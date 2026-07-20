@@ -44,7 +44,17 @@ artifact: 0-lifecycle/5-section-edit/{section}/{section}.md   # PER SECTION — 
 log: 0-lifecycle/5-section-edit/{section}/_LOG_{section}.md
 probes: 1-probes/PPNN_<topic>.md
 output: 0-sections/*.tex   # GENERATED from the .md by sync; NEVER hand-authored
-template: template.md     # the SHAPE **and** its own rulebook — placeholder grammar, the
+template: <resolved per (venue, section_kind)>
+          # PRINCIPLE (JL 2026-07-20): every (venue, kind) has its OWN template, summarized from
+          # that outlet's exemplars — a MISQ introduction ≠ a Nature introduction in SHAPE. So the
+          # skeleton is NOT fixed here. The venue stage resolved it into 2a-venue.md's Section
+          # Styles table (the `template:` path for this section's kind). Read THAT and copy it.
+          #   venue has a pack template for this kind  -> use it (authoritative)
+          #   pack exists but no template.md for this kind, OR a pack-less venue (grant/patent/
+          #     NEJM…)                                  -> fall back to ./template.md (generic)
+          # The generic ./template.md below is the FALLBACK, not the default — its own header
+          # says so. Never hand-spell a pack path; the venue stage owns resolution.
+fallback_template: template.md     # generic scaffold — placeholder grammar, the
                           # mandatory Q-consumer block and its fill rules all live inline
                           # as <tpl: …> guidance. There is no separate format spec.
 
