@@ -1,32 +1,13 @@
-# 260719 · DRAFT 相位的提问能力
+# 260719 · DRAFT 相位的提问能力 — ✅ CLOSED
 
-
-
-> JL: 什么是皮肤？
-
->> CC0719: 我造的词，指的就是 **skill** —— repo 里的 `skills/<family>/<name>/SKILL.md`。
->>          已把本文件里 9 处「皮肤」全部改回 `skill`（你上面这句原话保留不动）。
->>          来源交代一下：审计员的返回里写了「姊妹皮肤」「该皮肤」，我照抄进来没拦。
->>          规矩重申：**用 repo 里的原词，不给它起别名** —— 包括子代理带回来的词。
-
-
-> JL: change this emoji: seed      💀 这个角度被人占了吗?
-
->> CC0719: 换成 👣（有人先走过这里）。两处都改了：R1 展开的对照表 + seed 的形状示例。
->>          💀 是我从「杀伤 / 什么会让它死」那套词带过来的，但这条问的是
->>          「这块地被人插旗了吗」——是**领地**问题，不是**存活**问题，配错了。
-
-
-
-
-> JL: haipipe-skill-diagnose/SKILL.md:46 please also change this, and make SKILLS to save things to a _console folder? 
-
-```
-  A · _console/ 取代 bucket 根   → 要改 haipipe-skill-diagnose/SKILL.md:46
-                                   现存 4 份是否搬过来（它们都已结案）
-  B · 两者并存                    → _console/ 放**在制品**，bucket 根放**已结案的 review**
-                                   那本文件结案后要搬回 paper/2-phase/
-```
+> **FINISHED 2026-07-19.** 34 条 finding:**33 已解决**,1 转出。
+> 裁决 R1–R7 全部做出**并执行完毕**;零未决 `> JL:` 槽。本文件只读。
+>
+> 转出的 1 条:**D4**(`mode` 按 per-question 汇报)→ 按 JL「留给他们」交给
+> `260719-03-MODE-RETIREMENT.md`,因为那块板在裁的是「整条 `mode` 要不要废」,
+> 在这里单独改字段是白做。
+>
+> 后续工作 → `_console/260719-07-APPLICATION-PARITY.md`
 
 
 
@@ -49,8 +30,10 @@
             七个 stage skill 各自持有问题类型；RAISE+PLAN 升为顶层 Step 4b
   ⏸️ 未动   application（R2：paper 之后）· 要动 probe 的两条（跨 family）
 
-  ▶️ 下一步   **看上面的「🙋 待你确认（六件）」** —— 六个 `> JL:` 空槽等你
-             按 R5，一个 tag 都还没发；你说停我一次性发
+  ✅ 已做   C1–C6 六条确认全部执行（R7）；application + probe 也做完了
+  ✅ 已做   21 个 skill 一次性发 tag（C3：只发 minor）
+
+  ▶️ 下一步   本轮结束。没有未决 `> JL:` 槽。
 
 
   ── 第 0 轮复核：不重跑，只核 haipipe-paper-draft ──────────────
@@ -77,130 +60,7 @@
 ```
 
 
-## 🙋 待你确认（六件 · 直接在 `> JL:` 后面写）
-
-paper 侧能做的都做完了。以下六件我停在这里。
-
----
-
-### C1 · N2 执笔权 —— 我按证据落了「hub 单写」，你确认或翻案
-
-Step 4a 的三条 lane 和 hub，原本**互相都说是对方写**：
-
-```
-  改之前                                    我改成
-  ─────────────────────────                ─────────────────────────
-  hub :158    「Fold those new questions    hub   THIS HUB HOLDS THE PEN
-               into the Q-consumer and            ①② 都由 hub 写
-               author their ENTRIES」
-  citation:90 「RAISE a new ## Q-...」      lane  REPORT it as UNOWNED
-  values  :78 「RAISE a new Q-consumer」    lane  REPORT it as UNOWNED
-  display     「file a DR row」             lane  照旧（不同 inbox，是它自己的）
-```
-
-理由：三条 lane 同时写一个 `1-probes/PPNN_<topic>.md` 是 write race，而 bank 的 QA 文件
-早就定了 ONE WRITER + `set -C`。同一个形状，同一条规矩。
-
-连带后果：citation / values 因此**不再需要 `Write`**（只改正文，Edit 够），我已撤回；
-display 保留 `Write`（它要建 `_DISPLAY_REQUEST.md`）。
-
-翻案代价：5 个文件，不大。
-
-> JL: 什么意思？我以为draft会call draft-citaton, draft-values, ... 最后之后haipipe-paper-draft 在该 draft.md 和Q-consumers？ 
-
-
-
-
----
-
-### C2 · 七份问题类型清单的**内容**
-
-形状我有把握（每个 stage 一段 `## Questions this stage typically raises`，英文，R3）。
-但内容是我从各 stage 的 done-criteria 反推的，**领域判断是你的**。最没把握的三条：
-
-```
-  claims    📏 robustness      「换个 specification / 样本 / cutoff 还成立吗」
-                               —— 是真该在 claims 问，还是这属于 review 阶段？
-  resource  🔁 reusability     「有没有现成模型可复用，而不是重训」
-                               —— 这是 resource 的问题，还是 claims 的？
-  pitch     🏁 competing paper 「有没有人正在讲同一个故事」
-                               —— 和 seed 的 👣 occupied ground 重不重？
-```
-
-其余四组（seed / narrative / display / section-edit）我比较有把握。
-
-> JL:resource 我们现在有什么数据，有什么算法，要去网上找什么数据，找什么算法，是不是自己要开发算法，自己构造数据之类的。
-pitch： 是为了说能不能让对应venue的人听得懂，能不能吸引他们的注意力之类的。
-claims    📏 robustness      「换个 specification / 样本 / cutoff 还成立吗」
-                               —— 是真该在 claims 问，还是这属于 review 阶段？ 
-            > JL: 我同意，这个我们应该控制claim的量，最好只有三四个，不要啥都问/
-
-
----
-
-### C3 · 什么时候发 tag（R5）
-
-按你的规矩现在一个都没发：
-
-```
-  haipipe-paper-draft            5.1.0  ⚠️ IN PROGRESS（一直往里追加）
-  haipipe-paper-draft-{citation,values,display}   1.0.0（改动在，tag 没动）
-  七个 stage skill               版本未动
-  haipipe-skill-diagnose         1.3.0（这个是完整的一件事，已收口）
-```
-
-你说停，我一次性发。
-
-> JL: 可以的。现在直接改到5.1，但是更新并没有很多。以后代际更新要谨慎。
-
----
-
-### C4 · 我的 D1 / D4 要不要让位
-
-```
-  本文件 D1「四行 PROBE: 归错相位」  ≈  260719-PHASE-BOUNDARY-REFACTOR.md 整场重构
-  本文件 D4「mode 按 per-question 汇报」 ⊂ 260719-MODE-RETIREMENT.md
-```
-
-D1 我已经按 R1 执行了（搬进七个 stage skill）。D4 还没动。
-问题是：D4 划掉交给 MODE-RETIREMENT，还是留在这份里？
-
-> JL: 留给他们。
-
----
-
-### C5 · 第 4 轮 application 现在开吗
-
-R2 说 paper 优先 —— paper 侧已经清完。application 那边等着的：
-
-```
-  A1  🔴 整份文件没有人类闸之前的自审（probe 的 DRAFT rule 4 两个 family 都要求）
-  A2  🔴 allowed-tools 缺 Agent，A1 的改法跑不动
-  A3 A6 A7 · B7 · C2 C5 C6 · D4        🟡🟢
-```
-
-> JL: 先等着，把application做完再说。
-
----
-
-### C6 · 两条要动 `probe` 的（跨 family，我没敢动）
-
-```
-  D5  ENTRY vs section 混用
-      probe/haipipe-probe/SKILL.md 自己也混（:162 entry / :96 section）
-      单改 paper 会和它不一致 → 要一起规范化
-
-  B3  probe 的 DRAFT rule 2 仍以 "For each open question" 开头
-      预设问题已经存在，没指向新建的 per-stage 清单
-      但 probe 是 paper + application 共用的
-```
-
-动 `probe` 会同时影响 application，所以停在这里等你。
-
-> JL: 可以直接去改。
-
----
-
+## ✅ 六条确认已全部收口 → 见裁决账本 R7
 
 ## ⚖️ 裁决账本（append-only · 你的原话逐字保留）
 
@@ -241,6 +101,40 @@ R5 · 2026-07-19 · 一轮活只发一个 tag
                   haipipe-paper-draft-values     1.0.1          → 回滚到 1.0.0
                   haipipe-paper-draft-display    1.0.1          → 回滚到 1.0.0
                 改动本身都留着，只是不发 tag
+
+R7 · 2026-07-19 · 六条确认，一次收口（原 C1–C6）
+> JL: 什么意思？我以为draft会call draft-citaton, draft-values, ... 最后之后haipipe-paper-draft 在该 draft.md 和Q-consumers？
+
+     >> CC0719: C1 你的理解就是最终形态。而且比我原来落的更彻底 ——
+                三条 lane 变成**纯只读检查器**，hub 一手写 prose + Q-consumer + 1-probes/
+                这同时杀掉了我没看见的第二个竞争：citation 和 values 本来都直接改 draft.md 正文，
+                而 Step 4a 说「run them in one batch」——一句话同时缺引用和缺数字是常态
+                citation/values 的 allowed-tools 已去掉 Edit/Write；display 保留（独占 inbox）
+
+> JL:resource 我们现在有什么数据，有什么算法，要去网上找什么数据，找什么算法，是不是自己要开发算法，自己构造数据之类的。
+
+     >> CC0719: C2 resource 的清单按你这句重写了，切成 DATA × ALGORITHM 两轴 ×
+                HAVE / GET / BUILD 三问，外加横跨两轴的 linkability
+                我原来那版（existence/coverage/reusability）漏了「要不要自己开发」这整条
+
+> JL: 可以的。现在直接改到5.1，但是更新并没有很多。以后代际更新要谨慎。
+
+     >> CC0719: C3 已发。21 个 skill 各一个 minor，无 major。以后按你说的谨慎。
+
+> JL: 留给他们。
+
+     >> CC0719: C4 本文件的 D1 / D4 交给 260719-02-PHASE-BOUNDARY-REFACTOR.md
+                和 260719-03-MODE-RETIREMENT.md，不在这里裁
+
+> JL: 先等着，把application做完再说。
+
+     >> CC0719: C5 application 已做完：A1 A2 A3 A6 A7 · B3 B7 · C2 C5 C6，
+                外加九个 application stage skill 的问题类型清单
+
+> JL: 可以直接去改。
+
+     >> CC0719: C6 probe 已改（9.7.0）：B3 rule 2 不再预设问题已存在、
+                D5 十一处 section → ENTRY
 
 R2 · 2026-07-19 · 双生收敛顺序（原 thread T2）
 > JL: 现在我们以paper为主，然后apply到application上去。
@@ -318,17 +212,14 @@ NOT here: profiling OUR OWN data → [FORWARD -> RESOURCE]
           D1 四行 `PROBE:` 搬出，draft 只留指针
 第 2 轮   B1 RAISE+PLAN 升为顶层 Step 4b · B2 补 Q-consumer 那一半 ✅
 第 3 轮   A4 A5 A8 A9 A10 · B4 B5 B6 · C1 C2 C3 C4 · D3 · N4 · C7  ✅
-第 4 轮   application（R2：paper 之后）                           ⬜ 未开始
+第 4 轮   application + probe（C5 / C6 放行）                      ✅
 ```
 
-**没做的，和为什么：**
+**收口状态：**
 
 ```
-D5   ENTRY vs section 混用   ⬜ probe/haipipe-probe 自己也混（:162 entry / :96 section）
-                                单改 paper 会和它不一致 → 要一起规范化
-B3   probe 的 DRAFT rule 2    ⬜ 仍以 "For each open question" 开头（预设问题已存在）
-     还没指向 per-stage 清单     probe 是 paper+application 共用，动它要跨 family
-D1·D4 让位                    ⬜ 见「跨 console 文件的两个坑」
+D5 · B3   ✅ 已在 probe 9.7.0 改掉（C6 放行）
+D1 · D4   ➡️ 按 C4「留给他们」，交给 260719-02-PHASE-BOUNDARY-REFACTOR / -MODE-RETIREMENT
 ```
 
 ## 📋 Findings（33 条 · 🔴8 🟡19 🟢6 · [M]23 [J]10）
@@ -628,12 +519,12 @@ probe/haipipe-probe/SKILL.md                                    v9.5.0 · 349 �
 
 ```
 1  id 撞车
-   260719-PHASE-BOUNDARY-REFACTOR.md 有它自己的 D1–D5，和本文件的 D1–D5 是不同的东西。
+   260719-02-PHASE-BOUNDARY-REFACTOR.md 有它自己的 D1–D5，和本文件的 D1–D5 是不同的东西。
    引用时必须带文件名。（要不要在 _console/ 层面统一 id 空间，你定。）
 
 2  主题重叠 —— 这两条该让位，不该两处并行裁
-   本文件 D1「四行 PROBE: 归错相位」  ≈  260719-PHASE-BOUNDARY-REFACTOR.md 的整场重构
-   本文件 D4「mode 按 per-question 汇报」 ⊂ closed/260719-MODE-RETIREMENT.md（整条 mode 要不要废
+   本文件 D1「四行 PROBE: 归错相位」  ≈  260719-02-PHASE-BOUNDARY-REFACTOR.md 的整场重构
+   本文件 D4「mode 按 per-question 汇报」 ⊂ closed/260719-03-MODE-RETIREMENT.md（整条 mode 要不要废
    → ✅ 已裁决 A 退役并执行完毕；D4 因此消失，mode 已不是字段）
 ```
 

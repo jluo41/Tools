@@ -4,7 +4,7 @@ description: "Stage 4 of the intervention lifecycle (venue-GATED: required for d
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.7.0"
+  version: "4.8.0"
   last_updated: "2026-07-19"
   summary: "Display stage (stage 4, venue-GATED + venue-ALIGNED) — maps each claim to a display UNIT with a required per-unit Job (minimap absorbed); materialization raised as a section in the flat probe pool 1-probes/, uniquely commissioned by this stage. History: ./CHANGELOG.md."
 ---
@@ -86,6 +86,20 @@ Formatting: `=====` title / `-----` sections; content uses no `#`, Q-consumer qu
 [ ] display types match the venue's available element types
 ```
 
+
+## Questions this stage typically raises
+
+DRAFT's RAISE+PLAN step raises what the draft cannot answer. These are the kinds this stage is prone to — read this list, then walk the draft against it.
+
+```
+📤 evidence exists   Does a task-produced result exist that this element would show?
+                     An element with no producing task cannot be refreshed.
+🎨 element form      Panel, chart, table, or plain sentence — which does this claim
+                     need? Ask when the venue's budget makes it a real trade.
+📐 venue budget      How many elements does this modality allow, and what is cut?
+🖥️ render context   On what screen / in what client will this be seen? An element
+                     that breaks on a phone is not done.
+```
 
 ## Exits
 

@@ -31,7 +31,7 @@ Two axes stay orthogonal: **layer/frontier** (which stage has the active work) a
 
 ## Evidence routing
 
-For claim-related evidence, the paper always routes through the PROBE phase. It raises its questions as SECTIONS in `1-probes/`, MATCHes each against the bank's QA corpus (most close there, for free), and dispatches only what MATCH cannot close — handing the section's `q-executor:` block, VERBATIM, to the task/discovery orchestrators. A standalone utility question a human wants goes to the bank's own `/haipipe-task qa` door, never proxied by the paper.
+For claim-related evidence, the paper always routes through the PROBE phase. It raises its questions as ENTRIES in `1-probes/`, MATCHes each against the bank's QA corpus (most close there, for free), and dispatches only what MATCH cannot close — handing the section's `q-executor:` block, VERBATIM, to the task/discovery orchestrators. A standalone utility question a human wants goes to the bank's own `/haipipe-task qa` door, never proxied by the paper.
 
 The paper does not execute code, search literature directly, or store raw results.
 
@@ -40,7 +40,7 @@ The paper does not execute code, search literature directly, or store raw result
 ```text
 task       executes internal work
 discovery  checks outside evidence
-probe      the paper's Q/A map: one SECTION per question, bound BY PATH to the
+probe      the paper's Q/A map: one ENTRY per question, bound BY PATH to the
            executor's answering QA file. It does not judge — the claim's status
            lands in the paper's 0-lifecycle/1b-claims/1b-claims.md
 paper      selects evidence, writes prose, delivers
@@ -95,6 +95,6 @@ STATUS.md, 0-lifecycle/<stage>/<stage>.tex, 0-sections/,
 Preserve boundaries:
 - for claim-related evidence, paper routes through a stage's PROBE phase; there
   is no direct task/discover — a standalone utility question uses the bank's own door
-- paper raises questions as sections in 1-probes/, MATCHes, then dispatches
+- paper raises questions as entries in 1-probes/, MATCHes, then dispatches
 - paper does not execute code, search literature, or store raw results
 ```

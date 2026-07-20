@@ -16,7 +16,7 @@ the entry's `### q-executor` block, VERBATIM
         |                                                  eval, display, stata, agent)
         +-- Agent(haipipe-discovery-orchestrator-agent)   external evidence: search + read,
         |                                                 judge/synthesize, idea
-        |     The bank verdict was settled at DRAFT (② MATCH); dispatch goes
+        |     The bank verdict was settled at ② MATCH, just above; dispatch goes
         |        DIRECT to the two orchestrators above.
         |
         +-- on return, this worker writes NOTHING bank-side:
@@ -43,7 +43,7 @@ task/discovery orchestrator -> the answering QA file)
 
 Dispatch rules (apply to every dispatch)
 ----------------------------------------------
-1. **Reuse-before-create -- the MATCH is DRAFT's, the DEPTH is the EXECUTOR's.**
+1. **Reuse-before-create -- the MATCH is PROBE's, the DEPTH is the EXECUTOR's.**
    DRAFT runs ② MATCH over the
    bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the
    hits -- match ON THE ANSWER, never on the topic. A hit is `bank: reuse`
@@ -79,7 +79,8 @@ Resource specifics (SCAN and BUILD lanes)
 -------------------------------------------
 The stage hands over paper-space QUESTIONS (Q1, Q2, ...), never PP ids and never
 probe topics. The resource stage's DRAFT reads 1a-resource.md at ① ORGANIZE and opens one ENTRY
-per GATE-1-approved Q — a `### q-consumer` bullet `Q-Resource-<n>` (the Q, copied
+per drafted Q — BEFORE GATE 1, which is the DRAFT gate where the human approves the set just
+opened — a `### q-consumer` bullet `Q-Resource-<n>` (the Q, copied
 in) · `### bank binding` with `route`, `bank`, `target: NEW ?`, `state: planned`,
 `blocks: N<n>` · `### q-executor` = the Q re-posed as a self-contained evidence
 question — writing the `-> PP<NN>` backlink back into the Q; the entry can be

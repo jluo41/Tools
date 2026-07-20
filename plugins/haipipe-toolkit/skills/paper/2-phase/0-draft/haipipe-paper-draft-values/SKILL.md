@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-draft-values
-description: "DRAFT-phase value auditor (internal). Walks a stage doc or section for every quantitative claim, decides which already trace to a named source, and turns each remaining hole into `{VAL:? <what>} [Q-<Stage>-<n>]` — the placeholder plus the id of the question that will produce the number. Reports a hole back to the hub as UNOWNED when no existing question would answer it; the hub raises the question. Never re-derives, never greps the codebase, never edits the manuscript. Users invoke stage skills (claims, section-edit...), not this skill directly."
+description: "DRAFT-phase value auditor (internal). Walks a stage doc or section for every quantitative claim, decides which already trace to a named source, and REPORTS every remaining hole to haipipe-paper-draft — where it is, that it owes `{VAL:? <what>}`, and which `Q-<Stage>-<n>` will produce the number (or UNOWNED). READ-ONLY: the hub holds the pen for the manuscript, the Q-consumer, and 1-probes/. Never re-derives, never greps the codebase, never writes anything. Users invoke stage skills (claims, section-edit...), not this skill directly."
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   last_updated: "2026-07-19"
-  summary: "DRAFT-phase value auditor: find every number the prose asserts, keep the ones that trace to a named source, and OWN every remaining hole with `{VAL:? <what>} [Q-<Stage>-<n>]`. Re-derivation is CHECK's; this skill only decides what is owed and who owes it. History: ./CHANGELOG.md."
+  summary: "DRAFT-phase value auditor: find every number the prose asserts, keep the ones that trace to a named source, and report every remaining hole with the question that owes it. READ-ONLY; the hub writes. Re-derivation is CHECK's; this skill only decides what is owed and who owes it. History: ./CHANGELOG.md."
 ---
 
 haipipe-paper-draft-values

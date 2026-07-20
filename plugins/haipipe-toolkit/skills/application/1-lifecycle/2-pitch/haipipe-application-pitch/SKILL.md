@@ -4,8 +4,8 @@ description: "Stage 2 of the intervention lifecycle (venue-ALIGNED, first stage 
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.3.0"
-  last_updated: "2026-07-18"
+  version: "5.4.0"
+  last_updated: "2026-07-19"
   summary: "Pitch stage (stage 2, venue-ALIGNED, the FIRST stage after the venue pin) — the one-minute goal + theory of change told FOR the pinned venue + audience, and the home of the [primary] claim designation. Rewrites on retarget; the venue-FREE ladder it cites does not. History: ./CHANGELOG.md."
 ---
 
@@ -88,6 +88,21 @@ Formatting: `=====` title / `-----` sections; content uses no `#`, Q-consumer qu
 [ ] [primary] claim designated for THIS venue; audience frame matches the profile
 ```
 
+
+## Questions this stage typically raises
+
+DRAFT's RAISE+PLAN step raises what the draft cannot answer. These are the kinds this stage is prone to — read this list, then walk the draft against it.
+
+```
+🎯 audience fit      Has this audience responded to this kind of message before?
+                     Name the comparable programme and its response rate.
+📡 channel norm      What does this channel's convention allow — length, tone,
+                     frequency? A pitch that violates it will not be read.
+⚠️ framing risk      Which framing would read as alarming or presumptuous to this
+                     audience, and what would we need to keep it?
+🏁 competing message What else is this audience already receiving through this
+                     channel? A message that collides gets ignored.
+```
 
 ## Exits
 

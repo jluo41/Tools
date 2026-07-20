@@ -6,7 +6,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## 1.4.0 — 2026-07-19 — placeholder contract updated; comment-first residue removed from ref/
 
-From the `paper/2-phase` review (`../../../_console/260719-PHASE-BOUNDARY-REFACTOR.md`).
+From the `paper/2-phase` review (`../../../_console/260719-02-PHASE-BOUNDARY-REFACTOR.md`).
 
 ### Changed (JL: "\\cite{TOADD} [Q-XXX-N] So I want something like this.")
 Every placeholder this worker leaves or checks now carries the id of the question that will settle it — `{VAL:? <what>} [Q-<Stage>-<n>]`, `\cite{TOADD} [Q-<Stage>-<n>]` — two markers side by side, never fused. A placeholder without a bracket is a hole nobody owns.

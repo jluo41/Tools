@@ -4,8 +4,8 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1d-advice/1d
 argument-hint: "[intervention-path] [--deposit <Ann>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.8.0"
-  last_updated: "2026-07-18"
+  version: "1.9.0"
+  last_updated: "2026-07-19"
   summary: "Advice stage (rung 1d of the venue-FREE 1a–1d evidence ladder; the W rung and the ladder's DELIVERABLE) — design advice, one A<n> per entry (exploit|explore role) derived from >=1 claim in the 1c ledger; counsel not mandate (venue-ALIGNED stages adopt or decline downstream); content-WHAT, distinct from the venue's channel-HOW Artifact Principles. History: ./CHANGELOG.md."
 ---
 
@@ -102,6 +102,20 @@ full     every exploit A cites supported (judged) claims only
 
 Absent `claims_settlement` (venue unpinned) → apply `light` provisionally.
 
+
+## Questions this stage typically raises
+
+DRAFT's RAISE+PLAN step raises what the draft cannot answer. These are the kinds this stage is prone to — read this list, then walk the draft against it.
+
+```
+🎬 actionability     Can the recipient actually DO this? Name the barrier if not —
+                     advice nobody can act on is not advice.
+⚠️ harm              Who is made worse off if this advice is followed and the claim
+                     turns out to be wrong? Ask it before deployment, not after.
+📐 dosage            How much / how often / for how long? Advice without a dose is
+                     a sentiment.
+🏛️ standard of care  Does this contradict published guidance? If so, on what evidence?
+```
 
 ## Exits
 

@@ -4,7 +4,7 @@ description: "Stage 3 of the intervention lifecycle (venue-GATED: fires per STAT
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.3.0"
+  version: "5.4.0"
   last_updated: "2026-07-19"
   summary: "Narrative stage (stage 3, venue-GATED + venue-ALIGNED): maps the settled claim/advice flow onto the venue's arc; it composes, never gathers — a beat exposing a NEW evidence gap raises a question SECTION in 1-probes/PPNN_<topic>.md (serves: 3-narrative) routed back to 1c-claims. History: ./CHANGELOG.md."
 ---
@@ -79,6 +79,21 @@ Sidecar: `_LOG_3-narrative.md` (phase journal).
 Formatting: `=====` title / `-----` sections; content uses no `#`, Q-consumer questions use `## Q-Narr-<n>`; one sentence per line.
 Markdown only (argument documents need no compilation).
 
+
+## Questions this stage typically raises
+
+DRAFT's RAISE+PLAN step raises what the draft cannot answer. These are the kinds this stage is prone to — read this list, then walk the draft against it.
+
+```
+⚓ beat anchor      This beat asserts something. Which claim carries it? A beat with
+                    no claim behind it is copy, not narrative.
+🕳️ gap beat        A beat with no evidence at all — is it worth producing, or cut?
+                    Every gap is a question or a cut, never a maybe.
+🖼️ element need    Does this beat need the recipient to SEE something? Then it owes
+                    a display unit, not a promise.
+🧵 arc break       Does the message still hold together in this order, or does it
+                    need a fact we have not established?
+```
 
 ## Exits
 

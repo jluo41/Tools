@@ -4,9 +4,9 @@ description: Rigorous mathematical proof verification and fixing workflow. Reads
 argument-hint: "[path-to-tex-file or proof-description]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.1.2"
-  last_updated: "2026-07-07"
-  summary: "Rigorous mathematical proof verification and fixing workflow."
+  version: "1.2.0"
+  last_updated: "2026-07-19"
+  summary: "CHECK-phase PROOF sub-checker (internal, conditionally dispatched): rigorous verification and repair of LaTeX proofs — read, find gaps via cross-model review, fix each with full derivations, re-review, emit an audit report. Dispatched BY haipipe-paper-check when a section carries a proof; it is not the CHECK gate itself and does not run alone as one. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,7 +24,7 @@ Systematically verify a mathematical proof via cross-model adversarial review, f
   Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP.
   See `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/reviewer-routing.md`.
 - AUDIT_DOC: `PROOF_AUDIT.md` at the paper directory root, alongside `main.tex` (cumulative log).
-  Primary caller: `haipipe-paper-check` dispatches this skill as its PROOF sub-checker; the legacy `/paper-writing` Phase 6 (retired to Tools/legacy/) used `paper/PROOF_AUDIT.md`.
+  Primary caller: `haipipe-paper-check` dispatches this skill as its PROOF sub-checker.
 - REPORT_TEX: `proof_audit_report.tex` (formal before/after PDF)
 - STATE_FILE: `PROOF_CHECK_STATE.json` (for recovery)
 - SKELETON_DOC: `PROOF_SKELETON.md` (micro-claim inventory)

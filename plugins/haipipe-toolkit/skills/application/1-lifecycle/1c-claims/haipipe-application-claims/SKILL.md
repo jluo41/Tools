@@ -4,7 +4,7 @@ description: "Stage orchestrator for rung 1c of the venue-FREE evidence ladder (
 argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "7.5.0"
+  version: "7.6.0"
   last_updated: "2026-07-19"
   summary: "Claims stage (rung 1c of the venue-FREE 1a–1d evidence ladder; the K rung) — the ONLY home of a claim's status (supported | weak | GAP, from a judged artifact, never intuition; Consumes 1b theme hooks into a claim ledger + evidence campaign, gives each primary a Rival + refute-capable probe, and reaches for evidence via the PROBE phase (questions raised as entries in 1-probes/). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). History: ./CHANGELOG.md."
 ---
@@ -93,6 +93,21 @@ full     (dashboard, ui-card,       primary claims supported (judged); every GAP
 
 Absent `claims_settlement` (venue unpinned) → apply `light` provisionally.
 
+
+## Questions this stage typically raises
+
+DRAFT's RAISE+PLAN step raises what the draft cannot answer. These are the kinds this stage is prone to — read this list, then walk the draft against it.
+
+```
+⚖️ sufficiency         Does this evidence support the claim, or only fail to
+                       contradict it? Name the effect and the N.
+🔀 rival explanation   What else would produce this pattern, and what would
+                       distinguish them? A claim with no named rival is untested.
+🎯 generalization      Does it hold for the audience we will actually deploy to,
+                       or only for the sample it was found in?
+🧱 ingredient          Is a prerequisite still missing? Then the claim is
+                       BLOCKED-ON-DESCRIPTIONS — do not re-ask 1a's question here.
+```
 
 ## Exits
 

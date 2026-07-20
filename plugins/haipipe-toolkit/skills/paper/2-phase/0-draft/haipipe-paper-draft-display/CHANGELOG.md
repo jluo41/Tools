@@ -4,6 +4,14 @@ haipipe-paper-draft-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 1.1.0 — 2026-07-19 — `Write` added; the DR inbox could not be created
+
+From `_console/closed/260719-01-DRAFT-RAISE-QUESTIONS.md` finding N5.
+
+`allowed-tools` was `Bash, Read, Edit, Grep, Glob` — no `Write`. This lane's terminal act is filing a DR row into `0-lifecycle/4-display/_DISPLAY_REQUEST.md`, which PLAN step 3 calls "the ONLY way a display comes into being from here". `Edit` can append to that inbox once it exists but cannot create it, so the lane failed on any paper whose display stage had not yet run — exactly the case it exists for.
+
+This lane KEEPS its pen, unlike the citation and values lanes (N2): `_DISPLAY_REQUEST.md` is a file no one else writes, so there is no race to solve.
+
 ## 1.0.0 — 2026-07-19 — created, from the DRAFT half of the retired `haipipe-paper-probe-display`
 
 From the `paper/2-phase` skillset review (118 findings, 5 parallel auditors, 22/22 spot-checks passed).

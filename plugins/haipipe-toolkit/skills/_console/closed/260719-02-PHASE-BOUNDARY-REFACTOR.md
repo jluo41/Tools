@@ -27,7 +27,7 @@
   ⚖️ 12 条裁决全部执行完毕。重构闭环。
 
   ⏳ 还等你的两件(都不属于本次重构):
-       mode 三选一           → ✅ closed/260719-MODE-RETIREMENT.md §4 (裁决 A,已执行)
+       mode 三选一           → ✅ closed/260719-03-MODE-RETIREMENT.md §4 (裁决 A,已执行)
        PREFERENCES.md:11    → 是你的标准偏好,编码了已退役模型,要你亲手改
 ```
 
@@ -103,7 +103,7 @@ D4 · harvest lane 存废
 D5 · mode
 > JL: Do we still need this? Leave it. Maybe we don't need this mode.
 > JL: for this one, maybe open a new review file to discuss about it only
-     >> CC0719: ✅ 已单独立案 → `closed/260719-MODE-RETIREMENT.md`(裁决 A 退役,已执行完毕)。本文件不再讨论。
+     >> CC0719: ✅ 已单独立案 → `closed/260719-03-MODE-RETIREMENT.md`(裁决 A 退役,已执行完毕)。本文件不再讨论。
 
 D6 · cite/val/disp 状态条
 > JL: Delete.
@@ -190,7 +190,7 @@ D12 · principle 5a
                                               · PHILOSOPHY:41,108 · README:193 · EVALUATION:35 · USAGE:26
                                               ⚠️ 其中 4 处在 summary:/description: 上 —— 必须用
                                                  文件级过滤 grep -v '/CHANGELOG\.md:' 才看得见
-  ⑦    mode                        35        ✅ 已退役 closed/260719-MODE-RETIREMENT.md §6
+  ⑦    mode                        35        ✅ 已退役 closed/260719-03-MODE-RETIREMENT.md §6
   ────────────────────────────────────────────────────────────────────────
   已清 5 / 10     目标:全部 ✅ 本文件才算 clean
 ```

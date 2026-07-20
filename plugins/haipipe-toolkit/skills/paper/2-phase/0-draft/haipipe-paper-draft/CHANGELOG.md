@@ -4,11 +4,34 @@ haipipe-paper-draft — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 5.2.0 — 2026-07-19 — Step 4c runs the checker BEFORE the sub-agent
+
+### Changed
+Step 4c opened by dispatching a review sub-agent whose checklist asked, in prose, for
+placeholder ownership ("COMPLETENESS, the reverse direction: every {VAL:?} and every
+\cite{TOADD} carries a [Q-<Stage>-<n>]"). That is a regex property, and it is already tested
+deterministically by `check-probe-cards.sh` PASS 4 — which DRAFT never ran. So the phase that
+CREATES the property delegated verifying it to a model reading a document.
+
+It does not hold. Measured on `Paper-Personality2Opioid-MISQ2026`: 19 unowned placeholders
+across four section docs, every one written under a DRAFT self-review that reported clean.
+
+Step 4c now RUNS `check-probe-cards.sh <paper_root> --stage <stage>` first and states the
+DRAFT-phase pass condition explicitly — the ONLY legal FAIL is `state-planned(probe-not-run)`,
+which is what a correct DRAFT looks like (DRAFT plans the entries, PROBE runs them). Every
+other code (cite-unowned, value-unowned, dangling-owner, stale-old-format, LAW2 leak,
+sidecar-present, markdown-table) is a DRAFT defect fixed before the gate. The sub-agent keeps
+only what the checker CANNOT test: is the question answerable, was the `bank` verdict rooted in
+a folder someone actually read, does the prose say anything. Judgment, not pattern-matching.
+
+Requires haipipe-paper-probe >= 6.1.0 (the `--stage` filter this relies on was vacuous for
+section-edit before it).
+
 ## 5.1.0 — 2026-07-19 — question-raising promoted to a step of its own
 
-⚠️ IN PROGRESS — this tag covers the whole 260719 DRAFT-raise round and is still being written to. One tag for one body of work (JL: "only add it or assign the new tags until we really have the final version, not everytime, we have a new tag").
+One tag for one body of work (JL: "only add it or assign the new tags until we really have the final version, not everytime, we have a new tag" / "现在直接改到5.1，但是更新并没有很多。以后代际更新要谨慎").
 
-From `_console/260719-DRAFT-RAISE-QUESTIONS.md`, findings B1 B2 B4 B5 B6 · A4 A5 A8 A9 A10 · C1 C3 C4 · D1 D3 · N3 N4. JL's opening question was "把 draft 的 raise 问题's ability，也提得更重要一些" — this is that.
+From `_console/closed/260719-01-DRAFT-RAISE-QUESTIONS.md`, findings B1 B2 B4 B5 B6 · A4 A5 A8 A9 A10 · C1 C3 C4 · D1 D3 · N3 N4. JL's opening question was "把 draft 的 raise 问题's ability，也提得更重要一些" — this is that.
 
 **N1 — `Skill` was never declared.** `Step 4a. 🕳️ SWEEP THE HOLES` consists of exactly three `Skill()` calls — `haipipe-paper-draft-{citation,values,display}` — but `allowed-tools` listed `Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent` and never `Skill`. Every dispatch on the step's only path was undeclared. `Skill` appended. The same gap had an older, quieter instance: the `Skill("haipipe-paper-probe", …)` call in the resource stage note. That one sat in a per-stage aside; Step 4a is on the mandatory path, which is why this surfaced now.
 
@@ -18,13 +41,13 @@ From `_console/260719-DRAFT-RAISE-QUESTIONS.md`, findings B1 B2 B4 B5 B6 · A4 A
 
 **B5 — find-or-open, and T0 JOIN.** "author its ENTRY" dropped `probe`'s find-or-open, and the cost ladder's cheapest rung appeared nowhere, so a drafter opened a duplicate entry instead of adding a `### q-consumer` bullet to the one already asking.
 
-**N2 (applied reading) — the hub holds the pen.** Step 4a's three lanes REPORT holes; they do not author Q-consumers or probe entries. The lanes' own SKILL.md files said they raised; the hub said it folded them in. Three writers on one `1-probes/PPNN_<topic>.md` is a write race, and the one-writer rule that governs a bank QA file governs this one. ⚠️ This is a judgment call taken on evidence, not an owner ruling — flagged for JL.
+**N2 — the hub holds the pen, for all of it.** JL: "我以为draft会call draft-citaton, draft-values, ... 最后之后haipipe-paper-draft 再改 draft.md 和Q-consumers". Two contradictions, not one. The lanes' own SKILL.md files claimed they RAISED the Q-consumer and authored the ENTRY, while this hub said it folded them in — both claimed the pen on `1-probes/`. And the citation and values lanes each edited the manuscript prose directly, while Step 4a dispatches all three "in one batch": a sentence missing both a citation and a number is the common case, so two lanes edited the same line concurrently. Both races are gone. The lanes are READ-ONLY checkers returning one row per hole (where · what it owes · which `Q-<Stage>-<n>` owes it, or UNOWNED); this hub writes the prose placeholders, the Q-consumer, and the probe entries. The display lane keeps its pen — `_DISPLAY_REQUEST.md` has no other writer.
 
 **D1 / R1 — per-stage question types moved OUT.** JL: "是不是我们给每个stage写上，我们这里要写什么东西，一般会问到什么类型的问题？" The `PROBE:` lines in Stage-specific notes were assigning question ELICITATION to the PROBE phase, against `probe`'s PROBE rule 1 and this file's own "DRAFT is where the questions are born AND planned". Each stage skill now owns a **Questions this stage typically raises** section; this worker points at it and never restates it (one home). The display note keeps only its genuine PROBE work — the evidence and render lanes.
 
 **N3 — the file violated its own headline rule** in four places, writing bare `\cite{TOADD}` / `{VAL:?}` while the Rules block says "A placeholder with no bracket is a defect". Worst instance was inside the self-review checklist, where it taught the reviewer to accept them.
 
-**B6 — the self-review gained a COMPLETENESS surface.** It checked Q → sentence and never sentence → Q, so the headline rule had no checker.
+**B6 — the self-review gained a COMPLETENESS surface.** It checked Q → sentence ("every `Q-<Stage>-<n>` is cited inline") and never sentence → Q. The mechanical backstop already existed — `check-probe-cards.sh` carries `cite-unowned` and `value-unowned` over the stage docs — but it runs at PROBE VERIFY and again at CHECK, long after the DRAFT gate. The self-review is where an unowned placeholder should be caught, while the drafter is still holding it.
 
 **A5 — the merged gate now presents all three things** it exists to review: draft, probe plan (one line per question), self-review verdict. It had presented only the draft, though the file itself says "ONE gate reviews both".
 

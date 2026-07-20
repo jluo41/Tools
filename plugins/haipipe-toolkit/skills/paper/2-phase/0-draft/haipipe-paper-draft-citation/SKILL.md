@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-draft-citation
-description: "DRAFT-phase citation auditor (internal). Walks a stage doc or section for assertions that need a source, decides which already have a real \\citep{key} in the .bib, and turns each remaining hole into `\\cite{TOADD} [Q-<Stage>-<n>]` — the placeholder plus the id of the question that will produce the key. Reports a hole back to the hub as UNOWNED when no existing question would answer it; the hub raises the question. Never searches, never writes bibtex, never touches .bib, never edits the manuscript. Users invoke stage skills (seed, claims, section-edit...), not this skill directly."
+description: "DRAFT-phase citation auditor (internal). Walks a stage doc or section for assertions that need a source, decides which already have a real \\citep{key} in the .bib, and REPORTS every remaining hole to haipipe-paper-draft — where it is, that it owes `\\cite{TOADD}`, and which `Q-<Stage>-<n>` will produce the key (or UNOWNED). READ-ONLY: the hub holds the pen for the manuscript, the Q-consumer, and 1-probes/. Never searches, never writes bibtex, never writes anything. Users invoke stage skills (seed, claims, section-edit...), not this skill directly."
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   last_updated: "2026-07-19"
-  summary: "DRAFT-phase citation auditor: find every assertion that owes a source, place the real key when the .bib already has it, and OWN every remaining hole with `\\cite{TOADD} [Q-<Stage>-<n>]`. Acquisition is a question's job, not this skill's — it never searches. History: ./CHANGELOG.md."
+  summary: "DRAFT-phase citation auditor: find every assertion that owes a source, report the real key when the .bib already has it, and report every remaining hole with the question that owes it. READ-ONLY; the hub writes. Acquisition is a question's job, not this skill's — it never searches. History: ./CHANGELOG.md."
 ---
 
 haipipe-paper-draft-citation

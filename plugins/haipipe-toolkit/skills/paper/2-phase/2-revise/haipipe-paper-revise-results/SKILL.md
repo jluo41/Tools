@@ -22,7 +22,7 @@ Before you start, read the shared prose rules: `../../REF/prose-quality.md` (one
 Also read the venue's results conventions from the paper's `0-lifecycle/2a-venue/2a-venue.md`: the Structural Blueprint's Results block (results reported + detail, display units) and the Writing Principles (statistical reporting, effect sizes, tables vs figures).
 Fall back to the pinned `venue/playbook-*` pack only when 2a-venue.md is absent; no pack -> skip venue norms (the results-specific checks below still apply).
 
-Use `haipipe-paper-draft` for general prose drafting or rewriting (venue style comes from the paper's `0-lifecycle/2a-venue/2a-venue.md`, with the pinned `venue/playbook-*` pack as fallback).
+Use `haipipe-paper-draft` when WHAT the section says is still unsettled — that is a DRAFT-phase content decision, and it re-opens the DRAFT gate. Use `haipipe-paper-revise-content` when the content is right and the PROSE needs rewriting; rewriting for style is REVISE's own job and never goes back to DRAFT. (Venue style comes from the paper's `0-lifecycle/2a-venue/2a-venue.md`, with the pinned `venue/playbook-*` pack as fallback.)
 Use `haipipe-paper-optimizer` when the claim hierarchy, evidence chain, or figure logic is still unstable.
 Use this skill when the section is largely right but still reads like stitched figure captions rather than a controlled argument.
 

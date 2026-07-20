@@ -6,7 +6,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## 1.6.0 — 2026-07-19 — a fourth worker, `place`, and it runs FIRST
 
-From the `paper/2-phase` review (`../../../_console/260719-PHASE-BOUNDARY-REFACTOR.md`), ruling D7.
+From the `paper/2-phase` review (`../../../_console/260719-02-PHASE-BOUNDARY-REFACTOR.md`), ruling D7.
 
 ### Changed (JL: "Follow your recommendation.")
 `haipipe-paper-revise-place` joins the roster and runs before every prose worker. The dispatch order becomes `place → content → humanizer → results`, and the order is BINDING, not stylistic: substituting a landed key or number after the prose workers have run drops it into sentences they had already closed, so the text that actually ships was never reviewed in its final form. Running the de-AI pass over `{VAL:? held-out accuracy}` and swapping in `0.87` afterwards reviews a sentence that does not exist.
