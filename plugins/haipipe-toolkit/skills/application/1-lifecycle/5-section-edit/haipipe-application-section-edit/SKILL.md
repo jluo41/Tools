@@ -4,7 +4,7 @@ description: "Stage 5 of the intervention lifecycle (venue-gated: sectioned venu
 argument-hint: "[section-name-or-§N] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.3.0"
+  version: "5.4.0"
   last_updated: "2026-07-19"
   summary: "Section-edit stage (stage 5, venue-ALIGNED; sectioned venues only — report/dashboard spec): each section the VENUE PROFILE declares runs DRAFT → PROBE → REVISE → CHECK, editing prose in 0-sections/ with per-section scaffolds under 0-lifecycle/5-section-edit/{section}/. Its PROBE is a full-document probe — values + citation lanes per section, display lane where a section references units — raising gaps as entries in the flat pool 1-probes/PPNN_<topic>.md. Keeps the comment→reply→apply convention and the six edit topics as REVISE/CHECK lenses. History: ./CHANGELOG.md."
 ---
@@ -84,6 +84,21 @@ Evidence gaps do NOT buffer here: they are raised as ENTRIES in the flat probe p
 Inputs read: `STATUS.md` (venue, stages_skipped) · `venue/venue-<name>/README.md` (section list + jobs) · `0-lifecycle/4-display/4-display.md` (element→section map) · `0-lifecycle/1c-claims/1c-claims.md` (the ledger; claims language must not outrun it) · `0-lifecycle/1d-advice/1d-advice.md` (the advice entries each section executes) · `0-sections/*` (the prose under edit).
 Output: edited `0-sections/*` in place, plus the per-section scaffolds above; this stage does not modify upstream lifecycle docs — upstream problems become loopback suggestions.
 
+
+## Questions this stage typically raises
+
+DRAFT's RAISE+PLAN step raises what the draft cannot answer. These are the kinds this stage is prone to — read this list, then walk the draft against it.
+
+```
+🔢 owed number       A number in the prose with no named source. Worth going to get,
+                     or cut the sentence?
+⚓ owed source       An assertion about the world with nothing behind it.
+🧩 unearned move     This paragraph makes a step the reader has not been given
+                     grounds for. No sweep finds this — it is a missing argument,
+                     not a missing token.
+📛 norm conflict     The venue profile and the section's own convention disagree
+                     here. Which wins, and on what evidence?
+```
 
 ## Exits
 

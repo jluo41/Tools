@@ -12,7 +12,7 @@ Sourced from user feedback across multiple sessions. These are non-negotiable pr
 - **No em-dashes.** Never use `---` or `—` anywhere. Use commas, colons, or parentheses instead.
 - **Compress, don't split.** For long sentences, tighten by dropping adjectives/parentheticals/hedging. Do NOT split into many fragments. Fewer words > more sentences.
 - **Short plain academic sentences.** No buzzword stacks, no parenthetical name-explosions, no italics-on-nouns. Write like a confident researcher, not a press release.
-- **No AI voice.** Never use: Furthermore, Moreover, Additionally, delve, utilize, underscore, landscape, tapestry, multifaceted, crucial, pivotal, groundbreaking, innovative, cutting-edge, comprehensive, holistic, robust, novel, significant, transformative. If the sentence reads like ChatGPT wrote it, rewrite it.
+- **No AI voice.** Never use: Furthermore, Moreover, Additionally, delve, utilize, underscore, landscape (as a vague metaphor — a stage's own `Landscape` SECTION heading is a contract name and is exempt), tapestry, multifaceted, crucial, pivotal, groundbreaking, innovative, cutting-edge, comprehensive, holistic, robust, novel, significant, transformative. If the sentence reads like ChatGPT wrote it, rewrite it.
 - **Use verified numbers.** Prefer concrete verified numbers (e.g., "r = 0.61") over vague qualifiers ("higher", "moderate"). Strip numbers only if unverifiable.
 - **Each sentence carries its own weight.** If removing a sentence wouldn't confuse the reader, the sentence doesn't belong.
 

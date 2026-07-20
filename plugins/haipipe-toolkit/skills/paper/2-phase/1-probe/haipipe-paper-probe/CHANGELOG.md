@@ -4,6 +4,26 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 6.1.0 — 2026-07-19 — check-probe-cards.sh PASS 4: `--stage section-edit` was a VACUOUS GREEN
+
+### Fixed
+PASS 4's `--stage` gate derived a doc's stage from its BASENAME alone. That works for every
+top-level stage (`1a-resource` -> `resource`), but a section doc lives at
+`0-lifecycle/5-section-edit/<section>/<section>.md` and is named for the SECTION, never for its
+owning stage — so `--stage section-edit` matched NO doc, printed NOTHING, and exited 0.
+
+Not a missed detection: a gate reporting success over work it never looked at. Measured on
+`Paper-Personality2Opioid-MISQ2026` — `--stage section-edit` exited 0 while 19 unowned
+placeholders sat in four section docs (4-llmtrait 3 · 5-empirical 4 · 6-results 10 ·
+7-discussion 2), every one of them invisible to the only gate that owns them. PASS 4 was added
+(D9) precisely to make those holes assert; the stage filter silenced it on the stage that
+accumulates the most of them.
+
+A doc now carries TWO stage names and either may match: the BASENAME (keeps per-section runs
+like `--stage results` working) and the PATH OWNER (`*/0-lifecycle/5-section-edit/*/` ->
+`section-edit`). Verified on all three scopes: section-edit 19 visible, results 1 doc, seed
+unchanged.
+
 ## 6.0.1 — 2026-07-19 — vocabulary: `probe`, not "the constitution"; the display reroute a-consumer is sited in the stage doc
 
 Two vocabulary rulings from JL, both dated 2026-07-19, applied across `paper/`.

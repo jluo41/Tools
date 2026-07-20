@@ -6,7 +6,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## 1.0.0 — 2026-07-19 — created; the pre-submission evidence walk gets a home
 
-From the `paper/2-phase` review (`../../../_console/260719-PHASE-BOUNDARY-REFACTOR.md`), ruling D11.
+From the `paper/2-phase` review (`../../../_console/260719-02-PHASE-BOUNDARY-REFACTOR.md`), ruling D11.
 
 ### Changed (JL: "I think check should be in executor side." → confirmed as the NARROW reading, "我 agree with this")
 Two readings were on the table. NARROW: the verification work belongs to the CHECK PHASE rather than to DRAFT. BROAD: verification belongs to the executor side entirely, so the paper never re-verifies what came across the wall and this skill should not exist. JL confirmed the narrow one — the broad reading changes the task/discovery `qa` gate contract, which is a different bucket and needs its own run.

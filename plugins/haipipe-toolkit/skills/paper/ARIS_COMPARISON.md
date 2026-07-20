@@ -8,7 +8,7 @@ ARIS is an autonomous research workflow (idea > experiment > review > paper > re
 |---|---|---|
 | Optimizes for | Autonomous forward motion | Story reliability + state correction |
 | Main unit | Workflow stage | Paper folder state |
-| Evidence lives in | Workflow logs, research wiki | Project-level tasks/discoveries; the paper's questions live as SECTIONS in `1-probes/` and bind BY PATH to the bank's `QA/<n>-<slug>.md` answers |
+| Evidence lives in | Workflow logs, research wiki | Project-level tasks/discoveries; the paper's questions live as ENTRIES in `1-probes/` and bind BY PATH to the bank's `QA/<n>-<slug>.md` answers |
 | Review means | Fix weaknesses, rerun | Diagnose earliest broken layer, loop back |
 | Story state | Implicit in NARRATIVE_REPORT | First-class `0-lifecycle/1-pitch/` with provenance |
 
@@ -43,7 +43,7 @@ W6   Conference Talk      ->   present (reads pitch first)
 |---|---|---|
 | Unclear intro | Rewrite intro | Check pitch first; if pitch unclear, fix pitch then intro |
 | Claim too strong | Soften text | Update claims/narrative, then edit |
-| Need more ablation | Run experiment | Raise a question SECTION > MATCH > dispatch what MATCH cannot close > the claim's status flips in 1b-claims.md |
+| Need more ablation | Run experiment | Raise a question ENTRY > MATCH > dispatch what MATCH cannot close > the claim's status flips in 1b-claims.md |
 | Lacks contribution focus | Rewrite abstract | Reopen pitch and narrative |
 
 ## Integration model
@@ -58,7 +58,7 @@ HAI-Pipe paper folder
   0-lifecycle/{0-seed..5-section-edit}/
   0-sections/*.tex
   0-displays/displayNN-*/
-  1-probes/PPNN_<topic>.md <- the paper's questions (one SECTION each), bound by PATH to the bank
+  1-probes/PPNN_<topic>.md <- the paper's questions (one ENTRY each), bound by PATH to the bank
   1-rounds/vYYMMDD/
 ```
 

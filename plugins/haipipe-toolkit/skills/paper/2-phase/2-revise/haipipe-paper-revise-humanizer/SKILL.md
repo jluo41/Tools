@@ -115,7 +115,7 @@ REVISE phase:
   revise-humanizer   -> HOW sentences sound (AI patterns, voice)  <- THIS
   revise-results     -> results-specific narration
 
-Typical order: content first (incl. its weave step), then humanizer.
+Order (BINDING, not typical): place → content (incl. its weave step) → humanizer → results (if applicable). `place` runs FIRST because substituting landed values after the prose workers would re-open sentences they had already finished — the shipped text would then never have been reviewed in its final form. The hub `haipipe-paper-revise` owns this order; see its SKILL.md.
 Content decisions before language cleanup.
 ```
 

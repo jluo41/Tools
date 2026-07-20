@@ -8,7 +8,7 @@
 > 本次退役**没有写进任何 CHANGELOG**(JL 裁决:直接跳过)——
 > 这意味着 **§6 是「mode 去哪了」的唯一书面答案**。清理 `_console/` 时请先归档,勿直接删。
 
-从 `260719-PHASE-BOUNDARY-REFACTOR.md` 的 D5 拆出来,因为它横跨 paper / application / probe 三个 skill 家族,不该塞在一次重构里顺手裁掉。
+从 `260719-02-PHASE-BOUNDARY-REFACTOR.md` 的 D5 拆出来,因为它横跨 paper / application / probe 三个 skill 家族,不该塞在一次重构里顺手裁掉。
 
 
 > JL: 宪法 don't use this name, just use "probe". 
@@ -136,7 +136,7 @@ probe 里它是**文件级**字段:
 
 ## §5 披露:已经动了 2 处,以及为什么那不算动 mode
 
-执行 `260719-PHASE-BOUNDARY-REFACTOR.md` 的裁决时,我在本文件存在之前改了 20 处 paper 站点中的 2 处 —— `haipipe-paper-probe/SKILL.md:38` 和 `:111`。
+执行 `260719-02-PHASE-BOUNDARY-REFACTOR.md` 的裁决时,我在本文件存在之前改了 20 处 paper 站点中的 2 处 —— `haipipe-paper-probe/SKILL.md:38` 和 `:111`。
 
 改它们**不是为了退役 mode**,是因为它们把一条无条件规则写成了条件句:
 

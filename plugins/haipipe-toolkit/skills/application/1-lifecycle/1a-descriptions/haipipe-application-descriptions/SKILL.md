@@ -4,7 +4,7 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1a-descripti
 argument-hint: "[intervention-path] [--refresh <Dnn>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.5.0"
+  version: "2.6.0"
   last_updated: "2026-07-19"
   summary: "Descriptions stage (rung 1a of the venue-FREE 1a–1d evidence ladder; the D rung) — the anchored data profile: each D entry is statistic + pointer + as-of date, one line, quoting what task-profile probes landed (rich landed detail redirects into _DESCRIPTIONS/DS<n> profile sheets). Rounds are a GROW saturation loop (lens-rotating question storms, blind self-test, dry-stop); the rung consumes seed's [FORWARD -> CLAIMS] pointers and owns the downstream staleness stamp. History: ./CHANGELOG.md."
 ---
@@ -111,6 +111,22 @@ Formatting: `=====` title, `-----` sections, `**bold**` sub-items, one sentence 
 2. Venue-FREE: data truth does not change with the channel, so retargeting never touches this rung.
 3. Insight KB is optional context, not a required source — anchor to task results and discovery sources directly.
 
+
+## Questions this stage typically raises
+
+DRAFT's RAISE+PLAN step raises what the draft cannot answer. These are the kinds this stage is prone to — read this list, then walk the draft against it.
+
+```
+🗄️ what we HAVE      Which store already holds this population, and what does it
+                     actually contain? Path, producing pipeline, as-of date.
+📏 magnitude         How many, over what window, with what completeness? An
+                     anchored number, never an estimate written into prose.
+🕳️ missingness       What fraction is missing, and is it missing at random?
+                     A summary that hides this misleads every rung above it.
+🌐 what to GET       Is there an external dataset that fills the gap, and can we get it?
+```
+
+Every entry here is COMPUTED by a task probe, never inline. This stage describes; it does not calculate.
 
 ## Exits
 

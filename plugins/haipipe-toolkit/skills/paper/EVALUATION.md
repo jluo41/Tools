@@ -32,7 +32,7 @@ The phase engine is `2-phase/`: DRAFT → PROBE → REVISE → CHECK, shared acr
 
 - Order: the four phases fire in sequence; no phase is skipped or reordered.
 - Internal: phases are never user-invoked directly — a stage drives them.
-- Evidence door: PROBE is the ONLY way evidence enters; it raises questions as sections in `1-probes/` and dispatches the `q-executor:` block verbatim (`ref/03-paper-lifecycle.md`).
+- Evidence door: PROBE is the ONLY way evidence enters; it raises questions as entries in `1-probes/` and dispatches the `q-executor:` block verbatim (`ref/03-paper-lifecycle.md`).
 - Gates: DRAFT review and CHECK are the two human gates; the agent never self-advances past them (`ref/08-stage-gate.md`).
 - Stage-agnostic: the workers carry no stage-specific logic; the stage supplies the contract, the phase supplies the process.
 

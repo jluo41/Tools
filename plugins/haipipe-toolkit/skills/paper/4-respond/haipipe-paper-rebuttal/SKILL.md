@@ -4,9 +4,9 @@ description: "Submission rebuttal pipeline specialist (was: rebuttal). Parses ex
 argument-hint: "[paper-path-or-review-bundle]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   last_updated: "2026-07-14"
-  summary: "Submission rebuttal pipeline specialist: parse external reviews, enforce coverage + grounding, draft a safe text-only rebuttal under venue limits, manage follow-up rounds. A supplementary experiment is raised as a question SECTION and MATCHed against the bank before it is commissioned. History: ./CHANGELOG.md."
+  summary: "Submission rebuttal pipeline specialist: parse external reviews, enforce coverage + grounding, draft a safe text-only rebuttal under venue limits, manage follow-up rounds. A supplementary experiment is raised as a question ENTRY and MATCHed against the bank before it is commissioned. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -53,7 +53,7 @@ Workflow 4:   rebuttal (post-submission external reviews)
 - **MAX_INTERNAL_DRAFT_ROUNDS = 2** — draft → lint → revise.
 - **MAX_STRESS_TEST_ROUNDS = 1** — One Codex MCP critique round.
 - **MAX_FOLLOWUP_ROUNDS = 3** — per reviewer thread.
-- **AUTO_EXPERIMENT = false** — When `true`, automatically raise a question SECTION for each supplementary experiment the strategy plan identifies and run the PROBE phase (`Skill(haipipe-paper-probe, args="from-buffer <paper_root>")`), which MATCHes each one and commissions only what MATCH cannot close.
+- **AUTO_EXPERIMENT = false** — When `true`, automatically raise a question ENTRY for each supplementary experiment the strategy plan identifies and run the PROBE phase (`Skill(haipipe-paper-probe, args="from-buffer <paper_root>")`), which MATCHes each one and commissions only what MATCH cannot close.
   When `false` (default), pause and present the evidence gap to the user for manual handling.
 - **QUICK_MODE = false** — When `true`, only run Phase 0-3 (parse reviews, atomize concerns, build strategy).
   Outputs `ISSUE_BOARD.md` + `STRATEGY_PLAN.md` and stops — no drafting, no stress test.
@@ -135,9 +135,9 @@ If the strategy plan identifies issues that require new empirical evidence (tagg
    - Success criterion (what result would satisfy the reviewer)
    - Estimated GPU-hours
 
-2. Raise one question SECTION per experiment, then run the PROBE phase (the ONLY dispatch door):
+2. Raise one question ENTRY per experiment, then run the PROBE phase (the ONLY dispatch door):
    ```
-   /haipipe-paper probe "<the mini plan's need>"     # one SECTION per experiment
+   /haipipe-paper probe "<the mini plan's need>"     # one ENTRY per experiment
    Skill(haipipe-paper-probe, args="from-buffer <paper_root>")
    ```
    ② MATCH runs first (a rebuttal experiment is often already answered by an existing

@@ -251,7 +251,7 @@ The dashboard leads with WHAT THE INTERVENTION IS ABOUT, then WHERE IT STANDS, t
 Render the stage strip deterministically with the helper, never hand-typed:
 
 ```sh
-sh "$CLAUDE_SKILL_DIR/../../haipipe-application/stage-strip.sh" <intervention-root>
+sh "${CLAUDE_SKILL_DIR:-.}/../../haipipe-application/stage-strip.sh" <intervention-root>
 ```
 
 Body order -- sections MUST appear in this sequence:

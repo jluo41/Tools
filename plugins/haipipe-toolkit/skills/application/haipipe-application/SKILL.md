@@ -118,7 +118,7 @@ phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 
 Markers: 🔥 active now (what this session works on) · 🚀 frontier (farthest the intervention has ever reached) · ✅ done (Gate-Ledger-approved; venue slot: pinned) · ⬜ not started · `--` skipped by the pinned venue. Rules: EXACTLY one 🔥 and EXACTLY one 🚀 per line, never zero -- "reached" means entered, not completed, so a virgin intervention working its first phase renders `draft 🔥🚀`; they split only on loopback (the frontier slot keeps 🚀 while 🔥 moves back) and collapse to `🔥🚀` when they land on the same slot; the phase line always describes the 🔥 stage's DPRC phases. Venue-skipped stages render `--` and can never carry 🔥 or 🚀.
 
-Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "$CLAUDE_SKILL_DIR/stage-strip.sh" <intervention-dir> [<session-stage>]` (the script lives IN this skill folder, next to this spec; it reads `| current_layer |`, `| venue |`, `| stages_skipped |`, and the Gate Ledger from STATUS.md). The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
+Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "${CLAUDE_SKILL_DIR:-.}/stage-strip.sh" <intervention-dir> [<session-stage>]` (the script lives IN this skill folder, next to this spec; it reads `| current_layer |`, `| venue |`, `| stages_skipped |`, and the Gate Ledger from STATUS.md). The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
 
 Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that the current stage is done (the Stage Gate Protocol section below) -- by the human (copilot mode) or by the check worker's persona standing in (autopilot/unattended modes); once STATUS.md carries the gate ledger, ✅ means "approved", and the ledger records who approved.
 
@@ -290,7 +290,7 @@ Each open question is one ENTRY in `1-probes/PPNN_<topic>.md` (anatomy + states:
 ### q-consumer    one bullet per consumer this q-executor serves:
                   * Q-<Stage>-<n> — <that consumer's ORIGINAL question, copied in>
 ### bank binding  **route**:  task | discovery          the dispatch door, AUTHORITATIVE
-                  **bank**:   reuse | run | code | new  the DRAFT verdict on what the bank needs
+                  **bank**:   reuse | run | code | new  the PROBE ② verdict on what the bank needs
                   **target**: a PATH to the answering QA file (`NEW <path>` while it does not exist)
                   **state**:  planned | commissioned | answered | read | answered-local | failed
                               (DERIVED from disk)

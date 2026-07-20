@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-revise-content
-description: "Review and edit prose CONTENT at section → paragraph → weave → sentence. REVISE phase (fully automatic): applies changes directly, leaves %% {CC-content}: why-comments for CHECK. Self-contained — carries its own structure/claim/flow checks including the weave step (¶-to-¶ arc, hinges, rhythm, absorbed from the retired revise-weaving skill). Trigger: edit content, review content, tighten section, restructure paragraphs, weave, paragraph flow, transitions, /haipipe-paper-revise-content."
+description: "Review and edit prose CONTENT at section → paragraph → weave → sentence. REVISE phase (fully automatic): applies changes directly, leaves %% {CC-content}: why-comments for CHECK. Self-contained — carries its own structure/claim/flow checks including the weave step (¶-to-¶ arc, hinges, rhythm). Trigger: edit content, review content, tighten section, restructure paragraphs, weave, paragraph flow, transitions, /haipipe-paper-revise-content."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.4.0"
   last_updated: "2026-07-19"
-  summary: "REVISE worker: edit prose CONTENT at section->¶->weave->sentence, change directly + leave why-comments. Absorbs the retired revise-weaving skill (¶-flow: arc/hinges/rhythm, ref/weaving.md). Fully automatic."
+  summary: "REVISE worker: edit prose CONTENT at section->¶->weave->sentence, change directly + leave why-comments. Carries the ¶-flow weave step (arc/hinges/rhythm, ref/weaving.md). Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -51,7 +51,7 @@ Fixing sentences inside a paragraph that should not exist is wasted work.
 1. **Section** -- state the section's one job in a sentence; make the paragraph banner skeleton (`grep '^% Para '`) tell the section's story; fix boundaries and order.
 2. **Paragraph** -- one paragraph = one point (its banner's point); topic sentence first; merge/split so each banner is true.
 3. **Weave** -- paragraph-to-paragraph flow: ARC (order/logic/redundancy, 🔴 first), HINGES (each Pn->Pn+1 seam picks up what Pn put down; content linkage, never bare connectives), RHYTHM (role variety).
-   Method + severity discipline + role vocabulary: `ref/weaving.md` (merged from the retired revise-weaving skill, JL 2026-07-07).
+   Method + severity discipline + role vocabulary: `ref/weaving.md`.
 4. **Sentence** -- one assertion each; cut filler; concrete over vague; one term per concept.
 
 ## Flag, don't fabricate

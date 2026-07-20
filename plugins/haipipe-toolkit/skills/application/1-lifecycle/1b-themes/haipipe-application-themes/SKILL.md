@@ -4,7 +4,7 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1b-themes/1b
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.6.0"
+  version: "2.7.0"
   last_updated: "2026-07-19"
   summary: "Themes stage (rung 1b of the venue-FREE 1a–1d evidence ladder; the I rung) — grounded pattern-clusters extracted from 1a D ids + discovery sources, each theme carrying candidate-claim hooks that rung 1c consumes; ungrounded patterns go to Parked. Full D-consumption + counter-hunt; light discovery PROBE via 1-probes/. History: ./CHANGELOG.md."
 ---
@@ -82,6 +82,19 @@ Sidecar: `_LOG_1b-themes.md` (phase journal).
 Formatting: `=====` title, `-----` sections, `**bold**` sub-items, one sentence per line; content sections use no `#`, Q-consumer questions use `## Q-Theme-<n>`.
 The Insight KB is optional context here, never a required source.
 
+
+## Questions this stage typically raises
+
+DRAFT's RAISE+PLAN step raises what the draft cannot answer. These are the kinds this stage is prone to — read this list, then walk the draft against it.
+
+```
+📚 outside evidence  Does the literature name this pattern, and what does it call it?
+                     A theme with no external anchor is an observation, not a theme.
+🔁 is it real        Does the pattern hold across subgroups / time windows, or is it
+                     an artifact of one slice?
+🆕 unnamed pattern   Is there something in the data the literature has NOT named?
+                     That is the interesting case — and it needs the most evidence.
+```
 
 ## Exits
 

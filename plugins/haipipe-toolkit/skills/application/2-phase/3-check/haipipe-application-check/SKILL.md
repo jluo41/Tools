@@ -51,7 +51,7 @@ Locating the probe-file checker
 Installed skills flatten the tree, so the hard-coded relative path (`../../1-probe/...`) is NOT reliable, and TWO files named `check-probe-cards.sh` exist on disk (paper's under `haipipe-paper-probe/`, application's under `haipipe-application-probe/`). Glob for it, FILTER on the path so it cannot resolve to the paper family, and FAIL LOUDLY when nothing matches:
 
 ```sh
-CHK=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" "$CLAUDE_SKILL_DIR/../../../.." \
+CHK=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4  \
         -path "*haipipe-application-probe*" -name check-probe-cards.sh 2>/dev/null | head -1)
 [ -n "$CHK" ] || { echo "FAIL: application probe-file checker not found"; exit 1; }
 

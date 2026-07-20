@@ -3,6 +3,18 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 9.7.0 — 2026-07-19 — DRAFT rule 2 no longer presupposes the question
+
+From `_console/closed/260719-01-DRAFT-RAISE-QUESTIONS.md` findings B3 and D5 (JL: "可以直接去改" — this file is shared by paper and application, so the change was gated on the owner).
+
+### Changed — B3, the missing half of DRAFT rule 2
+
+Rule 2 opened "For each open question: raise a `## Q-<Stage>-<n>` …", which presupposes the question already exists. Nothing in this file, or in either DRAFT worker, said how to FIND one. The mechanical half was covered (a placeholder sweep finds missing numbers and citations); the JUDGMENT half — the questions a stage is structurally prone to — had no home at all. Rule 2 now opens with FIND, and points at each stage skill's own `## Questions this stage typically raises` (new, in all 16 stage skills), naming the shape per family so a reader sees what kind of thing is meant.
+
+### Changed — D5, ENTRY is the only word for an entry
+
+The file used "section" and "entry" interchangeably for the same object — "An entry's parts" (:162) against "Per SECTION:" (:96) and "MOST sections should land on T2" (:219) — and `haipipe-paper-draft` had inherited the drift. 11 sites normalized to ENTRY: the build-lane clause, the cost ladder's T2/T3/T4 rungs, the dispatch payload, the supersession clause, the derived-state table, and the self-review checklist header. "Section" now means only what it means in a stage doc.
+
 ## [9.6.0] — 2026-07-19
 
 - ⑨ TOMBSTONES erased. Owner ruling (JL): "不需要留退役告示,直接抹除任何痕迹" — a doc states the CURRENT contract and never names the dead thing.

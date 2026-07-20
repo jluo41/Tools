@@ -4,6 +4,38 @@ haipipe-application-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## 6.1.0 — 2026-07-19 — converge on paper's seed contract (JL ruling D3)
+
+### Changed
+Board 260719-04-SEED-2PHASE, D3 — JL: "我们统一一下：Description / Reason / Answer 都是这个。
+填写规则住哪 ： template 内联 <!-- RULE -->(template 是唯一家) ，(c) 也是paper的方法".
+
+- (a) `ref/seed-template.md` Q-consumer fields `Ask:` / `Why:` -> `Description:` / `Reason:` /
+      `Answer:`. The block had NO `Answer:` line at all while the Done gate tested its state, so a
+      seed generated from the template could never pass its own gate (board P2-2).
+- (b) The fill rules move INTO the template as inline `<!-- RULE -->` comments — the template is the
+      single home. (Was: rules in SKILL, template left blank.)
+- (c) The PROBE line now names the call — `Skill("haipipe-application-probe", args="from-buffer
+      <root>")`. It previously said only "one worker call" while the prose named
+      `Agent(haipipe-probe-q-executor-agent)`, which is the worker's INTERNAL step, not the stage's.
+- The DRAFT/PROBE split is stated correctly: DRAFT authors the plan (①ORGANIZE + ②MATCH), PROBE runs
+      it forward (③④⑤) and does NOT re-raise or re-match. The block previously assigned the
+      five-step loop's raising to PROBE, contradicting probe/haipipe-probe/SKILL.md.
+- (D5) `state: planned` sections -> ENTRIES.
+
+### Added
+`Probe:` field in the template's Q-consumer block (board P2-3), matching paper's.
+
+## 4.4.0 — 2026-07-19 — questions this stage typically raises
+
+From `_console/closed/260719-01-DRAFT-RAISE-QUESTIONS.md` (R1).
+
+### Added (JL: "是不是我们给每个stage写上，我们这里要写什么东西，一般会问到什么类型的问题？")
+
+- **`## Questions this stage typically raises`** — the kinds of question this stage is PRONE to, named so a drafter can hunt for them instead of only stumbling into them. Until now nothing anywhere said how to FIND a question worth raising: `probe`'s DRAFT rule 2 opened "For each open question", presupposing it already existed, and the DRAFT workers only had a trigger ("when the search reveals a gap"). The mechanical half was covered — placeholder sweeps find missing numbers and citations — but the JUDGMENT half, the questions a stage is structurally prone to, had no home.
+- This stage OWNS its list; the DRAFT worker points here and never restates it. One home.
+- Not invented: the four `PROBE:` lines that had been sitting in `haipipe-paper-draft`'s Stage-specific notes were exactly this content, filed under the wrong PHASE (they assigned question ELICITATION to PROBE, against `probe`'s PROBE rule 1). This is where they belong.
+
 ## [4.3.0] — 2026-07-18
 
 - Kill criteria section removed from the seed doc (unhelpful at seed stage; six content sections -> five). Q-consumer question blocks renamed `## Q<n>` -> `## Q-Seed-<n>` (id carries the origin stage) and reshaped to a fixed 3-field, human-readable form: `Ask` / `Why` (carries the content-section link + failure consequence) / `Answer` (`__TO_BE_FILLED__` == OPEN, else ANSWERED — the only state the seed doc tracks). Rule prose moved out of the template into SKILL (template = skeleton, SKILL = rules). Template + SKILL (frontmatter, skeleton, Done gate, formatting) updated.
