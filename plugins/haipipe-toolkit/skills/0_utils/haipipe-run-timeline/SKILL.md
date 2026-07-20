@@ -4,8 +4,8 @@ description: "Rebuild a multi-lane flight-record timeline of any Claude Code ses
 argument-hint: "<session>.jsonl path (find via grep -l '<session-name>' ~/.claude/projects/<project-dir>/*.jsonl)"
 allowed-tools: Bash, Read
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-14"
+  version: "1.3.0"
+  last_updated: "2026-07-19"
   summary: "One-command flight recorder: python3 run_timeline.py <session>.jsonl. Born during the test-2-2222 replication audit (JL: 'how could you log the process... so we can have an overview'). v1.1: the worked example re-cut to the live dispatch doors — the probe gateway agent was retired 2026-07-14, so a paper session now dispatches DIRECT to haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent, which write <task-folder>/QA/<n>-<slug>.md."
 ---
 
@@ -40,7 +40,7 @@ LANES:
 17:34         [L2] 📝 Write L01_novelty/01_three-axes/sources.md
 19:39     [L1] 🤖 dispatch haipipe-discovery-reviewer-agent (bg=False)
 26:04     [L1] 📝 Write L01_novelty/01_three-axes/QA/1-three-axis-novelty.md   ← the ANSWER
-27:10 [L0] ✏️  Edit  papers/Paper-X/1-probes/PP02_novelty.md      ← target: + a-consumer:
+27:10 [L0] ✏️  Edit  papers/Paper-X/1-probes/PP02_novelty.md      ← target: + ### a-executor
 ```
 
 Read it for: where time went (per-layer spans), sync-vs-background choices (`bg=`), which files
@@ -52,8 +52,8 @@ were born when, and — the audit that matters most — **whether dispatches too
    haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent dispatch.
 ❌ a Write into tasks/ or discoveries/ FROM LANE L0 = LAW 1 broken. The paper session did bank
    work inline, with the stake in its context. That is the leak this timeline exists to catch.
-💀 haipipe-probe-orchestrator-agent (the gateway) was RETIRED 2026-07-14 — a timeline showing it
-   is a pre-v3 session. Dispatch is now DIRECT to the two executor orchestrators.
+✅ dispatch goes DIRECT from the consumer lane to the two executor orchestrators — no
+   intermediate hop between them.
 ```
 
 Complements the on-disk coarse trail (_LOG [PHASE] entries carry date + HH:MM per wiki/02); this

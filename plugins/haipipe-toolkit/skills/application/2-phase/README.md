@@ -19,7 +19,7 @@ phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 ├── 0-draft/haipipe-application-draft        settle stage-doc structure + sentences
 ├── 1-probe/haipipe-application-probe        the ONLY evidence door: the five-step loop
 │                                            ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET
-│                                            (thin deltas over the probe constitution; + check-probe-cards.sh, ref/)
+│                                            (thin deltas over probe/haipipe-probe/SKILL.md; + check-probe-cards.sh, ref/)
 ├── 2-revise/haipipe-application-revise      venue+audience-quality text pass (single worker)
 └── 3-check/haipipe-application-check        human gate: approve/revise/done + Gate Ledger
                                              (persona + attendance machinery; + checks.sh)
@@ -36,7 +36,7 @@ phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 
 Every open question is a SECTION in the flat pool `1-probes/`; its `q-executor` (the stake stripped out) is handed to `Agent(haipipe-probe-q-executor-agent)`, the stake-free collector that runs MATCH → DISPATCH → POINT over the task/discovery bank in clean context. That collector is the ONLY door for evidence. HARVEST is transcription of the pointers the answer landed (JL 2026-07-07 ruling, ported from paper): the harvest hooks never search, grep-discover, or dispatch tasks themselves.
 
-No sidecar docs (2026-07-18): the answer's numbers/citations land INLINE in the section's `a-consumer:`, anchored to `target:` (the answering QA file). There are no `values:`/`sources:`/`displays:` lanes and no `_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` docs.
+No sidecar docs: the answer's numbers/citations land INLINE in the entry's `### a-executor`, anchored to `target:` (the answering QA file).
 
 `check-probe-cards.sh` FAILs a `state: planned` section at VERIFY and again at the CHECK gate; the `target:` it points at is verified `answered` + non-superseded.
 

@@ -1,6 +1,6 @@
 # Application Skill Handoff — 2026-07-17
 
-A skill-dev session aligned the `application` skill family to `paper` and the shared probe constitution. Everything below is **committed but NOT run end-to-end**. The next step is to drive a REAL intervention through the lifecycle and see whether the model actually holds — this doc is the map for that.
+A skill-dev session aligned the `application` skill family to `paper` and the shared `probe` layer (`probe/haipipe-probe/SKILL.md`). Everything below is **committed but NOT run end-to-end**. The next step is to drive a REAL intervention through the lifecycle and see whether the model actually holds — this doc is the map for that.
 
 ## Where things stand
 
@@ -59,5 +59,5 @@ Start CHEAP, then go DEEP.
 ## Deferred / out of scope
 
 - **audience content**: fold the old patient/clinician/regulator/executive tone rules INTO the venue packs' style-profiles (only the directory was deleted; the content move is TODO).
-- **paper F2**: `paper-check` still asserts "DRAFT runs fully automatic", contradicting both DRAFT workers + the constitution — a paper-side wording bug (application-check is correct).
+- **paper F2**: `paper-check` still asserts "DRAFT runs fully automatic", contradicting both DRAFT workers + `probe/haipipe-probe/SKILL.md` — a paper-side wording bug (application-check is correct).
 - **push**: the branch is local only.

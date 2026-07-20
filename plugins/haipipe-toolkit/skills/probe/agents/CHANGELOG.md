@@ -7,6 +7,14 @@ Never loaded at invocation; read on demand.
 Versions match each agent's frontmatter `version:`. Newest first, grouped per agent.
 
 
+## [1.1.0] — 2026-07-19
+
+- Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname
+  "THE CONSTITUTION" / "the constitution" for `probe/haipipe-probe/SKILL.md` is dropped everywhere;
+  each site now names either `probe` or the actual path.
+  Touched: `haipipe-probe-q-executor-agent.md` (model pointer, the ② MATCH boundary line) and `README.md`.
+- The "I do NOT" list's `a-consumer` reference is the LIVE stage-doc concept and stands.
+
 ## [1.0.1] — 2026-07-19  (haipipe-probe-q-executor-agent) — sync to constitution v9.5.0
 
 Follows the probe constitution to v9.5.0 (the Q-executor-entry probe-file format). Two model

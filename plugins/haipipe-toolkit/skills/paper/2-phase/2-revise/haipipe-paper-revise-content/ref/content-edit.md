@@ -3,11 +3,10 @@
 The full content pass at three granularities. Work top-down. See the parent
 `SKILL.md` for scope and `2-phase/REF/` for file anatomy and the banner format.
 
-> **Read these as a Round-1 review lens, not an edit list.** In Round 1 each
-> failed checkbox becomes one `%% {CC-content-vMMDD}: <finding> | <suggestion>
-> ========>` comment anchored to the target — you change no prose. The fixes
-> described below happen only in Round 2, after the human replies `accept` /
-> `modify`. See `../../../../haipipe-paper/SKILL.md`, Comment lifecycle.
+> **These are an edit list.** A failed checkbox is FIXED directly, and the fix
+> carries a `%% {CC-content}: <why>` comment anchored to what changed. REVISE is
+> fully automatic; the human's preferences arrive later, as `> USER:` comments in
+> CHECK. See `../../../../haipipe-paper/SKILL.md`, Comment lifecycle.
 
 ---
 
@@ -58,7 +57,9 @@ Checklist:
       support it.
 - [ ] **One point only** — no second idea smuggled into the tail.
 - [ ] **Evidence attached or flagged** — a claim that needs a number or citation
-      has one, or is marked `{VAL:? <what>}` / `\cite{TOADD}` (+ `_CITATION_` row).
+      has one, or carries `{VAL:? <what>} [Q-<Stage>-<n>]` / `\cite{TOADD} [Q-<Stage>-<n>]`;
+      the bracket names the question that will settle it, and a placeholder
+      without one is a hole nobody owns.
 - [ ] **Transitions** — the paragraph connects to the one before and after; the
       `Role` sequence should feel like a path, not a list.
 - [ ] **Length** — roughly 3–8 sentences. A 1-sentence paragraph is a flag; a
@@ -79,7 +80,7 @@ Checklist:
 - [ ] **Cut hedges and filler** — "it is important to note that", "in order to",
       "very", throat-clearing openers ("In this section we…").
 - [ ] **Concrete over vague** — name the thing; replace "performs well" with the
-      number (or `{VAL:? <what>}` if the number isn't here yet).
+      number (or `{VAL:? <what>} [Q-<Stage>-<n>]` if the number is not here yet).
 - [ ] **One term per concept** — use a single name per concept; note variants for
       the consistency pass rather than silently picking one across sections.
 - [ ] **Active where it carries** — prefer active voice unless the object is the
@@ -104,8 +105,7 @@ The model achieved {VAL:? held-out accuracy} accuracy on the held-out set.
 This aligns with prior work \cite{TOADD} on trait extraction.
 ```
 
-`{VAL:?}` → topic ② (`haipipe-paper-probe-values`).
-`\cite{TOADD}`   → topic ③ (`haipipe-paper-probe-citation`).
+A placeholder still standing at REVISE means its answer has not landed. `haipipe-paper-revise-place` runs first and substitutes every one whose answer HAS landed, so what survives to this worker is genuinely still owed — leave it, and leave its `[Q-<Stage>-<n>]` bracket intact.
 
 Leaving a flag is correct; inventing a number or a citation is not.
 

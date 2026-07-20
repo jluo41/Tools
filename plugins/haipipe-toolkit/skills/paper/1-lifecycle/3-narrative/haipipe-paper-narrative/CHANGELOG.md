@@ -4,6 +4,44 @@ haipipe-paper-narrative — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.2.1 — 2026-07-19 — the 1b-claims input description names `### a-executor`
+
+Two vocabulary rulings from JL, both dated 2026-07-19, applied across `paper/`.
+
+**Ruling A — the `probe` nickname.** JL: "宪法 don't use this name, just use `probe`." Every "THE CONSTITUTION" / "the constitution" / "the probe constitution" naming `probe/haipipe-probe/SKILL.md` is replaced by `probe` or by the actual path, whichever reads better at the site. A nickname already in the repo is still a nickname.
+
+**Ruling B — the `a-consumer:` probe-file field.** `- a-consumer:` as a FIELD IN A PROBE FILE was replaced by the entry's `### a-executor`; `check-probe-cards.sh` HARD FAILs it under the `stale-old-format` rule. The a-consumer CONCEPT is untouched and still named a-consumer: it is the per-consumer interpretation written in the STAGE DOC (station ②), anchored `[source: PP<NN>]`. Prose that said "the probe section carries its `a-consumer:`" was wrong twice over — probe files hold ENTRIES, not sections, and what an entry carries is `### a-executor`.
+
+Current model, for reference:
+```
+QA file (bank)  ->  the ENTRY's `### a-executor`  (probe file: the copy, single source of truth)
+                ->  each Q-consumer's a-consumer  (STAGE DOC: what it MEANS for this consumer)
+                ->  stage content                 (REVISE weaves it in, discharges the bracket)
+```
+
+Written under JL's NO TOMBSTONES rule (2026-07-19): "不需要留退役告示,直接抹除任何痕迹" then "follow this rule to do all the following changes." The docs state only the current contract; this CHANGELOG carries the history.
+
+### Changed — Inputs, item 1 (`0-lifecycle/1b-claims/1b-claims.md`) (ruling B)
+"a probe section carries only its `a-consumer:`, and `## Verdict`/`verdicted` are DELETED" -> "a probe entry carries only its `### a-executor`." Two fixes in one sentence: the retired field name is corrected to the live one, and the `## Verdict`/`verdicted` ban-list is dropped per the NO TOMBSTONES rule (the checker's `dead-vocab` rule enforces it, so the prose does not need to).
+
+## 4.2.0 — 2026-07-19 — the stage could not pass its own gate: `_DISPLAY_3-narrative.md` sidecar RETIRED
+
+The narrative stage's done-criteria required a file that no longer exists anywhere in the contract. Line 61 read `- [ ] Display needs identified in _DISPLAY_3-narrative.md`; the sidecar working docs (`_CITATION_*`, `_VALUES_*`, `_DISPLAY_{stage}*`, `_DISCOVERY_*`, `_EVIDENCE_*`) are all retired, so the criterion was unsatisfiable and CHECK could never legitimately close. Four references in one file (artifact spec, done-criteria, the PROBE phase line, the Location block) all pointed at the same dead artifact.
+
+JL ruling on the removal style, 2026-07-19: "不需要留退役告示，直接抹除任何痕迹" / "follow this rule to do all the following changes." No retirement notice is left in SKILL.md — the history is here instead.
+
+Changed
+- Artifact spec — the `_DISPLAY_3-narrative.md` bullet is replaced by `0-lifecycle/4-display/_DISPLAY_REQUEST.md`: this stage FILES one DR row per beat that needs a display unit; the display stage owns the file and is the only one that advances a DR status.
+- Artifact spec gains the placeholder contract (matching seed 4.4.0): `1-probes/` is the only consumer-side source of truth, `_LOG_3-narrative.md` the only sidecar; an owed citation is `\cite{TOADD} [Q-Narrative-<n>]` and an owed number `{VAL:? <what>} [Q-Narrative-<n>]` — two markers side by side, never fused. A bracket-less placeholder is a defect (a hole no question will ever fill).
+- Done-criterion — `Display needs identified in _DISPLAY_3-narrative.md` → `Every beat needing a display carries a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md`. This is now checkable against a file that exists.
+- Location block — the `_DISPLAY_3-narrative.md` row now points at the display stage's request inbox.
+- Phase flow: display-need RAISING moved DRAFT-ward, because the skill that raises display holes (`haipipe-paper-draft-display`) is a DRAFT-phase worker. DRAFT files the DR rows; PROBE now checks each row against the display stage's ruling (accepted / declined-with-reason / done) instead of writing a registry.
+- DPRC applicability + CHECK question follow the same move: "identify display needs" leaves PROBE, "Display needs met?" → "Every DR row ruled by the display stage?".
+
+Untouched (deliberately)
+- Every `mode: light | full` reference — deferred to a separate review.
+- `_DISPLAY_REQUEST.md` is ALIVE and is not a sidecar; it must never be confused with the retired `_DISPLAY_{stage}` registries.
+
 ## 4.1.0 — 2026-07-14
 
 - `1-probes/` described as the probe FILES (one per TOPIC, one SECTION per question), not "probe plans"; [GAP]/[PENDING] beats are RAISED as question SECTIONS.

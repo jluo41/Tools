@@ -4,6 +4,45 @@ haipipe-paper-claims — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 5.4.0 — 2026-07-19 — the two-stage `supported` test names the real probe fields
+
+Two vocabulary rulings from JL, both dated 2026-07-19, applied across `paper/`.
+
+**Ruling A — the `probe` nickname.** JL: "宪法 don't use this name, just use `probe`." Every "THE CONSTITUTION" / "the constitution" / "the probe constitution" naming `probe/haipipe-probe/SKILL.md` is replaced by `probe` or by the actual path, whichever reads better at the site. A nickname already in the repo is still a nickname.
+
+**Ruling B — the `a-consumer:` probe-file field.** `- a-consumer:` as a FIELD IN A PROBE FILE was replaced by the entry's `### a-executor`; `check-probe-cards.sh` HARD FAILs it under the `stale-old-format` rule. The a-consumer CONCEPT is untouched and still named a-consumer: it is the per-consumer interpretation written in the STAGE DOC (station ②), anchored `[source: PP<NN>]`. Prose that said "the probe section carries its `a-consumer:`" was wrong twice over — probe files hold ENTRIES, not sections, and what an entry carries is `### a-executor`.
+
+Current model, for reference:
+```
+QA file (bank)  ->  the ENTRY's `### a-executor`  (probe file: the copy, single source of truth)
+                ->  each Q-consumer's a-consumer  (STAGE DOC: what it MEANS for this consumer)
+                ->  stage content                 (REVISE weaves it in, discharges the bracket)
+```
+
+Written under JL's NO TOMBSTONES rule (2026-07-19): "不需要留退役告示,直接抹除任何痕迹" then "follow this rule to do all the following changes." The docs state only the current contract; this CHANGELOG carries the history.
+
+### Changed — the frontmatter `summary:` (ruling B)
+"The PROBE phase raises questions as SECTIONS in 1-probes/ and runs the five-step loop; a section's a-consumer FEEDS this ledger" -> "...raises questions as ENTRIES in 1-probes/ ...; the entry's `### a-executor` and each Q-consumer's a-consumer FEED this ledger." This one nearly escaped: a verification grep piped through `grep -v CHANGELOG` silently drops every frontmatter `summary:` line, because each ends with "History: ./CHANGELOG.md." Filter on the FILE (`grep -v '/CHANGELOG\\.md:'`), never on the word.
+
+### Changed — "It is the ONLY home of a claim's status" (ruling B)
+"A probe section carries the evidence's MEANING for this paper (its `a-consumer:`)" -> "A probe entry carries the evidence itself (its `### a-executor`) and each Q-consumer's a-consumer, here in this stage doc, says what that evidence MEANS for this paper". The old sentence collapsed two stations into one and put the surviving one in the wrong file.
+
+### Changed — the status-settling line (ruling B)
+"written at INTERPRET when a probe section's `a-consumer:` lands" -> "written at INTERPRET when a probe entry's `### a-executor` lands and its Q-consumer's a-consumer reads it".
+
+### Changed — the two-stage `supported` test (ruling B, the contract clarification behind the minor bump)
+Stage 2 read: "a probe section whose `target:` QA file RESOLVES on disk and whose `a-consumer:` says that number carries the claim." It now reads: "a probe entry whose `**target**:` QA file RESOLVES on disk, whose `### a-executor` carries the answer, and whose Q-consumer's a-consumer here says that number carries the claim." This is the gate an author actually runs before flipping a claim to `supported`, and it was pointing at a field that fails the checker — so the test could never be satisfied as written.
+
+## 5.3.0 — 2026-07-19 — `_VALUES_1b-claims.md` / `_CITATION_1b-claims.md` sidecars RETIRED
+
+The claims stage still told its reader to keep two stage-local registries. The sidecar working docs (`_CITATION_*`, `_VALUES_*`, `_DISPLAY_{stage}*`, `_DISCOVERY_*`, `_EVIDENCE_*`) are all retired across the paper layer: `1-probes/` is the only consumer-side source of truth and `_LOG_<stage>.md` the only sidecar. Two lines survived the earlier sweeps — the artifact section's "Verified numbers live in ... citation candidates in ..." and the PROBE phase line's `numbers -> _VALUES_`.
+
+JL ruling on the removal style, 2026-07-19: "不需要留退役告示，直接抹除任何痕迹" / "follow this rule to do all the following changes." SKILL.md states only the current contract; the retirement is recorded here.
+
+Changed
+- The artifact section's sidecar line is replaced by the placeholder contract: an owed number is `{VAL:? <what>} [Q-Claim-<n>]`, an owed citation `\cite{TOADD} [Q-Claim-<n>]` — the marker and the anchor bracket sit side by side, NEVER fused, and the bracket names the question that will produce it. A placeholder with no bracket is a defect (a hole no question will ever fill). The number lands in that question's `Answer`, sourced from the QA file its entry's `target:` names.
+- PROBE phase line — `the claim's status FLIPS here, numbers -> _VALUES_` → `... and each verified number lands in the Answer of the Q-Claim-<n> that owed it`. The COLLECT step no longer writes to a registry that does not exist.
+
 ## 5.2.0 — 2026-07-18 — Q-consumer under the charter; M:N claims↔questions; Evidence Campaign cut
 
 Adopted the stage-template charter (`../../TEMPLATES.md`, JL 2026-07-18). The claims ledger keeps Hypotheses + Claims; the question section is standardized and made many-to-many; the Evidence Campaign scoreboard was deleted.

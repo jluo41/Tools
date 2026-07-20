@@ -11,8 +11,8 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "3.1.0"
-  last_updated: "2026-07-14"
+  version: "3.2.0"
+  last_updated: "2026-07-19"
   summary: "Creator agent — produces artifacts for plan/build/report stages. v3.1: THE QA FILE IS A TICKET THAT BECOMES A RECEIPT. It carries ONE mutable `state:` line (working | answered | superseded-by:) + `started:` (MANDATORY when working) + optional `by:`. On gate ③ the CLAIM already exists on disk when I reach Report — I COMPLETE it (state: answered + the ## Answer body), the second and last write by the same owner. On gate ② I CREATE it once, complete. I never leave `state: answered` with an empty ## Answer (a lying receipt), and I never touch a QA file another run is `working` on. v3.0: CONSUMER-UNAWARE — _ASK/ stub reading and the `answers:` report field are DELETED; the task layer holds the pen on QA/, and it carries no consumer vocabulary because this layer never saw a consumer."
   changelog:
     - "3.1.0 (2026-07-14): THE CLAIM (JL ruling 2026-07-14; probe SKILL 8.2.0 PART 3a R19/R20/R21). A QA file gains ONE MUTABLE FIELD — the state line — and becomes a TICKET that becomes a RECEIPT. Stage 4 changes: on gate ③ I do NOT create the QA file (the qa gate CLAIMED it before Plan ran, with `state: working` + `started:` + an EMPTY `## Answer`) — I COMPLETE it: rewrite the state line to `state: answered` and fill the body. On gate ② I still create it once, complete. New hard rules: `state: answered` with an empty `## Answer` is a LYING RECEIPT (checker: qa-answered-empty); a `working` file whose `started:` is past QA_WORKING_TTL_HOURS=24 is a ZOMBIE (checker: qa-working-expired) and may be RESTARTED (fresh started:, abandoned attempt noted in ## Not-done); a `working` file with no `started:` is UNEXPIRABLE (checker: qa-working-no-started). SUPERSESSION: a later run whose answer CHANGES writes QA/<n+1> and APPENDS `superseded-by:` to the old file's state line — the ONLY edit ever permitted to a frozen file, and only by its own owner. The BODY is never edited. ONE WRITER, not write-once: two writes by me is fine; a consumer writing here is FORBIDDEN."
@@ -236,7 +236,7 @@ Anatomy — the state line, then exactly these sections:
 
 🚫 **NO CONSUMER VOCABULARY.** No claim ids (C1, C2…), no hypothesis ids (H1, H2…), no "claims-stage", no "the paper", no "this supports/rescues …". I never saw a paper; I cannot honestly write one of those words, and if one appears the wall was crossed. Report what was measured, and where it lives.
 
-Full contract: `haipipe-task/fn/qa.md`. Constitution: `probe/haipipe-probe/SKILL.md` PART 3a.
+Full contract: `haipipe-task/fn/qa.md`. The probe layer: `probe/haipipe-probe/SKILL.md` PART 3a.
 
 Return:
 ```yaml

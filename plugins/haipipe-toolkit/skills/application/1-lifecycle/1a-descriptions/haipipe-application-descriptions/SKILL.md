@@ -4,8 +4,8 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1a-descripti
 argument-hint: "[intervention-path] [--refresh <Dnn>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.4.0"
-  last_updated: "2026-07-18"
+  version: "2.5.0"
+  last_updated: "2026-07-19"
   summary: "Descriptions stage (rung 1a of the venue-FREE 1a–1d evidence ladder; the D rung) — the anchored data profile: each D entry is statistic + pointer + as-of date, one line, quoting what task-profile probes landed (rich landed detail redirects into _DESCRIPTIONS/DS<n> profile sheets). Rounds are a GROW saturation loop (lens-rotating question storms, blind self-test, dry-stop); the rung consumes seed's [FORWARD -> CLAIMS] pointers and owns the downstream staleness stamp. History: ./CHANGELOG.md."
 ---
 
@@ -57,7 +57,7 @@ DRAFT   FIRST consume seed's forward pointers — grep seed's _LOG_0-seed.md for
         a DDL, or a schema-only probe) into the DS sheet's Field Disposition (every field group profiled |
         waived | excluded-PHI), sweep the six coverage facets, run this round's lens-rotated question storm,
         turn each unanswerable question into a D slot + a probe question; end with the release menu
-PROBE   dispatch via haipipe-application-probe (mode light, task-profile: "profile the cohort", "pull
+PROBE   dispatch via haipipe-application-probe (task-profile: "profile the cohort", "pull
         engagement summary"); the values: lane lands anchored numbers into Description entries (with as-of dates) — the rich
         detail stays in the task result the entry points to (no sidecar). Routing mechanics are the probe layer's:
         ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
@@ -88,7 +88,7 @@ Refresh Log    which D ids refreshed when, and which downstream ids were STALE-s
 ```
 
 Sidecar: `_LOG_1a-descriptions.md` (phase journal). No `_DESCRIPTIONS/` sheet — rich detail stays in the task/discovery result the entry points to; the schema sweep still reads COLUMN NAMES ONLY (PHI rail).
-Evidence questions are RAISED as SECTIONS in the flat probe pool `1-probes/PPNN_<topic>.md` (one file per topic, one section per question, fields serves/target/state/q-executor/a-consumer + `## Why`), state `planned | commissioned | answered | read | answered-local | failed` — never a per-stage `_PROBE/` folder or a `1-probe-plans/` index (both retired; migrate a legacy card into `1-probes/` on first touch).
+Evidence questions are RAISED as ENTRIES in the flat probe pool `1-probes/PPNN_<topic>.md` (one file per TOPIC; each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`), states `planned | commissioned | answered | read | answered-local | failed`; the stake stays in this doc's Q-consumer.
 Formatting: `=====` title, `-----` sections, `**bold**` sub-items, one sentence per line; content sections use no `#`; Descriptions use `## Description <n>`, Q-consumer questions use `## Q-Desc-<n>`.
 
 

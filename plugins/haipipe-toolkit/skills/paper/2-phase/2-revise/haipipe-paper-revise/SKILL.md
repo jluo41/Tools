@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-revise
-description: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality after PROBE. REVISE = the agent CHANGES the prose directly AND leaves %% {CC-*}: why-comments explaining each change; the human gives preferences in CHECK. Dispatches content, humanizer, and results workers (weaving merged into content 2026-07-07). Fully automatic (no human gate). Users invoke stage skills (pitch, narrative, section-edit...), not this skill directly."
+description: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality after PROBE. REVISE = the agent CHANGES the prose directly AND leaves %% {CC-*}: why-comments explaining each change; the human gives preferences in CHECK. Dispatches place, content, humanizer, and results workers; place runs first and substitutes landed answers into their placeholders. Fully automatic (no human gate). Users invoke stage skills (pitch, narrative, section-edit...), not this skill directly."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.5.1"
-  last_updated: "2026-07-09"
-  summary: "REVISE phase worker (internal): rewrite draft prose to venue-quality -- change directly, leave why-comments, then sync .md -> tex. Proof-carrying: stage hubs MUST reach REVISE through this skill (never hand-edit inline) and the [REVISE] _LOG entry MUST carry a `workers:` line. Dispatches content/humanizer/results workers. History: ./CHANGELOG.md."
+  version: "1.6.0"
+  last_updated: "2026-07-19"
+  summary: "REVISE phase worker (internal): rewrite draft prose to venue-quality -- change directly, leave why-comments, then sync .md -> tex. Proof-carrying: stage hubs MUST reach REVISE through this skill (never hand-edit inline) and the [REVISE] _LOG entry MUST carry a `workers:` line. Dispatches place/content/humanizer/results workers (place first). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -22,7 +22,7 @@ This skill defines HOW to revise it.
 The human does not approve changes here; the human gives preferences in CHECK (via `> USER:` comments), and a REVISE restart responds to them.
 
 **Proof-carrying (binding).** A stage hub reaches REVISE ONLY through `Skill(haipipe-paper-revise)` — hand-editing the prose inline is a protocol violation ("the REVISE phase did not happen").
-Every run writes a `[REVISE]` entry in the stage's `_LOG` with a workers line: `workers: content ✓ humanizer ✓ results --` (✓ ran · -- skipped-with-reason).
+Every run writes a `[REVISE]` entry in the stage's `_LOG` with a workers line: `workers: place ✓ content ✓ humanizer ✓ results --` (✓ ran · -- skipped-with-reason).
 `checks.sh --log` FAILs a `[REVISE]` entry without it.
 Order of operations: revise the working `.md` FIRST, then sync to tex — never tex-first (the .md is the document the human reads and comments in).
 
@@ -35,10 +35,11 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
 
 ## What REVISE means
 
-REVISE = rewrite draft sentences to venue-quality prose, applying changes directly with why-comments.
+REVISE = put the landed answers into the prose, then rewrite those sentences to venue-quality, applying changes directly with why-comments.
 Four workers, each with a different lens:
 
 ```
+haipipe-paper-revise-place                SUBSTITUTE landed answers into placeholders (runs FIRST)
 haipipe-paper-revise-content              WHAT sentences say (accuracy, completeness, claims)
 haipipe-paper-revise-humanizer            HOW sentences sound (de-AI audit, voice)
 haipipe-paper-revise-results              results-specific (figure narration, effect reporting)
@@ -77,11 +78,13 @@ Read the section outline and tex to determine which workers to run:
 
 | Worker | Run when | Skip when |
 |---|---|---|
+| place | the artifact carries any placeholder | no placeholder in the artifact |
 | content | always | never |
 | humanizer | always | never (AI-authored prose reliably contains patterns) |
 | results | section is Results or contains figure/table narration | non-results sections |
 
-When no specific worker is named, run in order: content (incl. its weave step for ¶-flow) → humanizer → results (if applicable).
+When no specific worker is named, run in order: place → content (incl. its weave step for ¶-flow) → humanizer → results (if applicable).
+`place` runs FIRST and the order is binding: substituting after the prose workers would re-open sentences they had already finished, so the shipped text would never have been reviewed in its final form.
 
 ## Automation
 
@@ -113,12 +116,13 @@ revise ⬜    not yet started (PROBE must complete first)
 ```
 DRAFT → PROBE → REVISE (this) → CHECK
                     │
+                    ├── haipipe-paper-revise-place       (SUBSTITUTE landed answers, FIRST)
                     ├── haipipe-paper-revise-content     (WHAT: accuracy, claims)
                     ├── haipipe-paper-revise-humanizer   (HOW: de-AI voice)
                     └── haipipe-paper-revise-results     (results-specific)
 ```
 
-REVISE reads PROBE outputs (citations placed, values verified, displays linked) and rewrites draft sentences into final prose.
+REVISE reads what PROBE landed in each entry's `### a-executor`, PLACES it into the prose (discharging the placeholder's bracket), and rewrites those sentences into final prose.
 CHECK then verifies the revised result.
 
 ## Return contract
@@ -126,7 +130,7 @@ CHECK then verifies the revised result.
 ```
 status:    ok | blocked
 section:   <section-name>
-workers:   content <status> │ humanizer <status> │ results <status>
+workers:   place <status> │ content <status> │ humanizer <status> │ results <status>
 next:      <suggested command>
 ```
 

@@ -4,6 +4,22 @@ haipipe-paper-check — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 3.0.0 — 2026-07-19
+
+Changed (JL 2026-07-19, paper/2-phase refactor — the sidecar model is retired: `1-probes/` is the only consumer-side source of truth, `_LOG_<stage>.md` the only sidecar)
+
+- **What CHECK walks is RE-ROOTED**: the stage doc (or section `.md`) + the paper's `1-probes/` entries. Every `_CITATION_` / `_VALUES_` / `_DISPLAY_` reference is gone from SKILL.md — they were load-bearing in NINE places (frontmatter summary, step 2.5 comment-seeding targets, the one-shot `./checks.sh` invocation, the Citation table, the Values table, the report-format SEEDED example, Citation verification, Values verification, Display review, and the seed row of the per-stage gate table). A checker that scores a document nobody writes reports a metric it cannot compute.
+- **📚 PROBE checks restructured** around the DRAFT contract "every hole is FILLED or OWNED". New leading table (**The entries**): `check-probe-cards.sh --stage <key>` exit 0 · every `\cite{TOADD}` / `{VAL:?` carries a `[Q-<Stage>-<n>]` id (a bare placeholder = a hole nobody owns) · every id resolves to a Q-consumer block AND a bound `## QX<n>` entry · the entry's `### a-executor` is non-empty. Citation/Values/Display tables re-rooted onto the `### a-executor` bodies: 🔍 sources are greppped there, and a placed value must satisfy `grep -F '<value>' <the source path the a-executor names>` (the fabrication guard, mirrored from the probe worker's ⑤).
+- **Display track** now reads `0-lifecycle/4-display/_DISPLAY_REQUEST.md` for DR rows short of `done` — 📨 pending, flagged for CHECK, never a pre-placed `\ref` for a unit that does not exist.
+- **Human Actions** re-rooted: Citation verification, Values verification, and Display review now open the `1-probes/PP*.md` entries the report names. Step 7 of citation verification states where a verified key LANDS: the `\cite{TOADD} [Q-<Stage>-<n>]` hole that owns it.
+- **Vocabulary**: `section` → ENTRY, `serves:` → `### q-consumer`, `card` → entry throughout (`--stage` scoping, the resource gate rulings block, the resource row of Who-calls-this-skill). `## Locating the card checker` → `## Locating the probe checker`; the script's `check-probe-cards.sh` filename is unchanged and still load-bearing.
+- **PROBE restart** guidance: new-candidate requests become `## QX<n>` ENTRIES (was "question SECTIONS").
+
+Fixed
+
+- **`checks.sh` no longer asserts a dead marker is the convention.** The TODO-marker block's rationale claimed `% TODO[values]` / `% TODO[cite]` are "planted in comments by DRAFT and MUST block the gate until PROBE fills them" — that convention is retired (1.8.1 already marked the flags legacy, but the comment still taught them as live). The TODO/FIXME grep itself STAYS at the ❌ tier on its own merit: unfinished work parked in a `%` comment is exactly work hidden from the compiled PDF. The two LIVE markers (`\cite{TOADD}`, `{VAL:?}`) are enforced elsewhere, not here.
+- **`checks.sh` `--md` header** re-rooted: "a markdown working doc (`_CITATION_`/`_VALUES_`/outline)" → a stage doc, a section `.md`, or a `1-probes/PP*.md` entry file.
+
 ## 2.1.0 — 2026-07-14
 
 - "planned/dispatched cards" -> `planned` sections + unresolvable `target:`s; `status: planned card` -> `state: planned` section. (`check-probe-cards.sh` KEEPS its filename; only its internals changed.)

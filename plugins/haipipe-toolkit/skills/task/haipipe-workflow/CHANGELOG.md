@@ -4,6 +4,13 @@ haipipe-workflow — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [2.5.0] — 2026-07-19
+
+- ⑨ TOMBSTONES erased. Owner ruling (JL): "不需要留退役告示,直接抹除任何痕迹" — a doc states the CURRENT contract and never names the dead thing.
+  The frontmatter summary's "`answers:` field is DELETED / drops the retired evidence-gateway hop" becomes
+  "The report schema names no consumer; a consumer dispatches straight to an executor orchestrator".
+
+
 ## [2.4.0] — 2026-07-14
 
 Spec of record: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3 (APPROVED by JL 2026-07-14).

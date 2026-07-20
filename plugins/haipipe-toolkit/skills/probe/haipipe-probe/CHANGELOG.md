@@ -3,6 +3,13 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [9.6.0] — 2026-07-19
+
+- ⑨ TOMBSTONES erased. Owner ruling (JL): "不需要留退役告示,直接抹除任何痕迹" — a doc states the CURRENT contract and never names the dead thing.
+  "There is no `## Why` in a probe file" and the DRAFT self-review's "no `## Why` and no stake anywhere"
+  both restated as where the stake DOES live (the stage-doc Q-consumer).
+
+
 ## [9.5.0] — 2026-07-19 — PROBE FILE REDESIGN: Q-executor-oriented, many-to-one, a-executor copy (matches ref/probe-template.md)
 
 JL co-design 2026-07-19 (branch "C-P-E-Skill-Update-Probe-Template"). The probe file is redesigned to be Q-EXECUTOR-oriented, and the constitution anatomy is synced to `ref/probe-template.md`. Full record: `HANDOFF.md`.

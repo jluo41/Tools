@@ -29,7 +29,7 @@ editing rules. This doc defines the folder those files live in.
 │   ├── 4-display/
 │   │   └── 4-display.tex                 claim -> display map + gallery PDF
 │   └── 5-section-edit/                   per-section scaffolds (DRAFT-PROBE-REVISE-CHECK)
-│       └── <NN_section>/                 outline .md, _LOG, _CITATION_, _VALUES_
+│       └── <NN_section>/                 section .md (REAL prose) + _LOG_<NN_section>.md
 ├── 0-sections/                           all body prose, split per the grammar below
 │   ├── README.md                         one-screen map of section files
 │   ├── 00_abstract.tex

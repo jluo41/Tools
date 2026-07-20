@@ -48,7 +48,7 @@ Knowledge home
 Agents are THIN — every rule lives in its canonical home:
 
 ```
-the constitution (probe file anatomy, path binding,   → ../haipipe-probe/SKILL.md
+the probe layer (probe file anatomy, path binding,    → ../haipipe-probe/SKILL.md
 the QA/ contract, the qa verb, the two LAWS,             ⭐ START HERE
 status derivation, the writer table)
 the claim's status + claim_type overclaim check       → ../../<consumer>/1-lifecycle/1b-claims/

@@ -4,6 +4,27 @@ haipipe-paper-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.5.0 — 2026-07-19 — D12: principle 5a constrains DISPATCH, not RAISING
+
+JL ruling on D12 ("Yes"), 2026-07-19. His words that produced it: "feel free to add more questions … the Q-consumer is as many as possible … if there's no one here, I think you should propose a new question."
+
+The problem: principle 5a read "**Seed probes are FEASIBILITY only**" and told the agent, when DRAFT surfaced a non-feasibility need, to "DO NOT open a seed probe for it". Read literally that forbids RAISING — so an agent drafting a seed would suppress a real question rather than write it down, and the anchor loop (`[Q-Seed-<n>]` cited inline from the sentence it hangs on) would leave that sentence unanchored forever. But the cost the rule was actually protecting against is DISPATCH (agent-hours, GPU-weeks, external searches), not the sentence in the Q-consumer. Asking is cheap; the Q-consumer should be generous.
+
+Changed
+- Principle 5a retitled and rewritten as **RAISE freely; DISPATCH narrowly**. Raise ANY question the seed's prose hangs on, however far from feasibility it sits; when a sentence rests on something no existing question tests, PROPOSE A NEW ONE rather than leave it unanchored — no question shape is disqualified from being asked. The narrow part is what goes OUT: feasibility-shaped only (novelty, external-data-obtainability), both `discover` work. A raised question of any other shape KEEPS its `## Q-Seed-<n>` block, gets NO entry in `1-probes/`, records `Answer: deferred -> RESOURCE`, and carries the `[FORWARD -> RESOURCE]` pointer of principle 5c. **The DRAFT gate is where the split is decided** — the user rules per question.
+  The "no entry in 1-probes/" clause matters mechanically: it keeps a deferred question from becoming a `planned` survivor that `check-probe-cards.sh` would fail at the CHECK gate.
+- DRAFT phase block — was "raise the feasibility questions as ENTRIES in 1-probes/". Now: raise EVERY question the draft hangs on as a `## Q-Seed-<n>` block + inline `[Q-Seed-<n>]` citation; the gate then rules which are DISPATCHED (also get a `1-probes/` entry) and which are DEFERRED (block only, forward pointer). Planning (①ORGANIZE + ②MATCH) applies to the dispatched entries.
+- PROBE phase block — "That is the seed's whole probe scope" → "the seed's whole DISPATCH scope; this phase runs exactly the entries the DRAFT gate approved, no more". A non-feasibility question is now described as legitimately RAISED and then deferred at the gate, not as something that should never have existed.
+- Principle 5 — "Q-consumer is explicit" → "explicit, and generous": it makes EVERY question the draft hangs on visible, as many as the draft needs; `1-probes/` carries only the dispatched ones.
+- Done-criterion — the Q-consumer criterion no longer says "carries the feasibility questions"; it requires every question the draft hangs on, each anchored, each marked DISPATCHED or DEFERRED by the gate.
+- Handoff — "Seed KEEPS its own probe policy" → "its own DISPATCH policy"; "novelty probes" → "novelty questions".
+- Frontmatter `summary:` rewritten to lead with RAISE freely / DISPATCH narrowly.
+- `ref/seed-template.md` (the single source of truth for fill rules) — the Q-consumer RULE opens with "every question the draft raises" and gains two bullets, RAISE FREELY and DISPATCH NARROWLY, stating the gate split and the deferred form. The `Answer:` placeholder documents `deferred -> RESOURCE`.
+
+Untouched (deliberately)
+- Every `mode: light | full` reference, including PROBE's `(mode light)` — deferred to a separate review.
+- Principle 5b (DRAFT may search; PROBE must bind) and 5c (the one emitted forward-pointer form) — both already constrain dispatch/binding rather than raising, and 5a now leans on 5c explicitly.
+
 ## 4.4.0 — 2026-07-19 — BREAKING: `_CITATION_0-seed.md` sidecar RETIRED; Formatting/`##` contradiction fixed
 
 JL ruling, 2026-07-19 (Paper-Personality2Opioid seed redo): "we should delete it. do not use it." The 4.3.0 sync had deliberately left the `_CITATION_0-seed.md` harvest rule untouched; that is now reversed — seed keeps NO stage-local sidecars at all, matching the rule resource already had (`haipipe-paper-draft/SKILL.md` "NO SIDECARS"). Found the hard way: an agent drafting a seed read the artifact-spec bullet and regenerated the file, and it did so BEFORE any probe had run — the bullet's own "only when the probe returns literature" condition was unenforceable because nothing checked it.

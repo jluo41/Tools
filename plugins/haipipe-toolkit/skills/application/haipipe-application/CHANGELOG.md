@@ -4,6 +4,24 @@ haipipe-application — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Oldest first (append at the bottom).
 
 
+## [6.10.0] — 2026-07-19
+
+- ⑨ TOMBSTONES erased. Owner ruling (JL): "不需要留退役告示,直接抹除任何痕迹" — a doc states the CURRENT contract and never names the dead thing.
+  `fn/probes.md`: the 💀 ban-list on retired state words becomes "An entry in flight is `commissioned`";
+  `SKILL.md:300`'s "There is NO `## Why` / NO `## Verdict` / NO G1-G2-G3" becomes the positive statement of
+  where the stake and the claim status actually live.
+- ⑩ probe files hold `## QX<n>` ENTRIES, not "sections" — wording corrected in the description, summary, the router line, and the evidence-path diagram.
+
+
+## [6.9.0] — 2026-07-19
+
+- Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname
+  "THE CONSTITUTION" / "the constitution" for `probe/haipipe-probe/SKILL.md` is dropped everywhere;
+  each site now names either `probe` or the actual path.
+  Touched: SKILL.md (Delivery Need Routing model pointer, probe-entry anatomy pointer) and `fn/probes.md`
+  (the MODEL-owner line, the full-spec pointer).
+- No `a-consumer` change here: every occurrence in this skill is the LIVE stage-doc concept (station 2).
+
 ## [1.0.0] — 2026-05-31
 
 - baseline.

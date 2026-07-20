@@ -190,8 +190,8 @@ The four evidence principles (land-at-home, review-on-write, layered orders, tri
 | `haipipe-application-draft` as artifact generator | `3-deliver/haipipe-application-artifact` (verb stays `draft`) |
 | spine `seed → pitch → [venue] → claims → ... → minimap` | `seed → 1a-1d ladder → [venue] → pitch → narrative → display → section-edit` |
 | flat `0-lifecycle/N-stage.md` files | stage FOLDERS `0-lifecycle/N-stage/` (md + _LOG) |
-| per-stage `_PROBE/PPNN_*.md` cards; `1-probe-plans/README.md` index; `/haipipe-probe plan from-need` | flat pool `1-probes/PPNN_<topic>.md` (one file per TOPIC, one SECTION per question, states `planned\|commissioned\|answered\|read\|answered-local\|failed`); `/haipipe-application probe "<q>"` raises a section + `probe run` |
-| verdict word `confirmed`; PP-card `## Verdict` / G1-G2-G3 | claim status `supported \| weak \| GAP` in `0-lifecycle/1c-claims/1c-claims.md` (no `## Verdict`, no gate) |
+| per-stage `_PROBE/PPNN_*.md` cards; `1-probe-plans/README.md` index; `/haipipe-probe plan from-need` | flat pool `1-probes/PPNN_<topic>.md` (one file per TOPIC, one `## QX<n>` ENTRY per q-executor, states `planned\|commissioned\|answered\|read\|answered-local\|failed`); `/haipipe-application probe "<q>"` raises a section + `probe run` |
+| verdict word `confirmed`; PP-card `## Verdict` / G1-G2-G3 | claim status `supported \| weak \| GAP` in `0-lifecycle/1c-claims/1c-claims.md`, written by the author |
 | `applications/ask/<NN>/` case files | dead history: nothing reads, nothing writes |
 | stage folder `1-claims/` (single stage-1 ledger) | the ladder `1a-descriptions/ 1b-themes/ 1c-claims/ 1d-advice/` (SOP-ladder-restage, 2026-07-09); legacy interventions: `enter` offers the confirm-gated one-shot migration (rename to `1c-claims/`, scaffold rungs, re-file probes by shape) on next open |
 | `1d-principles` / `haipipe-application-principles` / `P<n>` ids / maturity `principled` (hours-old, same restage) | `1d-advice` / `haipipe-application-advice` / `A<n>` / `advised` (JL ruling 2026-07-09: advice = counsel downstream stages adopt or decline; `principles` survives only as a verb alias) |

@@ -45,7 +45,9 @@ Tentative Claim Shape
 
 Q-consumer
 ----------
-<!-- RULE: the feasibility questions the draft raises, one `## Q-Seed-<n>` block each.
+<!-- RULE: every question the draft raises, one `## Q-Seed-<n>` block each.
+     · RAISE FREELY — as many questions as the draft needs; asking is cheap. When a sentence rests on something no existing question tests, PROPOSE A NEW ONE rather than leave it unanchored. No question shape is disqualified from being asked here.
+     · DISPATCH NARROWLY — the GATE decides, per question, what goes out at seed: feasibility-shaped only (novelty, external-data-obtainability), which also gets an entry in `1-probes/`. Anything else stays here with `Answer: deferred -> RESOURCE` and a `[FORWARD -> RESOURCE]` pointer in `_LOG_0-seed.md` — no entry, no dispatch.
      · STAGE-PREFIXED ID — `Q-Seed-<n>`. Each stage owns its own index (Q-Claim-<n>, Q-Pitch-<n>, …) so a cited id is never ambiguous across stages.
      · ANCHORED, not detached — every question spot-checks a SPECIFIC assertion above (Seed Question / Motivations / Landscape / H-line); cite its id inline in the sentence(s) it hangs on, e.g. [Q-Seed-1]. One question may be cited from several sentences/sections — that is how it links to more than one place.
      · Description = what the question wants. Reason = every anchor it is cited from + why each matters if that assertion is wrong (the back-link). Answer = empty in DRAFT; PROBE fills it from the answering QA file.
@@ -54,4 +56,4 @@ Q-consumer
 ## Q-Seed-<n> · <question title>
 Description: <what the question wants to know — one sentence per line>
 Reason: <which Motivations / Landscape / H-line(s) above cite this id, and why each matters if that assertion is wrong>
-Answer: <empty in DRAFT — PROBE fills it from the answering QA file, anchored [source: PPnn]; on a loopback redo, prior-cycle resolution + source>
+Answer: <empty in DRAFT — PROBE fills it from the answering QA file, anchored [source: PPnn]; a question the gate DEFERRED reads `deferred -> RESOURCE`; on a loopback redo, prior-cycle resolution + source>

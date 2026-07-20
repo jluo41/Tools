@@ -4,8 +4,8 @@ description: "Venue selection for the intervention lifecycle — the decision ga
 argument-hint: "[venue-name] [intervention-path] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.3.0"
-  last_updated: "2026-07-18"
+  version: "3.4.0"
+  last_updated: "2026-07-19"
   summary: "Venue stage: recommends + pins the output modality and produces 2-venue.md (template ref/venue-template.md) — the decision gate between the venue-FREE ladder and the venue-ALIGNED stages; writes the three STATUS rows (venue / stages_skipped / claims_settlement) and Artifact Principles as the downstream channel-HOW contract. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -64,8 +64,8 @@ DRAFT   read 1c-claims.md (the campaign shapes which venues fit) + 1d-advice.md 
         pros/cons (evidence depth vs venue demands, audience fit); on the user's confirm PIN the
         three STATUS rows and write 2-venue.md (Artifact Principles + Fit Assessment against the
         campaign). --no-pin = recommend only, write nothing.
-PROBE   light, and often skipped — venue-level questions only (channel capability, compliance
-        constraints, prior sends on this channel), raised as sections in 1-probes/PPNN_<topic>.md
+PROBE   often skipped — venue-level questions only (channel capability, compliance
+        constraints, prior sends on this channel), raised as entries in 1-probes/PPNN_<topic>.md
         and dispatched via Agent(haipipe-probe-q-executor-agent). Routing mechanics are the probe
         layer's: ../../2-phase/1-probe/haipipe-application-probe/SKILL.md (see its
         ref/per-stage-dispatch.md, the "2-venue" entry).

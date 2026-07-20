@@ -4,8 +4,8 @@ description: "Stage 4 of the intervention lifecycle (venue-GATED: required for d
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.6.0"
-  last_updated: "2026-07-18"
+  version: "4.7.0"
+  last_updated: "2026-07-19"
   summary: "Display stage (stage 4, venue-GATED + venue-ALIGNED) — maps each claim to a display UNIT with a required per-unit Job (minimap absorbed); materialization raised as a section in the flat probe pool 1-probes/, uniquely commissioned by this stage. History: ./CHANGELOG.md."
 ---
 
@@ -72,7 +72,7 @@ Q-consumer         materialization questions, one `## Q-Disp-<n>` block each (As
 ```
 
 Sidecar: `_LOG_4-display.md` (phase journal).
-Evidence questions live in the flat probe pool `1-probes/PPNN_<topic>.md` (sections carry `serves` / `target` / `state` / `q-executor` / `a-consumer` + one `## Why`; states `planned | commissioned | answered | read | answered-local | failed`); a legacy per-stage `_PROBE/` folder is migrated into the pool on first touch.
+Evidence questions live in the flat probe pool `1-probes/PPNN_<topic>.md` (one file per TOPIC; each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`), states `planned | commissioned | answered | read | answered-local | failed`; the stake stays in this doc's Q-consumer.
 Formatting: `=====` title / `-----` sections; content uses no `#`, Q-consumer questions use `## Q-Disp-<n>`; one sentence per line; the doc reads `2-venue.md`'s Artifact Principles for the available element types.
 
 

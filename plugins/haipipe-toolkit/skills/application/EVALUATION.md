@@ -32,7 +32,7 @@ The phase engine is `2-phase/`: DRAFT → PROBE → REVISE → CHECK, shared acr
 
 - Order: the four phases fire in sequence; no phase is skipped or reordered.
 - Internal: phases are never user-invoked directly — a stage drives them.
-- Evidence door: PROBE is the ONLY way evidence enters; it raises questions as sections in `1-probes/` and dispatches the `q-executor:` block verbatim through the clean collector agent (`1-lifecycle/haipipe-application-lifecycle/SKILL.md` Intervention Lifecycle Contract).
+- Evidence door: PROBE is the ONLY way evidence enters; it raises questions as entries in `1-probes/` and dispatches the `### q-executor` block verbatim through the clean collector agent (`1-lifecycle/haipipe-application-lifecycle/SKILL.md` Intervention Lifecycle Contract).
 - Gates: DRAFT review and CHECK are the two human gates; the agent never self-advances past them (`haipipe-application/SKILL.md` Stage Gate Protocol). CHECK's mechanical teeth are `checks.sh` + the probe-file checker — a ❌/FAIL blocks the gate green at any venue depth.
 - Stage-agnostic: the workers carry no stage-specific logic; the stage supplies the contract, the phase supplies the process.
 
@@ -46,7 +46,7 @@ Each stage in `1-lifecycle/` (seed, the 1a–1d ladder: descriptions/themes/clai
 - 1:1 mapping: one stage, one skill, with reads/writes/calls declared (`README.md` Router Rule).
 - Ladder cite-chain: each DIKW rung anchors in the one above it (`T1 (D3)`, `C2 (T1; D3)`, `A ← C`); the ladder climbs to W (the deliverable), where paper stops at K.
 - Venue boundary: venue-FREE stages (seed + the 1a–1d ladder) don't change on retarget; venue-ALIGNED stages (pitch onward) do. The pinned venue gates WHICH stages fire (`stages_skipped`) and HOW DEEP claims must settle (`claims_settlement`).
-- **Template**: the stage's `ref/<stage>-template.md` is the contract mold — every real intervention's stage doc is stamped from it, so a bad template propagates everywhere. It must be concrete (real example values, not bare `<...>`), its sections must match what the SKILL declares, and its field vocabulary must be current (`state`, not the retired `status`/`dispatched`/`verdicted`; the six-value state enum spelled in full). This is the single highest-leverage thing to check.
+- **Template**: the stage's `ref/<stage>-template.md` is the contract mold — every real intervention's stage doc is stamped from it, so a bad template propagates everywhere. It must be concrete (real example values, not bare `<...>`), its sections must match what the SKILL declares, and its field vocabulary must be current (`state`, with the six-value state enum spelled in full). This is the single highest-leverage thing to check.
 - Reservoir: the stage captures what it considered-and-dropped (1a Waivers, 1b Parked, 1c Declined hooks, 1d Rejected + No-action) — negative wisdom is first-class, so the next round does not re-derive it. (Seed has none: it is too early for considered-and-dropped wisdom; that accrues on the ladder rungs.)
 - Artifact: produces its stage doc + `_LOG`, and updates `STATUS.md current_layer`.
 

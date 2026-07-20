@@ -3,6 +3,13 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [6.3.0] — 2026-07-19
+
+- Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname
+  "THE CONSTITUTION" / "the constitution" for `probe/haipipe-probe/SKILL.md` is dropped everywhere;
+  each site now names either `probe` or the actual path.
+  Touched: `fn/qa.md` (the QA-file anatomy / field-name / state-value pointer).
+
 ## [6.2.0] — 2026-07-14 — R19 hardening: the state line is read FIRST
 
 > JL: what is R19? Make it self contained. 

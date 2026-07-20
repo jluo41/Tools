@@ -4,6 +4,13 @@ haipipe-application-draft — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.4.0] — 2026-07-19
+
+- Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname
+  "THE CONSTITUTION" / "the constitution" for `probe/haipipe-probe/SKILL.md` is dropped everywhere;
+  each site now names either `probe` or the actual path.
+  Touched: the RAISED QUESTIONS + THEIR PLAN step, which cited "the constitution's PHASE MAP".
+
 ## [1.3.1] — 2026-07-19
 
 - Probe constitution v9.5.0 sync (Q-executor-entry probe-file format), mirroring the paper family. RAISE becomes RAISE+PLAN: DRAFT authors the WHOLE probe plan (①ORGANIZE + ②MATCH) — a `Q-<Stage>-<n>` in the stage doc's Q-consumer plus a `## QX<n>` ENTRY carrying `### q-executor` (+ Deliverable/Accepted), a `### q-consumer` bullet, and `### bank binding` (route · bank · target) — instead of a bare `state: planned` section with an empty `target:`.

@@ -4,6 +4,13 @@ haipipe-application-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [4.7.0] — 2026-07-19
+
+- Probe-pool anatomy line restated as the current entry contract. Vocabulary: `a-consumer:` as a PROBE-FILE FIELD is gone — the probe entry's answer subsection is
+  `### a-executor` (the copy of the answering QA file's answer, the consumer-side single source of truth).
+  The a-consumer CONCEPT is untouched: it remains the per-consumer interpretation written in the STAGE DOC
+  (station 2, anchored `[source: PP<NN>]`).
+
 ## [4.6.0] — 2026-07-18
 
 - Template alignment sweep: dropped the template's "How to use:" header line; Q-consumer questions renamed `## Q<n>` -> `## Q-Disp-<n>` (id carries the origin stage; the materialize-U<nn> title kept) + reshaped to the fixed 3-field form Ask / Why / Answer (`__TO_BE_FILLED__` == OPEN, else ANSWERED — the doc's only state). SKILL skeleton + formatting synced.

@@ -4,9 +4,9 @@ description: "Skill-set health review. Runs a 6-phase diagnose-first pass over O
 argument-hint: "[bucket-path] (e.g. skills/task, skills/discovery, skills/0_utils)"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "1.2.1"
-  last_updated: "2026-07-14"
-  summary: "Diagnose-first health review of a skill bucket with user-gated fixes and verbatim decision archival. v1.2.1: the 'Good (option comparison, drawn)' worked example in ref/thread-protocol.md is re-cut against a LIVE decision (MATCH via `/haipipe-task qa --check-only` → T2 REUSE, vs a T4 FRESH commission). It was built on `/haipipe-probe file` (no such verb) and `probe-attach.md` (no such file) — the exemplar a session copies was teaching a dead command surface. The diagram FORM, which is the point of the doc, is unchanged."
+  version: "1.3.0"
+  last_updated: "2026-07-19"
+  summary: "Diagnose-first health review of a skill bucket with user-gated fixes and verbatim decision archival. v1.3.0: the review LEDGER moves out of the bucket — it is written to `skills/_console/<YYMMDD>-<SLUG>.md` (see `_console/README.md`), because a process artifact must never ship inside the skill it reviews. REPORT, RESOLVE's reply sweep, the COMMIT gate + add-scope, and the return contract all follow it there."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -43,11 +43,13 @@ Six phases
 
 ### 3️⃣ REPORT  (hard gate: nothing is fixed before this is eyeballed)
 
-- Write `SKILLSET_REVIEW.md` at the bucket root:
+- Write the review to `skills/_console/<YYMMDD>-<SLUG>.md`, NOT into the bucket (see `../../_console/README.md`).
+  A review is a PROCESS artifact and must never ship inside the skill it reviews.
+  The date is the day the file is BORN and is never re-dated; one file per TOPIC, and a later session APPENDS to it.
   Part 1 = root causes (先看这个, one line each with counts);
   Part 2 = findings grouped by class, each with checkbox, id, severity, [M]/[J], file:line, proposed fix;
   Part 3 = coverage honesty (what was NOT audited and why).
-- [J] findings: open their `> {CC->JL}:` threads AT the judgment points NOW, as part of report delivery, and MIRROR each full block under its finding in SKILLSET_REVIEW.md so the user replies in ONE file (JL 2026-07-05: "我觉得这个comment 必须要先生成好" / "我在哪里加入我的comments呀"). Either copy's `> JL:` slot counts; first reply wins; both copies are removed together at RESOLVE. Opening a thread is a question, not a fix; the gate below still holds.
+- [J] findings: open their `> {CC->JL}:` threads AT the judgment points NOW, as part of report delivery, and MIRROR each full block under its finding in the console file so the user replies in ONE file (JL 2026-07-05: "我觉得这个comment 必须要先生成好" / "我在哪里加入我的comments呀"). Either copy's `> JL:` slot counts; first reply wins; both copies are removed together at RESOLVE. Opening a thread is a question, not a fix; the gate below still holds.
 - Announce in chat with clickable bare `path:line` refs (report + each open thread), then STOP and wait for the user.
 
 ### 4️⃣ FIX  (only after the user approves the report)
@@ -56,12 +58,12 @@ Six phases
 - [J] items: never decide silently.
   Their threads are already open from Phase 3; execute replies as they land (per RESOLVE). Arbitrate by evidence (code + shipped templates beat prose; LESSON files beat stale SKILL claims; the newest deliberate design beats leftovers), apply the best reading, and for any [J] first discovered mid-FIX open its `> {CC->JL}:` thread AT the judgment point per `ref/thread-protocol.md`.
   Every thread carries a concrete worked EXAMPLE (real values, behavior under each option) and quotes the exact before/after text; an abstract-only thread is defective (JL 2026-07-05: "inline 的每个comments 都很难understand，try to provide more information and examples"). When the decision is drawable (two options / flow / before-after), the 例子 IS a compact diagram-ascii block, not prose (JL 2026-07-05: "如果可以用diagram-ascii，就用这个来explain").
-- Every fixed skill gets a version bump + CHANGELOG entry in the same pass.
+- ONE TAG PER BODY OF WORK, assigned at the END. Do NOT bump a version or open a new CHANGELOG heading per round — a review that lands in four passes gets ONE tag, written when the work is actually final, with every finding folded into it. While the round is open, mark the entry `⚠️ IN PROGRESS` and keep appending to it. (JL 2026-07-19: "only add it or assign the new tags until we really have the final version, not everytime, we have a new tag".)
 - If the user says anything is unclear (没讲清楚), stop writing prose and draw the decision with `/diagram-ascii`: what actually differs, what each option costs, one crisp question.
 
 ### 5️⃣ RESOLVE  (loop until zero threads)
 
-- Sweep for replies: `grep -rn "^> JL:" <bucket>` filtered to non-empty lines.
+- Sweep for replies: `grep -rn "^> JL:" <bucket> skills/_console/<the console file>` filtered to non-empty lines — the console file is where the user actually types, so it is never optional in the sweep.
 - For each reply: execute the decision, archive the verbatim quote into the owning skill's CHANGELOG as `### Changed (JL: "...")`, then remove the thread from the doc.
 - An owner ruling may overturn a recorded LESSON: keep the lesson body as history and add a `⚠️ SUPERSEDED <date> by owner decision ("<quote>")` banner so a future reviewer does not revert the docs.
 - Process feedback (how to work, not what to change) goes to agent memory, not to CHANGELOGs.
@@ -69,8 +71,8 @@ Six phases
 
 ### 6️⃣ COMMIT  (only on explicit user go)
 
-- Gate: grep for `{CC->JL}` and for non-empty `> JL:` must BOTH return zero in the bucket.
-- `git add` scoped to the bucket path only; never touch other sessions' changes elsewhere in the repo.
+- Gate: grep for `{CC->JL}` and for non-empty `> JL:` must BOTH return zero in the bucket AND in the console file.
+- `git add` scoped to the bucket path plus the one `skills/_console/<YYMMDD>-<SLUG>.md` this review owns; never touch other sessions' changes elsewhere in the repo.
 - Commit message: one line per major ruling carrying the user's quotes; the detailed history lives in the per-skill CHANGELOGs.
 
 
@@ -80,8 +82,9 @@ MUST NOT
 - Fix anything before the user has eyeballed the report (改前必报).
 - Present my inference as the user's decision; quotes are verbatim or absent.
 - Delete or rewrite a LESSON the owner overruled; banner it SUPERSEDED instead.
-- Leave a fixed skill without a version bump + CHANGELOG entry.
+- Ship a finished round with no CHANGELOG entry — or fragment one round across several version tags.
 - Commit without the zero-thread gate, or beyond the bucket scope.
+- Write the review ledger into the bucket being reviewed; it goes to `skills/_console/`, never beside its subject.
 
 
 Return contract
@@ -90,6 +93,6 @@ Return contract
 ```
 status:    ok | blocked
 summary:   <phase reached; counts: findings by severity, threads open/closed>
-artifacts: [SKILLSET_REVIEW.md, changed skill paths...]
+artifacts: [skills/_console/<YYMMDD>-<SLUG>.md, changed skill paths...]
 next:      <the gate the user currently holds>
 ```

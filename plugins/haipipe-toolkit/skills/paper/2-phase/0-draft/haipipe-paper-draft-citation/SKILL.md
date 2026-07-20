@@ -1,0 +1,122 @@
+---
+name: haipipe-paper-draft-citation
+description: "DRAFT-phase citation auditor (internal). Walks a stage doc or section for assertions that need a source, decides which already have a real \\citep{key} in the .bib, and turns each remaining hole into `\\cite{TOADD} [Q-<Stage>-<n>]` — the placeholder plus the id of the question that will produce the key. Reports a hole back to the hub as UNOWNED when no existing question would answer it; the hub raises the question. Never searches, never writes bibtex, never touches .bib, never edits the manuscript. Users invoke stage skills (seed, claims, section-edit...), not this skill directly."
+argument-hint: "[stage-or-section] [paper-path]"
+allowed-tools: Bash, Read, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-07-19"
+  summary: "DRAFT-phase citation auditor: find every assertion that owes a source, place the real key when the .bib already has it, and OWN every remaining hole with `\\cite{TOADD} [Q-<Stage>-<n>]`. Acquisition is a question's job, not this skill's — it never searches. History: ./CHANGELOG.md."
+---
+
+haipipe-paper-draft-citation
+=============================
+
+The citation lane of the DRAFT phase.
+Called by `haipipe-paper-draft` while it drafts a stage doc or a section.
+
+One job: **no assertion leaves DRAFT owing a source to nobody.**
+
+
+What this skill does NOT do
+----------------------------
+
+- It does NOT search. Finding a paper is a question's job: the ENTRY's `### q-executor` goes to `Agent(haipipe-discovery-orchestrator-agent)`.
+- It does NOT generate bibtex and NEVER touches `0-*.bib`. Generated bibtex means hallucinated authors, wrong years, wrong journals, wrong pages — the failure is silent and survives into the submitted PDF.
+- It does NOT verify a source (does the DOI resolve? does the paper actually say this?). That is `haipipe-paper-check-evidence`.
+- It does NOT WRITE, anywhere. Not the manuscript, not the stage doc, not `1-probes/`. It walks and reports; `haipipe-paper-draft` holds the pen for all three, and `haipipe-paper-revise-place` places landed keys later. One writer per file — two lanes editing one sentence is a race.
+
+
+AUDIT — what owes a source
+---------------------------
+
+Walk the working `.md` sentence by sentence. A sentence owes a source when it is a FACTUAL ASSERTION about the world that the paper is not itself establishing:
+
+```
+owes a source        a claim about prior work · a number taken from elsewhere ·
+                     a named method with an origin · a field-level generalization
+                     ("X is widely used", "prior work has not tested Y")
+owes nothing         this paper's own result · its own design decision ·
+                     a definition it stipulates · a transition sentence
+```
+
+Three gap types, and they are not interchangeable:
+
+```
+UNCITED        the assertion has no citation at all
+WRONG-CONTEXT  a citation is present but does not support THIS claim
+               (the source is real, the use is wrong — the hardest kind to see,
+                and the kind a reader who knows the field will catch first)
+WEAK           one citation carrying a claim that needs a body of work behind it
+```
+
+Only UNCITED is DRAFT's to close by raising a question. WRONG-CONTEXT and WEAK are judgments about a source you already have — flag them for `haipipe-paper-check-evidence` and move on.
+
+
+PLACE what is already there
+----------------------------
+
+Before raising anything, grep the paper's `.bib`:
+
+```sh
+grep -in "<author-surname>\|<distinctive title word>" <paper>/0-*.bib
+```
+
+A key that greps → REPORT it as `\citep{key}`, with the line it belongs on. The hub places it.
+A key that does NOT grep → it does not exist. Reporting it anyway is an invented citation, and it will not be caught until compile time, or later.
+
+
+ROUTE — own every remaining hole
+---------------------------------
+
+Each surviving UNCITED assertion is REPORTED as one row:
+
+```
+<line>  |  <the assertion, quoted>  |  \cite{TOADD}  |  owed by: Q-<Stage>-<n> | UNOWNED
+```
+
+The hub writes it into the prose as `\cite{TOADD} [Q-<Stage>-<n>]`.
+
+Two markers, side by side, never fused. The `\cite{}` is the citation layer; the `[Q-...]` is the question layer; their adjacency says *this key will come from that question*.
+
+Finding the right `[Q-<Stage>-<n>]`, cheapest first:
+
+```
+1. an EXISTING Q-consumer in this stage doc would produce it
+     → reuse its id. Most citation holes land here: a novelty question, a
+       landscape question, a prior-art question already asks for exactly the
+       anchors the prose is missing.
+2. an existing q-executor ENTRY in 1-probes/ asks it
+     → add a `### q-consumer` bullet to that entry, reuse its consumer id.
+3. nothing would produce it
+     → REPORT it back to haipipe-paper-draft as UNOWNED, naming the assertion and
+       what would settle it. The hub raises the `## Q-<Stage>-<n>` and authors its
+       ENTRY at its Step 4b — this lane never writes to the stage doc's Q-consumer
+       or to 1-probes/. One writer per file; three lanes writing one probe file is
+       a race. Asking is cheap, so report every one; the DRAFT gate decides worth.
+```
+
+A bare `\cite{TOADD}` with no bracket is a defect. It means no question will ever produce that key — a hole with no owner, which is exactly the state DRAFT exists to prevent.
+
+
+Done criteria
+--------------
+
+- [ ] Every factual assertion is reported as carrying a real `\citep{key}`, or as owing `\cite{TOADD}`
+- [ ] Every `\citep{key}` greps in the paper's `.bib`
+- [ ] Every `[Q-<Stage>-<n>]` names a Q-consumer that exists in the stage doc
+- [ ] WRONG-CONTEXT / WEAK flags recorded in `_LOG_<stage>.md` for the evidence check
+- [ ] Nothing written anywhere — the report IS the output
+
+
+Siblings
+---------
+
+```
+haipipe-paper-draft            the hub that calls this
+haipipe-paper-draft-values     the same shape for numbers  ({VAL:?} [Q-<Stage>-<n>])
+haipipe-paper-draft-display    the same shape for displays (a DR row in the 4-display inbox)
+haipipe-paper-probe            answers the questions this skill raised
+haipipe-paper-revise-place     puts landed keys into the prose
+haipipe-paper-check-evidence   verifies the sources pre-submission
+```

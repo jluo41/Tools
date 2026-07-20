@@ -105,7 +105,7 @@ DRAFT  -> 2-phase/0-draft/haipipe-paper-draft
 PROBE  -> 2-phase/1-probe/haipipe-paper-probe    (runs the five-step loop ORGANIZE->MATCH->DISPATCH->POINT->INTERPRET;
                                                   DISPATCH goes DIRECT to Agent(haipipe-task-orchestrator-agent) /
                                                   Agent(haipipe-discovery-orchestrator-agent) — no gateway, and
-                                                  /haipipe-probe is the CONSTITUTION, never a dispatch tier)
+                                                  probe owns the model, never a dispatch tier)
 REVISE -> 2-phase/2-revise/haipipe-paper-revise
 CHECK  -> 2-phase/3-check/haipipe-paper-check   (final human gate; DRAFT review is the other)
 ```

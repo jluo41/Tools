@@ -4,8 +4,8 @@ description: "Per-section editing hub under 0-lifecycle/5-section-edit/. STAGE C
 argument-hint: "[section-name-or-number] [draft|probe|revise|check] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "5.1.0"
-  last_updated: "2026-07-14"
+  version: "5.2.0"
+  last_updated: "2026-07-19"
   summary: "Per-section editing hub (stage 5, venue-ALIGNED): each section runs DRAFT → PROBE → REVISE → CHECK on a folder under 0-lifecycle/5-section-edit/{section}/. STAGE CONTRACT -- aim + rules here, structure in ref/section-template.md (rulebook ref/outline-format.md); the phases are executed by the 2-phase workers via Skill() dispatch. The .md holds REAL prose (one sentence per line, real \\citep{} from .bib, {VAL:?}/\\cite{TOADD} placeholders); tex is synced from it. Two human gates (DRAFT structure, CHECK 6-axis); the agent never self-advances. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -32,9 +32,12 @@ The section `.md` holds the REAL prose -- one sentence per line, blank line betw
 The `.tex` is GENERATED from the `.md` by sync; never hand-edit tex prose (pure LaTeX mechanics -- labels, floats, `\input` -- live in tex and are preserved by sync).
 
 **2. Real or greppable, never invented.**
-`\citep{key}` only for keys already in the paper's `.bib`; `{VAL:?}` for an unverified number; `\cite{TOADD}` (+ a `_CITATION_` row) for a missing citation.
+`\citep{key}` only for keys already in the paper's `.bib`; `{VAL:? <what>} [Q-<Stage>-<n>]` for an unverified number; `\cite{TOADD} [Q-<Stage>-<n>]` for a missing citation.
+The marker and the anchor bracket sit side by side, NEVER fused: the bracket names the question that will produce the key or the number.
+A placeholder with no bracket is a defect -- it is a hole no question will ever fill.
 Never invent a key or a number to avoid a placeholder -- those placeholders are exactly what PROBE fills.
-`_CITATION_` is plain-text (the map, what to cite where); `.bib` is human-only (the data); the agent learns a key by grepping `.bib` after the human adds it (format + provenance: `../../../2-phase/1-probe/haipipe-paper-probe-citation/SKILL.md`).
+`1-probes/` is the only consumer-side source of truth; `_LOG_{section}.md` is the only sidecar.
+`.bib` is human-only (the data); the agent learns a key by grepping `.bib` after the human adds it.
 
 **3. Three PROBE tracks, and the display exception.**
 PROBE runs citation / values / display in parallel, agent-only, flagging (not placing).
@@ -52,9 +55,10 @@ DRAFT   settle structure, then write REAL prose (complete academic sentences, co
         unverified), and end the .md with a "Questions raised by this draft" block -- placeholders
         rolled up with expected sources, display needs, and anything heavier than pointer-following
         raised as a `state: planned` question SECTION in 1-probes/.  ⛔ STOP for the user's STRUCTURE review.
-PROBE   three tracks, agent-only, flag don't place: citation → _CITATION_, values → _VALUES_,
-        display → 0-displays/ links or a DR row. Sweep paper-local first, then ② MATCH the bank's QA
-        corpus, then DISPATCH only what MATCH cannot close (routing mechanics: the probe layer).
+PROBE   three tracks, agent-only, flag don't place: citation and values run their `[Q-<Stage>-<n>]`
+        entries in 1-probes/ to an answer; display links a 0-displays/ unit or checks its DR row.
+        Sweep paper-local first, then ② MATCH the bank's QA corpus, then DISPATCH only what
+        MATCH cannot close (routing mechanics: the probe layer).
 REVISE  dispatched workers (content + humanizer, + results where applicable) rewrite the .md to
         venue quality and sync .md → tex; the proof is a `workers:` line in the _LOG. Never hand-edit prose inline.
 CHECK   ⛔ the human verifies the flags; the agent then places verified \citep{}/values and links displays;
@@ -74,14 +78,32 @@ Per section, a folder `0-lifecycle/5-section-edit/{section}/`:
 ```text
 {section}.md              the outline + REAL prose -- the primary working doc (full spec: ref/outline-format.md)
 _LOG_{section}.md         changelog, one [PHASE]-tagged entry per round (newest on top)
-_CITATION_{section}.md    citation map (plain text, no bibtex)
-_VALUES_{section}.md      values registry
 ```
+
+The section's open citation and number needs live as `[Q-<Stage>-<n>]` entries in `1-probes/`, raised from the `.md`'s "Questions Raised by This Draft" block; a needed display unit is a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`.
 
 Output: `0-sections/*.tex`, synced from the revised `.md`.
 The copy-and-fill skeleton is `ref/section-template.md`; the `.md` format and the "Questions raised" block are specified in `ref/outline-format.md`.
-Phase-line status is derived from disk: **draft** ✅ = the .md has structure + prose AND _LOG has the draft `[GATE]`; **cite/val/disp** ✅ = the tracking file is all-placed / all-verified / linked (`--` if not needed, 📨 if a DR row is pending); **revise** ✅ = newest `[REVISE]` has a `workers:` line and tex is synced; **check** ✅ = _LOG has the user's approval.
+Phase-line status is derived from disk: **draft** ✅ = the .md has structure + prose AND _LOG has the draft `[GATE]`; **cite/val/disp** ✅ = every `\cite{TOADD}` placed / every `{VAL:?}` verified / every display linked, i.e. no bracket of that track is left open in the `.md` (`--` if not needed, 📨 if a DR row is pending); **revise** ✅ = newest `[REVISE]` has a `workers:` line and tex is synced; **check** ✅ = _LOG has the user's approval.
 
+
+## Questions this stage typically raises
+
+DRAFT's Step 4b raises what the draft cannot answer. At section-edit most holes are found MECHANICALLY by Step 4a's three lanes; what stays for judgment is smaller and sharper.
+
+```
+🔢 owed number       Step 4a's values lane marks it {VAL:? <what>} [Q-<Stage>-<n>]. The
+                     judgment is only whether the number is worth going to get.
+⚓ owed source       Step 4a's citation lane marks it \cite{TOADD} [Q-<Stage>-<n>]. Same:
+                     the lane finds it, you decide if it is worth a lit sweep.
+🧩 unearned move     This paragraph makes a step the reader has not been given grounds
+                     for. No lane catches this — it is not a missing token, it is a
+                     missing argument.
+📛 norm conflict     The section-type norm and the venue blueprint disagree here.
+                     Which wins, and on what evidence?
+```
+
+The first two are lane output; raise them only when the lane returned them UNOWNED. The last two are why this section exists — a sweep cannot find an argument that was never made.
 
 ## Closing block
 

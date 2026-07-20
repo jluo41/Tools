@@ -1,7 +1,7 @@
 Per-stage dispatch reference (haipipe-paper-probe)
 ====================================================
 
-Loaded on demand from SKILL.md. Which stage runs which workers/mode, stage
+Loaded on demand from SKILL.md. Which stage runs which workers, stage
 specifics, section-edit worker logic, and phase-status strip forms.
 
 Where a dispatched question goes
@@ -31,26 +31,19 @@ Per-stage table (workers = HARVESTERS: they transcribe landed evidence, never
 acquire; acquisition is always a question ENTRY -> its `### q-executor` -> the
 task/discovery orchestrator -> the answering QA file)
 ----------------
-- **seed** -- probe mode light (-> discovery): landscape / related work / novelty to sharpen the seed question; returned source anchors stay in the ENTRY's `### a-executor`. Seed has NO SIDECARS (`_CITATION_0-seed.md` retired 2026-07-19, PASS 2) and no values/display lanes; an owed `\cite{TOADD}` is tracked in `_LOG_0-seed.md`.
-- **resource** -- probe mode light for SCAN questions, FULL for BUILD questions (-> task + discovery): the prerequisite stage (`what must EXIST for this paper to be testable, does it exist, can it CARRY the claim?`). The stage ASKS (Q\<n\>, keyed to a demand row N\<n\>); the resource stage's DRAFT opens one ENTRY per approved Q, writes the `-> PP<NN>` backlink into 1a-resource.md, and settles the `bank` verdict against the bank; this worker DISPATCHES only the entries left `run`/`code`/`new` to the task/discovery orchestrator, which picks the shape and depth in its own clean context. Two lanes, SCAN (blocking) and BUILD (non-blocking) -- see Resource specifics. `task-for-fit` and `task-for-eval` are FORBIDDEN here -- training and evaluating are claims' (resource stops at "do the ingredients exist and can they carry the claim?"). NO harvest lanes at all (see below).
-- **claims** -- probe mode FULL (-> task + discovery): the core evidence stage; one question ENTRY per GAP claim. A full-mode entry's answer is read by the author, who writes the claim status into `0-lifecycle/1b-claims/1b-claims.md` — the ONLY home of a claim's status (there is no review gate; a probe is communication, not judgment). `## Verdict` and `verdicted` are DELETED. Claims does NOT consume seed's `[FORWARD -> ...]` pointers — RESOURCE is their sole consumer; claims only picks up the ones resource explicitly DECLINED to it (per `_LOG_1a-resource.md`).
-- **pitch** -- citation lane only (anchor papers).
-- **narrative** -- citation + display lanes (beats map to displays).
-- **display** -- display lane. From SECTION/NARRATIVE context a missing unit is NEVER commissioned: it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox) and the ENTRY closes `answered-local` with the a-consumer `rerouted to display stage: DRNN`. Only the DISPLAY STAGE itself commissions evidence/render work for its accepted units (via its own PROBE lanes); the harvester LINKs existing/done units.
-- **section-edit** -- full document probe: citation + values + display lanes.
-  (disp statuses include 📨 = DR request pending in the 4-display inbox; the
-   display axis cannot pass CHECK until the row is `done` and the unit linked.)
+- **seed** (-> discovery): landscape / related work / novelty to sharpen the seed question; returned source anchors stay in the ENTRY's `### a-executor`. An owed citation in 0-seed.md is written `\cite{TOADD} [Q-Seed-<n>]`.
+- **resource** (-> task + discovery): the prerequisite stage (`what must EXIST for this paper to be testable, does it exist, can it CARRY the claim?`). The stage ASKS (Q\<n\>, keyed to a demand row N\<n\>); the resource stage's DRAFT opens one ENTRY per approved Q, writes the `-> PP<NN>` backlink into 1a-resource.md, and settles the `bank` verdict against the bank; this worker DISPATCHES only the entries left `run`/`code`/`new` to the task/discovery orchestrator, which picks the shape and depth in its own clean context. Two lanes, SCAN (blocking) and BUILD (non-blocking) -- see Resource specifics. `task-for-fit` and `task-for-eval` are FORBIDDEN here -- training and evaluating are claims' (resource stops at "do the ingredients exist and can they carry the claim?"). NO harvest lanes at all (see below).
+- **claims** (-> task + discovery): the core evidence stage; one question ENTRY per GAP claim. An entry's answer is read by the author, who writes the claim status into `0-lifecycle/1b-claims/1b-claims.md` — the ONLY home of a claim's status (there is no review gate; a probe is communication, not judgment). Claims does NOT consume seed's `[FORWARD -> ...]` pointers — RESOURCE is their sole consumer; claims only picks up the ones resource explicitly DECLINED to it (per `_LOG_1a-resource.md`).
+- **pitch** -- anchor-paper questions (-> discovery).
+- **narrative** -- anchor-paper and display-need questions, one per beat.
+- **display** -- from SECTION/NARRATIVE context a missing unit is NEVER commissioned: it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox) and the ENTRY closes `answered-local`, with each Q-consumer's a-consumer in its stage doc reading `rerouted to display stage: DRNN`. Only the DISPLAY STAGE itself commissions evidence/render work for its accepted units; ⑤ LINKs existing/done units.
+- **section-edit** -- full document probe: citation, value, and display-need questions together.
+  (A DR request pending in the 4-display inbox is 📨; the display axis cannot pass
+   CHECK until the row is `done` and the unit linked.)
 
-Dispatch rules (both apply to every dispatch)
+Dispatch rules (apply to every dispatch)
 ----------------------------------------------
-1. **Mode: light by default.** A light probe stops at Read and returns evidence
-   to the caller -- right for context questions (seed landscape, section-edit
-   lookups). Request `mode: full` only when the paper needs a COMMITTED claim
-   status: the author reads the answer and writes the claim status into
-   `0-lifecycle/1b-claims/1b-claims.md` (claims stage's normal case). Light can
-   escalate to full later; never start heavy for a question that
-   only needs orientation.
-2. **Reuse-before-create -- the MATCH is DRAFT's, the DEPTH is the EXECUTOR's.**
+1. **Reuse-before-create -- the MATCH is DRAFT's, the DEPTH is the EXECUTOR's.**
    DRAFT runs ② MATCH over the
    bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the
    hits -- match ON THE ANSWER, never on the topic. A hit is `bank: reuse`
@@ -62,8 +55,8 @@ Dispatch rules (both apply to every dispatch)
    Duplication is a mental-model tax: two half-overlapping evidence sets cost more
    than one enriched one.
 
-Seed specifics (mode light; DEFAULT RUN for a new seed)
---------------------------------------------------------
+Seed specifics (DEFAULT RUN for a new seed)
+---------------------------------------------
 Skip only on re-entry or minor edits, and only by an explicit logged verdict
 (`[PROBE] skipped -- <reason>` in the stage _LOG; phase line shows `--`) --
 never silently. The seed question needs outside context, not settled claims:
@@ -78,15 +71,12 @@ novelty ("is this idea new?")                  -> discovery novelty-check -> ver
 
 The **a-consumer** (in 0-seed.md) feeds Motivations and Tentative Claim Shape. Source anchors
 the answer brought back stay in the ENTRY's `### a-executor` so the user can eyeball them
-paper-side; seed keeps NO `_CITATION_` sidecar (PASS 2), and an owed `\cite{TOADD}` is
-tracked in `_LOG_0-seed.md`. Full evidence stays executor-side, reusable by claims.
-(_DISCOVERY_{stage}.md is retired -- the probe ENTRY carries the `### a-executor`, and
-0-seed.md carries the a-consumer.)
+paper-side. Full evidence stays executor-side, reusable by claims.
 NOTE: a discovery leaf's own `verdict.md` is executor-native and SURVIVES; it is a
-different thing from the deleted probe `## Verdict`.)
+different thing: it belongs to the bank, not to the probe layer.)
 
-Resource specifics (mode light for SCAN, full for BUILD)
----------------------------------------------------------
+Resource specifics (SCAN and BUILD lanes)
+-------------------------------------------
 The stage hands over paper-space QUESTIONS (Q1, Q2, ...), never PP ids and never
 probe topics. The resource stage's DRAFT reads 1a-resource.md at ① ORGANIZE and opens one ENTRY
 per GATE-1-approved Q — a `### q-consumer` bullet `Q-Resource-<n>` (the Q, copied
@@ -96,7 +86,7 @@ question — writing the `-> PP<NN>` backlink back into the Q; the entry can be
 opened nowhere else, since the stage is forbidden to mint a PP id. DRAFT's ② MATCH
 settles what the bank already answers (`bank: reuse`); this worker DISPATCHES only the
 rest, and ⑤ INTERPRET writes the answer back as the Q's **A**. A BUILD lands a committed answer that flips
-a demand row, so it runs `mode: full`; a SCAN only needs orientation, so `mode: light`.
+a demand row; a SCAN only needs orientation.
 
 ```
 SCAN  -- minutes. GATE-BLOCKING. This is what makes the stage DECIDABLE.
@@ -131,16 +121,12 @@ a bundled fit+eval entangles the
 judgment (Paper-CGMtoAge's PP04: you cannot tell whether the null came from the
 MODEL or from the CORPUS).
 
-HARVEST LANES: **none**. Resource is a ledger doc with exactly two sections
-(Demand + Questions), and it has NO sidecars by design -- no _CITATION_1a-resource.md,
-no _VALUES_1a-resource.md, no display units. The Q's **A** IS the settled record.
-So the harvest lanes never fire (no `sources:` / `values:` / `displays:` lane line is
-written, and none is owed), and the phase strip reads `cite --  val --  disp --`.
-Access-rung and prior-art SCANs still route through discovery; their return is
-transcribed into the A, not into a _CITATION_ doc.
+Resource is a ledger doc with exactly two sections (Demand + Questions), and no
+display units. The Q's **A** IS the settled record. Access-rung and prior-art SCANs
+route through discovery; their return is transcribed into the A.
 
-Claims specifics (mode full)
------------------------------
+Claims specifics
+-----------------
 Every GAP/weak claim raises one question ENTRY -- DRAFT MATCHes first
 (reuse-before-create), then the ones left `run`/`code`/`new` fan out by shape:
 
@@ -160,37 +146,20 @@ refuted | inconclusive + confidence + claim_type), citing the entry's `target` Q
 The paper owns the NEED and the JUDGMENT; the executor owns the FACT.
 See the Evidence Routing Protocol + Delivery Need Routing sections in ../../../../haipipe-paper/SKILL.md.
 
-Section-edit worker logic
---------------------------
-Read the section outline and decide which document workers run:
-- **citation** -- always (every section cites).
-- **values** -- when the outline contains numbers, statistics, or data references; skip for pure argumentative sections.
-- **display** -- when the outline references figures/tables/visuals; skip otherwise.
-When no worker is named, run all applicable in order: citation -> values -> display.
-
 Phase status (derive from disk)
 --------------------------------
 ```
-cite ✅  _CITATION_ exists, all entries placed (no 🔍 remaining)
-cite 🚀  _CITATION_ exists, work in progress
-cite 🔍N _CITATION_ has N unverified candidates
-cite ⬜  _CITATION_ does not exist
-
-val ✅   _VALUES_ exists, all verified   · val --  skipped (no numbers)
-val 🚀   in progress                     · val ⬜  does not exist
-
-disp ✅  every need linked to a rendered unit · disp --  skipped (no displays)
-disp 🚀  needs recorded, units in progress    · disp ⬜  does not exist
+probe ⬜  no entry in 1-probes/ serves this stage
+probe 🚀  entries exist, at least one not yet `read`
+probe ✅  every entry serving this stage is `read` or `answered-local`
+probe --  skipped (logged verdict required)
 ```
 
-Strip form (cite/val/disp sub-tracks belong to the probe phase):
+Strip form:
 
 ```
-phase:   draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜  │  check ⬜
+phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 ```
 
-GATE RULE (the seed incident): the probe phase may NOT show ✅
-while any lane is OWED. A lane is OWED when a probe ENTRY carries its lane line
-with `harvest: OWED`, or when a return named harvestable content for a lane
-whose doc (⬜) does not exist. `probe ✅ (cite ⬜ ...)` -- the exact strip the
-incident shipped -- is a contradiction: run check-probe-cards.sh, it FAILs.
+GATE RULE: the probe phase may NOT show ✅ over a `check-probe-cards.sh` FAIL.
+Derive the status from the checker, never from a stored value or an eyeball.

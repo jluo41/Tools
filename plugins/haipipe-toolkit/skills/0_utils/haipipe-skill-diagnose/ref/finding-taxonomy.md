@@ -58,7 +58,7 @@ Severity
 ```
 
 
-Finding line format (in SKILLSET_REVIEW.md)
+Finding line format (in the console file)
 --------------------------------------------
 
 ```

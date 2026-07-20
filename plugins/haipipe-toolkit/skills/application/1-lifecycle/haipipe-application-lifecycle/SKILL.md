@@ -4,7 +4,7 @@ description: "Orchestrator for the intervention structure lifecycle (1-lifecycle
 argument-hint: "[stage-verb|ladder] [intervention-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "4.3.1"
+  version: "4.4.0"
   last_updated: "2026-07-19"
   summary: "Routes intervention structural work across the venue-free/venue-aligned boundary: seed + the ladder (1a-1d) are venue-FREE, the venue pin gates stages 3-5, and pitch/narrative/display/section-edit rewrite on retarget. History: ./CHANGELOG.md."
 ---
@@ -161,8 +161,8 @@ Evidence Flow (flat probe pool)
 ```text
 stage DRAFT raises the questions (a Q-consumer list); APPROVE (human) picks which to pursue
     ↓
-① ORGANIZE  each approved question → a SECTION in 1-probes/PPNN_<topic>.md (one file per TOPIC),
-            with serves / target / state / q-executor (stake stripped) / a-consumer + one ## Why per file
+① ORGANIZE  each approved question → an ENTRY (## QX<n>) in 1-probes/PPNN_<topic>.md (one file per
+            TOPIC), with ### q-executor (stake stripped) / ### q-consumer / ### bank binding / ### a-executor
     ↓
 ② MATCH     scan the bank's QA corpus FIRST — most sections REUSE an existing answer and stop here
     ↓
@@ -171,14 +171,15 @@ stage DRAFT raises the questions (a Q-consumer list); APPROVE (human) picks whic
     ↓
 ④ POINT     target: → the answering QA FILE (verify with ls + the state line)
     ↓
-⑤ INTERPRET write the a-consumer; if it serves a claim, the AUTHOR flips that claim's STATUS
-            (supported | weak | GAP) in 1c-claims.md — never in the probe file; harvest lanes pay out
+⑤ INTERPRET copy the QA answer into ### a-executor; each Q-consumer then writes its own a-consumer
+            in the stage doc. If it serves a claim, the AUTHOR flips that claim's STATUS
+            (supported | weak | GAP) in 1c-claims.md — never in the probe file
     ↓
-VERIFY: check-probe-cards.sh — planned sections, dangling refs, OWED lane debts, and dead vocabulary FAIL;
+VERIFY: check-probe-cards.sh — planned entries, dangling refs, and stale vocabulary FAIL;
 the stage CHECK gate re-runs the same script before it can go green
 ```
 
-Light settlement venues rarely dispatch — they REUSE from the bank's existing QA corpus; full venues run the whole chain. Probe files live in the flat `1-probes/` pool (one file per TOPIC, one SECTION per question); the per-stage `_PROBE/` folders and the `1-probe-plans/README.md` index are RETIRED — a legacy file is migrated into `1-probes/` on first touch only.
+Light settlement venues rarely dispatch — they REUSE from the bank's existing QA corpus; full venues run the whole chain. Probe files live in the flat `1-probes/` pool: one file per TOPIC, one `## QX<n>` ENTRY per q-executor.
 
 Paper ↔ Application Comparison
 -------------------------------

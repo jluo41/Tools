@@ -4,8 +4,8 @@ description: "Recommend the best-fit venue for a paper or topic, then pin it. Pr
 argument-hint: "[paper-path | free-text topic/abstract] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.4.0"
-  last_updated: "2026-07-18"
+  version: "3.4.1"
+  last_updated: "2026-07-19"
   summary: "Venue stage orchestrator: recommends + pins the best-fit venue and produces 2a-venue.md (template ref/venue-template.md) -- the venue decision, relevant files, and requirements (structural blueprint transcribed from pack Micro-norms + writing principles), plus a Q-consumer. 2a-venue.md is the single consumption point for the venue-ALIGNED stages (pitch, narrative, display, section-edit). Venue questions are SECTIONS in 1-probes/. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -31,7 +31,7 @@ It never edits a pack.
 **Files produced:**
 - `0-lifecycle/2a-venue/2a-venue.md` -- venue stage document; full fill-in skeleton: `ref/venue-template.md`
 - `0-lifecycle/2a-venue/_LOG_2a-venue.md` -- phase progress journal
-- `1-probes/PPNN_<topic>.md` -- the probe FILES; a venue question becomes a SECTION (recent publications, editor, competing papers; `serves: 2a-venue`)
+- `1-probes/PPNN_<topic>.md` -- the probe FILES; a venue question becomes an ENTRY (recent publications, editor, competing papers), its `### q-consumer` bullet naming the `Q-Venue-<n>` it serves
 - `STATUS.md` -- `venue:` field pinned
 
 **Content structure (2a-venue.md)** -- four sections; full skeleton + fill rules (inline `<!-- RULE -->` comments) in `ref/venue-template.md`; cross-stage charter in `../../TEMPLATES.md`:

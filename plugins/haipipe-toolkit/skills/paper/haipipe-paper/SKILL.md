@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); evidence enters ONLY through the PROBE phase, which raises questions as sections in 1-probes/PPNN_<topic>.md and dispatches them through a clean agent. `enter`/`status` open the paper's open-needs dashboard. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
+description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); evidence enters ONLY through the PROBE phase, which runs the probe plan DRAFT authored in 1-probes/PPNN_<topic>.md, dispatching each open entry through a clean agent. `enter`/`status` open the paper's open-needs dashboard. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.1.1"
+  version: "3.2.1"
   last_updated: "2026-07-19"
-  summary: "Front door for the paper lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the paper RAISES evidence questions as sections in 1-probes/, and each stage's PROBE phase dispatches them through a clean agent — the paper never calls the bank directly. Also THE home of three family-wide conventions: the Closing Block, the Comment lifecycle, and Delivery Need Routing + the Evidence Routing Protocol. History: ./CHANGELOG.md."
+  summary: "Front door for the paper lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the paper RAISES evidence questions as `## QX<n>` ENTRIES in 1-probes/, and each stage's PROBE phase dispatches them through a clean agent — the paper never calls the bank directly. Also THE home of three family-wide conventions: the Closing Block, the Comment lifecycle, and Delivery Need Routing + the Evidence Routing Protocol. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -63,7 +63,7 @@ build | scaffold | restructure | conform | folder |
   polish | consistency | format | typeset |
   compile | diffpdf | overleaf | ship | deliver  -> haipipe-paper-deliver (artifact side; forwards the leaf verb to 1-build/2-audit/3-polish/4-ship; polish runs consistency→format→typeset; also "make submission-ready", "conformance", "produce the PDF")
 round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
-probe ["<question>"] | probe | probe plan | probe run [PPNN]  -> the probe-file pool: 1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (RAISE / SHOW the board / PLAN the cross-stage campaign / RUN the five-step loop; the probe FILES are the source of truth — the README's Status board regenerates from them, its Campaign section is authored by "plan"; "run" hands the pool to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis", "probe campaign", "consolidate probes")
+probe ["<question>"] | probe | probe plan | probe run [PPNN]  -> the probe-file pool: 1-probes/PPNN_<topic>.md, one file per TOPIC, one ENTRY per q-executor (RAISE / SHOW the board / PLAN the cross-stage campaign / RUN the five-step loop; the probe FILES are the source of truth — the README's Status board regenerates from them, its Campaign section is authored by "plan"; "run" hands the pool to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis", "probe campaign", "consolidate probes")
 rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
 feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
 digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
@@ -120,11 +120,12 @@ probe     Operates on the flat cross-stage pool (1-probes/PPNN_<topic>.md; the R
           derived from it). Sub-modes are listed in the Verbs block above (raise · board · plan
           the campaign · run). It is the SAME operation at two scopes: this paper-level verb
           works the WHOLE pool (see/plan/drain every open question across all stages), while a
-          stage's PROBE phase works only its own slice — the sections whose `serves:` names that
-          stage — during that stage's DRAFT→PROBE→REVISE→CHECK turn. Both go through the one
-          worker, haipipe-paper-probe, which runs the five-step loop MATCH-before-DISPATCH and is
-          the ONLY thing that touches the bank; the umbrella and the stages never do. That worker
-          follows the shared probe model (the constitution). Anatomy + campaign + model: fn/probes.md.
+          stage's PROBE phase works only its own slice — the entries whose `### q-consumer`
+          bullets name that stage — during that stage's DRAFT→PROBE→REVISE→CHECK turn. Both go
+          through the one worker, haipipe-paper-probe, which runs the five-step loop
+          MATCH-before-DISPATCH and is the ONLY thing that touches the bank; the umbrella and the
+          stages never do. That worker follows the shared probe model owned by
+          `probe/haipipe-probe/SKILL.md`. Anatomy + campaign + model: fn/probes.md.
 ```
 
 After dispatch, capture the specialist's structured tail (status / summary / artifacts / next) and present it.
@@ -183,7 +184,7 @@ In outline `.md` files, blockquote style:
 > CC: response to the comment
 ```
 
-Used in: section outlines, seed, claims, pitch, narrative, `_CITATION_`, `_VALUES_`.
+Used in: section `.md` files, seed, claims, pitch, narrative, and `1-probes/PP*.md` entries.
 
 In `.tex` files, LaTeX comment style:
 
@@ -363,11 +364,11 @@ Do NOT route through a project-level narrative layer (there isn't one).
 ### Routes
 
 ```
-claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (a SECTION in 1-probes/; MATCH first, dispatch only what MATCH cannot close)
+claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (an ENTRY in 1-probes/; MATCH at DRAFT, dispatch only what MATCH cannot close)
 figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
 settled claim status (supported|refuted|inconclusive             -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY home of a claim's status; the
   + confidence + claim_type)                                        probe entry carries only the `### a-executor` copy of the bank's answer.
-                                                                    `## Verdict`/`verdicted` are DELETED)
+                                                                    answer)
 wording/section placement                                        -> the owning lifecycle stage skill
 standalone utility (a HUMAN, not the paper: lit scan, data check) -> /haipipe-task qa | /haipipe-discovery qa (the bank's own door)
 ```
@@ -462,7 +463,7 @@ Add this macro to the lifecycle preamble (or the paper's shared command file). U
 \needprobe{Is the intensive margin about patients already on opioids?}
 ```
 
-The red flag renders in the compiled PDF so the gap is obvious to every coauthor. Remove it when the answer lands (the section's `target:` resolves and its `a-consumer:` is written) and the claim is backfilled with supported text.
+The red flag renders in the compiled PDF so the gap is obvious to every coauthor. Remove it when the answer lands (the entry's `**target**` resolves and its `### a-executor` is written) and the claim is backfilled with supported text.
 
 ### Handoff protocol
 
@@ -474,11 +475,12 @@ a. STOP investigating the data. Do not grep do-files, re-derive variables, or
 b. MARK the claim with \needprobe{description of what needs settling}.
 c. RECORD a delivery NEED (per Delivery Need Routing above): the claim under test
    and what an answer would have to establish.
-d. RAISE it as a question SECTION (/haipipe-paper probe "<need>"). The stage's
-   PROBE phase MATCHes it against the bank, and dispatches only what MATCH cannot
+d. RAISE it as a question ENTRY (/haipipe-paper probe "<need>"). DRAFT MATCHes it
+   against the bank; the stage's PROBE phase dispatches only what MATCH cannot
    close. The paper TRIGGERS; it never runs the analysis (LAW 1).
-e. BACKFILL: when the answering QA file lands, write the section's `a-consumer:`,
-   flip the claim's status in 1b-claims.md, and remove the \needprobe{} flag.
+e. BACKFILL: when the answering QA file lands, PROBE writes the entry's
+   `### a-executor`, each Q-consumer writes its a-consumer in the stage doc, the
+   claim's status flips in 1b-claims.md, and the \needprobe{} flag comes out.
 ```
 
 ### The `probe` verb
@@ -487,7 +489,7 @@ e. BACKFILL: when the answering QA file lands, write the section's `a-consumer:`
 /haipipe-paper probe <need-description>
 ```
 
-opens a question SECTION in the right topic's probe file at `1-probes/`. The stage's PROBE phase (`haipipe-paper-probe`) is what dispatches it — to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the section's `q-executor:` block and nothing else. The paper stays a story layer; the executor does the work.
+opens a `## QX<n>` ENTRY in the right topic's probe file at `1-probes/`. The stage's PROBE phase (`haipipe-paper-probe`) is what dispatches it — through `Agent(haipipe-probe-q-executor-agent)` to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the entry's `### q-executor` block and nothing else. The paper stays a story layer; the executor does the work.
 
 ### Heavy probes and subagent dispatch
 
@@ -496,8 +498,8 @@ When a probe requires reading a lot of code/logs (e.g. cohort construction from 
 ```
 a. Add a beat to narrative/Methods for the topic (e.g. "Cohort construction"),
    marked \needprobe{} until the report lands.
-b. Raise the question SECTION (/haipipe-paper probe "<need>"), then let the PROBE
-   phase dispatch its `q-executor:` with run_in_background=true.
+b. Raise the question ENTRY (/haipipe-paper probe "<need>"), then let the PROBE
+   phase dispatch its `### q-executor` with run_in_background=true.
 c. When the subagent report returns, fold it into Methods + Table 1 and flip the
    beat from \needprobe{} to supported.
 ```
@@ -537,14 +539,15 @@ Composing with Evidence Workers
         ├─► /haipipe-paper-rebuttal     (any venue, post-review)
         │
         │   evidence path (a claim hits a gap):
-        └─► 1-probes/PPNN_<topic>.md (one file per TOPIC, one SECTION per question)
+        └─► 1-probes/PPNN_<topic>.md (one file per TOPIC, one ENTRY per q-executor)
+                 │        DRAFT authored ① ORGANIZE + ② MATCH ──► most entries close at MATCH (T2 REUSE)
                  └─► haipipe-paper-probe (the PROBE phase worker, run inside a stage's PROBE phase)
-                          ② MATCH the bank's QA corpus ──► most sections close HERE (T2 REUSE)
-                          ③ DISPATCH the `q-executor:` block, VERBATIM, only for what MATCH missed:
-                               Agent(haipipe-task-orchestrator-agent)
-                               Agent(haipipe-discovery-orchestrator-agent)   ← their clean context IS the wall
-                          ④ POINT  target: ─► the answering QA file  tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
-                          ⑤ INTERPRET a-consumer: ─► the harvest lanes pay out
+                          ③ DISPATCH the `### q-executor` block, VERBATIM, only for what MATCH missed:
+                               Agent(haipipe-probe-q-executor-agent)          ← its clean context IS the wall
+                                    ├─► Agent(haipipe-task-orchestrator-agent)
+                                    └─► Agent(haipipe-discovery-orchestrator-agent)
+                          ④ POINT  **target** ─► the answering QA file  tasks|discoveries/<group>/<folder>/QA/<n>-<slug>.md
+                          ⑤ INTERPRET ─► `### a-executor` (harvest inline) ─► each stage doc's a-consumer
 
         a stage reaches the bank ONLY through its PROBE phase — no direct discover/task verb
 ```

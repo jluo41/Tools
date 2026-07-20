@@ -4,6 +4,18 @@ haipipe-paper-revise — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 1.6.0 — 2026-07-19 — a fourth worker, `place`, and it runs FIRST
+
+From the `paper/2-phase` review (`../../../_console/260719-PHASE-BOUNDARY-REFACTOR.md`), ruling D7.
+
+### Changed (JL: "Follow your recommendation.")
+`haipipe-paper-revise-place` joins the roster and runs before every prose worker. The dispatch order becomes `place → content → humanizer → results`, and the order is BINDING, not stylistic: substituting a landed key or number after the prose workers have run drops it into sentences they had already closed, so the text that actually ships was never reviewed in its final form. Running the de-AI pass over `{VAL:? held-out accuracy}` and swapping in `0.87` afterwards reviews a sentence that does not exist.
+
+- `workers:` proof line widened to `place ✓ content ✓ humanizer ✓ results --`. `checks.sh --log` FAILs a `[REVISE]` entry without it, so the line and the roster must stay in step.
+- Dispatch table, phase diagram, return contract, `description:` and `summary:` all updated together; the roster was previously described as "Four workers" over a list of three.
+- The phase's own definition was rewritten: REVISE reads what PROBE landed in each entry's `### a-executor`, PLACES it, then rewrites. It previously stated "REVISE reads PROBE outputs (citations placed…)" as a PRECONDITION — self-referential once placement became REVISE's own first step.
+
+
 ## [1.5.1] -- 2026-07-10
 
 Changed

@@ -167,14 +167,12 @@ Where the principles are enforced:
    the executor orchestrators' clean context IS the wall (agent level)
 ①  haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent
    "fresh evidence must land" — the answer is a FILE: <task-folder>/QA/<n>-<slug>.md,
-   which the section's `target:` then points at;
+   which the entry's `**target**:` then points at;
    a CLAIM's status lands in 0-lifecycle/1b-claims/1b-claims.md — per-claim,
-   per-paper, private. 💀 `## Verdict` and `verdicted` are DELETED; the
-   probe section carries only its `a-consumer:`.
+   per-paper, private; the probe entry carries only its `### a-executor`.
 ②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);
    author writes the claim status from the QA file; paper-probe worker mechanical acceptance
-④  probe light reuse (zero-write => zero ceremony);
-   discovery ENRICH (no new folder, creator folded, one review pass)
+④  discovery ENRICH (no new folder, creator folded, one review pass)
 ```
 
 
@@ -190,7 +188,7 @@ Per-Stage Exit Criteria
 | pitch | Hook section with >=2 candidate hooks? Surprise stated? Implication/so-what stated? Why-believe with evidence pointers? Editor's Chair Test passed? [primary] claim designated? |
 | narrative | All claims carried in the arc? Claim-evidence matrix complete? Figure inventory present? Per-beat subagent review comments in small font? |
 | display | Gallery README present? Every display unit has README + float.tex? Per-unit interrogation verdict present? 4-display.tex + PDF compiled and current? |
-| section-edit | Every section has a scaffold (outline + _LOG + _CITATION_ + _VALUES_)? DRAFT-PROBE-REVISE-CHECK complete per section? Section checklists pass? |
+| section-edit | Every section has a scaffold (outline + _LOG)? Every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]` bracket? DRAFT-PROBE-REVISE-CHECK complete per section? Section checklists pass? |
 
 
 Confirmation Ledger in STATUS.md

@@ -96,13 +96,13 @@ Current top-level folders are the working structure:
 project      project container setup
 task         inside-execution layer: lifecycle hub + task-domain families
 discovery    outside-evidence layer: Search / Review / Idea
-probe        the paper-side Q/A map: the constitution + the claim-judging skill
+probe        the paper-side Q/A map: `haipipe-probe` + the claim-judging skill
 paper        academic deliverables (stages × DPRC phases)
 application  report / message / UI deliverables
 ```
 
 The `probe` bucket holds NO folder in the execution tree, no live gateway, and no
-agents. It holds ONE skill — `haipipe-probe` (the constitution: probe-file anatomy,
+agents. It holds ONE skill — `haipipe-probe` (probe-file anatomy,
 path binding, the QA/ contract, the qa verb, the five-step loop, the cost ladder, the
 two LAWS, status derivation, the writer table). A probe is communication between a
 consumer and an executor; the claim's status is authored by the consumer, in its own

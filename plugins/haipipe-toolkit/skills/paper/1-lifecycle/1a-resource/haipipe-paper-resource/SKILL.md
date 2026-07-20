@@ -72,6 +72,22 @@ A resource that exists but cannot carry the claim says so in its `### Serves & c
 Keyed on H<n>, not C<n> -- claim ids do not exist yet at resource time.
 
 
+## Questions this stage typically raises
+
+DRAFT's Step 4b raises what the draft cannot answer. Resource asks about the INGREDIENTS — what must exist for the paper to be testable at all.
+
+```
+📦 existence      Does the store / model / code this hypothesis needs actually exist?
+                  Name the path and the producing pipeline, not a belief that it does.
+🔗 linkability    Can it be JOINED to the other side at the unit of analysis?
+                  Name the key. A dataset that cannot be linked is not a resource.
+📊 coverage       Which years / cohorts / partitions have actually completed a run?
+                  "The pipeline exists" and "the pipeline has run" are different answers.
+🔁 reusability    Is there an existing model or artifact we can reuse instead of fitting one?
+```
+
+NOT here: whether the evidence SUPPORTS a claim. Resource settles what we have; claims settles what it shows.
+
 ## Exits
 
 ```text

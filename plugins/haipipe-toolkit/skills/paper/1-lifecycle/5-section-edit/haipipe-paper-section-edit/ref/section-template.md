@@ -31,9 +31,9 @@ total: <p> ¶ · <s> sentences · ~<w> words   (venue budget for this section: <
 
 <First real sentence — complete academic prose, close to submission register.>
 
-<Second sentence; cite with a real key grep-verified in the .bib \citep{<key>}, or \cite{TOADD} when no key fits (+ a _CITATION_ row naming the topic).>
+<Second sentence; cite with a real key grep-verified in the .bib \citep{<key>}, or \cite{TOADD} [Q-<Stage>-<n>] when no key fits — the bracket names the question that will produce the key, side by side, never fused.>
 
-<A sentence whose number is unverified writes it anyway: ... at {VAL:? <what the number is>} ...>
+<A sentence whose number is unverified writes it anyway: ... at {VAL:? <what the number is>} [Q-<Stage>-<n>] ...>
 
 <tpl: ONE sentence per line, BLANK line between sentences (each becomes a Pn.Sn marker at sync). No S-number prefixes. No LaTeX except citation commands. Never invent a key or a number.>
 <tpl: user threads sit under the sentence they discuss and are NEVER deleted/reworded/relocated:>
@@ -67,7 +67,7 @@ Each question is a Q_consume: it links back to the sentence that raised it, and 
 
 ## Settled Flags (not open questions — logged, no action)
 
-- <accepted deviations / already-ruled items / placeholder rollups that resolve paper-local (e.g. `{VAL:? x} -> paper-local: _VALUES_...`) — bullet lines, never a table>
+- <accepted deviations / already-ruled items / placeholder rollups that resolve paper-local (e.g. `{VAL:? x} -> paper-local: the number is already on disk at <path>`) — bullet lines, never a table>
 
 ---
 

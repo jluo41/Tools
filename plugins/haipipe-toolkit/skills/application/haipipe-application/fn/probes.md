@@ -4,7 +4,7 @@ Probe files (application)
 The intervention accumulates its open QUESTIONS as **probe files** during lifecycle work (seed, the 1a–1d evidence ladder, pitch, narrative, display, section-edit).
 The DRAFT phase RAISES the questions AND authors their probe plan (① ORGANIZE + ② MATCH: q-executor / route / bank / target); the PROBE phase runs the plan forward (③ DISPATCH → ④ POINT → ⑤ INTERPRET) and binds each one to an answer.
 
-The MODEL itself is owned by `../../../probe/haipipe-probe/SKILL.md` (the constitution).
+The MODEL itself is owned by `../../../probe/haipipe-probe/SKILL.md`.
 Read that; this file only carries the application-side paths and verbs.
 This is the paper twin's `fn/probes.md`, the same document with application paths.
 
@@ -30,11 +30,10 @@ Location — one FLAT pool, one file per TOPIC
 Probe file anatomy
 -------------------
 
-Full spec: the constitution's "The probe file" section. In brief — one `## QX<n>` ENTRY per q-executor, four `###` subsections each; no `## Why` (the stake lives in each Q-consumer, in the stage doc):
+Full spec: the "The probe file" section of `../../../probe/haipipe-probe/SKILL.md`. In brief — one `## QX<n>` ENTRY per q-executor, four `###` subsections each; no `## Why` (the stake lives in each Q-consumer, in the stage doc):
 
 ```markdown
 # PP01 — refill-reminder timing feasibility
-**mode**: light | full
 
 ## QX1 — response window
 
@@ -77,9 +76,9 @@ answered-local   target points into the intervention's OWN registries; no dispat
 failed           a reading with a dead target · the task-folder was deleted · the qa verb REFUSEd
 ```
 
-💀 `verdicted` is DELETED. 💀 `dispatched` is DELETED (say `commissioned`).
+An entry in flight is `commissioned`.
 A claim's STATUS (`supported | refuted | inconclusive` + confidence) lives in `0-lifecycle/1c-claims/1c-claims.md`, flipping its C-line and Evidence Campaign row.
-It is not a probe field. There is no `## Verdict`, and there is no G1/G2/G3 review gate.
+It is not a probe field: the probe carries the evidence, the author writes the judgment.
 
 Binding is by PATH, never by id
 --------------------------------

@@ -1,12 +1,12 @@
 ---
 name: haipipe-application
-description: "Run any intervention-lifecycle work (the application umbrella). Use `/haipipe-application enter <intervention-path>` or `status` to preload an open-needs dashboard from STATUS.md, 0-lifecycle, 0-artifacts, 1-rounds, and git state. Application lifecycle owns intervention-specific story, the stage-1 evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice), narrative, displays, artifact text, maturity, and dated work rounds; the venue (sms/email/dashboard/report/...) gates which stages fire and how deep claims must settle; open evidence questions are RAISED as sections in the flat probe pool 1-probes/PPNN_<topic>.md, and each stage's PROBE phase (haipipe-application-probe) binds them to answers in the task/discovery bank through a clean collector agent — never calling the bank directly. Trigger: application, intervention, enter, status, seed, ladder, descriptions, themes, claims, advice, venue, pitch, narrative, display, section-edit, draft, sms, message, email, dashboard, report, review, deploy, iterate, round, probe, /haipipe-application."
+description: "Run any intervention-lifecycle work (the application umbrella). Use `/haipipe-application enter <intervention-path>` or `status` to preload an open-needs dashboard from STATUS.md, 0-lifecycle, 0-artifacts, 1-rounds, and git state. Application lifecycle owns intervention-specific story, the stage-1 evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice), narrative, displays, artifact text, maturity, and dated work rounds; the venue (sms/email/dashboard/report/...) gates which stages fire and how deep claims must settle; open evidence questions are RAISED as entries in the flat probe pool 1-probes/PPNN_<topic>.md, and each stage's PROBE phase (haipipe-application-probe) binds them to answers in the task/discovery bank through a clean collector agent — never calling the bank directly. Trigger: application, intervention, enter, status, seed, ladder, descriptions, themes, claims, advice, venue, pitch, narrative, display, section-edit, draft, sms, message, email, dashboard, report, review, deploy, iterate, round, probe, /haipipe-application."
 argument-hint: "[enter|status|venue|stage|draft] [intervention-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "6.8.2"
+  version: "6.10.0"
   last_updated: "2026-07-19"
-  summary: "Front door for the intervention lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the intervention RAISES evidence questions as sections in the flat pool 1-probes/, and each stage's PROBE phase binds them to answers in the task/discovery bank through a clean agent — never calling the bank directly. The venue gates which stages fire and how deep claims settle; the 1a–1d ladder (D→I→K→W) is the venue-free evidence spine. History: ./CHANGELOG.md."
+  summary: "Front door for the intervention lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the intervention RAISES evidence questions as entries in the flat pool 1-probes/, and each stage's PROBE phase binds them to answers in the task/discovery bank through a clean agent — never calling the bank directly. The venue gates which stages fire and how deep claims settle; the 1a–1d ladder (D→I→K→W) is the venue-free evidence spine. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -45,7 +45,7 @@ claim-audit | verify claims                  -> haipipe-application-claim-audit
 deploy | ship | go live                      -> haipipe-application-deploy
 round | rounds                               -> haipipe-application-round (dated work rounds; also "todo", "decisions", "applied")
 iterate | A/B | performance                  -> haipipe-application-iterate
-probe ["<question>"] | probe | probe run [PPNN]  -> the flat probe pool 1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (RAISE a question / SHOW the board / RUN the five-step loop; "run" hands the pool to haipipe-application-probe, the single door to the bank; also "evidence gap", "verify claim", "hypothesis")
+probe ["<question>"] | probe | probe run [PPNN]  -> the flat probe pool 1-probes/PPNN_<topic>.md, one file per TOPIC, one `## QX<n>` ENTRY per q-executor (RAISE a question / SHOW the board / RUN the five-step loop; "run" hands the pool to haipipe-application-probe, the single door to the bank; also "evidence gap", "verify claim", "hypothesis")
 feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
 digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
 "<natural language>"                         -> infer via the keywords above, dispatch
@@ -227,7 +227,7 @@ next:      suggested next command
 Delivery Need Routing
 ----------------------
 
-THE single source of truth for how an intervention (message / checklist / dashboard / report) records an evidence gap as a QUESTION, routes it to the bank, and backfills when the answer returns. Application-owned; the paper family keeps its own copy. There is no cross-skill shared file. The model itself is the probe constitution's (`../../probe/haipipe-probe/SKILL.md`); this section is the application-side routing.
+THE single source of truth for how an intervention (message / checklist / dashboard / report) records an evidence gap as a QUESTION, routes it to the bank, and backfills when the answer returns. Application-owned; the paper family keeps its own copy. There is no cross-skill shared file. The model itself belongs to `probe` (`../../probe/haipipe-probe/SKILL.md`); this section is the application-side routing.
 
 Application work is demand-driven: a claim, content element, artifact slot, or round todo may reveal that the next action is evidence work. The enter/status path surfaces those needs before recommending more drafting.
 
@@ -281,7 +281,7 @@ Claim-related evidence goes through a stage's PROBE phase — the entry preserve
 
 **Question record**
 
-Each open question is one ENTRY in `1-probes/PPNN_<topic>.md` (anatomy + states: `fn/probes.md` and the probe constitution). One file per TOPIC; one `## QX<n>` entry per Q-EXECUTOR, each with four `###` subsections — the file is Q-executor-oriented, and the consumers hang off it:
+Each open question is one ENTRY in `1-probes/PPNN_<topic>.md` (anatomy + states: `fn/probes.md` and `../../probe/haipipe-probe/SKILL.md`). One file per TOPIC; one `## QX<n>` entry per Q-EXECUTOR, each with four `###` subsections — the file is Q-executor-oriented, and the consumers hang off it:
 
 ```
 ## QX<n>          one entry per Q-EXECUTOR; a topic-local id
@@ -297,7 +297,7 @@ Each open question is one ENTRY in `1-probes/PPNN_<topic>.md` (anatomy + states:
 ### a-executor    a COPY of the answering QA file's answer, written at harvest
 ```
 
-There is NO `## Why` in a probe file — the STAKE lives in each Q-consumer, in the stage doc, and is NEVER sent to an executor. There is NO `## Verdict` block and NO G1/G2/G3 review gate. BUILD-lane entries (days-to-weeks work) additionally carry `**owner**:` · `**eta**:` · `**blocks**:` · `**cross-project**:` under `### bank binding`, present only at `state: commissioned`.
+The STAKE lives in each Q-consumer, in the stage doc, and is NEVER sent to an executor; a claim's status lives in `1c-claims.md`, written by the author. BUILD-lane entries (days-to-weeks work) additionally carry `**owner**:` · `**eta**:` · `**blocks**:` · `**cross-project**:` under `### bank binding`, present only at `state: commissioned`.
 
 **Backfill (the return direction)**
 
@@ -346,7 +346,7 @@ Composing with Evidence Workers
         ├─► /haipipe-application-artifact    (draft the deliverable from the venue profile + lifecycle stages)
         │
         │   evidence path (a claim hits a gap):
-        └─► questions RAISED as sections in 1-probes/PPNN_<topic>.md  ─►  haipipe-application-probe (the PROBE phase worker)
+        └─► questions RAISED as entries in 1-probes/PPNN_<topic>.md  ─►  haipipe-application-probe (the PROBE phase worker)
                                             └─► Agent(haipipe-probe-q-executor-agent)  (stake-free collector; dispatches /haipipe-task + /haipipe-discovery)
                                                  └── answers land as QA files; the a-consumer + 1c-claims status backfill into the ladder, sections, round logs
 

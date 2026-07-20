@@ -4,8 +4,8 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1b-themes/1b
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.4.0"
-  last_updated: "2026-07-18"
+  version: "2.6.0"
+  last_updated: "2026-07-19"
   summary: "Themes stage (rung 1b of the venue-FREE 1a–1d evidence ladder; the I rung) — grounded pattern-clusters extracted from 1a D ids + discovery sources, each theme carrying candidate-claim hooks that rung 1c consumes; ungrounded patterns go to Parked. Full D-consumption + counter-hunt; light discovery PROBE via 1-probes/. History: ./CHANGELOG.md."
 ---
 
@@ -50,8 +50,8 @@ DRAFT   re-mine last round's Parked reservoir (did new D entries ground any?); r
         (the grounding floor); elicit taste on which directions matter; sweep the three lenses — data /
         field (discovery: "what messaging levers does the mhealth literature name?") / counter-hunt —
         drafting T slots with grounding + hooks
-PROBE   mode LIGHT — the five-step loop raises field-pattern questions as SECTIONS in 1-probes/ and COLLECTS
-        (→ discovery; task only for a quick in-data confirmation); each section's a-consumer lands grounding
+PROBE   the five-step loop raises field-pattern questions as ENTRIES in 1-probes/ and COLLECTS
+        (→ discovery; task only for a quick in-data confirmation); each entry's `### a-executor` lands grounding
         refs onto its T entry. Routing mechanics are the probe layer's:
         ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
 REVISE  sharpen pattern sentences, merge overlapping themes, park the ungrounded

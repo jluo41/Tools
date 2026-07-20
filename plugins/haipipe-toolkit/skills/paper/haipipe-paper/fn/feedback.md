@@ -116,7 +116,7 @@ write, draft, scaffold prose            -> haipipe-paper-section-edit
 edit, polish, weave, walk sections      -> haipipe-paper-section-edit
 rebuttal, reply, reviewers, response    -> haipipe-paper-rebuttal
 compile this paper, build broke         -> haipipe-paper-compile
-citation, bibtex, references            -> haipipe-paper-probe-citation
+citation, bibtex, references            -> haipipe-paper-draft-citation
   (NB: "every/each stage must compile a PDF" is the cross-cutting guard,
    not a haipipe-paper-compile bug -> fallback, per resolve step 0)
 --------------------------------------------------------------------------

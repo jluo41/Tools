@@ -10,9 +10,9 @@
 # LEAK_AWK pattern set, with `intervention_root` in place of `paper_root` -- and WITHOUT
 # the RESOURCE-STAGE PASS below, which is paper-only. Keep the two in step.)
 #
-# Usage: sh check-probe-cards.sh <paper_root> [project_root] [--stage <key>]
+# Usage: sh check-probe-cards.sh <paper_root> [project_root] [--stage <key>] [--final]
 #
-# WHAT IT CHECKS -- three passes, plus a paper-only RESOURCE-STAGE pass.
+# WHAT IT CHECKS -- four passes, plus a paper-only RESOURCE-STAGE pass.
 #
 # PASS 1: every <paper_root>/1-probes/PP*.md probe file, ENTRY BY ENTRY
 #   (an entry = a `## QX<n>` heading + its ### q-executor / ### q-consumer / ### bank binding
@@ -55,9 +55,28 @@
 #                              carries NO state line at all (read-target-no-state: `state:`
 #                              is MANDATORY). EXISTENCE OF THE TARGET IS NO LONGER ENOUGH --
 #                              the checker OPENS it.
+#  12. state concern       -> A TERMINAL STATE, NOT A FAILURE (D10). `**route**: none` +
+#                              `**state**: concern` records a doubt the bank CANNOT close --
+#                              a construct-validity threat, a design limitation, a question
+#                              no task or discovery can settle. It is legitimate, so it never
+#                              reds the gate; it is a DOUBT, so it must stay VISIBLE: it is
+#                              reported as a `CONCERN` roster line, every run. Being terminal,
+#                              it is EXEMPT from the probe-not-run tooth and from every
+#                              bank-binding requirement (no q-executor, no target, no owner).
+#                              THE ONE TOOTH IT KEEPS bites only under `--final`: a concern
+#                              must be DISCUSSED. `**discussed**: <where the limitation text
+#                              bears it>` is how the paper proves it carried the doubt into
+#                              its own prose instead of quietly dropping it
+#                              (concern-not-discussed). Mid-lifecycle that text does not exist
+#                              yet, which is why the tooth is flag-gated.
 #
-# PASS 2: RETIRED 2026-07-19 -- no `_VALUES_` / `_CITATION_` sidecars anymore (JL: `1-probes/`
-#   is the only consumer-side source of truth; `_LOG` is the only kept sidecar).
+# PASS 2: NO SIDECAR WORKING DOCS under <paper_root>/0-lifecycle/. `1-probes/` is the ONLY
+#   consumer-side source of truth for evidence, and `_LOG_*` is the ONLY kept sidecar. Any
+#   `_CITATION_*`, `_VALUES_*`, `_DISPLAY_*`, `_DISCOVERY_*` or `_EVIDENCE_*` file is a
+#   SECOND, UNCHECKED LEDGER: it duplicates what the probe files own, drifts from them
+#   silently, and nothing in this checker asserts over it. FAIL sidecar-present(<name>).
+#   ONE EXCEPTION, AND IT IS ALIVE: `0-lifecycle/4-display/_DISPLAY_REQUEST.md` is the display
+#   stage's live inbox, not a ledger. It is never flagged.
 #
 # PASS 3: THE BANK -- two rules on the same files, <project_root>/{tasks,discoveries}/**/QA/*.md.
 #   (a) LAW 2 (surface 2): a QA file must carry NO consumer vocabulary. A QA file written in
@@ -73,6 +92,38 @@
 #   `## Answer` = a LYING RECEIPT (qa-answered-empty).
 #   PASS 3 also FAILs the RETIRED bank machinery: an `_ASK/` or `_ANS/` folder, or a PP id
 #   in a QA filename. The bank is PROBE-UNAWARE (R2): none of those may exist.
+#
+# PASS 4: THE MANUSCRIPT -- PLACEHOLDER OWNERSHIP (D9). Scans the STAGE DOCS
+#   (<paper_root>/0-lifecycle/<stage>/<stage>.md and 5-section-edit/<section>/<section>.md --
+#   the doc whose basename IS its folder's, never a `_`-sidecar, never a probe file).
+#
+#   EVERY PLACEHOLDER NAMES THE QUESTION THAT WILL SETTLE IT. Two adjacent markers:
+#       \cite{TOADD} [Q-<Stage>-<n>]
+#       {VAL:? <what>} [Q-<Stage>-<n>]
+#   An UNOWNED placeholder is the failure mode this exists to stop: a hole in the prose that
+#   no question is chasing. It survives to submission because nothing points at it -- the
+#   probe files are all green (they never knew it existed) and the gap is invisible until a
+#   reviewer finds it. Ownership makes the hole ASSERT.
+#     (a) cite-unowned(...)   a `\cite{TOADD}` with no `[Q-...]` bracket after it
+#     (b) value-unowned(...)  a `{VAL:? ...}`  with no `[Q-...]` bracket after it
+#     (c) dangling-owner(...) a `[Q-<Stage>-<n>]` naming a Q-consumer that is NOT a
+#                             `## Q-<Stage>-<n>` heading in that same doc -- the owner is
+#                             named but does not exist, which reads as owned and is not.
+#
+#   THE FALSE-POSITIVE GUARANTEE (same doctrine as LEAK_AWK). These docs TALK ABOUT the
+#   convention constantly, and a checker that cannot tell USE from MENTION gets muted:
+#     - a fenced code block            -> documentation, skipped
+#     - a `> ` comment line            -> a `> USER:`/`> CC:` thread, skipped
+#     - a backticked span              -> `\cite{TOADD}` inside backticks is NAMED, stripped
+#     - a LEDGER line                  -> "placeholders: 0 {VAL:?} · 3 \cite{TOADD}",
+#                                         "\cite{TOADD} count = 0", "TOADD slots" TALLY
+#                                         placeholders, they do not carry one
+#     - a BARE `{VAL:?}`               -> the token with no `<what>` is the convention being
+#                                         named; a live one always describes its value
+#
+# --final  Turn on the END-OF-LIFECYCLE teeth -- the ones whose evidence does not exist until
+#   the paper is nearly written, and which would therefore fire falsely on every mid-lifecycle
+#   run. Today: concern-not-discussed (PASS 1, rule 12).
 #
 # BOTH LAW-2 SURFACES SHARE ONE PATTERN SET -- the awk function library `LEAK_AWK` below.
 #   They are the same rule on two surfaces; two hand-copied regex sets drift, and the
@@ -98,17 +149,26 @@ set -u
 paper_root=""
 project_root=""
 stage_filter=""
+final=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --stage) shift; stage_filter=${1:?--stage needs a key}; ;;
     --stage=*) stage_filter=${1#--stage=} ;;
+    --final) final=1 ;;
     *) if [ -z "$paper_root" ]; then paper_root=$1
        elif [ -z "$project_root" ]; then project_root=$1
        else echo "FAIL  unexpected arg: $1"; exit 1; fi ;;
   esac
   shift
 done
-[ -n "$paper_root" ] || { echo "usage: check-probe-cards.sh <paper_root> [project_root] [--stage <key>]"; exit 1; }
+[ -n "$paper_root" ] || { echo "usage: check-probe-cards.sh <paper_root> [project_root] [--stage <key>] [--final]"; exit 1; }
+
+# THE STAGE KEY -> Q-ID STEM map, factored once. A stage key is plural where its ids are
+# singular (`claims` -> `Q-Claim-3`), so the trailing `s` comes off. Read by the --stage gate
+# in PASS 1 (an entry's `### q-consumer` ids) and by the --stage gate in PASS 4 (a stage doc's
+# own identity). Same map, two callers -- and the same reason LEAK_AWK and QA_STATE are
+# functions: a second hand-typed copy is a drift that nothing catches.
+stage_stem() { printf '%s' "${1%s}"; }
 
 # Resolve project_root: FIRST ancestor of paper_root containing discoveries/.
 # Never git rev-parse here -- repo-backed projects are their own git repos, so
@@ -238,7 +298,7 @@ function stake_leak(s,   low) {
 # (staleness is the thing the reader must act on).
 #
 # A QA file with NO state line is MALFORMED, not "legacy". `state:` is MANDATORY, ALWAYS
-# (the constitution, "The QA file" section). The first cut of this file mapped a stateless QA file to the kind
+# (probe/haipipe-probe/SKILL.md, "The QA file" section). The first cut of this file mapped a stateless QA file to the kind
 # `legacy` and EXEMPTED it from every claim check -- so an executor could defeat the whole
 # lying-receipt tooth BY OMISSION: drop one line, ship an empty `## Answer`, and the gate
 # goes green while a consumer publishes an `### a-executor` derived from nothing. The grandfather
@@ -341,7 +401,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
   dead=$(grep -cEi '(^|[^a-z])verdicted([^a-z]|$)|^##[[:space:]]*Verdict|^##[[:space:]]*Takeaways|^[-[:space:]]*answers:|_ASK|_ANS[^A-Za-z]' "$probe")
   [ "$dead" -gt 0 ] && fprob="$fprob dead-vocab(${dead}-lines: verdicted/Verdict/Takeaways/answers:/_ASK/_ANS are DELETED);"
 
-  # RETIRED old-format strings must not appear (constitution v9.5.0+). The stake now lives
+  # RETIRED old-format strings must not appear (probe v9.5.0+). The stake now lives
   # in the stage-doc Q-consumer; the anatomy is `## QX<n>` entries with `###` subsections.
   stale=$(grep -cE '^[[:space:]]*-[[:space:]]*(serves|match|a-consumer):|^##[[:space:]]*Why([[:space:]]|$)' "$probe")
   [ "$stale" -gt 0 ] && fprob="$fprob stale-old-format(${stale}-lines: serves/match/a-consumer/## Why are RETIRED -- rewrite to the QX-entry format);"
@@ -360,11 +420,12 @@ for probe in "$paper_root"/1-probes/PP*.md; do
       # collapses consecutive tabs into one delimiter and every empty field (an absent
       # owner, an empty a-executor) silently SHIFTS the rest of the record. That shift is
       # invisible -- it produces confident wrong answers, not errors.
-      printf "SEC%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", \
+      printf "SEC%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", \
         SEP, FN, SEP, qname, SEP, state, SEP, target, SEP, qconsumer, SEP, owner, SEP, eta, \
         SEP, blocks, SEP, xproj, SEP, (reading_nonempty ? "1" : "0"), SEP, owed+0, \
-        SEP, leak+0, SEP, (has_qexec ? "1" : "0")
+        SEP, leak+0, SEP, (has_qexec ? "1" : "0"), SEP, route, SEP, discussed
       qname=""; state=""; target=""; qconsumer=""; owner=""; eta=""; blocks=""; xproj=""
+      route=""; discussed=""
       reading_nonempty=0; owed=0; qx_claimid=0; qx_stage=0; qx_stake=0
       in_qexec=0; in_qcons=0; in_bank=0; in_aexec=0; has_qexec=0
     }
@@ -383,6 +444,9 @@ for probe in "$paper_root"/1-probes/PP*.md; do
 
     # `### bank binding` fields, written `**field**: value`.
     in_bank && /^[[:space:]]*\*\*state\*\*:/  { state=$0;  sub(/^.*\*\*state\*\*:[[:space:]]*/, "", state);  gsub(/[[:space:]].*$/, "", state) }
+    in_bank && /^[[:space:]]*\*\*route\*\*:/  { route=$0;  sub(/^.*\*\*route\*\*:[[:space:]]*/, "", route);  gsub(/[[:space:]].*$/, "", route) }
+    # `**discussed**:` -- a concern'"'"'s ONLY obligation: WHERE the limitation text bears it.
+    in_bank && /^[[:space:]]*\*\*discussed\*\*:/ { discussed=$0; sub(/^.*\*\*discussed\*\*:[[:space:]]*/, "", discussed); sub(/[[:space:]]*$/, "", discussed) }
     in_bank && /^[[:space:]]*\*\*target\*\*:/ { target=$0; sub(/^.*\*\*target\*\*:[[:space:]]*/, "", target); sub(/[[:space:]]*$/, "", target) }
     in_bank && /\*\*owner\*\*:/ { owner=$0; sub(/^.*\*\*owner\*\*:[[:space:]]*/, "", owner); sub(/[[:space:]]*·.*$/, "", owner); sub(/[[:space:]]*$/, "", owner) }
     # No {n} intervals: mawk does not enable them by default, so spell the date out.
@@ -417,14 +481,14 @@ for probe in "$paper_root"/1-probes/PP*.md; do
     END { flush() }
   ' "$probe" > /tmp/.probe_sections.$$ 2>/dev/null
 
-  while IFS="$(printf '\037')" read -r tag f qname state target qconsumer owner eta blocks xproj reading owed leak has_qexec; do
+  while IFS="$(printf '\037')" read -r tag f qname state target qconsumer owner eta blocks xproj reading owed leak has_qexec route discussed; do
     [ "$tag" = "SEC" ] || continue
     owed=${owed:-0}; leak=${leak:-0}
 
     # --stage: an entry asserts at stage X's gate only if one of its `### q-consumer`
     # ids names stage X (e.g. `Q-Seed-1` -> seed). Trailing-s tolerant (claims -> Q-Claim).
     if [ -n "$stage_filter" ] && [ -n "$qconsumer" ]; then
-      _stem=${stage_filter%s}
+      _stem=$(stage_stem "$stage_filter")
       if ! printf '%s' "$qconsumer" | grep -qiE "q-${_stem}"; then
         continue
       fi
@@ -432,10 +496,38 @@ for probe in "$paper_root"/1-probes/PP*.md; do
 
     problems=""
     [ -z "$state" ] && problems="$problems no-state-field;"
-    [ "$has_qexec" = "0" ] && [ "$state" != "answered-local" ] \
-      && problems="$problems no-q-executor(the ### q-executor subsection is missing);"
+    # LAW 2 and the harvest tooth bind EVERY entry, `concern` included: a concern still has
+    # prose, and prose still must not disclose the stake.
     [ "$leak" -gt 0 ] && problems="$problems LAW2-q-executor-leak(${leak}: consumer vocab or stake disclosed);"
     [ "$owed" -gt 0 ] && problems="$problems harvest-owed(${owed}-lane);"
+
+    # THE CONCERN CARVE-OUT (D10). A `concern` is TERMINAL: the bank was never asked because
+    # the bank CANNOT answer -- no q-executor to write, no route to take, no target to point
+    # at. Demanding those fields would force a fake dispatch just to clear the gate, which
+    # turns the honest record of a limitation into laundering. So the bank-binding checks are
+    # skipped wholesale here, and rule 12's own tooth (below) is the only one that applies.
+    if [ "$state" = "concern" ]; then
+      case "$route" in
+        ''|none|--) : ;;
+        *) problems="$problems concern-with-route($route -- a concern is TERMINAL: **route**: none);" ;;
+      esac
+      # --final ONLY. Mid-lifecycle the limitations text does not exist yet, so this would
+      # fire on every honest concern the moment it is filed -- and a tooth that bites correct
+      # work is a tooth that gets muted.
+      if [ "$final" -eq 1 ] && [ -z "$discussed" ]; then
+        problems="$problems concern-not-discussed(no **discussed**: field -- name WHERE the limitation text bears this doubt, or the paper dropped it);"
+      fi
+      if [ -n "$problems" ]; then
+        echo "FAIL  $f :: $qname  --$problems"
+        fail=1
+      else
+        echo "CONCERN  $f :: $qname  (terminal: the bank cannot close it${discussed:+ · discussed: $discussed})"
+      fi
+      continue
+    fi
+
+    [ "$has_qexec" = "0" ] && [ "$state" != "answered-local" ] \
+      && problems="$problems no-q-executor(the ### q-executor subsection is missing);"
 
     case "$state" in
       read|answered-local)
@@ -699,10 +791,35 @@ if [ "$found" -eq 0 ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# PASS 2 -- RETIRED 2026-07-19 (JL: no `_VALUES_` / `_CITATION_` sidecars; `1-probes/` is the
-# ONLY consumer-side source of truth, and `_LOG` is the only kept sidecar). The old PASS 2
-# checked those working docs for bibtex / tables; there are no such docs to check anymore.
+# PASS 2 -- NO SIDECAR WORKING DOCS under 0-lifecycle/.
+#
+# `1-probes/` is the ONLY consumer-side source of truth for evidence, and `_LOG_*` is the
+# ONLY kept sidecar. A `_CITATION_` / `_VALUES_` / `_DISPLAY_` / `_DISCOVERY_` / `_EVIDENCE_`
+# file is a SECOND LEDGER of the same facts -- and a second ledger is worse than none: it
+# drifts from the probe files silently, nothing in this checker asserts over it, and the
+# stale copy is the one a later run reads. The ban was written down and nothing enforced it,
+# so the files kept reappearing. This is the enforcement.
+#
+# THE ONE LIVE EXCEPTION: 0-lifecycle/4-display/_DISPLAY_REQUEST.md. It is the display
+# stage's INBOX -- a request queue the display stage drains, not a ledger of settled facts.
+# It is carved out BY EXACT BASENAME, so a `_DISPLAY_5-empirical.md` ledger still FAILs.
+# `_LOG_*` is not matched at all: it is the kept sidecar.
 # ---------------------------------------------------------------------------
+if [ -d "$paper_root/0-lifecycle" ]; then
+  find "$paper_root/0-lifecycle" -type f \
+    \( -name '_CITATION_*' -o -name '_VALUES_*' -o -name '_DISPLAY_*' \
+       -o -name '_DISCOVERY_*' -o -name '_EVIDENCE_*' \) 2>/dev/null \
+  | sort \
+  | while IFS= read -r side; do
+      [ "$(basename "$side")" = "_DISPLAY_REQUEST.md" ] && continue
+      echo "FAIL  ${side#"$paper_root"/}  -- sidecar-present($(basename "$side")): a SECOND ledger of what 1-probes/ owns. Fold it into the probe file (or _LOG_) and DELETE it"
+    done > /tmp/.probe_sidecars.$$
+  if [ -s /tmp/.probe_sidecars.$$ ]; then
+    cat /tmp/.probe_sidecars.$$
+    fail=1
+  fi
+  rm -f /tmp/.probe_sidecars.$$
+fi
 
 # ---------------------------------------------------------------------------
 # PASS 3 -- THE BANK: LAW 2 (surface 2) + THE CLAIM'S OWN VALIDITY (R19).
@@ -766,6 +883,122 @@ for dead_dir in "$project_root"/tasks/*/_ASK "$project_root"/tasks/*/*/_ASK \
   [ -e "$dead_dir" ] || continue
   echo "FAIL  ${dead_dir#"$project_root"/}  -- RETIRED mailbox (_ASK/_ANS are DEAD: the bank is probe-unaware, R2)"
   fail=1
+done
+
+# ---------------------------------------------------------------------------
+# PASS 4 -- THE MANUSCRIPT: PLACEHOLDER OWNERSHIP (D9).
+#
+# EVERY PLACEHOLDER NAMES THE QUESTION THAT WILL SETTLE IT:
+#     \cite{TOADD} [Q-<Stage>-<n>]        {VAL:? <what>} [Q-<Stage>-<n>]
+#
+# An UNOWNED placeholder is a hole in the prose that NOTHING is chasing. Every other tooth in
+# this file watches the probe files -- so an unowned hole is invisible exactly where it is
+# most dangerous: the probe files stay green because they never knew it existed, and the gap
+# surfaces at a reviewer. The owner bracket is what makes the hole ASSERT: it forces the
+# placeholder to name a Q-consumer, and (c) below forces that Q-consumer to be REAL.
+#
+# THE DOC SET: `<stage>/<stage>.md` -- the working doc whose basename IS its folder's. That
+# one rule excludes every `_`-sidecar, every README, and every parked draft without a
+# blocklist to maintain.
+#
+# THE USE/MENTION PROBLEM IS THE WHOLE DIFFICULTY. These docs discuss the convention
+# constantly ("0 {VAL:?}, 3 \cite{TOADD}"), and a checker that reads a TALLY as a placeholder
+# fails correct work on its first run and gets muted by its second. Four filters below, and
+# one shape rule: a LIVE `{VAL:?}` always describes the value it is standing in for, so the
+# bare token is always a mention.
+# ---------------------------------------------------------------------------
+for docdir in "$paper_root"/0-lifecycle/*/ "$paper_root"/0-lifecycle/5-section-edit/*/; do
+  [ -d "$docdir" ] || continue
+  dbase=${docdir%/}; dbase=${dbase##*/}
+  doc="$docdir$dbase.md"
+  [ -f "$doc" ] || continue
+
+  # --stage: a stage doc asserts at its OWN stage's gate. Without this, one section's unowned
+  # placeholders would red every other stage's CHECK -- the same whole-paper-glob problem
+  # ruling C8-i carved out for PASS 1, and the same fix (shared stage_stem).
+  if [ -n "$stage_filter" ]; then
+    _dstage=$(printf '%s' "$dbase" | sed 's/^[0-9]*[a-z]*-//')
+    [ "$(stage_stem "$_dstage")" = "$(stage_stem "$stage_filter")" ] || continue
+  fi
+
+  dprob=$(awk '
+    function is_ledger(s,   low) {
+      # A TALLY LINE COUNTS placeholders; it does not carry one.
+      low = tolower(s)
+      if (low ~ /placeholder|rollup|tally|citations to resolve|values to verify/) return 1
+      if (low ~ /count[ \t]*[=:]/) return 1
+      # A QUANTIFIER in front of the token is a count, not a placeholder -- and the quantifier
+      # is very often ZERO ("no \cite{TOADD}", "0 {VAL:?}"), i.e. the line asserts the very
+      # ABSENCE the checker would otherwise report as a hole.
+      if (low ~ /(^|[^a-z])(no|none|zero|[0-9]+)[ \t]+(real[ \t]+)?(\\cite\{toadd\}|\{val:\?\})/) return 1
+      if (low ~ /\\cite\{toadd\}[ \t]*(slot|count)/) return 1
+      return 0
+    }
+    function note(arr, key, ln) { arr[key] = (key in arr) ? arr[key] "," "L" ln : "L" ln }
+
+    # ---- read 1: the Q-consumers this doc DEFINES (`## Q-<Stage>-<n>`).
+    NR == FNR {
+      if ($0 ~ /^##[[:space:]]*Q-[A-Za-z]+-[0-9]+/) {
+        h = $0; sub(/^##[[:space:]]*/, "", h)
+        match(h, /^Q-[A-Za-z]+-[0-9]+/); defined[substr(h, RSTART, RLENGTH)] = 1
+      }
+      next
+    }
+
+    # ---- read 2: the placeholders. Filter to LIVE prose first.
+    /^[ \t]*```/ { fence = !fence; next }
+    fence        { next }        # a fenced block DOCUMENTS the convention
+    /^[ \t]*>/   { next }        # a `> USER:` / `> CC:` thread QUOTES it
+    {
+      line = $0
+      gsub(/`[^`]*`/, " ", line) # a backticked span NAMES it
+      if (is_ledger(line)) next
+    }
+
+    {
+      # (a) \cite{TOADD} -- per OCCURRENCE: one line legitimately carries two.
+      rest = line
+      while (match(rest, /\\cite\{TOADD\}/)) {
+        rest = substr(rest, RSTART + RLENGTH)
+        if (rest !~ /^[ \t]*\[Q-[A-Za-z]+-[0-9]+\]/) { cu++; note(culines, "x", FNR) }
+      }
+      # (b) {VAL:? <what>} -- a LIVE placeholder describes its value; bare `{VAL:?}` is a mention.
+      rest = line
+      while (match(rest, /\{VAL:\?[^}]*\}/)) {
+        tok = substr(rest, RSTART, RLENGTH)
+        rest = substr(rest, RSTART + RLENGTH)
+        body = tok; sub(/^\{VAL:\?/, "", body); sub(/\}$/, "", body); gsub(/[ \t]/, "", body)
+        if (body == "") continue
+        if (rest !~ /^[ \t]*\[Q-[A-Za-z]+-[0-9]+\]/) { vu++; note(vulines, "x", FNR) }
+      }
+      # (c) every owner bracket must resolve to a `## Q-...` heading in THIS doc.
+      rest = line
+      while (match(rest, /\[Q-[A-Za-z]+-[0-9]+\]/)) {
+        id = substr(rest, RSTART + 1, RLENGTH - 2)
+        rest = substr(rest, RSTART + RLENGTH)
+        if (!(id in defined)) note(dang, id, FNR)
+      }
+    }
+
+    function trim(s) { return (length(s) > 60) ? substr(s, 1, 60) "..." : s }
+    END {
+      p = ""
+      if (cu > 0) p = p " cite-unowned(" cu " -- " trim(culines["x"]) ": \\cite{TOADD} with no [Q-<Stage>-<n>] after it);"
+      if (vu > 0) p = p " value-unowned(" vu " -- " trim(vulines["x"]) ": {VAL:? ...} with no [Q-<Stage>-<n>] after it);"
+      for (k in dang) p = p " dangling-owner(" k " @" trim(dang[k]) " -- no `## " k "` heading in this doc);"
+      printf "%s", p
+    }
+  ' "$doc" "$doc")
+
+  if [ -n "$dprob" ]; then
+    # printf, NOT echo: these messages carry `\cite{TOADD}`, and POSIX echo reads `\c` as
+    # "stop output here" -- it silently TRUNCATES the failure it is trying to report.
+    printf 'FAIL  %s  --%s\n' "${doc#"$paper_root"/}" "$dprob"
+    printf '      (every placeholder names the question that settles it: %s [Q-<Stage>-<n>] · {VAL:? <what>} [Q-<Stage>-<n>])\n' '\cite{TOADD}'
+    fail=1
+  else
+    echo "PASS  ${doc#"$paper_root"/}  (every placeholder is owned)"
+  fi
 done
 
 echo "project_root: $project_root"

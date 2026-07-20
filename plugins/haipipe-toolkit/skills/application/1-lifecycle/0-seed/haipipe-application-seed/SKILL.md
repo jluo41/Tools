@@ -51,7 +51,7 @@ DRAFT   settle the five content sections with the user (haipipe-application-draf
         ORIENT (crowded space? prior interventions? benchmark rates?) — weave the result into prose AND
         buffer the feasibility questions as `state: planned` sections; register internal-data needs as
         [FORWARD -> CLAIMS] pointers in _LOG_0-seed.md
-PROBE   one worker call — mode LIGHT, feasibility only (novelty + external-data obtainable); the five-step
+PROBE   one worker call — feasibility only (novelty + external-data obtainable); the five-step
         loop raises each question as a SECTION in 1-probes/ and COLLECTS. Inline search is FORBIDDEN here.
         Routing mechanics + seed specifics: ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
 REVISE  tighten wording; weave probe takeaways into Opportunity/Mechanism; the Q-consumer section holds the questions (haipipe-application-revise)

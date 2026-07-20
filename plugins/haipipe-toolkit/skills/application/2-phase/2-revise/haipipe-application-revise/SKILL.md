@@ -4,8 +4,8 @@ description: "REVISE phase worker (internal). Called by application stage skills
 argument-hint: "[stage <stage-name>] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-07-06"
+  version: "1.1.0"
+  last_updated: "2026-07-19"
   summary: "The intervention's REVISE-phase worker — a single thin worker whose quality spec is the pinned venue's style-profile plus the audience profile. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -19,7 +19,8 @@ REVISE phase worker. Runs after PROBE, before CHECK. Agent-only: change the text
 
 ```
 1. WEAVE      fold PROBE's landed evidence into the text: replace flagged
-              NEEDs with the section's a-consumer or an evidence-backed statement;
+              NEEDs with the stage doc's a-consumer (the Q-consumer `Answer:`
+              line) or an evidence-backed statement;
               a NEED that PROBE could not fill stays flagged for CHECK
 2. TIGHTEN    one job per paragraph/element; cut filler; concrete over vague
 3. CONFORM    the venue pack (venue/venue-<name>/style-profile.md):
