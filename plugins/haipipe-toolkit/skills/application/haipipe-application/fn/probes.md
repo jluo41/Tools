@@ -130,7 +130,7 @@ PROBE runs the plan forward (route/bank are AUTHORITATIVE — executed, not re-d
   ⑤ INTERPRET  `### a-executor` (the copy, numbers inline) → stage-doc a-consumer → 1c-claims.md flips
 ```
 
-⛔ **MATCH (at DRAFT) BEFORE DISPATCH (at PROBE).** The bank fills AUTONOMOUSLY from the executor side, so in a healthy project most answers already exist before anyone asks.
+⛔ **MATCH BEFORE DISPATCH — both at PROBE, in that order.** The bank fills AUTONOMOUSLY from the executor side, so in a healthy project most answers already exist before anyone asks.
 A probe file whose every entry is NEW-to-dispatch is a SMELL — either the MATCH was lazy, or the bank is starving. Say which, in the reply.
 
 Lifecycle Integration

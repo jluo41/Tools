@@ -14,7 +14,7 @@ Skill: haipipe-paper-scaffold (3-deliver)
 ================================
 
 Create a **new** paper folder that conforms to `2-phase/REF/paper-folder-anatomy.md`. This skill writes structure only: drivers, wrappers, leaf stubs, directories, the compile script.
-It never writes a body sentence; prose belongs to `1-lifecycle/5-section-edit/haipipe-paper-section-edit`.
+It never writes a body sentence; prose belongs to `1-lifecycle/haipipe-paper-stage/stages/5-section-edit/`.
 
 If a folder already exists and merely has the wrong shape, stop and route to `haipipe-paper-restructure` instead.
 Never scaffold over existing content.

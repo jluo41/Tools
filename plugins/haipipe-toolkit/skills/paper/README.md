@@ -2,7 +2,7 @@
 
 Canonical reference for how this skill family is organized. This file wins over anything elsewhere.
 
-A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>.md` probe files hold its QUESTIONS, one SECTION each, and BIND each one BY PATH to the answering `<task-folder>/QA/<n>-<slug>.md` in that bank. Claim gaps become sections there; MATCH closes most of them for free, and only the rest are dispatched (the `q-executor:` block, verbatim) to the task/discovery orchestrators. The paper reaches the bank only through a stage's PROBE phase; a standalone utility question uses the bank's own `/haipipe-task qa` door, typed by a human.
+A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>.md` probe files hold its QUESTIONS, one ENTRY each, and BIND each one BY PATH to the answering `<task-folder>/QA/<n>-<slug>.md` in that bank. Claim gaps become entries there; MATCH closes most of them for free, and only the rest are dispatched (the `q-executor:` block, verbatim) to the task/discovery orchestrators. The paper reaches the bank only through a stage's PROBE phase; a standalone utility question uses the bank's own `/haipipe-task qa` door, typed by a human.
 
 ## Paper-folder layout
 
@@ -14,7 +14,7 @@ A paper is a delivery contract, not a writing folder. It owns one manuscript's s
 │   ├── 0-seed/  1a-resource/  1b-claims/  2b-pitch/  3-narrative/  4-display/  5-editing/
 ├── 0-sections/               manuscript prose .tex
 ├── 0-displays/displayNN-*/   figure/table units
-├── 1-probes/PPNN_<topic>.md   the paper's questions, one SECTION each -> bound BY PATH to a QA file
+├── 1-probes/PPNN_<topic>.md   the paper's questions, one ENTRY each -> bound BY PATH to a QA file
 ├── 1-rounds/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 ├── 1-config.yaml
 └── 1-compile.sh
@@ -44,20 +44,20 @@ paper/
 │                        + haipipe-paper-round (owns the 1-rounds/ contract)
 ├── 1-lifecycle/         STAGE orchestrators, one numbered folder per stage
 │     ref/               lifecycle references (03-paper-lifecycle, 04-lifecycle-map, 08-stage-gate, 09-stage-illuminate)
-│     0-seed/haipipe-paper-seed
-│     1a-resource/haipipe-paper-resource     (venue-FREE; stage 1a)
-│     1b-claims/haipipe-paper-claims         (venue-FREE; stage 1b)
-│     2a-venue/haipipe-paper-venue           (venue pin; venue-ALIGNED boundary; stage 2a)
-│     2b-pitch/haipipe-paper-pitch            (venue-ALIGNED cover letter; stage 2b)
-│     3-narrative/haipipe-paper-narrative
-│     4-display/haipipe-paper-display + renderers
+│     haipipe-paper-stage/stages/0-seed/
+│     haipipe-paper-stage/stages/1a-resource/     (venue-FREE; stage 1a)
+│     haipipe-paper-stage/stages/1b-claims/         (venue-FREE; stage 1b)
+│     haipipe-paper-stage/stages/2a-venue/           (venue pin; venue-ALIGNED boundary; stage 2a)
+│     haipipe-paper-stage/stages/2b-pitch/            (venue-ALIGNED cover letter; stage 2b)
+│     haipipe-paper-stage/stages/3-narrative/
+│     haipipe-paper-stage/stages/4-display/ + renderers
 │       -display-{table,figure,diagram,illustration}
 │       (illustration = Codex bridge;
 │        framework candidate rounds inside display)
-│     5-section-edit/haipipe-paper-section-edit + section-type/ norms
+│     haipipe-paper-stage/stages/5-section-edit/ (+ outline-format.md + section-type/ norms)
 │     + haipipe-paper-lifecycle (orchestrator)
 ├── 2-phase/             PHASE workers (internal; driven by stage skills)
-│     0-draft/haipipe-paper-draft  (retired write-* style skills live in 2-phase/_archive/)
+│     0-draft/haipipe-paper-draft
 │     1-probe/haipipe-paper-probe (+ -probe-{citation,display,values})
 │     2-revise/haipipe-paper-revise (+ -revise-{content,humanizer,results,weaving})
 │     3-check/haipipe-paper-check (+ haipipe-paper-proof-checker)
@@ -84,14 +84,14 @@ Lifecycle stages map 1:1 to skills (full table in `1-lifecycle/ref/04-lifecycle-
 
 ```text
 enter             -> 0-enter/haipipe-paper-enter
-0-seed            -> 1-lifecycle/0-seed/haipipe-paper-seed
-1-resource        -> 1-lifecycle/1a-resource/haipipe-paper-resource (venue-FREE; what must EXIST for the paper to be testable; is stage 1a, just before claims (1b))
-1-claims          -> 1-lifecycle/1b-claims/haipipe-paper-claims
-venue (choose+pin)-> 1-lifecycle/2a-venue/haipipe-paper-venue (recommend journal, write STATUS venue; after claims, before pitch; claims is venue-free)
-2-pitch           -> 1-lifecycle/2b-pitch/haipipe-paper-pitch
-3-narrative       -> 1-lifecycle/3-narrative/haipipe-paper-narrative
-4-display         -> 1-lifecycle/4-display/haipipe-paper-display (+ render skills -display-{table,figure,diagram,illustration})
-5-section-edit    -> 1-lifecycle/5-section-edit/haipipe-paper-section-edit (per-section DRAFT/PROBE/REVISE/CHECK)
+0-seed            -> 1-lifecycle/haipipe-paper-stage/stages/0-seed/
+1-resource        -> 1-lifecycle/haipipe-paper-stage/stages/1a-resource/ (venue-FREE; what must EXIST for the paper to be testable; is stage 1a, just before claims (1b))
+1-claims          -> 1-lifecycle/haipipe-paper-stage/stages/1b-claims/
+venue (choose+pin)-> 1-lifecycle/haipipe-paper-stage/stages/2a-venue/ (recommend journal, write STATUS venue; after claims, before pitch; claims is venue-free)
+2-pitch           -> 1-lifecycle/haipipe-paper-stage/stages/2b-pitch/
+3-narrative       -> 1-lifecycle/haipipe-paper-stage/stages/3-narrative/
+4-display         -> 1-lifecycle/haipipe-paper-stage/stages/4-display/ (+ render skills -display-{table,figure,diagram,illustration})
+5-section-edit    -> 1-lifecycle/haipipe-paper-stage/stages/5-section-edit/ (per-section DRAFT/PROBE/REVISE/CHECK)
 review            -> 3-deliver/2-audit/ (claim-audit, reviewer, optimizer)
 round             -> 0-enter/haipipe-paper-round
 respond           -> 4-respond/*
@@ -127,7 +127,7 @@ polish / format / typeset             -> 3-deliver/3-polish
 compile / diff / overleaf / ship      -> 3-deliver/4-ship
 rebuttal / response                   -> 4-respond
 slides / poster                       -> 5-present
-venue / which journal / where submit  -> 1-lifecycle/2a-venue/haipipe-paper-venue  (recommend + pin STATUS venue)
+venue / which journal / where submit  -> 1-lifecycle/haipipe-paper-stage/stages/2a-venue/  (recommend + pin STATUS venue)
   (the pinned venue's pack             -> venue/playbook-<venue>, consulted by each stage)
 ```
 
@@ -166,4 +166,4 @@ Maturity answers "how real is the paper?"
 | `0-displays/Figures/` `Tables/` buckets | `0-displays/displayNN-<slug>/` |
 | project-level narrative coordination | paper owns its story; gaps route to probe |
 | `haipipe-paper-{conference,journal,is}` | `venue/playbook-<venue>` + lifecycle verbs |
-| `haipipe-paper-{create,revise}` | `5-section-edit/haipipe-paper-section-edit` (drives the DRAFT/REVISE phases) |
+| `haipipe-paper-{create,revise}` | `haipipe-paper-stage/stages/5-section-edit/` (drives the DRAFT/REVISE phases) |

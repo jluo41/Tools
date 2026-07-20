@@ -1,16 +1,16 @@
 # 2-phase -- how to use it
 
-Concrete recipes for the phase engine. You never invoke a phase skill directly: you run a **stage skill** from `1-lifecycle/` and it drives DRAFT → PROBE → REVISE internally, then stops at CHECK for you. Paths below use a real example manuscript:
+Concrete recipes for the phase engine. You never invoke a phase skill directly: you run a **stage skill** from `1-lifecycle/` and it drives the four phases internally, stopping at BOTH judgment gates for you — the DRAFT structure review and the CHECK quality review (see "Two human gates" below). Paths below use a real example manuscript:
 
 ```
-PAPER=examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality2Opioid-MISQ2026
+PAPER=examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026
 SEC=$PAPER/0-lifecycle/5-section-edit
 ```
 
 ## TL;DR
 
 ```
-1. /haipipe-paper-section-edit introduction draft   → DRAFT writes a REAL prose draft, then ⛔ STOPS
+1. /haipipe-paper-stage section-edit introduction draft   → DRAFT writes a REAL prose draft, then ⛔ STOPS
 2. You review the STRUCTURE (¶ jobs, order, coverage) in the .md; comment > USER: inline
 3. Your verb advances:  … introduction probe  → PROBE fills {VAL:?} / \cite{TOADD} sources (agent-only)
                         … introduction revise → REVISE workers polish + sync to tex (agent-only)
@@ -18,7 +18,7 @@ SEC=$PAPER/0-lifecycle/5-section-edit
 5. You decide: proceed / restart <phase> / accept with edits / park → loop until clean → compile
 ```
 
-Two human gates: structure review after DRAFT, quality review at CHECK. The agent never advances past a gate on its own — your verb (or "go") is the approval. Same engine behind every stage: `seed | claims | pitch | narrative | display | section-edit`.
+Two human gates: structure review after DRAFT, quality review at CHECK. The agent never advances past a gate on its own — your verb (or "go") is the approval. Unattended (autopilot), a fresh-context reviewer subagent stands in and decides at each gate; the gate is delegated, never skipped. Same engine behind every stage: `seed | claims | pitch | narrative | display | section-edit`.
 
 ## A. Run a stage (the normal path)
 

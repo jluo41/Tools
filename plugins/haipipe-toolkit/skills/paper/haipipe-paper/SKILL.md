@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); evidence enters ONLY through the PROBE phase, which runs the probe plan DRAFT authored in 1-probes/PPNN_<topic>.md, dispatching each open entry through a clean agent. `enter`/`status` open the paper's open-needs dashboard. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
+description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); evidence enters ONLY through the PROBE phase, which authors the probe plan in 1-probes/PPNN_<topic>.md from the stage doc's Q-consumer and then runs it, dispatching each open entry through a clean agent. `enter`/`status` open the paper's open-needs dashboard. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
@@ -48,14 +48,14 @@ One block: verb, aliases and trigger keywords, then where it goes.
 
 ```
 enter | status | dashboard | preload         -> haipipe-paper-enter (open-needs console; GET-OR-CREATE: a missing path offers to create the paper first, see Dispatch notes; also "enter paper", "paper status", "create paper", "new paper folder")
-venue | journal | 选刊 | any venue name       -> haipipe-paper-venue (recommend + pin; MISQ/ISR/Management Science/Nature/PNAS/JAMA/NEJM/Lancet/clinical/grant/patent all land here)
-seed                                         -> haipipe-paper-lifecycle seed        (also "paper seed", "why this paper")
-resource | prereq | prerequisite | need      -> haipipe-paper-lifecycle resource    (venue-FREE; what must EXIST for this paper to be testable, does it exist, can it CARRY the claim -- data, model checkpoints and producing-code alike; also "do we have the data", "does the checkpoint exist", "demand", "1-resource")
-claims | claim | ledger                      -> haipipe-paper-lifecycle claims      (also "claim gap", "supported", "GAP", "H1/H2/H3")
-pitch                                        -> haipipe-paper-lifecycle pitch       (also "cover letter", "one-minute story", "editor's chair")
-narrative | story | contract                 -> haipipe-paper-lifecycle narrative
-display | figures | figures-tables           -> haipipe-paper-lifecycle display     (also "figure plan", "gallery", "preview pdf")
-section-edit | section | sec | §N            -> haipipe-paper-lifecycle section-edit (per-section prose work)
+venue | journal | 选刊 | any venue name       -> haipipe-paper-stage venue (recommend + pin; MISQ/ISR/Management Science/Nature/PNAS/JAMA/NEJM/Lancet/clinical/grant/patent all land here)
+seed                                         -> haipipe-paper-stage seed        (also "paper seed", "why this paper")
+resource | prereq | prerequisite | need      -> haipipe-paper-stage resource    (venue-FREE; what must EXIST for this paper to be testable, does it exist, can it CARRY the claim -- data, model checkpoints and producing-code alike; also "do we have the data", "does the checkpoint exist", "demand", "1-resource")
+claims | claim | ledger                      -> haipipe-paper-stage claims      (also "claim gap", "supported", "GAP", "H1/H2/H3")
+pitch                                        -> haipipe-paper-stage pitch       (also "cover letter", "one-minute story", "editor's chair")
+narrative | story | contract                 -> haipipe-paper-stage narrative
+display | figures | figures-tables           -> haipipe-paper-stage display     (also "figure plan", "gallery", "preview pdf")
+section-edit | section | sec | §N            -> haipipe-paper-stage section-edit (per-section prose work)
 table | figure | plot | diagram |
   illustration | figure1 | framework         -> haipipe-paper-lifecycle <renderer verb> (display renderer family; 做表/画图/架构图)
 build | scaffold | restructure | conform | folder |
@@ -105,6 +105,8 @@ Venue coupling (drives two routing rules): seed + resource + claims are venue-FR
 So: "paper" with claims done but no venue pinned -> run `venue` before pitch.
 Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); resource and claims stay unchanged (what a paper NEEDS to exist does not depend on where you send it).
 
+**Every lifecycle STAGE goes through one skill.** `seed · resource · claims · venue · pitch · narrative · display · section-edit` are no longer separate skills — dispatch them as `Skill("haipipe-paper-stage", args="<stage-key> <rest>")`, stage key first. The four display RENDERERS (`table · figure · diagram · illustration`) are workers and keep their own skills.
+
 Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-paper-<target>")` or `Skill("haipipe-paper-lifecycle", args="<verb> ...")`):
 
 ```
@@ -149,7 +151,7 @@ Markers: 🔥 active now (what this session works on) · 🚀 frontier (farthest
 Rules: EXACTLY one 🔥 and EXACTLY one 🚀 per line, never zero -- "reached" means entered, not completed, so a virgin paper working its first phase renders `draft 🔥🚀`, and any line showing 🔥 without a 🚀 somewhere is a rendering defect; they split only on loopback (the frontier slot keeps 🚀 while 🔥 moves back) and collapse to `🔥🚀` when they land on the same slot; the phase line always describes the 🔥 stage's DPRC phases; `cite`/`val`/`disp` are probe's sub-tracks (stages without them show a single `probe` slot).
 Two markers because loopbacks are normal (redo seed while the frontier is section-edit): one marker cannot show both "where I am" and "how far the paper has gotten".
 
-Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "$CLAUDE_SKILL_DIR/stage-strip.sh" <paper-dir> [<session-stage>]` (the script lives IN this skill folder, next to this spec).
+Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "${CLAUDE_SKILL_DIR:-.}/stage-strip.sh" <paper-dir> [<session-stage>]` (the script lives IN this skill folder, next to this spec).
 The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
 
 
@@ -364,7 +366,7 @@ Do NOT route through a project-level narrative layer (there isn't one).
 ### Routes
 
 ```
-claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (an ENTRY in 1-probes/; MATCH at DRAFT, dispatch only what MATCH cannot close)
+claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (an ENTRY in 1-probes/; PROBE does MATCH first, and dispatches only what MATCH cannot close)
 figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
 settled claim status (supported|refuted|inconclusive             -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY home of a claim's status; the
   + confidence + claim_type)                                        probe entry carries only the `### a-executor` copy of the bank's answer.
@@ -540,7 +542,7 @@ Composing with Evidence Workers
         │
         │   evidence path (a claim hits a gap):
         └─► 1-probes/PPNN_<topic>.md (one file per TOPIC, one ENTRY per q-executor)
-                 │        DRAFT authored ① ORGANIZE + ② MATCH ──► most entries close at MATCH (T2 REUSE)
+                 │        PROBE runs ① ORGANIZE + ② MATCH ─────► most entries close at MATCH (T2 REUSE)
                  └─► haipipe-paper-probe (the PROBE phase worker, run inside a stage's PROBE phase)
                           ③ DISPATCH the `### q-executor` block, VERBATIM, only for what MATCH missed:
                                Agent(haipipe-probe-q-executor-agent)          ← its clean context IS the wall

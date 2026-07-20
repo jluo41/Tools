@@ -53,7 +53,7 @@ Human review of revised prose happens in CHECK.
 ## Universal rules
 
 All revise workers read and enforce `../../REF/prose-quality.md`. Installed skills flatten the tree (symlinks under `~/.claude/skills/`), so that relative path is NOT reliable — locate it layout-agnostically:
-`PQ=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in _LOG).
+`PQ=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in _LOG).
 The rules:
 
 - One idea per sentence
@@ -141,11 +141,11 @@ Stage skills call this as their REVISE phase:
 
 | Stage skill | What this skill revises |
 |---|---|
-| haipipe-paper-pitch | cover letter prose (readability rules) |
-| haipipe-paper-narrative | story beat prose (arc/flow coherence) |
-| haipipe-paper-section-edit | section tex (full revise: content + humanizer + results) |
+| pitch | cover letter prose (readability rules) |
+| narrative | story beat prose (arc/flow coherence) |
+| section-edit | section tex (full revise: content + humanizer + results) |
 
-Note: seed, resource and claims produce argument docs that skip REVISE (markdown only, no venue-quality prose needed).
+Note: whether a stage runs REVISE is declared by its own contract's `phases:` list, not by this table. Argument docs (seed, resource, claims) need no venue-quality POLISH — but they DO run REVISE when their contract lists it, because REVISE is also where a landed answer is woven back into the sentences that cite it and the `[Q-<Stage>-<n>]` bracket is discharged. `2a-venue` is the one stage that genuinely omits REVISE: it produces a contract, not prose.
 Resource has ONE exception: a woolly fitness ruling ("probably fine") is a DEFECT, not an answer -- when an **A** does not say what it KILLS, resource does NOT skip REVISE and sharpens it instead.
 
 ## Sibling phase workers

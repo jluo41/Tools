@@ -4,7 +4,7 @@ description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`,
 argument-hint: "[paper-path] [--org <owner>] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "4.1.0"
+  version: "4.1.1"
   last_updated: "2026-07-19"
   summary: "Paper Console: a derive-from-disk dashboard + lifecycle router, and THE home of the dashboard spec (golden rule, frontier predicates, glyphs, shallow check, render skeleton). Renders the 9-stage spine (seed · resource · claims · venue · pitch · narrative · display · section-edit · review) and a four-glyph DPRC phase strip; the resource predicate honours the `n/a` exemption for pre-2026-07-14 papers. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -253,7 +253,7 @@ Open needs block (printed directly under the panel; short, it is "what to do nex
 Open needs (from 1-rounds/<round>/todo.md + 1-claims planned/GAP rows + missing displays):
   - <gap> -> <route>     e.g. Materialize Display 01-04 -> /haipipe-task-for-display
   - <gap> -> <route>     e.g. Backfill C1-C5 evidence anchors -> /haipipe-paper probe "<need>"
-                              (opens a question SECTION in 1-probes/; the PROBE phase MATCHes
+                              (opens a question ENTRY in 1-probes/; the PROBE phase MATCHes
                                the bank first, and commissions only if nothing answers it)
 ```
 
@@ -344,7 +344,7 @@ Operational details come after orientation.
 Render the stage strip deterministically with the helper, never hand-typed:
 
 ```sh
-sh "$CLAUDE_SKILL_DIR/../../haipipe-paper/stage-strip.sh" <paper-root>
+sh "${CLAUDE_SKILL_DIR:-.}/../../haipipe-paper/stage-strip.sh" <paper-root>
 ```
 
 It prints one line driven by `STATUS.md current_layer`, over the 9-stage spine `seed resource claims venue pitch narrative display section-edit review`.
@@ -493,16 +493,16 @@ Full marker convention in the haipipe-paper umbrella SKILL.md, Closing Block sec
 After the dashboard, route follow-up input through the lifecycle using the command map in `../../1-lifecycle/ref/04-lifecycle-map.md`:
 
 ```text
-seed                       -> /haipipe-paper seed         (haipipe-paper-seed)
-resource / prereq /        -> /haipipe-paper resource      (haipipe-paper-resource)
+seed                       -> /haipipe-paper seed         (stage key: seed)
+resource / prereq /        -> /haipipe-paper resource      (stage key: resource)
   do we have the data /
   does the checkpoint exist
-claims / ledger            -> /haipipe-paper claims        (haipipe-paper-claims)
-venue / journal            -> /haipipe-paper venue         (haipipe-paper-venue)
-pitch / story / sell       -> /haipipe-paper pitch         (haipipe-paper-pitch)
-narrative / arc            -> /haipipe-paper narrative     (haipipe-paper-narrative)
-display / figure / table   -> /haipipe-paper display       (haipipe-paper-display)
-section / edit / §N        -> /haipipe-paper section-edit  (haipipe-paper-section-edit)
+claims / ledger            -> /haipipe-paper claims        (stage key: claims)
+venue / journal            -> /haipipe-paper venue         (stage key: venue)
+pitch / story / sell       -> /haipipe-paper pitch         (stage key: pitch)
+narrative / arc            -> /haipipe-paper narrative     (stage key: narrative)
+display / figure / table   -> /haipipe-paper display       (stage key: display)
+section / edit / §N        -> /haipipe-paper section-edit  (stage key: section-edit)
 check §N                   -> /haipipe-paper-check
 round / todo               -> round skills
 rebuttal / respond         -> rebuttal skills
@@ -566,5 +566,5 @@ phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
 ```
 
 `status` merges the state and the active stage on one line: `ok` (dashboard rendered, session ready) · `blocked` (missing paper root or unresolvable state) · `failed` (read error or inconsistent disk state).
-NO `paper_root` or `current_layer` lines in the tail -- the header rule and the stage line already carry them (the retired 4-field tail must not reappear).
+NO `paper_root` or `current_layer` lines in the tail -- the header rule and the stage line already carry them.
 Render the stage line with `../../haipipe-paper/stage-strip.sh`; the closing block is the very last thing in every reply.

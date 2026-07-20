@@ -1,0 +1,75 @@
+# section-kinds.yml — the CLOSED vocabulary of section kinds, and which outlet has which.
+#
+# Owned by the VENUE stage, because venue already owns the other resolution map
+# (human venue label -> pack slug). Read by section-edit, narrative, and display.
+#
+# WHY THIS FILE EXISTS — two things measured on disk 2026-07-20 across 95 style.md files:
+#
+#   1. THE SLUG PREFIX IS NOT COMPUTABLE. A pack file is <outlet>/<slug>-<kind>/style.md and
+#      the slug is arbitrary, sometimes multi-token:
+#        MISQ -> MISQ-      ·  JAMA Netw Open -> jno-   ·  Diabetes Care -> diabcare-
+#        npj Digital Med -> npjdm-  ·  Nat Comms -> natcomm-  ·  MS-IS -> MS-IS-
+#      So the path must be reached by GLOB (`*-<kind>`), never by string concatenation.
+#      Concatenation happens to work for MISQ and fails on six other outlets.
+#
+#   2. THE POSITIONING SECTION HAS THREE NAMES, and two of them are NOT the same section.
+#      `theory` (IS family) DEVELOPS the model and its hypotheses.
+#      `related-work` (Nature family) SITUATES the paper against prior literature.
+#      Those are different jobs — they are NOT aliases. `theory-model` IS an alias of `theory`.
+#      Five outlets have neither.
+
+resolution:
+  # 1. read the paper's 0-lifecycle/2a-venue/2a-venue.md provenance header -> <pack>, <outlet>
+  #    NEVER guess either from the human venue label.
+  # 2. locate the venue dir layout-agnostically (installed skills flatten the tree):
+  #      VEN=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" \
+  #             -type d -path '*skills/paper/venue' 2>/dev/null | head -1)
+  # 3. glob, do not concatenate:
+  #      "$VEN/<pack>/<outlet>"/*-<kind>/style.md
+  # 4. 0 hits  -> `style: (pack missing — blueprint only)` + flag for CHECK. Never invent a path.
+  #    >1 hits -> FAIL. Do not pick one.
+  # The BLUEPRINT in 2a-venue.md is BINDING and is sufficient to draft without any pack;
+  # the pack is the REFERENCE deep-dive only.
+  glob: "<VEN>/<pack>/<outlet>/*-<kind>/style.md"
+
+kinds:                       # the closed set. A section maps to exactly one.
+  - abstract
+  - introduction
+  - theory                   # develops the model / hypotheses (IS family)
+  - related-work             # situates against prior literature (Nature family)
+  - methods
+  - results
+  - discussion
+  - appendix
+  - letter                   # outlet-specific: the JAMA research-letter format
+  - significance             # outlet-specific: the PNAS significance statement
+
+aliases:                     # on-disk directory suffix -> canonical kind
+  theory-model: theory       # MS-IS names it this; same section, different label
+
+# WHICH OUTLET HAS WHICH — measured, not assumed. An absent kind means that outlet has no
+# pack file for it: fall back to the 2a-venue.md blueprint block alone.
+outlets:
+  playbook-utd-is:
+    MISQ:                    [abstract, introduction, theory, methods, results, discussion, appendix]
+    ISR:                     [abstract, introduction, theory, methods, results, discussion, appendix]
+    MS-IS:                   [abstract, introduction, theory, methods, results, discussion, appendix]   # theory via theory-model
+    MS-Marketing:            [abstract, introduction, theory, methods, results, discussion, appendix]
+  playbook-nature-portfolio:
+    NMI:                     [abstract, introduction, related-work, methods, results, discussion, appendix]
+    nature-communications:   [abstract, introduction, related-work, methods, results, discussion, appendix]
+    nature-human-behaviour:  [abstract, introduction, related-work, methods, results, discussion, appendix]
+    nature-medicine:         [abstract, introduction, related-work, methods, results, discussion, appendix]
+    npj-digital-medicine:    [abstract, introduction, related-work, methods, results, discussion, appendix]
+  playbook-jama-portfolio:
+    jama-flagship:           [abstract, introduction, methods, results, discussion, appendix, letter]
+    jama-im:                 [abstract, introduction, methods, results, discussion, appendix, letter]
+    jama-netopen:            [abstract, introduction, methods, results, discussion, appendix]
+  playbook-medical-journals:
+    diabetes-care:           [abstract, introduction, methods, results, discussion, appendix]
+  playbook-pnas:
+    pnas:                    [abstract, significance, introduction, methods, results, discussion]   # no appendix
+
+# Packs with no per-section style files at all — blueprint-only, by design:
+#   playbook-grant · playbook-patent
+# A named venue with NO pack (NEJM, Lancet, ICLR, NeurIPS…) is blueprint-only too.

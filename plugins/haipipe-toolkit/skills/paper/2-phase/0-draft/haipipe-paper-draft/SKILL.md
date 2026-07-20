@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-draft
-description: "DRAFT phase worker (internal). Called by stage skills to produce the first-pass artifact. Reads the stage's artifact spec (from 1-lifecycle/) to know WHAT the result should look like, then runs the generic drafting process: consult upstream → settle structure → draft content → iterate with user → confirm. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
+description: "DRAFT phase worker (internal). Called by stage skills to produce the first-pass artifact. Reads the stage's contract at 1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md to know WHAT the result should look like, then runs the generic drafting process: consult upstream → settle structure → draft content → iterate with user → confirm. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
 metadata:
-  version: "5.1.0"
+  version: "5.2.0"
   last_updated: "2026-07-19"
-  summary: "DRAFT phase worker (internal). TWO outputs, not one: the stage's first-pass artifact, and the QUESTIONS it could not answer. Step 4a sweeps the prose through three lanes (citation/values/display) which REPORT holes; Step 4b RAISE+PLAN is the single pen -- it raises each `## Q-<Stage>-<n>` in the stage doc's Q-consumer AND authors its q-executor ENTRY in 1-probes/ (find-or-open, T0 JOIN before a new entry; route + bank + target; never `### a-executor`). Step 4c self-reviews draft + plan in a fresh context, then ONE gate reviews both. Each stage owns its own **Questions this stage typically raises**; this worker points at it and never restates it. Inline WebSearch is drafting fuel only. History: ./CHANGELOG.md."
+  summary: "DRAFT phase worker (internal). TWO outputs, not one: the stage's first-pass artifact, and the QUESTIONS it could not answer. Step 4a sweeps the prose through three lanes (citation/values/display) which REPORT holes; Step 4b RAISE+PLAN is the single pen -- it raises each `## Q-<Stage>-<n>` in the stage doc's Q-consumer AND authors its q-executor ENTRY in 1-probes/ (find-or-open, T0 JOIN before a new entry; route + bank + target; never `### a-executor`). Step 4c self-reviews draft + plan in a fresh context, then ONE gate reviews both. Each stage owns its own dispatch scope and craft; this worker points at its stage.md and never restates it. Inline WebSearch is drafting fuel only. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,7 @@ Skill: haipipe-paper-draft (internal phase worker)
 
 DRAFT phase worker.
 Called by stage skills (seed, resource, claims, pitch, narrative, display, section-edit) to produce the first-pass artifact.
-The stage defines WHAT the result looks like (artifact spec in `../../../1-lifecycle/`).
+The stage defines WHAT the result looks like (its contract at `../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md`).
 This skill defines HOW to get there.
 
 **Not user-facing.**
@@ -33,8 +33,10 @@ The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **P
 - **EVERY HOLE IS FILLED OR OWNED, EVERY STAGE.** `1-probes/` is the ONLY consumer-side source of truth and `_LOG_<stage>.md` is the ONLY sidecar. A hole you cannot fill leaves a placeholder carrying the id of the question that will settle it — `\cite{TOADD} [Q-<Stage>-<n>]`, `{VAL:? <what>} [Q-<Stage>-<n>]` — two markers side by side, never fused. A placeholder with no bracket is a defect: nobody owns it, so nobody will ever fill it. If no existing question would produce it, RAISE ONE; asking is cheap and the DRAFT gate decides what is worth pursuing.
 - **Citations**: grep the paper's `.bib` FIRST — real `\citep{key}` for hits, `\cite{TOADD} [Q-<Stage>-<n>]` where none fits. A key that does not grep is invented.
 - **T1 LOCAL**: a question answered by the paper's OWN registries (entries already `read` in `1-probes/` · `0-displays/` units · the `.bib` · `_LOG_<stage>.md`) roots its `### bank binding` there — `target` into the registry, `state: answered-local` (no bank dispatch). A display-shaped need reroutes to `0-lifecycle/4-display/_DISPLAY_REQUEST.md`.
-- **RESOURCE stage**: read `1a-resource.md`'s GATE-1-approved `Q<n>`, open one q-executor ENTRY per question (its `### q-consumer` bullet carries the `Q<n>` id), and write the `-> PP<NN>` backlink into `1a-resource.md`.
+- **RESOURCE stage**: read the `Q<n>` the stage drafted in `1a-resource.md`, open one q-executor ENTRY per question (its `### q-consumer` bullet carries the `Q<n>` id), and write the `-> PP<NN>` backlink into `1a-resource.md`. This happens BEFORE GATE 1, never after: GATE 1 *is* the DRAFT gate, and what the human approves there is the set of questions this step just opened. Opening an entry is not a commitment to dispatch it — asking is cheap, and the gate is where worth is decided.
 - One sentence per line; no markdown tables in probe files.
+- ⛔ **DRAFT DOES NOT TOUCH `1-probes/`.** It raises `## Q-<Stage>-<n>` blocks in the stage doc and stops. Writing a `### q-executor`, choosing a `route`, judging a `bank`, or setting a `target` is PROBE's ① and ②. (They ran here until 2026-07-20, purely so one human gate could review draft + plan together; stages now declare `gates: [check]`, so that reason is gone.)
+- ⛔ **DRAFT OPENS NO GATE unless the stage's contract declares one.** Read `gates:` in `stage.md`. The default is `[check]` — in that case DRAFT ends by handing straight to PROBE, with no STOP.
 
 The steps below are the HOW-TO for these rules.
 
@@ -47,7 +49,7 @@ For argument docs (seed, claims, pitch, narrative) that means content decisions 
 For SECTIONS it means a REAL draft — complete academic sentences close to submission register, with real `\citep{key}` citations for keys already in the paper's .bib and `{VAL:? <what>} [Q-<Stage>-<n>]` / `\cite{TOADD} [Q-<Stage>-<n>]` placeholders for everything unverified — because the user reviews structure by reading real prose, not a skeleton.
 In both cases: content-complete, unverified, unpolished (polish is REVISE's job).
 
-Each stage has its own artifact spec (in `../../../1-lifecycle/{stage}/haipipe-paper-{stage}/SKILL.md`) that defines:
+Each stage has its own contract (`../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md`) that defines:
 - What files to produce
 - What content structure to follow
 - What done-criteria to meet
@@ -62,20 +64,37 @@ Same process for every stage, different content:
 
 ### Step 1. Identify the stage and read its artifact spec + template
 
-Determine which stage is being drafted, then read TWO things from `../../../1-lifecycle/`: the stage's SKILL.md artifact spec (WHAT to produce, done-criteria) and the stage's canonical template (section order, placeholders).
-This skill carries NO templates of its own -- the stage owns its format.
+Determine which stage is being drafted, then read TWO files from that stage's own folder under
+`../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/`:
 
-| Stage | Artifact spec | Template |
-|---|---|---|
-| seed | `../../../1-lifecycle/0-seed/haipipe-paper-seed/SKILL.md` | `ref/seed-template.md` |
-| resource | `../../../1-lifecycle/1a-resource/haipipe-paper-resource/SKILL.md` | `ref/resource-template.md` |
-| claims | `../../../1-lifecycle/1b-claims/haipipe-paper-claims/SKILL.md` | `ref/claims-template.md` |
-| pitch | `../../../1-lifecycle/2b-pitch/haipipe-paper-pitch/SKILL.md` | `ref/pitch-template.md` |
-| narrative | `../../../1-lifecycle/3-narrative/haipipe-paper-narrative/SKILL.md` | `ref/narrative-template.md` |
-| display | `../../../1-lifecycle/4-display/haipipe-paper-display/SKILL.md` | `ref/display-template.md` (unit contracts live in the same `ref/`) |
-| section name (e.g. `introduction`) | `../../../1-lifecycle/5-section-edit/haipipe-paper-section-edit/SKILL.md` | `ref/outline-format.md` |
+```text
+stage.md      the CONTRACT (YAML frontmatter: artifact path, sections, done_criteria,
+              q_id_pattern, phases, exit_when) + the CRAFT prose for that stage
+template.md   the canonical skeleton — section order, placeholders, inline <!-- RULE --> comments
+```
 
-(Template paths are relative to each stage skill's OWN folder — the same folder as its SKILL.md, e.g. `../../../1-lifecycle/0-seed/haipipe-paper-seed/ref/seed-template.md`.)
+This skill carries NO templates of its own — the stage owns its format.
+Resolve the folder from `../../../1-lifecycle/haipipe-paper-stage/stages/index.yml`, which maps a
+stage key to its `dir`. Do NOT hardcode the mapping here; that index is the one enumerating file.
+
+```text
+seed          -> stages/0-seed/
+resource      -> stages/1a-resource/
+claims        -> stages/1b-claims/
+venue         -> stages/2a-venue/
+pitch         -> stages/2b-pitch/
+narrative     -> stages/3-narrative/
+display       -> stages/4-display/
+section-edit  -> stages/5-section-edit/     (a section NAME, e.g. `introduction`, routes here)
+```
+
+Some stages carry EXTRA support files in the same folder; read them when the contract's
+`support:` field names them. They are NOT uniform — `2b-pitch/readability.md`,
+`4-display/figure-logic.md` + `checklist.md`. section-edit has none — its template is its own rulebook. Never assume a
+file exists because a sibling stage has one.
+
+⚠️ The `phases:` field in `stage.md` is AUTHORITATIVE and is not always four. `venue` declares
+`[draft, probe, check]` — it has no REVISE. Run what the stage declares.
 
 ### Step 2. Consult upstream artifacts
 
@@ -125,7 +144,7 @@ The `Q-consumer` section lives at the END of every stage doc — no exceptions. 
 Fill in the structure with first-pass content:
 - Write to settle WHAT is being said, not HOW it sounds
 - Argument docs: working prose.
-  Sections: REAL prose per the stage's template (`ref/outline-format.md`) — complete sentences, one per line, blank line between
+  Sections: REAL prose per the stage's template (`stages/5-section-edit/template.md`, which carries its own fill rules) — complete sentences, one per line, blank line between
 - Citations real, never guessed: grep the paper's .bib FIRST and write `\citep{key}` for keys that exist; `\cite{TOADD} [Q-<Stage>-<n>]` where no key fits; `{VAL:? <what>} [Q-<Stage>-<n>]` for unverified numbers.
   A key that does not grep in .bib is an invented citation.
 - Never invent a number or citation to avoid a placeholder
@@ -169,9 +188,9 @@ Skip a lane only when the artifact cannot carry its kind of hole (a seed has no 
 
 ### Step 4b. 🙋 RAISE + PLAN — every question this draft cannot answer
 
-**DRAFT is where the questions are born AND planned** — the probe plan is authored here, beside the draft, so ONE gate reviews both (see probe's PHASE MAP: ①ORGANIZE + ②MATCH run at DRAFT).
+**DRAFT is where the questions are BORN — and only born.** Raise each `## Q-<Stage>-<n>` in the stage doc's Q-consumer, in the consumer's own words, with the stake attached, and STOP. Planning them (①ORGANIZE, ②MATCH) is PROBE's; see probe's PHASE MAP. This skill never opens `1-probes/`.
 
-This step is UNCONDITIONAL. It runs on every draft, whatever the question's origin: a hole Step 4a's lanes returned unowned, a question the stage typically raises (see the calling stage's **Questions this stage typically raises**), a gap a web search revealed, or one you simply noticed while writing.
+This step is UNCONDITIONAL. It runs on every draft, whatever the question's origin: a hole Step 4a's lanes returned unowned, a question the stage typically raises (see the calling stage's `dispatch_scope:` + craft body), a gap a web search revealed, or one you simply noticed while writing.
 
 Each question gets TWO artifacts, and they are a conjunction — neither alone is the job:
 
@@ -190,7 +209,30 @@ Asking is cheap. A question you are unsure is worth pursuing still gets raised �
 
 ### Step 4c. 🤖 SELF-REVIEW — check the draft + probe plan before the gate
 
-Before the STOP gate, self-review the DRAFT output — a CREATOR/REVIEWER split, so the drafter does not grade its own work. Dispatch a review sub-agent in a FRESH context (report-only; the drafter applies the fixes):
+**RUN THE CHECKER FIRST. It is deterministic; the sub-agent below is not.**
+
+```sh
+CHK=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 -path '*haipipe-paper-probe/check-probe-cards.sh' 2>/dev/null | head -1)
+[ -n "$CHK" ] || { echo 'FAIL: paper probe checker not found'; exit 1; }
+sh "$CHK" <paper_root> --stage <stage>
+```
+
+**The DRAFT-phase pass condition — the ONLY legal FAIL is `state-planned(probe-not-run)`.** That one is not a defect here: it is what a correct DRAFT looks like, because DRAFT plans the entries and PROBE runs them. Every OTHER code is a DRAFT defect and is fixed before the gate:
+
+```
+cite-unowned / value-unowned   a placeholder no question owns   <- Step 4a+4b did not finish
+dangling-owner                 a bracket naming a Q-consumer that does not exist
+stale-old-format               the entry is not in the QX-entry shape
+LAW2-q-executor-leak           the stake crossed into the q-executor
+sidecar-present                a second ledger was created
+markdown-table                 a probe file holding a table
+```
+
+Do NOT delegate this to the sub-agent. Its checklist below asks for the SAME placeholder-ownership property in prose ("COMPLETENESS, the reverse direction") — and a model eyeballing a doc for a regex property is exactly the check that passes when it should fail. Measured 2026-07-19 on Paper-Personality2Opioid-MISQ2026: 19 unowned placeholders across four section docs, every one of them written under a DRAFT self-review that reported clean. The stage skills already say it — "the gate RUNS the checker and shows its output; it never eyeballs" — and this is the phase where the property is CREATED, so this is where running it is cheapest.
+
+The sub-agent's job is what the checker CANNOT test: whether a question is answerable, whether a `bank` verdict was actually rooted in a folder someone read, whether the prose says something. Judgment, not pattern-matching.
+
+Then, the CREATOR/REVIEWER split, so the drafter does not grade its own work. Dispatch a review sub-agent in a FRESH context (report-only; the drafter applies the fixes):
 
 ```text
 Agent(general-purpose, prompt="
@@ -249,13 +291,13 @@ When the user approves:
 ### seed
 - Output: `0-lifecycle/0-seed/0-seed.md`
 - WebSearch-to-orient: see Step 4 (the one normative home).
-- Question types: `../../../1-lifecycle/0-seed/haipipe-paper-seed/SKILL.md` -> **Questions this stage typically raises** (the stage owns its own list; this file never restates it).
+- Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/0-seed/stage.md` -> its `dispatch_scope:` + the craft body (the stage owns its own list; this file never restates it).
   Profiling OUR OWN data is RESOURCE-stage task work; register it as a `[FORWARD -> RESOURCE]` pointer in `_LOG`, do not raise it in seed.
-  The RESOURCE stage is the SOLE CONSUMER of these pointers and takes them at its open (reader clause in haipipe-paper-resource SKILL) -- an unconsumed pointer fails the RESOURCE done-criteria, not claims'.
+  The RESOURCE stage is the SOLE CONSUMER of these pointers and takes them at its open (reader clause in the resource stage contract) -- an unconsumed pointer fails the RESOURCE done-criteria, not claims'.
 - Short document, FIVE sections: Seed Question + Motivations + Landscape + Tentative Claim Shape + Q-consumer (Landscape and Q-consumer are not optional — the `[Q-Seed-<n>]` anchor loop hangs on Q-consumer)
 
 ### resource
-- Output: `0-lifecycle/1a-resource/1a-resource.md`; template `ref/resource-template.md`
+- Output: `0-lifecycle/1a-resource/1a-resource.md`; template `template.md` (in stages/1a-resource/)
 - Venue-FREE, and it sits BETWEEN seed and claims — it is stage 1a, just before claims (1b) on disk (precedented by `2a-venue/` + `2b-pitch/`).
   Nothing renumbers.
 - EXACTLY TWO SECTIONS: **Demand** (one `**N<n> (H<n>)**` per prerequisite the seed's Tentative Claim Shape implies -- keyed on H, never C) and **Questions** (one `**Q<n> (N<n>)**`, its `-> PP<NN>` backlink once the PROBE worker opens the section, and its `A:` when the answer lands).
@@ -266,7 +308,7 @@ When the user approves:
   Each pointer becomes an N row, a Q, or is explicitly DECLINED in `_LOG` with its reason; a CLAIM-STATUS pointer is not ours — leave it for claims and say so.
 - The stage ASKS; it never mints a PP id, never picks a probe type or topic, and never executes (no `/haipipe-data`, `/haipipe-nn`, `/haipipe-task`, no inline store scan).
   WebSearch/glob to ORIENT is legal DRAFT fuel per Step 4 — it never lands in an `A`.
-- Question types: `../../../1-lifecycle/1a-resource/haipipe-paper-resource/SKILL.md` -> **Questions this stage typically raises**.
+- Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/1a-resource/stage.md` -> its `dispatch_scope:` + the craft body.
 - PROBE (resource): EXACTLY ONE worker call per pass — `Skill("haipipe-paper-probe", args="from-buffer <paper_root>")`, never evidence inline.
   The worker runs the DRAFT-authored entries forward — ③ DISPATCH what the plan left `NEW`, ④ POINT, ⑤ INTERPRET — and lands the answer back as the Q's `A`. It does not re-author or re-match (route/bank are AUTHORITATIVE).
   It runs in TWO passes (SCAN, then — after the stage's GATE 1b spend authorization — BUILD); the pass split is the stage's business, not DRAFT's.
@@ -279,33 +321,33 @@ When the user approves:
 - On open: do NOT grep seed's `_LOG` for forward pointers — RESOURCE is their sole consumer, and re-consuming one it already took DOUBLE-DISPATCHES the same build.
   Read `_LOG_1a-resource.md` instead: only the pointers resource explicitly DECLINED to claims become entries in the Q-consumer (or are declined again in `_LOG`)
 - Reads the resource stage's `1a-resource.md`: the ingredients (data / reusable model / code) are settled there, but training this paper's model (fit) + eval are claims' own experiment; a claim whose ingredients are missing is marked BLOCKED-ON-RESOURCE, not re-asked
-- Question types: `../../../1-lifecycle/1b-claims/haipipe-paper-claims/SKILL.md` -> **Questions this stage typically raises**.
+- Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/1b-claims/stage.md` -> its `dispatch_scope:` + the craft body.
 - Hypotheses are venue-neutral (H1, H2, H3)
 
 ### pitch
 - Output: `0-lifecycle/2b-pitch/2b-pitch.md`
-- Question types: `../../../1-lifecycle/2b-pitch/haipipe-paper-pitch/SKILL.md` -> **Questions this stage typically raises**.
+- Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/2b-pitch/stage.md` -> its `dispatch_scope:` + the craft body.
 - Venue-ALIGNED: reads the venue stage's 2a-venue.md (pack fallback per the venue guard)
 
 ### narrative
 - Output: `0-lifecycle/3-narrative/3-narrative.md`
-- Question types: `../../../1-lifecycle/3-narrative/haipipe-paper-narrative/SKILL.md` -> **Questions this stage typically raises**.
+- Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/3-narrative/stage.md` -> its `dispatch_scope:` + the craft body.
 - Section-mirrored story with readiness tags
 
 ### display
-- Output: `0-lifecycle/4-display/4-display.md` (the BRAIN; `4-display.tex` is GENERATED from it by sync at REVISE — never drafted by hand); template `ref/display-template.md`
+- Output: `0-lifecycle/4-display/4-display.md` (the BRAIN; `4-display.tex` is GENERATED from it by sync at REVISE — never drafted by hand); template `template.md` (in stages/4-display/)
 - DRAFT runs the stage's step-0 reconcile first (legacy probes/preview/tex-comments merge), then authors the md: Venue Set, Display Map, PROBE PLAN (S0/En/Rn rows, ▶ ready / ✋ gated-on-thread), one block per display with method candidates + ASCII sketch
 - The ⛔ STOP presentation = the open threads + the Q-consumer; the user rules on threads and strikes rows; DRAFT proposes, PROBE executes after the gate (the display twin of section-edit's "Questions raised by this draft" block)
-- Question types: `../../../1-lifecycle/4-display/haipipe-paper-display/SKILL.md` -> **Questions this stage typically raises** (the cross-stage coverage sweep is DRAFT's, not PROBE's)
+- Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/4-display/stage.md` -> its `dispatch_scope:` + the craft body (the cross-stage coverage sweep is DRAFT's, not PROBE's)
 - PROBE: evidence lane (tasks) + render lane (renderer skills, candidate mode) over the approved plan rows
 
 ### section-edit
 - Output: `0-lifecycle/5-section-edit/{section}/{section}.md`
-- Format: REAL prose per `ref/outline-format.md` in section-edit hub
+- Format: REAL prose per `stages/5-section-edit/template.md` (shape + rules in one file)
 - Ends with the "Questions raised by this draft" block — the Step 4a sweep's output, rolled up: every `{VAL:? <what>} [Q-<Stage>-<n>]` and `\cite{TOADD} [Q-<Stage>-<n>]` with the question that owes it, display needs per paragraph, and heavier needs (new task run, lit sweep) left `state: planned` in `1-probes/PPNN_<topic>.md`.
   DRAFT proposes; PROBE binds each one to an answer after the gate.
   The STOP presentation includes this block.
-- Question types: `../../../1-lifecycle/5-section-edit/haipipe-paper-section-edit/SKILL.md` -> **Questions this stage typically raises**.
+- Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/5-section-edit/stage.md` -> its `dispatch_scope:` + the craft body.
   (citation / values / display are DRAFT's Step 4a lanes, not PROBE tracks.)
 - Reads section-type norms and 2a-venue.md's per-section blueprint block for style (pack fallback per the venue guard)
 
@@ -318,7 +360,7 @@ Style inputs come from elsewhere:
 | Guidance | Lives in | Used by |
 |---|---|---|
 | Venue style, word budget, arc | `0-lifecycle/2a-venue/2a-venue.md` (compiled from `venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
-| Per-section structure norms | `../../../1-lifecycle/5-section-edit/section-type/` | DRAFT (structure) |
+| Per-section structure norms | the paper's `0-lifecycle/2a-venue/2a-venue.md` blueprint block (BINDING), deep dive `paper/venue/playbook-*/<journal>/<journal>-<kind>/style.md` (reference) | DRAFT (structure) |
 | Prose quality rules | `../../REF/prose-quality.md` | REVISE |
 
 Old venue LaTeX templates and the write-conference/scientific/systems style skills were archived to the paper-root `_archive/` (venue knowledge belongs in `venue/` packs).
@@ -344,13 +386,13 @@ Stage skills call this as their DRAFT phase:
 
 | Stage skill | What this skill drafts |
 |---|---|
-| haipipe-paper-seed | 0-seed.md (5 sections) |
-| haipipe-paper-resource | 1a-resource.md (2 sections: Demand N\<n\> + Questions Q\<n\> with their A) |
-| haipipe-paper-claims | 1b-claims.md (hypothesis list + evidence matrix) |
-| haipipe-paper-pitch | 2b-pitch.md (cover letter) |
-| haipipe-paper-narrative | 3-narrative.md (story beats) |
-| haipipe-paper-display | 4-display.md (display map + Q-consumer + per-display blocks with candidates) |
-| haipipe-paper-section-edit | {section}.md (paragraph outline) |
+| seed | 0-seed.md (5 sections) |
+| resource | 1a-resource.md (2 sections: Demand N\<n\> + Questions Q\<n\> with their A) |
+| claims | 1b-claims.md (hypothesis list + evidence matrix) |
+| pitch | 2b-pitch.md (cover letter) |
+| narrative | 3-narrative.md (story beats) |
+| display | 4-display.md (display map + Q-consumer + per-display blocks with candidates) |
+| section-edit | {section}.md (paragraph outline) |
 
 ## Sibling phase workers
 

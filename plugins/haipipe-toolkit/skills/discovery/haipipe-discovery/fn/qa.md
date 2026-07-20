@@ -13,8 +13,14 @@ A consumer is just one caller among three.
 The discovery session's PRIMARY mode is autonomous Plan → Build → Execute → Report, with no question pending at all.
 Most questions should already have an answer sitting in the bank before anyone asks.
 
-QA-file anatomy, the canonical field names and the state values live in `probe/haipipe-probe/SKILL.md` PART 3a.
-Read them there — they are not restated here.
+QA-file anatomy — the field names, the state values, the TTL constant and the race guard — is DEFINED HERE, in the sections below.
+This layer WRITES these files, so this layer is canonical for their shape.
+
+NAMING: `QA/<n>-<slug>.md`, where `n` is CREATION ORDER — `ls QA/` IS the index.
+A plain descriptive slug, never an identifier handed in by whoever asked.
+
+The task twin states every one of these rules IDENTICALLY — same field names, same state
+values, same TTL constant. They must not drift.
 This file is the VERB.
 
 

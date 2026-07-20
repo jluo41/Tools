@@ -88,11 +88,24 @@ The checker's --stage gate greps these ids for the stage word (Q-Seed-1 → seed
 
 ### bank binding
 -----------------
-Four fields that say how this q-executor reaches the bank; all authored at DRAFT.
+Four fields that say how this q-executor reaches the bank; all authored at PROBE (①②).
 `route` — which bank: `task` for internal work (data, a run, a regression), `discovery` for outside evidence (prior-art, landscape). Authoritative — the executor runs it, it does not re-decide.
 `bank` — what the bank needs, judged by reading it (a read-only grep is allowed): `reuse` (a results folder already answers it), `run` (folder + code exist, needs a run), `code` (folder exists, code needs a change first), `new` (nothing exists, create a folder). This is the plan; `state` is where it actually is now.
 `target` — the path to the answering QA FILE, never the folder. `NEW ?` while the folder is undecided; `NEW <path>` once chosen but the QA digest is unwritten. Binding is by path.
-`state` — the live lifecycle, derived from disk, never asserted: `planned`, `commissioned`, `answered`, `read`, `answered-local`, `failed`.
+`state` — the live lifecycle, derived from disk, never asserted: `planned`, `commissioned`, `answered`, `read`, `answered-local`, `deferred`, `failed`.
+
+`deferred` — the PROBE CEILING landed here. The entry's `bank` verdict maps to a depth ABOVE the
+stage's `probe_depth`, so answering it would cost money nobody has authorized. This is a CORRECT
+outcome. It must be DECLARED, with a fifth field, or it is indistinguishable from a PROBE that was
+simply skipped:
+
+```text
+**state**: deferred
+**deferred**: depth-<n> · <what it would actually take, one line> · raise with `probe --depth <n>`
+```
+
+A `deferred` entry with no `**deferred**:` line FAILs the checker as `deferred-undeclared`.
+The depth ladder: `reuse`=0 (free) · `run`=1 · `code`=2 · `new`=3.
 
 ### a-executor
 ---------------

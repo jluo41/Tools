@@ -1,0 +1,213 @@
+---
+# CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
+# not a registered skill.
+key: venue
+order: "2a"
+title: Venue
+one_line: "Which venue does this paper target, and what does that venue REQUIRE of it?"
+
+phases: [draft, probe, check]
+                          # THREE phases — no REVISE. Venue produces a CONTRACT (a scored
+                          # decision + a transcribed blueprint), not prose, so there is
+                          # nothing for REVISE to polish. But it DOES run PROBE: it raises
+                          # `## Q-Venue-<n>` questions (recent-publications, editor and
+                          # competing-paper checks) as real ENTRIES in 1-probes/, and
+                          # template.md states "Answer: empty in DRAFT — PROBE
+                          # fills it: the finding + [source: PP<nn>]".
+                          # The invariant is only that `phases` ends with `check`.
+gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
+                           # Default is ONE, at CHECK. DRAFT/PROBE/REVISE run unattended.
+                           # This is safe only because PROBE cannot spend: see probe_depth.
+probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
+                           # (task/haipipe-task/fn/qa.md:102-107), which maps 1:1 onto the
+                           # consumer's `bank:` verdict:
+                           #   0 READ        reuse  results already answer it   free, nothing runs
+                           #   1 NEW RUN     run    old script, new config      costs
+                           #   2 NEW SCRIPT  code   must write new code         costs
+                           #   3 NEW FOLDER  new    open a new task-folder      costs most
+                           # Rule: dispatch when depth(bank) <= probe_depth, else DEFER.
+                           # At 0 the stage can only HARVEST, so a run of it is free and needs
+                           # no gate. Raise it per invocation with `probe --depth N`.
+runs: once
+needs_paper: false        # a bare free-text topic/abstract is a valid input; no folder needed
+                          # (with no folder, run --no-pin: there is nothing to write into)
+
+modes:
+  default:    "recommend a ranked shortlist, then ASK before writing STATUS venue"
+  "--no-pin": "advise only — recommend and STOP; write no file at all
+               (for 'just tell me which journal', or a bare topic with no paper folder)"
+  refresh:    "re-derive ONLY — keep the existing pin, re-transcribe Structural Blueprint +
+               Writing Principles from current pack state, update the provenance header
+               (new venue commit + derived date), log the delta. Never re-opens the choice."
+
+artifact: 0-lifecycle/2a-venue/2a-venue.md
+log: 0-lifecycle/2a-venue/_LOG_2a-venue.md
+probes: 1-probes/PPNN_<topic>.md
+pins: STATUS.md            # `venue: <pack-slug>` (+ optional `venue_outlet: <journal-dir>`)
+template: template.md
+
+packs: ../../../../venue/  # the venue knowledge directory: playbook-*/README.md (`-> Claims`
+                           # rewards), <journal>/taste.md (desk signals), <journal>/<journal>-
+                           # <section>/style.md (Micro-norms), <journal>/examples/.
+                           # READ BY ~13 SKILLS and NOT owned by this stage. This stage is the
+                           # READER that turns a pack into a pinned contract; it NEVER edits a pack.
+
+exit_when: "no clear fit; venue change re-runs pitch"
+
+sections:                  # in order; all five must carry real content
+  - Venue Decision         #   (a provenance header sits above them: pack @ commit, outlet dir)
+  - Relevant Files
+  - Section Styles         #   the RESOLVED per-kind pack paths — see owns_resolution
+  - Requirements           #   two blocks: Structural Blueprint, then Writing Principles
+  - Q-consumer
+
+owns_resolution: |         # THIS stage resolves, ONCE, what every downstream stage would
+                           # otherwise re-derive per section:
+  · venue label -> pack slug         (the map in the craft body)
+  · pack + outlet -> section styles  (the Section Styles table in the artifact)
+  Downstream NEVER globs, finds, or spells a pack path. section-edit reads its row and stops.
+  The kind vocabulary and which kinds each outlet actually has: ./section-kinds.yml
+  Resolution is a GLOB (`*-<kind>`), never concatenation — the per-journal slug is arbitrary
+  and sometimes multi-token (jno- · diabcare- · npjdm- · MS-IS-); concatenation works for
+  MISQ and fails on six other outlets.
+kinds_file: section-kinds.yml
+
+formatting:
+  title_rule: "====="
+  section_rule: "-----"
+  headings: "no #/##/### — EXCEPT the Q-consumer blocks, which are `## Q-Venue-<n> · <title>`"
+  line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
+  fit_record: "the Venue Decision's Fit is RECORD LINES, never a pipe table"
+
+q_id_pattern: "## Q-Venue-<n> · <title>"
+q_anchor: "[Q-Venue-<n>] cited inline in the Venue Decision sentence it rests on"
+closed_when: "PROBE writes the finding + [source: PP<nn>] into the Answer field. That is where
+              the loop closes for this stage — there is no REVISE to weave it back into prose,
+              because the artifact is a contract, not prose. A landed Answer that changes the
+              pick re-opens DRAFT rather than being woven in."
+
+dispatch_scope:            # venue questions are concrete LOOKUPS, never 'is this a good fit?'
+  - recent-publications    # has this outlet run near-identical papers lately?
+  - editor-and-competition # who handles this at the outlet; what competing papers are in flight
+
+done_criteria:
+  - "venue pinned in STATUS.md (skipped under --no-pin, which writes nothing anywhere)"
+  - "provenance header records pack slug @ venue commit + outlet dir"
+  - "Venue Decision carries the pick, 1-2 backups, the nearest rejected + its hard disqualifier,
+     the outlet's one-sentence desk test + this paper's answer, and desk-reject risks"
+  - "Fit record-lines map H/claims to the venue reward each satisfies (no pipe table)"
+  - "Structural Blueprint filled per section: subsections, paragraphs, sentences/paragraph,
+     sentence length, citation density, results reported, display units — each [source: ...]-tagged"
+  - "blueprint adapted to THIS paper's claim structure (H1/H2/H3 mapped to sections/subsections)"
+  - "Writing Principles filled: tone, citation style, results presentation, display limits, abstract"
+  - "Section Styles carries ONE record line per kind in section-kinds.yml — a resolved path, or
+     an explicit `— blueprint-only` / `— n/a`, so 'no pack' is distinguishable from 'not checked'"
+  - "at least one Q-Venue-<n> raised or answered (the recent-publications check)"
+  - "every <!-- RULE --> comment deleted from the filled 2a-venue.md"
+
+upstream: [claims]         # reads 0-lifecycle/{0-seed,1a-resource,1b-claims} when they exist;
+                           # a bare topic has none and the profile is built from the text
+downstream: [pitch]
+consumed_by: [pitch, narrative, display, section-edit, revise, revise-results, revise-humanizer]
+                           # the venue-ALIGNED readers. 2a-venue.md is their single consumption
+                           # point; the packs are a FALLBACK only when 2a-venue.md is absent.
+handoff: "on CHECK confirm, write STATUS.md `venue:` (+ `venue_outlet:`) -> pitch, which re-runs
+          its [primary] designation, RQ framing, and Editor's Chair Test for this venue"
+---
+
+Venue — the craft
+=================
+
+Venue selection is the FIRST venue-coupled design decision. Seed, resource, and claims are
+venue-FREE — what a paper NEEDS to exist does not depend on where you send it — and everything
+after couples. So this stage answers one question in two halves: **which venue**, and **what does
+that venue REQUIRE of the final paper**. The second half is the half that outlives the decision.
+
+Profile first, packs second
+---------------------------
+
+Do not open a pack until the paper has a CONTRIBUTION PROFILE: the central contribution, the
+method, the topic/domain, the evidence strength, the intended audience. From seed/claims when they
+exist, from the topic text when they do not. If any of the five is unclear, ask ONE round of
+questions before scoring — a profile guessed wrong makes every score downstream of it wrong too.
+
+Then read what each pack REWARDS
+--------------------------------
+
+A pack's `README.md` carries a `-> Claims` mapping: what that venue rewards, and what it treats as
+a mere enabler. That mapping — not the venue's prestige — is what the profile is matched against.
+
+Packs are FAMILY-granular; the concrete outlet is a delta inside the family, chosen by reading each
+candidate's `<journal>/taste.md` — desk-accept signals, desk-reject signals, and the one-sentence
+test. A paper that passes the family and fails that test has not found its venue yet.
+
+```text
+MISQ / ISR / MS-IS / MS-Marketing              -> playbook-utd-is
+NMI / Nat Comms / Nat Med / npj DM / NHB       -> playbook-nature-portfolio
+PNAS                                           -> playbook-pnas
+JAMA / JAMA Intern Med / JAMA Netw Open        -> playbook-jama-portfolio
+Diabetes Care (specialty clinical)             -> playbook-medical-journals
+grant (NSF / NSFC / KAKENHI / ERC …)           -> playbook-grant
+patent (CNIPA / USPTO / EPO)                   -> playbook-patent
+```
+
+This stage OWNS that map — every other stage resolves a human `venue:` label through it, so prefer
+writing the pack slug into STATUS directly. A named venue with no pack (NEJM, Lancet, ICLR,
+NeurIPS…) stays a bare `venue_outlet:` formatting target: recommend it honestly, say no pack
+exists, and the lifecycle wiring no-ops.
+
+Score five dimensions, High/Med/Low, one line each
+--------------------------------------------------
+
+```text
+🎯 contribution-type   does the paper's strongest claim match what this venue rewards?
+🔬 method              is this design one the venue publishes?
+🗺  topic/domain       is the subject inside its scope?
+📏 evidence-bar        does the evidence clear the bar this venue holds?
+👥 audience            do the people who read it do something with it?
+```
+
+The one-line reason is not decoration — it is what makes the ranking auditable later. Record any
+HARD DISQUALIFIER separately (e.g. "design science -> not ISR"); it kills a venue regardless of how
+the five dimensions scored. Shortlist the top 3, each with a fit rationale, what to emphasize
+there, and the main why-not. The PRIMARY is the one whose rewards the paper's strongest claim most
+directly satisfies.
+
+Transcribe the requirements; never invent them
+----------------------------------------------
+
+The blueprint is the stage's real product, and it is built by TRANSCRIPTION in this order:
+
+```text
+1  <journal>/<journal>-<section>/style.md   word budget, arc, paragraph-structure table, and the
+                                            measured `## Micro-norms` block — copy these across;
+                                            do not re-mine what is already measured
+2  <journal>/taste.md + pack style-profile.md   the Writing Principles side
+3  ONLY if a section guide is missing       count 2-3 stored exemplars in <journal>/examples/
+                                            yourself; search published papers as a last resort
+4  adapt to THIS paper                      H1/H2/H3 mapped onto named sections/subsections
+```
+
+Where a Micro-norms block flags a measured-vs-budget clash or a "to verify" marker, CARRY THE
+CAVEAT rather than silently picking one number. Hard caps (word limits, display limits) stay caps
+even when exemplars deviate from them.
+
+The test of a finished blueprint is whether section-edit can use it without guessing:
+"Introduction has 4 subsections, each 2 paragraphs, each 5-6 sentences" — not "well-structured".
+The blueprint says HOW MANY sentences; Writing Principles says HOW TO WRITE them. The provenance
+header exists so staleness is DETECTABLE: if `venue/` has moved past the recorded commit, run
+`refresh` to re-derive without touching the pin.
+
+The pin is a gate, not a side effect
+------------------------------------
+
+Ask before writing `venue:`, and ask again before OVERWRITING an existing one. A venue change is
+not a metadata edit: it re-runs pitch's [primary] designation and RQ framing, and reshapes
+narrative, displays, section-edit, and prose. Claims does not move — it is venue-free.
+
+Not from the venue
+------------------
+
+This stage recommends and pins. It does not write claims, pitch, or prose, and it never edits a
+venue pack. Under `--no-pin` it writes nothing at all — recommend, stop, and offer to scaffold a
+folder if the user then wants one.

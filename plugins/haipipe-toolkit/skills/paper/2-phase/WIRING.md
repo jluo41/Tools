@@ -25,11 +25,11 @@ Each phase folder holds a hub skill plus its workers, every one a `SKILL.md` wit
 | `2-revise/` | `haipipe-paper-revise` | `haipipe-paper-revise-place` (first) / `-content` / `-humanizer` / `-results` |
 | `3-check/` | `haipipe-paper-check` | `haipipe-paper-proof-checker` (math proofs) / `haipipe-paper-check-evidence` (pre-submission evidence walk) |
 
-Not registered: `REF/` (plain reference .md, no SKILL.md -- workers load it by path) and the paper-root `_archive/` (retired edit-cycle skills, the old `paper-edit-*` stage agents, the retired venue-style `draft-write-*` skills, and the old draft LaTeX templates; kept for history, nothing routes to them, and they are not symlinked into top-level `agents/`).
+Not registered: `REF/` (plain reference .md, no SKILL.md -- workers load it by path) and the paper-root `_archive/` (kept for history; nothing routes to it, and it is not symlinked into top-level `agents/`).
 
 ## Dispatch chain (who calls whom)
 
-**Phase skills are internal workers called by stage skills via the Skill tool; they are not user entry points.** The user steers with phase VERBS on the stage skill (`/haipipe-paper-section-edit <section> [draft|probe|revise|check]`): the verb picks which phase the stage drives; the stage still supplies all context and still dispatches the internal workers.
+**Phase skills are internal workers called by stage skills via the Skill tool; they are not user entry points.** The user steers with phase VERBS on the stage skill (`/haipipe-paper-stage section-edit <section> [draft|probe|revise|check]`): the verb picks which phase the stage drives; the stage still supplies all context and still dispatches the internal workers.
 
 ```
 user → /haipipe-paper <stage> [<target>] [draft|probe|revise|check]
@@ -37,12 +37,16 @@ user → /haipipe-paper <stage> [<target>] [draft|probe|revise|check]
              │
              ▼  the stage skill (the STAGE CONTRACT: aim + template + rules)
                 dispatches the phase engine via Skill(), in order:
-       haipipe-paper-draft    → drafts from the stage's template → ⛔ STOP: user structure review
-       haipipe-paper-probe    → five-step loop (ORGANIZE→MATCH→DISPATCH→POINT→INTERPRET); fans out
-                                -citation / -values / -display; DISPATCH hands the section's `q-executor:`
-                                block VERBATIM to Agent(haipipe-task-orchestrator-agent) /
-                                Agent(haipipe-discovery-orchestrator-agent)   [no gateway]
-       haipipe-paper-revise   → runs -content / -humanizer (+ -results); proof: workers line in _LOG
+       haipipe-paper-draft    → drafts from the stage's template AND authors the probe plan
+                                (①ORGANIZE + ②MATCH) → ⛔ STOP: structure review (gate 1 of 2)
+       haipipe-paper-probe    → runs the DRAFT-authored plan FORWARD (③DISPATCH ④POINT ⑤INTERPRET);
+                                the whole loop is PROBE's, and ①② happened at DRAFT, and are AUTHORITATIVE.
+                                ③ hands each entry's `### q-executor` block VERBATIM to
+                                Agent(haipipe-probe-q-executor-agent) — the stake-free collector,
+                                which is the ONLY door to the bank (LAW 1: this worker never calls
+                                an executor orchestrator itself).
+       haipipe-paper-revise   → runs -place (FIRST, binding order) → -content → -humanizer → -results;
+                                proof: workers line in _LOG
        haipipe-paper-check    → 6-axis report, presented to the human (CHECK 🧑)
 ```
 
@@ -51,5 +55,5 @@ Two human gates: after DRAFT (structure) and at CHECK (quality). PROBE/REVISE ru
 ## Related, but not in 2-phase/
 
 - Whole-paper passes (`haipipe-paper-polish`, `-diffpdf`, …) live in `3-deliver/` -- same discovery convention, different scope.
-- The section-edit stage hub is `1-lifecycle/5-section-edit/haipipe-paper-section-edit/`; its per-paper working files land in the manuscript's `0-lifecycle/5-section-edit/`.
+- The section-edit stage hub is `1-lifecycle/haipipe-paper-stage/stages/5-section-edit//`; its per-paper working files land in the manuscript's `0-lifecycle/5-section-edit/`.
 - Comment threads produced during CHECK follow the Comment lifecycle section in `../haipipe-paper/SKILL.md`.

@@ -17,7 +17,7 @@ Generate publication-quality **architecture diagrams**, **workflow pipelines**, 
 ## Output: write into a display unit
 
 The diagram goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
-`../haipipe-paper-display/ref/display-unit-output-contract.md`.
+`../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
 rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSpec).
 
@@ -52,9 +52,9 @@ Resolve it via `$CLAUDE_SKILL_DIR` (CC 1.0+ exposes it).
 Invoke via:
 
 ```bash
-python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" render <spec.json> --output <out.svg>
-python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" validate <spec.json>
-python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" schema
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render <spec.json> --output <out.svg>
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate <spec.json>
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" schema
 ```
 
 ## Workflow
@@ -117,10 +117,10 @@ Start from a template based on the diagram type:
 
 ```bash
 # Validate first (spec lives in the unit's source/)
-python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" validate 0-displays/displayNN-slug/source/spec.json
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate 0-displays/displayNN-slug/source/spec.json
 
 # Render to SVG (into the unit's assets/)
-python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" render 0-displays/displayNN-slug/source/spec.json --output 0-displays/displayNN-slug/assets/figure.svg
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render 0-displays/displayNN-slug/source/spec.json --output 0-displays/displayNN-slug/assets/figure.svg
 
 # Convert to PDF for LaTeX inclusion
 rsvg-convert -f pdf 0-displays/displayNN-slug/assets/figure.svg -o 0-displays/displayNN-slug/assets/figure.pdf
@@ -166,7 +166,7 @@ The ARIS tech report figures went through 5 rounds of this loop to reach C:7/R:7
 
 ## Schema Quick Reference
 
-Run `python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" schema` for the authoritative schema.
+Run `python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" schema` for the authoritative schema.
 
 ### Nodes
 
@@ -222,14 +222,14 @@ Three-stage horizontal cascade with inputs feeding in from top, outputs exiting 
 ## Output Contract
 
 Write into the display unit per the shared contract
-(`../haipipe-paper-display/ref/display-unit-output-contract.md`): the editable SVG ->
+(`../ref/display-unit-output-contract.md`): the editable SVG ->
 `assets/figure.svg`, the `rsvg-convert` PDF -> `assets/figure.pdf`, and the source
 FigureSpec JSON -> `source/<name>.json` for reproducibility.
 
 ## Integration with Other Skills
 
 Sibling display renderers and when to use each: see the sibling-routing table in the
-contract (`../haipipe-paper-display/ref/display-unit-output-contract.md`).
+contract (`../ref/display-unit-output-contract.md`).
 `/mermaid-diagram` is a lighter alternative for simple flowcharts; in the ARIS
 `/paper-writing` Workflow 3, this skill handles Phase 2b when `illustration: figurespec`.
 

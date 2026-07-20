@@ -155,9 +155,8 @@ Anchors: [→ sources.md#S02]  [→ verdict.md#Evidence]  [→ landscape.md#Gaps
   single paper's hypotheses is contaminated and single-use. This is a real, observed failure
   (2026-07-11), and it is why I never learn who asked.
 
-Full contract: `haipipe-discovery/fn/qa.md`. The probe layer: `probe/haipipe-probe/SKILL.md`
-PART 3a. The task creator twin states every one of these rules IDENTICALLY — same field
-names, same state values, same TTL constant. They must not drift.
+Full contract: `haipipe-discovery/fn/qa.md`. The task creator twin states every one of these
+rules IDENTICALLY — same field names, same state values, same TTL constant. They must not drift.
 
 This layer is **probe-unaware**. At Plan I read only the question; at Report I emit only the
 file that answers it. Nothing under `discoveries/` carries a trace of who asked.

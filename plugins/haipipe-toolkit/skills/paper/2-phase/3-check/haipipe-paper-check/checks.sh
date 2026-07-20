@@ -81,7 +81,7 @@ echo "────────────────────────�
 # ── REVISE: em-dashes (comments stripped so %% ---- Pn.Sn ---- markers don't hit)
 #    ❌ FAIL, not ⚠️: the house rule is absolute (prose-quality.md), same tier as
 #    TODO markers (JL 2026-07-07: "统一提议" on making the exit code match the rule).
-emdash=$(for f in "${TEX_FILES[@]}"; do
+emdash=$(for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do
   awk -v F="$f" '{ l=$0; sub(/(^|[^\\])%.*$/,"",l); if (l ~ /---/ || l ~ /—/) printf "%s:%d:%s\n", F, NR, $0 }' "$f" 2>/dev/null
 done)
 if [[ -z "$emdash" ]]; then
@@ -96,7 +96,7 @@ fi
 AI_TELLS='delve|tapestry|realm|seamless|showcase|intricate|nuanced|utilize|underscore|leverage'
 # comments stripped (same as em-dash): a "delve" inside a % comment is noise, not prose
 # portable (mawk-safe): lowercase + explicit non-letter boundaries, no gawk \< \> / IGNORECASE
-aivoice=$(for f in "${TEX_FILES[@]}"; do
+aivoice=$(for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do
   awk -v F="$f" -v P="$AI_TELLS" '{ l=$0; sub(/(^|[^\\])%.*$/,"",l); if (tolower(l) ~ ("(^|[^a-z])(" P ")([^a-z]|$)")) printf "%s:%d:%s\n", F, NR, $0 }' "$f" 2>/dev/null
 done)
 if [[ -z "$aivoice" ]]; then
@@ -110,7 +110,7 @@ fi
 #    unfinished work, and a comment is exactly where it hides from the compiled PDF.
 #    XXX deliberately EXCLUDED: it collides with double-blind anonymization
 #    placeholders (\author{XXX}, "XXX University") that are legitimate at submission.
-todos=$(for f in "${TEX_FILES[@]}"; do grep -nHE '\b(TODO|FIXME)\b' "$f" 2>/dev/null; done)
+todos=$(for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do grep -nHE '\b(TODO|FIXME)\b' "$f" 2>/dev/null; done)
 if [[ -z "$todos" ]]; then
   echo "✅ no TODO/FIXME markers"
 else
@@ -121,7 +121,7 @@ fi
 if [[ ${#MD_FILES[@]} -gt 0 ]]; then
   # any entry type: @word{key, — anchored to the entry-plus-brace-plus-key-comma
   # shape so venue names with bare @ (e.g. "KHD@IJCAI workshop") don't false-hit
-  bibleak=$(for f in "${MD_FILES[@]}"; do [[ -f "$f" ]] && grep -nHE '^\s*@[A-Za-z]+\{[^,}]+,' "$f" 2>/dev/null; done)
+  bibleak=$(for f in ${MD_FILES[@]+"${MD_FILES[@]}"}; do [[ -f "$f" ]] && grep -nHE '^\s*@[A-Za-z]+\{[^,}]+,' "$f" 2>/dev/null; done)
   if [[ -z "$bibleak" ]]; then
     echo "✅ no bibtex in markdown (bibtex lives ONLY in .bib)"
   else
@@ -132,7 +132,7 @@ fi
 # ── META/PROBE: broken \cite (key not in any .bib) ───────────────────────────
 BIB_FILES=()
 while IFS= read -r _f; do [[ -n "$_f" ]] && BIB_FILES+=("$_f"); done < <(find "$PAPER_DIR" -maxdepth "$DEPTH" -name '*.bib' -not -path '*/_archive/*' -not -path '*/_external/*' 2>/dev/null | sort)
-has_cites=$(for f in "${TEX_FILES[@]}"; do strip_comments "$f"; done | grep -cE '\\cite' || true)
+has_cites=$(for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do strip_comments "$f"; done | grep -cE '\\cite' || true)
 if [[ ${#BIB_FILES[@]} -eq 0 ]]; then
   if [[ "$has_cites" -gt 0 ]]; then
     # NOT a silent skip: \cite with no discoverable .bib is a real gap
@@ -142,7 +142,7 @@ if [[ ${#BIB_FILES[@]} -eq 0 ]]; then
   fi
 else
   bibkeys=$(grep -hoE '@[A-Za-z]+\{[^,]+' "${BIB_FILES[@]}" 2>/dev/null | sed -E 's/@[A-Za-z]+\{//; s/[[:space:]]//g' | sort -u)
-  citekeys=$(for f in "${TEX_FILES[@]}"; do strip_comments "$f"; done \
+  citekeys=$(for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do strip_comments "$f"; done \
     | grep -oE '\\(cite|citep|citet|citealp|citealt|citeauthor|citeyear|citeyearpar)\*?(\[[^]]*\])?(\[[^]]*\])?\{[^}]+\}' \
     | grep -oE '\{[^}]+\}$' | tr -d '{}' | tr ',' '\n' | sed 's/[[:space:]]//g' | grep -v '^$' | sort -u)
   broken=""
@@ -159,9 +159,9 @@ else
 fi
 
 # ── META: broken \ref (no matching \label) ───────────────────────────────────
-labels=$(for f in "${TEX_FILES[@]}"; do strip_comments "$f"; done \
+labels=$(for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do strip_comments "$f"; done \
   | grep -oE '\\label\{[^}]+\}' | sed -E 's/\\label\{//; s/\}//' | sort -u)
-refs=$(for f in "${TEX_FILES[@]}"; do strip_comments "$f"; done \
+refs=$(for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do strip_comments "$f"; done \
   | grep -oE '\\(ref|autoref|cref|Cref|eqref|nameref)\*?\{[^}]+\}' \
   | grep -oE '\{[^}]+\}$' | tr -d '{}' | sort -u)
 if [[ -z "$refs" ]]; then
@@ -196,7 +196,7 @@ if [[ -n "$labels" ]]; then
 fi
 
 # ── REVISE: Pn.Sn markers present & sequential (per-file) ────────────────────
-for f in "${TEX_FILES[@]}"; do
+for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do
   markers=$(grep -oE '%% ---- P[0-9]+\.S[0-9]+ ----' "$f" 2>/dev/null | grep -oE 'P[0-9]+\.S[0-9]+')
   [[ -z "$markers" ]] && continue
   n=$(echo "$markers" | grep -c .)

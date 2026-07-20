@@ -133,7 +133,7 @@ Common fields: `outcome`, `summary`, `confidence` (high/medium/low). Judge roles
   the consumer's entry points at that path. Nothing points back.
 ```
 
-There is no disk signal to grep for, because there is no id: the answer IS a file, and the caller's `target:` is the pointer to it. The probe layer: `probe/haipipe-probe/SKILL.md`.
+There is no disk signal to grep for, because there is no id: the answer IS a file, and the caller's `target:` is the pointer to it.
 
 
 ## Terminal templates

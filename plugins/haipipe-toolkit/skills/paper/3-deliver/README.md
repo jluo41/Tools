@@ -47,7 +47,7 @@ Everything downstream of the written argument. `1-lifecycle` decides what the pa
 | Existing paper, wrong shape | `1-build/haipipe-paper-restructure` |
 | Is this folder conforming? | `1-build/haipipe-paper-conform` |
 | What should ONE `.tex` file look like inside | `2-phase/REF/tex-file-anatomy.md` |
-| Write prose into the skeleton | `1-lifecycle/5-section-edit/haipipe-paper-section-edit` (DRAFT phase) |
+| Write prose into the skeleton | `1-lifecycle/haipipe-paper-stage/stages/5-section-edit/` (DRAFT phase) |
 | Improve existing prose | `1-lifecycle/5-section-edit` (REVISE phase) |
 | Audit the finished draft | `2-audit/` |
 | Polish the finished draft | `3-polish/` |
