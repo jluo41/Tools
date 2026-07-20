@@ -45,6 +45,21 @@ Palette: ink `#1c1c1c` · sub `#3f3f46` · muted `#8a8a8a` · accent `#1f5aa8`
    was violated. Fix the text, don't ignore the preview.
 4. **Regenerate** any time numbers change: `python3 generate_svgs.py`.
 
+## Two variants: display vs PPT-editable (figure-to-svg Lesson 16)
+
+PowerPoint's **Convert to Shape ignores `<tspan dy>`** (lines collapse onto
+one y) and gives every absolutely-positioned `<text>` its own text box — so
+wrapped bullets become stacks of per-line boxes that collide when edited.
+Per `figure-to-svg` Lesson 16, keep TWO variants from the one generator:
+
+| Variant | bullets() behavior | Use for |
+|---|---|---|
+| **display** (default) | sentence wraps, one `<text>` per line, absolute y each — never tspans | presenting as-is, PNG export, visual diffs |
+| **PPT-editable** (`--ppt` → `ppt-editable/`) | NO wrap: one single-line `<text>` per sentence, overflowing its column | Convert to Shape → one box per sentence → re-wrap by dragging in PowerPoint |
+
+The one-line variant looks overflowed when rendered raw — that is expected;
+its consumer is the human re-wrapping boxes in PowerPoint, not a viewer.
+
 ## Assembling a .pptx (`scripts/build_pptx.py`)
 
 Copy `scripts/build_pptx.py` next to the deck's SVGs and run it — it builds a
