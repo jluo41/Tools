@@ -43,7 +43,19 @@ Palette: ink `#1c1c1c` · sub `#3f3f46` · muted `#8a8a8a` · accent `#1f5aa8`
    ```
    cairosvg has no emoji font — tofu boxes in the preview mean the emoji rule
    was violated. Fix the text, don't ignore the preview.
-4. **Regenerate** any time numbers change: `python3 generate_svgs.py`.
+4. **PDF review gate — before any .pptx build**: copy `scripts/build_pdf.py`
+   (this skill) next to the SVGs, merge ALL display-variant slides into one
+   vector PDF, and flip through every page:
+   ```bash
+   python3 build_pdf.py              # → deck.pdf   (pip install cairosvg pypdf)
+   ```
+   This is where layout collisions, text overflow, and wording problems get
+   caught — fixing them costs seconds here (edit `generate_svgs.py`, re-run)
+   vs. a rebuilt-and-reimported .pptx later. Only when the PDF looks right,
+   proceed to `build_pptx.py`. Never build the PDF from `ppt-editable/` —
+   those SVGs are intentionally overflowed.
+5. **Regenerate** any time numbers change: `python3 generate_svgs.py`.
+   Full loop: `python3 generate_svgs.py && python3 build_pdf.py && python3 build_pptx.py`.
 
 ## Two variants: display vs PPT-editable (figure-to-svg Lesson 16)
 
@@ -70,13 +82,22 @@ the `svgBlip` extension pointing at the SVG added as a package part
 PowerPoint 2019/365 renders crisp vector; older versions use the PNG.
 Fill the `NOTES` dict to write speaker notes into each slide's notes pane.
 Requires `pip install python-pptx cairosvg`. Full loop after edits:
-`python3 generate_svgs.py && python3 build_pptx.py`.
+`python3 generate_svgs.py && python3 build_pdf.py && python3 build_pptx.py`
+(review the PDF before shipping the .pptx).
 
-## PDF export (`scripts/build_pdf.py`)
+## PDF review gate & export (`scripts/build_pdf.py`)
 
-`python3 build_pdf.py` merges the display-variant SVGs into one vector PDF
-(cairosvg per page + pypdf concat) — for email/review distribution where a
-.pptx is overkill. Requires `pip install cairosvg pypdf`.
+`python3 build_pdf.py` (copied next to the deck's SVGs, like the other
+scripts) merges the display-variant SVGs into one vector PDF — cairosvg per
+page, pypdf concat, vector stays vector. It has two jobs:
+
+1. **The review gate** (Workflow step 4): the one flippable file for checking
+   every slide before `build_pptx.py` — much better ergonomics than opening
+   NN-*.svg files one by one, and shareable with collaborators who annotate
+   the PDF.
+2. **Distribution**: the deliverable for audiences who want a PDF, not a .pptx.
+
+Requires `pip install cairosvg pypdf`.
 
 ## Library (`scripts/svg_deck.py`)
 
