@@ -151,6 +151,7 @@ def _model_info(pkg: str) -> dict[str, Any]:
         "endpoint_version": manifest.get("endpoint_version"),
         "models_field": None,
         "required_tables": [],
+        "payload_style": "source_tables",
     }
     ex = os.path.join(root, pkg, "examples", "example_000", "payload.json")
     if os.path.exists(ex):
@@ -158,6 +159,23 @@ def _model_info(pkg: str) -> dict[str, Any]:
             example = json.load(f)
         info["models_field"] = example.get("models")
         info["required_tables"] = sorted(example.get("source_tables", {}).keys())
+
+    # Two payload DIALECTS live in the same store, and the manifest's Input2SrcFn says
+    # which one an endpoint speaks:
+    #
+    #   source_tables  (REACH/MIMIC)  {models, source_tables: {...}, dataframe_records: [trigger]}
+    #   cgm_columnar   (WellDoc CGM)  {models, Ptt: {...}, CGM: {...}, Diet/Exercise/Medication}
+    #                                 — flat columnar; the endpoint derives its own trigger
+    #                                   from the LAST CGM reading (see TrigFn FORMAT 2).
+    #
+    # CGM packages ship no examples/, so their models_field and required_tables have to
+    # come from the manifest instead of an example payload.
+    if "CGMDecoder" in str(manifest.get("inference_functions", {}).get("Input2SrcFn", "")):
+        info["payload_style"] = "cgm_columnar"
+        info["models_field"] = info["models_field"] or \
+            f"{info['endpoint_name']}/{info['endpoint_version']}"
+        info["required_tables"] = info["required_tables"] or ["CGM", "Ptt"]
+        info["optional_tables"] = ["Diet", "Exercise", "Medication"]
     return info
 
 
@@ -194,11 +212,81 @@ def _pick_trigger(patient: dict[str, Any], pkg: str) -> tuple[dict[str, Any] | N
     return None, "none available"
 
 
+def _rows_to_columnar(rows: list[dict[str, Any]]) -> dict[str, list[Any]]:
+    """[{col: val}, ...] -> {col: [val, ...]} — the columnar shape CGM endpoints read."""
+    cols: dict[str, list[Any]] = {}
+    for i, row in enumerate(rows):
+        for k, v in row.items():
+            cols.setdefault(k, [None] * i).append(v)
+        for k, vals in cols.items():          # ragged rows: pad the columns this row lacks
+            if len(vals) < i + 1:
+                vals.append(None)
+    return cols
+
+
+def _build_cgm_payload(patient: dict[str, Any], info: dict[str, Any]) -> dict[str, Any]:
+    """The WellDoc CGM dialect: a FLAT columnar payload, no dataframe_records.
+
+    The endpoint's own TrigFn reads the trigger off the LAST CGM reading, so we do not
+    invent one. We ship the WHOLE CGM series on purpose: CGM5MinLTS needs >= 288 bins
+    before and after its anchor inside one gap-free segment, and a trimmed slice fails
+    with "No cases generated".
+    """
+    # PREFLIGHT. CGM endpoints are scoped to a patient registry (their trigger keeps only
+    # rows whose PatientID is 'included' in it). A patient outside that registry has its
+    # CGM rows filtered to zero and the run dies ~60s later, deep in the pipeline, with
+    # the unreadable "No LTS segments generated - check your data". The patient store
+    # records which packages can actually score a patient (provenance); trust it and fail
+    # here, in one sentence, instead.
+    # NOTE: no provenance at all means "no endpoint can score this patient" (the builder
+    # writes an empty list for browse-only patients) — that must FAIL here, not fall
+    # through as if unconstrained.
+    claimed = {p.get("endpoint_package") for p in patient.get("provenance", [])}
+    if info["package"] not in claimed:
+        why = (patient.get("summary") or {}).get("not_scoreable_reason")
+        raise ValueError(
+            f"{patient.get('patient_id')} cannot be scored by {info['package']}. "
+            + (why or "the patient store lists no provenance for this endpoint.")
+        )
+
+    have = patient.get("source_tables", {})
+    payload: dict[str, Any] = {"models": [info["models_field"]]}
+    missing, empty = [], []
+
+    for t in info["required_tables"]:
+        rows = have.get(t)
+        if rows is None:
+            missing.append(t)
+            payload[t] = {}
+        else:
+            payload[t] = _rows_to_columnar(rows)
+            if not rows:
+                empty.append(t)
+
+    for t in info.get("optional_tables", []):
+        rows = have.get(t) or []
+        payload[t] = _rows_to_columnar(rows) if rows else {}
+
+    known = set(info["required_tables"]) | set(info.get("optional_tables", []))
+    return {
+        "payload": payload,
+        "model": info,
+        "trigger": {"record": {"ObsDT": (patient.get("summary") or {}).get("cgm_last")},
+                    "source": "the endpoint's TrigFn anchors on the last CGM reading"},
+        "gaps": {"missing_tables": missing, "empty_tables": empty,
+                 "unused_patient_tables": sorted(set(have) - known)},
+    }
+
+
 def _build_payload_for(patient_id: str, model: str,
                        obs_dt: str | None = None) -> dict[str, Any]:
     info = _resolve_model(model)
     with open(_patient_path(patient_id)) as f:
         patient = json.load(f)
+
+    if info.get("payload_style") == "cgm_columnar":
+        return _build_cgm_payload(patient, info)
+
     have = patient.get("source_tables", {})
     source_tables, missing, empty = {}, [], []
     for t in info["required_tables"]:
