@@ -16,7 +16,7 @@ lives in tasks and discoveries.
 │   ├── 3-narrative/     venue: MEDIUM
 │   ├── 4-display/       venue: HEAVY
 │   └── 5-section-edit/  venue: SPECIFIC (per-section norms)
-├── 1-probes/       PPNN_<topic>.md probe files (flat cross-stage pool; campaign board in its README)
+├── 1-probes/       PPNN_<topic>/ probe files (flat cross-stage pool; campaign board in its README)
 ├── 1-rounds/
 ├── 0-displays/
 ├── 0-sections/

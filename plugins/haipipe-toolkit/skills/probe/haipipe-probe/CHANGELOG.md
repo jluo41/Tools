@@ -3,6 +3,54 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 9.9.0 — 2026-07-20 — probe files are a FOLDER of one-q-executor files (flat RETIRED)
+
+Owner co-design (JL): "a q-executor a file, and several q-executor a folder in 1-probes … break down the current PP markdown" + "don't 向后兼容 … 全面推 folder 为默认". A probe TOPIC is now a FOLDER `1-probes/PPNN_<topic>/` holding one `## QX<n>` entry per `QXn_<slug>.md` file — each q-executor path-addressable and single-purpose. The flat single-file `1-probes/PPNN_<topic>.md` is RETIRED, not deprecated: the checker no longer globs it. (No backward-compatibility window — the owner ruled it out; the only flat files on disk were this paper's and the test fixture, both migrated in this change.)
+
+### Changed — check-probe-cards.sh is folder-only (paper + application, kept in step)
+
+PASS 1's loop glob changed from `1-probes/PP*.md` to `1-probes/PP*/*.md` (flat dropped, not added-alongside). Each file still carries its `## QX<n>` heading, so the section-splitter awk is UNCHANGED — only the glob. The resource-stage backlink resolver (paper-only) now resolves `1-probes/<q_pp>*/*.md`; the legacy `1-probe-plans/` + `0-lifecycle/*/_PROBE/` globs are a SEPARATE loop and untouched (pre-v8 history still surfaces as MIGRATE). The `no probe files` WARN text updated. Verified on the fixture regression harness (`test/run-checker-tests.sh`, folder fixture → same FAIL/PASS/CONCERN code per entry) AND on this paper (`--stage seed` exit 0).
+
+### Migrated — this paper + the checker's own test fixture
+
+`papers/Paper-Personality2Opioid-MISQ2026/1-probes/`: `PP01_seed-feasibility.md` (QX1, QX2) and `PP02_discretion-mechanism.md` (QX1) → `PP01_seed-feasibility/{QX1_novelty,QX2_obtainability}.md` and `PP02_discretion-mechanism/QX1_precedent.md`. The checker's `test/fixture/.../PP01_states.md` (5 state cases) → `PP01_states/QX{1..5}_<slug>.md`. Both extractions verified byte-faithful (concat(new) == flat-from-first-`## QX`, empty diff); only the redundant `# PP<NN> —` H1 header dropped (the folder name carries the topic).
+
+### Anchors re-pointed to paths (the `PP·QX` double-id is gone)
+
+In `0-seed.md`: the stage-doc `**Probe:**` pointers, the `> CHECK:` refs, AND the `[source: …]` a-consumer tags all path-ified from `PP·QX` to `PPNN_<topic>/QXn_<slug>.md`.
+
+### Documented + propagated folder-only across the whole skill tree
+
+This layer's `ref/probe-template.md` (What-this-is + filled-section shape) and `SKILL.md` (The probe file, flow diagram, pointer convention, frontmatter description) were rewritten to folder-only by hand. Then the flat placeholder `1-probes/PPNN_<topic>.md` was replaced by the folder form `1-probes/PPNN_<topic>/` in ~140 more files (`grep -rl` → `sed`), covering the WRITE side and every doc: the paper + application PROBE and DRAFT workers, all 8 paper `stage.md` contracts' `probes:` field, the ~90 venue section templates' probe references, the application lifecycle + stage skills, the probe collector agent + `probe/agents/README.md`, `project/`, `discovery/`, and the lifecycle/anatomy refs. The two PROBE workers' write instruction additionally NAMES the entry file — `.../PPNN_<topic>/QXn_<slug>.md`, one q-executor per file — so an authoring agent knows the filename, not just the folder. Only `_console/` history and the deliberate `RETIRED`-context mentions (this CHANGELOG + `SKILL.md`/`probe-template.md`) keep the flat form. Checker green throughout (`--stage seed` exit 0; the fixture regression harness exercises all five entry states in the folder layout).
+
+## 9.8.0 — 2026-07-20 — free-text bodies are one sentence per line (readability)
+
+Owner ruling (JL; this file is shared by paper + application, so the change is owner-gated): "we want the one sentence one line version". Motivated by a real instance — a harvested `### a-executor` (papers/Paper-Personality2Opioid-MISQ2026, PP01 QX1, the novelty prior-art digest) had grown into a wall of prose JL found hard to read, and asked for the fix at the template, not the instance.
+
+### Changed — a formatting rule for the free-text BODIES, in ref/probe-template.md
+
+The probe file's prose bodies — the `### q-executor` question, the `### q-consumer` originals, and the `### a-executor` answer — are now written ONE SENTENCE PER LINE (semantic line breaks), no dense paragraphs; when a body lists sources, one source per bullet. The `### q-executor` already carried "one sentence per line" (SKILL.md:76); this generalizes it to every body and names the `### a-executor` — the longest body, and the one a human actually reads — explicitly, in both the filled-section note and the a-executor field guide.
+
+### Changed — the `### q-consumer` id is bold
+
+Owner request (JL: "why not make it to be `**Q-<Stage>-<n>**`"). The q-consumer bullet's stage-doc id is now written bold — `**Q-<Stage>-<n>**` — so it stands out at a glance in a long entry. Checker-safe: the `--stage` gate greps the q-consumer text for the stage word as a substring (e.g. `q-seed`), and the `**…**` decoration around the unchanged id text does not affect the match. Applied to the template shape + the q-consumer field-guide entry.
+
+### Changed — navigation emojis in the template GUIDANCE
+
+Owner request (JL: "add the emojis to the probe template ... so we are easier to follow"). The guidance now carries emojis: the top-level section headers (🧭 what-this-is · 🔀 executor/consumer · 🪜 three-homes · 📋 filled-section · 📖 field-guide · ✍️ for-the-creator · ➕ optional), plus a four-emoji mnemonic for the subsections — 📤 q-executor · 🙋 q-consumer · 🔗 bank binding · 📥 a-executor — repeated on the Field-guide entry headers, which use an emoji-plus-name LABEL form (`📤 q-executor  (the question OUT)`, `----`-underlined) rather than the `### ` token — so the guide never shows a `### `-name that a reader might copy with an emoji still attached. SCOPED TO GUIDANCE ONLY: the copied "filled section" skeleton (`## QX<n>`, the four bare `### ` names, the `**field**:` lines) stays emoji-free, so real probe files parse identically. The emojis live where a human reads to follow the format, never where the machine reads to check it.
+
+### Validated — fresh-context subagent (CLAUDE.md skill-validation protocol)
+
+A fresh-context agent, given only the template path and a realistic "author one entry" task, produced the format correctly: one-sentence-per-line bodies, a bold `**Q-Claim-4**` q-consumer id, and the four bare `### ` skeleton names + `**field**:` lines left clean. It flagged ONE ambiguity — the first cut put the emoji ON the Field-guide `### ` names (`### q-executor 📤`), the same token the filled section shows bare, a possible copy-the-emoji trap. Fixed by the LABEL form above (Field-guide headers carry no `### `). Checker unaffected throughout: `check-probe-cards.sh --stage seed` = exit 0 before and after, including on the two instances reflowed to the new format (PP01, PP02).
+
+### Why it does NOT touch the checker
+
+The rule is scoped to BODIES only, never the skeleton. The machine tokens `check-probe-cards.sh` parses — `## QX<n>`, the four `###` subsection names, and the `**field**:` lines (`**state**:`, `**bank**:`, `**target**:`, `**eta**:`, …) — are never wrapped or split, so every awk/grep match is unchanged. The `### a-executor` is only checked non-empty and is never leak-scanned; the `### q-executor` leak scan is per-line, so extra line breaks only make it finer-grained. No `check-probe-cards.sh` logic changed.
+
+### Not done here
+
+Existing probe-file instances were NOT reflowed by this change (the template governs new/edited entries). Reflowing a live a-executor is a separate, per-instance edit. The global marketplace copy (`~/.claude/plugins/marketplaces/jluo41-tools/…`) is a separate copy from this Tools source; re-run `install.sh --global` to propagate beyond the symlinked project.
+
 ## 9.7.0 — 2026-07-19 — DRAFT rule 2 no longer presupposes the question
 
 From `_console/closed/260719-01-DRAFT-RAISE-QUESTIONS.md` findings B3 and D5 (JL: "可以直接去改" — this file is shared by paper and application, so the change was gated on the owner).

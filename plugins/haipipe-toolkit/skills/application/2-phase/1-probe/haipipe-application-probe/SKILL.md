@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-probe
-description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads the stage doc's Q-consumer and ①ORGANIZEs each question into an ENTRY in applications/<A>/1-probes/PPNN_<topic>.md (## QX<n> · q-executor / q-consumer / bank binding / a-executor), ②MATCHes it against the bank with a read-only grep, ③DISPATCHes what the ceiling allows, ④POINTs, ⑤INTERPRETs. ①② moved here from DRAFT on 2026-07-20 with the removal of the DRAFT gate; DRAFT now raises questions and nothing else. Binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Harvest folds INTO the entry's a-executor (anchored to target) — no sidecar docs. Users invoke stage skills (seed, claims…), not this directly."
+description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads the stage doc's Q-consumer and ①ORGANIZEs each question into an ENTRY FILE in applications/<A>/1-probes/PPNN_<topic>/ — one q-executor per QXn_<slug>.md file (## QX<n> · q-executor / q-consumer / bank binding / a-executor), ②MATCHes it against the bank with a read-only grep, ③DISPATCHes what the ceiling allows, ④POINTs, ⑤INTERPRETs. ①② moved here from DRAFT on 2026-07-20 with the removal of the DRAFT gate; DRAFT now raises questions and nothing else. Binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Harvest folds INTO the entry's a-executor (anchored to target) — no sidecar docs. Users invoke stage skills (seed, claims…), not this directly."
 argument-hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
@@ -54,7 +54,7 @@ This worker runs ③DISPATCH + ④POINT (COLLECT the answer from the bank, per `
 ① + ② — DONE AT DRAFT (this worker's PRECONDITION)
 -------------------------------------------------
 
-The entries already exist under `<intervention_root>/1-probes/PPNN_<topic>.md`, each carrying the DRAFT-authored plan. This worker READS them; it does not author or re-match them.
+The entries already exist under `<intervention_root>/1-probes/PPNN_<topic>/`, each carrying the DRAFT-authored plan. This worker READS them; it does not author or re-match them.
 - Resolve `project_root`: walk UP from `intervention_root` to the first ancestor containing `discoveries/`.
   Do NOT use `git rev-parse` — a repo-backed project is its own git repo. (The checker resolves the same way.)
 - Read each entry's `### bank binding` (`bank` + `target`) to route it: an existing `target:` path (bank `reuse`) → the answer may already be banked, go to ④/⑤ (verify then harvest); `target: NEW …` (bank `run`/`code`/`new`) → ③ DISPATCH.

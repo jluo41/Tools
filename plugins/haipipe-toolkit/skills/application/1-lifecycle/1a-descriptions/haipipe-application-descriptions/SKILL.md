@@ -88,7 +88,7 @@ Refresh Log    which D ids refreshed when, and which downstream ids were STALE-s
 ```
 
 Sidecar: `_LOG_1a-descriptions.md` (phase journal). No `_DESCRIPTIONS/` sheet — rich detail stays in the task/discovery result the entry points to; the schema sweep still reads COLUMN NAMES ONLY (PHI rail).
-Evidence questions are RAISED as ENTRIES in the flat probe pool `1-probes/PPNN_<topic>.md` (one file per TOPIC; each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`), states `planned | commissioned | answered | read | answered-local | failed`; the stake stays in this doc's Q-consumer.
+Evidence questions are RAISED as ENTRIES in the flat probe pool `1-probes/PPNN_<topic>/` (one file per TOPIC; each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`), states `planned | commissioned | answered | read | answered-local | failed`; the stake stays in this doc's Q-consumer.
 Formatting: `=====` title, `-----` sections, `**bold**` sub-items, one sentence per line; content sections use no `#`; Descriptions use `## Description <n>`, Q-consumer questions use `## Q-Desc-<n>`.
 
 

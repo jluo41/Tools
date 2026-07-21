@@ -153,7 +153,7 @@ Read only files that exist, in this order:
 2. `0-lifecycle/2-pitch/2-pitch.md` -- HIGH PRIORITY for the dashboard header: extract the goal/theory-of-change paragraph as the 2-3 sentence "what this intervention is about" summary. If absent, the dashboard says "pitch not yet written".
 3. Remaining stage docs: `0-lifecycle/0-seed/0-seed.md`, the ladder (`1a-descriptions/1a-descriptions.md`, `1b-themes/1b-themes.md`, `1c-claims/1c-claims.md`, `1d-advice/1d-advice.md`), `3-narrative/3-narrative.md`, `4-display/4-display.md`
 4. Section-edit scaffolds (sectioned venues): scan `0-lifecycle/5-section-edit/` for per-section outline `.md`, `_LOG*` files; derive per-section DPRC status from disk.
-5. Probe state: the flat pool `1-probes/PPNN_<topic>.md` -- section states (planned/commissioned/answered/read) derived from disk; the README board regenerates from the files.
+5. Probe state: the flat pool `1-probes/PPNN_<topic>/` -- section states (planned/commissioned/answered/read) derived from disk; the README board regenerates from the files.
 6. Explicit need records: search stage docs for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, `open`.
 7. `0-artifacts/` -- artifact versions, `REVIEW-*`, `CLAIM_AUDIT.md`; deployed markers.
 8. `1-rounds/latest.md`, then the referenced round README, `discussion.md`, `decisions.md`, `todo.md`, `applied.md` if they exist.

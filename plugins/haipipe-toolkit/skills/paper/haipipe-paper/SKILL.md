@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); evidence enters ONLY through the PROBE phase, which authors the probe plan in 1-probes/PPNN_<topic>.md from the stage doc's Q-consumer and then runs it, dispatching each open entry through a clean agent. `enter`/`status` open the paper's open-needs dashboard. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
+description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); evidence enters ONLY through the PROBE phase, which authors the probe plan in 1-probes/PPNN_<topic>/ from the stage doc's Q-consumer and then runs it, dispatching each open entry through a clean agent. `enter`/`status` open the paper's open-needs dashboard. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
@@ -63,7 +63,7 @@ build | scaffold | restructure | conform | folder |
   polish | consistency | format | typeset |
   compile | diffpdf | overleaf | ship | deliver  -> haipipe-paper-deliver (artifact side; forwards the leaf verb to 1-build/2-audit/3-polish/4-ship; polish runs consistency→format→typeset; also "make submission-ready", "conformance", "produce the PDF")
 round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
-probe ["<question>"] | probe | probe plan | probe run [PPNN]  -> the probe-file pool: 1-probes/PPNN_<topic>.md, one file per TOPIC, one ENTRY per q-executor (RAISE / SHOW the board / PLAN the cross-stage campaign / RUN the five-step loop; the probe FILES are the source of truth — the README's Status board regenerates from them, its Campaign section is authored by "plan"; "run" hands the pool to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis", "probe campaign", "consolidate probes")
+probe ["<question>"] | probe | probe plan | probe run [PPNN]  -> the probe-file pool: 1-probes/PPNN_<topic>/, one file per TOPIC, one ENTRY per q-executor (RAISE / SHOW the board / PLAN the cross-stage campaign / RUN the five-step loop; the probe FILES are the source of truth — the README's Status board regenerates from them, its Campaign section is authored by "plan"; "run" hands the pool to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis", "probe campaign", "consolidate probes")
 rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
 feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
 digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
@@ -118,7 +118,7 @@ enter     Path exists -> Skill("haipipe-paper-enter", args="<path>"). Path MISSI
           Skill("haipipe-paper-lifecycle", args="folder <paper-path>"), double-bump (paper push ->
           project pointer -> workspace pointer), and continue straight into the console.
           Plain projects: folder + scaffold, then console.
-probe     Operates on the flat cross-stage pool (1-probes/PPNN_<topic>.md; the README board is
+probe     Operates on the flat cross-stage pool (1-probes/PPNN_<topic>/; the README board is
           derived from it). Sub-modes are listed in the Verbs block above (raise · board · plan
           the campaign · run). It is the SAME operation at two scopes: this paper-level verb
           works the WHOLE pool (see/plan/drain every open question across all stages), while a
@@ -541,7 +541,7 @@ Composing with Evidence Workers
         ├─► /haipipe-paper-rebuttal     (any venue, post-review)
         │
         │   evidence path (a claim hits a gap):
-        └─► 1-probes/PPNN_<topic>.md (one file per TOPIC, one ENTRY per q-executor)
+        └─► 1-probes/PPNN_<topic>/ (one file per TOPIC, one ENTRY per q-executor)
                  │        PROBE runs ① ORGANIZE + ② MATCH ─────► most entries close at MATCH (T2 REUSE)
                  └─► haipipe-paper-probe (the PROBE phase worker, run inside a stage's PROBE phase)
                           ③ DISPATCH the `### q-executor` block, VERBATIM, only for what MATCH missed:

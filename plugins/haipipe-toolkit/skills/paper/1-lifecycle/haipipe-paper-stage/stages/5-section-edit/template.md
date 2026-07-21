@@ -68,7 +68,7 @@ Q-consumer
      · EVERY {VAL:?}, every \cite{TOADD}, every heavier need becomes a numbered question. Only items resolving paper-local (a pointer the draft already sees) go under Settled Flags instead.
      · A missing DISPLAY UNIT is NEVER a question — it is a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md. section-edit FILES display requests; it never creates displays.
      · Bullet lines, never markdown tables, anywhere in this block (JL standing rule).
-     · At PROBE-run time heavier bank questions are DISPATCHED via 1-probes/PP<NN>_<topic>.md (executor-facing q-executor:, no stake) + a 1-probes/README.md bullet row (`- PP<NN> · <stage/section> · <state> · <one-line need> · file: <path>`); the harvested answer flows BACK into the Answer field here.
+     · At PROBE-run time heavier bank questions are DISPATCHED via 1-probes/PP<NN>_<topic>/ (executor-facing q-executor:, no stake) + a 1-probes/README.md bullet row (`- PP<NN> · <stage/section> · <state> · <one-line need> · file: <path>`); the harvested answer flows BACK into the Answer field here.
      · The ⛔ STOP presentation shows this block, so the user reviews STRUCTURE and QUESTIONS at the same gate.
      · closes at CHECK, not REVISE: PROBE FLAGS, it does not place; the human verifies at CHECK and the agent places afterward.>
 

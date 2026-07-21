@@ -7,7 +7,7 @@ Venue: <pinned venue>
 Fires only if the pinned venue requires it (STATUS.md stages_skipped).
 Every unit carries FOUR required fields -- Type, Claim, Job, Data source.
 The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
-Unit materialization is raised as a SECTION in the flat probe pool `1-probes/PPNN_<topic>.md` and, uniquely among stages, commissioned by this stage through the PROBE phase to a task; this doc plans and links.
+Unit materialization is raised as a SECTION in the flat probe pool `1-probes/PPNN_<topic>/` and, uniquely among stages, commissioned by this stage through the PROBE phase to a task; this doc plans and links.
 
 
 

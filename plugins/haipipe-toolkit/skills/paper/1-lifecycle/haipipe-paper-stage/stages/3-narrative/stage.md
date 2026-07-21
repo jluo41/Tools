@@ -26,7 +26,7 @@ venue_aligned: true       # REWRITTEN when the paper is retargeted to another jo
 
 artifact: 0-lifecycle/3-narrative/3-narrative.md
 log: 0-lifecycle/3-narrative/_LOG_3-narrative.md
-probes: 1-probes/PPNN_<topic>.md
+probes: 1-probes/PPNN_<topic>/
 display_request: 0-lifecycle/4-display/_DISPLAY_REQUEST.md   # one DR row per beat that needs a
                           # display, filed on this stage's behalf; the DISPLAY stage owns the file
                           # and advances its statuses

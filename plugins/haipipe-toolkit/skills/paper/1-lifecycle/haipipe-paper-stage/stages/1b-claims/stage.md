@@ -26,7 +26,7 @@ venue_free: true          # does not change when retargeting to another journal
 
 artifact: 0-lifecycle/1b-claims/1b-claims.md
 log: 0-lifecycle/1b-claims/_LOG_1b-claims.md
-probes: 1-probes/PPNN_<topic>.md
+probes: 1-probes/PPNN_<topic>/
 template: template.md
 
 exit_when: "claim unsupported/too strong, no route"   # the stage's own failure exit

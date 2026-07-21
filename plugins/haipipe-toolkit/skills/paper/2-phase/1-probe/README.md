@@ -27,7 +27,7 @@ DRAFT authors the plan          PROBE runs it forward
              along with the answer into the SAME `### a-executor`.
 ```
 
-The probe FILE — `1-probes/PPNN_<topic>.md`, one file per TOPIC, one ENTRY per q-executor — is the single consumer-side source of truth. `_LOG_<stage>.md` is the only sidecar.
+The probe FILE — `1-probes/PPNN_<topic>/`, one file per TOPIC, one ENTRY per q-executor — is the single consumer-side source of truth. `_LOG_<stage>.md` is the only sidecar.
 
 ```markdown
 ## QX<n> — <slug>

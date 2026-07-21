@@ -23,17 +23,18 @@ venue_free: true          # does not change when retargeting to another journal
 
 artifact: 0-lifecycle/1a-resource/1a-resource.md
 log: 0-lifecycle/1a-resource/_LOG_1a-resource.md
-probes: 1-probes/PPNN_<topic>.md
+probes: 1-probes/PPNN_<topic>/
 template: template.md
 
-exit_when: "GATE 1 (approve the questions + the SPEND), GATE 2 (exit)"
+exit_when: "at CHECK — pick one of the `exits:` below"
 
-gates:                    # TWO human stops, per JL ruling; the agent self-advances past neither
-  gate_1: "after DRAFT — the human approves WHICH questions get asked AND authorizes the SPEND
-           on every BUILD row, per row: build it · cut it · authorize a cross-project reuse.
-           Logged `[GATE] draft-review: approved` + `[GATE] spend-authorized: …`, quoting the user.
-           A declined Q is LOGGED in the _LOG, never deleted."
-  gate_2: "at CHECK — the exit. Picks one of `exits:` below."
+gates: [check]             # ONE human gate, at CHECK — like every other stage. DRAFT/PROBE/REVISE
+                           # run unattended. Safe because probe_depth is 0: PROBE only HARVESTS,
+                           # nothing spends on a default run. A BUILD acquisition is depth >= 1 and
+                           # never fires unless the human explicitly raises the ceiling with
+                           # `probe --depth N` — that raise IS the spend authorization, so no
+                           # separate DRAFT gate is needed. CHECK reviews the filled ledger, logs
+                           # `[GATE] check: <exit>` quoting the user, and picks one of `exits:` below.
 
 exits:                    # THREE, not the usual two — see the craft body
   proceed: "-> claims — every H<n> has a HAVE+FIT resource, a COMMISSIONED acquisition, or a stated cut"
@@ -62,9 +63,10 @@ closed_when: "PROBE writes the Answer from the answering QA file — existence A
 probe_lanes:              # what a Q costs to answer
   scan:  "minutes — a store scan, a capability grep, an access-rung check. Cheap; ask freely."
   build: "an acquisition — a DUA, a pipeline, a labeling run; cost in calendar-months or GPU-weeks.
-          Nothing in this lane dispatches before `[GATE] spend-authorized` exists in the _LOG."
+          Depth >= 1, so nothing in this lane dispatches on a default run — only when the human
+          raises the ceiling with `probe --depth N`. That explicit raise IS the spend authorization."
 build_requires: "`cross-project:` on every BUILD question — a sibling-project path or `none-found`.
-                 Empty is a FAIL: it makes the gate authorize spend blind."
+                 Empty is a FAIL: it makes a `probe --depth N` raise spend blind."
 
 done_criteria:
   - "both sections filled with real content; every <!-- RULE --> comment deleted"
@@ -75,7 +77,8 @@ done_criteria:
   - "every question is a `## Q-Resource-<n>` block, cited inline in the line it tests"
   - "no woolly Answer — 'probably fine' is a DEFECT; the Answer names existence, fitness, and the kill"
   - "every BUILD question carries `cross-project:` (path or `none-found`)"
-  - "`[GATE] spend-authorized` in the _LOG before any BUILD dispatched (or `n/a -- no BUILD questions`)"
+  - "no BUILD dispatched on a default run (depth 0); any BUILD fired only after an explicit
+     `probe --depth N`, recorded in the _LOG (or `n/a -- no BUILD questions`)"
   - "_LOG entry records the current state"
   - "check-probe-cards.sh <paper_root> --stage resource exits 0"
 
@@ -134,17 +137,19 @@ do we HAVE it, can we GET it, or must we BUILD it?
 NOT here: whether the evidence SUPPORTS a claim. Resource settles what we have, what we can get, and
 what we must build; claims settles what it shows.
 
-Ask freely; SPEND at the gate
------------------------------
+Ask freely; SPEND only on an explicit depth raise
+-------------------------------------------------
 
 A SCAN is minutes, so the Q-consumer is as generous as the draft needs — raise every existence or
-fitness question the description actually rests on. The BUILD lane is what is expensive, and bounding
-it is the gate's whole job.
+fitness question the description actually rests on. The BUILD lane is what is expensive, and at the
+default `probe_depth: 0` it NEVER dispatches: a BUILD is depth >= 1, so it fires only when the human
+explicitly raises the ceiling with `probe --depth N`. That raise IS the spend decision — there is no
+separate DRAFT gate, exactly as in every other stage.
 
-The human decides PER BUILD ROW, and needs three things in front of them: what the row BLOCKS
-(`H<n>`), what it COSTS (pipeline-days, GPU-weeks, or a DUA whose cost is calendar-MONTHS and not
-compute), and its `cross-project:` candidate. That candidate is why the field is mandatory — without
-it the gate authorizes spend blind while the thing sits scaffolded one repo over. An agent may NAME a
+Before raising depth on a BUILD row, the human needs three things in front of them: what the row
+BLOCKS (`H<n>`), what it COSTS (pipeline-days, GPU-weeks, or a DUA whose cost is calendar-MONTHS and
+not compute), and its `cross-project:` candidate. That candidate is why the field is mandatory —
+without it a raise spends blind while the thing sits scaffolded one repo over. An agent may NAME a
 sibling-project source; only the USER may CONSUME it. A scope cut taken here is free; the same cut
 after claims costs a CLAIM, and after display it costs a FIGURE.
 

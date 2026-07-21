@@ -27,7 +27,7 @@ venue_aligned: true       # REWRITES when the venue changes (claims does not —
 artifact: 0-lifecycle/2b-pitch/2b-pitch.md
 log: 0-lifecycle/2b-pitch/_LOG_2b-pitch.md
 archive: 0-lifecycle/2b-pitch/archive/vNN_<reason>.md
-probes: 1-probes/PPNN_<topic>.md
+probes: 1-probes/PPNN_<topic>/
 template: template.md
 support: [readability.md]   # the 9 global language rules, section lead cues, hook method menu,
                             # worked rewrites, reviewer checklist — LARGER than the template

@@ -14,7 +14,10 @@
 #
 # WHAT IT CHECKS -- four passes, plus a paper-only RESOURCE-STAGE pass.
 #
-# PASS 1: every <paper_root>/1-probes/PP*.md probe file, ENTRY BY ENTRY
+# PASS 1: every probe file. A probe TOPIC is a FOLDER <paper_root>/1-probes/PP<NN>_<topic>/ holding
+#   one q-executor per QXn_<slug>.md file (the flat single-file 1-probes/PP*.md was RETIRED at the
+#   folder-only cutover -- see CHANGELOG). ENTRY BY ENTRY. Each file still carries its `## QX<n>`
+#   heading, so the section-splitter awk below is unchanged; the glob is PP*/*.md.
 #   (an entry = a `## QX<n>` heading + its ### q-executor / ### q-consumer / ### bank binding
 #    (**route**/**bank**/**target**/**state**) / ### a-executor subsections)
 #   1. state read           -> target: non-empty, no placeholder, resolves under
@@ -392,7 +395,7 @@ served=0
 # the walk, the shell does the two things awk cannot: resolve a path on disk and
 # compare a date to today.
 # ---------------------------------------------------------------------------
-for probe in "$paper_root"/1-probes/PP*.md; do
+for probe in "$paper_root"/1-probes/PP*/*.md; do
   [ -e "$probe" ] || continue
   found=1
   name=${probe#"$paper_root"/}
@@ -765,7 +768,7 @@ if [ "$stage_filter" = "resource" ] && [ -f "$res_md" ]; then
       # asked. The backlink must resolve to a real probe file, or it is laundering.
       res_open=$((res_open + 1))
       c_hit=0
-      for c in "$paper_root"/1-probes/"$q_pp"*.md \
+      for c in "$paper_root"/1-probes/"$q_pp"*/*.md \
                "$paper_root"/1-probe-plans/"$q_pp"*.md \
                "$paper_root"/0-lifecycle/*/_PROBE/"$q_pp"*.md; do
         [ -e "$c" ] && c_hit=1
@@ -857,7 +860,7 @@ if [ -n "$stage_filter" ] && [ "$served" -eq 0 ]; then
     fi
   fi
 elif [ "$found" -eq 0 ]; then
-  echo "WARN  no PP*.md probe files under $paper_root/1-probes/"
+  echo "WARN  no probe files under $paper_root/1-probes/ (expected PP<NN>_<topic>/QXn_<slug>.md folders)"
 fi
 
 # ---------------------------------------------------------------------------

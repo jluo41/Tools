@@ -308,7 +308,7 @@ After this skill produces the ranked report:
 ```
 
 A ranked idea is not a claim, and this layer never opens one. If the idea grows into a
-paper, THAT paper raises its own questions in its own `1-probes/PPNN_<topic>.md` probe file
+paper, THAT paper raises its own questions in its own `1-probes/PPNN_<topic>/` probe file
 and judges its own claims in its own `1-claims.md` — we only ever answer the questions.
 
 ## Review Tracing

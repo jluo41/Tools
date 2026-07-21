@@ -42,7 +42,7 @@ venue_aligned: true       # rewritten on retarget to another journal
 
 artifact: 0-lifecycle/5-section-edit/{section}/{section}.md   # PER SECTION — one folder per unit
 log: 0-lifecycle/5-section-edit/{section}/_LOG_{section}.md
-probes: 1-probes/PPNN_<topic>.md
+probes: 1-probes/PPNN_<topic>/
 output: 0-sections/*.tex   # GENERATED from the .md by sync; NEVER hand-authored
 template: <resolved per (venue, section_kind)>
           # PRINCIPLE (JL 2026-07-20): every (venue, kind) has its OWN template, summarized from

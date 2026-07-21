@@ -2,7 +2,7 @@
 
 Canonical reference for how this skill family is organized. This file wins over anything elsewhere.
 
-A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>.md` probe files hold its QUESTIONS, one ENTRY each, and BIND each one BY PATH to the answering `<task-folder>/QA/<n>-<slug>.md` in that bank. Claim gaps become entries there; MATCH closes most of them for free, and only the rest are dispatched (the `q-executor:` block, verbatim) to the task/discovery orchestrators. The paper reaches the bank only through a stage's PROBE phase; a standalone utility question uses the bank's own `/haipipe-task qa` door, typed by a human.
+A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>/` probe files hold its QUESTIONS, one ENTRY each, and BIND each one BY PATH to the answering `<task-folder>/QA/<n>-<slug>.md` in that bank. Claim gaps become entries there; MATCH closes most of them for free, and only the rest are dispatched (the `q-executor:` block, verbatim) to the task/discovery orchestrators. The paper reaches the bank only through a stage's PROBE phase; a standalone utility question uses the bank's own `/haipipe-task qa` door, typed by a human.
 
 ## Paper-folder layout
 
@@ -14,7 +14,7 @@ A paper is a delivery contract, not a writing folder. It owns one manuscript's s
 │   ├── 0-seed/  1a-resource/  1b-claims/  2b-pitch/  3-narrative/  4-display/  5-editing/
 ├── 0-sections/               manuscript prose .tex
 ├── 0-displays/displayNN-*/   figure/table units
-├── 1-probes/PPNN_<topic>.md   the paper's questions, one ENTRY each -> bound BY PATH to a QA file
+├── 1-probes/PPNN_<topic>/   the paper's questions, one ENTRY each -> bound BY PATH to a QA file
 ├── 1-rounds/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 ├── 1-config.yaml
 └── 1-compile.sh

@@ -33,7 +33,7 @@ The probe, in five lines
 
 ```
 A PROBE IS A PAPER-LEVEL DOCUMENT. Nothing else.
-    papers/<P>/1-probes/PPNN_<topic>.md    ·    applications/<A>/1-probes/PPNN_<topic>.md
+    papers/<P>/1-probes/PPNN_<topic>/    ·    applications/<A>/1-probes/PPNN_<topic>/
 One file per TOPIC; each question is one SECTION: serves / target / state / q-executor/a-consumer.
 Plus one '## Why' per file — the STAKE. It NEVER leaves the file.
 Binding is by PATH, never by id: `target:` points at a QA file in the bank.

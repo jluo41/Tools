@@ -30,7 +30,7 @@ Paper-<Name>/
 ├── 0-lifecycle/        # EMPTY -- each stage skill creates its own N-stage/ on first run
 ├── 0-displays/         # EMPTY -- display units land here (owner: display stage + renderers)
 ├── 1-rounds/           # EMPTY -- dated work rounds (owner: haipipe-paper-round)
-└── 1-probes/           # EMPTY -- the probe-file pool (README.md + flat PPNN_<topic>.md probe files, created on first probe; one cross-stage pool, one file per TOPIC)
+└── 1-probes/           # EMPTY -- the probe-file pool (README.md + flat PPNN_<topic>/ probe files, created on first probe; one cross-stage pool, one file per TOPIC)
 ```
 
 Absent-until-written: `0-lifecycle/` starts empty.
@@ -122,7 +122,7 @@ Not this skill's job
 repo + submodule wiring        -> /haipipe-paper enter (get-or-create branch)
 stage files (0-seed.md, ...)   -> each stage skill, on first run
 rounds (1-rounds/vYYMMDD/)     -> haipipe-paper-round (contract: ../../../0-enter/haipipe-paper-round/SKILL.md)
-probe files (PPNN_<topic>.md)  -> /haipipe-paper probe verbs (fn/probes.md)
+probe files (PPNN_<topic>/)  -> /haipipe-paper probe verbs (fn/probes.md)
 display units                  -> display stage + renderer family
 venue knowledge                -> venue/playbook-<venue> packs
 ```

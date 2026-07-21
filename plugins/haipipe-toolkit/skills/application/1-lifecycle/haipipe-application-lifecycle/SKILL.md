@@ -65,7 +65,7 @@ Folder Contract
 │   └── 5-section-edit/   venue: GATED     per-section scaffolds + _LOG   (sectioned venues)
 ├── 0-sections/               sectioned-venue prose
 ├── 0-artifacts/              <slug>-v{N}.md · REVIEW-* · CLAIM_AUDIT.md
-├── 1-probes/                 the flat probe pool (one file per TOPIC, PPNN_<topic>.md)
+├── 1-probes/                 the flat probe pool (one file per TOPIC, PPNN_<topic>/)
 ├── 1-rounds/vYYMMDD/         work rounds
 └── data/contract.yaml        input-data contract (data-consuming venues)
 ```
@@ -161,7 +161,7 @@ Evidence Flow (flat probe pool)
 ```text
 stage DRAFT raises the questions (a Q-consumer list); APPROVE (human) picks which to pursue
     ↓
-① ORGANIZE  each approved question → an ENTRY (## QX<n>) in 1-probes/PPNN_<topic>.md (one file per
+① ORGANIZE  each approved question → an ENTRY (## QX<n>) in 1-probes/PPNN_<topic>/ (one file per
             TOPIC), with ### q-executor (stake stripped) / ### q-consumer / ### bank binding / ### a-executor
     ↓
 ② MATCH     scan the bank's QA corpus FIRST — most sections REUSE an existing answer and stop here

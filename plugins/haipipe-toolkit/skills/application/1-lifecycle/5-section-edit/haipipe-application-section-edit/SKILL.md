@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "5.4.0"
   last_updated: "2026-07-19"
-  summary: "Section-edit stage (stage 5, venue-ALIGNED; sectioned venues only — report/dashboard spec): each section the VENUE PROFILE declares runs DRAFT → PROBE → REVISE → CHECK, editing prose in 0-sections/ with per-section scaffolds under 0-lifecycle/5-section-edit/{section}/. Its PROBE is a full-document probe — values + citation lanes per section, display lane where a section references units — raising gaps as entries in the flat pool 1-probes/PPNN_<topic>.md. Keeps the comment→reply→apply convention and the six edit topics as REVISE/CHECK lenses. History: ./CHANGELOG.md."
+  summary: "Section-edit stage (stage 5, venue-ALIGNED; sectioned venues only — report/dashboard spec): each section the VENUE PROFILE declares runs DRAFT → PROBE → REVISE → CHECK, editing prose in 0-sections/ with per-section scaffolds under 0-lifecycle/5-section-edit/{section}/. Its PROBE is a full-document probe — values + citation lanes per section, display lane where a section references units — raising gaps as entries in the flat pool 1-probes/PPNN_<topic>/. Keeps the comment→reply→apply convention and the six edit topics as REVISE/CHECK lenses. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-section-edit
@@ -39,7 +39,7 @@ The per-lane wording is the probe layer's — see `../../../2-phase/1-probe/haip
 DRAFT   settle the section's outline + draft sentences against its assigned job, and end the outline with
         the evidence gaps it raises (haipipe-application-draft).  ⛔ STOP for the user's structure review.
 PROBE   trace numbers to task results and claims to the 1c ledger / K-W anchors; raise each real gap as a
-        SECTION in the flat pool 1-probes/PPNN_<topic>.md (values + citation lanes per section, display lane
+        SECTION in the flat pool 1-probes/PPNN_<topic>/ (values + citation lanes per section, display lane
         where units are referenced), MATCH the bank, dispatch only what MATCH cannot close
         (haipipe-application-probe; routing is the probe layer's).
 REVISE  the comment → reply → apply cycle (below) + venue style-profile + audience conformance
@@ -79,7 +79,7 @@ _LOG_{section}.md    phase journal, one [PHASE]-tagged entry per round (newest o
 ```
 
 There is no single stage template — each section's scaffold IS its outline, and the display stage's per-unit job spec is the map of what each section must carry.
-Evidence gaps do NOT buffer here: they are raised as ENTRIES in the flat probe pool `1-probes/PPNN_<topic>.md` (one file per TOPIC; each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`), states `planned | commissioned | answered | read | answered-local | failed`; the stake stays in the stage doc's Q-consumer.
+Evidence gaps do NOT buffer here: they are raised as ENTRIES in the flat probe pool `1-probes/PPNN_<topic>/` (one file per TOPIC; each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`), states `planned | commissioned | answered | read | answered-local | failed`; the stake stays in the stage doc's Q-consumer.
 
 Inputs read: `STATUS.md` (venue, stages_skipped) · `venue/venue-<name>/README.md` (section list + jobs) · `0-lifecycle/4-display/4-display.md` (element→section map) · `0-lifecycle/1c-claims/1c-claims.md` (the ledger; claims language must not outrun it) · `0-lifecycle/1d-advice/1d-advice.md` (the advice entries each section executes) · `0-sections/*` (the prose under edit).
 Output: edited `0-sections/*` in place, plus the per-section scaffolds above; this stage does not modify upstream lifecycle docs — upstream problems become loopback suggestions.
