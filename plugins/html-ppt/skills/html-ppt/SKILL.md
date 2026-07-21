@@ -60,6 +60,37 @@ Only `presenter-mode-reveal` is designed from the ground up around the feature w
 Keyboard in presenter window: `← →` navigate (syncs audience) · `R` reset timer · `Esc` close popup.
 Keyboard in audience window: `S` open presenter · `T` cycle theme · `← →` navigate (syncs presenter) · `F` fullscreen · `O` overview.
 
+## House default style: `academic-report` (settled 2026-07-21)
+
+Unless the user asks for something else, **start every new deck from this
+style** — it was converged over many review rounds on the REACH-ADHD NIH
+program-officer briefing (reference deck:
+`REACH-SPACE/collaborations/Event-JHU-ADHD-NIH-Team/po-update-deck/html-ppt/`).
+
+| Rule | Value |
+|---|---|
+| Background | pure white `#ffffff` — page AND cards |
+| Font | Times New Roman on every element (code spans too) |
+| Type scale | normal-PPT sizes: titles ~33pt, body ~15-18pt; **trim content rather than shrink type** |
+| Chrome | NO kicker above titles · NO rule under titles · NO page index |
+| Body text | bullets, ONE SENTENCE PER LINE (`.blt` list) |
+| Layout | slides fill the page (flex column, space-between) |
+| Palette | ink/grays + navy accent `#1f5aa8` + amber warn `#b45309` only |
+| Placeholders | dashed amber `.todo` pill — unfilled content is visible, never presentable by accident |
+| Corners | square-ish (2px radius), no shadows |
+
+Wire-up in a deck's `<head>` (after base.css):
+
+```html
+<link rel="stylesheet" id="theme-link" href="../assets/themes/academic-report.css">
+<link rel="stylesheet" href="../assets/academic-report-extras.css">
+```
+
+`themes/academic-report.css` = tokens; `academic-report-extras.css` = the
+component conventions (.blt bullets, .todo pill, kicker-off, page-fill,
+table styles). For per-slide SVG / PPTX / PDF export of such a deck, use the
+sibling **html-to-svg** skill — same contract, plus native-shapes pptx.
+
 ## Before you author anything — ALWAYS ask or recommend
 
 **Do not start writing slides until you understand three things.** Either ask
@@ -68,8 +99,8 @@ tasteful default and confirm.
 
 1. **Content & audience.** What's the deck about, how many slides, who's
    watching (engineers / execs / 小红书读者 / 学生 / VC)?
-2. **Style / theme.** Which of the 36 themes fits? If unsure, recommend 2-3
-   candidates based on tone:
+2. **Style / theme.** DEFAULT to `academic-report` (house style above) unless
+   the user signals otherwise; for other tones recommend 2-3 candidates:
    - Business / investor pitch → `pitch-deck-vc`, `corporate-clean`, `swiss-grid`
    - Tech sharing / engineering → `tokyo-night`, `dracula`, `catppuccin-mocha`,
      `terminal-green`, `blueprint`

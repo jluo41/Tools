@@ -1,0 +1,28 @@
+/* theme: academic-report — HOUSE DEFAULT (JL, settled 2026-07-21)
+   Pure-white formal report deck in Times New Roman. Distilled from the
+   REACH-ADHD NIH program-officer briefing (the reference deck for this style:
+   REACH-SPACE/collaborations/Event-JHU-ADHD-NIH-Team/po-update-deck/).
+   Pair with ../academic-report-extras.css for the component conventions
+   (sentence-per-line bullets, todo pills, no-kicker, page-fill). */
+:root{
+  --bg:#ffffff;--bg-soft:#ffffff;--surface:#ffffff;--surface-2:#f2f2f0;
+  --border:#d4d4d0;--border-strong:rgba(20,20,20,.4);
+  --text-1:#1c1c1c;--text-2:#3f3f46;--text-3:#8a8a8a;
+  --accent:#1f5aa8;--accent-2:#1c1c1c;--accent-3:#b45309;
+  --good:#15803d;--warn:#b45309;--bad:#b91c1c;
+  --grad:linear-gradient(135deg,#1f5aa8,#1c1c1c);
+  --grad-soft:linear-gradient(135deg,#eef2f8,#f2f2f0);
+  --radius:2px;--radius-sm:2px;--radius-lg:2px;
+  --shadow:none;
+  --shadow-lg:0 1px 2px rgba(0,0,0,.08);
+  --font-sans:'Times New Roman',Times,'Noto Serif SC',serif;
+  --font-serif:'Times New Roman',Times,'Noto Serif SC',serif;
+  --font-display:'Times New Roman',Times,'Noto Serif SC',serif;
+}
+body{font-family:var(--font-serif)}
+h1.title,h2.title,.h1,.h2{font-weight:700;font-family:var(--font-serif)}
+.card{border:1px solid var(--border);box-shadow:none}
+.divider{background:var(--text-1);height:1px}
+.divider-accent{background:var(--text-1);height:2px;width:100%}
+a{color:var(--accent);text-decoration:underline}
+.kicker{color:var(--accent);text-transform:uppercase;letter-spacing:2px;font-weight:700;font-style:normal}

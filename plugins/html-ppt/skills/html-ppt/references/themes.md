@@ -67,6 +67,7 @@ All themes define the same variables: `--bg`, `--bg-soft`, `--surface`,
 |---|---|---|
 | `corporate-clean` | 纯白 + 海军蓝 accent + Inter + 保守边框。 | 董事会汇报、B2B 销售、金融保险 |
 | `pitch-deck-vc` | YC 风白底 + 蓝紫渐变 accent + 大留白。 | 融资路演、种子轮、VC meeting |
+| `academic-report` | **HOUSE DEFAULT** 纯白 + Times New Roman + 无 kicker/无标题下划线 + PPT 字号。配 `assets/academic-report-extras.css`。 | 正式汇报（NIH/PO briefing 类）、默认首选 |
 | `academic-paper` | 论文白 + 衬线正文 + 黑墨 + 蓝链接。 | 学术报告、研究分享、会议论文 |
 | `japanese-minimal` | 象牙白 + 朱红 accent + 极大留白 + Noto Serif。 | 品牌升级、匠人故事、禅意叙事 |
 | `engineering-whiteprint` | 白底 + 坐标纸网格 + 海军墨线 + 等宽字。 | 系统设计、API 文档、架构白皮书 |
