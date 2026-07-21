@@ -38,7 +38,7 @@ Seed and the evidence ladder are venue-FREE: data truth, patterns, claims, and c
 
 ## Evidence routing
 
-For claim-related evidence, the application always routes through probe (the single evidence door). Stages RAISE questions as entries in the flat pool `1-probes/PPNN_<topic>.md`, and each stage's PROBE phase worker binds every entry to a bank answer through the stake-free collector agent — never calling task/discover directly. Direct task/discover for non-claim utility work only.
+For claim-related evidence, the application always routes through probe (the single evidence door). Stages RAISE questions as entries in the flat pool `1-probes/PPNN_<topic>/`, and each stage's PROBE phase worker binds every entry to a bank answer through the stake-free collector agent — never calling task/discover directly. Direct task/discover for non-claim utility work only.
 
 The application does not execute code, search literature directly, or store raw results.
 

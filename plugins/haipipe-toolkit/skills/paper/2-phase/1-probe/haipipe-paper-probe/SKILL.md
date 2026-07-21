@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-probe
-description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads the stage doc's Q-consumer and ①ORGANIZEs each question into an ENTRY in papers/<P>/1-probes/PPNN_<topic>.md (`## QX<n>` + `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`; the stake stays behind in the stage-doc Q-consumer), ②MATCHes it against the bank with a read-only grep, ③DISPATCHes only what the stage's probe_depth ceiling allows, ④POINTs each target, ⑤INTERPRETs the answer back. ①② moved here from DRAFT on 2026-07-20, when the DRAFT gate they had been merged into was removed; DRAFT now raises questions and nothing else. Binds by PATH to a QA file in the probe-unaware task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Users invoke stage skills (seed, claims, pitch…), not this directly."
+description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads the stage doc's Q-consumer and ①ORGANIZEs each question into an ENTRY FILE in papers/<P>/1-probes/PPNN_<topic>/ — one q-executor per `QXn_<slug>.md` file (`## QX<n>` + `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`; the stake stays behind in the stage-doc Q-consumer), ②MATCHes it against the bank with a read-only grep, ③DISPATCHes only what the stage's probe_depth ceiling allows, ④POINTs each target, ⑤INTERPRETs the answer back. ①② moved here from DRAFT on 2026-07-20, when the DRAFT gate they had been merged into was removed; DRAFT now raises questions and nothing else. Binds by PATH to a QA file in the probe-unaware task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Users invoke stage skills (seed, claims, pitch…), not this directly."
 argument-hint: "[from-buffer <paper_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
@@ -55,7 +55,7 @@ This worker runs ③DISPATCH + ④POINT (COLLECT the answer from the bank, per `
 ① + ② — THIS WORKER AUTHORS THEM
 ---------------------------------
 
-The stage doc's Q-consumer is the input. For each `## Q-<Stage>-<n>` block, find-or-open its ENTRY under `<paper_root>/1-probes/PPNN_<topic>.md` and author it. DRAFT wrote none of this and never opened `1-probes/`; if an entry is already there from a previous PROBE run, read it and do not re-author it.
+The stage doc's Q-consumer is the input. For each `## Q-<Stage>-<n>` block, find-or-open its ENTRY FILE `<paper_root>/1-probes/PPNN_<topic>/QXn_<slug>.md` (one q-executor per file; the folder is the topic) and author it. DRAFT wrote none of this and never opened `1-probes/`; if an entry is already there from a previous PROBE run, read it and do not re-author it.
 - Resolve `project_root`: walk UP from `paper_root` to the first ancestor containing `discoveries/`.
   Do NOT use `git rev-parse` — a repo-backed paper is its own git repo. (The checker resolves the same way.)
 - Route on the TARGET, not on the verdict. They answer different questions: `bank` says what the

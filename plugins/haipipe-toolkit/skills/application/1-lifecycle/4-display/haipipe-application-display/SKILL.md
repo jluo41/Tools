@@ -39,7 +39,7 @@ The available element types come from the venue stage doc's Artifact Principles 
 **3. Display is the ONE stage that commissions its own units.**
 A missing unit raised from narrative or a section is NOT commissioned there — it becomes a request row this stage later fulfills, and that section closes `answered-local`.
 Only THIS stage commissions render/materialization work for its own accepted units; every other stage's display lane merely LINKs what landed.
-A unit whose data source does not exist yet is an evidence need: it is raised as a question SECTION in the flat probe pool `1-probes/PPNN_<topic>.md` and dispatched through PROBE — display never runs `/haipipe-task` or renders inline (LAW 1).
+A unit whose data source does not exist yet is an evidence need: it is raised as a question SECTION in the flat probe pool `1-probes/PPNN_<topic>/` and dispatched through PROBE — display never runs `/haipipe-task` or renders inline (LAW 1).
 The rendered output lands task-side; the unit's Data source field points at it.
 
 
@@ -72,7 +72,7 @@ Q-consumer         materialization questions, one `## Q-Disp-<n>` block each (As
 ```
 
 Sidecar: `_LOG_4-display.md` (phase journal).
-Evidence questions live in the flat probe pool `1-probes/PPNN_<topic>.md` (one file per TOPIC; each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`), states `planned | commissioned | answered | read | answered-local | failed`; the stake stays in this doc's Q-consumer.
+Evidence questions live in the flat probe pool `1-probes/PPNN_<topic>/` (one file per TOPIC; each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`), states `planned | commissioned | answered | read | answered-local | failed`; the stake stays in this doc's Q-consumer.
 Formatting: `=====` title / `-----` sections; content uses no `#`, Q-consumer questions use `## Q-Disp-<n>`; one sentence per line; the doc reads `2-venue.md`'s Artifact Principles for the available element types.
 
 

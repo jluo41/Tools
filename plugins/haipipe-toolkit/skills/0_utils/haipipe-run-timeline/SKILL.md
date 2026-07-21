@@ -34,13 +34,13 @@ LANES:
   L3 = 🔍 d2 discovery-reviewer
 
 00:00 [L0] 🎯 Skill(haipipe-paper-enter)
-02:15 [L0] 📝 Write papers/Paper-X/1-probes/PP02_novelty.md      ← the probe file (paper-side)
+02:15 [L0] 📝 Write papers/Paper-X/1-probes/PP02_novelty/      ← the probe file (paper-side)
 03:42 [L0] 🤖 dispatch haipipe-discovery-orchestrator-agent (bg=False)   ← the commission, verbatim
 10:10     [L1] 🎯 Skill(haipipe-discovery)
 17:34         [L2] 📝 Write L01_novelty/01_three-axes/sources.md
 19:39     [L1] 🤖 dispatch haipipe-discovery-reviewer-agent (bg=False)
 26:04     [L1] 📝 Write L01_novelty/01_three-axes/QA/1-three-axis-novelty.md   ← the ANSWER
-27:10 [L0] ✏️  Edit  papers/Paper-X/1-probes/PP02_novelty.md      ← target: + ### a-executor
+27:10 [L0] ✏️  Edit  papers/Paper-X/1-probes/PP02_novelty/      ← target: + ### a-executor
 ```
 
 Read it for: where time went (per-layer spans), sync-vs-background choices (`bg=`), which files

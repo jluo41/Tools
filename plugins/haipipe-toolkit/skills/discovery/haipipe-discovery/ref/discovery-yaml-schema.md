@@ -126,7 +126,7 @@ Common fields: `outcome`, `summary`, `confidence` (high/medium/low). Judge roles
 
 ```
   the CONSUMER keeps the question + the stake in ITS OWN probe file
-     papers/<P>/1-probes/PPNN_<topic>.md — a `### q-executor` block per entry
+     papers/<P>/1-probes/PPNN_<topic>/ — a `### q-executor` block per entry
   it hands us that block, VERBATIM, and nothing else
   we answer it through the `qa` verb (fn/qa.md) and return ONE PATH:
      discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md

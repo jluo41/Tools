@@ -1,10 +1,10 @@
 ---
 name: haipipe-probe
-description: "The probe layer: a consumer-level Q/A map (papers/<P>/ or applications/<A>/1-probes/PPNN_<topic>.md) that binds each question a paper or application cannot answer itself, by PATH, to a QA file in the probe-unaware task/discovery bank. Owns the probe-file anatomy, the five-step loop, the cost ladder, the QA state-line contract, the two LAWS, and the checker's FAIL conditions. Trigger: probe, probe file, PPNN, q-executor, a-consumer, QA file, qa verb, state, working, answered, superseded, evidence, /haipipe-probe."
+description: "The probe layer: a consumer-level Q/A map (papers/<P>/ or applications/<A>/1-probes/PPNN_<topic>/, one file per q-executor) that binds each question a paper or application cannot answer itself, by PATH, to a QA file in the probe-unaware task/discovery bank. Owns the probe-file anatomy, the five-step loop, the cost ladder, the QA state-line contract, the two LAWS, and the checker's FAIL conditions. Trigger: probe, probe file, PPNN, q-executor, a-consumer, QA file, qa verb, state, working, answered, superseded, evidence, /haipipe-probe."
 argument-hint: "[contract | anatomy | status | \"<question>\"]"
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "9.7.0"
+  version: "9.9.0"
   last_updated: "2026-07-19"
   summary: "The probe layer, operational form. A probe maps a question to a QA file in the probe-unaware bank — communication, not judgment. Spec + rationale: ../../../diagram/260714-probe-qa/. History: ./CHANGELOG.md."
 ---
@@ -30,7 +30,7 @@ What a probe is
 ```text
    YOUR PAPER / APPLICATION                THE BANK  (task = discovery, probe-UNAWARE)
    ────────────────────────                ──────────────────────────────────────────
-   1-probes/PP03_welldoc.md                tasks/A03_welldoc_cycle_check/01_column_scan/
+   1-probes/PP03_welldoc/QX1_cycle.md      tasks/A03_welldoc_cycle_check/01_column_scan/
      ## QX1  "cycle indicator?"              ├── workflow/plan.yaml · results/   (code)
      ### q-executor ────────────┐            └── QA/1-cycle-indicator.md         (readable)
      ### bank binding · target ─┼───────────────▶ "none — 40 tables scanned"
@@ -90,7 +90,7 @@ For each Q-consumer, PROBE runs the loop in order:
 Before the gate, DRAFT SELF-REVIEWS its output: a review sub-agent in a FRESH context (a creator/reviewer split — the drafter does not grade its own work) checks the draft against the stage's artifact spec and the probe plan against **The DRAFT self-review checklist** below, and returns PASS or an issue list; the drafter fixes and re-reviews (bounded) so what reaches the human is already clean of mechanical defects. The self-review PRECEDES the human gate; it never replaces it.
 APPROVE is the HUMAN gate at the DRAFT│PROBE boundary: the consumer (a person) reviews the draft AND the probe plan and approves which questions to pursue — the agent never self-advances. Only APPROVED sections go on.
 PROBE then RUNS FORWARD (no re-planning, no second gate; it stays a milestone): ③ DISPATCH the `new`/`run`/`code` entries (`target: NEW`), ④ POINT their `target`, ⑤ INTERPRET (copy the QA answer into `### a-executor`).
-Ids: three LOCAL layers, none crossing the wall — `Q-<Stage>-<n>` in the stage doc (consumer-local), `QX<n>` in the probe file (topic-local), `QA/<n>-<slug>.md` in the bank (task-folder-local). They bind by PATH (`target`), never by a shared id. Each stage-doc `Q-<Stage>-<n>` gains a `→ 1-probes/PPnn · QX<n>` pointer, and its `state` is DERIVED — that state, not an empty `target`, marks a planned-but-unrun entry, because PROBE writes `target`.
+Ids: three LOCAL layers, none crossing the wall — `Q-<Stage>-<n>` in the stage doc (consumer-local), `QX<n>` in the probe file (topic-local), `QA/<n>-<slug>.md` in the bank (task-folder-local). They bind by PATH (`target`), never by a shared id. Each stage-doc `Q-<Stage>-<n>` gains a `→ 1-probes/PPnn_<topic>/QXn_<slug>.md` pointer, and its `state` is DERIVED — that state, not an empty `target`, marks a planned-but-unrun entry, because PROBE writes `target`.
 
 The DRAFT self-review checklist
 -------------------------------
@@ -132,8 +132,8 @@ Each hop is a copy anchored to the last, so the whole chain is self-contained AN
 The probe file
 ==============
 
-`papers/<P>/1-probes/PPNN_<topic>.md`, or identically `applications/<A>/1-probes/PPNN_<topic>.md`.
-One file per TOPIC; each ENTRY is one Q-EXECUTOR (the file is Q-executor-oriented — the consumers hang off it).
+`papers/<P>/1-probes/PPNN_<topic>/`, or identically `applications/<A>/1-probes/PPNN_<topic>/` — a FOLDER per topic.
+One FOLDER per TOPIC; one FILE `QXn_<slug>.md` per Q-EXECUTOR (each file holds a single `## QX<n>` entry, Q-executor-oriented — the consumers hang off it). A q-executor is path-addressable; the flat single-file `PPNN_<topic>.md` is RETIRED. `check-probe-cards.sh` globs `PP*/*.md`; each file keeps its `## QX<n>` heading, so the section parser is unchanged.
 PP numbers are consumer-local footnote numbers — two consumers may both carry a PP04, and nothing collides because no PP id ever crosses to the bank.
 The stake lives in each Q-consumer, in the stage doc, not here.
 

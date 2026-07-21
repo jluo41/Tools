@@ -15,7 +15,10 @@
 #
 # WHAT IT CHECKS -- three passes (the paper checker's resource pass is dropped).
 #
-# PASS 1: every <intervention_root>/1-probes/PP*.md probe file, ENTRY BY ENTRY
+# PASS 1: every probe file. A probe TOPIC is a FOLDER <intervention_root>/1-probes/PP<NN>_<topic>/
+#   holding one q-executor per QXn_<slug>.md file (the flat single-file 1-probes/PP*.md was RETIRED at
+#   the folder-only cutover -- see CHANGELOG). ENTRY BY ENTRY. Each file still carries its `## QX<n>`
+#   heading, so the section-splitter awk below is unchanged; the glob is PP*/*.md.
 #   (an entry = a `## QX<n>` heading + its ### q-executor / ### q-consumer / ### bank binding
 #    (**route**/**bank**/**target**/**state**) / ### a-executor subsections)
 #   1. state read           -> target: non-empty, no placeholder, resolves under
@@ -328,7 +331,7 @@ found=0
 # the walk, the shell does the two things awk cannot: resolve a path on disk and
 # compare a date to today.
 # ---------------------------------------------------------------------------
-for probe in "$intervention_root"/1-probes/PP*.md; do
+for probe in "$intervention_root"/1-probes/PP*/*.md; do
   [ -e "$probe" ] || continue
   found=1
   name=${probe#"$intervention_root"/}
@@ -596,7 +599,7 @@ if [ "$found" -eq 0 ]; then
   if [ -n "$stage_filter" ]; then
     echo "OK    no sections serve stage '$stage_filter' (other stages' probes were skipped, not failed)"
   else
-    echo "WARN  no PP*.md probe files under $intervention_root/1-probes/"
+    echo "WARN  no probe files under $intervention_root/1-probes/ (expected PP<NN>_<topic>/QXn_<slug>.md folders)"
   fi
 fi
 

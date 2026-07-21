@@ -50,7 +50,7 @@ DRAFT   read 1d-advice.md (the entries it sells), 1c-claims.md (the evidence bac
         the pinned 2-venue.md Artifact Principles + the audience profile; settle the one-minute goal
         + theory of change with the user; designate the [primary] claim for THIS venue; write the pitch
 PROBE   rare — a CITATION LANE only: anchor evidence for a theory-of-change link the ledger
-        lacks, raised as a SECTION in 1-probes/PPNN_<topic>.md. Most pitches skip it (logged in _LOG).
+        lacks, raised as a SECTION in 1-probes/PPNN_<topic>/. Most pitches skip it (logged in _LOG).
 REVISE  venue + audience framing pass — register, the ask, one-minute readability
 CHECK   exit criteria below → Gate Ledger row
 ```

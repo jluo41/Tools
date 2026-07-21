@@ -34,7 +34,7 @@ The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **P
                 against it. Then every spot where the draft needs evidence it
                 does not have becomes a QUESTION -- a `Q-<Stage>-<n>` in the stage doc's
                 Q-consumer AND a `## QX<n>` ENTRY in the right topic's probe file
-                (1-probes/PPNN_<topic>.md) -- then write the
+                (1-probes/PPNN_<topic>/) -- then write the
                 `→ 1-probes/PP<NN> · QX<n>` pointer BACK into that
                 `Q-<Stage>-<n>`, so the stage doc says where its answer will
                 come from. Per

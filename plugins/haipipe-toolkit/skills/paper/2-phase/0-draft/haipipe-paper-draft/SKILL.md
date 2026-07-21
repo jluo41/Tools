@@ -182,7 +182,7 @@ draft.md · Q-consumer   this hub, at Step 4b
 1-probes/PPNN_*.md      this hub, at Step 4b
 ```
 
-One writer per file. Two lanes editing the same prose is a write race (a sentence missing both a citation and a number is common), and three lanes editing one `1-probes/PPNN_<topic>.md` is the same race the bank's QA files solve with ONE WRITER + `set -C`. The display lane is the one exception, and only because its inbox `_DISPLAY_REQUEST.md` is a file nobody else writes.
+One writer per file. Two lanes editing the same prose is a write race (a sentence missing both a citation and a number is common), and three lanes editing one `1-probes/PPNN_<topic>/` is the same race the bank's QA files solve with ONE WRITER + `set -C`. The display lane is the one exception, and only because its inbox `_DISPLAY_REQUEST.md` is a file nobody else writes.
 
 Skip a lane only when the artifact cannot carry its kind of hole (a seed has no numbers; a pitch has no displays), and log the skip.
 
@@ -196,7 +196,7 @@ Each question gets TWO artifacts, and they are a conjunction — neither alone i
 
 **① a `## Q-<Stage>-<n>` in the stage doc's Q-consumer** — the question in YOUR words, carrying the STAKE (what dies if the answer goes the wrong way). This is the consumer-side half, and it never crosses to the bank. Cite its id inline — `[Q-<Stage>-<n>]` — on every sentence that hangs on it.
 
-**② its q-executor ENTRY** in the right topic's probe file at `1-probes/PPNN_<topic>.md`, per `../../../haipipe-paper/fn/probes.md`:
+**② its q-executor ENTRY** in the right topic's probe file at `1-probes/PPNN_<topic>/`, per `../../../haipipe-paper/fn/probes.md`:
 
 - FIND-OR-OPEN the `## QX<n>`. If an existing q-executor already asks this, do NOT open a new entry — add a `### q-consumer` bullet to it and stop (that is the cost ladder's T0 JOIN, and it costs nothing).
 - `### q-executor` — the question in GENERAL language (no claim ids, no stake, no hint of which answer is wanted), plus its `Deliverable:` and `Accepted: a | b` lines; the stake never leaves the stage-doc Q-consumer.
@@ -344,7 +344,7 @@ When the user approves:
 ### section-edit
 - Output: `0-lifecycle/5-section-edit/{section}/{section}.md`
 - Format: REAL prose per `stages/5-section-edit/template.md` (shape + rules in one file)
-- Ends with the "Questions raised by this draft" block — the Step 4a sweep's output, rolled up: every `{VAL:? <what>} [Q-<Stage>-<n>]` and `\cite{TOADD} [Q-<Stage>-<n>]` with the question that owes it, display needs per paragraph, and heavier needs (new task run, lit sweep) left `state: planned` in `1-probes/PPNN_<topic>.md`.
+- Ends with the "Questions raised by this draft" block — the Step 4a sweep's output, rolled up: every `{VAL:? <what>} [Q-<Stage>-<n>]` and `\cite{TOADD} [Q-<Stage>-<n>]` with the question that owes it, display needs per paragraph, and heavier needs (new task run, lit sweep) left `state: planned` in `1-probes/PPNN_<topic>/`.
   DRAFT proposes; PROBE binds each one to an answer after the gate.
   The STOP presentation includes this block.
 - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/5-section-edit/stage.md` -> its `dispatch_scope:` + the craft body.

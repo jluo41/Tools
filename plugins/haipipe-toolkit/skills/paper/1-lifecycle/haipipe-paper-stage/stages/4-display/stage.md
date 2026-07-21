@@ -30,7 +30,7 @@ compiled: 0-lifecycle/4-display/4-display.pdf         # compile from the PAPER R
 log: 0-lifecycle/4-display/_LOG_4-display.md
 inbox: 0-lifecycle/4-display/_DISPLAY_REQUEST.md      # DR rows other stages file; only THIS stage advances their status
 units: 0-displays/displayNN-<slug>/                   # README + float.tex + preview + assets/ candidates/ source/ versions/
-probes: 1-probes/PPNN_<topic>.md
+probes: 1-probes/PPNN_<topic>/
 template: template.md
 support: [figure-logic.md, checklist.md]
 

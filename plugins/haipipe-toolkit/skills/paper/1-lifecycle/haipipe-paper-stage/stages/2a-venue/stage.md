@@ -42,7 +42,7 @@ modes:
 
 artifact: 0-lifecycle/2a-venue/2a-venue.md
 log: 0-lifecycle/2a-venue/_LOG_2a-venue.md
-probes: 1-probes/PPNN_<topic>.md
+probes: 1-probes/PPNN_<topic>/
 pins: STATUS.md            # `venue: <pack-slug>` (+ optional `venue_outlet: <journal-dir>`)
 template: template.md
 

@@ -71,7 +71,7 @@ a number it does not have   →  {VAL:? <what>} [Q-<Stage>-<n>]
 a display that does not exist →  a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md
 ```
 
-Each `Q-<Stage>-<n>` is a Q-consumer in the stage doc (it holds the STAKE) bound to a `## QX<n>` ENTRY in `1-probes/PPNN_<topic>.md` (it holds the question). PROBE dispatches the entry, harvests the answer into its `### a-executor`; REVISE's `-place` worker substitutes the landed answer into the placeholder.
+Each `Q-<Stage>-<n>` is a Q-consumer in the stage doc (it holds the STAKE) bound to a `## QX<n>` ENTRY in `1-probes/PPNN_<topic>/` (it holds the question). PROBE dispatches the entry, harvests the answer into its `### a-executor`; REVISE's `-place` worker substitutes the landed answer into the placeholder.
 
 ## The probe phase
 

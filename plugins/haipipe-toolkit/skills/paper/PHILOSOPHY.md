@@ -2,7 +2,7 @@
 
 A paper is a delivery contract, not a writing folder.
 
-Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>.md`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1b-claims/1b-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
+Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>/`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1b-claims/1b-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
 
 ## Lifecycle
 
@@ -89,7 +89,7 @@ it updates, and when it must stop and ask the user.
 
 Keep the paper folder fixed:
 STATUS.md, 0-lifecycle/<stage>/<stage>.tex, 0-sections/,
-0-displays/displayNN-<slug>/, 1-probes/PPNN_<topic>.md,
+0-displays/displayNN-<slug>/, 1-probes/PPNN_<topic>/,
 1-rounds/vYYMMDD/{README,discussion,decisions,todo,applied}.md.
 
 Preserve boundaries:

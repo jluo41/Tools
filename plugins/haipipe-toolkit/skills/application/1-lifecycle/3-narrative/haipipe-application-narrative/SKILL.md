@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "5.4.0"
   last_updated: "2026-07-19"
-  summary: "Narrative stage (stage 3, venue-GATED + venue-ALIGNED): maps the settled claim/advice flow onto the venue's arc; it composes, never gathers — a beat exposing a NEW evidence gap raises a question SECTION in 1-probes/PPNN_<topic>.md (serves: 3-narrative) routed back to 1c-claims. History: ./CHANGELOG.md."
+  summary: "Narrative stage (stage 3, venue-GATED + venue-ALIGNED): maps the settled claim/advice flow onto the venue's arc; it composes, never gathers — a beat exposing a NEW evidence gap raises a question SECTION in 1-probes/PPNN_<topic>/ (serves: 3-narrative) routed back to 1c-claims. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-narrative
@@ -47,7 +47,7 @@ DRAFT   read 1d-advice.md (the A entries the arc composes), 1c-claims.md (the ev
         2-pitch.md (primary claim + theory of change anchor), 2-venue.md Artifact Principles;
         map each load-bearing claim/advice to an arc position per the venue's arc rules (haipipe-application-draft)
 PROBE   rarely fires; a beat exposing a NEW evidence gap raises it as a question SECTION in
-        1-probes/PPNN_<topic>.md (serves: 3-narrative), routed back to claims — never gathered here
+        1-probes/PPNN_<topic>/ (serves: 3-narrative), routed back to claims — never gathered here
         (haipipe-application-probe)
 REVISE  arc coherence + register pass (haipipe-application-revise)
 CHECK   3-narrative.md exists (when the venue requires it); every load-bearing claim mapped to an arc
@@ -58,7 +58,7 @@ CHECK   3-narrative.md exists (when the venue requires it); every load-bearing c
 Precondition (before DRAFT commits): the arc leans only on claims meeting the venue's settlement bar (`STATUS.md claims_settlement`) — a load-bearing GAP claim cannot anchor a beat.
 If one does, BLOCK with a loopback suggestion to claims.
 
-Probe model: questions live in the FLAT cross-stage pool `1-probes/PPNN_<topic>.md`, one file per TOPIC.
+Probe model: questions live in the FLAT cross-stage pool `1-probes/PPNN_<topic>/`, one file per TOPIC.
 Each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`; states are `planned|commissioned|answered|read|answered-local|failed`, and the stake stays in this doc's Q-consumer.
 Dispatch is `Agent(haipipe-probe-q-executor-agent)`, not a gateway.
 Mechanics: the probe layer's `ref/per-stage-dispatch.md`.

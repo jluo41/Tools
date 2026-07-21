@@ -26,7 +26,7 @@ venue_free: true          # does not change when retargeting to another journal
 
 artifact: 0-lifecycle/0-seed/0-seed.md
 log: 0-lifecycle/0-seed/_LOG_0-seed.md
-probes: 1-probes/PPNN_<topic>.md
+probes: 1-probes/PPNN_<topic>/
 template: template.md
 
 exit_when: "not viable -> drop the paper"   # the stage's own failure exit

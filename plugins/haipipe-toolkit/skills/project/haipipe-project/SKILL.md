@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "3.2.0"
   last_updated: "2026-07-14"
-  summary: "Project SETUP only: Project-* repo-backed submodules + ProjX-* plain dirs. Everything else moved out or retired. v3.2 syncs the container contract to the probe v3 model (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/, JL 2026-07-14): a task/discovery LEAF may carry an OPTIONAL QA/ folder (QA/<n>-<slug>.md — the executor's readable digest, numbering IS the index, on BOTH banks); the scaffold NEVER mints _ASK/ or _ANS/ (the bank is PROBE-UNAWARE: no PP ids, no answers: field); a consumer's evidence questions live in papers|applications/<X>/1-probes/PPNN_<topic>.md (renamed from 1-probe-plans/), bound to the bank BY PATH."
+  summary: "Project SETUP only: Project-* repo-backed submodules + ProjX-* plain dirs. Everything else moved out or retired. v3.2 syncs the container contract to the probe v3 model (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/, JL 2026-07-14): a task/discovery LEAF may carry an OPTIONAL QA/ folder (QA/<n>-<slug>.md — the executor's readable digest, numbering IS the index, on BOTH banks); the scaffold NEVER mints _ASK/ or _ANS/ (the bank is PROBE-UNAWARE: no PP ids, no answers: field); a consumer's evidence questions live in papers|applications/<X>/1-probes/PPNN_<topic>/ (renamed from 1-probe-plans/), bound to the bank BY PATH."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -42,7 +42,7 @@ workflow plan/report schema                  -> task/haipipe-workflow
 paper folders inside a project               -> /haipipe-paper-lifecycle folder
 project audits / reorganization              -> retired; originals in project/_archive
 claims / evidence questions                  -> /haipipe-probe (a probe is a
-                                                paper-level file, papers/<P>/1-probes/PPNN_<topic>.md
+                                                paper-level file, papers/<P>/1-probes/PPNN_<topic>/
                                                 -- it owns NO folder in the execution tree)
 asking the bank a question                   -> /haipipe-task qa · /haipipe-discovery qa
 ```
@@ -73,7 +73,7 @@ This skill owns ONLY the top-level container. Each subfolder's INTERNAL structur
       digest, written by the EXECUTOR at its Report stage. Numbering IS the index.
       Not scaffolded at setup -- it appears when the task-folder has something to say.
 
-   📄 THE CONSUMER holds the questions.  papers|applications/<X>/1-probes/PPNN_<topic>.md
+   📄 THE CONSUMER holds the questions.  papers|applications/<X>/1-probes/PPNN_<topic>/
       (renamed from 1-probe-plans/ on 2026-07-14). One file per TOPIC, one SECTION per
       question. Created by the consumer's own PROBE phase, never by this skill.
 

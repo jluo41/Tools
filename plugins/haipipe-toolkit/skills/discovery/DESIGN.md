@@ -22,7 +22,7 @@ execution stage and it judges nobody's claims.
 ```
 discovery   outside-world evidence   sources, notes, verdicts, maps, ideas   ⚙️ EXECUTOR
 task        inside-world execution   code, runs, metrics, reports            ⚙️ EXECUTOR
-probe       a PAPER-LEVEL document   papers/<P>/1-probes/PPNN_<topic>.md —   📄 CONSUMER
+probe       a PAPER-LEVEL document   papers/<P>/1-probes/PPNN_<topic>/ —   📄 CONSUMER
                                      one question per SECTION, holding the
                                      stake it never lets out; binds to an
                                      answer BY PATH
@@ -255,7 +255,7 @@ Boundary Rules
   field, no PP id, no claim id. The bank is probe-unaware (R2). A caller's question arrives
   in general language, is answered on its own terms, and the answer is a FILE they point at.
 - `tasks/` stores execution artifacts and metrics — and its own `QA/` digests, identically.
-- A paper's evidence questions live in ITS OWN `1-probes/PPNN_<topic>.md` probe file, with
+- A paper's evidence questions live in ITS OWN `1-probes/PPNN_<topic>/` probe file, with
   the stake in a `## Why` that never leaves it; its claim statuses live in ITS OWN
   `1-claims.md`. Neither is ever written, read, or resolved from this layer.
 - `paper/` and `applications/` own the delivery story and bind to our answers by PATH.

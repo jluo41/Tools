@@ -52,7 +52,7 @@ editing rules. This doc defines the folder those files live in.
 │   │   └── versions/                     dated exports
 │   └── displayNN-<slug>/
 ├── 0-extra/                              optional cover letter, IRB, checklists
-├── 1-probes/                        the probe-file pool (PPNN_<topic>.md, one file per TOPIC, one ENTRY per question)
+├── 1-probes/                        the probe-file pool (PPNN_<topic>/, one file per TOPIC, one ENTRY per question)
 ├── 1-rounds/                             dated work rounds
 │   ├── latest.md                         active round pointer and summary
 │   └── vYYMMDD/

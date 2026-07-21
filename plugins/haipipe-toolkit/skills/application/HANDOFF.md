@@ -50,7 +50,7 @@ Start CHEAP, then go DEEP.
 
 ## Open risks to watch DURING the real run
 
-1. **APPROVE → 1-probes/.** After each DRAFT, confirm the `## Q` blocks in the stage doc's Q-consumer section actually become sections in `1-probes/PPNN_<topic>.md` (state `planned`, a real `q-executor:`). If they don't, the Q-consumer migration is name-only and the door is broken.
+1. **APPROVE → 1-probes/.** After each DRAFT, confirm the `## Q` blocks in the stage doc's Q-consumer section actually become sections in `1-probes/PPNN_<topic>/` (state `planned`, a real `q-executor:`). If they don't, the Q-consumer migration is name-only and the door is broken.
 2. **PROBE reads what it needs (claims-A).** With the full PP plan now in `1-probes/` and only lean `## Q` in the stage doc, check `haipipe-application-probe` still has mode/route/Refutes-if to work with.
 3. **CHECK's F1 glob resolves.** Confirm the check worker finds `check-probe-cards.sh` via the glob and FAILs loudly if absent (not a silent skip).
 4. **Audience tone hole.** When `draft`/`revise` reach for tone-by-audience, see whether the venue pack actually supplies it or the rule dead-ends. If it dead-ends, the audience tone rules need to be authored into the venue packs (the deferred content move).

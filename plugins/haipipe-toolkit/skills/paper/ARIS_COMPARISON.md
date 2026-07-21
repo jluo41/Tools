@@ -58,7 +58,7 @@ HAI-Pipe paper folder
   0-lifecycle/{0-seed..5-section-edit}/
   0-sections/*.tex
   0-displays/displayNN-*/
-  1-probes/PPNN_<topic>.md <- the paper's questions (one ENTRY each), bound by PATH to the bank
+  1-probes/PPNN_<topic>/ <- the paper's questions (one ENTRY each), bound by PATH to the bank
   1-rounds/vYYMMDD/
 ```
 

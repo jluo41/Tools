@@ -9,7 +9,7 @@ A probe is COMMUNICATION: it maps questions to answers and gets out of the way. 
 evidence; it does not grade it.
 
 The probe writes NO bank file. Its only files are the paper's own
-`papers/<P>/1-probes/PPNN_<topic>.md` probe files. Execution artifacts live in `tasks/` and
+`papers/<P>/1-probes/PPNN_<topic>/` probe files. Execution artifacts live in `tasks/` and
 `discoveries/`, authored by the executor (haipipe-probe/SKILL.md, R12 + CC-8).
 
 
