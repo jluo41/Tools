@@ -124,6 +124,19 @@ Procedure:
 
 Output: printed table + `{project_dir}/cache/sampler/diagnostic_{timestamp}.jsonl`
 
+## Base-rate & enriched pools (`lib/sample.py`) — construct-driven (S5)
+
+For a rare construct a random draw is ~all-NONE (openness ≈ 5%). Use `lib/sample.py`:
+- `probe` — estimate prevalence from a **construct-lexicon**
+- `sample` — enriched pool: per probe stratum + per `discriminant_from` **confound
+  stratum** + a random **NONE quota** (so over-firing on the silent majority stays measurable)
+
+The lexicon + confound regexes are **LLM-generated per construct** (from
+`construct.definition` + `discriminant_from`) — NEVER hardcoded (that was the
+openness-specific `probe_base_rate.py`; now generalized). ALWAYS report the base
+rate + the NONE-quota false-positive rate alongside any κ. Hard-case mining still
+comes from the trained classifier's uncertainty, NOT from embedding distance.
+
 ## Operation
 
 You do not pick items by reading them — you pick by calling `embedder` and `classifier` and composing their numeric outputs. Reading stays with the panel. This keeps sampling fast (milliseconds) and reproducible (same inputs, same sample).

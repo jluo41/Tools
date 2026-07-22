@@ -14,7 +14,7 @@ See: skills/subjective-label/INIT.md for the full design (IPO + Evaluation).
 
 Outputs:
   {project_dir}/
-  ├── config.yaml                  topic + label schema + embedding config
+  ├── config.yaml                  task + construct + objective + labels (see ref/ref-config.md)
   ├── .state.json                  project state machine
   ├── guideline/
   │   ├── guideline.md             current version (latest)
@@ -55,8 +55,10 @@ Protocol
     "What subjective dimension do you want to label?"
     (Accept vague answers — "empathy", "actionability", "clinical usefulness")
 
-    "What is the PURPOSE? What decision will these labels support?"
-    (This shapes granularity: paper → clean categories; intervention → thresholds)
+    "What is the OBJECTIVE? What decision/metric will select a good labeling?"
+    (This is the one irreducible human input — it lets the construct be
+     auto-refined/selected later. kind = discriminance | downstream | dataset_match.
+     See objective in ref/ref-config.md.)
 
     "Point me at your corpus."
     (Path to csv / jsonl / txt. Moderator loads and profiles: N items, length
@@ -64,7 +66,33 @@ Protocol
 
   DO NOT ask for label schema yet. Labels emerge from seeing data.
 
-  Output: config.yaml with topic, purpose, corpus_path. No labels yet.
+  Output: config.yaml per ref/ref-config.md — fill `task`, `construct`
+  {name, mode, discriminant_from}, and `objective`; `labels.values: null`
+  (elicited later). Nothing physician/construct-specific is hardcoded.
+
+### Step 2b. Construct mode — auto-select vs human seed
+
+  `construct.mode` in config decides how v01 is born (see ref/ref-config.md):
+
+  mode: seed  — a human one-liner defines the construct → proceed to the normal
+                Expose → React → Extract path (Steps 3–4).
+
+  mode: auto  — the construct is SELECTED against `objective`, not hand-defined:
+    1. Expose the representative sample (Step 3).
+    2. Multi-LLM PROPOSE N candidate operational definitions (each = a short
+       guideline draft + label schema) from `construct.name` + `discriminant_from`.
+       Diverse framings, not consensus (consensus = generic textbook meaning).
+    3. Each candidate labels the sample via `lib/label.py`; also label the sample
+       with the sibling constructs' guidelines (`discriminant_from`) for scoring.
+    4. `lib/construct.py score --objective <kind>` → ranks candidates and picks
+       the winner (discriminance × informativeness; degenerate/redundant → 0),
+       and returns `divergence_top` = the items candidates most disagree on.
+    5. Winner's guideline becomes v01; `divergence_top` are the first ambiguities
+       to pin down (surfaced to the human, or resolved by the objective).
+
+  objective.kind: discriminance works now (no external data); downstream needs the
+  target regression (PHI-gated); dataset_match needs a public set. The objective is
+  the one irreducible human input — everything after it is automated.
 
 ### Step 3. Expose — show diverse examples from the corpus
 
@@ -100,22 +128,26 @@ Protocol
     - Implicit dimensions (caring about tone? formality? directness?)
     DO NOT surface yet — accumulate for Step 6.
 
-### Step 5. Create anchor set
+### Step 5. Create the three eval sets (distinct jobs — never merge)
 
-  From the labeled items so far, set aside a diverse subset (20-30 items) as
-  the FIXED anchor set. This set never changes — it's used to compare guideline
-  versions cleanly.
+  Per ref/ref-config.md `eval` + note-update.md Part 5, THREE sets, each with one job:
 
-  Sampler picks: balanced across labels, includes boundary cases, covers
-  embedding space.
+  | set | size | changes? | job |
+  |-----|------|----------|-----|
+  | **fixed anchor** | ≥100, `representative` (base-rate-aware, incl. NONE quota) | FROZEN | version-to-version comparison (correctness) |
+  | **fresh held-out** | ~50, `representative` | new draw each round, NEVER trained on | honest generalization + anti-circular (F8) |
+  | **rolling batch** | 20–30 | new each round | active-learning refinement ONLY — NOT an eval set (F7) |
 
-  Write: eval/anchor_set.jsonl
+  Sampler draws anchor + held-out from the `representative` pool (Step S5/lib/sample.py:
+  base-rate + NONE quota), balanced across labels, boundary-dense.
+  Write: eval/anchor_set.jsonl · eval/heldout.jsonl
 
-  Run first performance measurement:
-    Prompt LLM Labeler: guideline_v01 (as system prompt) → label anchor set
-    Record: eval/trajectory.jsonl ← {version: "v01", kappa: X, f1: Y, ...}
-    Write: eval/per_version/v01_results.jsonl
-    Render: eval/trajectory.md (table + sparkline; refresh on every measurement — ref/ref-output-style.md)
+  Run first measurement (via lib/label.py + lib/kappa.py):
+    label v01 on anchor AND held-out → record correctness (κ vs gold), reliability
+    (panel κ), clarity (executor-independence) into eval/trajectory.jsonl +
+    heldout_kappa; render eval/trajectory.md (ref/ref-output-style.md).
+
+  Anchor κ alone is optimistic — the held-out gap is what catches over-fit.
 
 ### Step 6. Challenge — find cases that break the draft
 
@@ -164,10 +196,15 @@ Protocol
     e. Prompt LLM Labeler → measure on anchor set
     f. Record in trajectory
 
-  Convergence signals (check after each round):
-    - Performance trajectory plateaus (kappa change < 0.02 for 2 rounds)
-    - Changelog entries per round decreasing (< 1 rule change last round)
-    - Researcher confirms: "yes, this matches what I want"
+  Convergence (run `lib/converge.py --project-dir <task>` after each round — F8):
+    CONVERGED only when ALL hold —
+    - anchor κ plateaus (Δ < anchor_plateau for 2 rounds), AND
+    - **held-out gap ≤ heldout_gap_max** (anchor − held-out; a big gap = OVERFIT,
+      NOT converged — this is the B03 0.93/0.67 trap the gate catches), AND
+    - objective_score plateaus (if tracked), AND
+    - researcher confirms "yes, this matches what I want".
+    A plateau with no held-out returns CONVERGED_NO_HELDOUT (⚠ gap unchecked) — do
+    NOT treat as done. Changelog entries per round should also be decreasing.
 
 ### Step 9. Init complete — report + handoff
 
