@@ -34,6 +34,40 @@ probes: 1-probes/PPNN_<topic>/
 template: template.md
 support: [figure-logic.md, checklist.md]
 
+# ── BINDING — THE DISPLAY SPLIT (JL ruling 2026-07-21) ────────────────────────────
+# A display unit has TWO halves with DIFFERENT OWNERS. The same wall the probe layer
+# draws between a stake-free question and a stake-aware consumer runs through every
+# table and figure.
+#
+#   BANK side  (task-folder · stake-free · reusable · LAW 1: the executor holds the pen)
+#     · source_data.csv  the numbers, one row per cell, each carrying coef/SE/p/N and
+#                        the source path + line it was parsed from
+#     · metrics.json     the machine digest
+#     · provenance       which run, which spec, which window, which log line
+#     Produced by the TASK layer (haipipe-task-for-display), never by a paper stage.
+#
+#   CONSUMER side (0-displays/<unit>/ · stake-aware · venue-bound · THIS stage)
+#     · WHICH rows/columns the argument needs, in what order, what is emphasised
+#     · venue formatting: caption style, column rules, width, float placement
+#     · \label / \ref wiring into the manuscript
+#
+# THE RULE: a consumer-side unit is GENERATED FROM the bank's source_data.csv.
+#           Hand-typing numbers into a unit's .tex is a DEFECT, not a shortcut.
+#
+# WHY BINDING — the failure it exists to prevent, observed 2026-07-21:
+#   a ruling flipped §6's primary exposure from the continuous score to the binary
+#   indicator. The prose was updated; table3-main-results.tex was not, because its
+#   numbers were hand-authored and nothing linked them back to the bank. The table
+#   silently contradicted the text it supported, and only a manual display-lane sweep
+#   caught it. A GENERATED unit makes that drift mechanically detectable; a hand-typed
+#   one cannot.
+#
+# CONSEQUENCE FOR DR ROWS: a DR names BOTH halves — `bank deliverable:` and
+#   `consumer deliverable:`. A DR naming only one is incomplete and may not be accepted.
+#   Structurally a DR row IS the display-flavoured q-executor: same crossing, same
+#   ownership rule, a different artifact shape.
+display_split: binding
+
 exit_when: "display cannot support claim"   # the stage's own failure exit
 
 # THE COMMISSIONING ASYMMETRY — this stage is the reason this field exists.
