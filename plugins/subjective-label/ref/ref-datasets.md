@@ -106,3 +106,28 @@ Validation runs the full Labeler Panel on N items (default 200). With 5
 personas × Sonnet tier, expect ~$1-3 per validation run. Cache the panel
 outputs — re-running the same held-out set should not re-call the panel
 unless gallery has changed.
+
+
+Registry & autonomy-license battery (S6)
+-----------------------------------------
+
+These datasets serve as the **autonomy-license battery** (see
+note-update.md Part 4): run the whole engine on them, on
+their NATIVE construct, and assert engine κ ≥ human ceiling via `lib/license.py`.
+Passing licenses autonomous runs on new constructs adjacent to the battery.
+Artifact-verified per-rater status from `discoveries/P02_external-validation-datasets`:
+
+| dataset | native construct | per-rater? | access | notes |
+|---------|------------------|-----------|--------|-------|
+| **DICES** | conversational safety | ✅ 123 raters/item (350 split) | github `google-research-datasets/dices-dataset` | strongest ceiling; +rater demographics |
+| **POPQuorn** | offensiveness · politeness | ✅ per-rater + demographics | github `Jiaxin-Pei/potato-prolific-dataset` | closest to short-text subjective; use `raw` splits |
+| **GoEmotions** | emotion | ✅ 211k per-rater | **canonical Google CSVs** (HF mirror lossy) | `config="raw"`; largest, most familiar |
+| **LeWiDi** | HS/abuse (4 corpora) | ✅ + distribution-scoring protocol | SemEval-2023 Task 11 | adopt its "score vs rating distribution" protocol |
+| MFTC | moral sentiment | labels-yes / **text-NO** | — | DEMOTED: text unrecoverable (dead Twitter API) |
+
+**registry-match**: for a new construct, match to the construct-ADJACENT sets
+here (never assume one exists — skip cleanly if none). Coverage/adjacency is
+reported, not assumed; the battery's diversity = the width of the autonomy license.
+
+**Flow**: run engine on a battery dataset → project its native labels to the
+construct's schema → `lib/license.py assess --agent ... --raters ...` → PASS/BELOW.

@@ -61,3 +61,28 @@ Step 5. Report to researcher.
      - CONVERGED  (gap < 0.05): ready to /sl-scale
      - IMPROVING  (κ going up): run another /sl-iterate
      - STALLED    (κ flat): Analyzer flagged X systematic failure mode; recommend adjustment"
+
+
+Autonomy-license mode (S6) — the correct role of public datasets
+----------------------------------------------------------------
+
+Public datasets are NOT a substitute for the target-construct gold (that would be
+the construct-transfer flaw F2). Their real role is the **autonomy license**
+(note-update.md Part 4 / ref-datasets registry):
+
+  mode: license
+    1. For each battery dataset (DICES / POPQuorn / GoEmotions / LeWiDi), run the
+       WHOLE engine on its NATIVE construct; project its labels to a HIGH/LOW/NONE
+       (or matching) schema.
+    2. `lib/license.py assess --agent <engine preds> --raters <per-rater> --labels ... --type ...`
+       → human ceiling (Krippendorff α) vs agent-vs-consensus κ → PASS / BELOW.
+    3. PASS across the battery licenses AUTONOMOUS runs on new constructs ADJACENT
+       to it (report coverage; a construct far from the battery gets a weaker license).
+
+  mode: registry-match
+    For a new construct, find construct-ADJACENT battery sets; skip cleanly if none.
+
+A target construct (e.g. physician openness) with NO public analog is NOT
+validated by borrowing one — it inherits trust from the license (scoped to
+adjacency) and is measured per-project by reliability + held-out generalization
+(lib/converge.py), never by claiming a public set's construct is its own."
