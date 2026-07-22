@@ -1,0 +1,344 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>board — subjective-label</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{
+  --bg:#fbfbf9; --fg:#1c1c1c; --mut:#6b6b6b; --line:#e2e2dd; --card:#fff;
+  --pre:#f5f5f1; --jl:#1f5aa8; --ra:#15803d; --cc:#8a8a8a; --warn:#b45309;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#16171a; --fg:#e8e8e6; --mut:#9a9a97; --line:#2c2e33; --card:#1d1f23;
+  --pre:#111214; --jl:#6ea8f0; --ra:#5fc98a; --cc:#8a8a8a; --warn:#e0a458;
+}}
+:root[data-theme=dark]{
+  --bg:#16171a; --fg:#e8e8e6; --mut:#9a9a97; --line:#2c2e33; --card:#1d1f23;
+  --pre:#111214; --jl:#6ea8f0; --ra:#5fc98a; --cc:#8a8a8a; --warn:#e0a458;
+}
+:root[data-theme=light]{
+  --bg:#fbfbf9; --fg:#1c1c1c; --mut:#6b6b6b; --line:#e2e2dd; --card:#fff;
+  --pre:#f5f5f1; --jl:#1f5aa8; --ra:#15803d; --cc:#8a8a8a; --warn:#b45309;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
+  "Hiragino Sans GB","Microsoft YaHei",sans-serif;}
+main{max-width:920px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:25px;line-height:1.35;margin:0 0 6px}
+h2{font-size:18px;margin:0 0 10px}
+h2.plain{margin:34px 0 12px;padding-top:14px;border-top:1px solid var(--line)}
+hr{border:0;border-top:1px solid var(--line);margin:26px 0}
+p{margin:8px 0}
+code{background:var(--pre);padding:1px 5px;border-radius:4px;
+  font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+pre.ascii{background:var(--pre);border:1px solid var(--line);border-radius:8px;
+  padding:14px 16px;overflow-x:auto;
+  font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:12px 0}
+img{max-width:100%;border:1px solid var(--line);border-radius:8px}
+nav{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);
+  padding:10px 0;margin-bottom:18px;font-size:13px;z-index:5}
+nav a{color:var(--mut);text-decoration:none;margin-right:2px}
+nav a:hover{color:var(--jl)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:18px 20px;margin:18px 0;position:relative}
+.card h2 .slug{color:var(--mut);text-decoration:none;font:13px ui-monospace,monospace}
+.card h2 .slug:hover{color:var(--jl)}
+.meta{margin:-2px 0 12px;display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:12px;padding:2px 9px;border-radius:999px;
+  border:1px solid var(--line);background:var(--pre);color:var(--mut)}
+.pill.decide{border-color:var(--jl);color:var(--jl)}
+.pill.build{border-color:var(--ra);color:var(--ra)}
+.pill.block{border-color:var(--warn);color:var(--warn)}
+.pill.open{border-color:var(--warn);color:var(--warn)}
+.pill.done{border-color:var(--ra);color:var(--ra)}
+.field{margin:9px 0;padding-left:2px}
+.cmt{border-left:3px solid var(--cc);padding:5px 0 5px 11px;margin:7px 0;
+  background:transparent;font-size:14px}
+.cmt b{font-size:12px;letter-spacing:.4px;margin-right:6px}
+.cmt.jl{border-color:var(--jl)} .cmt.jl b{color:var(--jl)}
+.cmt.ra{border-color:var(--ra)} .cmt.ra b{color:var(--ra)}
+.cmt.cc{border-color:var(--cc)} .cmt.cc b{color:var(--cc)}
+.copy{position:absolute;top:16px;right:16px;font-size:12px;cursor:pointer;
+  background:var(--pre);border:1px solid var(--line);color:var(--mut);
+  border-radius:7px;padding:4px 10px}
+.copy:hover{color:var(--jl);border-color:var(--jl)}
+.note{color:var(--mut);font-size:12.5px;margin-top:40px;text-align:center}
+</style>
+<main>
+<nav><a href="#battery-list">§battery-list</a> · <a href="#license-run">§license-run</a> · <a href="#lexicon-auto">§lexicon-auto</a> · <a href="#objective-pick">§objective-pick</a> · <a href="#rerun-3dims">§rerun-3dims</a> · <a href="#b02-naming">§b02-naming</a></nav>
+<h1>📋 板 01 · subjective-label — 给这套方法拿一个不是自己打的分数</h1>
+<p><strong>状态</strong> 🟡 进行中 · 开板 2026-07-22 · 6 件事全做完就关板</p>
+<p>&gt; <strong>这块板要干的事，一句话</strong>：</p>
+<p>&gt; 引擎已经写好了，但从没在真实数据上跑过。</p>
+<p>&gt; 把它在公开数据上跑一次，拿到一个<strong>不是自己给自己打的分数</strong>。</p>
+<p>&gt; 做完这块板，我们才敢对外说这套方法有效。</p>
+<pre class="ascii">
+📊  6 件事 · ✅ 0 完成 · 🔧 4 待做 · 🧠 2 等 JL 拍板 · ░░░░░░ 0%
+    ⚠️ 两个决定压着四天的活。不定，RA 只能干其中两件小的。
+</pre>
+<hr>
+<h2 class="plain">1 · 这个项目在做什么</h2>
+<pre class="ascii">
+   病人在网上写的医生评论
+        ↓
+   给每条打一个人格特质标签：宜人性 / 尽责性 / 开放性 …
+   每个标签三档：HIGH · LOW · NONE
+        ↓
+   产出两样东西：一份标注规则（guideline） + 一批标好的数据
+</pre>
+<p>请真人标太慢太贵，所以用<strong>一组大模型</strong>代替一队人类标注员。</p>
+<h2 class="plain">2 · 为什么这件事难</h2>
+<p>「这条评论体现了高的宜人性」—— 这是<strong>判断</strong>，不是事实。</p>
+<p>两个真人看同一条评论，也会打出不同的分。</p>
+<p>所以没有标准答案可以对照。</p>
+<p>我们只能想办法证明一件事：<strong>我们标得跟真人一样好</strong>。</p>
+<h2 class="plain">3 · 我们已经做到哪一步</h2>
+<pre class="ascii">
+   三个维度跑完了：
+      B01  agreeableness   宜人性     κ = 0.937
+      B02  conscientiousness 尽责性    κ = 0.937
+      B03  openness        开放性     κ = 0.932
+
+   κ（Cohen&#x27;s kappa）＝ 两方打分有多一致的统计量。0 ＝ 跟瞎猜一样，1 ＝ 完全一致。
+   0.93 在标注领域算很高。看起来很好。
+</pre>
+<h2 class="plain">4 · ⚠️ 但这个 0.93 不算数</h2>
+<pre class="ascii">
+   0.93 是拿哪些题考出来的？
+      ⇒ 拿「规则作者自己看过、并且亲手标过」的那 24 条。
+
+   同一版规则，换成没看过的题再考一次：
+      B03_dim_openness   看过的 24 条 → 0.932
+                         没看过的题   → 0.667      ⬅ 掉了 0.27
+
+   ⇒ 高分只说明规则**记住了**那 24 条，
+     不说明它在新数据上管用。
+</pre>
+<p>这不是某个人做错了，是<strong>方法上的一个洞</strong>：出题的人和答题的人是同一批。</p>
+<h2 class="plain">5 · 出路：正确性只能从外面借</h2>
+<pre class="ascii">
+   公开数据集里有一类特殊的：
+      它保留了**每一位**人类标注者的原始打分（per-rater），
+      而不是只给你一个合并后的&quot;标准答案&quot;。
+
+   ⇒ 于是能算出：真人和真人之间，彼此有多不一致。
+     这个数字就是**天花板** —— 人类自己也就做到这个程度。
+
+   ⇒ 如果我们的引擎能达到那个天花板，
+     就说明它标得跟真人一样好。
+
+   这个一次性的认证，原文里叫 autonomy license。
+   要跑的那组公开数据集，原文里叫 battery
+   （也是配置文件 ref-config.md 里的字段名：license: {battery: [...]}）。
+</pre>
+<p>⚠️ 注意 license 只需要拿<strong>一次</strong>，是引擎级的。</p>
+<p>拿到之后，换任何新的构念（construct）跑，都继承这份可信度 —— 前提是新构念跟</p>
+<p>battery 里的内容沾边，沾多远要如实写出来。</p>
+<h2 class="plain">6 · 那要做哪 6 件事</h2>
+<pre class="ascii">
+   ┌ 拿 license ─────────────────────────────────────────┐
+   │  ① battery 放哪几个数据集      🧠 JL 拍板            │
+   │        ↓ 定了②才能开工                               │
+   │  ② 真跑一遍，把 license 拿回来  🔧 RA ~3d  ⬅ 最重的一条│
+   └──────────────────────────────────────────────────────┘
+   ┌ 补上引擎的最后一块（跟上面并行，不用等）──────────────┐
+   │  ③ 让引擎不再写死在 openness 上 🔧 RA ~1d ✅可立即开工 │
+   └──────────────────────────────────────────────────────┘
+   ┌ 回头重验我们自己的三个维度 ───────────────────────────┐
+   │  ④ 用什么标准选构念            🧠 JL 拍板            │
+   │        ↓ 定了⑤才能开工                               │
+   │  ⑤ B01/B02/B03 重跑一遍        🔧 RA ~2d             │
+   └──────────────────────────────────────────────────────┘
+   ┌ 收尾 ────────────────────────────────────────────────┐
+   │  ⑥ 两个 B02 编号撞了，理干净    🔧 RA ~0.5d ✅可立即开工│
+   └──────────────────────────────────────────────────────┘
+</pre>
+<p><strong>怎么在板上留言</strong>：在对应那件事的 💬 下面写一行。三个人各一条车道，谁都不删别人的。</p>
+<pre class="ascii">
+&gt; JL [#battery-list]: battery 就用 POPQuorn + DICES，别铺太宽
+&gt;&gt; RA [#battery-list]: POPQuorn 下好了，DICES 要申请
+&gt;&gt; CC0722 [#battery-list]: [已处理] registry 加好了
+</pre>
+<hr>
+</section>
+<section class="card" id="battery-list"><h2>① battery 里放哪几个数据集 <a class="slug" href="#battery-list">#battery-list</a></h2><div class="meta"><span class="pill decide"><strong>🧠 JL 拍板</strong></span><span class="pill block">⛔ 挡着 ②</span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="battery-list">💬 复制评论模板</button>
+<p>&gt; <strong>为什么它排第一</strong>：battery 覆盖多宽，license 就只敢宣称多宽。</p>
+<p>&gt; 放少了跑得快，但只能说&quot;这套方法在很窄的范围内有效&quot;；</p>
+<p>&gt; 放多了覆盖广，但 ② 要多跑好几天。这个不定，② 无从下手。</p>
+<div class="field">❓ <strong>要决定什么</strong> 用哪几个公开数据集来考这台引擎，考几个。</div>
+<div class="field">📍 <strong>现在什么样</strong> 代码 <code>lib/license.py</code> 写好了，registry 留了位置，</div>
+<p>  但<strong>一个真实数据集都还没下载</strong>。</p>
+<p>  候选来自 RA 做的调研 P02：POPQuorn · DICES · GoEmotions · LeWiDi。</p>
+<p>  ⚠️ GoEmotions 标的是情绪，跟人格特质不是一回事（已实测 κ 只有 0.25–0.30）。</p>
+<p>  要放进去的话，得先想清楚它到底证明了什么。</p>
+<div class="field">🎯 <strong>怎么算做完</strong> 板上写下最终名单，每个数据集配两样：它的人类天花板 κ 是多少、</div>
+<p>  为什么选它。然后写进 <code>ref/ref-datasets.md</code>。</p>
+<div class="field">💬</div>
+</section>
+<section class="card" id="license-run"><h2>② 真跑一遍，把 license 拿回来 <a class="slug" href="#license-run">#license-run</a></h2><div class="meta"><span class="pill build"><strong>🔧 RA ~3d</strong></span><span class="pill block">⏳ 等 ①</span><span class="pill open">🟠 待办</span><span class="pill"><strong>本板最重的一条</strong></span></div><button class="copy" data-slug="license-run">💬 复制评论模板</button>
+<p>&gt; <strong>为什么它在①后面</strong>：①只是选考题，②才是真去考。</p>
+<p>&gt; 这一条跑完，引擎才第一次有了一个不是自己给自己打的分数。</p>
+<div class="field">❓ <strong>要做什么</strong> 把整条引擎放到那组公开数据集上真跑一遍，</div>
+<p>  看它的 κ 有没有达到人类天花板。</p>
+<div class="field">📍 <strong>现在什么样</strong> <code>lib/license.py</code> 的自测过了（喂好数据判 PASS，喂随机数判 BELOW），</div>
+<p>  但<strong>从没碰过真实数据</strong>。RA 自己在 note-update 里也把它列在</p>
+<p>  「还没做的 = 真实运行」第一条。</p>
+<div class="field">🎯 <strong>怎么算做完</strong> 每个数据集落一行结果：名字 · 样本量 · 引擎 κ · 人类天花板 · 过没过。</div>
+<p>  然后写一句总判定，并且如实写明：这份 license 覆盖哪类构念，不覆盖哪类。</p>
+<div class="field">💬</div>
+<hr>
+</section>
+<section class="card" id="lexicon-auto"><h2>③ 让引擎不再写死在 openness 上 <a class="slug" href="#lexicon-auto">#lexicon-auto</a></h2><div class="meta"><span class="pill build"><strong>🔧 RA ~1d</strong></span><span class="pill done">不等任何人，✅ 现在就能开工</span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="lexicon-auto">💬 复制评论模板</button>
+<p>&gt; <strong>为什么它可以并行</strong>：它跟 license 没关系。但不做完，</p>
+<p>&gt; 「这是一台通用引擎」这句话就是假的 —— 里面还有一份写死的词表。</p>
+<div class="field">❓ <strong>要做什么</strong> 引擎第一步要先估算&quot;这个特质在语料里大概多常见&quot;（base rate），</div>
+<p>  靠的是一份关键词表（lexicon）。现在这份词表是照着 openness 手写死的。</p>
+<p>  要改成：根据构念的定义，让大模型自动生成。</p>
+<div class="field">📍 <strong>现在什么样</strong> <code>probe_base_rate.py</code> 里的词表是硬编码的。</div>
+<p>  <code>lib/sample.py</code> 已经写好了，就等这份词表喂给它。</p>
+<div class="field">🎯 <strong>怎么算做完</strong> 换一个跟医生完全无关的构念（比如&quot;讽刺&quot;），</div>
+<p>  跑一次能自动出词表、算出 base rate，全程没有一行写死的东西。结果贴在这条下面。</p>
+<div class="field">💬</div>
+<hr>
+</section>
+<section class="card" id="objective-pick"><h2>④ 用什么标准来选构念 <a class="slug" href="#objective-pick">#objective-pick</a></h2><div class="meta"><span class="pill decide"><strong>🧠 JL 拍板</strong></span><span class="pill block">⛔ 挡着 ⑤</span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="objective-pick">💬 复制评论模板</button>
+<p>&gt; <strong>为什么它排在重跑前面</strong>：新引擎不再让人手写构念定义，</p>
+<p>&gt; 而是让多个大模型各提一个候选，然后<strong>按一个标准挑最好的那个</strong>。</p>
+<p>&gt; 这个标准（原文里叫 objective）不定，⑤ 跑出来的东西没法判好坏。</p>
+<div class="field">❓ <strong>要决定什么</strong> 这个标准用哪一种：</div>
+<p>  (a) <strong>downstream</strong> —— 看这个标签能不能预测下游结果（比如医生的阿片类处方量）</p>
+<p>  (b) <strong>discriminance</strong> —— 看这个标签跟兄弟特质分得开不开</p>
+<div class="field">📍 <strong>现在什么样</strong> <code>lib/construct.py</code> 两种都支持了，但医生这个项目的标准还空着。</div>
+<p>  ⚠️ 卡点：CMS 数据是 PHI（受保护健康信息），<code>_WorkSpace/1-CMS-Store</code> 和</p>
+<p>  <code>2-Data-Store</code> 只能待在安全服务器上。笔记本上跑不了真的 downstream，</p>
+<p>  除非找一个能合法搬出来的聚合指标当代理。</p>
+<div class="field">🎯 <strong>怎么算做完</strong> 二选一，并写下理由：</div>
+<p>  (a) 用 downstream，说明接哪个指标、怎么在不搬 PHI 的前提下算出来；</p>
+<p>  (b) 这一轮先用 discriminance，downstream 推到下一块板。</p>
+<div class="field">💬</div>
+</section>
+<section class="card" id="rerun-3dims"><h2>⑤ B01/B02/B03 重跑一遍 <a class="slug" href="#rerun-3dims">#rerun-3dims</a></h2><div class="meta"><span class="pill build"><strong>🔧 RA ~2d</strong></span><span class="pill block">⏳ 等 ④</span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="rerun-3dims">💬 复制评论模板</button>
+<p>&gt; <strong>为什么它是收口</strong>：前面借来的外部认证 + ④定好的标准，</p>
+<p>&gt; 都是为了这一步 —— 回头看看我们自己那三个 0.93 到底还剩多少。</p>
+<div class="field">❓ <strong>要做什么</strong> 三个维度用新的评分方式重跑。新方式把题分成两套：</div>
+<p>  一套<strong>固定的题</strong>（fixed anchor，永不变，用来比较不同版本的规则），</p>
+<p>  一套<strong>每轮换新的题</strong>（held-out，规则从没见过，用来看真实水平）。</p>
+<div class="field">📍 <strong>现在什么样</strong> <code>lib/converge.py</code> 的自测已经能在离线数据上复现那个 0.93/0.67 陷阱，</div>
+<p>  但还没在真实项目文件夹里跑过。</p>
+<p>  旧的固定题全部取自规则作者标过的那批（B01 实测 24 条 100% 重叠），</p>
+<p>  所以重跑等于作废 12 个历史数字：B01 v01–v04 · B02 v01–v02 · B03 v01–v04。</p>
+<div class="field">🎯 <strong>怎么算做完</strong> 三个项目文件夹各产出一行新结果，<strong>同时给出两个数</strong>：</div>
+<p>  固定题 κ 和没见过的题 κ。旧曲线移进各自的 <code>_archive/</code>，注明为什么作废。</p>
+<div class="field">💬</div>
+<hr>
+</section>
+<section class="card" id="b02-naming"><h2>⑥ 两个 B02 编号撞了 <a class="slug" href="#b02-naming">#b02-naming</a></h2><div class="meta"><span class="pill build"><strong>🔧 RA ~0.5d</strong></span><span class="pill done">不等任何人，✅ 现在就能开工</span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="b02-naming">💬 复制评论模板</button>
+<p>&gt; <strong>为什么虽小但不能不做</strong>：⑤ 要重跑三个文件夹，编号乱着就没法引用结果。</p>
+<div class="field">❓ <strong>要做什么</strong> RA 的 note-update 里写的是 <code>tasks/B02_dim_openness/</code>，</div>
+<p>  但磁盘上是 <code>B02_dim_conscientiousness/</code>，而 openness 另有一个 <code>B03_dim_openness/</code>。</p>
+<p>  同一个 B02 指了两个不同的东西。</p>
+<div class="field">📍 <strong>现在什么样</strong> 磁盘上：A01_sample_corpus · B00_PhysicianTrait ·</div>
+<p>  B01_dim_agreeableness · B02_dim_conscientiousness · B03_dim_openness ·</p>
+<p>  B04_dim_extraversion。</p>
+<p>  项目仓另有一个分支 <code>b03-openness</code> 没合，上面挂着 commit f7e97f2。</p>
+<div class="field">🎯 <strong>怎么算做完</strong> 编号唯一；<code>INDEX.md</code> 跟磁盘对得上；<code>b03-openness</code> 分支要么合、</div>
+<p>  要么明确废弃；医生项目到底用哪个构念定义，写进板子。</p>
+<div class="field">💬</div>
+<hr>
+<h2 class="plain">现在卡在谁身上</h2>
+<pre class="ascii">
+   🧠 等 JL 拍两个板 —— 落了它们，RA 六件事全部解锁
+      ① battery 放哪几个数据集    ⛔ 挡着 ② （~3 天的活）
+      ④ 用什么标准选构念          ⛔ 挡着 ⑤ （~2 天的活）
+
+   🔧 RA 现在就能开工的两件
+      ③ 让引擎不再写死在 openness 上   ~1 天
+      ⑥ 两个 B02 编号撞了              ~0.5 天
+</pre>
+<hr>
+<h2 class="plain">💡 下一块板（现在不做，先记着）</h2>
+<pre class="ascii">
+· 板 02「对外说明文档订正」
+    diagram/ 里 0-overview.txt · 1-three-loops.txt · 4-cascade.txt 描述的是
+    2026-04/06 的旧设计，部分已经跟实际不符 + README 补一张流程图
+    + plugin 缺 CHANGELOG.md 和版本号
+  ⏳ 为什么现在不做：引擎还没真跑过（本板①②⑤），现在改完还得再改一遍。
+     本板关掉那天，就是板 02 开板那天。
+
+· 把全部 5000 条评论标完（现在只标了 48 条），或者训一个小分类器接手
+· 请第二位真人在我们自己的评论上标一批，作为自家数据的天花板
+</pre>
+<hr>
+<h2 class="plain">附录 A · 术语对照</h2>
+<pre class="ascii">
+   construct          构念 —— 你要标的那个东西本身，比如&quot;开放性&quot;
+   guideline          标注规则 —— 一份写清楚&quot;什么算 HIGH/LOW/NONE&quot;的文档
+   gallery            例子册 —— 已经标好并附了理由的样本，规则从它长出来
+   κ (Cohen&#x27;s kappa)  一致性统计量，0 = 瞎猜，1 = 完全一致
+   human ceiling      人类天花板 —— 真人之间彼此的一致性，我们的上限
+   per-rater          数据集保留了每一位标注者的原始打分，而不是只给合并结果
+   battery            用来考引擎的那组公开数据集（ref-config.md 里的字段名）
+   autonomy license   一次性认证：引擎在 battery 上达到人类天花板，
+                      之后换新构念也继承这份可信度
+   anchor / fixed set 固定的题，永不变，用来比较不同版本的规则
+   held-out           每轮换新的题，规则没见过，用来看真实水平
+   objective          挑构念候选时用的标准（downstream 或 discriminance）
+   base rate          这个特质在语料里大概多常见
+   panel              一组同时打标的大模型
+   validator          负责验的模型，规定必须跟打标的模型不是同一个
+</pre>
+<h2 class="plain">附录 B · 引擎完整跑一遍是什么样</h2>
+<pre class="ascii">
+   0  先摸底         估算这个特质在语料里多常见（base rate）
+   1  定构念         多个大模型各提一个候选定义 → 各标一批样本
+                     → 按 objective 挑最好的那个 → 针对分歧再打磨
+   2  打标           一组大模型打标；负责验的模型必须换一个
+   3  改规则         用分类器找出模型最拿不准的样本 → 据此改规则 → 出新版本
+   4  量成绩         一致性 + 稳定性 + 没见过的题上的表现 + objective 分数
+   5  判收敛         objective 不再涨 且 规则不再变 且 没见过的题上掉得不多
+   6  铺全量         用分类器 + 分层策略把整个语料标完
+   ─────────── 以下是引擎级的，一辈子只做一次 ───────────
+   L  拿 license     整条引擎跑一遍 battery，确认 κ ≥ 人类天花板
+
+   本板 6 件事各自在修哪一步：
+      L  ⬅ ①② 　　　　整块板的重心
+      0  ⬅ ③   　　　　这一步的词表还写死在 openness 上
+      1  ⬅ ④   　　　　没有 objective，这一步挑不出来
+      4·5⬅ ⑤   　　　　新的评分方式就在这两步
+      —  ⬅ ⑥   　　　　编号卫生，不在流程上
+</pre>
+<p>⚠️ 整条流程里，需要人的地方只剩三个：说出 objective（每类构念一次）、</p>
+<p>给 license 签字（一辈子一次）、极端个案的人工复核（可选，可关）。</p>
+<p>其余全自动 —— 这就是为什么 L 这一步不做完，整台机器都没有可信度。</p>
+<h2 class="plain">附录 C · 这台引擎已经修掉的 8 个方法学问题</h2>
+<p>来自 2026-07-17 那次会 + 2026-07-21 的独立复核，两边撞到了同样的结论。</p>
+<p>代号 F1–F8 是 RA 在 note-update 里的编号，这里保留是为了对得上原文。</p>
+<pre class="ascii">
+F1  出题的和答题的是同一批 → 每轮换没见过的题 · 验的模型换一个 · 正确性外部量一次
+F2  在数据集 A 上验证，却宣称在 B 上成立 → license 只覆盖跟 battery 沾边的构念
+F3  没有人类天花板 → 天花板从公开的 per-rater 数据集来，引擎级摊销一次
+F4  &quot;说得清楚&quot; 不等于 &quot;标得对&quot; → 一致性 / 清晰度 / 正确性，三个数分开报
+F5  向量空间里靠得近 ≠ 标签一样 → 难例改从训练过的分类器里挖
+F6  专门挑出来的难例被当成了普通样本 → 代表性样本和难例样本分成两池
+F7  每轮随机抽 24 条来打分 → 改成固定的题 + 每轮换新的题
+F8  规则不再变 ≠ 规则是对的 → 收敛条件要加上&quot;没见过的题上掉得不多&quot;
+</pre>
+<hr>
+<h2 class="plain">🗄️ 归档</h2>
+<pre class="ascii">
+_superseded/note-update-v3-260721.md    RA 2026-07-21 写的方法学分析，本板取代它
+_superseded/260721-workflow-audit.txt   CC 2026-07-21 的九步骤复核（压缩版，
+                                        原件 611 行已丢失，见板内说明）
+</pre>
+</section>
+<p class="note">generated from <code>board.md</code> · 不要手改这个文件 ·
+<code>python3 render.py</code> 重新生成</p>
+</main>
+<script>
+document.querySelectorAll('.copy').forEach(b=>b.onclick=()=>{
+  const t=`> JL [#${b.dataset.slug}]: `;
+  navigator.clipboard.writeText(t);
+  b.textContent='✅ 已复制，粘进 board.md';
+  setTimeout(()=>b.textContent='💬 复制评论模板',1800);
+});
+</script>

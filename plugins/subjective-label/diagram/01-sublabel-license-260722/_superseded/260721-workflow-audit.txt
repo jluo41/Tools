@@ -1,0 +1,349 @@
+🧭 subjective-label — THE MAIN WORKFLOW  (2026-07-21 audit, SUPERSEDED)
+=======================================================================
+SUPERSEDED 2026-07-22 by ../board.md. Kept for the ledger R1-R18 and the
+nine-station comparison, which board.md compresses rather than carries.
+Written BEFORE Tools commit 1eb432f6 landed — several 🟠 OWED items below
+are now built as engine code (not yet run). Read board.md for live status.
+
+  ❓ the question this audit answered:
+       "标一个主观维度，从空白到全量，到底要走哪几站，每一站谁在做，人在哪一站?"
+
+  evidence: examples/Project-Subjective-Label/tasks/B0*/  (read 2026-07-21)
+
+
+─§ ① THE THING — three descriptions that disagree ────────────────────────────
+
+     ┌──────────────────────────────────────────────────────────────────────┐
+     │ 📐 DESIGNED   diagram/0-overview.txt · 1-three-loops.txt · ref/*.md   │
+     │               9 agents · 3 nested loops · 3-tier cascade             │
+     │               written 2026-04/06 — parts of it never ran             │
+     │                                                                      │
+     │ 🏃 RUNNING    no document describes it. Reconstructed 2026-07-21      │
+     │               from tasks/B0*/.state.json + eval/*.jsonl              │
+     │               2-model panel · no sampler · no cascade · no scale     │
+     │                                                                      │
+     │ 🎙️ PROPOSED   2026-07-17 meeting, section 13 [117:42-137:59]         │
+     │               60 seed → guideline V0 → weak-model check → 140 →      │
+     │               stop on two signals → apply or distil                  │
+     └──────────────────────────────────────────────────────────────────────┘
+
+  🔑 The workflow is not broken in the middle. It is UNBUILT at both ends —
+     item selection (S2) and whole-corpus application (S9) — and MIS-WIRED at
+     the one station that is supposed to say "it got better" (S6).
+
+
+─§ ② THE WIRE — nine stations ────────────────────────────────────────────────
+
+   📚 S0 corpus                     5000 on-review sentences
+        │
+   💬 S1 intent                     what does HIGH / LOW / NONE even mean here?
+        │
+   🎲 S2 selection                  which items reach a human?          ⚠️ UNBUILT
+        │
+   ✍️  S3 labelling                  who labels, and how many at a time?
+        │
+   ⚖️  S4 conflict                   disagreement → a rule, or noise?
+        │
+   📋 S5 guideline vN               the versioned artifact
+        │
+   📏 S6 scoring                    did vN+1 get better?               ⚠️ MIS-WIRED
+        │
+   🚦 S7 stop                       when may the human leave?
+        │
+   🌍 S8 external check             why should anyone believe it?      ⚠️ WEAK
+        │
+   🎯 S9 apply / distil             label the other 4952               ⚠️ NEVER RUN
+
+  ⇒ S1→S7 is a LOOP, not a line: every round re-enters at S2.
+
+
+─§ ③ WHO WRITES WHAT ─────────────────────────────────────────────────────────
+
+   ✏️  moderator-agent       owns .state.json — the only researcher-facing agent
+   ✏️  gallery-keeper-agent  sole writer of gallery.json + guideline.md
+   ✏️  sl-init Step 5        writes eval/anchor_set.jsonl        ⚠️ from the gallery
+   ✏️  sl-init Step 7 · 8    appends eval/trajectory.jsonl       (S6)
+   ✏️  sl-validate           appends validation/trajectory.jsonl (S8)
+   ✏️  a human, by hand      edits .state.json gold_corrections  ⚠️ UNGUARDED
+   ⇒ nothing collides on a FILE. The collision is at S6: the set that SCORES a
+     version is carved out of the set the version was WRITTEN from.
+
+
+─§ ④ THE SEQUENCE — nine stations, three columns wide ────────────────────────
+
+  S0 · CORPUS
+  📐 any csv / jsonl / txt, profiled at sl-init Step 2.
+  🏃 A01_sample_corpus/results/sample_init.jsonl — 5000 on-review, seed 42.
+  🎙️ > JL: "从五千条 review 出发，最终用了多少条?"
+     answer on disk today: 48 in the gallery, 24 in the anchor, 0 at scale.
+
+  S1 · INTENT — what HIGH / LOW / NONE mean here
+  📐 sl-init Step 2-4: vague seed, show 10-15 items, extract v01 from reactions.
+  🏃 ran as designed. B01/B03 both reached v02 after 2 init rounds.
+  🎙️ 60 random items + a STRONG model in dialogue produce guideline V0 AND 60
+     gold items in the same pass.
+     > JL: "我担心他是不是并没有很好的跟那个用户交流…我觉得可能会被这些语料
+       给污染"
+
+  S2 · SELECTION — which items reach a human      ⚠️ THE UNBUILT STATION
+  📐 sl-init Step 3: "Sampler calls Embedder to cluster the corpus (12-20
+     clusters). Picks ~30-40 items: centroid + edge from each cluster."
+  🏃 ❌ NOT WIRED. No embedding index, no cluster assignment, no classifier
+     artifact under any task folder. lib/embed.py (597) + classify.py (388)
+     have no caller.
+  🎙️ 7 anchors — 3 label centroids + 3 pairwise midpoints + centre — 20 items
+     each ⇒ 140.
+     > JL: "我们不能说我们肯定不是随机选，随机选的话浪费了"
+
+   🎙️ "三个 label 就是三个 region,        📐 ref-architecture.md signal 4
+       80% 靠近中心, 20% 在边界"            silhouette >= 0.3 · pairwise_overlap
+   🎙️ "取三个 label 中心 + 两两中点"      📐 sampler init_map: centroid + edge
+   🎙️ "拿 softmax confidence 挑 hard"     📐 classifier-agent: "low margin /
+                                             high entropy"
+
+  S3 · LABELLING — who labels, how many at a time
+  📐 labeler-panel-agent spawns 3-5 personas from personas/.
+  🏃 two MODELS, not personas: "oauth (claude_agent_sdk haiku + codex_oauth
+     gpt-5.5)" · "oauth_panel:claude_sdk+codex". Metric literally named
+     `panel_kappa_claude_vs_codex`. All 24 items go in ONE prompt.
+  🎙️ · ONE ITEM AT A TIME (R3) — 24-in-one lets item 1 anchor item 24.
+     · STRONG builds gold · WEAK reads the guideline and is scored against it.
+       ⇒ measures whether the guideline TRANSFERS. Peer agreement does not.
+
+  S4 · CONFLICT
+  📐 disagreement-analyzer-agent: A boundary · B rule ambiguity · C novel
+     pattern · D noise. Only A/B/C reach the researcher.
+  🏃 partially. B02 `residual_hard_cases`, B03 `residual_fresh` + tie-breakers
+     TB7 non-responsiveness=LOW · TB8 rigid-policy=LOW · TB9 vague-distrust=NONE.
+  🎙️ > JL: "都觉得没问题那可能就不用…他可能只是把那些有问题的给你说出来让你去看"
+
+  S5 · GUIDELINE vN
+  📐 guideline/guideline.md + versions/vNN.md + changelog.md.
+  🏃 B01 v04, B02 v02, B03 v04.
+  🎙️ adds an inner loop V1.1 → V1.2 against the same gold until weak models agree.
+
+  S6 · SCORING             ⚠️ THE MIS-WIRED STATION
+  📐 sl-init Step 5: "From the labeled items so far, set aside a diverse subset
+     (20-30 items) as the FIXED anchor set. This set never changes."
+  🏃 FIXED is honoured; "from the labeled items so far" is the leak. B01 anchor
+     24 is 100% inside gallery 48.
+  🎙️ 3+1 layers instead of one number (R2):
+       ① 样例内   the fixed anchor — post-fix, drawn from OUTSIDE the gallery
+       ② 样例外   items labelled earlier, not in the anchor ⇒ "有没有改坏旧规则"
+       ③ 泛化     fresh, never-seen items
+       ＋① 外部   held-out + a SECOND HUMAN annotator ⇒ the only real ceiling
+
+  S7 · STOP
+  📐 four signals: public κ · panel κ > 0.7 + plateau · D-ratio > 0.7 ·
+     geometric separation (silhouette >= 0.3).
+  🏃 in practice one number is read: the anchor κ — the leaked one.
+  🎙️ > JL: "一个指标是 guideline 是不是符合这个作者的心意…第二，就是说 guideline
+       它是不是稳定的"
+     ⚠️ the deeper question nobody answered:
+        > JL: "什么时候人可以不参与了?"
+
+  S8 · EXTERNAL CHECK      ⚠️ WEAK
+  📐 GoEmotions · MFTC · POPQuorn · DICES vs published human-κ ceilings.
+  🏃 go_emotions          B01 0.3000 · B03 0.2500  vs 0.46    BELOW
+     popquorn_politeness  B01 0.4125               vs 0.2433  "CONVERGED"
+     ⚠️ the one CONVERGED verdict cleared a 0.2433 ceiling — noise beating noise.
+  🎙️ R1 (JL) vs S2's dissent "归根结底还是应该用我们自己的数据"; B03's own state
+     file: "real ceiling needs custom held-out + 2nd annotator" (R14).
+
+  S9 · APPLY / DISTIL      ⚠️ NEVER RUN
+  📐 sl-scale 3-tier cascade: embedder k-NN (~$0.00001/item, 60-80%) → trained
+     classifier (~$0.0001) → LLM panel (~$0.05-0.20, hardest 5-15%).
+  🏃 ❌ never executed. S2, 07-17: "还没有…现在只是把这个功能给它比较好的实现".
+  🎙️ two exits, not chosen: apply all 5000 ("会比较 expensive") · fine-tune a
+     small classifier (RoBERTa) train/test/validation.
+
+
+─§ ⑤ B01 WALKTHROUGH — the real numbers ──────────────────────────────────────
+
+   S0 corpus       sample_init.jsonl · 5000 · seed 42
+   S1 intent       2 init rounds → v02
+   S2 selection    ⚠️ no embedder, no clustering — drawn straight from 5000
+   S3 labelling    2 models, 24 items in ONE prompt, per version
+   S4 conflict     tie-breakers landed in guideline/versions/
+   S5 guideline    v01 → v02 → v03 → v04 · gallery grows to 48
+   S6 scoring      anchor 24, FIXED  ⚠️ and 100% inside the gallery 48
+   S7 stop         status flipped to `validated` at v04
+   S8 external     go_emotions 0.30 (ceiling 0.46) · popquorn 0.4125 (0.2433)
+   S9 apply        ❌ never ran — 4952 of 5000 still unlabelled
+
+  THE OVERLAP, measured
+     $ python3 …   (2026-07-21)
+       anchor n = 24 | gallery n = 48
+       overlap  = 24
+
+  THE ANCHOR IS FIXED — dist_gold cannot stay identical under resampling:
+     version   n_anchor   dist_gold                     kappa_majority_vs_gold
+     v01         24       NONE 8 · LOW 9 · HIGH 7       0.8740
+     v02         24       NONE 8 · LOW 9 · HIGH 7       0.8110
+     v03         24       NONE 8 · LOW 9 · HIGH 7       0.8743
+     v04         24       NONE 8 · LOW 9 · HIGH 7       0.9373   acc 0.958
+
+  ⇒ at the 07-17 meeting this was read as "每次随机抽 24 条". It is not. The
+    defect is PROVENANCE, not randomness — a moving anchor would make versions
+    incomparable instead.
+
+  WHAT THE LEAK IS WORTH — B03 prices it by accident
+     anchor_kappa_majority    0.9322    ← 24 items, in-sample
+     heldout_kappa_v03_blind  0.667     ← fresh items, guideline v03, blind
+     heldout_kappa_v04        0.861     ← fresh items, after the v04 fix
+
+  B01's generalization_kappa_iter01 = 0.933 is NOT a clean rebuttal: the fresh
+  batch was adjudicated by the same person with the guideline in hand. That is
+  self-consistency, not inter-annotator agreement.
+
+  THE BOOKKEEPING CRACK
+     B03 .state.json: gold_corrections ["anchor#10 NONE->LOW",
+                                        "iter01#4,#6 LOW->NONE"]
+  If anchor#10 moved NONE→LOW the distribution must become NONE 5 · LOW 13 ·
+  HIGH 6. Every row of B03 eval/trajectory.jsonl still reports NONE 6 · LOW 12 ·
+  HIGH 6. ⇒ either the correction never reached anchor_set.jsonl, or it landed
+  after v04 and nothing was re-measured.
+
+
+─§ ⑥ THE INVARIANT — and what we deliberately did not do ─────────────────────
+
+   ┌────────────────────────────────────────────────────────────────────────┐
+   │  NO STATION MAY GRADE ITSELF WITH MATERIAL ITS OWN UPSTREAM PRODUCED.  │
+   │                                                                        │
+   │  A station that scores, checks, or certifies must draw its items AND   │
+   │  its labels from outside the chain that produced the thing it grades.  │
+   └────────────────────────────────────────────────────────────────────────┘
+
+   S6 scoring     items:  anchor 24 ⊂ gallery 48         ⚠️ own upstream
+                  labels: the same person who wrote the rule
+   S3 labelling   the panel grades itself — claude vs codex are peers
+   S8 external    the ceiling is chosen after the fact, from datasets that do
+                  not measure the construct
+
+  ❌ THE ANTI-PATTERN — "the number went up, so it is working"
+     v01 0.874 → v02 0.811 → v03 0.874 → v04 0.937    📈 looks like proof
+     all four measured on the SAME 24 items the guideline was written from.
+     Under those conditions an upward curve is the EXPECTED result of editing.
+
+  THE CEILING TEST — for S8
+   ① CONSTRUCT   the dataset labels the thing we label, not a cousin of it.
+   ② HEADROOM    below ~0.4 the humans did not agree either.
+   go_emotions           ① ❌ emotion ≠ a Big-Five trait      ② ✅ 0.46
+   popquorn_politeness   ① ❌ politeness ≠ agreeableness      ② ❌ 0.2433
+
+  💀 DEAD — do not resurrect
+  · 💀 GoEmotions as an agreeableness / openness proxy. Tried twice (0.30, 0.25).
+       B03 marks it `construct_valid: false`.
+  · 💀 Declaring CONVERGED by clearing a human ceiling below 0.4.
+  · 💀 Re-randomising the anchor set every round — a moving anchor makes
+       versions incomparable, which is worse than the leak.
+
+  🟡 LOGGED, NOT ADOPTED
+  · 🟡 Model-specific guideline versions — "V1.1 for haiku, V1.2 for GPT-4.5"
+       (JL, 07-17 [134:32]). A guideline needing a per-model rewrite is a
+       guideline whose definition is still ambiguous. If adopted it must be a
+       DEPLOYMENT artifact derived from the canonical guideline.
+
+
+─§ ⑦ RULINGS — append-only ───────────────────────────────────────────────────
+
+  ✅ JL RULED — 2026-07-17  (meeting: 主观标注指南的AI辅助开发)
+
+  R1  VALIDATE-ROUTE Prove the METHOD on a public dataset that HAS ground truth
+                     first; only then apply it back to on-review.
+                     > JL: "我们的方法是 corpus-oriented — 拿 on-review 搞出
+                       guideline，应证明在 on-review 上 work，但 on-review 没有
+                       ground truth。所以拿公开数据集先验证方法有效，再 apply。"
+                     ⚠️  S2 dissented: "但其实归根结底，我们应该还是用我们自己的
+                        数据来标注才有用". R14 reconciles.
+
+  R2  LAYERED-CHECK  A guideline edit is verified on 3+1 layers, never one number.
+                     > JL: "每次 update guideline 之后，验证不是一个指标，而是分层
+                       跑 3 加 1 组：样例内 · 有没有改坏旧规则 · 泛化能力"
+
+  R3  ONE-AT-A-TIME  The panel labels items ONE AT A TIME, not 24 in one prompt.
+                     > JL: "那 24 个是每一个 agent 一起标 24 个吗，还是一个一个标
+                       … 我觉得应该是，所以说我们要一个个过"
+                     ⚠️  S2 confirmed current behaviour is "他是一起标的".
+
+  R4  STOP-RULE      Two signals, not a kappa threshold:
+                     (a) the guideline matches the author's intent
+                     (b) the guideline is STABLE — V(n+1) == V(n) for k rounds
+                     > JL: "这两个指标一个指标是 guideline 是不是符合这个作者的
+                       心意 … 第二，就是说 guideline 它是不是稳定的？"
+
+  R5  GALLERY-FORM   The gallery renders as sections, never a table.
+                     > JL: "这 Gallery 能不能比如说不要变成 table，就是看 table
+                       的话你就很难，人很难读这个"
+
+  ✅ JL RULED — 2026-07-21
+
+  R6  BOARD-HOME     Board lives at subjective-label/diagram/, next to the plugin
+                     it governs — not at haipipe-toolkit/diagram/.
+  R7  BOARD-SCOPE    The 07-17 meeting content is written INTO the board as
+                     first-class rulings (R1-R5).
+  R15 WORKFLOW-SCOPE The topic is THE MAIN WORKFLOW, not the kappa audit.
+                     > JL: "For this board, we are discussing the main workflow.
+                       Let's focusing on this."
+                     ⬅ SUPERSEDES R7's framing.
+  R18 ONE-FILE       ONE FILE, not a six-file session folder.
+                     > JL: "How many files you created? I hope I will just get
+                       one large board."
+                     ⚠️  breaks the /haipipe-session house form (MAX 6 files,
+                        05/06 mandatory), which that skill attributes to JL.
+
+  ⚙️  CC DEFAULTED
+
+  R8  DEFECT-NAME    The S6 defect is PROVENANCE, not randomness.
+                     ⚠️ WHY: dist_gold identical across v01-v04 in B01 and B03.
+                     ⚠️ COST: retires an Open Question JL raised. If a rotating
+                        eval set WAS the intent, R8 is wrong.
+  R9  EXAMPLE-PICK   § ⑤ uses B01 — the only folder at status `validated` with
+                     both a public row and a fresh-batch number.
+                     ⚠️ COST: the sharpest evidence (0.932 vs 0.667) is B03's.
+  R10 MODEL-FORK     Model-specific guideline versions LOGGED, NOT ADOPTED.
+  R16 STATION-MODEL  The workflow is cut into NINE stations, S0-S9.
+                     ⚠️ COST: the cut is CC's, not JL's, and is in no existing
+                        doc. If the real cleavage differs, § ④ is organised wrong.
+  R17 INVARIANT-PICK The ONE invariant is STATION INDEPENDENCE.
+                     ⚠️ COST: SILENT about the question JL actually asked at
+                        [130:50] — "什么时候人可以不参与了" — a SUFFICIENCY
+                        question, not an independence one.
+                     ❓ candidate A (shipped): no station grades itself with its
+                        own upstream's material.
+                        candidate B (JL's question): every station must answer
+                        "does a human still need to be here?"
+
+  👀 WHERE THE CLOSURE COULD STILL BE WRONG
+
+  1. ⚠️ R11 invalidates twelve measurements — B01 v01-v04, B02 v01-v02, B03
+        v01-v04 — and the trajectory JL has read as proof the method works.
+        ❓ Sure? Keep the leaked anchor as a FIT diagnostic and add a clean
+          held-out beside it — cheaper, but two numbers named kappa in one file.
+  2. ⚠️ R3 multiplies calls by ~24 per round on OAuth-metered engines. The 07-17
+        session already hit a quota wall mid-meeting.
+        ❓ Worth it? Anchoring contamination is invisible after the fact.
+  3. ⚠️ This board could become the thing nobody fills.
+        📌 precedent: the plugin's feedback/ — four entries, all 2026-06-27.
+           And lib/embed.py: 597 lines, never called.
+
+  🔴 THE OPEN RULINGS — as of 2026-07-21 (see ../board.md for live status)
+
+   🚪 R11  S6  ANCHOR-SPLIT   anchor drawn from the COMPLEMENT of gallery.json
+   🚪 R12  S6  GOLD-FREEZE    frozen gold; a change is a versioned re-run
+   🚪 R13  S8  CEILING-FLOOR  no CONVERGED under a 0.4 human ceiling
+   🚪 R14  S8  2ND-ANNOTATOR  a person labels a held-out slice
+
+
+─§ ⑧ WHAT CHANGED THE DAY AFTER ──────────────────────────────────────────────
+
+  Tools commit 1eb432f6 (Zeleikun Di, 2026-07-21 23:28, +1616 lines) landed the
+  engine for much of the 🟠 OWED list above — as CODE, unit-tested, NOT yet run
+  on real data:
+     R11/R7-flaw  → lib/converge.py  three-set gate ("catches the B03 OVERFIT
+                    (0.93/0.67) trap")
+     R13          → lib/license.py   public per-rater battery + ceiling assert
+     S2 wiring    → lib/sample.py    base-rate two pools
+     S3 peers     → lib/label.py     validator model ≠ labeler model
+  ⇒ that is why this audit is SUPERSEDED. The live board is ../board.md, whose
+    six subsections are the REAL RUNS this code has not yet had.

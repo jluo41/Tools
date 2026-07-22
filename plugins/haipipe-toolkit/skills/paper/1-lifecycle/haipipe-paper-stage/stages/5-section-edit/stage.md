@@ -118,6 +118,14 @@ formatting:
 displays: file-only       # JL ruling: this stage FILES a display request, it never CREATES one
 display_request: 0-lifecycle/4-display/_DISPLAY_REQUEST.md   # a DR row goes here; the units
                           # themselves come from 0-displays/ and 0-lifecycle/4-display/
+display_split: |          # BINDING, owned by ../4-display/stage.md (`display_split:`) — read it there.
+  A DR row filed from here names BOTH halves of the unit, because they have different owners:
+    `bank deliverable:`     the numbers — source_data.csv + provenance, produced by the TASK
+                            layer (haipipe-task-for-display); a paper stage never authors them.
+    `consumer deliverable:` the framing — which rows/columns the argument needs — plus venue
+                            formatting and \label/\ref wiring; rendered FROM that source_data.csv.
+  A DR naming only one half is incomplete. Hand-typing numbers into a unit's .tex is a DEFECT:
+  it is how a display silently drifts out of agreement with the prose it supports.
 display_gate: "the section's display axis cannot pass CHECK until the DR row is `done` and the
                unit is linked"
 

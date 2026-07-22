@@ -147,7 +147,7 @@ haipipe-paper-stage/
 Adding a stage = one folder + one row in `index.yml`. No new skill, no version bump, no
 `description` edit.
 
-## Status — v0.3.0, all 8 stages live, CUTOVER DONE, still UNTESTED end-to-end
+## Status — v0.4.0, all 8 stages live, CUTOVER DONE, first real run driven 2026-07-21
 
 ```text
 ✅ seed · resource · claims · venue · pitch · narrative · display · section-edit

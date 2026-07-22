@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📋 板 02 · 主观标注方法论 —— 你 7-17 会上讲的那套流程，走一遍</title>
+<link rel="stylesheet" href="../../../html-ppt/skills/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="../../../html-ppt/skills/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../../../html-ppt/skills/html-ppt/assets/themes/academic-report.css">
+<link rel="stylesheet" href="../../../html-ppt/skills/html-ppt/assets/academic-report-extras.css">
+<style>
+  /* academic-report forces Times on `.slide *` with !important — ASCII
+     diagrams MUST stay monospace or every box collapses. Out-specify it. */
+  .slide pre.ascii, .slide pre.ascii *{
+    font-family:ui-monospace,SFMono-Regular,Menlo,"DejaVu Sans Mono",monospace !important;
+    font-size:11.5px;line-height:1.45}
+  .slide pre.ascii{background:var(--surface-2);border:1px solid #d4d4d0;
+    border-radius:2px;padding:12px 14px;overflow:auto;margin:12px 0;
+    white-space:pre;flex:0 1 auto}
+  /* `.kicker` is display:none in this theme (house rule: no kicker).
+     The act label is content, not chrome — give it its own visible class. */
+  .act{color:#8a8a8a;font-size:15px;margin:0 0 4px}
+  .fnote{color:#6b6b6b;font-size:15px;margin:8px 0 2px}
+  .lede{color:var(--accent)}
+</style>
+</head>
+<body class="tpl-academic-report">
+<div class="deck">
+<section class="slide" data-title="Cover">
+<h1 class="h1">板 02 · 主观标注方法论 —— 你 7-17 会上讲的那套流程，走一遍</h1><p class="lede mt-s"></p>
+</section>
+<section class="slide" data-title="七步总览">
+<h2 class="h2">这七步现在的实现情况</h2><pre class="ascii">   第 1 步  冷启动 60 条 + 对话        ❌ 没有      现在是 10-15 条 Expose/React
+   第 2 步  分头标 · 只报冲突          🟡 部分      分歧分类有；但两模型平级 + 一次标 24 条
+   第 3 步  弱模型考 60 条             ❌ 没有      现在是两个模型平级互评
+   第 4 步  60 → 140 锚点采样          ❌ 没有      embed.py 597 行从没被调用
+   第 5 步  版本迭代 + 3+1 分层        🟡 部分      迭代有；只有第①层，且题目有污染
+   第 6 步  两个停机信号               ❌ 没有      只看一个 κ
+   第 7 步  全量 or 蒸馏               ❌ 没有      5000 条只标了 48 条
+
+   ⇒ 你会上讲的七步，代码里对得上的只有一步半。</pre>
+</section>
+<section class="slide" data-title="几何图">
+<h2 class="h2">你在会上画的那张几何图</h2><pre class="ascii">   你说：每条数据是空间里一个点，三个 label 就是三个区域。
+
+        ┌─────────────────────────────────────────┐
+        │        ●●●          ○  ○                │   ● 靠近中心 = clean case
+        │       ●HIGH●      ○   ○                 │     一眼能分，约 80%
+        │        ●●●     ○      ○                 │
+        │              ○  边界带  ○                │   ○ 在边界 = hard case
+        │        ●●●  ○       ○   ●●●             │     模棱两可，约 20%
+        │       ●LOW●    ○  ○    ●NONE●           │
+        │        ●●●                ●●●           │
+        └─────────────────────────────────────────┘
+
+   你的两个判断：
+   ① 「大部分都比较简单…难啃的可能占 20%」
+      ⇒ 所以标注要**优先花在边界那 20%**，clean case 不值得占你的时间
+
+   ② 「ground truth 一般是我们看不到的…我们设计的 guideline 跟真实的
+      　一直有一个偏差，要不停更新，直到跟它差不多」
+      ⇒ 真实的分界线你永远看不到，只能一版一版逼近它
+
+   ③ 「假如你的点非常均匀地散出来，以至于边界附近非常非常多的点，
+      　说明你的 guideline 说不清楚」
+      ⇒ **边界带上挤了多少点**，本身就是规则清不清楚的指标</pre>
+</section>
+<section class="slide" data-title="四个问题">
+<h2 class="h2">会上留下、到今天还没答的 4 个问题</h2><pre class="ascii">   Q1  什么时候人可以不参与？「连续几轮不变」是几轮？
+       「符合作者心意」怎么变成一个可执行的动作？          → 第 6 步
+
+   Q2  要不要给每个模型单独一版 guideline？
+       你会上提过 V1.1 给 haiku、V1.2 给 GPT-4.5。
+       ⚠️ 反面意见：需要按模型改写的规则，说明规则本身还没说清楚。 → 第 3 步
+
+   Q3  5000 条最终要标多少条？现在 48 条。全标？还是训个小模型接手？  → 第 7 步
+
+   Q4  On-review 没有标准答案，怎么证明这套方法有效？
+       你会上的意见：先拿一个**同域、有标签、每条一百来字**的公开数据集
+       跑一遍，证明方法行，再回到自己的数据。
+       ⚠️ S2 当时不同意，认为归根结底还得用自己的数据。这个分歧没解决。</pre><p class="fnote">commit 1eb432f6 · 2026-07-21 23:28 · +1616 行 · 6 个 lib 自测全绿 · note-update Part 12: “NOT yet done = real runs”</p>
+</section>
+<section class="slide" data-title="三层验证">
+<h2 class="h2">每改一版规则，要分三层考</h2><pre class="ascii">   ① 样例内     那 60 条标准答案                改的东西起作用了吗
+   ② 样例外     之前标过、但不在这 60 条里的     有没有把旧规则改坏
+   ③ 泛化       全新的、规则没见过的             在新数据上还管用吗
+   ＋① 外部     公开数据集 / 第二个真人           凭什么信这套方法</pre>
+</section>
+<section class="slide" data-title="锚点采样">
+<h2 class="h2">第 4 步：60 条怎么长到 140 条</h2><pre class="ascii">        HIGH ●                     ● = 三个 label 各自的中心（clean case 聚在这）
+            / \                    ○ = 两两之间的中点（模棱两可的 case 在这）
+           ○   ○
+          /     \
+    LOW ●───○───● NONE
+
+    7 个锚点 × 每个采 20 条 = 140 条
+    ⇒ 既拿到&quot;典型的&quot;，也拿到&quot;最难判的&quot;，不浪费在一眼就能看出答案的样本上</pre>
+</section>
+<section class="slide" data-title="step1-cold-start">
+<p class="act"></p><h2 class="h2">第 1 步 · 冷启动：60 条 + 强模型对话</h2><p class="lede mt-s">❌ 现在没有 · 🟠 待办</p><ul class="blt"><li>❓ <strong>这一步在干什么</strong> 一次对话同时产出两样东西： 一份初版规则 <code>guideline V0</code>，和 60 条<strong>你认可的答案</strong>（后面所有考试的标准答案）。</li><li>📍 <strong>现在什么样</strong> 现有流程是 sl-init「Expose → React → Extract」： 给你看 10-15 条，你反应，从反应里提规则。<strong>没有 60 条这一步</strong>，也没有把 对话产出的答案固定成标准答案。</li><li>🎯 <strong>怎么算做完</strong> 跑一次能产出：<code>guideline V0</code> + 60 条带理由的答案， 且这 60 条明确标记为「标准答案」，后面不再改。</li><li>💬</li></ul>
+</section>
+<section class="slide" data-title="step2-conflict">
+<p class="act"></p><h2 class="h2">第 2 步 · 找冲突：分头标，只把分歧拿给你</h2><p class="lede mt-s">🟡 部分有 · 🟠 待办</p><ul class="blt"><li>❓ <strong>这一步在干什么</strong> 把 60 条拆给几个 sub-agent 各自标。 意见一致的直接过，<strong>只有分歧的才占用你的时间</strong>。 而且要<strong>一条一条标</strong>，不是把 24 条塞进一个 prompt 一次标完。</li><li>📍 <strong>现在什么样</strong> · 分歧分类的机制有（A 边界случай / B 规则模糊 / C 新模式 / D 噪声，只有 A/B/C 找你） · 但实际跑的是 <strong>claude 和 codex 两个模型</strong>，不是多个 sub-agent · <strong>一次性标 24 条</strong>，不是一条一条 —— 这条你会上明确说要改 ⚠️ 一次标 24 条的问题：第 1 条的判断会锚住第 24 条，人和模型都一样。</li><li>🎯 <strong>怎么算做完</strong> 一条一条标；跑完只有分歧条目送到你面前； 一致的自动过，并记下&quot;哪几条是自动过的&quot;。</li><li>💬</li></ul>
+</section>
+<section class="slide" data-title="step3-weak-check">
+<p class="act"></p><h2 class="h2">第 3 步 · 验规则：让弱模型考这 60 条</h2><p class="lede mt-s">❌ 现在没有 · 🟠 待办</p><ul class="blt"><li>❓ <strong>这一步在干什么</strong> 强模型建标准答案，<strong>弱模型来考试</strong>。 考的是「这份规则写得够不够清楚，换个便宜模型也读得懂」。</li><li>📍 <strong>现在什么样</strong> 现在是 claude 和 codex <strong>平级互评</strong>，报的指标叫 <code>panel_kappa_claude_vs_codex</code>。 ⚠️ 平级互评只能说明&quot;两个模型碰巧想法一样&quot;，不能说明规则清楚。 你会上那句「模型之间不要比了，就跟 ground truth 比」正是在说这件事。</li><li>🎯 <strong>怎么算做完</strong> 指标从&quot;模型 vs 模型&quot;改成&quot;每个弱模型 vs 60 条标准答案&quot;， 分模型各报一个数。</li><li>💬</li></ul>
+</section>
+<section class="slide" data-title="step4-sampling">
+<p class="act"></p><h2 class="h2">第 4 步 · 扩样：从 60 条长到 140 条</h2><p class="lede mt-s">❌ 现在没有 · 🟠 待办</p><ul class="blt"><li>❓ <strong>这一步在干什么</strong> 拿已经确认的 60 条当种子，去 corpus 里捞下一批。 捞法不是随机，是按几何位置：</li><li>📍 <strong>现在什么样</strong> 完全没有。<code>lib/embed.py</code>（597 行）在盘上，但<strong>没有任何地方调用它</strong>。 实际是从 5000 条里直接取，没有 embedding、没有聚类、没有锚点。</li><li>🎯 <strong>怎么算做完</strong> 跑一次能输出 7 个锚点各自采到的 20 条， 并且能看出哪一批是 clean、哪一批是边界。</li><li>💬</li></ul>
+</section>
+<section class="slide" data-title="step5-iterate">
+<p class="act"></p><h2 class="h2">第 5 步 · 迭代：规则版本 V1.1 → V1.2</h2><p class="lede mt-s">✅ 已有（但评分方式要改） · 🟠 待办</p><ul class="blt"><li>❓ <strong>这一步在干什么</strong> 改一版规则，就重新考一次。但不能只看一个数，要分三层：</li><li>📍 <strong>现在什么样</strong> 版本迭代有（B01 到了 v04），但<strong>只有 ① 这一层</strong>， 而且那一层的题目全部取自规则作者自己标过的样本。 ⚠️ 实测后果：同一版规则，看过的题 0.932，没看过的题 0.667。</li><li>🎯 <strong>怎么算做完</strong> 每改一版，三层各出一个数，一起记下来。</li><li>💬</li></ul>
+</section>
+<section class="slide" data-title="step6-stop">
+<p class="act"></p><h2 class="h2">第 6 步 · 什么时候停</h2><p class="lede mt-s">❌ 现在没有 · 🧠 会上没答完的问题</p><ul class="blt"><li>❓ <strong>这一步在干什么</strong> 判断&quot;可以收手了&quot;。你给了两个信号，不是一个阈值： <strong>(a) 符合作者心意</strong> —— 你说行就行 <strong>(b) 稳定</strong> —— 连续几轮 V(n+1) 跟 V(n) 一模一样，没东西可改了</li><li>📍 <strong>现在什么样</strong> 只看一个 κ 数字，而且是上面那个不算数的 0.93。 两个信号一个都没实现。</li><li>🎯 <strong>怎么算做完</strong> 项目状态里能自动记录：连续几轮没改动 + 你签过字。</li><li>💬 ⚠️ <strong>这条会上没答完</strong>：「连续几轮」是几轮？「符合心意」怎么落成一个动作？</li></ul>
+</section>
+<section class="slide" data-title="step7-scale">
+<p class="act"></p><h2 class="h2">第 7 步 · 收尾：全量还是训个小模型</h2><p class="lede mt-s">❌ 现在没有 · 🧠 会上两条路都提了，没选</p><ul class="blt"><li>❓ <strong>这一步在干什么</strong> 规则定稿之后，怎么把剩下的几千条标完。两条路： <strong>(a) 硬跑</strong> 用规则把 5000 条全标一遍 —— 贵 <strong>(b) 蒸馏</strong> 拿标好的去 fine-tune 一个小分类器（比如 RoBERTa），让它接手</li><li>📍 <strong>现在什么样</strong> 一条都没走过。5000 条里目前只标了 48 条。</li><li>🎯 <strong>怎么算做完</strong> 选一条路并跑通，5000 条有标签。</li><li>💬 ⚠️ <strong>这条会上没选</strong>：(a) 还是 (b)？</li></ul>
+</section>
+<section class="slide" data-title="等谁">
+<h2 class="h2">现在卡在哪里</h2><pre class="ascii">🧠 等 JL 决断 2 条 —— 落了它们，RA 6 条全部解锁
+   §license-scope   电池选谁      ⛔ 挡着 §license-run   (~3d)
+   §objective-wire  选择目标      ⛔ 挡着 §physician-rerun (~2d)
+
+🔧 RA 现在能立刻开工的 2 条
+   §probe-lexicon   词表自动生成  ~1d
+   §b02-collision   编号理干净    ~0.5d
+
+💡 已停放到下一块板：S9 全量应用 · 第二标注者执行 ·
+   老设计图订正 · plugin CHANGELOG</pre>
+</section>
+</div>
+<script src="../../../html-ppt/skills/html-ppt/assets/runtime.js"></script>
+</body>
+</html>

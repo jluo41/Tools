@@ -5,6 +5,42 @@ Layer-scoped changelog for the paper (DELIVERY) layer. Newest first.
 Rollup lives in the plugin-level CHANGELOG.md.
 
 
+[2.3.0] -- 2026-07-21
+-----------------------
+
+BINDING: **the display SPLIT**. A display unit has TWO halves with DIFFERENT owners, and the
+consumer-side unit is GENERATED from the bank's `source_data.csv`. Hand-typing numbers into a
+unit's `.tex` is now a declared DEFECT, not a shortcut.
+
+### Why -- the failure it exists to prevent
+
+Observed on `Paper-Personality2Opioid-MISQ2026` the same day. A ruling flipped §6's primary
+exposure from the continuous score to the binary indicator. The prose was updated;
+`0-displays/Table/table3-main-results.tex` was NOT, because its numbers were hand-authored and
+nothing linked them back to the bank. The table silently contradicted the text it supported, and
+only a manual display-lane sweep caught it. A GENERATED unit makes that drift mechanically
+detectable; a hand-typed one cannot.
+
+### Changed
+
+- `1-lifecycle/haipipe-paper-stage/stages/4-display/stage.md` -- new BINDING block +
+  `display_split: binding`. BANK side (task-folder, stake-free, LAW 1: the executor holds the pen)
+  owns `source_data.csv` / `metrics.json` / provenance, produced by the task layer
+  (`haipipe-task-for-display`), never by a paper stage. CONSUMER side (`0-displays/<unit>/`,
+  stake-aware, venue-bound) owns which rows/columns the argument needs, venue formatting, and
+  `\label`/`\ref` wiring.
+- `1-lifecycle/haipipe-paper-stage/stages/5-section-edit/stage.md` -- new `display_split:` pointer
+  beside `displays: file-only`: a DR row filed from a section names BOTH `bank deliverable:` and
+  `consumer deliverable:`; a DR naming only one half is incomplete.
+- Router `1-lifecycle/haipipe-paper-stage/SKILL.md` -- Status bumped v0.3.0 -> v0.4.0.
+
+### Note
+
+Structurally a DR row IS the display-flavoured q-executor: the same consumer-to-executor crossing,
+the same LAW-1 ownership rule, a different artifact shape. Recorded here so the symmetry is not
+rediscovered a third time.
+
+
 [2.2.0] -- 2026-07-19
 -----------------------
 
