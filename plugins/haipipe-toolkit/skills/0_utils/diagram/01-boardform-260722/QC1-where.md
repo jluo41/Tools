@@ -53,7 +53,6 @@ skills/0_utils/
 >> CC0722: 已搬。`haipipe-board/` 里只剩 skill 本体（`build.py` + `ref/`）。规则记在上面「现在什么样」里。
 
 ## Log
-260722 · 开题时只有一条 JL 给的硬要求：名字是「编号-主题-日期」
-260722 · JL 拍板：板放在所属单位的 diagram/ 下，跟 skill 本体分开
-260722 · 这块板从 haipipe-board/diagram/ 搬到 0_utils/diagram/
-260722 · 编号 Q7 → QC1；状态 → ✅ SETTLED，3/3
+260723 0919 · 编号 Q7 → QC1；状态 → ✅ SETTLED，3/3
+260722 2249 · JL 拍板：板放在所属单位的 diagram/ 下，跟 skill 本体分开；这块板当场搬过去
+260722 2240 · 开题时只有一条 JL 给的硬要求：名字是「编号-主题-日期」
