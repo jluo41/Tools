@@ -407,15 +407,14 @@ For a worked-through method section using all of the above, see `ref/08-paper-se
 
 ## See Also
 
-- **`haipipe-session`** — owns the **design-note FOLDER**; this skill owns **how to draw the diagrams that go inside it**. Clean split:
+- **`haipipe-board`** — owns the **board FOLDER**; this skill owns **how to draw the diagrams that go inside it**. Clean split:
 
   ```
-  📁 haipipe-session   the CONTAINER      diagram/<YYMMDD>-<topic>/  — dated at BIRTH, never re-dated
-                                          one folder per TOPIC, not per session (a later session APPENDS)
-                                          the APPEND-ONLY rulings ledger (05) + shipped/owed (06)
+  📁 haipipe-board     the CONTAINER      <unit>/diagram/<NN>-<topic>-<YYMMDD>/  — dated at BIRTH
+                                          one folder per TOPIC; one `Q<A><n>-<slug>.md` per question
                                           the comment protocol:  `> JL:`  ·  `>> CC{MMDD}:`
-  ✏️  diagram-ascii     the CONTENT        the boxes, arrows, trees, emoji inside each .txt
+  ✏️  diagram-ascii     the CONTENT        the boxes, arrows, trees, emoji inside each `## 图`
   ```
 
-  When a session produces design decisions that must persist, reach for `haipipe-session` — do **not** invent a per-session log file here.
+  When design decisions must persist, put them on a board (`haipipe-board`) — do **not** invent a per-session log file here.
 - `diagram-ascii-canvas` — when you've produced 3+ `.txt` diagrams in one folder and the user wants to see them all on one canvas (for spatial layout, drawing connections between them, design review). Screenshots each `.txt` and embeds them into a single `.excalidraw` file. After producing multiple `.txt` files, offer this as a follow-up: *"要把这些拼成一张 Excalidraw 大图吗？"*
