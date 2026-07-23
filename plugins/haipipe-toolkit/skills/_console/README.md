@@ -8,7 +8,7 @@ skills/
 ├── _console/<YYMMDD>-<NN>-<SLUG>.md          working artifacts — you work here
 ├── _console/closed/<YYMMDD>-<NN>-<SLUG>.md   settled: ruling made AND executed; read-only
 ├── <family>/<skill>/SKILL.md            the shipped skills
-└── ../diagram/<YYMMDD>-<topic>/         design notes + .txt diagrams (owned by haipipe-session)
+└── ../diagram/<YYMMDD>-<topic>/         design notes + .txt diagrams (owned by haipipe-board)
 ```
 
 ## Filing rules

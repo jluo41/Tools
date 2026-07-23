@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>/haipipe-board —— 把「一块板」定成一个能重复用的东西</title>
+<style>
+/* palette + type follow html-ppt's academic-report; layout is body.single
+   (base.css's own no-JS mode) so every section is visible without any script. */
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
+ --accent:#1f5aa8;--ra:#15803d;--todo:#c23b3b;--wip:#b45309;--done:#15803d;--hold:#8a8a8a}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23;--pre:#111214;--accent:#6ea8f0;--ra:#5fc98a;
+ --todo:#e0736e;--wip:#e0a458;--done:#5fc98a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+ font:16px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:34px 22px 90px}
+.h1{font-size:26px;line-height:1.35;margin:0 0 10px;font-weight:700}
+.spine{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+ border-radius:10px;padding:14px 17px;margin:0 0 14px}
+.spine p{margin:5px 0}
+.bar{font:13px ui-monospace,Menlo,monospace;color:var(--mut);margin:0 0 22px}
+details.ctx{border:1px solid var(--line);border-radius:10px;background:var(--card);
+ padding:10px 15px;margin:8px 0}
+details.ctx>summary{cursor:pointer;font-size:15px;font-weight:600;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"▸ ";color:var(--mut)}
+details[open]>summary::before{content:"▾ "}
+h3.sec{font-size:12.5px;letter-spacing:.09em;color:var(--mut);margin:30px 0 10px;font-weight:600}
+h3.sec .hint{float:right;font-weight:400;letter-spacing:0;text-transform:none}
+
+/* ── 单题聚焦：纯 CSS，零脚本 ────────────────────────────────
+   URL 命中某个 #Qn 时（点目录一行就会），把目录、进度条和其他题全收起来，
+   屏幕上只剩这一题。点「☰ 全部」回到 #top，:target 落空，一切复原。
+   :has() 是纯选择器，不需要 JS。 */
+.nav{display:none}
+body:has(.q:target) .idx,
+body:has(.q:target) .bar,
+body:has(.q:target) h3.sec{display:none}
+body:has(.q:target) .foot,
+body:has(.q:target) .q{display:none}
+/* 必须比上面那条更特指，否则被选中的那题会连自己一起藏掉 */
+body:has(.q:target) .q:target{display:block;margin-top:6px}
+.q:target .nav{display:flex;gap:10px;align-items:center;margin-top:20px;
+ padding-top:13px;border-top:1px solid var(--line)}
+.nav a{color:var(--accent);text-decoration:none;font-size:14px;
+ border:1px solid var(--line);border-radius:8px;padding:6px 13px}
+.nav a:hover{border-color:var(--accent)}
+.nav .all{margin:0 auto;color:var(--mut)}
+.q:target .top{display:none}
+.ir{display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);
+ border-left:4px solid var(--mut);border-radius:9px;margin:6px 0;text-decoration:none;
+ color:var(--fg);background:var(--card)}
+.ir:hover{border-color:var(--accent)}
+.ir.todo{border-left-color:var(--todo)}.ir.wip{border-left-color:var(--wip)}
+.ir.done{border-left-color:var(--done);opacity:.6}.ir.hold{border-left-color:var(--hold)}
+.grp{font-size:12.5px;color:var(--mut);margin:16px 0 2px;padding-left:2px}
+.src{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);opacity:.7}
+.ir .i{font:12px ui-monospace,Menlo,monospace;color:var(--mut);min-width:24px}
+.ir .t{flex:1} .ir .w{font-size:12.5px;color:var(--mut)}
+.slide.q{border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:12px;
+ background:var(--card);padding:20px 22px;margin:18px 0;scroll-margin-top:16px}
+.slide.q.todo{border-left-color:var(--todo)}.slide.q.wip{border-left-color:var(--wip)}
+.slide.q.done{border-left-color:var(--done)}.slide.q.hold{border-left-color:var(--hold)}
+.qh{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12.5px;margin-bottom:4px}
+.qid{font:13px ui-monospace,Menlo,monospace;color:var(--mut)}
+.pill{padding:2px 10px;border-radius:999px;border:1px solid var(--mut);color:var(--mut)}
+.pill.todo{border-color:var(--todo);color:var(--todo)}
+.pill.wip{border-color:var(--wip);color:var(--wip)}
+.pill.done{border-color:var(--done);color:var(--done)}
+.pill.hold{border-color:var(--hold);color:var(--hold)}
+.top{margin-left:auto;color:var(--mut);text-decoration:none;font-size:12px}
+.top:hover{color:var(--accent)}
+.h2{font-size:22px;line-height:1.4;margin:4px 0 14px;font-weight:700}
+.ask{font-size:18px;line-height:1.55;padding-left:13px;border-left:3px solid var(--accent);
+ margin:0 0 18px}
+.f{display:flex;gap:12px;margin:11px 0;align-items:flex-start}
+.fl{flex:0 0 108px;font-size:13px;color:var(--mut);padding-top:2px}
+.f p{margin:0 0 4px}
+
+/* 现在 vs 算做完：上下叠，不左右分栏 —— 两边长短不一时并排会空掉半边 */
+.cmp{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}
+.col{border:1px solid var(--line);border-radius:10px;padding:12px 15px;background:var(--bg)}
+
+/* 勾选清单：md 里写 - [ ] / - [x] */
+.ck{display:flex;gap:9px;align-items:flex-start;margin:5px 0;line-height:1.65}
+.ck .bx{flex:0 0 auto;color:var(--mut);font-size:15px;line-height:1.6}
+.ck.on{color:var(--mut)}
+.ck.on .bx{color:var(--done)}
+
+/* 行内评论：被引用的原句 + 评论里的引文 */
+mark{background:rgba(255,214,0,.34);color:inherit;padding:0 2px;border-radius:3px}
+@media(prefers-color-scheme:dark){mark{background:rgba(255,214,0,.22)}}
+.qt{color:var(--mut);font-size:.92em;margin-right:5px}
+/* 评论工具条（只有开了 JS 才会出现；关掉 JS 页面一切照旧） */
+#cbtn{position:absolute;z-index:40;display:none;background:var(--accent);color:#fff;
+ border:none;border-radius:7px;padding:6px 12px;font-size:13px;cursor:pointer;
+ box-shadow:0 3px 10px rgba(0,0,0,.22)}
+#cbox{position:absolute;z-index:41;display:none;width:330px;background:var(--card);
+ border:1px solid var(--line);border-radius:11px;padding:13px;
+ box-shadow:0 8px 26px rgba(0,0,0,.24)}
+#cbox .qq{font-size:12.5px;color:var(--mut);border-left:3px solid var(--accent);
+ padding-left:9px;margin-bottom:9px;max-height:66px;overflow:auto}
+#cbox textarea{width:100%;min-height:66px;border:1px solid var(--line);border-radius:7px;
+ padding:8px;font:14px inherit;background:var(--bg);color:var(--fg);resize:vertical}
+#cbox .row{display:flex;gap:8px;align-items:center;margin-top:9px}
+#cbox select{border:1px solid var(--line);border-radius:7px;padding:5px 8px;
+ background:var(--bg);color:var(--fg);font:13px inherit}
+#cbox button,#cpanel button{border:1px solid var(--line);border-radius:7px;padding:6px 12px;
+ background:var(--bg);color:var(--fg);font:13px inherit;cursor:pointer}
+#cbox .ok,#cpanel .ok{background:var(--accent);color:#fff;border-color:var(--accent)}
+#cdock{position:fixed;right:18px;bottom:18px;z-index:42;display:none;
+ background:var(--accent);color:#fff;border:none;border-radius:999px;
+ padding:10px 17px;font-size:13.5px;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.26)}
+#cpanel{position:fixed;right:18px;bottom:66px;z-index:42;display:none;width:390px;
+ max-height:64vh;overflow:auto;background:var(--card);border:1px solid var(--line);
+ border-radius:12px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#cpanel .it{border-top:1px solid var(--line);padding:9px 0;font-size:13.5px}
+#cpanel .it .q{color:var(--mut);font-size:12px}
+#cpanel .hd{display:flex;gap:8px;margin-bottom:4px}
+#cpanel .hint{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.6}
+.cnt{float:right;font-weight:400;font:12px ui-monospace,Menlo,monospace}
+
+/* 大标题前面挂编号：QA2 一个 Q 文件的模板 */
+.hid{color:var(--accent);font:.62em ui-monospace,Menlo,monospace;
+ vertical-align:.22em;margin-right:11px;letter-spacing:.03em}
+
+/* ## 日志 —— 这一题一路改过什么 */
+.lg{display:flex;gap:11px;align-items:baseline;margin:4px 0}
+.lg .d{flex:0 0 auto;font:11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+
+/* ## 图 —— 这一题想干嘛，一张 ascii 图先说清楚 */
+.dia{margin:0 0 18px}
+.dia pre{margin:0;padding:15px 17px;line-height:1.55}
+.q:target .dia{margin:0 0 24px}
+.q:target .dia pre{font-size:13px;line-height:1.6}
+.col.now{border-left:3px solid var(--wip)}
+.col.goal{border-left:3px solid var(--done)}
+.ch{font-size:12.5px;color:var(--mut);margin:0 0 7px;font-weight:600}
+.col p{margin:0 0 6px;font-size:15px}
+.col pre{font-size:11.5px}
+
+/* ── 聚焦 = 一张幻灯片，不是一个卡片 ─────────────────────────
+   照 html-ppt：内容直接铺在页面上，没有边框、圆角、卡片底色把它围住。
+   头部压成一条跑马条，剩下的高度全给这一题。 */
+body:has(.q:target) .wrap{max-width:1000px;padding:20px 26px 40px}
+body:has(.q:target) .h1{font-size:14px;color:var(--mut);font-weight:600;margin:0 0 7px}
+body:has(.q:target) .spine{border:none;background:none;border-radius:0;
+ border-left:2px solid var(--accent);padding:0 0 0 11px;margin:0 0 9px}
+body:has(.q:target) .spine p{font-size:12.5px;margin:2px 0;color:var(--mut)}
+body:has(.q:target) details.ctx{border:none;background:none;padding:0;margin:3px 0}
+body:has(.q:target) details.ctx>summary{font-size:12.5px;color:var(--mut)}
+
+body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
+ padding:0;margin:26px 0 0;min-height:calc(100vh - 230px);
+ scroll-margin-top:280px;display:flex;flex-direction:column}
+.q:target .src,.q:target .top{display:none}
+.q:target .qh{margin-bottom:10px}
+.q:target .h2{font-size:38px;line-height:1.24;letter-spacing:-.01em;margin:0 0 18px}
+.q:target .ask{font-size:21px;line-height:1.55;border-left:none;padding-left:0;
+ color:var(--mut);margin:0 0 26px}
+.q:target .cmp{gap:22px;margin:0 0 22px}
+.q:target .col{border:none;border-radius:0;background:none;padding:0 0 0 15px}
+.q:target .col.now{border-left:2px solid var(--wip)}
+.q:target .col.goal{border-left:2px solid var(--done)}
+.q:target .ch{font-size:13px;margin-bottom:9px}
+.q:target .col p{font-size:16px;line-height:1.75}
+/* 「为什么在这块板」在幻灯片上也排成一栏，跟上面两栏同一个样式，不再是左标签 */
+.q:target .f{display:block;margin:0;border-left:2px solid var(--line);padding-left:15px}
+.q:target .fl{display:block;flex:none;font-size:13px;margin:0 0 9px;font-weight:600}
+.q:target .f p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .folds{margin-top:auto;padding-top:18px}
+.folds{margin-top:16px;border-top:1px dashed var(--line);padding-top:8px}
+.fold{margin:3px 0}
+.fold>summary{cursor:pointer;color:var(--mut);font-size:14px;list-style:none;padding:4px 0}
+.fold[open]>summary{color:var(--fg)}
+.fb{padding:5px 0 8px 16px;font-size:14.5px}
+.cmt{border-left:3px solid var(--mut);padding:3px 0 3px 10px;margin:5px 0}
+.cmt b{font-size:11px;letter-spacing:.4px;margin-right:5px}
+.cmt .qt{background:rgba(217,164,6,.18);border-bottom:1px solid rgba(217,164,6,.55);
+ padding:0 2px;border-radius:2px}
+.cmt.jl{border-color:var(--accent)}.cmt.jl b{color:var(--accent)}
+.cmt.ra{border-color:var(--ra)}.cmt.ra b{color:var(--ra)}
+.mut{color:var(--mut)}
+code{background:var(--pre);padding:1px 5px;border-radius:4px;font:13px ui-monospace,Menlo,monospace}
+pre{background:var(--pre);border:1px solid var(--line);border-radius:8px;padding:11px 13px;
+ margin:8px 0;overflow-x:auto;font:12.5px/1.6 ui-monospace,Menlo,monospace;white-space:pre}
+img{max-width:100%;border:1px solid var(--line);border-radius:8px}
+.foot{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);
+ color:var(--mut);font-size:12.5px}
+</style></head><body class="single"><div class="wrap" id="top">
+
+<h1 class="h1">/haipipe-board —— 把「一块板」定成一个能重复用的东西</h1>
+<div class="spine"><p><b>🦴 Spine</b> 一块板 = 一个文件夹，里面一题一个 md，外加一页谁都打得开的 html。把这个形状定死，写成 SKILL.md，让别人（和以后没有记忆的我）能照着开板。</p><p><b>🏁 Close when</b> 下面十个 Q 全部到 ✅ 或 ⏸️。SKILL.md 写完、一个没有背景的新 agent 只看它就能开出一块合格的板 —— 这个 skill 才算做完。</p></div>
+<p class="bar">█░░░░░░░░░░░░░  1/10 settled</p>
+
+<details class="ctx"><summary>🦴 Topic —— 这块板在干嘛</summary><div class="fb"><p>board（板）是干什么用的：一个话题下面有几个还没定的问题，把它们摊在一页上，谁都能打开看、能在上面写评论；问题一个个定完，这块板就关掉。</p>
+<p>人物：JL = 拍板的人。CC = Claude Code，干活的。RA = 研究助手，将来会被指派一块板做几天。</p>
+<p>这块板特殊在：它讨论的就是「板」这个东西本身 —— 用一块板来定义板。</p></div></details><details class="ctx"><summary>🔄 Pipeline —— 这些 Q 怎么排</summary><div class="fb"><p>十个 Q 分三组，编号里的字母就是组：<b>QA</b> 定形状、<b>QB</b> 交出去、<b>QC</b> 等 JL 拍板。</p>
+<p>QA1–QA6 先把「一块板」这个东西本身定下来：文件夹形状 → 一个 Q 文件的模板 → 投屏怎么办 → 单题那一屏怎么排 → 正文怎么写才是人话 → 怎么在上面加行内评论。这六个不定，后面全悬着。</p>
+<p>QB1–QB3 再把它交出去：写成 SKILL.md → 拿一个全新 agent 验收 → 把已有的两块板迁到新格式。</p>
+<p>QC1 是唯一一个跟怎么做无关、只能 JL 拍板的：板放在哪儿、叫什么名字。</p></div></details>
+
+<h3 class="sec">ALL QUESTIONS<span class="hint">点任意一行 → 只看那一题</span></h3>
+<div class="idx"><div class="grp">QA · 先把「一块板」定下来</div>
+<a class="ir wip" href="#QA1"><span class="s">🟡</span><span class="i">QA1</span><span class="t">Board folder shape</span><span class="w">🔧 CC</span></a>
+<a class="ir todo" href="#QA2"><span class="s">🔴</span><span class="i">QA2</span><span class="t">Q file template</span><span class="w">🔧 CC</span></a>
+<a class="ir wip" href="#QA3"><span class="s">🟡</span><span class="i">QA3</span><span class="t">One file, two modes</span><span class="w">🔧 CC</span></a>
+<a class="ir wip" href="#QA4"><span class="s">🟡</span><span class="i">QA4</span><span class="t">Single-Q slide layout</span><span class="w">🔧 CC</span></a>
+<a class="ir todo" href="#QA5"><span class="s">🔴</span><span class="i">QA5</span><span class="t">Writing it so people understand</span><span class="w">🔧 CC</span></a>
+<a class="ir todo" href="#QA6"><span class="s">🔴</span><span class="i">QA6</span><span class="t">Inline comments on selected text</span><span class="w">🔧 CC</span></a>
+<div class="grp">QB · 再把这个 skill 交出去</div>
+<a class="ir todo" href="#QB1"><span class="s">🔴</span><span class="i">QB1</span><span class="t">What SKILL.md must say</span><span class="w">🔧 CC</span></a>
+<a class="ir todo" href="#QB2"><span class="s">🔴</span><span class="i">QB2</span><span class="t">Fresh-agent acceptance test</span><span class="w">🔧 CC</span></a>
+<a class="ir todo" href="#QB3"><span class="s">🔴</span><span class="i">QB3</span><span class="t">Migrate the two old boards</span><span class="w">🔧 CC</span></a>
+<div class="grp">QC · 要 JL 拍板</div>
+<a class="ir done" href="#QC1"><span class="s">✅</span><span class="i">QC1</span><span class="t">Where a board lives</span><span class="w">🧠 JL</span></a></div>
+
+<section class="slide q wip" id="QA1" data-title="Board folder shape" data-file="QA1-form.md"><div class="qh"><span class="qid">QA1</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 CC</span><span class="mut">· 一题一个 md（照 1-probes/ 的做法），靠路径挂，不靠登记</span><span class="src">QA1-form.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA1</span>Board folder shape</h2><div class="ask">❓ 一块板是一个文件夹。这个文件夹里必须有哪些文件？一个 Q 文件是怎么「属于」这块板的？</div><div class="dia"><pre>NN-主题-YYMMDD/
+├── board.md        全局：标题 · 主干 · 关板 · 主题 · 流水线 · 清单
+├── QA1-xxx.md  ┐
+├── QA2-xxx.md  ├─ 一题一个文件
+├── QB1-xxx.md  ┘
+├── board.html      ← build.py 生成，纯静态
+└── fig/
+
+谁在这块板上  →  靠路径：同目录所有 Q*.md，丢一个文件进来就算
+什么顺序分组  →  靠 board.md 的 ## 清单：只写文件名，不抄标题
+漏登记        →  照样显示（归 ⚠️ 组）+ 命令行提醒一句</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>已经跑通一版：</p>
+<pre>NN-主题-YYMMDD/
+  board.md      全局：标题 · spine（主干） · close（关板条件） · ## 主题 · ## 流水线 · ## 清单
+  QA1-xxx.md     一题一个
+  QA2-xxx.md
+  board.html    生成的，纯静态
+  fig/          截图放这儿</pre>
+<p>挂接方式分两层，已经跑通并测过两种翻车：</p>
+<p>① <b>谁在这块板上</b> —— 靠路径：同一个文件夹里所有 <code>Q*.md</code> 就是这块板的题。新开一题＝丢一个文件进去，不改别的。</p>
+<p>② <b>什么顺序、怎么分组</b> —— 靠 <code>board.md</code> 的 <code>## Roster</code>：只写文件名和分组标题，标题正文一概不抄。</p>
+<p>清单漏写一个文件，那题照样出现在页面上（归到 ⚠️ 组）+ 命令行提醒一句；清单写了不存在的文件，也只是提醒。<b>漏登记只会丑，不会丢题。</b></p>
+<p>还没定死的：<code>fig/</code> 是不是必须建（现在是空的）；文件名后半截用中文还是英文。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">0/3</span></div><div class="ck"><span class="bx">☐</span><span>列出文件夹里必须有哪几个文件，每个一行说明管什么</span></div>
+<div class="ck"><span class="bx">☐</span><span>写清 Q 文件怎么挂到板上（路径认人 + 清单排序，两层）</span></div>
+<div class="ck"><span class="bx">☐</span><span>照着这份清单能徒手搭出一块空板，不用翻现成的例子</span></div>
+<p>（一个 Q 文件内部长什么样，是 QA2 的事，这里不管。）</p></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>文件夹形状不定死，SKILL.md 就没东西可写，生成器也没法读。</p>
+<p>而且「一题一个文件」还是「全部塞在一个 board.md 里」，直接决定 RA 能不能一个人认领一个 Q 去改，而不跟别人撞车。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 QA1 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>一题一个文件：借 haipipe-probe 的做法 —— <code>1-probes/</code> 下面每个问题是一个单独的 md 文件。好处是两个人同时改两个问题不会撞车。</p></div></details><details class="fold"><summary>📜 Log (5)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>开题。原题「文件夹里有哪些文件 + 文件里有哪些段落」两件事混在一起</span></div>
+<div class="lg"><span class="d">260722</span><span>拆题：段落归 QA2，这题只管文件夹</span></div>
+<div class="lg"><span class="d">260722</span><span>挂接方式定成两层（路径认人 / 清单排序），两种漏登记都测过</span></div>
+<div class="lg"><span class="d">260722</span><span>编号 Q1 → QA1；标题 28 字压到 9 字</span></div>
+<div class="lg"><span class="d">260722</span><span>完成线改成勾选清单；补 ## 图</span></div></div></details></div><div class="nav"><span></span><a class="all" href="#top">☰ All 10</a><a href="#QA2">QA2 →</a></div></section>
+<section class="slide q todo" id="QA2" data-title="Q file template" data-file="QA2-qtemplate.md"><div class="qh"><span class="qid">QA2</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 CC</span><span class="mut">· 定一份可以直接复制的空模板，标清楚哪些必填</span><span class="src">QA2-qtemplate.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA2</span>Q file template</h2><div class="ask">❓ 打开一个空的 <code>QA5-xxx.md</code>，我该往里面填什么？哪些段落是必须有的，哪些可以不写？</div><div class="dia"><pre>QA5-xxx.md                              显示在哪
+┌──────────────────────────────┐
+│ # 短标题          ≤14 字      │ →  索引一行 + 幻灯片大标题
+│ state: 🔴 OPEN               │ →  状态徽章
+│ owner: CC   method: …        │ →  卡片头那一行
+├──────────────────────────────┤
+│ ## Question                  │ →  ❓ 最显眼那行
+│ ## Diagram   ascii 图        │ →  问句下面
+│ ## Now                       │ →  上
+│ ## Done when - [ ] 勾选清单   │ →  下（自动数出 2/5）
+│ ## Why here                  │
+│ ## Glossary ## Discussion    │ →  折叠，不上台面
+└──────────────────────────────┘</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>格式在跑，但只存在于「现有几个文件长这样」，没有一份模板，也没写下哪些必填。目前实际用的是：</p>
+<pre># 短标题            必填 · 一个短语，≤14 字，像幻灯片的标题；完整问句写进 ## Question
+state: 🔴 OPEN          必填 · ✅ SETTLED / 🟡 PARTIAL / 🔴 OPEN / ⏸️ ON HOLD
+owner: CC               必填 · JL 显示成 🧠 拍板，其他显示成 🔧
+method: 一句话说怎么做   选填 · 显示在卡片头一行
+
+## Question    必填 · 一句真正的问句，页面上是最显眼那行
+## Done when   必填 · 勾选清单，一条一行：- [ ] xxx / - [x] 已经做到的
+## Now         必填 · 现在的实际状态，有数字给数字
+## Why here    必填 · 不写就没人知道这题为什么值得占一页
+## Glossary    选填 · 折叠 · 这一页出现的、外人看不懂的词
+## Discussion  选填 · 折叠 · 评论写这里，一行一条：&gt; JL: …  /  &gt;&gt; CC0722: …
+## Log         选填 · 折叠 · 这题改过什么，一行一条：260722 · 改了什么</pre>
+<p>已经定下来的两条（JL 当场提的）：</p>
+<p>标题必须是短语，不是句子 —— 完整问句归 <code>## Question</code>。八个 Q 的标题已经从最长 43 字压到 8–15 字。</p>
+<p><code>## Done when</code> 一律写成勾选清单，页面上会自动数出 <code>2/5</code> 这样的进度。</p>
+<p>还没定的：段落顺序能不能乱；<code>## Glossary</code> 是不是每题都要；<code>state</code> 后面还能不能跟自定义字样。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">0/4</span></div><div class="ck"><span class="bx">☐</span><span><code>ref/</code> 下有一份能直接复制的空模板文件</span></div>
+<div class="ck"><span class="bx">☐</span><span>每个段落上面一行注释：这儿写什么、写多长</span></div>
+<div class="ck"><span class="bx">☐</span><span>标明哪些必填、哪些选填</span></div>
+<div class="ck"><span class="bx">☐</span><span>新加一题＝复制模板改文件名，不用参考任何已有的板</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>QA1 定的是文件夹，这一题定的是<b>一个文件内部</b>。这是 RA 和以后的 agent 真正每天要动的那个东西 —— 模板不清楚，每个人写出来的 Q 都不一样，页面就乱。</p>
+<p>而且模板直接决定页面上能显示什么：生成器只认这几个固定段落名，写了别的名字就不显示。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 QA2 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>必填：缺了就算这个 Q 文件不合格。生成器不会报错，但页面上会缺一块。</p></div></details><details class="fold"><summary>📜 Log (5)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>从 QA1 拆出来单独立题</span></div>
+<div class="lg"><span class="d">260722</span><span>编号 Q2 → QA2</span></div>
+<div class="lg"><span class="d">260722</span><span>定下两条：标题必须是短语（≤14 字）、完成线一律写成勾选清单</span></div>
+<div class="lg"><span class="d">260722</span><span>状态词从自造的「半有 / 没做」换成 OPEN / PARTIAL / SETTLED / ON HOLD</span></div>
+<div class="lg"><span class="d">260722</span><span>模板里加 ## Diagram 和 ## Log 两段</span></div></div></details></div><div class="nav"><a href="#QA1">← QA1</a><a class="all" href="#top">☰ All 10</a><a href="#QA3">QA3 →</a></div></section>
+<section class="slide q wip" id="QA3" data-title="One file, two modes" data-file="QA3-htmlppt.md"><div class="qh"><span class="qid">QA3</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 CC</span><span class="mut">· 一个文件两种模式：滚着读 / 一题一屏。JL 已定：合并</span><span class="src">QA3-htmlppt.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA3</span>One file, two modes</h2><div class="ask">❓ <code>board.html</code> 是一页长文档，适合一个人滚着读；开会投屏要的是一屏一页。这两件事要不要出两个文件？</div><div class="dia"><pre>             Q*.md ──build.py──► board.html   ← 只有这一个文件
+                                    │
+                ┌───────────────────┴───────────────────┐
+           默认：滚着读                         点一行：一题一屏
+           8 题一整页                           屏上只剩那一题
+           自己看 / 发给 RA                      开会投屏
+                └────── 同一个文件，同一份内容 ──────┘
+
+✗ 不再另出 deck.html          还差：← → 翻页 · 演讲者模式（都要 JS）</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>仓库里现在只有 <code>board.html</code>，没有任何在用的 <code>deck.html</code>。</p>
+<p>唯一残留的 <code>subjective-label/diagram/01-sublabel-license-260722/deck.html</code> 是旧的坏版本，靠 JS 现场造 DOM，跟 <code>/html-ppt</code> 没关系 —— 归 QB3 一起清掉。</p>
+<p>还差的是 <code>/html-ppt</code> 里那几个纯靠 JS 的能力：方向键 ← → 翻页、演讲者模式（S）、总览宫格（O）。</p>
+<p>这些都得引 JS，而 <code>board.html</code> 目前坚持零脚本。</p>
+<p>可以做成<b>渐进增强</b>：没有 JS 时点着翻（现在就能用），有 JS 时方向键也能翻 —— 加不加都不会白屏。</p>
+<p><code>/html-ppt</code> 的 <code>base.css</code> 把 <code>.slide</code> 默认设成 <code>opacity:0</code>、靠 <code>runtime.js</code> 才显示，那种做法不能照抄；要引也只引一段自己写的、纯增强的脚本。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">2/5</span></div><div class="ck on"><span class="bx">☑</span><span>一个 Q 一屏，翻页看（board.html 的聚焦模式已经做到）</span></div>
+<div class="ck on"><span class="bx">☑</span><span>只有一个文件，不出第二份 <code>deck.html</code></span></div>
+<div class="ck"><span class="bx">☐</span><span>方向键 ← → 翻页</span></div>
+<div class="ck"><span class="bx">☐</span><span>演讲者模式（讲者看得到讨论，观众看不到）</span></div>
+<div class="ck"><span class="bx">☐</span><span>内容仍然只从 <code>Q-xxx.md</code> 来，不另外维护一份文字</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>原本的想法是出两个文件：<code>board.html</code> 自己读、<code>deck.html</code> 拿去投屏。<b>JL 定了：合并成一个。</b></p>
+<p>理由站得住 —— 两个文件意味着两份要同步的东西；而且开会时经常临时要展开某一题的细节，切文件很别扭。</p>
+<p>现在 <code>board.html</code> 一个文件就是两种模式：默认滚着读，点目录任意一行进入聚焦，屏上只剩那一题。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (2)</summary><div class="fb"><div class="cmt jl"><b>JL</b> 我们还有 deck.html 还是 board.html？我想把它们合成一个。</div>
+<div class="cmt cc"><b>CC0722</b> 合了。现在只有 <code>board.html</code>，一个文件两种模式。剩下的只是方向键那几个要 JS 的能力。</div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>渐进增强：页面在没有 JS 的时候功能完整，有 JS 的时候更好用。跟「没有 JS 就白屏」正好相反。</p></div></details><details class="fold"><summary>📜 Log (4)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>开题：要不要另出一份 deck.html 拿去投屏</span></div>
+<div class="lg"><span class="d">260722</span><span>原稿写死了「VS Code 预览必然屏蔽 JS」，JL 质疑，查证后发现是错的 —— 真原因是端口没转发</span></div>
+<div class="lg"><span class="d">260722</span><span>JL 拍板：合并，不出第二个文件。整题重写</span></div>
+<div class="lg"><span class="d">260722</span><span>编号 Q3 → QA3；状态 OPEN → PARTIAL</span></div></div></details></div><div class="nav"><a href="#QA2">← QA2</a><a class="all" href="#top">☰ All 10</a><a href="#QA4">QA4 →</a></div></section>
+<section class="slide q wip" id="QA4" data-title="Single-Q slide layout" data-file="QA4-slidedesign.md"><div class="qh"><span class="qid">QA4</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 CC</span><span class="mut">· 聚焦模式去掉卡片框，照 html-ppt 的幻灯片来排</span><span class="src">QA4-slidedesign.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA4</span>Single-Q slide layout</h2><div class="ask">❓ 点开一个 Q、屏上只剩它的时候，这一屏该长什么样？什么放大、什么收起、什么根本不该出现在台面上？</div><div class="dia"><pre>┌ 跑马条 ≈110px ──────────────────────────┐
+│ /haipipe-board                          │  板名
+│ │ 主干 · 关板                            │  永远在
+│ ▸ 这块板在干嘛   ▸ 这些 Q 是怎么排的      │  全局入口
+├─────────────────────────────────────────┤
+│ QA4  🟡 PARTIAL  🔧 CC                   │
+│ 单题幻灯片怎么排              ← 38px      │
+│ ❓ 点开一个 Q、屏上只剩它时…    ← 21px     │
+│ │ 📍 现在什么样                          │  上
+│ │ 🎯 算做完   ☐ ☐ ☑            2/5       │  下
+│ │ 💡 为什么在这块板                       │
+│ ▸ 讨论  ▸ 名词                          │  贴到底
+│ ← QA3        ☰ 全部 8 题        QB1 →   │
+└─────────────────────────────────────────┘
+不带框 = 没有边框 · 没有圆角 · 没有卡片底色</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>已经做到的：</p>
+<p>点目录任意一行进入聚焦，纯 CSS（<code>:target</code> + <code>:has()</code>），零脚本。</p>
+<p>卡片框在聚焦时去掉了 —— 不再是页面上的一个盒子，而是内容直接铺开。</p>
+<p>标题、问句、正文在聚焦时统一放大，正文加宽到 1000px。</p>
+<p>「现在什么样」和「到什么程度算做完」左右并排，借的是 html-ppt 的 <code>comparison.html</code>。</p>
+<p>顶上留一条细的跑马条：板名 + 主干 + 两个全局入口（🦴 这块板在干嘛 / 🔄 这些 Q 是怎么排的），折叠着，任何一题上都点得到。</p>
+<p>底部一行 <code>← 上一题 · ☰ 全部 · 下一题 →</code>。</p>
+<p>还没定的：</p>
+<p>标题多大算合适（现在 38px），一屏塞不下的长题怎么办 —— 截断、滚动，还是拆成两屏。</p>
+<p>要不要像 html-ppt 那样锁 16:9，还是随窗口高度走（现在是后者）。</p>
+<p>「讨论」和「名词」两个折叠块，在幻灯片上算不算噪声 —— html-ppt 的规矩是讲者的话一律进 <code>notes</code>，不上台面。</p>
+<p>方向键翻页要 JS，board.html 现在坚持零脚本，这条跟 QA3 是同一个口。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">3/5</span></div><div class="ck on"><span class="bx">☑</span><span>单独打开一个 Q 时不带框、字够大</span></div>
+<div class="ck on"><span class="bx">☑</span><span>一眼能看出「在问什么」和「现在离做完差多远」</span></div>
+<div class="ck on"><span class="bx">☑</span><span>翻到下一题不用回目录</span></div>
+<div class="ck"><span class="bx">☐</span><span>两块内容长短差很多时不留大片空白</span></div>
+<div class="ck"><span class="bx">☐</span><span>这套排版规则写下来，不只是「现在长这样」</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>QA3 管的是「另出一份 deck.html 拿去投屏」，这一题管的是「board.html 自己的聚焦模式」—— 两件事，容易混。</p>
+<p>而且这是最影响「一眼能不能看懂」的一题：同样的文字，排成一个带框的小卡片，和排成一张不带框的幻灯片，读起来完全是两回事。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (2)</summary><div class="fb"><div class="cmt jl"><b>JL</b> 能不能让这个 slide 更像 /html-ppt 里的 slide？我不想让它被框住。</div>
+<div class="cmt cc"><b>CC0722</b> 聚焦模式下已经把边框、圆角、卡片底色全去掉，标题放到 38px，头部压成一条跑马条。还没定的几条列在上面「现在什么样」里。</div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>不带框（unbounded）：不再用边框、圆角、卡片底色把内容围起来，让它直接铺在页面上 —— html-ppt 的幻灯片就是这么排的。</p>
+<p>跑马条：聚焦时顶上那一条压扁的头部，只占约 110px，保证不管翻到哪一题都还知道这块板在干嘛。</p></div></details><details class="fold"><summary>📜 Log (4)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>JL 提出「slide 要像 /html-ppt，不想被框住」，新开此题</span></div>
+<div class="lg"><span class="d">260722</span><span>聚焦模式落地：纯 CSS :target，零脚本</span></div>
+<div class="lg"><span class="d">260722</span><span>去掉边框 / 圆角 / 卡片底色，标题放到 38px，头部压成跑马条</span></div>
+<div class="lg"><span class="d">260722</span><span>现在 vs 算做完 从左右并排改成上下叠（长短不一时并排会空掉半边）</span></div></div></details></div><div class="nav"><a href="#QA3">← QA3</a><a class="all" href="#top">☰ All 10</a><a href="#QA5">QA5 →</a></div></section>
+<section class="slide q todo" id="QA5" data-title="Writing it so people understand" data-file="QA5-readable.md"><div class="qh"><span class="qid">QA5</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 CC</span><span class="mut">· 一份写法规矩 + 一个零背景 reviewer subagent 每次过一遍</span><span class="src">QA5-readable.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA5</span>Writing it so people understand</h2><div class="ask">❓ 一个 Q 的正文怎么写，才能让一个完全不了解这件事的人读一遍就懂？怎么保证它一直是这样，而不是靠我某一次心情好？</div><div class="dia"><pre>    每个 QX-xxx.md
+          │
+          ▼
+  ┌─ 零背景 reviewer subagent ────────────────┐
+  │  假设：没读过会议记录，没看过代码，         │
+  │        不认识 JL / RA，不知道这个项目       │
+  │  只答三件事：                              │
+  │    ① 哪一句读不懂 —— 原句抄回来             │
+  │    ② 哪个词没解释 —— 列出来                │
+  │    ③ 缺了什么背景才看得懂这一题             │
+  └──────────────────┬───────────────────────┘
+                     ▼
+              问题清单 → 改 md → 再跑一遍  ⟲
+                     │
+              没有新问题 → 这一题算「读得懂」
+
+  ✗ 我自己在同一个对话里读 —— 我知道太多没写进去的事，测不出来</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>喊过一次，有用，但没沉淀下来。</p>
+<p>那次的反馈很难看：「像在解释一个菜谱的格式，却从头到尾没说这道菜是什么」；约 35 个没解释就用的词；7 题里 1 题勉强清楚、5 题模糊、1 题完全看不懂。</p>
+<p>改完之后确实好多了 —— 加了 <code>## Topic</code>（这块板在干嘛）、<code>## Pipeline</code>（这些题怎么排），术语挪进各题的 <code>## Glossary</code>。</p>
+<p>还有一条更具体的教训：<b>我自己造过词</b>。把 <code>battery</code> 译成「电池」，还有「向外锚定」「第一幕」「三集合闸门」—— 这些词在任何源文档里出现 0 次。这类最伤人：读者以为是行话，去查，查不到。</p>
+<p><b>第二次（就是这块板，9 题）刚跑完，结果不好看：2 题清楚（QA5 / QC1）、6 题半懂、1 题看不懂（QA4）。</b></p>
+<p>它挑出来最狠的三条：</p>
+<p>① 「板」这个词在自指的语境里指代不清 —— 有时指工具，有时指这一块，读者全程要猜。</p>
+<p>② QA2 的图写「上/下」，QA4 的正文写「左右并排」，同一件事两处打架；同一个段落还有三个名字（完成线 / 到什么程度算做完 / 算做完）。</p>
+<p>③ <code>build.py</code>、<code>skill</code>、<code>/html-ppt</code>、<code>聚焦模式</code> 这些词出现在四五个文件里，一次都没定义。</p>
+<p>现在缺的：没有固定的 agent、没有固定的检查项、没写进任何文件，全靠我记得要做。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">0/5</span></div><div class="ck"><span class="bx">☐</span><span>写下一份「怎么写才算人话」的规矩，放进 SKILL.md</span></div>
+<div class="ck"><span class="bx">☐</span><span>有一个固定的零背景 reviewer subagent，不是临时喊一次</span></div>
+<div class="ck"><span class="bx">☐</span><span>它逐个文件报告：哪句看不懂、哪个词没解释、缺什么背景</span></div>
+<div class="ck"><span class="bx">☐</span><span>板每次大改都跑一遍，报出来的问题改掉才算改完</span></div>
+<div class="ck"><span class="bx">☐</span><span>收敛判据写清楚：跑到什么程度算「这一题读得懂了」</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>JL 的原话：<b>「如果不易读，写那么多都是 rubbish。」</b></p>
+<p>一块板的全部价值就是给别人看 —— 看不懂等于没写。这一条比结构、比排版都更靠前。</p>
+<p>跟 QA2 的分工：QA2 管<b>有哪些段落</b>（结构），这一题管<b>每段里的字怎么写</b>（文字）。两件事都做对，板才立得住。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt jl"><b>JL</b> 我想要一个新的 Q，讲怎么写 Q 的正文，保证人能读懂。可以叫 subagent 去审每个 md，确保知识有限的人也能看懂。</div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>零背景读者：假装完全没参与过这个项目的人。用一个全新的 agent 来扮演，因为它真的不知道 —— 我在这个对话里知道太多没写下来的事，自己读是测不出问题的。</p>
+<p>subagent：另开一个 Claude，只看你给它的文件，看不到这次对话。</p></div></details><details class="fold"><summary>📜 Log (4)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>JL 提出「如果不易读，写那么多都是 rubbish」，新开此题</span></div>
+<div class="lg"><span class="d">260722</span><span>跑了第一次零背景审查：7 题里 1 清楚 / 5 模糊 / 1 看不懂，约 35 个没解释的词</span></div>
+<div class="lg"><span class="d">260722</span><span>按反馈加了 ## Topic 和 ## Pipeline，术语挪进各题 ## 名词</span></div>
+<div class="lg"><span class="d">260722</span><span>跑了第二次（9 题）：2 清楚 / 6 半懂 / 1 看不懂 —— 见「现在什么样」</span></div></div></details></div><div class="nav"><a href="#QA4">← QA4</a><a class="all" href="#top">☰ All 10</a><a href="#QA6">QA6 →</a></div></section>
+<section class="slide q todo" id="QA6" data-title="Inline comments on selected text" data-file="QA6-comments.md"><div class="qh"><span class="qid">QA6</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 CC</span><span class="mut">· 选中 → 弹框 → 写回 md；md 是唯一存储，html 只是显示</span><span class="src">QA6-comments.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA6</span>Inline comments on selected text</h2><div class="ask">❓ <mark>怎么像 Google Docs 那样，在页面上选中一句话就地加评论？</mark>而且这条评论要同时活在 <code>.md</code> 和 <code>board.html</code> 里，不是只存在浏览器里。</div><div class="dia"><pre>       在 board.html 上选中一句话
+                │   选区必须靠 JS —— 没有别的办法拿到「用户选了哪几个字」
+                ▼
+          弹一个小框，写评论
+                │
+                ▼
+        生成一条 md 补丁（人能读懂的那种）：
+          …前文 {==被选中的那句==}{&gt;&gt;JL: 这里说不清&lt;&lt;} 后文…
+                │
+      ┌─────────┴──────────────────────────┐
+      A 直接写回 .md                        B 复制到剪贴板
+        File System Access API                你自己粘回 md
+        localhost + Chrome/Edge 可用           哪儿都能用，多两步
+      └─────────┬──────────────────────────┘
+                ▼
+        重新跑 build.py → 那句话高亮，评论挂在旁边
+
+  读评论：不需要 JS      新加评论：必须有 JS   ← 渐进增强，缺 JS 只是不能加</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>现在只有<b>段落级</b>评论：在 <code>.md</code> 的 <code>## Discussion</code> 里写一行 <code>&gt; JL: …</code>，页面上排成一条带色边的评论行。</p>
+<p>够用，但太粗 —— 只能说「这一题我有意见」，说不了「就这一句说不清」。</p>
+<p>真正的难点不是弹框，是<b>锚点</b>。一条评论必须能在原文被改过之后还知道自己挂在哪。</p>
+<p>Google Docs 靠一套文档模型解决，我们只有纯文本文件。用「把原句抄进去」当锚点最可读，代价是原句一改锚点就断 —— 所以「断了要能被发现」必须写进完成线。</p>
+<p>还有一件事要先认下来：<b>这是这块板第一次真的需要 JS</b>。拿不到选区就做不了这个功能。</p>
+<p>但可以只让「新加评论」依赖 JS，「读评论」仍然是纯 HTML —— 页面永远不会因为没有 JS 而变白。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">0/5</span></div><div class="ck"><span class="bx">☐</span><span>选中一句 → 写评论 → 它真的落进 <code>.md</code> 文件里</span></div>
+<div class="ck"><span class="bx">☐</span><span><code>.md</code> 里那条评论用眼睛就能读懂，不是一串坐标或哈希</span></div>
+<div class="ck"><span class="bx">☐</span><span><code>board.html</code> 上被评论的那句高亮，评论挂在旁边</span></div>
+<div class="ck"><span class="bx">☐</span><span>原文被改动之后，评论要么跟着走，要么明确标成「锚点丢了」</span></div>
+<div class="ck"><span class="bx">☐</span><span>没有 JS 时评论照样显示（只是不能新加）</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>JL 从第一天就提了「板要能加自己的评论」。段落级已经有了，句子级是它自然的下一步。</p>
+<p>而且这一题定的是 <b><code>.md</code> 里的存储语法</b> —— 语法不定，QB1 的 SKILL.md 就没法写「怎么在板上评论」。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (3)</summary><div class="fb"><div class="cmt jl"><b>JL</b><span class="qt">「怎么像 Google Docs 那样，在页面上选中一句话就地加评论？」</span> 就这个，先能加，之后再一起同步</div>
+<div class="cmt jl"><b>JL</b> 怎么像 Google Docs / Word 那样选中一段加行内评论？而且能同步回 markdown 和 html。</div>
+<div class="cmt cc"><b>CC0722</b> 存储用 md 里的 CriticMarkup 语法（肉眼可读），采集用一层只负责「新加」的 JS。难的是锚点在原文改动后会断，这条已经列进完成线。</div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>选区 API：浏览器里「用户当前选中了哪几个字」这个信息，只有 JavaScript 能读到。</p>
+<p>File System Access API：浏览器直接读写你本机文件的能力。Chrome / Edge 在 <code>localhost</code> 上可用，用户点一次「允许」之后就能写回 <code>.md</code>。</p>
+<p>CriticMarkup：一套写在纯文本里的批注语法，<code>{==这句==}</code> 表示被标记的原文，<code>{&gt;&gt;评论&lt;&lt;}</code> 表示评论。好处是 md 里肉眼可读。</p>
+<p>锚点：一条评论「挂在哪句话上」的定位方式。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">260723</span><span>JL 提出要 Google Docs 那样的行内评论，新开此题</span></div></div></details></div><div class="nav"><a href="#QA5">← QA5</a><a class="all" href="#top">☰ All 10</a><a href="#QB1">QB1 →</a></div></section>
+<section class="slide q todo" id="QB1" data-title="What SKILL.md must say" data-file="QB1-skillmd.md"><div class="qh"><span class="qid">QB1</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 CC</span><span class="mut">· 三件事说清楚：怎么开板、怎么加题、什么时候关板</span><span class="src">QB1-skillmd.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB1</span>What SKILL.md must say</h2><div class="ask">❓ 别人（或者以后没有这次对话记忆的我）敲下 <code>/haipipe-board</code>，要照着做什么？</div><div class="dia"><pre>用户敲  /haipipe-board
+          │
+          ▼
+      SKILL.md  ──►  必须答清楚三件事
+          ├─ ① 怎么开一块新板   建文件夹 → board.md → 第一个 Q
+          ├─ ② 怎么加一个 Q     抄 ref/ 模板 → 改文件名 → 进清单
+          └─ ③ 什么时候关板     每个 Q 到 ✅ 或 ⏸️
+
+现在：文件夹在，build.py 在，ref/ 在 —— SKILL.md 一个字没写</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>文件夹 <code>skills/0_utils/haipipe-board/</code> 已经建好。</p>
+<p>里面只有 <code>build.py</code> 和 <code>ref/board-example.md</code>。</p>
+<p><code>SKILL.md</code> 一个字都还没写。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">0/4</span></div><div class="ck"><span class="bx">☐</span><span><code>SKILL.md</code> 写完</span></div>
+<div class="ck"><span class="bx">☐</span><span>里面答清楚：怎么开一块新板</span></div>
+<div class="ck"><span class="bx">☐</span><span>里面答清楚：怎么往板上加一个 Q</span></div>
+<div class="ck"><span class="bx">☐</span><span>里面答清楚：这块板什么时候该关掉</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>现在这套流程只活在这次对话里。换个 agent 进来，看到的只有一个 <code>build.py</code> 和两块试验板，它猜不出该怎么走。</p>
+<p>skill 的全部价值就是把流程写下来 —— 不写，这次做的东西下次就没了。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 QB1 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>SKILL.md：Claude Code 里一个 skill 的入口文件。用户敲 <code>/haipipe-board</code> 的时候，被读进去的就是它。</p></div></details><details class="fold"><summary>📜 Log (4)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>开题</span></div>
+<div class="lg"><span class="d">260722</span><span>编号 Q4 → QB1；标题压到 12 字</span></div>
+<div class="lg"><span class="d">260722</span><span>完成线改成勾选清单（三件事各一条）</span></div>
+<div class="lg"><span class="d">260722</span><span>技能文件夹从 skills/board/ 搬到 skills/0_utils/haipipe-board/</span></div></div></details></div><div class="nav"><a href="#QA6">← QA6</a><a class="all" href="#top">☰ All 10</a><a href="#QB2">QB2 →</a></div></section>
+<section class="slide q todo" id="QB2" data-title="Fresh-agent acceptance test" data-file="QB2-newcomer.md"><div class="qh"><span class="qid">QB2</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 CC</span><span class="mut">· 开一个没有这次对话记忆的 agent，只给它 SKILL.md</span><span class="src">QB2-newcomer.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB2</span>Fresh-agent acceptance test</h2><div class="ask">❓ 怎么证明这个 skill 是能用的，而不是只有写它的人才会用？</div><div class="dia"><pre>┌ 这次对话里的我 ┐  脑子里一堆没写进 SKILL.md 的事
+└───────────────┘  → 自测测不出缺什么     ✗
+
+┌ 全新 agent ┐  只给 SKILL.md + 一个真实话题
+└──────┬─────┘
+       ▼
+   它自己开出一块板
+       │
+   比对：走的步骤跟设计的一样吗？
+       ├─ 一样   → 通过
+       └─ 不一样 → 改 SKILL.md，再来一遍  ⟲</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>一次都没跑过。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">0/4</span></div><div class="ck"><span class="bx">☐</span><span>开一个没有这次对话记忆的 agent，只给它 SKILL.md 和一个真实话题</span></div>
+<div class="ck"><span class="bx">☐</span><span>它自己开出一块板</span></div>
+<div class="ck"><span class="bx">☐</span><span>比对它走的步骤和设计的是否一致</span></div>
+<div class="ck"><span class="bx">☐</span><span>不一致就改 SKILL.md，再来一遍</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>仓库的 CLAUDE.md 里写死了这条规矩：任何 skill 改完，必须用一个全新 agent 验过才算完。</p>
+<p>在这次对话里自测没有用 —— 我脑子里有一大堆没写进 SKILL.md 的东西，测不出缺什么。</p>
+<p>还要验第二件事：一个完全不懂这个话题的人打开 <code>board.html</code>，看不看得懂。上一块板试过一次，反馈是「像在解释一个菜谱的格式，却从头到尾没说这道菜是什么」。这条要变成 SKILL.md 里的硬要求。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 QB2 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>全新 agent：另开一个 Claude，它看不见这次对话，只能看见你给它的那几个文件。</p></div></details><details class="fold"><summary>📜 Log (3)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>开题，依据是仓库 CLAUDE.md 里「skill 改完必须用全新 agent 验过」</span></div>
+<div class="lg"><span class="d">260722</span><span>编号 Q5 → QB2</span></div>
+<div class="lg"><span class="d">260722</span><span>可读性验收这一条挪给 QA5，这题只留「照着 SKILL.md 能不能开出板」</span></div></div></details></div><div class="nav"><a href="#QB1">← QB1</a><a class="all" href="#top">☰ All 10</a><a href="#QB3">QB3 →</a></div></section>
+<section class="slide q todo" id="QB3" data-title="Migrate the two old boards" data-file="QB3-migrate.md"><div class="qh"><span class="qid">QB3</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 CC</span><span class="mut">· 重写成新格式 + 重新生成 html + 清掉旧中间产物</span><span class="src">QB3-migrate.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB3</span>Migrate the two old boards</h2><div class="ask">❓ <code>subjective-label/diagram/</code> 下面已经有两块板，是旧格式。要不要迁？迁到什么程度？</div><div class="dia"><pre>01-sublabel-license-260722/        02-method-260722/
+  board.md    旧格式                  board.md    全塞在一个文件里
+  board.html  靠 JS 造 DOM → 白屏      board.html  已经是静态 ✅
+  deck.html   坏的，删                 fig/
+  render.py   删
+       │                                    │
+       └──────► 都改成 QA1 定的形状 ◄────────┘
+                一题一个 QX-xxx.md + 重新生成</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p><code>02-method-260722/</code> 已经换成了新的静态版本（7 个 Q、页面里 0 个脚本），但写法还是「全部塞在一个 board.md 里」，没拆成一题一文件。</p>
+<p><code>01-sublabel-license-260722/</code> 还是旧的：靠页面里的 JS 现场造内容，在 VS Code 预览里必然白屏；文件夹里还留着 <code>render.py</code> 和 <code>deck.html</code>。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">0/3</span></div><div class="ck"><span class="bx">☐</span><span>两块板都改成 QA1 定下的格式</span></div>
+<div class="ck"><span class="bx">☐</span><span><code>board.html</code> 重新生成，打开能看</span></div>
+<div class="ck"><span class="bx">☐</span><span>旧的中间产物（<code>render.py</code>、<code>deck.html</code>）清掉</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>这两块板是这个 skill 目前唯一的实物证据。它们要是还停在打不开的旧版本，SKILL.md 里写的东西就一个能指的例子都没有。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 QB3 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>白屏：旧版页面的正文全靠页面里一段 JS 现场生成，而 VS Code 的预览窗口不许跑这段 JS，所以打开就是一片白。新版把正文直接写死在 HTML 里、一个脚本都没有，因此不可能白屏。</p></div></details><details class="fold"><summary>📜 Log (4)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>开题</span></div>
+<div class="lg"><span class="d">260722</span><span>02-method-260722 已改成静态版（7 题、零脚本），但还没拆成一题一文件</span></div>
+<div class="lg"><span class="d">260722</span><span>编号 Q6 → QB3</span></div>
+<div class="lg"><span class="d">260722</span><span>清单里加了「删掉旧的 deck.html / render.py」</span></div></div></details></div><div class="nav"><a href="#QB2">← QB2</a><a class="all" href="#top">☰ All 10</a><a href="#QC1">QC1 →</a></div></section>
+<section class="slide q done" id="QC1" data-title="Where a board lives" data-file="QC1-where.md"><div class="qh"><span class="qid">QC1</span><span class="pill done">✅ SETTLED</span><span class="mut">🧠 JL 拍板</span><span class="mut">· 板放在「所属单位/diagram/」，跟 skill 本体分开；名字是 编号-主题-日期</span><span class="src">QC1-where.md</span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC1</span>Where a board lives</h2><div class="ask">❓ 一块板的文件夹该放在仓库的哪个位置？名字怎么起？</div><div class="dia"><pre>skills/0_utils/
+├── diagram/                    ← 板：工作产物，天天变
+│   └── 01-boardform-260722/
+│         编号  主题       日期
+└── haipipe-board/              ← skill：要交付的包
+      SKILL.md  build.py  ref/
+
+规则：&lt;所属单位&gt;/diagram/编号-主题-YYMMDD/</pre></div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>JL 已拍板：板放在<b>所属单位的 <code>diagram/</code></b> 下面，跟 skill 本体分开。这块板自己已经搬到</p>
+<p><code>Tools/plugins/haipipe-toolkit/skills/0_utils/diagram/01-boardform-260722/</code>。</p>
+<pre>skills/0_utils/
+  diagram/                  ← 板住这儿（工作产物，天天变）
+    01-boardform-260722/
+  haipipe-board/            ← skill 本体住这儿（要交付的包）
+    SKILL.md  build.py  ref/</pre>
+<p>这条规则顺带解决了一件原本没想清楚的事：<b>板是工作产物，skill 是要交付的包</b>，不该混在一个文件夹里。</p>
+<p>之前这块板塞在 <code>haipipe-board/diagram/</code> 里，等于把一份会天天变的工作记录打包进了 skill。</p>
+<p>名字仍是 <code>编号-主题-日期</code>（<code>01-boardform-260722</code>），编号在前、日期在后。</p>
+<p>剩两件小事不挡路，边用边定：日期是开板那天之后永不改，还是每次大改都更新；编号是每个 <code>diagram/</code> 各自从 01 开始，还是全仓库统一编。</p></div><div class="col goal"><div class="ch">🎯 Done when<span class="cnt">3/3</span></div><div class="ck on"><span class="bx">☑</span><span>定下这块板放哪</span></div>
+<div class="ck on"><span class="bx">☑</span><span>定下下一块板放哪</span></div>
+<div class="ck on"><span class="bx">☑</span><span>名字规则定下来，光看名字知道是哪块板</span></div></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>板会越开越多，还要指派给 RA。位置和名字一乱就找不着，也没法在别的文档里指过来。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (2)</summary><div class="fb"><div class="cmt jl"><b>JL</b> 这块板应该在 <code>Tools/plugins/haipipe-toolkit/skills/0_utils/diagram</code></div>
+<div class="cmt cc"><b>CC0722</b> 已搬。<code>haipipe-board/</code> 里只剩 skill 本体（<code>build.py</code> + <code>ref/</code>）。规则记在上面「现在什么样」里。</div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>所属单位：这块板服务于哪个东西 —— 一组 skill、一个 task 文件夹、一篇 paper。板就放在那个东西下面的 <code>diagram/</code> 里。</p></div></details><details class="fold"><summary>📜 Log (4)</summary><div class="fb"><div class="lg"><span class="d">260722</span><span>开题时只有一条 JL 给的硬要求：名字是「编号-主题-日期」</span></div>
+<div class="lg"><span class="d">260722</span><span>JL 拍板：板放在所属单位的 diagram/ 下，跟 skill 本体分开</span></div>
+<div class="lg"><span class="d">260722</span><span>这块板从 haipipe-board/diagram/ 搬到 0_utils/diagram/</span></div>
+<div class="lg"><span class="d">260722</span><span>编号 Q7 → QC1；状态 → ✅ SETTLED，3/3</span></div></div></details></div><div class="nav"><a href="#QB3">← QB3</a><a class="all" href="#top">☰ All 10</a><span></span></div></section>
+
+<p class="foot">内容来自同目录的 <code>board.md</code>（全局）和 <code>QX-xxx.md</code>（一题一文件）。
+改那些文件，然后重新生成这一页：<code>python3 build.py</code>。<br>这一页是纯静态 HTML，没有任何脚本 ——
+双击、VS Code 预览、发给别人，都能正常显示。</p>
+</div>
+<script>
+/* ─────────────────────────────────────────────────────────────
+   评论层：纯增强。页面正文早就是真 HTML，这段脚本只负责「新增评论」。
+   关掉 JS，板照样能读，只是不能在页面上加评论。
+   评论先存 localStorage（可以攒着），点「同步进 md」时一次性写回各个 Q 文件的
+   ## Discussion，格式：  > JL 「被选中的原句」: 评论
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  var KEY = 'board-comments:' + location.pathname;
+  var db = [];
+  try { db = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { db = []; }
+  var pend = null;
+
+  var btn = mk('button', 'cbtn', '💬 评论');
+  var box = mk('div', 'cbox',
+    '<div class="qq"></div><textarea placeholder="写点什么…"></textarea>' +
+    '<div class="row"><select><option>JL</option><option>RA</option><option>CC</option></select>' +
+    '<span style="flex:1"></span><button class="cx">取消</button>' +
+    '<button class="ok cs">保存</button></div>');
+  var dock = mk('button', 'cdock', '');
+  var panel = mk('div', 'cpanel', '');
+  [btn, box, dock, panel].forEach(function (e) { document.body.appendChild(e); });
+  dock.style.display = 'block';
+
+  function mk(tag, id, html) {
+    var e = document.createElement(tag); e.id = id; e.innerHTML = html || ''; return e;
+  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(db)); paint(); }
+
+  document.addEventListener('mouseup', function (ev) {
+    if (box.contains(ev.target) || panel.contains(ev.target) || ev.target === btn) return;
+    setTimeout(function () {
+      var s = window.getSelection();
+      var txt = s && String(s).trim();
+      if (!txt || txt.length < 2) { btn.style.display = 'none'; return; }
+      var node = s.anchorNode;
+      node = node.nodeType === 1 ? node : node.parentNode;
+      var q = node.closest && node.closest('section.q');
+      if (!q) { btn.style.display = 'none'; return; }
+      var r = s.getRangeAt(0).getBoundingClientRect();
+      pend = { id: q.id, file: q.getAttribute('data-file') || '', quote: txt };
+      btn.style.left = (r.left + window.scrollX) + 'px';
+      btn.style.top = (r.bottom + window.scrollY + 7) + 'px';
+      btn.style.display = 'block';
+    }, 0);
+  });
+
+  btn.onclick = function () {
+    btn.style.display = 'none';
+    box.querySelector('.qq').textContent = pend.quote;
+    box.querySelector('textarea').value = '';
+    box.style.left = btn.style.left; box.style.top = btn.style.top;
+    box.style.display = 'block';
+    box.querySelector('textarea').focus();
+  };
+  box.querySelector('.cx').onclick = function () { box.style.display = 'none'; };
+  box.querySelector('.cs').onclick = function () {
+    var v = box.querySelector('textarea').value.trim();
+    if (!v) return;
+    db.push({ id: pend.id, file: pend.file, quote: pend.quote,
+              who: box.querySelector('select').value, text: v });
+    box.style.display = 'none'; save();
+  };
+
+  function paint() {
+    dock.textContent = db.length ? ('💬 ' + db.length + ' 条待同步') : '💬 评论';
+    panel.innerHTML =
+      '<div class="hd"><b>待同步的评论</b><span style="flex:1"></span>' +
+      '<button class="ok sy">同步进 md</button><button class="cp">复制</button></div>' +
+      (db.length ? db.map(function (c, i) {
+        return '<div class="it"><div class="q">' + c.id + ' 「' + esc(c.quote) + '」</div>' +
+               '<b>' + c.who + '</b> ' + esc(c.text) +
+               ' <button data-i="' + i + '" class="rm" style="padding:2px 8px">删</button></div>';
+      }).join('') : '<div class="it mut">还没有。在正文里选中一句话试试。</div>') +
+      '<div class="hint">「同步进 md」会让你选一次这块板的文件夹，' +
+      '然后把每条评论写进对应 Q 文件的 <code>## Discussion</code>。' +
+      '写完记得重新跑 <code>python3 build.py</code>。</div>';
+    panel.querySelectorAll('.rm').forEach(function (b) {
+      b.onclick = function () { db.splice(+b.dataset.i, 1); save(); };
+    });
+    panel.querySelector('.sy').onclick = sync;
+    panel.querySelector('.cp').onclick = function () {
+      navigator.clipboard.writeText(patch()).then(function () {
+        panel.querySelector('.cp').textContent = '已复制';
+      });
+    };
+  }
+  function esc(s) { return s.replace(/[&<>]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function line(c) { return '> ' + c.who + ' 「' + c.quote + '」: ' + c.text; }
+  function patch() {
+    var by = {};
+    db.forEach(function (c) { (by[c.file] = by[c.file] || []).push(line(c)); });
+    return Object.keys(by).map(function (f) {
+      return '### ' + f + '  （加到 ## Discussion 下面）\n' + by[f].join('\n');
+    }).join('\n\n');
+  }
+
+  dock.onclick = function () {
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  };
+
+  async function sync() {
+    if (!db.length) return;
+    if (!window.showDirectoryPicker) {
+      navigator.clipboard.writeText(patch());
+      panel.querySelector('.sy').textContent = '此浏览器不支持写文件，已复制补丁';
+      return;
+    }
+    var dir;
+    try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
+    catch (e) { return; }
+    var by = {}, done = 0;
+    db.forEach(function (c) { (by[c.file] = by[c.file] || []).push(line(c)); });
+    for (var f in by) {
+      try {
+        var fh = await dir.getFileHandle(f);
+        var txt = await (await fh.getFile()).text();
+        var add = by[f].join('\n');
+        if (/^## Discussion\s*$/m.test(txt)) {
+          txt = txt.replace(/^## Discussion[^\n]*\n/m, function (m) { return m + add + '\n'; });
+        } else {
+          txt = txt.replace(/\n## Log\b/, '\n## Discussion\n' + add + '\n\n## Log');
+          if (txt.indexOf(add) < 0) txt = txt.trimEnd() + '\n\n## Discussion\n' + add + '\n';
+        }
+        var w = await fh.createWritable();
+        await w.write(txt); await w.close(); done += by[f].length;
+      } catch (e) { console.log('[board] 写不进 ' + f + '：' + e.message); }
+    }
+    db = db.filter(function (c) { return false; });
+    save();
+    panel.querySelector('.sy').textContent = '已写回 ' + done + ' 条';
+  }
+
+  paint();
+})();
+</script>
+</body></html>

@@ -1,295 +1,369 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>board — subjective-label</title>
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>board</title>
 <style>
-:root{
-  --bg:#fbfbf9; --fg:#1c1c1c; --mut:#6b6b6b; --line:#e2e2dd; --card:#fff;
-  --pre:#f5f5f1; --jl:#1f5aa8; --ra:#15803d; --cc:#8a8a8a; --warn:#b45309;
-}
-@media (prefers-color-scheme:dark){:root{
-  --bg:#16171a; --fg:#e8e8e6; --mut:#9a9a97; --line:#2c2e33; --card:#1d1f23;
-  --pre:#111214; --jl:#6ea8f0; --ra:#5fc98a; --cc:#8a8a8a; --warn:#e0a458;
-}}
-:root[data-theme=dark]{
-  --bg:#16171a; --fg:#e8e8e6; --mut:#9a9a97; --line:#2c2e33; --card:#1d1f23;
-  --pre:#111214; --jl:#6ea8f0; --ra:#5fc98a; --cc:#8a8a8a; --warn:#e0a458;
-}
-:root[data-theme=light]{
-  --bg:#fbfbf9; --fg:#1c1c1c; --mut:#6b6b6b; --line:#e2e2dd; --card:#fff;
-  --pre:#f5f5f1; --jl:#1f5aa8; --ra:#15803d; --cc:#8a8a8a; --warn:#b45309;
-}
+/* palette + type follow html-ppt's academic-report; layout is body.single
+   (base.css's own no-JS mode) so every section is visible without any script. */
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
+ --accent:#1f5aa8;--ra:#15803d;--todo:#c23b3b;--wip:#b45309;--done:#15803d;--hold:#8a8a8a}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23;--pre:#111214;--accent:#6ea8f0;--ra:#5fc98a;
+ --todo:#e0736e;--wip:#e0a458;--done:#5fc98a}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
-  font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
-  "Hiragino Sans GB","Microsoft YaHei",sans-serif;}
-main{max-width:920px;margin:0 auto;padding:32px 20px 80px}
-h1{font-size:25px;line-height:1.35;margin:0 0 6px}
-h2{font-size:18px;margin:0 0 10px}
-h2.plain{margin:34px 0 12px;padding-top:14px;border-top:1px solid var(--line)}
-hr{border:0;border-top:1px solid var(--line);margin:26px 0}
-p{margin:8px 0}
-code{background:var(--pre);padding:1px 5px;border-radius:4px;
-  font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
-pre.ascii{background:var(--pre);border:1px solid var(--line);border-radius:8px;
-  padding:14px 16px;overflow-x:auto;
-  font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;margin:12px 0}
+ font:16px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:34px 22px 90px}
+.h1{font-size:26px;line-height:1.35;margin:0 0 10px;font-weight:700}
+.spine{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+ border-radius:10px;padding:14px 17px;margin:0 0 14px}
+.spine p{margin:5px 0}
+.bar{font:13px ui-monospace,Menlo,monospace;color:var(--mut);margin:0 0 22px}
+details.ctx{border:1px solid var(--line);border-radius:10px;background:var(--card);
+ padding:10px 15px;margin:8px 0}
+details.ctx>summary{cursor:pointer;font-size:15px;font-weight:600;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"▸ ";color:var(--mut)}
+details[open]>summary::before{content:"▾ "}
+h3.sec{font-size:12.5px;letter-spacing:.09em;color:var(--mut);margin:30px 0 10px;font-weight:600}
+h3.sec .hint{float:right;font-weight:400;letter-spacing:0;text-transform:none}
+
+/* ── 单题聚焦：纯 CSS，零脚本 ────────────────────────────────
+   URL 命中某个 #Qn 时（点目录一行就会），把目录、进度条和其他题全收起来，
+   屏幕上只剩这一题。点「☰ 全部」回到 #top，:target 落空，一切复原。
+   :has() 是纯选择器，不需要 JS。 */
+.nav{display:none}
+body:has(.q:target) .idx,
+body:has(.q:target) .bar,
+body:has(.q:target) h3.sec{display:none}
+body:has(.q:target) .foot,
+body:has(.q:target) .q{display:none}
+/* 必须比上面那条更特指，否则被选中的那题会连自己一起藏掉 */
+body:has(.q:target) .q:target{display:block;margin-top:6px}
+.q:target .nav{display:flex;gap:10px;align-items:center;margin-top:20px;
+ padding-top:13px;border-top:1px solid var(--line)}
+.nav a{color:var(--accent);text-decoration:none;font-size:14px;
+ border:1px solid var(--line);border-radius:8px;padding:6px 13px}
+.nav a:hover{border-color:var(--accent)}
+.nav .all{margin:0 auto;color:var(--mut)}
+.q:target .top{display:none}
+.ir{display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);
+ border-left:4px solid var(--mut);border-radius:9px;margin:6px 0;text-decoration:none;
+ color:var(--fg);background:var(--card)}
+.ir:hover{border-color:var(--accent)}
+.ir.todo{border-left-color:var(--todo)}.ir.wip{border-left-color:var(--wip)}
+.ir.done{border-left-color:var(--done);opacity:.6}.ir.hold{border-left-color:var(--hold)}
+.grp{font-size:12.5px;color:var(--mut);margin:16px 0 2px;padding-left:2px}
+.src{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);opacity:.7}
+.ir .i{font:12px ui-monospace,Menlo,monospace;color:var(--mut);min-width:24px}
+.ir .t{flex:1} .ir .w{font-size:12.5px;color:var(--mut)}
+.slide.q{border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:12px;
+ background:var(--card);padding:20px 22px;margin:18px 0;scroll-margin-top:16px}
+.slide.q.todo{border-left-color:var(--todo)}.slide.q.wip{border-left-color:var(--wip)}
+.slide.q.done{border-left-color:var(--done)}.slide.q.hold{border-left-color:var(--hold)}
+.qh{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12.5px;margin-bottom:4px}
+.qid{font:13px ui-monospace,Menlo,monospace;color:var(--mut)}
+.pill{padding:2px 10px;border-radius:999px;border:1px solid var(--mut);color:var(--mut)}
+.pill.todo{border-color:var(--todo);color:var(--todo)}
+.pill.wip{border-color:var(--wip);color:var(--wip)}
+.pill.done{border-color:var(--done);color:var(--done)}
+.pill.hold{border-color:var(--hold);color:var(--hold)}
+.top{margin-left:auto;color:var(--mut);text-decoration:none;font-size:12px}
+.top:hover{color:var(--accent)}
+.h2{font-size:22px;line-height:1.4;margin:4px 0 14px;font-weight:700}
+.ask{font-size:18px;line-height:1.55;padding-left:13px;border-left:3px solid var(--accent);
+ margin:0 0 18px}
+.f{display:flex;gap:12px;margin:11px 0;align-items:flex-start}
+.fl{flex:0 0 108px;font-size:13px;color:var(--mut);padding-top:2px}
+.f p{margin:0 0 4px}
+
+/* 现在 vs 算做完：上下叠，不左右分栏 —— 两边长短不一时并排会空掉半边 */
+.cmp{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}
+.col{border:1px solid var(--line);border-radius:10px;padding:12px 15px;background:var(--bg)}
+
+/* 勾选清单：md 里写 - [ ] / - [x] */
+.ck{display:flex;gap:9px;align-items:flex-start;margin:5px 0;line-height:1.65}
+.ck .bx{flex:0 0 auto;color:var(--mut);font-size:15px;line-height:1.6}
+.ck.on{color:var(--mut)}
+.ck.on .bx{color:var(--done)}
+
+/* 行内评论：被引用的原句 + 评论里的引文 */
+mark{background:rgba(255,214,0,.34);color:inherit;padding:0 2px;border-radius:3px}
+@media(prefers-color-scheme:dark){mark{background:rgba(255,214,0,.22)}}
+.qt{color:var(--mut);font-size:.92em;margin-right:5px}
+/* 评论工具条（只有开了 JS 才会出现；关掉 JS 页面一切照旧） */
+#cbtn{position:absolute;z-index:40;display:none;background:var(--accent);color:#fff;
+ border:none;border-radius:7px;padding:6px 12px;font-size:13px;cursor:pointer;
+ box-shadow:0 3px 10px rgba(0,0,0,.22)}
+#cbox{position:absolute;z-index:41;display:none;width:330px;background:var(--card);
+ border:1px solid var(--line);border-radius:11px;padding:13px;
+ box-shadow:0 8px 26px rgba(0,0,0,.24)}
+#cbox .qq{font-size:12.5px;color:var(--mut);border-left:3px solid var(--accent);
+ padding-left:9px;margin-bottom:9px;max-height:66px;overflow:auto}
+#cbox textarea{width:100%;min-height:66px;border:1px solid var(--line);border-radius:7px;
+ padding:8px;font:14px inherit;background:var(--bg);color:var(--fg);resize:vertical}
+#cbox .row{display:flex;gap:8px;align-items:center;margin-top:9px}
+#cbox select{border:1px solid var(--line);border-radius:7px;padding:5px 8px;
+ background:var(--bg);color:var(--fg);font:13px inherit}
+#cbox button,#cpanel button{border:1px solid var(--line);border-radius:7px;padding:6px 12px;
+ background:var(--bg);color:var(--fg);font:13px inherit;cursor:pointer}
+#cbox .ok,#cpanel .ok{background:var(--accent);color:#fff;border-color:var(--accent)}
+#cdock{position:fixed;right:18px;bottom:18px;z-index:42;display:none;
+ background:var(--accent);color:#fff;border:none;border-radius:999px;
+ padding:10px 17px;font-size:13.5px;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.26)}
+#cpanel{position:fixed;right:18px;bottom:66px;z-index:42;display:none;width:390px;
+ max-height:64vh;overflow:auto;background:var(--card);border:1px solid var(--line);
+ border-radius:12px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#cpanel .it{border-top:1px solid var(--line);padding:9px 0;font-size:13.5px}
+#cpanel .it .q{color:var(--mut);font-size:12px}
+#cpanel .hd{display:flex;gap:8px;margin-bottom:4px}
+#cpanel .hint{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.6}
+.cnt{float:right;font-weight:400;font:12px ui-monospace,Menlo,monospace}
+
+/* 大标题前面挂编号：QA2 一个 Q 文件的模板 */
+.hid{color:var(--accent);font:.62em ui-monospace,Menlo,monospace;
+ vertical-align:.22em;margin-right:11px;letter-spacing:.03em}
+
+/* ## 日志 —— 这一题一路改过什么 */
+.lg{display:flex;gap:11px;align-items:baseline;margin:4px 0}
+.lg .d{flex:0 0 auto;font:11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+
+/* ## 图 —— 这一题想干嘛，一张 ascii 图先说清楚 */
+.dia{margin:0 0 18px}
+.dia pre{margin:0;padding:15px 17px;line-height:1.55}
+.q:target .dia{margin:0 0 24px}
+.q:target .dia pre{font-size:13px;line-height:1.6}
+.col.now{border-left:3px solid var(--wip)}
+.col.goal{border-left:3px solid var(--done)}
+.ch{font-size:12.5px;color:var(--mut);margin:0 0 7px;font-weight:600}
+.col p{margin:0 0 6px;font-size:15px}
+.col pre{font-size:11.5px}
+
+/* ── 聚焦 = 一张幻灯片，不是一个卡片 ─────────────────────────
+   照 html-ppt：内容直接铺在页面上，没有边框、圆角、卡片底色把它围住。
+   头部压成一条跑马条，剩下的高度全给这一题。 */
+body:has(.q:target) .wrap{max-width:1000px;padding:20px 26px 40px}
+body:has(.q:target) .h1{font-size:14px;color:var(--mut);font-weight:600;margin:0 0 7px}
+body:has(.q:target) .spine{border:none;background:none;border-radius:0;
+ border-left:2px solid var(--accent);padding:0 0 0 11px;margin:0 0 9px}
+body:has(.q:target) .spine p{font-size:12.5px;margin:2px 0;color:var(--mut)}
+body:has(.q:target) details.ctx{border:none;background:none;padding:0;margin:3px 0}
+body:has(.q:target) details.ctx>summary{font-size:12.5px;color:var(--mut)}
+
+body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
+ padding:0;margin:26px 0 0;min-height:calc(100vh - 230px);
+ scroll-margin-top:280px;display:flex;flex-direction:column}
+.q:target .src,.q:target .top{display:none}
+.q:target .qh{margin-bottom:10px}
+.q:target .h2{font-size:38px;line-height:1.24;letter-spacing:-.01em;margin:0 0 18px}
+.q:target .ask{font-size:21px;line-height:1.55;border-left:none;padding-left:0;
+ color:var(--mut);margin:0 0 26px}
+.q:target .cmp{gap:22px;margin:0 0 22px}
+.q:target .col{border:none;border-radius:0;background:none;padding:0 0 0 15px}
+.q:target .col.now{border-left:2px solid var(--wip)}
+.q:target .col.goal{border-left:2px solid var(--done)}
+.q:target .ch{font-size:13px;margin-bottom:9px}
+.q:target .col p{font-size:16px;line-height:1.75}
+/* 「为什么在这块板」在幻灯片上也排成一栏，跟上面两栏同一个样式，不再是左标签 */
+.q:target .f{display:block;margin:0;border-left:2px solid var(--line);padding-left:15px}
+.q:target .fl{display:block;flex:none;font-size:13px;margin:0 0 9px;font-weight:600}
+.q:target .f p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .folds{margin-top:auto;padding-top:18px}
+.folds{margin-top:16px;border-top:1px dashed var(--line);padding-top:8px}
+.fold{margin:3px 0}
+.fold>summary{cursor:pointer;color:var(--mut);font-size:14px;list-style:none;padding:4px 0}
+.fold[open]>summary{color:var(--fg)}
+.fb{padding:5px 0 8px 16px;font-size:14.5px}
+.cmt{border-left:3px solid var(--mut);padding:3px 0 3px 10px;margin:5px 0}
+.cmt b{font-size:11px;letter-spacing:.4px;margin-right:5px}
+.cmt .qt{background:rgba(217,164,6,.18);border-bottom:1px solid rgba(217,164,6,.55);
+ padding:0 2px;border-radius:2px}
+.cmt.jl{border-color:var(--accent)}.cmt.jl b{color:var(--accent)}
+.cmt.ra{border-color:var(--ra)}.cmt.ra b{color:var(--ra)}
+.mut{color:var(--mut)}
+code{background:var(--pre);padding:1px 5px;border-radius:4px;font:13px ui-monospace,Menlo,monospace}
+pre{background:var(--pre);border:1px solid var(--line);border-radius:8px;padding:11px 13px;
+ margin:8px 0;overflow-x:auto;font:12.5px/1.6 ui-monospace,Menlo,monospace;white-space:pre}
 img{max-width:100%;border:1px solid var(--line);border-radius:8px}
-nav{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);
-  padding:10px 0;margin-bottom:18px;font-size:13px;z-index:5}
-nav a{color:var(--mut);text-decoration:none;margin-right:2px}
-nav a:hover{color:var(--jl)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;
-  padding:18px 20px;margin:18px 0;position:relative}
-.card h2 .slug{color:var(--mut);text-decoration:none;font:13px ui-monospace,monospace}
-.card h2 .slug:hover{color:var(--jl)}
-.meta{margin:-2px 0 12px;display:flex;flex-wrap:wrap;gap:6px}
-.pill{font-size:12px;padding:2px 9px;border-radius:999px;
-  border:1px solid var(--line);background:var(--pre);color:var(--mut)}
-.pill.decide{border-color:var(--jl);color:var(--jl)}
-.pill.build{border-color:var(--ra);color:var(--ra)}
-.pill.block{border-color:var(--warn);color:var(--warn)}
-.pill.open{border-color:var(--warn);color:var(--warn)}
-.pill.done{border-color:var(--ra);color:var(--ra)}
-.field{margin:9px 0;padding-left:2px}
-.cmt{border-left:3px solid var(--cc);padding:5px 0 5px 11px;margin:7px 0;
-  background:transparent;font-size:14px}
-.cmt b{font-size:12px;letter-spacing:.4px;margin-right:6px}
-.cmt.jl{border-color:var(--jl)} .cmt.jl b{color:var(--jl)}
-.cmt.ra{border-color:var(--ra)} .cmt.ra b{color:var(--ra)}
-.cmt.cc{border-color:var(--cc)} .cmt.cc b{color:var(--cc)}
-.copy{position:absolute;top:16px;right:16px;font-size:12px;cursor:pointer;
-  background:var(--pre);border:1px solid var(--line);color:var(--mut);
-  border-radius:7px;padding:4px 10px}
-.copy:hover{color:var(--jl);border-color:var(--jl)}
-.note{color:var(--mut);font-size:12.5px;margin-top:40px;text-align:center}
-</style>
-<main>
-<nav><a href="#step1-cold-start">§step1-cold-start</a> · <a href="#step2-conflict">§step2-conflict</a> · <a href="#step3-weak-check">§step3-weak-check</a> · <a href="#step4-sampling">§step4-sampling</a> · <a href="#step5-iterate">§step5-iterate</a> · <a href="#step6-stop">§step6-stop</a> · <a href="#step7-scale">§step7-scale</a></nav>
-<h1>📋 板 02 · 主观标注方法论 —— 你 7-17 会上讲的那套流程，走一遍</h1>
-<p><strong>状态</strong> 🟡 进行中 · 开板 2026-07-22</p>
-<p><strong>来源</strong> 只用一份材料：<code>collaborations/Event-Subject-Labeling/meetings/2026-07-17-1401 主观标注指南的AI辅助开发.md</code></p>
-<p>&gt; <strong>这块板要干的事</strong>：</p>
-<p>&gt; 把你在会上口头讲完的那条流程，写成一份能照着做的东西。</p>
-<p>&gt; 每一步：你原话怎么说的 → 这一步到底在干什么 → 现在有没有 → 还缺什么。</p>
-<p>&gt; 走完这一遍，我们才知道「方法论」和「已经写好的代码」之间差多远。</p>
-<pre class="ascii">
-📊  7 步 + 4 个会上没答的问题
-    ✅ 已实现 2 步 · 🟡 部分 2 步 · ❌ 没有 3 步 · 🧠 4 个问题等你
-</pre>
-<hr>
-<h2 class="plain">出发点 · 你反对的是什么</h2>
-<p>你在会上先否掉了当时的做法：</p>
-<p>&gt; 「我担心他是不是并没有很好的跟那个用户交流，然后把用户理解的这个东西放进去。」</p>
-<p>&gt; 「5000 条 corpus 中随机抽 24 条，让人一条条标，这一步很奇怪 ——</p>
-<p>&gt; 　用户意图会被这些语料<strong>污染</strong>。」</p>
-<pre class="ascii">
-   ❌ 当时的做法          随机抽 24 条 → 人硬标 → 从标注里倒推规则
-                          ⇒ 你先看到什么，就以为自己想要什么
-                          ⇒ 意图是被语料带出来的，不是你本来的意图
+.foot{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);
+ color:var(--mut);font-size:12.5px}
+</style></head><body class="single"><div class="wrap" id="top">
 
-   ✅ 你要的顺序          先说清楚要标什么 → 让它去 corpus 里找**最相关**的例子
-                          → 起几个 sub-agent 分头标 → 拿分歧来问你
-                          → 从你的偏好里长出规则
-</pre>
-<p>&gt; 「我核心想说的是它得 <strong>talk with corpus</strong>。」</p>
-<hr>
-</section>
-<section class="card" id="step1-cold-start"><h2>第 1 步 · 冷启动：60 条 + 强模型对话 <a class="slug" href="#step1-cold-start">#step1-cold-start</a></h2><div class="meta"><span class="pill"><strong>❌ 现在没有</strong></span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="step1-cold-start">💬 复制评论模板</button>
-<p>&gt; 你的原话：</p>
-<p>&gt; 「刚开始我们啥都没有的时候，我们是随机选…从 corpus 随机选 60 条，</p>
-<p>&gt; 　让 strong LLM 通过对话读懂用户意图，同时把这 60 条标出来。」</p>
-<div class="field">❓ <strong>这一步在干什么</strong> 一次对话同时产出两样东西：</div>
-<p>  一份初版规则 <code>guideline V0</code>，和 60 条<strong>你认可的答案</strong>（后面所有考试的标准答案）。</p>
-<div class="field">📍 <strong>现在什么样</strong> 现有流程是 sl-init「Expose → React → Extract」：</div>
-<p>  给你看 10-15 条，你反应，从反应里提规则。<strong>没有 60 条这一步</strong>，也没有把</p>
-<p>  对话产出的答案固定成标准答案。</p>
-<div class="field">🎯 <strong>怎么算做完</strong> 跑一次能产出：<code>guideline V0</code> + 60 条带理由的答案，</div>
-<p>  且这 60 条明确标记为「标准答案」，后面不再改。</p>
-<div class="field">💬</div>
-</section>
-<section class="card" id="step2-conflict"><h2>第 2 步 · 找冲突：分头标，只把分歧拿给你 <a class="slug" href="#step2-conflict">#step2-conflict</a></h2><div class="meta"><span class="pill"><strong>🟡 部分有</strong></span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="step2-conflict">💬 复制评论模板</button>
-<p>&gt; 你的原话：</p>
-<p>&gt; 「不是我一个个标，是拆成 sub-agent 分别标，目的是<strong>找 conflict</strong> ——</p>
-<p>&gt; 　都同意就跳过，冲突的才拿给我看。」</p>
-<p>&gt; 「那 24 个是一个 agent 一起标 24 条，还是一条一条标？我觉得应该一条一条过。」</p>
-<div class="field">❓ <strong>这一步在干什么</strong> 把 60 条拆给几个 sub-agent 各自标。</div>
-<p>  意见一致的直接过，<strong>只有分歧的才占用你的时间</strong>。</p>
-<p>  而且要<strong>一条一条标</strong>，不是把 24 条塞进一个 prompt 一次标完。</p>
-<div class="field">📍 <strong>现在什么样</strong></div>
-<p>  · 分歧分类的机制有（A 边界случай / B 规则模糊 / C 新模式 / D 噪声，只有 A/B/C 找你）</p>
-<p>  · 但实际跑的是 <strong>claude 和 codex 两个模型</strong>，不是多个 sub-agent</p>
-<p>  · <strong>一次性标 24 条</strong>，不是一条一条 —— 这条你会上明确说要改</p>
-<p>  ⚠️ 一次标 24 条的问题：第 1 条的判断会锚住第 24 条，人和模型都一样。</p>
-<div class="field">🎯 <strong>怎么算做完</strong> 一条一条标；跑完只有分歧条目送到你面前；</div>
-<p>  一致的自动过，并记下&quot;哪几条是自动过的&quot;。</p>
-<div class="field">💬</div>
-</section>
-<section class="card" id="step3-weak-check"><h2>第 3 步 · 验规则：让弱模型考这 60 条 <a class="slug" href="#step3-weak-check">#step3-weak-check</a></h2><div class="meta"><span class="pill"><strong>❌ 现在没有</strong></span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="step3-weak-check">💬 复制评论模板</button>
-<p>&gt; 你的原话：</p>
-<p>&gt; 「拿一些比较弱的 LLM，比如 haiku 或者 GPT-4.5，去 apply 这个 guideline</p>
-<p>&gt; 　against 这六十个，看他们效果是不是好的。」</p>
-<p>&gt; 「可能模型之间不要比了，就跟这个 ground truth 比。」</p>
-<div class="field">❓ <strong>这一步在干什么</strong> 强模型建标准答案，<strong>弱模型来考试</strong>。</div>
-<p>  考的是「这份规则写得够不够清楚，换个便宜模型也读得懂」。</p>
-<div class="field">📍 <strong>现在什么样</strong> 现在是 claude 和 codex <strong>平级互评</strong>，报的指标叫</div>
-<p>  <code>panel_kappa_claude_vs_codex</code>。</p>
-<p>  ⚠️ 平级互评只能说明&quot;两个模型碰巧想法一样&quot;，不能说明规则清楚。</p>
-<p>  你会上那句「模型之间不要比了，就跟 ground truth 比」正是在说这件事。</p>
-<div class="field">🎯 <strong>怎么算做完</strong> 指标从&quot;模型 vs 模型&quot;改成&quot;每个弱模型 vs 60 条标准答案&quot;，</div>
-<p>  分模型各报一个数。</p>
-<div class="field">💬</div>
-</section>
-<section class="card" id="step4-sampling"><h2>第 4 步 · 扩样：从 60 条长到 140 条 <a class="slug" href="#step4-sampling">#step4-sampling</a></h2><div class="meta"><span class="pill"><strong>❌ 现在没有</strong></span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="step4-sampling">💬 复制评论模板</button>
-<p>&gt; 你的原话：</p>
-<p>&gt; 「我们不能说…肯定不是随机选，随机选的话浪费了。」</p>
-<p>&gt; 「取三个 label 中心和它们两两之间的中点（总共 6-7 个锚点），</p>
-<p>&gt; 　每个锚点周围采 20 条，加起来 140 条送去标 ——</p>
-<p>&gt; 　把 token 花在最有代表性、最有挑战的 case 上。」</p>
-<div class="field">❓ <strong>这一步在干什么</strong> 拿已经确认的 60 条当种子，去 corpus 里捞下一批。</div>
-<p>  捞法不是随机，是按几何位置：</p>
-<pre class="ascii">
-        HIGH ●                     ● = 三个 label 各自的中心（clean case 聚在这）
-            / \                    ○ = 两两之间的中点（模棱两可的 case 在这）
-           ○   ○
-          /     \
-    LOW ●───○───● NONE
+<h1 class="h1">board</h1>
+<div class="spine"><p><b>🦴 Spine</b> </p><p><b>🏁 Close when</b> </p></div>
+<p class="bar">░░░░░░░░░░░░░░  0/7 settled</p>
 
-    7 个锚点 × 每个采 20 条 = 140 条
-    ⇒ 既拿到&quot;典型的&quot;，也拿到&quot;最难判的&quot;，不浪费在一眼就能看出答案的样本上
-</pre>
-<div class="field">📍 <strong>现在什么样</strong> 完全没有。<code>lib/embed.py</code>（597 行）在盘上，但<strong>没有任何地方调用它</strong>。</div>
-<p>  实际是从 5000 条里直接取，没有 embedding、没有聚类、没有锚点。</p>
-<div class="field">🎯 <strong>怎么算做完</strong> 跑一次能输出 7 个锚点各自采到的 20 条，</div>
-<p>  并且能看出哪一批是 clean、哪一批是边界。</p>
-<div class="field">💬</div>
-</section>
-<section class="card" id="step5-iterate"><h2>第 5 步 · 迭代：规则版本 V1.1 → V1.2 <a class="slug" href="#step5-iterate">#step5-iterate</a></h2><div class="meta"><span class="pill done"><strong>✅ 已有（但评分方式要改）</strong></span><span class="pill open">🟠 待办</span></div><button class="copy" data-slug="step5-iterate">💬 复制评论模板</button>
-<p>&gt; 你的原话：</p>
-<p>&gt; 「多轮内循环 V1.1 → V1.2 → …，直到 sub-agent 表现都不错。」</p>
-<p>&gt; 「每次 update guideline 之后，验证不是一个指标，而是分层跑 3 加 1 组：</p>
-<p>&gt; 　样例内 · 有没有改坏旧规则 · 泛化能力。」</p>
-<div class="field">❓ <strong>这一步在干什么</strong> 改一版规则，就重新考一次。但不能只看一个数，要分三层：</div>
-<pre class="ascii">
-   ① 样例内     那 60 条标准答案                改的东西起作用了吗
-   ② 样例外     之前标过、但不在这 60 条里的     有没有把旧规则改坏
-   ③ 泛化       全新的、规则没见过的             在新数据上还管用吗
-   ＋① 外部     公开数据集 / 第二个真人           凭什么信这套方法
-</pre>
-<div class="field">📍 <strong>现在什么样</strong> 版本迭代有（B01 到了 v04），但<strong>只有 ① 这一层</strong>，</div>
-<p>  而且那一层的题目全部取自规则作者自己标过的样本。</p>
-<p>  ⚠️ 实测后果：同一版规则，看过的题 0.932，没看过的题 0.667。</p>
-<div class="field">🎯 <strong>怎么算做完</strong> 每改一版，三层各出一个数，一起记下来。</div>
-<div class="field">💬</div>
-</section>
-<section class="card" id="step6-stop"><h2>第 6 步 · 什么时候停 <a class="slug" href="#step6-stop">#step6-stop</a></h2><div class="meta"><span class="pill"><strong>❌ 现在没有</strong></span><span class="pill decide">🧠 会上没答完的问题</span></div><button class="copy" data-slug="step6-stop">💬 复制评论模板</button>
-<p>&gt; 你的原话：</p>
-<p>&gt; 「什么时候人可以不参与了？」</p>
-<p>&gt; 「这两个指标：一个是 guideline 是不是符合这个作者的心意；</p>
-<p>&gt; 　第二，就是说 guideline 它是不是稳定的。」</p>
-<p>&gt; 「过了几轮没有再更新那就停了，那就可以 apply 了。」</p>
-<div class="field">❓ <strong>这一步在干什么</strong> 判断&quot;可以收手了&quot;。你给了两个信号，不是一个阈值：</div>
-<p>  <strong>(a) 符合作者心意</strong> —— 你说行就行</p>
-<p>  <strong>(b) 稳定</strong> —— 连续几轮 V(n+1) 跟 V(n) 一模一样，没东西可改了</p>
-<div class="field">📍 <strong>现在什么样</strong> 只看一个 κ 数字，而且是上面那个不算数的 0.93。</div>
-<p>  两个信号一个都没实现。</p>
-<div class="field">🎯 <strong>怎么算做完</strong> 项目状态里能自动记录：连续几轮没改动 + 你签过字。</div>
-<div class="field">💬 ⚠️ <strong>这条会上没答完</strong>：「连续几轮」是几轮？「符合心意」怎么落成一个动作？</div>
-</section>
-<section class="card" id="step7-scale"><h2>第 7 步 · 收尾：全量还是训个小模型 <a class="slug" href="#step7-scale">#step7-scale</a></h2><div class="meta"><span class="pill"><strong>❌ 现在没有</strong></span><span class="pill decide">🧠 会上两条路都提了，没选</span></div><button class="copy" data-slug="step7-scale">💬 复制评论模板</button>
-<p>&gt; 你的原话：</p>
-<p>&gt; 「如果狠一点，可以让它一直跑到 5000 条全标完，但会很贵。」</p>
-<p>&gt; 「或者另外接一个传统 fine-tune 分类器，拿这 60 条分 train/test/validation，</p>
-<p>&gt; 　fine-tune 一下看 performance。」</p>
-<div class="field">❓ <strong>这一步在干什么</strong> 规则定稿之后，怎么把剩下的几千条标完。两条路：</div>
-<p>  <strong>(a) 硬跑</strong> 用规则把 5000 条全标一遍 —— 贵</p>
-<p>  <strong>(b) 蒸馏</strong> 拿标好的去 fine-tune 一个小分类器（比如 RoBERTa），让它接手</p>
-<div class="field">📍 <strong>现在什么样</strong> 一条都没走过。5000 条里目前只标了 48 条。</div>
-<div class="field">🎯 <strong>怎么算做完</strong> 选一条路并跑通，5000 条有标签。</div>
-<div class="field">💬 ⚠️ <strong>这条会上没选</strong>：(a) 还是 (b)？</div>
-<hr>
-<h2 class="plain">你在会上画的那张几何图 —— 整套方法的直觉</h2>
-<pre class="ascii">
-   你说：每条数据是空间里一个点，三个 label 就是三个区域。
 
-        ┌─────────────────────────────────────────┐
-        │        ●●●          ○  ○                │   ● 靠近中心 = clean case
-        │       ●HIGH●      ○   ○                 │     一眼能分，约 80%
-        │        ●●●     ○      ○                 │
-        │              ○  边界带  ○                │   ○ 在边界 = hard case
-        │        ●●●  ○       ○   ●●●             │     模棱两可，约 20%
-        │       ●LOW●    ○  ○    ●NONE●           │
-        │        ●●●                ●●●           │
-        └─────────────────────────────────────────┘
 
-   你的两个判断：
-   ① 「大部分都比较简单…难啃的可能占 20%」
-      ⇒ 所以标注要**优先花在边界那 20%**，clean case 不值得占你的时间
+<h3 class="sec">ALL QUESTIONS<span class="hint">点任意一行 → 只看那一题</span></h3>
+<div class="idx"><a class="ir todo" href="#Q1"><span class="s">🔴</span><span class="i">Q1</span><span class="t">冷启动：先跟语料对话，别拿随机样本硬标</span><span class="w">🔧 RA</span></a>
+<a class="ir wip" href="#Q2"><span class="s">🟡</span><span class="i">Q2</span><span class="t">分头标，只把有分歧的拿给你看</span><span class="w">🔧 RA</span></a>
+<a class="ir todo" href="#Q3"><span class="s">🔴</span><span class="i">Q3</span><span class="t">强模型出标准答案，弱模型来考试</span><span class="w">🔧 RA</span></a>
+<a class="ir todo" href="#Q4"><span class="s">🔴</span><span class="i">Q4</span><span class="t">从 60 条长到 140 条，要挑最值得标的</span><span class="w">🔧 RA</span></a>
+<a class="ir wip" href="#Q5"><span class="s">🟡</span><span class="i">Q5</span><span class="t">每改一版规则，要分三层考，别只看一个数</span><span class="w">🔧 RA</span></a>
+<a class="ir hold" href="#Q6"><span class="s">⏸️</span><span class="i">Q6</span><span class="t">什么时候人可以撒手不管了</span><span class="w">🧠 JL</span></a>
+<a class="ir hold" href="#Q7"><span class="s">⏸️</span><span class="i">Q7</span><span class="t">收尾：剩下几千条，全量硬标还是训个小模型接手</span><span class="w">🧠 JL</span></a></div>
 
-   ② 「ground truth 一般是我们看不到的…我们设计的 guideline 跟真实的
-      　一直有一个偏差，要不停更新，直到跟它差不多」
-      ⇒ 真实的分界线你永远看不到，只能一版一版逼近它
+<section class="slide q todo" id="Q1" data-title="冷启动：先跟语料对话，别拿随机样本硬标" data-file=""><div class="qh"><span class="qid">Q1</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· 60 条 + 强模型对话（会上提出）</span><span class="src"></span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">Q1</span>冷启动：先跟语料对话，别拿随机样本硬标</h2><div class="ask">❓ 一个新维度刚开始、手上啥都没有的时候，第一批标注怎么产生？</div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>现有做法是给你看十几条、你随口反应、从反应里凑规则 —— 没有「先造 60 条标准答案」这一步。</p></div><div class="col goal"><div class="ch">🎯 Done when</div><p>跑一次，能同时产出两样东西：一份初版标注规则，和 60 条你亲自认可的答案（后面所有考试的标准答案就是这 60 条）。</p></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>这是 JL 会上第一句就否掉的做法：随机抽一批让人硬标，人的判断会被这些语料带跑。</p>
+<p>换成「先让模型去语料里找相关的、再跟你对话」，整套方法才立得住。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 Q1 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>标注规则：一份写清楚「什么算 HIGH / LOW / NONE」的文档，模型照着它打标签。</p>
+<p>标准答案：你本人确认过的正确标签，用来当尺子量模型标得对不对。</p></div></details></div><div class="nav"><span></span><a class="all" href="#top">☰ All 7</a><a href="#Q2">Q2 →</a></div></section>
+<section class="slide q wip" id="Q2" data-title="分头标，只把有分歧的拿给你看" data-file=""><div class="qh"><span class="qid">Q2</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· 多个模型分头标 + 一条一条过</span><span class="src"></span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">Q2</span>分头标，只把有分歧的拿给你看</h2><div class="ask">❓ 这 60 条谁来标？怎么标才不浪费你的时间？</div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>「揪分歧」的机制有：分歧分四类，只有前三类（真边界 / 规则没写清 / 冒出新情况）送你，第四类当噪声自动处理。</p>
+<p>但实际跑的是两个模型平级对标，不是几个模型分头标；而且是一次标一批 —— 毛病是前面几条的判断会把后面几条带跑。这条 JL 明确说要改。</p></div><div class="col goal"><div class="ch">🎯 Done when</div><p>一条一条标（不是一口气把几十条塞进去一次标完）；标完只有「几个模型意见不一致」的那些送到你面前，一致的自动通过并记一笔。</p></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>JL 会上两句话直接定了这一步：让几个模型分头标，目的是揪出分歧 —— 都同意的就跳过；而且要一条一条过，不能一次标一批。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 Q2 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>噪声：某个模型偶尔手滑标错，不代表规则有问题，这类分歧不用惊动你。</p></div></details></div><div class="nav"><a href="#Q1">← Q1</a><a class="all" href="#top">☰ All 7</a><a href="#Q3">Q3 →</a></div></section>
+<section class="slide q todo" id="Q3" data-title="强模型出标准答案，弱模型来考试" data-file=""><div class="qh"><span class="qid">Q3</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· 弱模型对着规则标 60 条，跟标准答案比</span><span class="src"></span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">Q3</span>强模型出标准答案，弱模型来考试</h2><div class="ask">❓ 一版规则写好之后，怎么知道它「写得够清楚」？</div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>现在是两个模型平级互评 —— 两个平级模型意见一致，只能说明它俩想法像，说明不了规则写清楚了。</p></div><div class="col goal"><div class="ch">🎯 Done when</div><p>让几个便宜的弱模型照着规则去标那 60 条，跟标准答案比一致度，各报一个分。</p></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>JL：拿弱模型去套这份规则、跟标准答案比；模型之间就别互相比了，都跟标准答案比。</p>
+<p>考的是「规则写得清不清楚，换个便宜模型也读得懂」，不是「两个模型碰巧想法一样」。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 Q3 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>弱模型 / 强模型：能力强的贵模型用来出标准答案，能力弱的便宜模型用来考试。如果连便宜模型照着规则都标得对，说明规则真的写清楚了。</p></div></details></div><div class="nav"><a href="#Q2">← Q2</a><a class="all" href="#top">☰ All 7</a><a href="#Q4">Q4 →</a></div></section>
+<section class="slide q todo" id="Q4" data-title="从 60 条长到 140 条，要挑最值得标的" data-file=""><div class="qh"><span class="qid">Q4</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· 按几何位置挑，专挑边界上的难例</span><span class="src"></span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">Q4</span>从 60 条长到 140 条，要挑最值得标的</h2><div class="ask">❓ 已经确认的 60 条种子，怎么挑出下一批 80 条送去标（凑够 140）？</div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>完全没做。挑样本靠的那套工具代码在盘上，但没有任何地方在用它 —— 现在就是从大池子里直接取，没有按位置挑。</p></div><div class="col goal"><div class="ch">🎯 Done when</div><p>跑一次，能挑出下一批，并且看得出哪些是「一眼能分的典型」、哪些是「模棱两可的难例」。</p></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>JL：随机挑就是浪费。他会上画了张图 —— 把每条数据想成空间里一个点，三个标签是三块区域；</p>
+<p>大部分点靠近区域中心，一眼能分（约八成），少数卡在区域交界，模棱两可（约两成）。</p>
+<p>标注的力气应该花在那两成难例上，别浪费在一眼就能看出答案的样本上。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 Q4 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>难例：卡在两个标签交界、连人都拿不准的样本。这类最该让人来标，也最能暴露规则说不清的地方。</p>
+<p>把文本变成空间里的点：先用一个现成模型把每句话转成一串数字（坐标），意思相近的句子坐标就相近，于是「挑区域中心 / 挑交界」才有意义。</p></div></details></div><div class="nav"><a href="#Q3">← Q3</a><a class="all" href="#top">☰ All 7</a><a href="#Q5">Q5 →</a></div></section>
+<section class="slide q wip" id="Q5" data-title="每改一版规则，要分三层考，别只看一个数" data-file=""><div class="qh"><span class="qid">Q5</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· 三层 + 一层外部验证</span><span class="src"></span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">Q5</span>每改一版规则，要分三层考，别只看一个数</h2><div class="ask">❓ 改了一版规则，怎么知道它是真变好了，还是只是把看过的题背下来了？</div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>版本迭代有，但只有第①层，而且那层的题全部取自你自己标过的样本。</p>
+<p>后果是实测出来的：同一版规则，在看过的题上一致度 0.93，换成没看过的题掉到 0.67 —— 高分只是把那些题背下来了。这是这块板上最有说服力的一个「为什么」。</p></div><div class="col goal"><div class="ch">🎯 Done when</div><p>每改一版，同时报三个数：① 在标准答案上（改的东西起作用没）② 在早先标过、但不在标准答案里的题上（有没有把旧规则改坏）③ 在全新、没见过的题上（换新数据还管用没）。再加一层：跟外部的真人或公开数据比。</p></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>JL：验证不能只看一个数，要分层跑「样例内 / 有没有改坏旧规则 / 泛化能力」这几组。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 Q5 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>一致度 0.93 / 0.67：一个 0 到 1 的统计量，衡量两方打分有多一致，0 是瞎猜、1 是完全一样。0.93 看着很高，但如果只在「看过的题」上高，就是背下来了，不算数。</p>
+<p>泛化：换一批从没见过的新数据，还标得准，才叫真的会标，而不是背答案。</p></div></details></div><div class="nav"><a href="#Q4">← Q4</a><a class="all" href="#top">☰ All 7</a><a href="#Q6">Q6 →</a></div></section>
+<section class="slide q hold" id="Q6" data-title="什么时候人可以撒手不管了" data-file=""><div class="qh"><span class="qid">Q6</span><span class="pill hold">⏸️ ON HOLD</span><span class="mut">🧠 JL 拍板</span><span class="mut">· 两个信号：符合你心意 + 规则不再变</span><span class="src"></span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">Q6</span>什么时候人可以撒手不管了</h2><div class="ask">❓ 迭代到什么程度，算「可以收手、放手让它自动跑」了？</div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>现在只看一个一致度数字，还是上面那个不算数的 0.93。两个信号一个都没做。</p>
+<p>⚠️ 会上也没答完：「连续几轮不变」到底是几轮？「符合心意」怎么变成一个系统能判定的动作？</p></div><div class="col goal"><div class="ch">🎯 Done when</div><p>系统能自动判断并记录：连续几轮规则都没再改动，而且 JL 签字认可。</p></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>JL：判停机看两个信号 —— 一是规则符不符合你（作者）的心意，二是规则稳不稳定（不再变了）。</p>
+<p>没有停机准则，这套方法就没有终点，会一直空转。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 Q6 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details></div><div class="nav"><a href="#Q5">← Q5</a><a class="all" href="#top">☰ All 7</a><a href="#Q7">Q7 →</a></div></section>
+<section class="slide q hold" id="Q7" data-title="收尾：剩下几千条，全量硬标还是训个小模型接手" data-file=""><div class="qh"><span class="qid">Q7</span><span class="pill hold">⏸️ ON HOLD</span><span class="mut">🧠 JL 拍板</span><span class="mut">· (a) 全量标 或 (b) 训一个小分类器接手</span><span class="src"></span><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">Q7</span>收尾：剩下几千条，全量硬标还是训个小模型接手</h2><div class="ask">❓ 规则定稿之后，剩下的几千条怎么标完？</div><div class="cmp"><div class="col now"><div class="ch">📍 Now</div><p>一条都没走过。5000 条目前只标了 48 条。</p>
+<p>⚠️ 会上没选：(a) 还是 (b)？</p></div><div class="col goal"><div class="ch">🎯 Done when</div><p>在两条路里选一条并跑通，让全部 5000 条都有标签。</p></div></div><div class="f"><span class="fl">💡 Why here</span><div><p>JL 会上给了两条路：(a) 拿规则把 5000 条全标一遍，但很贵；</p>
+<p>(b) 拿已经标好的那批去训练一个小模型，让这个小模型接手标剩下的。方法论的最后一公里。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">还没有讨论。在 Q7 那个文件的「## 讨论」下写一行 <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>训个小模型接手：拿人和大模型标好的那几百条当教材，训练一个又小又快的专用模型，之后剩下的几千条交给它标，省钱省时间。</p></div></details></div><div class="nav"><a href="#Q6">← Q6</a><a class="all" href="#top">☰ All 7</a><span></span></div></section>
 
-   ③ 「假如你的点非常均匀地散出来，以至于边界附近非常非常多的点，
-      　说明你的 guideline 说不清楚」
-      ⇒ **边界带上挤了多少点**，本身就是规则清不清楚的指标
-</pre>
-<p>⚠️ 这三条里，只有 ③ 在代码里有对应（<code>lib/embed.py</code> 里的 silhouette / 重叠检测），</p>
-<p>但那段代码从没被调用过。①② 完全没有实现。</p>
-<hr>
-<h2 class="plain">这 7 步现在的实现情况</h2>
-<pre class="ascii">
-   第 1 步  冷启动 60 条 + 对话        ❌ 没有      现在是 10-15 条 Expose/React
-   第 2 步  分头标 · 只报冲突          🟡 部分      分歧分类有；但两模型平级 + 一次标 24 条
-   第 3 步  弱模型考 60 条             ❌ 没有      现在是两个模型平级互评
-   第 4 步  60 → 140 锚点采样          ❌ 没有      embed.py 597 行从没被调用
-   第 5 步  版本迭代 + 3+1 分层        🟡 部分      迭代有；只有第①层，且题目有污染
-   第 6 步  两个停机信号               ❌ 没有      只看一个 κ
-   第 7 步  全量 or 蒸馏               ❌ 没有      5000 条只标了 48 条
-
-   ⇒ 你会上讲的七步，代码里对得上的只有一步半。
-</pre>
-<hr>
-<h2 class="plain">🧠 会上留下、到今天还没答的 4 个问题</h2>
-<pre class="ascii">
-   Q1  什么时候人可以不参与？「连续几轮不变」是几轮？
-       「符合作者心意」怎么变成一个可执行的动作？          → 第 6 步
-
-   Q2  要不要给每个模型单独一版 guideline？
-       你会上提过 V1.1 给 haiku、V1.2 给 GPT-4.5。
-       ⚠️ 反面意见：需要按模型改写的规则，说明规则本身还没说清楚。 → 第 3 步
-
-   Q3  5000 条最终要标多少条？现在 48 条。全标？还是训个小模型接手？  → 第 7 步
-
-   Q4  On-review 没有标准答案，怎么证明这套方法有效？
-       你会上的意见：先拿一个**同域、有标签、每条一百来字**的公开数据集
-       跑一遍，证明方法行，再回到自己的数据。
-       ⚠️ S2 当时不同意，认为归根结底还得用自己的数据。这个分歧没解决。
-</pre>
-<hr>
-<h2 class="plain">💬 讨论区</h2>
-<p>在上面任何一条下面写 <code>&gt; JL [#step4-sampling]: ……</code> 就行。</p>
-<p>下面这块留给整体性的意见。</p>
-<hr>
-<h2 class="plain">📎 这块板和板 01 的关系</h2>
-<pre class="ascii">
-   板 02（这块）  你的方法论 —— 应该长什么样，七步走一遍
-   板 01          RA 已经写好的引擎代码 —— 拿去公开数据上考一次
-
-   ⚠️ 两块板讲的不是一回事，而且**可能有冲突**：
-      RA 的代码是按他自己那份 note-update 的框架写的，
-      跟你这七步对不对得上，本板第「实现情况」一节就是在量这个差距。
-      对不上的地方，最后要以哪一边为准 —— 这件事没人拍过板。
-</pre>
-</section>
-<p class="note">generated from <code>board.md</code> · 不要手改这个文件 ·
-<code>python3 render.py</code> 重新生成</p>
-</main>
+<p class="foot">内容来自同目录的 <code>board.md</code>（全局）和 <code>QX-xxx.md</code>（一题一文件）。
+改那些文件，然后重新生成这一页：<code>python3 build.py</code>。<br>这一页是纯静态 HTML，没有任何脚本 ——
+双击、VS Code 预览、发给别人，都能正常显示。</p>
+</div>
 <script>
-document.querySelectorAll('.copy').forEach(b=>b.onclick=()=>{
-  const t=`> JL [#${b.dataset.slug}]: `;
-  navigator.clipboard.writeText(t);
-  b.textContent='✅ 已复制，粘进 board.md';
-  setTimeout(()=>b.textContent='💬 复制评论模板',1800);
-});
+/* ─────────────────────────────────────────────────────────────
+   评论层：纯增强。页面正文早就是真 HTML，这段脚本只负责「新增评论」。
+   关掉 JS，板照样能读，只是不能在页面上加评论。
+   评论先存 localStorage（可以攒着），点「同步进 md」时一次性写回各个 Q 文件的
+   ## Discussion，格式：  > JL 「被选中的原句」: 评论
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  var KEY = 'board-comments:' + location.pathname;
+  var db = [];
+  try { db = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { db = []; }
+  var pend = null;
+
+  var btn = mk('button', 'cbtn', '💬 评论');
+  var box = mk('div', 'cbox',
+    '<div class="qq"></div><textarea placeholder="写点什么…"></textarea>' +
+    '<div class="row"><select><option>JL</option><option>RA</option><option>CC</option></select>' +
+    '<span style="flex:1"></span><button class="cx">取消</button>' +
+    '<button class="ok cs">保存</button></div>');
+  var dock = mk('button', 'cdock', '');
+  var panel = mk('div', 'cpanel', '');
+  [btn, box, dock, panel].forEach(function (e) { document.body.appendChild(e); });
+  dock.style.display = 'block';
+
+  function mk(tag, id, html) {
+    var e = document.createElement(tag); e.id = id; e.innerHTML = html || ''; return e;
+  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(db)); paint(); }
+
+  document.addEventListener('mouseup', function (ev) {
+    if (box.contains(ev.target) || panel.contains(ev.target) || ev.target === btn) return;
+    setTimeout(function () {
+      var s = window.getSelection();
+      var txt = s && String(s).trim();
+      if (!txt || txt.length < 2) { btn.style.display = 'none'; return; }
+      var node = s.anchorNode;
+      node = node.nodeType === 1 ? node : node.parentNode;
+      var q = node.closest && node.closest('section.q');
+      if (!q) { btn.style.display = 'none'; return; }
+      var r = s.getRangeAt(0).getBoundingClientRect();
+      pend = { id: q.id, file: q.getAttribute('data-file') || '', quote: txt };
+      btn.style.left = (r.left + window.scrollX) + 'px';
+      btn.style.top = (r.bottom + window.scrollY + 7) + 'px';
+      btn.style.display = 'block';
+    }, 0);
+  });
+
+  btn.onclick = function () {
+    btn.style.display = 'none';
+    box.querySelector('.qq').textContent = pend.quote;
+    box.querySelector('textarea').value = '';
+    box.style.left = btn.style.left; box.style.top = btn.style.top;
+    box.style.display = 'block';
+    box.querySelector('textarea').focus();
+  };
+  box.querySelector('.cx').onclick = function () { box.style.display = 'none'; };
+  box.querySelector('.cs').onclick = function () {
+    var v = box.querySelector('textarea').value.trim();
+    if (!v) return;
+    db.push({ id: pend.id, file: pend.file, quote: pend.quote,
+              who: box.querySelector('select').value, text: v });
+    box.style.display = 'none'; save();
+  };
+
+  function paint() {
+    dock.textContent = db.length ? ('💬 ' + db.length + ' 条待同步') : '💬 评论';
+    panel.innerHTML =
+      '<div class="hd"><b>待同步的评论</b><span style="flex:1"></span>' +
+      '<button class="ok sy">同步进 md</button><button class="cp">复制</button></div>' +
+      (db.length ? db.map(function (c, i) {
+        return '<div class="it"><div class="q">' + c.id + ' 「' + esc(c.quote) + '」</div>' +
+               '<b>' + c.who + '</b> ' + esc(c.text) +
+               ' <button data-i="' + i + '" class="rm" style="padding:2px 8px">删</button></div>';
+      }).join('') : '<div class="it mut">还没有。在正文里选中一句话试试。</div>') +
+      '<div class="hint">「同步进 md」会让你选一次这块板的文件夹，' +
+      '然后把每条评论写进对应 Q 文件的 <code>## Discussion</code>。' +
+      '写完记得重新跑 <code>python3 build.py</code>。</div>';
+    panel.querySelectorAll('.rm').forEach(function (b) {
+      b.onclick = function () { db.splice(+b.dataset.i, 1); save(); };
+    });
+    panel.querySelector('.sy').onclick = sync;
+    panel.querySelector('.cp').onclick = function () {
+      navigator.clipboard.writeText(patch()).then(function () {
+        panel.querySelector('.cp').textContent = '已复制';
+      });
+    };
+  }
+  function esc(s) { return s.replace(/[&<>]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function line(c) { return '> ' + c.who + ' 「' + c.quote + '」: ' + c.text; }
+  function patch() {
+    var by = {};
+    db.forEach(function (c) { (by[c.file] = by[c.file] || []).push(line(c)); });
+    return Object.keys(by).map(function (f) {
+      return '### ' + f + '  （加到 ## Discussion 下面）\n' + by[f].join('\n');
+    }).join('\n\n');
+  }
+
+  dock.onclick = function () {
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  };
+
+  async function sync() {
+    if (!db.length) return;
+    if (!window.showDirectoryPicker) {
+      navigator.clipboard.writeText(patch());
+      panel.querySelector('.sy').textContent = '此浏览器不支持写文件，已复制补丁';
+      return;
+    }
+    var dir;
+    try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
+    catch (e) { return; }
+    var by = {}, done = 0;
+    db.forEach(function (c) { (by[c.file] = by[c.file] || []).push(line(c)); });
+    for (var f in by) {
+      try {
+        var fh = await dir.getFileHandle(f);
+        var txt = await (await fh.getFile()).text();
+        var add = by[f].join('\n');
+        if (/^## Discussion\s*$/m.test(txt)) {
+          txt = txt.replace(/^## Discussion[^\n]*\n/m, function (m) { return m + add + '\n'; });
+        } else {
+          txt = txt.replace(/\n## Log\b/, '\n## Discussion\n' + add + '\n\n## Log');
+          if (txt.indexOf(add) < 0) txt = txt.trimEnd() + '\n\n## Discussion\n' + add + '\n';
+        }
+        var w = await fh.createWritable();
+        await w.write(txt); await w.close(); done += by[f].length;
+      } catch (e) { console.log('[board] 写不进 ' + f + '：' + e.message); }
+    }
+    db = db.filter(function (c) { return false; });
+    save();
+    panel.querySelector('.sy').textContent = '已写回 ' + done + ' 条';
+  }
+
+  paint();
+})();
 </script>
+</body></html>
