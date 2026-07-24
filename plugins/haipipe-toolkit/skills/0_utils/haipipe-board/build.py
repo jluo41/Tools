@@ -705,7 +705,7 @@ def render(meta, qs):
         # 问句里的 **粗体** 要正常内联流动 —— 所以文字包进一个 .qt span，别让 flex 拆散它。
         # Boundary 收进【同一个】折叠块，不再单占一节；里头用扁平行，不套第二层折叠。
         q_md = sec(q["sec"], "Question").strip()
-        _parts = re.split(r"\n\s*\n", q_md, 1)
+        _parts = re.split(r"\n\s*\n", q_md, maxsplit=1)
         qlead = inline(_parts[0].replace("\n", " ").strip())
         qrest = _parts[1].strip() if len(_parts) > 1 else ""
         btxt = sec(q["sec"], "Boundary").strip()
