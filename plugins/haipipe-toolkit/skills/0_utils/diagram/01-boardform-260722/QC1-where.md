@@ -1,75 +1,76 @@
 # Where a board lives
 state: ✅ SETTLED
 owner: JL
-method: 板放在「所属单位/diagram/」，跟 skill 本体分开；名字是 编号-主题-日期
+method: boards live under "<owning unit>/diagram/", apart from the skill itself; named number-topic-date
 
 ## Question
-一块板的文件夹该放在仓库的哪个位置？名字怎么起？
+Where in the repo does a board's folder go, and how is it named?
 
-- 为什么难
-  板服务的对象五花八门（一个 plugin、一个 task 文件夹、一篇 paper），没有单一的「板都放这儿」的地方。
-- 不定会怎样
-  板会越开越多、还要指派给 RA。位置和名字一乱就找不着，也没法在别的文档里稳定地指过来。
-- 定了会影响什么
-  `## Links` 的相对路径、以及将来把板放出去（`QE1`）时的目录结构。
+- Why it is hard
+  Boards serve all kinds of owners (a plugin, a task folder, a paper) — there is no single "all boards go here" place.
+- What breaks if we leave it
+  Boards will multiply and get assigned to RAs. Once locations and names drift, nothing can be found and no other document can point at a board reliably.
+- What it affects downstream
+  The relative paths in `## Links`, and the directory structure when boards are shared out later (`QE1`).
 
 ## Boundary
-- ✅ 这题管
-  **板文件夹放哪、叫什么**：挂在谁名下、编号和日期怎么起。
-- ❌ 这题不管
-  文件夹**里面**有什么 —— 那是 `QA1`。也不管首页那张清单长什么样 —— 那是 `QC2`。
+- ✅ This question owns
+  **Where the folder goes and what it is named**: under whose name it hangs, how number and date are assigned.
+- ❌ This question does not own
+  What is **inside** the folder — that is `QA1`. Nor what the index page looks like — that is `QC2`.
 
 ## Diagram
 ```
 skills/0_utils/
-├── diagram/                    ← 板：工作产物，天天变
+├── diagram/                    ← boards: working artifacts, change daily
 │   └── 01-boardform-260722/
-│         编号  主题       日期
-└── haipipe-board/              ← skill：要交付的包
+│         number  topic    date
+└── haipipe-board/              ← the skill: the deliverable package
       SKILL.md  build.py  ref/
 
-规则：<所属单位>/diagram/编号-主题-YYMMDD/
+rule: <owning unit>/diagram/<NN>-<topic>-<YYMMDD>/
 ```
 
 ## Items to Finish
-- [x] 定下这块板放哪
-- [x] 定下下一块板放哪
-- [x] 名字规则定下来，光看名字知道是哪块板
+- [x] Decide where this board lives
+- [x] Decide where the next board lives
+- [x] Naming rule settled — the name alone identifies the board
 
 ## Where we are
-JL 已拍板：板放在**所属单位的 `diagram/`** 下面，跟 skill 本体分开。这块板自己已经搬到
-`Tools/plugins/haipipe-toolkit/skills/0_utils/diagram/01-boardform-260722/`。
+JL has ruled: boards live under the **owning unit's `diagram/`**, apart from the skill itself. This board has already moved to
+`Tools/plugins/haipipe-toolkit/skills/0_utils/diagram/01-boardform-260722/`.
 
 ```
 skills/0_utils/
-  diagram/                  ← 板住这儿（工作产物，天天变）
+  diagram/                  ← boards live here (working artifacts, change daily)
     01-boardform-260722/
-  haipipe-board/            ← skill 本体住这儿（要交付的包）
+  haipipe-board/            ← the skill itself lives here (the deliverable package)
     SKILL.md  build.py  ref/
 ```
 
-这条规则顺带解决了一件原本没想清楚的事：**板是工作产物，skill 是要交付的包**，不该混在一个文件夹里。
-之前这块板塞在 `haipipe-board/diagram/` 里，等于把一份会天天变的工作记录打包进了 skill。
+The rule solved something that had never been thought through: **a board is a working artifact, a skill is a deliverable package** — they do not belong in one folder.
+This board used to sit inside `haipipe-board/diagram/`, which effectively shipped a daily-changing work log inside the skill.
 
-名字仍是 `编号-主题-日期`（`01-boardform-260722`），编号在前、日期在后。
+The name stays `number-topic-date` (`01-boardform-260722`), number first, date last.
 
-剩两件小事不挡路，边用边定：日期是开板那天之后永不改，还是每次大改都更新；编号是每个 `diagram/` 各自从 01 开始，还是全仓库统一编。
+Two small non-blocking items, settled through use: whether the date is fixed at opening forever or refreshed on major changes; whether numbering restarts at 01 per `diagram/` or is repo-global.
 
 ## Files
 - `ref/board-form.md`
-  §1 文件夹 —— 位置和命名规矩写在那儿。
+  §1 folder — location and naming rules live there.
 - `SKILL.md`
-  「🗂 形状」那一节的第一条（所属单位 = 这块板服务于谁）。
+  The first line of the "🗂 Shape" section (owning unit = whom this board serves).
 
 ## Glossary
-所属单位：这块板服务于哪个东西 —— 一组 skill、一个 task 文件夹、一篇 paper。板就放在那个东西下面的 `diagram/` 里。
+owning unit: the thing a board serves — a skill group, a task folder, a paper. The board lives in that thing's `diagram/`.
 
 ## Discussion
-> JL: 这块板应该在 `Tools/plugins/haipipe-toolkit/skills/0_utils/diagram`
->> CC0722: 已搬。`haipipe-board/` 里只剩 skill 本体（`build.py` + `ref/`）。规则记在上面「现在什么样」里。
+> JL: this board should be at `Tools/plugins/haipipe-toolkit/skills/0_utils/diagram`
+>> CC0722: moved. `haipipe-board/` keeps only the skill itself (`build.py` + `ref/`). The rule is recorded in "Where we are" above.
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
-260723 0919 · 编号 Q7 → QC1；状态 → ✅ SETTLED，3/3
-260722 2249 · JL 拍板：板放在所属单位的 diagram/ 下，跟 skill 本体分开；这块板当场搬过去
-260722 2240 · 开题时只有一条 JL 给的硬要求：名字是「编号-主题-日期」
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
+260723 0919 · Renumbered Q7 → QC1; state → ✅ SETTLED, 3/3
+260722 2249 · JL ruled: boards under the owning unit's diagram/, apart from the skill itself; this board moved on the spot
+260722 2240 · Opened with a single hard requirement from JL: the name is "number-topic-date"

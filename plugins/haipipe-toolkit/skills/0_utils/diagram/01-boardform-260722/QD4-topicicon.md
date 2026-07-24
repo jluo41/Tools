@@ -1,69 +1,71 @@
 # LLM topic icons
 state: 🔴 OPEN
 owner: CC
-method: serve.py 加端点让 LLM 挑 emoji 填进 md；build.py 保持哑
+method: serve.py gains an endpoint letting an LLM pick emoji into the md; build.py stays dumb
 
 ## Question
-组标题开头的 emoji（`**🎨 …**`）现在得手写。能不能让 LLM 自动配上、不用每条都想？
+The emoji at the head of a group title (`**🎨 …**`) is hand-written today. Could an LLM assign them automatically, so nobody has to think one up per line?
 
-- 为什么难
-  `build.py` 是纯静态生成器，不联网也没有 LLM —— 想自动只能靠关键词硬猜，而组标题是自由句，没有稳定词表可猜。真要自动，只能交给 `serve.py` 那个有 LLM 的层。
-- 不定会怎样
-  每条组标题都要人想一个 emoji，写着写着就懒得配，最后全是默认 🔹 —— 那这个图标机制等于白做。
-- 定了会影响什么
-  触发方式、模型、覆盖策略、作用范围 —— 四条岔路都要 JL 拍，别我替他定了又推翻（`QD1` 的权限规则就那么返工过）。
+- Why it is hard
+  `build.py` is a pure static generator — no network, no LLM. Automating there means keyword guessing, and group titles are free sentences with no stable vocabulary. Real automation can only live in `serve.py`, the layer that has an LLM.
+- What breaks if we leave it
+  Every group title demands a human-chosen emoji; people get lazy, everything ends up the default 🔹 — and the icon mechanism might as well not exist.
+- What it affects downstream
+  Trigger, model, overwrite policy, scope — four forks, all JL's to call; I must not pick for him and get overturned (`QD1`'s permission rule went through exactly that rework).
 
 ## Boundary
-- ✅ 这题管
-  **自动配图标**：怎么触发、用哪个模型、只填空的还是覆盖手写的、管一题还是整块板。
-- ❌ 这题不管
-  手写那半（`**🎨 …**` → 🎨，不写默认 🔹）—— 那条已随 `QA4` 定了，规格在 `ref/board-form.md §5`。
+- ✅ This question owns
+  **Automatic icon assignment**: how it triggers, which model, fill-blanks-only vs. overwrite, one question vs. the whole board.
+- ❌ This question does not own
+  The hand-written half (`**🎨 …**` → 🎨, default 🔹 when absent) — settled with `QA4`, spec in `ref/board-form.md §5`.
 
 ## Diagram
 ```
-页面按一下 🎨          serve.py（已有 OAuth + SDK）        写回 md → 重建 → 刷新
-「配图标」        →    读这题、找没写 emoji 的组标题     →   **四条没定的**
-                      haiku 一次挑好（emoji 是小活）            ↓
-                      只填空的，作者写过的不动               **🗂️ 四条没定的**
+click 🎨 on the page      serve.py (already has OAuth + SDK)     write back to md → rebuild → reload
+"assign icons"       →    reads this question, finds group    →   **the four undecided ones**
+                          titles without an emoji                       ↓
+                          haiku picks in one shot (a small job)   **🗂️ the four undecided ones**
+                          fills blanks only; hand-written ones untouched
 ```
 
 ## Where we are
-**只做了「手写」那半（QA4 定的），自动配还没做，只讨论过设计。**
+**Only the hand-written half exists (settled by QA4); automatic assignment is design-only so far.**
 
-- 手写已经能用
-  `**🎨 版式落地**` → 🎨；没写 → 默认 🔹。`GT_ICON` 抽首个 emoji，build.py 出记号。这条 QA4 已定、已毕业到 `ref/board-form.md §8`。
-- 自动配还只是设计
-  serve.py 已经有 LLM（OAuth + SDK），加一个端点就能让它挑 emoji 填进 md。build.py 不参与 —— 它没有脑子，自动只能靠 LLM 层。
+- Hand-written works today
+  `**🎨 layout landed**` → 🎨; nothing written → default 🔹. `GT_ICON` extracts the first emoji; build.py renders the marker. Settled by QA4, graduated into `ref/board-form.md §8`.
+- Automatic is still just a design
+  serve.py already has an LLM (OAuth + SDK); one more endpoint lets it pick emoji and write them into the md. build.py takes no part — it has no brain; automation belongs to the LLM layer.
 
-**没定的岔路（要 JL 拍）：**
+**The undecided forks (JL's to call):**
 
-- 🔀 怎么触发
-  按钮（人点一下，秒出，便宜、可控、可撤）还是存盘自动（每次改都花钱、会在你打字时改你的 md）。我倾向按钮。
-- 🤖 模型 + 覆盖策略
-  挑 emoji 是小活 → haiku 够；只填「没写 emoji 的」组标题，作者手写过的绝不覆盖。
-- 📄 范围
-  只配当前这题，还是整块板一次配。
+- 🔀 How it triggers
+  A button (one click, instant, cheap, controllable, reversible) vs. auto-on-save (spends money on every save and edits your md while you type). I lean button.
+- 🤖 Model + overwrite policy
+  Picking emoji is a small job → haiku suffices; fill only group titles **without** an emoji, never overwrite what an author wrote.
+- 📄 Scope
+  Only the current question, or the whole board in one pass.
 
 ## Items to Finish
-- [ ] 触发方式定了
-      按钮 vs 存盘自动 —— 拍一个，写进 `## Law`。
-- [ ] 模型 + 覆盖策略定了
-      哪个模型、只填空的不覆盖手写的。
-- [ ] 范围定了
-      当前这题 / 整块板。
-- [ ] 做出来、验过
-      serve.py 端点 + 页面按钮；填完的 emoji 看得见、能改、能撤。
+- [ ] Trigger settled
+      Button vs. auto-on-save — pick one, write it into `## Law`.
+- [ ] Model + overwrite policy settled
+      Which model; fill blanks only, never overwrite hand-written.
+- [ ] Scope settled
+      Current question / whole board.
+- [ ] Built and verified
+      serve.py endpoint + page button; assigned emoji are visible, editable, revertible.
 
 ## Files
 - `serve.py`
-  自动配图标的端点要加在这儿（它已经有 OAuth + SDK）。
+  The auto-assign endpoint goes here (it already has OAuth + SDK).
 - `build.py`
-  `GT_ICON` 抽首个 emoji、`.gt .gi` 渲染记号 —— 手写那半已经在这儿了。
+  `GT_ICON` extracts the first emoji, `.gt .gi` renders the marker — the hand-written half already lives here.
 
 ## Discussion
-> JL: 组标题图标能不能 realtime 用 LLM 配？
->> CC0723: 能 —— serve.py 已有 LLM。但「realtime」有岔路：按钮触发（推荐，便宜可控）还是存盘自动（贵、会在你打字时改 md）。build.py 保持哑，聪明活交给 LLM 层。
+> JL: could group-title icons be assigned in realtime by an LLM?
+>> CC0723: yes — serve.py already has an LLM. But "realtime" forks: button-triggered (recommended — cheap, controllable) vs. auto-on-save (expensive, edits your md while you type). build.py stays dumb; clever work goes to the LLM layer.
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
-260723 · 开题：把「LLM 自动配组标题图标」记成 Q；手写那半已随 QA4 定，自动配的触发 / 模型 / 范围待拍
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
+260723 · Opened: "LLM auto-assigns group-title icons" recorded as a Q; the hand-written half settled with QA4, the trigger / model / scope of automation pending JL

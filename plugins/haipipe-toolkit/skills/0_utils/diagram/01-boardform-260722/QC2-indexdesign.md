@@ -1,67 +1,68 @@
 # Index page design
 state: 🔴 OPEN
 owner: JL
-method: 定「首页那张清单」要回答什么问题，再决定它长什么样
+method: settle which questions "the front-page list" must answer, then decide what it looks like
 
 ## Question
-打开一块板、还没点进任何一题的时候，看到的是首页那张清单。它该长什么样，才能让人**三秒之内知道该动哪一题**？
+You open a board and have not clicked into any question yet — what you see is the front-page list. What should it look like so that a person knows **within three seconds which question to act on**?
 
-- 为什么难
-  单题页（`QA4`）已经定了，但首页至今没人管。它要同时装：所有题、所有分组、每题的状态和完成度 —— 信息一多就变成一面墙，谁也不知道从哪下手。
-- 不定会怎样
-  板是给第二个人看的。首页看不出「哪题卡住了、哪题该我动」，那这块板就只有写的人自己用得动。
-- 定了会影响什么
-  分组怎么排、状态怎么显示、完成度怎么上色、默认排序 —— 全在 `build.py` 生成索引那段，跟 `board.md` 的 `## Roster` 联动。
+- Why it is hard
+  The single-question page (`QA4`) is settled, but nobody has owned the front page. It must hold everything at once: all questions, all groups, every state and completion — one notch more information and it becomes a wall nobody can enter.
+- What breaks if we leave it
+  A board is for the second person. If the front page does not show "which question is stuck, which one is mine to move", the board is only usable by whoever wrote it.
+- What it affects downstream
+  Group ordering, state display, completion coloring, default sort — all in `build.py`'s index-rendering pass, coupled to `board.md`'s `## Roster`.
 
 ## Boundary
-- ✅ 这题管
-  **首页那张清单**：分组标题、每行显示什么、状态与完成度的视觉、排序规则、「一眼看出该动哪题」怎么达成。
-- ❌ 这题不管
-  点进去之后的**单题页** —— 那归 `QA4`。也不管每题的**文字写得好不好** —— 那归 `QA5`。也不管板放在哪个文件夹 —— 那是 `QC1`。
+- ✅ This question owns
+  **The front-page list**: group headers, what each row shows, the visuals of state and completion, sort rules, and how "see at a glance what to act on" is achieved.
+- ❌ This question does not own
+  The **single-question page** after the click — that is `QA4`. Nor whether each question's **prose is well written** — that is `QA5`. Nor which folder the board lives in — that is `QC1`.
 
 ## Diagram
 ```
-board.html 顶部（还没点进任何一题）
+top of board.html (no question opened yet)
 ┌──────────────────────────────────────────────┐
-│ 板名 · 🦴 主干 · 🏁 关板条件                    │
-│ ▓▓▓▓▓░░░░░  N/M settled                      │  进度条
+│ board name · 🦴 spine · 🏁 close condition    │
+│ ▓▓▓▓▓░░░░░  N/M settled                      │  progress bar
 ├──────────────────────────────────────────────┤
-│ QA · Defining a board                        │  分组标题
-│  ✅ QA1  Board folder shape        🔧 CC      │  ← 每行该显示什么？
-│  🟡 QA4  Single Question Webpage…  🔧 CC  7/9 │     完成度怎么上色？
-│  🔴 QD4  LLM topic icons           🔧 CC  0/4 │     怎么排序？
+│ QA · Defining a board                        │  group header
+│  ✅ QA1  Board folder shape        🔧 CC      │  ← what does each row show?
+│  🟡 QA4  Single Question Webpage…  🔧 CC  7/9 │     how is completion colored?
+│  🔴 QD4  LLM topic icons           🔧 CC  0/4 │     what is the sort?
 │  …                                            │
 └──────────────────────────────────────────────┘
-         ↑ 三秒内要能答：「现在该动哪一题？」
+         ↑ within three seconds: "which question do I act on?"
 ```
 
 ## Items to Finish
-- [ ] 定下首页要回答的问题
-      至少三条：这块板在干嘛 · 整体到哪了 · **我现在该动哪题**。第三条是最难也最要紧的。
-- [ ] 定下每一行显示什么
-      现在是「状态 · 编号 · 标题 · 未解决评论 · owner · 完成度上色」。够不够？多不多？
-- [ ] 定下排序与分组规则
-      现在完全按 `## Roster` 的人工顺序。要不要支持「按状态」「按完成度」「未解决评论优先」？
-- [ ] 定下完成度上色怎么读
-      现在白→绿按勾选比例。⏸️ ON HOLD 也满格显示，容易被误读成「做完了」。
-- [ ] 零背景的人三秒内指得出该动哪题
-      跟 `QA4` 一样的验收方式：找个全新 agent 只看首页，问它「该动哪题」，答得出才算。
+- [ ] Settle the questions the front page must answer
+      At least three: what is this board doing · how far along is it · **which question do I act on now**. The third is the hardest and the one that matters.
+- [ ] Settle what each row shows
+      Today: state · id · title · open-comment badge · owner · completion coloring. Enough? Too much?
+- [ ] Settle sort and grouping rules
+      Today it is purely the hand-written `## Roster` order. Should "by state", "by completion", "open comments first" exist?
+- [ ] Settle how completion coloring reads
+      Today white→green by tick ratio. ⏸️ ON HOLD also renders full — easily misread as "done".
+- [ ] A zero-background person points at the right question within three seconds
+      Same acceptance as `QA4`: a fresh agent sees only the front page, is asked "which question to act on", and must answer correctly.
 
 ## Where we are
-**只有「能看」，还没「好用」——首页从来没被当成一个设计问题。**
+**It "can be viewed" but is not "usable" — the front page has never been treated as a design problem.**
 
-- 现在长什么样
-  板名 + 主干 + 关板条件 + 进度条 + 两个全局折叠入口（这块板在干嘛 / 这些 Q 怎么排）+ 按 `## Roster` 排的清单。
-- 每行现在有什么
-  状态徽章 · 编号 · 标题 · 未解决评论角标 · owner · 整行按完成度白→绿上色（`--fill`，`title` 里写百分比）。
-- 已知的毛病
-  ⏸️ ON HOLD 跟 ✅ 一样满格绿，读起来像「做完了」；题一多就是一长条，看不出优先级；分组顺序全靠手写 Roster。
+- What it looks like today
+  Board name + spine + close condition + progress bar + two global fold-outs (what is this board / how are the Qs ordered) + the list in `## Roster` order.
+- What each row has today
+  State badge · id · title · open-comment badge · owner · row tinted white→green by completion (`--fill`, percentage in `title`).
+- Known defects
+  ⏸️ ON HOLD renders as full green like ✅ — reads as "done"; with many questions it is one long strip with no visible priority; group order is entirely hand-maintained in the Roster.
 
 ## Files
 - `build.py`
-  生成索引那段（`rows` / `frac_done` / `.ir` 系列 CSS）。这题一改先改这里。
+  The index-rendering pass (`rows` / `frac_done` / the `.ir` CSS family). Changing this question starts here.
 - `board.md`
-  `## Roster` 决定分组与顺序 —— 排序规则要是改成自动的，这段的角色也得跟着重新定义。
+  `## Roster` decides grouping and order — if sorting ever becomes automatic, this section's role must be redefined too.
 
 ## Log
-260723 · 开题：QC 组从「要 JL 拍板」改成「索引与板的结构」，首页设计单独立题（`QA4` 只管单题页，index 页一直没人管）
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Opened: the QC group refocused from "needs JL's ruling" to "index and structure"; the front page becomes its own question (`QA4` owns only the single-question page; the index page had no owner)

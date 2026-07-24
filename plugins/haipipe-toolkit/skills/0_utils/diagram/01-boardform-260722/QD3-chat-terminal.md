@@ -1,239 +1,241 @@
 # Terminal version: the real CLI
 state: 🟡 PARTIAL
 owner: JL
-method: ttyd 起进程 + serve.py 反代过 5599；claude 开在 SPACE 根，一题一 session
+method: ttyd spawns the process + serve.py reverse-proxies through 5599; claude opens at the SPACE root, one session per question
 session: d650c47e-0d7d-464d-8405-a98a545fe552
 
 ## Question
-每个 Q 除了受限的抽屉，能不能再有一个**自己的真终端** —— 就是完整的 Claude Code，功能一个不少？
+Besides the restricted drawer, can every Q also have **its own real terminal** — the full Claude Code, nothing missing?
 
-- 为什么难
-  终端要跑在文件所在那台机器上，还得穿过 Remote-SSH 只转发了一个端口的限制；多块板、多题同时开，还不能互相撞端口。
-- 不定会怎样
-  抽屉终究是重搭的，遇到要跑命令、要用技能的活就卡住 —— 没有真终端，板就只能干「改文字」这一类轻活。
-- 定了会影响什么
-  跟 `QD2` 的分工从此不再是「安全 vs 不安全」（QD2 现在也能全开），而是**形态不同**：抽屉是重搭的对话框，终端是原样的 CLI。
+- Why it is hard
+  The terminal must run on the machine the files are on, and squeeze through Remote-SSH's single forwarded port; several boards and questions open at once must not fight over ports.
+- What breaks if we leave it
+  The drawer is ultimately a re-built chat box; any job needing commands or skills gets stuck — without a real terminal the board can only do "edit some text" work.
+- What it affects downstream
+  The split with `QD2` stops being "safe vs. unsafe" (QD2 can now open up fully too) and becomes a **difference of form**: the drawer is a rebuilt chat box, the terminal is the CLI verbatim.
 
 ## Boundary
-- ✅ 这题管
-  **真终端这一种形态**：怎么起、怎么穿过单端口、多板多题怎么不撞、进程怎么回收。
-- ❌ 这题不管
-  规则本身 —— 那是 `QD1`；也不管网页抽屉 —— 那是 `QD2`。
+- ✅ This question owns
+  **The real-terminal form**: how it starts, how it passes through one port, how multiple boards and questions avoid collisions, how processes get reaped.
+- ❌ This question does not own
+  The rules themselves — that is `QD1`; nor the web drawer — that is `QD2`.
 
 ## Diagram
 ```
-   浏览器（JL 的笔记本）                       服务器（文件在这台）
-   ┌──────────────────┐                       ┌──────────────────────────────┐
-   │ 板A/QD3 标签      │ /_term/cc6638…/ (WS)  │ ttyd -i haiboard/cc6638.sock  │
-   │ 板A/QA6 标签      │ ───────────────────►  │   claude --resume a0c6698a    │
-   │ 板B/QD3 标签      │        全部走          │ ttyd -i haiboard/3d798.sock   │
-   │  …N 个标签…      │  已转发的 5599 反代    │   claude --session-id <uuid>  │
-   └──────────────────┘ ◄───────────────────  │ …一题一个 unix socket，无端口 │
-      每个标签 = 一题                          └───────────┬──────────────────┘
-      = 一个 key = 一个 session      cwd = SPACE 根 ▼
+   browser (JL's laptop)                        server (the files live here)
+   ┌──────────────────┐                         ┌──────────────────────────────┐
+   │ boardA/QD3 tab   │ /_term/cc6638…/ (WS)    │ ttyd -i haiboard/cc6638.sock  │
+   │ boardA/QA6 tab   │ ─────────────────────►  │   claude --resume a0c6698a    │
+   │ boardB/QD3 tab   │     everything rides    │ ttyd -i haiboard/3d798.sock   │
+   │  …N tabs…       │   the forwarded 5599    │   claude --session-id <uuid>  │
+   └──────────────────┘ ◄─────────────────────  │ …one unix socket per Q, no ports│
+      each tab = one question                   └───────────┬──────────────────┘
+      = one key = one session        cwd = SPACE root ▼
                                     ~/.claude/projects/-Users-…-Physician-SPACE/<uuid>.jsonl
-   key = sha1(Q 文件绝对路径)[:12]  ← 跨所有板唯一，板A/QD3 和板B/QD3 天然不撞
-   cwd = 整个 repo（不是板文件夹）   ← 会话能读它讨论的代码；session 归档在 repo 根的 project 目录
+   key = sha1(absolute Q-file path)[:12]  ← unique across all boards; boardA/QD3 and boardB/QD3 never collide
+   cwd = the whole repo (not the board folder)  ← the session reads the code it discusses; archives under the repo root's project dir
 
-   为什么走 5599 反代 + unix socket：只有 5599 转发到笔记本；不用端口池，
-   一题一个 socket 文件（没有"分哪个端口 / 会不会占满"）。ttyd -b 挂子路径，serve.py 原样转（含 WS）。
+   why 5599 reverse proxy + unix sockets: only 5599 is forwarded to the laptop; no port pool —
+   one socket file per question (no "which port / will they run out"). ttyd -b mounts a subpath; serve.py forwards verbatim (WS included).
 ```
 
 ## Items to Finish
-- [x] 每个 Q 卡片上有一个 ⌨ 入口
-      抽屉头部一个 ⌨，切过去整个抽屉变成这一题的真终端（iframe）。
-- [x] 点它进的是**这一题自己的**那个会话
-      有 session 就 `--resume`；没有就 serve.py 生成 uuid 写回头部、`--session-id` 用它。
-      不会开出空终端，也不会冒出第二个 session。
-- [x] 决定用哪条路
-      **既不是 myrlin，也不是手写 node-pty，而是 ttyd + serve.py 反代。** 理由见 Now。
-- [x] 端到端验过它真的能用
-      从 5599 反代连 WebSocket，屏上是这一题的真会话（a0c6698a，带着之前的历史），
-      发「只回 BOARDLIVE」当场收到回复。不是「应该能」，是实测过。
-- [x] 能同时开多题
-      多开几个板页面标签即可（每标签一题），不需要单独的「弹出」按钮。实测两个 ttyd 并存。
-- [x] 端口 → unix socket，多板不撞
-      不再抢 TCP 端口：一题一个 unix socket，key = 路径 hash 全局唯一。
-      实测：同名 QD3 在两块板下 key 不同（cc6638… vs 3d798…），互不干扰。
-- [x] 进程能自动收，不留孤儿
-      启动先扫 TERM_DIR 杀掉上一轮遗留（不靠退出信号，最可靠）；退出再尽力收一次；
-      `/_board/killall` 一键全关；关整个板页面时 `pagehide` beacon 通知释放。
-      实测：造一个 stale ttyd → 启动 serve.py → 它被自动杀掉、socket 删掉。
-- [ ] 安全边界要定成白纸黑字的规矩
-      「写成文」的意思：把「谁能连、能碰什么、认证怎么做」全部明确写下来定死，别含糊留在脑子里。
-      已有的护栏更强了：ttyd 只监听 unix socket 文件（连 TCP 端口都没有），只能从 5599 反代进，
-      key 必须是已登记的 12 位 hex。没定的还是：ttyd 本身不认证，谁连到 5599 谁就能用；
-      对外暴露前必须先定认证。
+- [x] A ⌨ entry on every Q card
+      A ⌨ in the drawer header; switching turns the whole drawer into this question's real terminal.
+- [x] Clicking it enters **this question's own** session
+      With a session: `--resume`; without: serve.py generates a uuid, writes it back to the header, `--session-id` uses it.
+      Never an empty terminal, never a second stray session.
+- [x] Route chosen
+      **Neither myrlin nor hand-rolled node-pty — ttyd + serve.py reverse proxy.** Reasons in Where we are.
+- [x] End-to-end verified it actually works
+      WebSocket connected through the 5599 proxy; on screen was this question's real session (a0c6698a, prior history intact);
+      sent "reply only BOARDLIVE" and got the reply on the spot. Not "should work" — tested.
+- [x] Multiple questions open simultaneously
+      Open more board tabs (one question per tab); no separate "pop out" button needed. Two ttyds verified coexisting.
+- [x] Ports → unix sockets; boards never collide
+      No more TCP port racing: one unix socket per question, key = path hash, globally unique.
+      Verified: same-named QD3 on two boards gets different keys (cc6638… vs 3d798…), zero interference.
+- [x] Processes reap themselves, no orphans
+      Startup sweeps TERM_DIR and kills last round's leftovers (not relying on exit signals — most reliable); exit reaps best-effort again;
+      `/_board/killall` closes everything; closing the board page sends a `pagehide` beacon to release.
+      Verified: planted a stale ttyd → started serve.py → it was killed and its socket removed.
+- [ ] The security boundary written down in black and white
+      "Written down" means: who may connect, what they may touch, how auth works — all explicit and fixed, nothing vague in someone's head.
+      The guardrails got stronger: ttyd listens only on unix socket files (no TCP port at all), reachable only through the 5599 proxy,
+      keys must be registered 12-hex values. Still unsettled: ttyd itself does no auth — whoever reaches 5599 can use it;
+      before any outside exposure, auth must come first.
 
 ## Where we are
-做出来了，就在页面里。抽屉头部 ⌨ 进终端，再点变 💬 交回 session。
+Built, and it lives in the page. ⌨ in the drawer header enters the terminal; clicking again (💬) hands the session back.
 
-- 终端画在抽屉里，用 xterm.js，不再套 iframe（JL：closer to myrlin / A）
-      抽屉里直接跑 xterm.js（vendored，serve.py 从 /_board/asset/ 供），自己拿它连 ttyd 的
-      WebSocket，说 ttyd 的子协议（auth 一条、尺寸一条、输入 '0'+data、输出帧首字节 '0'）。
-      省掉 iframe 那层：没有 webview CSP、加载更快、能自己控制 fit/reconnect。
-      ttyd 仍在后端当 PTY，只是前端不再是它的页面，而是我们自己的 xterm。
-      验证：代理的 WS 握手是浏览器合法的（101 + Sec-WebSocket-Accept 精确匹配）；
-      claude 输出经这条 WS 流到 xterm；坑见 Lesson。
-- 走的是 ttyd + 反代，不是 myrlin，也不是手写 node-pty
-      · myrlin 是一整个应用（AGPL、单独一个服务），拿来当「板里的一个终端」太重。
-      · 手写 node-pty + xterm 要自己管进程、滚屏、重连，约 150 行起步。
-      · ttyd 是个只干一件事的小工具（`brew install ttyd`），一条命令就把 `claude` 变成网页终端。
-        serve.py 本来就在服务这个页面，顺手当反代 —— 最省。
-- 一开就知道自己在哪一题（JL 260723）
-      起终端时给 `claude` 灌一段 `--append-system-prompt`：这是哪块板、哪一题、这题问什么、
-      还有几条评论没解决、文件在哪。用系统提示、不占一个回合、也不让它自动跑 ——
-      你一打开，claude 就已经知道自己在干嘛，等你说话。ttyd 标签页标题也改成「QD3 · 标题」。
-      实测：全新终端里问「我在做哪块板哪一题」，不给任何背景，它直接答「QB3 — Migrate the two old boards」。
-- claude 开在 SPACE 根，不是板文件夹（JL 260723）
-      `ttyd` 起 `claude` 时 cwd = 整个 repo。为什么：一题的会话经常要碰它讨论的代码
-      （比如「迁旧板」得改板文件夹外的东西），只给板文件夹太窄。
-      cwd 一改，两件事跟着变：① 系统提示给的是「相对 repo 根的路径」而不是光文件名；
-      ② session 归档到 repo 根的 project 目录（`~/.claude/projects/-Users-…-Physician-SPACE/`）。
-      代价见 Lesson：改 cwd 会把旧的板文件夹会话留在原地，各题在 root 下重新起。
-- 一题一 session 是强制的（见 ⚖️ Law）
-      终端首次开：serve.py 先生成 uuid、写进这一题头部 `session:`，再 `claude --session-id <uuid>`。
-      所以「首次是在终端里开的」也不会留下一个没记录的 session。实测过：给没 session 的题开终端，
-      头部立刻多出 `session:`；再开是 reused，同一个 id。
-- N 题 N 终端，靠多开板页面的标签
-      想同时看好几题的终端，就在浏览器里多开几个板页面标签，各自的抽屉互不相干。
-      比一个「弹出」按钮干净，而且关标签时 pagehide 能把那个终端收掉。
-      LAW 只拦「同一题的抽屉 + 终端」（同一个 `.jsonl`），不拦不同题。
-- 全走 5599，底层是 unix socket 不是端口
-      每题一个 unix socket（`haiboard-terms/<key>.sock`），没有端口池、不会占满。
-      URL 是 `/_term/<key>/`，key = `sha1(Q 文件绝对路径)[:12]` —— **多块板各自的 QD3 天然分开**。
-      serve.py 把 `/_term/<key>/…` 转给对应 socket：普通 HTTP 直接转，WebSocket 走 `Upgrade` 裸倒。
-- 进程生命周期收口了
-      · 启动先清上一轮遗留（扫 socket 目录杀残留 ttyd）—— 主力，不依赖能不能接住退出信号
-      · 退出时 atexit / SIGTERM 再尽力收一次
-      · `/_board/killall` 一键全关；`/_board/terms` 列出在跑的（跨板一起列）
-      · 关板页面时 pagehide beacon 通知服务器释放抽屉里那个终端
+- The terminal is drawn inside the drawer with xterm.js — no more iframe (JL: closer to myrlin / A)
+      xterm.js runs directly in the drawer (vendored, served by serve.py from /_board/asset/); it connects to ttyd's
+      WebSocket itself, speaking ttyd's subprotocol (one auth message, one resize, input '0'+data, output frames lead with '0').
+      Dropping the iframe layer: no webview CSP, faster load, own control of fit/reconnect.
+      ttyd stays in the back as the PTY; the front end is our own xterm, not ttyd's page.
+      Verified: the proxied WS handshake is browser-legal (101 + exact Sec-WebSocket-Accept);
+      claude's output streams through this WS into xterm; pitfalls in Lesson.
+- The route is ttyd + reverse proxy — not myrlin, not hand-rolled node-pty
+      · myrlin is a whole application (AGPL, its own service) — too heavy for "a terminal inside a board".
+      · hand-rolled node-pty + xterm means managing processes, scrollback, reconnects yourself — ~150 lines to start.
+      · ttyd is a one-job tool (`brew install ttyd`): one command turns `claude` into a web terminal.
+        serve.py already serves this page, so it moonlights as the proxy — cheapest.
+- Knows its question the moment it opens (JL 260723)
+      The terminal starts `claude` with an `--append-system-prompt` block: which board, which question, what it asks,
+      how many comments are open, where the file is. A system prompt — costs no turn, triggers nothing on its own —
+      the moment you open it, claude already knows where it is, waiting for you to speak. The ttyd tab title also becomes "QD3 · title".
+      Verified: a fresh terminal, zero context given, asked "which board and question am I on" — answered "QB3 — Migrate the two old boards".
+- claude opens at the SPACE root, not the board folder (JL 260723)
+      When ttyd starts `claude`, cwd = the whole repo. Why: a question's session keeps touching the code it discusses
+      (e.g. "migrate the old boards" edits things outside the board folder); the board folder alone is too narrow.
+      Two things follow the cwd change: ① the system prompt hands out repo-root-relative paths, not bare names;
+      ② sessions archive under the repo root's project dir (`~/.claude/projects/-Users-…-Physician-SPACE/`).
+      The cost is in Lesson: changing cwd strands the old board-folder sessions; every question restarted under root.
+- One session per question is enforced (see ⚖️ Law)
+      First terminal open: serve.py generates the uuid, writes it into the question's `session:` header, then `claude --session-id <uuid>`.
+      So even a terminal-first open leaves no unrecorded session. Verified: opening a terminal on a session-less question
+      immediately adds `session:` to its header; reopening reuses the same id.
+- N questions, N terminals — via more board tabs
+      To watch several questions' terminals at once, open more board tabs; each drawer is independent.
+      Cleaner than a "pop out" button, and closing a tab lets pagehide reap that terminal.
+      The LAW blocks only "drawer + terminal on the SAME question" (same `.jsonl`), never different questions.
+- Everything rides 5599; underneath are unix sockets, not ports
+      One unix socket per question (`haiboard-terms/<key>.sock`) — no port pool, nothing to run out of.
+      The URL is `/_term/<key>/`, key = `sha1(absolute Q-file path)[:12]` — **each board's QD3 is naturally distinct**.
+      serve.py forwards `/_term/<key>/…` to the matching socket: plain HTTP passes straight through, WebSocket rides a raw `Upgrade` relay.
+- Process lifecycle is closed
+      · startup sweeps last round's leftovers first (scans the socket dir, kills stragglers) — the main line of defense, no reliance on catching exit signals
+      · atexit / SIGTERM reap best-effort on the way out
+      · `/_board/killall` closes everything; `/_board/terms` lists what runs (across boards)
+      · closing a board page sends a pagehide beacon to release the drawer's terminal
 
-**还没定死的：**
+**Still unsettled:**
 
-- 安全边界只剩「认证」这一条没写成文
-      护栏已经不弱：unix socket（没有 TCP 端口可扫）、只能从 5599 反代进、key 必须已登记。
-      唯一的口子：ttyd 本身不认证 —— 谁连到 5599 谁就能用。现在是纯本地 + SSH 转发，够用；
-      哪天对外暴露，必须先加认证。这一条留着，等真要暴露再定。
-- 关标签自动释放：抽屉里的能收，别的靠兜底
-      关整个板页面时，抽屉里开着的那个终端会被 pagehide beacon 收掉。
-      要一次清干净所有终端，用 `/_board/killall`（或重启 serve.py，启动时自动清残留）。
+- Of the security boundary, only "auth" remains unwritten
+      The guardrails are no longer weak: unix sockets (no scannable TCP port), entry only through the 5599 proxy, keys must be registered.
+      The single gap: ttyd itself does no auth — whoever reaches 5599 can use it. Pure-local + SSH forwarding today, good enough;
+      the day it faces the outside, auth comes first. Parked until exposure is real.
+- Auto-release on tab close: the drawer's own terminal is reaped, the rest rely on the fallback
+      Closing a whole board page reaps the drawer's open terminal via the pagehide beacon.
+      To sweep everything at once: `/_board/killall` (or restart serve.py — startup clears leftovers).
 
 ## Files
 - `serve.py`
-  `terminal()` / `proxy_term()` / `reap_stale_terms()` —— ttyd + unix socket + 反向代理 + 进程回收。
+  `terminal()` / `proxy_term()` / `reap_stale_terms()` — ttyd + unix sockets + reverse proxy + process reaping.
 - `build.py`
-  页面上切到终端那个入口。
+  The page-side entry that switches into the terminal.
 
 ## Lesson
-**空壳 session（记了 id 却没聊过）会让 --resume 秒退，终端一开就死。**
-`claude --session-id <uuid>` 起一个 session，但**只 boot 交互界面、没发过消息**的话，jsonl 不落盘。
-下次开终端读到头部那个 id → `claude --resume <id>` → 「No conversation found」→ claude 立刻退出 →
-ttyd 关连接 → 终端刚出 ttyd 的握手字节就黑掉。排查时表现成「收到 365 字节就断」。
-修法：开终端前看**磁盘上有没有那段对话的 jsonl**，有才 `--resume`，没有（空壳或全新）用 `--session-id`。
-抽屉那边同理：resume 前先查 jsonl 在不在。
+**A hollow session (id recorded, never chatted) makes --resume exit instantly — the terminal dies on open.**
+`claude --session-id <uuid>` starts a session, but if only the UI booted and no message was ever sent, no jsonl lands on disk.
+Next open reads that id from the header → `claude --resume <id>` → "No conversation found" → claude exits at once →
+ttyd drops the connection → the terminal blacks out right after ttyd's handshake bytes. Presented as "365 bytes then disconnect".
+Fix: before opening, check **whether that conversation's jsonl exists on disk** — resume only if it does; otherwise (hollow or brand-new) use `--session-id`.
+Same rule on the drawer side: check the jsonl before resuming.
 
-**HOLD 卡住会让「打不开」看起来像 bug，其实是没释放干净。**
-一个没跑完 / 没正常结束的抽屉或终端，会把这一题的 HOLD 留住，之后所有 open 都被
-「session 正被…占着」挡下。排查 xterm 时，一个陈旧的 drawer-HOLD 挡了每一次终端 open，
-让浏览器 mountTerm 永远拿不到 key —— 看着像 xterm 坏了，其实是 HOLD 没清。
-兜底：`/_board/killall` 清所有 HOLD + 终端；真正的修是让每条路径的 finally 都可靠 release。
+**A stuck HOLD makes "won't open" look like a bug when it is an unreleased lock.**
+A drawer or terminal that never finished holds the question's HOLD, and every later open gets blocked with
+"session is held by …". While debugging xterm, one stale drawer-HOLD blocked every terminal open,
+so the browser's mountTerm never received a key — looked like xterm was broken; it was an uncleared HOLD.
+Fallback: `/_board/killall` clears all HOLDs + terminals; the real fix is a reliable release in every path's finally.
 
-**会话跟着 cwd 走，改 cwd 就等于换一批会话；迁移 jsonl 不管用。**
-`~/.claude/projects/` 下的目录名是 cwd 的斜杠换成横杠编出来的，一个 cwd 一个 project。
-把 cwd 从板文件夹改成 SPACE 根之后：
-  · 旧的板文件夹会话还在原来的 project 目录里，但从 root 敲 `claude --resume <旧 sid>` 找不到它。
-  · 试过把那 6 个 jsonl 复制到 root 的 project 目录 —— **resume 还是不认**（发命令后文件不增长），
-    因为会话是绑在原 cwd 上的，光挪文件骗不过它。
-所以这次的做法是：清掉各题头部的旧 `session:` 行，各题在 root 下重新起一个 session（`--session-id`）。
-旧会话没删，还在板文件夹的 project 目录里，真要看，`cd` 进那个板文件夹 `claude --resume` 就行。
-**教训**：cwd 是会话的归属，不是一个可以随便改的参数 —— 改它 = 这一题从头开始。
+**Sessions follow the cwd; changing cwd swaps the session set; migrating jsonl does not work.**
+Directory names under `~/.claude/projects/` are the cwd with slashes turned to dashes — one cwd, one project.
+After moving cwd from the board folder to the SPACE root:
+  · old board-folder sessions stayed in their old project dir, and `claude --resume <old sid>` from root cannot find them.
+  · copying the 6 jsonl files into root's project dir was tried — **resume still refused** (file did not grow after a command),
+    because a session is bound to its original cwd; moving files does not fool it.
+So this time: cleared each question's old `session:` line and restarted each under root (`--session-id`).
+The old sessions are not deleted — still in the board folder's project dir; to view one, `cd` into that folder and `claude --resume`.
+**Lesson**: cwd is a session's home, not a tweakable parameter — changing it = this question starts over.
 
-**首次开会话要自己定 id，别让它自己生。**
-`claude` 不带参数会自己造一个新 session id，我们抓不到 → 一题会攒出好几个 session。
-用 `--session-id <uuid>`：我们先生成、先写回头部，再让终端用这个。一题一 session 才守得住。
+**Set the id yourself on first open; never let it self-generate.**
+A bare `claude` invents its own new session id, which we cannot capture → one question accumulates several sessions.
+With `--session-id <uuid>`: we generate first, write it back to the header first, then let the terminal use it. That is how one-question-one-session holds.
 
-**只有 5599 转发过来，所以终端必须反代，连 WebSocket 一起。**
-每开一题多转发一个端口不现实。ttyd 的 `-b <base>` 让它认自己挂在子路径下，
-serve.py 除了普通 HTTP，还要处理 `Upgrade: websocket`（终端的输入输出全走 WS）——
-握手转发对了才有字符流。
+**Only 5599 is forwarded, so the terminal must be proxied — WebSocket included.**
+Forwarding one more port per question is unrealistic. ttyd's `-b <base>` makes it live under a subpath,
+and serve.py must handle `Upgrade: websocket` besides plain HTTP (all terminal I/O rides the WS) —
+only a correctly forwarded handshake yields a character stream.
 
-**先翻有没有现成的轮子，但"现成"不等于"该用"。**
-myrlin-workbook 的发现路径跟我们落盘位置一字不差，一度以为直接接上就行。
-但它是一整个应用；我们要的只是「板里嵌一个终端」。最后用了更小的 ttyd + 自己的反代。
-翻轮子是对的，选轮子看的是"要的那一小块"有多大，不是"它能做多少"。
+**Look for an existing wheel first — but "existing" is not "the one to use".**
+myrlin-workbook's discovery path matched our storage location byte for byte; for a moment it looked plug-in ready.
+But it is a whole application; we needed "a terminal embedded in a board". The smaller ttyd + our own proxy won.
+Searching for wheels is right; choosing one is about how big "the piece you need" is, not how much the wheel can do.
 
 ## Glossary
-ttyd：把一个命令行程序变成网页里可用终端的小工具。`-i` 绑地址、`-b` 挂子路径、`-W` 允许输入。
-反代（reverse proxy）：serve.py 把 `/_term/<port>/…` 的请求原样转给本地那个 ttyd，
-    浏览器只跟 5599 打交道，不用知道 ttyd 在哪个端口。
-WebSocket / Upgrade：一条一直开着、双向传字符的连接。终端的键入和输出都走它。
-AGPL-3.0：myrlin 的许可证。当独立工具用无所谓，抄进自己的东西再分发才受约束。
+ttyd: a small tool that turns a command-line program into a usable web terminal. `-i` binds the address, `-b` mounts a subpath, `-W` allows input.
+reverse proxy: serve.py forwards `/_term/<key>/…` requests verbatim to the local ttyd; the browser talks only to 5599 and never needs to know where ttyd is.
+WebSocket / Upgrade: one always-open, two-way character connection. All terminal keystrokes and output ride it.
+AGPL-3.0: myrlin's license. Fine to use as a standalone tool; constraints bite when you copy it into something you redistribute.
 
 ## Discussion
-> JL: 我在想能不能也加入这个呢？给一个 terminal 的图标？
-> JL: 然后我想每一个 question page，他对应的 terminal 是他自己的。
-> JL: 我不知道 myrlin 这个 package 能不能帮你 —— github.com/therealarthur/myrlin-workbook
->> CC0723: 翻了源码，发现路径跟我们一致。但它是一整个应用，太重；最后用 ttyd + serve.py 反代自己嵌了。
+> JL: I wonder if we could add this too — a terminal icon?
+> JL: and I want each question page to have a terminal that is its own.
+> JL: I don't know whether the myrlin package could help you — github.com/therealarthur/myrlin-workbook
+>> CC0723: read its source — the discovery path matches ours exactly. But it is a whole application, too heavy; ended with ttyd + serve.py's own proxy embedded instead.
 
 ## Comments
-- [ ] JL 「❓ Question 每个 Q 除了受限的抽屉，能不能再有一个自己的真终端 —— 就是完整的 Claude Code，功能一个不少？」 · 260723 2038
+- [x] JL “❓ Question — besides the restricted drawer, can every Q also have its own real terminal — the full Claude Code, nothing missing?” · 260723 2038
       We need to change this to English as well, must to make this can be well written and easier to follow, and also list several bullets.
-- [ ] JL 「跟 QD2 是同一个需求的两种实现，但取舍完全相反：」 · 260723 1511
-      我们已经改了，你看看QD2，现在跟QD3一样了。
-- [x] JL 「when we open the terminal/chatbot, give some prompt so they know which question and board they're working on」 · 260723 1500
-      >> CC0723: 做了。开场用 `--append-system-prompt`（抽屉那边拼进 system_prompt）灌一段定位：
-      板 + 题号 + 题目 + 这题问什么 + 几条评论没解决 + 文件路径。不占回合、不自动跑。
-      实测：全新终端/抽屉，不给背景直接问「我在哪一题」，都答得出 QB3 / QB2。
-- [x] JL 「I want to make the chat or claude opened in the SPACE dir, not in the board」 · 260723 1430
-      >> CC0723: 改了。`ttyd` 和抽屉里的 `claude` 现在都开在 SPACE 根（`cwd = 整个 repo`），
-      实测终端里 `pwd` = SPACE 根、能看到全部 skills。代价：旧的板文件夹会话留在原地，
-      各题在 root 下重新起 session（迁移 jsonl 试过，resume 不认 —— 见 Lesson）。QD1/QD2 一起更新了。
-- [x] JL 「跟 QD2 是同一个需求的两种实现，但取舍完全相反：」 · 260723 1420
-      我们已经改了，你看看QD2，现在跟QD3一样了。
-      >> CC0723: 对，看了 QD2 —— 它现在也是三档权限、默认「完整·问我」＝ 跟 CLI 一样能干任何事，
-      不再是「只受限」。改写了 Why here：两题差别不再是「安全 vs 不安全」，而是形态不同 ——
-      QD2 是带可调闸门的 SDK 对话框，QD3 是没闸门的真 CLI 本体。
-- [x] JL 「跟 QD2 是同一个需求的两种实现，但取舍完全相反：」 · 260723 1358
-      我们已经改了，你看看QD2，现在跟QD3一样了。
-      >> CC0723: 同上，Why here 已改。删掉「取舍完全相反 / QD2 受限」的旧说法，改成按形态区分。
-- [x] JL 「安全边界写死成文」 · 260723 1355
-      什么意思？
-      >> CC0723: 「写死成文」= 把「谁能连、能碰什么、认证怎么做」白纸黑字定死、写下来，别含糊留脑子里。
-      这条 Done-when 标题改成「安全边界要定成白纸黑字的规矩」，并加了一行解释这句话的意思。
-      现在只剩「认证」这一条没定：ttyd 自己不认证，谁连到 5599 谁就能用，对外暴露前必须先加认证。
-- [x] JL 「跟 QD2 是同一个需求的两种实现，但取舍完全相反： QD2 受限、安全、只能改一个文件；这一题不受限、能干任何事、也就没有护栏。」 · 260723 1354
-      我们已经改了，你看看QD2，现在跟QD3一样了。
-      >> CC0723: 同上。QD2 现在默认「完整·问我」也能改任何相关文件，不再是「只改一个文件」；
-      Why here 已按新事实重写（形态之分，非受限之分）。
-- [x] JL 「Wait, here each terminal is one port? for the QD3? will that be too hard to manage?」 · 260723 1640
-      >> CC0723: 端口数量不是问题（一块板就几个并发终端），难的是生命周期。
-      改成了 unix socket（无端口池）+ 全局 key（多板不撞）+ 启动清残留 + killall。实测都过。
-- [x] JL 「suppose in the future we have several boards open at the same time, how do we handle that?」 · 260723 1640
-      >> CC0723: 服务器层面早就是一个 serve.py 服务整个仓库（已验 3 板并存）。
-      终端身份改成按 Q 文件绝对路径 hash，跨板全局唯一 —— 两块板各自的 QD3 天然分开。
-- [x] JL 「127.0.0.1 refused to connect. I have this.」 · 260723 1550
-      >> CC0723: 端口没转发（跟之前 3000 那次同一类）。改成全走已转发的 5599 反代，
-      ttyd 用 -b 挂子路径，WebSocket 也一起转。实测 GET 200、WS 101。
-- [x] JL 「in the questions, I cannot open two claude terminal version at the same time?」 · 260723 1600
-      >> CC0723: 能，被 UI 挡了不是 LAW。不同题是不同 session，多开几个板页面标签即可。（↗ 弹出按钮后来按 JL 意见删了。）
+      >> CC0724: done in this round — the whole board (this file included) is now English, and the Question section carries the standard three bullets (why hard / what breaks / what it affects).
+- [x] JL “two implementations of the same need as QD2, with exactly opposite trade-offs:” · 260723 1511
+      we already changed that — look at QD2, it now matches QD3.
+      >> CC0724: right — same resolution as the 1420/1358/1354 copies of this comment: the old "opposite trade-offs / QD2 restricted" wording was rewritten (see the Question's third bullet — the split is a difference of form, not of safety). This stray open copy is closed with them.
+- [x] JL “when we open the terminal/chatbot, give some prompt so they know which question and board they're working on” · 260723 1500
+      >> CC0723: done. Opening injects an orientation block via `--append-system-prompt` (the drawer builds it into system_prompt):
+      board + question id + title + what it asks + open comment count + file path. Costs no turn, runs nothing.
+      Verified: fresh terminal/drawer, no context, asked "which question am I on" — answered QB3 / QB2.
+- [x] JL “I want to make the chat or claude opened in the SPACE dir, not in the board” · 260723 1430
+      >> CC0723: changed. `ttyd` and the drawer's `claude` both open at the SPACE root (`cwd = whole repo`);
+      verified `pwd` in the terminal = SPACE root and all skills visible. Cost: old board-folder sessions stayed put,
+      every question restarted under root (jsonl migration tried, resume refused — see Lesson). QD1/QD2 updated together.
+- [x] JL “two implementations of the same need as QD2, with exactly opposite trade-offs:” · 260723 1420
+      we already changed that — look at QD2, it now matches QD3.
+      >> CC0723: yes — read QD2; it now has the three permission tiers, default "full·ask" = can do anything like the CLI,
+      no longer "restricted only". Rewrote the framing: the two questions differ in form, not in safety —
+      QD2 is an SDK chat box with an adjustable gate, QD3 is the gateless real CLI.
+- [x] JL “two implementations of the same need as QD2, with exactly opposite trade-offs:” · 260723 1358
+      we already changed that — look at QD2, it now matches QD3.
+      >> CC0723: same as above; the framing is rewritten. The stale "opposite trade-offs / QD2 restricted" wording is gone, replaced by the difference-of-form framing.
+- [x] JL “the security boundary written down” · 260723 1355
+      what does that mean?
+      >> CC0723: "written down" = who may connect, what they may touch, how auth works — fixed in black and white, not left vague in anyone's head.
+      That Done-when line is now titled "the security boundary written down in black and white" with an explanation line.
+      Only "auth" remains: ttyd itself does no auth; whoever reaches 5599 can use it; exposure requires auth first.
+- [x] JL “two implementations of the same need as QD2, with exactly opposite trade-offs: QD2 restricted, safe, one editable file; this one unrestricted, can do anything, no guardrails.” · 260723 1354
+      we already changed that — look at QD2, it now matches QD3.
+      >> CC0723: same as above. QD2's default "full·ask" edits any relevant file too, no longer one-file-only;
+      the framing is rewritten to the new facts (a difference of form, not of restriction).
+- [x] JL “Wait, here each terminal is one port? for the QD3? will that be too hard to manage?” · 260723 1640
+      >> CC0723: port count was never the problem (a board runs a handful of concurrent terminals); lifecycle was.
+      Switched to unix sockets (no port pool) + global keys (no cross-board collisions) + startup sweeps + killall. All verified.
+- [x] JL “suppose in the future we have several boards open at the same time, how do we handle that?” · 260723 1640
+      >> CC0723: at the server layer one serve.py has always served the whole repo (3 boards verified coexisting).
+      Terminal identity became the hash of the Q file's absolute path — globally unique; each board's QD3 is naturally distinct.
+- [x] JL “127.0.0.1 refused to connect. I have this.” · 260723 1550
+      >> CC0723: an unforwarded port (same family as the earlier 3000 case). Everything now rides the forwarded 5599 proxy,
+      ttyd mounts a subpath via -b, WebSocket forwarded too. Verified GET 200, WS 101.
+- [x] JL “in the questions, I cannot open two claude terminal version at the same time?” · 260723 1600
+      >> CC0723: you can — the UI blocked it, not the LAW. Different questions are different sessions; open more board tabs. (The ↗ pop-out button was later removed per JL.)
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
-260723 1810 · 结掉 4 条评论：QD2 已改成三档权限（默认完整），Why here 从「受限 vs 不受限」重写成
-              「形态之分」（带闸门的 SDK 对话框 vs 无闸门的真 CLI）；「安全边界写死成文」改成白话并加解释
-260723 1745 · JL 要「开场给个 prompt 让它知道在哪一题」。加 prime_context()：终端用 --append-system-prompt、
-              抽屉拼进 system_prompt，灌板/题号/题目/未解决评论数/文件路径。实测终端和抽屉都能直接答出自己在哪一题
-260723 1730 · JL 定：claude 开在 SPACE 根，不是板文件夹。改了 serve.py 两处 cwd（终端 + 抽屉）+
-              系统提示改用相对 repo 根的路径；实测终端 pwd = SPACE 根、加载全部 skills。
-              旧 6 个会话迁移失败（resume 不认跨 cwd 的 jsonl），清掉各题 session: 行、root 下重起；见 Lesson
-260723 1650 · 删掉 ↗「弹到新标签」按钮（JL：不需要）—— 多题终端改成「多开板页面标签」，更干净，pagehide 也能收
-260723 1645 · 端口→unix socket + 全局 key（多板不撞）+ 生命周期收口（启动清残留/killall/beacon）；实测全过
-260723 1630 · 端到端验证 QD3 终端：经 5599 反代驱动 WebSocket，resume 到 a0c6698a，发指令当场收到回复 —— 确认真能用
-260723 1610 · 终端做出来了：ttyd + serve.py 反代过 5599（含 WebSocket），抽屉 ⌨ 进 / ↗ 弹标签
-260723 1600 · 一题一 session 补严：终端首次开用 --session-id 写回头部，不再冒出没记录的 session
-260723 1550 · 修 refused to connect：全走 5599 反代，WS Upgrade 一并转发
-260723 1315 · 当场验证路 ①：这个对话就是板文件夹里的真 Claude Code CLI（session a0c6698a-…）
-260723 1445 · 从 QD1 拆出来单独立题（JL 定：chat / terminal / sdk 各一题）
-260723 1440 · 翻了 myrlin-workbook 源码：发现路径跟我们一致 —— 但最后没用它，太重
-260723 1355 · 确认题级 session 就是真的 Claude Code 会话，终端和抽屉是同一个会话的两个前端
+260724 1242 · Translated to English (JL 260724: everything on the board in English); closed the two open comments — the 2038 "change this to English" one (this round IS that change) and the stray 1511 copy of the already-resolved trade-offs comment
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
+260723 1810 · Closed 4 comments: QD2 now has the three tiers (default full), the framing rewritten from "restricted vs. unrestricted" to
+              "a difference of form" (gated SDK chat box vs. gateless real CLI); "security boundary written down" reworded with an explanation
+260723 1745 · JL asked for "an opening prompt so it knows its question". Added prime_context(): terminal via --append-system-prompt,
+              drawer via system_prompt — board/question id/title/open comment count/file path. Verified both answer correctly with zero context
+260723 1730 · JL ruled: claude opens at the SPACE root, not the board folder. Changed both serve.py cwds (terminal + drawer) +
+              system prompts now use repo-root-relative paths; verified terminal pwd = SPACE root, all skills load.
+              Migration of the 6 old sessions failed (resume rejects cross-cwd jsonl); cleared each question's session: line, restarted under root; see Lesson
+260723 1650 · Removed the ↗ "pop out to a new tab" button (JL: not needed) — multi-question terminals = more board tabs; cleaner, and pagehide reaps them
+260723 1645 · Ports → unix sockets + global keys (no cross-board collisions) + lifecycle closed (startup sweep/killall/beacon); all verified
+260723 1630 · End-to-end verified the QD3 terminal: WebSocket driven through the 5599 proxy, resumed a0c6698a, sent a command, got the reply — confirmed real
+260723 1610 · Terminal built: ttyd + serve.py proxy through 5599 (WebSocket included), drawer ⌨ enters / ↗ popped a tab
+260723 1600 · One-session-per-question tightened: first terminal open uses --session-id and writes it back to the header; no more unrecorded sessions
+260723 1550 · Fixed refused-to-connect: everything rides the 5599 proxy, WS Upgrade forwarded along
+260723 1315 · Verified route ① on the spot: this very conversation IS the real Claude Code CLI in the board folder (session a0c6698a-…)
+260723 1445 · Split out of QD1 as its own question (JL: chat / terminal / sdk, one each)
+260723 1440 · Read myrlin-workbook's source: the discovery path matches ours — but not used in the end, too heavy
+260723 1355 · Confirmed a question-level session is a real Claude Code session; terminal and drawer are two front ends of one session

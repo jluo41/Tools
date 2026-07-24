@@ -1,24 +1,25 @@
-# /haipipe-board —— 把「一块板」定成一个能重复用的东西
-spine: 一块板 = 一个文件夹，里面一题一个 md，外加一页谁都打得开的 html。把这个形状定死，写成 SKILL.md，让别人（和以后没有记忆的我）能照着开板。
-close: 板上每一个 Q 都到 ✅ 或 ⏸️。SKILL.md 写完、一个没有背景的新 agent 只看它就能开出一块合格的板 —— 这个 skill 才算做完。
+# /haipipe-board — pinning down what "a board" is, so it can be reused
+
+spine: A board = one folder. One markdown file per question inside it, plus one HTML page anyone can open. Pin that shape down, write it into SKILL.md, so someone else (and a future me with no memory) can open a board by following it.
+close: Every Q on this board reaches ✅ or ⏸️. SKILL.md is written, and a fresh agent with no background can read only that and open a decent board — then this skill is done.
 
 ## Topic
-board（板）是干什么用的：一个话题下面有几个还没定的问题，把它们摊在一页上，谁都能打开看、能在上面写评论；问题一个个定完，这块板就关掉。
-人物：JL = 拍板的人。CC = Claude Code，干活的。RA = 研究助手，将来会被指派一块板做几天。
-这块板特殊在：它讨论的就是「板」这个东西本身 —— 用一块板来定义板。
+What a board is for: a topic has several undecided questions; lay them out on one page anyone can open and comment on; settle them one by one, then close the board.
+Cast: JL = the one who decides. CC = Claude Code, who does the work. RA = research assistant, who will one day be handed a board for a few days.
+What makes this board unusual: its subject IS the board itself — a board used to define boards.
 
 ## Pipeline
-五组，编号里的字母就是组。前两组是主线，后三组各管一摊，可以并行想。
+Five groups; the letter in each Q's id is its group. The first two are the main line; the other three each own one area and can be thought about in parallel.
 
-**QA · Defining a board** —— 先把「一块板」这个东西本身定下来：文件夹形状 → 一个 Q 文件的模板 → 投屏怎么办 → 单题那一页怎么排 → 正文怎么写才是人话 → 怎么加行内评论 → 一条评论的 lifecycle。这组不定，后面全悬着。
+**QA · Defining a board** — pin down the thing itself: folder shape → the template for a single Q file → what to do about projection → how one question's page is laid out → how to write body text that reads like human language → how to add inline comments → the lifecycle of one comment. Nothing downstream is safe until this group lands.
 
-**QB · Shipping the skill** —— 再把它交出去：写成 SKILL.md → 拿一个全新 agent 冷读验收 → 把已有的老板子迁到新格式。
+**QB · Shipping the skill** — then hand it over: write SKILL.md → have a fresh agent cold-read it as acceptance → migrate the older boards to the new format.
 
-**QC · Index and structure** —— 板的骨架：板放在哪儿、叫什么名字（QC1）；首页那张清单长什么样、怎么三秒看出该动哪题（QC2）。注意跟 QA4 分工：QA4 管**点进去之后的单题页**，QC2 管**还没点进去的首页**。
+**QC · Index and structure** — the board's skeleton: where a board lives and what it is named (QC1); what the index page looks like and how to see in three seconds which question to work on (QC2). Note the split from QA4: QA4 owns the **single-question page you land on after clicking**, QC2 owns the **index you see before clicking**.
 
-**QD · Working on the board** —— 现场层：能不能直接在板上干活。一题一 session 的规则（QD1）、受限的网页抽屉（QD2）、不受限的真终端（QD3）、组标题图标让 LLM 配（QD4）、作用域放大到整块板的 agent（QD5）、页面实时更新怎么做（QD6）。
+**QD · Working on the board** — the live layer: whether you can do real work on the board itself. One session per question (QD1), the restricted in-page drawer (QD2), the unrestricted real terminal (QD3), LLM-assigned group icons (QD4), an agent scoped to the whole board (QD5), how the page updates live (QD6).
 
-**QE · Sharing the board** —— 放出去给别人看（QE1）。板一直号称是给第二个人看的，但至今只活在本机 `127.0.0.1`。
+**QE · Sharing the board** — putting the board out there and making it a real thing. QE1 is the parent question: local or server, and which half other people get. The three below are its forks: how a mounted SPACE shows all its boards (QE2), whether the code stays in `serve.py` or moves into `haichat-inlab`, and whether the static half survives (QE3), whether the body text is editable in the page and what happens when two people edit at once (QE4).
 
 ## Roster
 ### QA · Defining a board
@@ -45,11 +46,15 @@ QD5-boardagent.md
 QD6-liveupdate.md
 ### QE · Sharing the board
 QE1-hosting.md
+QE2-mountspace.md
+QE3-whereitruns.md
+QE4-editlock.md
 
 ## Links
 SKILL.md            ../../haipipe-board/SKILL.md
 build.py            ../../haipipe-board/build.py
 watch.py            ../../haipipe-board/watch.py
+serve.py            ../../haipipe-board/serve.py
 CHANGELOG.md        ../../haipipe-board/CHANGELOG.md
 ref/                ../../haipipe-board/ref/
 ref/q-template.md   ../../haipipe-board/ref/q-template.md
@@ -57,4 +62,11 @@ ref/board-form.md   ../../haipipe-board/ref/board-form.md
 ref/writing-rules.md ../../haipipe-board/ref/writing-rules.md
 ref/board-example.md ../../haipipe-board/ref/board-example.md
 haipipe-board/      ../../haipipe-board/
-02-method-260722/   ../../../../subjective-label/diagram/02-method-260722/
+02-method-260722/   ../../../../../subjective-label/diagram/02-method-260722/
+haichat-inlab/      ../../../../../../../platforms/HAIChat-SPACE/haichat-inlab/
+main.py             ../../../../../../../platforms/HAIChat-SPACE/haichat-inlab/main.py
+console_api.py      ../../../../../../../platforms/HAIChat-SPACE/haichat-inlab/console_api.py
+tasks_api.py        ../../../../../../../platforms/HAIChat-SPACE/haichat-inlab/tasks_api.py
+labeling_api.py     ../../../../../../../platforms/HAIChat-SPACE/haichat-inlab/labeling_api.py
+web/                ../../../../../../../platforms/HAIChat-SPACE/haichat-inlab/web/
+docker-compose.yml  ../../../../../../../platforms/HAIChat-SPACE/docker-compose.yml

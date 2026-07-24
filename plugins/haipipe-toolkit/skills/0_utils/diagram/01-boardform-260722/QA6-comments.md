@@ -1,178 +1,179 @@
 # Inline comments on selected text
 state: ✅ SETTLED
 owner: CC
-method: 选中 → 包住那个 Range → 存 localStorage → 一次性写回 md
+method: select → wrap that live Range → stash in localStorage → write back to md in one shot
 ## Question
-怎么像 Google Docs 那样，在页面上选中一句话就地加评论？而且这条评论要同时活在 `.md` 和 `board.html` 里，不能只存在某个人的浏览器里。
+How do you select a sentence on the page and attach a comment right there, Google-Docs style? And the comment must live in both `.md` and `board.html` — not only in someone's browser.
 
-- 为什么难
-  浏览器在用户笔记本上、文件在服务器上（Remote-SSH）。浏览器自己写不了盘 —— 写盘这件事必须挪到文件所在那台机器。
-- 不定会怎样
-  评论只活在浏览器里，换台机器就没了，也进不了 git —— 那就不叫「板上的讨论」，只是私人便签。
-- 定了会影响什么
-  它定的是 **`.md` 里的存储语法**。语法不定，`QB1` 的 SKILL.md 就没法写「怎么在板上评论」。
+- Why it is hard
+  The browser is on the user's laptop and the files are on the server (Remote-SSH). A browser cannot write that disk — the write has to happen on the machine the files are on.
+- What breaks if we leave it
+  Comments that live only in a browser vanish on the next machine and never enter git — that is not "discussion on the board", it is a private sticky note.
+- What it affects downstream
+  It defines the **storage syntax inside `.md`**. Without that syntax, `QB1`'s SKILL.md cannot describe "how to comment on a board".
 
 ## Boundary
-- ✅ 这题管
-  **做出来**：选中怎么冒出按钮、`.md` 里存成什么语法、怎么写盘、引文怎么在正文里高亮、锚不上怎么标。
-- ❌ 这题不管
-  一条评论**跑起来之后**的事 —— 活多久、谁来推、未解决能不能关板 —— 那是 `QA7`。
+- ✅ This question owns
+  **Building it**: how the button appears on selection, the storage syntax in `.md`, how the disk write happens, how the quote is highlighted in the body, how a failed anchor is flagged.
+- ❌ This question does not own
+  What happens to a comment **after it exists** — how long it lives, who pushes it, whether unresolved ones block closing — that is `QA7`.
 
 ## Diagram
 ```
-       在 board.html 上选中一句话
-                │   选区必须靠 JS —— 没有别的办法拿到「用户选了哪几个字」
+       select a sentence on board.html
+                │   selection needs JS — there is no other way to know which words were selected
                 ▼
-          弹一个小框，写评论
+          a small box pops up, write the comment
                 │
                 ▼
-        生成一条 md 补丁（人能读懂的那种）：
-          …前文 {==被选中的那句==}{>>JL: 这里说不清<<} 后文…
+        produce an md patch (the human-readable kind):
+          …before {==the selected sentence==}{>>JL: unclear here<<} after…
                 │
       ┌─────────┴──────────────────────────┐
-      A 直接写回 .md                        B 复制到剪贴板
-        File System Access API                你自己粘回 md
-        localhost + Chrome/Edge 可用           哪儿都能用，多两步
+      A write straight back to .md          B copy to clipboard
+        File System Access API                paste it back yourself
+        works on localhost + Chrome/Edge      works anywhere, two extra steps
       └─────────┬──────────────────────────┘
                 ▼
-        重新跑 build.py → 那句话高亮，评论挂在旁边
+        re-run build.py → the sentence highlights, the comment hangs beside it
 
-  读评论：不需要 JS      新加评论：必须有 JS   ← 渐进增强，缺 JS 只是不能加
+  reading comments: no JS needed      adding one: JS required   ← progressive enhancement
 ```
 
 ## Items to Finish
-- [x] 选中一句 → 写评论 → 页面上立刻高亮 + 句尾挂 💬
-- [x] 谁都能用自己的缩写署名，不限于 JL / RA / CC
-- [x] 定位不到那句时明确标出来（面板里 ⚠ not anchored），不会悄悄消失
-- [x] 没有 JS 时评论照样显示（只是不能新加）
-- [x] 保存即写盘，不用再点按钮
-      浏览器发一个 POST，`serve.py` 在**文件所在的那台机器上**改 md，并顺手重新生成 html。
-      （原本想让浏览器自己写文件，JL 指出行不通 —— 见 Lesson。）
-- [x] 页面上能改状态
-      每条评论旁边 mark solved / reopen，直接改 md 里的 `[ ]` ↔ `[x]`。
-- [x] 评论有自己的位置和状态
-      单独一个 `## Comments`，不跟 `## Discussion` 混；`- [ ]` / `- [x]` 就是未解决 / 已解决。
-- [x] 锚点断了要能被发现
-      引文在正文里对不上时，页面直接标 `⚠ anchor lost`，不再静默失效。
-- [x] 写盘跑通一次真实来回
-      `curl` 打 `/_board/comment` 和 `/_board/resolve` 都实测通过：md 改了、html 重新生成了、
-      越界的文件名被挡住。而且这两天你在页面上留的每条评论，走的都是这条真实来回。
-      （「锚点断了怎么修」不在这一题了，归 QA7。）
+- [x] Select a sentence → write a comment → instant highlight + 💬 at the sentence end
+- [x] Anyone can sign with their own initials, not just JL / RA / CC
+- [x] When the sentence cannot be located, say so explicitly (⚠ not anchored in the panel) — never silently vanish
+- [x] Without JS, comments still display (you just cannot add one)
+- [x] Save writes the disk directly, no extra button
+      The browser sends one POST; `serve.py` edits the md **on the machine the files are on** and regenerates the html.
+      (The first plan had the browser write the file itself; JL pointed out it cannot work — see Lesson.)
+- [x] Status can be changed on the page
+      mark solved / reopen beside every comment, flipping `[ ]` ↔ `[x]` in the md directly.
+- [x] Comments have their own place and status
+      A dedicated `## Comments`, never mixed into `## Discussion`; `- [ ]` / `- [x]` is open / solved.
+- [x] A broken anchor must be discoverable
+      When the quote no longer matches the body, the page flags it — no silent failure.
+- [x] One real round-trip of the disk write, verified
+      `curl` against `/_board/comment` and `/_board/resolve` both pass: md edited, html regenerated,
+      out-of-bounds file names rejected. And every comment you left on the page these two days went down this exact path.
+      ("How to REPAIR a broken anchor" is no longer this question — it moved to QA7.)
 
 ## Where we are
-**做完了，而且已经在真实使用中：这块板上的评论都是这套东西加进来的。**
+**Done, and in real use: the comments on this very board came in through this machinery.**
 
-- 选中就能评论
-  在正文里选中一句话，光标下冒出「💬 Comment」。
-  点它弹小框：引文 + 输入框 + 署名，写完 Save。
-- 保存的瞬间就有反应
-  那句话变黄底高亮，句尾挂一个 💬（悬停看评论，点它跳到面板）。
-  右下角计数 +1，屏幕中间弹一条确认。
-- 谁都能用自己的缩写
-  署名下拉最后一项「+ new person…」，输入两三个字母回车即可，之后一直记着。
-  渲染端认任意大写缩写，按名字分配固定颜色。
-- 评论立刻落盘，攒的是「处理」不是「同步」
-  按下 Save 就发一个 POST，`serve.py` 在服务器上改 md、顺手重跑 build.py。
-  所以不存在「还没同步的评论」这回事，md 永远是最新的那份。
-  localStorage 只剩两个用处：写到一半的草稿，和 `serve.py` 没开时的兜底 ——
-  那时才用面板的 Sync to md / Copy 把补丁手动送回去。
-  真正攒起来的是另一头：你一次留好几条，我一轮统一改、逐条回 `>> CC0723:`，再一起 mark solved。
-- md 里长这样，肉眼可读
-  写在 `## Comments` 段（在 `## Discussion` 下面），一条一块：
-  `- [ ] JL 「被选中的原句」 · 260723 1100` ＋ 缩进两格的正文。
-  `[ ]` 是没解决、`[x]` 是已解决，就是页面上那个 open / solved。
-- 已解决和没解决看得出来
-  没解决：黄色高亮 + 橙色边 + open。已解决：灰绿高亮 + 条目变淡 + solved。
-  这一题还有几条没解决时，卡片头会挂一个 `💬 N`。
-- 锚点断了不会悄悄失效
-  引文在正文里找不到时，那条评论旁边标 `⚠ anchor lost`，折叠标题上也会写明几条断了。
+- Select to comment
+  Select a sentence in the body; "💬 Comment" pops up under the cursor.
+  Click it: quote + input + signature, then Save.
+- Instant reaction on save
+  The sentence gets a yellow highlight and a 💬 at its end (hover to read, click to jump to the panel).
+  The counter in the corner ticks +1 and a confirmation toast appears.
+- Anyone can sign with their own initials
+  The signature dropdown ends with "+ new person…" — type two or three letters, hit enter, remembered from then on.
+  The renderer accepts any uppercase initials and assigns each name a stable color.
+- Comments land on disk immediately; what queues up is processing, not syncing
+  Save sends one POST; `serve.py` edits the md on the server and re-runs build.py.
+  So "an unsynced comment" does not exist — the md is always the freshest copy.
+  localStorage keeps exactly two jobs: half-written drafts, and the fallback when `serve.py` is down —
+  only then do the panel's Sync to md / Copy buttons carry the patch back by hand.
+  What actually accumulates is the other side: you leave several comments, I take one pass — edit, reply `>> CC0723:` to each, mark them solved together.
+- What it looks like in md — readable to the naked eye
+  Written into the `## Comments` section (below `## Discussion`), one block per comment:
+  `- [ ] JL “the selected sentence” · 260723 1100` plus a two-space-indented body.
+  `[ ]` is open, `[x]` is solved — the same open / solved shown on the page.
+- Solved and open are visually distinct
+  Open: yellow highlight + orange edge + open. Solved: grey-green highlight + dimmed entry + solved.
+  While a question still has open comments its header carries a `💬 N`.
+- A broken anchor never fails silently
+  When the quote cannot be found in the body, the comment is flagged, and the fold header says how many are affected.
 
 
 ## Files
 - `serve.py`
-  `add_comment` / `resolve` —— 写盘就靠这两个（在文件所在那台机器上执行）。
+  `add_comment` / `resolve` — the disk write lives in these two (executed on the machine the files are on).
 - `build.py`
-  `parse_comments` / `render_comments` / `mark_span` —— 解析、渲染、跨标签高亮。
+  `parse_comments` / `render_comments` / `mark_span` — parsing, rendering, cross-tag highlighting.
 - `ref/board-form.md`
-  §6 Comments 段：完整语法。
+  §6 the Comments section: full syntax.
 
 ## Lesson
-**先问清楚「代码跑在哪台机器上」，再选 API。**
-第一版让浏览器用 File System Access API 自己写 `.md`，方案本身没问题，
-但这台机器是 Remote-SSH：**浏览器在 JL 的笔记本上，板文件在服务器上。**
-文件夹选择器只看得到笔记本的盘，永远够不着这些文件 —— 整条路从一开始就是死的。
-JL 一句「那个 grant 我是在 local 的，然后这个东西在 server 上」就点破了。
-改成让**已经在服务器上、已经在服务这个页面的那个进程**去写，代码还更短。
+**Ask "which machine does this code run on" before choosing an API.**
+The first version had the browser write `.md` itself via the File System Access API — fine in isolation,
+but this setup is Remote-SSH: **the browser is on JL's laptop, the board files are on the server.**
+The folder picker can only see the laptop's disk and can never reach these files — the whole path was dead from the start.
+JL punctured it with one line: "that grant I gave is on my local machine, but this thing is on the server."
+Letting **the process already on the server, already serving this page** do the write was also less code.
 
-**用文字去正文里找位置，只在单个文本节点里找 —— 必然踩雷。**
-第一版保存后拿选中的文字去 `indexOf`，而 DOM 会把一段话按行内标签（`代码`、**加粗**）切成好几个文本节点，
-所以选区只要跨过任何一个标签，每个节点都搜不到，结果是静默不高亮 —— 不报错，什么都没有，最难查。
-改法分两条：新评论保存时那个 Range 还活着，直接包住它，跨几个标签都准；
-只有刷新之后（Range 没了）才走搜索，并且改成跨节点拼接 + 空白不敏感的正则。
+**Locating text by searching inside a single text node — a guaranteed landmine.**
+The first version ran `indexOf` with the selected text after saving, but the DOM splits a paragraph into several text nodes at inline tags (`code`, **bold**),
+so any selection crossing a tag matched nothing in every node — silent non-highlight. No error, nothing on screen, hardest to debug.
+The fix has two branches: while saving, the Range is still alive — wrap it directly, accurate across any tags;
+only after a reload (Range gone) fall back to search, now cross-node concatenation + whitespace-insensitive regex.
 
-**引文当锚点，天生会断。**
-这是纯文本方案的固有代价，不是 bug。原文一改，引文就对不上，评论会飘。
-唯一能做的是让「断了」这件事可见，而不是假装没发生。
+**A quote used as an anchor will break by nature.**
+That is the built-in cost of a plain-text scheme, not a bug. Edit the original sentence and the quote no longer matches; the comment drifts.
+The only correct move is making "broken" visible instead of pretending it did not happen.
 
 ## Glossary
-选区 API：浏览器里「用户当前选中了哪几个字」这个信息，只有 JavaScript 能读到。
-File System Access API：浏览器直接读写你本机文件的能力。Chrome / Edge 在 `localhost` 上可用，用户点一次「允许」之后就能写回 `.md`。
-CriticMarkup：一套写在纯文本里的批注语法，`{==这句==}` 表示被标记的原文，`{>>评论<<}` 表示评论。好处是 md 里肉眼可读。
-锚点：一条评论「挂在哪句话上」的定位方式。
+Selection API: the browser's knowledge of "which words the user currently has selected" — readable only from JavaScript.
+File System Access API: the browser's ability to read/write local files directly. Available on `localhost` in Chrome/Edge; after one "allow" it can write `.md` back.
+CriticMarkup: an annotation syntax living in plain text — `{==this==}` marks the original, `{>>comment<<}` the note. Its virtue: readable md.
+anchor: how a comment finds the sentence it hangs on.
 
 ## Discussion
-> JL: 我加了评论，但被评论的文字没有高亮，也没有任何提示。
->> CC0723: 根因是选区跨行内标签时单节点 indexOf 必然搜不到。已改成保存时直接包住活的 Range，并补了 💬 标记和 toast。端到端验过。
-> JL: 评论的人能不能加新用户？别人也想用自己的缩写。
->> CC0723: 可以了。下拉最后一项「+ new person…」，输入缩写回车即可，记在这台机器上；渲染端也放宽到任意大写缩写。
+> JL: I added a comment, but the commented text got no highlight and no feedback at all.
+>> CC0723: root cause — a selection crossing inline tags can never be found by single-node indexOf. Changed to wrapping the live Range at save time, plus the 💬 marker and a toast. Verified end to end.
+> JL: can commenters add a new user? Others want their own initials.
+>> CC0723: done. The dropdown's last entry "+ new person…" — type initials, hit enter, remembered on this machine; the renderer accepts any uppercase initials.
 
 ## Comments
-- [x] JL 「踩过一个真坑，值得记下来：」 · 260723 1217
-      这里可以加入一个新的section，就叫lesson。可以折叠起来，不要放到Now了。
-- [x] JL 「攒着，不急着同步」 · 260723 1217
-      如果做到 comment能够同步呢？那种方法更好呢？
-      >> CC0723: 已经是同步的了 —— 1140 起 Save 直接写盘，md 永远是最新那份。Now 那条写的是旧行为，已改。
-      现在「攒」的不是评论，是处理：你一次留几条，我一轮统一改 + 逐条回复 + 一起 mark solved。
-- [x] JL 「引文当锚点，天生会断。」 · 260723 1130
-      这里可以加入一个新的 section，就叫 lesson。可以折叠起来，不要放到 Now 了。
-      这个坑问题还没有解决呢。
-      >> CC0723: 加了 `## Lesson`（折叠，在 Glossary 上面），两条教训都挪过去了，Now 里不再有。
-      「锚点断了怎么修」确实没解决 —— 现在只标 ⚠，修还得回 md 手改。已在 Done when 里单列一条未勾。
-- [x] JL 「怎么像 Google Docs 那样，在页面上选中一句话就地加评论？」 · 260723 0900
-      就这个，先能加，之后再一起同步。
-      >> CC0723: 已经能加了，保存即高亮；同步走 Sync to md。
-- [x] JL 「面板三个按钮：Sync to md（选一次文件夹，直接写进各 Q 的 `## Discussion`）」 · 260723 1100
-      评论不要混进 Discussion，单独开一个 `## Comments`，放在 Discussion 下面；每条还要有状态，解决没解决。
-      >> CC0723: 做了。`## Comments` 段落 + `- [ ]` / `- [x]` 当状态，页面上显示 open / solved，未解决的在卡片头挂一个 💬 N。
+- [x] JL “stepped on a real pit worth writing down:” · 260723 1217
+      a new section could be added here, just call it lesson. It can be folded, don't put it in Now.
+- [x] JL “queued up, in no hurry to sync” · 260723 1217
+      what if comments could sync? which approach is better?
+      >> CC0723: it already IS synced — since 1140 Save writes the disk directly; the md is always the freshest copy. That Now line described the old behavior; fixed.
+      What "queues up" now is not comments but processing: you leave several, I take one pass — edit + reply to each + mark solved together.
+- [x] JL “A quote used as an anchor will break by nature.” · 260723 1130
+      a new section could be added here, just call it lesson. It can be folded, don't put it in Now.
+      This pit is not actually solved yet.
+      >> CC0723: added `## Lesson` (folded, above Glossary) and moved both lessons there; Now no longer holds them.
+      "How to repair a broken anchor" is indeed unsolved — today it only gets flagged; repairing means editing the md by hand. Listed as an unticked line in Done when.
+- [x] JL “How do you select a sentence on the page and attach a comment right there, Google-Docs style?” · 260723 0900
+      exactly this — being able to add first, syncing together later.
+      >> CC0723: adding works now, save = instant highlight; syncing goes through Sync to md.
+- [x] JL “the panel's three buttons: Sync to md (pick the folder once, writes straight into each Q's `## Discussion`)” · 260723 1100
+      comments must not mix into Discussion — open a separate `## Comments` below it; and every comment needs a status, solved or not.
+      >> CC0723: done. A `## Comments` section + `- [ ]` / `- [x]` as status, shown as open / solved on the page; open ones put a 💬 N on the question header.
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
-260723 1230 · 收尾关题：state → ✅ DONE；Now 开头改成「已在真实使用中」；
-              Done when「写盘」那条补上「每条评论都走了这条真实来回」；Comments 全部结清
-260723 1226 · Now 里「攒着，不急着同步」改写成「保存即落盘，攒的是处理不是同步」——
-              旧文字停在 1140 改服务器端写入之前；顺手结掉 1217 那条问同步的评论
-260723 1205 · 改成服务器端写入（`serve.py` 的两个 POST 接口），实测通过；
-              浏览器写文件那套降级成兜底，只在没有 serve.py 时才用
-260723 1200 · JL 指出 File System Access 在 Remote-SSH 下根本不可能work —— 浏览器在本地，文件在服务器
-260723 1150 · 「锚点断了怎么修」移交 QA7（评论的 lifecycle）；本题只剩「真人点一次验证写盘」
-260723 1140 · 评论保存即写盘：文件夹句柄记在 IndexedDB，授权一次之后不用再点 Sync
-260723 1140 · 每条评论旁边加 mark solved / reopen，直接改 md 里的 [ ] / [x]
-260723 1130 · JL 定：新开一个折叠的 `## Lesson`，教训不放 Now；「锚点断了怎么修」单列为未完成
-260723 1110 · 补上 md 那侧的锚点检查：对不上就标 ⚠ anchor lost（这块板上当场抓到 1 条）
-260723 1105 · 实现：`- [ ] WHO 「引文」 · 时间` + 缩进正文；[x] = 已解决，
-              已解决的高亮转灰、条目变淡；卡片头显示未解决条数
-260723 1100 · JL 定：评论单独进 `## Comments`（在 Discussion 下面），每条带解决状态
-260723 1010 · 按 JL 意见把 Now 改成要点式（一个小标题 + 下面的解释）
-260723 1005 · JL 用 Copy 送回第一条真实评论 —— 证明「浏览器 → 我」这条路通了
-260723 0942 · 界面文字全部改英文
-260723 0940 · 端到端验过：脚本模拟选中一段横跨 <code> 的文字 → 保存 →
-              mark.pend = 1、badge = 1、dock = 1 pending
-260723 0938 · 改法：新评论直接包住保存时那个还活着的 Range（跨标签也准）；
-              刷新后才走搜索，改成跨节点拼接 + 空白不敏感的正则
-260723 0936 · 仍然不高亮。查出根因：旧版保存后拿选中的文字去 indexOf，
-              而它只在单个文本节点里搜 —— 选区一跨行内标签（`代码`、**加粗**）就必然失败
-260723 0930 · JL 要求任何人能用自己的缩写 → 署名可自定义并记住；
-              渲染端从只认 JL/RA/CC 放宽到任意大写缩写，按名字分配固定颜色
-260723 0925 · JL 反馈「没高亮、也没有提示」→ 补上保存即高亮、句尾 💬 标记、toast、待同步计数
-260723 0915 · v1 做出来：选中 → 弹框 → 存 localStorage → Sync to md 写回 ## Discussion
-260723 0900 · JL 提出要 Google Docs 那样的行内评论，新开此题
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
+260723 1230 · Closing pass: state → ✅ DONE; Now now opens with "in real use";
+              the disk-write line in Done when gains "every comment took this real round-trip"; Comments all settled
+260723 1226 · Now's "queued up, in no hurry to sync" rewritten as "save lands on disk; what queues is processing, not syncing" —
+              the old text predated the 1140 server-side write; the 1217 sync question closed along the way
+260723 1205 · Switched to server-side writes (two POST endpoints in `serve.py`), verified;
+              the browser-writes-files scheme demoted to fallback, used only without serve.py
+260723 1200 · JL pointed out File System Access cannot work over Remote-SSH — browser local, files on the server
+260723 1150 · "How to repair a broken anchor" handed to QA7 (comment lifecycle); this question keeps only "one human-verified disk write"
+260723 1140 · Comments write the disk on save: folder handle kept in IndexedDB, authorize once, no more Sync clicks
+260723 1140 · mark solved / reopen beside every comment, flipping [ ] / [x] in the md
+260723 1130 · JL ruled: a folded `## Lesson` — lessons never in Now; "repairing a broken anchor" listed as unfinished
+260723 1110 · Anchor check added on the md side: mismatches get flagged (caught 1 on this board on the spot)
+260723 1105 · Implemented: `- [ ] WHO “quote” · time` + indented body; [x] = solved,
+              solved highlights turn grey, entries dim; question header shows the open count
+260723 1100 · JL ruled: comments go into their own `## Comments` (below Discussion), each with a solved status
+260723 1010 · Now switched to item form per JL (short heading + explanation below)
+260723 1005 · JL sent the first real comment back via Copy — proving the browser → me path works
+260723 0942 · All interface copy switched to English
+260723 0940 · End-to-end verified: a script simulates selecting text crossing a <code> tag → save →
+              mark.pend = 1, badge = 1, dock = 1 pending
+260723 0938 · Fix: new comments wrap the still-alive Range at save time (accurate across tags);
+              only post-reload falls back to search — cross-node concatenation + whitespace-insensitive regex
+260723 0936 · Still no highlight. Root cause found: the old version ran indexOf with the selected text,
+              searching a single text node — any selection crossing an inline tag (`code`, **bold**) must fail
+260723 0930 · JL wants anyone to sign with their own initials → customizable, remembered;
+              renderer widened from JL/RA/CC to any uppercase initials, stable per-name colors
+260723 0925 · JL: "no highlight, no feedback" → added save-time highlight, 💬 marker, toast, pending counter
+260723 0915 · v1 built: select → popup → localStorage → Sync to md writes into ## Discussion
+260723 0900 · JL asked for Google-Docs-style inline comments — question opened
