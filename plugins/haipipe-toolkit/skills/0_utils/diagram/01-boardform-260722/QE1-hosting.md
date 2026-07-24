@@ -15,9 +15,9 @@ This board lives only on one machine's `127.0.0.1:5599`. To show it to anyone el
   Whether auth is needed, how comments attribute to people, whether outsiders may write to disk — the moment remote writes are allowed, `serve.py`'s narrow interface ("only under `--root`, only two kinds of edits") must be re-audited.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **How the board is reached**: local / LAN / server, who can see it, login or not, static export vs. full function.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   The board's **content and layout** — that is the `QA` group and `QC2`. Nor whether **work can be done on the board** — that is the `QD` group; this question only owns "where it opens from".
 
 ## Diagram

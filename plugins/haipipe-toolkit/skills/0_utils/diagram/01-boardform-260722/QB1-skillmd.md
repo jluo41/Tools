@@ -14,9 +14,9 @@ Someone else — or a future me without this conversation's memory — types `/h
   It is the skill's entry point, and the only export channel for "rules the board has settled" (the graduation mechanism).
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **What goes into SKILL.md**: which actions, how long, what belongs in the body vs. in `ref/`, and how it stays in sync with the board (graduation).
-- ❌ This question does not own
+- ↪ Covered elsewhere
   How to **verify it suffices** once written — that is `QB2` (fresh-agent cold read).
 
 ## Diagram

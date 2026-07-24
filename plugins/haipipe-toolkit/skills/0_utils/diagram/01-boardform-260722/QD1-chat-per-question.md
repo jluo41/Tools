@@ -15,9 +15,9 @@ Give every Q on the board its own conversation — but first the thing itself mu
   It is the shared foundation of `QD2` (drawer), `QD3` (terminal), `QD5` (board-level agent) — change that LAW and all three follow.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **The rules**: board level vs. question level, one session per question, one window per session, where the session id is stored.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   The implementations — the web drawer is `QD2`, the real terminal is `QD3`, widening the scope to the whole board is `QD5`.
 
 ## Diagram

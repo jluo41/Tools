@@ -14,9 +14,9 @@ The emoji at the head of a group title (`**🎨 …**`) is hand-written today. C
   Trigger, model, overwrite policy, scope — four forks, all JL's to call; I must not pick for him and get overturned (`QD1`'s permission rule went through exactly that rework).
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **Automatic icon assignment**: how it triggers, which model, fill-blanks-only vs. overwrite, one question vs. the whole board.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   The hand-written half (`**🎨 …**` → 🎨, default 🔹 when absent) — settled with `QA4`, spec in `ref/board-form.md §5`.
 
 ## Diagram

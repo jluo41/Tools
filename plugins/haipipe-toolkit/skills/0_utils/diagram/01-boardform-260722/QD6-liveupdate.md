@@ -1,8 +1,8 @@
 # Live page updates
-state: 🔴 OPEN
+state: 🟡 PARTIAL
 owner: JL
-method: decide whether live updates are wanted and via which mechanism; answer the Node question along the way — I lean no
-
+method: never reload — poll our own Last-Modified and swap div.wrap in place; the drawer survives because it was never inside the content
+session: 8ffce751-3dec-429b-8e05-57cc3c91402f
 ## Question
 `board.html` is a static file. Someone (or serve.py) edits the md and regenerates the html, but **my open tab does not update itself** — I have to refresh to see it. Should this become live? Does that require a Node.js version?
 
@@ -14,9 +14,9 @@ method: decide whether live updates are wanted and via which mechanism; answer t
   This is the threshold for "can the board serve as a collaboration dashboard". Only after the mechanism lands can "open it and it stays fresh" be discussed.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **How the page learns the content changed, and how it updates**: polling / SSE / WebSocket / manual refresh — pick one; full-page reload vs. a "new changes" banner. Plus the one-line answer: Node or not.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   How comments get into the md (`QA6`, solved) or how drawer/terminal work (`QD2`/`QD3`). Only "after a change, how do other browsers learn of it first".
 
 ## Diagram
@@ -39,17 +39,26 @@ method: decide whether live updates are wanted and via which mechanism; answer t
 ```
 
 ## Items to Finish
-- [ ] Pick a mechanism (manual / poll / SSE / WS)
-      My reasoning is in Where we are; the final call is yours.
-- [ ] Answer the Node question
-      My initial verdict: no. Overturning it requires naming something Python's serve.py cannot do.
-- [ ] Settle "what an update looks like"
-      A hard full-page reload wipes your scroll position and half-written comments. Lean: a banner "↻ new changes, click to refresh" — reload only on click.
-- [ ] Keep the script-free readability invariant
-      Whatever the pick, it is pure enhancement: delete the script and the page still reads. build.py's assertion keeps standing guard.
+- [x] Pick a mechanism (manual / poll / SSE / WS)
+      Decided by JL's requirement (260724: "when the chat changed something, it can be refreshed automatically, and after the refresh my chat interface is still there") → **HEAD-poll every 4s on the page's own URL** (both servers send Last-Modified; zero new endpoints). SSE stays the upgrade path if 4s ever feels slow.
+- [x] Answer the Node question
+      **No** — and the survive-the-refresh requirement is the strongest reason yet: the drawer survives because it hangs off `<body>` and we swap only `div.wrap`. A framework re-render buys nothing here.
+- [x] Settle "what an update looks like"
+      Better than the banner I leaned to: **in-place swap, automatic** — content updates under you, scroll restored, a small "↻ board updated" toast; held while you have text selected (mid-comment). No reload ever, so nothing to lose.
+- [x] Keep the script-free readability invariant
+      The watcher lives inside the page's single script block; build.py's strip-scripts assertion still passes (223k chars of body without JS).
+- [ ] Seen working in a real browser
+      Built and node-checked; the honest tick waits for JL's tab to actually swap under a live edit (their next drawer-driven change will be the test).
 
 ## Where we are
-None of it is built; today is ① manual refresh.
+**v1 shipped 260724 — automatic in-place refresh; the drawer, terminal, and comment dock all survive updates.**
+
+- How it works
+  Every 4s the page HEADs its own URL and compares Last-Modified. On change: fetch the new page, DOMParser it, `replaceWith` ONLY `div.wrap` (all content), re-run the wiring (`window.__boardRewire`: marks/paint/resolve/discuss/chat buttons — the expand-all listener is delegated and survives by itself), restore scroll, toast "↻ board updated". Everything the scripts appended to `<body>` — comment dock, chat drawer mid-stream, terminal, fab — is untouched.
+- The console needed one line
+  FastAPI registers GET only, so `boards_api.py`'s page route gained `methods=["GET","HEAD"]`; serve.py had HEAD via SimpleHTTPRequestHandler all along.
+- Held during selection
+  If you have text selected (probably mid-comment), the swap waits for the next tick.
 
 - The file is always fresh — only the browser does not know
   You write a comment on the page → serve.py writes the md and regenerates board.html on the spot. So **the html on disk is already current**;
@@ -70,7 +79,10 @@ None of it is built; today is ① manual refresh.
 ## Discussion
 > JL: this page does not update in real time — what should we do? Do we need to build a nodejs version? Open a Q to discuss.
 >> CC0724: opened. My initial verdict: no Node — "md changed → tell the browser" is one SSE (or polling) endpoint inside today's Python serve.py; Node-style HMR is a much bigger ask. Five routes laid out, yours to call.
+> JL: if we have the haichat-board, could the content be updated in realtime, or do I reload manually? What I want: in QD2, when the chat changed something, it refreshes automatically, and after the refresh my chat interface is still there — should we use node js for it?
+>> CC0724: shipped exactly that, without Node: the page watches its own Last-Modified and swaps div.wrap in place — your chat drawer (even mid-stream), the terminal, and the comment dock are appended to <body>, so they never notice. When the drawer's edit lands, the content under it updates itself within ~4s with a "↻ board updated" toast.
 
 ## Log
+260724 1510 · v1 shipped per JL's requirement (auto-refresh, chat survives): HEAD-poll 4s + in-place div.wrap swap + rewire + scroll restore + toast; held during text selection; console page route gained HEAD; Node answered NO — 🔴 → 🟡, only the seen-in-browser tick remains
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260724 · JL raised "the page is not live — Node or not"; QD6 opened; five routes laid out (manual/poll/SSE/WS/Node), I lean SSE and no Node, JL to decide

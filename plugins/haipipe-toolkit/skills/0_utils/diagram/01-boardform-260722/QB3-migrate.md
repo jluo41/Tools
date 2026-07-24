@@ -14,9 +14,9 @@ Two old-format boards already sit under `subjective-label/diagram/`. Should they
   It also tests one thing directly: whether the generator is truly backward-compatible with old boards (whether the `ALIAS` multi-name mechanism holds).
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **What happens to the legacy boards**: which ones migrate, how far, or regenerate in place.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   The new format itself — that is `QA1`/`QA2`/`QA4`. This question owns only the existing stock.
 
 ## Diagram

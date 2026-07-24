@@ -14,9 +14,9 @@ I open an empty `QA9-xxx.md` — what do I put in it? Which sections are require
   The template decides what the page can display at all. It is the flip side of `QA4`: when `QA4` changes the on-stage order, this template must follow, or newly written questions drift back to the old shape.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **The inside of one Q file**: which sections exist, which are required vs. optional, what goes in each, and what `ref/q-template.md` looks like.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   Which files are in the folder and how a Q attaches to the board — that is `QA1`. Nor **how the words inside each section should be written** — that is `QA5` (this one owns structure, that one owns prose).
 
 ## Diagram

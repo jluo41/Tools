@@ -14,9 +14,9 @@ Open a conversation right inside the page: it reads this question's content and 
   It and `QD3` are two forms of one need with entirely different trade-offs — each must be settled on its own, neither bent to fit the other.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **The web-drawer implementation**: the three permission tiers, streaming, markdown rendering, cost, and how it obeys `QD1`'s LAW.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   The rules themselves (levels, boundaries) — that is `QD1`. Nor the real terminal — that is `QD3`.
 
 ## Diagram
@@ -194,6 +194,7 @@ effort: how much thinking the model spends on one answer, five tiers low→max.
       but one question: is this output actually streaming out? It doesn't feel like it.
 
 ## Log
+260724 1510 · The wait line tells the truth now: serve.py emits stage events ("booting claude — the full tier loads the whole skill registry…" / "session up") so the drawer shows real progress instead of a static "…thinking"; the collapsed 💭 block is labeled "Thinking (N chars — click to reopen)". Also verified: RESUMED sessions stream thinking now (probe on QD6: 3 think events) — yesterday's loose end ② is gone, cured by the explicit thinking={enabled} flag
 260724 1455 · Diff preview at the gate BUILT (serve.py ask events carry `detail`, drawer renders −/+ blocks; node-checked; live pop owed — the E2E's full-tier boot outran the window, turn stopped clean, board.md untouched). The extension's backend anatomized in Where we are per JL's "duplicate it"; item ④ persistent-process named as the real remaining delta
 260724 1350 · Console relay verified (boards_api.py pipes /_board/chat NDJSON through 8093 — "RELAY OK" streamed); VS Code extension alignment analyzed per JL's question: same engine, adopt diff-preview → @-mentions → plan mode, skip checkpoints
 260724 1242 · Translated to English (JL 260724: everything on the board in English)

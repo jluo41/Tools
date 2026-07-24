@@ -14,9 +14,9 @@ method: one file, two modes: scroll to read / one question per screen. JL has ru
   Whether the remaining projection features (arrow-key paging, presenter mode) get built and where — they all need JS, and the board has the invariant "must never depend on JS to be readable".
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **Projection**: one file or two, how focus mode doubles as a slide, whether paging and presenter mode get built.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   How the single-question page is **laid out** (section order, names, what folds) — that is `QA4`. Nor how the board is **shared with others** — that is `QE1`.
 
 ## Diagram

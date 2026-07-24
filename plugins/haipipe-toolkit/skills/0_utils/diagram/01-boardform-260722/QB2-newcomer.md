@@ -14,9 +14,9 @@ How do we prove this skill is **usable** — and not usable only by the person w
   It is the only acceptance gate that can be **re-run** — every structural change (like the 260723 redesign) voids the previous acceptance and forces a re-run.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **How acceptance is run**: what the fresh agent is given, what it must do, what counts as passing, how often to re-run.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   **What SKILL.md says** — that is `QB1`. This question only judges whether it suffices.
 
 ## Diagram

@@ -14,9 +14,9 @@ A board is a folder. So which files MUST that folder contain? And more important
   It directly decides whether an RA can claim one question and edit it without colliding with anyone else (one file per question vs. everything stuffed into one board.md).
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **What is in the folder and how a Q attaches to the board**: which files are required, membership by path vs. by list, and what happens when registration is missed.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   What a Q file looks like **inside** — that is `QA2` (the template). Nor **where in the repo** the folder lives or what it is named — that is `QC1`.
 
 ## Diagram
