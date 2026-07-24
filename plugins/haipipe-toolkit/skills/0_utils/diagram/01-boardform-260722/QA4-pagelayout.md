@@ -39,40 +39,63 @@ https://app.excalidraw.com/s/1JWkKv8oMIX/4SD9kLApiQC?element=gFrVKXlBG2d-IrA9PD7
 
 ## Items to Finish
 - [x] Unframed
-      A question opened on its own carries no border, no rounded corners, and no card background — the content sits directly on the page. This began as JL's complaint on 260722 that the page felt "boxed in" compared with the slides `/html-ppt` produces. The fix was not cosmetic: a card frame silently tells the reader they are looking at one item in a collection, which is precisely the wrong signal when the intent is that this single question should own the whole screen. Removing the frame, raising the title to 38px, and compressing the header into a thin marquee bar together changed what the page claims to be.
+      A question opened on its own carries no border, no rounded corners, and no card background, so the content sits directly on the page.
+      This began as JL's complaint on 260722 that the page felt boxed in compared with the slides `/html-ppt` produces. The fix was not cosmetic. A card frame quietly tells the reader they are looking at one item in a collection, which is precisely the wrong signal when the intent is that this single question owns the whole screen. Removing the frame, raising the title to 38px, and compressing the header into a thin marquee bar together changed what the page claims to be.
 - [x] The gap is visible at a glance
-      Someone who reads nothing but the headings should still come away with two facts: what is being asked, and how far it is from done. This is what the auto-counted `5/6` in the `Items to Finish` heading buys — it turns a checklist into a progress signal that survives not being read. The underlying idea is that most people scan a board rather than read it, and a page that only rewards full reading will be misjudged by everyone who scans.
+      Someone who reads nothing but the headings still comes away knowing what is being asked and how far it is from done.
+      This is what the auto-counted `5/6` in the `Items to Finish` heading buys: it turns a checklist into a progress signal that survives not being read. The assumption behind it is that most people scan a board rather than read it, so a page that only rewards full reading will be misjudged by everyone who scans.
 - [x] Paging without returning to the index
-      Every screen ends with one line: `← previous · ☰ Index · next →`. The reason is behavioural rather than technical — when moving on requires a trip back to the index, people stop after one question instead of reading the run. Since the questions in a group are usually meant to be read in sequence, forcing a detour between them works against the board's own structure.
+      Every screen ends with one line: `← previous · ☰ Index · next →`.
+      The reason is behavioural rather than technical. When moving on requires a trip back to the index, people stop after one question instead of reading the run. Questions in a group are usually meant to be read in sequence, so forcing a detour between them works against the board's own structure.
 - [x] Uneven lengths leave no big blank
-      `Items to Finish` and `Where we are` stack vertically instead of sitting side by side. They were originally side by side, and JL asked for the change on 260723 for a plain reason: the two are almost never the same length, so one column always ended in a large area of white space, and worse, the shorter column looked finished when it had simply run out. Stacking also removes the accidental implication that the two are parallel or comparable — they are not.
+      `Items to Finish` and `Where we are` stack vertically instead of sitting side by side.
+      They were originally two columns, and JL asked for the change on 260723 for a plain reason: the two are almost never the same length, so one column always ended in a large patch of white space, and the shorter one looked finished when it had simply run out. Stacking also removes an accidental implication that the two are parallel or comparable, which they are not.
 - [x] Long passages can be chunked
-      Body text uses `- short heading` with an indented explanation beneath it, plus full-line bold sentences acting as group titles above a run of items, and checklist entries may carry explanations of their own. This structure exists because the alternative — several unbroken paragraphs in a row — is unreadable on a projected screen and unscannable on a laptop. The explanation is folded by default and the heading is not, which is what makes it safe for an explanation to be long: it costs the scanning reader nothing.
+      Body text uses `- short heading` with an indented explanation beneath it, and checklist entries can carry explanations too.
+      The structure exists because the alternative, several unbroken paragraphs in a row, is unreadable on a projected screen and unscannable on a laptop. The heading stays on stage while the explanation folds, which is what makes it safe for an explanation to be long: it costs the scanning reader nothing.
 - [x] Order flipped to "intent first, status second"
-      The on-stage order became `Question → Boundary → Diagram → Items to Finish → Where we are`, implemented in `build.py` and verified against the rendered page rather than the markdown. Before the 260723 redesign `Where we are` came first, which meant a reader with no background met implementation detail before learning what was being decided. That was this layout's single worst flaw, and it was invisible to us precisely because we already knew the goal — the detail read as context to people who had it, and as noise to everyone else.
+      On-stage order became `Question → Boundary → Diagram → Items to Finish → Where we are`, verified against the rendered page rather than the markdown.
+      Before the 260723 redesign `Where we are` came first, so a reader with no background met implementation detail before learning what was being decided. That was this layout's single worst flaw, and it was invisible from the inside precisely because we already knew the goal: the detail read as context to anyone who had it and as noise to everyone else.
 - [x] Section names switched to plain language
-      `Done when` became `Items to Finish` and `Now` became `Where we are`. The old names were compact but slightly cryptic; the new ones say what the section contains without needing to be learned. Because renaming a section could have broken every existing board, `ALIAS` was added so one slot answers to several names — old boards, including the ones with Chinese section names, regenerate untouched.
+      `Done when` became `Items to Finish` and `Now` became `Where we are`.
+      The old names were compact but had to be learned; the new ones say what the section contains. Because renaming a section could have broken every existing board, `ALIAS` was added so one slot answers to several names, and old boards, including the ones with Chinese section names, regenerate untouched.
 - [x] Every question on the board rewritten to the new structure
-      All 18 questions then on the board were converted: `## Question` rewritten as one paragraph plus bullets, `## Boundary` and `## Files` added, and the retired `## Why here` folded into the Question bullets. The acceptance check inspected the **generated page** for the `.bnd` and `.fls` blocks rather than grepping the markdown for section names — an earlier substring check had been fooled by text sitting inside an ascii fence, and QA2 passed that way while actually missing the section.
+      All 18 questions then on the board were converted, not just this one.
+      Each got `## Question` rewritten as a paragraph plus bullets, `## Boundary` and `## Files` added, and the retired `## Why here` folded in. The acceptance check inspected the generated page for the `.bnd` and `.fls` blocks rather than grepping the markdown, because an earlier substring check had been fooled by text sitting inside an ascii fence and QA2 passed that way while actually missing the section.
 - [ ] A zero-background reader understands one page in one pass
-      The remaining bar, and the only one that tests the layout's actual claim: hand one question to a fresh agent with no prior context and have it retell what is being asked, what counts as done, and where things stand. It counts only if all three come back intact. This item exists because of what happened on 260723 — the question closed ✅ with every other box ticked and was reopened the same day, since none of those boxes represented the reader the layout is for.
+      Hand one question to a fresh agent with no prior context and have it retell what is being asked, what counts as done, and where things stand.
+      It counts only if all three come back intact. This item exists because of what happened on 260723: the question closed ✅ with every other box ticked and was reopened the same day, since none of those boxes represented the reader the layout is for. A checklist that omits the real user proves nothing when it is fully ticked.
 
 ## Where we are
-**✅ Layout and generator are done; acceptance is two steps short.**
+The layout and the generator are finished. Focus mode, the fixed intent-first order, plain-language section names, and the fold that keeps long explanations off the scanning path are all in place, and every question on this board is written to that shape. One claim is still unproven, and it is the one the whole layout rests on: that a reader with no background can take in a page in a single pass.
 
-- Order and names (the 260723 redesign)
-  The on-stage order is now fixed as `Question → Boundary → Diagram → Items to Finish → Where we are` — intent first, status second — and the two status sections were renamed to `Items to Finish` and `Where we are`. `Why here` was retired in the same pass, its job absorbed into the `## Question` bullets so that the opening section could stand alone. This was the largest single change to the layout, and it came from JL's observation that a zero-background reader could barely follow the page; the diagnosis was that the ordering, not the wording, was doing the damage.
-- `## Question` became "one paragraph + bullets"
-  The section is rendered through `body()`, with the first paragraph set as a 21px lead line and the bullets following beneath it. The bullets are not decoration — they carry why the question is hard, what breaks while it stays open, and what it affects downstream. The acceptance bar attached to this shape is deliberately harsh: this section alone, with nothing after it, should orient someone who has never seen the board.
-- `🚧 Boundary` added
-  A new section stating what the question owns and, more importantly, what it does not, naming the question that owns the excluded part. It was added because readers were repeatedly judging a question against expectations imported from a neighbouring one — asking why QA4 said nothing about writing quality, when writing quality is QA5's subject. Declaring the exclusion turned out to be more useful than declaring the ownership.
-- Old boards do not break
-  `ALIAS` allows a single slot to answer to several names: `Done when` maps to `Items to Finish`, `Now` maps to `Where we are`, and the original Chinese section names still resolve. This was a precondition for the rename rather than an afterthought — without it, renaming two sections would have silently emptied those blocks on every board written before the change, and the damage would only have surfaced the next time someone regenerated an old page.
-
-**Only the last step remains:**
-
-- Cold-read acceptance
-  A fresh agent reads one page and must retell what is being asked, what counts as done, and where things stand. All 18 questions were converted to the new structure, so QA4 is no longer the only page written to the standard and the cold read will test the real state of the board rather than one hand-tuned example. Until this passes, the layout's central claim — that one page is understandable in one pass — remains asserted rather than demonstrated, which is why the question sits at 🟡 and not ✅.
+- 260722 JL · The page stopped looking like a card
+  JL asked for pages like the slides `/html-ppt` produces, not something boxed in, and focus mode landed the same evening.
+  Border, rounded corners, and card background were removed so the content sits directly on the page, the title went to 38px, and the header was compressed into a thin marquee bar. The mechanism is pure CSS, `:target` plus `:has()`, so a question fills the screen without any script running. The reason this was not cosmetic: a card frame quietly tells the reader they are looking at one entry in a collection, which is the wrong signal when the intent is that this single question owns the screen.
+- 260723 JL · Goal and status stacked instead of side by side
+  `Items to Finish` and `Where we are` were sitting in two columns, and JL asked for them stacked.
+  The two are almost never the same length, so one column always ended in a large patch of white space, and the shorter one read as finished when it had simply run out. Stacking also removes an accidental implication that the two sections are parallel or comparable, which they are not: one is a target and the other is a position.
+- 260723 CC · Order flipped to intent first, sections renamed
+  On-stage order became `Question → Boundary → Diagram → Items to Finish → Where we are`, and `Done when` and `Now` were renamed to `Items to Finish` and `Where we are`.
+  Before this pass the page opened with `Where we are`, so a reader with no background met implementation detail before learning what was being decided. That was the layout's worst flaw and it was invisible from the inside, because anyone who already knew the goal read that detail as context rather than noise. The renames were a separate, smaller fix: the old names were compact but had to be learned, and the new ones say what the section holds.
+- 260723 CC · Boundary added, and Why here retired
+  A new `## Boundary` section states what a question covers and what is covered elsewhere, while `## Why here` was folded into the `## Question` bullets.
+  Boundary was added because readers kept judging a question against expectations carried over from a neighbouring one, for example asking why QA4 says nothing about writing quality when that is QA5's subject. Naming the question that does cover the excluded part turned out to matter more than stating what this one covers. `Why here` went away in the same pass so that the opening section could orient a reader without help from anything below it.
+- 260723 CC · ALIAS so old boards keep working
+  One slot now answers to several section names, so `Done when`, `Items to Finish`, and the original Chinese names all resolve to the same block.
+  This was a precondition for the rename rather than a convenience added afterwards. Without it, renaming two sections would have silently emptied those blocks on every board written before the change, and nobody would have noticed until the next time an old page was regenerated.
+- 260723 CC · All 18 questions rewritten to the new structure
+  Every question then on the board was converted, not just this one.
+  The acceptance check inspected the generated page for the `.bnd` and `.fls` blocks rather than grepping the markdown for section names. An earlier substring check had been fooled by text sitting inside an ascii fence, and QA2 passed that way while actually missing the section, so the check now looks at what was rendered.
+- 260724 JL · Everything on the board in English
+  JL ruled that board markdown, generated pages, and artifacts are written in English.
+  The questions were translated in place. The specification files under `ref/` have not been translated yet, which is a live inconsistency, since `ref/q-template.md` is copied into every new question and would reintroduce Chinese guide text.
+- 260724 JL · Item shape: heading, one sentence, then [more details]
+  An item now shows its heading and a one-sentence summary on stage, with the long explanation behind a visible `[more details]` button.
+  Two complaints produced this. First, the only cue that an item could be opened was a small `▸` triangle, so readers did not know anything was there: the fold was working and invisible at the same time. Second, a heading alone gives too little to decide whether to open it. The first indented line in the markdown is now the visible summary and the remaining lines are the folded detail, styled a shade lighter so the two are distinguishable at a glance.
+- open · Cold-read acceptance
+  A fresh agent must read one page and retell what is being asked, what counts as done, and where things stand.
+  It counts only if all three come back intact. Because all questions are now written to the standard, the cold read will test the real state of the board rather than one hand-tuned example. Until it passes, the layout's central claim is asserted rather than demonstrated, which is why this question sits at 🟡 rather than ✅.
 
 ## Files
 - `build.py`
