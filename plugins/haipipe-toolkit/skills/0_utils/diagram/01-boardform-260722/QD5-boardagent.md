@@ -14,9 +14,9 @@ Chat and terminal are both pinned to **one question** today (`QD1`/`QD2`/`QD3`).
   serve.py's session / HOLD machinery, where the entry point sits on the page, and how much power it gets (may it delete questions? edit a question someone is editing?).
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   The agent whose **scope is the whole board**: adding Qs, editing the Roster, regrouping, cross-question batch rewrites; its entry point, session rules, permission boundary.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   Chat / terminal pinned to a single question — that is `QD2` (SDK drawer) and `QD3` (real terminal). Nor what the front page **looks like** — that is `QC2`; this question only owns "who gets to change it".
 
 ## Diagram

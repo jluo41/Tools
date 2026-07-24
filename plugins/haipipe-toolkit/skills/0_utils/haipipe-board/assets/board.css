@@ -1,0 +1,465 @@
+/* palette + type follow html-ppt's academic-report; layout is body.single
+   (base.css's own no-JS mode) so every section is visible without any script. */
+:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
+ --accent:#1f5aa8;--ra:#15803d;--todo:#c23b3b;--wip:#b45309;--done:#15803d;--hold:#8a8a8a}
+@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+ --line:#2c2e33;--card:#1d1f23;--pre:#111214;--accent:#6ea8f0;--ra:#5fc98a;
+ --todo:#e0736e;--wip:#e0a458;--done:#5fc98a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+ font:16px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:34px 22px 90px}
+.h1{font-size:26px;line-height:1.35;margin:0 0 10px;font-weight:700}
+.spine{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+ border-radius:10px;padding:14px 17px;margin:0 0 14px}
+.spine p{margin:5px 0}
+.bar{font:13px ui-monospace,Menlo,monospace;color:var(--mut);margin:0 0 22px}
+details.ctx{border:1px solid var(--line);border-radius:10px;background:var(--card);
+ padding:10px 15px;margin:8px 0}
+details.ctx>summary{cursor:pointer;font-size:15px;font-weight:600;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"▸ ";color:var(--mut)}
+details[open]>summary::before{content:"▾ "}
+h3.sec{font-size:12.5px;letter-spacing:.09em;color:var(--mut);margin:30px 0 10px;font-weight:600}
+h3.sec .hint{float:right;font-weight:400;letter-spacing:0;text-transform:none}
+
+/* 默认（#top，没选中任何一题）：只显示目录，不把 10 张卡片全铺出来。
+   要一次看全部 / 想 Ctrl-F 全文，点目录旁边的 “show all”（跳到 #all）。 */
+body:not(:has(.q:target)):not(:has(#all:target)) .q{display:none}
+body:has(#all:target) h3.sec .hint{visibility:hidden}
+
+/* ── 单题聚焦：纯 CSS，零脚本 ────────────────────────────────
+   URL 命中某个 #Qn 时（点目录一行就会），把目录、进度条和其他题全收起来，
+   屏幕上只剩这一题。点「☰ 全部」回到 #top，:target 落空，一切复原。
+   :has() 是纯选择器，不需要 JS。 */
+.nav{display:none}
+body:has(.q:target) .idx,
+body:has(.q:target) .bar,
+body:has(.q:target) h3.sec{display:none}
+body:has(.q:target) .foot,
+body:has(.q:target) .q{display:none}
+/* 必须比上面那条更特指，否则被选中的那题会连自己一起藏掉 */
+body:has(.q:target) .q:target{display:block;margin-top:6px}
+.q:target .nav{display:flex;gap:10px;align-items:center;margin-top:20px;
+ padding-top:13px;border-top:1px solid var(--line)}
+.nav a{color:var(--accent);text-decoration:none;font-size:14px;
+ border:1px solid var(--line);border-radius:8px;padding:6px 13px}
+.nav a:hover{border-color:var(--accent)}
+.nav .all{margin:0 auto;color:var(--mut)}
+.q:target .top{display:none}
+.ir{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;
+ border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:9px;margin:6px 0;
+ text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden;--fill:0}
+/* 完成度上色：白底 → 绿。绿色叠加层的透明度 = 完成比例（--fill 0..1）。
+   从左往右填，像进度条，但很淡，不抢正文。 */
+.ir::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(90deg,
+   rgba(21,128,61,calc(var(--fill) * .30)),
+   rgba(21,128,61,calc(var(--fill) * .30)) calc(var(--fill) * 100%),
+   transparent calc(var(--fill) * 100%))}
+.ir > *{position:relative;z-index:1}
+.ir:hover{border-color:var(--accent)}
+h3.sec .hint a{color:var(--accent);text-decoration:none}
+.ir.todo{border-left-color:var(--todo)}.ir.wip{border-left-color:var(--wip)}
+.ir.done{border-left-color:var(--done)}.ir.hold{border-left-color:var(--hold)}
+/* 索引里的分组标题：放大 + 底下一条线，跟 Q 页里的节标题（.ch）同一套语言（JL 260723） */
+.grp{font-size:16px;font-weight:700;color:var(--fg);letter-spacing:-.01em;
+ margin:26px 0 9px;padding:0 0 6px 2px;border-bottom:1px solid var(--line)}
+.grp:first-of-type{margin-top:8px}
+.src{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);opacity:.7;text-decoration:none}
+a.src:hover{opacity:1;color:var(--accent);text-decoration:underline}
+.ir .i{font:12px ui-monospace,Menlo,monospace;color:var(--mut);min-width:24px}
+.ir .t{flex:1} .ir .w{font-size:12.5px;color:var(--mut)}
+.slide.q{border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:12px;
+ background:var(--card);padding:20px 22px;margin:18px 0;scroll-margin-top:16px}
+.slide.q.todo{border-left-color:var(--todo)}.slide.q.wip{border-left-color:var(--wip)}
+.slide.q.done{border-left-color:var(--done)}.slide.q.hold{border-left-color:var(--hold)}
+.qh{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12.5px;margin-bottom:4px}
+.qid{font:13px ui-monospace,Menlo,monospace;color:var(--mut)}
+.pill{padding:2px 10px;border-radius:999px;border:1px solid var(--mut);color:var(--mut)}
+.pill.todo{border-color:var(--todo);color:var(--todo)}
+.pill.wip{border-color:var(--wip);color:var(--wip)}
+.pill.done{border-color:var(--done);color:var(--done)}
+.pill.hold{border-color:var(--hold);color:var(--hold)}
+.top{margin-left:auto;color:var(--mut);text-decoration:none;font-size:12px}
+.top:hover{color:var(--accent)}
+.h2{font-size:22px;line-height:1.4;margin:4px 0 14px;font-weight:700}
+/* ## Question 现在是「一段话 + 几个要点」：.ask 只是容器，
+   第一段当大字领句，要点跟在下面按正常字号（JL 260723 改版） */
+.ask{padding-left:13px;border-left:3px solid var(--accent);margin:0 0 18px}
+.ask p{margin:0 0 6px}
+.ask>p:first-of-type{font-size:18px;line-height:1.55;margin:0 0 9px}
+/* 🚧 Boundary：这题管什么 / 不管什么。中性灰边，跟黄(现在)绿(目标)区分开 */
+.bnd{border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:10px;
+ padding:12px 15px;background:var(--bg);margin:0 0 16px}
+/* 嵌进来的 excalidraw 画布：一行只放一个分享链接就会变成这个 */
+.xcal{margin:12px 0}
+.xcal iframe{width:100%;height:440px;border:1px solid var(--line);border-radius:10px;
+ background:var(--card);display:block}
+.xcal .xopen{display:inline-block;margin-top:6px;font-size:12.5px}
+.q:target .xcal iframe{height:520px}
+/* 📁 Files：这题牵动哪些文件。蓝边（跟 Question 一个色系＝「指向真东西」） */
+.fls{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
+ padding:12px 15px;background:var(--bg);margin:16px 0 0}
+.fls code{font-size:12.5px}
+/* Question 段的小标签：跟 📍 Now / 🎯 Done when 一样显示段名，不只剩一个 ❓（JL 260723） */
+.ql{display:block;font-size:12px;font-weight:600;color:var(--accent);
+ letter-spacing:.02em;margin:0 0 5px}
+.q:target .ql{font-size:13px;margin:0 0 8px}
+.f{margin:16px 0}
+.f p,.fbd p{margin:0 0 4px}
+
+/* 现在 vs 算做完：上下叠，不左右分栏 —— 两边长短不一时并排会空掉半边 */
+.cmp{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}
+.col{border:1px solid var(--line);border-radius:10px;padding:12px 15px;background:var(--bg)}
+
+/* 勾选清单：md 里写 - [ ] / - [x] */
+.ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65}
+.ck .ct{font-weight:600}
+.ck.on .ct{font-weight:600;opacity:.85}
+.ck .bd{padding-left:0;margin-top:2px}
+.ck .bx{flex:0 0 auto;color:var(--mut);font-size:15px;line-height:1.6}
+.ck.on{color:var(--mut)}
+.ck.on .bx{color:var(--done)}
+
+.cmt.cc{border-color:var(--mut)}
+.cmt.u0{border-color:#8b5cf6}.cmt.u0 b{color:#8b5cf6}
+.cmt.u1{border-color:#0891b2}.cmt.u1 b{color:#0891b2}
+.cmt.u2{border-color:#c2410c}.cmt.u2 b{color:#c2410c}
+.cmt.u3{border-color:#be185d}.cmt.u3 b{color:#be185d}
+mark.pend{background:rgba(255,214,0,.30);outline:1px dashed rgba(180,83,9,.5)}
+.cmk{cursor:pointer;font-size:.78em;vertical-align:super;margin-left:2px;opacity:.85}
+.cmk:hover{opacity:1}
+#cdock.has{background:var(--wip)}
+#ctoast{position:fixed;left:50%;transform:translateX(-50%);bottom:26px;z-index:44;
+ display:none;background:var(--fg);color:var(--bg);padding:9px 17px;border-radius:9px;
+ font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#cbox .nu{width:100%;margin-top:7px;border:1px solid var(--line);border-radius:7px;
+ padding:6px 8px;font:13px inherit;background:var(--bg);color:var(--fg);display:none}
+
+/* 组标题（整行加粗）：领着下面一串 item 的一句话。🔹 图标 + 略大 + 上间距，
+   夹在节标题(.ch, 带下划线) 和 item 名字(.bt, ▸) 中间一层（JL 260723）。 */
+.gt{display:flex;align-items:baseline;gap:7px;font-weight:700;font-size:14.5px;
+ color:var(--fg);margin:16px 0 7px;letter-spacing:-.01em}
+.gt .gi{font-size:.9em;flex:0 0 auto}
+.gt:first-child{margin-top:2px}       /* 紧跟节标题的第一句，不留大空档 */
+.q:target .gt{font-size:16.5px;margin:22px 0 9px}
+.q:target .gt:first-child{margin-top:4px}
+
+/* 要点式：一个小标题 + 下面的解释（JL 260723）。解释收进 <details>，想看再点开 */
+.blt{margin:11px 0}
+.blt .bt{font-weight:600;position:relative;padding-left:15px}
+.blt .bt:before{content:"▸";position:absolute;left:0;color:var(--accent);transition:transform .12s}
+.blt summary.bt{list-style:none;cursor:pointer}
+.blt summary.bt::-webkit-details-marker{display:none}
+.blt summary.bt:hover{color:var(--accent)}
+.blt details.it[open]>summary.bt:before{content:"▾"}
+.blt .bt.nod:before{opacity:.45}          /* 没有解释：▸ 淡一点，示意点不开 */
+/* [more details] —— 看得见的展开按钮（JL 260724）。
+   只在「有解释」的 item 上出现；文字用 ::after 出，展开后变 hide。
+   纯 CSS，零脚本：脚本剥掉后 <details> 照样点得开，正文一直在 DOM 里。 */
+.md{display:inline-block;margin-left:8px;padding:1px 8px;border:1px solid var(--line);
+ border-radius:999px;font-size:11px;font-weight:500;color:var(--mut);
+ letter-spacing:.01em;white-space:nowrap;vertical-align:1.5px;
+ background:var(--card);transition:color .12s,border-color .12s}
+.md::after{content:"more details"}
+details.it[open]>summary .md::after{content:"hide"}
+summary:hover .md{color:var(--accent);border-color:var(--accent)}
+.q:target .md{font-size:11.5px}
+@media print{.md{display:none}}
+.blt .bd{padding-left:15px;margin-top:2px}
+.blt .bd p{margin:0 0 3px;color:var(--mut)}
+.q:target .blt{margin:15px 0}
+.q:target .blt .bd p{font-size:15.5px;line-height:1.7}
+
+/* 代码块也默认收起（JL 260723）：合着时只是一行 “</> code · N 行”，点开才铺代码。
+   带 .it → 跟节标题的 expand-all 一起开合。脚本剥掉后照样点得开，代码一直在 DOM。 */
+details.codef{margin:10px 0}
+details.codef>summary{list-style:none;cursor:pointer;padding:2px 0;
+ font:12px ui-monospace,Menlo,monospace;color:var(--mut)}
+details.codef>summary::-webkit-details-marker{display:none}
+details.codef>summary:before{content:"▸ ";color:var(--accent)}
+details.codef[open]>summary:before{content:"▾ "}
+details.codef>summary:hover{color:var(--accent)}
+details.codef>pre{margin:7px 0 0}
+
+/* 勾选清单里的 item：名字被 ☑/☐ 领着，caret 放在行尾示意可展开 */
+.ck .itw{flex:1;min-width:0}
+.ck summary.ct{list-style:none;cursor:pointer;position:relative;padding-right:16px}
+.ck summary.ct::-webkit-details-marker{display:none}
+.ck summary.ct:after{content:"▸";position:absolute;right:0;top:0;color:var(--accent);font-size:.82em}
+.ck details.it[open]>summary.ct:after{content:"▾"}
+.ck summary.ct:hover{color:var(--accent)}
+
+/* ── 每题一个对话窗（QD1）──────────────────────────────────── */
+.chatbtn{margin-left:6px;border:1px solid var(--line);background:var(--bg);color:var(--mut);
+ border-radius:7px;padding:2px 10px;font:11.5px inherit;cursor:pointer}
+.chatbtn:hover{border-color:var(--accent);color:var(--accent)}
+/* 右侧整条抽屉（照 haichat-inlab 的 drawer）：占满高度，页面往左让位。
+   打开它的图标是右下角那个悬浮的 💬 Chat（#chatfab）。 */
+#chat{position:fixed;top:0;right:0;bottom:0;z-index:60;width:min(440px,92vw);
+ display:none;flex-direction:column;background:var(--card);
+ border-left:1px solid var(--line);box-shadow:-12px 0 34px rgba(0,0,0,.20)}
+#chat.on{display:flex}
+body.chaton{padding-right:min(440px,92vw)}
+@media(max-width:820px){body.chaton{padding-right:0}}
+
+/* 打开聊天框的悬浮图标：右下角，只在看某一题时出现（JL 260723） */
+#chatfab{position:fixed;right:20px;bottom:20px;z-index:55;display:none;
+ align-items:center;gap:7px;background:var(--accent);color:#fff;border:none;
+ border-radius:999px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;
+ box-shadow:0 6px 20px rgba(0,0,0,.28)}
+#chatfab:hover{filter:brightness(1.06)}
+body:has(.q:target):not(.chaton) #chatfab{display:inline-flex}
+/* 聚焦看一题时，卡片头里那个小 💬 Chat 让位给悬浮图标；平铺/展开视图里还留着 */
+body:has(.q:target) .chatbtn{display:none}
+#chat .hd{background:var(--accent);color:#fff;padding:13px 15px;display:flex;
+ gap:9px;align-items:center;font-size:14px;font-weight:600;flex:0 0 auto}
+#chat .hd .qid{background:rgba(255,255,255,.22);border-radius:6px;padding:1px 7px;
+ font:11.5px ui-monospace,Menlo,monospace}
+#chat .hd .term{margin-left:auto;background:rgba(0,0,0,.18);border:none;color:#fff;
+ width:28px;height:26px;border-radius:7px;cursor:pointer;font-size:14px;line-height:1}
+#chat .tm{display:none;flex:1 1 auto;min-height:0;width:100%;background:#0b0d12;
+ padding:6px 8px;overflow:hidden}
+#chat .tm .xterm{height:100%}
+#chat .tm .xterm-viewport{overflow-y:auto}
+#chat .hd .x{background:rgba(0,0,0,.18);border:none;color:#fff;
+ width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:15px;line-height:1}
+#chat .bd{padding:14px;flex:1 1 auto;min-height:0;overflow-y:auto;
+ display:flex;flex-direction:column;gap:9px;background:var(--bg)}
+#chat .m{max-width:90%;padding:9px 13px;border-radius:13px;font-size:14px;line-height:1.6;
+ white-space:pre-wrap;word-break:break-word}
+#chat .m.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+#chat .m.cc{align-self:flex-start;background:var(--pre);color:var(--fg);
+ border:1px solid var(--line);border-bottom-left-radius:4px}
+#chat .m.sys{align-self:center;background:none;color:var(--mut);font-size:12px;padding:2px}
+/* 思考过程折叠块 */
+#chat .tk{align-self:flex-start;max-width:92%;border:1px dashed var(--line);
+ border-radius:11px;background:var(--bg);padding:4px 11px;margin:1px 0}
+#chat .tk>summary{cursor:pointer;color:var(--mut);font-size:12.5px;list-style:none;padding:3px 0}
+#chat .tk>summary::-webkit-details-marker{display:none}
+#chat .tk>summary::before{content:"▸ ";color:var(--mut)}
+#chat .tk[open]>summary::before{content:"▾ "}
+#chat .tk .tk-body{white-space:pre-wrap;word-break:break-word;color:var(--mut);
+ font-size:12.5px;line-height:1.6;padding:4px 0 6px;max-height:280px;overflow-y:auto}
+/* 权限提示，跟 CLI 那个弹窗一个意思 */
+#chat .ask{align-self:stretch;border:1px solid var(--wip);border-radius:11px;
+ padding:10px 12px;background:var(--bg)}
+#chat .ask .q{font-size:13px;font-weight:600;color:var(--wip);margin-bottom:6px}
+#chat .ask .w{font:12px ui-monospace,Menlo,monospace;color:var(--fg);
+ background:var(--pre);border-radius:7px;padding:7px 9px;margin-bottom:9px;
+ overflow-x:auto;white-space:pre}
+#chat .ask .b{display:flex;gap:7px;align-items:center}
+#chat .askd{max-height:230px;overflow:auto;margin:0 0 9px}
+#chat .askd pre{margin:0 0 4px;padding:6px 9px;border-radius:6px;font-size:11.5px;
+ line-height:1.45;white-space:pre-wrap;word-break:break-word;
+ font-family:ui-monospace,Menlo,monospace}
+#chat .askd pre.del{background:rgba(214,102,102,.12);color:#b3564e;
+ border-left:3px solid #d66}
+#chat .askd pre.add{background:rgba(74,165,90,.12);color:#3c7d4c;
+ border-left:3px solid #4a5}
+#chat .askd pre.cmd{background:var(--pre);color:var(--fg);
+ border-left:3px solid var(--wip)}
+.lrf{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+ background:var(--accent);color:#fff;padding:7px 14px;border-radius:18px;
+ font-size:13px;z-index:99;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#chat .ask button{border:1px solid var(--line);background:var(--card);color:var(--fg);
+ border-radius:8px;padding:5px 11px;font:12.5px inherit;cursor:pointer}
+#chat .ask button.ok{background:var(--done);border-color:var(--done);color:#fff}
+#chat .ask button.n{color:var(--todo);border-color:var(--todo)}
+/* 回复里的 markdown */
+#chat .m.md{white-space:normal}
+#chat .m.md p{margin:0 0 7px}
+#chat .m.md p:last-child{margin-bottom:0}
+#chat .m.md .mh{font-weight:700;margin:9px 0 5px}
+#chat .m.md ul,#chat .m.md ol{margin:4px 0 7px;padding-left:20px}
+#chat .m.md li{margin:2px 0}
+#chat .m.md li.cont{list-style:none;color:var(--mut);margin-left:-6px}
+#chat .m.md pre{margin:6px 0;padding:9px 11px;font-size:12px;line-height:1.5;
+ background:var(--bg);border:1px solid var(--line);border-radius:8px;overflow-x:auto}
+#chat .m.md code{font-size:12.5px}
+#chat .ft{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);
+ align-items:flex-end;flex:0 0 auto}
+#chat textarea{flex:1;border:1px solid var(--line);border-radius:10px;padding:8px 11px;
+ font:14px inherit;background:var(--bg);color:var(--fg);resize:none;max-height:110px}
+#chat .send{background:var(--accent);color:#fff;border:none;border-radius:10px;
+ width:38px;height:36px;cursor:pointer;font-size:15px}
+#chat .send:disabled{opacity:.45;cursor:default}
+#chat .send.stop{background:var(--todo)}
+#chat .tip{padding:0 13px 9px;font-size:11.5px;color:var(--mut)}
+#chat .cfg{display:flex;gap:7px;align-items:center;padding:0 13px 8px;flex:0 0 auto}
+#chat .cfg select{border:1px solid var(--line);border-radius:7px;padding:4px 7px;
+ background:var(--bg);color:var(--fg);font:12px inherit}
+#chat .cfg .cost{margin-left:auto;font:11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+#chat .sid{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:0 13px 8px;
+ font-size:11.5px;color:var(--mut);flex:0 0 auto}
+#chat .sid code{font-size:11px}
+#chat .acts{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 4px;flex:0 0 auto}
+#chat .act{border:1px solid var(--line);background:var(--bg);color:var(--fg);
+ border-radius:999px;padding:5px 12px;font:12.5px inherit;cursor:pointer}
+#chat .act:hover{border-color:var(--accent)}
+#chat .act.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ## Comments —— 带状态的行内评论 */
+.cm{border-left:3px solid var(--wip);padding:7px 0 7px 11px;margin:9px 0}
+.cm.done{border-left-color:var(--done);opacity:.62}
+.cmh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:13px}
+.cmh .bx{color:var(--mut)}
+.cm.done .cmh .bx{color:var(--done)}
+.cmh b{font-size:11.5px;letter-spacing:.4px}
+.cq{color:var(--mut);flex:1;min-width:120px}
+.cw{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+.cs{font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:1px 8px;
+ border:1px solid var(--wip);color:var(--wip);border-radius:999px}
+.cm.done .cs{border-color:var(--done);color:var(--done)}
+.cs.lost{border-color:var(--todo);color:var(--todo);text-transform:none}
+.cs.unpin{border-color:var(--line);color:var(--mut);text-transform:none;cursor:help}
+.cmb{padding-left:22px;margin-top:3px}
+.cmb p{margin:0 0 4px}
+/* 已解决评论：正文折叠，只留一行 reply 标题 */
+.cmb-fold{padding-left:22px;margin-top:2px}
+.cmb-fold>summary{cursor:pointer;color:var(--mut);font-size:12px;list-style:none;padding:1px 0}
+.cmb-fold>summary::-webkit-details-marker{display:none}
+.cmb-fold>summary::before{content:"▸ ";color:var(--mut)}
+.cmb-fold[open]>summary::before{content:"▾ "}
+.cmb-fold .cmb{padding-left:0}
+.cres{margin-left:6px;border:1px solid var(--line);background:var(--bg);color:var(--mut);border-radius:7px;padding:2px 9px;font:11.5px inherit;cursor:pointer}
+.cres:hover{border-color:var(--accent);color:var(--accent)}
+.obadge{background:var(--wip);color:#fff;border-radius:999px;padding:1px 8px;font-size:11.5px}
+mark.solved{background:rgba(21,128,61,.16);outline:none}
+b.jl{color:var(--accent)}b.ra{color:var(--ra)}b.cc{color:var(--mut)}
+b.u0{color:#8b5cf6}b.u1{color:#0891b2}b.u2{color:#c2410c}b.u3{color:#be185d}
+
+/* 行内评论：被引用的原句 + 评论里的引文 */
+mark{background:rgba(255,214,0,.34);color:inherit;padding:0 2px;border-radius:3px}
+@media(prefers-color-scheme:dark){mark{background:rgba(255,214,0,.22)}}
+.qt{color:var(--mut);font-size:.92em;margin-right:5px}
+/* 评论工具条（只有开了 JS 才会出现；关掉 JS 页面一切照旧） */
+#cbtn{position:absolute;z-index:40;display:none;background:var(--accent);color:#fff;
+ border:none;border-radius:7px;padding:6px 12px;font-size:13px;cursor:pointer;
+ box-shadow:0 3px 10px rgba(0,0,0,.22)}
+#cbox{position:absolute;z-index:41;display:none;width:330px;background:var(--card);
+ border:1px solid var(--line);border-radius:11px;padding:13px;
+ box-shadow:0 8px 26px rgba(0,0,0,.24)}
+#cbox .qq{font-size:12.5px;color:var(--mut);border-left:3px solid var(--accent);
+ padding-left:9px;margin-bottom:9px;max-height:66px;overflow:auto}
+#cbox textarea{width:100%;min-height:66px;border:1px solid var(--line);border-radius:7px;
+ padding:8px;font:14px inherit;background:var(--bg);color:var(--fg);resize:vertical}
+#cbox .row{display:flex;gap:8px;align-items:center;margin-top:9px}
+#cbox select{border:1px solid var(--line);border-radius:7px;padding:5px 8px;
+ background:var(--bg);color:var(--fg);font:13px inherit}
+#cbox button,#cpanel button{border:1px solid var(--line);border-radius:7px;padding:6px 12px;
+ background:var(--bg);color:var(--fg);font:13px inherit;cursor:pointer}
+#cbox .ok,#cpanel .ok{background:var(--accent);color:#fff;border-color:var(--accent)}
+#cdock{position:fixed;right:18px;bottom:74px;z-index:42;display:none;
+ background:var(--accent);color:#fff;border:none;border-radius:999px;
+ padding:10px 17px;font-size:13.5px;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.26)}
+#cpanel{position:fixed;right:18px;bottom:122px;z-index:42;display:none;width:390px;
+ max-height:64vh;overflow:auto;background:var(--card);border:1px solid var(--line);
+ border-radius:12px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#cpanel .it{border-top:1px solid var(--line);padding:9px 0;font-size:13.5px}
+#cpanel .it .q{color:var(--mut);font-size:12px}
+#cpanel .hd{display:flex;gap:8px;margin-bottom:4px}
+#cpanel .hint{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.6}
+.cnt{float:right;font-weight:400;font:12px ui-monospace,Menlo,monospace}
+
+/* 大标题前面挂编号：QA2 一个 Q 文件的模板 */
+.hid{color:var(--accent);font:.62em ui-monospace,Menlo,monospace;
+ vertical-align:.22em;margin-right:11px;letter-spacing:.03em}
+
+/* ## 日志 —— 这一题一路改过什么 */
+.lg{display:flex;gap:11px;align-items:baseline;margin:4px 0}
+.lg .d{flex:0 0 96px;white-space:nowrap;font:11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+
+/* ## 图 —— 这一题想干嘛，一张 ascii 图先说清楚 */
+.dia{margin:0 0 18px}
+.dia pre{margin:0;padding:15px 17px;line-height:1.55}
+.q:target .dia{margin:0 0 24px}
+.q:target .dia pre{font-size:13px;line-height:1.6}
+.col.now{border-left:3px solid var(--wip)}
+.col.goal{border-left:3px solid var(--done)}
+/* 节标题：左标签 + 底下一条线 + 右边 expand-all（JL 260723） */
+.ch{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--mut);
+ margin:0 0 9px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:5px}
+.ch .chl{flex:1;min-width:0}
+.ch .cnt{color:var(--mut);font-weight:600}
+/* expand / collapse all：把这一节所有 item 一起开合。纯增强——脚本剥掉后
+   每个 item 仍能单独点开（native <details>），全文一直在 DOM 里。 */
+.secall{flex:0 0 auto;border:1px solid var(--line);background:var(--bg);color:var(--mut);
+ border-radius:6px;padding:1px 9px;font:11px inherit;font-weight:500;cursor:pointer;letter-spacing:0}
+.secall:hover{border-color:var(--accent);color:var(--accent)}
+.q:target .secall{font-size:12px;padding:2px 11px}
+.col p{margin:0 0 6px;font-size:15px}
+.col pre{font-size:11.5px}
+
+/* ── 聚焦 = 一张幻灯片，不是一个卡片 ─────────────────────────
+   照 html-ppt：内容直接铺在页面上，没有边框、圆角、卡片底色把它围住。
+   头部压成一条跑马条，剩下的高度全给这一题。 */
+body:has(.q:target) .wrap{max-width:1000px;padding:20px 26px 40px}
+body:has(.q:target) .h1{font-size:14px;color:var(--mut);font-weight:600;margin:0 0 7px}
+body:has(.q:target) .spine{border:none;background:none;border-radius:0;
+ border-left:2px solid var(--accent);padding:0 0 0 11px;margin:0 0 9px}
+body:has(.q:target) .spine p{font-size:12.5px;margin:2px 0;color:var(--mut)}
+body:has(.q:target) details.ctx{border:none;background:none;padding:0;margin:3px 0}
+body:has(.q:target) details.ctx>summary{font-size:12.5px;color:var(--mut)}
+
+body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
+ padding:0;margin:26px 0 0;min-height:calc(100vh - 230px);
+ scroll-margin-top:280px;display:flex;flex-direction:column}
+.q:target .src,.q:target .top{display:none}
+.q:target .qh{margin-bottom:10px}
+.q:target .h2{font-size:38px;line-height:1.24;letter-spacing:-.01em;margin:0 0 18px}
+.q:target .ask{border-left:none;padding-left:0;margin:0 0 24px}
+.q:target .ask p{font-size:16px;line-height:1.75}
+.q:target .ask>p:first-of-type{font-size:21px;line-height:1.5;color:var(--fg);margin:0 0 13px}
+/* Boundary / Files 聚焦时也去框，只留一道边，跟 Items/Where 一个排法 */
+.q:target .bnd{border:none;border-radius:0;background:none;padding:0 0 0 15px;
+ border-left:2px solid var(--mut);margin:0 0 22px}
+.q:target .bnd p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .fls{border:none;border-radius:0;background:none;padding:0 0 0 15px;
+ border-left:2px solid var(--accent);margin:22px 0 0}
+.q:target .fls p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .cmp{gap:22px;margin:0 0 22px}
+.q:target .col{border:none;border-radius:0;background:none;padding:0 0 0 15px}
+.q:target .col.now{border-left:2px solid var(--wip)}
+.q:target .col.goal{border-left:2px solid var(--done)}
+.q:target .ch{font-size:18px;color:var(--fg);margin-bottom:14px;padding-bottom:7px;
+ letter-spacing:-.01em}
+.q:target .ch .cnt{font-size:13px}
+.q:target .col p{font-size:16px;line-height:1.75}
+/* 「为什么在这块板」在幻灯片上也排成一栏，跟上面两栏同一个样式（.ch 标题 + 线） */
+.q:target .f{display:block;margin:0;border-left:2px solid var(--line);padding-left:15px}
+.q:target .f p,.q:target .fbd p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .folds{margin-top:auto;padding-top:18px}
+.folds{margin-top:16px;border-top:1px dashed var(--line);padding-top:8px}
+.fold{margin:3px 0}
+.fold>summary{cursor:pointer;color:var(--mut);font-size:14px;list-style:none;padding:4px 0}
+.fold[open]>summary{color:var(--fg)}
+.fb{padding:5px 0 8px 16px;font-size:14.5px}
+/* 讨论框：整段写想法，追加进 ## Discussion（JL 260723） */
+.dadd{margin-top:11px;border-top:1px dashed var(--line);padding-top:10px}
+.dadd textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:8px;
+ padding:8px 10px;font:14px inherit;line-height:1.6;background:var(--bg);color:var(--fg);resize:vertical}
+.dadd .row{display:flex;gap:8px;align-items:center;margin-top:7px}
+.dadd select{border:1px solid var(--line);border-radius:7px;padding:4px 9px;font:13px inherit;
+ background:var(--bg);color:var(--fg)}
+.dadd .dsave{margin-left:auto;border:1px solid var(--accent);background:var(--accent);color:#fff;
+ border-radius:7px;padding:6px 14px;font:13px inherit;font-weight:600;cursor:pointer}
+.dadd .dsave:hover{filter:brightness(1.07)}
+.dadd .dsave:disabled{opacity:.6;cursor:default}
+.cmt{border-left:3px solid var(--mut);padding:3px 0 3px 10px;margin:5px 0}
+.cmt b{font-size:11px;letter-spacing:.4px;margin-right:5px}
+.cmt .qt{background:rgba(217,164,6,.18);border-bottom:1px solid rgba(217,164,6,.55);
+ padding:0 2px;border-radius:2px}
+.cmt.jl{border-color:var(--accent)}.cmt.jl b{color:var(--accent)}
+.cmt.ra{border-color:var(--ra)}.cmt.ra b{color:var(--ra)}
+.mut{color:var(--mut)}
+a.fp{text-decoration:none;border-bottom:1px dashed var(--accent)}
+a.fp code{color:var(--accent);cursor:pointer}
+a.fp:hover code{background:var(--accent);color:var(--bg)}
+code{background:var(--pre);padding:1px 5px;border-radius:4px;font:13px ui-monospace,Menlo,monospace}
+pre{background:var(--pre);border:1px solid var(--line);border-radius:8px;padding:11px 13px;
+ margin:8px 0;overflow-x:auto;font:12.5px/1.6 ui-monospace,Menlo,monospace;white-space:pre}
+img{max-width:100%;border:1px solid var(--line);border-radius:8px}
+.foot{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);
+ color:var(--mut);font-size:12.5px}

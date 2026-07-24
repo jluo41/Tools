@@ -15,9 +15,9 @@ Besides the restricted drawer, can every Q also have **its own real terminal** �
   The split with `QD2` stops being "safe vs. unsafe" (QD2 can now open up fully too) and becomes a **difference of form**: the drawer is a rebuilt chat box, the terminal is the CLI verbatim.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **The real-terminal form**: how it starts, how it passes through one port, how multiple boards and questions avoid collisions, how processes get reaped.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   The rules themselves — that is `QD1`; nor the web drawer — that is `QD2`.
 
 ## Diagram

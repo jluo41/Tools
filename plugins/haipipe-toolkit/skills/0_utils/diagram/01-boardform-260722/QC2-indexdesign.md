@@ -14,9 +14,9 @@ You open a board and have not clicked into any question yet — what you see is 
   Group ordering, state display, completion coloring, default sort — all in `build.py`'s index-rendering pass, coupled to `board.md`'s `## Roster`.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **The front-page list**: group headers, what each row shows, the visuals of state and completion, sort rules, and how "see at a glance what to act on" is achieved.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   The **single-question page** after the click — that is `QA4`. Nor whether each question's **prose is well written** — that is `QA5`. Nor which folder the board lives in — that is `QC1`.
 
 ## Diagram

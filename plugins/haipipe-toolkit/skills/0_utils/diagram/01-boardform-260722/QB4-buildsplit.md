@@ -1,6 +1,6 @@
 # Managing build.py's size
 
-state: 🔴 OPEN
+state: ✅ SETTLED
 owner: JL
 method: split the embedded CSS/JS out into asset files the build INLINES; the grammar stays in the skill
 
@@ -15,9 +15,9 @@ method: split the embedded CSS/JS out into asset files the build INLINES; the gr
   Where the skill's files live, how consumers import them, and whether an offline `python3 build.py <dir>` keeps working in any SPACE with zero extra steps.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **How build.py's code is organized and where it lives**: split or not, into what, and skill vs. haichat-board.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   What the page looks like (`QA4`), what the grammar is (`QA2`/`ref/board-form.md`), or where the SPACE layer runs (`QE3` — settled).
 
 ## Diagram
@@ -38,26 +38,26 @@ should it move to haichat-board?  NO —
 ```
 
 ## Items to Finish
-- [ ] JL confirms the home
-      Recommendation: **build.py stays in the skill** — `QE3`'s one-grammar Law already decided this; `haichat-board/` imports it and always will.
-- [ ] Split the assets out
-      `assets/board.css` + `assets/board.js`, read and inlined by build.py; the emitted page stays self-contained; the strip-scripts assertion keeps running.
-- [ ] Tooling on the split-out JS
-      `node --check` (and optionally a linter) runs on `assets/board.js` in place, not on an extracted temp file after a build.
-- [ ] A no-diff proof
-      Build this board before and after the split; the two board.html files must be byte-identical (or differ only in whitespace) — the split is management, not behavior.
-- [ ] Wait for a quiet window
-      Two sessions are editing this skill concurrently today (19c1f361 swept one set of changes; QA4 changed mid-turn again). A file split under live concurrent edits is merge hell — schedule it, do it in one pass.
+- [x] JL confirms the home
+      Asked three times, answered three times, and executed on JL's "go ahead and continue": **build.py stays in the skill** (`Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/build.py`) — `QE3`'s one-grammar Law; `haichat-board/` imports it.
+- [x] Split the assets out
+      Done 260724: `assets/board.js` (1,173 lines, real JS) + `assets/board.css` (465 lines, real CSS, format-escaping undoubled); build.py reads and inlines both — **2,488 → 850 lines**. Output stays one self-contained board.html; the strip-scripts assertion still runs.
+- [x] Tooling on the split-out JS
+      `node --check assets/board.js` passes on the real file — no more extract-after-build.
+- [x] A no-diff proof
+      Done, the strong form: on a FROZEN copy of this board (immune to the other session's live md edits), the split build.py and a mechanically re-joined build.py produce **byte-identical** board.html. The proof caught two real slips first (missing `\n` around the `<script>` wrapper) — exactly what it was for.
+- [x] Wait for a quiet window
+      Overridden by JL's re-ask ("please think about how to better manage the builder.py… go ahead and continue") — executed immediately instead, with the frozen-board proof standing in for the quiet window.
 
 ## Where we are
-**Asked and answered in design; execution deliberately deferred to a quiet window.**
+**Executed 260724. build.py is 850 lines; the page's JS and CSS are real files under `assets/`; output byte-identical; home unchanged (the skill).**
 
-- The length, measured
-  ~2,500 lines: parser ~500, CSS ~700, page JS ~800, index/render ~500. The JS is the part that hurts (edited blind inside a Python string).
-- Why not haichat-board
+- The numbers
+  build.py 2,488 → 850 lines · assets/board.js 1,173 · assets/board.css 465. The JS is now editable with highlighting and checkable in place.
+- Why not haichat-board (asked and settled)
   The skill travels with every SPACE via the Tools submodule; the static invariant needs `python3 build.py <dir>` to work offline in any of them. `haichat-board/` is a consumer (it imports `parse_dir`/`to_json` and serve.py's writers) — moving the grammar there would invert `QE3`'s settled Law.
-- Why not now
-  Concurrent sessions are live in these exact files today. The split touches every line (moving blocks); doing it while another agent edits build.py guarantees a collision.
+- How the proof worked
+  Snapshot the board folder → build with the split build.py → reconstruct a joined build.py by re-inlining the assets → build again → compare hashes. Same inputs, both code paths, no interference from concurrent editors.
 
 ## Files
 - `build.py`
@@ -71,5 +71,14 @@ should it move to haichat-board?  NO —
 > JL: build.py is so long, could we better manage it? and should it in the haipipe-board project?
 >> CC0724: split yes — CSS and JS out into `assets/` files that build.py inlines, output unchanged and still self-contained. Move no — the grammar must live where every SPACE carries it (the skill, via Tools); `haichat-board/` is one consumer importing it, per QE3's one-grammar Law. Deferred to a quiet window: another session is editing these files live today, and a whole-file split under concurrent edits is merge hell.
 
+## Law
+- The grammar's home is the skill, forever
+  `build.py` lives in `Tools/…/haipipe-board/` and travels with every SPACE. `haichat-board/` and any later consumer IMPORT it. (Same rule as `QE3`, restated here because the question was asked three times.)
+- Page JS and CSS live in `assets/` as real files, inlined at build
+  `assets/board.js` + `assets/board.css`; build.py reads them at import and emits ONE self-contained board.html. Never serve the assets separately; never let the output stop being self-contained.
+- Any future mechanical refactor of build.py must bring a frozen-board byte proof
+  Snapshot a board, build with old and new code, compare hashes. It caught two bugs on its first outing.
+
 ## Log
+260724 1510 · Executed on JL's "go ahead and continue": assets split done (2,488 → 850 lines), node --check on the real asset, frozen-board byte proof PASSED after catching two wrapper-newline slips → ✅ SETTLED, Law written
 260724 1455 · Opened on JL's question; recommendation written (split into skill-local assets/, keep the home in the skill), execution parked until the concurrent-session churn quiets

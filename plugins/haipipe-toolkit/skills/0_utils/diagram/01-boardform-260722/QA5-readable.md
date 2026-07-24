@@ -14,9 +14,9 @@ How should a Q's body be written so that someone who knows nothing about the mat
   It is the only rule that can be **re-run as acceptance**: every revision should be able to pass through it, instead of "written once, done forever".
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **How the words inside each section are written**: no invented terms, stale sentences must be purged, how zero-background cold reading verifies it, and how these rules land in `ref/writing-rules.md`.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   **Which sections exist** (structure) — that is `QA2`; nor how sections are **arranged on the page** — that is `QA4`. This question owns only the prose itself.
 
 ## Diagram

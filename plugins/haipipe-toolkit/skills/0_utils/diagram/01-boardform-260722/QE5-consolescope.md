@@ -15,9 +15,9 @@ The inlab console splits everything by scope: `/individual` (one patient) and `/
   The SPA's top-level routes (`/individual` · `/group` today, registered in `main.py` so refreshes work), the rail contents per scope, and where the SPACE picker lives (`QE2`'s layer).
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **Where Boards sits in the console's information architecture**: inside the scopes, a third top-level entry, or a space-level shell above the scopes.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   What the Boards view shows once opened — that is `QE2`. Nor exposure/auth — that is `QE1`.
 
 ## Diagram

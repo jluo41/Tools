@@ -15,9 +15,9 @@ A SPACE is a repo root — `Physician-SPACE`, `WellDoc-SPACE`. What JL wants: mo
   What the board list page looks like (the same visual problem as QC2's index design, one level up), whether a new board can be created from the web, and what the URLs look like.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **The layer above a board**: how a SPACE is mounted, how many at once, how the boards in a SPACE are discovered, what the board list page shows, whether a new board can be created from the page.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   Whether the board is served locally or from a server, and whether it needs a login — that is `QE1`. Nor the index page **inside** one board — that is `QC2`. Nor which process the code runs in — that is `QE3`.
 
 ## Diagram

@@ -14,9 +14,9 @@ Where in the repo does a board's folder go, and how is it named?
   The relative paths in `## Links`, and the directory structure when boards are shared out later (`QE1`).
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **Where the folder goes and what it is named**: under whose name it hangs, how number and date are assigned.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   What is **inside** the folder — that is `QA1`. Nor what the index page looks like — that is `QC2`.
 
 ## Diagram

@@ -15,9 +15,9 @@ The page can take comments, discussion, and resolutions today — but it **canno
   Which editor to use, whether to bring in Yjs, whether `HOLD` grows from "one session per question" to "one editor per question", and how in-page edits get recorded in `## Log`.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **Editing body text from the page**: which sections are editable, which editor, what happens when two people edit at once, and how an edit gets written into `## Log`.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   The comment and discussion write-back path — that is finished, and belongs to `QA6`. Nor chat / terminal working on a question — that is `QD1`/`QD2`/`QD3`. Nor who is allowed to edit — that is `QE1`'s authentication.
 
 ## Diagram

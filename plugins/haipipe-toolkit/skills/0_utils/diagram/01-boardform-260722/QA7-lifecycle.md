@@ -14,9 +14,9 @@ From the moment an inline comment is written to the moment it disappears from th
   It rewrites the closing rule (`close:`), and decides who owns the repair after an anchor is flagged.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   A comment's **lifecycle**: which states exist, who pushes them, who repairs broken anchors, what open comments mean for closing.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   How commenting is **built** (selection, storage syntax, disk write, highlighting) — that is `QA6`.
 
 ## Diagram

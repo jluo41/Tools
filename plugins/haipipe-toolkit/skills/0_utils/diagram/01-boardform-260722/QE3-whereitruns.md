@@ -15,9 +15,9 @@ The board runs inside `serve.py` today — a 976-line Python `SimpleHTTPRequestH
   Which of the two repos the code lives in, whether to branch, the fate of `build.py`'s ~490-line parser, and whether the board can be embedded in a HAI-Chat thread.
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **Which process and which repo the board's code runs in**: stay in `serve.py`, or move into `haichat-inlab` as a fifth router; whether the front end should reuse the `haichat-inlab/web/` React SPA; whether `build.py` producing a static page remains an invariant.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   Who may access it and whether it needs a login — that is `QE1`. Nor how a SPACE is mounted and what the board list looks like — that is `QE2`. Nor whether the body text is editable in the page — that is `QE4`.
 
 ## Diagram

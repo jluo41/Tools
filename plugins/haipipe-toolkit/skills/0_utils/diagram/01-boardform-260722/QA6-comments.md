@@ -13,9 +13,9 @@ How do you select a sentence on the page and attach a comment right there, Googl
   It defines the **storage syntax inside `.md`**. Without that syntax, `QB1`'s SKILL.md cannot describe "how to comment on a board".
 
 ## Boundary
-- ✅ This question owns
+- ✅ Covered here
   **Building it**: how the button appears on selection, the storage syntax in `.md`, how the disk write happens, how the quote is highlighted in the body, how a failed anchor is flagged.
-- ❌ This question does not own
+- ↪ Covered elsewhere
   What happens to a comment **after it exists** — how long it lives, who pushes it, whether unresolved ones block closing — that is `QA7`.
 
 ## Diagram

@@ -1,0 +1,1173 @@
+/* ─────────────────────────────────────────────────────────────
+   Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
+   this script only ADDS "select -> comment -> highlight right away".
+   Strip this script block and the board still reads fine (just no commenting).
+
+   Comments live in localStorage until you press "Sync to md", which writes
+   them into each Q file's ## Discussion as:   > JL 「quoted sentence」: text
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  var KEY = 'board-comments:' + location.pathname;
+  var UK = 'board-users', WK = 'board-user-last';
+  var db = [], users = [];
+  try { db = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { db = []; }
+  try { users = JSON.parse(localStorage.getItem(UK) || 'null') || ['JL','RA','CC']; }
+  catch (e) { users = ['JL','RA','CC']; }
+  var pend = null;
+
+  function mk(tag, id, html) {
+    var e = document.createElement(tag); e.id = id; e.innerHTML = html || ''; return e;
+  }
+  var btn = mk('button', 'cbtn', '\u{1F4AC} Comment');
+  var box = mk('div', 'cbox',
+    '<div class="qq"></div><textarea placeholder="Write a comment…"></textarea>' +
+    '<div class="row"><select></select><span style="flex:1"></span>' +
+    '<button class="cx">Cancel</button><button class="ok cs">Save</button></div>' +
+    '<input class="nu" placeholder="New initials, e.g. ZW — press Enter">');
+  var dock = mk('button', 'cdock', '');
+  var panel = mk('div', 'cpanel', '');
+  var toast = mk('div', 'ctoast', '');
+  [btn, box, dock, panel, toast].forEach(function (e) { document.body.appendChild(e); });
+
+  function save() { localStorage.setItem(KEY, JSON.stringify(db)); marks(); paint(); }
+  function say(m) {
+    toast.textContent = m; toast.style.display = 'block';
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { toast.style.display = 'none'; }, 3000);
+  }
+
+  /* ── highlighting ────────────────────────────────────────────
+     Two paths, because they have different information:
+       NEW comment  -> we still hold the live Range. Wrap THAT. Always exact,
+                       even when the selection crosses <code>/<b> boundaries.
+       ON RELOAD    -> the Range is gone, so find the quote by text. Search the
+                       section's whole text (concatenated across nodes) with a
+                       whitespace-tolerant regex, then map the hit back to
+                       (node, offset) so the wrap can span several nodes.
+     The old version only did indexOf() inside ONE text node — which is why a
+     selection crossing any inline tag silently failed to highlight.          */
+  function clearMarks() {
+    document.querySelectorAll('span.cmk').forEach(function (e) { e.remove(); });
+    document.querySelectorAll('mark.pend').forEach(function (m) {
+      var par = m.parentNode;
+      while (m.firstChild) par.insertBefore(m.firstChild, m);
+      par.removeChild(m); par.normalize();
+    });
+  }
+  function badge(mark, idx) {
+    var s = document.createElement('span');
+    s.className = 'cmk'; s.textContent = '\u{1F4AC}';
+    s.setAttribute('data-i', idx);
+    s.title = db[idx].who + ': ' + db[idx].text;
+    mark.parentNode.insertBefore(s, mark.nextSibling);
+  }
+  function wrapRange(r, idx) {
+    var m = document.createElement('mark');
+    m.className = 'pend'; m.setAttribute('data-i', idx);
+    try { r.surroundContents(m); }
+    catch (e) { m.appendChild(r.extractContents()); r.insertNode(m); }
+    if (!m.parentNode) return false;
+    badge(m, idx);
+    return true;
+  }
+  function scan(sec) {
+    var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, null);
+    var n, s = '', map = [];
+    while ((n = w.nextNode())) {
+      var p = n.parentNode;
+      if (p.closest && p.closest('.folds, .qh, .nav, pre')) continue;
+      for (var i = 0; i < n.nodeValue.length; i++) map.push([n, i]);
+      s += n.nodeValue;
+    }
+    return { s: s, map: map };
+  }
+  function rx(q) {
+    var parts = q.trim().split(/\s+/).map(function (x) {
+      return x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    });
+    return new RegExp(parts.join('[\\s]*'));
+  }
+  function findAndWrap(sec, quote, idx) {
+    var t = scan(sec);
+    if (!t.s) return false;
+    var m = rx(quote).exec(t.s);
+    if (!m) {                                   // last resort: first 12 chars
+      var head = quote.trim().slice(0, 12);
+      if (head.length < 4) return false;
+      m = rx(head).exec(t.s);
+      if (!m) return false;
+    }
+    var a = t.map[m.index], b = t.map[m.index + m[0].length - 1];
+    if (!a || !b) return false;
+    var r = document.createRange();
+    r.setStart(a[0], a[1]); r.setEnd(b[0], b[1] + 1);
+    return wrapRange(r, idx);
+  }
+  function marks() {
+    clearMarks();
+    db.forEach(function (c, i) {
+      var sec = document.getElementById(c.id);
+      c.lost = !(sec && findAndWrap(sec, c.quote, i));
+    });
+    document.querySelectorAll('span.cmk').forEach(function (s) {
+      s.onclick = function () {
+        panel.style.display = 'block'; flash(+s.getAttribute('data-i'));
+      };
+    });
+  }
+  function flash(i) {
+    var el = panel.querySelector('[data-row="' + i + '"]');
+    if (!el) return;
+    el.scrollIntoView({ block: 'nearest' });
+    el.style.background = 'rgba(255,214,0,.28)';
+    setTimeout(function () { el.style.background = ''; }, 1300);
+  }
+
+  /* ── select -> floating button ───────────────────────────── */
+  document.addEventListener('mouseup', function (ev) {
+    if (box.contains(ev.target) || panel.contains(ev.target) || ev.target === btn) return;
+    setTimeout(function () {
+      var s = window.getSelection();
+      var txt = s && String(s).trim();
+      if (!txt || txt.length < 2 || !s.rangeCount) { btn.style.display = 'none'; return; }
+      var node = s.anchorNode;
+      node = node.nodeType === 1 ? node : node.parentNode;
+      var q = node.closest && node.closest('section.q');
+      if (!q) { btn.style.display = 'none'; return; }
+      var live = s.getRangeAt(0);
+      var r = live.getBoundingClientRect();
+      pend = { id: q.id, file: q.getAttribute('data-file') || '',
+               quote: txt, range: live.cloneRange() };
+      btn.style.left = (r.left + window.scrollX) + 'px';
+      btn.style.top = (r.bottom + window.scrollY + 7) + 'px';
+      btn.style.display = 'block';
+    }, 0);
+  });
+
+  function fillWho() {
+    var sel = box.querySelector('select'), last = localStorage.getItem(WK) || users[0];
+    sel.innerHTML = users.map(function (u) {
+      return '<option' + (u === last ? ' selected' : '') + '>' + u + '</option>';
+    }).join('') + '<option value="__new">+ new person…</option>';
+    sel.onchange = function () {
+      var nu = box.querySelector('.nu');
+      if (sel.value === '__new') { nu.style.display = 'block'; nu.value = ''; nu.focus(); }
+      else { nu.style.display = 'none'; localStorage.setItem(WK, sel.value); }
+    };
+  }
+  box.querySelector('.nu').onkeydown = function (ev) {
+    if (ev.key !== 'Enter') return;
+    ev.preventDefault();
+    var v = this.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+    if (!v) return;
+    if (users.indexOf(v) < 0) users.push(v);
+    localStorage.setItem(UK, JSON.stringify(users));
+    localStorage.setItem(WK, v);
+    this.style.display = 'none'; fillWho();
+  };
+
+  btn.onclick = function () {
+    btn.style.display = 'none';
+    fillWho(); box.querySelector('.nu').style.display = 'none';
+    box.querySelector('.qq').textContent = pend.quote;
+    box.querySelector('textarea').value = '';
+    box.style.left = btn.style.left; box.style.top = btn.style.top;
+    box.style.display = 'block';
+    box.querySelector('textarea').focus();
+  };
+  box.querySelector('.cx').onclick = function () { box.style.display = 'none'; };
+  box.querySelector('.cs').onclick = function () {
+    var v = box.querySelector('textarea').value.trim();
+    if (!v) return;
+    var who = box.querySelector('select').value;
+    if (who === '__new') who = users[0];
+    localStorage.setItem(WK, who);
+    var live = pend.range;
+    db.push({ id: pend.id, file: pend.file, quote: pend.quote, who: who, text: v });
+    var idx = db.length - 1;
+    box.style.display = 'none';
+    /* wrap the live range FIRST — guaranteed exact, no text search involved */
+    var ok = false;
+    try { ok = wrapRange(live, idx); } catch (e) { ok = false; }
+    window.getSelection().removeAllRanges();
+    db[idx].lost = !ok;
+    localStorage.setItem(KEY, JSON.stringify(db));
+    if (!ok) marks();
+    paint();
+    /* 这一次点击本身就是用户手势 —— 直接写盘，不用再点 Sync */
+    drain(true).then(function (n) {
+      if (n) say((ok ? 'Highlighted and ' : 'Saved (not anchored) and ') +
+                 'written to ' + pend.file + (srvOK ? ' — reload to see it rendered'
+                                                    : ' — rebuild to render it'));
+      else say(ok ? 'Highlighted — ' + db.length + ' pending (no folder access yet)'
+                  : 'Saved, but could not anchor it (see ⚠ in the panel)');
+    });
+  };
+
+  /* ── panel ──────────────────────────────────────────────── */
+  function esc(s) { return s.replace(/[&<>]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function stamp() {
+    var d = new Date(), z = function (n) { return (n < 10 ? '0' : '') + n; };
+    return String(d.getFullYear()).slice(2) + z(d.getMonth() + 1) + z(d.getDate()) +
+           ' ' + z(d.getHours()) + z(d.getMinutes());
+  }
+  /* md 里一条评论长这样，[ ] 未解决 / [x] 已解决 */
+  function line(c) {
+    return '- [ ] ' + c.who + ' 「' + c.quote.replace(/\s+/g, ' ').trim() +
+           '」 · ' + (c.when || stamp()) + '\n      ' + c.text.replace(/\n/g, '\n      ');
+  }
+  function patch() {
+    var by = {};
+    db.forEach(function (c) { (by[c.file] = by[c.file] || []).push(line(c)); });
+    return Object.keys(by).map(function (f) {
+      return '### ' + f + '\n' + by[f].join('\n');
+    }).join('\n\n');
+  }
+  function paint() {
+    // 这个角标只在「真有没写盘的评论」时才出现（JL 260723）。
+    // serve.py 跑着的时候 Save 直接落盘，pending 永远是 0 —— 那就不该在右下角常驻碍眼。
+    // 它仍是 serve.py 没跑时的兜底入口，所以不是删掉，是平时藏起来。
+    dock.style.display = db.length ? 'block' : 'none';
+    dock.textContent = db.length ? ('\u{1F4AC} ' + db.length + ' pending')
+                                 : '\u{1F4AC} Comment';
+    dock.className = db.length ? 'has' : '';
+    panel.innerHTML =
+      '<div class="hd"><b>Pending comments</b><span style="flex:1"></span>' +
+      '<button class="ok sy">Write now</button>' +
+      '<button class="cf">Connect folder</button>' +
+      '<button class="cp">Copy</button></div>' +
+      (db.length ? db.map(function (c, i) {
+        return '<div class="it" data-row="' + i + '"><div class="q">' + c.id +
+          (c.lost ? ' <span style="color:var(--mut)">· unanchored</span> ' : ' ') +
+          '“' + esc(c.quote.slice(0, 40)) + '”</div><b>' + c.who + '</b> ' +
+          esc(c.text) + ' <button data-i="' + i +
+          '" class="rm" style="padding:2px 8px">del</button></div>';
+      }).join('') : '<div class="it mut">Nothing yet. Select a sentence in the text.</div>') +
+      '<div class="hint">Comments are written to the <code>.md</code> the moment you save — ' +
+      'once you have connected this board’s folder. Anything listed above has NOT been ' +
+      'written yet. ' +
+      'each comment into its Q file under <code>## Comments</code> as ' +
+      '<code>- [ ] WHO 「quote」 · time</code> — flip it to <code>[x]</code> when solved. ' +
+      'Re-run <code>python3 build.py</code> afterwards.</div>';
+    panel.querySelectorAll('.rm').forEach(function (b) {
+      b.onclick = function () { db.splice(+b.getAttribute('data-i'), 1); save(); };
+    });
+    panel.querySelector('.sy').onclick = sync;
+    panel.querySelector('.cf').onclick = async function () {
+      dirH = null; await putDir(undefined);
+      var d = await ensureDir(true);
+      say(d ? 'Folder connected — comments now save straight to the .md' : 'Not connected');
+      if (d) drain(false);
+    };
+    panel.querySelector('.cp').onclick = function () {
+      navigator.clipboard.writeText(patch()).then(function () { say('Patch copied'); });
+    };
+  }
+  dock.onclick = function () {
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  };
+
+
+
+  /* ── 写盘：优先让服务器写 ───────────────────────────────────
+     板文件在服务器上，浏览器在你自己的机器上（Remote-SSH）——
+     File System Access 的文件夹选择器只看得到你本机的盘，够不着这些文件。
+     所以第一选择是发个 POST 让服务器写（serve.py），它写完顺手重新生成 html。
+     只有服务器不支持时，才退回浏览器直接写文件 / 复制补丁。          */
+  var srvOK = null;                       // null=没试过, true/false=试过
+  async function post(url, payload) {
+    payload.path = location.pathname;
+    var r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                               body: JSON.stringify(payload) });
+    if (r.status === 404 || r.status === 501) { srvOK = false; return null; }
+    srvOK = true;
+    return await r.json();
+  }
+  async function srvComment(c) {
+    try {
+      var j = await post('/_board/comment',
+        { file: c.file, who: c.who, quote: c.quote, text: c.text, when: c.when || stamp() });
+      if (!j) return null;
+      return j.ok ? true : j.err;
+    } catch (e) { srvOK = false; return null; }
+  }
+  async function srvResolve(file, quote, done) {
+    try {
+      var j = await post('/_board/resolve', { file: file, quote: quote, done: done });
+      if (!j) return null;
+      return j.ok ? true : j.err;
+    } catch (e) { srvOK = false; return null; }
+  }
+
+  /* ── 兜底：浏览器自己写文件（只在服务器不支持时才用到）
+     文件夹句柄记在 IndexedDB 里，授权一次，之后每次保存直接写盘 ──
+     浏览器规定：第一次挑文件夹必须由用户点击触发，无法自动。
+     但句柄可以存下来；之后每次「Save」本身就是一次点击，够格再申请权限，
+     所以正常情况下你一个 session 只会看到一次 Allow。                */
+  function idb(fn) {
+    return new Promise(function (res) {
+      var r = indexedDB.open('board-fs', 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore('h'); };
+      r.onsuccess = function () {
+        var db = r.result, tx = db.transaction('h', 'readwrite');
+        fn(tx.objectStore('h'), res);
+      };
+      r.onerror = function () { res(null); };
+    });
+  }
+  function getDir() { return idb(function (s, res) {
+    var g = s.get('dir'); g.onsuccess = function () { res(g.result || null); }; }); }
+  function putDir(h) { return idb(function (s, res) { s.put(h, 'dir'); res(1); }); }
+
+  var dirH = null;
+  async function ensureDir(ask) {
+    if (!window.showDirectoryPicker) return null;
+    if (!dirH) dirH = await getDir();
+    if (dirH) {
+      var st = await dirH.queryPermission({ mode: 'readwrite' });
+      if (st === 'granted') return dirH;
+      if (ask) {
+        st = await dirH.requestPermission({ mode: 'readwrite' });
+        if (st === 'granted') return dirH;
+      }
+      return null;
+    }
+    if (!ask) return null;
+    try {
+      dirH = await window.showDirectoryPicker({ mode: 'readwrite' });
+      await putDir(dirH);
+      return dirH;
+    } catch (e) { return null; }
+  }
+
+  async function edit(dir, file, fn) {
+    var fh = await dir.getFileHandle(file);
+    var txt = await (await fh.getFile()).text();
+    var next = fn(txt);
+    if (next === txt) return false;
+    var w = await fh.createWritable();
+    await w.write(next); await w.close();
+    return true;
+  }
+  function insertComments(txt, add) {
+    if (/^## Comments[^\n]*$/m.test(txt))
+      return txt.replace(/^## Comments[^\n]*\n/m, function (mm) { return mm + add + '\n'; });
+    if (/\n## Log\b/.test(txt))
+      return txt.replace(/\n## Log\b/, '\n## Comments\n' + add + '\n\n## Log');
+    return txt.replace(/\s*$/, '') + '\n\n## Comments\n' + add + '\n';
+  }
+  /* 把已经写盘的从待办里剔掉；写不进去的留着，面板里还看得见 */
+  async function drain(ask) {
+    if (!db.length) return 0;
+    if (srvOK !== false) {                       // 先试服务器
+      var n = 0, err = null;
+      for (var i = 0; i < db.length; i++) {
+        var r = await srvComment(db[i]);
+        if (r === true) { db[i].written = 1; n++; }
+        else if (typeof r === 'string') { err = r; }
+        else break;                              // null = 服务器不支持，退出去走老路
+      }
+      if (n || srvOK) {
+        db = db.filter(function (c) { return !c.written; });
+        localStorage.setItem(KEY, JSON.stringify(db));
+        paint();
+        if (err) say(err);
+        if (srvOK) return n;
+      }
+    }
+    var dir = await ensureDir(ask);
+    if (!dir) return 0;
+    var by = {}, done = 0;
+    db.forEach(function (c) { (by[c.file] = by[c.file] || []).push(c); });
+    for (var f in by) {
+      var add = by[f].map(line).join('\n');
+      try {
+        await edit(dir, f, function (txt) { return insertComments(txt, add); });
+        by[f].forEach(function (c) { c.written = 1; });
+        done += by[f].length;
+      } catch (e) { console.log('[board] ' + f + ': ' + e.message); }
+    }
+    db = db.filter(function (c) { return !c.written; });
+    localStorage.setItem(KEY, JSON.stringify(db));
+    paint();
+    return done;
+  }
+
+  /* ── 页面上直接把一条评论标成已解决 / 重新打开 ───────────── */
+  function esc4re(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  async function toggle(file, quote, to) {
+    if (srvOK !== false) {
+      var r = await srvResolve(file, quote, to);
+      if (r === true) return true;
+      if (typeof r === 'string') { say(r); return false; }
+    }
+    var dir = await ensureDir(true);
+    if (!dir) { say('No folder access — press Connect folder in the panel'); return false; }
+    var re = new RegExp('^(-\\s*\\[)[ xX](\\]\\s*[A-Z]{1,4}\\d{0,4}\\s*[「"]' +
+                        esc4re(quote) + ')', 'm');
+    var hit = false;
+    await edit(dir, file, function (txt) {
+      if (!re.test(txt)) return txt;
+      hit = true;
+      return txt.replace(re, '$1' + (to ? 'x' : ' ') + '$2');
+    });
+    return hit;
+  }
+  // 讨论框：整段写想法 → POST /_board/discuss → 追加进 ## Discussion → 刷新（JL 260723）
+  function wireDadd() {
+    var last = localStorage.getItem(WK) || users[0];
+    document.querySelectorAll('.dadd').forEach(function (box) {
+      var ta = box.querySelector('textarea');
+      var sel = box.querySelector('select');
+      var btn = box.querySelector('.dsave');
+      users.forEach(function (u) { sel.appendChild(new Option(u, u)); });
+      sel.value = last;
+      btn.onclick = async function () {
+        var text = ta.value.trim();
+        if (!text) { ta.focus(); return; }
+        btn.disabled = true; btn.textContent = '…';
+        var j = null;
+        try {
+          j = await post('/_board/discuss',
+            { file: box.getAttribute('data-file'), who: sel.value, text: text });
+        } catch (e) { j = null; }
+        btn.disabled = false; btn.textContent = '➕ Add to discussion';
+        if (j === null) {
+          say('serve.py is not running — write > ' + sel.value + ': … into ## Discussion in the md yourself');
+          return;
+        }
+        if (j.ok) { localStorage.setItem(WK, sel.value); location.reload(); }
+        else say(j.err || 'write failed');
+      };
+    });
+  }
+
+  function wireResolve() {
+    document.querySelectorAll('.cms').forEach(function (box) {
+      var file = box.getAttribute('data-cfile');
+      box.querySelectorAll('.cm').forEach(function (row) {
+        if (row.querySelector('.cres')) return;
+        var b = document.createElement('button');
+        b.className = 'cres';
+        var setLbl = function () {
+          b.textContent = row.classList.contains('done') ? 'reopen' : 'mark solved';
+        };
+        setLbl();
+        b.onclick = async function () {
+          var to = !row.classList.contains('done');
+          b.disabled = true;
+          var ok = await toggle(file, row.getAttribute('data-quote'), to);
+          b.disabled = false;
+          if (!ok) { say('Could not find that line in ' + file); return; }
+          row.classList.toggle('done', to);
+          var s = row.querySelector('.cs:last-of-type');
+          if (s) s.textContent = to ? 'solved' : 'open';
+          var bx = row.querySelector('.bx'); if (bx) bx.textContent = to ? '☑' : '☐';
+          setLbl();
+          say('Written to ' + file + (srvOK ? ' — reload to refresh' : ' — rebuild to refresh'));
+        };
+        row.querySelector('.cmh').appendChild(b);
+      });
+    });
+  }
+
+  /* ── 手动兜底：面板上的按钮 ───────────────────────────── */
+  async function sync() {
+    if (!db.length) { say('Nothing pending'); return; }
+    if (!window.showDirectoryPicker) {
+      navigator.clipboard.writeText(patch());
+      say('This browser cannot write files — patch copied instead');
+      return;
+    }
+    var n = await drain(true);
+    say(n ? ('Wrote ' + n + ' comment(s) — rebuild to see them rendered')
+          : 'Could not write. Grant access to the board folder.');
+  }
+
+
+  /* ── 每题一个对话窗（QD1）──────────────────────────────────
+     打开它 = 在服务器上起一个 claude_agent_sdk 会话，作用域锁死在这一题：
+     只能读这个板文件夹，只能改这一个 Q 文件（服务器端 can_use_tool 把关）。
+     session id 由服务器写回 Q 文件头部的 `session:`，所以关掉再开还接得上。 */
+  var chat = document.createElement('div');
+  chat.id = 'chat';
+  chat.innerHTML =
+    '<div class="hd"><span class="qid"></span><span class="ti"></span>' +
+    '<button class="term" title="Open this question in a real terminal (same session)">⌨</button>' +
+    '<button class="x" title="close">×</button></div>' +
+    '<div class="bd"></div><div class="tm"></div>' +
+    '<div class="acts"></div>' +
+    '<div class="tip"></div>' +
+    '<div class="cfg">' +
+    '<select class="mdl"><option value="opus">Opus 4.8</option>' +
+    '<option value="sonnet">Sonnet 5</option><option value="haiku">Haiku 4.5</option></select>' +
+    '<select class="eff"><option>low</option><option>medium</option>' +
+    '<option selected>high</option><option>xhigh</option><option>max</option></select>' +
+    '<select class="scope" title="Permission tier: Scoped = this question only · Full = all tools + skills, like the CLI">' +
+    '<option value="scoped">Scoped</option>' +
+    '<option value="full" selected>Full · ask</option>' +
+    '<option value="bypass">Full · no ask</option></select>' +
+    '<span class="cost"></span></div>' +
+    '<div class="sid"></div>' +
+    '<div class="ft"><textarea rows="1" placeholder="Ask about this question…"></textarea>' +
+    '<button class="send">➤</button></div>';
+  document.body.appendChild(chat);
+  var cq = null;                                    // 当前挂在哪一题
+  var MK = 'board-chat-model', EK = 'board-chat-effort', SK = 'board-chat-scope';
+  var CHATK = function (id) { return 'board-chat:' + location.pathname + ':' + id; };
+
+  function chatLoad(id) {
+    try { return JSON.parse(localStorage.getItem(CHATK(id)) || '[]'); } catch (e) { return []; }
+  }
+  function chatSave(id, log) { localStorage.setItem(CHATK(id), JSON.stringify(log)); }
+  /* 回复是 markdown，得渲染出来 —— 先转义，再只认几种最常用的写法。
+     不引第三方库：这一页坚持自带一切，而且要渲染的只是我们自己 agent 的输出。 */
+  function mdEsc(s) {
+    return s.replace(/[&<>]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
+  }
+  function mdInline(s) {
+    return mdEsc(s)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+      .replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>');
+  }
+  function md2html(src) {
+    var out = [], fence = null, list = null;
+    var flush = function () { if (list) { out.push('</' + list + '>'); list = null; } };
+    (src || '').split('\n').forEach(function (ln) {
+      if (ln.trim().slice(0, 3) === '```') {
+        if (fence === null) { flush(); fence = []; }
+        else { out.push('<pre>' + mdEsc(fence.join('\n')) + '</pre>'); fence = null; }
+        return;
+      }
+      if (fence !== null) { fence.push(ln); return; }
+      if (!ln.trim()) { flush(); return; }
+      var h = ln.match(/^(#{1,6})\s+(.*)$/);
+      if (h) { flush(); out.push('<div class="mh">' + mdInline(h[2]) + '</div>'); return; }
+      var b = ln.match(/^\s*[-*]\s+(.*)$/);
+      if (b) {
+        if (list !== 'ul') { flush(); out.push('<ul>'); list = 'ul'; }
+        out.push('<li>' + mdInline(b[1]) + '</li>'); return;
+      }
+      var n = ln.match(/^\s*\d+[.)]\s+(.*)$/);
+      if (n) {
+        if (list !== 'ol') { flush(); out.push('<ol>'); list = 'ol'; }
+        out.push('<li>' + mdInline(n[1]) + '</li>'); return;
+      }
+      if (list) { out.push('<li class="cont">' + mdInline(ln.trim()) + '</li>'); return; }
+      out.push('<p>' + mdInline(ln) + '</p>');
+    });
+    if (fence !== null) out.push('<pre>' + mdEsc(fence.join('\n')) + '</pre>');
+    flush();
+    return out.join('');
+  }
+  function bubble(kind, text) {
+    var d = document.createElement('div');
+    d.className = 'm ' + kind;
+    if (kind === 'cc') { d.classList.add('md'); d.innerHTML = md2html(text); }
+    else { d.textContent = text; }
+    chat.querySelector('.bd').appendChild(d);
+    chat.querySelector('.bd').scrollTop = 1e9;
+    return d;
+  }
+  function setBubble(el, text) {
+    if (el.classList.contains('md')) el.innerHTML = md2html(text);
+    else el.textContent = text;
+  }
+  /* 思考过程：一个可折叠块。默认展开着让你看它边想，答案一到就自动收起；
+     之后随时点标题再展开。跟 CLI 里的 thinking 一个意思，只是这里能折叠。 */
+  function thinkBubble() {
+    var d = document.createElement('details');
+    d.className = 'tk'; d.open = true;
+    d.innerHTML = '<summary>💭 Thinking</summary><div class="tk-body"></div>';
+    chat.querySelector('.bd').appendChild(d);
+    chat.querySelector('.bd').scrollTop = 1e9;
+    return d;
+  }
+
+  /* 权限提示 —— 行为跟 Claude Code CLI 一致：只读的自动放行，
+     会动东西的弹出来问；「总是允许」只在这一轮这一题里有效。 */
+  function askUI(ev) {
+    var box = document.createElement('div');
+    box.className = 'ask';
+    box.innerHTML = '<div class="q">Allow this tool?</div>' +
+      '<div class="w"><code></code></div>' +
+      '<div class="b"><button class="ok y">Allow once</button>' +
+      '<button class="a">Always allow</button><button class="n">Deny</button></div>';
+    box.querySelector('code').textContent = ev.brief || ev.tool;
+    /* diff preview — what the VS Code extension shows at its gate: the actual
+       proposed change. − old in red, + new in green, Bash commands verbatim. */
+    if (ev.detail) {
+      var d = ev.detail, dv = document.createElement('div');
+      dv.className = 'askd';
+      var pre = function (cls, txt) {
+        var p = document.createElement('pre'); p.className = cls; p.textContent = txt;
+        dv.appendChild(p);
+      };
+      if (d.command) pre('cmd', d.command);
+      else if (d.edits) {
+        d.edits.forEach(function (e) { if (e.old) pre('del', e.old); if (e.new) pre('add', e.new); });
+        if (d.count > d.edits.length) {
+          var m = document.createElement('div'); m.className = 'mut';
+          m.textContent = '… ' + (d.count - d.edits.length) + ' more edit(s)';
+          dv.appendChild(m);
+        }
+      } else {
+        if (d.old) pre('del', d.old);
+        if (d.new) pre('add', d.new);
+      }
+      if (dv.childNodes.length) box.insertBefore(dv, box.querySelector('.b'));
+    }
+    chat.querySelector('.bd').appendChild(box);
+    chat.querySelector('.bd').scrollTop = 1e9;
+    var send = function (ok, always) {
+      box.querySelector('.b').innerHTML =
+        '<span class="mut">' + (ok ? (always ? 'Always allowed' : 'Allowed') : 'Denied') + '</span>';
+      fetch('/_board/answer', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: ev.id, ok: ok, always: always }) })
+        .catch(function () {});
+    };
+    box.querySelector('.y').onclick = function () { send(true, false); };
+    box.querySelector('.a').onclick = function () { send(true, true); };
+    box.querySelector('.n').onclick = function () { send(false, false); };
+  }
+  var FIXALL =
+    'Work through every unresolved comment in this question\'s ## Comments ' +
+    '(the ones starting with `- [ ]`). For each one:\n' +
+    '1. Edit this question\'s body the way the comment asks;\n' +
+    '2. Flip that line to `- [x]` and reply on an indented line below it with ' +
+    '`>> CC<MMDD>: what you did`;\n' +
+    '3. Add one line at the TOP of ## Log: `YYMMDD HHMM · what changed`.\n' +
+    'If you cannot do one, or disagree, do NOT flip it to [x] — write why underneath.\n' +
+    'End with a short summary of what you changed.';
+
+  function openCount(sec) {
+    return sec.querySelectorAll('.cm:not(.done)').length;
+  }
+  function chatActs(sec) {
+    var box = chat.querySelector('.acts');
+    box.innerHTML = '';
+    var add = function (label, fn, primary) {
+      var b = document.createElement('button');
+      b.className = 'act' + (primary ? ' pri' : '');
+      b.textContent = label; b.onclick = fn;
+      box.appendChild(b);
+    };
+    var n = openCount(sec);
+    if (n) add('🔧 Handle ' + n + ' open comment' + (n > 1 ? 's' : ''), function () { chatSend(FIXALL); }, true);
+    add('📝 What is this question missing?', function () {
+      chatSend('Answer only, do not edit any file: which items in this question\'s ' +
+               '## Done when are still unchecked, and what is each one blocked on? ' +
+               'One per line.');
+    });
+    add('↻ Reload', function () { location.reload(); });
+  }
+
+  async function chatOpen(sec) {
+    cq = { id: sec.id, file: sec.getAttribute('data-file') || '',
+           title: sec.getAttribute('data-title') || '' };
+    chat.querySelector('.qid').textContent = cq.id;
+    chat.querySelector('.ti').textContent = cq.title.slice(0, 30);
+    var bd = chat.querySelector('.bd'); bd.innerHTML = '';
+    var log = chatLoad(cq.id);
+    if (!log.length) bubble('sys', 'This chat is attached to ' + cq.file);
+    log.forEach(function (m) { bubble(m.k, m.t); });
+    chat.querySelector('.tip').textContent = cq.file;
+    /* 这一题的 Claude Code session id —— 抽屉和终端用的是同一个 */
+    var sid = sec.getAttribute('data-session') || '';
+    var sidbox = chat.querySelector('.sid');
+    /* session 归档在 cwd（= serve.py 的 --root，现在是 SPACE 根）下的 project 目录，
+       所以要 cd 到 root，不是板文件夹 —— cd 错了 --resume 就找不到这个 session。
+       root 精确算法：serve.py 在 <root> + location.pathname 处提供文件，
+       所以 root = 板文件夹绝对路径 减去 URL 里的那段目录。不靠 .git/pyproject 猜。 */
+    var board = document.body.getAttribute('data-board') || '.';
+    var urlDir = location.pathname.replace(/\/[^\/]*$/, '');   // 去掉 board.html
+    var root = board;
+    if (urlDir && board.slice(-urlDir.length) === urlDir) {
+      root = board.slice(0, board.length - urlDir.length) || '/';
+    }
+    if (sid) {
+      sidbox.innerHTML = '<code>' + sid + '</code>';
+      // 复制的是一整条能直接跑的命令（带注释说明是哪一题），不是光一个 uuid
+      var full = '# ' + cq.id + ' · ' + cq.title + '\n'
+               + 'cd "' + root + '" && claude --resume ' + sid;
+      var cb = document.createElement('button');
+      cb.className = 'act'; cb.textContent = '⌨ Copy: claude --resume';
+      cb.title = full;
+      cb.onclick = function () {
+        navigator.clipboard.writeText(full)
+          .then(function () { cb.textContent = 'Copied full command'; });
+      };
+      sidbox.appendChild(cb);
+    } else {
+      sidbox.innerHTML = '<span class="mut">No session yet — it appears after your first '
+        + 'message and is written into the header of ' + cq.file + '</span>';
+    }
+    chatActs(sec);
+    termView(false); disposeTerm();
+    chat.classList.add('on'); document.body.classList.add('chaton');
+
+    /* 第一步：先把浏览器里还没写盘的评论同步过去 —— 不然 chat 读不到它们 */
+    var mine = db.filter(function (c) { return c.file === cq.file; }).length;
+    if (mine) {
+      bubble('sys', 'Writing ' + mine + ' new comment' + (mine > 1 ? 's' : '') + ' into ' + cq.file + '…');
+      var n = await drain(true);
+      bubble('sys', n ? ('Synced ' + n + '. You can now have it work through the comments.')
+                      : 'Sync failed — the comments are still pending.');
+      if (n) chat.querySelector('.acts').firstChild &&
+             chat.querySelector('.acts').replaceChildren();
+      if (n) {
+        var b = document.createElement('button');
+        b.className = 'act pri'; b.textContent = '🔧 Handle the ' + n + ' just-synced comment' + (n > 1 ? 's' : '');
+        b.onclick = function () { chatSend(FIXALL); };
+        chat.querySelector('.acts').appendChild(b);
+        var r = document.createElement('button');
+        r.className = 'act'; r.textContent = '↻ Reload';
+        r.onclick = function () { location.reload(); };
+        chat.querySelector('.acts').appendChild(r);
+      }
+    }
+    chat.querySelector('textarea').focus();
+  }
+  chat.querySelector('.x').onclick = function () {
+    chat.classList.remove('on'); document.body.classList.remove('chaton'); };
+  /* 模型 / effort / 权限档 记在本机；默认 Opus 4.8 · high · 完整·问我 */
+  (function () {
+    var m = chat.querySelector('.mdl'), e = chat.querySelector('.eff'),
+        s = chat.querySelector('.scope');
+    m.value = localStorage.getItem(MK) || 'opus';
+    e.value = localStorage.getItem(EK) || 'high';
+    s.value = localStorage.getItem(SK) || 'full';
+    m.onchange = function () { localStorage.setItem(MK, m.value); };
+    e.onchange = function () { localStorage.setItem(EK, e.value); };
+    s.onchange = function () {
+      localStorage.setItem(SK, s.value);
+      say(s.value === 'scoped' ? 'Scoped: edits only this question, no skills loaded (cheap)'
+        : s.value === 'full' ? 'Full: all tools + skills, asks before touching anything else (like the CLI)'
+        : 'Full · no ask: everything auto-approved — this endpoint can now run bash with no prompt, be careful');
+    };
+  })();
+
+  var inflight = null;                    // 正在跑的那一轮：{ctrl, file}
+  async function chatStop() {
+    if (!inflight) return;
+    try {
+      await fetch('/_board/stop', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, file: inflight.file }) });
+      bubble('sys', 'Stop signal sent — it will wrap up at the next message…');
+    } catch (e) { /* 服务器都不通了，直接放弃等待 */ }
+    inflight.ctrl.abort();                // 浏览器这边立刻不等了
+  }
+  function chatBusy(on) {
+    var btn = chat.querySelector('.send');
+    btn.textContent = on ? '⏹' : '➤';
+    btn.title = on ? 'Stop this turn' : 'Send';
+    btn.classList.toggle('stop', on);
+    btn.disabled = false;                 // 忙的时候也能点 —— 那是停止键
+    chat.querySelector('textarea').disabled = on;
+  }
+
+  async function chatSend(preset) {
+    var ta = chat.querySelector('textarea'), btn = chat.querySelector('.send');
+    if (inflight) return chatStop();       // 正在跑 → 这一下是「停」
+    var msg = (preset || ta.value).trim();
+    if (!msg || !cq) return;
+    if (!preset) ta.value = '';
+    chatBusy(true);
+    var log = chatLoad(cq.id);
+    bubble('you', msg); log.push({ k: 'you', t: msg }); chatSave(cq.id, log);
+    var wait = bubble('sys', '…thinking (click ⏹ again to stop)');
+    var ctrl = new AbortController();
+    inflight = { ctrl: ctrl, file: cq.file };
+    try {
+      var r = await fetch('/_board/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        signal: ctrl.signal,
+        body: JSON.stringify({ path: location.pathname, file: cq.file, message: msg,
+          stream: true,
+          model: chat.querySelector('.mdl').value,
+          effort: chat.querySelector('.eff').value,
+          scope: chat.querySelector('.scope').value })
+      });
+      /* 服务器一行一条 JSON 地往下发，边收边显示 */
+      var rd = r.body.getReader(), dec = new TextDecoder(), buf = '';
+      var cur = null, acc = '', j = { ok: true };
+      var thinkEl = null, thinkAcc = '';        // 思考过程 → 一个可折叠块
+      while (true) {
+        var ch = await rd.read();
+        if (ch.done) break;
+        buf += dec.decode(ch.value, { stream: true });
+        var lines = buf.split('\n'); buf = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          var ev; try { ev = JSON.parse(lines[i]); } catch (e) { continue; }
+          if (ev.t === 'stage') {                 // real progress while nothing streams yet
+            if (wait.isConnected) wait.textContent = '… ' + ev.text + '  (⏹ to stop)';
+          } else if (ev.t === 'think') {          // 思考过程 → 折叠块，边想边展开
+            wait.remove();
+            if (!thinkEl) thinkEl = thinkBubble();
+            thinkAcc += ev.text;
+            thinkEl.querySelector('.tk-body').textContent = thinkAcc;
+            chat.querySelector('.bd').scrollTop = 1e9;
+          } else if (ev.t === 'delta') {          // 逐字答案
+            wait.remove();
+            if (thinkEl && thinkEl.open) {        // 答案一来就收起思考；标题留个量
+              thinkEl.open = false;
+              thinkEl.querySelector('summary').textContent =
+                '💭 Thinking (' + thinkAcc.length + ' chars — click to reopen)';
+            }
+            if (!cur) cur = bubble('cc', '');
+            acc += ev.text;
+            setBubble(cur, acc);
+            chat.querySelector('.bd').scrollTop = 1e9;
+          } else if (ev.t === 'text') {           // 整段（没开逐字时）
+            wait.remove();
+            if (!cur) cur = bubble('cc', '');
+            acc += (acc ? '\n\n' : '') + ev.text;
+            setBubble(cur, acc);
+            chat.querySelector('.bd').scrollTop = 1e9;
+          } else if (ev.t === 'ask') {
+            /* 跟 CLI 一样的权限提示：它想动东西，先问你 */
+            wait.remove();
+            cur = null;                       // 批准之后的输出另起一条气泡
+            askUI(ev);
+          } else if (ev.t === 'tool') {
+            wait.textContent = '…' + ev.name;
+          } else if (ev.t === 'done') {
+            j = Object.assign({ ok: true }, ev);
+            if (ev.text && cur) { acc = ev.text; setBubble(cur, acc); }
+          }
+        }
+      }
+      wait.remove();
+      var txt = j.ok ? (acc || j.text || '(no text reply — it may have only used tools)')
+                     : ('⚠ ' + (j.err || 'failed'));
+      if (j.stopped) txt = txt + '\n(you stopped this turn, so it may be unfinished)';
+      if (!cur) bubble('cc', txt);
+      log.push({ k: 'cc', t: txt }); chatSave(cq.id, log);
+      if (j.ok) {
+        var bits = [];
+        if (j.model) bits.push(j.model.replace('claude-', '') + ' / ' + j.effort);
+        if (j.scope) bits.push({scoped:'scoped',full:'full·ask',bypass:'full·no-ask'}[j.scope] || j.scope);
+        if (j.usd != null) bits.push('$' + Number(j.usd).toFixed(3));
+        if (j.denied && j.denied.length) bits.push('blocked ' + j.denied.length + ' tool call' + (j.denied.length > 1 ? 's' : ''));
+        // 只有真的写了盘上文件，才说「已写盘」并给刷新按钮 —— 读一读不该出现
+        if (j.wrote) {
+          bits.push('written to disk');
+          bubble('sys', bits.join(' · '));
+          var rb = document.createElement('button');
+          rb.className = 'act pri'; rb.textContent = '↻ Reload to see the result';
+          rb.onclick = function () { location.reload(); };
+          chat.querySelector('.acts').replaceChildren(rb);
+        } else if (bits.length) {
+          bubble('sys', bits.join(' · '));   // 只报模型/花费，不提写盘、不换按钮
+        }
+      }
+    } catch (e) {
+      wait.remove();
+      bubble('sys', e.name === 'AbortError'
+        ? 'Stopped waiting. The server got the stop signal too.'
+        : '⚠ ' + e.message);
+    }
+    inflight = null; chatBusy(false); ta.focus();
+  }
+  chat.querySelector('.send').onclick = chatSend;
+  chat.querySelector('textarea').addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); chatSend(); }
+  });
+
+  /* ── ⌨ 真终端：同一个 session 换个窗口 ────────────────────────
+     LAW（JL 260723）：一个 session 同时只能有一个窗口。
+     抽屉和终端读写的是磁盘上同一个 .jsonl，两边同时开会互相盖或者 fork 出第二段历史。
+     所以开终端前服务器先看抽屉在不在用；从终端切回来时要「交回 session」。 */
+  var termOn = false;
+  function termView(on) {
+    termOn = on;
+    chat.querySelector('.tm').style.display = on ? 'block' : 'none';
+    ['.bd', '.acts', '.cfg', '.sid', '.ft', '.tip'].forEach(function (s) {
+      var e = chat.querySelector(s); if (e) e.style.display = on ? 'none' : '';
+    });
+    var b = chat.querySelector('.term');
+    b.textContent = on ? '💬' : '⌨';
+    b.title = on ? 'Back to the web chat (hands the session back)' : 'Open this question in a real terminal (same session)';
+    if (on && termT) setTimeout(fitTerm, 0);
+  }
+
+  /* ── xterm.js 直接画在抽屉里（不再用 iframe，closer to myrlin）──────
+     终端后端仍是 serve.py 起的 ttyd；这里我们自己拿 xterm 连它的 WebSocket，
+     省掉 iframe 那层（CSP、加载慢、控制不了）。ttyd 的 WS 子协议：
+       连接子协议 'tty'；开场发 JSON auth；输入 '0'+data；输出帧首字节 '0'。 */
+  var termT = null, termWS = null, xtermP = null;
+  function loadXterm() {
+    if (xtermP) return xtermP;
+    xtermP = new Promise(function (res, rej) {
+      var css = document.createElement('link');
+      css.rel = 'stylesheet'; css.href = '/_board/asset/xterm.css';
+      document.head.appendChild(css);
+      var s = document.createElement('script');
+      s.src = '/_board/asset/xterm.min.js';
+      s.onload = function () { res(window.Terminal); };
+      s.onerror = function () { rej(new Error('xterm.js failed to load (is serve.py running?)')); };
+      document.head.appendChild(s);
+    });
+    return xtermP;
+  }
+  function fitTerm() {
+    if (!termT) return;
+    var host = chat.querySelector('.tm');
+    var w = host.clientWidth, h = host.clientHeight;
+    if (w < 40 || h < 40) return;
+    var cols = Math.max(20, Math.floor((w - 16) / 8.4));
+    var rows = Math.max(6, Math.floor((h - 12) / 17));
+    try { termT.resize(cols, rows); } catch (e) {}
+  }
+  var termKey = null, termRetry = 0, termPing = null, termClosing = false;
+  function disposeTerm() {
+    termClosing = true;                       // an intentional close never reconnects
+    if (termPing) { clearInterval(termPing); termPing = null; }
+    try { if (termWS) termWS.close(); } catch (e) {}
+    try { if (termT) termT.dispose(); } catch (e) {}
+    termWS = null; termT = null; termKey = null; termRetry = 0;
+    var host = chat.querySelector('.tm'); if (host) host.innerHTML = '';
+  }
+  /* smoothness (QD3 260724): the WS is rebuilt on drops, the TERMINAL is not —
+     scrollback survives a reconnect; the post-auth resize (SIGWINCH) makes
+     claude repaint. Keepalive = a same-size resize op every 30s, so an idle
+     relay/proxy never reaps the pipe. */
+  function connectWS(key) {
+    var proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
+    var ws = new WebSocket(proto + location.host + '/_term/' + key + '/ws', ['tty']);
+    ws.binaryType = 'arraybuffer';
+    termWS = ws;
+    window.__wsDbg = { state: 'new', msgs: 0, err: null };
+    ws.onopen = function () {
+      window.__wsDbg.state = 'open';
+      termRetry = 0;
+      // the ttyd handshake: auth as one message, size as another (merged = no output)
+      ws.send(JSON.stringify({ AuthToken: '' }));
+      ws.send(JSON.stringify({ columns: termT.cols || 100, rows: termT.rows || 30 }));
+      if (termPing) clearInterval(termPing);
+      termPing = setInterval(function () {           // keepalive: same-size resize op
+        if (ws.readyState === 1 && termT)
+          ws.send('1' + JSON.stringify({ columns: termT.cols, rows: termT.rows }));
+      }, 30000);
+    };
+    ws.onmessage = function (ev) {
+      window.__wsDbg.msgs++;
+      var d = ev.data;
+      if (typeof d === 'string') { if (d.charCodeAt(0) === 48) termT.write(d.slice(1)); return; }
+      var b = new Uint8Array(d);
+      if (b[0] === 48) termT.write(new TextDecoder().decode(b.subarray(1)));
+    };
+    ws.onerror = function (e) { window.__wsDbg.err = 'error'; };
+    ws.onclose = function (e) {
+      window.__wsDbg.state = 'closed:' + (e && e.code);
+      if (termPing) { clearInterval(termPing); termPing = null; }
+      if (termClosing || !termOn || !termT) return;  // closed on purpose → stay quiet
+      if (termRetry >= 6) {
+        termT.write('\r\n\x1b[90m[disconnected — click ⌨ twice to reopen]\x1b[0m\r\n');
+        return;
+      }
+      var wait = Math.min(15000, 1000 * Math.pow(2, termRetry));
+      termRetry += 1;
+      termT.write('\r\n\x1b[90m[connection lost — reconnecting in ' +
+                  Math.round(wait / 1000) + 's (' + termRetry + '/6)]\x1b[0m\r\n');
+      setTimeout(function () {
+        if (!termClosing && termOn && termT && termKey === key) connectWS(key);
+      }, wait);
+    };
+    termT.onData(function (s) { if (ws.readyState === 1) ws.send('0' + s); });
+    termT.onResize(function (sz) {
+      if (ws.readyState === 1) ws.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
+    });
+  }
+  async function mountTerm(key) {
+    await loadXterm();
+    disposeTerm();
+    var host = chat.querySelector('.tm');
+    termT = new window.Terminal({
+      fontSize: 13, fontFamily: 'Menlo, "SF Mono", ui-monospace, monospace',
+      cursorBlink: true, convertEol: false, scrollback: 4000,
+      theme: { background: '#0b0d12', foreground: '#e8e8e6', cursor: '#6ea8f0' }
+    });
+    termT.open(host);
+    try { window.__boardTerm = termT; } catch (e) {}   // debug handle, inspect from the console
+    fitTerm();
+    termClosing = false; termKey = key; termRetry = 0;
+    connectWS(key);
+    setTimeout(function () { termT && termT.focus(); }, 50);
+  }
+  window.addEventListener('resize', function () { if (termOn) fitTerm(); });
+  // fit when the drawer pane itself changes size, not only the window (debounced)
+  (function () {
+    var host = chat.querySelector('.tm'), t = null;
+    if (window.ResizeObserver && host)
+      new ResizeObserver(function () {
+        clearTimeout(t); t = setTimeout(function () { if (termOn) fitTerm(); }, 150);
+      }).observe(host);
+  })();
+
+  async function termRelease(file) {
+    disposeTerm();
+    if (!file) return;
+    try {
+      await fetch('/_board/release', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, file: file }) });
+    } catch (e) { /* 服务器没了也要让界面回得来 */ }
+  }
+  /* 关整个板页面时，如果抽屉里还开着终端，用 beacon 通知服务器收掉。 */
+  window.addEventListener('pagehide', function () {
+    if (termOn && cq && cq.file && navigator.sendBeacon) {
+      navigator.sendBeacon('/_board/release',
+        new Blob([JSON.stringify({ path: location.pathname, file: cq.file })],
+                 { type: 'application/json' }));
+    }
+  });
+  async function termOpen(quiet) {
+    if (!cq) return false;
+    if (!quiet) say('Starting a terminal for this question…');
+    try {
+      var r = await fetch('/_board/term', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, file: cq.file }) });
+      var j = await r.json();
+      if (!j.ok) { say('⚠ ' + j.err); return false; }
+      termView(true);
+      await mountTerm(j.key);
+      if (!quiet) say(j.reused ? 'Reattached to the terminal already running'
+                               : (j.note || 'Terminal ready'));
+      return true;
+    } catch (e) { say('⚠ ' + e.message); return false; }
+  }
+  // pre-warm on hover: pull the 480KB xterm.js while the pointer is still on ⌨,
+  // so the click feels instant. Assets only — never POST /_board/term here (it takes HOLD).
+  chat.querySelector('.term').addEventListener('mouseenter', function () {
+    loadXterm().catch(function () {});
+  });
+  chat.querySelector('.term').onclick = async function () {
+    if (!cq) return;
+    if (termOn) {                                  // 切回抽屉 = 交回 session
+      await termRelease(cq.file);
+      termView(false);
+      say('Terminal closed, session handed back');
+      return;
+    }
+    await termOpen(false);
+  };
+
+  /* ── 面板跟着题走（JL 260723）────────────────────────────────
+     换一题 = 换一个 session。抽屉开着的时候，切到哪一题它就跟到哪一题：
+     聊天记录换成那一题的，session id 换成那一题的；
+     本来在终端模式的话，先把上一题的 session 交回去，再开新那一题的终端。 */
+  async function follow() {
+    var id = (location.hash || '').slice(1);
+    var sec = id && document.getElementById(id);
+    if (!sec || !sec.classList.contains('q')) return;
+    if (!chat.classList.contains('on')) return;     // 抽屉没开就别多事
+    if (cq && cq.id === sec.id) return;             // 还是同一题
+    var wasTerm = termOn, oldFile = cq && cq.file;
+    if (wasTerm) await termRelease(oldFile);        // 一个 session 一个窗口
+    await chatOpen(sec);                            // 重新绑到新题（会重置成聊天视图）
+    if (wasTerm) await termOpen(true);              // 本来在终端 → 跟着切过去
+    say('Now following ' + sec.id);
+  }
+  window.addEventListener('hashchange', follow);
+
+  /* 每张卡片的头部挂一个入口（idempotent —— live refresh 换掉 .wrap 后要重挂） */
+  function wireQBtns() {
+    document.querySelectorAll('section.q').forEach(function (sec) {
+      if (sec.querySelector('.chatbtn')) return;
+      var b = document.createElement('button');
+      b.className = 'chatbtn'; b.textContent = '\u{1F916} Chat';
+      b.onclick = function () {
+        // 顺便把 URL 也切到这一题，这样 follow() 和「回目录」都对得上
+        if (location.hash !== '#' + sec.id) location.hash = sec.id;
+        chatOpen(sec);
+      };
+      var qh = sec.querySelector('.qh');
+      if (qh) qh.appendChild(b);
+    });
+  }
+  wireQBtns();
+
+  /* 右下角悬浮的「💬 Chat」—— 打开当前正在看的这一题的聊天框。
+     只在聚焦看某一题时出现（CSS 控制），点它就开这一题的抽屉。 */
+  var fab = document.createElement('button');
+  fab.id = 'chatfab';
+  fab.innerHTML = '\u{1F916} Chat';
+  fab.onclick = function () {
+    var id = (location.hash || '').slice(1);
+    var sec = id && document.getElementById(id);
+    if (sec && sec.classList.contains('q')) chatOpen(sec);
+  };
+  document.body.appendChild(fab);
+
+  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); }
+  window.__boardRewire = rewire;
+  marks(); paint(); wireResolve(); wireDadd();
+})();
+
+/* ── live refresh (QD6, JL 260724) ─────────────────────────────────────────
+   "when the chat changed something, refresh automatically — and my chat
+   interface is still there." So: NEVER reload. Poll our own Last-Modified
+   (both servers send it); when the file changes, fetch the new page and swap
+   ONLY div.wrap. Everything the scripts appended to <body> — comment dock,
+   chat drawer (mid-stream included), terminal, fab — stays alive. No Node,
+   no framework: the drawer survives because it was never inside the content. */
+(function () {
+  var last = null, busy = false;
+  function tick() {
+    if (busy || document.hidden) return;
+    fetch(location.pathname, { method: 'HEAD', cache: 'no-store' })
+      .then(function (h) {
+        var lm = h.headers.get('last-modified');
+        if (!lm) return;
+        if (last === null) { last = lm; return; }
+        if (lm === last) return;
+        // mid-selection = probably writing a comment on that text; hold the swap
+        if (window.getSelection && String(window.getSelection())) return;
+        busy = true;
+        return fetch(location.pathname, { cache: 'no-store' })
+          .then(function (r) { return r.text(); })
+          .then(function (t) {
+            var doc = new DOMParser().parseFromString(t, 'text/html');
+            var nw = doc.querySelector('div.wrap');
+            var old = document.querySelector('div.wrap');
+            if (!nw || !old) return;
+            var y = window.scrollY;
+            old.replaceWith(nw);
+            if (window.__boardRewire) window.__boardRewire();
+            window.scrollTo(0, y);
+            last = lm;
+            var n = document.createElement('div');
+            n.className = 'lrf';
+            n.textContent = '↻ board updated';
+            document.body.appendChild(n);
+            setTimeout(function () { n.remove(); }, 2200);
+          });
+      })
+      .catch(function () {})
+      .then(function () { busy = false; });
+  }
+  setInterval(tick, 4000);
+})();
+
+/* ── section「expand / collapse all」──────────────────────────────
+   Pure enhancement over native <details>. Strip this block and every
+   item is still individually openable; all text stays in the DOM. */
+document.addEventListener('click', function (ev) {
+  var b = ev.target.closest && ev.target.closest('.secall');
+  if (!b) return;
+  var sec = b.closest('.col, .f');
+  if (!sec) return;
+  var open = b.getAttribute('data-open') !== '1';
+  sec.querySelectorAll('details.it').forEach(function (d) { d.open = open; });
+  b.setAttribute('data-open', open ? '1' : '0');
+  var lbl = b.querySelector('.lbl');
+  if (lbl) lbl.textContent = open ? 'collapse all' : 'expand all';
+});

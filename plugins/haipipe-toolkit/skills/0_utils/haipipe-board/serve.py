@@ -585,7 +585,16 @@ class Handler(SimpleHTTPRequestHandler):
             # 读操作往往赶在关闭之前问完，所以表现是「读得了、写就挂」。
             # ClaudeSDKClient 在整轮里把连接一直开着，回调才有地方回。
             # （haichat-inlab 用的也是 ClaudeSDKClient，不是 query。）
+            # 等待期的真话（JL 260724「show the real things」）：boot 阶段一个事件都
+            # 没有，页面只能挂一句假的「…thinking」。这里把真实阶段发出去。
+            if stream:
+                emit({"t": "stage",
+                      "text": ("booting claude — the full tier loads the whole skill "
+                               "registry, the first message is the slow one"
+                               if sources else "booting claude (scoped — quick)")})
             async with ClaudeSDKClient(options=opts) as client:
+              if stream:
+                  emit({"t": "stage", "text": "session up — sending your message"})
               await client.query(msg)
               async for m in client.receive_response():
                   if stop.is_set():
