@@ -7,6 +7,19 @@ session: d650c47e-0d7d-464d-8405-a98a545fe552
 ## Question
 每个 Q 除了受限的抽屉，能不能再有一个**自己的真终端** —— 就是完整的 Claude Code，功能一个不少？
 
+- 为什么难
+  终端要跑在文件所在那台机器上，还得穿过 Remote-SSH 只转发了一个端口的限制；多块板、多题同时开，还不能互相撞端口。
+- 不定会怎样
+  抽屉终究是重搭的，遇到要跑命令、要用技能的活就卡住 —— 没有真终端，板就只能干「改文字」这一类轻活。
+- 定了会影响什么
+  跟 `QD2` 的分工从此不再是「安全 vs 不安全」（QD2 现在也能全开），而是**形态不同**：抽屉是重搭的对话框，终端是原样的 CLI。
+
+## Boundary
+- ✅ 这题管
+  **真终端这一种形态**：怎么起、怎么穿过单端口、多板多题怎么不撞、进程怎么回收。
+- ❌ 这题不管
+  规则本身 —— 那是 `QD1`；也不管网页抽屉 —— 那是 `QD2`。
+
 ## Diagram
 ```
    浏览器（JL 的笔记本）                       服务器（文件在这台）
@@ -26,7 +39,7 @@ session: d650c47e-0d7d-464d-8405-a98a545fe552
    一题一个 socket 文件（没有"分哪个端口 / 会不会占满"）。ttyd -b 挂子路径，serve.py 原样转（含 WS）。
 ```
 
-## Done when
+## Items to Finish
 - [x] 每个 Q 卡片上有一个 ⌨ 入口
       抽屉头部一个 ⌨，切过去整个抽屉变成这一题的真终端（iframe）。
 - [x] 点它进的是**这一题自己的**那个会话
@@ -52,7 +65,7 @@ session: d650c47e-0d7d-464d-8405-a98a545fe552
       key 必须是已登记的 12 位 hex。没定的还是：ttyd 本身不认证，谁连到 5599 谁就能用；
       对外暴露前必须先定认证。
 
-## Now
+## Where we are
 做出来了，就在页面里。抽屉头部 ⌨ 进终端，再点变 💬 交回 session。
 
 - 终端画在抽屉里，用 xterm.js，不再套 iframe（JL：closer to myrlin / A）
@@ -106,16 +119,11 @@ session: d650c47e-0d7d-464d-8405-a98a545fe552
       关整个板页面时，抽屉里开着的那个终端会被 pagehide beacon 收掉。
       要一次清干净所有终端，用 `/_board/killall`（或重启 serve.py，启动时自动清残留）。
 
-## Why here
-跟 QD2 是同一个需求的两种实现。原来靠「受限 vs 不受限」来分它们，但 QD2 已经改了 ——
-它现在也有三档权限，默认「完整·问我」就跟 CLI 一样全工具全技能、能干任何事。
-所以两题的差别不再是「一个安全一个不安全」，而是**形态不同**：
-  · QD2 = SDK 重搭的对话框：气泡逐字流、一个可调的权限闸门（受限 / 完整·问我 / 完整·不问）。
-    嵌在页面里、看得住，适合日常；代价是一个 HTTP 请求跑一轮，长任务会顶超时。
-  · QD3 = 真正的 CLI 本体：完整的 Claude Code TUI，功能一个不少，但没有闸门 ——
-    谁连到 5599 谁就能用。是「对话框不够用、要真终端」时的出口。
-两个都该存在：日常用看得住的对话框，要完整 TUI 或卡住了就切真终端。
-分开成两题，是让「要不要闸门、闸门怎么调」在两种形态里各说各的，不搅在一起。
+## Files
+- `serve.py`
+  `terminal()` / `proxy_term()` / `reap_stale_terms()` —— ttyd + unix socket + 反向代理 + 进程回收。
+- `build.py`
+  页面上切到终端那个入口。
 
 ## Lesson
 **空壳 session（记了 id 却没聊过）会让 --resume 秒退，终端一开就死。**
@@ -169,6 +177,8 @@ AGPL-3.0：myrlin 的许可证。当独立工具用无所谓，抄进自己的�
 >> CC0723: 翻了源码，发现路径跟我们一致。但它是一整个应用，太重；最后用 ttyd + serve.py 反代自己嵌了。
 
 ## Comments
+- [ ] JL 「❓ Question 每个 Q 除了受限的抽屉，能不能再有一个自己的真终端 —— 就是完整的 Claude Code，功能一个不少？」 · 260723 2038
+      We need to change this to English as well, must to make this can be well written and easier to follow, and also list several bullets.
 - [ ] JL 「跟 QD2 是同一个需求的两种实现，但取舍完全相反：」 · 260723 1511
       我们已经改了，你看看QD2，现在跟QD3一样了。
 - [x] JL 「when we open the terminal/chatbot, give some prompt so they know which question and board they're working on」 · 260723 1500
@@ -209,6 +219,7 @@ AGPL-3.0：myrlin 的许可证。当独立工具用无所谓，抄进自己的�
       >> CC0723: 能，被 UI 挡了不是 LAW。不同题是不同 session，多开几个板页面标签即可。（↗ 弹出按钮后来按 JL 意见删了。）
 
 ## Log
+260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
 260723 1810 · 结掉 4 条评论：QD2 已改成三档权限（默认完整），Why here 从「受限 vs 不受限」重写成
               「形态之分」（带闸门的 SDK 对话框 vs 无闸门的真 CLI）；「安全边界写死成文」改成白话并加解释
 260723 1745 · JL 要「开场给个 prompt 让它知道在哪一题」。加 prime_context()：终端用 --append-system-prompt、

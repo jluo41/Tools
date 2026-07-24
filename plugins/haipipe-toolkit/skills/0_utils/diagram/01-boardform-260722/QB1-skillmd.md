@@ -4,7 +4,20 @@ owner: CC
 method: SKILL.md 保持最短，细节放 ref/ 三份
 
 ## Question
-别人（或者以后没有这次对话记忆的我）敲下 `/haipipe-board`，要照着做什么？
+别人 —— 或者以后没有这次对话记忆的我 —— 敲下 `/haipipe-board`，要照着做什么？这份 SKILL.md 到底该说哪些事、又该把哪些事留给 `ref/`？
+
+- 为什么难
+  它每次调用都要进上下文，越短越好；但短了就说不清。取舍的界线得有个规矩，不能凭手感。
+- 不定会怎样
+  现在这套流程只活在这次对话里。换个 agent 进来只看到一个 `build.py` 和几块板，它猜不出该怎么走 —— 这次做的东西下次就没了。
+- 定了会影响什么
+  它是 skill 的入口，也是「板上已定的规矩」唯一的出海口（毕业机制）。
+
+## Boundary
+- ✅ 这题管
+  **SKILL.md 里写什么**：哪些动作、写多长、什么进正文什么进 `ref/`、怎么跟板保持同步（毕业机制）。
+- ❌ 这题不管
+  写完之后**怎么验它够不够用** —— 那是 `QB2`（全新 agent 冷读）。
 
 ## Diagram
 ```
@@ -25,7 +38,7 @@ method: SKILL.md 保持最短，细节放 ref/ 三份
         ref/board-example.md  一块两题的最小示例
 ```
 
-## Done when
+## Items to Finish
 - [x] SKILL.md 写完
       形状 · 动作（open/add/build/sync/link/close + serve/comment）· Q 文件段落 · 写法 · 禁令 · ref/ 索引。
 - [x] 答清楚怎么开一块新板
@@ -45,11 +58,7 @@ method: SKILL.md 保持最短，细节放 ref/ 三份
       挑出的唯一真 gap（build.py 怎么调）已修进 SKILL.md。
 
 
-## Why here
-现在这套流程只活在这次对话里。换个 agent 进来，看到的只有一个 `build.py` 和两块试验板，它猜不出该怎么走。
-skill 的全部价值就是把流程写下来 —— 不写，这次做的东西下次就没了。
-
-## Now
+## Where we are
 **写完了，但还没被验过。**
 
 - `SKILL.md` 128 行
@@ -67,6 +76,14 @@ skill 的全部价值就是把流程写下来 —— 不写，这次做的东西
 
 还没做的：换个全新 agent 只看 SKILL.md 去开一块板 —— 那是 QB2。
 
+
+## Files
+- `SKILL.md`
+  这题的交付物本身。
+- `ref/board-form.md` · `ref/writing-rules.md` · `ref/q-template.md` · `ref/board-example.md`
+  细节的去处 —— SKILL.md 保持最短，全靠这四份接住。
+- `CHANGELOG.md`
+  版本与改动记录，跟 SKILL.md 的 `version:` 对齐。
 
 ## Law
 - 毕业机制：SKILL.md = 板上已定问题的结晶
@@ -86,6 +103,7 @@ skill 的全部价值就是把流程写下来 —— 不写，这次做的东西
 ## Discussion
 
 ## Log
+260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
 260723 1720 · QB2 验收通过 → 勾掉「全新 agent 能开板」；顺手补进 SKILL.md：build.py 带路径调 + slug/默认状态/owner 约定
 260723 1700 · 定下毕业机制（Q ✅ → Law 抄进 SKILL.md），写进 ## Law 和 SKILL.md 的「板 ↔ SKILL.md」一节；
               顺手毕业已 ✅ 的三题：修掉 comment 那节过期的「Sync」说法（QA6：Save 即写盘）、

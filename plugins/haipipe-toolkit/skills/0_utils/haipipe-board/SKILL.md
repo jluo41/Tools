@@ -1,8 +1,8 @@
 ---
 name: haipipe-board
-description: Open and run a BOARD — one topic, one folder, one markdown file per open question, generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions that need to be laid out, discussed with someone, and closed one by one; when handing a few days of work to an RA; or when the user says board, 开板, 加一题, 关板, /haipipe-board.
+description: Open and run a BOARD — one topic, one folder, one markdown file per open question, generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions that need to be laid out, discussed with someone, and closed one by one; when handing a few days of work to an RA; or when the user says board, 打开这块板, 开板, 加一题, 关板, /haipipe-board. "打开 <board folder>" means VIEW an existing board (rebuild + push the URL to the user's VS Code browser over the VS Code IPC socket) — NOT create a new one, and never `open board.html`/`file://` (Remote-SSH: the browser is on the user's laptop).
 metadata:
-  version: "0.4.3"
+  version: "0.6.0"
   last_updated: "2026-07-23"
   summary: "One topic = one folder of question .md files + one static HTML page. build.py for the static page; serve.py adds live comments/chat/terminal. SKILL.md = the board's settled questions, distilled."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -18,7 +18,7 @@ metadata:
 **两条必须成立的（JL 定的）：**
 
 - 打开就知道自己在干嘛 —— 靠 `spine`（主干）和 `## Topic`
-- 知道什么时候能结束 —— 靠 `close`（关板条件）和每题的 `## Done when`
+- 知道什么时候能结束 —— 靠 `close`（关板条件）和每题的 `## Items to Finish`
 
 ## 🗂 形状
 
@@ -40,10 +40,36 @@ metadata:
 
 ## 🔨 动作
 
-离线（只要 `build.py`）：**open · add · build · sync · link · close**
+离线（只要 `build.py`）：**view · open · add · build · sync · link · close**
 现场（要 `serve.py` 跑着）：**serve · comment**
 
-### open — 开一块板
+> **「打开 <某块板>」= view（看已有的），不是 open（开新的）。** 用户给了一个已存在的
+> 文件夹路径就走 view；只有要新建时才走 open。
+
+### view — 打开一块已有的板（最常用）
+
+用户说「打开 `<板文件夹>`」时做这三步，**别只丢一句「打开 board.html」就完事**：
+
+1. **先重新生成**，免得页面是旧的：
+   `python3 <skill>/build.py <板文件夹>`
+2. **推到用户的 VS Code 浏览器**（下面那段是唯一真正有效的方式，见 ⚠️）：
+
+```bash
+BD=<板文件夹相对仓库根的路径>          # 例：Tools/plugins/.../diagram/01-boardform-260722
+S=$(ls -t "$TMPDIR"/vscode-ipc-*.sock 2>/dev/null | head -1)
+B=$(ls -t ~/.vscode-server/cli/servers/*/server/bin/helpers/browser.sh 2>/dev/null | head -1)
+VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
+```
+
+3. 顺手报一句板的状态：几题、几条未解决评论、卡在哪。
+
+⚠️ **为什么不能用 `open board.html` 或 `file://`**：这台机器是 Remote-SSH ——
+**浏览器在用户的笔记本上，文件在服务器上**。`open` 只会在服务器桌面上打开，用户什么都看不到；
+`file://` 指的是用户本机的盘，那儿没有这些文件。必须走上面那条 IPC，把 URL 交给用户那侧的 VS Code。
+
+需要 `serve.py` 在 5599 上跑着（没跑就先起，见 serve 段）。`#top` 回目录、`#QA7` 直接跳某一题、`#all` 展开全部。
+
+### open — 开一块**新**板
 
 1. 问清三件事：**这块板要解决什么**（→ `spine`）、**什么时候算完**（→ `close`）、**有哪几个 Q**。
    Q 列表要用户点头才往下走 —— 这是唯一必须停下来问的地方。
@@ -55,7 +81,8 @@ metadata:
 5. 生成：`build.py` 在 **skill 目录**里，不在板文件夹里，所以带上它的路径 ——
    `python3 <skill>/build.py <板文件夹>`（`<skill>` = `Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board`）。
    **别 `cd` 进板文件夹再 `python3 build.py .`** —— 那样找不到 build.py。
-   生成只往 `board.html` 写，不碰你的 `.md`（md 是唯一来源）。打开 `board.html` 给用户看。
+   生成只往 `board.html` 写，不碰你的 `.md`（md 是唯一来源）。
+6. **按 view 那一节把页面推到用户的 VS Code 浏览器** —— 不要只说「打开 board.html」。
 
 ### add — 加一题
 
@@ -105,8 +132,8 @@ python3 <skill>/watch.py <board 文件夹>     # 盯着，改任何 .md 自动�
 
 | 回写哪 | 写什么 |
 |---|---|
-| `## Now` | 现在的实际状态。有数字给数字。 |
-| `## Done when` | 达到的条打勾。**没验过的不许打勾。** |
+| `## Where we are` | 现在的实际状态。有数字给数字。 |
+| `## Items to Finish` | 达到的条打勾。**没验过的不许打勾。** |
 | `## Log` | 一行：`YYMMDD HHMM · 改了什么` |
 | `state:` | 全部打勾 → ✅ SETTLED；有进展 → 🟡 PARTIAL；明确不做 → ⏸️ ON HOLD |
 | `## Comments` | 这轮解决掉的评论，勾成 `[x]` |
@@ -145,11 +172,12 @@ state: 🔴 OPEN          ✅ SETTLED / 🟡 PARTIAL / 🔴 OPEN / ⏸️ ON HOL
 owner: CC               JL 显示 🧠 拍板，其他显示 🔧
 method: 一句话说怎么做
 
-## Question     一句真正的问句，页面上最显眼那行   ┐
-## Diagram      ascii 图（可省）                  │ 必填
-## Now          现在的实际状态，有数字给数字        │（Diagram 可省）
-## Done when    勾选清单，栏头自动数出 3/5          │
-## Why here     不写就没人知道这题为什么值得占一页  ┘
+## Question        一段平白话 + 2–4 个要点：在问什么 · 为什么难 · 不定会怎样  ┐
+## Boundary        这题管什么、更要紧的是不管什么（选填但强烈建议）          │ 台面
+## Diagram         ascii 图（可省）                                        │ 顺序
+## Items to Finish 勾选清单 ＝ 什么算做完，栏头自动数出 3/5                 │ 固定
+## Where we are    现在的实际状态，有数字给数字                             │
+## Files           这题牵动哪些文件（选填但强烈建议）                        ┘
 ## Law          这题拍定的规矩      ┐
 ## Lesson       这题踩过的坑        │
 ## Glossary     这一页的生词        ├ 选填 · 折叠，不上台面
@@ -158,8 +186,15 @@ method: 一句话说怎么做
 ## Log          260723 1030 · 改了什么 ┘
 ```
 
-正文里长内容一律写成 **`- 小标题` + 缩进两格的解释**，不要一段接一段的散句。
+**台面顺序是定死的**：先给意图（问什么 · 边界 · 什么算完），再给状态（现在到哪、动哪些文件）。
+`## Question` 一节读完，一个零背景的人就该明白这题在干嘛 —— 这是这套版式的验收标准。
+
+正文里长内容一律写成 **`- 小标题` + 缩进两格的解释**，不要一段接一段的散句；
+整行加粗 `**…**` 是**组标题**（领着一串 item）。
 加一题直接复制 `ref/q-template.md`（每段都标了必填/选填）；完整语法表见 `ref/board-form.md`。
+
+> 老段名一律还认：`## Done when`＝`## Items to Finish`、`## Now`＝`## Where we are`、中文名同理。
+> `## Why here` 已退役 —— 它的活并进 `## Question` 的要点，老板子里写着的收进折叠区。
 
 ## ✍️ 写法（这条最容易被跳过）
 
@@ -183,7 +218,7 @@ method: 一句话说怎么做
 `diagram/01-boardform-260722/`）里**已定问题的结晶**。
 
 ```
-   那块板（14 题，每题 Question/Now/Law/Lesson/Log）    SKILL.md
+   那块板（每题 Question/Now/Law/Lesson/Log）           SKILL.md
    ┌──────────────────────────────────┐   一题 ✅   ┌──────────────┐
    │ 完整设计记录：为什么、怎么来的、还没定的 │ ────────► │ 只留结论，照着做 │
    └──────────────────────────────────┘           └──────────────┘

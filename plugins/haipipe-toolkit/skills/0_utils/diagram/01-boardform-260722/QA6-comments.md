@@ -1,9 +1,22 @@
 # Inline comments on selected text
-state: ✅ DONE
+state: ✅ SETTLED
 owner: CC
 method: 选中 → 包住那个 Range → 存 localStorage → 一次性写回 md
 ## Question
-怎么像 Google Docs 那样，在页面上选中一句话就地加评论？而且这条评论要同时活在 `.md` 和 `board.html` 里，不是只存在浏览器里。
+怎么像 Google Docs 那样，在页面上选中一句话就地加评论？而且这条评论要同时活在 `.md` 和 `board.html` 里，不能只存在某个人的浏览器里。
+
+- 为什么难
+  浏览器在用户笔记本上、文件在服务器上（Remote-SSH）。浏览器自己写不了盘 —— 写盘这件事必须挪到文件所在那台机器。
+- 不定会怎样
+  评论只活在浏览器里，换台机器就没了，也进不了 git —— 那就不叫「板上的讨论」，只是私人便签。
+- 定了会影响什么
+  它定的是 **`.md` 里的存储语法**。语法不定，`QB1` 的 SKILL.md 就没法写「怎么在板上评论」。
+
+## Boundary
+- ✅ 这题管
+  **做出来**：选中怎么冒出按钮、`.md` 里存成什么语法、怎么写盘、引文怎么在正文里高亮、锚不上怎么标。
+- ❌ 这题不管
+  一条评论**跑起来之后**的事 —— 活多久、谁来推、未解决能不能关板 —— 那是 `QA7`。
 
 ## Diagram
 ```
@@ -27,7 +40,7 @@ method: 选中 → 包住那个 Range → 存 localStorage → 一次性写回 m
   读评论：不需要 JS      新加评论：必须有 JS   ← 渐进增强，缺 JS 只是不能加
 ```
 
-## Done when
+## Items to Finish
 - [x] 选中一句 → 写评论 → 页面上立刻高亮 + 句尾挂 💬
 - [x] 谁都能用自己的缩写署名，不限于 JL / RA / CC
 - [x] 定位不到那句时明确标出来（面板里 ⚠ not anchored），不会悄悄消失
@@ -46,7 +59,7 @@ method: 选中 → 包住那个 Range → 存 localStorage → 一次性写回 m
       越界的文件名被挡住。而且这两天你在页面上留的每条评论，走的都是这条真实来回。
       （「锚点断了怎么修」不在这一题了，归 QA7。）
 
-## Now
+## Where we are
 **做完了，而且已经在真实使用中：这块板上的评论都是这套东西加进来的。**
 
 - 选中就能评论
@@ -75,9 +88,13 @@ method: 选中 → 包住那个 Range → 存 localStorage → 一次性写回 m
   引文在正文里找不到时，那条评论旁边标 `⚠ anchor lost`，折叠标题上也会写明几条断了。
 
 
-## Why here
-JL 从第一天就提了「板要能加自己的评论」。段落级已经有了，句子级是它自然的下一步。
-而且这一题定的是 **`.md` 里的存储语法** —— 语法不定，QB1 的 SKILL.md 就没法写「怎么在板上评论」。
+## Files
+- `serve.py`
+  `add_comment` / `resolve` —— 写盘就靠这两个（在文件所在那台机器上执行）。
+- `build.py`
+  `parse_comments` / `render_comments` / `mark_span` —— 解析、渲染、跨标签高亮。
+- `ref/board-form.md`
+  §6 Comments 段：完整语法。
 
 ## Lesson
 **先问清楚「代码跑在哪台机器上」，再选 API。**
@@ -129,6 +146,7 @@ CriticMarkup：一套写在纯文本里的批注语法，`{==这句==}` 表示�
       >> CC0723: 做了。`## Comments` 段落 + `- [ ]` / `- [x]` 当状态，页面上显示 open / solved，未解决的在卡片头挂一个 💬 N。
 
 ## Log
+260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
 260723 1230 · 收尾关题：state → ✅ DONE；Now 开头改成「已在真实使用中」；
               Done when「写盘」那条补上「每条评论都走了这条真实来回」；Comments 全部结清
 260723 1226 · Now 里「攒着，不急着同步」改写成「保存即落盘，攒的是处理不是同步」——

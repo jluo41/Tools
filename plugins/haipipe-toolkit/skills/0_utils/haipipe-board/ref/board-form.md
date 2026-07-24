@@ -69,12 +69,14 @@ state:          → .pill     ✅ SETTLED / 🟡 PARTIAL / 🔴 OPEN / ⏸️ ON
 owner:          → 状态条    JL 显示 🧠 拍板，其他显示 🔧
 method:         → 状态条    一句话说怎么做
 
-## Question     → .ask      问句，最显眼那行
-## Diagram      → .dia      ascii 图，紧跟问句
-## Now          → .col.now  上面那块，黄色边
-## Done when    → .col.goal 下面那块，绿色边，栏头自动数出 5/6
-## Why here     → .f        再下面一栏
-## Discussion   → .folds    折叠
+## Question        → .ask       一段话 + 几个要点；第一段是大字领句
+## Boundary        → .bnd       这题管什么 / 不管什么，灰边
+## Diagram         → .dia       ascii 图
+## Items to Finish → .col.goal  绿色边，栏头自动数出 5/6
+## Where we are    → .col.now   黄色边
+## Files           → .fls       这题牵动哪些文件，蓝边（路径自动变可点链接）
+## Why here        → .folds     折叠（已退役，见下）
+## Discussion      → .folds    折叠
 ## Comments     → .folds    折叠，有未解决的会默认展开
 ## Law          → .folds    折叠 · 这题拍定的规矩
 ## Lesson       → .folds    折叠 · 这题踩过的坑
@@ -82,11 +84,19 @@ method:         → 状态条    一句话说怎么做
 ## Log          → .folds    折叠
 ```
 
-**必填**：`# 标题`、`state:`、`owner:`、`## Question`、`## Now`、`## Done when`、`## Why here`。
-其余（`method:`、`## Diagram` 和所有折叠段）**选填**，用不上就整段删掉。
-折叠段在页面上的顺序由 `build.py` 固定（Discussion · Comments · Law · Lesson · Glossary · Log），跟文件里写的顺序无关。
+**必填**：`# 标题`、`state:`、`owner:`、`## Question`、`## Items to Finish`、`## Where we are`。
+`## Boundary` 和 `## Files` 选填但**强烈建议写**；其余（`method:`、`## Diagram` 和所有折叠段）**选填**，用不上就整段删掉。
+折叠段在页面上的顺序由 `build.py` 固定（Why here · Discussion · Comments · Law · Lesson · Glossary · Log），跟文件里写的顺序无关。
 
-中文段落名（`## 问题` `## 现在什么样` …）仍然能解析，老板子不用改就能重新生成。
+**台面上的顺序是定死的**（260723 改版）：`Question → Boundary → Diagram → Items to Finish → Where we are → Files`。
+先给意图（在问什么、边界、什么算完），再给状态（现在到哪）。改版前是 Now 在 Done when 上面 ——
+零背景的人先撞上一堵实现细节，还没搞懂目标就淹了。
+
+**`## Why here` 已退役。** 它的活（为什么难 / 不定会怎样）并进 `## Question` 的要点里，
+好让「光读第一节就 orient」。老板子里还写着这段的照常解析，只是收进底部折叠区，内容不丢。
+
+**老段名一律还认**，老板子不用改就能重新生成：中文名（`## 问题` `## 现在什么样` …）、
+以及改版前的 `## Done when`（＝`## Items to Finish`）和 `## Now`（＝`## Where we are`）。
 
 ## 4b. `## Links` —— 板和产物的连线
 
@@ -115,6 +125,8 @@ haipipe-board/      ../../haipipe-board/
 | `- 小标题` + 缩进两格的解释行 | 要点块：▸ 加粗小标题 + 灰色解释 |
 | `- [ ]` / `- [x]` + 缩进解释 | 勾选清单，栏头自动数出 `3/5` |
 | ` ``` ` 围栏 | 原样输出的 `<pre>`（ascii 图、代码、目录树） |
+| 单独一行一个 excalidraw 分享链接 | 嵌成可交互画布（iframe）+ 一条「↗ 在 Excalidraw 打开」兜底链接 |
+| 裸 `https://…` | 自动变成可点链接（不会把已在 `href=` 里的再套一层） |
 | `` `code` `` `**粗**` `![](fig/x.png)` | 行内代码 / 加粗 / 图片 |
 | `> JL: 文字` | 讨论行，按署名分颜色 |
 | `>> CC0723: 文字` | 回复 |
@@ -162,9 +174,10 @@ python3 <skill>/watch.py <board 文件夹>     # 盯着，改任何 .md 自动�
 
 **聚焦时什么上台面、什么收起来**（QA4 定的）：
 
-- **上台面**（三级层级）：节标题（📍/🎯/💡，底下一条线）＞ **组标题**（整行加粗 → 🔹 默认，开头写 emoji 就用那个，领着一串 item）＞ item 的名字（`▸`）。加上标题、问句、`## Diagram`（招牌图，不折）、勾选项的框+名字。
+- **上台面**（从上到下）：标题 → `❓ Question`（大字领句 + 要点）→ `🚧 Boundary` → `## Diagram`（招牌图，不折）→ `🎯 Items to Finish` → `📍 Where we are` → `📁 Files`。
+- **三级层级**：节标题（❓/🚧/🎯/📍，底下一条线）＞ **组标题**（整行加粗 → 🔹 默认，开头写 emoji 就用那个，领着一串 item）＞ item 的名字（`▸`）。
 - **默认收起**（点名字 / 按节标题右边的 `expand all` 才现）：item 的解释（收进 native `<details>`）、正文里的代码块（收成一行 `</> code · N 行`；`## Diagram` 除外）。
-- **沉到底部折叠区**：Discussion · Comments · Law · Lesson · Glossary · Log。
+- **沉到底部折叠区**：Why here · Discussion · Comments · Law · Lesson · Glossary · Log。
 - 一屏第一眼 = 一列干净的名字 + 招牌图；`expand all` 一键把这一节的 item / 代码全铺开（纯增强，脚本剥掉后每条仍能单独点开）。
 
 **别的定死的**：现在 vs 算做完**上下叠**不左右分栏（长短不齐时并排会空半边）；长题**滚动**不截断不拆屏；**不锁 16:9** 随窗口高走（锁画幅归投屏 deck）；大标题 id 后面留一个**真空格**，复制才不会粘成 `QA4Single…`。

@@ -33,16 +33,26 @@ ST = {"✅": ("done", "SETTLED"), "🟡": ("wip", "PARTIAL"),
       "🔴": ("todo", "OPEN"), "⏸️": ("hold", "ON HOLD")}
 STN = {k.replace("️", ""): v for k, v in ST.items()}
 # 段落名用英文（两边都认：新板写英文，老板写中文照样能读）
-ALIAS = {"Question": "问题", "Diagram": "图", "Done when": "完成线",
-         "Now": "现在什么样", "Why here": "为什么在这块板",
-         "Glossary": "名词", "Discussion": "讨论", "Comments": "评论",
-         "Law": "规矩", "Lesson": "教训", "Log": "日志",
-         "Topic": "主题", "Pipeline": "流水线", "Roster": "清单", "Links": "链接"}
+# 一个槽位可以有多个段名：规范名 -> [别名…]。中文老名字一直认（老板子不用改就能重新生成），
+# 260723 改版又加了两个新名：Done when -> 「Items to Finish」、Now -> 「Where we are」。
+ALIAS = {"Question": ["问题"], "Boundary": ["边界"], "Diagram": ["图"],
+         "Files": ["文件"],
+         "Done when": ["完成线", "Items to Finish"],
+         "Now": ["现在什么样", "Where we are"],
+         "Why here": ["为什么在这块板"],
+         "Glossary": ["名词"], "Discussion": ["讨论"], "Comments": ["评论"],
+         "Law": ["规矩"], "Lesson": ["教训"], "Log": ["日志"],
+         "Topic": ["主题"], "Pipeline": ["流水线"], "Roster": ["清单"], "Links": ["链接"]}
 
 
 def sec(d, key):
-    """段落取值：先按英文名找，找不到再按中文别名找。"""
-    return d.get(key) or d.get(ALIAS.get(key, "\0")) or ""
+    """段落取值：先按规范名找，再挨个试别名（中文老名 + 新名）。"""
+    if d.get(key):
+        return d[key]
+    for a in ALIAS.get(key, ()):
+        if d.get(a):
+            return d[a]
+    return ""
 
 
 
@@ -217,6 +227,10 @@ def inline(s):
     s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a class="fp" href="\2">\1</a>', s)
     s = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", r'<img alt="\1" src="\2">', s)
+    # 裸 URL 自动变链接（放最后）。前面那个 lookbehind 是为了别去动已经躺在
+    # href="…" / src="…" 里的地址 —— 否则会把链接再套一层链接。
+    s = re.sub(r'(?<![\"\'=])(https?://[^\s<>"\')]+)',
+               r'<a class="fp" href="\1" target="_blank" rel="noopener">\1</a>', s)
     return s
 
 
@@ -353,6 +367,17 @@ def body(txt, fold_code=True):
         if m:
             flush()
             blt = ["ck", m.group(2), [], m.group(1).lower() == "x"]
+            continue
+        # 一行只放一个 excalidraw 分享链接 → 嵌成一块可交互画布，底下再给一条链接。
+        # 为什么敢嵌：excalidraw.com 没有 X-Frame-Options / frame-ancestors（实测）。
+        # 为什么还要那条链接：断网 / iframe 被拦时，画布是空的，链接仍然点得开 —— 不靠 iframe 才读得到。
+        m = re.match(r"^\s*(https?://(?:app\.)?excalidraw\.com/\S+)\s*$", ln)
+        if m:
+            u = esc(m.group(1))
+            out.append(f'<div class="xcal"><iframe src="{u}" loading="lazy" '
+                       f'referrerpolicy="no-referrer"></iframe>'
+                       f'<a class="fp xopen" href="{u}" target="_blank" rel="noopener">'
+                       f'↗ 在 Excalidraw 打开</a></div>')
             continue
         # 整行加粗 = 组标题：领着下面一串 item 的一句话。图标 + 略大 + 上间距，
         # 夹在节标题(.ch)和 item 名字(.bt)中间一层，把层级拉开（JL 260723）。
@@ -571,8 +596,9 @@ def render(meta, qs):
                + '</div>')
         tok, cls, lab = st(q)
         who = "🧠 JL 拍板" if q["owner"] == "JL" else ("🔧 " + q["owner"] if q["owner"] else "")
-        # 借 html-ppt 的 comparison 版式：一个 Q 的核心就是「现在」和「算做完」的落差，
-        # 左右并排时那个落差本身是看得见的；上下堆叠时得读完两段才拼得出来。
+        # 顺序（JL 260723 改版）：先「什么算做完」，再「现在到哪了」。
+        # 原来 Now 在上，零背景的人先撞上一堵实现细节，还没搞懂目标就淹了 ——
+        # 先给意图（目标），再给状态（进度）。
         now, goal = sec(q["sec"], "Now"), sec(q["sec"], "Done when")
         boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", goal, re.M)
         cnt = (f'<span class="cnt">{sum(1 for b in boxes if b.lower()=="x")}/{len(boxes)}</span>'
@@ -581,22 +607,31 @@ def render(meta, qs):
         if now or goal:
             nb, gb = body(now), body(goal)
             fs += ('<div class="cmp">'
-                   f'<div class="col now">{chead("📍 Now", nb)}{nb}</div>'
-                   f'<div class="col goal">{chead(f"🎯 Done when{cnt}", gb)}{gb}</div>'
+                   f'<div class="col goal">{chead(f"🎯 Items to Finish{cnt}", gb)}{gb}</div>'
+                   f'<div class="col now">{chead("📍 Where we are", nb)}{nb}</div>'
                    '</div>')
+        # 「Why here」不再单独占台面：它该讲的（为什么难 / 不定会怎样）并进 ## Question
+        # 的要点里，光读第一节就 orient。老板子里还写着这段的，收进底部折叠区，内容不丢。
         why = sec(q["sec"], "Why here")
-        if why:
-            wb = body(why)
-            fs += f'<div class="f">{chead("💡 Why here", wb)}<div class="fbd">{wb}</div></div>'
         disc = sec(q["sec"], "Discussion").strip()
         cms = parse_comments(sec(q["sec"], "Comments"))
 
         # 先高亮，再渲染评论 —— 这样每条评论知道自己有没有锚上，
         # 锚不上的当场标出来（原文改过之后引文就对不上了，不能让它悄悄失效）。
-        # 别的段都显示段名（📍 Now / 🎯 Done when …），Question 段也给个「❓ Question」
-        # 小标签，别只剩一个 ❓ —— 跟其它段对齐（JL 260723）。
+        # ## Question 是「一段话 + 几个要点」（JL 260723 改版）：走 body() 才吃得下要点。
+        # 第一段是大字领句（CSS 挑 p:first-of-type），要点跟在下面 —— 光这一节就该让
+        # 零背景的人明白：在问什么、为什么难、不定会怎样（原 Why here 的活并进来了）。
         ask = (f'<div class="ask"><span class="ql">❓ Question</span>'
-               f'{inline(sec(q["sec"], "Question"))}</div>')
+               f'{body(sec(q["sec"], "Question"))}</div>')
+        # 🚧 Boundary（JL 260723 新增，选填）：这题管什么、更要紧的是不管什么。
+        # 不写清「不管什么」，读的人会拿别题的期待来读它 —— 零背景最容易在这儿误解。
+        bb = body(sec(q["sec"], "Boundary"))
+        bnd = f'<div class="bnd">{chead("🚧 Boundary", bb)}{bb}</div>' if bb else ""
+        # 📁 Files（JL 260723 新增，选填）：这题牵动哪些文件。读懂之后知道去哪儿动手；
+        # 反过来改了哪个文件，也知道该回写哪一题。路径写反引号里，board.md 的
+        # ## Links 声明过的会自动变成可点链接。
+        flb = body(sec(q["sec"], "Files"))
+        fls = f'<div class="fls">{chead("📁 Files", flb)}{flb}</div>' if flb else ""
         dia = (f'<div class="dia">{body(sec(q["sec"], "Diagram"), fold_code=False)}</div>'
                if sec(q["sec"], "Diagram") else "")
 
@@ -605,7 +640,7 @@ def render(meta, qs):
             return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", s)).strip()
 
         # 卡片上所有可见文字的「纯文本」快照，用来判 lost（不含标签、空白已归一）
-        card_plain = _norm(ask + " " + fs + " " + dia)
+        card_plain = _norm(ask + " " + bnd + " " + fs + " " + fls + " " + dia)
 
         def hl(quote, solved):
             # 锚点为什么老丢，两个原因都堵上（JL 260723 问）：
@@ -614,17 +649,21 @@ def render(meta, qs):
             #      不再是 naive 的 e in html（那个一遇标签就贴不到原文）。
             #   兜底：连跨标签都找不到（空白差异等），退一步用纯文本判「在不在」——
             #        在就不算 lost（只是这一条没描黄）。
-            nonlocal ask, fs, dia
+            nonlocal ask, bnd, fs, fls, dia
             e = esc(quote)
             kls = ' class="solved"' if solved else ''
-            for name in ("ask", "fs", "dia"):
-                cur = {"ask": ask, "fs": fs, "dia": dia}[name]
+            for name in ("ask", "bnd", "fs", "fls", "dia"):
+                cur = {"ask": ask, "bnd": bnd, "fs": fs, "fls": fls, "dia": dia}[name]
                 new, ok = mark_span(cur, e, kls)
                 if ok:
                     if name == "ask":
                         ask = new
+                    elif name == "bnd":
+                        bnd = new
                     elif name == "fs":
                         fs = new
+                    elif name == "fls":
+                        fls = new
                     else:
                         dia = new
                     return True
@@ -658,6 +697,8 @@ def render(meta, qs):
                 lab += f" · {nlost} 未定位"      # 引文不在正文里；不喊「丢了」（分不清是聊天话还是真被改）
             folds += det(lab, f'<div class="cms" data-cfile="{esc(q.get("file",""))}">'
                          + render_comments(cms) + '</div>', open_=nopen > 0)
+        # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
+        folds += det("💡 Why here", body(why))
         folds += det("⚖️ Law", body(sec(q["sec"], "Law")))
         folds += det("🧠 Lesson", body(sec(q["sec"], "Lesson")))
         folds += det("📖 Glossary", body(sec(q["sec"], "Glossary")))
@@ -680,8 +721,8 @@ def render(meta, qs):
             # id 后面那个空格是真字符（不是 CSS margin）——复制这行标题时
             # 才不会粘成 QA4Single…，而是 QA4 Single…（JL 260723）
             f'<h2 class="h2"><span class="hid">{q["id"]} </span>{inline(q["title"])}</h2>'
-            + ask + dia
-            + f'{fs}<div class="folds">{folds}</div>{nav}</section>')
+            + ask + bnd + dia
+            + f'{fs}{fls}<div class="folds">{folds}</div>{nav}</section>')
 
     ctx = ""
     if meta["theme"]:
@@ -729,7 +770,6 @@ JS = r"""
   var panel = mk('div', 'cpanel', '');
   var toast = mk('div', 'ctoast', '');
   [btn, box, dock, panel, toast].forEach(function (e) { document.body.appendChild(e); });
-  dock.style.display = 'block';
 
   function save() { localStorage.setItem(KEY, JSON.stringify(db)); marks(); paint(); }
   function say(m) {
@@ -927,6 +967,10 @@ JS = r"""
     }).join('\n\n');
   }
   function paint() {
+    // 这个角标只在「真有没写盘的评论」时才出现（JL 260723）。
+    // serve.py 跑着的时候 Save 直接落盘，pending 永远是 0 —— 那就不该在右下角常驻碍眼。
+    // 它仍是 serve.py 没跑时的兜底入口，所以不是删掉，是平时藏起来。
+    dock.style.display = db.length ? 'block' : 'none';
     dock.textContent = db.length ? ('\u{1F4AC} ' + db.length + ' pending')
                                  : '\u{1F4AC} Comment';
     dock.className = db.length ? 'has' : '';
@@ -1817,7 +1861,10 @@ body:has(.q:target) .q:target{{display:block;margin-top:6px}}
 h3.sec .hint a{{color:var(--accent);text-decoration:none}}
 .ir.todo{{border-left-color:var(--todo)}}.ir.wip{{border-left-color:var(--wip)}}
 .ir.done{{border-left-color:var(--done)}}.ir.hold{{border-left-color:var(--hold)}}
-.grp{{font-size:12.5px;color:var(--mut);margin:16px 0 2px;padding-left:2px}}
+/* 索引里的分组标题：放大 + 底下一条线，跟 Q 页里的节标题（.ch）同一套语言（JL 260723） */
+.grp{{font-size:16px;font-weight:700;color:var(--fg);letter-spacing:-.01em;
+ margin:26px 0 9px;padding:0 0 6px 2px;border-bottom:1px solid var(--line)}}
+.grp:first-of-type{{margin-top:8px}}
 .src{{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);opacity:.7;text-decoration:none}}
 a.src:hover{{opacity:1;color:var(--accent);text-decoration:underline}}
 .ir .i{{font:12px ui-monospace,Menlo,monospace;color:var(--mut);min-width:24px}}
@@ -1836,8 +1883,24 @@ a.src:hover{{opacity:1;color:var(--accent);text-decoration:underline}}
 .top{{margin-left:auto;color:var(--mut);text-decoration:none;font-size:12px}}
 .top:hover{{color:var(--accent)}}
 .h2{{font-size:22px;line-height:1.4;margin:4px 0 14px;font-weight:700}}
-.ask{{font-size:18px;line-height:1.55;padding-left:13px;border-left:3px solid var(--accent);
- margin:0 0 18px}}
+/* ## Question 现在是「一段话 + 几个要点」：.ask 只是容器，
+   第一段当大字领句，要点跟在下面按正常字号（JL 260723 改版） */
+.ask{{padding-left:13px;border-left:3px solid var(--accent);margin:0 0 18px}}
+.ask p{{margin:0 0 6px}}
+.ask>p:first-of-type{{font-size:18px;line-height:1.55;margin:0 0 9px}}
+/* 🚧 Boundary：这题管什么 / 不管什么。中性灰边，跟黄(现在)绿(目标)区分开 */
+.bnd{{border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:10px;
+ padding:12px 15px;background:var(--bg);margin:0 0 16px}}
+/* 嵌进来的 excalidraw 画布：一行只放一个分享链接就会变成这个 */
+.xcal{{margin:12px 0}}
+.xcal iframe{{width:100%;height:440px;border:1px solid var(--line);border-radius:10px;
+ background:var(--card);display:block}}
+.xcal .xopen{{display:inline-block;margin-top:6px;font-size:12.5px}}
+.q:target .xcal iframe{{height:520px}}
+/* 📁 Files：这题牵动哪些文件。蓝边（跟 Question 一个色系＝「指向真东西」） */
+.fls{{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
+ padding:12px 15px;background:var(--bg);margin:16px 0 0}}
+.fls code{{font-size:12.5px}}
 /* Question 段的小标签：跟 📍 Now / 🎯 Done when 一样显示段名，不只剩一个 ❓（JL 260723） */
 .ql{{display:block;font-size:12px;font-weight:600;color:var(--accent);
  letter-spacing:.02em;margin:0 0 5px}}
@@ -2120,8 +2183,16 @@ body:has(.q:target) .q:target{{border:none;border-radius:0;background:none;
 .q:target .src,.q:target .top{{display:none}}
 .q:target .qh{{margin-bottom:10px}}
 .q:target .h2{{font-size:38px;line-height:1.24;letter-spacing:-.01em;margin:0 0 18px}}
-.q:target .ask{{font-size:21px;line-height:1.55;border-left:none;padding-left:0;
- color:var(--mut);margin:0 0 26px}}
+.q:target .ask{{border-left:none;padding-left:0;margin:0 0 24px}}
+.q:target .ask p{{font-size:16px;line-height:1.75}}
+.q:target .ask>p:first-of-type{{font-size:21px;line-height:1.5;color:var(--fg);margin:0 0 13px}}
+/* Boundary / Files 聚焦时也去框，只留一道边，跟 Items/Where 一个排法 */
+.q:target .bnd{{border:none;border-radius:0;background:none;padding:0 0 0 15px;
+ border-left:2px solid var(--mut);margin:0 0 22px}}
+.q:target .bnd p{{font-size:16px;line-height:1.75;margin:0 0 6px}}
+.q:target .fls{{border:none;border-radius:0;background:none;padding:0 0 0 15px;
+ border-left:2px solid var(--accent);margin:22px 0 0}}
+.q:target .fls p{{font-size:16px;line-height:1.75;margin:0 0 6px}}
 .q:target .cmp{{gap:22px;margin:0 0 22px}}
 .q:target .col{{border:none;border-radius:0;background:none;padding:0 0 0 15px}}
 .q:target .col.now{{border-left:2px solid var(--wip)}}
