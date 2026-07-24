@@ -1,73 +1,74 @@
 # One file, two modes
 state: 🟡 PARTIAL
 owner: CC
-method: 一个文件两种模式：滚着读 / 一题一屏。JL 已定：合并
+method: one file, two modes: scroll to read / one question per screen. JL has ruled: merge
 
 ## Question
-`board.html` 平时是一页长文档，一个人滚着读很顺；但开会投屏要的是「一屏一页」。这两件事，该出两个文件，还是一个文件切两种模式？
+`board.html` is normally one long document — one person scrolls and reads, which works well; but projecting in a meeting wants "one screen per question". Should these be two files, or one file with two modes?
 
-- 为什么难
-  出两份（`board.html` + `deck.html`）就有两份要同步的东西，必然漂移；出一份又要同时满足「滚着读」和「一屏一页」两种完全相反的排版。
-- 不定会怎样
-  开会时临时要展开某一题的细节，还得切文件 —— 很别扭，也容易投出过期的那份。
-- 定了会影响什么
-  投屏还缺的那几样（方向键翻页、演讲者模式）要不要做、做在哪 —— 它们都得靠 JS，而板有「不许依赖 JS 才能读」的不变量。
+- Why it is hard
+  Two files (`board.html` + `deck.html`) means two things to keep in sync, and they will drift. One file has to satisfy two opposite layouts at once — "scroll to read" and "one screen per page".
+- What breaks if we leave it
+  Mid-meeting you want to expand one question's details and have to switch files — awkward, and it is easy to project the stale copy.
+- What it affects downstream
+  Whether the remaining projection features (arrow-key paging, presenter mode) get built and where — they all need JS, and the board has the invariant "must never depend on JS to be readable".
 
 ## Boundary
-- ✅ 这题管
-  **投屏这件事**：一份还是两份、聚焦模式怎么当幻灯片用、翻页和演讲者模式要不要做。
-- ❌ 这题不管
-  单题那一页**具体怎么排**（段落顺序、段名、什么折叠）—— 那是 `QA4`。也不管板怎么**放出去给别人看** —— 那是 `QE1`。
+- ✅ This question owns
+  **Projection**: one file or two, how focus mode doubles as a slide, whether paging and presenter mode get built.
+- ❌ This question does not own
+  How the single-question page is **laid out** (section order, names, what folds) — that is `QA4`. Nor how the board is **shared with others** — that is `QE1`.
 
 ## Diagram
 ```
-             Q*.md ──build.py──► board.html   ← 只有这一个文件
+             Q*.md ──build.py──► board.html   ← the only file
                                     │
                 ┌───────────────────┴───────────────────┐
-           默认：滚着读                         点一行：一题一屏
-           8 题一整页                           屏上只剩那一题
-           自己看 / 发给 RA                      开会投屏
-                └────── 同一个文件，同一份内容 ──────┘
+           default: scroll & read              click a row: one question per screen
+           all questions on one page           only that question on screen
+           read alone / send to an RA          project in a meeting
+                └────── same file, same content ──────┘
 
-✗ 不再另出 deck.html          还差：← → 翻页 · 演讲者模式（都要 JS）
+✗ no second deck.html            still missing: ← → paging · presenter mode (both need JS)
 ```
 
 ## Items to Finish
-- [x] 一个 Q 一屏，翻页看（board.html 的聚焦模式已经做到）
-- [x] 只有一个文件，不出第二份 `deck.html`
-- [ ] 方向键 ← → 翻页
-- [ ] 演讲者模式（讲者看得到讨论，观众看不到）
-- [ ] 内容仍然只从 `Q-xxx.md` 来，不另外维护一份文字
+- [x] One question per screen, paged (board.html's focus mode already does it)
+- [x] Only one file, no second `deck.html`
+- [ ] Arrow-key ← → paging
+- [ ] Presenter mode (presenter sees the discussion, audience does not)
+- [ ] Content still comes only from `Q-xxx.md`, no second copy of the text maintained
 
 ## Where we are
-仓库里现在只有 `board.html`，没有任何在用的 `deck.html`。
-唯一残留的 `subjective-label/diagram/01-sublabel-license-260722/deck.html` 是旧的坏版本，靠 JS 现场造 DOM，跟 `/html-ppt` 没关系 —— 归 QB3 一起清掉。
+The repo now holds only `board.html`; no `deck.html` is in use anywhere.
+The one leftover, `subjective-label/diagram/01-sublabel-license-260722/deck.html`, is an old broken build that constructs its DOM with JS at load time and has nothing to do with `/html-ppt` — QB3 cleans it up.
 
-还差的是 `/html-ppt` 里那几个纯靠 JS 的能力：方向键 ← → 翻页、演讲者模式（S）、总览宫格（O）。
-这些都得引 JS。**「零脚本」这条前提已经在 QA6 那边作废了** —— 评论层引进了一段脚本。
-换成的规矩是：脚本只能做**增强**，剥掉所有 `<script>` 之后正文必须仍然完整。这条已经写成 `build.py` 里的断言，每次生成都验（实测剥掉后仍有 1.5 万字正文）。
-所以方向键翻页现在是可以做的，按同样的规矩来：没 JS 时点着翻，有 JS 时方向键也能翻。
-`/html-ppt` 的 `base.css` 把 `.slide` 默认设成 `opacity:0`、靠 `runtime.js` 才显示，那种做法不能照抄；要引也只引一段自己写的、纯增强的脚本。
+What is still missing are the `/html-ppt` capabilities that are purely JS: arrow-key ← → paging, presenter mode (S), overview grid (O).
+All of these require JS. **The "zero-script" premise was already voided over in QA6** — the comment layer introduced a script block.
+The replacement rule: scripts may only **enhance**; after stripping every `<script>`, the body must still be complete. This is now an assertion inside `build.py`, checked on every build (measured: ~15k characters of body survive stripping).
+So arrow-key paging is now buildable, under the same rule: without JS you click to page, with JS the arrow keys also work.
+`/html-ppt`'s `base.css` sets `.slide` to `opacity:0` by default and relies on `runtime.js` to reveal it — that approach must NOT be copied; if a script comes in, it is one hand-written, purely enhancing script.
 
 ## Files
 - `build.py`
-  聚焦模式那段 CSS（`body:has(.q:target)`）就是「一屏一页」的全部实现；翻页 / 演讲者模式要加的话也在这里。
+  The focus-mode CSS block (`body:has(.q:target)`) IS the whole "one screen per question" implementation; paging / presenter mode would also land here.
 - `ref/board-form.md`
-  §8 页面：一个文件两种模式，写在那儿。
+  §8 page: one file, two modes — written there.
 
 ## Glossary
-渐进增强：页面在没有 JS 的时候功能完整，有 JS 的时候更好用。跟「没有 JS 就白屏」正好相反。
+progressive enhancement: the page is fully functional without JS and merely nicer with it. The exact opposite of "blank page without JS".
 
 ## Discussion
-> JL: 我们还有 deck.html 还是 board.html？我想把它们合成一个。
->> CC0722: 合了。现在只有 `board.html`，一个文件两种模式。剩下的只是方向键那几个要 JS 的能力。
+> JL: do we still have both deck.html and board.html? I want to merge them into one.
+>> CC0722: merged. Only `board.html` remains — one file, two modes. What is left are just the arrow-key-style capabilities that need JS.
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary`（跟 QA4 / QE1 划清）和 `## Files`；退役的 `## Why here` 并进 Question
-260723 0930 · 「board.html 坚持零脚本」这条前提作废 —— QA6 的评论层引入了 JS。
-              保的性质改成「剥掉所有 script 之后正文仍然完整」，并写成 build.py 里的断言
-260723 0919 · 编号 Q3 → QA3；状态 OPEN → PARTIAL
-260722 2340 · JL 拍板：合并，不出第二个文件。整题重写
-260722 2330 · 原稿写死「VS Code 预览必然屏蔽 JS」。JL 质疑「这不可能」，查证后确认是错的 ——
-              真原因是 3000 端口没转发（remoteagent.log 里两条 Failed to connect tunnel）
-260722 2255 · 开题：要不要另出一份 deck.html 拿去投屏
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` (drawing the line against QA4 / QE1) and `## Files`; the retired `## Why here` merged into Question
+260723 0930 · The premise "board.html stays zero-script" voided — QA6's comment layer brought in JS.
+              The preserved property is now "body survives stripping every script", asserted inside build.py
+260723 0919 · Renumbered Q3 → QA3; state OPEN → PARTIAL
+260722 2340 · JL ruled: merge, no second file. Question rewritten
+260722 2330 · The draft claimed "VS Code preview inevitably blocks JS". JL challenged it ("that can't be right"); verified wrong —
+              the real cause was port 3000 not being forwarded (two Failed-to-connect-tunnel lines in remoteagent.log)
+260722 2255 · Opened: should there be a separate deck.html for projection?

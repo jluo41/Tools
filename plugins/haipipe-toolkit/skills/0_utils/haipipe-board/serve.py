@@ -307,7 +307,7 @@ class Handler(SimpleHTTPRequestHandler):
         if not quote or not text:
             return None, "引文或正文是空的"
         body = "\n".join("      " + x for x in text.split("\n"))
-        block = f"- [ ] {who} 「{quote}」" + (f" · {when}" if when else "") + f"\n{body}\n"
+        block = f"- [ ] {who} “{quote}”" + (f" · {when}" if when else "") + f"\n{body}\n"
         t = f.read_text(encoding="utf-8")
         # 找 ## Comments / ## Log 时跳过 ``` 代码围栏 —— 否则会写进
         # 「md 段落→页面位置」这类示例里的 ## Comments（真踩过，QA4 260723）。
@@ -382,7 +382,7 @@ class Handler(SimpleHTTPRequestHandler):
         quote = " ".join((p.get("quote") or "").split())
         to = "x" if p.get("done") else " "
         t = f.read_text(encoding="utf-8")
-        pat = re.compile(r"^(-\s*\[)[ xX](\]\s*[A-Z]{1,4}\d{0,4}\s*[「\"]"
+        pat = re.compile(r"^(-\s*\[)[ xX](\]\s*[A-Z]{1,4}\d{0,4}\s*[「\"“]"
                          + esc4re(quote) + r")", re.M)
         if not pat.search(t):
             return None, "在这个文件里找不到那条评论（引文对不上）"

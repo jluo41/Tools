@@ -1,117 +1,118 @@
 # What SKILL.md must say
 state: 🟡 PARTIAL
 owner: CC
-method: SKILL.md 保持最短，细节放 ref/ 三份
+method: SKILL.md stays as short as possible; details live in the ref/ files
 
 ## Question
-别人 —— 或者以后没有这次对话记忆的我 —— 敲下 `/haipipe-board`，要照着做什么？这份 SKILL.md 到底该说哪些事、又该把哪些事留给 `ref/`？
+Someone else — or a future me without this conversation's memory — types `/haipipe-board`. What should they follow? What exactly does SKILL.md say, and what does it leave to `ref/`?
 
-- 为什么难
-  它每次调用都要进上下文，越短越好；但短了就说不清。取舍的界线得有个规矩，不能凭手感。
-- 不定会怎样
-  现在这套流程只活在这次对话里。换个 agent 进来只看到一个 `build.py` 和几块板，它猜不出该怎么走 —— 这次做的东西下次就没了。
-- 定了会影响什么
-  它是 skill 的入口，也是「板上已定的规矩」唯一的出海口（毕业机制）。
+- Why it is hard
+  It enters the context on every invocation, so shorter is better; but too short and nothing is explained. The cut line needs a rule, not a feel.
+- What breaks if we leave it
+  Today this whole workflow lives only in this conversation. A different agent walking in sees a `build.py` and a few boards and cannot guess the moves — what was built here would be gone next time.
+- What it affects downstream
+  It is the skill's entry point, and the only export channel for "rules the board has settled" (the graduation mechanism).
 
 ## Boundary
-- ✅ 这题管
-  **SKILL.md 里写什么**：哪些动作、写多长、什么进正文什么进 `ref/`、怎么跟板保持同步（毕业机制）。
-- ❌ 这题不管
-  写完之后**怎么验它够不够用** —— 那是 `QB2`（全新 agent 冷读）。
+- ✅ This question owns
+  **What goes into SKILL.md**: which actions, how long, what belongs in the body vs. in `ref/`, and how it stays in sync with the board (graduation).
+- ❌ This question does not own
+  How to **verify it suffices** once written — that is `QB2` (fresh-agent cold read).
 
 ## Diagram
 ```
-用户敲  /haipipe-board
+user types  /haipipe-board
           │
           ▼
-      SKILL.md  128 行 —— 只答操作，细节不塞进来
-          ├─ 形状：一块板长什么样
-          ├─ 五个动作：open · add · build · comment · close
-          ├─ 一个 Q 文件的段落
-          ├─ 写法三条（不许造词 / 清过期话 / 全新 agent 冷读）
-          └─ 不许做的四条
+      SKILL.md  128 lines — operations only, details never inlined
+          ├─ the shape: what a board looks like
+          ├─ five actions: open · add · build · comment · close
+          ├─ the sections of one Q file
+          ├─ three writing rules (no invented terms / purge stale lines / fresh-agent cold read)
+          └─ the four prohibitions
                 │
-                ▼  要细节才去翻
-        ref/q-template.md     加一题直接复制
-        ref/board-form.md     完整规格：编号 · 段落↔页面 · 语法表 · Comments 格式
-        ref/writing-rules.md  怎么写才是人话 + 冷读提示词 + 收敛判据
-        ref/board-example.md  一块两题的最小示例
+                ▼  go to ref/ only when detail is needed
+        ref/q-template.md     copy to add a question
+        ref/board-form.md     full spec: numbering · section↔page · syntax table · Comments format
+        ref/writing-rules.md  how to write plainly + cold-read prompt + convergence criterion
+        ref/board-example.md  a minimal two-question example
 ```
 
 ## Items to Finish
-- [x] SKILL.md 写完
-      形状 · 动作（open/add/build/sync/link/close + serve/comment）· Q 文件段落 · 写法 · 禁令 · ref/ 索引。
-- [x] 答清楚怎么开一块新板
-      open 那一节五步，含唯一一处必须停下来问用户的地方（Q 列表要点头）。
-- [x] 答清楚怎么往板上加一个 Q
-      复制 `ref/q-template.md` → 改文件名 → 进 Roster → 重新生成。
-- [x] 答清楚这块板什么时候该关掉
-      每题到 ✅ 或 ⏸️；`close:` 就是关板条件，要能验收。
-- [x] 定下 SKILL.md 怎么跟板保持同步
-      **毕业机制**（见 ## Law）：一条 Q 到 ✅，它的 `## Law` 抄进 SKILL.md；没定的不进。
-      SKILL.md 里写成一节「板 ↔ SKILL.md」。这条本身就是「SKILL.md 必须说清的事」之一。
-- [ ] 现场层（serve/chat/terminal）写成规矩
-      现在 SKILL.md 里只放了指针（provisional，指向 QD 组），因为 QD1/QD2/QD3 还 🟡。
-      等它们 ✅ 再按毕业机制逐条抄进来。
-- [x] 换个全新 agent 只看它就能开出一块合格的板
-      QB2 跑过了（260723，GPU 集群话题）：全新 agent 只给 SKILL.md + ref/，一次开出 5 题的合格板，判决 YES。
-      挑出的唯一真 gap（build.py 怎么调）已修进 SKILL.md。
+- [x] SKILL.md written
+      Shape · actions (open/add/build/sync/link/close + serve/comment) · Q-file sections · writing rules · prohibitions · ref/ index.
+- [x] Answers "how to open a new board"
+      The open section, five steps, including the single place that must stop and ask the user (the Q list needs a nod).
+- [x] Answers "how to add a Q to a board"
+      Copy `ref/q-template.md` → rename → into the Roster → regenerate.
+- [x] Answers "when does a board close"
+      Every question at ✅ or ⏸️; `close:` is the closing condition and must be verifiable.
+- [x] Settles how SKILL.md stays in sync with the board
+      The **graduation mechanism** (see ## Law): when a Q reaches ✅, its `## Law` is copied into SKILL.md; unsettled ones never enter.
+      Written into SKILL.md as the "board ↔ SKILL.md" section. This rule is itself one of the things SKILL.md must state.
+- [ ] The live layer (serve/chat/terminal) written as rules
+      SKILL.md currently holds only pointers (provisional, aimed at the QD group), because QD1/QD2/QD3 are still 🟡.
+      When they reach ✅, graduate them in one by one.
+- [x] A fresh agent can open a decent board from it alone
+      QB2 ran (260723, GPU-cluster topic): a fresh agent, given only SKILL.md + ref/, opened a valid 5-question board on the first try, verdict YES.
+      The single real gap it exposed (how to invoke build.py) is fixed into SKILL.md.
 
 
 ## Where we are
-**写完了，但还没被验过。**
+**Written, and validated by QB2; the live layer stays pointer-only until the QD group settles.**
 
-- `SKILL.md` 128 行
-  只放操作：形状、七个动作（open / add / build / comment / sync / link / close）、
-  一个 Q 文件有哪些段落、写法三条、不许做的四条、ref/ 索引。
-  规格和写法细节一概不塞进来 —— 它每次调用都要进上下文，越短越好。
-- `ref/` 四份
-  `q-template.md` 加一题直接复制（已含 `## Comments`）。
-  `board-form.md` 完整规格：文件夹、编号、段落↔页面对应、语法表、Comments 格式、不变量。
-  `writing-rules.md` 写法硬规矩 + 零背景审查的提示词和收敛判据 + 历史成绩。
-  `board-example.md` 换掉了 —— 原来那份还是 0.1 之前的单文件 `[BOARD]`/`[Qn]` 老格式，会把人带偏。
-- `CHANGELOG.md` 记到 0.2.0
-  含一条自我更正：0.1.0 写的「输出里零个 `<script>`」在评论层上线那一刻就不成立了，
-  而且那本来就不是真正要保的东西。改成「删掉所有 script，每题和全部正文仍然在」，每次生成都断言。
+- `SKILL.md`, 128 lines
+  Operations only: the shape, seven actions (open / add / build / comment / sync / link / close),
+  the sections of one Q file, three writing rules, four prohibitions, a ref/ index.
+  Spec and prose details never inlined — it enters the context on every invocation, shorter is better.
+- `ref/`, four files
+  `q-template.md` — copy to add a question (now includes `## Comments`).
+  `board-form.md` — the full spec: folder, numbering, section↔page mapping, syntax table, Comments format, the invariant.
+  `writing-rules.md` — hard writing rules + the zero-background review prompt, convergence criterion, and past scores.
+  `board-example.md` — replaced; the old one still used the pre-0.1 single-file `[BOARD]`/`[Qn]` format and would mislead.
+- `CHANGELOG.md` up to 0.2.0
+  Including one self-correction: 0.1.0 claimed "zero `<script>` in the output", which stopped being true the moment the comment layer landed —
+  and was never the property worth keeping anyway. Restated as "strip every script and every question plus all body text remains", asserted on every build.
 
-还没做的：换个全新 agent 只看 SKILL.md 去开一块板 —— 那是 QB2。
+Still open: the live layer (serve/chat/terminal) graduates in only when the QD questions settle.
 
 
 ## Files
 - `SKILL.md`
-  这题的交付物本身。
+  The deliverable itself.
 - `ref/board-form.md` · `ref/writing-rules.md` · `ref/q-template.md` · `ref/board-example.md`
-  细节的去处 —— SKILL.md 保持最短，全靠这四份接住。
+  Where the details go — SKILL.md stays minimal because these four catch everything.
 - `CHANGELOG.md`
-  版本与改动记录，跟 SKILL.md 的 `version:` 对齐。
+  Version and change record, aligned with SKILL.md's `version:`.
 
 ## Law
-- 毕业机制：SKILL.md = 板上已定问题的结晶
-  这块板（`diagram/01-boardform-260722/`）是完整的设计记录；SKILL.md 只留 `✅ SETTLED` 的题的结论。
-  一条 Q 到 ✅，就把它 `## Law` 那段的规矩抄进 SKILL.md 对应位置。**没定的题（🟡/🔴）不进 manual** ——
-  免得把「随手定的」写成铁律（QD1 的权限规则就这么被写死又推翻过）。
-  所以 SKILL.md 永远 = 已定规矩之和；改 SKILL.md 之前，先看那题 ✅ 了没。
-- SKILL.md 保持最短
-  只放操作；规格、语法、写法细节全进 `ref/`。它每次调用都要进上下文，越短越好。
-- 现场层先放指针，不写成规矩
-  serve.py 的 comment 落盘已随 QA6 ✅ 毕业；chat/terminal（QD 组）还 🟡，SKILL.md 里只给指针。
+- Graduation: SKILL.md = the crystallization of the board's settled questions
+  This board (`diagram/01-boardform-260722/`) is the full design record; SKILL.md keeps only the conclusions of `✅ SETTLED` questions.
+  When a Q reaches ✅, copy its `## Law` rules into SKILL.md's matching spot. **Unsettled questions (🟡/🔴) never enter the manual** —
+  otherwise ad-hoc choices get written as iron law (QD1's permission rule was hard-coded and overturned exactly that way).
+  So SKILL.md always equals the sum of settled rules; before editing it, check whether that question is ✅.
+- SKILL.md stays minimal
+  Operations only; spec, syntax, and prose details all go to `ref/`. It enters the context on every invocation.
+- The live layer gets pointers, not rules, for now
+  serve.py's comment write-back graduated with QA6 ✅; chat/terminal (the QD group) are still 🟡, so SKILL.md carries only pointers.
 
 ## Glossary
-`SKILL.md`：Claude Code 里一个 skill 的入口文件。用户敲 `/haipipe-board` 的时候，被读进去的就是它。
-毕业：一条 Q 定案（✅）后，把它拍定的规矩从板搬进 SKILL.md，成为给人照着做的一条。
+`SKILL.md`: the entry file of a Claude Code skill. When the user types `/haipipe-board`, this is what gets read in.
+graduation: once a Q settles (✅), moving its settled rules from the board into SKILL.md, where they become instructions people follow.
 
 ## Discussion
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
-260723 1720 · QB2 验收通过 → 勾掉「全新 agent 能开板」；顺手补进 SKILL.md：build.py 带路径调 + slug/默认状态/owner 约定
-260723 1700 · 定下毕业机制（Q ✅ → Law 抄进 SKILL.md），写进 ## Law 和 SKILL.md 的「板 ↔ SKILL.md」一节；
-              顺手毕业已 ✅ 的三题：修掉 comment 那节过期的「Sync」说法（QA6：Save 即写盘）、
-              引入 serve.py 动作、现场层只放 provisional 指针；版本 0.2.0 → 0.3.0
-260723 1210 · 加 sync 和 link 两个动作 —— 板和产物的联动之前完全没写
-260723 1210 · board.md 加 ## Links；正文里的路径变成可点链接
-260723 1150 · SKILL.md 写完（128 行）+ ref/ 四份；CHANGELOG 记到 0.2.0
-260723 1150 · ref/board-example.md 换掉老格式；ref/q-template.md 补 ## Comments
-260723 0919 · 编号 Q4 → QB1；标题压到 12 字；完成线改成勾选清单
-260722 2255 · 开题
-260722 2249 · skill 文件夹从 skills/board/ 搬到 skills/0_utils/haipipe-board/
+260724 1242 · Translated to English (JL 260724: everything on the board in English); purged the stale "written but not yet verified" lead — QB2 passed on 260723
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
+260723 1720 · QB2 acceptance passed → ticked "a fresh agent can open a board"; SKILL.md gains: invoke build.py with its path + slug/default-state/owner conventions
+260723 1700 · Graduation mechanism settled (Q ✅ → Law copied into SKILL.md), written into ## Law and SKILL.md's "board ↔ SKILL.md" section;
+              graduated the three already-✅ questions along the way: fixed the stale "Sync" wording in the comment section (QA6: Save writes the disk),
+              introduced the serve.py action, live layer as provisional pointers only; version 0.2.0 → 0.3.0
+260723 1210 · Added the sync and link actions — board↔artifact coupling had never been written down
+260723 1210 · board.md gains ## Links; paths in body text become clickable links
+260723 1150 · SKILL.md finished (128 lines) + the four ref/ files; CHANGELOG at 0.2.0
+260723 1150 · ref/board-example.md replaced (old format); ref/q-template.md gains ## Comments
+260723 0919 · Renumbered Q4 → QB1; title compressed; finish line into a checklist
+260722 2255 · Opened
+260722 2249 · Skill folder moved from skills/board/ to skills/0_utils/haipipe-board/

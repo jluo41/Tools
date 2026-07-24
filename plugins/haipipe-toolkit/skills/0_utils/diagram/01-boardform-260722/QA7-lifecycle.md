@@ -1,166 +1,167 @@
 # Lifecycle of an inline comment
 state: 🟡 PARTIAL
 owner: JL
-method: 定清楚一条评论从写下到消失，中间有哪几个状态、谁负责推
+method: pin down the states a comment passes through from written to gone, and who pushes each step
 session: b597ef84-d77a-4941-bafa-f1c216030f44
 ## Question
-一条行内评论从被写下那一刻起，到最后从板上消失，中间要经过哪几个状态？每一步谁来推？
+From the moment an inline comment is written to the moment it disappears from the board, which states does it pass through? And who pushes each step?
 
-- 为什么难
-  `QA6` 把功能做出来了，但「评论越堆越多」「引文断了没人修」「还有未解决的能不能关板」这三件事，功能本身一条都答不了。
-- 不定会怎样
-  `## Comments` 里躺着未解决的评论，这块板到底算不算能关 —— 现在没人说得清，关板条件就是虚的。
-- 定了会影响什么
-  直接改写关板规则（`close:`），也决定 ⚠ anchor lost 之后由谁负责修。
+- Why it is hard
+  `QA6` built the feature, but "comments pile up forever", "broken quotes that nobody repairs", and "can a board close with open comments" — the feature itself answers none of these.
+- What breaks if we leave it
+  With open comments sitting in `## Comments`, nobody can say whether the board counts as closable — the close condition is hollow.
+- What it affects downstream
+  It rewrites the closing rule (`close:`), and decides who owns the repair after an anchor is flagged.
 
 ## Boundary
-- ✅ 这题管
-  一条评论的**生命周期**：有哪些状态、谁推动、断锚谁修、未解决的对关板意味着什么。
-- ❌ 这题不管
-  评论怎么**做出来**（选中、存储语法、写盘、高亮）—— 那是 `QA6`。
+- ✅ This question owns
+  A comment's **lifecycle**: which states exist, who pushes them, who repairs broken anchors, what open comments mean for closing.
+- ❌ This question does not own
+  How commenting is **built** (selection, storage syntax, disk write, highlighting) — that is `QA6`.
 
 ## Diagram
 ```
-  ① draft      浏览器里，还没写盘（localStorage）
-       │  Save（自动写进 md）
+  ① draft      in the browser, not yet on disk (localStorage)
+       │  Save (written into md automatically)
        ▼
-  ② open       md 的 ## Comments 里，`- [ ]`，卡片头和目录都挂 💬 N
-       │  mark solved（页面上点，或手改 md）        ┌── reopen ──┐
-       ▼                                          │            │
-  ③ solved     `- [x]`，条目变淡，高亮转灰绿  ─────┘            │
-       │                                                       │
-       │  ？ 一直留着，还是搬走                                  │
-       ▼                                                       │
-  ④ archived   ← 还没定这一步存不存在                            │
-                                                               │
-  ⚠ lost       原文被改，引文对不上 —— ② 和 ③ 都可能掉进来 ───────┘
-               现在只标出来，怎么修还没做
+  ② open       in the md's ## Comments, `- [ ]`; header and index carry 💬 N
+       │  mark solved (click on the page, or edit the md)   ┌── reopen ──┐
+       ▼                                                    │            │
+  ③ solved     `- [x]`, entry dims, highlight turns grey ───┘            │
+       │                                                                 │
+       │  ? keep forever, or move somewhere                              │
+       ▼                                                                 │
+  ④ archived   ← whether this state even exists is undecided             │
+                                                                         │
+  ⚠ lost       the original was edited, the quote no longer matches —────┘
+               ② and ③ can both fall in; today it is only flagged, repair unbuilt
 ```
 
-一条评论怎么从「浏览器里的 HTML」走到「盘上的 md」再被 agent 读到（写→存→读的来回）：
+How a comment travels from "HTML in the browser" to "md on disk" to being read by an agent (the write→store→read round-trip):
 
 ```
-  ①浏览器 board.html            ②serve.py（文件所在这台机器）        ③agent
-  ┌ 选中一句 ┐  POST            ┌ 写进 QX.md 的 ## Comments ┐   ┌ 读 ## Comments ┐
-  │ 写评论   │ /_board/comment  │ 一行： - [ ] WHO「引文」·时间│   │ 本 session：你说 │
-  │ 点 Save  │ ───────────────► │                           │   │  「读一下」我才读 │
-  │          │ ◄─────────────── │ 顺手 build.py → board.html │   │ 抽屉/终端 AI：   │
-  └────┬─────┘  {ok, wrote}      └──────────┬────────────────┘   │  开场 prime 自动读│
-       │                                    │ 刷新页面看高亮/状态  └────────┬────────┘
-       │  ✗ 服务器没跑 →                     │                             │
-       │    退回浏览器 localStorage（草稿）   └──── md 是唯一真相，两个读者都读它 ──┘
-       │    → 没写盘，agent 读不到
-       └─────────────────────────────────────────────────────────────────┘
+  ① browser board.html         ② serve.py (the machine the files are on)   ③ agent
+  ┌ select a line ┐  POST      ┌ writes into QX.md's ## Comments ┐   ┌ reads ## Comments ┐
+  │ write comment │ /_board/…  │ one line: - [ ] WHO “quote” ·time│   │ this session: I   │
+  │ hit Save      │ ─────────► │                                  │   │  read when told   │
+  │               │ ◄───────── │ then build.py → board.html       │   │ drawer/terminal AI:│
+  └────┬──────────┘ {ok,wrote} └──────────┬───────────────────────┘   │  primed at start   │
+       │                                  │ reload to see highlight    └────────┬──────────┘
+       │  ✗ server down →                 │                                     │
+       │    falls back to localStorage    └── the md is the single truth; both readers read it ──┘
+       │    → never hit disk, agents cannot see it
+       └──────────────────────────────────────────────────────────────────────┘
 
-  一句话：评论只有走完 ①→②（写进 md）才「存在」；agent（③）永远只读 md，
-         不读浏览器。所以 agent 读不到，只可能是卡在①没写盘。
+  In one line: a comment "exists" only after ①→② (written into md); agents (③) read only
+  the md, never the browser. If an agent cannot see it, it is stuck at ① — not on disk.
 ```
 
 ## Items to Finish
-- [x] 每个状态都写下来
-      draft → open → solved（↔ reopen）→ archived，外加 ⚠ lost。就是本题 ## Diagram 那张图，
-      每个状态在 md 里长什么样、页面上什么样子、谁推它，都标了。①②③ 已实现，④ archived 和 lost 的修复还空着。
-- [ ] 已解决的评论有归宿
-      一直留在 `## Comments`，还是攒够了搬进 `## Log`，还是删掉。现在会一直堆着。
-- [ ] 锚点断了能修（一键改锚 = 确认的目标，JL 260723 1518）
-      至少能跳到 md 里那一行；正式要的是：引文对不上时，页面给出「正文里最像的那句」，
-      让人一键把锚点改到那句上。不是「更好的话」，是这一步的验收标准。
-- [ ] 关板 / 关题条件说清楚（两级要分开，JL 260723 1519）
-      有两个「关」，是嵌套的：
-      · 关一题（question）：单个 QX.md 的 `state:` 标成 ✅/done。现在只看 Done-when 勾没勾，不看评论。
-      · 关整板（board）：这块板文件夹里每一题都关了。现在没有独立的「板」状态，靠逐题看。
-      未解决评论应该同时挡住这两级：一题挂着 `- [ ]` 不该被标 ✅，整板还有 `- [ ]` 不该算关。
-      现在两级都不检查评论。
+- [x] Every state written down
+      draft → open → solved (↔ reopen) → archived, plus ⚠ lost. Exactly the ## Diagram above —
+      per state: what it looks like in md, on the page, and who pushes it. ①②③ implemented; ④ archived and lost-repair still empty.
+- [ ] Solved comments get a destination
+      Stay in `## Comments` forever, move into `## Log` after enough pile up, or get deleted. Today they pile up forever.
+- [ ] Broken anchors become repairable (one-click re-anchor = the confirmed goal, JL 260723 1518)
+      At minimum, jump to that md line; the real bar: when a quote no longer matches, the page offers
+      "the closest sentence in the body" and one click moves the anchor there. Not a nice-to-have — this IS the acceptance bar for this step.
+- [ ] Closing rules spelled out — two nested levels (JL 260723 1519)
+      There are two "closes", nested:
+      · closing one question: a single QX.md's `state:` marked ✅/done. Today only Done-when ticks are checked, comments are not.
+      · closing the board: every question in the folder closed. Today there is no independent board state; you check question by question.
+      Open comments should block BOTH levels: a question carrying `- [ ]` must not be marked ✅, a board holding any `- [ ]` must not count as closed.
+      Today neither level checks comments.
 
 ## Where we are
-只有 ①②③ 是实现了的，而且是这两天边做边冒出来的，没有人先把它想清楚。
-④ archived 和 ⚠ lost 的修复都还是空的。
+Only ①②③ exist, and they emerged while building over these two days — nobody designed this first.
+④ archived and the ⚠ lost repair are both still empty.
 
-- 现在能跑通的一段
-      选中 → 写 → Save 自动写进 md → 页面上 open → 点 mark solved 变 solved。
-- 谁读这条评论、什么时候读（JL 260723 问的，lifecycle 里原来漏画的一步）
-      写盘之后有两个读者，都从同一处读 —— md 的 `## Comments`：
-      ① 这个 CC session：你说「读一下 QA7」，我就 Read 文件，当场把新评论捞出来（当下快照，不自动感知）；
-      ② 抽屉/终端里挂在这题上的 AI：开场被 prime，未解决评论直接塞进 system_prompt，不用你交代。
-      所以「agent 读不到」只发生在评论还没写盘、只在浏览器 localStorage 里时。
-- 会一直堆着
-      解决过的评论没有出口，`## Comments` 只增不减。这块板才两天，QA6 已经 3 条了。
-- 为什么锚点老「丢」—— 三层原因（JL 260723 问）
-      ① 扫描范围太窄：高亮以前不扫 `## Diagram`，选中图里的字就被冤枉。→ 已修，也扫图了。
-      ② 引文横跨行内标签：选的句子夹着 `代码`/**粗**，纯文字对不上带标签的 HTML。→ 已修：
-         精确匹配不到时，退一步「剥标签+空白归一」判在不在，在就不算丢。
-      ③ 真正的大头：很多 `## Comments` 条目引的是**聊天里说的话**（不是正文里的句子），
-         页面上压根没有那句可锚。这类不是「丢了」，是**从没被锚过**。
-- 「anchor lost」这个词喊错了，已改
-      没存历史 → 分不清「你真改了那句」和「这句从没在正文里」。所以不再红字喊「⚠ anchor lost（丢了）」，
-      改成中性的灰字「· 未定位」（悬停解释：引文不在正文里，可能是聊天话、也可能真被改）。
-      结果：红色警报 45 → 0，换成 26 条中性「未定位」。
-- 没人管未解决的评论（关题、关板两级都漏）
-      关一题（question）只看这题 Done-when 勾没勾，关整板（board）只逐题看 state，两级都完全没提评论。
-      一个 Q 可以挂着 3 条未解决评论还被标 ✅；整板也可以在还有 `- [ ]` 的情况下被当成关了。
+- The segment that runs today
+      select → write → Save auto-writes the md → open on the page → mark solved flips it to solved.
+- Who reads a comment, and when (JL asked 260723 — the step the lifecycle diagram had missed)
+      After the disk write there are two readers, both reading the same place — the md's `## Comments`:
+      ① this CC session: you say "read QA7" and I Read the file, scooping the new comments right then (a snapshot on demand, no automatic sensing);
+      ② the AI attached to this question in the drawer/terminal: primed at start — open comments are injected into its system prompt, no need to brief it.
+      So "the agent cannot see it" happens only while a comment is still browser-side in localStorage, not yet on disk.
+- They pile up forever
+      Solved comments have no exit; `## Comments` only grows. This board is two days old and QA6 already holds 3.
+- Why anchors kept "getting lost" — three layers (JL asked 260723)
+      ① Scan range too narrow: highlighting used to skip `## Diagram`, so selecting words inside the figure got wrongly flagged. → Fixed; figures are scanned too.
+      ② Quotes crossing inline tags: a sentence containing `code`/**bold** cannot match tagged HTML as plain text. → Fixed:
+         when exact match fails, fall back to "strip tags + normalize whitespace" containment; if present, it does not count as lost.
+      ③ The real bulk: many `## Comments` entries quote **things said in chat** (not sentences from the body),
+         so there is nothing on the page to anchor to. These are not "lost" — they were **never anchored**.
+- "anchor lost" was the wrong thing to shout — renamed
+      No history is kept → "you really edited that sentence" and "this sentence was never in the body" cannot be told apart. So no more red "⚠ anchor lost";
+      now a neutral grey "· unanchored" (hover text: the quote is not in the body — maybe chat, maybe a real edit).
+      Result: red alarms 45 → 0, replaced by 26 neutral "unanchored".
+- Nobody guards open comments (both closing levels leak)
+      Closing a question checks only its Done-when ticks; closing a board checks only per-question states — neither level mentions comments.
+      A Q can carry 3 open comments and still be marked ✅; a board can hold `- [ ]` and still pass as closed.
 
 ## Files
 - `serve.py`
-  `resolve`（勾 `[x]`）是目前唯一的状态迁移入口。
+  `resolve` (ticking `[x]`) is currently the only state-transition entry point.
 - `build.py`
-  未解决计数、默认展开、⚠ anchor lost 的判定都在渲染那段。
+  Open counts, default expansion, and the lost/unanchored verdict all live in the rendering pass.
 
 ## Glossary
-draft：只在浏览器里、还没写进 `.md` 的评论。换台机器就看不见。
-锚点：一条评论靠「引用原句」找到自己该挂在哪。原句被改，锚点就断。
+draft: a comment still in the browser, not yet written into `.md`. Invisible from any other machine.
+anchor: how a comment finds its place — by quoting the original sentence. Edit the sentence, break the anchor.
 
 ## Discussion
-> JL: 我写下一条评论之后，它的 lifecycle 是什么？单开一题。QA6 大部分事情做完了，是不是可以关了？
+> JL: after I write a comment, what is its lifecycle? Open a dedicated question. QA6 is mostly done — can it be closed?
 
 ## Comments
-- [x] JL 「关板」 · 260723 1519
-      你说的是board还是question？
-      >> CC0723: 两个都是，而且是嵌套的。把 Done-when 那条和 Now 那条都改成两级写法：
-      · 关一题（question）= 单个 QX.md 的 `state:` → ✅；· 关整板（board）= 板里每题都关。
-      未解决评论应该同时挡住这两级；现在两级都不看评论，所以一题挂着 3 条 `- [ ]` 也能标 ✅，
-      整板还有 `- [ ]` 也能算关。这就是你问的「关的到底是谁」——答案是两个层都要管。
-- [x] JL 「「正文里最像的那句」让人一键改锚。」 · 260723 1518
-      对呀，这正是我想要的。
-      >> CC0723: 收到，把它从「更好的话」升成正式验收标准。改了 Done-when 那条「锚点断了能修」：
-      引文对不上时页面给出正文里最像的那句，一键把锚点改过去——这就是这一步算做完的门槛。
-      （实现还没做，先把要什么定死。）
-- [x] JL 「一直留在 ## Comments，还是攒够了搬进 ## Log，还是删掉。现在会一直堆着」 · 260723 1518
-      可以把解决掉的comment给collapse。
-      >> CC0723: 做了。已解决的评论（`[x]`）正文折叠进一行 `▸ reply`，台面上只留标题
-      （谁 · 引文 · 时间 · solved）；点 reply 才展开。没解决的照常铺开。
-      这就是「已解决评论的归宿」的第一版 —— 不删不搬，先收起来。搬进 ## Log 的方案先不做。
-- [x] JL 「引文对不上时页面标 ⚠ anchor lost，但修只能回 md 自己改。」 · 260723 1517
+- [x] JL “closing the board” · 260723 1519
+      do you mean board or question?
+      >> CC0723: both, and they nest. Rewrote the Done-when line and the Now line in two-level form:
+      · closing a question = a single QX.md's `state:` → ✅; · closing a board = every question closed.
+      Open comments should block both levels; today neither level looks at comments, so a question carrying 3 `- [ ]` can be marked ✅
+      and a board holding `- [ ]` can pass as closed. That is the answer to "which one closes" — both levels must guard.
+- [x] JL “‘the closest sentence in the body’ with one-click re-anchoring.” · 260723 1518
+      yes, this is exactly what I want.
+      >> CC0723: noted — promoted from "nice-to-have" to the formal acceptance bar. The Done-when line "broken anchors become repairable" now reads:
+      when a quote no longer matches, the page offers the closest sentence in the body and one click moves the anchor — that is the bar for done.
+      (Implementation not started; the requirement is pinned first.)
+- [x] JL “stay in ## Comments forever, move into ## Log after enough pile up, or get deleted. Today they pile up forever” · 260723 1518
+      solved comments could be collapsed.
+      >> CC0723: done. Solved comments (`[x]`) fold their body into a one-line `▸ reply`; the surface keeps only the header
+      (who · quote · time · solved); click reply to expand. Open ones stay expanded.
+      This is v1 of "a destination for solved comments" — not deleted, not moved, just tucked in. The move-to-## Log idea is parked.
+- [x] JL “when a quote no longer matches the page flags ⚠ anchor lost, but repairing means editing the md yourself.” · 260723 1517
       why anchor is so easier to be lost?
-      >> CC0723: 你原句从来没丢 —— 是检测有两个 bug，都修了：
-      ① 扫描范围太窄：高亮只扫了 Question/Now/Done/Why，偏偏不扫 `## Diagram`。
-      你那条「Save（自动写进 md）」在图里 → 被冤成 lost。现在也扫图了，已高亮。
-      ② 更根本：引文是拿「纯文字」去跟**带标签的 HTML** 做精确子串匹配。
-      可你选的句子里往往夹着行内标记（`代码`→`<code>`、**粗**→`<b>`），引文一横跨这些标签，
-      `e in html` 就对不上 —— 字明明在页面上，却报 lost。你 1517 这条选的就带 `⚠ anchor lost` 那个反引号代码，正好踩中。
-      修法：精确匹配不到时，退一步用「剥掉标签 + 空白归一」的纯文本判在不在；在，就不算 lost（只是没描黄）。
-      结果：QA7 从「⚠ 1 anchor lost」变 0。
-      ⚠️ 真正的 lost 仍然存在 —— 你**真把那句原文改了**、字变了，引文才是真对不上，那才是该修的 ⚠（见 1518 那条「一键改锚」）。
-- [x] JL 「Save（自动写进 md）」 · 260723 1511
-      现在的问题是，怎么才让agent读到我的comments呢？
-      >> CC0723: 就是现在这样 —— 你这条我此刻正读着，它已经在本题 ## Comments 里了。
-      链路：Save → serve.py 写进 md 的 ## Comments → agent 读那个段。两个前提缺一不可：
-      ① 保存时服务器在跑（写盘那步，否则评论卡在浏览器 localStorage）；
-      ② agent 去读文件 —— 不会自动感知，得你说「读一下」，或抽屉 AI 开场被 prime。
-      所以「读不到」只发生在①没满足（还没写盘）时。这条链路本身，就是评论 lifecycle 里漏画的「谁读」那一步。
-- [x] JL 「① draft      浏览器里，还没写盘（localStorage）」 · 260723 1200
-      那个 grant 我是在 local 的，然后这个东西在 server 上，应该不行吧。
-      >> CC0723: 你是对的，整条路走不通。改成服务器端写：浏览器发一个 POST，
-      serve.py 在这台机器上改 md 并顺手重新生成 html。已实测通过。
+      >> CC0723: your sentences never actually got lost — detection had two bugs, both fixed:
+      ① scan range too narrow: highlighting covered Question/Now/Done/Why but skipped `## Diagram`.
+      Your “Save (written into md automatically)” lives inside the figure → wrongly flagged. Figures are scanned now; it highlights.
+      ② more fundamental: quotes were matched as plain text against **tagged HTML** by exact substring.
+      A selected sentence often contains inline markup (`code`→`<code>`, **bold**→`<b>`); once the quote crosses such a tag,
+      `e in html` fails — the words are visibly on the page yet reported lost. Your 1517 comment quoted the backticked `⚠ anchor lost` itself — a direct hit.
+      Fix: when exact match fails, fall back to "strip tags + normalize whitespace" containment; present = not lost (just not highlighted).
+      Result: QA7 went from "⚠ 1 anchor lost" to 0.
+      ⚠️ Genuine loss still exists — when you **really edit the original sentence**, the quote truly mismatches; that is the case worth repairing (see the 1518 one-click re-anchor).
+- [x] JL “Save (written into md automatically)” · 260723 1511
+      the question now is: how do I let the agent read my comments?
+      >> CC0723: exactly like this — I am reading this one right now; it is already in this question's ## Comments.
+      The chain: Save → serve.py writes into the md's ## Comments → the agent reads that section. Two prerequisites, both required:
+      ① the server is running at save time (the disk-write step; otherwise the comment is stuck in browser localStorage);
+      ② the agent actually reads the file — nothing is sensed automatically: you say "read it", or the drawer AI is primed at start.
+      So "cannot read it" only happens when ① is unmet (not yet on disk). This chain is precisely the "who reads" step the lifecycle diagram had missed.
+- [x] JL “① draft — in the browser, not yet on disk (localStorage)” · 260723 1200
+      that grant I gave is on my local machine, but this thing is on the server — that can't work, right?
+      >> CC0723: you are right, the whole path is dead. Switched to server-side writes: the browser sends one POST,
+      serve.py edits the md on this machine and regenerates the html. Verified.
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
-260723 1735 · 结掉两条未解决评论：① JL 1519「关板还是关题」→ 把 Done-when 和 Now 都改成两级写法（关一题 = QX state → ✅；关整板 = 每题都关；未解决评论应挡住两级，现在两级都不看）；② JL 1518「一键改锚正是我想要的」→ 把 Done-when 的「锚点断了能修」从「更好的话」升为正式验收标准（引文对不上时页面给最像的一句、一键改锚）
-260723 1520 · 答 JL「锚点为什么老丢」：三层原因，扫描范围 + 跨标签两个 bug 已修；
-              「anchor lost」是误报（多数引文本就是聊天话、从没在正文里）→ 标签改成中性「未定位」，红警报 45→0
-260723 1530 · JL 问「评论怎么贴不到原文了」+「已解决的该 collapse」→ 两处改 build.py：① 高亮改用 mark_span，能跨 <code>/<b> 描黄（之前 naive 子串匹配一遇标签就贴不上）——QA7 台面高亮 4→6，跨标签的引文也贴回原文了；② 已解决评论正文折叠进 ▸ reply，台面只留标题，点开才看回复。结掉 1518
-260723 1525 · JL 问「Q 里讲清楚 html→盘→agent 这条链没」→ 之前只画了状态机 + Now 里散着「谁读」；补一张写→存→读的来回流程图进 ## Diagram：浏览器 Save → serve.py 写进 md 的 ## Comments → agent 只读 md。点明：agent 读不到 = 卡在没写盘（还在 localStorage）
-260723 1520 · JL 问「锚点为什么这么容易丢」→ 查出是检测的两个 bug（不是原文真丢）：① 高亮不扫 ## Diagram；② 引文横跨行内标签（<code>/<b>）时精确子串匹配对不上。都修了：也扫图 + 精确失败退回纯文本判在不在。QA7 从 ⚠1 anchor lost 变 0。结掉 1517
-260723 1515 · JL 问「怎么让 agent 读到评论」→ 当场读到他 1511 那条、结掉它：写盘后从 ## Comments 读，
-              两个读者（本 session / 抽屉 AI），前提①保存时服务器在跑 ②agent 去读。补进 Now 的「谁读」一步
-260723 1710 · 全局回顾补勾：状态机已写下来（本题 Diagram）→ 🟡 PARTIAL；archived 出口 + 锚点修复仍空
-260723 1150 · JL 提出「一条评论的 lifecycle」，新开此题；「锚点断了怎么修」从 QA6 挪过来
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
+260723 1735 · Closed two open comments: ① JL 1519 "board or question" → Done-when and Now rewritten in two-level form (close a question = QX state → ✅; close a board = every question closed; open comments should block both levels, today neither checks); ② JL 1518 "one-click re-anchor is exactly what I want" → promoted from nice-to-have to the formal acceptance bar (closest sentence offered, one click moves the anchor)
+260723 1520 · Answered JL's "why do anchors keep getting lost": three layers; the scan-range and cross-tag bugs fixed;
+              "anchor lost" was a false alarm for most (quotes from chat, never in the body) → renamed to neutral "unanchored", red alarms 45→0
+260723 1530 · JL asked "why don't comments stick to the text anymore" + "solved ones should collapse" → two build.py changes: ① highlighting now uses mark_span, spanning <code>/<b> (the naive substring match failed at any tag) — QA7 surface highlights 4→6, cross-tag quotes stick again; ② solved comments fold into ▸ reply, header-only on the surface. Closed the 1518 one
+260723 1525 · JL asked "does the Q explain the html→disk→agent chain" → only the state machine existed plus scattered "who reads" notes; added the write→store→read round-trip figure to ## Diagram: browser Save → serve.py writes the md's ## Comments → agents read only the md. Spelled out: agent can't see it = stuck before the disk write (still in localStorage)
+260723 1520 · JL asked "why are anchors so easy to lose" → found two detection bugs (originals were never lost): ① highlighting skipped ## Diagram; ② quotes crossing inline tags (<code>/<b>) failed exact substring match. Both fixed: figures scanned + fallback to plain-text containment. QA7 went ⚠1 → 0. Closed the 1517 one
+260723 1515 · JL asked "how do agents read my comments" → read his 1511 comment on the spot and closed it: after the disk write agents read ## Comments;
+              two readers (this session / the drawer AI), prerequisites ① server running at save ② the agent actually reads. Added the "who reads" step to Now
+260723 1710 · Ticked during the board-wide review: the state machine is written down (this question's Diagram) → 🟡 PARTIAL; the archived exit + anchor repair still empty
+260723 1150 · JL raised "a comment's lifecycle" — question opened; "how to repair a broken anchor" moved over from QA6

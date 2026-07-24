@@ -1,61 +1,63 @@
 # Hosting: local vs server
+
 state: 🔴 OPEN
 owner: JL
-method: 先分清「谁要看」，再决定放本地还是放服务器
+method: first sort out "who needs to see it", then decide local vs. server
 
 ## Question
-这块板现在只活在一台机器的 `127.0.0.1:5599` 上。要给别人看 —— RA、合作者、开会投屏 —— 该怎么放出去？
+This board lives only on one machine's `127.0.0.1:5599`. To show it to anyone else — an RA, a collaborator, a meeting projector — how does it get out?
 
-- 为什么难
-  板有两半：静态那半（`board.html`）谁都能托管；**现场那半**（评论落盘、chat、terminal）必须跑在**文件所在那台机器**上。放出去就要决定：给对方哪一半。
-- 不定会怎样
-  现在只能截图或者让人挤到同一台机器上。板号称是「拿来跟人讨论、交给 RA」的东西，但实际上第二个人打不开。
-- 定了会影响什么
-  要不要认证、评论怎么归属到人、能不能让外人写盘 —— 一旦允许远端写，`serve.py` 那套「只认 `--root` 底下、只改两种东西」的窄接口就得重新审。
+- Why it is hard
+  The board is two halves: the static half (`board.html`) can be hosted by anything; the **live half** (comment write-back, chat, terminal) must run on **the machine the files are on**. Putting it out means deciding which half the other person gets.
+- What breaks if we leave it
+  Today the options are screenshots or crowding around one machine. The board claims to be "for discussing with people, for handing to an RA" — yet the second person literally cannot open it.
+- What it affects downstream
+  Whether auth is needed, how comments attribute to people, whether outsiders may write to disk — the moment remote writes are allowed, `serve.py`'s narrow interface ("only under `--root`, only two kinds of edits") must be re-audited.
 
 ## Boundary
-- ✅ 这题管
-  **板怎么被访问**：本地 / 局域网 / 服务器、谁能看、要不要登录、静态导出还是全功能。
-- ❌ 这题不管
-  板的**内容和版式** —— 那是 `QA` 组和 `QC2`。也不管板上**能不能干活** —— 那是 `QD` 组；这题只管「从哪儿打开」。
+- ✅ This question owns
+  **How the board is reached**: local / LAN / server, who can see it, login or not, static export vs. full function.
+- ❌ This question does not own
+  The board's **content and layout** — that is the `QA` group and `QC2`. Nor whether **work can be done on the board** — that is the `QD` group; this question only owns "where it opens from".
 
 ## Diagram
 ```
-                     静态那半              现场那半（要文件在本机）
-                  board.html            评论落盘 · chat · terminal
-                  ─────────────         ──────────────────────────
-① 现在：本地       ✅ 127.0.0.1:5599      ✅ 全都能用          只有自己看得到
-② 静态导出         ✅ 丢哪儿都能看         ❌ 全没了            给人看一眼够了
-③ 服务器全功能     ✅                     ⚠️ 要认证 + 要审写权限   真·协作
+                     the static half         the live half (files must be local)
+                  board.html               comment write-back · chat · terminal
+                  ─────────────            ──────────────────────────────────
+① today: local     ✅ 127.0.0.1:5599        ✅ everything works      only you can see it
+② static export    ✅ opens anywhere         ❌ all gone             enough for a look
+③ full on server   ✅                        ⚠️ needs auth + a write-permission audit   real collaboration
 ```
 
 ## Items to Finish
-- [ ] 分清「谁要看、要看哪一半」
-      只读一眼（②）还是要一起评论、一起干活（③）。不同答案，做法完全不同。
-- [ ] 定下只读那条路怎么走
-      静态导出：`board.html` 是自包含的，理论上丢哪儿都能开 —— 但 `fig/` 和 `## Links` 的相对路径要一起带走，得验一次。
-- [ ] 定下全功能那条路的门槛
-      放服务器就要认证（谁能写）、要审 `serve.py` 那几个写接口在公网下还安不安全。
-- [ ] 决定评论怎么归属到人
-      现在署名是浏览器里自己选的缩写（任意 1–4 位大写）。多人真用起来，这个不够。
-- [ ] 真让第二个人打开过一次
-      验收就是这条：不是「理论上能」，是有人真的从另一台机器上打开并留下一条评论。
+- [ ] Sort out "who needs to see it, and which half"
+      A read-only glance (②) or commenting and working together (③). Different answers, completely different builds.
+- [ ] Settle the read-only route
+      Static export: `board.html` is self-contained and should open anywhere — but `fig/` and `## Links` relative paths must travel with it; verify once.
+- [ ] Settle the bar for the full-function route
+      A server deployment needs auth (who may write) and an audit of `serve.py`'s write endpoints under a public network.
+- [ ] Decide how comments attribute to people
+      Today the signature is browser-side initials of your choosing (any 1–4 uppercase letters). Real multi-user needs more than that.
+- [ ] A second person has actually opened it once
+      That is the acceptance line: not "theoretically possible" — someone really opened it from another machine and left a comment.
 
 ## Where we are
-**只有本地一条路，而且是 Remote-SSH 转发出来的。**
+**One route only: local, tunneled out by Remote-SSH.**
 
-- 现在怎么开
-  `serve.py --root <仓库根> --port 5599`，只绑 `127.0.0.1`；VS Code Remote-SSH 把 5599 转发到笔记本，Simple Browser 打开。
-- 为什么只绑本地
-  `serve.py` 有写接口（评论落盘、chat、terminal）。绑到 `0.0.0.0` 等于把写盘和起终端的能力开给网络 —— 现在完全没有认证。
-- 静态那半其实已经很独立
-  不变量保证「剥掉所有 `<script>`，每题和全部正文仍然在」。所以纯只读分发的技术门槛很低 —— 缺的是验证和规矩，不是能力。
+- How it opens today
+  `serve.py --root <repo root> --port 5599`, bound to `127.0.0.1` only; VS Code Remote-SSH forwards 5599 to the laptop; Simple Browser opens it.
+- Why it binds local-only
+  `serve.py` has write endpoints (comment write-back, chat, terminal). Binding 0.0.0.0 hands disk writes and terminal spawning to the network — with no auth at all today.
+- The static half is already quite independent
+  The invariant guarantees "strip every `<script>` and every question plus all body text remains". So the technical bar for read-only distribution is low — what is missing is verification and rules, not capability.
 
 ## Files
 - `serve.py`
-  绑定地址、端口、写接口、（将来的）认证都在这里。
+  Bind address, port, write endpoints, and (future) auth all live here.
 - `board.html`
-  静态导出那条路的产物本身；`fig/` 和 `## Links` 的相对路径要一起验。
+  The static-export deliverable itself; `fig/` and `## Links` relative paths must be verified together.
 
 ## Log
-260723 · 开题：新开 QE 组「板放出去给别人看」。板一直号称是给第二个人看的，但实际只活在本机 127.0.0.1
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Opened: the new QE group "putting the board out". The board has always claimed to be for a second reader, yet it lives only on 127.0.0.1

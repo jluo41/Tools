@@ -1,124 +1,124 @@
 # Q file template
 state: 🟡 PARTIAL
 owner: CC
-method: 定一份可以直接复制的空模板，标清楚哪些必填
+method: ship a blank template that can be copied as-is, with required sections clearly marked
 
 ## Question
-打开一个空的 `QA9-xxx.md`，我该往里面填什么？哪些段落必须有、哪些可以整段删掉？
+I open an empty `QA9-xxx.md` — what do I put in it? Which sections are required, and which can be deleted wholesale?
 
-- 为什么难
-  生成器只认几个固定段落名，写错名字那段就**不显示也不报错** —— 静默失败，最难查。
-- 不定会怎样
-  模板不清楚，每个人写出来的 Q 都不一样，页面就乱；RA 和以后的 agent 每天动的就是这个文件。
-- 定了会影响什么
-  模板直接决定页面上能显示什么。它跟 `QA4` 是一体两面：`QA4` 改了台面顺序，这份模板必须同步，否则新写的题会走回老样子。
+- Why it is hard
+  The generator only recognizes a fixed set of section names. Misspell one and that section **silently disappears — no error**. Silent failure is the hardest kind to debug.
+- What breaks if we leave it
+  Without a clear template, everyone writes a different-shaped Q and the page turns messy; the RA and future agents touch this file every day.
+- What it affects downstream
+  The template decides what the page can display at all. It is the flip side of `QA4`: when `QA4` changes the on-stage order, this template must follow, or newly written questions drift back to the old shape.
 
 ## Boundary
-- ✅ 这题管
-  **一个 Q 文件内部**：有哪些段落、谁必填谁选填、每段该写什么、`ref/q-template.md` 长什么样。
-- ❌ 这题不管
-  文件夹里有哪些文件、Q 怎么挂上板 —— 那是 `QA1`。也不管**每段里的字怎么写才是人话** —— 那是 `QA5`（这题管结构，那题管文字）。
+- ✅ This question owns
+  **The inside of one Q file**: which sections exist, which are required vs. optional, what goes in each, and what `ref/q-template.md` looks like.
+- ❌ This question does not own
+  Which files are in the folder and how a Q attaches to the board — that is `QA1`. Nor **how the words inside each section should be written** — that is `QA5` (this one owns structure, that one owns prose).
 
 ## Diagram
 ```
-复制 ref/q-template.md                    必填? → 显示在哪
+copy ref/q-template.md                    required? → where it shows
 ┌────────────────────────────────┐
-│ # 短标题        ≤14 字          │ 必填 → 索引行 + 幻灯片大标题
-│ state: 🔴 OPEN                 │ 必填 → 状态徽章（只填一个词）
-│ owner: CC   method: …          │ owner 必填 / method 选填 → 卡片头
+│ # short title    ≤14 chars     │ required → index row + page headline
+│ state: 🔴 OPEN                 │ required → status badge (one word only)
+│ owner: CC   method: …          │ owner required / method optional → header bar
 ├────────────────────────────────┤
-│ ## Question   一段话 + 要点     │ 必填 → ❓ 大字领句
-│ ## Boundary   管/不管           │ 建议 → 🚧 灰边
-│ ## Diagram    ascii 图         │ 选填 → 招牌图
-│ ## Items to Finish - [ ] 清单   │ 必填 → 🎯 绿框（自动数 2/5）
-│ ## Where we are                │ 必填 → 📍 黄框
-│ ## Files      牵动哪些文件       │ 建议 → 📁 蓝边
-├────────────────────────────────┤ ↓ 全折叠，不上台面
-│ ## Law    ## Lesson            │ 选填 → 规矩 / 踩坑
-│ ## Glossary   ## Discussion    │ 选填 → 生词 / 讨论
-│ ## Comments   ## Log           │ 选填 → 行内评论 / 日志
+│ ## Question   1 para + bullets │ required → ❓ the big lead line
+│ ## Boundary   owns / not-owns  │ advised  → 🚧 grey border
+│ ## Diagram    ascii figure     │ optional → the signature figure
+│ ## Items to Finish - [ ] list  │ required → 🎯 green box (auto-counts 2/5)
+│ ## Where we are                │ required → 📍 yellow box
+│ ## Files      what it touches  │ advised  → 📁 blue border
+├────────────────────────────────┤ ↓ all folded, never on stage
+│ ## Law    ## Lesson            │ optional → settled rules / lessons learned
+│ ## Glossary   ## Discussion    │ optional → new words / free discussion
+│ ## Comments   ## Log           │ optional → inline comments / change log
 └────────────────────────────────┘
 ```
 
 ## Items to Finish
-- [x] `ref/` 下有一份能直接复制的空模板文件
-      `ref/q-template.md`（`board.md` 的 `## Links` 把它指到 skill 的 ref）。build.py parse 测过：state/owner/method 不被污染、11 段全取得到、顶部 `<!-- 用法 -->` 注释生成时被丢掉不上页面。
-- [x] 每个段落上面一行注释：这儿写什么、写多长
-      每段正文第一行就是引导句（写什么 + 多长），填的时候直接覆盖掉。
-- [x] 标明哪些必填、哪些选填
-      引导句开头标 `必填 ·` / `选填 ·`；顶部四行（标题·state·owner 必填，method 选填）写在用法注释里 —— 标记不能进 `state:` 这种行，会被 meta 解析器吃掉。
-- [x] 新加一题＝复制模板改文件名，不用参考任何已有的板
-      一个零背景 agent 只拿到模板就填出了一张合格卡（`/tmp/QA9-testfill.md`，parse 验过），全程没翻任何现成的板。
-- [x] 模板跟上 260723 改版
-      新顺序、新段名（`Items to Finish` / `Where we are`）、新增 `## Boundary`、`## Question` 改成「一段话 + 要点」、`## Why here` 退役 —— `ref/q-template.md` 已重写。
-- [ ] 用新模板再跑一次零背景填卡
-      上次冷读验的是旧模板。结构换了就得重验：新 agent 只拿新模板，能不能填出一张「零背景读得懂」的卡。
+- [x] A blank template file under `ref/` that can be copied as-is
+      `ref/q-template.md` (`board.md`'s `## Links` points it at the skill's ref). Parse-tested against build.py: state/owner/method stay clean, all 11 sections are picked up, and the top `<!-- usage -->` comment is dropped at build time and never reaches the page.
+- [x] One guide line at the top of every section: what to write here, and how long
+      The first line of each section's body IS the guide sentence (what + how long); you overwrite it as you fill in.
+- [x] Mark which sections are required and which optional
+      Guide sentences start with `required ·` / `optional ·`; the top four lines (title · state · owner required, method optional) are covered in the usage comment — the markers must NOT go into lines like `state:`, the meta parser would eat them.
+- [x] Adding a question = copy the template and rename, without consulting any existing board
+      A zero-background agent, given only the template, filled out a valid card (`/tmp/QA9-testfill.md`, parse-verified) without opening any existing board.
+- [x] Template caught up with the 260723 redesign
+      New order, new section names (`Items to Finish` / `Where we are`), new `## Boundary`, `## Question` turned into "one paragraph + bullets", `## Why here` retired — `ref/q-template.md` rewritten.
+- [ ] Re-run the zero-background fill test on the new template
+      The last cold-read validated the OLD template. The structure changed, so it must be re-verified: a fresh agent, given only the new template, fills out a card a zero-background reader can understand.
 
 ## Where we are
-**模板已跟上 260723 改版，但新版还没被零背景验过 —— 所以退回 🟡。**
+**The template has caught up with the 260723 redesign, but the new version has not been cold-read yet — hence back to 🟡.**
 
-- 模板长什么样
-  顶部 `# 标题 / state / owner / method`，加 11 个 `##` 段。每段正文第一行是引导句，开头标 `必填 ·` 或 `选填 ·`，填的时候覆盖掉。顶部一段 `<!-- 用法 -->` 注释讲怎么用，生成时被丢掉、不上页面。
-- 必填 / 选填
-  必填六样：`# 标题`、`state`、`owner`、`## Question`、`## Items to Finish`、`## Where we are`。`## Boundary` 和 `## Files` 选填但强烈建议；其余（`method`、`## Diagram` 和全部折叠段）选填，用不上就整段连标题一起删。
-- 顺手修好的三处 drift（模板、`board-form.md`、`SKILL.md` 三处原来对不上）
-  ① 补了 `## Law`（拍定的规矩）和 `## Lesson`（踩过的坑）—— build.py 早认这两段、别的题也在用，就这三处漏写；已同步。
-  ② 老模板写「Log 最新的放最下面」，跟 1120 定的倒序（`sort_log` reverse=True，最新在最上）自相矛盾，已改。
-  ③ 顶部四行原来不在必填/选填规矩里，冷读的新 agent 只能猜；已补进用法注释，并给了 `state` 图例。
-- 之前「还没定的」现在也定了
-  段落顺序随便排（build.py 按名字取内容，折叠段在页面上的顺序由 build.py 固定）；`## Glossary` 选填，不是每题都要；`state:` 后面只跟一个状态词，别把图例抄进去。
+- What the template looks like
+  Top block `# title / state / owner / method`, plus 11 `##` sections. The first line of each section is a guide sentence starting with `required ·` or `optional ·`, overwritten as you fill in. A `<!-- usage -->` comment at the top explains how to use it and is dropped at build time.
+- Required / optional
+  Six required: `# title`, `state`, `owner`, `## Question`, `## Items to Finish`, `## Where we are`. `## Boundary` and `## Files` optional but strongly advised; everything else (`method`, `## Diagram`, all folded sections) optional — if unused, delete the whole section including its heading.
+- Three drift spots fixed along the way (template, `board-form.md`, `SKILL.md` disagreed)
+  ① Added `## Law` (settled rules) and `## Lesson` (pitfalls) — build.py recognized both all along and other questions were using them; only these three docs missed them. Synced.
+  ② The old template said "newest Log lines at the bottom", contradicting the reverse order settled at 1120 (`sort_log` reverse=True, newest on top). Fixed.
+  ③ The top four lines used to sit outside the required/optional rules, so a cold-reading agent had to guess; now covered in the usage comment, with a legend for `state`.
+- Previously "undecided" items now decided
+  Section order in the file is free (build.py fetches by name; the fold order on the page is fixed by build.py); `## Glossary` is optional, not per-question mandatory; `state:` takes exactly one status word — do not copy the legend into it.
 
 ## Files
 - `ref/q-template.md`
-  这题的交付物本身 —— 加一题就是复制它。
+  The deliverable itself — adding a question means copying it.
 - `build.py`
-  `ALIAS` / `sec()` 决定认哪些段名；段名写错就静默取不到。
+  `ALIAS` / `sec()` decide which section names are recognized; a misspelled name silently yields nothing.
 - `ref/board-form.md`
-  §4 段落↔页面对应表 + 必填/选填。
+  §4 section↔page mapping + required/optional.
 
 ## Law
-- 段落名必须原样保留
-  build.py 拿 `## ` 后面整串当 key（`ln[3:].strip()`），`## Question（必填）` 就取不到了。所以必填/选填标记只能写进正文第一行，不能写进标题行。
-- 必填六样（260723 改版后）
-  `# 标题`、`state`、`owner`、`## Question`、`## Items to Finish`、`## Where we are`。
-  `## Boundary` 选填但强烈建议；其余全选填，用不上就整段删掉。
-- 台面顺序定死
-  `Question → Boundary → Diagram → Items to Finish → Where we are` —— 先意图后状态（`QA4` 定的）。
-- 折叠段顺序由 build.py 固定
-  页面上永远是 Why here · Discussion · Comments · Law · Lesson · Glossary · Log。文件里怎么排都行。
-- 改段名必须走 ALIAS
-  一个槽位认多个名字（`Done when`＝`Items to Finish`、`Now`＝`Where we are`、中文老名照旧），
-  老板子一个字不改也要能重新生成。
-- Log 倒序
-  最新的在最上面（`sort_log` reverse=True，md 和页面一致）。
+- Section names must be kept verbatim
+  build.py takes the whole string after `## ` as the key (`ln[3:].strip()`), so `## Question (required)` is not found. Required/optional markers therefore go into the first body line, never the heading line.
+- The six required things (after the 260723 redesign)
+  `# title`, `state`, `owner`, `## Question`, `## Items to Finish`, `## Where we are`.
+  `## Boundary` optional but strongly advised; everything else optional — delete the whole section if unused.
+- On-stage order is fixed
+  `Question → Boundary → Diagram → Items to Finish → Where we are` — intent first, status second (settled by `QA4`).
+- Fold order is fixed by build.py
+  On the page it is always Why here · Discussion · Comments · Law · Lesson · Glossary · Log, regardless of file order.
+- Renaming a section must go through ALIAS
+  One slot recognizes several names (`Done when` = `Items to Finish`, `Now` = `Where we are`, the old Chinese names still work), so old boards regenerate without touching a single character.
+- Log is reverse-chronological
+  Newest on top (`sort_log` reverse=True, both in md and on the page).
 
 ## Lesson
-- 用法注释里别让某行以 `state:` / `owner:` / `method:` 开头
-  meta 解析器（parse_q）对首词是这几个的行照单全收，会把 `state` 图例当成真状态值吃进去 —— 第一版就这么把状态写坏了，改成 `· state …` 才躲开。
-- 顶部四行不在「## 段」的必填/选填规矩里
-  第一版模板只给 `##` 段标了必填/选填，冷读的新 agent 得猜 state/owner 是不是必填。补进用法注释才算清楚。
-- 老模板自相矛盾要清
-  模板里还留着「Log 最新的放最下面」，而倒序早在 1120 就定了 —— 正是零背景读者第一眼挑出来的那种过期话。
+- In the usage comment, never start a line with `state:` / `owner:` / `method:`
+  The meta parser (parse_q) swallows any line whose first word is one of these — the first draft corrupted the status exactly this way; writing `· state …` dodges it.
+- The top four lines are outside the `##`-section required/optional rules
+  The first template only marked the `##` sections, so a cold-reading agent had to guess whether state/owner were required. Only after adding them to the usage comment was it clear.
+- Stale self-contradictions in the template must be purged
+  The template still said "newest Log lines at the bottom" long after reverse order was settled at 1120 — exactly the kind of stale sentence a zero-background reader spots first.
 
 ## Glossary
-必填：缺了就算这个 Q 文件不合格。生成器不会报错，但页面上会缺一块。
-选填：用不上就把整段连标题一起删掉，不留空壳。
+required: without it the Q file is invalid. The generator raises no error, but a block is missing on the page.
+optional: if unused, delete the whole section including the heading — leave no empty shell.
 
 ## Discussion
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
-260723 · 跟 260723 改版同步：模板重写（新顺序 · `Items to Finish` / `Where we are` · 新增 `## Boundary` · Question 改「一段话+要点」· `Why here` 退役）；必填从七样改六样。state ✅ → 🟡 —— 结构换了，旧的零背景填卡验收不再算数，要重跑
-260723 1450 · 冷读验收：全新 agent 只拿模板就填出合格卡；顶部四行补必填/选填 + `state` 图例（写进用法注释，避开 meta 解析器）
-260723 1445 · 落地 `ref/q-template.md`：每段标必填/选填、补 `## Law`/`## Lesson`、Log 改倒序；`board-form.md` 与 `SKILL.md` 同步 → 四条完成线全达到，本题 SETTLED
-260723 1130 · 模板补 `## Lesson`（折叠，放踩过的坑）
-260723 1120 · Log 改成时间倒序，最新的在最上面（md 和页面都是）
-260723 1105 · 模板补 `## Comments` 段（带状态的行内评论）
-260723 1010 · 模板补要点式语法（`- 小标题` + 缩进解释）
-260723 0950 · Log 行加时间：`YYMMDD HHMM · 改了什么`，时间可省
-260723 0919 · 段落名全部改英文，模板示例同步
-260723 0910 · 模板里加 ## Diagram 和 ## Log 两段
-260722 2330 · 状态词从自造的「半有 / 没做」换成 OPEN / PARTIAL / SETTLED / ON HOLD
-260722 2325 · JL 当场定两条：标题必须是短语（≤14 字）、完成线一律写成勾选清单
-260722 2310 · 编号 Q2 → QA2
-260722 2255 · 从 QA1 拆出来单独立题
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
+260723 · Synced with the 260723 redesign: template rewritten (new order · `Items to Finish` / `Where we are` · new `## Boundary` · Question as "paragraph + bullets" · `Why here` retired); required count 7 → 6. state ✅ → 🟡 — the structure changed, the old zero-background fill test no longer counts, must re-run
+260723 1450 · Cold-read acceptance: a fresh agent produced a valid card from the template alone; top four lines got required/optional + a `state` legend (in the usage comment, dodging the meta parser)
+260723 1445 · Landed `ref/q-template.md`: per-section required/optional, added `## Law`/`## Lesson`, Log reversed; `board-form.md` and `SKILL.md` synced → all four finish lines reached, question SETTLED
+260723 1130 · Template gains `## Lesson` (folded, for pitfalls)
+260723 1120 · Log switched to reverse-chronological, newest on top (md and page)
+260723 1105 · Template gains `## Comments` (inline comments with status)
+260723 1010 · Template gains the item syntax (`- short heading` + indented explanation)
+260723 0950 · Log lines gain time: `YYMMDD HHMM · what changed`, time optional
+260723 0919 · All section names switched to English, template examples synced
+260723 0910 · Template gains ## Diagram and ## Log
+260722 2330 · Status words replaced the home-made ones with OPEN / PARTIAL / SETTLED / ON HOLD
+260722 2325 · JL settled two rules on the spot: titles must be short phrases (≤14 chars), finish lines must be checklists
+260722 2310 · Renumbered Q2 → QA2
+260722 2255 · Split out of QA1 as its own question

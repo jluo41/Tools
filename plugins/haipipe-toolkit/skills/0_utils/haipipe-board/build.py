@@ -24,7 +24,7 @@ Follows html-ppt conventions where free: `.slide` sections with `data-title`,
 academic-report palette. So the same file can later be handed to runtime.js for
 presenter mode without rewriting the content.
 """
-import html, re, sys
+import html, json, re, sys
 from pathlib import Path
 
 # 状态标签用英文：OPEN / PARTIAL / SETTLED / ON HOLD 是 issue 追踪的通用词，
@@ -57,7 +57,7 @@ def sec(d, key):
 
 
 CM_HEAD = re.compile(
-    r"^-\s*\[([ xX])\]\s*([A-Z]{1,4}\d{0,4})\s*[「\"]([^」\"]+)[」\"]"
+    r"^-\s*\[([ xX])\]\s*([A-Z]{1,4}\d{0,4})\s*[「\"“]([^」\"”]+)[」\"”]"
     r"\s*(?:·\s*(\d{6}(?:\s+\d{3,4})?))?\s*[:：]?\s*(.*)$")
 
 
@@ -118,10 +118,11 @@ def render_comments(items):
             f' data-done="{"1" if c["done"] else ""}"><div class="cmh">'
             f'<span class="bx">{"☑" if c["done"] else "☐"}</span>'
             f'<b class="{who_class(c["who"])}">{esc(c["who"])}</b>'
-            f'<span class="cq">「{inline(c["quote"])}」</span>{when}'
-            + (f'<span class="cs unpin" title="引文不是这一题正文里的句子 —— 可能是聊天里说的话，'
-               '也可能原文后来被改了。没存历史，分不清是哪种，所以只说「没在正文里」，不喊「丢了」。">'
-               '· 未定位</span>' if c.get("lost") else "")
+            f'<span class="cq">“{inline(c["quote"])}”</span>{when}'
+            + (f'<span class="cs unpin" title="The quoted sentence is not in this '
+               'question\'s body — it may have been said in chat, or the original may have '
+               'been edited since. No history is kept, so we only say it is not in the body.">'
+               '· unanchored</span>' if c.get("lost") else "")
             + f'<span class="cs">{"solved" if c["done"] else "open"}</span></div>'
             f'{body_html}</div>')
     return "\n".join(rows)
@@ -155,7 +156,7 @@ def stinfo(state):
     """'✅ 已定' / '⏸️ 会上没答完' -> (emoji, css-class, label)"""
     state = (state or "").strip() or "🔴"
     tok = state.split()[0]
-    cls, lab = STN.get(tok.replace("️", ""), ("todo", "没做"))
+    cls, lab = STN.get(tok.replace("️", ""), ("todo", "TODO"))
     rest = state[len(tok):].strip()
     return tok, cls, (rest or lab)
 
@@ -324,7 +325,7 @@ def body(txt, fold_code=True):
                 if fold_code:
                     lab = ('&lt;/&gt; code'
                            + (f' · {esc(flang)}' if flang else '')
-                           + f' · {len(fence)} 行')
+                           + f' · {len(fence)} lines')
                     out.append(f'<details class="it codef"><summary class="cs">{lab}'
                                f'</summary><pre>{code}</pre></details>')
                 else:
@@ -377,7 +378,7 @@ def body(txt, fold_code=True):
             out.append(f'<div class="xcal"><iframe src="{u}" loading="lazy" '
                        f'referrerpolicy="no-referrer"></iframe>'
                        f'<a class="fp xopen" href="{u}" target="_blank" rel="noopener">'
-                       f'↗ 在 Excalidraw 打开</a></div>')
+                       f'↗ Open in Excalidraw</a></div>')
             continue
         # 整行加粗 = 组标题：领着下面一串 item 的一句话。图标 + 略大 + 上间距，
         # 夹在节标题(.ch)和 item 名字(.bt)中间一层，把层级拉开（JL 260723）。
@@ -517,13 +518,13 @@ def parse_dir(d):
                 order.append((group, disk[name][2]))
                 seen.add(name)
             else:
-                warn.append(f"清单里写了 {name}，文件夹里没有这个文件")
+                warn.append(f"{name} is listed in the Roster but no such file exists")
     listed = bool(order)
     for name, (key, qid, p) in sorted(disk.items(), key=lambda kv: kv[1][0]):
         if name not in seen:
             if listed:
-                warn.append(f"{name} 没写进 board.md 的「## 清单」")
-            order.append(("⚠️ 没进清单" if listed else "", p))
+                warn.append(f"{name} is not listed in board.md's ## Roster")
+            order.append(("⚠️ Not in Roster" if listed else "", p))
 
     qs = [parse_q(disk[p.name][1], p.read_text(encoding="utf-8"), g, p.name)
           for g, p in order]
@@ -563,7 +564,7 @@ def render(meta, qs):
         pct = round(fr * 100)
         fill = (f' style="--fill:{fr:.3f}"') if fr > 0 else ""
         rows.append(
-            f'<a class="ir {st(q)[1]}" href="#{q["id"]}"{fill} title="完成度 {pct}%">'
+            f'<a class="ir {st(q)[1]}" href="#{q["id"]}"{fill} title="{pct}% done">'
             f'<span class="s">{st(q)[0]}</span><span class="i">{q["id"]}</span>'
             f'<span class="t">{inline(q["title"])}</span>'
             + (f'<span class="obadge">💬 {open_cm[q["id"]]}</span>' if open_cm[q["id"]] else "")
@@ -595,7 +596,7 @@ def render(meta, qs):
                + (f'<a href="#{nxt["id"]}">{nxt["id"]} →</a>' if nxt else '<span></span>')
                + '</div>')
         tok, cls, lab = st(q)
-        who = "🧠 JL 拍板" if q["owner"] == "JL" else ("🔧 " + q["owner"] if q["owner"] else "")
+        who = "🧠 JL decides" if q["owner"] == "JL" else ("🔧 " + q["owner"] if q["owner"] else "")
         # 顺序（JL 260723 改版）：先「什么算做完」，再「现在到哪了」。
         # 原来 Now 在上，零背景的人先撞上一堵实现细节，还没搞懂目标就淹了 ——
         # 先给意图（目标），再给状态（进度）。
@@ -680,7 +681,7 @@ def render(meta, qs):
         # 讨论里加个「整段写想法」的框（要 serve.py 跑着）：写完 → 追加进 ## Discussion。
         # 不钉在某句话上，就是自由讨论；serve.py 没跑时按钮会提示改走手写（JL 260723）。
         dadd = (f'<div class="dadd" data-file="{esc(q.get("file",""))}">'
-                f'<textarea placeholder="把想法整段写进讨论…"></textarea>'
+                f'<textarea placeholder="Write a thought into the discussion…"></textarea>'
                 f'<div class="row"><select></select>'
                 f'<button class="dsave" type="button">➕ Add to discussion</button></div></div>')
         folds = det(f"💬 Discussion ({ndisc})",
@@ -694,7 +695,7 @@ def render(meta, qs):
         if cms:
             lab = f"💬 Comments ({nopen} open / {len(cms)})"
             if nlost:
-                lab += f" · {nlost} 未定位"      # 引文不在正文里；不喊「丢了」（分不清是聊天话还是真被改）
+                lab += f" · {nlost} unanchored"      # 引文不在正文里；不喊「丢了」（分不清是聊天话还是真被改）
             folds += det(lab, f'<div class="cms" data-cfile="{esc(q.get("file",""))}">'
                          + render_comments(cms) + '</div>', open_=nopen > 0)
         # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
@@ -716,7 +717,7 @@ def render(meta, qs):
             + (f'<span class="obadge">💬 {nopen}</span>' if nopen else "")
             # 文件名做成链接：点它直接看这一题的原始 markdown（serve.py 把它当纯文本发）
             + f'<a class="src" href="{esc(q.get("file",""))}" target="_blank"'
-            f' title="打开这一题的原始 markdown">📄 {esc(q.get("file",""))}</a>'
+            f' title="Open this question\'s raw markdown">📄 {esc(q.get("file",""))}</a>'
             f'<a class="top" href="#top">↑ Index</a></div>'
             # id 后面那个空格是真字符（不是 CSS margin）——复制这行标题时
             # 才不会粘成 QA4Single…，而是 QA4 Single…（JL 260723）
@@ -981,8 +982,8 @@ JS = r"""
       '<button class="cp">Copy</button></div>' +
       (db.length ? db.map(function (c, i) {
         return '<div class="it" data-row="' + i + '"><div class="q">' + c.id +
-          (c.lost ? ' <span style="color:var(--mut)">· 未定位</span> ' : ' ') +
-          '「' + esc(c.quote.slice(0, 40)) + '」</div><b>' + c.who + '</b> ' +
+          (c.lost ? ' <span style="color:var(--mut)">· unanchored</span> ' : ' ') +
+          '“' + esc(c.quote.slice(0, 40)) + '”</div><b>' + c.who + '</b> ' +
           esc(c.text) + ' <button data-i="' + i +
           '" class="rm" style="padding:2px 8px">del</button></div>';
       }).join('') : '<div class="it mut">Nothing yet. Select a sentence in the text.</div>') +
@@ -1176,11 +1177,11 @@ JS = r"""
         } catch (e) { j = null; }
         btn.disabled = false; btn.textContent = '➕ Add to discussion';
         if (j === null) {
-          say('serve.py 没在跑 —— 直接在 md 的 ## Discussion 里写 > ' + sel.value + ': …');
+          say('serve.py is not running — write > ' + sel.value + ': … into ## Discussion in the md yourself');
           return;
         }
         if (j.ok) { localStorage.setItem(WK, sel.value); location.reload(); }
-        else say(j.err || '写入失败');
+        else say(j.err || 'write failed');
       };
     });
   }
@@ -1236,7 +1237,7 @@ JS = r"""
   chat.id = 'chat';
   chat.innerHTML =
     '<div class="hd"><span class="qid"></span><span class="ti"></span>' +
-    '<button class="term" title="用真终端打开这一题（同一个 session）">⌨</button>' +
+    '<button class="term" title="Open this question in a real terminal (same session)">⌨</button>' +
     '<button class="x" title="close">×</button></div>' +
     '<div class="bd"></div><div class="tm"></div>' +
     '<div class="acts"></div>' +
@@ -1624,7 +1625,7 @@ JS = r"""
       var s = document.createElement('script');
       s.src = '/_board/asset/xterm.min.js';
       s.onload = function () { res(window.Terminal); };
-      s.onerror = function () { rej(new Error('xterm.js 加载失败（serve.py 在跑吗？）')); };
+      s.onerror = function () { rej(new Error('xterm.js failed to load (is serve.py running?)')); };
       document.head.appendChild(s);
     });
     return xtermP;
@@ -1793,7 +1794,7 @@ document.addEventListener('click', function (ev) {
 """
 
 TPL = """<!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="utf-8">
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <style>
@@ -2258,7 +2259,50 @@ with JavaScript off; the script only adds commenting.</p>
 </div>{js}</body></html>
 """
 
+_CJK = re.compile(r"[一-鿿]")
+
+
+def scrub_cjk_comments(txt):
+    """Drop CSS/JS comments that contain CJK from the EMITTED page (the source
+    keeps its comments for developers; the output stays fully English — JL 260724).
+    Only comments are touched: /*…*/ blocks, and //-to-EOL tails whose line prefix
+    has balanced quotes (so a // inside a string is never mistaken for a comment)."""
+    txt = re.sub(r"/\*.*?\*/", lambda m: "" if _CJK.search(m.group(0)) else m.group(0),
+                 txt, flags=re.S)
+    def line(ln):
+        i = ln.find("//")
+        while i != -1:
+            pre = ln[:i]
+            if pre.count("'") % 2 == 0 and pre.count('"') % 2 == 0 and pre.count("`") % 2 == 0:
+                return pre.rstrip() if _CJK.search(ln[i:]) else ln
+            i = ln.find("//", i + 1)
+        return ln
+    return "\n".join(line(l) if _CJK.search(l) else l for l in txt.split("\n"))
+
+
+def to_json(meta, qs, warn):
+    """`build.py <dir> --json` — the parser as a service (QE3: one grammar,
+    two render paths). Emits the same data the HTML is built from, plus the
+    derived numbers the index shows, so JSON and HTML cannot disagree."""
+    def q_json(q):
+        boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", sec(q["sec"], "Done when"), re.M)
+        cms = parse_comments(sec(q["sec"], "Comments"))
+        tok, cls, lab = stinfo(q["state"])
+        return dict(id=q["id"], title=q["title"], group=q["group"], file=q["file"],
+                    state=q["state"], state_token=tok, state_label=lab,
+                    owner=q["owner"], method=q["method"], session=q["session"],
+                    done=sum(1 for b in boxes if b.lower() == "x"), total=len(boxes),
+                    comments_open=sum(1 for c in cms if not c["done"]),
+                    comments_total=len(cms),
+                    sections={k: v for k, v in q["sec"].items()})
+    return json.dumps({"meta": meta, "questions": [q_json(q) for q in qs],
+                       "warnings": warn}, ensure_ascii=False, indent=1)
+
+
 if __name__ == "__main__":
+    args = [a for a in sys.argv[1:] if a != "--json"]
+    as_json = "--json" in sys.argv[1:]
+    sys.argv = [sys.argv[0]] + args
     src = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
     BASE = (src if src.is_dir() else src.parent).resolve()
     if src.is_dir():
@@ -2268,16 +2312,19 @@ if __name__ == "__main__":
         meta, qs, warn = parse_file(src.read_text(encoding="utf-8"))
         out = src.with_suffix(".html")
     else:
-        sys.exit(f"找不到 {src}")
-    out.write_text(render(meta, qs), encoding="utf-8")
+        sys.exit(f"not found: {src}")
+    if as_json:
+        print(to_json(meta, qs, warn))
+        sys.exit(0)
+    out.write_text(scrub_cjk_comments(render(meta, qs)), encoding="utf-8")
     txt = out.read_text(encoding="utf-8")
     # 真正要保的性质不是「没有 script」，而是「关掉 script 页面照样完整」。
     # 评论层是纯增强，所以改成直接验这一条：剥掉所有 <script> 之后，
     # 每个 Q 仍在，正文仍在。
     bare = re.sub(r"<script.*?</script>", "", txt, flags=re.S)
-    assert bare.count('class="slide q') == len(qs), "剥掉 JS 后少了 Q"
+    assert bare.count('class="slide q') == len(qs), "a Q went missing after stripping JS"
     plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", bare.split("<body", 1)[1])).strip()
-    assert len(plain) > 1200, f"剥掉 JS 后正文只剩 {len(plain)} 字"
-    print(f"✅ {out} · {len(qs)} 个 Q · 无 JS 时仍有 {len(plain)} 字正文 · 评论层 {txt.count(chr(60)+'script')} 段")
+    assert len(plain) > 1200, f"only {len(plain)} chars of body left after stripping JS"
+    print(f"✅ {out} · {len(qs)} questions · {len(plain)} chars of body survive with JS stripped · {txt.count(chr(60)+'script')} script block(s)")
     for w in warn:
         print(f"⚠️  {w}")

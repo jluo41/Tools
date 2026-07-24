@@ -1,95 +1,97 @@
 # Writing it so people understand
 state: 🟡 PARTIAL
 owner: CC
-method: 一份写法规矩 + 一个零背景 reviewer subagent 每次过一遍
+method: one set of writing rules + a zero-background reviewer subagent run over every revision
 
 ## Question
-一个 Q 的正文该怎么写，才能让一个完全不了解这件事的人读一遍就懂？而且怎么保证它**一直**是这样，不是靠我某一次心情好？
+How should a Q's body be written so that someone who knows nothing about the matter understands it in one pass? And how do we make sure it **stays** that way, rather than depending on my mood on a good day?
 
-- 为什么难
-  写的人知道太多没写进去的事，自己读永远觉得通顺 —— 可读性没法自测，只能靠外人。
-- 不定会怎样
-  JL 的原话：**「如果不易读，写那么多都是 rubbish。」** 板的全部价值就是给别人看，看不懂等于没写。这条比结构、比排版都更靠前。
-- 定了会影响什么
-  它是唯一能**反复验收**的规矩：每次改完都要能跑一遍，而不是写完就完。
+- Why it is hard
+  The writer knows too many things that never made it onto the page — your own text always reads fine to you. Readability cannot be self-tested; only an outsider can test it.
+- What breaks if we leave it
+  JL's exact words: **"if it is not easy to read, writing that much is rubbish."** The board's entire value is being read by others; unreadable equals unwritten. This ranks ahead of structure and layout.
+- What it affects downstream
+  It is the only rule that can be **re-run as acceptance**: every revision should be able to pass through it, instead of "written once, done forever".
 
 ## Boundary
-- ✅ 这题管
-  **每段里的字怎么写**：不许造词、过期的话要清掉、怎么用零背景冷读来验，以及这套规矩怎么落进 `ref/writing-rules.md`。
-- ❌ 这题不管
-  **有哪些段落**（结构）—— 那是 `QA2`；也不管这些段落在页面上**怎么排** —— 那是 `QA4`。这题只管文字本身。
+- ✅ This question owns
+  **How the words inside each section are written**: no invented terms, stale sentences must be purged, how zero-background cold reading verifies it, and how these rules land in `ref/writing-rules.md`.
+- ❌ This question does not own
+  **Which sections exist** (structure) — that is `QA2`; nor how sections are **arranged on the page** — that is `QA4`. This question owns only the prose itself.
 
 ## Diagram
 ```
-    每个 QX-xxx.md
+    every QX-xxx.md
           │
           ▼
-  ┌─ 零背景 reviewer subagent ────────────────┐
-  │  假设：没读过会议记录，没看过代码，         │
-  │        不认识 JL / RA，不知道这个项目       │
-  │  只答三件事：                              │
-  │    ① 哪一句读不懂 —— 原句抄回来             │
-  │    ② 哪个词没解释 —— 列出来                │
-  │    ③ 缺了什么背景才看得懂这一题             │
+  ┌─ zero-background reviewer subagent ──────┐
+  │  assumes: never saw the meeting notes,    │
+  │        never read the code,               │
+  │        does not know JL / RA / the project│
+  │  answers exactly three things:            │
+  │    ① which sentence is unreadable — quoted│
+  │    ② which word is never explained — list │
+  │    ③ what background is missing           │
   └──────────────────┬───────────────────────┘
                      ▼
-              问题清单 → 改 md → 再跑一遍  ⟲
+              issue list → edit md → run again  ⟲
                      │
-              没有新问题 → 这一题算「读得懂」
+              no new issues → the question counts as "readable"
 
-  ✗ 我自己在同一个对话里读 —— 我知道太多没写进去的事，测不出来
+  ✗ me re-reading in the same conversation — I know too much unwritten context to catch anything
 ```
 
 ## Items to Finish
-- [x] 写下一份「怎么写才算人话」的规矩
-      `ref/writing-rules.md`（3.9KB）：不许造词、过期的话要清掉、改完用全新 agent 冷读；SKILL.md 里也有一节引它。
-- [x] 逐个文件报告：哪句看不懂、哪个词没解释、缺什么背景
-      冷读跑过两次，报告就是这个格式（读不懂的句子 / 没解释的词 / 缺的前提 / 逐题评级）。
-- [ ] 有一个固定的零背景 reviewer subagent，不是每次手动喊
-      现在是手动派一个全新 agent。规矩和提示词写下来了，但没做成「一条命令自动跑」。
-- [ ] 板每次大改都自动跑一遍
-      靠人记得。没接进 build.py / serve.py。
-- [ ] 收敛判据写清楚
-      `ref/writing-rules.md` 里有初版（跑到没有新的「看不懂」为止），但没定量、没拍死。
+- [x] Write down the rules for "what counts as plain language"
+      `ref/writing-rules.md` (3.9KB): no invented terms, stale sentences must be purged, cold-read with a fresh agent after every revision; SKILL.md has a section pointing at it.
+- [x] Per-file report: which sentence is unreadable, which word unexplained, what background is missing
+      The cold read has run twice; the report follows exactly that format (unreadable sentences / unexplained words / missing premises / per-question grade).
+- [ ] A standing zero-background reviewer subagent, not summoned by hand each time
+      Today it is a manually dispatched fresh agent. Rules and prompt are written down, but not packaged as "one command runs it".
+- [ ] Every major board change triggers a run automatically
+      Relies on someone remembering. Not wired into build.py / serve.py.
+- [ ] Convergence criterion written down
+      `ref/writing-rules.md` has a first version (run until no new "unreadable" findings), but it is not quantified or finalized.
 
 ## Where we are
-喊过一次，有用，但没沉淀下来。
+Ran it once by hand, it worked, but nothing has been institutionalized.
 
-那次的反馈很难看：「像在解释一个菜谱的格式，却从头到尾没说这道菜是什么」；约 35 个没解释就用的词；7 题里 1 题勉强清楚、5 题模糊、1 题完全看不懂。
-改完之后确实好多了 —— 加了 `## Topic`（这块板在干嘛）、`## Pipeline`（这些题怎么排），术语挪进各题的 `## Glossary`。
+That first round's feedback was ugly: "like explaining a recipe's format without ever saying what the dish is"; ~35 terms used without explanation; of 7 questions, 1 barely clear, 5 vague, 1 incomprehensible.
+After the edits things genuinely improved — `## Topic` (what this board is about) and `## Pipeline` (how the questions are ordered) were added, and terms moved into per-question `## Glossary`.
 
-还有一条更具体的教训：**我自己造过词**。把 `battery` 译成「电池」，还有「向外锚定」「第一幕」「三集合闸门」—— 这些词在任何源文档里出现 0 次。这类最伤人：读者以为是行话，去查，查不到。
+One more concrete lesson: **I have invented terms myself.** A coined translation for `battery`, plus "outward anchoring", "act one", "three-set gate" — terms that appear 0 times in any source document. These hurt most: the reader assumes jargon, goes looking, finds nothing.
 
-**第二次（就是这块板，9 题）刚跑完，结果不好看：2 题清楚（QA5 / QC1）、6 题半懂、1 题看不懂（QA4）。**
-它挑出来最狠的三条：
-① 「板」这个词在自指的语境里指代不清 —— 有时指工具，有时指这一块，读者全程要猜。
-② QA2 的图写「上/下」，QA4 的正文写「左右并排」，同一件事两处打架；同一个段落还有三个名字（完成线 / 到什么程度算做完 / 算做完）。
-③ `build.py`、`skill`、`/html-ppt`、`聚焦模式` 这些词出现在四五个文件里，一次都没定义。
+**The second round (this very board, 9 questions) just finished, and it does not look good: 2 clear (QA5 / QC1), 6 half-understood, 1 incomprehensible (QA4).**
+Its three sharpest findings:
+① The word "board" is ambiguous in self-referential context — sometimes the tool, sometimes this specific board; the reader guesses throughout.
+② QA2's diagram says "top/bottom" while QA4's body said "side by side" — the same fact contradicted in two places; and one section went by three different names.
+③ `build.py`, `skill`, `/html-ppt`, "focus mode" appear across four or five files and are defined nowhere.
 
-第二次报告里那两处**自相矛盾已经改掉**：QA4 正文的「左右并排」改成了实际的上下叠；段落名统一成 `## Now` / `## Done when`，不再有三个叫法。
-剩下的大头没动 —— `build.py`、`skill`、`/html-ppt`、`聚焦模式` 这些词仍然没有一处定义。
+The two **self-contradictions from that report are fixed**: QA4's "side by side" now reads as the actual stacked layout; the section names are unified, no more three aliases in prose.
+The big remainder is untouched — `build.py`, `skill`, `/html-ppt`, "focus mode" still have no single definition anywhere.
 
-现在缺的：规矩和提示词都写进 `ref/writing-rules.md` 了，冷读也跑过两次；
-差的是「自动化」—— 没有常驻 agent、没接进生成流程，还靠人记得要跑。
+What is missing now: the rules and the prompt are in `ref/writing-rules.md`, and the cold read has run twice;
+what lacks is **automation** — no standing agent, not wired into the build, still depends on someone remembering.
 
 ## Files
 - `ref/writing-rules.md`
-  这题的交付物：写法硬规矩 + 零背景审查的提示词和收敛判据。
+  This question's deliverable: the hard writing rules + the zero-background review prompt and convergence criterion.
 - `SKILL.md`
-  「✍️ 写法」那一节 —— 最要命的三条摘在那儿。
+  The "✍️ Writing" section — the three deadliest rules are excerpted there.
 
 ## Glossary
-零背景读者：假装完全没参与过这个项目的人。用一个全新的 agent 来扮演，因为它真的不知道 —— 我在这个对话里知道太多没写下来的事，自己读是测不出问题的。
-subagent：另开一个 Claude，只看你给它的文件，看不到这次对话。
+zero-background reader: someone who pretends to have never touched this project. Played by a fresh agent, because it genuinely does not know — I know too much unwritten context in this conversation to test anything myself.
+subagent: a separately started Claude that sees only the files you hand it, not this conversation.
 
 ## Discussion
-> JL: 我想要一个新的 Q，讲怎么写 Q 的正文，保证人能读懂。可以叫 subagent 去审每个 md，确保知识有限的人也能看懂。
+> JL: I want a new Q about how to write a Q's body so people can actually understand it. We can have a subagent review every md so someone with limited knowledge can still follow.
 
 ## Log
-260723 · 按新结构重写：Question 展开成「一段话 + 要点」，补 `## Boundary` 和 `## Files`；退役的 `## Why here` 并进 Question
-260723 1710 · 全局回顾补勾：writing-rules.md 已写、冷读跑过两次 → 🟡 PARTIAL；剩「自动化」那半没做
-260723 0945 · 按第二次审查修掉两处自相矛盾 —— QA4 的左右/上下、段落名三个叫法
-260723 0925 · 第二次审查（9 题）：2 清楚（QA5 / QC1）、6 半懂、1 看不懂（QA4）
-260723 0915 · JL 说「如果不易读，写那么多都是 rubbish」，正式立为一题
-260722 1900 · 按反馈加了 ## Topic 和 ## Pipeline，术语挪进各题 ## Glossary
-260722 1830 · 第一次零背景审查（当时 7 题）：1 清楚 / 5 模糊 / 1 看不懂，约 35 个没解释的词
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
+260723 1710 · Ticked during the board-wide review: writing-rules.md written, cold read run twice → 🟡 PARTIAL; the "automation" half remains
+260723 0945 · Fixed the two self-contradictions from round two — QA4's side-by-side/stacked, and the three names for one section
+260723 0925 · Second review (9 questions): 2 clear (QA5 / QC1), 6 half-understood, 1 incomprehensible (QA4)
+260723 0915 · JL: "if it is not easy to read, writing that much is rubbish" — formally opened as a question
+260722 1900 · Added ## Topic and ## Pipeline per feedback; terms moved into per-question ## Glossary
+260722 1830 · First zero-background review (7 questions then): 1 clear / 5 vague / 1 incomprehensible, ~35 unexplained terms

@@ -1,65 +1,67 @@
 # Board-level agent
 state: 🔴 OPEN
 owner: CC
-method: 把现场层的作用域从「一题」放大到「整块板」，先定 session 规则再动手
+method: widen the live layer's scope from "one question" to "the whole board"; settle the session rules before building
 
 ## Question
-现在 chat 和 terminal 都钉在**某一题**上（`QD1`/`QD2`/`QD3`）。但很多活是**整块板**的：加一题、改 `## Roster`、重排分组、把各题的 `## Question` 批量重写成新结构。这些活该怎么在板上干？
+Chat and terminal are both pinned to **one question** today (`QD1`/`QD2`/`QD3`). But much of the work is **board-wide**: adding a question, editing `## Roster`, regrouping, batch-rewriting every question's `## Question` into the new structure. How does that kind of work get done on the board?
 
-- 为什么难
-  一放大到整块板，`QD1` 那条 LAW（**一题一 session · 一 session 一窗口**）就不够用了：板级 agent 要同时碰很多题的文件，跟正开着的单题 session 会撞车。
-- 不定会怎样
-  「整理问题清单」这类活现在只能回到 CLI 里手敲，板上干不了 —— 板就只是个只读的展示页，不是工作台。
-- 定了会影响什么
-  serve.py 的 session / HOLD 机制、页面上入口放哪、给它多大权限（能不能删题、能不能改别人正在编辑的题）。
+- Why it is hard
+  The moment the scope widens to the whole board, `QD1`'s LAW (**one session per question · one window per session**) stops sufficing: a board-level agent touches many questions' files at once and collides with any open single-question session.
+- What breaks if we leave it
+  "Tidy up the question list"-type work can only be typed back in the CLI; the board cannot host it — the board stays a read-only display page, not a workbench.
+- What it affects downstream
+  serve.py's session / HOLD machinery, where the entry point sits on the page, and how much power it gets (may it delete questions? edit a question someone is editing?).
 
 ## Boundary
-- ✅ 这题管
-  **作用域是整块板**的 agent：加 Q、改 Roster、重排分组、跨题批量改写；它的入口、session 规则、权限边界。
-- ❌ 这题不管
-  钉在单题上的 chat / terminal —— 那是 `QD2`（SDK 抽屉）和 `QD3`（真终端）。也不管首页清单**长什么样** —— 那是 `QC2`；这题只管「谁来动它」。
+- ✅ This question owns
+  The agent whose **scope is the whole board**: adding Qs, editing the Roster, regrouping, cross-question batch rewrites; its entry point, session rules, permission boundary.
+- ❌ This question does not own
+  Chat / terminal pinned to a single question — that is `QD2` (SDK drawer) and `QD3` (real terminal). Nor what the front page **looks like** — that is `QC2`; this question only owns "who gets to change it".
 
 ## Diagram
 ```
-现在（QD1/2/3）                     这题要加的
-┌──────────────┐                  ┌──────────────────────────┐
-│ QA4 ─ session│ 一题一条           │ 整块板 ─ 一条 board session│
-│ QD3 ─ session│ 各自独立           │   能动：board.md · 任何 Q.md│
-└──────────────┘                  │   要解决：跟单题 session 撞车 │
-   一 session 一窗口（LAW）          └──────────────────────────┘
-                                        ↑ HOLD 怎么扩？板级开着时
-                                          单题还能不能开？
+today (QD1/2/3)                      what this question adds
+┌──────────────┐                   ┌──────────────────────────────┐
+│ QA4 ─ session│ one per question   │ whole board ─ one board session│
+│ QD3 ─ session│ each independent   │   may touch: board.md · any Q.md│
+└──────────────┘                   │   must solve: collisions with   │
+   one window per session (LAW)     │   open single-question sessions │
+                                    └──────────────────────────────┘
+                                        ↑ how does HOLD widen? with a board
+                                          session open, can a question open?
 ```
 
 ## Items to Finish
-- [ ] 定下跟 `QD1` 那条 LAW 怎么衔接
-      板级 session 开着的时候，单题 chat/terminal 还能不能开？谁让谁？这是最要紧的一条。
-- [ ] 定下作用域和权限
-      能改 `board.md` 和所有 `Q*.md`；能不能**新建**题、能不能**删**题、能不能改动别人正开着的那题。
-- [ ] 定下入口在哪
-      首页上一个按钮？还是只能从 CLI 起？（跟 `QC2` 的首页设计有交叉，别各做各的。）
-- [ ] 用 Claude Code 还是 Codex，还是都支持
-      现在 `QD2` 走 claude_agent_sdk、`QD3` 走真 CLI。板级这条走哪套，要不要复用。
-- [ ] 做出来并验过一次真活
-      验收方式：让它把某一组的 `## Question` 批量重写成新结构，人只做审阅。
+- [ ] Settle how it meshes with `QD1`'s LAW
+      With a board-level session open, can a single question's chat/terminal still open? Who yields? The item that matters most.
+- [ ] Settle scope and permissions
+      May edit `board.md` and every `Q*.md`; may it **create** questions, **delete** questions, edit a question currently open in someone's session?
+- [ ] Settle the entry point
+      A button on the front page? Or CLI-only? (Overlaps with `QC2`'s front-page design — do not build separately.)
+- [ ] Claude Code, Codex, or both
+      `QD2` runs claude_agent_sdk, `QD3` the real CLI. Which stack does the board-level route take, and what gets reused?
+- [ ] Built and verified on one real job
+      Acceptance: have it batch-rewrite one group's `## Question` sections into the new structure with a human only reviewing.
 
 ## Where we are
-**只有「一题一 session」，板级完全没有。**
+**Only "one session per question" exists; board level does not exist at all.**
 
-- 现在能干的
-  在某一题上开 SDK 抽屉（`QD2`）或真终端（`QD3`），作用域是那一题的文件；session id 存在那题 md 的 `session:` 行里。
-- 现在干不了的
-  跨题的活：加一题、改 Roster、重排分组、批量重写。这些现在只能回 CLI 手敲。
-- 已经存在、可以复用的零件
-  serve.py 的 OAuth + SDK + HOLD 机制、`/_board/term` 的 ttyd 反代、`/_board/chat` 的流式与权限回调 —— 板级这条不用从零起。
+- What works today
+  Open the SDK drawer (`QD2`) or the real terminal (`QD3`) on a single question, scoped to that question's files; the session id lives in that question's `session:` header line.
+- What cannot be done today
+  Cross-question work: adding a question, editing the Roster, regrouping, batch rewrites. All of it goes back to hand-typed CLI.
+- Parts that already exist and can be reused
+  serve.py's OAuth + SDK + HOLD machinery, `/_board/term`'s ttyd reverse proxy, `/_board/chat`'s streaming and permission callback — the board-level route does not start from zero.
 
 ## Files
 - `serve.py`
-  session / HOLD / chat / terminal 都在这里。板级这条要么复用、要么扩展这套机制。
+  Sessions / HOLD / chat / terminal all live here. The board-level route either reuses or extends this machinery.
 - `build.py`
-  入口按钮要是放首页，渲染在这里（跟 `QC2` 有交叉）。
+  If the entry button goes on the front page, it renders here (overlaps `QC2`).
 - `board.md`
-  板级 agent 主要动的就是它的 `## Roster`。
+  What a board-level agent mostly edits is its `## Roster`.
 
 ## Log
-260723 · 开题：把「板级 agent」从 `QC2` 挪进 QD 组 —— 它的机制跟 `QD1`/`QD2`/`QD3` 同源（serve.py + session + 窗口），只是作用域放大到整块板；跟 `QD1` 的 LAW 直接冲突，必须挨着放
+260724 1242 · Translated to English (JL 260724: everything on the board in English)
+260723 · Opened: "board-level agent" moved from `QC2` into the QD group — its machinery is the same stock as `QD1`/`QD2`/`QD3` (serve.py + sessions + windows), only the scope widens to the whole board; it collides head-on with `QD1`'s LAW, so they must sit side by side
