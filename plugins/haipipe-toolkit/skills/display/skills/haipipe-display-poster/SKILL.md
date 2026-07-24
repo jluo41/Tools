@@ -1,26 +1,34 @@
 ---
-name: paper-poster
-description: "Generate a conference poster (article + tcbposter LaTeX → A0/A1 PDF + editable PPTX + SVG) from a compiled paper. Use when user says \"做海报\", \"制作海报\", \"conference poster\", \"make poster\", \"生成poster\", \"poster session\", or wants to create a poster for a conference presentation."
-argument-hint: "[paper-directory-or-venue]"
+name: haipipe-display-poster
+description: "Render a conference poster (article + tcbposter LaTeX → A0/A1 PDF + editable PPTX + SVG) from a CONTENT PLAN — a markdown plan plus a figures folder, per ref/content-plan-spec.md. Source-agnostic: it never opens a paper. Use when user says \"做海报\", \"制作海报\", \"conference poster\", \"make poster\", \"生成poster\", \"poster session\", or hands over a poster content plan to lay out. To build one from a compiled paper, run /paper-poster — it extracts the plan, then calls this."
+argument-hint: "[content-plan.md or venue overrides]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
-  summary: "Generate a conference poster (article + tcbposter LaTeX → A0/A1 PDF + editable PPTX + SVG) from a compiled paper."
+  version: "0.2.0"
+  last_updated: "2026-07-24"
+  summary: "Content plan + figures/ → tcbposter → A0/A1 PDF + PPTX + SVG. Renders what it is given; never reads the source it came from."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# Paper Poster: From Paper to Conference Poster
+# Display: Poster Renderer
 
-Generate a conference poster from: **$ARGUMENTS**
+Render a poster from: **$ARGUMENTS**
 
 ## Context
 
-This skill runs **after** Workflow 3 (`/paper-writing`).
-It takes a compiled paper and generates a print-ready poster for conference poster sessions.
-The poster extracts key content from the paper — it does **not** dump the full paper text onto a poster.
+This is a **renderer**. It takes a finished **content plan** — a markdown file plus a
+folder of figures, shaped per [`../../ref/content-plan-spec.md`](../../ref/content-plan-spec.md) —
+and lays it out as a print-ready poster.
 
-Unlike papers (dense prose, 8-15 pages), posters are **visual-first**: one page, 4 columns, bullet points only, figures dominant.
+**It never opens the source the content came from.** No `main.tex`, no `sections/*.tex`,
+no assumption that a paper exists anywhere. A paper, a grant application, a project
+write-up, or a plan you typed by hand all render the same way. Deciding *what* goes on
+the poster already happened upstream; this skill decides *how it looks*.
+
+- From a compiled paper → run **`/paper-poster`**, which extracts the plan and then calls this.
+- Already have a plan → run this directly.
+
+Unlike papers (dense prose, 8-15 pages), posters are **visual-first**: one page, 3-4 columns, bullet points only, figures dominant.
 A good poster tells the story in 60 seconds.
 
 ## Constants
@@ -35,7 +43,9 @@ A good poster tells the story in 60 seconds.
 - **COLUMNS = 4** — Number of content columns.
   Typical: 4 for landscape A0 (IMRAD), **3 for portrait A0** (research consensus), 2 for portrait A1.
   Portrait A0 should NEVER use 4 columns — text becomes too narrow and unreadable.
-- **PAPER_DIR = `paper/`** — Directory containing the compiled paper (main.tex + figures/).
+- **PLAN = `poster-content-plan.md`** — The content plan to render. Shape: [`ref/content-plan-spec.md`](../../ref/content-plan-spec.md).
+  `venue`, `size`, `orientation`, `columns` declared inside the plan **override** the constants above.
+- **FIGURES_DIR = `figures/`** — Folder holding every image the plan names. A `figure:` with no matching file is an error, not a guess.
 - **OUTPUT_DIR = `poster/`** — Output directory for all poster files.
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for poster review.
 - **AUTO_PROCEED = false** — At each checkpoint, **always wait for explicit user confirmation**.
@@ -340,22 +350,30 @@ Similarly, `\rowcolor` in tables should use 15% intensity: `\rowcolor{primary!15
 
    **If LaTeX is NOT installed**, follow the install recipe in [`ref/texlive-setup.md`](ref/texlive-setup.md) — Homebrew options, the no-sudo user-directory TeX Live install, and the required `tlmgr` packages — then re-run the check above.
 
-2. **Verify paper exists**:
+2. **Verify the content plan and its figures**:
    ```bash
-   ls $PAPER_DIR/main.tex || ls $PAPER_DIR/main.pdf
-   ls $PAPER_DIR/sections/*.tex
-   ls $PAPER_DIR/figures/
+   ls $PLAN                       # the plan must exist
+   ls $FIGURES_DIR                # and the folder it draws figures from
+   grep -n '^figure:' $PLAN       # every named figure must be present below
    ```
+
+   Check the plan parses into the shape in [`ref/content-plan-spec.md`](../../ref/content-plan-spec.md):
+   a title, `## Stat callouts`, and `### ` boxes each carrying a `col:`. Then confirm every
+   `figure:` names a file that is actually in `$FIGURES_DIR`.
+
+   **⛔ If anything is missing, stop and say exactly what.** Do not go looking for a paper,
+   do not infer content from a source document, do not invent a figure. This skill renders
+   the plan it was handed; filling gaps is upstream's job (`/paper-poster` for a paper).
 
 3. **Backup existing poster**: if `poster/` exists, copy to `poster-backup-{timestamp}/`
 
 4. **Create output directory**: `mkdir -p poster/figures`
 
-5. **Copy figures** to poster directory:
+5. **Copy figures** into the poster directory:
    ```bash
    # IMPORTANT: Use cp, NOT ln -sf (symlinks)
    # pdflatex often fails to resolve symlinks across directories
-   cp paper/figures/selected_figure.pdf poster/figures/
+   cp $FIGURES_DIR/<figure named in the plan> poster/figures/
    ```
 
    > ⚠️ **Never use symlinks** for poster figures. `pdflatex` cannot reliably follow symlinks across directories. Always `cp` the actual files.
@@ -374,75 +392,70 @@ Similarly, `\rowcolor` in tables should use 15% intensity: `\rowcolor{primary!15
 
    > ⚠️ **python-pptx CANNOT embed PDF images.** You MUST convert to PNG first. This is a hard limitation of the OOXML format. Always generate PNG copies at 300 DPI during setup.
 
-7. **Detect CJK**: if paper contains Chinese/Japanese/Korean text, set ENGINE to `xelatex`
+7. **Detect CJK**: if the plan contains Chinese/Japanese/Korean text, set ENGINE to `xelatex`
 
 8. **Check for resume**: read `poster/POSTER_STATE.json` if it exists
 
-### Phase 1: Content Extraction
+### Phase 1: Read the Content Plan
 
-Read each section from `paper/sections/*.tex` and extract poster-appropriate content:
+The selection already happened upstream — **this skill does not choose what goes on the
+poster.** Parse `$PLAN` into the boxes it declares and carry them straight into layout:
 
-**Extraction rules** — a poster shows ~30-40% of the paper's content:
+- **Header** — `title`, `authors`, and the overrides (`venue`, `size`, `orientation`,
+  `columns`, `link`). Plan values win over the Constants above.
+- **`## Stat callouts`** — 3-4 headline numbers. These span all columns and *replace an
+  abstract paragraph entirely*; a poster with a wall of abstract text fails the
+  60-second test.
+- **`### ` boxes** — each carries `col:` (which column), an optional `figure:` +
+  `caption:`, an optional `stats:` table, and its bullets. Render them in the order given.
 
-| Paper Section | Poster Extraction | Target Length |
-|---------------|-------------------|---------------|
-| Abstract | **Skip** — replace with 2-4 big-number stat callout boxes spanning all columns | 0 words (numbers only) |
-| Introduction | Motivation: 2-3 bullet points + numbered contribution list (4 items) | 120-160 words |
-| Method | 1 hero architecture figure + key equations + 3-5 bullet points | 80-120 words |
-| Experiments | Dataset details + main result figures + numeric stat tables + ablation | 150-200 words |
-| Conclusion | 3-4 key findings + 2-3 next steps | 60-80 words |
-| Related Work | **Skip entirely** — no space on poster | 0 |
-
-**Total target: 300-500 words** (excluding figure captions and stat callout numbers).
-
-> ⚠️ **No abstract paragraph on poster.** Replace with a stat banner: 3-4 large-number callout boxes showing headline results. This is the single highest-impact change for 60-second comprehension.
-
-**Content-authoring rules**:
-- **Do NOT hallucinate citations.** Use only references from the paper's bibliography.
-- **Include a QR code placeholder** or code link for the paper/code repository.
-- **De-AI polish**: remove watch words (delve, pivotal, underscore, noteworthy, leverage, facilitate, harness).
-
-**Output**: `poster/POSTER_CONTENT_PLAN.md` — structured markdown showing exactly what goes where, with word counts per box.
+**Do not rewrite the prose.** Word budgets, citation honesty, and de-AI polish were the
+plan author's job (see [`ref/content-plan-spec.md`](../../ref/content-plan-spec.md)). If a
+box overruns its column, report it at the checkpoint rather than silently trimming — the
+fix belongs in the plan.
 
 **🚦 Checkpoint:**
 
 ```
-📋 Poster content plan ready:
-- Title: [paper title]
+📋 Content plan read:
+- Title: [title]
 - Venue: [VENUE] ([POSTER_SIZE] [ORIENTATION])
 - Layout: [COLUMNS] columns, rows=20
-- Figures selected: [N] figures
-- Boxes per column: Col1=[N], Col2=[N], Col3=[N], Col4=[N]
-- Estimated word count: [N] words
+- Stat callouts: [N]
+- Boxes: Col1=[N], Col2=[N], Col3=[N], Col4=[N]
+- Figures referenced: [N] (all present in FIGURES_DIR ✓)
+- Prose word count: [N]
 
-Proceed with this layout? Or adjust content selection?
+Proceed with this layout?
 ```
 
 **⛔ STOP HERE and wait for user response.**
 
 **State**: Write `POSTER_STATE.json` with `phase: 1`.
 
-### Phase 2: Figure Selection & Layout
+### Phase 2: Figure Placement & Layout
 
-1. **Inventory** all figures in `paper/figures/`:
+**Which figures appear was decided in the plan** — every `figure:` line names one, and
+Phase 0 already checked each exists. This phase places them, it does not re-select them.
+
+1. **Resolve** each `figure:` named in the plan against `$FIGURES_DIR`:
    ```bash
-   ls -la paper/figures/*.{pdf,png,jpg,svg} 2>/dev/null
+   ls -la $FIGURES_DIR/*.{pdf,png,jpg,svg} 2>/dev/null
    ```
 
-2. **Rank by poster importance**:
-   - **Tier 1 (must include)**: Architecture/method overview diagram, main results plot
-   - **Tier 2 (include if space)**: Ablation bar chart, qualitative examples, experimental paradigm
-   - **Tier 3 (skip)**: Appendix figures, supplementary plots, tables-as-figures
+2. **Copy** them into `poster/figures/` (`cp`, never symlink) + **convert PDF→PNG** at 300 DPI for PPTX
 
-3. **Select top 3-5 figures** that fit the 4-column layout
+3. **Place** each into the box that named it, in the column that box declared (`col:`)
 
-4. **Copy figures** to poster directory + **convert PDF→PNG** for PPTX
-
-5. **Design column layout** — 4-column IMRAD:
+4. **Lay out the columns** from the plan's box order. The classic IMRAD arrangement, when
+   the plan follows it:
    - **Col 1**: Background & Motivation + Contributions + References & QR
    - **Col 2**: Dataset & Paradigms (fig) + Computational Models (equations)
    - **Col 3**: Architecture (fig) + Result 1 (fig + stat table)
    - **Col 4**: Result 2 (fig + stat table) + Ablation + Conclusion
+
+   A plan that groups its boxes differently is rendered as given — the `col:` values are
+   the layout, not a suggestion.
 
 ### Phase 3: Generate Poster LaTeX
 

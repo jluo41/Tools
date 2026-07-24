@@ -16,7 +16,7 @@ board（板）是干什么用的：一个话题下面有几个还没定的问题
 
 **QC · Index and structure** —— 板的骨架：板放在哪儿、叫什么名字（QC1）；首页那张清单长什么样、怎么三秒看出该动哪题（QC2）。注意跟 QA4 分工：QA4 管**点进去之后的单题页**，QC2 管**还没点进去的首页**。
 
-**QD · Working on the board** —— 现场层：能不能直接在板上干活。一题一 session 的规则（QD1）、受限的网页抽屉（QD2）、不受限的真终端（QD3）、组标题图标让 LLM 配（QD4）、作用域放大到整块板的 agent（QD5）。
+**QD · Working on the board** —— 现场层：能不能直接在板上干活。一题一 session 的规则（QD1）、受限的网页抽屉（QD2）、不受限的真终端（QD3）、组标题图标让 LLM 配（QD4）、作用域放大到整块板的 agent（QD5）、页面实时更新怎么做（QD6）。
 
 **QE · Sharing the board** —— 放出去给别人看（QE1）。板一直号称是给第二个人看的，但至今只活在本机 `127.0.0.1`。
 
@@ -42,6 +42,7 @@ QD2-chat-sdk.md
 QD3-chat-terminal.md
 QD4-topicicon.md
 QD5-boardagent.md
+QD6-liveupdate.md
 ### QE · Sharing the board
 QE1-hosting.md
 
