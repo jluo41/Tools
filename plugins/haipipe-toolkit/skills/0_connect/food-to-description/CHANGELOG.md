@@ -2,6 +2,11 @@ CHANGELOG — food-to-description
 ================================================================================
 
 
+0.3.1 — 2026-07-24
+--------------------------------------------------------------------------------
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 3.1.0; older entries below keep their original numbers).
+
 3.1.0 — 2026-07-12
 --------------------------------------------------------------------------------
 

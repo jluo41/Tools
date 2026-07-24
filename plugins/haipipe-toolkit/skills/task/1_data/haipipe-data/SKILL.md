@@ -4,7 +4,7 @@ description: "Run any Stage 1-4 data pipeline work: parses intent (stage + funct
 argument-hint: "[stage] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-07-08"
   summary: "Run any Stage 1-4 data pipeline work."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -4,7 +4,7 @@ description: "Review type specialist for the discovery layer: analyze across sou
 argument-hint: "[<discovery-folder> | \"<claim-or-topic>\"]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-07-03"
   summary: "Type specialist owning Review: judge -> verdict.md, synthesize -> landscape.md. Home of the Review Output Contract."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

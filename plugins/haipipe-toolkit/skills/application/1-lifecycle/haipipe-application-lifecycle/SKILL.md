@@ -4,7 +4,7 @@ description: "Orchestrator for the intervention structure lifecycle (1-lifecycle
 argument-hint: "[stage-verb|ladder] [intervention-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "4.4.0"
+  version: "0.4.4"
   last_updated: "2026-07-19"
   summary: "Routes intervention structural work across the venue-free/venue-aligned boundary: seed + the ladder (1a-1d) are venue-FREE, the venue pin gates stages 3-5, and pitch/narrative/display/section-edit rewrite on retarget. History: ./CHANGELOG.md."
 ---

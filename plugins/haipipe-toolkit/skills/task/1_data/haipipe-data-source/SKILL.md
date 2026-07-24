@@ -4,7 +4,7 @@ description: "Stage 1 (Source) specialist: builds/runs/reviews SourceFn, inspect
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-07-08"
   summary: "Stage 1 (Source) specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

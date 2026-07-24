@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.3] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.3.0; older entries below keep their original numbers).
+
 ## [1.3.0] — 2026-07-08
 
 - skill-diagnose fixes: CaseSet path now shows the optional `@i{i}n{n}` partition level (all real multi-partition stores have it); Recipe/config locations -> task-folder configs/; dead test block removed from templates/config.yaml; `scripts.haistep.case` -> `scripts.haistepcli.case`; CHANGELOG reordered newest-first.

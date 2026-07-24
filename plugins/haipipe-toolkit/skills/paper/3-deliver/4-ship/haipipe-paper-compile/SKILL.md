@@ -4,7 +4,7 @@ description: "Compile LaTeX paper to PDF, fix errors, and verify output. Use whe
 argument-hint: "[paper-directory]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Compile LaTeX paper to PDF, fix errors, and verify output."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

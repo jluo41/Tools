@@ -4,7 +4,7 @@ description: Search and analyze research papers, find related work, summarize ke
 argument-hint: "[paper-topic-or-url]"
 allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp__zotero__*, mcp__obsidian-vault__*
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Search and analyze research papers, find related work, summarize key ideas."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -4,7 +4,7 @@ description: "Zero-context verification that every number, comparison, and scope
 argument-hint: "[paper-directory]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-05-31"
   summary: "Zero-context verification that every number, comparison, and scope claim in the paper matches raw result files."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

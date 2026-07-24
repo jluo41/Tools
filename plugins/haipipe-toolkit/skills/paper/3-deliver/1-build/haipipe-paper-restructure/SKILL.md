@@ -4,7 +4,7 @@ description: "Migrate an existing paper into the gold-standard folder layout (np
 argument-hint: "[paper-dir] [--plan-only] [--repair]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-06-04"
   summary: "Existing paper → gold layout; prose byte-identical, compile verified."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

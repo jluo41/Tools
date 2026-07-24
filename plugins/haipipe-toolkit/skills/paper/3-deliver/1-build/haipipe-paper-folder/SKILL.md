@@ -2,7 +2,7 @@
 name: haipipe-paper-folder
 description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + four empty container dirs (0-lifecycle, 0-displays, 1-rounds, 1-probes). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
 metadata:
-  version: "4.0.1"
+  version: "0.4.0"
   last_updated: "2026-07-14"
   summary: "Minimal quick paper-folder scaffold (README + STATUS + .gitignore + empty 0-lifecycle/0-displays/1-rounds/1-probes/); stage files absent-until-written; manuscript machinery is an on-request upgrade. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

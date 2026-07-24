@@ -4,7 +4,7 @@ description: "Stage 0' (raw cohort) specialist: builds a business-readable pictu
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-07-08"
   summary: "Stage 0' (raw cohort) specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

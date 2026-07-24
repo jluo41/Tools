@@ -4,7 +4,7 @@ description: "Search type specialist for the discovery layer: find AND read sour
 argument-hint: "[<discovery-folder> | \"<question>\"]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-07-08"
   summary: "Type specialist owning Search: find + read sources -> sources.md + notes.md. Channel diversity mandatory: preprint channel + journal-index channel every run (OpenAlex/Crossref when S2 rate-limits); top-venue pass in full-mode novelty; coverage declaration in the sources.md preamble."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

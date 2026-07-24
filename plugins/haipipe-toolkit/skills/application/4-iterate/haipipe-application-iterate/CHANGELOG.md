@@ -4,6 +4,10 @@ haipipe-application-iterate — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.2.0] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.0.0; older entries below keep their original numbers).
+
 ## [2.0.0] — 2026-07-17
 
 - Removed the `Integration with insight` write-back section and the risk-profile insight sentence; deployment findings route to round triage only (insight KB retired as a write-back target).

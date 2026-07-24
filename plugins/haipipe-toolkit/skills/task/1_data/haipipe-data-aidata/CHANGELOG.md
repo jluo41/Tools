@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.4] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.4.0; older entries below keep their original numbers).
+
 ## [1.4.0] — 2026-07-08
 
 - skill-diagnose fixes: documented store layout corrected from `{aidata_name}/@{aidata_version}/` to the real `{ParentSetName}/@v{N}AIData-{aidata_name}/` (concepts + SKILL + template; verified against all 4 on-disk sets); split-name note added (config-driven; shipped MIMIC uses train/validation/test); Recipe location -> task-folder configs/; dead test block removed; `scripts.haistep.aidata` -> `scripts.haistepcli.aidata`; CHANGELOG reordered newest-first.

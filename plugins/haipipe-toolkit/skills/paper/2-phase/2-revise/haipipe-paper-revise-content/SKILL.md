@@ -4,7 +4,7 @@ description: "Review and edit prose CONTENT at section → paragraph → weave �
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.4.0"
+  version: "0.1.4"
   last_updated: "2026-07-19"
   summary: "REVISE worker: edit prose CONTENT at section->¶->weave->sentence, change directly + leave why-comments. Carries the ¶-flow weave step (arc/hinges/rhythm, ref/weaving.md). Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

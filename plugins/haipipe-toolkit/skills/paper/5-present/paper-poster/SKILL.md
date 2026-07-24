@@ -4,7 +4,7 @@ description: "Generate a conference poster (article + tcbposter LaTeX → A0/A1 
 argument-hint: "[paper-directory-or-venue]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Generate a conference poster (article + tcbposter LaTeX → A0/A1 PDF + editable PPTX + SVG) from a compiled paper."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

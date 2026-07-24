@@ -4,7 +4,7 @@ description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: read
 argument-hint: "[from-buffer <paper_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "6.1.0"
+  version: "0.6.1"
   last_updated: "2026-07-19"
   summary: "The paper's PROBE-phase worker — runs ①ORGANIZE→②MATCH→③DISPATCH→④POINT→⑤INTERPRET for a paper (all five; ①② came back here from DRAFT on 2026-07-20). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is owned by ../../../../probe/haipipe-probe/SKILL.md. This file is only the paper-side deltas. History: ./CHANGELOG.md."
 ---

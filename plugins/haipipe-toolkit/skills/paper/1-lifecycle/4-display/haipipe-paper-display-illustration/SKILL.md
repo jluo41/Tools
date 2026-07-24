@@ -4,7 +4,7 @@ description: "AI-illustration renderer of the display family: generate publicati
 argument-hint: "[description-or-method-file]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-06-22"
   summary: "AI-illustration renderer of the display family (Codex native image generation)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

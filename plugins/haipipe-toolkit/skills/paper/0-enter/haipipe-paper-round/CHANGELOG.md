@@ -4,6 +4,10 @@ haipipe-paper-round — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.1.0] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.0.1; older entries below keep their original numbers).
+
 ## 1.0.1 — 2026-07-19
 
 - WIKI RETIREMENT — the retired wiki folder's `07-paper-rounds.md` (5 referrers) absorbed here as the **Rounds contract** section; this skill is now its ONE home, and every referrer points at the section instead of the file.

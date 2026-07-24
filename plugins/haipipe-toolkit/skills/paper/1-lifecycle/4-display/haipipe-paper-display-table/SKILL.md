@@ -4,7 +4,7 @@ description: "Render a publication-quality LaTeX table from an aggregated data f
 argument-hint: "[table-spec-or-data-path]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-06-22"
   summary: "Render publication-quality LaTeX tables from aggregated data files into a paper display unit."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

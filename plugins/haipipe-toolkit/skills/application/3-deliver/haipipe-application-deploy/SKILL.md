@@ -4,7 +4,7 @@ description: "Deployment specialist for the intervention lifecycle. STUB. Packag
 argument-hint: "[variant-id] [--channel sms|dashboard|email] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-07-06"
   summary: "Deployment specialist (STUB) — packages a reviewed artifact for delivery through its channel. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

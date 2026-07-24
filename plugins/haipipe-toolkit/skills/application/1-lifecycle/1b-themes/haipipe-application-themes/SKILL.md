@@ -4,7 +4,7 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1b-themes/1b
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.7.0"
+  version: "0.2.7"
   last_updated: "2026-07-19"
   summary: "Themes stage (rung 1b of the venue-FREE 1a–1d evidence ladder; the I rung) — grounded pattern-clusters extracted from 1a D ids + discovery sources, each theme carrying candidate-claim hooks that rung 1c consumes; ungrounded patterns go to Parked. Full D-consumption + counter-hunt; light discovery PROBE via 1-probes/. History: ./CHANGELOG.md."
 ---

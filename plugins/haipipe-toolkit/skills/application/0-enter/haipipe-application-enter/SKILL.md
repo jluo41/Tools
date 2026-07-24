@@ -4,7 +4,7 @@ description: "Open the Intervention Console for an intervention folder. Use for 
 argument-hint: "[intervention-path] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "2.3.1"
+  version: "0.2.3"
   last_updated: "2026-07-19"
   summary: "Intervention Console (mirrors the Paper Console): resolve the intervention root, derive state from disk (not stored status), render an open-needs dashboard (frontier + maturity + venue/audience + claim/display/round gaps + releasable probes + loopback), record session state in .intervention-console.yaml, and route free-form follow-up through the lifecycle in copilot mode. Get-or-create scaffolds a missing path (confirm-gated). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

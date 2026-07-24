@@ -4,7 +4,7 @@ description: "Modify specialist for haipipe-project. Reorganizes files to fix st
 argument-hint: "[function] [project_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Modify specialist for haipipe-project."
   changelog:

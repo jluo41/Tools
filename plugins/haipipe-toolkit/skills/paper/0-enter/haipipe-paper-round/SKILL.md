@@ -4,7 +4,7 @@ description: "Manage the paper's 1-rounds/ working-memory layer: dated work roun
 argument-hint: "[enter|new|triage|apply|close] [paper-dir] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.1"
+  version: "0.1.0"
   last_updated: "2026-07-19"
   summary: "Rounds layer: enter/new/triage/apply/close over 1-rounds/vYYMMDD/. Owns the 1-rounds/ contract — folder shape, file semantics, round lifecycle, triage targets, dashboard rule. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

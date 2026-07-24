@@ -4,7 +4,7 @@ description: Verify research idea novelty against recent literature. Use when us
 argument-hint: "[method-or-idea-description]"
 allowed-tools: WebSearch, WebFetch, Grep, Read, Glob, mcp__codex__codex
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Verify research idea novelty against recent literature."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

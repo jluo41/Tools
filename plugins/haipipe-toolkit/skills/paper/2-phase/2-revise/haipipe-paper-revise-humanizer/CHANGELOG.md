@@ -4,6 +4,10 @@ haipipe-paper-revise-humanizer — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.2.3] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.3.0; older entries below keep their original numbers).
+
 ## [2.3.0] — 2026-07-07
 
 Changed (JL: "Could you copy the content from refences to our skillset? Our skill should never refer to the references content.")

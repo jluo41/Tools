@@ -4,7 +4,7 @@ description: "CHECK-phase evidence verifier (internal, conditionally dispatched)
 argument-hint: "[section-or-stage] [paper-path] [--axis citation|values|display]"
 allowed-tools: Bash, Read, Grep, Glob, WebSearch, WebFetch
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-07-19"
   summary: "CHECK-phase evidence verifier: the pre-submission walk over citations, numbers, and displays. Three axes per citation (existence · metadata · context), re-derivation for every number, claim-match for every display. Human-paced by design — one item at a time, one approval per fix, no batching. Reports and seeds > CHECK: comments; REVISE applies the fixes. History: ./CHANGELOG.md."
 ---

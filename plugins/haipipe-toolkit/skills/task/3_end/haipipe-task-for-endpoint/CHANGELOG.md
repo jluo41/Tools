@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.3] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.3.0; older entries below keep their original numbers).
+
 ## [2.3.0] — 2026-07-08
 
 - skill-diagnose fixes: config-seed build pointer -> endpoint fn_develop task folder (was unqualified retired code-dev path); ref/inference-perf-notes.md retitled as the knowledge base behind /haipipe-end profile (kept — endpointset fn-3-profile reads it; task-side profiling scope was retired in 2.2.0).

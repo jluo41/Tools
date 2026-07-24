@@ -4,7 +4,7 @@ description: "Audit a paper folder against the gold-standard layout contract (np
 argument-hint: "[paper-dir]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.1.1"
+  version: "0.1.1"
   last_updated: "2026-07-19"
   summary: "Conformance audit for the gold-standard paper folder layout; report-only."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

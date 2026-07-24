@@ -4,7 +4,7 @@ description: "Cross-stage transport specialist: pushes/pulls cohort assets betwe
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-07-08"
   summary: "Cross-stage transport specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

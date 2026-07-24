@@ -4,7 +4,7 @@ description: "Post-deploy iteration for the intervention lifecycle. Ingests A/B 
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
+  version: "0.2.0"
   last_updated: "2026-07-17"
   summary: "Post-deploy iteration — ingests A/B results and engagement metrics, opens a round, triages findings back into the lifecycle. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

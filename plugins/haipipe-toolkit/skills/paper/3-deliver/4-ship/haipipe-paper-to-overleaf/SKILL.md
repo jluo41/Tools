@@ -4,7 +4,7 @@ description: "Two-way sync between a local paper directory and an Overleaf proje
 argument-hint: "[setup <project-id> | pull | push | status]"
 allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write
 metadata:
-  version: "1.1.1"
+  version: "0.1.1"
   last_updated: "2026-07-19"
   summary: "Two-way sync between a local paper directory and an Overleaf project via the Overleaf Git bridge (Premium feature)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

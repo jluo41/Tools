@@ -4,7 +4,7 @@ description: "Stage 0 of the intervention lifecycle (venue-FREE). Answers 'why m
 argument-hint: "[intervention-path] [intent...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "6.1.0"
+  version: "0.6.1"
   last_updated: "2026-07-19"
   summary: "Seed stage (stage 0, venue-FREE ROOT of the DIKW ladder) — states why this intervention might work before evidence is mature: opportunity, impact, audience, channel hunch, mechanism. DRAFT may WebSearch to orient; PROBE is FEASIBILITY-light (novelty + external-data obtainable); internal-data needs FORWARD to the ladder as [FORWARD -> CLAIMS] pointers. History: ./CHANGELOG.md."
 ---

@@ -4,7 +4,7 @@ description: "Read-only specialist for haipipe-project. Reviews project structur
 argument-hint: "[function] [project_id_or_path] [args...]"
 allowed-tools: Read, Grep, Glob, Bash
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Read-only specialist for haipipe-project."
   changelog:

@@ -2,7 +2,7 @@
 name: rebuttal-response
 description: Use when responding to journal or conference reviewer comments and you need a structured author response, aligned manuscript edits, and clear decisions about when to clarify, add evidence, concede, or respectfully disagree.
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Use when responding to journal or conference reviewer comments and you need a structured author response, aligned manuscript edits, and clear decisions about when to clarify, add evidence, concede, or respectfully disagree."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

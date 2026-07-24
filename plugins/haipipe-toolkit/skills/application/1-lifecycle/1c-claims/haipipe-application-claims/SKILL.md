@@ -4,7 +4,7 @@ description: "Stage orchestrator for rung 1c of the venue-FREE evidence ladder (
 argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "7.6.0"
+  version: "0.7.6"
   last_updated: "2026-07-19"
   summary: "Claims stage (rung 1c of the venue-FREE 1a–1d evidence ladder; the K rung) — the ONLY home of a claim's status (supported | weak | GAP, from a judged artifact, never intuition; Consumes 1b theme hooks into a claim ledger + evidence campaign, gives each primary a Rival + refute-capable probe, and reaches for evidence via the PROBE phase (questions raised as entries in 1-probes/). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). History: ./CHANGELOG.md."
 ---

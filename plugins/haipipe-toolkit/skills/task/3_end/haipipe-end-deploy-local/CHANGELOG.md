@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.4] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.4.0; older entries below keep their original numbers).
+
 ## [1.4.0] — 2026-07-08
 
 - skill-diagnose fixes: platforms/ prefix on all runnable platform paths (incl. scripts/serve_local.py docstring); uniform input-contract note (folder canonical; .tar.gz = wire form).

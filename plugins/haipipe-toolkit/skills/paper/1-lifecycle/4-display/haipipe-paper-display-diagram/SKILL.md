@@ -4,7 +4,7 @@ description: "Generate deterministic publication-quality architecture, workflow,
 argument-hint: "[description-of-diagram]"
 allowed-tools: Bash(*), Read, Write, Edit
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-06-22"
   summary: "Deterministic vector-diagram renderer of the display family (JSON/FigureSpec -> editable SVG)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

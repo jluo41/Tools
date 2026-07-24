@@ -2,7 +2,7 @@
 name: academic-researcher
 description: Use when conducting literature reviews, summarizing papers, comparing methodologies, identifying research gaps, or supporting scholarly writing across disciplines.
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Use when conducting literature reviews, summarizing papers, comparing methodologies, identifying research gaps, or supporting scholarly writing across disciplines."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

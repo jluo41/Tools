@@ -4,7 +4,7 @@ description: Generate and rank research ideas given a broad direction. Use when 
 argument-hint: "[research-direction]"
 allowed-tools: Bash(*), Read, Write, Grep, Glob, WebSearch, WebFetch, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.0.1"
+  version: "0.1.0"
   last_updated: "2026-07-14"
   summary: "Generate and rank research ideas given a broad direction. Composes onward into the executors' `qa` verb (/haipipe-discovery qa, /haipipe-task qa) — the retired probe-gateway pointer is gone."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -4,6 +4,10 @@ haipipe-application-draft — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.1.5] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.5.0; older entries below keep their original numbers).
+
 ## 1.5.0 — 2026-07-19 — self-review, the constitution pointer, and a top-level gate
 
 From `_console/closed/260719-01-DRAFT-RAISE-QUESTIONS.md` findings A1 A2 A3 A6 A7 · B3 B7 · C2 C5 C6 (JL: "现在我们以paper为主，然后apply到application上去" — paper landed first; this is the port).

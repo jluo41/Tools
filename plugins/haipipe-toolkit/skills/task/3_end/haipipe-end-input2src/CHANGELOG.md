@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.1] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.1.0; older entries below keep their original numbers).
+
 ## [2.1.0] — 2026-07-08
 
 - skill-diagnose fixes: concepts.md caught up with the v2.0.0 platform-specific contract — "two supported formats in one Fn" replaced by one-Fn-per-platform (--platform, default sagemaker); "NOT inside MetaDict" contradiction fixed (top-level AND mirrored into MetaDict); phantom DatabricksV1 marked placeholder; entry-point wording qualified (Step 2, after TrigFn). Records the 7-08 builder-dir edit.

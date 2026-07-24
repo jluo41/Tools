@@ -4,7 +4,7 @@ description: "REVISE-phase placement worker (internal). Runs FIRST in the revise
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-07-19"
   summary: "REVISE-phase placement worker: substitute landed answers into the prose and discharge their brackets. Runs BEFORE content and humanizer, so those workers see final text rather than placeholders. A placeholder whose answer has not landed stays put and is flagged. History: ./CHANGELOG.md."
 ---

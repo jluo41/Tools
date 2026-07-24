@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.3] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.3.0; older entries below keep their original numbers).
+
 ## [1.3.0] — 2026-07-08
 
 - skill-diagnose fixes: store paths corrected to {endpoint_name}/ (no Endpoint- prefix exists on disk); dashboard external/ demoted required->conditional (absent from all real XGB sets — dashboard flagged every real endpoint broken); fn-1-package layout restatement -> pointer to 0-overview per its own no-restate rule; fn-3-profile ProjA example -> illustrative; fn_endpoint noted as 5 Fn-types + fn_example helper; platforms/ prefix.

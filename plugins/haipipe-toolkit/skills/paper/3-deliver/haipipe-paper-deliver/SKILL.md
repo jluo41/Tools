@@ -4,7 +4,7 @@ description: "Orchestrator for the paper delivery group (3-deliver) — everythi
 argument-hint: "[build|audit|polish|ship | <leaf-verb>] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.1"
+  version: "0.1.0"
   last_updated: "2026-07-19"
   summary: "Router for 3-deliver, the artifact side of the paper. Four sub-groups by verb-intent: 1-build (scaffold/restructure/conform/folder — structure, zero prose), 2-audit (claim-audit/reviewer/optimizer — read-only findings), 3-polish (polish: consistency→format→typeset — mutate the draft), 4-ship (compile/diffpdf/to-overleaf — produce & move). Also THE home of the Lifecycle TeX Quality Standard (self-contained preamble, real prose, Pn.Sm tags, compile-after-every-mutation). Mirror of haipipe-paper-lifecycle; the top router delegates delivery intents here. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

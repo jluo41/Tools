@@ -4,7 +4,7 @@ description: "CHECK phase worker (internal) -- the only human-involved phase, ru
 argument-hint: "[stage: seed|descriptions|themes|claims|advice|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.2.0"
+  version: "0.4.2"
   last_updated: "2026-07-17"
   summary: "The intervention's CHECK-phase worker and the only human gate — runs ./checks.sh + the probe-file checker (any ❌/FAIL blocks green), seeds > CHECK: threads in stage docs, writes the Gate Ledger row on approval. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

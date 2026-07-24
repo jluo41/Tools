@@ -4,7 +4,7 @@ description: "DRAFT phase worker (internal). Called by stage skills to produce t
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
 metadata:
-  version: "5.2.0"
+  version: "0.5.2"
   last_updated: "2026-07-19"
   summary: "DRAFT phase worker (internal). TWO outputs, not one: the stage's first-pass artifact, and the QUESTIONS it could not answer. Step 4a sweeps the prose through three lanes (citation/values/display) which REPORT holes; Step 4b RAISE+PLAN is the single pen -- it raises each `## Q-<Stage>-<n>` in the stage doc's Q-consumer AND authors its q-executor ENTRY in 1-probes/ (find-or-open, T0 JOIN before a new entry; route + bank + target; never `### a-executor`). Step 4c self-reviews draft + plan in a fresh context, then ONE gate reviews both. Each stage owns its own dispatch scope and craft; this worker points at its stage.md and never restates it. Inline WebSearch is drafting fuel only. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

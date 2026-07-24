@@ -2,7 +2,7 @@
 name: diagram-excalidraw
 description: Create Excalidraw diagram JSON files that make visual arguments. Use when the user wants to visualize workflows, architectures, or concepts.
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Create Excalidraw diagram JSON files that make visual arguments."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

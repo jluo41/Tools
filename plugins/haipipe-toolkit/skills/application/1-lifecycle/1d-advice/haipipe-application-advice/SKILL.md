@@ -4,7 +4,7 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1d-advice/1d
 argument-hint: "[intervention-path] [--deposit <Ann>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.9.0"
+  version: "0.1.9"
   last_updated: "2026-07-19"
   summary: "Advice stage (rung 1d of the venue-FREE 1a–1d evidence ladder; the W rung and the ladder's DELIVERABLE) — design advice, one A<n> per entry (exploit|explore role) derived from >=1 claim in the 1c ledger; counsel not mandate (venue-ALIGNED stages adopt or decline downstream); content-WHAT, distinct from the venue's channel-HOW Artifact Principles. History: ./CHANGELOG.md."
 ---

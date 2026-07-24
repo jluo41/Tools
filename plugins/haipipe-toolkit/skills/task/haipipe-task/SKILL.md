@@ -4,7 +4,7 @@ description: "Internal-execution EXECUTOR: runs the 4-phase lifecycle (Plan → 
 argument-hint: "[scope] [args...] | qa \"<question>\" [<task-folder>] [--check-only]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "6.3.0"
+  version: "0.6.3"
   last_updated: "2026-07-19"
   summary: "Build orchestrator: the 4-phase code lifecycle (Plan → Build → Execute → Report) for task-folders and task-groups, plus the `qa` question door. v6.x — the task layer is CONSUMER-UNAWARE, and a QA file is a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by), claimed at the qa gate's ③ decision and completed at Report. THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*. Full contract: fn/qa.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -4,7 +4,7 @@ description: "Per-individual endpoint inference test: loads one individual from 
 argument-hint: "--individual <id_or_path> [--endpoint-url URL] [--json]"
 allowed-tools: Bash, Read
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-07-04"
   summary: "Per-individual endpoint inference test."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

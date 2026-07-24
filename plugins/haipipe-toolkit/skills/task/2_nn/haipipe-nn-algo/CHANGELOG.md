@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.1] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.1.0; older entries below keep their original numbers).
+
 ## [1.1.0] — 2026-07-04
 
 - repoint 2 dangling layer-2 refs in ref/concepts.md to ../../haipipe-nn-tuner/ref/concepts.md; loss-ownership rule aligned with the family norm (loss inside forward() allowed; still no optimizer/training loop) — was contradicting SKILL.md and the TSCLM example (C9).

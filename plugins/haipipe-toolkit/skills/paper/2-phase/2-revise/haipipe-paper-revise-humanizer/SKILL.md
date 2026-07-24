@@ -4,7 +4,7 @@ description: "Remove AI-writing patterns from academic prose while preserving sc
 argument-hint: "[section-or-file] [--grant] [--venue <venue>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.3.0"
+  version: "0.2.3"
   last_updated: "2026-07-07"
   summary: "De-AI academic prose via 6-layer audit. Fully automatic. REVISE worker."
   source: "Based on AIScientists-Dev/academic-humanizer (MIT license). Catalog VENDORED at ./ref/pattern-catalog.md (upstream submodule under references/ is provenance only)"

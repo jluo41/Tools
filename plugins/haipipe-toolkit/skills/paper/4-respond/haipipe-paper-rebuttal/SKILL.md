@@ -4,7 +4,7 @@ description: "Submission rebuttal pipeline specialist (was: rebuttal). Parses ex
 argument-hint: "[paper-path-or-review-bundle]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.1.1"
+  version: "0.1.1"
   last_updated: "2026-07-14"
   summary: "Submission rebuttal pipeline specialist: parse external reviews, enforce coverage + grounding, draft a safe text-only rebuttal under venue limits, manage follow-up rounds. A supplementary experiment is raised as a question ENTRY and MATCHed against the bank before it is commissioned. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

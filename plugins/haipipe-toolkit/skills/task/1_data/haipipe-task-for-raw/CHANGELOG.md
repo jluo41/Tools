@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.4] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.4.0; older entries below keep their original numbers).
+
 ## [1.4.0] — 2026-07-08
 
 - Pattern 2 PROPAGATED into the operative files (v1.3.0 had added it to SKILL.md only): fn/scaffold.md gains Step 0 pattern gate + ⚡P2 deltas per step (A00 group shape, all-Spark, volume output aligned to the SourceFn cohort-slug, group-root README carve-out); ref/config-seed.yaml gains Pattern-2 execution/volume_path guidance and marks the local: block Pattern-1-only; ref/run-databricks-sh-template.sh sync hint marked "Pattern 1 only"; SKILL intro paragraph de-Pattern-1-ified (JL: "ok, go ahead and fix all of them" — approved recommended option A).

@@ -4,7 +4,7 @@ description: "Stage 5 of the intervention lifecycle (venue-gated: sectioned venu
 argument-hint: "[section-name-or-§N] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.4.0"
+  version: "0.5.4"
   last_updated: "2026-07-19"
   summary: "Section-edit stage (stage 5, venue-ALIGNED; sectioned venues only — report/dashboard spec): each section the VENUE PROFILE declares runs DRAFT → PROBE → REVISE → CHECK, editing prose in 0-sections/ with per-section scaffolds under 0-lifecycle/5-section-edit/{section}/. Its PROBE is a full-document probe — values + citation lanes per section, display lane where a section references units — raising gaps as entries in the flat pool 1-probes/PPNN_<topic>/. Keeps the comment→reply→apply convention and the six edit topics as REVISE/CHECK lenses. History: ./CHANGELOG.md."
 ---

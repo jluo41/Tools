@@ -2,7 +2,7 @@
 name: whoop-connect
 description: "Connect a Whoop wearable device to the bot. Guides the user step-by-step through creating a Whoop developer app, OAuth login, and daily sync setup. Use when the user says connect my whoop, link whoop, set up whoop, or /whoop-connect."
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Connect a Whoop wearable device to the bot."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

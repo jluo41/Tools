@@ -4,7 +4,7 @@ description: "Run any Stage 6 endpoint work: routes intent to the right speciali
 argument-hint: "[target_or_fn_or_verb] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-07-08"
   summary: "Run any Stage 6 endpoint work."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
