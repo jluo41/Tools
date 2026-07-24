@@ -73,6 +73,14 @@ Open a conversation right inside the page: it reads this question's content and 
       Verified: forcing Bash in restricted mode reports "Bash exists but is not enabled in this context".
 - [x] System language defaults to English
       CHAT_RULES / FULL_RULES both say "Answer in English by default"; the drawer UI is fully English.
+- [x] The drawer works through the console too (260724)
+      `haichat-inlab`'s `boards_api.py` relays `/_board/chat` (NDJSON stream), `/_board/answer`, `/_board/stop` to the workstation serve.py — verified end to end: a "Reply with exactly: RELAY OK" turn streamed `delta`/`done` lines through port 8093. One implementation; the console is only a pipe (`QE3`'s Law).
+- [ ] Align the drawer with the Claude Code VS Code extension (JL 260724)
+      Same engine underneath already (see Where we are). The affordances worth adopting, in order:
+      ① diff preview inside the permission prompt (the extension shows the proposed edit before you allow — the drawer names only tool + path);
+      ② @-file mentions (type `@` to pull a repo file into context);
+      ③ plan mode toggle (read-only planning turn before edits);
+      ④ checkpoints/rewind — parked; it fights the one-session-per-question LAW.
 - [ ] Long tasks
       Today one HTTP request waits start to finish. A ten-minute job will hit the timeout.
       (Note: NOT the same root as the old "writes hang" issue — that one was diagnosed and fixed, see Lesson.)
@@ -107,6 +115,17 @@ Usable. The `💬 Chat` you click on the page is this.
 - The three-step usage (JL's)
       ① open the drawer, unsaved comments sync first → ② click "🔧 handle N open comments" → ③ "↻ reload the page to see the result".
       The server regenerates the html after editing the md, so a reload suffices.
+
+**🧩 How the Claude Code VS Code extension relates (JL asked 260724)**
+
+- It is the same engine, not a different animal
+      The extension embeds the same local `claude` agent runtime the drawer drives through `claude_agent_sdk`: same login (`~/.claude/.credentials.json`), same session store (`~/.claude/projects/<cwd>/<sid>.jsonl`), same permission machinery. A drawer session and an extension session are the same kind of object — the LAW's "two front ends of one session" extends to it.
+- What the drawer already matches
+      allow-once / always / deny prompts (= the extension's permission dialog) · character streaming with a collapsible thinking block · model + effort pickers · per-turn cost · resumable sessions.
+- What the extension has that the drawer lacks
+      diff preview at the permission prompt · @-file mentions · plan mode · checkpoints/rewind · a session picker (deliberately NOT wanted here — one session per question is the LAW).
+- The alignment line to hold
+      adopt affordances, never a second engine: everything stays `serve.py` + `claude_agent_sdk`; the drawer copies the extension's UX where it makes the gate more informed (diff preview first).
 
 ## Files
 - `serve.py`
@@ -143,6 +162,8 @@ effort: how much thinking the model spends on one answer, five tiers low→max.
 >> CC0723: added both dropdowns, default opus 4.8 + high.
 > JL: how do I stop this chat? any smooth way?
 >> CC0723: the send key turns into ⏹ while running; clicking it raises the server-side flag and aborts browser-side.
+> JL: how do you think the claude code plugin in the vscode work? we want to align it with QD2?
+>> CC0724: it is the same engine underneath (local claude runtime, same credentials, same session jsonls) — so alignment is UX, not architecture. What it has that the drawer lacks: diff preview at the permission prompt, @-file mentions, plan mode, checkpoints. Adopt in that order; skip checkpoints (fights the one-session LAW). Full comparison in Where we are; new Items-to-Finish line added.
 
 ## Comments
 - [x] JL “open the terminal/chatbot with a prompt so they know which question and board” · 260723 1500
@@ -168,6 +189,7 @@ effort: how much thinking the model spends on one answer, five tiers low→max.
       but one question: is this output actually streaming out? It doesn't feel like it.
 
 ## Log
+260724 1350 · Console relay verified (boards_api.py pipes /_board/chat NDJSON through 8093 — "RELAY OK" streamed); VS Code extension alignment analyzed per JL's question: same engine, adopt diff-preview → @-mentions → plan mode, skip checkpoints
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
 260723 1745 · Opening orientation: system_prompt carries prime_context (board/question/what it asks/comments/file); verified it answers QB2

@@ -59,11 +59,20 @@ Besides the restricted drawer, can every Q also have **its own real terminal** �
       Startup sweeps TERM_DIR and kills last round's leftovers (not relying on exit signals — most reliable); exit reaps best-effort again;
       `/_board/killall` closes everything; closing the board page sends a `pagehide` beacon to release.
       Verified: planted a stale ttyd → started serve.py → it was killed and its socket removed.
+- [x] The terminal works through the console too (260724)
+      `boards_api.py` relays `POST /_board/term|release` and — the real pipe — `WS /_term/{key}/ws` (message-level, 'tty' subprotocol preserved) plus `GET /_board/asset/*` for the vendored xterm.js. Verified end to end through port 8093: term started (reused QD3's own session id), ttyd's stream arrived (the first frames carried the title op and the `claude --append-system-prompt` orientation line), release cleaned up. Chain: browser xterm ⇄ console ⇄ serve.py ⇄ ttyd ⇄ claude.
+- [ ] Make it smooth (JL 260724) — ①–④ built, ⑤⑥ open, live drop-test still owed
+      ① auto-reconnect with backoff — BUILT: the WS rebuilds on drops (1s→2s→…→15s, 6 tries), the terminal object survives so scrollback stays; the post-auth resize makes claude repaint. Not yet exercised against a real mid-session drop.
+      ② keepalive — BUILT: a same-size resize op every 30s keeps idle relays/proxies from reaping the pipe.
+      ③ fit on drawer resize — BUILT: ResizeObserver on the terminal host, debounced 150ms → fit → resize op.
+      ④ pre-warm on hover — BUILT (assets only): pointer on ⌨ pulls the 480KB xterm.js early, so the click is instant. Deliberately NOT pre-starting ttyd — POST /_board/term takes HOLD, and a hover that never becomes a click would lock the question (see the HOLD Lesson).
+      ⑤ grace-period release: closing the tab keeps ttyd alive ~10 min before reaping (pagehide kills it instantly today — --resume makes reopening lossless, this would make it fast). Open.
+      ⑥ optional: vendored xterm WebGL addon for big-scrollback rendering. Open.
 - [ ] The security boundary written down in black and white
       "Written down" means: who may connect, what they may touch, how auth works — all explicit and fixed, nothing vague in someone's head.
       The guardrails got stronger: ttyd listens only on unix socket files (no TCP port at all), reachable only through the 5599 proxy,
       keys must be registered 12-hex values. Still unsettled: ttyd itself does no auth — whoever reaches 5599 can use it;
-      before any outside exposure, auth must come first.
+      before any outside exposure, auth must come first. The console relay widens the audience the day inlab is exposed (`QE1`) — auth lands there first.
 
 ## Where we are
 Built, and it lives in the page. ⌨ in the drawer header enters the terminal; clicking again (💬) hands the session back.
@@ -220,6 +229,8 @@ AGPL-3.0: myrlin's license. Fine to use as a standalone tool; constraints bite w
       >> CC0723: you can — the UI blocked it, not the LAW. Different questions are different sessions; open more board tabs. (The ↗ pop-out button was later removed per JL.)
 
 ## Log
+260724 1410 · Smoothness ①–④ built into build.py's page JS (reconnect-with-backoff keeping scrollback · 30s keepalive resize op · ResizeObserver fit · hover pre-warms assets only, never HOLD); emitted JS node-checked; ⑤ grace release and ⑥ WebGL stay open
+260724 1350 · Console relay shipped and verified (boards_api.py: term/release POSTs, the /_term WS pipe, xterm assets — bytes flowed through 8093, session reused, released clean); JL asked "make it very smooth" → the six-point smoothness list added to Items to Finish
 260724 1242 · Translated to English (JL 260724: everything on the board in English); closed the two open comments — the 2038 "change this to English" one (this round IS that change) and the stray 1511 copy of the already-resolved trade-offs comment
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
 260723 1810 · Closed 4 comments: QD2 now has the three tiers (default full), the framing rewritten from "restricted vs. unrestricted" to

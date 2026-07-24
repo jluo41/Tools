@@ -1,6 +1,6 @@
 # Mounting a SPACE
 
-state: 🔴 OPEN
+state: 🟡 PARTIAL
 owner: CC
 method: copy the multi-store registry `console_api.py` already proved out (`_datasets()` / `?dataset=`)
 
@@ -22,54 +22,62 @@ A SPACE is a repo root — `Physician-SPACE`, `WellDoc-SPACE`. What JL wants: mo
 
 ## Diagram
 ```
-today                                  wanted
-──────────────────────────────         ──────────────────────────────
-serve.py --root <one repo root>        🏢 SPACE picker
-  ↓                                       Physician-SPACE / WellDoc-SPACE
-(this layer does not exist)  ❌            ↓
-  ↓                                    📋 boards in this SPACE   ← the new layer
-you must know the full URL                01-boardform-260722  15/19 ✅
-  /Tools/plugins/…/01-…/board.html         02-method-260722      3/8
-                                           ＋ open a new board
-                                             ↓
-                                       📖 board.html (already exists)
+shipped 260724 (boards_api.py + Boards view)          still missing
+──────────────────────────────────────────            ─────────────────────
+🏢 SPACE picker  /api/board/spaces                     ＋ open a new board
+   Physician-SPACE (2) · Scratch-SPACE (1)               from the web  ❌
+     ↓
+📋 boards in this SPACE  /api/board/boards?space=      a real 2nd SPACE
+   🧭 01-boardform-260722   ✅5 🟡9 🔴8 · 💬0            (WellDoc)  ❌
+   🧭 02-method-260722      ✅2 🟡4 🔴5 ⏸2 · 💬12
+     ↓ click
+📖 the real board.html   /_board/page/{space}/{path}
+   comments/discuss/resolve write back to the md
+   (chat/terminal → 501, workstation-only, QE3 Law)
 
-how boards are discovered: scan --root for **/diagram/*/board.md
+how boards are discovered: scan the space root for <unit>/diagram/*/board.md
+(os.walk + prune list + depth cap — no cache needed yet)
 ```
 
 ## Items to Finish
-- [ ] Decide how many SPACEs one service mounts
-      One SPACE per process (run N of them), or one service mounting N (needs a registry plus `?space=`).
-- [ ] Decide how boards are discovered
-      The convention today is `<owning unit>/diagram/<NN>-<topic>-<YYMMDD>/board.md` (settled in `QC1`).
-      Is scanning `**/diagram/*/board.md` enough? Does it stay fast on a large repo? Does it need a cache?
+- [x] Decide how many SPACEs one service mounts
+      One service mounts N (the `console_api.py` registry pattern, as planned): `INLAB_SPACES` (json) > `INLAB_SPACE_STORE` (parent dir) > `INLAB_SPACE_ROOT` (single) > walking up from the service collecting `*-SPACE` dirs. Shipped in `boards_api.py`.
+- [x] Decide how boards are discovered
+      Scan for `<unit>/diagram/<NN>-<topic>/board.md` via `os.walk` with a prune list (`.git`, `node_modules`, `_WorkSpace`, the data stores…) and a depth cap of 9. Verified fast on `Physician-SPACE` (finds 2 boards, no cache needed yet).
 - [ ] Decide what each row of the board list shows
-      Board name · spine · progress (how many ✅ out of how many) · open comment count · last modified. Enough? Too much?
+      v1 shipped: title · spine · ✅🟡🔴⏸ counts · question count · open-comment count · path · last modified. Whether that is the RIGHT set is JL's read — leave open until it has been used.
 - [ ] Decide whether a new board can be opened from the web
-      Today `open` is a skill action (CC runs it from the command line). Doing it from a page needs an HTTP endpoint that creates the folder, writes `board.md`, and copies `ref/q-template.md`.
+      Not built. Today `open` remains a skill action from the CLI.
 - [ ] Actually mount two SPACEs and open a board in each
-      That is the acceptance test: not "the design supports it", but really seeing boards from two SPACEs on one page and clicking into both.
+      The mechanism ran 260724: `Physician-SPACE` (2 boards) + a scratch space mounted together, both listed, both pages served, a comment written into the scratch one. But the second space was a throwaway — the honest tick waits for a real second research SPACE (WellDoc-SPACE).
 
 ## Where we are
-**The "mount one SPACE" half already runs. The "see which boards exist" half does not exist at all.**
+**v1 shipped in `haichat-inlab` (`boards_api.py` + the Boards view), verified end to end on 260724.**
 
-- What already works
-  `serve.py --root <repo root> --port 5599` serves the **whole repo root**, not one board — so a single process already covers every board in that SPACE, and comment write-back, chat, and terminal all work for each of them.
-- What is entirely missing
-  No SPACE list page, no board list page, no create-from-web. Opening any board means typing the URL or having CC push it to you.
-- The multi-store registry that can be copied outright (the cheapest part)
-  `_datasets()` in `console_api.py` already solved exactly this problem: three-level fallback — `INLAB_DATASETS` (json `{name: dir}`) > `INLAB_DATASET_STORE` (a parent dir whose children are auto-discovered) > `INLAB_PATIENT_STORE` (single, for backward compatibility) — plus a `?dataset=` query parameter and `_scope()` to switch. Rename `dataset` to `space` and that is this question's answer.
+- What runs now
+  `GET /api/board/spaces` (mounted SPACEs + board counts) · `GET /api/board/boards?space=` (rows with progress) · `GET /api/board/q` (one board as JSON, same code path as `build.py --json`) · `GET /_board/page/{space}/{path}` (the real `board.html`, path-vetted) · `POST /_board/comment|discuss|resolve` (the page's own write-backs, relayed to the skill's `serve.py` functions, then rebuild). The console SPA gained a **Boards** page — since QE5 ② (260724) a third TOP-LEVEL entry at `/boards`, not a scoped rail view: SPACE picker → board list → the embedded page.
+- What the verification showed
+  Two spaces mounted; `Physician-SPACE` discovers this board and `subjective-label/diagram/02-method-260722`; a comment posted through the console landed in the scratch board's md as `- [ ] JL “…” · 260724 1315` and the html rebuilt; resolve flipped it to `[x]`; a write aimed outside a board folder was rejected; `/_board/chat` answers 501 (chat/terminal stay on the workstation, `QE3`'s Law).
+- Still missing
+  Create-a-board-from-the-web; the board-list row design has not been judged by a reader; a real second SPACE.
+- The registry was copied as planned
+  `_spaces()` in `boards_api.py` is `console_api.py`'s `_datasets()` with `dataset` renamed to `space` — nothing invented.
 
 ## Files
-- `serve.py`
-  What `--root` means, the routing (`do_GET` / `do_POST`), and `target()` which decides what file a request lands on. The SPACE layer goes here, or into the new router `QE3` describes.
+- `boards_api.py`
+  The shipped layer: `_spaces()` registry, `_find_boards()` discovery, board rows, page serving, write-back relay. Lives in `haichat-inlab` on branch `feat/haichat-board`.
+- `web/`
+  `src/components/BoardsView.tsx` + the `boards` entries in `src/views.ts` / `src/types.ts` / `src/Console.tsx`.
 - `build.py`
-  `parse_dir()` already reads a whole board and returns data — the "how many ✅ out of how many" for the board list comes straight from it, no second parser needed.
+  `parse_dir()` / `to_json()` — the board list's numbers come from here, no second parser (imported by `boards_api.py`).
+- `serve.py`
+  The md-writers `boards_api.py` imports (`add_comment` / `add_discuss` / `resolve`), and still the whole live layer on the workstation.
 - `console_api.py`
-  The working template for multi-store registration (`_datasets()` / `_default_dataset()` / `_scope()`). Read it first when starting this.
+  The registry pattern this copied (`_datasets()` / `_default_dataset()` / `_scope()`).
 
 ## Glossary
 SPACE: JL's term for the root of one research repo, e.g. `Physician-SPACE`, `WellDoc-SPACE`. One SPACE holds several boards.
 
 ## Log
+260724 1324 · v1 shipped and verified (JL's "go ahead… as we discussed"): `boards_api.py` + Boards view in `haichat-inlab` (branch `feat/haichat-board`, commit 27e3ed6) — SPACE registry, discovery, board list, embedded page, comment/discuss/resolve write-backs relayed to the skill's own writers. 🔴 → 🟡; still open: create-from-web, row-design judgment, a real second SPACE
 260724 1242 · Opened: JL asked for "haichat-board mounts a SPACE, and inside it you create a new board or open an existing one". Split out as the layer above a board; where the code runs belongs to QE3

@@ -2,6 +2,7 @@
 state: 🟡 PARTIAL
 owner: JL
 method: settle the levels, the read/write permissions, and where conversations go; implementation split to QD2 / QD3
+session: e4ac2dc0-af0d-46cc-972c-c19582f2ba62
 
 ## Question
 Give every Q on the board its own conversation — but first the thing itself must be spelled out: what does the board level own vs. the question level? How far can a question-level session read and write? Where does the conversation itself live?
