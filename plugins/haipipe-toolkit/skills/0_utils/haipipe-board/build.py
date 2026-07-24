@@ -1341,6 +1341,29 @@ JS = r"""
       '<div class="b"><button class="ok y">Allow once</button>' +
       '<button class="a">Always allow</button><button class="n">Deny</button></div>';
     box.querySelector('code').textContent = ev.brief || ev.tool;
+    /* diff preview — what the VS Code extension shows at its gate: the actual
+       proposed change. − old in red, + new in green, Bash commands verbatim. */
+    if (ev.detail) {
+      var d = ev.detail, dv = document.createElement('div');
+      dv.className = 'askd';
+      var pre = function (cls, txt) {
+        var p = document.createElement('pre'); p.className = cls; p.textContent = txt;
+        dv.appendChild(p);
+      };
+      if (d.command) pre('cmd', d.command);
+      else if (d.edits) {
+        d.edits.forEach(function (e) { if (e.old) pre('del', e.old); if (e.new) pre('add', e.new); });
+        if (d.count > d.edits.length) {
+          var m = document.createElement('div'); m.className = 'mut';
+          m.textContent = '… ' + (d.count - d.edits.length) + ' more edit(s)';
+          dv.appendChild(m);
+        }
+      } else {
+        if (d.old) pre('del', d.old);
+        if (d.new) pre('add', d.new);
+      }
+      if (dv.childNodes.length) box.insertBefore(dv, box.querySelector('.b'));
+    }
     chat.querySelector('.bd').appendChild(box);
     chat.querySelector('.bd').scrollTop = 1e9;
     var send = function (ok, always) {
@@ -2083,6 +2106,16 @@ body:has(.q:target) .chatbtn{{display:none}}
  background:var(--pre);border-radius:7px;padding:7px 9px;margin-bottom:9px;
  overflow-x:auto;white-space:pre}}
 #chat .ask .b{{display:flex;gap:7px;align-items:center}}
+#chat .askd{{max-height:230px;overflow:auto;margin:0 0 9px}}
+#chat .askd pre{{margin:0 0 4px;padding:6px 9px;border-radius:6px;font-size:11.5px;
+ line-height:1.45;white-space:pre-wrap;word-break:break-word;
+ font-family:ui-monospace,Menlo,monospace}}
+#chat .askd pre.del{{background:rgba(214,102,102,.12);color:#b3564e;
+ border-left:3px solid #d66}}
+#chat .askd pre.add{{background:rgba(74,165,90,.12);color:#3c7d4c;
+ border-left:3px solid #4a5}}
+#chat .askd pre.cmd{{background:var(--pre);color:var(--fg);
+ border-left:3px solid var(--wip)}}
 #chat .ask button{{border:1px solid var(--line);background:var(--card);color:var(--fg);
  border-radius:8px;padding:5px 11px;font:12.5px inherit;cursor:pointer}}
 #chat .ask button.ok{{background:var(--done);border-color:var(--done);color:#fff}}

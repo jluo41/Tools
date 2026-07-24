@@ -13,7 +13,7 @@ Five groups; the letter in each Q's id is its group. The first two are the main 
 
 **QA · Defining a board** — pin down the thing itself: folder shape → the template for a single Q file → what to do about projection → how one question's page is laid out → how to write body text that reads like human language → how to add inline comments → the lifecycle of one comment. Nothing downstream is safe until this group lands.
 
-**QB · Shipping the skill** — then hand it over: write SKILL.md → have a fresh agent cold-read it as acceptance → migrate the older boards to the new format.
+**QB · Shipping the skill** — then hand it over: write SKILL.md → have a fresh agent cold-read it as acceptance → migrate the older boards to the new format → and keep the code manageable (QB4: split build.py's CSS/JS into skill-local assets; the grammar stays in the skill).
 
 **QC · Index and structure** — the board's skeleton: where a board lives and what it is named (QC1); what the index page looks like and how to see in three seconds which question to work on (QC2). Note the split from QA4: QA4 owns the **single-question page you land on after clicking**, QC2 owns the **index you see before clicking**.
 
@@ -34,6 +34,7 @@ QA7-lifecycle.md
 QB1-skillmd.md
 QB2-newcomer.md
 QB3-migrate.md
+QB4-buildsplit.md
 ### QC · Index and structure
 QC1-where.md
 QC2-indexdesign.md
