@@ -850,7 +850,12 @@ class Handler(SimpleHTTPRequestHandler):
     def guess_type(self, path):
         # .md 当纯文本发（utf-8），这样点卡片头那个「📄 QX.md」链接是**在浏览器里直接显示
         # 原始 markdown**，而不是弹下载。默认 mimetypes 会给 text/markdown，有的浏览器会下载。
-        if str(path).endswith(".md"):
+        # 同理：## Files 里链到的源码类文件（.do/.R/.sql/…）也直接在浏览器里显示，
+        # 否则默认 mimetypes 不认识就变成下载（JL 260724，cms_production.do 那次）。
+        p = str(path)
+        if p.rsplit(".", 1)[-1].lower() in (
+                "md", "do", "r", "sql", "tex", "bib", "toml", "yaml", "yml",
+                "sh", "ps1", "tsv", "log", "cfg", "ini"):
             return "text/plain; charset=utf-8"
         return SimpleHTTPRequestHandler.guess_type(self, path)
 
