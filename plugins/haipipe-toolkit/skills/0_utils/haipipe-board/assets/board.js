@@ -437,7 +437,7 @@
           say('serve.py is not running — write > ' + sel.value + ': … into ## Discussion in the md yourself');
           return;
         }
-        if (j.ok) { localStorage.setItem(WK, sel.value); location.reload(); }
+        if (j.ok) { localStorage.setItem(WK, sel.value); (window.__boardRefresh || function () { location.reload(); })(); }
         else say(j.err || 'write failed');
       };
     });
@@ -663,7 +663,7 @@
                '## Done when are still unchecked, and what is each one blocked on? ' +
                'One per line.');
     });
-    add('↻ Reload', function () { location.reload(); });
+    add('↻ Refresh', function () { (window.__boardRefresh || function () { location.reload(); })(); });
   }
 
   async function chatOpen(sec) {
@@ -725,8 +725,8 @@
         b.onclick = function () { chatSend(FIXALL); };
         chat.querySelector('.acts').appendChild(b);
         var r = document.createElement('button');
-        r.className = 'act'; r.textContent = '↻ Reload';
-        r.onclick = function () { location.reload(); };
+        r.className = 'act'; r.textContent = '↻ Refresh';
+        r.onclick = function () { (window.__boardRefresh || function () { location.reload(); })(); };
         chat.querySelector('.acts').appendChild(r);
       }
     }
@@ -860,8 +860,8 @@
           bits.push('written to disk');
           bubble('sys', bits.join(' · '));
           var rb = document.createElement('button');
-          rb.className = 'act pri'; rb.textContent = '↻ Reload to see the result';
-          rb.onclick = function () { location.reload(); };
+          rb.className = 'act pri'; rb.textContent = '↻ Refresh in place';
+          rb.onclick = function () { (window.__boardRefresh || function () { location.reload(); })(); };
           chat.querySelector('.acts').replaceChildren(rb);
         } else if (bits.length) {
           bubble('sys', bits.join(' · '));   // 只报模型/花费，不提写盘、不换按钮
@@ -1154,6 +1154,8 @@
       .catch(function () {})
       .then(function () { busy = false; });
   }
+  // instant, drawer-preserving refresh — what every former location.reload() now calls
+  window.__boardRefresh = function () { if (last === null) last = '0'; tick(); };
   setInterval(tick, 4000);
 })();
 

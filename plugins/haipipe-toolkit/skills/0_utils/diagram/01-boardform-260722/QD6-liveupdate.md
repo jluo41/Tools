@@ -83,6 +83,7 @@ session: 8ffce751-3dec-429b-8e05-57cc3c91402f
 >> CC0724: shipped exactly that, without Node: the page watches its own Last-Modified and swaps div.wrap in place — your chat drawer (even mid-stream), the terminal, and the comment dock are appended to <body>, so they never notice. When the drawer's edit lands, the content under it updates itself within ~4s with a "↻ board updated" toast.
 
 ## Log
+260724 1525 · JL hit the drawer's old "↻ Reload" button and it closed the chatbot — all four location.reload() sites now call the in-place swap (window.__boardRefresh) instead; labels renamed "Refresh in place"; the drawer survives its own post-write refresh
 260724 1510 · v1 shipped per JL's requirement (auto-refresh, chat survives): HEAD-poll 4s + in-place div.wrap swap + rewire + scroll restore + toast; held during text selection; console page route gained HEAD; Node answered NO — 🔴 → 🟡, only the seen-in-browser tick remains
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260724 · JL raised "the page is not live — Node or not"; QD6 opened; five routes laid out (manual/poll/SSE/WS/Node), I lean SSE and no Node, JL to decide
