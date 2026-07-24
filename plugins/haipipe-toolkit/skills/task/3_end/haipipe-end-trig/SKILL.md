@@ -4,7 +4,7 @@ description: "TrigFn specialist -- designs/reviews the trigger-detection functio
 argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-07-08"
   summary: "TrigFn specialist — design and review of the trigger-detection function in an Endpoint_Set."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

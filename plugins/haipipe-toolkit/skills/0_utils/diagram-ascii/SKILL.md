@@ -2,7 +2,7 @@
 name: diagram-ascii
 description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and experiment progress tracking. Use when the user wants to sketch an idea, map a codebase, visualize a flow inline during discussion, or show pipeline progress. Output is plain-text with liberal emoji for visual punch.
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and experiment progress tracking."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -4,6 +4,10 @@ haipipe-paper-display-illustration — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.1.3] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.3.0; older entries below keep their original numbers).
+
 ## [1.3.0] — 2026-06-22
 
 - promoted to the DEFAULT illustration renderer and renamed haipipe-paper-display-illustration (the Codex bridge is the maintained path); the Gemini backend moved to haipipe-paper-display-illustration-gemini as the named fallback.

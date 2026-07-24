@@ -4,7 +4,7 @@ description: "Raw extraction task-folder specialist: scaffolds {NN}_<name>/ task
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.4.0"
+  version: "0.1.4"
   last_updated: "2026-07-08"
   summary: "Raw extraction task-folder build specialist (Pattern 1 local / Pattern 2 PHI server-resident)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -2,7 +2,7 @@
 name: haipipe-paper-reviewer
 description: Use when acting as a journal or grant reviewer and writing formal reviewer-side evaluations focused on methodology, statistics, reporting standards, reproducibility, and constructive feedback.
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-05-31"
   summary: "Use when acting as a journal or grant reviewer and writing formal reviewer-side evaluations focused on methodology, statistics, reporting standards, reproducibility, and constructive feedback."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

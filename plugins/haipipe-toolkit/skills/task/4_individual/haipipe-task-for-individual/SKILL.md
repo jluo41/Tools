@@ -4,7 +4,7 @@ description: "individual-query task-folder specialist: scaffolds {NN}_<name>/ ta
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-07-04"
   summary: "individual-query task-folder build specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

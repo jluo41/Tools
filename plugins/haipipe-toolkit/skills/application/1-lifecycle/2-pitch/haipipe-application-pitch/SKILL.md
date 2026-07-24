@@ -4,7 +4,7 @@ description: "Stage 2 of the intervention lifecycle (venue-ALIGNED, first stage 
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.4.0"
+  version: "0.5.4"
   last_updated: "2026-07-19"
   summary: "Pitch stage (stage 2, venue-ALIGNED, the FIRST stage after the venue pin) — the one-minute goal + theory of change told FOR the pinned venue + audience, and the home of the [primary] claim designation. Rewrites on retarget; the venue-FREE ladder it cites does not. History: ./CHANGELOG.md."
 ---

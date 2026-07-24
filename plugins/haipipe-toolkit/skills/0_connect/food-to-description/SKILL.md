@@ -2,7 +2,7 @@
 name: food-to-description
 description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: food to nutrition, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
 metadata:
-  version: "3.1.0"
+  version: "0.3.1"
   last_updated: "2026-07-12"
   changelog: CHANGELOG.md
   summary: "Library = haiutils.food_enrichment (installed). This skill = docs + CLI + tests."

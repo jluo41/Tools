@@ -4,7 +4,7 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1a-descripti
 argument-hint: "[intervention-path] [--refresh <Dnn>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.6.0"
+  version: "0.2.6"
   last_updated: "2026-07-19"
   summary: "Descriptions stage (rung 1a of the venue-FREE 1a–1d evidence ladder; the D rung) — the anchored data profile: each D entry is statistic + pointer + as-of date, one line, quoting what task-profile probes landed (rich landed detail redirects into _DESCRIPTIONS/DS<n> profile sheets). Rounds are a GROW saturation loop (lens-rotating question storms, blind self-test, dry-stop); the rung consumes seed's [FORWARD -> CLAIMS] pointers and owns the downstream staleness stamp. History: ./CHANGELOG.md."
 ---

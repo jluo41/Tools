@@ -4,7 +4,7 @@ description: "Venue selection for the intervention lifecycle — the decision ga
 argument-hint: "[venue-name] [intervention-path] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.4.0"
+  version: "0.3.4"
   last_updated: "2026-07-19"
   summary: "Venue stage: recommends + pins the output modality and produces 2-venue.md (template ref/venue-template.md) — the decision gate between the venue-FREE ladder and the venue-ALIGNED stages; writes the three STATUS rows (venue / stages_skipped / claims_settlement) and Artifact Principles as the downstream channel-HOW contract. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

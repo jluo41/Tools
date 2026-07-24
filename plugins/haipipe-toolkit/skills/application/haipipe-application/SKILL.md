@@ -4,7 +4,7 @@ description: "Run any intervention-lifecycle work (the application umbrella). Us
 argument-hint: "[enter|status|venue|stage|draft] [intervention-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "6.10.0"
+  version: "0.6.10"
   last_updated: "2026-07-19"
   summary: "Front door for the intervention lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the intervention RAISES evidence questions as entries in the flat pool 1-probes/, and each stage's PROBE phase binds them to answers in the task/discovery bank through a clean agent — never calling the bank directly. The venue gates which stages fire and how deep claims settle; the 1a–1d ladder (D→I→K→W) is the venue-free evidence spine. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

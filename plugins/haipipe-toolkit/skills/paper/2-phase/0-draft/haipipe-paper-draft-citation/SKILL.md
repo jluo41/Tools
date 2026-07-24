@@ -4,7 +4,7 @@ description: "DRAFT-phase citation auditor (internal). Walks a stage doc or sect
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-07-19"
   summary: "DRAFT-phase citation auditor: find every assertion that owes a source, report the real key when the .bib already has it, and report every remaining hole with the question that owes it. READ-ONLY; the hub writes. Acquisition is a question's job, not this skill's — it never searches. History: ./CHANGELOG.md."
 ---

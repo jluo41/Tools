@@ -4,7 +4,7 @@ description: "Stage 3 (Case) specialist: builds/runs/reviews TriggerFn / CaseFn,
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-07-08"
   summary: "Stage 3 (Case) specialist with multi-partition + parallel support."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

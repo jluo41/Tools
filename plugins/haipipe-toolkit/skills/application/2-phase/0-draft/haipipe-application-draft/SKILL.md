@@ -4,7 +4,7 @@ description: "DRAFT phase worker (internal). Called first by every application s
 argument-hint: "[stage <stage-name>] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent
 metadata:
-  version: "1.5.0"
+  version: "0.1.5"
   last_updated: "2026-07-19"
   summary: "DRAFT phase worker (internal): settle the stage doc's structure + sentences with the user (illuminate → elicit → write per the stage's template), and RAISE what the draft cannot answer as `## QX<n>` question ENTRIES in 1-probes/ AND author their probe plan (`### q-executor` + route + bank + target — PROBE runs the loop's ①ORGANIZE + ②MATCH); never writes an answer (`### a-executor`). Inline WebSearch is drafting fuel only, never durable evidence. The calling stage supplies the artifact spec + template; this worker carries neither. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

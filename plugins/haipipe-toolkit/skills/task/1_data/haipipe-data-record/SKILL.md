@@ -4,7 +4,7 @@ description: "Stage 2 (Record) specialist: builds/runs/reviews HumanFn / RecordF
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-07-08"
   summary: "Stage 2 (Record) specialist with multi-partition support."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

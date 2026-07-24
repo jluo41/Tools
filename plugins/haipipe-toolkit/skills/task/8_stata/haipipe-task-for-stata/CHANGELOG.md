@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.7] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.7.0; older entries below keep their original numbers).
+
 ## [2.7.0] — 2026-07-05
 
 ### Changed (JL: "还是都允许Resolve-StataExe吧" / "这个东西太细节了…没必要写到skill里吧" / "服务器里当然有")

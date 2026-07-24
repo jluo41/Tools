@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.2.3] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.3.0; older entries below keep their original numbers).
+
 ## [2.3.0] — 2026-07-08
 
 - skill-diagnose fixes: dead `python -m scripts.haistep.*` invocations -> `scripts.haistepcli.*` (SKILL Path B block, execute-flow summary, fn/execute.md; the old module path raises ModuleNotFoundError — note pyproject's haistep-* console entry points carry the same rot upstream); CHANGELOG reordered newest-first.

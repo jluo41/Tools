@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.1] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.1.0; older entries below keep their original numbers).
+
 ## [1.1.0] — 2026-07-08
 
 - skill-diagnose fixes: <builder-dir> definition block added (the 2026-07-08 mechanical edit had left the token orphaned in this skill only); File-Structure return example now carries inputSchema/outputSchema (was 4-key, violating its own MUST DO #3 6-key contract); AutoMetaFn marked conceptual (not a file). Records the 7-08 builder-dir edit.

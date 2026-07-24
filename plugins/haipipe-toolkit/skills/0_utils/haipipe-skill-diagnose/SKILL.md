@@ -4,7 +4,7 @@ description: "Skill-set health review. Runs a 6-phase diagnose-first pass over O
 argument-hint: "[bucket-path] (e.g. skills/task, skills/discovery, skills/0_utils)"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-07-19"
   summary: "Diagnose-first health review of a skill bucket with user-gated fixes and verbatim decision archival. v1.3.0: the review LEDGER moves out of the bucket — it is written to `skills/_console/<YYMMDD>-<SLUG>.md` (see `_console/README.md`), because a process artifact must never ship inside the skill it reviews. REPORT, RESOLVE's reply sweep, the COMMIT gate + add-scope, and the return contract all follow it there."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

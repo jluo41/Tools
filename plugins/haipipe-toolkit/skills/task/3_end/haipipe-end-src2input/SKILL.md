@@ -4,7 +4,7 @@ description: "Src2InputFn specialist -- designs/reviews the record->wire-payload
 argument-hint: "[verb] [use_case] [--platform sagemaker|databricks] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.1.0"
+  version: "0.2.1"
   last_updated: "2026-07-08"
   summary: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

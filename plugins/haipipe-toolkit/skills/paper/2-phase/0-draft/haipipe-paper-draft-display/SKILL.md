@@ -4,7 +4,7 @@ description: "DRAFT-phase display auditor (internal). Walks a stage doc or secti
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-07-19"
   summary: "DRAFT-phase display auditor: decide which claims need visual support, map each to an existing unit, and file a DR row in the display stage's inbox for each missing one. The paper layer plans, it does not plot. History: ./CHANGELOG.md."
 ---

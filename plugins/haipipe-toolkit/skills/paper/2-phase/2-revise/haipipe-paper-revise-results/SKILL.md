@@ -4,7 +4,7 @@ description: "REVISE phase worker for Results sections. Fully automatic. Repairs
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.3.0"
+  version: "0.2.3"
   last_updated: "2026-07-08"
   summary: "REVISE worker for Results sections. Fixes narration flow. Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

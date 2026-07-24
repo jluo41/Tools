@@ -4,7 +4,7 @@ description: "Run any paper-lifecycle work: parse intent (venue + stage) and rou
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.2.1"
+  version: "0.3.2"
   last_updated: "2026-07-19"
   summary: "Front door for the paper lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the paper RAISES evidence questions as `## QX<n>` ENTRIES in 1-probes/, and each stage's PROBE phase dispatches them through a clean agent — the paper never calls the bank directly. Also THE home of three family-wide conventions: the Closing Block, the Comment lifecycle, and Delivery Need Routing + the Evidence Routing Protocol. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

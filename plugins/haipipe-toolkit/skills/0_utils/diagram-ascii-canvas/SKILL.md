@@ -8,7 +8,7 @@ description: >-
   Excalidraw annotations (arrows, sticky notes). Use rebuild for repo diagram/
   folders that change. Use append for daily session-log accretion.
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Bundle ASCII `.txt` diagrams into one Excalidraw canvas — two modes."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

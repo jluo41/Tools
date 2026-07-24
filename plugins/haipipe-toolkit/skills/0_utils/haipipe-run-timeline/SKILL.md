@@ -4,7 +4,7 @@ description: "Rebuild a multi-lane flight-record timeline of any Claude Code ses
 argument-hint: "<session>.jsonl path (find via grep -l '<session-name>' ~/.claude/projects/<project-dir>/*.jsonl)"
 allowed-tools: Bash, Read
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-07-19"
   summary: "One-command flight recorder: python3 run_timeline.py <session>.jsonl. Born during the test-2-2222 replication audit (JL: 'how could you log the process... so we can have an overview'). v1.1: the worked example re-cut to the live dispatch doors — the probe gateway agent was retired 2026-07-14, so a paper session now dispatches DIRECT to haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent, which write <task-folder>/QA/<n>-<slug>.md."
 ---

@@ -4,7 +4,7 @@ description: "The probe layer: a consumer-level Q/A map (papers/<P>/ or applicat
 argument-hint: "[contract | anatomy | status | \"<question>\"]"
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "9.9.0"
+  version: "0.9.9"
   last_updated: "2026-07-19"
   summary: "The probe layer, operational form. A probe maps a question to a QA file in the probe-unaware bank — communication, not judgment. Spec + rationale: ../../../diagram/260714-probe-qa/. History: ./CHANGELOG.md."
 ---

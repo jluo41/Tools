@@ -4,7 +4,7 @@ description: "Artifact composer for the intervention lifecycle (the `draft` verb
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.0"
+  version: "0.3.1"
   last_updated: "2026-07-17"
   summary: "Composes 0-artifacts/<slug>-v{N}.md through a DPRC pass — one skill for every venue, because the pinned venue profile IS the instruction set. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

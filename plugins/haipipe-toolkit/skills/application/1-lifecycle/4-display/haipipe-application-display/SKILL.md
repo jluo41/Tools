@@ -4,7 +4,7 @@ description: "Stage 4 of the intervention lifecycle (venue-GATED: required for d
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.8.0"
+  version: "0.4.8"
   last_updated: "2026-07-19"
   summary: "Display stage (stage 4, venue-GATED + venue-ALIGNED) — maps each claim to a display UNIT with a required per-unit Job (minimap absorbed); materialization raised as a section in the flat probe pool 1-probes/, uniquely commissioned by this stage. History: ./CHANGELOG.md."
 ---

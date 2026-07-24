@@ -4,7 +4,7 @@ description: "Generate publication-quality data plots from experiment results (l
 argument-hint: "[figure-plan-or-data-path]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-06-22"
   summary: "Generate publication-quality data plots from experiment results (the plot renderer of the display family)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

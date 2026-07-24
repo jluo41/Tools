@@ -4,7 +4,7 @@ description: Rigorous mathematical proof verification and fixing workflow. Reads
 argument-hint: "[path-to-tex-file or proof-description]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-07-19"
   summary: "CHECK-phase PROOF sub-checker (internal, conditionally dispatched): rigorous verification and repair of LaTeX proofs — read, find gaps via cross-model review, fix each with full derivations, re-review, emit an audit report. Dispatched BY haipipe-paper-check when a section carries a proof; it is not the CHECK gate itself and does not run alone as one. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

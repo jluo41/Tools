@@ -2,7 +2,7 @@
 name: haipipe-paper-polish
 description: "Whole-paper polish pass over a finished LaTeX draft — three passes in order: consistency (terminology, notation, \\label/\\ref integrity), format (venue style: abbreviations, units, headings, reference style), then typeset (widows, orphans, overfull boxes, bad breaks). Runs after per-section editing is complete because each pass is cross-section by nature. Comment-first. Trigger: polish, consistency pass, terminology check, fix cross-references, format pass, venue style, typeset, widow orphan, overfull box, fix line breaks."
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-07-17"
   stage: deliver
   summary: "3-polish worker. One skill, three ordered whole-paper passes (consistency -> format -> typeset). Comment-first like every deliver sub-skill. History: ./CHANGELOG.md."

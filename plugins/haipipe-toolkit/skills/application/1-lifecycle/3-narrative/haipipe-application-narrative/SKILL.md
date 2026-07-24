@@ -4,7 +4,7 @@ description: "Stage 3 of the intervention lifecycle (venue-GATED: fires per STAT
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.4.0"
+  version: "0.5.4"
   last_updated: "2026-07-19"
   summary: "Narrative stage (stage 3, venue-GATED + venue-ALIGNED): maps the settled claim/advice flow onto the venue's arc; it composes, never gathers — a beat exposing a NEW evidence gap raises a question SECTION in 1-probes/PPNN_<topic>/ (serves: 3-narrative) routed back to 1c-claims. History: ./CHANGELOG.md."
 ---

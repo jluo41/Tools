@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.2] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.2.0; older entries below keep their original numbers).
+
 ## [1.2.0] — 2026-07-04
 
 - fn/usage.md updated to the CREATE-from-ref/engine flow (was routing users to hand-copy the ProjC PoC, contradicting SKILL.md); LLMCallStore leaf = <case_id> per SKILL.md (was <transport>); example model ids claude-opus-4-8; __pycache__ .pyc pollution removed from ref/engine/.

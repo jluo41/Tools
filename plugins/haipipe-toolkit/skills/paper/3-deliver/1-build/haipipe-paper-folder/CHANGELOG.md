@@ -4,6 +4,10 @@ haipipe-paper-folder — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.4.0] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 4.0.1; older entries below keep their original numbers).
+
 ## 4.0.1 — 2026-07-14
 
 - "probe plans (PPNN_*.md) -> fn/probe-plans.md" -> "probe files (PPNN_<topic>.md) -> fn/probes.md" (the file was renamed).

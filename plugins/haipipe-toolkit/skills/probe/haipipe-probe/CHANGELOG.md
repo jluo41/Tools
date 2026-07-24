@@ -3,6 +3,10 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.9.9] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 9.9.0; older entries below keep their original numbers).
+
 ## 9.9.0 — 2026-07-20 — probe files are a FOLDER of one-q-executor files (flat RETIRED)
 
 Owner co-design (JL): "a q-executor a file, and several q-executor a folder in 1-probes … break down the current PP markdown" + "don't 向后兼容 … 全面推 folder 为默认". A probe TOPIC is now a FOLDER `1-probes/PPNN_<topic>/` holding one `## QX<n>` entry per `QXn_<slug>.md` file — each q-executor path-addressable and single-purpose. The flat single-file `1-probes/PPNN_<topic>.md` is RETIRED, not deprecated: the checker no longer globs it. (No backward-compatibility window — the owner ruled it out; the only flat files on disk were this paper's and the test fixture, both migrated in this change.)

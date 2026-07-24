@@ -4,7 +4,7 @@ description: "Generate conference presentation slides (beamer LaTeX → PDF + ed
 argument-hint: "[paper-directory-or-talk-length]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Generate conference presentation slides (beamer LaTeX → PDF + editable PPTX) from a compiled paper, with speaker notes and full talk script."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

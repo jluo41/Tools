@@ -4,6 +4,10 @@ haipipe-application-artifact — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.3.1] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 3.1.0; older entries below keep their original numbers).
+
 ## [3.1.0] — 2026-07-17
 
 - PROBE step no longer verifies cited K/W ids resolve in `insights/` (insight KB retired as an evidence layer).

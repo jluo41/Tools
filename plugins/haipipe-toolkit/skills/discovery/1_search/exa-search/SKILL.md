@@ -4,7 +4,7 @@ description: AI-powered web search via Exa with content extraction. Use when use
 argument-hint: "[search-query-or-url]"
 allowed-tools: Bash(*), Read, Write
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "AI-powered web search via Exa with content extraction."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

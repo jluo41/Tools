@@ -4,7 +4,7 @@ description: "REVISE phase worker (internal). Called by application stage skills
 argument-hint: "[stage <stage-name>] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-07-19"
   summary: "The intervention's REVISE-phase worker — a single thin worker whose quality spec is the pinned venue's style-profile plus the audience profile. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

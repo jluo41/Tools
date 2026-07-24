@@ -4,7 +4,7 @@ description: "Unified Stata-engine task-folder specialist: handles all 4 stages 
 argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [task-folder]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.7.0"
+  version: "0.2.7"
   last_updated: "2026-07-05"
   summary: "Unified Stata skill — topology-aware templates + contract aligned with production."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

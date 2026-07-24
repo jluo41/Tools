@@ -4,7 +4,7 @@ description: "Layer 1 (Algorithm) specialist of haipipe-nn: defines the algorith
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-07-04"
   summary: "Layer 1 (Algorithm) specialist of haipipe-nn."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

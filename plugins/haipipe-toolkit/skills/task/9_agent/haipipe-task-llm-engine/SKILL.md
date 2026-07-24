@@ -3,7 +3,7 @@ name: haipipe-task-llm-engine
 description: "Owns code/haiutils/llm_engine/ -- the unified LLM call runtime for agent task-folders. Two OAuth transports (Claude Agent SDK + Codex OAuth) with API-key fallback. On trigger: CHECK the deployed code exists, CREATE from ref/engine/ if missing, EVALUATE if present, UPDATE if stale."
 trigger: llm engine, llm call, llm transport, oauth engine, call claude, call codex, engine test, engine status
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-07-04"
   summary: "Owner of code/haiutils/llm_engine/ — unified LLM call runtime for agent task-folders."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -4,7 +4,7 @@ description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: read
 argument-hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.2.0"
+  version: "0.3.2"
   last_updated: "2026-07-19"
   summary: "The intervention's PROBE-phase worker — runs ③DISPATCH→④POINT→⑤INTERPRET for an application (DRAFT authored ①ORGANIZE+②MATCH; the plan is executed, not re-matched). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) belongs to probe: ../../../../probe/haipipe-probe/SKILL.md. This file is only the application-side deltas: intervention_root, the DIKW-ladder rungs, and no-sidecar harvest (folds into a-executor). History: ./CHANGELOG.md."
 ---

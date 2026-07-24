@@ -4,7 +4,7 @@ description: "CHECK phase worker (internal). Called by stage skills as the human
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "3.0.0"
+  version: "0.3.0"
   last_updated: "2026-07-19"
   summary: "CHECK phase worker (internal) -- the LAST human gate of a stage, and by default its ONLY one: runs the deterministic sub-checkers (./checks.sh), seeds `> CHECK:` comments in-file at every flag site, and gates human review. What it walks is the stage doc + the paper's `1-probes/` entries; its probe invariants are stated over ENTRIES (`state: planned`, unresolvable `**target**`, an `answered` target with an empty `### a-executor`). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

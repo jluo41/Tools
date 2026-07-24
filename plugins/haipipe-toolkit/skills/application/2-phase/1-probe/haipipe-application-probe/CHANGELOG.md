@@ -4,6 +4,10 @@ haipipe-application-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.3.2] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 3.2.0; older entries below keep their original numbers).
+
 ## [3.2.0] — 2026-07-19
 
 - Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname

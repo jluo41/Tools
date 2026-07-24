@@ -4,7 +4,7 @@ description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Rout
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "3.1.1"
+  version: "0.3.1"
   last_updated: "2026-07-19"
   summary: "Router for the 1-lifecycle stage spine: folder, seed (0), resource (1a), claims (1b) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills run DRAFT -> PROBE -> REVISE -> CHECK internally via 2-phase/ workers; this router never routes users to phase skills. Two modes: depth-first per-stage cycles for single-stage work, and GLOBAL-PASS (draft all stages breadth-first, consolidate probes once via `probe plan`, batch the handoff, harvest, then REVISE/CHECK per stage). Resource is stage 1a and claims is 1b (like 2-venue then 2-pitch within stage 2); nothing renumbers. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

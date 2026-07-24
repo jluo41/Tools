@@ -4,7 +4,7 @@ description: "Claim audit for the intervention lifecycle. Verifies that every cl
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-07-17"
   summary: "Claim-evidence audit — every artifact claim traces to an adopted entry (A -> C -> anchor) and stays inside its evidence scope. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -4,7 +4,7 @@ description: "Canonical spec for the assistant's chat reply format in this works
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "1.2.0"
+  version: "0.1.2"
   last_updated: "2026-06-26"
   summary: "Emoji headline format for chat replies + end-of-run file-change & conditional review report."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

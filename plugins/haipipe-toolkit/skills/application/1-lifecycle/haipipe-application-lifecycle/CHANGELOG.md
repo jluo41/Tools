@@ -4,6 +4,10 @@ haipipe-application-lifecycle — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Oldest first (append at the bottom).
 
 
+## [0.4.4] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 4.4.0; older entries below keep their original numbers).
+
 ## [4.4.0] — 2026-07-19
 
 - Evidence Flow diagram synced to the current model: ① ORGANIZE writes a `## QX<n>` ENTRY with

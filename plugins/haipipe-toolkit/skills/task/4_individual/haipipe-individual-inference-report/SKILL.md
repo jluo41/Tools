@@ -4,7 +4,7 @@ description: "Per-individual prediction-interpretation report: loads one individ
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Per-individual prediction-interpretation report."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -4,7 +4,7 @@ description: "Build a new paper folder in the gold-standard layout (npjDM2025 co
 argument-hint: "[plan-path-or-title] [--out <dir>] [--venue <v>] [--no-si]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion
 metadata:
-  version: "1.1.0"
+  version: "0.1.1"
   last_updated: "2026-06-04"
   summary: "Plan → new conforming paper folder skeleton (structure only, zero prose)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

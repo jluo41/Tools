@@ -4,7 +4,7 @@ description: "REVISE phase worker (internal). Called by stage skills to rewrite 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.6.0"
+  version: "0.1.6"
   last_updated: "2026-07-19"
   summary: "REVISE phase worker (internal): rewrite draft prose to venue-quality -- change directly, leave why-comments, then sync .md -> tex. Proof-carrying: stage hubs MUST reach REVISE through this skill (never hand-edit inline) and the [REVISE] _LOG entry MUST carry a `workers:` line. Dispatches place/content/humanizer/results workers (place first). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

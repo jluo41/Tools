@@ -4,7 +4,7 @@ description: Search, download, and summarize academic papers from arXiv. Use whe
 argument-hint: "[query-or-arxiv-id]"
 allowed-tools: Bash(*), Read, Write
 metadata:
-  version: "1.0.1"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Search, download, and summarize academic papers from arXiv."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

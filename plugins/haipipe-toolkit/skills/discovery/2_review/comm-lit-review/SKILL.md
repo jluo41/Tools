@@ -3,7 +3,7 @@ name: comm-lit-review
 description: Communications-domain literature review with Claude-style knowledge-base-first retrieval. Use when the task is about communications, wireless, networking, satellite/NTN, Wi-Fi, cellular, transport protocols, congestion control, routing, scheduling, MAC/PHY, rate adaptation, channel estimation, beamforming, or communication-system research and the user wants papers, related work, a survey, or a landscape summary. Search Zotero, Obsidian, and local paper folders first when available, then search IEEE Xplore, ScienceDirect, ACM Digital Library, and broader web in that order.
 allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp__zotero__*, mcp__obsidian-vault__*
 metadata:
-  version: "1.0.1"
+  version: "0.1.0"
   last_updated: "2026-07-14"
   summary: "Communications-domain literature review with Claude-style knowledge-base-first retrieval. v1.0.1: frontmatter `name:` corrected from comm-lit-review-claude-single to comm-lit-review — the folder and the registered symlink are both comm-lit-review, so the self-declared identity was a name nothing could invoke."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

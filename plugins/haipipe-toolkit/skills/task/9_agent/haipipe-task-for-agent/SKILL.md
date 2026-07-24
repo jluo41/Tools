@@ -4,7 +4,7 @@ description: "agent task-folder specialist: scaffolds {NN}_<name>/ task-folders 
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
+  version: "0.1.3"
   last_updated: "2026-07-04"
   summary: "agent task-folder build specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

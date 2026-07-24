@@ -3,6 +3,10 @@ haipipe-skill-diagnose — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.1.3] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.3.0; older entries below keep their original numbers).
+
 ## [1.3.0] — 2026-07-19 — the review ledger moves to `_console/`
 
 ### Changed (JL: "haipipe-skill-diagnose/SKILL.md:46 please also change this, and make SKILLS to save things to a _console folder?")

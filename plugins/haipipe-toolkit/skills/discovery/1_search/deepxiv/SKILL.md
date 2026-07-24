@@ -4,7 +4,7 @@ description: Search and progressively read open-access academic papers through D
 argument-hint: "[query-or-paper-id]"
 allowed-tools: Bash(*), Read, Write
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-05-31"
   summary: "Search and progressively read open-access academic papers through DeepXiv."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

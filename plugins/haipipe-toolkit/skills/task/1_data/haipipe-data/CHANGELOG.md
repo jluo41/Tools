@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.3] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.3.0; older entries below keep their original numbers).
+
 ## [1.3.0] — 2026-07-08
 
 - skill-diagnose fixes: dead `scripts.haistep.*` module paths -> `scripts.haistepcli.*` (SKILL + fn-2-cook; the old module no longer exists); broken `haistep-*` console-script examples replaced with `python -m` form; stale `ProjD-EHR-1-Mimic` worked-example path -> `Project-EHR-Mimic`; repo-root `config/` references retired everywhere (README, 0-overview snapshot section, fn-2-cook, fn-3-design-chef, fn-4-design-kitchen, fn-review path patterns -> `**/configs/**/*.yaml`); fn-3-design-chef body swept to BUILDER HOME / fn_develop-first and now points at the `code/scripts/haibuilder/` seed library; fn-2-cook template-path contradiction (line 22) aligned; frontmatter description now lists all 7 specialists.
