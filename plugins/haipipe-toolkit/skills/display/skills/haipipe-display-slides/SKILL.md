@@ -1,12 +1,12 @@
 ---
-name: paper-slides
-description: "Generate conference presentation slides (beamer LaTeX → PDF + editable PPTX) from a compiled paper, with speaker notes and full talk script. Use when user says \"做PPT\", \"做幻灯片\", \"make slides\", \"conference talk\", \"presentation slides\", \"生成slides\", \"写演讲稿\", or wants beamer slides for a conference talk."
-argument-hint: "[paper-directory-or-talk-length]"
+name: haipipe-display-slides
+description: "Render conference presentation slides (beamer LaTeX → PDF + editable PPTX), with speaker notes and full talk script, from a TALK OUTLINE — a markdown outline plus a figures folder, per ref/content-plan-spec.md. Source-agnostic: it never opens a paper. Use when user says \"做PPT\", \"做幻灯片\", \"make slides\", \"conference talk\", \"presentation slides\", \"生成slides\", \"写演讲稿\", or hands over a talk outline to lay out. To build one from a compiled paper, run /paper-slides — it extracts the outline, then calls this."
+argument-hint: "[talk-outline.md or talk-length]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
-  summary: "Generate conference presentation slides (beamer LaTeX → PDF + editable PPTX) from a compiled paper, with speaker notes and full talk script."
+  version: "0.2.0"
+  last_updated: "2026-07-24"
+  summary: "Talk outline + figures/ → beamer → PDF + PPTX, with speaker notes and talk script. Renders what it is given; never reads the source it came from."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -37,7 +37,9 @@ A good talk makes the audience understand *why this matters* before showing *wha
   Options: `16:9` (default, modern projectors), `4:3` (legacy).
 - **SPEAKER_NOTES = true** — Generate `\note{}` blocks in beamer and corresponding PPTX notes.
   Set `false` for clean slides without notes.
-- **PAPER_DIR = `paper/`** — Directory containing the compiled paper.
+- **OUTLINE = `talk-outline.md`** — The talk outline to render. Shape: [`ref/content-plan-spec.md`](../../ref/content-plan-spec.md).
+  `venue` and `talk` declared inside the outline **override** the constants above.
+- **FIGURES_DIR = `figures/`** — Folder holding every image the outline names. A `figure:` with no matching file is an error, not a guess.
 - **OUTPUT_DIR = `slides/`** — Output directory for all slide files.
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for slide review.
 - **AUTO_PROCEED = false** — At each checkpoint, **always wait for explicit user confirmation**.
@@ -96,18 +98,26 @@ Otherwise → fresh start.
    which pdflatex && which latexmk
    ```
 
-2. **Verify paper exists**:
+2. **Verify the talk outline and its figures**:
    ```bash
-   ls $PAPER_DIR/main.tex || ls $PAPER_DIR/main.pdf
-   ls $PAPER_DIR/sections/*.tex
-   ls $PAPER_DIR/figures/
+   ls $OUTLINE                    # the outline must exist
+   ls $FIGURES_DIR                # and the folder it draws figures from
+   grep -n '^figure:' $OUTLINE    # every named figure must be present below
    ```
+
+   Check it parses into the shape in [`ref/content-plan-spec.md`](../../ref/content-plan-spec.md):
+   a title header and one `## ` per slide. Then confirm every `figure:` names a file that
+   is actually in `$FIGURES_DIR`.
+
+   **⛔ If anything is missing, stop and say exactly what.** Do not go looking for a paper,
+   do not infer slides from a source document. This skill renders the outline it was handed;
+   filling gaps is upstream's job (`/paper-slides` for a paper).
 
 3. **Backup existing slides**: if `slides/` exists, copy to `slides-backup-{timestamp}/`
 
 4. **Create output directory**: `mkdir -p slides/figures`
 
-5. **Detect CJK**: if paper contains Chinese/Japanese/Korean, set ENGINE to `xelatex`
+5. **Detect CJK**: if the outline contains Chinese/Japanese/Korean, set ENGINE to `xelatex`
 
 6. **Determine slide count**: from TALK_TYPE and TALK_MINUTES using the table above
 
@@ -115,59 +125,38 @@ Otherwise → fresh start.
 
 **State**: Write `SLIDES_STATE.json` with `phase: 0`.
 
-### Phase 1: Content Extraction & Slide Outline
+### Phase 1: Read the Talk Outline
 
-Read `paper/sections/*.tex` and build a slide-by-slide outline.
+The slide-by-slide decisions already happened upstream — **this skill does not choose the
+talk's structure.** Parse `$OUTLINE` and carry it straight into drafting:
 
-**Slide template — one parametric plan keyed off the Talk-Type → Slide-Count table above.**
-Each row is a beat; the per-type cells give the slide number(s) it occupies (`—` = beat dropped at that length). `invited` scales the same beats up with a Related Work beat and deeper Method/Results.
+- **Header** — `title`, `authors`, and the overrides (`venue`, `talk`). Outline values win
+  over the Constants above; the `talk:` value sets the expected slide count.
+- **One `## ` per slide, in order** — each with its bullets, an optional `figure:`, and an
+  optional `notes:` line that becomes the beamer speaker note.
 
-| Beat | Content Source | Figure? | poster-talk | spotlight | oral |
-|------|----------------|:-------:|:-----------:|:---------:|:----:|
-| Title | Paper metadata | No | 1 | 1 | 1 |
-| Outline | Section headers | No | — | — | 2 |
-| Motivation & Problem | Introduction | Optional | 2 | 2-3 | 3-4 |
-| Key Insight | Introduction (contribution) | No | — | 4 | 5 |
-| Method | Method section (condensed at shorter lengths) | Yes (hero figure) | 3 | 5-6 | 6-9 |
-| Results | Experiments (key results only at shorter lengths) | Yes | 4-5 | 7-9 | 10-14 |
-| Analysis / Ablations | Experiments | Yes | — | — | 15-16 |
-| Limitations | Conclusion | No | — | — | 17 |
-| Takeaway / Conclusion | Conclusion | No | 6 (+QR) | 10 | 18 |
-| Thank You + QR | — | QR code | (folded into 6) | 11 | 19 |
-
-**For each slide, specify**:
-- Title (max 8 words)
-- 3-5 bullet points (max 8 words each)
-- Figure reference (if any) from paper/figures/
-- Speaker note (2-3 sentences of what to say)
-- Time allocation (in seconds)
-
-**Output**: `slides/SLIDE_OUTLINE.md`
+**Do not add or drop slides.** If the outline's slide count disagrees with the expected
+count for its `talk:` length, say so at the checkpoint and let the author fix the outline —
+silently padding or cutting a talk is not this skill's call.
 
 **🚦 Checkpoint:**
 
 ```
-📊 Slide outline ready:
-- Talk type: [TALK_TYPE] ([TALK_MINUTES] min)
-- Slide count: [N] slides
-- Figures used: [N] from paper/figures/
-- Time budget: [breakdown]
+📊 Talk outline read:
+- Talk type: [TALK_TYPE] ([TALK_MINUTES] min) — expected ~[N] slides
+- Slides in outline: [N]
+- Figures referenced: [N] (all present in FIGURES_DIR ✓)
+- Slides carrying speaker notes: [N]/[N]
 
-Slide-by-slide outline:
-1. [Title slide]
-2. [Motivation — 1.5 min]
-3. [Problem statement — 1 min]
+Slide-by-slide:
+1. [Title]
+2. [Motivation]
 ...
 
-Proceed to drafting? Or adjust the outline?
+Proceed to drafting?
 ```
 
-**⛔ STOP HERE and wait for user response.** This is the most critical checkpoint — the outline determines the entire talk flow.
-
-Options:
-- **"go"** → proceed to Phase 2
-- **adjustments** (e.g., "merge slides 3-4", "add a demo slide", "cut the ablation") → revise
-- **"stop"** → save to `slides/SLIDE_OUTLINE.md`
+**⛔ STOP HERE and wait for user response.**
 
 **State**: Write `SLIDES_STATE.json` with `phase: 1`.
 
@@ -199,10 +188,10 @@ Create `slides/main.tex` using beamer.
 
 **Template structure**: use `ref/slides-template.tex` (full `\documentclass … \end{document}` beamer skeleton with venue-theme color hooks, footline frame numbers, and a text + figure sample frame). Substitute `VENUE_PRIMARY`/`VENUE_ACCENT`, metadata, and per-slide frames.
 
-**Symlink figures**:
+**Copy in the figures the outline names** (from `$FIGURES_DIR`, never symlink — `pdflatex`
+cannot reliably follow symlinks across directories):
 ```bash
-ln -sf ../paper/figures/*.pdf slides/figures/ 2>/dev/null
-ln -sf ../paper/figures/*.png slides/figures/ 2>/dev/null
+cp $FIGURES_DIR/<figure named in the outline> slides/figures/
 ```
 
 **Key formatting rules**:
@@ -361,7 +350,7 @@ Fill in `ref/talk-script-template.md` — a full-manuscript skeleton with per-sl
   ├── TALK_SCRIPT.md        # Full word-for-word talk script + Q&A
   ├── SLIDES_STATE.json     # State persistence
   ├── generate_pptx.py      # PPTX generation script
-  └── figures/              # Symlinked from paper/figures/
+  └── figures/              # Copied from FIGURES_DIR (the figures the outline names)
 
 Next steps:
 1. Practice with TALK_SCRIPT.md (read aloud, time yourself)

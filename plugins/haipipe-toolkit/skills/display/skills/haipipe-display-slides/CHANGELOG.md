@@ -1,8 +1,12 @@
-paper-poster — Changelog
+paper-slides — Changelog
 ========================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+
+## [0.2.0] — 2026-07-24 · became a renderer
+
+Renamed `paper-slides → haipipe-display-slides` and cut loose from papers. It now takes a talk outline plus a figures folder (`display/ref/content-plan-spec.md`) and renders it — it never opens `main.tex` or `sections/*.tex`, and refuses rather than hunting for a source when the plan is incomplete. The extraction half (deciding what a slides shows of a paper) went back to `paper/5-present/paper-slides`.
 
 ## [0.1.0] — 2026-07-24 · moved to display/
 

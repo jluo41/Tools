@@ -171,6 +171,14 @@ keeping all skill names and slash commands unchanged.
 - Updated plugin docs and cross-references to use the new folder names.
 
 
+## [0.2.5] — 2026-07-24 · paper is paper, display is display
+
+Split poster and slides along the seam that was already there. Each used to read a paper *and* typeset the result; the two halves now live where they belong, joined by a written contract (`display/ref/content-plan-spec.md` — a markdown content plan plus a figures folder).
+
+- **`display/haipipe-display-poster`** and **`display/haipipe-display-slides`** (renamed from `paper-poster`/`paper-slides`) are now RENDERERS: content plan + figures → tcbposter / beamer → PDF · PPTX · SVG. They never open `main.tex` or `sections/*.tex`, and refuse rather than hunt for a source when the plan is incomplete. Any source can feed them — a paper, an application, a talk outline typed by hand.
+- **`paper/5-present/paper-poster`** and **`paper-slides`** are now EXTRACTORS: read the paper, decide what a poster/talk shows of it, write the plan, dispatch to the renderer. Selection is a paper judgement and stays with paper; layout is not.
+- The seam was already in the code — old Phase 1 produced `POSTER_CONTENT_PLAN.md` / `SLIDE_OUTLINE.md` and Phases 2-8 only ever read that. The split formalised the intermediate instead of inventing one.
+
 ## [0.2.4] — 2026-07-24 · display/ bucket
 
 New shared **`display/`** bucket for cross-cutting render tools. Pulled the four display RENDERERS out of `paper/1-lifecycle/4-display/` and dropped the paper prefix (`haipipe-paper-display-{figure,illustration,diagram,table}` → `haipipe-display-*`); moved `paper-poster` / `paper-slides` out of `paper/5-present/` (names kept, they still consume a compiled paper). html-ppt / html-to-svg already lived here. The paper 4-display **stage** (the display-plan doc + `ref/display-unit-output-contract.md`) STAYS in paper — only the renderers moved. All 75 references updated across 25 files; git mv preserved history.
