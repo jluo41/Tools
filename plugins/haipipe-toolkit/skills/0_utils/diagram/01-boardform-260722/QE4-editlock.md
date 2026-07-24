@@ -5,20 +5,15 @@ owner: CC
 method: start with a per-file lock (`HOLD` already exists); do not reach for a CRDT first
 
 ## Question
-The page can take comments, discussion, and resolutions today — but it **cannot edit body text**. Changing `## Where we are`, or ticking a line in `## Items to Finish`, still means going back to an editor and changing the markdown. What JL wants is to "really work on a question", and that runs into two things: editing in the page, and two people editing the same question without overwriting each other.
+The page can take comments, discussion, and resolutions today, but it cannot edit body text. Changing `## Where we are`, or ticking a line in `## Items to Finish`, still means going back to an editor and changing the markdown. What JL wants is to "really work on a question", and that runs into two things: editing in the page, and two people editing the same question without overwriting each other.
 
-- Why it is hard
-  Markdown is the single source of truth, which is the board's foundation. But a markdown file is not a database — two people writing the same `Q*.md` means the later write silently wins, with no warning. The only reason this has not bitten yet is that `serve.py` is localhost and single user.
-- What breaks if we leave it
-  The board stays at "readable and commentable" and never becomes a workbench. JL's "we can work hard to solve the problem" cannot happen.
-- What it affects downstream
-  Which editor to use, whether to bring in Yjs, whether `HOLD` grows from "one session per question" to "one editor per question", and how in-page edits get recorded in `## Log`.
+The hard part is that markdown is the single source of truth, the board's foundation, but a markdown file is not a database: two people writing the same `Q*.md` means the later write silently wins, with no warning, and the only reason this has not bitten yet is that `serve.py` is localhost and single user. Leave it and the board stays at "readable and commentable" and never becomes a workbench, so JL's "we can work hard to solve the problem" cannot happen. Downstream it decides which editor to use, whether to bring in Yjs, whether `HOLD` grows from "one session per question" to "one editor per question", and how in-page edits get recorded in `## Log`.
 
 ## Boundary
 - ✅ Covered here
   **Editing body text from the page**: which sections are editable, which editor, what happens when two people edit at once, and how an edit gets written into `## Log`.
 - ↪ Covered elsewhere
-  The comment and discussion write-back path — that is finished, and belongs to `QA6`. Nor chat / terminal working on a question — that is `QD1`/`QD2`/`QD3`. Nor who is allowed to edit — that is `QE1`'s authentication.
+  The comment and discussion write-back path: that is finished, and belongs to `QA6`. Nor chat / terminal working on a question: that is `QD1`/`QD2`/`QD3`. Nor who is allowed to edit: that is `QE1`'s authentication.
 
 ## Diagram
 ```
@@ -43,7 +38,7 @@ concurrency: three steps, do not skip one
 
 ## Items to Finish
 - [ ] Decide which sections are editable from the page
-      All of it? Or start with just `## Where we are` body text, ticking `## Items to Finish`, and the `state:` line — smallest change, most of the value.
+      All of it? Or start with just `## Where we are` body text, ticking `## Items to Finish`, and the `state:` line: smallest change, most of the value.
 - [ ] Decide how far to take concurrency
       ① per-file lock / ② optimistic / ③ CRDT. My recommendation is ① first, and not to discuss ③ until two people really do edit one question at the same time.
 - [ ] Decide on the editor
@@ -57,19 +52,19 @@ concurrency: three steps, do not skip one
 **Writing back to markdown has worked for a while; it is just only exposed for those three comment actions.**
 
 - Write-back that already runs
-  `serve.py`'s `add_comment` / `add_discuss` / `resolve` edit `Q*.md` directly and then call `build.py` to rebuild — which is why "there is no such thing as an unsynced comment". Body editing rides the same path; it is not a new mechanism.
+  `serve.py`'s `add_comment` / `add_discuss` / `resolve` edit `Q*.md` directly and then call `build.py` to rebuild, which is why "there is no such thing as an unsynced comment". Body editing rides the same path; it is not a new mechanism.
 - Half of the lock already exists
   `HOLD` in `serve.py` is a per-file occupancy marker written for `QD1`'s rule (one session per question, one window per session), along with `release` / `kill_term`. Turning it into "one editor per question" is widening the meaning, not building from scratch.
 - Why it does not hurt yet
   Bound to `127.0.0.1`, single user. The day either `QE1` (sharing) or `QE3` (moving into `haichat-inlab`) lands, this becomes real.
 - Where the mature option fits
-  For several people editing the same markdown, the industry answer is a CRDT (Yjs) with a ProseMirror-family editor (TipTap / Milkdown). It is the one mature component worth importing out of `QE3` — but only once "two people typing at once" is actually needed.
+  For several people editing the same markdown, the industry answer is a CRDT (Yjs) with a ProseMirror-family editor (TipTap / Milkdown). It is the one mature component worth importing out of `QE3`, but only once "two people typing at once" is actually needed.
 
 ## Files
 - `serve.py`
   `add_comment` / `add_discuss` / `resolve` are the working template for writing back to markdown; `HOLD` / `hold` / `release` are the half-built lock. Body editing goes here.
 - `build.py`
-  `parse_q()` knows where each `##` section starts and ends — "edit only this section" should locate through it rather than a hand-rolled regex.
+  `parse_q()` knows where each `##` section starts and ends: "edit only this section" should locate through it rather than a hand-rolled regex.
 - `ref/board-form.md`
   The section-grammar spec. Which sections the page may edit, and what an edit writes back, must line up with it.
 
@@ -78,4 +73,4 @@ CRDT: a data structure that lets several people change the same content at once 
 per-file lock: only one person may write a given file at a time; everyone else sees "someone is editing". `HOLD` in `serve.py` is exactly this.
 
 ## Log
-260724 1242 · Opened: JL wants to "really work on a question page — edit, comment, discuss, log the changes". The three comment actions are already done in QA6; this question owns **editing body text** and the concurrency that comes with it
+260724 1242 · Opened: JL wants to "really work on a question page: edit, comment, discuss, log the changes". The three comment actions are already done in QA6; this question owns **editing body text** and the concurrency that comes with it

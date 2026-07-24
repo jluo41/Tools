@@ -6,18 +6,13 @@ method: rewrite into the new format + regenerate the html + delete the old inter
 ## Question
 Two old-format boards already sit under `subjective-label/diagram/`. Should they migrate to the new format, and how far does the migration need to go?
 
-- Why it is hard
-  Migrate too much and it is wasted work (those boards' topics have passed); migrate too little and they will not open — useless as examples.
-- What breaks if we leave it
-  Those two boards are this skill's only **physical evidence**. If they stay stuck in an unopenable old version, nothing SKILL.md says has a single example to point at.
-- What it affects downstream
-  It also tests one thing directly: whether the generator is truly backward-compatible with old boards (whether the `ALIAS` multi-name mechanism holds).
+It is hard because migrating too much is wasted work (those boards' topics have passed), while migrating too little means they will not open and are useless as examples. Leaving it matters because those two boards are this skill's only **physical evidence**: if they stay stuck in an unopenable old version, nothing SKILL.md says has a single example to point at. It also tests one thing directly, whether the generator is truly backward-compatible with old boards (whether the `ALIAS` multi-name mechanism holds).
 
 ## Boundary
 - ✅ Covered here
   **What happens to the legacy boards**: which ones migrate, how far, or regenerate in place.
 - ↪ Covered elsewhere
-  The new format itself — that is `QA1`/`QA2`/`QA4`. This question owns only the existing stock.
+  The new format itself: that is `QA1`/`QA2`/`QA4`. This question owns only the existing stock.
 
 ## Diagram
 ```
@@ -43,12 +38,12 @@ Two old-format boards already sit under `subjective-label/diagram/`. Should they
 
 ## Files
 - `build.py`
-  `ALIAS` decides whether old section names are still recognized — whether an old board regenerates untouched depends entirely on it.
+  `ALIAS` decides whether old section names are still recognized; whether an old board regenerates untouched depends entirely on it.
 - `Tools/plugins/subjective-label/diagram/`
   Where the two legacy boards lived.
 
 ## Glossary
-blank page: the old page built its entire body with an in-page JS pass, and VS Code's preview pane does not run that JS — so it opened pure white. The new version bakes the body into the HTML with zero scripts, so a blank page is impossible.
+blank page: the old page built its entire body with an in-page JS pass, and VS Code's preview pane does not run that JS, so it opened pure white. The new version bakes the body into the HTML with zero scripts, so a blank page is impossible.
 
 ## Discussion
 

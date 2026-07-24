@@ -4,20 +4,15 @@ owner: CC
 method: start an agent with no memory of this conversation and hand it only SKILL.md
 
 ## Question
-How do we prove this skill is **usable** — and not usable only by the person who wrote it?
+How do we prove this skill is **usable**, and not usable only by the person who wrote it?
 
-- Why it is hard
-  The author's head holds a pile of things that never made it into SKILL.md; self-testing in the same conversation can never reveal what is missing.
-- What breaks if we leave it
-  The repo's `CLAUDE.md` hard-codes the rule: any skill change must be validated by a fresh agent before it counts as done. Unvalidated equals unfinished.
-- What it affects downstream
-  It is the only acceptance gate that can be **re-run** — every structural change (like the 260723 redesign) voids the previous acceptance and forces a re-run.
+It is hard because the author's head holds a pile of things that never made it into SKILL.md, so self-testing in the same conversation can never reveal what is missing. Leaving it unproven is not an option here: the repo's `CLAUDE.md` hard-codes the rule that any skill change must be validated by a fresh agent before it counts as done, so unvalidated equals unfinished. Downstream, this is the only acceptance gate that can be **re-run**, since every structural change (like the 260723 redesign) voids the previous acceptance and forces a re-run.
 
 ## Boundary
 - ✅ Covered here
   **How acceptance is run**: what the fresh agent is given, what it must do, what counts as passing, how often to re-run.
 - ↪ Covered elsewhere
-  **What SKILL.md says** — that is `QB1`. This question only judges whether it suffices.
+  **What SKILL.md says**: that is `QB1`. This question only judges whether it suffices.
 
 ## Diagram
 ```
@@ -45,7 +40,7 @@ How do we prove this skill is **usable** — and not usable only by the person w
       wrote board.md → wrote each question → build. Never touched the forbidden zone (never peeked at an existing board).
 - [x] Feed the findings back into SKILL.md
       Verdict YES: SKILL.md + ref/ suffice for a newcomer to open a valid board. The single spot that could truly block someone
-      — `build.py` lives in the skill dir, not the board folder, and how to invoke it was unclear — fixed into SKILL.md (invoke with its path, do not cd in).
+      (`build.py` lives in the skill dir, not the board folder, and how to invoke it was unclear) was fixed into SKILL.md (invoke with its path, do not cd in).
       Everything else was "which convention" minutiae (slug format, default state, owner assignment), also written into the open section.
 
 ## Where we are
@@ -53,7 +48,7 @@ Ran once (260723, GPU-cluster topic), verdict YES; the single real gap is fixed 
 
 ## Files
 - `SKILL.md` · `ref/`
-  The complete material handed to the fresh agent — nothing else may be given.
+  The complete material handed to the fresh agent; nothing else may be given.
 - `ref/writing-rules.md`
   The zero-background cold-read prompt and convergence criterion live here.
 
@@ -63,7 +58,7 @@ fresh agent: a separately started Claude that cannot see this conversation and s
 ## Discussion
 
 ## Log
-260724 1242 · Translated to English (JL 260724: everything on the board in English); Where-we-are updated — the old "never ran" line predated the 260723 run
+260724 1242 · Translated to English (JL 260724: everything on the board in English); Where-we-are updated: the old "never ran" line predated the 260723 run
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
 260723 1720 · Fresh-agent acceptance ran (GPU-cluster topic): success first try, workflow matched, verdict YES;
               the single real gap (how to invoke build.py) fixed into SKILL.md → ✅ SETTLED

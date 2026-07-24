@@ -2,7 +2,7 @@
 name: haipipe-board
 description: Open and run a BOARD — one topic, one folder, one markdown file per open question, generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions that need to be laid out, discussed with someone, and closed one by one; when handing a few days of work to an RA; or when the user says board, 打开这块板, 开板, 加一题, 关板, /haipipe-board. "打开 <board folder>" means VIEW an existing board (rebuild + push the URL to the user's VS Code browser over the VS Code IPC socket) — NOT create a new one, and never `open board.html`/`file://` (Remote-SSH: the browser is on the user's laptop).
 metadata:
-  version: "0.9.2"
+  version: "0.10.0"
   last_updated: "2026-07-24"
   summary: "One topic = one folder of question .md files + one static HTML page. build.py for the static page; serve.py adds live comments/chat/terminal. SKILL.md = the board's settled questions, distilled."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -37,6 +37,7 @@ metadata:
 - **日期是开板那天，之后永不改。** 一个文件夹一个话题，后来的讨论往里追加，不另开。
 - **谁在这块板上，靠路径**：同目录所有 `Q*.md` 就是这块板的题。
   `## Roster` 只管排序和分组；漏登记的照样显示（归 ⚠️ 组）并在命令行提醒 —— **漏登记只会丑，不会丢题**。
+- **Group intro (QC2, 260724)**: in `## Roster`, plain lines between a `### ` heading and its first `.md` line introduce that group. Line 1 always shows under the group header on the index; further lines expand on click. The page's ＋Q / ＋Group / 🗄 buttons edit this structure through `POST /_board/structure` (serve.py `structure_op`); archive moves Q files to `_archive/`, never deletes.
 
 ## 🔨 动作
 

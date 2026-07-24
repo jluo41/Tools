@@ -6,18 +6,13 @@ method: boards live under "<owning unit>/diagram/", apart from the skill itself;
 ## Question
 Where in the repo does a board's folder go, and how is it named?
 
-- Why it is hard
-  Boards serve all kinds of owners (a plugin, a task folder, a paper) — there is no single "all boards go here" place.
-- What breaks if we leave it
-  Boards will multiply and get assigned to RAs. Once locations and names drift, nothing can be found and no other document can point at a board reliably.
-- What it affects downstream
-  The relative paths in `## Links`, and the directory structure when boards are shared out later (`QE1`).
+It is hard because boards serve all kinds of owners (a plugin, a task folder, a paper), so there is no single "all boards go here" place. Leave it and boards will multiply and get assigned to RAs, and once locations and names drift, nothing can be found and no other document can point at a board reliably. It reaches downstream to the relative paths in `## Links`, and to the directory structure when boards are shared out later (`QE1`).
 
 ## Boundary
 - ✅ Covered here
   **Where the folder goes and what it is named**: under whose name it hangs, how number and date are assigned.
 - ↪ Covered elsewhere
-  What is **inside** the folder — that is `QA1`. Nor what the index page looks like — that is `QC2`.
+  What is **inside** the folder: that is `QA1`. Nor what the index page looks like: that is `QC2`.
 
 ## Diagram
 ```
@@ -34,7 +29,7 @@ rule: <owning unit>/diagram/<NN>-<topic>-<YYMMDD>/
 ## Items to Finish
 - [x] Decide where this board lives
 - [x] Decide where the next board lives
-- [x] Naming rule settled — the name alone identifies the board
+- [x] Naming rule settled: the name alone identifies the board
 
 ## Where we are
 JL has ruled: boards live under the **owning unit's `diagram/`**, apart from the skill itself. This board has already moved to
@@ -48,7 +43,7 @@ skills/0_utils/
     SKILL.md  build.py  ref/
 ```
 
-The rule solved something that had never been thought through: **a board is a working artifact, a skill is a deliverable package** — they do not belong in one folder.
+The rule solved something that had never been thought through: **a board is a working artifact, a skill is a deliverable package**: they do not belong in one folder.
 This board used to sit inside `haipipe-board/diagram/`, which effectively shipped a daily-changing work log inside the skill.
 
 The name stays `number-topic-date` (`01-boardform-260722`), number first, date last.
@@ -57,12 +52,12 @@ Two small non-blocking items, settled through use: whether the date is fixed at 
 
 ## Files
 - `ref/board-form.md`
-  §1 folder — location and naming rules live there.
+  §1 folder: location and naming rules live there.
 - `SKILL.md`
   The first line of the "🗂 Shape" section (owning unit = whom this board serves).
 
 ## Glossary
-owning unit: the thing a board serves — a skill group, a task folder, a paper. The board lives in that thing's `diagram/`.
+owning unit: the thing a board serves (a skill group, a task folder, a paper). The board lives in that thing's `diagram/`.
 
 ## Discussion
 > JL: this board should be at `Tools/plugins/haipipe-toolkit/skills/0_utils/diagram`

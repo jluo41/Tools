@@ -49,6 +49,8 @@ source: 可选，这块板的来源（会议记录路径之类）
 
 ## Roster
 ### QA · 组标题
+One sentence shown under the group header on the index (optional intro).
+More plain lines: the click-to-expand body, what this group is for and why.
 QA1-form.md
 QA2-qtemplate.md
 ### QB · 另一组
@@ -56,6 +58,8 @@ QB1-skillmd.md
 ```
 
 **Roster 只管排序和分组**，标题正文一概不抄（抄了就会不同步）。
+
+**Group intro (QC2, 260724)**: plain lines between a `### ` heading and that group's first `.md` line are the group's intro. Line 1 is always visible under the header on the index page; any further lines open on click (rendered as a native `<details>`, so the no-script invariant holds). Intro lines must not end in `.md`. The index page's ＋Q / ＋Group / 🗄 buttons write exactly this grammar through `POST /_board/structure` (`structure_op()` in serve.py, imported by the console): add_question seeds a stub Q file and lists it under its group, add_group appends a `### QX · title` heading (letter auto-picked), archive moves a question's file to `_archive/` inside the board folder (never deletes; build.py does not glob subfolders, so archived files simply leave the page) and removes a group only when it lists no questions.
 
 **必填**：`# 标题`、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Roster` —— 这三段都要写，别省掉 `## Pipeline`。`source:`、`## Links` 选填。
 

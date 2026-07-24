@@ -155,22 +155,63 @@ mark.pend{background:rgba(255,214,0,.30);outline:1px dashed rgba(180,83,9,.5)}
 .blt summary.bt:hover{color:var(--accent)}
 .blt details.it[open]>summary.bt:before{content:"▾"}
 .blt .bt.nod:before{opacity:.45}          /* 没有解释：▸ 淡一点，示意点不开 */
-/* [more details] —— 看得见的展开按钮（JL 260724）。
-   只在「有解释」的 item 上出现；文字用 ::after 出，展开后变 hide。
+/* item = 名字 + 一句话(.ld) + 长解释(.bd)，「click the row」（JL 260724）。
+   有长解释时，「名字 + 一句话」整块就是 <summary>，点这一整行就展开；名字行最右
+   一个淡 caret(.cv) 示意可点，展开后翻转。别的按钮一概不加 —— 就是要干净。
    纯 CSS，零脚本：脚本剥掉后 <details> 照样点得开，正文一直在 DOM 里。 */
-.md{display:inline-block;margin-left:8px;padding:1px 8px;border:1px solid var(--line);
- border-radius:999px;font-size:11px;font-weight:500;color:var(--mut);
- letter-spacing:.01em;white-space:nowrap;vertical-align:1.5px;
- background:var(--card);transition:color .12s,border-color .12s}
-.md::after{content:"more details"}
-details.it[open]>summary .md::after{content:"hide"}
-summary:hover .md{color:var(--accent);border-color:var(--accent)}
-.q:target .md{font-size:11.5px}
-@media print{.md{display:none}}
-.blt .bd{padding-left:15px;margin-top:2px}
-.blt .bd p{margin:0 0 3px;color:var(--mut)}
+/* 名字行：一整行 flex —— 标题占左，灰印(.stmp) + caret(.cv) 钉右。 */
+.bt.nof,.ck .ct.nof{padding-left:0;display:flex;align-items:baseline;gap:9px}
+.bt.nof:before,.ck .ct.nof:before{content:none}
+.bt.nof .ttl,.ck .ct.nof .ttl{flex:1 1 auto;min-width:0}
+/* item 标题图标：标题开头写个 emoji 就当图标（JL 260724） */
+.ti{flex:0 0 auto;font-size:1.05em;line-height:1}
+/* 灰印：日期 + 人，淡、小，不抢标题（JL 260724：date/person 不进标题文字） */
+.stmp{flex:0 0 auto;display:inline-flex;align-items:baseline;gap:6px;
+ font-size:11px;font-weight:500;letter-spacing:.02em;white-space:nowrap}
+.stmp .sd{color:var(--mut)}
+.stmp .sw{font-weight:700}
+.stmp .sw.jl{color:var(--jl,#b5761f)}.stmp .sw.cc{color:var(--cc,#3c7d4c)}
+.stmp .sw.ra{color:var(--ra,#4a6fa5)}
+/* 展开后（藏起来的内容）字号比标题小一档，深浅分摘要/正文（JL 260724 要更小） */
+.bd .ld{color:var(--fg);font-weight:500;font-size:12.5px;line-height:1.55;margin:0 0 5px}
+.q:target .bd .ld{font-size:13.5px;line-height:1.65}
+/* 整行可点 */
+details.it.row{margin:0}
+details.it.row>summary{list-style:none;cursor:pointer;display:block;
+ margin:0 -8px;padding:3px 8px;border-radius:8px;transition:background .12s}
+details.it.row>summary::-webkit-details-marker{display:none}
+details.it.row>summary::before{content:none}
+details.it.row>summary:hover{background:var(--pre)}
+details.it.row>summary:hover .ttl{color:var(--accent)}
+/* caret：名字行最右，淡；展开翻转 */
+.cv{flex:0 0 auto;color:var(--mut);opacity:.45;font-size:12px;
+ transition:transform .15s,opacity .12s}
+.cv::after{content:"⌄"}
+details.it.row>summary:hover .cv{opacity:.8}
+details.it.row[open]>summary .cv{transform:rotate(180deg);opacity:.7}
+.blt .bd{padding-left:0;margin-top:4px}
+.blt .bd p{margin:0 0 5px;color:var(--mut);font-size:12.5px;line-height:1.55}
 .q:target .blt{margin:15px 0}
-.q:target .blt .bd p{font-size:15.5px;line-height:1.7}
+.q:target .blt .bd p{font-size:13.5px;line-height:1.65}
+
+/* ## Question 领句可点，点开一个带小标题的隐藏块（JL 260724）。
+   领句用 flex 只为把 caret 钉右：文字全包在 .qt 里当【一个】flex 子项，
+   这样 **粗体** 照常内联流动，不会被 flex 拆成一列一列（之前的 bug）。 */
+.qlead{margin:0;display:flex;align-items:flex-start;gap:10px}
+.qlead .qt{flex:1 1 auto;min-width:0;font-size:18px;line-height:1.55;color:var(--fg)}
+.qlead .cv{flex:0 0 auto;margin-top:7px}
+.q:target .qlead .qt{font-size:21px;line-height:1.5}
+details.it.row.qd{margin:0 0 6px}
+details.it.row.qd>summary{padding:5px 8px}
+/* 隐藏块：小标题(.fh) 分段，正文比标题小一档 */
+.qbd{padding-left:0;margin-top:6px}
+.qbd .fh{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.03em;
+ margin:14px 0 6px}
+.qbd .fh:first-child{margin-top:2px}
+.q:target .qbd .fh{font-size:13px;margin:18px 0 7px}
+.qbd>p,.qbd .brow{color:var(--mut);margin:0 0 7px;font-size:12.5px;line-height:1.55}
+.qbd .brow b{color:var(--fg);font-weight:600}
+.q:target .qbd>p,.q:target .qbd .brow{font-size:13.5px;line-height:1.7}
 
 /* 代码块也默认收起（JL 260723）：合着时只是一行 “</> code · N 行”，点开才铺代码。
    带 .it → 跟节标题的 expand-all 一起开合。脚本剥掉后照样点得开，代码一直在 DOM。 */
@@ -463,3 +504,37 @@ pre{background:var(--pre);border:1px solid var(--line);border-radius:8px;padding
 img{max-width:100%;border:1px solid var(--line);border-radius:8px}
 .foot{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);
  color:var(--mut);font-size:12.5px}
+
+/* ── group intro (QC2, JL 260724): one quiet sentence under each group header;
+   when more lines exist in the Roster it becomes a native <details> that
+   expands to say what the group is for and why it is here. No script. ── */
+.grp{display:flex;align-items:baseline;gap:8px}
+.grp .gt{flex:1}
+details.gi,.gi.one{margin:-2px 0 10px 2px;font-size:12.8px;color:var(--mut);line-height:1.55}
+details.gi summary{cursor:pointer;list-style:none;user-select:none}
+details.gi summary::-webkit-details-marker{display:none}
+details.gi summary::before{content:'▸';display:inline-block;margin-right:6px;font-size:10px;
+ transition:transform .15s;color:var(--accent)}
+details.gi[open] summary::before{transform:rotate(90deg)}
+details.gi summary:hover{color:var(--fg)}
+.gib{margin:5px 0 2px 15px;max-width:78ch;border-left:2px solid var(--line);padding-left:10px}
+
+/* ── index structure controls (QC2): ＋ Q / ＋ Group / archive. Writers only;
+   they appear on hover so the reading surface stays quiet. ── */
+.gadd,.garch,.gnew{border:1px solid var(--line);background:none;color:var(--mut);
+ border-radius:7px;font-size:11.5px;font-family:inherit;padding:2px 8px;cursor:pointer;
+ opacity:0;transition:opacity .15s}
+.grp:hover .gadd,.grp:hover .garch{opacity:.85}
+.gadd:hover,.garch:hover,.gnew:hover{color:var(--fg);border-color:var(--accent);opacity:1}
+.gnew{display:block;margin:16px 0 4px 2px;opacity:.6}
+.qarch{font-size:12px;color:var(--mut);opacity:0;cursor:pointer;border-radius:6px;
+ padding:0 5px;transition:opacity .15s}
+.ir:hover .qarch{opacity:.75}
+.qarch:hover{opacity:1;color:var(--fg)}
+.garch.arm,.qarch.arm{color:#fff;background:var(--todo);border-color:var(--todo);opacity:1}
+.gform{display:inline-flex;gap:6px;align-items:center;margin-left:8px}
+.gform input{font-size:12.5px;font-family:inherit;border:1px solid var(--line);
+ border-radius:7px;background:var(--card);color:var(--fg);padding:3px 8px;min-width:180px}
+.gform .go{border:1px solid var(--accent);background:var(--accent);color:#fff;
+ border-radius:7px;font-size:11.5px;padding:3px 9px;cursor:pointer}
+.gform .cx2{border:none;background:none;color:var(--mut);font-size:14px;cursor:pointer}

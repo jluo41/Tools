@@ -4,20 +4,15 @@ owner: CC
 method: SKILL.md stays as short as possible; details live in the ref/ files
 
 ## Question
-Someone else — or a future me without this conversation's memory — types `/haipipe-board`. What should they follow? What exactly does SKILL.md say, and what does it leave to `ref/`?
+Someone else, or a future me without this conversation's memory, types `/haipipe-board`. What should they follow? What exactly does SKILL.md say, and what does it leave to `ref/`?
 
-- Why it is hard
-  It enters the context on every invocation, so shorter is better; but too short and nothing is explained. The cut line needs a rule, not a feel.
-- What breaks if we leave it
-  Today this whole workflow lives only in this conversation. A different agent walking in sees a `build.py` and a few boards and cannot guess the moves — what was built here would be gone next time.
-- What it affects downstream
-  It is the skill's entry point, and the only export channel for "rules the board has settled" (the graduation mechanism).
+It is hard because SKILL.md enters the context on every invocation, so shorter is better, yet too short and nothing is explained, and the cut line needs a rule, not a feel. Leave it unwritten and the whole workflow lives only in this conversation: a different agent walking in sees a `build.py` and a few boards, cannot guess the moves, and what was built here would be gone next time. It reaches downstream because SKILL.md is the skill's entry point and the only export channel for "rules the board has settled" (the graduation mechanism).
 
 ## Boundary
 - ✅ Covered here
   **What goes into SKILL.md**: which actions, how long, what belongs in the body vs. in `ref/`, and how it stays in sync with the board (graduation).
 - ↪ Covered elsewhere
-  How to **verify it suffices** once written — that is `QB2` (fresh-agent cold read).
+  How to **verify it suffices** once written: that is `QB2` (fresh-agent cold read).
 
 ## Diagram
 ```
@@ -64,14 +59,14 @@ user types  /haipipe-board
 - `SKILL.md`, 128 lines
   Operations only: the shape, seven actions (open / add / build / comment / sync / link / close),
   the sections of one Q file, three writing rules, four prohibitions, a ref/ index.
-  Spec and prose details never inlined — it enters the context on every invocation, shorter is better.
+  Spec and prose details never inlined; it enters the context on every invocation, shorter is better.
 - `ref/`, four files
-  `q-template.md` — copy to add a question (now includes `## Comments`).
-  `board-form.md` — the full spec: folder, numbering, section↔page mapping, syntax table, Comments format, the invariant.
-  `writing-rules.md` — hard writing rules + the zero-background review prompt, convergence criterion, and past scores.
-  `board-example.md` — replaced; the old one still used the pre-0.1 single-file `[BOARD]`/`[Qn]` format and would mislead.
+  `q-template.md`: copy to add a question (now includes `## Comments`).
+  `board-form.md`, the full spec: folder, numbering, section↔page mapping, syntax table, Comments format, the invariant.
+  `writing-rules.md`: hard writing rules + the zero-background review prompt, convergence criterion, and past scores.
+  `board-example.md`: replaced; the old one still used the pre-0.1 single-file `[BOARD]`/`[Qn]` format and would mislead.
 - `CHANGELOG.md` up to 0.2.0
-  Including one self-correction: 0.1.0 claimed "zero `<script>` in the output", which stopped being true the moment the comment layer landed —
+  Including one self-correction: 0.1.0 claimed "zero `<script>` in the output", which stopped being true the moment the comment layer landed,
   and was never the property worth keeping anyway. Restated as "strip every script and every question plus all body text remains", asserted on every build.
 
 Still open: the live layer (serve/chat/terminal) graduates in only when the QD questions settle.
@@ -81,14 +76,14 @@ Still open: the live layer (serve/chat/terminal) graduates in only when the QD q
 - `SKILL.md`
   The deliverable itself.
 - `ref/board-form.md` · `ref/writing-rules.md` · `ref/q-template.md` · `ref/board-example.md`
-  Where the details go — SKILL.md stays minimal because these four catch everything.
+  Where the details go; SKILL.md stays minimal because these four catch everything.
 - `CHANGELOG.md`
   Version and change record, aligned with SKILL.md's `version:`.
 
 ## Law
 - Graduation: SKILL.md = the crystallization of the board's settled questions
   This board (`diagram/01-boardform-260722/`) is the full design record; SKILL.md keeps only the conclusions of `✅ SETTLED` questions.
-  When a Q reaches ✅, copy its `## Law` rules into SKILL.md's matching spot. **Unsettled questions (🟡/🔴) never enter the manual** —
+  When a Q reaches ✅, copy its `## Law` rules into SKILL.md's matching spot. **Unsettled questions (🟡/🔴) never enter the manual**,
   otherwise ad-hoc choices get written as iron law (QD1's permission rule was hard-coded and overturned exactly that way).
   So SKILL.md always equals the sum of settled rules; before editing it, check whether that question is ✅.
 - SKILL.md stays minimal
@@ -103,13 +98,13 @@ graduation: once a Q settles (✅), moving its settled rules from the board into
 ## Discussion
 
 ## Log
-260724 1242 · Translated to English (JL 260724: everything on the board in English); purged the stale "written but not yet verified" lead — QB2 passed on 260723
+260724 1242 · Translated to English (JL 260724: everything on the board in English); purged the stale "written but not yet verified" lead: QB2 passed on 260723
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
 260723 1720 · QB2 acceptance passed → ticked "a fresh agent can open a board"; SKILL.md gains: invoke build.py with its path + slug/default-state/owner conventions
 260723 1700 · Graduation mechanism settled (Q ✅ → Law copied into SKILL.md), written into ## Law and SKILL.md's "board ↔ SKILL.md" section;
               graduated the three already-✅ questions along the way: fixed the stale "Sync" wording in the comment section (QA6: Save writes the disk),
               introduced the serve.py action, live layer as provisional pointers only; version 0.2.0 → 0.3.0
-260723 1210 · Added the sync and link actions — board↔artifact coupling had never been written down
+260723 1210 · Added the sync and link actions; board↔artifact coupling had never been written down
 260723 1210 · board.md gains ## Links; paths in body text become clickable links
 260723 1150 · SKILL.md finished (128 lines) + the four ref/ files; CHANGELOG at 0.2.0
 260723 1150 · ref/board-example.md replaced (old format); ref/q-template.md gains ## Comments
