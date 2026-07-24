@@ -85,6 +85,7 @@ https://app.excalidraw.com/s/1JWkKv8oMIX/4SD9kLApiQC?element=gFrVKXlBG2d-IrA9PD7
   The file copied for every new question. Its section order and guide sentences must match this question, or new questions drift back.
 - `ref/board-form.md`
   The full spec: §4 section↔page mapping + required/optional, §8 on-stage order and the three-level hierarchy.
+  **Division of labour:** §4 holds the *technical* mapping (name → CSS class → required/optional); this question's `## Law` holds the *meaning* of each section in prose. Neither repeats the other — the earlier attempt to keep an HTML skeleton here went stale and was removed, and that trap is what the split avoids.
 - `SKILL.md`
   The "one Q file" section table + the on-stage order sentence; the section names in the `sync` write-back table must follow too.
 - `board.html`
@@ -111,6 +112,37 @@ https://app.excalidraw.com/s/1JWkKv8oMIX/4SD9kLApiQC?element=gFrVKXlBG2d-IrA9PD7
   So copying the headline yields `QA4 Single…`, not `QA4Single…`.
 - Renaming sections must go through ALIAS; old boards must never break
   One slot, many names; old boards regenerate without a single edit.
+
+**What each section is for — one paragraph each**
+
+These say what each section *means* and what belongs in it. The technical mapping (section name → CSS class → required/optional) stays in `ref/board-form.md §4` and is not repeated here; prose *quality* is `QA5`'s business, not this question's. On the page each heading below is visible and its paragraph is folded — open the one you need.
+
+- ❓ Question — the section that has to work alone
+  One paragraph stating the actual question as a question, then two to four bullets carrying why it is hard, what breaks if it stays undecided, and what it affects downstream. This is the only section with a hard acceptance bar: a reader with no background reads this and nothing else, and can still say what is being decided. The common failure is writing a topic label — "Cohort codes", "Physician table" — which tells the reader the subject but never reveals what is actually unresolved. If the section can be read without learning that something is open, it has failed.
+- 🚧 Boundary — mostly about what is *not* owned
+  Two halves: what this question decides, and what it explicitly does not. The second half is the one that earns its place. Readers arrive carrying expectations from a neighbouring question, and without an explicit "this is not mine, `QAn` owns it" they will judge this question for failing to answer something it never claimed. Naming the owning question, not just the exclusion, is what makes the boundary usable rather than defensive.
+- 🖼 Diagram — the one figure that never folds
+  A single ascii figure carrying the shape of the problem: a flow, a comparison, a before/after, a set of options side by side. It stays on stage permanently because a figure that must be unfolded has already lost to the paragraph above it. The test is subtraction: if removing the figure costs the reader nothing, it was decoration. A good one lets you skip a paragraph of prose; a bad one restates that paragraph in box-drawing characters.
+- 🎯 Items to Finish — the definition of done, not a to-do list
+  A checklist where each line is a condition that can be judged true or false by someone who is not you, with the heading counting ticks automatically. The binding rule is that nothing gets ticked until it has actually been verified. The subtler failure is a checklist that is complete and still proves nothing, because it never included the real user — this question hit exactly that trap: it closed ✅ with every box ticked and was reopened the same day because "a zero-background reader understands it" was not among the boxes.
+- 📍 Where we are — the honest present tense
+  What is true right now, with numbers wherever numbers exist: counts, versions, which of several things is built and which is not. It sits *after* the goal deliberately, because a reader who meets implementation detail before understanding the objective drowns in it — that ordering was this layout's worst flaw before the 260723 redesign. Phrases like "basically done" belong nowhere in it; either a thing is done and can be named, or it is not.
+- 📎 Files — where the work actually lands
+  The files this question moves or depends on, each with a line explaining why it matters here, with paths rendered as clickable links. This is not an exhaustive list of everything touched; it is the shortlist someone needs in order to start. Its real job is to close the gap between a decision written on a board and the code that decision governs, so that a settled question can be acted on without a search.
+- ⚖ Law — the rules that survived the argument
+  What has actually been decided and will be followed from now on, one rule per line with the reasoning behind it. Only settled things go here: writing an intention as law is how a casual preference hardens into a constraint nobody remembers agreeing to. This section carries a second job — when a question reaches ✅ SETTLED, its Law is what graduates into `SKILL.md` or `ref/`, so anything written here should be worth reading by someone who never saw the board.
+- 💡 Lesson — the traps, kept specific
+  What went wrong and what it cost, in enough detail that the same mistake is recognisable next time. Generic advice is worthless here; the entries that earn their place are the ones with a concrete failure attached — a checklist that was fully ticked and still wrong, an ordering that made identical text unreadable. If a lesson could have been written before the work started, it is not a lesson.
+- 📖 Glossary — the terms a stranger would stumble on
+  One line per word, in the form `term: explanation`. The rule attached to it is strict: any phrase invented on this board must be defined here or must not be used at all. This is what stops a board from developing a private vocabulary that only its authors can read — the exact failure that makes a handed-over board useless to the person receiving it.
+- 💬 Discussion — the running argument
+  Loose exchange, one line each, written as `> JL:` and answered as `>> CC0724:`. It preserves how a decision was reached, which matters when the decision is later questioned and nobody remembers what was already considered and rejected. Lines beginning `> JL:` are never deleted — when a point is resolved it gets marked resolved, not erased.
+- ☑ Comments — remarks pinned to a specific sentence
+  Entries in the form `- [ ] WHO 「the quoted sentence」 · YYMMDD HHMM`, with the quoted text highlighted in the body above and `[x]` marking resolved. Unresolved comments open automatically, so an open thread cannot be missed by scrolling past a collapsed block. Written by the page's comment button when the server is running, or by hand when it is not.
+- 🗒 Log — what changed, newest first
+  One line per change, `YYMMDD HHMM · what changed`, most recent at the top. It answers "what happened to this question since I last looked" without reading the whole page, which is the question a returning reader actually has. Entries record the change and its cause, not a restatement of the current state — the current state is what `## Where we are` is for.
+- 🕳 Why here — retired, still parsed
+  A section that once justified why a question deserved a page. Its job moved into `## Question`'s bullets so that the first section could orient a reader on its own. Old boards that still carry it regenerate without edits; the content is kept and sinks into the bottom fold rather than being dropped.
 
 ## Lesson
 - "Settled" can be overturned by one sentence
@@ -143,6 +175,7 @@ group title: a full-line bold sentence in the body that leads a run of items; sh
       >> CC0723: the HTML skeleton + mapping table were added earlier; after the 260723 redesign the skeleton went stale and was removed — the mapping lives in `ref/board-form.md §4`, no second copy maintained here.
 
 ## Log
+260724 1500 · `## Law` gains "What each section is for — one paragraph each": all 12 sections (+ retired `Why here`) now carry a real paragraph instead of a few words, folded on stage so the detail is there when wanted (JL 260724). `## Files` records the split from `ref/board-form.md §4` (spec vs meaning) so the stale-duplicate trap does not recur
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · All 18 questions on the board converted to the new structure (Question bullets + Boundary + Files + Why here retired) → only "zero-background reader understands one page" remains
 260723 · Redesign: order flipped to "intent first, status second" (Question paragraph+bullets → Boundary → Diagram → Items to Finish → Where we are); `Why here` retired into Question; `🚧 Boundary` added; old names preserved via ALIAS. state ✅ → 🟡, pending per-question rewrites + cold read

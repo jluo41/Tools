@@ -488,10 +488,38 @@ class Handler(SimpleHTTPRequestHandler):
                 denied.append(tool_brief(name, tin))
                 return PermissionResultDeny(
                     message="这一轮没开流式，没法问你，先拒了。")
+            def ask_detail():
+                """What the VS Code extension shows before you allow: the actual
+                proposed change, not just the tool name (JL 260724, duplicating
+                the plugin). Truncated — a gate preview, not a full diff view."""
+                cap = 4000
+                try:
+                    if name == "Edit":
+                        return {"file": tin.get("file_path", ""),
+                                "old": str(tin.get("old_string", ""))[:cap],
+                                "new": str(tin.get("new_string", ""))[:cap]}
+                    if name == "Write":
+                        tgt = Path(tin.get("file_path", ""))
+                        old = (tgt.read_text(encoding="utf-8", errors="replace")[:cap]
+                               if tgt.exists() else "")
+                        return {"file": str(tgt), "old": old,
+                                "new": str(tin.get("content", ""))[:cap]}
+                    if name == "MultiEdit":
+                        eds = [{"old": str(e.get("old_string", ""))[:800],
+                                "new": str(e.get("new_string", ""))[:800]}
+                               for e in (tin.get("edits") or [])[:6]]
+                        return {"file": tin.get("file_path", ""), "edits": eds,
+                                "count": len(tin.get("edits") or [])}
+                    if name == "Bash":
+                        return {"command": str(tin.get("command", ""))[:1200]}
+                except Exception:  # noqa: BLE001 — a broken preview must not block the gate
+                    return None
+                return None
+
             rid = str(next(ASK_SEQ))
             ASKS[rid] = {"ev": threading.Event(), "ok": False, "always": False}
             emit({"t": "ask", "id": rid, "tool": name,
-                  "brief": tool_brief(name, tin)})
+                  "brief": tool_brief(name, tin), "detail": ask_detail()})
             await anyio.to_thread.run_sync(lambda: ASKS[rid]["ev"].wait(300))
             a = ASKS.pop(rid, {})
             if a.get("always"):

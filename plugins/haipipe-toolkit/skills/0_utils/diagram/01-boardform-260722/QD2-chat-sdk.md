@@ -75,12 +75,13 @@ Open a conversation right inside the page: it reads this question's content and 
       CHAT_RULES / FULL_RULES both say "Answer in English by default"; the drawer UI is fully English.
 - [x] The drawer works through the console too (260724)
       `haichat-inlab`'s `boards_api.py` relays `/_board/chat` (NDJSON stream), `/_board/answer`, `/_board/stop` to the workstation serve.py — verified end to end: a "Reply with exactly: RELAY OK" turn streamed `delta`/`done` lines through port 8093. One implementation; the console is only a pipe (`QE3`'s Law).
-- [ ] Align the drawer with the Claude Code VS Code extension (JL 260724)
-      Same engine underneath already (see Where we are). The affordances worth adopting, in order:
-      ① diff preview inside the permission prompt (the extension shows the proposed edit before you allow — the drawer names only tool + path);
-      ② @-file mentions (type `@` to pull a repo file into context);
-      ③ plan mode toggle (read-only planning turn before edits);
-      ④ checkpoints/rewind — parked; it fights the one-session-per-question LAW.
+- [ ] Align the drawer with the Claude Code VS Code extension (JL 260724: "I want to duplicate it")
+      Same engine underneath already (see Where we are — the extension's backend IS the local claude runtime this drawer drives). Progress:
+      ① diff preview inside the permission prompt — BUILT 260724: the ask event now carries `detail` (Edit: old/new; Write: current-file vs proposed; MultiEdit: per-edit pairs; Bash: the command), and the drawer renders − red / + green blocks above Allow/Deny. Emitted JS node-checked; a live gate-pop is still owed (the full-tier E2E boots ~150 skills and outran the test window; the turn was stopped cleanly and board.md verified untouched).
+      ② @-file mentions (type `@` to pull a repo file into context) — open;
+      ③ plan mode toggle (read-only planning turn before edits) — open;
+      ④ persistent process per session (the extension keeps one claude process alive across turns; the drawer boots one per POST — the real architectural delta, and the fix for slow full-tier boots) — open;
+      ⑤ checkpoints/rewind — parked; it fights the one-session-per-question LAW.
 - [ ] Long tasks
       Today one HTTP request waits start to finish. A ten-minute job will hit the timeout.
       (Note: NOT the same root as the old "writes hang" issue — that one was diagnosed and fixed, see Lesson.)
@@ -116,10 +117,12 @@ Usable. The `💬 Chat` you click on the page is this.
       ① open the drawer, unsaved comments sync first → ② click "🔧 handle N open comments" → ③ "↻ reload the page to see the result".
       The server regenerates the html after editing the md, so a reload suffices.
 
-**🧩 How the Claude Code VS Code extension relates (JL asked 260724)**
+**🧩 How the Claude Code VS Code extension relates (JL asked 260724; "duplicate it" is the goal)**
 
-- It is the same engine, not a different animal
-      The extension embeds the same local `claude` agent runtime the drawer drives through `claude_agent_sdk`: same login (`~/.claude/.credentials.json`), same session store (`~/.claude/projects/<cwd>/<sid>.jsonl`), same permission machinery. A drawer session and an extension session are the same kind of object — the LAW's "two front ends of one session" extends to it.
+- Its backend, anatomically
+      The extension does NOT implement an agent. It spawns the machine's own `claude` binary as a subprocess and speaks the stream-JSON agent protocol over stdin/stdout — the exact protocol `claude_agent_sdk` wraps. Permissions come back as control messages on that channel (what our `can_use_tool` receives); one process stays alive across the turns of a session; sessions land in the same `~/.claude/projects/<cwd>/<sid>.jsonl`; auth is the CLI's own login. On top sits a webview UI plus an IDE bridge (a small local service the CLI discovers via `~/.claude/ide/` lockfiles) for editor-native affordances: the diff view, selection context, diagnostics.
+- So the drawer already IS the duplicate, at the engine layer
+      serve.py's `chat()` = ClaudeSDKClient = the same subprocess + protocol + session store + permission channel. What differs is the shell around it: the extension holds ONE live process per session (instant follow-ups), and its gate shows the proposed edit. The first is item ④ above; the second shipped today (①).
 - What the drawer already matches
       allow-once / always / deny prompts (= the extension's permission dialog) · character streaming with a collapsible thinking block · model + effort pickers · per-turn cost · resumable sessions.
 - What the extension has that the drawer lacks
@@ -164,6 +167,8 @@ effort: how much thinking the model spends on one answer, five tiers low→max.
 >> CC0723: the send key turns into ⏹ while running; clicking it raises the server-side flag and aborts browser-side.
 > JL: how do you think the claude code plugin in the vscode work? we want to align it with QD2?
 >> CC0724: it is the same engine underneath (local claude runtime, same credentials, same session jsonls) — so alignment is UX, not architecture. What it has that the drawer lacks: diff preview at the permission prompt, @-file mentions, plan mode, checkpoints. Adopt in that order; skip checkpoints (fights the one-session LAW). Full comparison in Where we are; new Items-to-Finish line added.
+> JL: will this make it better to use the claude sdk or terminal? I want to know what is the back end of the vscode claude plugin? and I want to duplicate it.
+>> CC0724: the console split changes nothing about which to use — both still run on the workstation serve.py; the console only pipes. Choose by job: drawer (SDK) for gated, comment-driven edits in the page; terminal for long tasks, skills, anything CLI-shaped. The plugin's backend is the claude binary itself over the stream-JSON protocol — which is what the drawer already drives, so "duplicating it" = the shell: diff-at-the-gate (shipped today, ①) and one persistent process per session (④, next). Anatomy written into Where we are.
 
 ## Comments
 - [x] JL “open the terminal/chatbot with a prompt so they know which question and board” · 260723 1500
@@ -189,6 +194,7 @@ effort: how much thinking the model spends on one answer, five tiers low→max.
       but one question: is this output actually streaming out? It doesn't feel like it.
 
 ## Log
+260724 1455 · Diff preview at the gate BUILT (serve.py ask events carry `detail`, drawer renders −/+ blocks; node-checked; live pop owed — the E2E's full-tier boot outran the window, turn stopped clean, board.md untouched). The extension's backend anatomized in Where we are per JL's "duplicate it"; item ④ persistent-process named as the real remaining delta
 260724 1350 · Console relay verified (boards_api.py pipes /_board/chat NDJSON through 8093 — "RELAY OK" streamed); VS Code extension alignment analyzed per JL's question: same engine, adopt diff-preview → @-mentions → plan mode, skip checkpoints
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
