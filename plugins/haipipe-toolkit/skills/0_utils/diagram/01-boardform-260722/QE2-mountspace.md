@@ -65,7 +65,7 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 
 ## Files
 - `boards_api.py`
-  The shipped layer: `_spaces()` registry, `_find_boards()` discovery, board rows, page serving, write-back relay. Lives in `haichat-inlab` on branch `feat/haichat-board`.
+  The shipped layer: `_spaces()` registry, `_find_boards()` discovery, board rows, page serving, write-back relay. Lives in the sibling project `haichat-board/` since 260724 (JL: "a separate project"); `haichat-inlab` imports it from there. Branch `feat/haichat-board`.
 - `web/`
   `src/components/BoardsView.tsx` + the `boards` entries in `src/views.ts` / `src/types.ts` / `src/Console.tsx`.
 - `build.py`
@@ -79,5 +79,6 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 SPACE: JL's term for the root of one research repo, e.g. `Physician-SPACE`, `WellDoc-SPACE`. One SPACE holds several boards.
 
 ## Log
+260724 1440 · Page serving widened to ANY existing file under the space root, read-only (JL: "how could I open cms_production.do?") — `## Files` links now open through the console; source-ish suffixes (.do/.R/.sql/…) display as text instead of downloading (both here and serve.py); the third discovered board (Project-Personality-OpioidRx/01-cmsdata) verified the click end to end. `boards_api.py` rehomed to the sibling `haichat-board/` service (8094), inlab imports it — see QE3
 260724 1324 · v1 shipped and verified (JL's "go ahead… as we discussed"): `boards_api.py` + Boards view in `haichat-inlab` (branch `feat/haichat-board`, commit 27e3ed6) — SPACE registry, discovery, board list, embedded page, comment/discuss/resolve write-backs relayed to the skill's own writers. 🔴 → 🟡; still open: create-from-web, row-design judgment, a real second SPACE
 260724 1242 · Opened: JL asked for "haichat-board mounts a SPACE, and inside it you create a new board or open an existing one". Split out as the layer above a board; where the code runs belongs to QE3

@@ -175,7 +175,8 @@ def esc(s):
 
 BASE = None            # 当前这块板的文件夹，main 里设；用来把路径解析成链接
 LINKS = {}             # board.md 的 ## Links 声明的： 反引号里的写法 -> 相对路径
-EXT = ("md", "py", "html", "css", "js", "json", "yaml", "yml", "sh", "txt", "ipynb")
+EXT = ("md", "py", "html", "css", "js", "json", "yaml", "yml", "sh", "txt", "ipynb",
+       "do", "R", "r", "sql", "tex", "bib", "toml", "csv", "tsv", "ps1", "log")
 
 
 def resolve(token):

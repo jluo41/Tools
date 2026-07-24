@@ -105,7 +105,9 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 - One writer, never two
   The md-editing functions (`add_comment` / `add_discuss` / `resolve`) live in the skill's `serve.py`; `boards_api.py` imports them. A second implementation of "how a comment is written into md" must not exist.
 - The layer split
-  Skill (Tools repo) = grammar + static build + workstation live layer (chat/terminal). Console (`haichat-inlab`) = SPACE mounting + discovery + serving + relayed write-backs. The console degrades honestly (501) where the workstation half is required.
+  Skill (Tools repo) = grammar + static build + workstation live layer (chat/terminal). The SPACE layer (mounting + discovery + serving + relayed write-backs) = `boards_api.py`. Anything mounting it degrades honestly (501/502) where the workstation half is required.
+- The SPACE layer's home is the sibling project `haichat-board/` (JL 260724)
+  Its own service (port 8094, zero-build server-rendered index, own Dockerfile + compose entry); `haichat-inlab` imports the SAME router from that directory for its `/boards` page — one implementation, two fronts. Same repo, same branch, so "merge back later" is an ordinary `git merge`, not a transplant.
 
 ## Glossary
 router: a FastAPI `APIRouter`, a group of endpoints under a shared prefix. `haichat-inlab/main.py` uses `include_router()` to compose four into one service; the board is now the fifth (`boards_api.py`).
@@ -118,5 +120,6 @@ per-thread iframe: HAI-Chat embedding any URL as a page alongside one conversati
 >> CC0724: Only partly. Of the five steps, the first two (`build.py --json`, the SPACE index on `serve.py`) stay in `Tools`; the last three (`boards_api.py`, the `web/` view, in-page editing) go to `HAIChat-SPACE`. On branching: yes for `HAIChat-SPACE` (`feat/haichat-board` — a multi-day feature in a repo whose `haichat-inlab` service others run), no for `Tools` (both changes are small and additive, and branching there only adds submodule-ref churn in `Physician-SPACE`).
 
 ## Log
+260724 1440 · JL: a separate project for haichat-board, merged back later → `boards_api.py` moved to the sibling `haichat-board/` (standalone on 8094: server-rendered index, Dockerfile, compose entry); inlab imports the same router from there. Law amended; still ✅ — the decision deepened, nothing reversed
 260724 1324 · SETTLED. JL approved the discussed plan ("go ahead… as we discussed, don't stop to ask me"): static invariant KEPT (`build.py --json` shipped, skill v0.7.0); hybrid layer split (grammar+writers in the skill, SPACE/discovery/serving in `haichat-inlab`'s new `boards_api.py`, chat/terminal workstation-only via 501); branch `feat/haichat-board` created in HAIChat-SPACE (commit 27e3ed6), no branch in Tools. JSON≡HTML verified on this board (22 ids, comment counts). `## Law` written
 260724 1242 · Opened: JL asked "should we use a mature stack like nodejs / should we branch". Split "where it runs + does the static invariant survive" into its own question; the SPACE layer is QE2 and in-page editing is QE4
