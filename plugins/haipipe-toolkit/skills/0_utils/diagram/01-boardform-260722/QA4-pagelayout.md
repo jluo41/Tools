@@ -3,12 +3,10 @@ state: 🟡 PARTIAL
 owner: CC
 method: intent first (what is asked · boundary · what counts as done), status second — a zero-background reader gets it in one pass
 session: cd5e7f5f-15c7-49ba-a97f-bdf90ef3f534
-
 ## Question
 When one question is opened and it alone fills the screen, how should that page be arranged so that someone with **no background at all** can read top to bottom once and know: what is being asked, what counts as done, and where things stand now?
 
-- Why this is hard, and what it touches
-  The difficulty is that one page has to carry two different things at once: what is being decided, and how far along it is. The order turns out to matter more than the wording. Lead with implementation detail and the reader drowns before ever learning what the question is, while the same sentences, reordered, read like a different document. This matters because the board is not written for us. It exists to be discussed with other people and handed to an RA, so a page the second person cannot follow is worth nothing no matter how much is on it. If it is not easy to read, writing that much is rubbish. The decision also reaches past this one page: section names, their order, and what sits on stage rather than folded are all produced by `build.py`, so whenever this question moves, `ref/q-template.md` and the wording of every other question on the board have to move with it.
+The difficulty is that one page has to carry two different things at once: what is being decided, and how far along it is. The order turns out to matter more than the wording. Lead with implementation detail and the reader drowns before ever learning what the question is, while the same sentences, reordered, read like a different document. This matters because the board is not written for us. It exists to be discussed with other people and handed to an RA, so a page the second person cannot follow is worth nothing no matter how much is on it. If it is not easy to read, writing that much is rubbish. The decision also reaches past this one page: section names, their order, and what sits on stage rather than folded are all produced by `build.py`, so whenever this question moves, `ref/q-template.md` and the wording of every other question on the board have to move with it.
 
 ## Boundary
 - ✅ Covered here

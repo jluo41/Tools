@@ -916,16 +916,29 @@
     });
     return xtermP;
   }
+  function cellDims() {
+    // xterm's rendered cell size — the truth the pty must match. Guessed
+    // constants drift with CJK-heavy fonts and mangle claude's TUI columns
+    // (JL's screenshot, fig/qd3-reconnect-after-release-260724.png).
+    try {
+      var d = termT._core._renderService.dimensions;
+      var w = d.css ? d.css.cell.width : d.actualCellWidth;
+      var h = d.css ? d.css.cell.height : d.actualCellHeight;
+      if (w > 3 && h > 6) return { w: w, h: h };
+    } catch (e) {}
+    return { w: 8.4, h: 17 };
+  }
   function fitTerm() {
     if (!termT) return;
     var host = chat.querySelector('.tm');
     var w = host.clientWidth, h = host.clientHeight;
     if (w < 40 || h < 40) return;
-    var cols = Math.max(20, Math.floor((w - 16) / 8.4));
-    var rows = Math.max(6, Math.floor((h - 12) / 17));
+    var c = cellDims();
+    var cols = Math.max(20, Math.floor((w - 16) / c.w));
+    var rows = Math.max(6, Math.floor((h - 12) / c.h));
     try { termT.resize(cols, rows); } catch (e) {}
   }
-  var termKey = null, termRetry = 0, termPing = null, termClosing = false;
+  var termKey = null, termRetry = 0, termPing = null, termClosing = false, termRespawn = false;
   function disposeTerm() {
     termClosing = true;                       // an intentional close never reconnects
     if (termPing) { clearInterval(termPing); termPing = null; }
@@ -946,7 +959,8 @@
     window.__wsDbg = { state: 'new', msgs: 0, err: null };
     ws.onopen = function () {
       window.__wsDbg.state = 'open';
-      termRetry = 0;
+      termRetry = 0; termRespawn = false;
+      setTimeout(fitTerm, 350);            // refit with REAL cell metrics, repaints claude
       // the ttyd handshake: auth as one message, size as another (merged = no output)
       ws.send(JSON.stringify({ AuthToken: '' }));
       ws.send(JSON.stringify({ columns: termT.cols || 100, rows: termT.rows || 30 }));
@@ -968,6 +982,18 @@
       window.__wsDbg.state = 'closed:' + (e && e.code);
       if (termPing) { clearInterval(termPing); termPing = null; }
       if (termClosing || !termOn || !termT) return;  // closed on purpose → stay quiet
+      if (termRetry >= 2 && !termRespawn) {
+        // the socket keeps dying → the ttyd behind it is probably GONE (released
+        // or reaped), and no amount of reconnecting revives a dead terminal.
+        // Ask serve.py for a fresh one — --resume brings the same session back.
+        termRespawn = true;
+        termT.write('\r\n\x1b[90m[terminal is gone — restarting it (same session)…]\x1b[0m\r\n');
+        termOpen(true).then(function (ok) {
+          if (!ok && termT)
+            termT.write('\r\n\x1b[90m[could not restart — click ⌨ twice to reopen]\x1b[0m\r\n');
+        });
+        return;
+      }
       if (termRetry >= 6) {
         termT.write('\r\n\x1b[90m[disconnected — click ⌨ twice to reopen]\x1b[0m\r\n');
         return;
