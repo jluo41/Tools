@@ -135,6 +135,13 @@ Built, and it lives in the page. ⌨ in the drawer header enters the terminal; c
   The page-side entry that switches into the terminal.
 
 ## Lesson
+**A released terminal looks like a network failure to the page.**
+CC released QD3's ttyd from the CLI while JL had that very terminal open in the drawer; the page saw only a dead WebSocket and knocked six times — reconnect cannot revive a terminal that no longer exists. JL's screenshot caught it, banners interleaved with claude's half-repainted screen:
+
+![reconnect banners over a mangled TUI after the terminal was released](fig/qd3-reconnect-after-release-260724.png)
+
+Since 0.9.2 the third knock stops knocking and re-asks serve.py for a FRESH terminal (`--resume` restores the session), so a release under your feet costs a two-second restart, not a dead pane. The mangled columns had a second cause: fitTerm used guessed glyph metrics (8.4px/17px); it now reads xterm's real rendered cell size and refits 350ms after connect, so the pty and the pane agree on the width claude repaints into.
+
 **A hollow session (id recorded, never chatted) makes --resume exit instantly — the terminal dies on open.**
 `claude --session-id <uuid>` starts a session, but if only the UI booted and no message was ever sent, no jsonl lands on disk.
 Next open reads that id from the header → `claude --resume <id>` → "No conversation found" → claude exits at once →
@@ -229,6 +236,7 @@ AGPL-3.0: myrlin's license. Fine to use as a standalone tool; constraints bite w
       >> CC0723: you can — the UI blocked it, not the LAW. Different questions are different sessions; open more board tabs. (The ↗ pop-out button was later removed per JL.)
 
 ## Log
+260724 1540 · JL's screenshot (fig/qd3-reconnect-after-release-260724.png) → two fixes in assets/board.js: reconnect self-heals (2 dead knocks → respawn via /_board/term, --resume restores the session) and fitTerm uses xterm's real cell metrics + a post-connect refit. Lesson written
 260724 1410 · Smoothness ①–④ built into build.py's page JS (reconnect-with-backoff keeping scrollback · 30s keepalive resize op · ResizeObserver fit · hover pre-warms assets only, never HOLD); emitted JS node-checked; ⑤ grace release and ⑥ WebGL stay open
 260724 1350 · Console relay shipped and verified (boards_api.py: term/release POSTs, the /_term WS pipe, xterm assets — bytes flowed through 8093, session reused, released clean); JL asked "make it very smooth" → the six-point smoothness list added to Items to Finish
 260724 1242 · Translated to English (JL 260724: everything on the board in English); closed the two open comments — the 2038 "change this to English" one (this round IS that change) and the stray 1511 copy of the already-resolved trade-offs comment
