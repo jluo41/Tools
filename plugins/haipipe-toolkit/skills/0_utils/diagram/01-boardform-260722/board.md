@@ -19,7 +19,7 @@ Five groups; the letter in each Q's id is its group. The first two are the main 
 
 **QD · Working on the board** — the live layer: whether you can do real work on the board itself. One session per question (QD1), the restricted in-page drawer (QD2), the unrestricted real terminal (QD3), LLM-assigned group icons (QD4), an agent scoped to the whole board (QD5), how the page updates live (QD6).
 
-**QE · Sharing the board** — putting the board out there and making it a real thing. QE1 is the parent question: local or server, and which half other people get. The three below are its forks: how a mounted SPACE shows all its boards (QE2), whether the code stays in `serve.py` or moves into `haichat-inlab`, and whether the static half survives (QE3), whether the body text is editable in the page and what happens when two people edit at once (QE4).
+**QE · Sharing the board** — putting the board out there and making it a real thing. QE1 is the parent question: local or server, and which half other people get. Its forks: how a mounted SPACE shows all its boards (QE2 — v1 shipped 260724 as `boards_api.py` + a Boards view in `haichat-inlab`); where the code runs (QE3 — ✅ settled 260724: static half stays an invariant, hybrid layer split, branch `feat/haichat-board`); whether the body text is editable in the page and what happens when two people edit at once (QE4); where Boards sits in the console — inside the scopes, or a third top-level entry beside individual/group (QE5, JL's call). The console now also RELAYS the live layer — chat and terminal work through it, piped to the workstation serve.py, verified 260724.
 
 ## Roster
 ### QA · Defining a board
@@ -49,6 +49,7 @@ QE1-hosting.md
 QE2-mountspace.md
 QE3-whereitruns.md
 QE4-editlock.md
+QE5-consolescope.md
 
 ## Links
 SKILL.md            ../../haipipe-board/SKILL.md

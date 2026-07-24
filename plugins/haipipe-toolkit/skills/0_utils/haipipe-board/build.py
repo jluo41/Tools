@@ -1639,11 +1639,65 @@ JS = r"""
     var rows = Math.max(6, Math.floor((h - 12) / 17));
     try { termT.resize(cols, rows); } catch (e) {}
   }
+  var termKey = null, termRetry = 0, termPing = null, termClosing = false;
   function disposeTerm() {
+    termClosing = true;                       // an intentional close never reconnects
+    if (termPing) { clearInterval(termPing); termPing = null; }
     try { if (termWS) termWS.close(); } catch (e) {}
     try { if (termT) termT.dispose(); } catch (e) {}
-    termWS = null; termT = null;
+    termWS = null; termT = null; termKey = null; termRetry = 0;
     var host = chat.querySelector('.tm'); if (host) host.innerHTML = '';
+  }
+  /* smoothness (QD3 260724): the WS is rebuilt on drops, the TERMINAL is not —
+     scrollback survives a reconnect; the post-auth resize (SIGWINCH) makes
+     claude repaint. Keepalive = a same-size resize op every 30s, so an idle
+     relay/proxy never reaps the pipe. */
+  function connectWS(key) {
+    var proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
+    var ws = new WebSocket(proto + location.host + '/_term/' + key + '/ws', ['tty']);
+    ws.binaryType = 'arraybuffer';
+    termWS = ws;
+    window.__wsDbg = { state: 'new', msgs: 0, err: null };
+    ws.onopen = function () {
+      window.__wsDbg.state = 'open';
+      termRetry = 0;
+      // the ttyd handshake: auth as one message, size as another (merged = no output)
+      ws.send(JSON.stringify({ AuthToken: '' }));
+      ws.send(JSON.stringify({ columns: termT.cols || 100, rows: termT.rows || 30 }));
+      if (termPing) clearInterval(termPing);
+      termPing = setInterval(function () {           // keepalive: same-size resize op
+        if (ws.readyState === 1 && termT)
+          ws.send('1' + JSON.stringify({ columns: termT.cols, rows: termT.rows }));
+      }, 30000);
+    };
+    ws.onmessage = function (ev) {
+      window.__wsDbg.msgs++;
+      var d = ev.data;
+      if (typeof d === 'string') { if (d.charCodeAt(0) === 48) termT.write(d.slice(1)); return; }
+      var b = new Uint8Array(d);
+      if (b[0] === 48) termT.write(new TextDecoder().decode(b.subarray(1)));
+    };
+    ws.onerror = function (e) { window.__wsDbg.err = 'error'; };
+    ws.onclose = function (e) {
+      window.__wsDbg.state = 'closed:' + (e && e.code);
+      if (termPing) { clearInterval(termPing); termPing = null; }
+      if (termClosing || !termOn || !termT) return;  // closed on purpose → stay quiet
+      if (termRetry >= 6) {
+        termT.write('\r\n\x1b[90m[disconnected — click ⌨ twice to reopen]\x1b[0m\r\n');
+        return;
+      }
+      var wait = Math.min(15000, 1000 * Math.pow(2, termRetry));
+      termRetry += 1;
+      termT.write('\r\n\x1b[90m[connection lost — reconnecting in ' +
+                  Math.round(wait / 1000) + 's (' + termRetry + '/6)]\x1b[0m\r\n');
+      setTimeout(function () {
+        if (!termClosing && termOn && termT && termKey === key) connectWS(key);
+      }, wait);
+    };
+    termT.onData(function (s) { if (ws.readyState === 1) ws.send('0' + s); });
+    termT.onResize(function (sz) {
+      if (ws.readyState === 1) ws.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
+    });
   }
   async function mountTerm(key) {
     await loadXterm();
@@ -1655,36 +1709,21 @@ JS = r"""
       theme: { background: '#0b0d12', foreground: '#e8e8e6', cursor: '#6ea8f0' }
     });
     termT.open(host);
-    try { window.__boardTerm = termT; } catch (e) {}   // 调试用句柄，可在控制台 inspect
+    try { window.__boardTerm = termT; } catch (e) {}   // debug handle, inspect from the console
     fitTerm();
-    var proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
-    var ws = new WebSocket(proto + location.host + '/_term/' + key + '/ws', ['tty']);
-    ws.binaryType = 'arraybuffer';
-    termWS = ws;
-    window.__wsDbg = { state: 'new', msgs: 0, err: null };
-    ws.onopen = function () {
-      window.__wsDbg.state = 'open';
-      // ttyd 的握手：auth 一条、尺寸另一条（合并成一条 ttyd 不认，实测终端不出内容）
-      ws.send(JSON.stringify({ AuthToken: '' }));
-      ws.send(JSON.stringify({ columns: termT.cols || 100, rows: termT.rows || 30 }));
-    };
-    ws.onmessage = function (ev) {
-      window.__wsDbg.msgs++;
-      var d = ev.data;
-      if (typeof d === 'string') { if (d.charCodeAt(0) === 48) termT.write(d.slice(1)); return; }
-      var b = new Uint8Array(d);
-      if (b[0] === 48) termT.write(new TextDecoder().decode(b.subarray(1)));
-    };
-    ws.onerror = function (e) { window.__wsDbg.err = 'error'; };
-    ws.onclose = function (e) { window.__wsDbg.state = 'closed:' + (e && e.code);
-      if (termT) termT.write('\r\n\x1b[90m[disconnected]\x1b[0m\r\n'); };
-    termT.onData(function (s) { if (ws.readyState === 1) ws.send('0' + s); });
-    termT.onResize(function (sz) {
-      if (ws.readyState === 1) ws.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
-    });
+    termClosing = false; termKey = key; termRetry = 0;
+    connectWS(key);
     setTimeout(function () { termT && termT.focus(); }, 50);
   }
   window.addEventListener('resize', function () { if (termOn) fitTerm(); });
+  // fit when the drawer pane itself changes size, not only the window (debounced)
+  (function () {
+    var host = chat.querySelector('.tm'), t = null;
+    if (window.ResizeObserver && host)
+      new ResizeObserver(function () {
+        clearTimeout(t); t = setTimeout(function () { if (termOn) fitTerm(); }, 150);
+      }).observe(host);
+  })();
 
   async function termRelease(file) {
     disposeTerm();
@@ -1719,6 +1758,11 @@ JS = r"""
       return true;
     } catch (e) { say('⚠ ' + e.message); return false; }
   }
+  // pre-warm on hover: pull the 480KB xterm.js while the pointer is still on ⌨,
+  // so the click feels instant. Assets only — never POST /_board/term here (it takes HOLD).
+  chat.querySelector('.term').addEventListener('mouseenter', function () {
+    loadXterm().catch(function () {});
+  });
   chat.querySelector('.term').onclick = async function () {
     if (!cq) return;
     if (termOn) {                                  // 切回抽屉 = 交回 session

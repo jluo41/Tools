@@ -51,6 +51,8 @@ This board lives only on one machine's `127.0.0.1:5599`. To show it to anyone el
   `serve.py` has write endpoints (comment write-back, chat, terminal). Binding 0.0.0.0 hands disk writes and terminal spawning to the network — with no auth at all today.
 - The static half is already quite independent
   The invariant guarantees "strip every `<script>` and every question plus all body text remains". So the technical bar for read-only distribution is low — what is missing is verification and rules, not capability.
+- Route ③ now has a concrete vehicle (260724)
+  `haichat-inlab` gained `boards_api.py` (`QE2`/`QE3`): SPACE mounting, board discovery, page serving, comment write-backs. It still binds locally — so nothing about THIS question's decisions (who can reach it, auth, attribution) has changed; but when JL picks route ③, the thing to expose now exists, and it lives inside a service that docker-compose already deploys.
 
 ## Files
 - `serve.py`
@@ -59,5 +61,6 @@ This board lives only on one machine's `127.0.0.1:5599`. To show it to anyone el
   The static-export deliverable itself; `fig/` and `## Links` relative paths must be verified together.
 
 ## Log
+260724 1324 · Noted: route ③'s vehicle now exists (`boards_api.py` in haichat-inlab, see QE2/QE3) — exposure, auth, and attribution stay exactly as open as before
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · Opened: the new QE group "putting the board out". The board has always claimed to be for a second reader, yet it lives only on 127.0.0.1

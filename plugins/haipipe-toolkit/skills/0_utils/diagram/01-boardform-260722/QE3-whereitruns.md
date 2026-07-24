@@ -1,6 +1,6 @@
 # Where the board runs
 
-state: 🔴 OPEN
+state: ✅ SETTLED
 owner: JL
 method: decide whether the static half survives first — that one answer determines everything else
 
@@ -48,21 +48,19 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 ```
 
 ## Items to Finish
-- [ ] Decide: does `build.py` producing a static page stay an invariant?
-      **Keep it** → `build.py` stays alive, gains a `--json` output, two render paths (JSON for the API, HTML for the static page).
-      **Drop it** → a full Node rewrite becomes coherent, but the board can no longer be handed over as one file or projected offline.
-      Decide this one first; everything else follows from it.
-- [ ] Decide: stay in `serve.py` or move into `haichat-inlab`?
-      A two-step path is also available: build `QE2`'s SPACE layer on `serve.py` first (usable immediately), then move.
-- [ ] Decide whether to branch, and in which repo
-      `Tools` (`jluo41/Tools`) and `HAIChat-SPACE` (`JHU-CDHAI/HAIChat-SPACE`) are two independent repos, both mounted as submodules of `Physician-SPACE`. `haichat-inlab` is a **plain directory** inside `HAIChat-SPACE`, not a submodule.
-- [ ] Ship `build.py --json`
-      `parse_dir()` / `parse_file()` / `parse_q()` are already the clean parsing half and `render()` the rendering half. Adding an output does not require a refactor.
-- [ ] Verify once: for the same board, the API's JSON and the static HTML agree
-      Two render paths must not tell different stories.
+- [x] Decide: does `build.py` producing a static page stay an invariant?
+      **Kept** (JL 260724, approving the discussed plan: "as we discussed, don't stop to ask me"). `build.py` stays alive and gained `--json` — two render paths, one grammar. The hand-an-RA-one-file and offline-projection properties survive.
+- [x] Decide: stay in `serve.py` or move into `haichat-inlab`?
+      **Both, split by layer** (the discussed hybrid, approved 260724): the grammar (`build.py`) and the md-writers (`serve.py`) stay in the skill; `haichat-inlab` gained `boards_api.py`, a fifth router that IMPORTS them — SPACE mounting, board discovery, page serving, comment/discuss/resolve write-backs. Chat/terminal (`QD2`/`QD3`) stay on the workstation's `serve.py`; the console answers them 501.
+- [x] Decide whether to branch, and in which repo
+      **`feat/haichat-board` in `HAIChat-SPACE`** (created, first commit 27e3ed6); **no branch in `Tools`** — its two changes (`--json`, English chrome) are small and additive, and a Tools branch only adds submodule-ref churn in `Physician-SPACE`.
+- [x] Ship `build.py --json`
+      Shipped (skill v0.7.0): meta + per-question `{state, owner, done/total, comments_open/total, sections}` from the same parse the HTML uses.
+- [x] Verify once: for the same board, the API's JSON and the static HTML agree
+      Verified 260724 on this board: 22 question ids match the HTML sections exactly; comment counts match (`QA1 0 open / 7`); the console's `/api/board/q` returns byte-identical JSON because it calls the same `to_json`.
 
 ## Where we are
-**Not decided. What follows is verified fact, not conclusion.**
+**Settled 260724 — JL approved the discussed plan ("you just go ahead… as we discussed"); v1 is built, verified, and committed on `feat/haichat-board`.**
 
 **🐍 This half today (`serve.py`, Tools repo)**
 
@@ -99,8 +97,18 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 - `console_api.py`
   The multi-store registry template (`_datasets()` / `_scope()`) — the thing `QE2` would copy.
 
+## Law
+- The static half is an invariant
+  `build.py` → a self-contained `board.html` stays, whatever else is built on top. Hand an RA one file; project offline. The no-JS assertion keeps running on every build.
+- One grammar, never two parsers
+  `build.py`'s parse half is the board's grammar; every consumer (serve.py, boards_api.py, anything later) IMPORTS it or calls `--json`. Rewriting it in another language is forbidden while the invariant above stands.
+- One writer, never two
+  The md-editing functions (`add_comment` / `add_discuss` / `resolve`) live in the skill's `serve.py`; `boards_api.py` imports them. A second implementation of "how a comment is written into md" must not exist.
+- The layer split
+  Skill (Tools repo) = grammar + static build + workstation live layer (chat/terminal). Console (`haichat-inlab`) = SPACE mounting + discovery + serving + relayed write-backs. The console degrades honestly (501) where the workstation half is required.
+
 ## Glossary
-router: a FastAPI `APIRouter`, a group of endpoints under a shared prefix. `haichat-inlab/main.py` uses `include_router()` to compose four into one service; the board would be the fifth.
+router: a FastAPI `APIRouter`, a group of endpoints under a shared prefix. `haichat-inlab/main.py` uses `include_router()` to compose four into one service; the board is now the fifth (`boards_api.py`).
 per-thread iframe: HAI-Chat embedding any URL as a page alongside one conversation thread. `haichat-inlab`'s README describes itself exactly this way.
 
 ## Discussion
@@ -110,4 +118,5 @@ per-thread iframe: HAI-Chat embedding any URL as a page alongside one conversati
 >> CC0724: Only partly. Of the five steps, the first two (`build.py --json`, the SPACE index on `serve.py`) stay in `Tools`; the last three (`boards_api.py`, the `web/` view, in-page editing) go to `HAIChat-SPACE`. On branching: yes for `HAIChat-SPACE` (`feat/haichat-board` — a multi-day feature in a repo whose `haichat-inlab` service others run), no for `Tools` (both changes are small and additive, and branching there only adds submodule-ref churn in `Physician-SPACE`).
 
 ## Log
+260724 1324 · SETTLED. JL approved the discussed plan ("go ahead… as we discussed, don't stop to ask me"): static invariant KEPT (`build.py --json` shipped, skill v0.7.0); hybrid layer split (grammar+writers in the skill, SPACE/discovery/serving in `haichat-inlab`'s new `boards_api.py`, chat/terminal workstation-only via 501); branch `feat/haichat-board` created in HAIChat-SPACE (commit 27e3ed6), no branch in Tools. JSON≡HTML verified on this board (22 ids, comment counts). `## Law` written
 260724 1242 · Opened: JL asked "should we use a mature stack like nodejs / should we branch". Split "where it runs + does the static invariant survive" into its own question; the SPACE layer is QE2 and in-page editing is QE4
