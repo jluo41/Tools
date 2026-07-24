@@ -102,7 +102,7 @@ def build_float_tex(rel_asset: str, caption: str, label: str) -> str:
     """float.tex for a display unit: references the asset under assets/."""
     return "\n".join(
         [
-            "% Rendered by haipipe-paper-display-illustration; rebuild spec in source/prompt.md.",
+            "% Rendered by haipipe-display-illustration; rebuild spec in source/prompt.md.",
             r"\begin{figure}[t]",
             r"\centering",
             f"\\includegraphics[width=\\textwidth]{{{rel_asset}}}",

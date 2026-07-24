@@ -102,10 +102,10 @@ typed directly into `float.tex` are a defect (data must live in `assets/`).
 
 | Display kind | Renderer |
 |---|---|
-| data plot (line/bar/scatter/heatmap/box) | `haipipe-paper-display-figure` |
-| typeset LaTeX table (booktabs) | `haipipe-paper-display-table` |
-| deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `haipipe-paper-display-diagram` |
-| AI concept illustration (richest Figure 1) | `haipipe-paper-display-illustration` |
+| data plot (line/bar/scatter/heatmap/box) | `haipipe-display-figure` |
+| typeset LaTeX table (booktabs) | `haipipe-display-table` |
+| deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `haipipe-display-diagram` |
+| AI concept illustration (richest Figure 1) | `haipipe-display-illustration` |
 
 The two data renderers (figure/table) read a task's aggregated output only; the two
 concept renderers take no data (a schematic still carries real Ns).

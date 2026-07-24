@@ -106,10 +106,10 @@ narrative, beat, story arc              -> haipipe-paper-stage narrative
 section-edit, paragraph job, evidence anchor -> haipipe-paper-stage section-edit
 venue, journal, playbook                -> haipipe-paper-stage venue
 display, gallery, float, figure plan    -> haipipe-paper-stage display
-  table                                 -> haipipe-paper-display-table
-  figure, plot                          -> haipipe-paper-display-figure
-  diagram, vector, elbow, connector     -> haipipe-paper-display-diagram
-  illustration, ai-img, concept art     -> haipipe-paper-display-illustration
+  table                                 -> haipipe-display-table
+  figure, plot                          -> haipipe-display-figure
+  diagram, vector, elbow, connector     -> haipipe-display-diagram
+  illustration, ai-img, concept art     -> haipipe-display-illustration
 enter, console, dashboard, status view  -> haipipe-paper-enter
 round, rounds                           -> haipipe-paper-round
 write, draft, scaffold prose            -> haipipe-paper-stage section-edit
@@ -171,9 +171,10 @@ narrative                           1-lifecycle/haipipe-paper-stage/feedback/nar
 display                             1-lifecycle/haipipe-paper-stage/feedback/display/
 section-edit                        1-lifecycle/haipipe-paper-stage/feedback/section-edit/
 
-# The four display RENDERERS are still their own skills and keep their own inboxes:
+# The four display RENDERERS moved out to the shared display/ bucket (2026-07-24)
+# and dropped the "paper" from their names; they keep their own inboxes:
 display-[table|figure|diagram|illustration]
-                                    1-lifecycle/4-display/haipipe-paper-display-*/feedback/
+                                    ../display/skills/haipipe-display-*/feedback/
 
 # Feedback filed before the 2026-07-20 cutover stayed with the retired skills:
 #   1-lifecycle/_old/<stage-dir>/haipipe-paper-<stage>/feedback/   (68 files; 19 still `status: open`)

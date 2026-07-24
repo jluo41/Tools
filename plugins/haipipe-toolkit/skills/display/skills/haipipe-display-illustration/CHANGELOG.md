@@ -1,8 +1,12 @@
-haipipe-paper-display-illustration — Changelog
+haipipe-display-illustration — Changelog
 ==============================================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+
+## [0.1.3] — 2026-07-24 · moved to display/
+
+Moved to `display/` and renamed `haipipe-paper-display-illustration → haipipe-display-illustration` — generic Codex-image-2 concept/hero-figure renderer, decoupled from paper.
 
 ## [0.1.3] — 2026-07-24
 
@@ -10,7 +14,7 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 
 ## [1.3.0] — 2026-06-22
 
-- promoted to the DEFAULT illustration renderer and renamed haipipe-paper-display-illustration (the Codex bridge is the maintained path); the Gemini backend moved to haipipe-paper-display-illustration-gemini as the named fallback.
+- promoted to the DEFAULT illustration renderer and renamed haipipe-display-illustration (the Codex bridge is the maintained path); the Gemini backend moved to haipipe-display-illustration-gemini as the named fallback.
 
 ## [1.2.0] — 2026-06-22
 

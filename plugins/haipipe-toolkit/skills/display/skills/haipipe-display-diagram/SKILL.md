@@ -1,5 +1,5 @@
 ---
-name: haipipe-paper-display-diagram
+name: haipipe-display-diagram
 description: "Generate deterministic publication-quality architecture, workflow, and pipeline diagrams from structured JSON (FigureSpec) into editable SVG. Use when user says \"架构图\", \"workflow 图\", \"pipeline 图\", \"确定性矢量图\", \"figure spec\", \"draw architecture\", or needs precise, editable, publication-ready vector diagrams. Preferred over AI illustration for formal architecture/workflow figures."
 argument-hint: "[description-of-diagram]"
 allowed-tools: Bash(*), Read, Write, Edit
@@ -23,7 +23,7 @@ rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSp
 
 ## When to Use This Skill
 
-**Use `haipipe-paper-display-diagram`** for:
+**Use `haipipe-display-diagram`** for:
 - System architecture diagrams (layered, hub-and-spoke, multi-plane)
 - Workflow / pipeline figures
 - Audit cascade / flow-control diagrams
@@ -32,8 +32,8 @@ rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSp
 - Figures where determinism matters (same spec → same SVG)
 
 **Do NOT use for:**
-- Data plots (bar/line/scatter) — use `/haipipe-paper-display-figure`
-- Natural/qualitative illustrations — use `/haipipe-paper-display-illustration`
+- Data plots (bar/line/scatter) — use `/haipipe-display-figure`
+- Natural/qualitative illustrations — use `/haipipe-display-illustration`
 - Quick state-machine / flowchart — use `/mermaid-diagram` (lighter syntax)
 
 ## Core Properties

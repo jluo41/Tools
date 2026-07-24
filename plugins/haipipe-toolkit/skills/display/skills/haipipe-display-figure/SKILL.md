@@ -1,6 +1,6 @@
 ---
-name: haipipe-paper-display-figure
-description: "Generate publication-quality data plots from experiment results (line/bar/scatter/heatmap/box). Use when user says \"画图\", \"作图\", \"generate figures\", \"paper plots\", or needs data-driven plots for a paper. The plot renderer of the display family; tables are rendered by haipipe-paper-display-table."
+name: haipipe-display-figure
+description: "Generate publication-quality data plots from experiment results (line/bar/scatter/heatmap/box). Use when user says \"画图\", \"作图\", \"generate figures\", \"paper plots\", or needs data-driven plots for a paper. The plot renderer of the display family; tables are rendered by haipipe-display-table."
 argument-hint: "[figure-plan-or-data-path]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
@@ -30,14 +30,14 @@ THIS renderer's row: asset -> `assets/figure.pdf`; rebuild spec -> `source/gen_*
 | Category | Can auto-generate? | Examples |
 |----------|-------------------|----------|
 | **Data-driven plots** | ✅ Yes | Line plots (training curves), bar charts (method comparison), scatter plots, heatmaps, box/violin plots |
-| **Comparison tables** | ➡️ Use `haipipe-paper-display-table` | LaTeX tables (prior bounds, method features, ablation) now live in the dedicated table renderer |
+| **Comparison tables** | ➡️ Use `haipipe-display-table` | LaTeX tables (prior bounds, method features, ablation) now live in the dedicated table renderer |
 | **Multi-panel figures** | ✅ Yes | Subfigure grids combining multiple plots (e.g., 3×3 dataset × method) |
 | **Architecture/pipeline diagrams** | ❌ No — manual | Model architecture, data flow diagrams, system overviews. At best can generate a rough TikZ skeleton, but **expect to draw these yourself** using tools like draw.io, Figma, or TikZ |
 | **Generated image grids** | ❌ No — manual | Grids of generated samples (e.g., GAN/diffusion outputs). These come from running your model, not from this skill |
 | **Photographs / screenshots** | ❌ No — manual | Real-world images, UI screenshots, qualitative examples |
 
 **In practice:** For a typical ML paper, this skill handles the data plots (a large share of the figure set).
-Tables go to `haipipe-paper-display-table`; the hero figure / architecture diagram / qualitative results are created via the diagram/illustration skills or manually and placed in `figures/` before running `/haipipe-paper section-edit`.
+Tables go to `haipipe-display-table`; the hero figure / architecture diagram / qualitative results are created via the diagram/illustration skills or manually and placed in `figures/` before running `/haipipe-paper section-edit`.
 The skill will detect manually-made figures as "existing figures" and preserve them.
 
 ## Constants
@@ -78,7 +78,7 @@ Parse the Figure Plan table from PAPER_PLAN.md:
 Identify:
 - Which figures can be auto-generated from data (this skill)
 - Which need manual creation (architecture diagrams, etc.)
-- Which rows are tables -> route those to `haipipe-paper-display-table`, not here
+- Which rows are tables -> route those to `haipipe-display-table`, not here
 
 ### Step 2: Set Up Plotting Environment
 
@@ -130,7 +130,7 @@ Use this decision tree for data-driven figures (inspired by Imbad0202/academic-r
 | Matrix / grid values | Heatmap | 0.48\textwidth |
 | Distribution comparison | Box/violin plot | 0.48\textwidth |
 | Multi-dataset results | Multi-panel (subfigure) | 0.95\textwidth |
-| Prior work comparison / coefficients | (table) → use `haipipe-paper-display-table` | — |
+| Prior work comparison / coefficients | (table) → use `haipipe-display-table` | — |
 
 ### Step 4: Generate Each Figure
 
@@ -168,7 +168,7 @@ for bar, val in zip(bars, values):
 save_fig(fig, 'fig3_comparison')
 ```
 
-**Comparison / coefficient tables** (LaTeX): out of scope — use `haipipe-paper-display-table`, which owns booktabs rules, significance stars, SE rows, panels, and table notes.
+**Comparison / coefficient tables** (LaTeX): out of scope — use `haipipe-display-table`, which owns booktabs rules, significance stars, SE rows, panels, and table notes.
 Do not emit `.tex` tables from this skill.
 
 **Architecture/pipeline diagrams** (MANUAL — outside this skill's scope):
