@@ -19,6 +19,11 @@ regenerates board.html so a plain reload shows the rendered comment.
     POST /_board/stop      {path, file}                -> ask that turn to stop
     POST /_board/term      {path, file}                -> start a ttyd for that question
     POST /_board/release   {path, file}                -> hand the session back
+    POST /_board/structure {path, op, ...}             -> add/archive groups and questions
+                            op: add_group {title, letter?, hook?, body?}
+                                add_question {group, title}
+                                archive_question {q}     (moves to _archive/, never deletes)
+                                archive_group {group}    (only when it lists no questions)
 
 Auth for /_board/chat is OAuth, in this order:
   1. $CLAUDE_CODE_OAUTH_TOKEN                      (long-lived, `claude setup-token`)
@@ -45,11 +50,13 @@ import hashlib
 import itertools
 import json
 import os
+import shutil
 import signal
 import re
 import subprocess
 import sys
 import threading
+import time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -253,6 +260,169 @@ def oauth_token(root):
 
 def esc4re(s):
     return re.escape(s)
+
+
+def _now_stamp():
+    return time.strftime("%y%m%d %H%M")
+
+
+def _slugify(t):
+    s = re.sub(r"[^a-z0-9]+", "-", t.lower()).strip("-")
+    return "-".join(s.split("-")[:5])[:48] or "question"
+
+
+Q_STUB = """# {title}
+state: 🔴 OPEN
+owner: JL
+
+## Question
+{title}: restate this as one plain question a zero-background reader understands.
+
+Then one paragraph on why it is hard, what breaks while it stays open, and what
+it affects downstream. This file is a stub from the index page's ＋ button;
+writing standard: ref/writing-rules.md (English only, no em-dashes).
+
+## Items to Finish
+- [ ] 🎯 Name what counts as done
+      One sentence saying exactly how this line is judged met.
+
+## Where we are
+Nothing yet: the question was just opened.
+
+## Log
+{stamp} · Opened from the index page (＋ Question)
+"""
+
+
+def structure_op(board, p):
+    """The index's shape as ONE writer (QC2): add/archive groups and questions.
+
+    Deliberately module-level and self-free, like the comment writers, so the
+    console (boards_api.py) can import it instead of reimplementing (QE3 Law).
+    All edits go through board.md's ## Roster plus the Q files themselves.
+    Archive NEVER deletes: files move to _archive/ inside the board folder and
+    stay recoverable by hand.
+    """
+    op = (p.get("op") or "").strip()
+    bp = board / "board.md"
+    lines = bp.read_text(encoding="utf-8").split("\n")
+    rs = next((i for i, ln in enumerate(lines) if re.match(r"^## Roster\b", ln)), None)
+    if rs is None:
+        return None, "board.md has no ## Roster section"
+    rend = next((i for i in range(rs + 1, len(lines)) if lines[i].startswith("## ")),
+                len(lines))
+    heads = []                              # (line idx, letter, full heading)
+    for i in range(rs + 1, rend):
+        m = re.match(r"^### Q([A-Z]+)\b", lines[i].strip())
+        if m:
+            heads.append((i, m.group(1), lines[i].strip()[4:].strip()))
+
+    def block_end(hi):                      # lines belonging to the group at hi
+        j = hi + 1
+        while j < rend and not lines[j].strip().startswith("### "):
+            j += 1
+        return j
+
+    def write():
+        bp.write_text("\n".join(lines), encoding="utf-8")
+
+    if op == "add_group":
+        title = " ".join((p.get("title") or "").split())
+        if not title:
+            return None, "the group needs a title"
+        used = {l for _, l, _ in heads}
+        letter = (p.get("letter") or "").strip().upper().lstrip("Q")
+        if not letter:
+            letter = next((c for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if c not in used), "")
+        if not letter or letter in used:
+            return None, f"group letter Q{letter or '?'} is taken or invalid"
+        block = [f"### Q{letter} · {title}"]
+        hook = " ".join((p.get("hook") or "").split())
+        if hook:
+            block.append(hook)
+        for ln in (p.get("body") or "").split("\n"):
+            if ln.strip():
+                block.append(ln.strip())
+        at = rend                           # append at the section's true tail
+        while at > rs + 1 and not lines[at - 1].strip():
+            at -= 1
+        lines[at:at] = block
+        write()
+        return {"group": f"Q{letter} · {title}", "letter": letter}, None
+
+    if op == "add_question":
+        g = (p.get("group") or "").strip()
+        title = " ".join((p.get("title") or "").split())
+        if not title:
+            return None, "the question needs a title"
+        m = re.match(r"^Q?([A-Z]+)", g)
+        hit = next(((i, l, h) for i, l, h in heads
+                    if (m and l == m.group(1)) or h == g), None)
+        if not hit:
+            return None, f"no group matches {g!r} (heading must start with ### Q<letter>)"
+        hi, letter, heading = hit
+        pat = re.compile(rf"^Q{letter}(\d+)")
+        nums = [int(mm.group(1)) for f in board.glob(f"Q{letter}*.md")
+                if (mm := pat.match(f.name))]
+        nums += [int(mm.group(1)) for ln in lines[rs:rend]
+                 if (mm := pat.match(ln.strip()))]
+        fname = f"Q{letter}{max(nums, default=0) + 1}-{_slugify(title)}.md"
+        f = board / fname
+        if f.exists():
+            return None, f"{fname} already exists"
+        f.write_text(Q_STUB.format(title=title, stamp=_now_stamp()), encoding="utf-8")
+        at = block_end(hi)                  # list it at the end of its group
+        while at > hi + 1 and not lines[at - 1].strip():
+            at -= 1
+        lines[at:at] = [fname]
+        write()
+        return {"file": fname, "group": heading}, None
+
+    if op == "archive_question":
+        name = (p.get("q") or "").strip()
+        if not QNAME.match(name):
+            return None, f"not a Q file name: {name}"
+        f = board / name
+        if not f.exists():
+            return None, f"not found: {name}"
+        arch = board / "_archive"
+        arch.mkdir(exist_ok=True)
+        dest = arch / name
+        if dest.exists():
+            dest = arch / f"{f.stem}-{time.strftime('%y%m%d%H%M%S')}.md"
+        note = f"{_now_stamp()} · Archived from the index page (moved to _archive/)"
+        t = f.read_text(encoding="utf-8")
+        mm = re.search(r"^## Log\s*$", t, re.M)
+        if mm:                              # Log is newest-first: insert right below
+            t = t[:mm.end()] + "\n" + note + t[mm.end():]
+        else:
+            t = t.rstrip("\n") + "\n\n## Log\n" + note + "\n"
+        f.write_text(t, encoding="utf-8")
+        shutil.move(str(f), str(dest))
+        lines[rs:rend] = [ln for ln in lines[rs:rend] if ln.strip() != name]
+        write()
+        return {"file": name, "to": f"_archive/{dest.name}"}, None
+
+    if op == "archive_group":
+        g = (p.get("group") or "").strip()
+        m = re.match(r"^Q?([A-Z]+)", g)
+        hit = next(((i, l, h) for i, l, h in heads
+                    if (m and l == m.group(1)) or h == g), None)
+        if not hit:
+            return None, f"no group matches {g!r}"
+        hi, letter, heading = hit
+        j = block_end(hi)
+        while j > hi + 1 and not lines[j - 1].strip():   # keep section padding
+            j -= 1
+        left = [ln.strip() for ln in lines[hi + 1:j] if ln.strip().endswith(".md")]
+        if left:
+            return None, (f"{heading} still lists {len(left)} question(s): "
+                          "archive them first")
+        del lines[hi:j]
+        write()
+        return {"group": heading}, None
+
+    return None, f"unknown op: {op or '(empty)'}"
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -934,6 +1104,25 @@ class Handler(SimpleHTTPRequestHandler):
             kill_all_terms()
             HOLD.clear()
             return self.reply(200, {"ok": True, "closed": n})
+        if self.path == "/_board/structure":
+            # Targets the BOARD, not one Q file, so it resolves the folder itself
+            # instead of going through target() (which insists on a Q*.md name).
+            page = unquote(p.get("path") or "")
+            board = (self.root / page.lstrip("/")).resolve().parent
+            try:
+                board.relative_to(self.root.resolve())
+            except ValueError:
+                return self.reply(400, {"ok": False, "err": "越出了 --root"})
+            if not (board / "board.md").exists():
+                return self.reply(400, {"ok": False, "err": f"{board} 里没有 board.md"})
+            try:
+                res, err = structure_op(board, p)
+            except Exception as e:
+                return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
+            if err:
+                return self.reply(400, {"ok": False, "err": err})
+            return self.reply(200, {"ok": True, "build": self.rebuild(board),
+                                    **(res or {})})
         f, board = self.target(p)
         if f is None:
             return self.reply(400, {"ok": False, "err": board})

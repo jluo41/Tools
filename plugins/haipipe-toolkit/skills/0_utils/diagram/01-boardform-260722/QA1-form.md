@@ -4,20 +4,15 @@ owner: CC
 method: one md file per question (following the 1-probes/ practice); membership by path, not by registration
 session: c8603c47-0cd5-4a52-b708-37c617e82dd8
 ## Question
-A board is a folder. So which files MUST that folder contain? And more importantly: what makes a Q file "belong" to the board — someone registering it on a list, or simply where the file sits?
+A board is a folder. So which files MUST that folder contain? And more importantly: what makes a Q file "belong" to the board: someone registering it on a list, or simply where the file sits?
 
-- Why it is hard
-  The two attachment models differ a lot: with registration, forgetting to register means losing the question; with path-based membership, dropping a file in counts automatically, but then nobody controls order and grouping.
-- What breaks if we leave it
-  Until the shape is pinned down, SKILL.md has nothing to say and the generator does not know what to read — every downstream question hangs on this.
-- What it affects downstream
-  It directly decides whether an RA can claim one question and edit it without colliding with anyone else (one file per question vs. everything stuffed into one board.md).
+The two attachment models differ a lot: with registration, forgetting to register means losing the question; with path-based membership, dropping a file in counts automatically, but then nobody controls order and grouping. Until the shape is pinned down, SKILL.md has nothing to say and the generator does not know what to read, so every downstream question hangs on this. It also decides directly whether an RA can claim one question and edit it without colliding with anyone else (one file per question vs. everything stuffed into one board.md).
 
 ## Boundary
 - ✅ Covered here
   **What is in the folder and how a Q attaches to the board**: which files are required, membership by path vs. by list, and what happens when registration is missed.
 - ↪ Covered elsewhere
-  What a Q file looks like **inside** — that is `QA2` (the template). Nor **where in the repo** the folder lives or what it is named — that is `QC1`.
+  What a Q file looks like **inside**: that is `QA2` (the template). Nor **where in the repo** the folder lives or what it is named: that is `QC1`.
 
 ## Diagram
 ```
@@ -36,20 +31,20 @@ missed registration   →  still displayed (grouped under ⚠️) + a one-line C
 
 ## Items to Finish
 - [x] List the files the folder must contain, one line each on what it owns
-      board.md · Q*.md · board.html · fig/ — written into SKILL.md's "shape" section and `ref/board-form.md`.
+      board.md · Q*.md · board.html · fig/, written into SKILL.md's "shape" section and `ref/board-form.md`.
 - [x] Spell out how a Q attaches to the board (two layers: path for membership, Roster for order)
       Every Q*.md in the folder is one of the board's questions; `## Roster` only controls order and grouping; an unregistered file lands in the ⚠️ group and is never lost. All written down.
 - [x] A blank board can be built by hand from this spec alone, without consulting an existing example
-      `ref/board-example.md` is a minimal two-question skeleton; verified in practice: the two subjective-label boards plus this one — 3 boards use this shape.
+      `ref/board-example.md` is a minimal two-question skeleton; verified in practice: the two subjective-label boards plus this one; 3 boards use this shape.
 (What a Q file looks like inside is QA2's business, not handled here.)
 
 ## Where we are
 **The shape is settled, written into SKILL.md and `ref/board-form.md`, and 3 boards (this one + the two subjective-label boards) are built on it.**
 For what the folder contains, see the `## Diagram` above; this section only records how attachment works and what is left.
 
-- Who is on the board — by path
+- Who is on the board, by path
   Every `Q*.md` in the same folder is one of the board's questions. Opening a new question = dropping in one file, changing nothing else.
-- Order and grouping — by `board.md`'s `## Roster`
+- Order and grouping, by `board.md`'s `## Roster`
   File names and group headings only; titles and body text are never copied.
 - Missed registration is only ugly, never lossy (both failure modes tested)
   A file missing from the Roster → the question still appears on the page, under the ⚠️ group, plus a one-line CLI warning; a Roster line pointing at a non-existent file → also just a warning.
@@ -60,12 +55,12 @@ For what the folder contains, see the `## Diagram` above; this section only reco
 - `build.py`
   `parse_dir` implements "every `Q*.md` in the folder is one of the board's questions" and the ⚠️ group for unregistered files.
 - `ref/board-form.md`
-  §1 folder · §2 numbering — the full spec for this question lives there.
+  §1 folder · §2 numbering. The full spec for this question lives there.
 - `SKILL.md`
   The "🗂 Shape" section.
 
 ## Glossary
-one file per question: borrowed from haipipe-probe — under `1-probes/` every question is its own md file. The benefit: two people editing two questions never collide.
+one file per question: borrowed from haipipe-probe, where under `1-probes/` every question is its own md file. The benefit: two people editing two questions never collide.
 
 ## Discussion
 
@@ -89,7 +84,7 @@ one file per question: borrowed from haipipe-probe — under `1-probes/` every q
       >> CC0723: same as above, in effect.
 - [x] JL “QA1” · 260723 1240
       I want all the section name to be more salient.
-      >> CC0723: same as the “📍 Now” one — QA4's enlarged, underlined section headings cover every section of every question.
+      >> CC0723: same as the “📍 Now” one: QA4's enlarged, underlined section headings cover every section of every question.
 - [x] JL “Board folder shape” · 260723 1240
       maybe make it a bit longer, make it more like a question, like
       

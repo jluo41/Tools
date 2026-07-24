@@ -7,18 +7,13 @@ method: split the embedded CSS/JS out into asset files the build INLINES; the gr
 ## Question
 `build.py` is ~2,500 lines because it is three things in one file: the parser (the board's grammar), the HTML/CSS template, and the page's JavaScript (comments, chat drawer, terminal). JL 260724: "build.py is so long, could we better manage it? and should it be in the haichat-board project?"
 
-- Why it is hard
-  The length is real, but the cure must not break two Laws: the static invariant (one command, one self-contained board.html, no build toolchain) and one-grammar (`QE3`: every consumer imports the skill's parser, nobody rewrites it).
-- What breaks if we leave it
-  Editing 800 lines of JS inside a Python string means no syntax highlighting, no linting, and node --check only AFTER a build — the QD3 smoothness work paid that tax already.
-- What it affects downstream
-  Where the skill's files live, how consumers import them, and whether an offline `python3 build.py <dir>` keeps working in any SPACE with zero extra steps.
+It is hard because the length is real, but the cure must not break two Laws: the static invariant (one command, one self-contained board.html, no build toolchain) and one-grammar (`QE3`: every consumer imports the skill's parser, nobody rewrites it). Leave it and the cost stays: editing 800 lines of JS inside a Python string means no syntax highlighting, no linting, and node --check only AFTER a build, and the QD3 smoothness work paid that tax already. Downstream it decides where the skill's files live, how consumers import them, and whether an offline `python3 build.py <dir>` keeps working in any SPACE with zero extra steps.
 
 ## Boundary
 - ✅ Covered here
   **How build.py's code is organized and where it lives**: split or not, into what, and skill vs. haichat-board.
 - ↪ Covered elsewhere
-  What the page looks like (`QA4`), what the grammar is (`QA2`/`ref/board-form.md`), or where the SPACE layer runs (`QE3` — settled).
+  What the page looks like (`QA4`), what the grammar is (`QA2`/`ref/board-form.md`), or where the SPACE layer runs (`QE3`, settled).
 
 ## Diagram
 ```
@@ -39,15 +34,15 @@ should it move to haichat-board?  NO —
 
 ## Items to Finish
 - [x] JL confirms the home
-      Asked three times, answered three times, and executed on JL's "go ahead and continue": **build.py stays in the skill** (`Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/build.py`) — `QE3`'s one-grammar Law; `haichat-board/` imports it.
+      Asked three times, answered three times, and executed on JL's "go ahead and continue": **build.py stays in the skill** (`Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/build.py`), `QE3`'s one-grammar Law; `haichat-board/` imports it.
 - [x] Split the assets out
-      Done 260724: `assets/board.js` (1,173 lines, real JS) + `assets/board.css` (465 lines, real CSS, format-escaping undoubled); build.py reads and inlines both — **2,488 → 850 lines**. Output stays one self-contained board.html; the strip-scripts assertion still runs.
+      Done 260724: `assets/board.js` (1,173 lines, real JS) + `assets/board.css` (465 lines, real CSS, format-escaping undoubled); build.py reads and inlines both: **2,488 → 850 lines**. Output stays one self-contained board.html; the strip-scripts assertion still runs.
 - [x] Tooling on the split-out JS
-      `node --check assets/board.js` passes on the real file — no more extract-after-build.
+      `node --check assets/board.js` passes on the real file, no more extract-after-build.
 - [x] A no-diff proof
-      Done, the strong form: on a FROZEN copy of this board (immune to the other session's live md edits), the split build.py and a mechanically re-joined build.py produce **byte-identical** board.html. The proof caught two real slips first (missing `\n` around the `<script>` wrapper) — exactly what it was for.
+      Done, the strong form: on a FROZEN copy of this board (immune to the other session's live md edits), the split build.py and a mechanically re-joined build.py produce **byte-identical** board.html. The proof caught two real slips first (missing `\n` around the `<script>` wrapper), exactly what it was for.
 - [x] Wait for a quiet window
-      Overridden by JL's re-ask ("please think about how to better manage the builder.py… go ahead and continue") — executed immediately instead, with the frozen-board proof standing in for the quiet window.
+      Overridden by JL's re-ask ("please think about how to better manage the builder.py… go ahead and continue"), executed immediately instead, with the frozen-board proof standing in for the quiet window.
 
 ## Where we are
 **Executed 260724. build.py is 850 lines; the page's JS and CSS are real files under `assets/`; output byte-identical; home unchanged (the skill).**
@@ -55,13 +50,13 @@ should it move to haichat-board?  NO —
 - The numbers
   build.py 2,488 → 850 lines · assets/board.js 1,173 · assets/board.css 465. The JS is now editable with highlighting and checkable in place.
 - Why not haichat-board (asked and settled)
-  The skill travels with every SPACE via the Tools submodule; the static invariant needs `python3 build.py <dir>` to work offline in any of them. `haichat-board/` is a consumer (it imports `parse_dir`/`to_json` and serve.py's writers) — moving the grammar there would invert `QE3`'s settled Law.
+  The skill travels with every SPACE via the Tools submodule; the static invariant needs `python3 build.py <dir>` to work offline in any of them. `haichat-board/` is a consumer (it imports `parse_dir`/`to_json` and serve.py's writers); moving the grammar there would invert `QE3`'s settled Law.
 - How the proof worked
   Snapshot the board folder → build with the split build.py → reconstruct a joined build.py by re-inlining the assets → build again → compare hashes. Same inputs, both code paths, no interference from concurrent editors.
 
 ## Files
 - `build.py`
-  The file being split; the parse half must keep its import surface (`parse_dir`, `to_json`, `sec`, `parse_comments`, `stinfo`) — `boards_api.py` imports exactly these.
+  The file being split; the parse half must keep its import surface (`parse_dir`, `to_json`, `sec`, `parse_comments`, `stinfo`); `boards_api.py` imports exactly these.
 - `assets/` (to be created)
   `board.css` + `board.js`, inlined at build time; never served separately.
 - `SKILL.md` · `CHANGELOG.md`
@@ -69,7 +64,7 @@ should it move to haichat-board?  NO —
 
 ## Discussion
 > JL: build.py is so long, could we better manage it? and should it in the haipipe-board project?
->> CC0724: split yes — CSS and JS out into `assets/` files that build.py inlines, output unchanged and still self-contained. Move no — the grammar must live where every SPACE carries it (the skill, via Tools); `haichat-board/` is one consumer importing it, per QE3's one-grammar Law. Deferred to a quiet window: another session is editing these files live today, and a whole-file split under concurrent edits is merge hell.
+>> CC0724: split yes: CSS and JS out into `assets/` files that build.py inlines, output unchanged and still self-contained. Move no: the grammar must live where every SPACE carries it (the skill, via Tools); `haichat-board/` is one consumer importing it, per QE3's one-grammar Law. Deferred to a quiet window: another session is editing these files live today, and a whole-file split under concurrent edits is merge hell.
 
 ## Law
 - The grammar's home is the skill, forever

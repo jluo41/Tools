@@ -16,21 +16,26 @@ The difficulty is that one page has to carry two different things at once: what 
 
 ## Diagram
 ```
-┌ marquee bar ≈110px ─────────────────────┐
-│ /haipipe-board   │ spine · close        │  always present
-├─────────────────────────────────────────┤
-│ QA4  🟡 PARTIAL  🔧 CC                   │  status bar
-│ Single Question Webpage Layout  ← 38px   │  .h2
-│ ❓ Question   1 para + 2–4 bullets       │  .ask   ← this alone should orient
-│ 🚧 Boundary   covered here / elsewhere   │  .bnd
-│ ┌───── ascii figure ─────┐              │  .dia
-│ 🎯 Items to Finish  ☑☑☑☐        7/9     │  .col.goal  intent first
-│ 📍 Where we are                          │  .col.now   status second
-│    each item:  heading  [more details]   │  ← click to open the paragraph
-│ ▸ Law ▸ Lesson ▸ Why here ▸ Log          │  folded, never on stage
-│ ← QA3       ☰ Index       QA5 →          │  pinned to the bottom
-└─────────────────────────────────────────┘
-unframed = no border · no rounded corners · no card background
+Focus mode: one question owns the whole screen. Read top to bottom —
+intent first, status second.
+
+  ═══ marquee bar  ≈110px, always present  (/haipipe-board · spine · close) ═══
+
+  QA4   🟡 PARTIAL   🔧 CC
+  Single Question Webpage Layout            — the title, 38px
+
+  ❓ Question        one paragraph + 2–4 bullets — orients a stranger on its own
+  🚧 Boundary        covered here / covered elsewhere
+  🖼 Diagram         the one figure that never folds
+  🎯 Items to Finish    ☑ ☑ ☑ ☐   7/9      — what counts as done      ← intent
+  📍 Where we are       the honest present                            ← status
+        each item = heading  +  [more details]  (click to open the paragraph)
+
+  ─── below the fold, never on stage ───
+  ▸ Law   ▸ Lesson   ▸ Why here   ▸ Log
+  ← QA3        ☰ Index        QA5 →         — pinned to the bottom
+
+  unframed = no border · no rounded corners · no card background
 ```
 
 https://app.excalidraw.com/s/1JWkKv8oMIX/4SD9kLApiQC?element=gFrVKXlBG2d-IrA9PD7Wv

@@ -236,6 +236,48 @@ def inline(s):
     return s
 
 
+STAMP = re.compile(r"^(\d{6})\s+([A-Z]{1,4}\d{0,4})\s*·\s*(.+)$")
+
+
+def split_stamp(text):
+    """item 名字开头的「260722 JL · …」→ (右侧灰印, 真标题)。
+
+    日期和人不该混进标题文字里（JL 260724）。抽出来单独渲染成一个淡印，
+    标题只留后半句。没有前缀就原样返回。
+    """
+    m = STAMP.match(text.strip())
+    if not m:
+        return "", text
+    d = m.group(1)
+    stamp = (f'<span class="stmp"><span class="sd">{d[:2]}-{d[2:4]}-{d[4:]}</span>'
+             f'<span class="sw {who_class(m.group(2))}">{esc(m.group(2))}</span></span>')
+    return stamp, m.group(3)
+
+
+def flat_rows(txt):
+    """把「- 小标题 / 缩进解释」铺成扁平的一行行 <p><b>小标题</b> 解释</p>。
+
+    给 Boundary 这种收进折叠块的短内容用 —— 折叠块里不该再套一层折叠（JL 260724）。
+    """
+    items, cur = [], None
+    for ln in (txt or "").split("\n"):
+        m = re.match(r"^[-*]\s+(.+)$", ln)
+        if m:
+            if cur:
+                items.append(cur)
+            cur = [m.group(1).strip(), []]
+        elif cur is not None and ln.strip():
+            cur[1].append(ln.strip())
+    if cur:
+        items.append(cur)
+    rows = []
+    for head, exp in items:
+        e = " ".join(exp)
+        rows.append(f'<p class="brow"><b>{inline(head)}</b>'
+                    + (f' {inline(e)}' if e else "") + "</p>")
+    return "".join(rows)
+
+
 def mark_span(html, needle, kls):
     """把 needle（已转义的纯文字）在 html 里对应的那一段包进 <mark>，
     **哪怕这段横跨行内标签**（`代码`→<code>、**粗**→<b>）。
@@ -301,15 +343,28 @@ def body(txt, fold_code=True):
         name_cls = "ct" if kind == "ck" else "bt"
         # item = 名字 + 解释。名字永远在台面上；有解释时把它收进 native <details>，
         # 想看再点开 —— 纯 CSS，零脚本（JL 260723）。没解释就是一行光名字。
+        # 名字开头的「260722 JL ·」抽成右侧灰印，标题只留后半句（JL 260724）。
+        stamp, title = split_stamp(top)
+        # 标题开头写个 emoji 就当图标（跟组标题一个规矩，作者写、机器不猜）。
+        im = GT_ICON.match(title)
+        icon = f'<span class="ti">{im.group(1)}</span>' if im else ""
+        if im:
+            title = im.group(2).strip()
         if det:
-            exp = "".join(f"<p>{inline(x)}</p>" for x in det)
-            # 名字后面挂一个看得见的 [more details] —— 光靠 ▸ 三角，读的人根本
-            # 不知道下面还有东西可以展开（JL 260724）。纯 CSS，文字由 ::after 出。
-            item = (f'<details class="it"><summary class="{name_cls}">{inline(top)}'
-                    f'<span class="md"></span></summary>'
+            # 「click the row」，收干净（JL 260724）：台面上只留标题（图标+灰印+caret）；
+            #   一句话摘要和长解释【都】藏起来，点这一整行才铺开。
+            #   摘要是解释的第一段（.ld，深一档），其余段落淡一档，展开后一眼分层。
+            head = (f'<div class="{name_cls} nof">{icon}'
+                    f'<span class="ttl">{inline(title)}</span>'
+                    f'{stamp}<span class="cv"></span></div>')
+            exp = "".join(
+                f'<p class="ld">{inline(x)}</p>' if i == 0 else f'<p>{inline(x)}</p>'
+                for i, x in enumerate(det))
+            item = (f'<details class="it row"><summary>{head}</summary>'
                     f'<div class="bd">{exp}</div></details>')
         else:
-            item = f'<div class="{name_cls} nod">{inline(top)}</div>'
+            item = (f'<div class="{name_cls} nod">{icon}'
+                    f'<span class="ttl">{inline(title)}</span>{stamp}</div>')
         if kind == "ck":
             out.append(f'<div class="ck{" on" if on else ""}">'
                        f'<span class="bx">{"☑" if on else "☐"}</span>'
@@ -511,7 +566,7 @@ def parse_dir(d):
     if not disk:                        # legacy: everything in one board.md
         return parse_file(board)
 
-    order, seen, warn, group = [], set(), [], ""
+    order, seen, warn, group, gintro = [], set(), [], "", {}
     for ln in sec(split_sections(board), "Roster").split("\n"):
         ln = ln.strip()
         if ln.startswith("### "):
@@ -523,6 +578,11 @@ def parse_dir(d):
                 seen.add(name)
             else:
                 warn.append(f"{name} is listed in the Roster but no such file exists")
+        elif ln and group:
+            # Plain lines between a "### " heading and its first .md line are the
+            # GROUP INTRO (QC2, JL 260724): line 1 = the sentence that always shows
+            # under the header; the rest = the click-to-expand "what / why" body.
+            gintro.setdefault(group, []).append(ln)
     listed = bool(order)
     for name, (key, qid, p) in sorted(disk.items(), key=lambda kv: kv[1][0]):
         if name not in seen:
@@ -534,6 +594,7 @@ def parse_dir(d):
           for g, p in order]
     meta = parse_board(board)
     meta["dir"] = str(d.resolve())
+    meta["groups"] = {g: ls for g, ls in gintro.items() if ls}
     return meta, qs, warn
 
 
@@ -558,17 +619,30 @@ def render(meta, qs):
             return 0.0
         return sum(1 for b in boxes if b.lower() == "x") / len(boxes)
 
+    ginfo = meta.get("groups") or {}
     rows, cur = [], None
     for q in qs:
         if q.get("group") and q["group"] != cur:
             cur = q["group"]
-            rows.append(f'<div class="grp">{inline(cur)}</div>')
+            rows.append(f'<div class="grp" data-g="{esc(cur)}">'
+                        f'<span class="gt">{inline(cur)}</span></div>')
+            # Group intro (QC2): one sentence always visible; if more lines follow,
+            # they open on click via a native <details>. No script involved, so the
+            # strip-scripts invariant is untouched.
+            gi = ginfo.get(cur)
+            if gi and len(gi) > 1:
+                gib = "<br>".join(inline(x) for x in gi[1:])
+                rows.append(f'<details class="gi"><summary>{inline(gi[0])}</summary>'
+                            f'<div class="gib">{gib}</div></details>')
+            elif gi:
+                rows.append(f'<div class="gi one">{inline(gi[0])}</div>')
         # 完成度上色：一条没做 = 白，越接近做完越绿（绿色叠加的透明度 = 完成比例）
         fr = frac_done(q)
         pct = round(fr * 100)
         fill = (f' style="--fill:{fr:.3f}"') if fr > 0 else ""
+        df = f' data-f="{esc(q["file"])}"' if q.get("file") else ""
         rows.append(
-            f'<a class="ir {st(q)[1]}" href="#{q["id"]}"{fill} title="{pct}% done">'
+            f'<a class="ir {st(q)[1]}" href="#{q["id"]}"{fill}{df} title="{pct}% done">'
             f'<span class="s">{st(q)[0]}</span><span class="i">{q["id"]}</span>'
             f'<span class="t">{inline(q["title"])}</span>'
             + (f'<span class="obadge">💬 {open_cm[q["id"]]}</span>' if open_cm[q["id"]] else "")
@@ -626,12 +700,29 @@ def render(meta, qs):
         # ## Question 是「一段话 + 几个要点」（JL 260723 改版）：走 body() 才吃得下要点。
         # 第一段是大字领句（CSS 挑 p:first-of-type），要点跟在下面 —— 光这一节就该让
         # 零背景的人明白：在问什么、为什么难、不定会怎样（原 Why here 的活并进来了）。
-        ask = (f'<div class="ask"><span class="ql">❓ Question</span>'
-               f'{body(sec(q["sec"], "Question"))}</div>')
-        # 🚧 Boundary（JL 260723 新增，选填）：这题管什么、更要紧的是不管什么。
-        # 不写清「不管什么」，读的人会拿别题的期待来读它 —— 零背景最容易在这儿误解。
-        bb = body(sec(q["sec"], "Boundary"))
-        bnd = f'<div class="bnd">{chead("🚧 Boundary", bb)}{bb}</div>' if bb else ""
+        # ## Question（JL 260724）：领句本身可点，点这一整行才铺开隐藏块。
+        # 隐藏块里带小标题、readable：Why this matters（解释）+ 🚧 Boundary（管/不管）。
+        # 问句里的 **粗体** 要正常内联流动 —— 所以文字包进一个 .qt span，别让 flex 拆散它。
+        # Boundary 收进【同一个】折叠块，不再单占一节；里头用扁平行，不套第二层折叠。
+        q_md = sec(q["sec"], "Question").strip()
+        _parts = re.split(r"\n\s*\n", q_md, 1)
+        qlead = inline(_parts[0].replace("\n", " ").strip())
+        qrest = _parts[1].strip() if len(_parts) > 1 else ""
+        btxt = sec(q["sec"], "Boundary").strip()
+        inner = ""
+        if qrest:
+            inner += f'<div class="fh">Why this matters</div>{body(qrest)}'
+        if btxt:
+            inner += f'<div class="fh">🚧 Boundary</div>{flat_rows(btxt)}'
+        if inner:
+            qblock = (f'<details class="it row qd"><summary>'
+                      f'<p class="qlead"><span class="qt">{qlead}</span>'
+                      f'<span class="cv"></span></p></summary>'
+                      f'<div class="bd qbd">{inner}</div></details>')
+        else:
+            qblock = f'<p class="qlead"><span class="qt">{qlead}</span></p>'
+        ask = (f'<div class="ask"><span class="ql">❓ Question</span>{qblock}</div>')
+        bnd = ""   # Boundary 现在收在 ask 的折叠块里，不再单独上台面
         # 📁 Files（JL 260723 新增，选填）：这题牵动哪些文件。读懂之后知道去哪儿动手；
         # 反过来改了哪个文件，也知道该回写哪一题。路径写反引号里，board.md 的
         # ## Links 声明过的会自动变成可点链接。

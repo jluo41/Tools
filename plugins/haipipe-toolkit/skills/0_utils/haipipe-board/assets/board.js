@@ -1121,6 +1121,116 @@
   }
   wireQBtns();
 
+  /* ── index structure controls (QC2, JL 260724): add / archive groups and
+     questions straight from the front page. Every button is only a WRITER:
+     POST /_board/structure edits board.md (and seeds/moves the Q files), the
+     server rebuilds, and the live watcher (QD6) swaps the new index in place.
+     Archive never deletes: files move to _archive/ inside the board folder. */
+  function structPost(op, extra, okMsg) {
+    var payload = { op: op };
+    Object.keys(extra).forEach(function (k) { payload[k] = extra[k]; });
+    post('/_board/structure', payload).then(function (j) {
+      if (!j) { say('No live server behind this page'); return; }
+      if (!j.ok) { say(j.err || 'failed'); return; }
+      say(okMsg(j));
+      if (window.__boardRefresh) window.__boardRefresh();
+    }).catch(function () { say('No live server behind this page'); });
+  }
+  function arm(btn, fire) {
+    /* two-step confirm, no native dialogs: first click arms, second fires */
+    if (btn._armT) {
+      clearTimeout(btn._armT); btn._armT = null;
+      btn.classList.remove('arm'); btn.textContent = btn._lbl;
+      fire(); return;
+    }
+    btn._lbl = btn.textContent;
+    btn.classList.add('arm'); btn.textContent = 'sure?';
+    btn._armT = setTimeout(function () {
+      btn._armT = null; btn.classList.remove('arm'); btn.textContent = btn._lbl;
+    }, 2600);
+  }
+  function miniForm(anchor, fields, onGo) {
+    var old = document.querySelector('.gform');
+    if (old) old.remove();
+    var f = document.createElement('span');
+    f.className = 'gform';
+    var ins = fields.map(function (ph) {
+      var i = document.createElement('input');
+      i.placeholder = ph; f.appendChild(i); return i;
+    });
+    var go = document.createElement('button'); go.className = 'go'; go.textContent = 'Add';
+    var cx = document.createElement('button'); cx.className = 'cx2'; cx.textContent = '×';
+    f.appendChild(go); f.appendChild(cx);
+    go.onclick = function () {
+      var vals = ins.map(function (i) { return i.value.trim(); });
+      if (!vals[0]) { ins[0].focus(); return; }
+      f.remove(); onGo(vals);
+    };
+    cx.onclick = function () { f.remove(); };
+    ins.forEach(function (i) {
+      i.onkeydown = function (ev) {
+        if (ev.key === 'Enter') go.onclick();
+        if (ev.key === 'Escape') cx.onclick();
+      };
+    });
+    anchor.appendChild(f);
+    ins[0].focus();
+  }
+  function wireStruct() {
+    document.querySelectorAll('div.grp').forEach(function (g) {
+      if (g.querySelector('.gadd')) return;
+      var name = g.getAttribute('data-g') || '';
+      var add = document.createElement('button');
+      add.className = 'gadd'; add.type = 'button'; add.textContent = '＋ Q';
+      add.title = 'Add a question to ' + name;
+      add.onclick = function () {
+        miniForm(g, ['new question title'], function (v) {
+          structPost('add_question', { group: name, title: v[0] },
+            function (j) { return 'Added ' + j.file; });
+        });
+      };
+      var del = document.createElement('button');
+      del.className = 'garch'; del.type = 'button'; del.textContent = '\u{1F5C4}';
+      del.title = 'Archive this group (only when it lists no questions)';
+      del.onclick = function () {
+        arm(del, function () {
+          structPost('archive_group', { group: name },
+            function (j) { return 'Archived group ' + j.group; });
+        });
+      };
+      g.appendChild(add); g.appendChild(del);
+    });
+    document.querySelectorAll('a.ir[data-f]').forEach(function (row) {
+      if (row.querySelector('.qarch')) return;
+      var b = document.createElement('span');
+      b.className = 'qarch'; b.textContent = '\u{1F5C4}';
+      b.title = 'Archive ' + row.getAttribute('data-f') +
+        ' (moves to _archive/, never deletes)';
+      b.onclick = function (ev) {
+        ev.preventDefault(); ev.stopPropagation();
+        arm(b, function () {
+          structPost('archive_question', { q: row.getAttribute('data-f') },
+            function (j) { return 'Archived ' + j.file + ' → ' + j.to; });
+        });
+      };
+      row.appendChild(b);
+    });
+    var idxBox = document.querySelector('div.idx');
+    if (idxBox && !idxBox.querySelector('.gnew')) {
+      var ng = document.createElement('button');
+      ng.className = 'gnew'; ng.type = 'button'; ng.textContent = '＋ Group';
+      ng.title = 'Add a question group (letter is picked automatically)';
+      ng.onclick = function () {
+        miniForm(idxBox, ['new group title', 'one-line intro (optional)'], function (v) {
+          structPost('add_group', { title: v[0], hook: v[1] || '' },
+            function (j) { return 'Added group ' + j.group; });
+        });
+      };
+      idxBox.appendChild(ng);
+    }
+  }
+  wireStruct();
+
   /* 右下角悬浮的「💬 Chat」—— 打开当前正在看的这一题的聊天框。
      只在聚焦看某一题时出现（CSS 控制），点它就开这一题的抽屉。 */
   var fab = document.createElement('button');
@@ -1133,7 +1243,7 @@
   };
   document.body.appendChild(fab);
 
-  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); }
+  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); wireStruct(); }
   window.__boardRewire = rewire;
   marks(); paint(); wireResolve(); wireDadd();
 })();
