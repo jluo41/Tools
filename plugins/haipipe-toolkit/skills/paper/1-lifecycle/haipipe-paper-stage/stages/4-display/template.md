@@ -49,7 +49,7 @@ Render & sweep — display mechanics (NOT bank questions)
 These are the display stage's OWN steps, not questions to the bank; PROBE runs them on the user's verb, and the user may strike any at the gate. Status: `▶ ready` · `✋ gated` · `done`.
 
 - **S0 · cross-stage coverage sweep** — display PROBE step 0: read 3-narrative + every section md (its `\input`/`\ref` uses included). Outcome: the DR rows filed on each section's behalf.
-- **R<n> · render dispatch** — a candidate goes to a renderer skill (`/haipipe-paper-display-figure | -table | -diagram | -illustration`); candidates land in the unit's `candidates/` (`assets/` untouched until REVISE). Serves Fig/Tab N, candidate `<letter>`. Not dispatched to the bank.
+- **R<n> · render dispatch** — a candidate goes to a renderer skill (`/haipipe-display-figure | -table | -diagram | -illustration`); candidates land in the unit's `candidates/` (`assets/` untouched until REVISE). Serves Fig/Tab N, candidate `<letter>`. Not dispatched to the bank.
 
 
 <Paper Section, e.g. Intro & Theory>
@@ -63,8 +63,8 @@ claim: <C1+C3> | status: <planned>
 takeaway: <what the reader learns in five seconds -- one sentence>
 evidence: <source path + producing task/probe, or "concept (no data)">
 candidates:
-- A <AI illustration> via /haipipe-paper-display-illustration -> candidates/A-illus.png · verdict: <empty until PROBE fills it>
-- B <vector diagram> via /haipipe-paper-display-diagram -> candidates/B-model.svg · verdict:
+- A <AI illustration> via /haipipe-display-illustration -> candidates/A-illus.png · verdict: <empty until PROBE fills it>
+- B <vector diagram> via /haipipe-display-diagram -> candidates/B-model.svg · verdict:
 sketch:
 ```text
   ┌────────┐        ┌───────────┐

@@ -171,6 +171,10 @@ keeping all skill names and slash commands unchanged.
 - Updated plugin docs and cross-references to use the new folder names.
 
 
+## [0.2.4] — 2026-07-24 · display/ bucket
+
+New shared **`display/`** bucket for cross-cutting render tools. Pulled the four display RENDERERS out of `paper/1-lifecycle/4-display/` and dropped the paper prefix (`haipipe-paper-display-{figure,illustration,diagram,table}` → `haipipe-display-*`); moved `paper-poster` / `paper-slides` out of `paper/5-present/` (names kept, they still consume a compiled paper). html-ppt / html-to-svg already lived here. The paper 4-display **stage** (the display-plan doc + `ref/display-unit-output-contract.md`) STAYS in paper — only the renderers moved. All 75 references updated across 25 files; git mv preserved history.
+
 ## [0.2.3] — 2026-07-24 · 0.x policy
 
 Reset every skill **and** this package to `0.x` — the whole toolkit is declared pre-1.0 until JL blesses individual pieces. Mechanical renumber `X.Y.Z → 0.X.Y` across 135 skills (2 already-0.x skills left alone; `diagram-drawio` given `0.1.0`); `plugin.json 2.3.4 → 0.2.3`, marketplace `2.0.0 → 0.2.0`. Each skill's own CHANGELOG got a matching top entry; older entries keep their original numbers.

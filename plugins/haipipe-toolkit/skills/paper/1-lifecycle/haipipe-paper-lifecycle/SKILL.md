@@ -36,10 +36,10 @@ The orchestrator never generates narrative, outlines, figures, or diagrams itsel
 /haipipe-paper-lifecycle narrative <args>               -> 0-lifecycle/3-narrative/3-narrative.md (venue-ALIGNED design contract)
 /haipipe-paper-lifecycle display <args>                 -> 0-lifecycle/4-display/4-display.tex + 0-displays/ units (the only compiled stage)
 /haipipe-paper-lifecycle section-edit <args>            -> 0-lifecycle/5-section-edit/{section}/ per-section editing hub
-/haipipe-paper-lifecycle table <args>                   -> data-driven LaTeX tables (haipipe-paper-display-table)
-/haipipe-paper-lifecycle figure <args>                  -> data-driven plots (haipipe-paper-display-figure)
-/haipipe-paper-lifecycle diagram <args>                 -> deterministic vector diagrams / SVG (haipipe-paper-display-diagram)
-/haipipe-paper-lifecycle illustration <args>            -> AI concept illustration, Codex bridge (haipipe-paper-display-illustration)
+/haipipe-paper-lifecycle table <args>                   -> data-driven LaTeX tables (haipipe-display-table)
+/haipipe-paper-lifecycle figure <args>                  -> data-driven plots (haipipe-display-figure)
+/haipipe-paper-lifecycle diagram <args>                 -> deterministic vector diagrams / SVG (haipipe-display-diagram)
+/haipipe-paper-lifecycle illustration <args>            -> AI concept illustration, Codex bridge (haipipe-display-illustration)
 /haipipe-paper-lifecycle framework <args>               -> display framework mode (candidate rounds, selection, handoff)
 /haipipe-paper-lifecycle "<natural language>"           -> infer function, dispatch
 ```
@@ -113,13 +113,13 @@ section-edit                SECTION-EDIT (5): per-section editing hub under 0-li
 ### Display renderers -- visual assets
 
 ```
-haipipe-paper-display-table           TABLE:   data-driven LaTeX tables (booktabs/stars/panels) from an aggregated CSV/JSON
+haipipe-display-table           TABLE:   data-driven LaTeX tables (booktabs/stars/panels) from an aggregated CSV/JSON
 
-haipipe-paper-display-figure          PLOT:    data-driven publication plots from experiment results (plots only)
+haipipe-display-figure          PLOT:    data-driven publication plots from experiment results (plots only)
 
-haipipe-paper-display-diagram         VECTOR:  deterministic architecture/workflow/pipeline diagrams from structured JSON -> editable SVG
+haipipe-display-diagram         VECTOR:  deterministic architecture/workflow/pipeline diagrams from structured JSON -> editable SVG
 
-haipipe-paper-display-illustration    AI-IMG:  AI concept illustration via the local Codex app-server bridge (native image gen)
+haipipe-display-illustration    AI-IMG:  AI concept illustration via the local Codex app-server bridge (native image gen)
 ```
 
 ---
@@ -226,10 +226,10 @@ Step 3: Dispatch:
     function = "folder"    -> Skill("haipipe-paper-folder", args)
 
     # Display renderers carry the display- prefix; map the short verb explicitly:
-    function = "table"          -> Skill("haipipe-paper-display-table", args)
-    function = "figure"         -> Skill("haipipe-paper-display-figure", args)
-    function = "diagram"        -> Skill("haipipe-paper-display-diagram", args)
-    function = "illustration"   -> Skill("haipipe-paper-display-illustration", args)        # Codex bridge
+    function = "table"          -> Skill("haipipe-display-table", args)
+    function = "figure"         -> Skill("haipipe-display-figure", args)
+    function = "diagram"        -> Skill("haipipe-display-diagram", args)
+    function = "illustration"   -> Skill("haipipe-display-illustration", args)        # Codex bridge
 
     # Lifecycle stages ALL go through ONE skill. There are no longer per-stage skills:
     function in (seed | resource | claims | venue | pitch | narrative | display | section-edit)

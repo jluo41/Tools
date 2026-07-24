@@ -1,5 +1,5 @@
 ---
-name: haipipe-paper-display-illustration
+name: haipipe-display-illustration
 description: "AI-illustration renderer of the display family: generate publication-quality academic concept figures (architecture/method/pipeline/taxonomy) through a local Codex app-server bridge that uses Codex native image generation. Use when user says \"画架构图\", \"method illustration\", \"concept figure\", \"AI 配图\", or needs an AI-rendered concept figure."
 argument-hint: "[description-or-method-file]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status, mcp__codex__codex, mcp__codex__codex-reply
@@ -35,7 +35,7 @@ dose-response, subgroup, etc.) must be rendered from real data by a task
 An
 AI raster of a data figure is unverifiable and unfit for a data-driven venue.
 For deterministic vector schematics (e.g. a study-flow / CONSORT diagram), prefer
-`haipipe-paper-display-diagram` (JSON -> SVG, no external service) or a
+`haipipe-display-diagram` (JSON -> SVG, no external service) or a
 task-rendered matplotlib schematic; reach for image2 only when you want a richer
 conceptual illustration than a vector spec can express, typically for a
 conference/ML venue.

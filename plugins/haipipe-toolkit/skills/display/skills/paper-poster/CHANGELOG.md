@@ -1,8 +1,12 @@
-paper-slides — Changelog
+paper-poster — Changelog
 ========================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+
+## [0.1.0] — 2026-07-24 · moved to display/
+
+Moved from `paper/5-present/` to the shared `display/` bucket (name kept — it still consumes a compiled paper).
 
 ## [0.1.0] — 2026-07-24
 

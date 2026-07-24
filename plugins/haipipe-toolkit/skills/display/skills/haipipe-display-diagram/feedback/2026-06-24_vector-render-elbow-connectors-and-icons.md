@@ -10,7 +10,7 @@ instead of curve lines [...] I think it is much better."
 things? I want to understand it."
 
 Two requests about the FigureSpec vector renderer used for research-model /
-research-design figures (haipipe-paper-display-diagram, scripts/figure_renderer.py).
+research-design figures (haipipe-display-diagram, scripts/figure_renderer.py).
 
 1. ELBOW (rectangle) connectors -- APPLIED 2026-06-24.
    The renderer previously offered only curved (quadratic bezier) or straight
