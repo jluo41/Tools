@@ -236,6 +236,7 @@ AGPL-3.0: myrlin's license. Fine to use as a standalone tool; constraints bite w
       >> CC0723: you can — the UI blocked it, not the LAW. Different questions are different sessions; open more board tabs. (The ↗ pop-out button was later removed per JL.)
 
 ## Log
+260724 1550 · JL confirms in the browser: "It is better now." — the self-healing respawn + real cell metrics hold up live; ⑤ grace release, ⑥ WebGL, and the auth line keep this 🟡
 260724 1540 · JL's screenshot (fig/qd3-reconnect-after-release-260724.png) → two fixes in assets/board.js: reconnect self-heals (2 dead knocks → respawn via /_board/term, --resume restores the session) and fitTerm uses xterm's real cell metrics + a post-connect refit. Lesson written
 260724 1410 · Smoothness ①–④ built into build.py's page JS (reconnect-with-backoff keeping scrollback · 30s keepalive resize op · ResizeObserver fit · hover pre-warms assets only, never HOLD); emitted JS node-checked; ⑤ grace release and ⑥ WebGL stay open
 260724 1350 · Console relay shipped and verified (boards_api.py: term/release POSTs, the /_term WS pipe, xterm assets — bytes flowed through 8093, session reused, released clean); JL asked "make it very smooth" → the six-point smoothness list added to Items to Finish

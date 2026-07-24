@@ -1,5 +1,5 @@
 # Live page updates
-state: 🟡 PARTIAL
+state: ✅ SETTLED
 owner: JL
 method: never reload — poll our own Last-Modified and swap div.wrap in place; the drawer survives because it was never inside the content
 session: 8ffce751-3dec-429b-8e05-57cc3c91402f
@@ -47,8 +47,8 @@ session: 8ffce751-3dec-429b-8e05-57cc3c91402f
       Better than the banner I leaned to: **in-place swap, automatic** — content updates under you, scroll restored, a small "↻ board updated" toast; held while you have text selected (mid-comment). No reload ever, so nothing to lose.
 - [x] Keep the script-free readability invariant
       The watcher lives inside the page's single script block; build.py's strip-scripts assertion still passes (223k chars of body without JS).
-- [ ] Seen working in a real browser
-      Built and node-checked; the honest tick waits for JL's tab to actually swap under a live edit (their next drawer-driven change will be the test).
+- [x] Seen working in a real browser
+      JL operated the loop live through the afternoon of 260724 (drawer edits landing under an open tab) and closed it with "It is better now." — the tick this line was waiting for.
 
 ## Where we are
 **v1 shipped 260724 — automatic in-place refresh; the drawer, terminal, and comment dock all survive updates.**
@@ -70,6 +70,18 @@ session: 8ffce751-3dec-429b-8e05-57cc3c91402f
 - One detail that must be settled together
   "Full reload on every change" is obnoxious — mid-read or mid-comment, the page jumps and everything is gone. The update behavior must be settled with the mechanism; I lean "banner + reload on click".
 
+## Law
+- Never reload; swap `div.wrap` in place
+  Every widget the scripts build (comment dock, chat drawer, terminal, fab) hangs off `<body>`, OUTSIDE the swapped region — that placement is the whole trick and must be preserved by future widgets.
+- The page watches its own URL
+  HEAD-poll every 4s, compare Last-Modified; zero server endpoints invented. SSE is the upgrade path if 4s ever feels slow.
+- `location.reload()` is banned in the page's own controls
+  Any "refresh" affordance calls `window.__boardRefresh` (the immediate in-place swap). A hard reload tears down the drawer — that is a bug, not a refresh (0.9.1's lesson).
+- Swaps hold while text is selected
+  A selection is probably a comment being written; the update waits for the next tick.
+- Still an enhancement
+  The watcher lives inside the page's single script block; strip every script and the full body remains (build.py asserts it).
+
 ## Files
 - `serve.py`
   The live mechanism lands here (an mtime endpoint, or one SSE long connection). The spot where html gets generated is exactly the "changed" trigger.
@@ -83,6 +95,7 @@ session: 8ffce751-3dec-429b-8e05-57cc3c91402f
 >> CC0724: shipped exactly that, without Node: the page watches its own Last-Modified and swaps div.wrap in place — your chat drawer (even mid-stream), the terminal, and the comment dock are appended to <body>, so they never notice. When the drawer's edit lands, the content under it updates itself within ~4s with a "↻ board updated" toast.
 
 ## Log
+260724 1550 · JL: "It is better now." — the seen-in-a-real-browser tick lands; all items done → ✅ SETTLED, ## Law written (swap-not-reload · body-anchored widgets · reload ban · selection hold · enhancement-only)
 260724 1525 · JL hit the drawer's old "↻ Reload" button and it closed the chatbot — all four location.reload() sites now call the in-place swap (window.__boardRefresh) instead; labels renamed "Refresh in place"; the drawer survives its own post-write refresh
 260724 1510 · v1 shipped per JL's requirement (auto-refresh, chat survives): HEAD-poll 4s + in-place div.wrap swap + rewire + scroll restore + toast; held during text selection; console page route gained HEAD; Node answered NO — 🔴 → 🟡, only the seen-in-browser tick remains
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
