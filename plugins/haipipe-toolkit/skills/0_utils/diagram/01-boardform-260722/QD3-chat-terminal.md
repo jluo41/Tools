@@ -112,6 +112,16 @@ Built, and it lives in the page. ⌨ in the drawer header enters the terminal; c
       · atexit / SIGTERM reap best-effort on the way out
       · `/_board/killall` closes everything; `/_board/terms` lists what runs (across boards)
       · closing a board page sends a pagehide beacon to release the drawer's terminal
+- Character widths agree end to end: Unicode 11 tables + a CJK-aware font (260724)
+      The smear cause left standing after the 0.9.2 metrics fix: the vendored xterm.min.js only carries Unicode 6
+      width tables, so 🟡 ✅ 💬 count 1 cell while claude's TUI counts 2 (modern wcwidth) — every emoji shifts the
+      row, a full-screen repaint lands off-cell, and the old frame shows through as interleaved double text.
+      Fixed by vendoring @xterm/addon-unicode11 (served at `/_board/asset/addon-unicode11.js`, loaded right after
+      xterm.min.js, `unicode.activeVersion = '11'`); verified offline that the v11 provider returns width 2 for 🟡✅💬
+      and CJK where the built-in V6 tables said 1. Stacked cause fixed with it: Menlo has no CJK, so those glyphs fell
+      back to a taller system font that bled into neighboring rows — fontFamily now carries PingFang SC / Hiragino / YaHei
+      and lineHeight 1.2 adds the headroom. The addon load is soft-fail (console warning, terminal still opens),
+      so an older serve.py cannot brick the drawer. Visual re-check in the drawer owed to JL.
 
 **Still unsettled:**
 
@@ -136,6 +146,14 @@ CC released QD3's ttyd from the CLI while JL had that very terminal open in the 
 ![reconnect banners over a mangled TUI after the terminal was released](fig/qd3-reconnect-after-release-260724.png)
 
 Since 0.9.2 the third knock stops knocking and re-asks serve.py for a FRESH terminal (`--resume` restores the session), so a release under your feet costs a two-second restart, not a dead pane. The mangled columns had a second cause: fitTerm used guessed glyph metrics (8.4px/17px); it now reads xterm's real rendered cell size and refits 350ms after connect, so the pty and the pane agree on the width claude repaints into.
+
+**Wiring the pipe is not the whole terminal: both ends must agree on how wide a character is.**
+Three width opinions meet in one pane: the app's (claude counts 🟡✅💬 as 2 cells, modern wcwidth), the terminal's
+(the vendored xterm shipped only Unicode 6 tables, which say 1), and the font's (Menlo has no CJK glyphs, and the
+fallback glyph is wider and taller than the measured ASCII cell). Any disagreement drifts the cursor or bleeds the
+rows, and a TUI that repaints in place turns the drift into interleaved double-frames — the QD3 smear (fig/image.png).
+Emoji-dense content (state pills, 💬 markers) guarantees the trigger on this very board. All three are now pinned
+explicitly — addon-unicode11 (`activeVersion '11'`), a CJK-aware font stack, lineHeight 1.2 — none of them assumed.
 
 **A hollow session (id recorded, never chatted) makes --resume exit instantly; the terminal dies on open.**
 `claude --session-id <uuid>` starts a session, but if only the UI booted and no message was ever sent, no jsonl lands on disk.
@@ -231,6 +249,8 @@ AGPL-3.0: myrlin's license. Fine to use as a standalone tool; constraints bite w
       >> CC0723: you can; the UI blocked it, not the LAW. Different questions are different sessions; open more board tabs. (The ↗ pop-out button was later removed per JL.)
 
 ## Log
+260725 1105 · The terminal also opens on the index's chatbot (JL's ask on QC2, details on QD2): ⌨ in the board drawer posts /_board/term with file=board.md; verified live: ttyd up at /_term/117a3466ca18/, HTTP 200 through the proxy, SAME session id as the drawer (two front ends, one session holds), released clean
+260724 1925 · Width accounting aligned (JL's fig/image.png smear): vendored addon-unicode11 (emoji 1→2 cells, matches claude's wcwidth; offline-verified provider v11) + CJK font fallbacks + lineHeight 1.2 in the drawer's xterm; serve.py asset whitelist + soft-fail load; Lesson added
 260724 1550 · JL confirms in the browser: "It is better now."; the self-healing respawn + real cell metrics hold up live; ⑤ grace release, ⑥ WebGL, and the auth line keep this 🟡
 260724 1540 · JL's screenshot (fig/qd3-reconnect-after-release-260724.png) → two fixes in assets/board.js: reconnect self-heals (2 dead knocks → respawn via /_board/term, --resume restores the session) and fitTerm uses xterm's real cell metrics + a post-connect refit. Lesson written
 260724 1410 · Smoothness ①–④ built into build.py's page JS (reconnect-with-backoff keeping scrollback · 30s keepalive resize op · ResizeObserver fit · hover pre-warms assets only, never HOLD); emitted JS node-checked; ⑤ grace release and ⑥ WebGL stay open

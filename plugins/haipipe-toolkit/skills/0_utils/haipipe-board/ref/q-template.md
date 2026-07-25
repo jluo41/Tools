@@ -1,100 +1,163 @@
-# 短标题（一个短语，≤14 字，不是句子）
+# Short title (a phrase, not a sentence)
 state: 🔴 OPEN
 owner: CC
-method: 一句话说打算怎么解决（选填，不写就删掉这一行）
+method: one line on how you plan to solve it (optional; delete the line if unused)
 
-<!-- 用法：复制这个文件 → 改名成 Q<组字母><序号>-<slug>.md → 把每段引导句换成真内容。
-     每段开头的「必填 / 选填」是给你看的：
-       必填 = 缺了这题就算不合格（build.py 不报错，但页面上会缺一块）。
-       选填 = 用不上就把整段连标题一起删掉。
-     顶部四行也照这个规矩：# 标题 · state · owner 必填，method 选填（删掉整行）。
-       · state 只填一个 —— 🔴 OPEN（没开始）· 🟡 PARTIAL（有进展）· ✅ SETTLED（做完）· ⏸️ ON HOLD（搁置）。
-       · owner 谁负责；JL 在页面上显示 🧠（拍板），其他人显示 🔧。
-     段落名（Question / Boundary / Items to Finish 这些）必须原样保留 —— build.py 只按这几个
-     名字取内容；名字后面加了字（比如「必填」两字）就取不到了，所以标记只能写进正文，
-     不能写进标题行；state: 后面也只能跟一个状态，别把上面那行图例抄进去。
-     台面上的顺序是固定的：Question → Boundary → Diagram → Items to Finish → Where we are。
-     写完把这段注释删掉；不删也没关系，生成时会被丢掉，不上页面。 -->
+<!-- How to use: copy this file, rename to Q<group letter><number>-<slug>.md for a ruling
+     or S<stage order>-<slug>.md for a lifecycle stage, replace each
+     guide sentence with real content. "required / optional" at the start of each section is
+     for you:
+       required = leaving it out makes the question incomplete (build.py does not error, but
+                  a block is missing on the page).
+       optional = delete the whole section, heading included, if unused.
+     The top four lines follow the same rule: # title, state, owner are required; method is
+     optional (delete the whole line).
+       - state takes exactly one: 🔴 OPEN (not started) · 🟡 PARTIAL (in progress) ·
+         ✅ SETTLED (done) · ⏸️ ON HOLD (parked).
+       - owner is who is responsible; JL shows 🧠 (decides) on the page, others show 🔧.
+     Section names (Question / Boundary / Items to Finish, etc.) must be kept verbatim.
+     `## Opening` is accepted as an alias for `## Question`, but the template keeps Question
+     because the lead sentence must still be an actual question.
+     build.py fetches content by these exact names, so any mark goes in the body, never in the
+     heading line, and state: takes one status only.
+     The visible on-stage hierarchy is fixed:
+       Opening -> Diagram -> Content -> Items to Finish -> Where we are -> Files.
+     Opening groups the Question lead + optional Boundary. Optional Diagram is its own collapsed
+     section and opens only when its heading is clicked. On Q faces, the remaining Question
+     paragraph becomes Content's first "Why this matters" subsection. On S faces, "Why this
+     matters" moves into Opening; an optional exact direct `### Stage Record` under Content moves
+     there too and starts collapsed when supplied. Explicit Content is optional for Q and required
+     for S.
+     Delete this comment when done (it is dropped at generation either way).
+     Full writing standard: ref/writing-rules.md. English only. No em-dashes. -->
 
 ## Question
-必填 · 先一段平白话（3–4 句），再 2–4 个要点。**光读这一节，一个零背景的人就该明白这题在干嘛。**
+required · One lead sentence, then one plain paragraph. **Reading this section alone, a
+zero-background person should understand what the question is.**
 
-第一段：在问什么、为什么现在要定。用大白话，别用只有你懂的简称。
+The lead renders in `🧭 Opening` with Boundary. On Q faces, the paragraph below it renders as
+Content's first `Why this matters` subsection. On S faces, that paragraph renders inside Opening.
 
-- 为什么难 / 卡在哪
-  一句话说清难点。没有难点的题不值得占一页。
-- 不定会怎样
-  拖着会挡住什么、谁会被卡住。
-- 定了会影响什么
-  这个决定往下会传导到哪儿。
+The lead sentence is the actual question, written as a question, in plain words. It stays in
+Opening and is clickable.
+
+Then one flowing paragraph: why the question is hard, what breaks while it stays open, and what
+it affects downstream. build.py labels it "Why this matters": under Content for Q, inside Opening
+for S. Write it as prose, not as `- Why it is hard / - What breaks` bullets.
 
 ## Boundary
-选填（强烈建议写）· 这题管什么、更要紧的是**不管**什么。不写清「不管什么」，
-读的人会拿别题的期待来读它 —— 零背景最容易在这儿误解。
+optional (strongly recommended) · What this question covers and, more importantly, what it does
+not. Folds into the same block as the Question, so keep each line short.
 
-- ✅ 这题管
-  一两条，划清范围。
-- ❌ 这题不管
-  一两条，并写清「那归哪一题」（比如「投屏那份归 QA3」）。
+- ✅ Covered here
+  One or two lines drawing the scope.
+- ↪ Covered elsewhere
+  One or two lines, and **name the question that does cover it** (for example "projection is
+  QA3"). A bare exclusion reads as a refusal; this line's job is to redirect the reader. Use
+  `↪`, not `❌` (JL 260724).
 
 ## Diagram
-选填 · 一张 ascii 图，说清这题的形状 / 流程，紧跟在 Boundary 下面。
-不会画就把整段删掉 —— 空着比画错好。
+optional · One ascii figure showing the shape or flow of the question, right below Boundary.
+If you cannot draw it, delete the whole section: empty beats wrong.
 
-要更细的图，就在 ascii 下面**单独一行**放一个 excalidraw 分享链接，会嵌成可交互画布：
-`https://app.excalidraw.com/s/…`（底下自动带一条「↗ 在 Excalidraw 打开」兜底，断网也点得开）。
-**ascii 图别删** —— 它零依赖，画布加载不出来时它还在。
+It renders as its own `🖼 Diagram` section, collapsed by default. The heading remains visible;
+the figure appears only after the reader clicks it.
+
+For a richer figure, put an excalidraw share link on **its own line** below the ascii; it embeds
+as an interactive canvas (`https://app.excalidraw.com/s/...`), with a fallback link underneath.
+**Keep the ascii figure:** it has zero dependencies and stays when the canvas fails to load.
+
+## Content
+S required · Q optional. The face's substantive material after orientation. Delete this explicit
+section in a Q that needs no additional material.
+
+S-only, optional: an exact direct `### Stage Record` is orientation metadata, so build.py lifts
+it into Opening and keeps it collapsed when supplied. All other direct `###` sections remain
+under Content.
+
+Each direct `###` heading becomes one individually collapsible content subsection. Keep the old
+stage prose under these headings rather than copying it into a second backing document.
+
+### First content subsection
+The actual content goes here.
+
+### Second content subsection
+Continue with the next coherent part of the stage.
 
 ## Items to Finish
-必填 · 勾选清单，一条一行，就是「什么算做完」。做到的改成 `- [x]`，栏头会自动数出 `1/2`。
-**没验过的不许打勾。**
+required · A checklist, one line each, of what counts as done. Tick `- [x]` when met; the
+heading auto-counts `1/2`. **Do not tick what has not been verified.**
 
-- [ ] 第一条完成线：具体指什么、怎么算达到。
-- [ ] 第二条完成线：写得要能验收，不是「差不多了」。
+Every item is `- ICON heading` with a folded explanation. Start the heading with an author-chosen
+emoji icon (build.py never guesses one). The first indented line is a one-sentence summary; the
+lines after it are the long explanation, written as a real paragraph (what it means, what
+happened, why). Only the heading shows on stage; length is free in the fold.
+
+- [ ] 🎯 First finish line
+      One sentence saying exactly what this means and how it is judged met.
+      The long explanation: the reasoning and history behind this line, as a paragraph.
+- [ ] 🧪 Second finish line
+      Written so it can be checked, not "basically there".
+      The paragraph continues here.
+
+For an S face, former Q-consumer records live here as recognizable checklist items. Keep the id,
+stake, route, and answer together:
+
+- [ ] 🔎 Q-Stage-1 · Concrete consumer question
+      **Description:** What must be learned?
+      **Reason:** Which content or claim depends on it, and what breaks if it fails?
+      **Probe:** -> `1-probes/PPNN_topic/QX1.md`
+      **Answer:** Empty until the answer lands.
+
+Tick a consumer only after its answer landed, was interpreted, and was woven into `## Content`.
+A deferred consumer closes only after a forward pointer is recorded.
 
 ## Where we are
-必填 · 现在的实际状态，有数字就给数字，别写「基本完成」。
-一句**整行加粗** `**…**` = 组标题：领着下面一串 item，比 item 大一号，用来把内容分组。
-开头写个 emoji（`**🎨 版式落地**`）就拿它当记号，跟 📍/🎯 一路；不写用默认 🔹。
+required · The actual present state, with numbers where numbers exist (not "basically done").
 
-**这一组在讲什么（组标题示范）**
+Open with one concise paragraph: what has been achieved, and what is still unproven. Then dated
+items, each prefixed `YYMMDD WHO ·`; build.py strips that into a muted right-aligned stamp, so the
+date and person never sit in the title text. Order by date. On S faces, summarize the stage; do
+not repeat every consumer answer from Items to Finish.
 
-- 一个小标题
-  长内容一律这样分块：`- 小标题` 一行，下面缩进两格写解释，可以好几行。
-- 再一个小标题
-  不要一段接一段的散句。
+- 260723 CC · 🔀 What changed on this date
+      One sentence naming the change.
+      The paragraph: what it was before, why it changed, what it cost.
 
 ## Files
-选填（强烈建议写）· 这题牵动哪些文件。读懂之后知道去哪儿动手；反过来改了哪个文件，也知道该回写哪一题。
-路径写进反引号，`board.md` 的 `## Links` 声明过的会自动变成可点链接。
+optional (strongly recommended) · Which files this question moves or depends on. Paths in
+backticks; those declared in `board.md`'s `## Links` become clickable.
 
 - `path/to/thing.py`
-  它在这题里担什么角色、这题一改先改哪儿。
-- `path/to/生成物`
-  是生成物的话写明「不要手改」。
+  Its role in this question, and where you start when this question changes.
+- `path/to/generated-thing`
+  If it is generated, say "do not hand-edit".
 
 ## Law
-选填 · 折叠 · 这一题已经拍定、以后照着办的规矩，一条一行。
-还没定死的先别写，免得看着像已经定了。用不上就删掉整段。
+optional · folded · Rules this question has settled and will follow from now on, one per line.
+Do not write intentions here as if settled. Delete the section if unused.
 
 ## Lesson
-选填 · 折叠 · 这一题踩过的坑、学到的教训，一条一行。放这里，不要塞进 `## Where we are`。用不上就删掉整段。
+optional · folded · Traps hit and lessons learned on this question, one per line. Keep them
+specific (a concrete failure attached). Delete the section if unused.
 
 ## Glossary
-选填 · 折叠 · 出现在这一页、外人看不懂的词，一行一个：`词：解释`。
-凡是自己新造的说法，必须在这里解释过，否则不许用。用不上就删掉整段。
+optional · folded · Words on this page an outsider would stumble on, one per line: `term:
+explanation`. Any coined phrase must be defined here or not used. Delete the section if unused.
 
 ## Discussion
-选填 · 折叠 · 随手讨论，一行一条。页面上那个「➕ Add to discussion」框会写进这里。
-> JL: 讨论写这里。
->> CC0723: 回复用两个尖括号加日期。
+optional · folded · Loose discussion, one line each. The "➕ Add to discussion" box on the page
+writes here.
+> JL: discussion goes here.
+>> CC0724: reply with two angle brackets and a date.
 
 ## Comments
-选填 · 折叠 · 钉在正文某一句上的评论，那句话会在页面上高亮。
-这段通常由页面上的「💬 Comment」按钮自动写回，不用手敲。用不上就删掉整段。
-- [ ] JL 「正文里的某一句原话」 · 260723 1100
-      评论正文，缩进两格。解决了把 [ ] 改成 [x]，页面上会划掉并变灰。
+optional · folded · Comments pinned to a sentence in the body; that sentence is highlighted on
+the page. Usually written by the page's "💬 Comment" button, not by hand. Delete if unused.
+- [ ] JL 「an exact sentence from the body」 · 260724 1100
+      The comment, indented two spaces. Tick `[x]` when resolved; the page strikes it through.
 
 ## Log
-选填（基本每题都有一段）· 折叠 · 这题改过什么，一行一条，最新的放最上面：
-260723 1030 · 改了什么（`YYMMDD HHMM · …`，时间可省）
+optional (most questions have one) · folded · What changed on this question, one line each,
+newest on top:
+260724 1030 · what changed (`YYMMDD HHMM · ...`, time optional)

@@ -19,7 +19,12 @@ HERE = Path(__file__).resolve().parent
 
 
 def stamp(d):
-    return {p: p.stat().st_mtime for p in sorted(d.glob("*.md"))}
+    # QC3: Q files may sit in subfolders, so watch the whole tree; skip
+    # `_`/`.` segments (archives, previews) and fig/ same as build.py.
+    return {p: p.stat().st_mtime
+            for p in sorted(d.rglob("*.md"))
+            if not any(s.startswith(("_", ".")) or s == "fig"
+                       for s in p.relative_to(d).parts[:-1])}
 
 
 def build(d):

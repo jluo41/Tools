@@ -6,7 +6,7 @@ session: c8603c47-0cd5-4a52-b708-37c617e82dd8
 ## Question
 A board is a folder. So which files MUST that folder contain? And more importantly: what makes a Q file "belong" to the board: someone registering it on a list, or simply where the file sits?
 
-The two attachment models differ a lot: with registration, forgetting to register means losing the question; with path-based membership, dropping a file in counts automatically, but then nobody controls order and grouping. Until the shape is pinned down, SKILL.md has nothing to say and the generator does not know what to read, so every downstream question hangs on this. It also decides directly whether an RA can claim one question and edit it without colliding with anyone else (one file per question vs. everything stuffed into one board.md).
+The two attachment models differ a lot: with registration, forgetting to register means losing the question; with path-based membership, dropping a file in counts automatically, but then nobody controls order and grouping. Until the shape is pinned down, SKILL.md has nothing to say and the generator does not know what to read, so every downstream question hangs on this. It also decides directly whether a colleague can claim one question and edit it without colliding with anyone else (one file per question vs. everything stuffed into one board.md).
 
 ## Boundary
 - ✅ Covered here

@@ -11,8 +11,12 @@
   var UK = 'board-users', WK = 'board-user-last';
   var db = [], users = [];
   try { db = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { db = []; }
-  try { users = JSON.parse(localStorage.getItem(UK) || 'null') || ['JL','RA','CC']; }
-  catch (e) { users = ['JL','RA','CC']; }
+  try { users = JSON.parse(localStorage.getItem(UK) || 'null') || ['JL','CC']; }
+  catch (e) { users = ['JL','CC']; }
+  users = users.filter(function (u) { return u !== 'RA'; });
+  if (!users.length) users = ['JL','CC'];
+  localStorage.setItem(UK, JSON.stringify(users));
+  if (localStorage.getItem(WK) === 'RA') localStorage.removeItem(WK);
   var pend = null;
 
   function mk(tag, id, html) {
@@ -644,10 +648,22 @@
     'If you cannot do one, or disagree, do NOT flip it to [x] — write why underneath.\n' +
     'End with a short summary of what you changed.';
 
+  /* BOARDFIX = FIXALL 的整板版（QD5）：不是这一题的评论，是每个 face 的。 */
+  var BOARDFIX =
+    'You are on the WHOLE board. Work through every unresolved comment (`- [ ]`) ' +
+    'in the ## Comments of EVERY face file on this board. For each one:\n' +
+    '1. Edit that face\'s body the way the comment asks;\n' +
+    '2. Flip that line to `- [x]` and reply on an indented line below it with ' +
+    '`>> CC<MMDD>: what you did`;\n' +
+    '3. Add one line at the TOP of that face\'s ## Log: `YYMMDD HHMM · what changed`.\n' +
+    'If you cannot do one, or disagree, do NOT flip it to [x] — write why underneath.\n' +
+    'End with a short per-file summary of what you changed.';
+
   function openCount(sec) {
     return sec.querySelectorAll('.cm:not(.done)').length;
   }
   function chatActs(sec) {
+    var isBoard = (sec === 'board');
     var box = chat.querySelector('.acts');
     box.innerHTML = '';
     var add = function (label, fn, primary) {
@@ -656,28 +672,54 @@
       b.textContent = label; b.onclick = fn;
       box.appendChild(b);
     };
-    var n = openCount(sec);
-    if (n) add('🔧 Handle ' + n + ' open comment' + (n > 1 ? 's' : ''), function () { chatSend(FIXALL); }, true);
-    add('📝 What is this question missing?', function () {
-      chatSend('Answer only, do not edit any file: which items in this question\'s ' +
-               '## Done when are still unchecked, and what is each one blocked on? ' +
-               'One per line.');
-    });
+    var n = isBoard ? document.querySelectorAll('.cm:not(.done)').length : openCount(sec);
+    if (n) add('🔧 Handle ' + n + ' open comment' + (n > 1 ? 's' : '') + (isBoard ? ' (whole board)' : ''),
+               function () { chatSend(isBoard ? BOARDFIX : FIXALL); }, true);
+    if (isBoard) {
+      add('🧭 Which question should I act on?', function () {
+        chatSend('Answer only, do not edit any file: which face on this board should ' +
+                 'be acted on next, and why? Consider state, unchecked items and open ' +
+                 'comments. Give 1-3 candidates, one line each: id · reason.');
+      });
+    } else {
+      add('📝 What is this question missing?', function () {
+        chatSend('Answer only, do not edit any file: which items in this question\'s ' +
+                 '## Done when are still unchecked, and what is each one blocked on? ' +
+                 'One per line.');
+      });
+    }
     add('↻ Refresh', function () { (window.__boardRefresh || function () { location.reload(); })(); });
   }
 
   async function chatOpen(sec) {
-    cq = { id: sec.id, file: sec.getAttribute('data-file') || '',
-           title: sec.getAttribute('data-title') || '' };
-    chat.querySelector('.qid').textContent = cq.id;
+    /* sec 是某一题的 <section>，或字符串 'board'（QD5）：整板会话，挂在 board.md 上。
+       服务器端认 file=board.md，规则和开场定位换成整板那份；session 记在 board.md 头部。 */
+    var isBoard = (sec === 'board');
+    if (isBoard) {
+      var h1 = document.querySelector('.h1');
+      cq = { id: 'BOARD', file: 'board.md',
+             title: (h1 ? h1.textContent : 'this board'), board: true };
+    } else {
+      cq = { id: sec.id, file: sec.getAttribute('data-file') || '',
+             title: sec.getAttribute('data-title') || '' };
+    }
+    chat.querySelector('.qid').textContent = isBoard ? '🗂 BOARD' : cq.id;
     chat.querySelector('.ti').textContent = cq.title.slice(0, 30);
+    chat.querySelector('textarea').placeholder = isBoard
+      ? 'Ask about this board — e.g. what should we act on next?'
+      : 'Ask about this question…';
     var bd = chat.querySelector('.bd'); bd.innerHTML = '';
     var log = chatLoad(cq.id);
-    if (!log.length) bubble('sys', 'This chat is attached to ' + cq.file);
+    if (!log.length) bubble('sys', isBoard
+      ? 'This chat sees the WHOLE board — ask it which question to act on, or have it edit the Roster.'
+      : 'This chat is attached to ' + cq.file);
     log.forEach(function (m) { bubble(m.k, m.t); });
-    chat.querySelector('.tip').textContent = cq.file;
-    /* 这一题的 Claude Code session id —— 抽屉和终端用的是同一个 */
-    var sid = sec.getAttribute('data-session') || '';
+    chat.querySelector('.tip').textContent = isBoard ? 'board.md · whole-board session' : cq.file;
+    /* 这一题的 Claude Code session id —— 抽屉和终端用的是同一个。
+       整板会话的 id 在 .wrap 的 data-bsession 上（live swap 会跟着换）。 */
+    var sid = isBoard
+      ? ((document.querySelector('.wrap') || document.body).getAttribute('data-bsession') || '')
+      : (sec.getAttribute('data-session') || '');
     var sidbox = chat.querySelector('.sid');
     /* session 归档在 cwd（= serve.py 的 --root，现在是 SPACE 根）下的 project 目录，
        所以要 cd 到 root，不是板文件夹 —— cd 错了 --resume 就找不到这个 session。
@@ -710,10 +752,13 @@
     termView(false); disposeTerm();
     chat.classList.add('on'); document.body.classList.add('chaton');
 
-    /* 第一步：先把浏览器里还没写盘的评论同步过去 —— 不然 chat 读不到它们 */
-    var mine = db.filter(function (c) { return c.file === cq.file; }).length;
+    /* 第一步：先把浏览器里还没写盘的评论同步过去 —— 不然 chat 读不到它们。
+       整板会话看得见每个 face，所以把所有还没写盘的都同步，不只这一个文件的。 */
+    var mine = isBoard ? db.length
+                       : db.filter(function (c) { return c.file === cq.file; }).length;
     if (mine) {
-      bubble('sys', 'Writing ' + mine + ' new comment' + (mine > 1 ? 's' : '') + ' into ' + cq.file + '…');
+      bubble('sys', 'Writing ' + mine + ' new comment' + (mine > 1 ? 's' : '') + ' into ' +
+                    (isBoard ? 'their files' : cq.file) + '…');
       var n = await drain(true);
       bubble('sys', n ? ('Synced ' + n + '. You can now have it work through the comments.')
                       : 'Sync failed — the comments are still pending.');
@@ -722,7 +767,7 @@
       if (n) {
         var b = document.createElement('button');
         b.className = 'act pri'; b.textContent = '🔧 Handle the ' + n + ' just-synced comment' + (n > 1 ? 's' : '');
-        b.onclick = function () { chatSend(FIXALL); };
+        b.onclick = function () { chatSend(isBoard ? BOARDFIX : FIXALL); };
         chat.querySelector('.acts').appendChild(b);
         var r = document.createElement('button');
         r.className = 'act'; r.textContent = '↻ Refresh';
@@ -910,7 +955,19 @@
       document.head.appendChild(css);
       var s = document.createElement('script');
       s.src = '/_board/asset/xterm.min.js';
-      s.onload = function () { res(window.Terminal); };
+      s.onload = function () {
+        // unicode11 addon: claude's TUI counts 🟡✅💬 as 2 cells (modern wcwidth);
+        // xterm's built-in tables are Unicode 6 and say 1 — every emoji shifts the
+        // row and repaints land off-cell (the QD3 smeared-frames screenshot).
+        var u = document.createElement('script');
+        u.src = '/_board/asset/addon-unicode11.js';
+        u.onload = function () { res(window.Terminal); };
+        u.onerror = function () {
+          console.warn('addon-unicode11 missing — emoji-heavy TUIs may smear (restart serve.py?)');
+          res(window.Terminal);
+        };
+        document.head.appendChild(u);
+      };
       s.onerror = function () { rej(new Error('xterm.js failed to load (is serve.py running?)')); };
       document.head.appendChild(s);
     });
@@ -1016,10 +1073,18 @@
     disposeTerm();
     var host = chat.querySelector('.tm');
     termT = new window.Terminal({
-      fontSize: 13, fontFamily: 'Menlo, "SF Mono", ui-monospace, monospace',
+      // CJK fallbacks + lineHeight headroom: Menlo has no 汉字, the browser falls
+      // back to a taller proportional font whose glyphs overflow the measured row
+      // and bleed into the next line — the vertical smear in JL's QD3 screenshot.
+      fontSize: 13, lineHeight: 1.2,
+      fontFamily: 'Menlo, "SF Mono", ui-monospace, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", monospace',
       cursorBlink: true, convertEol: false, scrollback: 4000,
       theme: { background: '#0b0d12', foreground: '#e8e8e6', cursor: '#6ea8f0' }
     });
+    if (window.Unicode11Addon) {           // match claude's wcwidth (see loadXterm)
+      termT.loadAddon(new window.Unicode11Addon.Unicode11Addon());
+      termT.unicode.activeVersion = '11';
+    }
     termT.open(host);
     try { window.__boardTerm = termT; } catch (e) {}   // debug handle, inspect from the console
     fitTerm();
@@ -1092,9 +1157,21 @@
      本来在终端模式的话，先把上一题的 session 交回去，再开新那一题的终端。 */
   async function follow() {
     var id = (location.hash || '').slice(1);
-    var sec = id && document.getElementById(id);
-    if (!sec || !sec.classList.contains('q')) return;
     if (!chat.classList.contains('on')) return;     // 抽屉没开就别多事
+    var sec = id && document.getElementById(id);
+    var isQ = sec && sec.classList.contains('q');
+    if (!isQ) {
+      /* 回到目录（#top / #qlist / #all / 无锚点）→ 跟到整板会话（QD5）。
+         别的锚点（某个小节之类）不算换地方，不动。 */
+      if (id && id !== 'top' && id !== 'qlist' && id !== 'all') return;
+      if (cq && cq.board) return;                   // 已经是整板会话
+      var wt = termOn, of = cq && cq.file;
+      if (wt) await termRelease(of);
+      await chatOpen('board');
+      if (wt) await termOpen(true);
+      say('Now following the board');
+      return;
+    }
     if (cq && cq.id === sec.id) return;             // 还是同一题
     var wasTerm = termOn, oldFile = cq && cq.file;
     if (wasTerm) await termRelease(oldFile);        // 一个 session 一个窗口
@@ -1231,16 +1308,24 @@
   }
   wireStruct();
 
-  /* 右下角悬浮的「💬 Chat」—— 打开当前正在看的这一题的聊天框。
-     只在聚焦看某一题时出现（CSS 控制），点它就开这一题的抽屉。 */
+  /* 右下角悬浮的「🤖 Chat」—— 聚焦某一题时开这一题的抽屉；
+     在目录页（QD5，JL 260725「chatbot in the index page」）开整板会话。 */
   var fab = document.createElement('button');
   fab.id = 'chatfab';
-  fab.innerHTML = '\u{1F916} Chat';
   fab.onclick = function () {
     var id = (location.hash || '').slice(1);
     var sec = id && document.getElementById(id);
     if (sec && sec.classList.contains('q')) chatOpen(sec);
+    else chatOpen('board');
   };
+  function fabLbl() {
+    var id = (location.hash || '').slice(1);
+    var sec = id && document.getElementById(id);
+    fab.innerHTML = (sec && sec.classList.contains('q'))
+      ? '\u{1F916} Chat' : '\u{1F916} Board chat';
+  }
+  window.addEventListener('hashchange', fabLbl);
+  fabLbl();
   document.body.appendChild(fab);
 
   function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); wireStruct(); }

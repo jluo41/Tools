@@ -5,9 +5,9 @@ owner: JL
 method: first sort out "who needs to see it", then decide local vs. server
 
 ## Question
-This board lives only on one machine's `127.0.0.1:5599`. To show it to anyone else (an RA, a collaborator, a meeting projector), how does it get out?
+This board lives only on one machine's `127.0.0.1:5599`. To show it to anyone else (colleagues, collaborators, or a meeting projector), how does it get out?
 
-The hard part is that the board is really two halves: the static half (`board.html`) can be hosted by anything, but the live half (comment write-back, chat, terminal) must run on the machine the files are on, so putting it out means deciding which half the other person gets. Right now the only options are screenshots or crowding around one machine, which makes a lie of the board's claim to be "for discussing with people, for handing to an RA": the second person literally cannot open it. The choice also reaches downstream into whether auth is needed, how comments attribute to people, and whether outsiders may write to disk; the moment remote writes are allowed, `serve.py`'s narrow interface ("only under `--root`, only two kinds of edits") must be re-audited.
+The hard part is that the board is really two halves: the static half (`board.html`) can be hosted by anything, but the live half (comment write-back, chat, terminal) must run on the machine the files are on, so putting it out means deciding which half the other person gets. Right now the only options are screenshots or crowding around one machine, which makes a lie of the board's claim to be "for discussing with colleagues": the second person literally cannot open it. The choice also reaches downstream into whether auth is needed, how comments attribute to people, and whether outsiders may write to disk; the moment remote writes are allowed, `serve.py`'s narrow interface ("only under `--root`, only two kinds of edits") must be re-audited.
 
 ## Boundary
 - ✅ Covered here

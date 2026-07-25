@@ -41,7 +41,7 @@ it isn't already looking at.
 Deliberately narrow, because this is a write endpoint:
   · binds 127.0.0.1 only
   · the target must sit inside --root, in a folder containing board.md
-  · the filename must match Q*.md
+    · the filename must match Q*.md or S*.md
   · the only edits possible are "append a comment block" and "flip one checkbox"
 """
 import argparse
@@ -63,7 +63,8 @@ from pathlib import Path
 from urllib.parse import unquote
 
 HERE = Path(__file__).resolve().parent
-QNAME = re.compile(r"^Q[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
+sys.path.insert(0, str(HERE))
+from src.common import QNAME, face_files, q_files, vet_facepath, vet_qpath  # noqa: E402
 
 # 正在跑的对话：文件路径 -> 一个「请停下」的旗子。
 # POST /_board/stop 把旗子立起来，chat 循环在下一条消息处收工，
@@ -144,9 +145,58 @@ def reap_stale_terms():
     del shutil, want
 
 
+def board_prime_context(board, root):
+    """开场定位的整板版（QD5）：file=board.md 的会话不属于哪一题，属于整块板。
+    给它的是索引页那份视野：spine / close / 每个 face 的状态和未解决评论数。"""
+    board = Path(board)
+    bmd = board / "board.md"
+    txt = bmd.read_text(encoding="utf-8", errors="ignore") if bmd.exists() else ""
+    tm = re.search(r"^#\s+(.*)$", txt, re.M)
+    title = tm.group(1).strip() if tm else board.name
+    spine = re.search(r"^spine:\s*(.*)$", txt, re.M)
+    close = re.search(r"^close:\s*(.*)$", txt, re.M)
+    try:
+        rel = str(bmd.resolve().relative_to(Path(root).resolve()))
+    except ValueError:
+        rel = bmd.name
+    rows, ndone, nall = [], 0, 0
+    for p in face_files(board):
+        t = p.read_text(encoding="utf-8", errors="ignore")
+        st = re.search(r"^state:\s*(\S+)", t, re.M)
+        st = st.group(1) if st else "🔴"
+        ft = re.search(r"^#\s+(.*)$", t, re.M)
+        cm = re.search(r"^## Comments\s*\n(.*?)(?=\n## |\Z)", t, re.S | re.M)
+        nopen = len(re.findall(r"^\s*-\s*\[ \]", cm.group(1), re.M)) if cm else 0
+        nall += 1
+        ndone += st.startswith("✅")
+        rows.append("      · {} {} — {}{}".format(
+            p.stem.split("-")[0], st, (ft.group(1).strip() if ft else p.name),
+            f"  ({nopen} open comment{'s' if nopen > 1 else ''})" if nopen else ""))
+    lines = [
+        "You are opened on the WHOLE BOARD of a haipipe board — its index page, "
+        "not any single question. Orientation:",
+        f"  · Board: {title}   (board.md relative to your cwd = the repo root: {rel})",
+    ]
+    if spine:
+        lines.append(f"  · Spine: {spine.group(1).strip()}")
+    if close:
+        lines.append(f"  · Close when: {close.group(1).strip()}")
+    lines.append(f"  · Faces ({ndone}/{nall} settled):")
+    lines.extend(rows)
+    lines.append(
+        "Board-level work is yours: which face to act on next, ## Roster order and "
+        "grouping in board.md, cross-question consistency. Deep work inside one "
+        "question belongs to that question's own chat. Read board.md for the full "
+        "picture; wait for the user's instruction.")
+    return "\n".join(lines)
+
+
 def prime_context(f, board, root):
     """开场定位：告诉会话它在哪块板、哪一题、这题问什么、还有几条评论没解决。
-    终端用 --append-system-prompt 灌进去，抽屉拼进 system_prompt —— 一打开就知道自己在干嘛。"""
+    终端用 --append-system-prompt 灌进去，抽屉拼进 system_prompt —— 一打开就知道自己在干嘛。
+    file=board.md（QD5 整板会话）走整板那份定位，抽屉和终端共用这一个开关。"""
+    if Path(f).name == "board.md":
+        return board_prime_context(board, root)
     try:
         rel = str(Path(f).resolve().relative_to(Path(root).resolve()))
     except ValueError:
@@ -244,6 +294,51 @@ explanation. Plain language, no invented jargon. Answer in English by default;
 only switch to another language if the user clearly writes to you in it."""
 
 
+BOARD_CHAT_RULES = """You are attached to the WHOLE BOARD of a haipipe board —
+the index page, not one question.
+
+Your working directory is the WHOLE repo (the SPACE), so you can read any code
+the board discusses. The board folder given below holds `board.md` (title ·
+`spine:` · `close:` · ## Topic / ## Pipeline / ## Roster) and one `QX-<slug>.md`
+or `SN-<slug>.md` per face.
+
+Scope, and it is hard:
+  · You may READ anywhere in the repo.
+  · You may EDIT ONLY markdown files INSIDE the board folder (board.md and the
+    face files). Nothing outside it, and never board.html — it is generated.
+  · Board-level work is yours: which face to act on next, ## Roster order,
+    grouping and group intros, cross-question consistency. Deep work inside one
+    question belongs to that question's own chat.
+  · Every face you change, add one line at the TOP of its ## Log:
+    `YYMMDD HHMM · what changed` (newest first).
+  · Unresolved comments live in ## Comments as `- [ ] WHO 「quote」 · time`.
+    When you have addressed one, flip it to `- [x]` and reply under it with
+    `>> CC<MMDD>: what you did`.
+
+Write the way the board is written: short topic line, then an indented
+explanation. Plain language. No invented jargon. Answer in English by default;
+only switch to another language if the user clearly writes to you in it."""
+
+
+BOARD_FULL_RULES = """You are a full Claude Code session attached to the WHOLE
+BOARD of a haipipe board — the index page, not one question. Your working
+directory is the WHOLE repo (the SPACE) — you have the full toolbelt, may call
+skills, and may reach any file the board is about.
+
+The board folder given below holds `board.md` (title · `spine:` · `close:` ·
+## Topic / ## Pipeline / ## Roster) and one `QX-<slug>.md` or `SN-<slug>.md`
+per face. Board-level work is yours: which face to act on next, the Roster,
+cross-question edits. Never hand-edit board.html — it is generated. Whatever
+face you change, add one line at the TOP of its `## Log`:
+`YYMMDD HHMM · what changed`. Unresolved comments are
+`- [ ] WHO 「quote」 · time`; when you address one, flip it to `- [x]` and reply
+under it with `>> CC<MMDD>: ...`.
+
+Write the way the board is written: short topic line, then an indented
+explanation. Plain language, no invented jargon. Answer in English by default;
+only switch to another language if the user clearly writes to you in it."""
+
+
 def oauth_token(root):
     """OAuth token for the SDK, or None to fall back to the ambient login."""
     tok = os.environ.get("CLAUDE_CODE_OAUTH_TOKEN")
@@ -313,7 +408,7 @@ def structure_op(board, p):
                 len(lines))
     heads = []                              # (line idx, letter, full heading)
     for i in range(rs + 1, rend):
-        m = re.match(r"^### Q([A-Z]+)\b", lines[i].strip())
+        m = re.match(r"^### Q([0-9][a-z]|[A-Z]+[a-z]?)\b", lines[i].strip())
         if m:
             heads.append((i, m.group(1), lines[i].strip()[4:].strip()))
 
@@ -355,14 +450,14 @@ def structure_op(board, p):
         title = " ".join((p.get("title") or "").split())
         if not title:
             return None, "the question needs a title"
-        m = re.match(r"^Q?([A-Z]+)", g)
+        m = re.match(r"^Q?([0-9][a-z]|[A-Z]+[a-z]?)", g)
         hit = next(((i, l, h) for i, l, h in heads
                     if (m and l == m.group(1)) or h == g), None)
         if not hit:
             return None, f"no group matches {g!r} (heading must start with ### Q<letter>)"
         hi, letter, heading = hit
         pat = re.compile(rf"^Q{letter}(\d+)")
-        nums = [int(mm.group(1)) for f in board.glob(f"Q{letter}*.md")
+        nums = [int(mm.group(1)) for f in q_files(board)
                 if (mm := pat.match(f.name))]
         nums += [int(mm.group(1)) for ln in lines[rs:rend]
                  if (mm := pat.match(ln.strip()))]
@@ -379,15 +474,15 @@ def structure_op(board, p):
         return {"file": fname, "group": heading}, None
 
     if op == "archive_question":
-        name = (p.get("q") or "").strip()
-        if not QNAME.match(name):
-            return None, f"not a Q file name: {name}"
+        name = vet_qpath(p.get("q"))
+        if not name:
+            return None, f"not a Q file name: {p.get('q')!r}"
         f = board / name
         if not f.exists():
             return None, f"not found: {name}"
         arch = board / "_archive"
         arch.mkdir(exist_ok=True)
-        dest = arch / name
+        dest = arch / name.rsplit("/", 1)[-1]   # nested faces flatten here
         if dest.exists():
             dest = arch / f"{f.stem}-{time.strftime('%y%m%d%H%M%S')}.md"
         note = f"{_now_stamp()} · Archived from the index page (moved to _archive/)"
@@ -399,13 +494,15 @@ def structure_op(board, p):
             t = t.rstrip("\n") + "\n\n## Log\n" + note + "\n"
         f.write_text(t, encoding="utf-8")
         shutil.move(str(f), str(dest))
-        lines[rs:rend] = [ln for ln in lines[rs:rend] if ln.strip() != name]
+        base = name.rsplit("/", 1)[-1]          # Roster lists bare filenames
+        lines[rs:rend] = [ln for ln in lines[rs:rend]
+                          if ln.strip() not in (name, base)]
         write()
         return {"file": name, "to": f"_archive/{dest.name}"}, None
 
     if op == "archive_group":
         g = (p.get("group") or "").strip()
-        m = re.match(r"^Q?([A-Z]+)", g)
+        m = re.match(r"^Q?([0-9][a-z]|[A-Z]+[a-z]?)", g)
         hit = next(((i, l, h) for i, l, h in heads
                     if (m and l == m.group(1)) or h == g), None)
         if not hit:
@@ -448,9 +545,13 @@ class Handler(SimpleHTTPRequestHandler):
     def target(self, payload):
         """browser pathname + file name -> a vetted Path, or (None, reason)"""
         page = unquote(payload.get("path") or "")
-        name = payload.get("file") or ""
-        if not QNAME.match(name):
-            return None, f"文件名不像一个 Q 文件：{name}"
+        name = vet_facepath(payload.get("file"))
+        # 整板会话（QD5）：file 恰好是 "board.md" 时，目标就是这块板本身。
+        # 只认这一个写法 —— 不认路径、不认别名，防走样。
+        if not name and (payload.get("file") or "").strip() == "board.md":
+            name = "board.md"
+        if not name:
+            return None, f"文件名不像一个 Q/S face：{payload.get('file')!r}"
         board = (self.root / page.lstrip("/")).resolve().parent
         try:
             board.relative_to(self.root.resolve())
@@ -589,6 +690,9 @@ class Handler(SimpleHTTPRequestHandler):
         #   full    全工具 + 全技能 · 逐个问你（CLI 默认行为）· 贵（~$0.9）
         #   bypass  全工具 + 全技能 · 什么都不问（= --dangerously-skip-permissions）
         mode = p.get("scope") if p.get("scope") in ("scoped", "full", "bypass") else "full"
+        # 整板会话（QD5）：f 是 board.md 而不是某一题。规则、开场定位、
+        # 「自动放行哪些写」三处跟着换；session 照旧记在 f（= board.md）头部。
+        is_board = f.name == "board.md"
         tok, src = oauth_token(self.root)
         env = {"CLAUDE_CODE_OAUTH_TOKEN": tok} if tok else {}
         prior = self.session_of(f)
@@ -644,15 +748,26 @@ class Handler(SimpleHTTPRequestHandler):
             if name in ("Edit", "Write", "MultiEdit"):
                 tgt = tin.get("file_path") or tin.get("path") or ""
                 try:
-                    if Path(tgt).resolve() == f.resolve():
-                        return PermissionResultAllow()   # 这一题自己的文件，永远放行
+                    rt = Path(tgt).resolve()
+                    # 一题的会话：自己的那个文件永远放行。
+                    # 整板会话（QD5）：板文件夹里的任何 .md 都算「自己的」——
+                    # board.md 和所有 face 都是它的工作面；board.html 不是 .md，自然进不来。
+                    if is_board:
+                        ok = (rt.suffix == ".md"
+                              and rt.is_relative_to(Path(board).resolve()))
+                    else:
+                        ok = rt == f.resolve()
+                    if ok:
+                        return PermissionResultAllow()
                 except Exception:
                     pass
-            # scoped 档：除了这一题的文件，别的写操作一律拒（不弹，直接不给）
+            # scoped 档：出了自己的工作面，别的写操作一律拒（不弹，直接不给）
             if mode == "scoped" and name not in READONLY:
                 denied.append(tool_brief(name, tin))
                 return PermissionResultDeny(
-                    message=f"「受限」档只能改 {f.name}。要动别的，把权限切到「完整」。")
+                    message=("「受限」档只能改这块板文件夹里的 .md。要动别的，把权限切到「完整」。"
+                             if is_board else
+                             f"「受限」档只能改 {f.name}。要动别的，把权限切到「完整」。"))
             # full 档：跟 CLI 一样，弹给你点
             if not stream:
                 denied.append(tool_brief(name, tin))
@@ -714,11 +829,19 @@ class Handler(SimpleHTTPRequestHandler):
             except ValueError:
                 rel = f.name
             prime = prime_context(f, board, self.root)
+            try:
+                brel = str(Path(board).resolve().relative_to(self.root.resolve()))
+            except ValueError:
+                brel = str(board)
             if mode == "scoped":
-                sysp = CHAT_RULES + f"\n\nThe question file you may edit: {rel}\n\n" + prime
+                sysp = ((BOARD_CHAT_RULES + f"\n\nThe board folder you may edit .md files in: {brel}\n\n")
+                        if is_board else
+                        (CHAT_RULES + f"\n\nThe question file you may edit: {rel}\n\n")) + prime
                 sources = []                 # 不加载 CLAUDE.md / skill 注册表 → 便宜
             else:
-                sysp = FULL_RULES + f"\n\nThis session's question file: {rel}\n\n" + prime
+                sysp = ((BOARD_FULL_RULES + f"\n\nThis session's board folder: {brel}\n\n")
+                        if is_board else
+                        (FULL_RULES + f"\n\nThis session's question file: {rel}\n\n")) + prime
                 sources = ["user", "project", "local"]   # 加载技能 → Skill 工具可用
             kw = dict(
                 cwd=str(self.root),
@@ -835,10 +958,16 @@ class Handler(SimpleHTTPRequestHandler):
         t = f.read_text(encoding="utf-8")
         if re.search(r"^session:\s*\S+\s*$", t, re.M):
             t = re.sub(r"^session:\s*\S+\s*$", f"session: {sid}", t, count=1, flags=re.M)
-        elif re.search(r"^method:.*$", t, re.M):
-            t = re.sub(r"^(method:.*)$", r"\1\n" + f"session: {sid}", t, count=1, flags=re.M)
         else:
-            return
+            # Q/S face 挂在 method: 后面；board.md（QD5 整板会话）没有 method:，
+            # 挂在 close: 或 spine: 后面 —— 都是头部行，session 跟它们并列。
+            for anchor in ("method", "close", "spine"):
+                if re.search(rf"^{anchor}:.*$", t, re.M):
+                    t = re.sub(rf"^({anchor}:.*)$", r"\1\n" + f"session: {sid}",
+                               t, count=1, flags=re.M)
+                    break
+            else:
+                return
         f.write_text(t, encoding="utf-8")
 
 
@@ -1040,7 +1169,7 @@ class Handler(SimpleHTTPRequestHandler):
         """serve vendored xterm from the skill folder, board-location-independent.
         /_board/asset/xterm.min.js  ·  /_board/asset/xterm.css"""
         name = self.path.rsplit("/", 1)[-1].split("?")[0]
-        if name not in ("xterm.min.js", "xterm.css"):
+        if name not in ("xterm.min.js", "xterm.css", "addon-unicode11.js"):
             return self.send_error(404)
         p = HERE / "vendor" / "xterm" / name
         if not p.exists():

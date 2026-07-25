@@ -1,78 +1,70 @@
-# Writing rules — 怎么写才是人话
+# Writing rules — how to write so it reads like human language
 
-JL 的原话：**「如果不易读，写那么多都是 rubbish。」**
-一块板的全部价值是给别人看。看不懂等于没写。这一条排在结构和排版前面。
+JL's words: **"If it is not easy to read, writing that much is rubbish."**
+A board's entire value is that a second person can read it. Unreadable means unwritten. This rule sits above structure and layout.
 
-板的形状由 `board-form.md` 管；这一份管**每段里的字怎么写**。
+`board-form.md` owns the board's shape. This file owns **how the words inside each section are written.** Everything is in English (JL 260724: board markdown, generated pages, and artifacts are English).
 
-## 硬规矩
+## The section shapes decided this session (260724)
 
-- **不许造词**
-  写下的每个说法，要么是源文档里出现过的原话，要么在 `## Glossary` 里解释过。
-  真实教训：把 `battery` 译成「电池」，还发明过「向外锚定」「第一幕」「三集合闸门」——
-  这些词在任何源文档里出现 **0 次**。这类最伤人：读者以为是行话，去查，查不到。
-  拿不准就用源文档的原词，宁可土。
+These are not style preferences. `build.py` renders each section a specific way, so writing against the shape produces a broken page. The worked example is QA4 (`diagram/01-boardform-260722/QA4-pagelayout.md`).
 
-- **标题是短语，不是句子**
-  ≤14 字。完整问句归 `## Question`。
-  反例：`一块板的文件夹长什么样：里面有哪些文件，它们怎么挂在一起`（28 字）
-  正例：`一块板的文件夹形状`（9 字）
+- `## Question` = one lead sentence, then one plain paragraph
+  The first paragraph is the actual question, written as a question, and stays in Opening. Write the remainder as **one flowing paragraph** covering why the question is hard, what breaks while it stays open, and what it affects downstream. build.py labels it "Why this matters": inside Opening for S, or as Content's first initially open subsection for Q. Do NOT use the old three-bullet form.
+- `## Boundary` = `✅ Covered here` / `↪ Covered elsewhere`
+  Two `- ` lines. The second must name the question that does cover the excluded part (for example "projection is QA3"), because a bare exclusion reads as a refusal. Use `↪`, not `❌`. Boundary folds into the same hidden block as the Question and renders as flat rows, so keep each explanation to one line.
+- `## Diagram` = one optional visual section, collapsed by default
+  Use one ASCII figure or supported Excalidraw share link. The page renders a peer-level `🖼 Diagram` row after Opening; the visual remains hidden until that row is clicked. Delete the whole section when the figure adds no information.
+- S `### Stage Record` = one orientation record inside Opening
+  Write it as a direct subsection of `## Content` with that exact heading. build.py lifts it beside "Why this matters" in Opening and keeps it collapsed; the remaining stage subsections stay under Content.
+- Items (in `## Items to Finish`, `## Where we are`, `## Law`, `## Lesson`) = `- ICON heading` then a folded explanation
+  Only the heading shows on stage, with a caret; the explanation opens on click. Start every item heading with an author-chosen emoji icon (build.py never guesses one). The first indented line is a one-sentence summary; the lines after it are the long explanation. Write the explanation as a real paragraph (what it means, what happened, what we understand so far, why it ended up this way), not a clause. Length is free here because it is folded.
+- `## Where we are` = one summary paragraph, then dated items
+  Open with a concise paragraph stating what has been achieved and what is still unproven. Then list items, each prefixed `YYMMDD WHO ·` (for example `260722 JL ·`), ordered by date. build.py strips that prefix into a muted right-aligned stamp, so the date and person never sit inside the title text.
 
-- **长内容分块，不写散句**
-  `- 小标题` 一行，下面缩进两格写解释。一段接一段的平铺散句最难扫。
-  `## Done when` 的每一条也这样带解释。
+## Hard rules
 
-- **有数字给数字**
-  「基本完成」「效果不错」是废话。写「7 题里 2 题清楚」「一致度 0.93 掉到 0.67」。
+- **No em-dashes** (JL 260724: "fuck em-dash")
+  Never use the em-dash in prose. Use a colon when expanding on what came before, a semicolon or a new sentence for two linked clauses, parentheses or commas for an aside. This is a rewrite per sentence, never a blind find-and-replace: each dash needs the mark its own sentence calls for.
+- **Sound like a person, not a model**
+  Plain declaratives. Cut the AI tells: "it is worth noting", "plays a crucial role", "in the realm of", "delve into", "a testament to", empty tricolons, and sentences that restate the previous sentence with grander words. Say the thing once, concretely, and stop.
+- **No coined words**
+  Every phrase is either a source-document term or is defined in `## Glossary`. Real damage done before: inventing "outward anchoring", "first act", "three-set gate", words that appear zero times in any source. The reader trusts them as jargon, goes to look them up, and finds nothing. When unsure, use the source word even if it is plain.
+- **No author notes to self**
+  Do not write explanations of the markup or the tooling into the page (for example a note about why an ascii figure is left-anchored). The reader needs the content, not the reasoning behind how it was typeset.
+- **A short heading is a phrase, not a sentence**
+  The complete question belongs in `## Question`. Keep the `# title` and every item heading short.
+- **Give numbers**
+  "Basically done" and "works well" say nothing. Write "2 of 7 questions are clear", "agreement fell from 0.93 to 0.67".
+- **Each question is self-contained**
+  A reader should not have to open another question to follow this one. To reference another question, name its id and say what it covers.
+- **`## Topic` answers "what is this project"**
+  The harshest first cold-read note: "it explains the format of a recipe but never says what the dish is." Identify JL, CC, and the colleagues involved, then state what real problem is being solved.
+- **Never delete someone's comment**
+  Lines starting `> JL:` are only added to. When resolved, tick `[x]` in `## Comments`, do not erase.
+- **Clear out stale text**
+  When the board changes, old descriptions elsewhere become wrong. Real case: QA4 said "side by side" long after the layout had been stacked. A zero-background reader catches these self-contradictions on the first pass.
 
-- **每题自足**
-  读者不该为了看懂这一题去翻别的题。要引用别题就写清楚编号和它讲什么。
+## Zero-background review (the convergence test)
 
-- **`## Why here` 不许省**
-  不写这段，没人知道这题为什么值得占一页。它挡住了什么？不解决会怎样？
+Reading it yourself in the same conversation is useless: you know too much that never made it onto the page. Open a fresh agent.
 
-- **`## Topic` 必须回答「这是什么项目」**
-  第一次零背景审查最狠的一句：「像在解释一个菜谱的格式，却从头到尾没说这道菜是什么」。
-  谁是谁（JL / RA / CC）、在解决什么真实问题，都写在这儿。
-
-- **不删别人的评论**
-  `> JL:` 开头的行只增不删。解决了就在 `## Comments` 里勾上 `[x]`，不是抹掉。
-
-- **过期的话要清掉**
-  板改了，正文里的旧说法就是错的。真实例子：QA4 正文一直写着「左右并排」，
-  而版式早就改成上下叠了；QA3 写着「board.html 坚持零脚本」，而评论层已经引了 JS。
-  这类自相矛盾是零背景读者第一眼就会挑出来的。
-
-## 零背景审查（收敛判据）
-
-自己在同一个对话里读**没有用** —— 写的人知道太多没写进去的事。必须开一个全新 agent。
-
-给它的设定：
+Its brief:
 
 ```
-你没见过这个项目，没参加过任何会，没读过代码，不认识 JL / RA / CC。
-只读我给你的这几个 md，不许读别的文件。
-只报三件事，不要夸，不要总结写得好的地方：
-  ① 哪一句读不懂 —— 原句抄回来，说清是指代不清、还是省了前提、还是一句塞三件事
-  ② 哪个词没解释 —— 列出来，标明首次出现在哪个文件、该文件 ## Glossary 里有没有
-  ③ 缺了什么前提 —— 要看懂这批文件必须先知道、而文件里从没说过的事
-最后给每一题一个评级：清楚 / 半懂 / 看不懂。
-「半懂」= 你能复述它在问什么，但说不出它为什么重要、什么算做完。
+You have never seen this project, attended any meeting, read any code, or met JL, CC, or their colleagues.
+Read only the markdown files I give you, nothing else.
+Report only three things. Do not praise, do not summarise what reads well:
+  1. Which sentence is unreadable. Quote it, and say whether it is unclear reference,
+     a missing premise, or three things packed into one sentence.
+  2. Which word is undefined. List it, note the file it first appears in and whether
+     that file's ## Glossary defines it.
+  3. What premise is missing. Something you must know to follow these files that the
+     files never state.
+Then rate each question: clear / half / unreadable.
+"half" = you can restate what it asks, but not why it matters or what counts as done.
 ```
 
-它报出来的问题改掉，才算改完。
+Fix what it reports, then it is done.
 
-**收敛判据**：没有一题是「看不懂」，且「半懂」的每一条理由都已经处理或明确记为已知缺口。
-
-## 历史成绩
-
-| 时间 | 题数 | 清楚 | 半懂 | 看不懂 |
-|---|---|---|---|---|
-| 260722 1830 | 7 | 1 | 5 | 1 |
-| 260723 0925 | 9 | 2 | 6 | 1 |
-
-第二次挑出来最狠的三条，留作后来者的提醒：
-
-1. **自指含混** —— 「板」有时指工具，有时指这一块，读者全程要猜。
-2. **两处打架** —— 图里写「上/下」，正文写「左右并排」；同一个段落三个叫法。
-3. **核心词零定义** —— `build.py`、`skill`、`/html-ppt`、`聚焦模式` 出现在四五个文件里，一次都没解释。
+**Convergence test:** no question is "unreadable", and every "half" reason is either handled or written down as a known gap.

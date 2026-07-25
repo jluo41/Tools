@@ -1,9 +1,9 @@
 /* palette + type follow html-ppt's academic-report; layout is body.single
    (base.css's own no-JS mode) so every section is visible without any script. */
 :root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
- --accent:#1f5aa8;--ra:#15803d;--todo:#c23b3b;--wip:#b45309;--done:#15803d;--hold:#8a8a8a}
+ --accent:#1f5aa8;--todo:#c23b3b;--wip:#b45309;--done:#15803d;--hold:#8a8a8a}
 @media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
- --line:#2c2e33;--card:#1d1f23;--pre:#111214;--accent:#6ea8f0;--ra:#5fc98a;
+ --line:#2c2e33;--card:#1d1f23;--pre:#111214;--accent:#6ea8f0;
  --todo:#e0736e;--wip:#e0a458;--done:#5fc98a}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
@@ -81,6 +81,8 @@ a.src:hover{opacity:1;color:var(--accent);text-decoration:underline}
 .pill.wip{border-color:var(--wip);color:var(--wip)}
 .pill.done{border-color:var(--done);color:var(--done)}
 .pill.hold{border-color:var(--hold);color:var(--hold)}
+.kind{font:10.5px ui-monospace,Menlo,monospace;color:var(--accent);
+ letter-spacing:.08em;border:1px solid var(--line);border-radius:4px;padding:1px 6px}
 .top{margin-left:auto;color:var(--mut);text-decoration:none;font-size:12px}
 .top:hover{color:var(--accent)}
 .h2{font-size:22px;line-height:1.4;margin:4px 0 14px;font-weight:700}
@@ -89,6 +91,15 @@ a.src:hover{opacity:1;color:var(--accent);text-decoration:underline}
 .ask{padding-left:13px;border-left:3px solid var(--accent);margin:0 0 18px}
 .ask p{margin:0 0 6px}
 .ask>p:first-of-type{font-size:18px;line-height:1.55;margin:0 0 9px}
+.opening{margin:0 0 18px}
+.opening>.ask{margin-bottom:0}
+.opening-head{color:var(--fg)}
+.opening-context{margin-top:14px;border-top:1px solid var(--line);padding-top:5px}
+.diagram-section{border-left:3px solid var(--mut);padding:12px 15px;margin:16px 0;
+ background:var(--bg)}
+.diagram-section>summary.ch{cursor:pointer;list-style:none;color:var(--fg);margin-bottom:0}
+.diagram-section[open]>summary.ch{margin-bottom:9px}
+.diagram-section>.dia{margin:0}
 /* 🚧 Boundary：这题管什么 / 不管什么。中性灰边，跟黄(现在)绿(目标)区分开 */
 .bnd{border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:10px;
  padding:12px 15px;background:var(--bg);margin:0 0 16px}
@@ -112,6 +123,17 @@ a.src:hover{opacity:1;color:var(--accent);text-decoration:underline}
 /* 现在 vs 算做完：上下叠，不左右分栏 —— 两边长短不一时并排会空掉半边 */
 .cmp{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}
 .col{border:1px solid var(--line);border-radius:10px;padding:12px 15px;background:var(--bg)}
+.content{border-left:3px solid var(--accent);padding:12px 15px;margin:16px 0;
+ background:var(--bg)}
+.csec{border-bottom:1px solid var(--line);padding:5px 0}
+.csec:last-child{border-bottom:none}
+.csec>summary{cursor:pointer;list-style:none;font-size:15px;font-weight:650;padding:5px 0}
+.csec>summary::-webkit-details-marker{display:none}
+.csec>summary::before{content:"▸";display:inline-block;width:17px;color:var(--accent)}
+.csec[open]>summary::before{content:"▾"}
+.cbody{padding:5px 0 10px 17px}
+.cbody.prelude{padding-left:0}
+.cbody p{margin:0 0 8px;line-height:1.65}
 
 /* 勾选清单：md 里写 - [ ] / - [x] */
 .ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65}
@@ -171,10 +193,12 @@ mark.pend{background:rgba(255,214,0,.30);outline:1px dashed rgba(180,83,9,.5)}
 .stmp .sd{color:var(--mut)}
 .stmp .sw{font-weight:700}
 .stmp .sw.jl{color:var(--jl,#b5761f)}.stmp .sw.cc{color:var(--cc,#3c7d4c)}
-.stmp .sw.ra{color:var(--ra,#4a6fa5)}
 /* 展开后（藏起来的内容）字号比标题小一档，深浅分摘要/正文（JL 260724 要更小） */
 .bd .ld{color:var(--fg);font-weight:500;font-size:12.5px;line-height:1.55;margin:0 0 5px}
 .q:target .bd .ld{font-size:13.5px;line-height:1.65}
+/* item 折叠区里的 ascii 图（JL 260724 QC10）：比正文再小一档，宽了自己横滚 */
+.bd pre.ip{font-size:11.5px;line-height:1.5;margin:6px 0;padding:9px 11px}
+.q:target .bd pre.ip{font-size:12.5px}
 /* 整行可点 */
 details.it.row{margin:0}
 details.it.row>summary{list-style:none;cursor:pointer;display:block;
@@ -245,13 +269,14 @@ details.codef>pre{margin:7px 0 0}
 body.chaton{padding-right:min(440px,92vw)}
 @media(max-width:820px){body.chaton{padding-right:0}}
 
-/* 打开聊天框的悬浮图标：右下角，只在看某一题时出现（JL 260723） */
+/* 打开聊天框的悬浮图标：右下角。看某一题时开那一题的抽屉（JL 260723）；
+   在目录页也在 —— 那里开的是整板会话（QD5，JL 260725）。抽屉开着就藏。 */
 #chatfab{position:fixed;right:20px;bottom:20px;z-index:55;display:none;
  align-items:center;gap:7px;background:var(--accent);color:#fff;border:none;
  border-radius:999px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;
  box-shadow:0 6px 20px rgba(0,0,0,.28)}
 #chatfab:hover{filter:brightness(1.06)}
-body:has(.q:target):not(.chaton) #chatfab{display:inline-flex}
+body:not(.chaton) #chatfab{display:inline-flex}
 /* 聚焦看一题时，卡片头里那个小 💬 Chat 让位给悬浮图标；平铺/展开视图里还留着 */
 body:has(.q:target) .chatbtn{display:none}
 #chat .hd{background:var(--accent);color:#fff;padding:13px 15px;display:flex;
@@ -368,7 +393,7 @@ body:has(.q:target) .chatbtn{display:none}
 .cres:hover{border-color:var(--accent);color:var(--accent)}
 .obadge{background:var(--wip);color:#fff;border-radius:999px;padding:1px 8px;font-size:11.5px}
 mark.solved{background:rgba(21,128,61,.16);outline:none}
-b.jl{color:var(--accent)}b.ra{color:var(--ra)}b.cc{color:var(--mut)}
+b.jl{color:var(--accent)}b.cc{color:var(--mut)}
 b.u0{color:#8b5cf6}b.u1{color:#0891b2}b.u2{color:#c2410c}b.u3{color:#be185d}
 
 /* 行内评论：被引用的原句 + 评论里的引文 */
@@ -453,6 +478,13 @@ body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
 .q:target .ask{border-left:none;padding-left:0;margin:0 0 24px}
 .q:target .ask p{font-size:16px;line-height:1.75}
 .q:target .ask>p:first-of-type{font-size:21px;line-height:1.5;color:var(--fg);margin:0 0 13px}
+.q:target .opening{margin:0 0 24px}
+.q:target .opening>.ask{margin-bottom:0}
+.q:target .opening-context{margin-top:18px;padding-top:7px}
+.q:target .diagram-section{border-left:2px solid var(--mut);padding:0 0 0 15px;
+ margin:0 0 22px;background:none}
+.q:target .diagram-section>summary.ch{font-size:18px;color:var(--fg)}
+.q:target .diagram-section>.dia{margin:0}
 /* Boundary / Files 聚焦时也去框，只留一道边，跟 Items/Where 一个排法 */
 .q:target .bnd{border:none;border-radius:0;background:none;padding:0 0 0 15px;
  border-left:2px solid var(--mut);margin:0 0 22px}
@@ -461,6 +493,12 @@ body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
  border-left:2px solid var(--accent);margin:22px 0 0}
 .q:target .fls p{font-size:16px;line-height:1.75;margin:0 0 6px}
 .q:target .cmp{gap:22px;margin:0 0 22px}
+.q:target .content{border-left:2px solid var(--accent);padding:0 0 0 15px;
+ margin:0 0 22px;background:none}
+.q:target .content .ch{font-size:18px;color:var(--fg);margin-bottom:10px}
+.q:target .csec>summary{font-size:17px;padding:8px 0}
+.q:target .cbody{padding:8px 0 14px 17px}
+.q:target .cbody p{font-size:15px;line-height:1.75}
 .q:target .col{border:none;border-radius:0;background:none;padding:0 0 0 15px}
 .q:target .col.now{border-left:2px solid var(--wip)}
 .q:target .col.goal{border-left:2px solid var(--done)}
@@ -472,6 +510,22 @@ body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
 .q:target .f{display:block;margin:0;border-left:2px solid var(--line);padding-left:15px}
 .q:target .f p,.q:target .fbd p{font-size:16px;line-height:1.75;margin:0 0 6px}
 .q:target .folds{margin-top:auto;padding-top:18px}
+@media(max-width:600px){
+ body{overflow-x:hidden}
+ body:has(.q:target) .wrap{width:100%;max-width:none;padding:16px 16px 32px}
+ body:has(.q:target) .spine{overflow-wrap:anywhere}
+ body:has(.q:target) .q:target{min-width:0;margin-top:20px}
+ .q:target .qh,.q:target .qh>*{min-width:0;max-width:100%}
+ .q:target .qh .mut{overflow-wrap:anywhere}
+ .q:target .h2{font-size:30px;line-height:1.2;letter-spacing:0;overflow-wrap:anywhere}
+ .q:target .hid{display:block;margin:0 0 5px;vertical-align:0}
+ .q:target .ask>p:first-of-type,.q:target .qlead .qt{font-size:19px;line-height:1.48}
+ .q:target details,.q:target summary,.q:target .content,.q:target .cmp,
+ .q:target .col,.q:target .csec,.q:target .cbody{min-width:0;max-width:100%}
+ .q:target .content,.q:target .col,.q:target .bnd,.q:target .fls{padding-left:10px}
+ .q:target .cbody{padding-left:8px}
+ .q:target p,.q:target li,.q:target code{overflow-wrap:anywhere}
+}
 .folds{margin-top:16px;border-top:1px dashed var(--line);padding-top:8px}
 .fold{margin:3px 0}
 .fold>summary{cursor:pointer;color:var(--mut);font-size:14px;list-style:none;padding:4px 0}
@@ -493,7 +547,6 @@ body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
 .cmt .qt{background:rgba(217,164,6,.18);border-bottom:1px solid rgba(217,164,6,.55);
  padding:0 2px;border-radius:2px}
 .cmt.jl{border-color:var(--accent)}.cmt.jl b{color:var(--accent)}
-.cmt.ra{border-color:var(--ra)}.cmt.ra b{color:var(--ra)}
 .mut{color:var(--mut)}
 a.fp{text-decoration:none;border-bottom:1px dashed var(--accent)}
 a.fp code{color:var(--accent);cursor:pointer}
@@ -518,6 +571,10 @@ details.gi summary::before{content:'▸';display:inline-block;margin-right:6px;f
 details.gi[open] summary::before{transform:rotate(90deg)}
 details.gi summary:hover{color:var(--fg)}
 .gib{margin:5px 0 2px 15px;max-width:78ch;border-left:2px solid var(--line);padding-left:10px}
+/* 组介绍里的小 ascii 图（JL 260724）：展开后一眼看清这组题怎么串起来。窄、灰底、可横滚 */
+.gib .gidia{font:11.5px/1.5 ui-monospace,Menlo,monospace;color:var(--fg);
+ background:var(--pre);border-radius:8px;padding:9px 12px;margin:9px 0 3px;
+ overflow-x:auto;white-space:pre;max-width:100%}
 
 /* ── index structure controls (QC2): ＋ Q / ＋ Group / archive. Writers only;
    they appear on hover so the reading surface stays quiet. ── */
@@ -538,3 +595,30 @@ details.gi summary:hover{color:var(--fg)}
 .gform .go{border:1px solid var(--accent);background:var(--accent);color:#fff;
  border-radius:7px;font-size:11.5px;padding:3px 9px;cursor:pointer}
 .gform .cx2{border:none;background:none;color:var(--mut);font-size:14px;cursor:pointer}
+
+/* ── QF1 · embeds: another file's content shown by reference (live) ────── */
+.embed{border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--card);overflow:hidden}
+.embed .emh{display:flex;gap:10px;align-items:center;padding:5px 11px;font-size:12.5px;
+  border-bottom:1px solid var(--line);background:var(--pre)}
+.embed .emh .es{color:var(--mut)}
+.embed .elive{margin-left:auto;color:var(--mut);font-size:11px;letter-spacing:.4px;text-transform:uppercase}
+.embed .emb{padding:9px 13px;font-size:14px;max-height:34em;overflow:auto}
+.embed .emb p{margin:5px 0;line-height:1.5}
+.embed .emb ul{margin:5px 0 5px 4px;padding-left:16px}
+.embed .emb li{margin:2px 0;line-height:1.45}
+.embed .emb pre{margin:7px 0;padding:9px 11px;background:var(--pre);border-radius:6px;
+  overflow-x:auto;font-size:12.5px;line-height:1.5}
+.embed .eh{font-weight:700;margin:11px 0 4px}
+.embed .eh1{font-size:16px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.embed .eh2{font-size:15px;border-bottom:1px solid var(--line);padding-bottom:2px}
+.embed .eh3,.embed .eh4,.embed .eh5,.embed .eh6{font-size:14px;color:var(--fg)}
+.embed .eq{border-left:3px solid var(--line);padding:2px 0 2px 9px;margin:4px 0;color:var(--mut)}
+.embed .er{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+  white-space:pre;overflow-x:auto;line-height:1.6}
+.embed.miss{border-color:var(--todo);color:var(--todo);padding:7px 11px;font-size:13.5px}
+
+/* ── QF2 · doc slides: source files rendered directly, no Q wrapper ───── */
+.slide.doc .embed.doc .emb{max-height:none}
+.pill.docp{border:1px solid var(--line);color:var(--mut);background:var(--pre)}
+.ir.doc .s{filter:none}
+.ir.doc .t{color:var(--mut)}
