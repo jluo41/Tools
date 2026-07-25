@@ -37,7 +37,7 @@ The browser is on the user's laptop and the files are on the server (Remote-SSH)
 
 ## Items to Finish
 - [x] Select a sentence → write a comment → instant highlight + 💬 at the sentence end
-- [x] Anyone can sign with their own initials, not just JL / RA / CC
+- [x] Anyone can sign with their own initials, not just the original defaults
 - [x] When the sentence cannot be located, say so explicitly (⚠ not anchored in the panel), never silently vanish
 - [x] Without JS, comments still display (you just cannot add one)
 - [x] Save writes the disk directly, no extra button
@@ -168,7 +168,7 @@ anchor: how a comment finds the sentence it hangs on.
 260723 0936 · Still no highlight. Root cause found: the old version ran indexOf with the selected text,
               searching a single text node, any selection crossing an inline tag (`code`, **bold**) must fail
 260723 0930 · JL wants anyone to sign with their own initials → customizable, remembered;
-              renderer widened from JL/RA/CC to any uppercase initials, stable per-name colors
+              renderer widened from its original fixed names to any uppercase initials, with stable per-name colors
 260723 0925 · JL: "no highlight, no feedback" → added save-time highlight, 💬 marker, toast, pending counter
 260723 0915 · v1 built: select → popup → localStorage → Sync to md writes into ## Discussion
 260723 0900 · JL asked for Google-Docs-style inline comments, question opened

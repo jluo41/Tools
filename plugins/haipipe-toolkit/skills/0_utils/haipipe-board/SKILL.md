@@ -1,17 +1,17 @@
 ---
 name: haipipe-board
-description: Open and run a BOARD — one topic, one folder, one markdown file per open question, generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions that need to be laid out, discussed with someone, and closed one by one; when handing a few days of work to an RA; or when the user says board, 打开这块板, 开板, 加一题, 关板, /haipipe-board. "打开 <board folder>" means VIEW an existing board (rebuild + push the URL to the user's VS Code browser over the VS Code IPC socket) — NOT create a new one, and never `open board.html`/`file://` (Remote-SSH: the browser is on the user's laptop).
+description: Open and run a BOARD — one topic, one folder tree, one markdown face per ruling (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when sharing work with colleagues; or when the user says board, 打开这块板, 开板, 加一题, 关板, /haipipe-board. "打开 <board folder>" means VIEW an existing board (rebuild + push the URL to the user's VS Code browser over the VS Code IPC socket) — NOT create a new one, and never `open board.html`/`file://` (Remote-SSH: the browser is on the user's laptop).
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-07-24"
-  summary: "One topic = one folder of question .md files + one static HTML page. build.py for the static page; serve.py adds live comments/chat/terminal. SKILL.md = the board's settled questions, distilled."
+  version: "0.15.1"
+  last_updated: "2026-07-25"
+  summary: "The shared Q/S source template now explicitly mirrors QA4, including optional Stage Record behavior."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-board — 一个话题，一叠问题，一页看板
 
-**一块板 = 一个文件夹。** 里面一题一个 `.md`，外加一页谁都打得开的 `board.html`。
-问题一个个定完，这块板就关掉。
+**一块板 = 一个文件夹。** 里面一个 ruling/stage 一个 `.md` face，外加一页谁都打得开的
+`board.html`。Q 是 ruling，S 是 lifecycle stage；两者共用一套版式，不共用关闭语义。
 
 它取代了 `/haipipe-session`（那个是只有干活的人自己看的工作日志）。
 
@@ -27,6 +27,7 @@ metadata:
   board.md            标题 · spine · close · ## Topic · ## Pipeline · ## Roster
   QA1-<slug>.md       一题一个文件
   QA2-<slug>.md
+  S0-<slug>.md        生命周期 stage（有 stage 才写）
   QB1-<slug>.md
   board.html          ← build.py 生成，别手改
   fig/
@@ -35,8 +36,17 @@ metadata:
 - **所属单位** = 这块板服务于谁（一个 plugin / 一个 task 文件夹 / 一篇 paper）。
   板是工作产物，skill 是交付包 —— 不放在同一个文件夹里。
 - **日期是开板那天，之后永不改。** 一个文件夹一个话题，后来的讨论往里追加，不另开。
-- **谁在这块板上，靠路径**：同目录所有 `Q*.md` 就是这块板的题。
-  `## Roster` 只管排序和分组；漏登记的照样显示（归 ⚠️ 组）并在命令行提醒 —— **漏登记只会丑，不会丢题**。
+- **谁在这块板上，靠路径**：板文件夹**整棵树**里所有 `Q*.md` / `S*.md` 就是这块板的
+  faces（`_`/`.` 开头的段和 `fig/` 除外）。
+  `## Roster` 只管排序和分组（仍只写文件名）；漏登记的照样显示（归 ⚠️ 组）并在命令行提醒 —— **漏登记只会丑，不会丢题**。
+- **Q/S 文件可以住进它讲的那个文件夹**：`4-display/QD2-….md` 和
+  `4-display/S4-display.md` 都会被发现。
+  一棵已有的树（比如一篇 paper 的 `0-lifecycle/`）因此可以直接当一块板，题面贴着它讲的东西住 ——
+  这种板**不套** `diagram/<NN>-…-<YYMMDD>` 的名字：树叫什么就是什么；NN+日期的规矩只管 `diagram/` 下新开的板。
+- **`![[路径]]` / `![[路径#某节]]` 单独占一行**（QF1）＝把另一份文件的内容**按引用**嵌进这一题：
+  生成时现读、零拷贝零漂移，板不学源文件的方言；嵌不到就地标红。详见 `ref/board-form.md` §5。
+- **Roster 里的 `doc:` 行**（QF2）仍兼容旧板，但它只是无状态阅读页。生命周期内容要参与
+  checklist、gate 和评论时，写成 S face；不要再用 `doc:` 模拟 stage。
 - **Group intro (QC2, 260724)**: in `## Roster`, plain lines between a `### ` heading and its first `.md` line introduce that group. Line 1 always shows under the group header on the index; further lines expand on click. The page's ＋Q / ＋Group / 🗄 buttons edit this structure through `POST /_board/structure` (serve.py `structure_op`); archive moves Q files to `_archive/`, never deletes.
 
 ## 🔨 动作
@@ -64,9 +74,11 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
 
 3. 顺手报一句板的状态：几题、几条未解决评论、卡在哪。
 
-⚠️ **为什么不能用 `open board.html` 或 `file://`**：这台机器是 Remote-SSH ——
+⚠️ **为什么不能用 `open board.html` 或 `file://`**：Remote-SSH 的机器上 ——
 **浏览器在用户的笔记本上，文件在服务器上**。`open` 只会在服务器桌面上打开，用户什么都看不到；
 `file://` 指的是用户本机的盘，那儿没有这些文件。必须走上面那条 IPC，把 URL 交给用户那侧的 VS Code。
+**本地机器**（不是 Remote-SSH：那两个 glob 找不到东西）就直接 `open "http://127.0.0.1:5599/<板>/board.html"` ——
+走 http（评论层才活），照样不碰 `file://`。
 
 需要 `serve.py` 在 5599 上跑着（没跑就先起，见 serve 段）。`#top` 回目录、`#QA7` 直接跳某一题、`#all` 展开全部。
 
@@ -78,7 +90,7 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
 3. 写 `board.md`：标题、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Roster`（三个都写上）。
 4. 每个 Q 复制 `ref/q-template.md` → `Q<组字母><序号>-<slug>.md`。
    `<slug>` 用短英文小写（`access`、`scheduling`），跟 `ref/board-example.md` 一致。
-   新开的 Q 一律 `state: 🔴 OPEN`。owner 按性质给：要拍板/授权的给 JL，动手干的给 RA/CC。
+   新开的 Q 一律 `state: 🔴 OPEN`。owner 按性质给：要拍板/授权的给 JL，动手干的给负责同事的姓名缩写或 CC。
 5. 生成：`build.py` 在 **skill 目录**里，不在板文件夹里，所以带上它的路径 ——
    `python3 <skill>/build.py <板文件夹>`（`<skill>` = `Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board`）。
    **别 `cd` 进板文件夹再 `python3 build.py .`** —— 那样找不到 build.py。
@@ -89,6 +101,8 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
 
 复制 `ref/q-template.md` → 新文件名 → 写进 `board.md` 的 `## Roster` → 重新生成。
 忘了写进 Roster 也不会丢，只会归到 ⚠️ 组。
+文件夹题（QC3）：把新文件放进它讲的那个文件夹；Roster 仍只写文件名，全板文件名要唯一。
+页面上的 ＋Q 一律把文件生成在**板根** —— 要住进哪个文件夹，自己挪（Roster 行不用改）。
 
 ### build — 生成
 
@@ -129,13 +143,13 @@ python3 <skill>/watch.py <board 文件夹>     # 盯着，改任何 .md 自动�
 ### sync — 干完活，同一轮里回写这一题
 
 **板和产物必须联动，否则板就是一份过期的漂亮东西。**
-在某一题名下做完任何实质工作（写了文件、跑了实验、拿到了结论），**在同一轮里**回写它：
+在某个 face 下做完任何实质工作（写了文件、跑了实验、拿到了结论），**在同一轮里**回写它：
 
 | 回写哪 | 写什么 |
 |---|---|
 | `## Where we are` | 现在的实际状态。有数字给数字。 |
 | `## Items to Finish` | 达到的条打勾。**没验过的不许打勾。** |
-| `## Log` | 一行：`YYMMDD HHMM · 改了什么` |
+| `## Log` | 可选的一行历史：`YYMMDD HHMM · 改了什么`；没有历史需求就不建 |
 | `state:` | 全部打勾 → ✅ SETTLED；有进展 → 🟡 PARTIAL；明确不做 → ⏸️ ON HOLD |
 | `## Comments` | 这轮解决掉的评论，勾成 `[x]` |
 
@@ -162,10 +176,11 @@ build.py            ../../haipipe-board/build.py
 
 ### close — 关板
 
-每一题都到 ✅ SETTLED 或 ⏸️ ON HOLD，这块板就关掉。
+每个 Q 到 ✅ SETTLED / ⏸️ ON HOLD、每个 S 到 human-gated / explicitly parked，并满足
+`close:`，这块板才关掉。
 `close:` 那句话就是关板条件，写的时候要能验收，不是「差不多了」。
 
-## 📐 一个 Q 文件
+## 📐 一个 Face
 
 ```markdown
 # 短标题（短语，≤14 字）
@@ -173,9 +188,10 @@ state: 🔴 OPEN          ✅ SETTLED / 🟡 PARTIAL / 🔴 OPEN / ⏸️ ON HOL
 owner: CC               JL 显示 🧠 拍板，其他显示 🔧
 method: 一句话说怎么做
 
-## Question        一段平白话 + 2–4 个要点：在问什么 · 为什么难 · 不定会怎样  ┐
-## Boundary        这题管什么、更要紧的是不管什么（选填但强烈建议）          │ 台面
-## Diagram         ascii 图（可省）                                        │ 顺序
+## Question        第一段是真问句；后面一段解释为什么重要                     ┐ 🧭 Opening
+## Boundary        这题管什么、更要紧的是不管什么（选填但强烈建议）          ┘
+## Diagram         ascii 图（可省）；独立一节，默认折叠                       ┐
+## Content         S 必填、Q 选填；`###` 是一个可折叠内容小节                │
 ## Items to Finish 勾选清单 ＝ 什么算做完，栏头自动数出 3/5                 │ 固定
 ## Where we are    现在的实际状态，有数字给数字                             │
 ## Files           这题牵动哪些文件（选填但强烈建议）                        ┘
@@ -187,15 +203,32 @@ method: 一句话说怎么做
 ## Log          260723 1030 · 改了什么 ┘
 ```
 
-**台面顺序是定死的**：先给意图（问什么 · 边界 · 什么算完），再给状态（现在到哪、动哪些文件）。
-`## Question` 一节读完，一个零背景的人就该明白这题在干嘛 —— 这是这套版式的验收标准。
+**台面上的五层顺序是定死的**：
+`Opening → Diagram → Content → Items to Finish → Where we are`（Files 跟在状态后面）。
+Opening 放 Question 的第一段问句和 optional Boundary；optional Diagram 是独立一节，
+默认折叠，点节名才展开。Q face 的 Question 解释段自动成为 Content 的第一个
+“Why this matters” subsection。S face 则把 “Why this matters” 放进 Opening；如果显式
+`## Content` 里有直接的 `### Stage Record`，也提到 Opening 里，默认折叠。S 的其余
+Content 仍在 `📚 Content`；Q 的显式 Content 选填。旧板仍可写 `## Question`，也认
+`## Opening` 这个别名。
+
+**一套版式，两种工作流：**
+
+- `Q*.md` = ruling。checkbox 全闭合后才可 `✅ SETTLED`。
+- `S*.md` = lifecycle stage。`## Content` 是 stage substance；former Q-consumer questions become
+  recognizable `Q-Stage-n` checklist records inside `## Items to Finish`; stage closes only at its
+  human gate.
+- Q-consumer checkbox means the answer landed, was interpreted, and was woven into Content. A
+  deferred item closes only after its forward pointer is recorded.
+- `## Where we are` summarizes the actual stage state. It does not copy every consumer answer.
 
 正文里长内容一律写成 **`- 小标题` + 缩进两格的解释**，不要一段接一段的散句；
 整行加粗 `**…**` 是**组标题**（领着一串 item）。
 加一题直接复制 `ref/q-template.md`（每段都标了必填/选填）；完整语法表见 `ref/board-form.md`。
 
 > 老段名一律还认：`## Done when`＝`## Items to Finish`、`## Now`＝`## Where we are`、中文名同理。
-> `## Why here` 已退役 —— 它的活并进 `## Question` 的要点，老板子里写着的收进折叠区。
+> `## Why here` 已退役 —— 它的活并进 `## Question` 的解释段并渲染到 Content；
+> 老板子里写着的旧段仍收进底部折叠区。
 
 ## ✍️ 写法（这条最容易被跳过）
 
@@ -231,16 +264,17 @@ method: 一句话说怎么做
 - 没定的题（🟡/🔴）**不进** manual —— 免得把「随手定的」写成铁律。
   （真踩过：`QD1` 的权限规则我一开始随手写死「只能改这一个文件」，后来被 JL 推翻成「跟 CLI 一样」。）
 - 所以 SKILL.md 永远 = **已定规矩之和**，不多不少。改它之前，先看那题 `✅` 了没。
-- 现在已毕业的：`QA2`（Q 文件模板）· `QA4`（幻灯片版式 → `ref/board-form.md §8`，显示规格不塞进这里）· `QA6`（评论落盘）· `QC1`（板放哪）。
-  现场层的 chat/terminal（`QD1`/`QD2`/`QD3`）还 🟡，上面只放了指针，没写成规矩。
+- 现在已毕业的：`QA2`（Q 文件模板）· `QA4`（幻灯片版式 → `ref/board-form.md §8`，显示规格不塞进这里）· `QA6`（评论落盘）· `QC1`（板放哪）· `QC3`（Q 可住进自己的文件夹）· `QB5`（Python 按页拆进 `src/`）。
+  现场层的 chat/terminal（`QD1`/`QD2`/`QD3`）还 🟡，上面只放了指针，没写成规矩；`QF1`（嵌入）语法已定、还差 paper 侧锚点握手，也 🟡。
 
 ## 📚 ref/
 
 | 文件 | 看它做什么 |
 |---|---|
-| `ref/q-template.md` | 加一题时直接复制的空模板 |
+| `ref/q-template.md` | Q/S 共用 face 模板（历史文件名保留，避免旧链接失效） |
 | `ref/board-form.md` | 完整规格：文件夹、编号、段落↔页面对应、语法表、Comments 格式、`## Links` |
 | `ref/writing-rules.md` | 怎么写才是人话 + 零背景审查的提示词和收敛判据 |
 | `ref/board-example.md` | 一块两题的最小示例 |
 
-活的例子：`Tools/plugins/haipipe-toolkit/skills/0_utils/diagram/01-boardform-260722/` —— 这个 skill 自己的板。
+活的例子：`Tools/plugins/haipipe-toolkit/skills/0_utils/diagram/01-boardform-260722/` —— 这个 skill 自己的板（平铺形）。
+嵌套形（Q rulings + S stages）的活例子：`examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`。

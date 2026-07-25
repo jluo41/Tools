@@ -7,13 +7,13 @@ session: e4ac2dc0-af0d-46cc-972c-c19582f2ba62
 ## Question
 Give every Q on the board its own conversation, but first the thing itself must be spelled out: what does the board level own vs. the question level? How far can a question-level session read and write? Where does the conversation itself live?
 
-The hard part is that one conversation per question forces an answer to whether the same session can be open in two windows at once: get it wrong and, mildly, they overwrite each other, or badly, Claude Code forks a second history on its own. This is the one question on this board that **changes how we work**, because until it is settled the loop stays "you comment on the page → I read it elsewhere → I edit the md", always one relay in between. It is also the shared foundation of `QD2` (drawer), `QD3` (terminal), and `QD5` (board-level agent): change that LAW and all three follow.
+The hard part is that one conversation per question forces an answer to whether the same session can be open in two windows at once: get it wrong and, mildly, they overwrite each other, or badly, Claude Code forks a second history on its own. This is the one question on this board that **changes how we work**, because until it is settled the loop stays "you comment on the page → I read it elsewhere → I edit the md", always one relay in between. It is also the shared foundation of `QD2` (drawer) and `QD3` (terminal): change that LAW and both follow.
 
 ## Boundary
 - ✅ Covered here
   **The rules**: board level vs. question level, one session per question, one window per session, where the session id is stored.
 - ↪ Covered elsewhere
-  The implementations: the web drawer is `QD2`, the real terminal is `QD3`, widening the scope to the whole board is `QD5`.
+  The implementations: the web drawer is `QD2`, the real terminal is `QD3`; both also open on the whole board through the index page's chatbot (recorded on `QD2`).
 
 ## Diagram
 ```

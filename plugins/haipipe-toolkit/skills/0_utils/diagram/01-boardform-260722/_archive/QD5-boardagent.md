@@ -63,5 +63,6 @@ today (QD1/2/3)                      what this question adds
   What a board-level agent mostly edits is its `## Roster`.
 
 ## Log
+260725 1036 · Archived from the index page (moved to _archive/)
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · Opened: "board-level agent" moved from `QC2` into the QD group — its machinery is the same stock as `QD1`/`QD2`/`QD3` (serve.py + sessions + windows), only the scope widens to the whole board; it collides head-on with `QD1`'s LAW, so they must sit side by side

@@ -21,7 +21,7 @@ Two files (`board.html` + `deck.html`) means two things to keep in sync, and the
                 ┌───────────────────┴───────────────────┐
            default: scroll & read              click a row: one question per screen
            all questions on one page           only that question on screen
-           read alone / send to an RA          project in a meeting
+           read alone / share with colleagues  project in a meeting
                 └────── same file, same content ──────┘
 
 ✗ no second deck.html            still missing: ← → paging · presenter mode (both need JS)

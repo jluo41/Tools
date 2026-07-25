@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="utf-8">
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>主观标注系统 —— 方法、引擎、和一个不是自己打的分数</title>
 <style>
@@ -28,22 +28,18 @@ details[open]>summary::before{content:"▾ "}
 h3.sec{font-size:12.5px;letter-spacing:.09em;color:var(--mut);margin:30px 0 10px;font-weight:600}
 h3.sec .hint{float:right;font-weight:400;letter-spacing:0;text-transform:none}
 
-/* 默认（#top，没选中任何一题）：只显示目录，不把 10 张卡片全铺出来。
-   要一次看全部 / 想 Ctrl-F 全文，点目录旁边的 “show all”（跳到 #all）。 */
+
 body:not(:has(.q:target)):not(:has(#all:target)) .q{display:none}
 body:has(#all:target) h3.sec .hint{visibility:hidden}
 
-/* ── 单题聚焦：纯 CSS，零脚本 ────────────────────────────────
-   URL 命中某个 #Qn 时（点目录一行就会），把目录、进度条和其他题全收起来，
-   屏幕上只剩这一题。点「☰ 全部」回到 #top，:target 落空，一切复原。
-   :has() 是纯选择器，不需要 JS。 */
+
 .nav{display:none}
 body:has(.q:target) .idx,
 body:has(.q:target) .bar,
 body:has(.q:target) h3.sec{display:none}
 body:has(.q:target) .foot,
 body:has(.q:target) .q{display:none}
-/* 必须比上面那条更特指，否则被选中的那题会连自己一起藏掉 */
+
 body:has(.q:target) .q:target{display:block;margin-top:6px}
 .q:target .nav{display:flex;gap:10px;align-items:center;margin-top:20px;
  padding-top:13px;border-top:1px solid var(--line)}
@@ -55,8 +51,7 @@ body:has(.q:target) .q:target{display:block;margin-top:6px}
 .ir{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;
  border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:9px;margin:6px 0;
  text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden;--fill:0}
-/* 完成度上色：白底 → 绿。绿色叠加层的透明度 = 完成比例（--fill 0..1）。
-   从左往右填，像进度条，但很淡，不抢正文。 */
+
 .ir::before{content:"";position:absolute;inset:0;pointer-events:none;
  background:linear-gradient(90deg,
    rgba(21,128,61,calc(var(--fill) * .30)),
@@ -67,7 +62,10 @@ body:has(.q:target) .q:target{display:block;margin-top:6px}
 h3.sec .hint a{color:var(--accent);text-decoration:none}
 .ir.todo{border-left-color:var(--todo)}.ir.wip{border-left-color:var(--wip)}
 .ir.done{border-left-color:var(--done)}.ir.hold{border-left-color:var(--hold)}
-.grp{font-size:12.5px;color:var(--mut);margin:16px 0 2px;padding-left:2px}
+
+.grp{font-size:16px;font-weight:700;color:var(--fg);letter-spacing:-.01em;
+ margin:26px 0 9px;padding:0 0 6px 2px;border-bottom:1px solid var(--line)}
+.grp:first-of-type{margin-top:8px}
 .src{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);opacity:.7;text-decoration:none}
 a.src:hover{opacity:1;color:var(--accent);text-decoration:underline}
 .ir .i{font:12px ui-monospace,Menlo,monospace;color:var(--mut);min-width:24px}
@@ -86,20 +84,35 @@ a.src:hover{opacity:1;color:var(--accent);text-decoration:underline}
 .top{margin-left:auto;color:var(--mut);text-decoration:none;font-size:12px}
 .top:hover{color:var(--accent)}
 .h2{font-size:22px;line-height:1.4;margin:4px 0 14px;font-weight:700}
-.ask{font-size:18px;line-height:1.55;padding-left:13px;border-left:3px solid var(--accent);
- margin:0 0 18px}
-/* Question 段的小标签：跟 📍 Now / 🎯 Done when 一样显示段名，不只剩一个 ❓（JL 260723） */
+
+.ask{padding-left:13px;border-left:3px solid var(--accent);margin:0 0 18px}
+.ask p{margin:0 0 6px}
+.ask>p:first-of-type{font-size:18px;line-height:1.55;margin:0 0 9px}
+
+.bnd{border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:10px;
+ padding:12px 15px;background:var(--bg);margin:0 0 16px}
+
+.xcal{margin:12px 0}
+.xcal iframe{width:100%;height:440px;border:1px solid var(--line);border-radius:10px;
+ background:var(--card);display:block}
+.xcal .xopen{display:inline-block;margin-top:6px;font-size:12.5px}
+.q:target .xcal iframe{height:520px}
+
+.fls{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
+ padding:12px 15px;background:var(--bg);margin:16px 0 0}
+.fls code{font-size:12.5px}
+
 .ql{display:block;font-size:12px;font-weight:600;color:var(--accent);
  letter-spacing:.02em;margin:0 0 5px}
 .q:target .ql{font-size:13px;margin:0 0 8px}
 .f{margin:16px 0}
 .f p,.fbd p{margin:0 0 4px}
 
-/* 现在 vs 算做完：上下叠，不左右分栏 —— 两边长短不一时并排会空掉半边 */
+
 .cmp{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}
 .col{border:1px solid var(--line);border-radius:10px;padding:12px 15px;background:var(--bg)}
 
-/* 勾选清单：md 里写 - [ ] / - [x] */
+
 .ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65}
 .ck .ct{font-weight:600}
 .ck.on .ct{font-weight:600;opacity:.85}
@@ -123,16 +136,15 @@ mark.pend{background:rgba(255,214,0,.30);outline:1px dashed rgba(180,83,9,.5)}
 #cbox .nu{width:100%;margin-top:7px;border:1px solid var(--line);border-radius:7px;
  padding:6px 8px;font:13px inherit;background:var(--bg);color:var(--fg);display:none}
 
-/* 组标题（整行加粗）：领着下面一串 item 的一句话。🔹 图标 + 略大 + 上间距，
-   夹在节标题(.ch, 带下划线) 和 item 名字(.bt, ▸) 中间一层（JL 260723）。 */
+
 .gt{display:flex;align-items:baseline;gap:7px;font-weight:700;font-size:14.5px;
  color:var(--fg);margin:16px 0 7px;letter-spacing:-.01em}
 .gt .gi{font-size:.9em;flex:0 0 auto}
-.gt:first-child{margin-top:2px}       /* 紧跟节标题的第一句，不留大空档 */
+.gt:first-child{margin-top:2px}       
 .q:target .gt{font-size:16.5px;margin:22px 0 9px}
 .q:target .gt:first-child{margin-top:4px}
 
-/* 要点式：一个小标题 + 下面的解释（JL 260723）。解释收进 <details>，想看再点开 */
+
 .blt{margin:11px 0}
 .blt .bt{font-weight:600;position:relative;padding-left:15px}
 .blt .bt:before{content:"▸";position:absolute;left:0;color:var(--accent);transition:transform .12s}
@@ -140,14 +152,23 @@ mark.pend{background:rgba(255,214,0,.30);outline:1px dashed rgba(180,83,9,.5)}
 .blt summary.bt::-webkit-details-marker{display:none}
 .blt summary.bt:hover{color:var(--accent)}
 .blt details.it[open]>summary.bt:before{content:"▾"}
-.blt .bt.nod:before{opacity:.45}          /* 没有解释：▸ 淡一点，示意点不开 */
+.blt .bt.nod:before{opacity:.45}          
+
+.md{display:inline-block;margin-left:8px;padding:1px 8px;border:1px solid var(--line);
+ border-radius:999px;font-size:11px;font-weight:500;color:var(--mut);
+ letter-spacing:.01em;white-space:nowrap;vertical-align:1.5px;
+ background:var(--card);transition:color .12s,border-color .12s}
+.md::after{content:"more details"}
+details.it[open]>summary .md::after{content:"hide"}
+summary:hover .md{color:var(--accent);border-color:var(--accent)}
+.q:target .md{font-size:11.5px}
+@media print{.md{display:none}}
 .blt .bd{padding-left:15px;margin-top:2px}
 .blt .bd p{margin:0 0 3px;color:var(--mut)}
 .q:target .blt{margin:15px 0}
 .q:target .blt .bd p{font-size:15.5px;line-height:1.7}
 
-/* 代码块也默认收起（JL 260723）：合着时只是一行 “</> code · N 行”，点开才铺代码。
-   带 .it → 跟节标题的 expand-all 一起开合。脚本剥掉后照样点得开，代码一直在 DOM。 */
+
 details.codef{margin:10px 0}
 details.codef>summary{list-style:none;cursor:pointer;padding:2px 0;
  font:12px ui-monospace,Menlo,monospace;color:var(--mut)}
@@ -157,7 +178,7 @@ details.codef[open]>summary:before{content:"▾ "}
 details.codef>summary:hover{color:var(--accent)}
 details.codef>pre{margin:7px 0 0}
 
-/* 勾选清单里的 item：名字被 ☑/☐ 领着，caret 放在行尾示意可展开 */
+
 .ck .itw{flex:1;min-width:0}
 .ck summary.ct{list-style:none;cursor:pointer;position:relative;padding-right:16px}
 .ck summary.ct::-webkit-details-marker{display:none}
@@ -165,12 +186,11 @@ details.codef>pre{margin:7px 0 0}
 .ck details.it[open]>summary.ct:after{content:"▾"}
 .ck summary.ct:hover{color:var(--accent)}
 
-/* ── 每题一个对话窗（QD1）──────────────────────────────────── */
+
 .chatbtn{margin-left:6px;border:1px solid var(--line);background:var(--bg);color:var(--mut);
  border-radius:7px;padding:2px 10px;font:11.5px inherit;cursor:pointer}
 .chatbtn:hover{border-color:var(--accent);color:var(--accent)}
-/* 右侧整条抽屉（照 haichat-inlab 的 drawer）：占满高度，页面往左让位。
-   打开它的图标是右下角那个悬浮的 💬 Chat（#chatfab）。 */
+
 #chat{position:fixed;top:0;right:0;bottom:0;z-index:60;width:min(440px,92vw);
  display:none;flex-direction:column;background:var(--card);
  border-left:1px solid var(--line);box-shadow:-12px 0 34px rgba(0,0,0,.20)}
@@ -178,14 +198,14 @@ details.codef>pre{margin:7px 0 0}
 body.chaton{padding-right:min(440px,92vw)}
 @media(max-width:820px){body.chaton{padding-right:0}}
 
-/* 打开聊天框的悬浮图标：右下角，只在看某一题时出现（JL 260723） */
+
 #chatfab{position:fixed;right:20px;bottom:20px;z-index:55;display:none;
  align-items:center;gap:7px;background:var(--accent);color:#fff;border:none;
  border-radius:999px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;
  box-shadow:0 6px 20px rgba(0,0,0,.28)}
 #chatfab:hover{filter:brightness(1.06)}
 body:has(.q:target):not(.chaton) #chatfab{display:inline-flex}
-/* 聚焦看一题时，卡片头里那个小 💬 Chat 让位给悬浮图标；平铺/展开视图里还留着 */
+
 body:has(.q:target) .chatbtn{display:none}
 #chat .hd{background:var(--accent);color:#fff;padding:13px 15px;display:flex;
  gap:9px;align-items:center;font-size:14px;font-weight:600;flex:0 0 auto}
@@ -207,7 +227,7 @@ body:has(.q:target) .chatbtn{display:none}
 #chat .m.cc{align-self:flex-start;background:var(--pre);color:var(--fg);
  border:1px solid var(--line);border-bottom-left-radius:4px}
 #chat .m.sys{align-self:center;background:none;color:var(--mut);font-size:12px;padding:2px}
-/* 思考过程折叠块 */
+
 #chat .tk{align-self:flex-start;max-width:92%;border:1px dashed var(--line);
  border-radius:11px;background:var(--bg);padding:4px 11px;margin:1px 0}
 #chat .tk>summary{cursor:pointer;color:var(--mut);font-size:12.5px;list-style:none;padding:3px 0}
@@ -216,7 +236,7 @@ body:has(.q:target) .chatbtn{display:none}
 #chat .tk[open]>summary::before{content:"▾ "}
 #chat .tk .tk-body{white-space:pre-wrap;word-break:break-word;color:var(--mut);
  font-size:12.5px;line-height:1.6;padding:4px 0 6px;max-height:280px;overflow-y:auto}
-/* 权限提示，跟 CLI 那个弹窗一个意思 */
+
 #chat .ask{align-self:stretch;border:1px solid var(--wip);border-radius:11px;
  padding:10px 12px;background:var(--bg)}
 #chat .ask .q{font-size:13px;font-weight:600;color:var(--wip);margin-bottom:6px}
@@ -224,11 +244,24 @@ body:has(.q:target) .chatbtn{display:none}
  background:var(--pre);border-radius:7px;padding:7px 9px;margin-bottom:9px;
  overflow-x:auto;white-space:pre}
 #chat .ask .b{display:flex;gap:7px;align-items:center}
+#chat .askd{max-height:230px;overflow:auto;margin:0 0 9px}
+#chat .askd pre{margin:0 0 4px;padding:6px 9px;border-radius:6px;font-size:11.5px;
+ line-height:1.45;white-space:pre-wrap;word-break:break-word;
+ font-family:ui-monospace,Menlo,monospace}
+#chat .askd pre.del{background:rgba(214,102,102,.12);color:#b3564e;
+ border-left:3px solid #d66}
+#chat .askd pre.add{background:rgba(74,165,90,.12);color:#3c7d4c;
+ border-left:3px solid #4a5}
+#chat .askd pre.cmd{background:var(--pre);color:var(--fg);
+ border-left:3px solid var(--wip)}
+.lrf{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+ background:var(--accent);color:#fff;padding:7px 14px;border-radius:18px;
+ font-size:13px;z-index:99;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 #chat .ask button{border:1px solid var(--line);background:var(--card);color:var(--fg);
  border-radius:8px;padding:5px 11px;font:12.5px inherit;cursor:pointer}
 #chat .ask button.ok{background:var(--done);border-color:var(--done);color:#fff}
 #chat .ask button.n{color:var(--todo);border-color:var(--todo)}
-/* 回复里的 markdown */
+
 #chat .m.md{white-space:normal}
 #chat .m.md p{margin:0 0 7px}
 #chat .m.md p:last-child{margin-bottom:0}
@@ -261,7 +294,7 @@ body:has(.q:target) .chatbtn{display:none}
 #chat .act:hover{border-color:var(--accent)}
 #chat .act.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
 
-/* ## Comments —— 带状态的行内评论 */
+
 .cm{border-left:3px solid var(--wip);padding:7px 0 7px 11px;margin:9px 0}
 .cm.done{border-left-color:var(--done);opacity:.62}
 .cmh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:13px}
@@ -277,7 +310,7 @@ body:has(.q:target) .chatbtn{display:none}
 .cs.unpin{border-color:var(--line);color:var(--mut);text-transform:none;cursor:help}
 .cmb{padding-left:22px;margin-top:3px}
 .cmb p{margin:0 0 4px}
-/* 已解决评论：正文折叠，只留一行 reply 标题 */
+
 .cmb-fold{padding-left:22px;margin-top:2px}
 .cmb-fold>summary{cursor:pointer;color:var(--mut);font-size:12px;list-style:none;padding:1px 0}
 .cmb-fold>summary::-webkit-details-marker{display:none}
@@ -291,11 +324,11 @@ mark.solved{background:rgba(21,128,61,.16);outline:none}
 b.jl{color:var(--accent)}b.ra{color:var(--ra)}b.cc{color:var(--mut)}
 b.u0{color:#8b5cf6}b.u1{color:#0891b2}b.u2{color:#c2410c}b.u3{color:#be185d}
 
-/* 行内评论：被引用的原句 + 评论里的引文 */
+
 mark{background:rgba(255,214,0,.34);color:inherit;padding:0 2px;border-radius:3px}
 @media(prefers-color-scheme:dark){mark{background:rgba(255,214,0,.22)}}
 .qt{color:var(--mut);font-size:.92em;margin-right:5px}
-/* 评论工具条（只有开了 JS 才会出现；关掉 JS 页面一切照旧） */
+
 #cbtn{position:absolute;z-index:40;display:none;background:var(--accent);color:#fff;
  border:none;border-radius:7px;padding:6px 12px;font-size:13px;cursor:pointer;
  box-shadow:0 3px 10px rgba(0,0,0,.22)}
@@ -324,28 +357,27 @@ mark{background:rgba(255,214,0,.34);color:inherit;padding:0 2px;border-radius:3p
 #cpanel .hint{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.6}
 .cnt{float:right;font-weight:400;font:12px ui-monospace,Menlo,monospace}
 
-/* 大标题前面挂编号：QA2 一个 Q 文件的模板 */
+
 .hid{color:var(--accent);font:.62em ui-monospace,Menlo,monospace;
  vertical-align:.22em;margin-right:11px;letter-spacing:.03em}
 
-/* ## 日志 —— 这一题一路改过什么 */
+
 .lg{display:flex;gap:11px;align-items:baseline;margin:4px 0}
 .lg .d{flex:0 0 96px;white-space:nowrap;font:11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
 
-/* ## 图 —— 这一题想干嘛，一张 ascii 图先说清楚 */
+
 .dia{margin:0 0 18px}
 .dia pre{margin:0;padding:15px 17px;line-height:1.55}
 .q:target .dia{margin:0 0 24px}
 .q:target .dia pre{font-size:13px;line-height:1.6}
 .col.now{border-left:3px solid var(--wip)}
 .col.goal{border-left:3px solid var(--done)}
-/* 节标题：左标签 + 底下一条线 + 右边 expand-all（JL 260723） */
+
 .ch{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--mut);
  margin:0 0 9px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:5px}
 .ch .chl{flex:1;min-width:0}
 .ch .cnt{color:var(--mut);font-weight:600}
-/* expand / collapse all：把这一节所有 item 一起开合。纯增强——脚本剥掉后
-   每个 item 仍能单独点开（native <details>），全文一直在 DOM 里。 */
+
 .secall{flex:0 0 auto;border:1px solid var(--line);background:var(--bg);color:var(--mut);
  border-radius:6px;padding:1px 9px;font:11px inherit;font-weight:500;cursor:pointer;letter-spacing:0}
 .secall:hover{border-color:var(--accent);color:var(--accent)}
@@ -353,9 +385,7 @@ mark{background:rgba(255,214,0,.34);color:inherit;padding:0 2px;border-radius:3p
 .col p{margin:0 0 6px;font-size:15px}
 .col pre{font-size:11.5px}
 
-/* ── 聚焦 = 一张幻灯片，不是一个卡片 ─────────────────────────
-   照 html-ppt：内容直接铺在页面上，没有边框、圆角、卡片底色把它围住。
-   头部压成一条跑马条，剩下的高度全给这一题。 */
+
 body:has(.q:target) .wrap{max-width:1000px;padding:20px 26px 40px}
 body:has(.q:target) .h1{font-size:14px;color:var(--mut);font-weight:600;margin:0 0 7px}
 body:has(.q:target) .spine{border:none;background:none;border-radius:0;
@@ -370,8 +400,16 @@ body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
 .q:target .src,.q:target .top{display:none}
 .q:target .qh{margin-bottom:10px}
 .q:target .h2{font-size:38px;line-height:1.24;letter-spacing:-.01em;margin:0 0 18px}
-.q:target .ask{font-size:21px;line-height:1.55;border-left:none;padding-left:0;
- color:var(--mut);margin:0 0 26px}
+.q:target .ask{border-left:none;padding-left:0;margin:0 0 24px}
+.q:target .ask p{font-size:16px;line-height:1.75}
+.q:target .ask>p:first-of-type{font-size:21px;line-height:1.5;color:var(--fg);margin:0 0 13px}
+
+.q:target .bnd{border:none;border-radius:0;background:none;padding:0 0 0 15px;
+ border-left:2px solid var(--mut);margin:0 0 22px}
+.q:target .bnd p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .fls{border:none;border-radius:0;background:none;padding:0 0 0 15px;
+ border-left:2px solid var(--accent);margin:22px 0 0}
+.q:target .fls p{font-size:16px;line-height:1.75;margin:0 0 6px}
 .q:target .cmp{gap:22px;margin:0 0 22px}
 .q:target .col{border:none;border-radius:0;background:none;padding:0 0 0 15px}
 .q:target .col.now{border-left:2px solid var(--wip)}
@@ -380,7 +418,7 @@ body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
  letter-spacing:-.01em}
 .q:target .ch .cnt{font-size:13px}
 .q:target .col p{font-size:16px;line-height:1.75}
-/* 「为什么在这块板」在幻灯片上也排成一栏，跟上面两栏同一个样式（.ch 标题 + 线） */
+
 .q:target .f{display:block;margin:0;border-left:2px solid var(--line);padding-left:15px}
 .q:target .f p,.q:target .fbd p{font-size:16px;line-height:1.75;margin:0 0 6px}
 .q:target .folds{margin-top:auto;padding-top:18px}
@@ -389,6 +427,17 @@ body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
 .fold>summary{cursor:pointer;color:var(--mut);font-size:14px;list-style:none;padding:4px 0}
 .fold[open]>summary{color:var(--fg)}
 .fb{padding:5px 0 8px 16px;font-size:14.5px}
+
+.dadd{margin-top:11px;border-top:1px dashed var(--line);padding-top:10px}
+.dadd textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:8px;
+ padding:8px 10px;font:14px inherit;line-height:1.6;background:var(--bg);color:var(--fg);resize:vertical}
+.dadd .row{display:flex;gap:8px;align-items:center;margin-top:7px}
+.dadd select{border:1px solid var(--line);border-radius:7px;padding:4px 9px;font:13px inherit;
+ background:var(--bg);color:var(--fg)}
+.dadd .dsave{margin-left:auto;border:1px solid var(--accent);background:var(--accent);color:#fff;
+ border-radius:7px;padding:6px 14px;font:13px inherit;font-weight:600;cursor:pointer}
+.dadd .dsave:hover{filter:brightness(1.07)}
+.dadd .dsave:disabled{opacity:.6;cursor:default}
 .cmt{border-left:3px solid var(--mut);padding:3px 0 3px 10px;margin:5px 0}
 .cmt b{font-size:11px;letter-spacing:.4px;margin-right:5px}
 .cmt .qt{background:rgba(217,164,6,.18);border-bottom:1px solid rgba(217,164,6,.55);
@@ -425,46 +474,46 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
 
 <h3 class="sec" id="qlist">ALL QUESTIONS<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>
 <div class="idx"><div class="grp">QA · 方法：会上定的标注流程</div>
-<a class="ir todo" href="#QA1" title="完成度 0%"><span class="s">🔴</span><span class="i">QA1</span><span class="t">冷启动：先对话，别硬标</span><span class="w">🔧 RA</span></a>
-<a class="ir wip" href="#QA2" style="--fill:0.250" title="完成度 25%"><span class="s">🟡</span><span class="i">QA2</span><span class="t">分头标，只报有分歧的</span><span class="w">🔧 RA</span></a>
-<a class="ir todo" href="#QA3" title="完成度 0%"><span class="s">🔴</span><span class="i">QA3</span><span class="t">强模型出答案，弱模型考试</span><span class="obadge">💬 1</span><span class="w">🔧 RA</span></a>
+<a class="ir todo" href="#QA1" title="0% done"><span class="s">🔴</span><span class="i">QA1</span><span class="t">冷启动：先对话，别硬标</span><span class="w">🔧 RA</span></a>
+<a class="ir wip" href="#QA2" style="--fill:0.250" title="25% done"><span class="s">🟡</span><span class="i">QA2</span><span class="t">分头标，只报有分歧的</span><span class="w">🔧 RA</span></a>
+<a class="ir todo" href="#QA3" title="0% done"><span class="s">🔴</span><span class="i">QA3</span><span class="t">强模型出答案，弱模型考试</span><span class="obadge">💬 1</span><span class="w">🔧 RA</span></a>
 <div class="grp">QB · 扩张与验证</div>
-<a class="ir todo" href="#QB1" title="完成度 0%"><span class="s">🔴</span><span class="i">QB1</span><span class="t">长到 140 条，专挑难例</span><span class="obadge">💬 2</span><span class="w">🔧 RA</span></a>
-<a class="ir wip" href="#QB2" style="--fill:0.250" title="完成度 25%"><span class="s">🟡</span><span class="i">QB2</span><span class="t">分三层考，别只看一个数</span><span class="obadge">💬 2</span><span class="w">🔧 RA</span></a>
-<a class="ir wip" href="#QB3" style="--fill:0.250" title="完成度 25%"><span class="s">🟡</span><span class="i">QB3</span><span class="t">拿一个不是自己打的分数</span><span class="obadge">💬 2</span><span class="w">🔧 RA</span></a>
+<a class="ir todo" href="#QB1" title="0% done"><span class="s">🔴</span><span class="i">QB1</span><span class="t">长到 140 条，专挑难例</span><span class="obadge">💬 2</span><span class="w">🔧 RA</span></a>
+<a class="ir wip" href="#QB2" style="--fill:0.250" title="25% done"><span class="s">🟡</span><span class="i">QB2</span><span class="t">分三层考，别只看一个数</span><span class="obadge">💬 2</span><span class="w">🔧 RA</span></a>
+<a class="ir wip" href="#QB3" style="--fill:0.250" title="25% done"><span class="s">🟡</span><span class="i">QB3</span><span class="t">拿一个不是自己打的分数</span><span class="obadge">💬 2</span><span class="w">🔧 RA</span></a>
 <div class="grp">QC · 收尾判断（等 JL 拍板）</div>
-<a class="ir hold" href="#QC1" style="--fill:1.000" title="完成度 100%"><span class="s">⏸️</span><span class="i">QC1</span><span class="t">什么时候人能撒手</span><span class="obadge">💬 1</span><span class="w">🧠 JL</span></a>
-<a class="ir hold" href="#QC2" style="--fill:1.000" title="完成度 100%"><span class="s">⏸️</span><span class="i">QC2</span><span class="t">剩几千条怎么标完</span><span class="obadge">💬 1</span><span class="w">🧠 JL</span></a>
-<a class="ir todo" href="#QC3" style="--fill:0.250" title="完成度 25%"><span class="s">🔴</span><span class="i">QC3</span><span class="t">用什么标准挑构念</span><span class="obadge">💬 2</span><span class="w">🧠 JL</span></a>
+<a class="ir hold" href="#QC1" style="--fill:1.000" title="100% done"><span class="s">⏸️</span><span class="i">QC1</span><span class="t">什么时候人能撒手</span><span class="obadge">💬 1</span><span class="w">🧠 JL</span></a>
+<a class="ir hold" href="#QC2" style="--fill:1.000" title="100% done"><span class="s">⏸️</span><span class="i">QC2</span><span class="t">剩几千条怎么标完</span><span class="obadge">💬 1</span><span class="w">🧠 JL</span></a>
+<a class="ir todo" href="#QC3" style="--fill:0.250" title="25% done"><span class="s">🔴</span><span class="i">QC3</span><span class="t">用什么标准挑构念</span><span class="obadge">💬 2</span><span class="w">🧠 JL</span></a>
 <div class="grp">QD · 引擎：机器怎么跑</div>
-<a class="ir done" href="#QD1" style="--fill:1.000" title="完成度 100%"><span class="s">✅</span><span class="i">QD1</span><span class="t">句子怎么变成向量</span><span class="w">🔧 CC</span></a>
-<a class="ir done" href="#QD2" style="--fill:1.000" title="完成度 100%"><span class="s">✅</span><span class="i">QD2</span><span class="t">三层漏斗怎么分工</span><span class="w">🔧 CC</span></a>
-<a class="ir wip" href="#QD3" style="--fill:0.500" title="完成度 50%"><span class="s">🟡</span><span class="i">QD3</span><span class="t">小分类器怎么训</span><span class="w">🔧 RA</span></a>
-<a class="ir todo" href="#QD4" title="完成度 0%"><span class="s">🔴</span><span class="i">QD4</span><span class="t">词表别写死，自动生成</span><span class="obadge">💬 1</span><span class="w">🔧 RA</span></a></div>
+<a class="ir done" href="#QD1" style="--fill:1.000" title="100% done"><span class="s">✅</span><span class="i">QD1</span><span class="t">句子怎么变成向量</span><span class="w">🔧 CC</span></a>
+<a class="ir done" href="#QD2" style="--fill:1.000" title="100% done"><span class="s">✅</span><span class="i">QD2</span><span class="t">三层漏斗怎么分工</span><span class="w">🔧 CC</span></a>
+<a class="ir wip" href="#QD3" style="--fill:0.500" title="50% done"><span class="s">🟡</span><span class="i">QD3</span><span class="t">小分类器怎么训</span><span class="w">🔧 RA</span></a>
+<a class="ir todo" href="#QD4" title="0% done"><span class="s">🔴</span><span class="i">QD4</span><span class="t">词表别写死，自动生成</span><span class="obadge">💬 1</span><span class="w">🔧 RA</span></a></div>
 
 <span id="all"></span>
-<section class="slide q todo" id="QA1" data-title="冷启动：先对话，别硬标" data-file="QA1-coldstart.md" data-session=""><div class="qh"><span class="qid">QA1</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· 60 条 + 强模型对话（会上提出）</span><a class="src" href="QA1-coldstart.md" target="_blank" title="打开这一题的原始 markdown">📄 QA1-coldstart.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA1 </span>冷启动：先对话，别硬标</h2><div class="ask"><span class="ql">❓ Question</span>一个新维度刚开始、手上啥都没有的时候，第一批标注怎么产生？</div><div class="dia"><pre>  ✗ 旧做法：随机抽一批 → 让人硬标      人的判断被这些语料带跑
+<section class="slide q todo" id="QA1" data-title="冷启动：先对话，别硬标" data-file="QA1-coldstart.md" data-session=""><div class="qh"><span class="qid">QA1</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· 60 条 + 强模型对话（会上提出）</span><a class="src" href="QA1-coldstart.md" target="_blank" title="Open this question's raw markdown">📄 QA1-coldstart.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA1 </span>冷启动：先对话，别硬标</h2><div class="ask"><span class="ql">❓ Question</span><p>一个新维度刚开始、手上啥都没有的时候，第一批标注怎么产生？</p></div><div class="dia"><pre>  ✗ 旧做法：随机抽一批 → 让人硬标      人的判断被这些语料带跑
                                        规则是从「随口反应」里凑的
 
   ✓ 会上定的：强模型先去语料里找相关的 → 跟 JL 对话
        └─► 同时长出两样东西：
              ① 一份初版标注规则（guideline）
-             ② 60 条 JL 亲自认可的答案  ← 后面所有考试的「标准答案」就是这 60 条</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p>现有做法是给 JL 看十几条、随口反应、从反应里凑规则 —— 没有「先造 60 条标准答案」这一步。</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">跑一次能产出一份初版标注规则（guideline）</div></div></div>
+             ② 60 条 JL 亲自认可的答案  ← 后面所有考试的「标准答案」就是这 60 条</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">跑一次能产出一份初版标注规则（guideline）</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">同一次跑出 60 条 JL 亲自认可的答案（当后面所有考试的标准答案）</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">这 60 条不是随机抽的 —— 是模型先去语料里找相关的、再跟 JL 对话定下来的</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>这是 JL 会上第一句就否掉的做法：随机抽一批让人硬标，人的判断会被这些语料带跑。</p>
-<p>换成「先让模型去语料里找相关的、再跟你对话」，整套方法才立得住。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QA1-coldstart.md: <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>标注规则：一份写清楚「什么算 HIGH / LOW / NONE」的文档，模型照着它打标签。</p>
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">这 60 条不是随机抽的 —— 是模型先去语料里找相关的、再跟 JL 对话定下来的</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p>现有做法是给 JL 看十几条、随口反应、从反应里凑规则 —— 没有「先造 60 条标准答案」这一步。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QA1-coldstart.md: <code>&gt; JL: …</code></p><div class="dadd" data-file="QA1-coldstart.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>这是 JL 会上第一句就否掉的做法：随机抽一批让人硬标，人的判断会被这些语料带跑。</p>
+<p>换成「先让模型去语料里找相关的、再跟你对话」，整套方法才立得住。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>标注规则：一份写清楚「什么算 HIGH / LOW / NONE」的文档，模型照着它打标签。</p>
 <p>标准答案：JL 本人确认过的正确标签，用来当尺子量模型标得对不对。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q1]</code> 单文件格式迁到新格式；完成线拆成勾选清单，加 Diagram</span></div></div></details></div><div class="nav"><span></span><a class="all" href="#top">☰ Index</a><a href="#QA2">QA2 →</a></div></section>
-<section class="slide q wip" id="QA2" data-title="分头标，只报有分歧的" data-file="QA2-split-label.md" data-session=""><div class="qh"><span class="qid">QA2</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· 多个模型分头标 + 一条一条过</span><a class="src" href="QA2-split-label.md" target="_blank" title="打开这一题的原始 markdown">📄 QA2-split-label.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA2 </span>分头标，只报有分歧的</h2><div class="ask"><span class="ql">❓ Question</span>这 60 条谁来标？怎么标才不浪费你的时间？</div><div class="dia"><pre>  几个模型各自分头标同一条
+<section class="slide q wip" id="QA2" data-title="分头标，只报有分歧的" data-file="QA2-split-label.md" data-session=""><div class="qh"><span class="qid">QA2</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· 多个模型分头标 + 一条一条过</span><a class="src" href="QA2-split-label.md" target="_blank" title="Open this question's raw markdown">📄 QA2-split-label.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA2 </span>分头标，只报有分歧的</h2><div class="ask"><span class="ql">❓ Question</span><p>这 60 条谁来标？怎么标才不浪费你的时间？</p></div><div class="dia"><pre>  几个模型各自分头标同一条
         │
         ├─ 都同意 ──► 自动通过，记一笔（不惊动 JL）
         └─ 不一致 ──► 分四类：
                        真边界 / 规则没写清 / 冒出新情况  ──► 送 JL 面前
-                       第四类（某模型手滑）＝噪声        ──► 自动处理</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p>「揪分歧」的机制有：分歧分四类，只有前三类（真边界 / 规则没写清 / 冒出新情况）送 JL，第四类当噪声自动处理。</p>
-<p>但实际跑的是<b>两个模型平级对标</b>，不是几个模型分头标；而且是<b>一次标一批</b> —— 毛病是前面几条的判断会把后面几条带跑。这条 JL 明确说要改。</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">1/4</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">揪分歧机制：分歧分四类，只有前三类送 JL，第四类当噪声自动处理</div></div></div>
+                       第四类（某模型手滑）＝噪声        ──► 自动处理</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">1/4</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">揪分歧机制：分歧分四类，只有前三类送 JL，第四类当噪声自动处理</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">一条一条标（现在是一次标一批 —— JL 说要改）</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">几个模型分头标（现在是两个模型平级对标 —— JL 说要改）</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">一致的自动通过，并记一笔</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>JL 会上两句话直接定了这一步：让几个模型分头标，目的是揪出分歧 —— 都同意的就跳过；而且要一条一条过，不能一次标一批。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QA2-split-label.md: <code>&gt; JL: …</code></p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>噪声：某个模型偶尔手滑标错，不代表规则有问题，这类分歧不用惊动你。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q2]</code> 迁入；完成线拆成清单，已做的「揪分歧机制」打勾、待改的两条留空</span></div></div></details></div><div class="nav"><a href="#QA1">← QA1</a><a class="all" href="#top">☰ Index</a><a href="#QA3">QA3 →</a></div></section>
-<section class="slide q todo" id="QA3" data-title="强模型出答案，弱模型考试" data-file="QA3-weak-exam.md" data-session=""><div class="qh"><span class="qid">QA3</span><span class="pill todo">🔴 💬 Comments (1 open / 1)</span><span class="mut">🔧 RA</span><span class="mut">· 弱模型对着规则标 60 条，跟标准答案比</span><span class="obadge">💬 1</span><a class="src" href="QA3-weak-exam.md" target="_blank" title="打开这一题的原始 markdown">📄 QA3-weak-exam.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA3 </span>强模型出答案，弱模型考试</h2><div class="ask"><span class="ql">❓ Question</span>一版规则写好之后，怎么知道它「写得够清楚」？</div><div class="dia"><pre>  强模型（贵）──► 出 60 条标准答案
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">一致的自动通过，并记一笔</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p>「揪分歧」的机制有：分歧分四类，只有前三类（真边界 / 规则没写清 / 冒出新情况）送 JL，第四类当噪声自动处理。</p>
+<p>但实际跑的是<b>两个模型平级对标</b>，不是几个模型分头标；而且是<b>一次标一批</b> —— 毛病是前面几条的判断会把后面几条带跑。这条 JL 明确说要改。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QA2-split-label.md: <code>&gt; JL: …</code></p><div class="dadd" data-file="QA2-split-label.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>JL 会上两句话直接定了这一步：让几个模型分头标，目的是揪出分歧 —— 都同意的就跳过；而且要一条一条过，不能一次标一批。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>噪声：某个模型偶尔手滑标错，不代表规则有问题，这类分歧不用惊动你。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q2]</code> 迁入；完成线拆成清单，已做的「揪分歧机制」打勾、待改的两条留空</span></div></div></details></div><div class="nav"><a href="#QA1">← QA1</a><a class="all" href="#top">☰ Index</a><a href="#QA3">QA3 →</a></div></section>
+<section class="slide q todo" id="QA3" data-title="强模型出答案，弱模型考试" data-file="QA3-weak-exam.md" data-session=""><div class="qh"><span class="qid">QA3</span><span class="pill todo">🔴 💬 Comments (1 open / 1) · 1 unanchored</span><span class="mut">🔧 RA</span><span class="mut">· 弱模型对着规则标 60 条，跟标准答案比</span><span class="obadge">💬 1</span><a class="src" href="QA3-weak-exam.md" target="_blank" title="Open this question's raw markdown">📄 QA3-weak-exam.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA3 </span>强模型出答案，弱模型考试</h2><div class="ask"><span class="ql">❓ Question</span><p>一版规则写好之后，怎么知道它「写得够清楚」？</p></div><div class="dia"><pre>  强模型（贵）──► 出 60 条标准答案
   规则（guideline）
         │
         ▼  照着规则去标那 60 条
@@ -472,25 +521,25 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
   弱模型 B ─┼─► 各自跟【标准答案】比一致度 ──► 各报一个分
   弱模型 C ─┘        （模型之间不互相比）
 
-  连便宜模型照着规则都标得对 = 规则真写清楚了</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p>现在是两个模型平级互评 —— 两个平级模型意见一致，只能说明它俩想法像，说明不了规则写清楚了。</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">几个便宜的弱模型照着规则去标那 60 条</div></div></div>
+  连便宜模型照着规则都标得对 = 规则真写清楚了</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">几个便宜的弱模型照着规则去标那 60 条</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">每个弱模型跟标准答案比一致度，各报一个分</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">模型之间不互相比 —— 都只跟标准答案比</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>JL：拿弱模型去套这份规则、跟标准答案比；模型之间就别互相比了，都跟标准答案比。</p>
-<p>考的是「规则写得清不清楚，<mark>换个便宜模型也读得懂</mark>」，不是「两个模型碰巧想法一样」。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QA3-weak-exam.md: <code>&gt; JL: …</code></p></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QA3-weak-exam.md"><div class="cm" data-quote="换个便宜模型也读得懂" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「换个便宜模型也读得懂」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F4：说得清 ≠ 标得对。三个数要分开报 —— reliability（panel 内部 κ）、clarity（executor-independence，就是这题的弱模型考试）、correctness（只在公开数据上量，见 QB3）。别把「弱模型也标得一致」当成「标得对」。</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>弱模型 / 强模型：能力强的贵模型用来出标准答案，能力弱的便宜模型用来考试。如果连便宜模型照着规则都标得对，说明规则真的写清楚了。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q3]</code> 迁入；完成线拆成清单，加 Diagram</span></div></div></details></div><div class="nav"><a href="#QA2">← QA2</a><a class="all" href="#top">☰ Index</a><a href="#QB1">QB1 →</a></div></section>
-<section class="slide q todo" id="QB1" data-title="长到 140 条，专挑难例" data-file="QB1-grow-140.md" data-session=""><div class="qh"><span class="qid">QB1</span><span class="pill todo">🔴 💬 Comments (2 open / 2)</span><span class="mut">🔧 RA</span><span class="mut">· 按几何位置挑，专挑边界上的难例</span><span class="obadge">💬 2</span><a class="src" href="QB1-grow-140.md" target="_blank" title="打开这一题的原始 markdown">📄 QB1-grow-140.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB1 </span>长到 140 条，专挑难例</h2><div class="ask"><span class="ql">❓ Question</span>已经确认的 60 条种子，怎么挑出下一批 80 条送去标（凑够 140）？</div><div class="dia"><pre>  把每条评论用 embedding 变成空间里一个点（见 QD1）
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">模型之间不互相比 —— 都只跟标准答案比</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p>现在是两个模型平级互评 —— 两个平级模型意见一致，只能说明它俩想法像，说明不了规则写清楚了。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QA3-weak-exam.md: <code>&gt; JL: …</code></p><div class="dadd" data-file="QA3-weak-exam.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (1 open / 1) · 1 unanchored</summary><div class="fb"><div class="cms" data-cfile="QA3-weak-exam.md"><div class="cm" data-quote="换个便宜模型也读得懂" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“换个便宜模型也读得懂”</span><span class="cw">26-07-21 14:00</span><span class="cs unpin" title="The quoted sentence is not in this question's body — it may have been said in chat, or the original may have been edited since. No history is kept, so we only say it is not in the body.">· unanchored</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F4：说得清 ≠ 标得对。三个数要分开报 —— reliability（panel 内部 κ）、clarity（executor-independence，就是这题的弱模型考试）、correctness（只在公开数据上量，见 QB3）。别把「弱模型也标得一致」当成「标得对」。</p></div></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>JL：拿弱模型去套这份规则、跟标准答案比；模型之间就别互相比了，都跟标准答案比。</p>
+<p>考的是「规则写得清不清楚，换个便宜模型也读得懂」，不是「两个模型碰巧想法一样」。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>弱模型 / 强模型：能力强的贵模型用来出标准答案，能力弱的便宜模型用来考试。如果连便宜模型照着规则都标得对，说明规则真的写清楚了。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q3]</code> 迁入；完成线拆成清单，加 Diagram</span></div></div></details></div><div class="nav"><a href="#QA2">← QA2</a><a class="all" href="#top">☰ Index</a><a href="#QB1">QB1 →</a></div></section>
+<section class="slide q todo" id="QB1" data-title="长到 140 条，专挑难例" data-file="QB1-grow-140.md" data-session=""><div class="qh"><span class="qid">QB1</span><span class="pill todo">🔴 💬 Comments (2 open / 2)</span><span class="mut">🔧 RA</span><span class="mut">· 按几何位置挑，专挑边界上的难例</span><span class="obadge">💬 2</span><a class="src" href="QB1-grow-140.md" target="_blank" title="Open this question's raw markdown">📄 QB1-grow-140.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB1 </span>长到 140 条，专挑难例</h2><div class="ask"><span class="ql">❓ Question</span><p>已经确认的 60 条种子，怎么挑出下一批 80 条送去标（凑够 140）？</p></div><div class="dia"><pre>  把每条评论用 embedding 变成空间里一个点（见 QD1）
   三个标签 = 三块区域：
 
         HIGH  ●●●●●              ●  靠中心：一眼能分的典型（约八成）
              ●●●● ◇◆ ●●●●        ◇◆ 卡交界：模棱两可的难例（约两成）
         LOW ●●● ◆◇   ◇◆ ●●● NONE
                   ↑
-      标注的力气花在这两成难例上，别浪费在一眼能看出答案的样本上</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p>完全没做。挑样本靠的那套工具代码在盘上（<a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a>），但没有任何地方在用它 —— 现在就是从大池子里直接取，没有按位置挑。</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">跑一次能从 60 条种子挑出下一批 80 条（凑够 140）</div></div></div>
+      标注的力气花在这两成难例上，别浪费在一眼能看出答案的样本上</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">跑一次能从 60 条种子挑出下一批 80 条（凑够 140）</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">挑的时候<mark>按几何位置来</mark>，不是从池子里随机取</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">看得出哪些是「<mark>一眼能分的典型</mark>」、哪些是「卡交界的难例」</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>JL：随机挑就是浪费。他会上画了张图 —— 把每条数据想成空间里一个点，三个标签是三块区域；</p>
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">看得出哪些是「<mark>一眼能分的典型</mark>」、哪些是「卡交界的难例」</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p>完全没做。挑样本靠的那套工具代码在盘上（<a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a>），但没有任何地方在用它 —— 现在就是从大池子里直接取，没有按位置挑。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 这题的「按位置挑」全踩在 QD1（句子怎么变向量）上 —— embedding 不落地，这里就是空话。挑难例的距离/新颖度打分在 <a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a>。</div><div class="dadd" data-file="QB1-grow-140.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (2 open / 2)</summary><div class="fb"><div class="cms" data-cfile="QB1-grow-140.md"><div class="cm" data-quote="按几何位置来" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“按几何位置来”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F5：向量几何 ≠ 标签几何 —— embedding 里靠得近不代表标签一样（&quot;I feel alive&quot; vs &quot;I feel nothing&quot; 坐标很近、标签相反）。难例改从 label-trained 分类器（<code>classify.py</code>，即 QD3）挖，别用原始 embedding 距离；并删掉文档里「规则会重塑 embedding」这个错误说法。</p></div></div>
+<div class="cm" data-quote="一眼能分的典型" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“一眼能分的典型”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F6：别把「专门挑出来的难例」和「代表性样本」混成一池。两个池子分开 —— 代表性池（按 base rate 抽，出诚实指标）vs enriched 难例池（只用来精炼规则）。<a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a> 已按两池实现。</p></div></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>JL：随机挑就是浪费。他会上画了张图 —— 把每条数据想成空间里一个点，三个标签是三块区域；</p>
 <p>大部分点靠近区域中心，一眼能分（约八成），少数卡在区域交界，模棱两可（约两成）。</p>
-<p>标注的力气应该花在那两成难例上，别浪费在一眼就能看出答案的样本上。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 这题的「按位置挑」全踩在 QD1（句子怎么变向量）上 —— embedding 不落地，这里就是空话。挑难例的距离/新颖度打分在 <a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a>。</div></div></details><details class="fold" open><summary>💬 Comments (2 open / 2)</summary><div class="fb"><div class="cms" data-cfile="QB1-grow-140.md"><div class="cm" data-quote="按几何位置来" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「按几何位置来」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F5：向量几何 ≠ 标签几何 —— embedding 里靠得近不代表标签一样（&quot;I feel alive&quot; vs &quot;I feel nothing&quot; 坐标很近、标签相反）。难例改从 label-trained 分类器（<code>classify.py</code>，即 QD3）挖，别用原始 embedding 距离；并删掉文档里「规则会重塑 embedding」这个错误说法。</p></div></div>
-<div class="cm" data-quote="一眼能分的典型" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「一眼能分的典型」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F6：别把「专门挑出来的难例」和「代表性样本」混成一池。两个池子分开 —— 代表性池（按 base rate 抽，出诚实指标）vs enriched 难例池（只用来精炼规则）。<a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a> 已按两池实现。</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>难例：卡在两个标签交界、连人都拿不准的样本。这类最该让人来标，也最能暴露规则说不清的地方。</p>
+<p>标注的力气应该花在那两成难例上，别浪费在一眼就能看出答案的样本上。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>难例：卡在两个标签交界、连人都拿不准的样本。这类最该让人来标，也最能暴露规则说不清的地方。</p>
 <p>把文本变成空间里的点：先用一个现成模型把每句话转成一串数字（坐标），意思相近的句子坐标就相近，于是「挑区域中心 / 挑交界」才有意义 —— 这一步就是 QD1。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q4]</code> 迁入；完成线拆成清单，Diagram 补上三区域图，链到 QD1</span></div></div></details></div><div class="nav"><a href="#QA3">← QA3</a><a class="all" href="#top">☰ Index</a><a href="#QB2">QB2 →</a></div></section>
-<section class="slide q wip" id="QB2" data-title="分三层考，别只看一个数" data-file="QB2-layered-eval.md" data-session=""><div class="qh"><span class="qid">QB2</span><span class="pill wip">🟡 💬 Comments (2 open / 2)</span><span class="mut">🔧 RA</span><span class="mut">· 三层 + 一层外部验证</span><span class="obadge">💬 2</span><a class="src" href="QB2-layered-eval.md" target="_blank" title="打开这一题的原始 markdown">📄 QB2-layered-eval.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB2 </span>分三层考，别只看一个数</h2><div class="ask"><span class="ql">❓ Question</span>改了一版规则，怎么知道它是真变好了，还是只是把看过的题背下来了？</div><div class="dia"><pre>  每改一版规则，同时报三个数：
+<section class="slide q wip" id="QB2" data-title="分三层考，别只看一个数" data-file="QB2-layered-eval.md" data-session=""><div class="qh"><span class="qid">QB2</span><span class="pill wip">🟡 💬 Comments (2 open / 2)</span><span class="mut">🔧 RA</span><span class="mut">· 三层 + 一层外部验证</span><span class="obadge">💬 2</span><a class="src" href="QB2-layered-eval.md" target="_blank" title="Open this question's raw markdown">📄 QB2-layered-eval.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB2 </span>分三层考，别只看一个数</h2><div class="ask"><span class="ql">❓ Question</span><p>改了一版规则，怎么知道它是真变好了，还是只是把看过的题背下来了？</p></div><div class="dia"><pre>  每改一版规则，同时报三个数：
     ① 标准答案上          改的东西起作用没
     ② 旧题上（标过但不在标准答案里）  有没有把旧规则改坏
     ③ 全新没见过的题上     换新数据还管用没（＝泛化）
@@ -498,42 +547,42 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
 
   实测的坑：同一版规则
      看过的题 → 一致度 0.93     ⬅ 只有第①层，还全取自作者标过的样本
-     没看过的题 → 0.67          ⬅ 高分只是背下来了</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p>版本迭代有，但<b>只有第①层</b>，而且<mark>那层的题全部取自 JL 自己标过的样本</mark>。</p>
-<p>后果是实测出来的：同一版规则，在看过的题上一致度 0.93，换成没看过的题掉到 0.67 —— <mark>高分只是把那些题背下来了</mark>。这是这块板上最有说服力的一个「为什么」。</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">1/4</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">有版本迭代（第①层：标准答案上）</div></div></div>
+     没看过的题 → 0.67          ⬅ 高分只是背下来了</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">1/4</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">有版本迭代（第①层：标准答案上）</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">每改一版同时报三个数（①标准答案 ②旧题上有没有改坏 ③没见过的新题上）—— 现在只有①</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">第①层的题别全取自作者标过的样本（现在 100% 重叠 → 制造了 0.93/0.67 陷阱）</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">再加一层：跟外部真人或公开数据比（这一层就是 QB3）</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>JL：验证不能只看一个数，要分层跑「样例内 / 有没有改坏旧规则 / 泛化能力」这几组。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 「再加一层跟外部比」这条完成线，展开就是 QB3（拿一个不是自己打的分数）。这题管「自己的三层」，QB3 管「外部那一层」。实现在 <a class="fp" href="../../lib/converge.py"><code>lib/converge.py</code></a>（自测已能在离线数据上复现 0.93/0.67 陷阱）。</div></div></details><details class="fold" open><summary>💬 Comments (2 open / 2)</summary><div class="fb"><div class="cms" data-cfile="QB2-layered-eval.md"><div class="cm" data-quote="高分只是把那些题背下来了" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「高分只是把那些题背下来了」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F1：循环验证 —— 规则拿模型标的去凑、又用同一批模型自己验自己。三条一起堵：每轮换一份规则没见过的 held-out、验证模型 ≠ 打标模型、正确性只在外部公开数据上量一次（见 QB3）。</p></div></div>
-<div class="cm" data-quote="那层的题全部取自 JL 自己标过的样本" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「那层的题全部取自 JL 自己标过的样本」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F7：每轮随机抽 24 条既没法比版本、方差又大。改成三套集合永不合并 —— 固定锚点（≥100 条、代表性、永不变，用来比版本）+ held-out（每轮换新，量泛化）+ 滚动批（随机 24 降级成这个，只用来挖难例）。<a class="fp" href="../../lib/converge.py"><code>lib/converge.py</code></a> 已能复现 0.93/0.67 陷阱。</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>一致度 0.93 / 0.67：一个 0 到 1 的统计量，衡量两方打分有多一致，0 是瞎猜、1 是完全一样。0.93 看着很高，但如果只在「看过的题」上高，就是背下来了，不算数。</p>
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">再加一层：跟外部真人或公开数据比（这一层就是 QB3）</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p>版本迭代有，但<b>只有第①层</b>，而且<mark>那层的题全部取自 JL 自己标过的样本</mark>。</p>
+<p>后果是实测出来的：同一版规则，在看过的题上一致度 0.93，换成没看过的题掉到 0.67 —— <mark>高分只是把那些题背下来了</mark>。这是这块板上最有说服力的一个「为什么」。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 「再加一层跟外部比」这条完成线，展开就是 QB3（拿一个不是自己打的分数）。这题管「自己的三层」，QB3 管「外部那一层」。实现在 <a class="fp" href="../../lib/converge.py"><code>lib/converge.py</code></a>（自测已能在离线数据上复现 0.93/0.67 陷阱）。</div><div class="dadd" data-file="QB2-layered-eval.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (2 open / 2)</summary><div class="fb"><div class="cms" data-cfile="QB2-layered-eval.md"><div class="cm" data-quote="高分只是把那些题背下来了" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“高分只是把那些题背下来了”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F1：循环验证 —— 规则拿模型标的去凑、又用同一批模型自己验自己。三条一起堵：每轮换一份规则没见过的 held-out、验证模型 ≠ 打标模型、正确性只在外部公开数据上量一次（见 QB3）。</p></div></div>
+<div class="cm" data-quote="那层的题全部取自 JL 自己标过的样本" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“那层的题全部取自 JL 自己标过的样本”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F7：每轮随机抽 24 条既没法比版本、方差又大。改成三套集合永不合并 —— 固定锚点（≥100 条、代表性、永不变，用来比版本）+ held-out（每轮换新，量泛化）+ 滚动批（随机 24 降级成这个，只用来挖难例）。<a class="fp" href="../../lib/converge.py"><code>lib/converge.py</code></a> 已能复现 0.93/0.67 陷阱。</p></div></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>JL：验证不能只看一个数，要分层跑「样例内 / 有没有改坏旧规则 / 泛化能力」这几组。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>一致度 0.93 / 0.67：一个 0 到 1 的统计量，衡量两方打分有多一致，0 是瞎猜、1 是完全一样。0.93 看着很高，但如果只在「看过的题」上高，就是背下来了，不算数。</p>
 <p>泛化：换一批从没见过的新数据，还标得准，才叫真的会标，而不是背答案。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q5]</code> 迁入；完成线拆成清单，第①层打勾、外部层链到 QB3</span></div></div></details></div><div class="nav"><a href="#QB1">← QB1</a><a class="all" href="#top">☰ Index</a><a href="#QB3">QB3 →</a></div></section>
-<section class="slide q wip" id="QB3" data-title="拿一个不是自己打的分数" data-file="QB3-external-license.md" data-session=""><div class="qh"><span class="qid">QB3</span><span class="pill wip">🟡 💬 Comments (2 open / 2)</span><span class="mut">🔧 RA</span><span class="mut">· 在公开 per-rater 数据集（battery）上跑，看 κ 有没有到人类天花板</span><span class="obadge">💬 2</span><a class="src" href="QB3-external-license.md" target="_blank" title="打开这一题的原始 markdown">📄 QB3-external-license.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB3 </span>拿一个不是自己打的分数</h2><div class="ask"><span class="ql">❓ Question</span>我们自己那个 0.93 是拿「规则作者看过、还亲手标过」的题考出来的，不算数。怎么拿一个<b>不是自己给自己打的分数</b>？</div><div class="dia"><pre>  出题的人 = 答题的人  ──►  0.93   但换没看过的题 → 0.667   ⬅ 方法上的一个洞
+<section class="slide q wip" id="QB3" data-title="拿一个不是自己打的分数" data-file="QB3-external-license.md" data-session=""><div class="qh"><span class="qid">QB3</span><span class="pill wip">🟡 💬 Comments (2 open / 2)</span><span class="mut">🔧 RA</span><span class="mut">· 在公开 per-rater 数据集（battery）上跑，看 κ 有没有到人类天花板</span><span class="obadge">💬 2</span><a class="src" href="QB3-external-license.md" target="_blank" title="Open this question's raw markdown">📄 QB3-external-license.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB3 </span>拿一个不是自己打的分数</h2><div class="ask"><span class="ql">❓ Question</span><p>我们自己那个 0.93 是拿「规则作者看过、还亲手标过」的题考出来的，不算数。怎么拿一个<b>不是自己给自己打的分数</b>？</p></div><div class="dia"><pre>  出题的人 = 答题的人  ──►  0.93   但换没看过的题 → 0.667   ⬅ 方法上的一个洞
 
   出路：正确性只能从外面借
      公开数据集里有一类特殊的：保留了【每一位】人类标注者的原始打分（per-rater）
         └─► 于是能算出「真人和真人之间彼此多不一致」＝ 人类天花板（human ceiling）
      引擎在这组数据集（battery）上跑，κ 够到天花板 ＝ 拿到 autonomy license
-        └─► 一次性、引擎级：<mark>换新构念也继承这份可信度</mark>（前提是跟 battery 沾边，沾多远要写明）</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p><a class="fp" href="../../lib/license.py"><code>lib/license.py</code></a> 写好了、自测过了（喂好数据判 PASS，喂随机数判 BELOW），但<b>从没碰过真实数据</b>；一个真实数据集都还没下载。</p>
-<p>候选来自 RA 调研 P02：POPQuorn · DICES · GoEmotions · LeWiDi。</p>
-<p>⚠️ GoEmotions 标的是情绪，跟人格特质不是一回事（已实测 κ 只有 0.25–0.30）—— 放进去得先想清楚它到底证明了什么。</p>
-<p>两个 JL 决定压着这条：<b>battery 名单</b> 和 <b>objective 标准</b>（见 Discussion）。</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">1/4</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod"><a class="fp" href="../../lib/license.py"><code>lib/license.py</code></a> 自测过了（喂好数据 PASS，喂随机数 BELOW）</div></div></div>
+        └─► 一次性、引擎级：<mark>换新构念也继承这份可信度</mark>（前提是跟 battery 沾边，沾多远要写明）</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">1/4</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod"><a class="fp" href="../../lib/license.py"><code>lib/license.py</code></a> 自测过了（喂好数据 PASS，喂随机数 BELOW）</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">battery 名单定下来，每个数据集配两样：<mark>人类天花板</mark> κ 是多少、为什么选它 —— 🧠 等 JL 拍板</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">整条引擎在 battery 上真跑一遍，每个数据集落一行：名字 · 样本量 · 引擎 κ · 人类天花板 · 过没过</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">写一句总判定，并如实写明这份 license 覆盖哪类构念、不覆盖哪类，然后写进 <a class="fp" href="../../ref/ref-datasets.md"><code>ref/ref-datasets.md</code></a></div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>引擎已经写好，但从没在真实数据上跑过。做完这条，才敢对外说这套方法有效。</p>
-<p>它也是 QB2「再加一层跟外部比」的展开：QB2 管自己那三层，这条管从外面借来的正确性。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (2)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 这条从旧板 <code>01-sublabel-license-260722</code> 折进来 —— 折的是它的<b>验证内核</b>（原 ①battery / ②license-run / ⑤rerun-3dims）。旧板其余三件也各自安了家：③auto-lexicon → QD4 · ④objective → QC3 · ⑥b02-naming → QC2 的评论。</div>
-<div class="cmt cc"><b>CC0723</b> 折完旧板已删；Di 的设计原文（note-update-v3 + workflow-audit）移到了本板 <code>_source/</code>，board.md 的 ## Links 指过去。</div></div></details><details class="fold" open><summary>💬 Comments (2 open / 2)</summary><div class="fb"><div class="cms" data-cfile="QB3-external-license.md"><div class="cm" data-quote="换新构念也继承这份可信度" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「换新构念也继承这份可信度」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F2：构念迁移缺口 —— 在数据集 A 上验证却宣称在 B 上成立。license 只覆盖跟 battery「沾边（adjacent）」的构念，沾多远要如实报告、不能默认。battery 越多样，license 越宽。</p></div></div>
-<div class="cm" data-quote="人类天花板" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「人类天花板」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F3：没有人类天花板，κ 高低没有参照。天花板来自公开的 per-rater 数据集（保留每一位标注者的原始打分），引擎级摊销一次，不是每个项目各算一次。</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>battery：用来考引擎的那组公开数据集（<code>ref-config.md</code> 里的字段名 <code>license: {battery: [...]}</code>）。</p>
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">写一句总判定，并如实写明这份 license 覆盖哪类构念、不覆盖哪类，然后写进 <a class="fp" href="../../ref/ref-datasets.md"><code>ref/ref-datasets.md</code></a></div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p><a class="fp" href="../../lib/license.py"><code>lib/license.py</code></a> 写好了、自测过了（喂好数据判 PASS，喂随机数判 BELOW），但<b>从没碰过真实数据</b>；一个真实数据集都还没下载。</p>
+<p>候选来自 RA 调研 P02：POPQuorn · DICES · GoEmotions · LeWiDi。</p>
+<p>⚠️ GoEmotions 标的是情绪，跟人格特质不是一回事（已实测 κ 只有 0.25–0.30）—— 放进去得先想清楚它到底证明了什么。</p>
+<p>两个 JL 决定压着这条：<b>battery 名单</b> 和 <b>objective 标准</b>（见 Discussion）。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (2)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 这条从旧板 <code>01-sublabel-license-260722</code> 折进来 —— 折的是它的<b>验证内核</b>（原 ①battery / ②license-run / ⑤rerun-3dims）。旧板其余三件也各自安了家：③auto-lexicon → QD4 · ④objective → QC3 · ⑥b02-naming → QC2 的评论。</div>
+<div class="cmt cc"><b>CC0723</b> 折完旧板已删；Di 的设计原文（note-update-v3 + workflow-audit）移到了本板 <code>_source/</code>，board.md 的 ## Links 指过去。</div><div class="dadd" data-file="QB3-external-license.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (2 open / 2)</summary><div class="fb"><div class="cms" data-cfile="QB3-external-license.md"><div class="cm" data-quote="换新构念也继承这份可信度" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“换新构念也继承这份可信度”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F2：构念迁移缺口 —— 在数据集 A 上验证却宣称在 B 上成立。license 只覆盖跟 battery「沾边（adjacent）」的构念，沾多远要如实报告、不能默认。battery 越多样，license 越宽。</p></div></div>
+<div class="cm" data-quote="人类天花板" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“人类天花板”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F3：没有人类天花板，κ 高低没有参照。天花板来自公开的 per-rater 数据集（保留每一位标注者的原始打分），引擎级摊销一次，不是每个项目各算一次。</p></div></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>引擎已经写好，但从没在真实数据上跑过。做完这条，才敢对外说这套方法有效。</p>
+<p>它也是 QB2「再加一层跟外部比」的展开：QB2 管自己那三层，这条管从外面借来的正确性。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>battery：用来考引擎的那组公开数据集（<code>ref-config.md</code> 里的字段名 <code>license: {battery: [...]}</code>）。</p>
 <p>autonomy license：一次性认证 —— 引擎在 battery 上达到人类天花板，之后换新构念也继承这份可信度。</p>
 <p>human ceiling：人类天花板 —— 真人之间彼此的一致性，我们的上限。</p>
 <p>per-rater：数据集保留了每一位标注者的原始打分，而不是只给合并后的「标准答案」。</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:15</span><span>③④⑥ 各自安家（QD4 / QC3 / QC2 评论）；旧板已删、Di 原文移入 <code>_source/</code>；加 Di 的 F2/F3 评论</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>新建：从 <code>01-sublabel-license-260722</code> 折入验证内核（0.93 不算数 → 借外部 → license）</span></div></div></details></div><div class="nav"><a href="#QB2">← QB2</a><a class="all" href="#top">☰ Index</a><a href="#QC1">QC1 →</a></div></section>
-<section class="slide q hold" id="QC1" data-title="什么时候人能撒手" data-file="QC1-when-stop.md" data-session=""><div class="qh"><span class="qid">QC1</span><span class="pill hold">⏸️ 💬 Comments (1 open / 1)</span><span class="mut">🧠 JL 拍板</span><span class="mut">· 两个信号：符合你心意 + 规则不再变</span><span class="obadge">💬 1</span><a class="src" href="QC1-when-stop.md" target="_blank" title="打开这一题的原始 markdown">📄 QC1-when-stop.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC1 </span>什么时候人能撒手</h2><div class="ask"><span class="ql">❓ Question</span>迭代到什么程度，算「可以收手、放手让它自动跑」了？</div><div class="dia"><pre>  判停机看两个信号（都满足才算收敛）：
+<section class="slide q hold" id="QC1" data-title="什么时候人能撒手" data-file="QC1-when-stop.md" data-session=""><div class="qh"><span class="qid">QC1</span><span class="pill hold">⏸️ 💬 Comments (1 open / 1)</span><span class="mut">🧠 JL decides</span><span class="mut">· 两个信号：符合你心意 + 规则不再变</span><span class="obadge">💬 1</span><a class="src" href="QC1-when-stop.md" target="_blank" title="Open this question's raw markdown">📄 QC1-when-stop.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC1 </span>什么时候人能撒手</h2><div class="ask"><span class="ql">❓ Question</span><p>迭代到什么程度，算「可以收手、放手让它自动跑」了？</p></div><div class="dia"><pre>  判停机看两个信号（都满足才算收敛）：
      信号一  规则符合作者（JL）的心意     ⚠️ 怎么变成系统能判定的动作？没定
      信号二  规则稳定，不再变了            ⚠️ 「连续几轮不变」到底几轮？没定
-  ──► 系统自动判断并记录：连续 N 轮没改 + JL 签字认可</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p>现在只看一个一致度数字，还是上面 QB2 那个不算数的 0.93。两个信号一个都没做。</p>
-<p>⚠️ 会上也没答完：「连续几轮不变」到底是几轮？「符合心意」怎么变成一个系统能判定的动作？</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">定「<mark>连续几轮规则不变</mark>」到底是几轮</div></div></div>
+  ──► 系统自动判断并记录：连续 N 轮没改 + JL 签字认可</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">定「<mark>连续几轮规则不变</mark>」到底是几轮</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">定「符合作者心意」怎么变成一个系统能判定的动作</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">系统能自动判断并记录：连续 N 轮规则没改 + JL 签字认可</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>JL：判停机看两个信号 —— 一是规则符不符合你（作者）的心意，二是规则稳不稳定（不再变了）。</p>
-<p>没有停机准则，这套方法就没有终点，会一直空转。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QC1-when-stop.md: <code>&gt; JL: …</code></p></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QC1-when-stop.md"><div class="cm" data-quote="连续几轮规则不变" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「连续几轮规则不变」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F8：稳定 ≠ 正确 —— 规则不再变，不代表规则对。收敛闸门除了「稳定」，还要加「held-out gap 够小」+ objective 分数（downstream/discriminance，见 QC3）。三个都满足才算收敛。</p></div></div></div></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q6]</code> 迁入；两个未答的会上问题拆进 Done when</span></div></div></details></div><div class="nav"><a href="#QB3">← QB3</a><a class="all" href="#top">☰ Index</a><a href="#QC2">QC2 →</a></div></section>
-<section class="slide q hold" id="QC2" data-title="剩几千条怎么标完" data-file="QC2-scale-out.md" data-session=""><div class="qh"><span class="qid">QC2</span><span class="pill hold">⏸️ 💬 Comments (1 open / 1)</span><span class="mut">🧠 JL 拍板</span><span class="mut">· (a) 全量标 或 (b) 训一个小分类器接手</span><span class="obadge">💬 1</span><a class="src" href="QC2-scale-out.md" target="_blank" title="打开这一题的原始 markdown">📄 QC2-scale-out.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC2 </span>剩几千条怎么标完</h2><div class="ask"><span class="ql">❓ Question</span>规则定稿之后，剩下的几千条怎么标完？</div><div class="dia"><pre>  会上给了两条路：
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">系统能自动判断并记录：连续 N 轮规则没改 + JL 签字认可</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p>现在只看一个一致度数字，还是上面 QB2 那个不算数的 0.93。两个信号一个都没做。</p>
+<p>⚠️ 会上也没答完：「连续几轮不变」到底是几轮？「符合心意」怎么变成一个系统能判定的动作？</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QC1-when-stop.md: <code>&gt; JL: …</code></p><div class="dadd" data-file="QC1-when-stop.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QC1-when-stop.md"><div class="cm" data-quote="连续几轮规则不变" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“连续几轮规则不变”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 F8：稳定 ≠ 正确 —— 规则不再变，不代表规则对。收敛闸门除了「稳定」，还要加「held-out gap 够小」+ objective 分数（downstream/discriminance，见 QC3）。三个都满足才算收敛。</p></div></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>JL：判停机看两个信号 —— 一是规则符不符合你（作者）的心意，二是规则稳不稳定（不再变了）。</p>
+<p>没有停机准则，这套方法就没有终点，会一直空转。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q6]</code> 迁入；两个未答的会上问题拆进 Done when</span></div></div></details></div><div class="nav"><a href="#QB3">← QB3</a><a class="all" href="#top">☰ Index</a><a href="#QC2">QC2 →</a></div></section>
+<section class="slide q hold" id="QC2" data-title="剩几千条怎么标完" data-file="QC2-scale-out.md" data-session=""><div class="qh"><span class="qid">QC2</span><span class="pill hold">⏸️ 💬 Comments (1 open / 1)</span><span class="mut">🧠 JL decides</span><span class="mut">· (a) 全量标 或 (b) 训一个小分类器接手</span><span class="obadge">💬 1</span><a class="src" href="QC2-scale-out.md" target="_blank" title="Open this question's raw markdown">📄 QC2-scale-out.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC2 </span>剩几千条怎么标完</h2><div class="ask"><span class="ql">❓ Question</span><p>规则定稿之后，剩下的几千条怎么标完？</p></div><div class="dia"><pre>  会上给了两条路：
      (a) 拿规则把 5000 条全标一遍       贵
      (b) 拿已标好的那批训一个小模型，让它接手标剩下的   省钱省时间
 
@@ -541,12 +590,12 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
 
   但引擎的三层漏斗（QD2）其实已经把 (a)(b) 揉成一台机器：
      Tier 0 embedding 继承 + Tier 1 小分类器（＝(b)，见 QD3）+ Tier 2 大模型 panel（＝(a)）
-  ── 所以「选一条」在引擎里其实变成「设阈值」（多少交给小模型、多少惊动大模型）。</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p>一条都没走过。<mark>5000 条目前只标了 48 条</mark>。</p>
-<p>⚠️ 会上没选：(a) 还是 (b)？</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">在 (a) 全量硬标 / (b) 训小模型接手 里选一条 —— 🧠 等 JL 拍板</div></div></div>
+  ── 所以「选一条」在引擎里其实变成「设阈值」（多少交给小模型、多少惊动大模型）。</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">在 (a) 全量硬标 / (b) 训小模型接手 里选一条 —— 🧠 等 JL 拍板</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">选定那条跑通，让全部 5000 条都有标签</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">（现在只标了 48/5000）</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>JL 会上给了两条路：(a) 拿规则把 5000 条全标一遍，但很贵；</p>
-<p>(b) 拿已经标好的那批去训练一个小模型，让这个小模型接手标剩下的。方法论的最后一公里。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> (b) 的技术实现＝ QD3（Tier-1 小分类器怎么训）；(a)(b) 怎么在一台漏斗里共存＝ QD2（三层漏斗）。这题是「方法上选哪条」，QD3 是「工程上怎么训」，别混。</div></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QC2-scale-out.md"><div class="cm" data-quote="5000 条目前只标了 48 条" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「5000 条目前只标了 48 条」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 收尾卫生（从 01-license ⑥ 折入）：<code>examples/Project-Subjective-Label/tasks/</code> 里两个 B02 撞了 —— 磁盘上是 <code>B02_dim_conscientiousness</code>，但 note 写成 <code>B02_dim_openness</code>，而 openness 另有 <code>B03_dim_openness</code>；分支 <code>b03-openness</code>（commit f7e97f2）没合。编号理唯一、<code>INDEX.md</code> 对得上盘、分支要么合要么废，才好引用重跑结果。⚠️ 这条是物理任务文件夹的卫生活，不在本板方法/引擎的范围内，钉在这里只为不丢。</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>训个小模型接手：拿人和大模型标好的那几百条当教材，训练一个又小又快的专用模型，之后剩下的几千条交给它标，省钱省时间。这就是 QD3 的 Tier-1 分类器。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q7]</code> 迁入；把跟 QD2/QD3 的关系写进 Diagram 和 Discussion</span></div></div></details></div><div class="nav"><a href="#QC1">← QC1</a><a class="all" href="#top">☰ Index</a><a href="#QC3">QC3 →</a></div></section>
-<section class="slide q todo" id="QC3" data-title="用什么标准挑构念" data-file="QC3-objective.md" data-session=""><div class="qh"><span class="qid">QC3</span><span class="pill todo">🔴 💬 Comments (2 open / 2)</span><span class="mut">🧠 JL 拍板</span><span class="mut">· 二选一：downstream 预测力 / discriminance（跟兄弟特质分得开）</span><span class="obadge">💬 2</span><a class="src" href="QC3-objective.md" target="_blank" title="打开这一题的原始 markdown">📄 QC3-objective.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC3 </span>用什么标准挑构念</h2><div class="ask"><span class="ql">❓ Question</span>让多个大模型各提一个构念候选、再自动挑最好的那个 —— 挑的时候用哪个标准（objective）？downstream（标签能不能预测下游结果，比如医生的阿片类处方量）还是 discriminance（这个标签跟兄弟特质分不分得开）？</div><div class="dia"><pre>  mode=auto：多个大模型各提一个构念定义 + 各标一批样本
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">（现在只标了 48/5000）</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p>一条都没走过。<mark>5000 条目前只标了 48 条</mark>。</p>
+<p>⚠️ 会上没选：(a) 还是 (b)？</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> (b) 的技术实现＝ QD3（Tier-1 小分类器怎么训）；(a)(b) 怎么在一台漏斗里共存＝ QD2（三层漏斗）。这题是「方法上选哪条」，QD3 是「工程上怎么训」，别混。</div><div class="dadd" data-file="QC2-scale-out.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QC2-scale-out.md"><div class="cm" data-quote="5000 条目前只标了 48 条" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“5000 条目前只标了 48 条”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 收尾卫生（从 01-license ⑥ 折入）：<code>examples/Project-Subjective-Label/tasks/</code> 里两个 B02 撞了 —— 磁盘上是 <code>B02_dim_conscientiousness</code>，但 note 写成 <code>B02_dim_openness</code>，而 openness 另有 <code>B03_dim_openness</code>；分支 <code>b03-openness</code>（commit f7e97f2）没合。编号理唯一、<code>INDEX.md</code> 对得上盘、分支要么合要么废，才好引用重跑结果。⚠️ 这条是物理任务文件夹的卫生活，不在本板方法/引擎的范围内，钉在这里只为不丢。</p></div></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>JL 会上给了两条路：(a) 拿规则把 5000 条全标一遍，但很贵；</p>
+<p>(b) 拿已经标好的那批去训练一个小模型，让这个小模型接手标剩下的。方法论的最后一公里。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>训个小模型接手：拿人和大模型标好的那几百条当教材，训练一个又小又快的专用模型，之后剩下的几千条交给它标，省钱省时间。这就是 QD3 的 Tier-1 分类器。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>从旧 <code>[Q7]</code> 迁入；把跟 QD2/QD3 的关系写进 Diagram 和 Discussion</span></div></div></details></div><div class="nav"><a href="#QC1">← QC1</a><a class="all" href="#top">☰ Index</a><a href="#QC3">QC3 →</a></div></section>
+<section class="slide q todo" id="QC3" data-title="用什么标准挑构念" data-file="QC3-objective.md" data-session=""><div class="qh"><span class="qid">QC3</span><span class="pill todo">🔴 💬 Comments (2 open / 2)</span><span class="mut">🧠 JL decides</span><span class="mut">· 二选一：downstream 预测力 / discriminance（跟兄弟特质分得开）</span><span class="obadge">💬 2</span><a class="src" href="QC3-objective.md" target="_blank" title="Open this question's raw markdown">📄 QC3-objective.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC3 </span>用什么标准挑构念</h2><div class="ask"><span class="ql">❓ Question</span><p>让多个大模型各提一个构念候选、再自动挑最好的那个 —— 挑的时候用哪个标准（objective）？downstream（标签能不能预测下游结果，比如医生的阿片类处方量）还是 discriminance（这个标签跟兄弟特质分不分得开）？</p></div><div class="dia"><pre>  mode=auto：多个大模型各提一个构念定义 + 各标一批样本
         │
         ▼  按 objective 打分，挑最高的那个
      ┌─ downstream    标签能预测下游结果（opioid-Rx 回归）
@@ -555,18 +604,18 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
         ▼  针对模型之间的分歧再自动打磨
      选出的构念 = <mark>工程构念（operational），不等于教科书上的那个心理特质</mark>
 
-  ⚠️ objective 是「全自治」<mark>唯一保留的人类输入</mark> —— 没有它，「哪个构念/标签对」欠定，必须有人拍。</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p><a class="fp" href="../../lib/construct.py"><code>lib/construct.py</code></a> 两种 objective 都支持了（自测：好的候选赢、冗余/退化的判 0），但<b>医生这个项目的标准还空着</b>。</p>
-<p>⚠️ 卡点：CMS 数据是 PHI，<code>_WorkSpace/1-CMS-Store</code> 和 <code>2-Data-Store</code> 只能待在安全服务器上 —— 笔记本上跑不了真的 downstream，除非找一个能合法搬出来的聚合指标当代理。</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">1/4</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">二选一并写下理由 —— 🧠 等 JL 拍板</div></div></div>
+  ⚠️ objective 是「全自治」<mark>唯一保留的人类输入</mark> —— 没有它，「哪个构念/标签对」欠定，必须有人拍。</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">1/4</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">二选一并写下理由 —— 🧠 等 JL 拍板</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">(a) 选 downstream：说明接哪个指标、怎么在不搬 PHI 的前提下算出来</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">(b) 选 discriminance：这一轮先用它，downstream 推到下一块板</div></div></div>
-<div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod"><a class="fp" href="../../lib/construct.py"><code>lib/construct.py</code></a> 两种都实现并自测过</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>Di 的 note-update-v3 Part 2 点破：这套引擎能做到「近乎全自治」，唯一的前提是<b>有一个标准替代人的判断</b> ——</p>
+<div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod"><a class="fp" href="../../lib/construct.py"><code>lib/construct.py</code></a> 两种都实现并自测过</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p><a class="fp" href="../../lib/construct.py"><code>lib/construct.py</code></a> 两种 objective 都支持了（自测：好的候选赢、冗余/退化的判 0），但<b>医生这个项目的标准还空着</b>。</p>
+<p>⚠️ 卡点：CMS 数据是 PHI，<code>_WorkSpace/1-CMS-Store</code> 和 <code>2-Data-Store</code> 只能待在安全服务器上 —— 笔记本上跑不了真的 downstream，除非找一个能合法搬出来的聚合指标当代理。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QC3-objective.md: <code>&gt; JL: …</code></p><div class="dadd" data-file="QC3-objective.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (2 open / 2)</summary><div class="fb"><div class="cms" data-cfile="QC3-objective.md"><div class="cm" data-quote="唯一保留的人类输入" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“唯一保留的人类输入”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 Part 2/3：全流程里需要人的地方只剩三个 —— 说出 objective（每类构念一次，本来就在研究设计里）、给 engine license 签字（引擎一辈子一次）、极端个案人工复核（可选、可关）。其余全自动。这一题就是那三个里的第一个。</p></div></div>
+<div class="cm" data-quote="工程构念（operational），不等于教科书上的那个心理特质" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“工程构念（operational），不等于教科书上的那个心理特质”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 Part 10 诚实边界：objective 挑出来的构念要如实报成「工程特征」，不能直接宣称它就是「开放性」；还要防 objective-gaming（自动挑出的构念可能钻 confound 空子 → 用 downstream held-out 兜：换没见过的数据还预测得准吗）。</p></div></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>Di 的 note-update-v3 Part 2 点破：这套引擎能做到「近乎全自治」，唯一的前提是<b>有一个标准替代人的判断</b> ——</p>
 <p>没有 objective，「哪个构念、哪个标签是对的」就是欠定的、必须有人一条条拍；有了它，就变成一个能优化、能自动化的问题。</p>
-<p>所以这一题不定，QC2 的 auto-select 无从下手，QB2 跑出来的成绩也没法判好坏。它从 01-license 的 ④ 折进来。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QC3-objective.md: <code>&gt; JL: …</code></p></div></details><details class="fold" open><summary>💬 Comments (2 open / 2)</summary><div class="fb"><div class="cms" data-cfile="QC3-objective.md"><div class="cm" data-quote="唯一保留的人类输入" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「唯一保留的人类输入」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 Part 2/3：全流程里需要人的地方只剩三个 —— 说出 objective（每类构念一次，本来就在研究设计里）、给 engine license 签字（引擎一辈子一次）、极端个案人工复核（可选、可关）。其余全自动。这一题就是那三个里的第一个。</p></div></div>
-<div class="cm" data-quote="工程构念（operational），不等于教科书上的那个心理特质" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「工程构念（operational），不等于教科书上的那个心理特质」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 Part 10 诚实边界：objective 挑出来的构念要如实报成「工程特征」，不能直接宣称它就是「开放性」；还要防 objective-gaming（自动挑出的构念可能钻 confound 空子 → 用 downstream held-out 兜：换没见过的数据还预测得准吗）。</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>objective：挑构念候选、判收敛时用的那个标准（downstream / discriminance / dataset_match）。是这套引擎里不可自动化掉的那一点人类输入。</p>
+<p>所以这一题不定，QC2 的 auto-select 无从下手，QB2 跑出来的成绩也没法判好坏。它从 01-license 的 ④ 折进来。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>objective：挑构念候选、判收敛时用的那个标准（downstream / discriminance / dataset_match）。是这套引擎里不可自动化掉的那一点人类输入。</p>
 <p>downstream：看标签能不能预测下游结果（如医生的阿片类处方量）。</p>
 <p>discriminance：看标签跟兄弟特质分不分得开。</p>
 <p>工程构念 / 理论构念（operational vs theoretical）：objective 挑出来的是「最服务于这个目的的标注」，不一定就是教科书意义上的那个心理特质 —— 除非它另外通过构念效度交叉核对，否则不许直接叫它「开放性」。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:15</span><span>新建：从 01-license 的 ④ 折入；吸收 Di note-update-v3 Part 2/3/10（objective 是自治的唯一人类输入 + 工程构念诚实边界）</span></div></div></details></div><div class="nav"><a href="#QC2">← QC2</a><a class="all" href="#top">☰ Index</a><a href="#QD1">QD1 →</a></div></section>
-<section class="slide q done" id="QD1" data-title="句子怎么变成向量" data-file="QD1-embedding.md" data-session=""><div class="qh"><span class="qid">QD1</span><span class="pill done">✅ SETTLED</span><span class="mut">🔧 CC</span><span class="mut">· lib/embed.py 包 sentence-transformers / OpenAI；换模型只改 config 一行</span><a class="src" href="QD1-embedding.md" target="_blank" title="打开这一题的原始 markdown">📄 QD1-embedding.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD1 </span>句子怎么变成向量</h2><div class="ask"><span class="ql">❓ Question</span>一句评论怎么变成一串数字（向量），好让「挑难例、去重、铺全量」这些按距离算的事有意义 —— 用哪个模型、缓存怎么存、它能不能决定标签？</div><div class="dia"><pre>  一句评论  ──►  lib/embed.py  ──►  [0.02, -0.31, …]  384 维向量
+<section class="slide q done" id="QD1" data-title="句子怎么变成向量" data-file="QD1-embedding.md" data-session=""><div class="qh"><span class="qid">QD1</span><span class="pill done">✅ SETTLED</span><span class="mut">🔧 CC</span><span class="mut">· lib/embed.py 包 sentence-transformers / OpenAI；换模型只改 config 一行</span><a class="src" href="QD1-embedding.md" target="_blank" title="Open this question's raw markdown">📄 QD1-embedding.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD1 </span>句子怎么变成向量</h2><div class="ask"><span class="ql">❓ Question</span><p>一句评论怎么变成一串数字（向量），好让「挑难例、去重、铺全量」这些按距离算的事有意义 —— 用哪个模型、缓存怎么存、它能不能决定标签？</p></div><div class="dia"><pre>  一句评论  ──►  lib/embed.py  ──►  [0.02, -0.31, …]  384 维向量
                                      意思近的句子 → 坐标近
 
   ⚖️ 一条铁律：embedding 是【速度工具】，不是【判断工具】
@@ -575,18 +624,18 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
          语义反转（&quot;I feel alive&quot; vs &quot;I feel nothing&quot; 坐标很近，标签相反）
          反讽 / 体裁模仿 在向量空间里像目标
          序数塌缩（&quot;extremely high&quot; vs &quot;very high&quot; 挤成一团）
-         不可解释（标错了指不出是哪个词害的）</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span><button class="secall" type="button" title="expand / collapse all"><span class="lbl">expand all</span></button></div><div class="gt"><span class="gi">🔹</span>一个模块、一个 agent、一段 config —— 全定型了</div>
-<div class="blt"><details class="it"><summary class="bt"><a class="fp" href="../../lib/embed.py"><code>lib/embed.py</code></a></summary><div class="bd"><p>全系统唯一碰 HF / OpenAI / sentence-transformers 的地方；对外由 embedder agent 提供 embed / index / nearest / cluster / stratified-sample。</p></div></details></div>
-<div class="blt"><details class="it"><summary class="bt">默认选型</summary><div class="bd"><p><code>all-MiniLM-L6-v2</code>（22M · 384 维 · CPU ~2K/秒 · 免费）—— &lt;100K 条英文，想跑就跑。要更好质量或大语料 → OpenAI <code>text-embedding-3-small</code>；医学文本 → <code>biobert</code>。</p></div></details></div>
-<div class="blt"><details class="it"><summary class="bt">换模型只改 config 一行</summary><div class="bd"><p><code>config.yaml</code> 的 <code>embedding:</code> 段改 <code>model</code> + <code>dim</code> 即可；老缓存按 <code>sha1(model+text)</code> 存，换模型不失效，新模型首次用才重算。</p></div></details></div></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">3/3</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">定下默认模型（<code>all-MiniLM-L6-v2</code>）和换模型的方式（改 config 的 model + dim 一行）</div></div></div>
+         不可解释（标错了指不出是哪个词害的）</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">3/3</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">定下默认模型（<code>all-MiniLM-L6-v2</code>）和换模型的方式（改 config 的 model + dim 一行）</div></div></div>
 <div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">定下缓存布局（按 <code>(model, text)</code> 哈希存，换模型不失效）</div></div></div>
-<div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">定死原则：embedding 只找候选、不决定标签（<code>ref-embeddings.md</code> 的四个失败模式）</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>JL 直接问的就是「句子怎么变 embedding」。它也是 spine 里「现在代码里有没有」那一半最底层的地基 ——</p>
-<p>QB1 挑难例、QD2 漏斗的 Tier 0、QB2 去重都踩在它上面。不把它写下来，上面几题的「按位置挑」就是空话。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 这题是 QB1（挑难例）和 QD2（漏斗 Tier 0）的地基。内容全部来自 <a class="fp" href="../../ref/ref-embeddings.md"><code>ref/ref-embeddings.md</code></a>，那份文档早定型了，所以这题直接 ✅ —— 板不只装没定的题，也把已定的引擎事实钉在明面上。</div></div></details><details class="fold"><summary>⚖️ Law</summary><div class="fb"><div class="blt"><div class="bt nod">embedding 只做 找候选 / 去重 / 铺全量，<b>永不决定标签</b>（标签只从 panel 推理来）。</div></div>
+<div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">定死原则：embedding 只找候选、不决定标签（<code>ref-embeddings.md</code> 的四个失败模式）</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span><button class="secall" type="button" title="expand / collapse all"><span class="lbl">expand all</span></button></div><div class="gt"><span class="gi">🔹</span>一个模块、一个 agent、一段 config —— 全定型了</div>
+<div class="blt"><details class="it"><summary class="bt"><a class="fp" href="../../lib/embed.py"><code>lib/embed.py</code></a><span class="md"></span></summary><div class="bd"><p>全系统唯一碰 HF / OpenAI / sentence-transformers 的地方；对外由 embedder agent 提供 embed / index / nearest / cluster / stratified-sample。</p></div></details></div>
+<div class="blt"><details class="it"><summary class="bt">默认选型<span class="md"></span></summary><div class="bd"><p><code>all-MiniLM-L6-v2</code>（22M · 384 维 · CPU ~2K/秒 · 免费）—— &lt;100K 条英文，想跑就跑。要更好质量或大语料 → OpenAI <code>text-embedding-3-small</code>；医学文本 → <code>biobert</code>。</p></div></details></div>
+<div class="blt"><details class="it"><summary class="bt">换模型只改 config 一行<span class="md"></span></summary><div class="bd"><p><code>config.yaml</code> 的 <code>embedding:</code> 段改 <code>model</code> + <code>dim</code> 即可；老缓存按 <code>sha1(model+text)</code> 存，换模型不失效，新模型首次用才重算。</p></div></details></div></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 这题是 QB1（挑难例）和 QD2（漏斗 Tier 0）的地基。内容全部来自 <a class="fp" href="../../ref/ref-embeddings.md"><code>ref/ref-embeddings.md</code></a>，那份文档早定型了，所以这题直接 ✅ —— 板不只装没定的题，也把已定的引擎事实钉在明面上。</div><div class="dadd" data-file="QD1-embedding.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>JL 直接问的就是「句子怎么变 embedding」。它也是 spine 里「现在代码里有没有」那一半最底层的地基 ——</p>
+<p>QB1 挑难例、QD2 漏斗的 Tier 0、QB2 去重都踩在它上面。不把它写下来，上面几题的「按位置挑」就是空话。</p></div></details><details class="fold"><summary>⚖️ Law</summary><div class="fb"><div class="blt"><div class="bt nod">embedding 只做 找候选 / 去重 / 铺全量，<b>永不决定标签</b>（标签只从 panel 推理来）。</div></div>
 <div class="blt"><div class="bt nod">换 embedding 模型只动 <code>config.yaml</code> 的 <code>model</code> + <code>dim</code>；缓存按 <code>(model, text)</code> 哈希，换模型不失效。</div></div>
 <div class="blt"><div class="bt nod">一个模块（<a class="fp" href="../../lib/embed.py"><code>lib/embed.py</code></a>）、一个 agent（embedder）、一段 config（<code>embedding:</code>）—— 别在别处另起炉灶碰 HF。</div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>embedding / 向量：把一句话映射成一串数字，意思相近的句子数字也相近。</p>
 <p>余弦相似度：量两个向量方向多接近的数，1＝同向，0＝无关，用来判「像不像」。</p>
 <p>faiss：一个按向量找最近邻的库，<code>faiss-flat</code>（&lt;100K 条）/ <code>faiss-ivf</code>（更大）。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>新建：把 <a class="fp" href="../../ref/ref-embeddings.md"><code>ref/ref-embeddings.md</code></a> 的选型/缓存/铁律收进板，标 ✅（已定型）</span></div></div></details></div><div class="nav"><a href="#QC3">← QC3</a><a class="all" href="#top">☰ Index</a><a href="#QD2">QD2 →</a></div></section>
-<section class="slide q done" id="QD2" data-title="三层漏斗怎么分工" data-file="QD2-cascade.md" data-session=""><div class="qh"><span class="qid">QD2</span><span class="pill done">✅ SETTLED</span><span class="mut">🔧 CC</span><span class="mut">· Tier0 embedding-kNN → Tier1 小分类器 → Tier2 大模型 panel，越往下越贵越少</span><a class="src" href="QD2-cascade.md" target="_blank" title="打开这一题的原始 markdown">📄 QD2-cascade.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD2 </span>三层漏斗怎么分工</h2><div class="ask"><span class="ql">❓ Question</span>铺全量的时候，怎么让「大部分容易的样本走便宜路、少数难的才惊动大模型」？</div><div class="dia"><pre>  ┌ Tier 0 · embedding k-NN ────────┐  ~$0.00001/条 · 最快 · 吃 60–80%
+<section class="slide q done" id="QD2" data-title="三层漏斗怎么分工" data-file="QD2-cascade.md" data-session=""><div class="qh"><span class="qid">QD2</span><span class="pill done">✅ SETTLED</span><span class="mut">🔧 CC</span><span class="mut">· Tier0 embedding-kNN → Tier1 小分类器 → Tier2 大模型 panel，越往下越贵越少</span><a class="src" href="QD2-cascade.md" target="_blank" title="Open this question's raw markdown">📄 QD2-cascade.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD2 </span>三层漏斗怎么分工</h2><div class="ask"><span class="ql">❓ Question</span><p>铺全量的时候，怎么让「大部分容易的样本走便宜路、少数难的才惊动大模型」？</p></div><div class="dia"><pre>  ┌ Tier 0 · embedding k-NN ────────┐  ~$0.00001/条 · 最快 · 吃 60–80%
   │  top-5 gallery 邻居同标签         │
   │  且平均余弦相似度 ≥ 0.85 → 继承    │
   └───────────┬─────────────────────┘ 不服 ↓
@@ -595,18 +644,18 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
   └───────────┬─────────────────────┘ 不服 ↓
   ┌ Tier 2 · 大模型 panel（3–5 persona）┐ ~$0.05–0.20/条 · 慢 · 吃 5–15%
   │  多数票 support ≥0.6 → 用；&lt;0.6 → 丢人工队列 │
-  └──────────────────────────────────┘</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span><button class="secall" type="button" title="expand / collapse all"><span class="lbl">expand all</span></button></div><div class="gt"><span class="gi">🔹</span>三层，越往下越贵、越少 —— 全定型了</div>
-<div class="blt"><details class="it"><summary class="bt">分工与阈值</summary><div class="bd"><p>Tier 0 靠 gallery（<code>cascade_inherit_sim</code> 0.85）· Tier 1 靠训练（<code>accept_prob</code> 0.70 / <code>accept_margin</code> 0.30）· Tier 2 靠 panel（support 0.6，再不服丢人工）。</p></div></details></div>
-<div class="blt"><details class="it"><summary class="bt">每条都记它走了哪层</summary><div class="bd"><p>annotation 里写 <code>method: tier0/1/2</code> + <code>confidence</code>，方便审计「给我看所有 Tier 0 判的，有没有明显错的」。</p></div></details></div>
-<div class="blt"><details class="it"><summary class="bt">能跳层</summary><div class="bd"><p><code>routing=panel</code>（全 panel，验证集用）· <code>single</code>（最便宜）· <code>cascade</code>（默认，铺全量用）。</p></div></details></div></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">3/3</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">三层的分工和阈值定死（<code>cascade_inherit_sim</code> 0.85 / <code>accept_margin</code> 0.30 / <code>accept_prob</code> 0.70 / support 0.6）</div></div></div>
+  └──────────────────────────────────┘</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">3/3</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">三层的分工和阈值定死（<code>cascade_inherit_sim</code> 0.85 / <code>accept_margin</code> 0.30 / <code>accept_prob</code> 0.70 / support 0.6）</div></div></div>
 <div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">每条记录 <code>method</code> + <code>confidence</code>，可审计</div></div></div>
-<div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">支持 <code>routing=panel/single/cascade</code> 三种模式</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>这就是 QC2「剩几千条怎么标完」的<b>机器答案</b> —— (a) 全量硬标和 (b) 训小模型接手，在这里被揉成一台漏斗，</p>
-<p>JL 那道「选一条」其实变成「设阈值」（多少交给 embedding 继承、多少交给小分类器、多少惊动大模型）。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> Tier 0 靠 QD1（embedding）；Tier 1 那层怎么训在 QD3；这台漏斗是 QC2 的工程实现。三题串起来读＝铺全量的完整图。内容来自 <a class="fp" href="../../ref/ref-cascade.md"><code>ref/ref-cascade.md</code></a>。</div></div></details><details class="fold"><summary>⚖️ Law</summary><div class="fb"><div class="blt"><div class="bt nod">漏斗 ＝ 迭代搭出来的筛子：每轮 <code>/sl-iterate</code> 加一层（gallery 长 → Tier 0 多吃；分类器训 → Tier 1 起来；规则收紧 → Tier 2 更同意）。</div></div>
+<div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">支持 <code>routing=panel/single/cascade</code> 三种模式</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span><button class="secall" type="button" title="expand / collapse all"><span class="lbl">expand all</span></button></div><div class="gt"><span class="gi">🔹</span>三层，越往下越贵、越少 —— 全定型了</div>
+<div class="blt"><details class="it"><summary class="bt">分工与阈值<span class="md"></span></summary><div class="bd"><p>Tier 0 靠 gallery（<code>cascade_inherit_sim</code> 0.85）· Tier 1 靠训练（<code>accept_prob</code> 0.70 / <code>accept_margin</code> 0.30）· Tier 2 靠 panel（support 0.6，再不服丢人工）。</p></div></details></div>
+<div class="blt"><details class="it"><summary class="bt">每条都记它走了哪层<span class="md"></span></summary><div class="bd"><p>annotation 里写 <code>method: tier0/1/2</code> + <code>confidence</code>，方便审计「给我看所有 Tier 0 判的，有没有明显错的」。</p></div></details></div>
+<div class="blt"><details class="it"><summary class="bt">能跳层<span class="md"></span></summary><div class="bd"><p><code>routing=panel</code>（全 panel，验证集用）· <code>single</code>（最便宜）· <code>cascade</code>（默认，铺全量用）。</p></div></details></div></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> Tier 0 靠 QD1（embedding）；Tier 1 那层怎么训在 QD3；这台漏斗是 QC2 的工程实现。三题串起来读＝铺全量的完整图。内容来自 <a class="fp" href="../../ref/ref-cascade.md"><code>ref/ref-cascade.md</code></a>。</div><div class="dadd" data-file="QD2-cascade.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>这就是 QC2「剩几千条怎么标完」的<b>机器答案</b> —— (a) 全量硬标和 (b) 训小模型接手，在这里被揉成一台漏斗，</p>
+<p>JL 那道「选一条」其实变成「设阈值」（多少交给 embedding 继承、多少交给小分类器、多少惊动大模型）。</p></div></details><details class="fold"><summary>⚖️ Law</summary><div class="fb"><div class="blt"><div class="bt nod">漏斗 ＝ 迭代搭出来的筛子：每轮 <code>/sl-iterate</code> 加一层（gallery 长 → Tier 0 多吃；分类器训 → Tier 1 起来；规则收紧 → Tier 2 更同意）。</div></div>
 <div class="blt"><div class="bt nod">Tier 0 靠 gallery、Tier 1 靠训练、Tier 2 靠 panel；三者阈值都在 <code>config.yaml</code>，调高更安全更贵，调低更快更险。</div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>k-NN：找最近的 k 个邻居，看它们的标签。</p>
 <p>margin：分类器最高概率和第二名的差；差得越开，决策边界越清楚。</p>
 <p>persona：一个带特定视角的打标大模型；panel＝一组不同 persona 同时打。</p>
 <p>gallery：已标好并附了理由的例子册，Tier 0 就拿新样本跟它比。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>新建：把 <a class="fp" href="../../ref/ref-cascade.md"><code>ref/ref-cascade.md</code></a> 的三层/阈值/routing 收进板，标 ✅（已定型）</span></div></div></details></div><div class="nav"><a href="#QD1">← QD1</a><a class="all" href="#top">☰ Index</a><a href="#QD3">QD3 →</a></div></section>
-<section class="slide q wip" id="QD3" data-title="小分类器怎么训" data-file="QD3-train-classifier.md" data-session=""><div class="qh"><span class="qid">QD3</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· 冻结的 embedding 上跑 logreg（默认），SetFit 可选升级；每轮 sl-iterate 重训</span><a class="src" href="QD3-train-classifier.md" target="_blank" title="打开这一题的原始 markdown">📄 QD3-train-classifier.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD3 </span>小分类器怎么训</h2><div class="ask"><span class="ql">❓ Question</span>漏斗中间那层（Tier 1）的小分类器，拿什么训、什么时候训、什么时候信它？</div><div class="dia"><pre>  已标好的样本 ──► 冻结的 embedding（QD1）──► logistic regression（秒级训完）
+<section class="slide q wip" id="QD3" data-title="小分类器怎么训" data-file="QD3-train-classifier.md" data-session=""><div class="qh"><span class="qid">QD3</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· 冻结的 embedding 上跑 logreg（默认），SetFit 可选升级；每轮 sl-iterate 重训</span><a class="src" href="QD3-train-classifier.md" target="_blank" title="Open this question's raw markdown">📄 QD3-train-classifier.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD3 </span>小分类器怎么训</h2><div class="ask"><span class="ql">❓ Question</span><p>漏斗中间那层（Tier 1）的小分类器，拿什么训、什么时候训、什么时候信它？</p></div><div class="dia"><pre>  已标好的样本 ──► 冻结的 embedding（QD1）──► logistic regression（秒级训完）
                                               │
                                               ▼  预测 {label, prob, margin}
                           prob ≥0.70 且 margin ≥0.30 ── 用它（Tier 1 出结果）
@@ -614,19 +663,19 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
 
   重训：每轮 /sl-iterate 末尾自动重训
   升级：sl-scale 前可 opt-in 换 SetFit / LoRA-BERT 做一次性高质量训
-  兜底：CV F1 &lt; 0.6 → 收紧阈值，或干脆跳过 Tier 1（全交 panel）</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span><button class="secall" type="button" title="expand / collapse all"><span class="lbl">expand all</span></button></div><div class="gt"><span class="gi">🔹</span>默认最轻</div>
-<div class="blt"><details class="it"><summary class="bt">backend</summary><div class="bd"><p>冻结的 embedding 上一个 logistic regression，秒级训完；可选升级 SetFit / LoRA-BERT（<code>/sl-scale</code> 前一次性高质量训，researcher opt-in）。</p></div></details></div>
-<div class="blt"><details class="it"><summary class="bt">重训触发</summary><div class="bd"><p>每轮 <code>/sl-iterate</code> 末尾自动重训；<code>residual</code> 模式下，下一批只从「当前分类器还搞不定的」里抽 —— 每轮都在打筛子的下一层。</p></div></details></div>
-<div class="blt"><details class="it"><summary class="bt">信不信它</summary><div class="bd"><p>top 概率 ≥0.70 且 margin ≥0.30 才用，否则升 Tier 2；CV F1 &lt; 0.6 就收紧阈值或跳过 Tier 1。</p></div></details></div>
-<div class="blt"><details class="it"><summary class="bt">现在</summary><div class="bd"><p>代码在 <a class="fp" href="../../lib/classify.py"><code>lib/classify.py</code></a>，自测有，但<b>没在真实项目文件夹里真跑过</b>。</p></div></details></div></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">2/4</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">定默认 backend（logreg on frozen embeddings）</div></div></div>
+  兜底：CV F1 &lt; 0.6 → 收紧阈值，或干脆跳过 Tier 1（全交 panel）</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">2/4</span></span></div><div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">定默认 backend（logreg on frozen embeddings）</div></div></div>
 <div class="ck on"><span class="bx">☑</span><div class="itw"><div class="ct nod">定重训触发（每轮 <code>/sl-iterate</code> 末尾）和信任阈值（prob 0.70 / margin 0.30）</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">定 SetFit / LoRA 升级什么时候值得（跟 QC2 的路线选择联动）</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">在真实项目文件夹里跑通一次（现在只有自测）</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>JL 点名要 modeling / embedding / <b>training</b> 这条线。training 这块就是它 ——</p>
-<p>也是 QC2 (b)「训个小模型接手」的具体实现。QD2 漏斗中间那层能不能顶住，全看这个分类器训得好不好。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 这题＝ QC2 (b) 的工程实现、QD2 Tier 1 那层的内幕。留 🟡 的原因是「真跑」还没做、SetFit 升级判据跟 QC2 的 JL 决定绑在一起。</div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>logreg：logistic regression，最轻的分类器，在冻结向量上几秒训完。</p>
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">在真实项目文件夹里跑通一次（现在只有自测）</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span><button class="secall" type="button" title="expand / collapse all"><span class="lbl">expand all</span></button></div><div class="gt"><span class="gi">🔹</span>默认最轻</div>
+<div class="blt"><details class="it"><summary class="bt">backend<span class="md"></span></summary><div class="bd"><p>冻结的 embedding 上一个 logistic regression，秒级训完；可选升级 SetFit / LoRA-BERT（<code>/sl-scale</code> 前一次性高质量训，researcher opt-in）。</p></div></details></div>
+<div class="blt"><details class="it"><summary class="bt">重训触发<span class="md"></span></summary><div class="bd"><p>每轮 <code>/sl-iterate</code> 末尾自动重训；<code>residual</code> 模式下，下一批只从「当前分类器还搞不定的」里抽 —— 每轮都在打筛子的下一层。</p></div></details></div>
+<div class="blt"><details class="it"><summary class="bt">信不信它<span class="md"></span></summary><div class="bd"><p>top 概率 ≥0.70 且 margin ≥0.30 才用，否则升 Tier 2；CV F1 &lt; 0.6 就收紧阈值或跳过 Tier 1。</p></div></details></div>
+<div class="blt"><details class="it"><summary class="bt">现在<span class="md"></span></summary><div class="bd"><p>代码在 <a class="fp" href="../../lib/classify.py"><code>lib/classify.py</code></a>，自测有，但<b>没在真实项目文件夹里真跑过</b>。</p></div></details></div></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> 这题＝ QC2 (b) 的工程实现、QD2 Tier 1 那层的内幕。留 🟡 的原因是「真跑」还没做、SetFit 升级判据跟 QC2 的 JL 决定绑在一起。</div><div class="dadd" data-file="QD3-train-classifier.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>JL 点名要 modeling / embedding / <b>training</b> 这条线。training 这块就是它 ——</p>
+<p>也是 QC2 (b)「训个小模型接手」的具体实现。QD2 漏斗中间那层能不能顶住，全看这个分类器训得好不好。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>logreg：logistic regression，最轻的分类器，在冻结向量上几秒训完。</p>
 <p>frozen embedding：直接用 QD1 的向量当特征，不再微调 embedding 模型本身。</p>
 <p>SetFit：在少量样本上微调句向量模型的方法，比 logreg 准但更重。</p>
 <p>CV F1：交叉验证的 F1 分数，衡量分类器好坏；&lt;0.6 就别太信它。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:00</span><span>新建：把 Tier-1 分类器的 backend/重训/阈值收进板；「真跑」和「升级判据」留 🟡</span></div></div></details></div><div class="nav"><a href="#QD2">← QD2</a><a class="all" href="#top">☰ Index</a><a href="#QD4">QD4 →</a></div></section>
-<section class="slide q todo" id="QD4" data-title="词表别写死，自动生成" data-file="QD4-auto-lexicon.md" data-session=""><div class="qh"><span class="qid">QD4</span><span class="pill todo">🔴 💬 Comments (1 open / 1)</span><span class="mut">🔧 RA</span><span class="mut">· 让大模型根据构念定义自动生成 lexicon，喂给 lib/sample.py</span><span class="obadge">💬 1</span><a class="src" href="QD4-auto-lexicon.md" target="_blank" title="打开这一题的原始 markdown">📄 QD4-auto-lexicon.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD4 </span>词表别写死，自动生成</h2><div class="ask"><span class="ql">❓ Question</span>引擎第一步要先估「这个特质在语料里大概多常见」（base rate），靠的是一份关键词表（lexicon）。现在这份词表照着 openness 手写死。怎么改成：根据构念的定义，让大模型自动生成？</div><div class="dia"><pre>  construct.definition ──► 大模型自动派生 ──► lexicon（关键词表）
+<section class="slide q todo" id="QD4" data-title="词表别写死，自动生成" data-file="QD4-auto-lexicon.md" data-session=""><div class="qh"><span class="qid">QD4</span><span class="pill todo">🔴 💬 Comments (1 open / 1)</span><span class="mut">🔧 RA</span><span class="mut">· 让大模型根据构念定义自动生成 lexicon，喂给 lib/sample.py</span><span class="obadge">💬 1</span><a class="src" href="QD4-auto-lexicon.md" target="_blank" title="Open this question's raw markdown">📄 QD4-auto-lexicon.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD4 </span>词表别写死，自动生成</h2><div class="ask"><span class="ql">❓ Question</span><p>引擎第一步要先估「这个特质在语料里大概多常见」（base rate），靠的是一份关键词表（lexicon）。现在这份词表照着 openness 手写死。怎么改成：根据构念的定义，让大模型自动生成？</p></div><div class="dia"><pre>  construct.definition ──► 大模型自动派生 ──► lexicon（关键词表）
                                                   │
                                                   ▼
                                           估 base rate（特质多常见）
@@ -635,11 +684,11 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
                                           lib/sample.py（按 base rate 抽代表性样本）
 
   ✗ 现在：probe_base_rate.py 的词表照 openness 硬编码 —— 换个构念就得重写
-  ✓ 目标：换任何构念，全程没有一行写死的词</pre></div><div class="cmp"><div class="col now"><div class="ch"><span class="chl">📍 Now</span></div><p><code><mark>probe_base_rate.py</code> 里的词表是硬编码的</mark>（照 openness 手写）。<a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a> 已经写好了，就等这份词表喂给它。</p>
-<p>Di note-update-v3 Part 12 把「LLM construct→probe 词表生成」列在「还没做 = 真实运行」那一档 —— 引擎代码在，这一段生成逻辑还没接上。</p></div><div class="col goal"><div class="ch"><span class="chl">🎯 Done when<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">换一个跟医生完全无关的构念（比如「讽刺」），跑一次能自动出词表</div></div></div>
+  ✓ 目标：换任何构念，全程没有一行写死的词</pre></div><div class="cmp"><div class="col goal"><div class="ch"><span class="chl">🎯 Items to Finish<span class="cnt">0/3</span></span></div><div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">换一个跟医生完全无关的构念（比如「讽刺」），跑一次能自动出词表</div></div></div>
 <div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">用那份词表算出 base rate，全程没有一行写死的东西</div></div></div>
-<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">结果贴在这条下面</div></div></div></div></div><div class="f"><div class="ch"><span class="chl">💡 Why here</span></div><div class="fbd"><p>这是「这是一台通用引擎」这句话里<b>最后一块写死的东西</b> —— 词表不自动化，换构念就得手改代码，通用就是假的。</p>
-<p>它也是 QD 引擎组的一员：对应流水线的第 0 步（先摸底 base rate），在 QD1（embedding）之前。它从 01-license 的 ③ 折进来。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QD4-auto-lexicon.md: <code>&gt; JL: …</code></p></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QD4-auto-lexicon.md"><div class="cm" data-quote="probe_base_rate.py 里的词表是硬编码的" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">「probe_base_rate.py 里的词表是硬编码的」</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 Part 8：把 openness 专用的写死资产泛化成机制 —— <code>probe_base_rate.py</code> 的硬编码 lexicon → construct→probe 生成器（大模型从 <code>construct.definition</code> 派生词表）；<code>sample_candidates.py</code> 的 confound 分层 → 由 <code>discriminant_from</code> 驱动。这两条是「去 openness 化」的关键。</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>base rate：这个特质在语料里大概多常见（如实测 openness 约 6.6%）。抽代表性样本要先知道它，才不会抽偏。</p>
+<div class="ck"><span class="bx">☐</span><div class="itw"><div class="ct nod">结果贴在这条下面</div></div></div></div><div class="col now"><div class="ch"><span class="chl">📍 Where we are</span></div><p><code><mark>probe_base_rate.py</code> 里的词表是硬编码的</mark>（照 openness 手写）。<a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a> 已经写好了，就等这份词表喂给它。</p>
+<p>Di note-update-v3 Part 12 把「LLM construct→probe 词表生成」列在「还没做 = 真实运行」那一档 —— 引擎代码在，这一段生成逻辑还没接上。</p></div></div><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QD4-auto-lexicon.md: <code>&gt; JL: …</code></p><div class="dadd" data-file="QD4-auto-lexicon.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QD4-auto-lexicon.md"><div class="cm" data-quote="probe_base_rate.py 里的词表是硬编码的" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“probe_base_rate.py 里的词表是硬编码的”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>Di note-update-v3 Part 8：把 openness 专用的写死资产泛化成机制 —— <code>probe_base_rate.py</code> 的硬编码 lexicon → construct→probe 生成器（大模型从 <code>construct.definition</code> 派生词表）；<code>sample_candidates.py</code> 的 confound 分层 → 由 <code>discriminant_from</code> 驱动。这两条是「去 openness 化」的关键。</p></div></div></div></div></details><details class="fold"><summary>💡 Why here</summary><div class="fb"><p>这是「这是一台通用引擎」这句话里<b>最后一块写死的东西</b> —— 词表不自动化，换构念就得手改代码，通用就是假的。</p>
+<p>它也是 QD 引擎组的一员：对应流水线的第 0 步（先摸底 base rate），在 QD1（embedding）之前。它从 01-license 的 ③ 折进来。</p></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>base rate：这个特质在语料里大概多常见（如实测 openness 约 6.6%）。抽代表性样本要先知道它，才不会抽偏。</p>
 <p>lexicon：一份关键词表，用来粗略估 base rate。</p>
 <p>construct→probe generator：Di 起的名字 —— 把「构念定义」变成「探针词表」的那段自动生成逻辑，取代手写死的词表。</p></div></details><details class="fold"><summary>📜 Log (1)</summary><div class="fb"><div class="lg"><span class="d">26-07-23 16:15</span><span>新建：从 01-license 的 ③ 折入；吸收 Di note-update-v3 Part 8（construct→probe 生成器）</span></div></div></details></div><div class="nav"><a href="#QD3">← QD3</a><a class="all" href="#top">☰ Index</a><span></span></div></section>
 
@@ -647,9 +696,7 @@ img{max-width:100%;border:1px solid var(--line);border-radius:8px}
 (one per question) in this folder. Edit those, then rebuild:
 <code>python3 build.py</code>.<br>Every question is real HTML — the page reads fine
 with JavaScript off; the script only adds commenting.</p>
-</div>
-<script>
-/* ─────────────────────────────────────────────────────────────
+</div><script>/* ─────────────────────────────────────────────────────────────
    Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
    this script only ADDS "select -> comment -> highlight right away".
    Strip this script block and the board still reads fine (just no commenting).
@@ -679,7 +726,6 @@ with JavaScript off; the script only adds commenting.</p>
   var panel = mk('div', 'cpanel', '');
   var toast = mk('div', 'ctoast', '');
   [btn, box, dock, panel, toast].forEach(function (e) { document.body.appendChild(e); });
-  dock.style.display = 'block';
 
   function save() { localStorage.setItem(KEY, JSON.stringify(db)); marks(); paint(); }
   function say(m) {
@@ -846,7 +892,7 @@ with JavaScript off; the script only adds commenting.</p>
     localStorage.setItem(KEY, JSON.stringify(db));
     if (!ok) marks();
     paint();
-    /* 这一次点击本身就是用户手势 —— 直接写盘，不用再点 Sync */
+    
     drain(true).then(function (n) {
       if (n) say((ok ? 'Highlighted and ' : 'Saved (not anchored) and ') +
                  'written to ' + pend.file + (srvOK ? ' — reload to see it rendered'
@@ -864,7 +910,7 @@ with JavaScript off; the script only adds commenting.</p>
     return String(d.getFullYear()).slice(2) + z(d.getMonth() + 1) + z(d.getDate()) +
            ' ' + z(d.getHours()) + z(d.getMinutes());
   }
-  /* md 里一条评论长这样，[ ] 未解决 / [x] 已解决 */
+  
   function line(c) {
     return '- [ ] ' + c.who + ' 「' + c.quote.replace(/\s+/g, ' ').trim() +
            '」 · ' + (c.when || stamp()) + '\n      ' + c.text.replace(/\n/g, '\n      ');
@@ -877,6 +923,10 @@ with JavaScript off; the script only adds commenting.</p>
     }).join('\n\n');
   }
   function paint() {
+
+
+
+    dock.style.display = db.length ? 'block' : 'none';
     dock.textContent = db.length ? ('\u{1F4AC} ' + db.length + ' pending')
                                  : '\u{1F4AC} Comment';
     dock.className = db.length ? 'has' : '';
@@ -887,8 +937,8 @@ with JavaScript off; the script only adds commenting.</p>
       '<button class="cp">Copy</button></div>' +
       (db.length ? db.map(function (c, i) {
         return '<div class="it" data-row="' + i + '"><div class="q">' + c.id +
-          (c.lost ? ' <span style="color:var(--mut)">· 未定位</span> ' : ' ') +
-          '「' + esc(c.quote.slice(0, 40)) + '」</div><b>' + c.who + '</b> ' +
+          (c.lost ? ' <span style="color:var(--mut)">· unanchored</span> ' : ' ') +
+          '“' + esc(c.quote.slice(0, 40)) + '”</div><b>' + c.who + '</b> ' +
           esc(c.text) + ' <button data-i="' + i +
           '" class="rm" style="padding:2px 8px">del</button></div>';
       }).join('') : '<div class="it mut">Nothing yet. Select a sentence in the text.</div>') +
@@ -918,12 +968,8 @@ with JavaScript off; the script only adds commenting.</p>
 
 
 
-  /* ── 写盘：优先让服务器写 ───────────────────────────────────
-     板文件在服务器上，浏览器在你自己的机器上（Remote-SSH）——
-     File System Access 的文件夹选择器只看得到你本机的盘，够不着这些文件。
-     所以第一选择是发个 POST 让服务器写（serve.py），它写完顺手重新生成 html。
-     只有服务器不支持时，才退回浏览器直接写文件 / 复制补丁。          */
-  var srvOK = null;                       // null=没试过, true/false=试过
+  
+  var srvOK = null;
   async function post(url, payload) {
     payload.path = location.pathname;
     var r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -948,11 +994,7 @@ with JavaScript off; the script only adds commenting.</p>
     } catch (e) { srvOK = false; return null; }
   }
 
-  /* ── 兜底：浏览器自己写文件（只在服务器不支持时才用到）
-     文件夹句柄记在 IndexedDB 里，授权一次，之后每次保存直接写盘 ──
-     浏览器规定：第一次挑文件夹必须由用户点击触发，无法自动。
-     但句柄可以存下来；之后每次「Save」本身就是一次点击，够格再申请权限，
-     所以正常情况下你一个 session 只会看到一次 Allow。                */
+  
   function idb(fn) {
     return new Promise(function (res) {
       var r = indexedDB.open('board-fs', 1);
@@ -1005,16 +1047,16 @@ with JavaScript off; the script only adds commenting.</p>
       return txt.replace(/\n## Log\b/, '\n## Comments\n' + add + '\n\n## Log');
     return txt.replace(/\s*$/, '') + '\n\n## Comments\n' + add + '\n';
   }
-  /* 把已经写盘的从待办里剔掉；写不进去的留着，面板里还看得见 */
+  
   async function drain(ask) {
     if (!db.length) return 0;
-    if (srvOK !== false) {                       // 先试服务器
+    if (srvOK !== false) {
       var n = 0, err = null;
       for (var i = 0; i < db.length; i++) {
         var r = await srvComment(db[i]);
         if (r === true) { db[i].written = 1; n++; }
         else if (typeof r === 'string') { err = r; }
-        else break;                              // null = 服务器不支持，退出去走老路
+        else break;
       }
       if (n || srvOK) {
         db = db.filter(function (c) { return !c.written; });
@@ -1042,7 +1084,7 @@ with JavaScript off; the script only adds commenting.</p>
     return done;
   }
 
-  /* ── 页面上直接把一条评论标成已解决 / 重新打开 ───────────── */
+  
   function esc4re(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   async function toggle(file, quote, to) {
     if (srvOK !== false) {
@@ -1062,6 +1104,35 @@ with JavaScript off; the script only adds commenting.</p>
     });
     return hit;
   }
+
+  function wireDadd() {
+    var last = localStorage.getItem(WK) || users[0];
+    document.querySelectorAll('.dadd').forEach(function (box) {
+      var ta = box.querySelector('textarea');
+      var sel = box.querySelector('select');
+      var btn = box.querySelector('.dsave');
+      users.forEach(function (u) { sel.appendChild(new Option(u, u)); });
+      sel.value = last;
+      btn.onclick = async function () {
+        var text = ta.value.trim();
+        if (!text) { ta.focus(); return; }
+        btn.disabled = true; btn.textContent = '…';
+        var j = null;
+        try {
+          j = await post('/_board/discuss',
+            { file: box.getAttribute('data-file'), who: sel.value, text: text });
+        } catch (e) { j = null; }
+        btn.disabled = false; btn.textContent = '➕ Add to discussion';
+        if (j === null) {
+          say('serve.py is not running — write > ' + sel.value + ': … into ## Discussion in the md yourself');
+          return;
+        }
+        if (j.ok) { localStorage.setItem(WK, sel.value); location.reload(); }
+        else say(j.err || 'write failed');
+      };
+    });
+  }
+
   function wireResolve() {
     document.querySelectorAll('.cms').forEach(function (box) {
       var file = box.getAttribute('data-cfile');
@@ -1091,7 +1162,7 @@ with JavaScript off; the script only adds commenting.</p>
     });
   }
 
-  /* ── 手动兜底：面板上的按钮 ───────────────────────────── */
+  
   async function sync() {
     if (!db.length) { say('Nothing pending'); return; }
     if (!window.showDirectoryPicker) {
@@ -1105,15 +1176,12 @@ with JavaScript off; the script only adds commenting.</p>
   }
 
 
-  /* ── 每题一个对话窗（QD1）──────────────────────────────────
-     打开它 = 在服务器上起一个 claude_agent_sdk 会话，作用域锁死在这一题：
-     只能读这个板文件夹，只能改这一个 Q 文件（服务器端 can_use_tool 把关）。
-     session id 由服务器写回 Q 文件头部的 `session:`，所以关掉再开还接得上。 */
+  
   var chat = document.createElement('div');
   chat.id = 'chat';
   chat.innerHTML =
     '<div class="hd"><span class="qid"></span><span class="ti"></span>' +
-    '<button class="term" title="用真终端打开这一题（同一个 session）">⌨</button>' +
+    '<button class="term" title="Open this question in a real terminal (same session)">⌨</button>' +
     '<button class="x" title="close">×</button></div>' +
     '<div class="bd"></div><div class="tm"></div>' +
     '<div class="acts"></div>' +
@@ -1132,7 +1200,7 @@ with JavaScript off; the script only adds commenting.</p>
     '<div class="ft"><textarea rows="1" placeholder="Ask about this question…"></textarea>' +
     '<button class="send">➤</button></div>';
   document.body.appendChild(chat);
-  var cq = null;                                    // 当前挂在哪一题
+  var cq = null;
   var MK = 'board-chat-model', EK = 'board-chat-effort', SK = 'board-chat-scope';
   var CHATK = function (id) { return 'board-chat:' + location.pathname + ':' + id; };
 
@@ -1140,8 +1208,7 @@ with JavaScript off; the script only adds commenting.</p>
     try { return JSON.parse(localStorage.getItem(CHATK(id)) || '[]'); } catch (e) { return []; }
   }
   function chatSave(id, log) { localStorage.setItem(CHATK(id), JSON.stringify(log)); }
-  /* 回复是 markdown，得渲染出来 —— 先转义，再只认几种最常用的写法。
-     不引第三方库：这一页坚持自带一切，而且要渲染的只是我们自己 agent 的输出。 */
+  
   function mdEsc(s) {
     return s.replace(/[&<>]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
@@ -1195,8 +1262,7 @@ with JavaScript off; the script only adds commenting.</p>
     if (el.classList.contains('md')) el.innerHTML = md2html(text);
     else el.textContent = text;
   }
-  /* 思考过程：一个可折叠块。默认展开着让你看它边想，答案一到就自动收起；
-     之后随时点标题再展开。跟 CLI 里的 thinking 一个意思，只是这里能折叠。 */
+  
   function thinkBubble() {
     var d = document.createElement('details');
     d.className = 'tk'; d.open = true;
@@ -1206,8 +1272,7 @@ with JavaScript off; the script only adds commenting.</p>
     return d;
   }
 
-  /* 权限提示 —— 行为跟 Claude Code CLI 一致：只读的自动放行，
-     会动东西的弹出来问；「总是允许」只在这一轮这一题里有效。 */
+  
   function askUI(ev) {
     var box = document.createElement('div');
     box.className = 'ask';
@@ -1216,6 +1281,29 @@ with JavaScript off; the script only adds commenting.</p>
       '<div class="b"><button class="ok y">Allow once</button>' +
       '<button class="a">Always allow</button><button class="n">Deny</button></div>';
     box.querySelector('code').textContent = ev.brief || ev.tool;
+    /* diff preview — what the VS Code extension shows at its gate: the actual
+       proposed change. − old in red, + new in green, Bash commands verbatim. */
+    if (ev.detail) {
+      var d = ev.detail, dv = document.createElement('div');
+      dv.className = 'askd';
+      var pre = function (cls, txt) {
+        var p = document.createElement('pre'); p.className = cls; p.textContent = txt;
+        dv.appendChild(p);
+      };
+      if (d.command) pre('cmd', d.command);
+      else if (d.edits) {
+        d.edits.forEach(function (e) { if (e.old) pre('del', e.old); if (e.new) pre('add', e.new); });
+        if (d.count > d.edits.length) {
+          var m = document.createElement('div'); m.className = 'mut';
+          m.textContent = '… ' + (d.count - d.edits.length) + ' more edit(s)';
+          dv.appendChild(m);
+        }
+      } else {
+        if (d.old) pre('del', d.old);
+        if (d.new) pre('add', d.new);
+      }
+      if (dv.childNodes.length) box.insertBefore(dv, box.querySelector('.b'));
+    }
     chat.querySelector('.bd').appendChild(box);
     chat.querySelector('.bd').scrollTop = 1e9;
     var send = function (ok, always) {
@@ -1272,22 +1360,19 @@ with JavaScript off; the script only adds commenting.</p>
     if (!log.length) bubble('sys', 'This chat is attached to ' + cq.file);
     log.forEach(function (m) { bubble(m.k, m.t); });
     chat.querySelector('.tip').textContent = cq.file;
-    /* 这一题的 Claude Code session id —— 抽屉和终端用的是同一个 */
+    
     var sid = sec.getAttribute('data-session') || '';
     var sidbox = chat.querySelector('.sid');
-    /* session 归档在 cwd（= serve.py 的 --root，现在是 SPACE 根）下的 project 目录，
-       所以要 cd 到 root，不是板文件夹 —— cd 错了 --resume 就找不到这个 session。
-       root 精确算法：serve.py 在 <root> + location.pathname 处提供文件，
-       所以 root = 板文件夹绝对路径 减去 URL 里的那段目录。不靠 .git/pyproject 猜。 */
+    
     var board = document.body.getAttribute('data-board') || '.';
-    var urlDir = location.pathname.replace(/\/[^\/]*$/, '');   // 去掉 board.html
+    var urlDir = location.pathname.replace(/\/[^\/]*$/, '');
     var root = board;
     if (urlDir && board.slice(-urlDir.length) === urlDir) {
       root = board.slice(0, board.length - urlDir.length) || '/';
     }
     if (sid) {
       sidbox.innerHTML = '<code>' + sid + '</code>';
-      // 复制的是一整条能直接跑的命令（带注释说明是哪一题），不是光一个 uuid
+
       var full = '# ' + cq.id + ' · ' + cq.title + '\n'
                + 'cd "' + root + '" && claude --resume ' + sid;
       var cb = document.createElement('button');
@@ -1306,7 +1391,7 @@ with JavaScript off; the script only adds commenting.</p>
     termView(false); disposeTerm();
     chat.classList.add('on'); document.body.classList.add('chaton');
 
-    /* 第一步：先把浏览器里还没写盘的评论同步过去 —— 不然 chat 读不到它们 */
+    
     var mine = db.filter(function (c) { return c.file === cq.file; }).length;
     if (mine) {
       bubble('sys', 'Writing ' + mine + ' new comment' + (mine > 1 ? 's' : '') + ' into ' + cq.file + '…');
@@ -1330,7 +1415,7 @@ with JavaScript off; the script only adds commenting.</p>
   }
   chat.querySelector('.x').onclick = function () {
     chat.classList.remove('on'); document.body.classList.remove('chaton'); };
-  /* 模型 / effort / 权限档 记在本机；默认 Opus 4.8 · high · 完整·问我 */
+  
   (function () {
     var m = chat.querySelector('.mdl'), e = chat.querySelector('.eff'),
         s = chat.querySelector('.scope');
@@ -1347,7 +1432,7 @@ with JavaScript off; the script only adds commenting.</p>
     };
   })();
 
-  var inflight = null;                    // 正在跑的那一轮：{ctrl, file}
+  var inflight = null;
   async function chatStop() {
     if (!inflight) return;
     try {
@@ -1355,21 +1440,21 @@ with JavaScript off; the script only adds commenting.</p>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: location.pathname, file: inflight.file }) });
       bubble('sys', 'Stop signal sent — it will wrap up at the next message…');
-    } catch (e) { /* 服务器都不通了，直接放弃等待 */ }
-    inflight.ctrl.abort();                // 浏览器这边立刻不等了
+    } catch (e) {  }
+    inflight.ctrl.abort();
   }
   function chatBusy(on) {
     var btn = chat.querySelector('.send');
     btn.textContent = on ? '⏹' : '➤';
     btn.title = on ? 'Stop this turn' : 'Send';
     btn.classList.toggle('stop', on);
-    btn.disabled = false;                 // 忙的时候也能点 —— 那是停止键
+    btn.disabled = false;
     chat.querySelector('textarea').disabled = on;
   }
 
   async function chatSend(preset) {
     var ta = chat.querySelector('textarea'), btn = chat.querySelector('.send');
-    if (inflight) return chatStop();       // 正在跑 → 这一下是「停」
+    if (inflight) return chatStop();
     var msg = (preset || ta.value).trim();
     if (!msg || !cq) return;
     if (!preset) ta.value = '';
@@ -1389,10 +1474,10 @@ with JavaScript off; the script only adds commenting.</p>
           effort: chat.querySelector('.eff').value,
           scope: chat.querySelector('.scope').value })
       });
-      /* 服务器一行一条 JSON 地往下发，边收边显示 */
+      
       var rd = r.body.getReader(), dec = new TextDecoder(), buf = '';
       var cur = null, acc = '', j = { ok: true };
-      var thinkEl = null, thinkAcc = '';        // 思考过程 → 一个可折叠块
+      var thinkEl = null, thinkAcc = '';
       while (true) {
         var ch = await rd.read();
         if (ch.done) break;
@@ -1401,29 +1486,35 @@ with JavaScript off; the script only adds commenting.</p>
         for (var i = 0; i < lines.length; i++) {
           if (!lines[i].trim()) continue;
           var ev; try { ev = JSON.parse(lines[i]); } catch (e) { continue; }
-          if (ev.t === 'think') {                 // 思考过程 → 折叠块，边想边展开
+          if (ev.t === 'stage') {                 // real progress while nothing streams yet
+            if (wait.isConnected) wait.textContent = '… ' + ev.text + '  (⏹ to stop)';
+          } else if (ev.t === 'think') {
             wait.remove();
             if (!thinkEl) thinkEl = thinkBubble();
             thinkAcc += ev.text;
             thinkEl.querySelector('.tk-body').textContent = thinkAcc;
             chat.querySelector('.bd').scrollTop = 1e9;
-          } else if (ev.t === 'delta') {          // 逐字答案
+          } else if (ev.t === 'delta') {
             wait.remove();
-            if (thinkEl && thinkEl.open) thinkEl.open = false;   // 答案一来就收起思考
+            if (thinkEl && thinkEl.open) {
+              thinkEl.open = false;
+              thinkEl.querySelector('summary').textContent =
+                '💭 Thinking (' + thinkAcc.length + ' chars — click to reopen)';
+            }
             if (!cur) cur = bubble('cc', '');
             acc += ev.text;
             setBubble(cur, acc);
             chat.querySelector('.bd').scrollTop = 1e9;
-          } else if (ev.t === 'text') {           // 整段（没开逐字时）
+          } else if (ev.t === 'text') {
             wait.remove();
             if (!cur) cur = bubble('cc', '');
             acc += (acc ? '\n\n' : '') + ev.text;
             setBubble(cur, acc);
             chat.querySelector('.bd').scrollTop = 1e9;
           } else if (ev.t === 'ask') {
-            /* 跟 CLI 一样的权限提示：它想动东西，先问你 */
+            
             wait.remove();
-            cur = null;                       // 批准之后的输出另起一条气泡
+            cur = null;
             askUI(ev);
           } else if (ev.t === 'tool') {
             wait.textContent = '…' + ev.name;
@@ -1445,7 +1536,7 @@ with JavaScript off; the script only adds commenting.</p>
         if (j.scope) bits.push({scoped:'scoped',full:'full·ask',bypass:'full·no-ask'}[j.scope] || j.scope);
         if (j.usd != null) bits.push('$' + Number(j.usd).toFixed(3));
         if (j.denied && j.denied.length) bits.push('blocked ' + j.denied.length + ' tool call' + (j.denied.length > 1 ? 's' : ''));
-        // 只有真的写了盘上文件，才说「已写盘」并给刷新按钮 —— 读一读不该出现
+
         if (j.wrote) {
           bits.push('written to disk');
           bubble('sys', bits.join(' · '));
@@ -1454,7 +1545,7 @@ with JavaScript off; the script only adds commenting.</p>
           rb.onclick = function () { location.reload(); };
           chat.querySelector('.acts').replaceChildren(rb);
         } else if (bits.length) {
-          bubble('sys', bits.join(' · '));   // 只报模型/花费，不提写盘、不换按钮
+          bubble('sys', bits.join(' · '));
         }
       }
     } catch (e) {
@@ -1470,10 +1561,7 @@ with JavaScript off; the script only adds commenting.</p>
     if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); chatSend(); }
   });
 
-  /* ── ⌨ 真终端：同一个 session 换个窗口 ────────────────────────
-     LAW（JL 260723）：一个 session 同时只能有一个窗口。
-     抽屉和终端读写的是磁盘上同一个 .jsonl，两边同时开会互相盖或者 fork 出第二段历史。
-     所以开终端前服务器先看抽屉在不在用；从终端切回来时要「交回 session」。 */
+  
   var termOn = false;
   function termView(on) {
     termOn = on;
@@ -1487,10 +1575,7 @@ with JavaScript off; the script only adds commenting.</p>
     if (on && termT) setTimeout(fitTerm, 0);
   }
 
-  /* ── xterm.js 直接画在抽屉里（不再用 iframe，closer to myrlin）──────
-     终端后端仍是 serve.py 起的 ttyd；这里我们自己拿 xterm 连它的 WebSocket，
-     省掉 iframe 那层（CSP、加载慢、控制不了）。ttyd 的 WS 子协议：
-       连接子协议 'tty'；开场发 JSON auth；输入 '0'+data；输出帧首字节 '0'。 */
+  
   var termT = null, termWS = null, xtermP = null;
   function loadXterm() {
     if (xtermP) return xtermP;
@@ -1501,7 +1586,7 @@ with JavaScript off; the script only adds commenting.</p>
       var s = document.createElement('script');
       s.src = '/_board/asset/xterm.min.js';
       s.onload = function () { res(window.Terminal); };
-      s.onerror = function () { rej(new Error('xterm.js 加载失败（serve.py 在跑吗？）')); };
+      s.onerror = function () { rej(new Error('xterm.js failed to load (is serve.py running?)')); };
       document.head.appendChild(s);
     });
     return xtermP;
@@ -1515,11 +1600,65 @@ with JavaScript off; the script only adds commenting.</p>
     var rows = Math.max(6, Math.floor((h - 12) / 17));
     try { termT.resize(cols, rows); } catch (e) {}
   }
+  var termKey = null, termRetry = 0, termPing = null, termClosing = false;
   function disposeTerm() {
+    termClosing = true;                       // an intentional close never reconnects
+    if (termPing) { clearInterval(termPing); termPing = null; }
     try { if (termWS) termWS.close(); } catch (e) {}
     try { if (termT) termT.dispose(); } catch (e) {}
-    termWS = null; termT = null;
+    termWS = null; termT = null; termKey = null; termRetry = 0;
     var host = chat.querySelector('.tm'); if (host) host.innerHTML = '';
+  }
+  /* smoothness (QD3 260724): the WS is rebuilt on drops, the TERMINAL is not —
+     scrollback survives a reconnect; the post-auth resize (SIGWINCH) makes
+     claude repaint. Keepalive = a same-size resize op every 30s, so an idle
+     relay/proxy never reaps the pipe. */
+  function connectWS(key) {
+    var proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
+    var ws = new WebSocket(proto + location.host + '/_term/' + key + '/ws', ['tty']);
+    ws.binaryType = 'arraybuffer';
+    termWS = ws;
+    window.__wsDbg = { state: 'new', msgs: 0, err: null };
+    ws.onopen = function () {
+      window.__wsDbg.state = 'open';
+      termRetry = 0;
+      // the ttyd handshake: auth as one message, size as another (merged = no output)
+      ws.send(JSON.stringify({ AuthToken: '' }));
+      ws.send(JSON.stringify({ columns: termT.cols || 100, rows: termT.rows || 30 }));
+      if (termPing) clearInterval(termPing);
+      termPing = setInterval(function () {           // keepalive: same-size resize op
+        if (ws.readyState === 1 && termT)
+          ws.send('1' + JSON.stringify({ columns: termT.cols, rows: termT.rows }));
+      }, 30000);
+    };
+    ws.onmessage = function (ev) {
+      window.__wsDbg.msgs++;
+      var d = ev.data;
+      if (typeof d === 'string') { if (d.charCodeAt(0) === 48) termT.write(d.slice(1)); return; }
+      var b = new Uint8Array(d);
+      if (b[0] === 48) termT.write(new TextDecoder().decode(b.subarray(1)));
+    };
+    ws.onerror = function (e) { window.__wsDbg.err = 'error'; };
+    ws.onclose = function (e) {
+      window.__wsDbg.state = 'closed:' + (e && e.code);
+      if (termPing) { clearInterval(termPing); termPing = null; }
+      if (termClosing || !termOn || !termT) return;  // closed on purpose → stay quiet
+      if (termRetry >= 6) {
+        termT.write('\r\n\x1b[90m[disconnected — click ⌨ twice to reopen]\x1b[0m\r\n');
+        return;
+      }
+      var wait = Math.min(15000, 1000 * Math.pow(2, termRetry));
+      termRetry += 1;
+      termT.write('\r\n\x1b[90m[connection lost — reconnecting in ' +
+                  Math.round(wait / 1000) + 's (' + termRetry + '/6)]\x1b[0m\r\n');
+      setTimeout(function () {
+        if (!termClosing && termOn && termT && termKey === key) connectWS(key);
+      }, wait);
+    };
+    termT.onData(function (s) { if (ws.readyState === 1) ws.send('0' + s); });
+    termT.onResize(function (sz) {
+      if (ws.readyState === 1) ws.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
+    });
   }
   async function mountTerm(key) {
     await loadXterm();
@@ -1531,36 +1670,21 @@ with JavaScript off; the script only adds commenting.</p>
       theme: { background: '#0b0d12', foreground: '#e8e8e6', cursor: '#6ea8f0' }
     });
     termT.open(host);
-    try { window.__boardTerm = termT; } catch (e) {}   // 调试用句柄，可在控制台 inspect
+    try { window.__boardTerm = termT; } catch (e) {}   // debug handle, inspect from the console
     fitTerm();
-    var proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
-    var ws = new WebSocket(proto + location.host + '/_term/' + key + '/ws', ['tty']);
-    ws.binaryType = 'arraybuffer';
-    termWS = ws;
-    window.__wsDbg = { state: 'new', msgs: 0, err: null };
-    ws.onopen = function () {
-      window.__wsDbg.state = 'open';
-      // ttyd 的握手：auth 一条、尺寸另一条（合并成一条 ttyd 不认，实测终端不出内容）
-      ws.send(JSON.stringify({ AuthToken: '' }));
-      ws.send(JSON.stringify({ columns: termT.cols || 100, rows: termT.rows || 30 }));
-    };
-    ws.onmessage = function (ev) {
-      window.__wsDbg.msgs++;
-      var d = ev.data;
-      if (typeof d === 'string') { if (d.charCodeAt(0) === 48) termT.write(d.slice(1)); return; }
-      var b = new Uint8Array(d);
-      if (b[0] === 48) termT.write(new TextDecoder().decode(b.subarray(1)));
-    };
-    ws.onerror = function (e) { window.__wsDbg.err = 'error'; };
-    ws.onclose = function (e) { window.__wsDbg.state = 'closed:' + (e && e.code);
-      if (termT) termT.write('\r\n\x1b[90m[disconnected]\x1b[0m\r\n'); };
-    termT.onData(function (s) { if (ws.readyState === 1) ws.send('0' + s); });
-    termT.onResize(function (sz) {
-      if (ws.readyState === 1) ws.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
-    });
+    termClosing = false; termKey = key; termRetry = 0;
+    connectWS(key);
     setTimeout(function () { termT && termT.focus(); }, 50);
   }
   window.addEventListener('resize', function () { if (termOn) fitTerm(); });
+  // fit when the drawer pane itself changes size, not only the window (debounced)
+  (function () {
+    var host = chat.querySelector('.tm'), t = null;
+    if (window.ResizeObserver && host)
+      new ResizeObserver(function () {
+        clearTimeout(t); t = setTimeout(function () { if (termOn) fitTerm(); }, 150);
+      }).observe(host);
+  })();
 
   async function termRelease(file) {
     disposeTerm();
@@ -1569,9 +1693,9 @@ with JavaScript off; the script only adds commenting.</p>
       await fetch('/_board/release', { method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: location.pathname, file: file }) });
-    } catch (e) { /* 服务器没了也要让界面回得来 */ }
+    } catch (e) {  }
   }
-  /* 关整个板页面时，如果抽屉里还开着终端，用 beacon 通知服务器收掉。 */
+  
   window.addEventListener('pagehide', function () {
     if (termOn && cq && cq.file && navigator.sendBeacon) {
       navigator.sendBeacon('/_board/release',
@@ -1595,9 +1719,14 @@ with JavaScript off; the script only adds commenting.</p>
       return true;
     } catch (e) { say('⚠ ' + e.message); return false; }
   }
+  // pre-warm on hover: pull the 480KB xterm.js while the pointer is still on ⌨,
+  // so the click feels instant. Assets only — never POST /_board/term here (it takes HOLD).
+  chat.querySelector('.term').addEventListener('mouseenter', function () {
+    loadXterm().catch(function () {});
+  });
   chat.querySelector('.term').onclick = async function () {
     if (!cq) return;
-    if (termOn) {                                  // 切回抽屉 = 交回 session
+    if (termOn) {
       await termRelease(cq.file);
       termView(false);
       say('Terminal closed, session handed back');
@@ -1606,39 +1735,39 @@ with JavaScript off; the script only adds commenting.</p>
     await termOpen(false);
   };
 
-  /* ── 面板跟着题走（JL 260723）────────────────────────────────
-     换一题 = 换一个 session。抽屉开着的时候，切到哪一题它就跟到哪一题：
-     聊天记录换成那一题的，session id 换成那一题的；
-     本来在终端模式的话，先把上一题的 session 交回去，再开新那一题的终端。 */
+  
   async function follow() {
     var id = (location.hash || '').slice(1);
     var sec = id && document.getElementById(id);
     if (!sec || !sec.classList.contains('q')) return;
-    if (!chat.classList.contains('on')) return;     // 抽屉没开就别多事
-    if (cq && cq.id === sec.id) return;             // 还是同一题
+    if (!chat.classList.contains('on')) return;
+    if (cq && cq.id === sec.id) return;
     var wasTerm = termOn, oldFile = cq && cq.file;
-    if (wasTerm) await termRelease(oldFile);        // 一个 session 一个窗口
-    await chatOpen(sec);                            // 重新绑到新题（会重置成聊天视图）
-    if (wasTerm) await termOpen(true);              // 本来在终端 → 跟着切过去
+    if (wasTerm) await termRelease(oldFile);
+    await chatOpen(sec);
+    if (wasTerm) await termOpen(true);
     say('Now following ' + sec.id);
   }
   window.addEventListener('hashchange', follow);
 
-  /* 每张卡片的头部挂一个入口 */
-  document.querySelectorAll('section.q').forEach(function (sec) {
-    var b = document.createElement('button');
-    b.className = 'chatbtn'; b.textContent = '\u{1F916} Chat';
-    b.onclick = function () {
-      // 顺便把 URL 也切到这一题，这样 follow() 和「回目录」都对得上
-      if (location.hash !== '#' + sec.id) location.hash = sec.id;
-      chatOpen(sec);
-    };
-    var qh = sec.querySelector('.qh');
-    if (qh) qh.appendChild(b);
-  });
+  
+  function wireQBtns() {
+    document.querySelectorAll('section.q').forEach(function (sec) {
+      if (sec.querySelector('.chatbtn')) return;
+      var b = document.createElement('button');
+      b.className = 'chatbtn'; b.textContent = '\u{1F916} Chat';
+      b.onclick = function () {
 
-  /* 右下角悬浮的「💬 Chat」—— 打开当前正在看的这一题的聊天框。
-     只在聚焦看某一题时出现（CSS 控制），点它就开这一题的抽屉。 */
+        if (location.hash !== '#' + sec.id) location.hash = sec.id;
+        chatOpen(sec);
+      };
+      var qh = sec.querySelector('.qh');
+      if (qh) qh.appendChild(b);
+    });
+  }
+  wireQBtns();
+
+  
   var fab = document.createElement('button');
   fab.id = 'chatfab';
   fab.innerHTML = '\u{1F916} Chat';
@@ -1649,7 +1778,54 @@ with JavaScript off; the script only adds commenting.</p>
   };
   document.body.appendChild(fab);
 
-  marks(); paint(); wireResolve();
+  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); }
+  window.__boardRewire = rewire;
+  marks(); paint(); wireResolve(); wireDadd();
+})();
+
+/* ── live refresh (QD6, JL 260724) ─────────────────────────────────────────
+   "when the chat changed something, refresh automatically — and my chat
+   interface is still there." So: NEVER reload. Poll our own Last-Modified
+   (both servers send it); when the file changes, fetch the new page and swap
+   ONLY div.wrap. Everything the scripts appended to <body> — comment dock,
+   chat drawer (mid-stream included), terminal, fab — stays alive. No Node,
+   no framework: the drawer survives because it was never inside the content. */
+(function () {
+  var last = null, busy = false;
+  function tick() {
+    if (busy || document.hidden) return;
+    fetch(location.pathname, { method: 'HEAD', cache: 'no-store' })
+      .then(function (h) {
+        var lm = h.headers.get('last-modified');
+        if (!lm) return;
+        if (last === null) { last = lm; return; }
+        if (lm === last) return;
+        // mid-selection = probably writing a comment on that text; hold the swap
+        if (window.getSelection && String(window.getSelection())) return;
+        busy = true;
+        return fetch(location.pathname, { cache: 'no-store' })
+          .then(function (r) { return r.text(); })
+          .then(function (t) {
+            var doc = new DOMParser().parseFromString(t, 'text/html');
+            var nw = doc.querySelector('div.wrap');
+            var old = document.querySelector('div.wrap');
+            if (!nw || !old) return;
+            var y = window.scrollY;
+            old.replaceWith(nw);
+            if (window.__boardRewire) window.__boardRewire();
+            window.scrollTo(0, y);
+            last = lm;
+            var n = document.createElement('div');
+            n.className = 'lrf';
+            n.textContent = '↻ board updated';
+            document.body.appendChild(n);
+            setTimeout(function () { n.remove(); }, 2200);
+          });
+      })
+      .catch(function () {})
+      .then(function () { busy = false; });
+  }
+  setInterval(tick, 4000);
 })();
 
 /* ── section「expand / collapse all」──────────────────────────────
@@ -1665,6 +1841,4 @@ document.addEventListener('click', function (ev) {
   b.setAttribute('data-open', open ? '1' : '0');
   var lbl = b.querySelector('.lbl');
   if (lbl) lbl.textContent = open ? 'collapse all' : 'expand all';
-});
-</script>
-</body></html>
+});</script></body></html>

@@ -5,6 +5,120 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## [0.15.1] — 2026-07-25
+
+**QA2's source-template contract now explicitly mirrors QA4's rendered Q/S face contract.**
+
+- `ref/q-template.md` states the fixed visible sequence, Q-versus-S Content requiredness,
+  rationale placement, Q-consumer closure rule, and optional S-only `### Stage Record` behavior.
+- The board's QA2 face now specifies the source-to-render mapping for Opening, Diagram, Content,
+  Items to Finish, Where we are, Files, and supporting folds; stale Q-only wording was retired.
+- Two fresh-context acceptance rounds rendered realistic temporary boards. The first exposed that
+  Stage Record optionality was only implied; after revision, the second rendered one Q and two S
+  variants and passed with Stage Record both present and absent.
+
+## [0.15.0] — 2026-07-25
+
+**A chatbot on the index page (JL 260725 on QC2: "just add a chatbot in the index page").**
+
+- It is the existing QD2 drawer and QD3 terminal, opened on `board.md` instead of one question.
+  No new agent, no second engine; details recorded on QD2, entry point on QC2.
+- `serve.py` accepts `file: "board.md"` as one more face: the orientation block carries the
+  index's own view (spine, close, every face's state + open-comment count); board-flavored
+  rules; the restricted tier's "own files" widens to any `.md` inside the board folder
+  (verified: in-board Write auto-allowed, /tmp Write denied).
+- The session id lands in `board.md`'s header (`session:` under `close:`), is parsed into meta
+  (`src/parse.py`) and rendered as `data-bsession` on `div.wrap` (`src/page_board.py`), inside
+  the live-swap region so it stays fresh without a reload. The drawer's ⌨ opens the same
+  session in a real terminal (verified: same session id, proxy 200, clean release).
+- `assets/board.js`: `chatOpen('board')`; the bottom-right fab now also shows on the index,
+  labeled "🤖 Board chat"; index flavor of the action buttons (🧭 which question should I act
+  on · 🔧 handle open comments board-wide); `follow()` returns to the board session when you
+  navigate back to the index. `assets/board.css`: the fab shows whenever the drawer is closed.
+
+## [0.14.0] — 2026-07-25
+
+**Stage orientation moved into Opening, and Opening now uses a compass.**
+
+- The visible heading is `🧭 Opening`, replacing the question mark with an orientation icon that
+  works for both Q rulings and S lifecycle stages.
+- On S faces, the automatic "Why this matters" disclosure now lives in Opening and starts open.
+- An exact direct `### Stage Record` inside S Content is lifted into Opening and starts collapsed;
+  the remaining stage subsections stay under Content.
+- Q faces retain "Why this matters" as Content's first open subsection.
+
+## [0.13.3] — 2026-07-25
+
+**Colleagues replaces the generic assistant role.**
+
+- User-facing prose now says colleague or colleagues instead of assigning everyone one generic role.
+- Each colleague signs and owns work with their own initials; examples use `ZW` rather than a
+  shared role identity.
+- The comment picker defaults to `JL` and `CC`, while any colleague can add their own initials.
+
+## [0.13.2] — 2026-07-25
+
+**Diagram is now a real section and starts closed.**
+
+- The fixed visible order is `Opening → Diagram → Content → Items to Finish → Where we are`;
+  Files follows.
+- Opening now contains the question lead and optional Boundary. Optional Diagram renders as a
+  peer-level native `<details>` section whose heading stays visible while its figure is hidden
+  until clicked.
+- The figure remains in the HTML and works without JavaScript; ASCII and embedded Excalidraw
+  content retain their existing rendering once opened.
+
+## [0.13.1] — 2026-07-25
+
+**The visible first layer is Opening, not a peer list of Question, Boundary, and Diagram.**
+
+- The rendered hierarchy is `Opening → Content → Items to Finish → Where we are`; Files follows.
+- Opening contains the actual question lead plus optional Boundary and Diagram. The rest of the
+  Question becomes Content's first "Why this matters" subsection, so Q faces follow the same
+  visible rhythm even without an explicit `## Content`.
+- The source keeps `## Question` for precision, while `## Opening` is accepted as an alias.
+- Opening uses the same section-heading hierarchy as Content, Items, and Where.
+
+## [0.13.0] — 2026-07-25
+
+**One face grammar now serves rulings and lifecycle stages.**
+
+- `Q*.md` remains a board ruling; `S*.md` is a lifecycle stage. Both are recursively discovered,
+  rostered, commentable, and rendered by the same face renderer.
+- `## Content` lands between Diagram and Items. It is optional for Q and required for S; each
+  direct `###` heading renders as a native collapsible subsection.
+- Former stage `Q-consumer` blocks become recognizable checklist records under
+  `## Items to Finish`. The answer must land, be interpreted, and be woven into Content before
+  its box closes.
+- Question settlement and stage gates have separate index summaries. A stage carries a STAGE
+  badge and never inflates the question settled count.
+- Focus mode now has a real narrow-viewport layout: smaller wrapping titles, zero-width-safe
+  flex/detail children, and measured `clientWidth == scrollWidth` at a 390px device viewport.
+- The first complete consumer is the MISQ paper lifecycle board: 14 Q rulings + 8 S stages, with
+  the previous stage files archived and all lifecycle `_LOG_*.md` sidecars removed at the user's
+  request.
+
+
+## [0.12.1] — 2026-07-24
+
+**The drawer terminal stops smearing on emoji + CJK (QD3, JL's fig/image.png).** The cause left standing after 0.9.2's cell-metrics fix: claude's TUI counts 🟡✅💬 as 2 cells (modern wcwidth) while the vendored xterm.min.js only ships Unicode 6 width tables that say 1 — every emoji shifts the row, full-screen repaints land off-cell, and the frames interleave into the smear. Vendored `@xterm/addon-unicode11@0.8.0` (new `vendor/xterm/addon-unicode11.js`, whitelisted in serve.py's `serve_asset`, loaded right after xterm.min.js, `unicode.activeVersion = '11'`); verified offline that the v11 provider returns width 2 for 🟡✅💬汉 where V6 said 1. The stacked second cause fixed with it: Menlo has no CJK, fallback glyphs overflow the measured row — the drawer terminal's fontFamily now carries PingFang SC / Hiragino Sans GB / Microsoft YaHei and `lineHeight: 1.2` adds the headroom. Addon load is soft-fail (console warning, terminal still opens), so an older running serve.py cannot brick the drawer.
+
+Also in 0.12.1: **`scrub_cjk_comments` scoped to `<style>`/`<script>` blocks.** Run page-wide it treated body prose as code: QD3's `GET /_board/asset/*` glob read as a `/*` comment-opener, and the span to the next `*/` (inside QE3) was silently dropped the moment CJK landed in between — five slides (QD4–QE2) gone. build.py's no-JS invariant caught it; body prose is now never scrubbed.
+
+## [0.12.0] — 2026-07-24
+
+**ascii inside an item's fold (JL: "for each item's hidden text, add the ascii").** An INDENTED ` ``` ` fence in an item's explanation lines is collected into that item's hidden text (dedented, rendered as `<pre class="ip">`), instead of flushing the item and landing as a sibling block. Column-0 fences keep the old sibling behaviour, so the face stays title-only and the diagram lives behind the click — the QA4 item shape (heading + summary + prose) is unchanged, the ascii just joins it. This deliberately revisits the 1705 ascii-in-item experiment that 0.11-era reverted: that revert traded ascii away to get the QA4 shape; now both hold at once. First user: the CMS board's QC10 (AMI → CABG), all 6 items. CSS: `.bd pre.ip` one size down, horizontal scroll of its own. Regression: boardform board (28 questions) rebuilds unchanged.
+
+## [0.11.0] — 2026-07-24
+
+**A board can sit on an existing tree (QC3), show other files' content live (QF1), and the Python got its src/ split (QB5).** All three driven by the first board laid directly over a paper's `0-lifecycle/`.
+
+- **folder questions (QC3, JL ruling).** A question is a `Q*.md` at ANY depth under the board folder: `q_files()` discovery (rglob, skipping path segments starting `_`/`.` and `fig/`), Roster keeps bare filenames, duplicate basenames warn and keep the first, the page's data-file carries the board-relative posix path, serve.py vets it (`vet_qpath`: no absolute, no `..`, basename must look like a Q file), archiving flattens into the board's `_archive/`, watch.py watches the whole tree. Flat boards untouched (regression: unchanged question set).
+- **embeds (QF1, JL: "can a markdown file incorporate another file?").** `![[path]]` / `![[path#Section]]` on its own line pulls another file's content into the slide at build time, by reference — zero copy, zero drift, zero dialect knowledge. `src/page_stage.py` renders generically (atx AND setext headings, fences, lists, quotes, `|` record lines) under a "live from source" header; every failure mode (missing file, non-md/txt, heading not found) is a visible warning box, never a silent gap; no recursive expansion. Comments on embedded text keep living in the FACE's `## Comments` and re-anchor against the re-rendered embed at rebuild. Still open on the board: the paper-side anchors handshake (haipipe-paper-stage contracts).
+- **src/ split (QB5, JL named the page modules).** build.py 995 → 70 lines, code moved VERBATIM to `src/{common,parse,body,page_board,page_question,page_stage}.py`; serve.py imports `QNAME`/`vet_qpath`/`q_files` from `src/common.py` instead of duplicating. Byte-identical proven on board.html AND `--json` BEFORE any feature landed.
+- **bugfix, found by the byte-identical gate:** the old single-function `render()` reused `lab`, so any question WITH comments wore the comments count in its state pill (`✅ 💬 Comments (0 open / 7) …`) instead of its state label. Reproduced first to prove the move pure, then fixed (`cm_lab` in `src/page_question.py`).
+- **doc slides (QF2, JL: "no need to generate QB3-claims.md").** A Roster line `doc: <path> <path>…` renders the listed source files DIRECTLY as one slide (id = first file's stem, title = its own `#`/setext title) — no Q wrapper at all. Doc slides are views, not questions: no state pill, no Items counting, no comment target, excluded from the settled count and the bar. Files are explicit, so `_LOG_*.md` can be shown even though `_` paths are excluded from Q discovery.
+- First consumer: `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/` — 14 ruling Q slides + 8 doc slides after JL's scope ruling ("I think 14 ruling faces"): every stage renders straight from its own docs (0-seed, 1a-resource, 1b-claims, 2a-venue, 2b-pitch, 3-narrative, 4-display + _DISPLAY_REQUEST, z-structure), while QA1 + QD2..QD8 + QE2..QE7 keep Q files, live embeds, and comment write-back (verified over HTTP on 5599). The settled bar counts the 14 rulings only.
 
 ## [0.10.0] — 2026-07-24
 
@@ -134,7 +248,7 @@ The graduation mechanism — SKILL.md is now defined as the board's settled ques
 
 - **`SKILL.md` + three `ref/` files** — the skill is now readable by someone who was not in the room: `ref/q-template.md` (copy this to add a question), `ref/board-form.md` (full spec: folder, numbering, section↔page map, syntax table), `ref/writing-rules.md` (how to write it so people understand, plus the cold-read prompt and its convergence test). `ref/board-example.md` was replaced — it still held the pre-0.1 single-file `[BOARD]`/`[Qn]` form.
 - **`## Comments`** — inline comments pinned to a sentence, each with its own state: `- [ ] JL 「quoted sentence」 · 260723 1100` plus an indented body; `[x]` marks it solved. Open comments highlight their sentence in the prose and force the fold open; solved ones grey out and strike through. A quote that no longer matches the prose is flagged **⚠ anchor lost** on the item and in the fold label — a comment can never silently detach. `## Discussion` stays as the free-form thread.
-- **in-page commenting** — select a sentence, press 💬, write, Save. Comments stage in `localStorage` and go to the md in one shot via "Sync to md" (File System Access API) or "Copy". Any 1–4 letter initials work, not just JL/RA/CC; new names are added from the dropdown and remembered, and each gets a stable colour.
+- **in-page commenting** — select a sentence, press 💬, write, Save. Comments stage in `localStorage` and go to the md in one shot via "Sync to md" (File System Access API) or "Copy". Any 1–4 letter initials work, not just the original defaults; new names are added from the dropdown and remembered, and each gets a stable colour.
 - **`watch.py`** — rebuilds on any `.md` change, so "Sync to md" → refresh is a closed loop with no Claude Code in it.
 - **topic/explanation bullets** — `- heading` plus indented lines renders as a bolded lead with its explanation underneath; `## Done when` items take the same shape. Long passages stop being walls of sentences.
 - **`## Log` takes a time** — `260723 1030 · what changed`; the time is optional.

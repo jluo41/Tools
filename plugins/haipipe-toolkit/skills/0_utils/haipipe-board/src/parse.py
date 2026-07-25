@@ -1,0 +1,213 @@
+"""md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
+parse_board fills body.LINKS (mutation only — same dict object inline() reads)."""
+import re
+
+from .body import LINKS
+from .common import face_files, sec
+
+
+def split_blocks(src):
+    out, cur, buf = {}, None, []
+    for ln in src.split("\n"):
+        m = re.match(r"^\[([^\]]+)\]\s*$", ln)
+        if m:
+            if cur:
+                out[cur] = "\n".join(buf).strip()
+            cur, buf = m.group(1), []
+        else:
+            buf.append(ln)
+    if cur:
+        out[cur] = "\n".join(buf).strip()
+    return out
+
+
+def split_sections(txt):
+    """split on `## ` headings — but NEVER inside a ``` fence, or a template
+    block that shows what `## 问题` looks like would tear its own file apart."""
+    out, cur, buf, fence = {}, None, [], False
+    for ln in txt.split("\n"):
+        if ln.lstrip().startswith("```"):
+            fence = not fence
+        if ln.startswith("## ") and not fence:
+            if cur:
+                out[cur] = "\n".join(buf).strip()
+            cur, buf = ln[3:].strip(), []
+        else:
+            buf.append(ln)
+    if cur:
+        out[cur] = "\n".join(buf).strip()
+    return out
+
+
+def parse_board(board):
+    """board-level text (no [Qn] blocks) -> meta dict"""
+    def f(k):
+        m = re.search(rf"^{k}:\s*(.*)$", board, re.M)
+        return m.group(1).strip() if m else ""
+
+    bs = split_sections(board)
+    title = next((l[2:].strip() for l in board.split("\n") if l.startswith("# ")), "board")
+    LINKS.clear()
+    for ln in sec(bs, "Links").split("\n"):
+        parts = ln.strip().split(None, 1)
+        if len(parts) == 2 and not ln.startswith("#"):
+            LINKS[parts[0]] = parts[1].strip()
+    return dict(title=title, spine=f("spine"), close=f("close"),
+                session=f("session"),   # 整板会话的 id（QD5）——serve.py 记在 board.md 头部
+                theme=sec(bs, "Topic"), pipeline=sec(bs, "Pipeline"), dir="")
+
+
+def parse_doc(d, paths):
+    """Roster `doc:` line -> a doc-slide entry (QF2): the listed files render
+    directly on one slide, no Q file involved. id = the first file's parent
+    folder when it has one (the folder IS the slide's identity:
+    `2b-pitch/PITCH_LOG.md` -> `2b-pitch`; also keeps two `README.md`s from
+    colliding), else the file's stem. title = the first file's `# ` or setext
+    title, else the id."""
+    if "/" in paths[0]:
+        stem = paths[0].rsplit("/", 2)[-2]
+    else:
+        stem = paths[0].rsplit("/", 1)[-1]
+        stem = stem[:-3] if stem.endswith(".md") else stem
+    title = stem
+    first = d / paths[0]
+    if first.is_file():
+        lines = first.read_text(encoding="utf-8").split("\n")
+        for i, ln in enumerate(lines):
+            if not ln.strip():
+                continue
+            if ln.startswith("# "):
+                title = ln[2:].strip()
+            elif (i + 1 < len(lines)
+                  and re.match(r"^\s*(=+|-+)\s*$", lines[i + 1])
+                  and len(lines[i + 1].strip()) >= 3):
+                title = ln.strip()
+            break
+    return dict(id=stem, title=title, group="", file="", kind="doc",
+                files=list(paths), state="", owner="", method="", session="",
+                sec={})
+
+
+def parse_face(qid, txt, group="", file="", kind="question"):
+    """One Q/S face (title, meta lines, and ## sections) -> data dict."""
+    lines = txt.split("\n")
+    i = 0
+    while i < len(lines) and not lines[i].strip():
+        i += 1
+    qt = lines[i].lstrip("# ").strip() if i < len(lines) else qid
+    i += 1
+    meta = {"state": "🔴", "owner": "", "method": "", "session": ""}
+    while i < len(lines) and not lines[i].startswith("## "):
+        m = re.match(r"^(state|owner|method|session):\s*(.*)$", lines[i].strip())
+        if m:
+            meta[m.group(1)] = m.group(2).strip()
+        i += 1
+    return dict(id=qid, title=qt, group=group, file=file, kind=kind,
+                sec=split_sections("\n".join(lines[i:])), **meta)
+
+
+def parse_q(qid, txt, group="", file=""):
+    """Backward-compatible question parser used by legacy single-file boards."""
+    return parse_face(qid, txt, group, file, "question")
+
+
+def parse_file(md):
+    """legacy single-file board: [BOARD] + [Q1] + [Q2] ... blocks"""
+    B = split_blocks(md)
+    qs = [parse_q(k, B[k]) for k in sorted(
+        [k for k in B if re.fullmatch(r"Q\d+", k)], key=lambda x: int(x[1:]))]
+    return parse_board(B.get("BOARD", "")), qs, []
+
+
+def parse_dir(d):
+    """house form: board.md + Q<n>-<slug>.md files in one folder tree.
+
+    The Q files ARE the board — binding is by PATH (under the board folder),
+    the way 1-probes/ does it, so a question can never desync from its roster
+    entry. board.md's optional `## 清单` only sets ORDER and GROUPING; a file
+    on disk that nobody listed is still rendered (under ⚠️), never silently
+    dropped. Since QC3 a Q file may sit in a subfolder (its home folder); the
+    Roster keeps listing bare filenames.
+    """
+    bp = d / "board.md"
+    board = re.sub(r"^\[BOARD\]\s*\n", "",
+                   bp.read_text(encoding="utf-8") if bp.exists() else "")
+    # 文件名前缀就是这题的编号：Q1 / QA1 / QAa1 / Q0s1。组是大写字母（可带一个
+    # 小写子组字母，QAa/QAb 这样把一个组一分为二）或「数字+小写」（Q0s 这类
+    # 排在字母组之前的前置组），数字是组内序号。
+    disk, dupes = {}, []
+    for p in face_files(d):
+        qm = re.match(r"Q([0-9][a-z]|[A-Z]*[a-z]?)(\d+)([a-z]?)", p.stem)
+        sm = re.match(r"S(\d+[a-z]?)", p.stem, re.I)
+        if qm or sm:
+            if qm:
+                key = (0, qm.group(1), int(qm.group(2)), qm.group(3))
+                face_id = "Q" + qm.group(1) + qm.group(2) + qm.group(3)
+                kind = "question"
+            else:
+                order = re.match(r"(\d+)([a-z]?)", sm.group(1), re.I)
+                key = (1, "", int(order.group(1)), order.group(2))
+                face_id = "S" + sm.group(1)
+                kind = "stage"
+            if p.name in disk:
+                dupes.append(
+                    f"{p.name} appears twice "
+                    f"({disk[p.name][2].relative_to(d)} and {p.relative_to(d)}); "
+                    "keeping the first")
+                continue
+            disk[p.name] = (key, face_id, p, kind)
+    roster_txt = sec(split_sections(board), "Roster")
+    if not disk and not re.search(r"^doc:", roster_txt, re.M):
+        return parse_file(board)        # legacy: everything in one board.md
+
+    order, seen, warn, group, gintro = [], set(), dupes, "", {}
+    in_fence = False
+    for raw in roster_txt.split("\n"):
+        ln = raw.strip()
+        if in_fence:                       # 组介绍里的 ``` ascii 图：整段按原样收，不 strip（保住对齐）
+            gintro.setdefault(group, []).append(raw)
+            if ln.startswith("```"):
+                in_fence = False
+            continue
+        if ln.startswith("### "):
+            group = ln[4:].strip()
+        elif ln.startswith("doc:"):
+            # doc slide（QF2，JL 260724）：这一行列出的源文件直接渲染成一页 ——
+            # 没有 Q 文件、没有 state/清单/评论；标题取第一份文件的标题。
+            paths = ln[4:].split()
+            if paths:
+                order.append((group, parse_doc(d, paths)))
+        elif ln.endswith(".md"):
+            name = ln.lstrip("-*· ").strip()
+            if name in disk:
+                order.append((group, disk[name][2]))
+                seen.add(name)
+            else:
+                warn.append(f"{name} is listed in the Roster but no such file exists")
+        elif ln.startswith("```") and group:
+            in_fence = True
+            gintro.setdefault(group, []).append(raw)
+        elif ln and group:
+            # Plain lines between a "### " heading and its first .md line are the
+            # GROUP INTRO (QC2, JL 260724): line 1 = the sentence that always shows
+            # under the header; the rest = the click-to-expand "what / why" body,
+            # which MAY include a ``` ascii diagram (JL 260724).
+            gintro.setdefault(group, []).append(raw)
+    listed = bool(order)
+    for name, (key, qid, p, kind) in sorted(disk.items(), key=lambda kv: kv[1][0]):
+        if name not in seen:
+            if listed:
+                warn.append(f"{name} is not listed in board.md's ## Roster")
+            order.append(("⚠️ Not in Roster" if listed else "", p))
+
+    qs = [p if isinstance(p, dict)
+          else parse_face(disk[p.name][1], p.read_text(encoding="utf-8"), g,
+                          p.relative_to(d).as_posix(), disk[p.name][3])
+          for g, p in order]
+    for q, (g, p) in zip(qs, order):
+        if isinstance(p, dict):
+            q["group"] = g
+    meta = parse_board(board)
+    meta["dir"] = str(d.resolve())
+    meta["groups"] = {g: ls for g, ls in gintro.items() if ls}
+    return meta, qs, warn

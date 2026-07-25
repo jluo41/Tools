@@ -82,7 +82,14 @@ Too little permission and it cannot work; too much and a browser tab can edit th
       (Note: NOT the same root as the old "writes hang" issue; that one was diagnosed and fixed, see Lesson.)
 
 ## Where we are
-Usable. The `💬 Chat` you click on the page is this.
+Usable. The `🤖 Chat` you click on the page is this.
+
+- The drawer also opens from the index page (JL 260725: "just add a chatbot in the index page")
+      The bottom-right 🤖 button on the index opens this same drawer with `file=board.md`: the orientation block carries
+      the index's view (spine, close, every face's state and open comments), the restricted tier's "own files" widens to
+      any `.md` inside the board folder (verified 260725: an in-board Write passed, a /tmp Write was denied), and the
+      session id sits in `board.md`'s header (`session:` under `close:`), resuming like any question's. Everything else
+      is unchanged: three tiers, streaming, the gate, ⌨ to the `QD3` terminal. No second engine.
 
 - Three permission tiers, dropdown at the drawer bottom (JL ruled 260723, default "full·ask")
       · restricted-to-this-Q: setting_sources=[], read + edit this question's files only, Bash/Task/Skill/Web hard-off, cheap ($0.24, no skills)
@@ -162,6 +169,8 @@ effort: how much thinking the model spends on one answer, five tiers low→max.
 >> CC0723: the send key turns into ⏹ while running; clicking it raises the server-side flag and aborts browser-side.
 > JL: how do you think the claude code plugin in the vscode work? we want to align it with QD2?
 >> CC0724: it is the same engine underneath (local claude runtime, same credentials, same session jsonls), so alignment is UX, not architecture. What it has that the drawer lacks: diff preview at the permission prompt, @-file mentions, plan mode, checkpoints. Adopt in that order; skip checkpoints (fights the one-session LAW). Full comparison in Where we are; new Items-to-Finish line added.
+> JL: I think it is also related to QD5, right? maybe we can just remove it. as it is very related to QD2 and QD3, how do you think? (260725)
+>> CC0725: agreed and archived (moved to _archive/QD5-boardagent.md, recoverable). QD5 asked for a board-level agent; what shipped is smaller and lives here: the same drawer and terminal, opened on board.md from the index. Its entry-point/stack/permission questions are answered by this question's machinery; its one real leftover, the "two agents, one file" rule, was already QD1's open item and stays there.
 > JL: will this make it better to use the claude sdk or terminal? I want to know what is the back end of the vscode claude plugin? and I want to duplicate it.
 >> CC0724: the console split changes nothing about which to use, both still run on the workstation serve.py; the console only pipes. Choose by job: drawer (SDK) for gated, comment-driven edits in the page; terminal for long tasks, skills, anything CLI-shaped. The plugin's backend is the claude binary itself over the stream-JSON protocol, which is what the drawer already drives, so "duplicating it" = the shell: diff-at-the-gate (shipped today, ①) and one persistent process per session (④, next). Anatomy written into Where we are.
 
@@ -189,6 +198,8 @@ effort: how much thinking the model spends on one answer, five tiers low→max.
       but one question: is this output actually streaming out? It doesn't feel like it.
 
 ## Log
+260725 1115 · QD5 archived on JL's call (redundant with QD2/QD3: the index chatbot IS this drawer + the QD3 terminal on board.md); references cleaned in QD1 and board.md's QD intro; the "two agents, one file" rule stays open on QD1
+260725 1050 · A chatbot on the index (JL's ask on QC2): the drawer accepts file=board.md (board-flavored rules + orientation in serve.py, chatOpen('board') + index fab in board.js, session: in board.md's header rendered as data-bsession). Verified: orientation answer, session resume, in-board Write allowed, /tmp Write denied. This question's own machinery untouched
 260724 1510 · The wait line tells the truth now: serve.py emits stage events ("booting claude, the full tier loads the whole skill registry…" / "session up") so the drawer shows real progress instead of a static "…thinking"; the collapsed 💭 block is labeled "Thinking (N chars, click to reopen)". Also verified: RESUMED sessions stream thinking now (probe on QD6: 3 think events), yesterday's loose end ② is gone, cured by the explicit thinking={enabled} flag
 260724 1455 · Diff preview at the gate BUILT (serve.py ask events carry `detail`, drawer renders −/+ blocks; node-checked; live pop owed: the E2E's full-tier boot outran the window, turn stopped clean, board.md untouched). The extension's backend anatomized in Where we are per JL's "duplicate it"; item ④ persistent-process named as the real remaining delta
 260724 1350 · Console relay verified (boards_api.py pipes /_board/chat NDJSON through 8093, "RELAY OK" streamed); VS Code extension alignment analyzed per JL's question: same engine, adopt diff-preview → @-mentions → plan mode, skip checkpoints

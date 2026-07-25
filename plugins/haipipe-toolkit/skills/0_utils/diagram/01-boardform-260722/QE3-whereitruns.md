@@ -2,12 +2,12 @@
 
 state: ✅ SETTLED
 owner: JL
-method: decide whether the static half survives first — that one answer determines everything else
+method: decide whether the static half survives first: that one answer determines everything else
 
 ## Question
 The board runs inside `serve.py` today, a 976-line Python `SimpleHTTPRequestHandler` bound to `127.0.0.1`, single user. JL wants to make it a real thing and asked whether to move to a mature stack such as Node. The decision that actually matters is not the language: it is which process the board moves into, and whether `build.py` producing a static page stays an invariant.
 
-The board has two halves with opposite requirements: the static half (`build.py` → `board.html`) is valuable precisely because it has zero dependencies, so you can hand an RA one file, project it in a meeting, or read it offline, while the live half (comment write-back, chat, terminal) must run on the machine the files are on, and moving into a service makes it very easy to kill the static half by accident. Leave it undecided and both `QE2` (the SPACE layer) and `QE4` (in-page editing) are stuck: they need to know which codebase they are written in before anyone can start, so until this is settled those two can only be speculated about. Downstream it settles which of the two repos the code lives in, whether to branch, the fate of `build.py`'s ~490-line parser, and whether the board can be embedded in a HAI-Chat thread.
+The board has two halves with opposite requirements: the static half (`build.py` → `board.html`) is valuable precisely because it has zero dependencies, so you can give a colleague one file, project it in a meeting, or read it offline, while the live half (comment write-back, chat, terminal) must run on the machine the files are on, and moving into a service makes it very easy to kill the static half by accident. Leave it undecided and both `QE2` (the SPACE layer) and `QE4` (in-page editing) are stuck: they need to know which codebase they are written in before anyone can start, so until this is settled those two can only be speculated about. Downstream it settles which of the two repos the code lives in, whether to branch, the fate of `build.py`'s ~490-line parser, and whether the board can be embedded in a HAI-Chat thread.
 
 ## Boundary
 - ✅ Covered here
@@ -44,7 +44,7 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 
 ## Items to Finish
 - [x] Decide: does `build.py` producing a static page stay an invariant?
-      **Kept** (JL 260724, approving the discussed plan: "as we discussed, don't stop to ask me"). `build.py` stays alive and gained `--json`: two render paths, one grammar. The hand-an-RA-one-file and offline-projection properties survive.
+      **Kept** (JL 260724, approving the discussed plan: "as we discussed, don't stop to ask me"). `build.py` stays alive and gained `--json`: two render paths, one grammar. The give-a-colleague-one-file and offline-projection properties survive.
 - [x] Decide: stay in `serve.py` or move into `haichat-inlab`?
       **Both, split by layer** (the discussed hybrid, approved 260724): the grammar (`build.py`) and the md-writers (`serve.py`) stay in the skill; `haichat-inlab` gained `boards_api.py`, a fifth router that IMPORTS them: SPACE mounting, board discovery, page serving, comment/discuss/resolve write-backs. Chat/terminal (`QD2`/`QD3`) stay on the workstation's `serve.py`; the console answers them 501.
 - [x] Decide whether to branch, and in which repo
@@ -94,7 +94,7 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 
 ## Law
 - The static half is an invariant
-  `build.py` → a self-contained `board.html` stays, whatever else is built on top. Hand an RA one file; project offline. The no-JS assertion keeps running on every build.
+  `build.py` → a self-contained `board.html` stays, whatever else is built on top. Give a colleague one file; project offline. The no-JS assertion keeps running on every build.
 - One grammar, never two parsers
   `build.py`'s parse half is the board's grammar; every consumer (serve.py, boards_api.py, anything later) IMPORTS it or calls `--json`. Rewriting it in another language is forbidden while the invariant above stands.
 - One writer, never two

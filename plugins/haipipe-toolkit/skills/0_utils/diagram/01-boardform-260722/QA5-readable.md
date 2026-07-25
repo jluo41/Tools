@@ -22,7 +22,7 @@ The writer knows too many things that never made it onto the page, so your own t
   ┌─ zero-background reviewer subagent ──────┐
   │  assumes: never saw the meeting notes,    │
   │        never read the code,               │
-  │        does not know JL / RA / the project│
+  │        does not know JL / CC / our colleagues│
   │  answers exactly three things:            │
   │    ① which sentence is unreadable — quoted│
   │    ② which word is never explained — list │
