@@ -99,9 +99,9 @@ Resolution order (first match wins):
 6. input but target unclear                  -> ASK; NEVER silently default a venue (venue drives pitch/narrative/display/prose, expensive to redo)
 ```
 
-A paper root is any directory upward containing `STATUS.md`, `0-lifecycle/`, `0-*.tex` + `0-sections/`, or `1-compile.sh` + `0-sections/`.
+A paper root is any directory upward containing `the S pages`, `0-lifecycle/`, `0-*.tex` + `sections/`, or `2-src/compile.sh` + `sections/`.
 
-Venue coupling (drives two routing rules): seed + resource + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2a-venue/2a-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2a-venue.md (direct `venue/playbook-<venue>` reads = fallback when 2a-venue.md is absent, or deep dives via its `[source: ...]` tags).
+Venue coupling (drives two routing rules): seed + resource + claims are venue-FREE; venue pins the journal in the S pages between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2a-venue/2a-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2a-venue.md (direct `venue/playbook-<venue>` reads = fallback when 2a-venue.md is absent, or deep dives via its `[source: ...]` tags).
 So: "paper" with claims done but no venue pinned -> run `venue` before pitch.
 Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); resource and claims stay unchanged (what a paper NEEDS to exist does not depend on where you send it).
 
@@ -155,7 +155,7 @@ Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it 
 The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
 
 
-Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../1-lifecycle/ref/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once STATUS.md carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
+Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../1-lifecycle/ref/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once the S pages carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
 
 
 Comment lifecycle
@@ -194,7 +194,7 @@ In `.tex` files, LaTeX comment style:
 %% {CC-content-v0531}: finding | suggestion ========>
 ```
 
-Used in: `0-sections/*.tex`, `4-display.tex`, rebuttal files.
+Used in: `sections/*.tex`, `4-display.tex`, rebuttal files.
 
 ### The two marks (tex format)
 
@@ -348,7 +348,7 @@ No message bus, no shared contract file. Two channels carry it, and the agent (t
              handshake — binding is by PATH, and the file on disk IS the state.
 ```
 
-Who owns which format: the paper owns the NEED (loose) and the a-consumer in its stage doc (its own vocabulary). The EXECUTOR owns the ANSWER (the QA file: `# Q` / `## Answer` / `## Caveats` / `## Not-done`, general language, anatomy in `probe/haipipe-probe/SKILL.md`). A CLAIM's status is the paper's alone, and lives in `0-lifecycle/1b-claims/1b-claims.md`. That is why no shared interface file is needed: each artifact's shape belongs to the layer that produces it.
+Who owns which format: the paper owns the NEED (loose) and the a-consumer in its stage doc (its own vocabulary). The EXECUTOR owns the ANSWER (the QA file: `# Q` / `## Answer` / `## Caveats` / `## Not-done`, general language, anatomy in `probe/haipipe-probe/SKILL.md`). A CLAIM's status is the paper's alone, and lives in `0-lifecycle/1b-claims/S-Work-1-claims.md`. That is why no shared interface file is needed: each artifact's shape belongs to the layer that produces it.
 
 ### When to record a need
 
@@ -358,7 +358,7 @@ Only when the problem is EVIDENCE, not wording. A wording/structure problem loop
 paper GAP -> a Q-consumer in the stage doc + a question ENTRY in 1-probes/ (DRAFT
 MATCHes it) -> the PROBE phase DISPATCHes only what MATCH could not close -> the
 answering QA file -> the entry's `### a-executor` -> each Q-consumer's a-consumer ->
-the paper backfills (the claim's status flips in 1b-claims.md)
+the paper backfills (the claim's status flips in S-Work-1-claims.md)
 ```
 
 Do NOT route through a project-level narrative layer (there isn't one).
@@ -368,7 +368,7 @@ Do NOT route through a project-level narrative layer (there isn't one).
 ```
 claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (an ENTRY in 1-probes/; PROBE does MATCH first, and dispatches only what MATCH cannot close)
 figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
-settled claim status (supported|refuted|inconclusive             -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY home of a claim's status; the
+settled claim status (supported|refuted|inconclusive             -> 0-lifecycle/1b-claims/S-Work-1-claims.md (the ONLY home of a claim's status; the
   + confidence + claim_type)                                        probe entry carries only the `### a-executor` copy of the bank's answer.
                                                                     answer)
 wording/section placement                                        -> the owning lifecycle stage skill
@@ -404,7 +404,7 @@ backfill     the slot/display to update when the worker returns
 The answer is a FILE: the executor's `<task-folder>/QA/<n>-<slug>.md`. The probe entry's `**target**:` points at it, `### a-executor` copies its answer in (the consumer-side single source of truth), and each Q-consumer's a-consumer — its `Answer:` line in the stage doc, anchored `[source: PP<NN>]` — says what it MEANS for this paper. On backfill:
 
 ```
-- write the claim's status in 0-lifecycle/1b-claims/1b-claims.md — supported |
+- write the claim's status in 0-lifecycle/1b-claims/S-Work-1-claims.md — supported |
   refuted | inconclusive, + confidence + claim_type. THAT ledger is
   the only home of a claim's status.
 - if the evidence narrows the claim, narrow the claim wording in 1-claims
@@ -439,7 +439,7 @@ Autonomy policy:
 AUTO (no asking):  local render/parse, backfill claims/displays, draft a stage tex,
                    compile previews, parse logs, status/ledger updates
 PAUSE + surface:   trigger a server/PHI run; declare a final yes/no answer;
-                   settle a claim's status in 1b-claims.md; compile-to-submit;
+                   settle a claim's status in S-Work-1-claims.md; compile-to-submit;
                    destructive round / git ops
 ```
 
@@ -482,7 +482,7 @@ d. RAISE it as a question ENTRY (/haipipe-paper probe "<need>"). DRAFT MATCHes i
    close. The paper TRIGGERS; it never runs the analysis (LAW 1).
 e. BACKFILL: when the answering QA file lands, PROBE writes the entry's
    `### a-executor`, each Q-consumer writes its a-consumer in the stage doc, the
-   claim's status flips in 1b-claims.md, and the \needprobe{} flag comes out.
+   claim's status flips in S-Work-1-claims.md, and the \needprobe{} flag comes out.
 ```
 
 ### The `probe` verb

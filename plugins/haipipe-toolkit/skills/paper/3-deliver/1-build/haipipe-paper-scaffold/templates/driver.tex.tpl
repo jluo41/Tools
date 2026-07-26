@@ -4,7 +4,7 @@
 %% {{VENUE_NOTE}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% !TEX root = 0-{{PAPER_SLUG}}.tex
+% !TEX root = {{PAPER_SLUG}}.tex
 \documentclass{article}
 {{VENUE_STYLE_USEPACKAGE}}
 
@@ -53,10 +53,10 @@
 
 \maketitle
 
-\input{0-sections/00_abstract}
+\input{sections/00_abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Main sections (included from 0-sections/)
+%% Main sections (included from sections/)
 %% The driver owns every \section{} heading; wrappers/leaves never do.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -67,7 +67,7 @@
 %% Lives at top level, OUTSIDE the last \section{}; uses \section*{} blocks.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\input{0-sections/{{BACKMATTER_FILE}}}
+\input{sections/{{BACKMATTER_FILE}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% References
@@ -75,11 +75,11 @@
 
 \clearpage
 \bibliographystyle{{{BIB_STYLE}}}
-\bibliography{0-{{PAPER_SLUG}}}
+\bibliography{{{PAPER_SLUG}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Supplementary Information is a SEPARATE document
-%% (0-Supplementary-{{PAPER_SLUG}}.tex). SI leaves (0-sections/A_* ...)
+%% (Supplementary-{{PAPER_SLUG}}.tex). Appendix leaves (appendices/A_* ...)
 %% are \input by that standalone entry point, never here.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}

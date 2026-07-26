@@ -1,6 +1,6 @@
 # Which address the board binds to
 
-state: 🔴 OPEN
+state: 🟡 PARTIAL
 owner: JL
 method: keep the shipped default local, then decide separately where a per-machine override is allowed to live
 
@@ -23,6 +23,7 @@ The setting also has no obvious home: a flag is explicit but has to be retyped, 
   What two people editing at once does: that is `QE4`.
 
 ## Diagram
+
 ```
 serve.py has no auth, so the address IS the permission
 ──────────────────────────────────────────────────────
@@ -35,6 +36,8 @@ serve.py has no auth, so the address IS the permission
 
   ①②③ keep the loopback security model.  ④⑤ trade it for reach.
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE6
 
 ## Content
 ### §1 The bind address is the only access control there is

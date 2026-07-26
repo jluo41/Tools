@@ -28,12 +28,12 @@ runs: once
 needs_paper: true
 venue_aligned: true       # REWRITES when the venue changes (claims does not — it is venue-free)
 
-artifact: 0-lifecycle/2b-pitch/S-Venue-1-pitch.md
-artifact_fallback: 0-lifecycle/2b-pitch/2b-pitch.md
+artifact: 0-lifecycle/2-venue/S-Venue-1-pitch.md
+artifact_fallback: 0-lifecycle/2-venue/2b-pitch.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
-archive: 0-lifecycle/2b-pitch/archive/vNN_<reason>.md
+archive: 0-lifecycle/2-venue/archive/vNN_<reason>.md
 probes: 1-probes/PPNN_<topic>/
 template: template.md
 support: [readability.md]   # the 9 global language rules, section lead cues, hook method menu,
@@ -42,7 +42,7 @@ support: [readability.md]   # the 9 global language rules, section lead cues, ho
 exit_when: "abstract/intro sells another story"   # the stage's own failure exit
 
 venue_contract:           # read FIRST, before a word is drafted — see the craft body
-  read: 0-lifecycle/2a-venue/S-Venue-0-venue.md
+  read: 0-lifecycle/2-venue/S-Venue-0-venue.md
   blocks: [Venue Profile, Fit Assessment]
   shapes: [Editor's Chair Test, "[primary] designation", RQ framing, Audience and Venue Fit]
   fallback: "venue/playbook-<venue> ONLY if S-Venue-0-venue.md is absent; with neither, proceed without
@@ -101,7 +101,7 @@ done_criteria:
 
 upstream: [claims, venue]
 downstream: [narrative]
-handoff: "on CHECK confirm, update STATUS.md (current_layer, maturity: pitch) -> narrative"
+handoff: "on CHECK confirm, append the gate row to this stage's S page ## Log -> narrative"
 ---
 
 Pitch — the craft
@@ -122,7 +122,7 @@ NARRATIVE  how does the arc RUN?       the section-mirrored expansion of this pi
 The venue contract is read FIRST
 --------------------------------
 
-Before a word is drafted, read `0-lifecycle/2a-venue/S-Venue-0-venue.md` — its **Venue Profile** and
+Before a word is drafted, read `0-lifecycle/2-venue/S-Venue-0-venue.md` — its **Venue Profile** and
 **Fit Assessment** blocks. Nothing substitutes for them. They shape four sections: the Editor's
 Chair Test question, the `[primary]` designation, the RQ framing, and Audience and Venue Fit.
 

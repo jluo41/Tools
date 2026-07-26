@@ -4,6 +4,18 @@ haipipe-paper-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.5.0] — 2026-07-26 — derives the frontier for real, and DRIFT is retired with STATUS.md
+
+Aligned with the paper-folder layout ruled 2026-07-26 on the design board (`skills/diagrams/01-haipipe-paper-260725`, face QA6): `0-sections/` to `sections/`, `0-displays/` to `displays/` (one folder per unit, the only home of an asset, no top-level `figures/`), `1-compile.sh` to `2-src/compile.sh`, and `STATUS.md` retired.
+
+- **DRIFT is gone, replaced by STALE.** DRIFT named the gap between a stored `current_layer` and the disk. With nothing stored there is no such gap. What survives is a real disagreement: an S page whose own `state:` claims done while its disk predicate fails. That is now `STALE`, and it is narrower and more useful, because the page sits ON the artifact it describes and cannot over-claim about a paper it is not part of.
+- **The Golden Rule rewritten** around the S page rather than around distrusting a status file.
+- **Paper-root signatures rewritten**: `0-lifecycle/board.md` first, because every paper is Board-first. `STATUS.md` is explicitly NOT a signature; a folder carrying only one is a leftover, not a paper.
+- **Read Order rewritten to the eight family folders.** It was still reading `0-lifecycle/0-seed/0-seed.tex`, `1a-resource/`, `1b-claims/`, `2b-pitch/`, `3-narrative/`, `4-display/`, none of which exist after the one-family-one-folder migration.
+- **The frontier predicate table** now tests S pages, and the venue predicate reads `S-Venue-0-venue.md` frontmatter.
+- **The stage strip** reads the derived frontier. It was specified in the 260622 feedback as reading `STATUS.md current_layer`, with the stated precondition that a stale value would make it lie; the console had already stopped honoring that design, and this makes the file match the behavior.
+
+
 ## [0.4.1] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 4.1.1; older entries below keep their original numbers).

@@ -1,11 +1,11 @@
 ---
 name: haipipe-paper-draft-display
-description: "DRAFT-phase display auditor (internal). Walks a stage doc or section for claims that need visual support, maps each need to an existing 0-displays/ unit where one fits, and files a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md for each one that does not. Never creates a display, never plots, never links a unit that does not exist yet. Users invoke stage skills (narrative, section-edit...), not this skill directly."
+description: "DRAFT-phase display auditor (internal). Walks a stage doc or section for claims that need visual support, maps each need to an existing displays/ unit where one fits, and files a DR row in the display stage's request file for each one that does not. Never creates a display, never plots, never links a unit that does not exist yet. Users invoke stage skills (narrative, section-edit...), not this skill directly."
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-19"
+  version: "0.2.0"
+  last_updated: "2026-07-26"
   summary: "DRAFT-phase display auditor: decide which claims need visual support, map each to an existing unit, and file a DR row in the display stage's inbox for each missing one. The paper layer plans, it does not plot. History: ./CHANGELOG.md."
 ---
 
@@ -52,7 +52,7 @@ PLAN — map each need to a unit
 For each need, in order:
 
 ```
-1. an EXISTING 0-displays/<unit>/ already shows it
+1. an EXISTING displays/<unit>/ already shows it
      → record the unit path against the need. Do NOT place a \ref yet —
        linking is ⑤ INTERPRET's job, after the unit is confirmed landed.
 2. a DR row already requests it
@@ -69,7 +69,7 @@ The DR row, appended to `0-lifecycle/4-display/_DISPLAY_REQUEST.md`:
 - claim: <the exact claim the display must support>
 - form: figure | table | diagram | illustration   (suggestion; the display stage decides)
 - evidence: <source hint: tasks/ path · metrics.json · a landed ### a-executor>
-- unit: --                                        (display stage fills: 0-displays/displayNN-slug/)
+- unit: --                                        (display stage fills: displays/displayNN-slug/)
 ```
 
 Status flow, and ONLY the display stage advances it:

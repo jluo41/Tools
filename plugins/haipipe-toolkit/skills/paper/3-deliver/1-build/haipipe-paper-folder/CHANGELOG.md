@@ -4,6 +4,18 @@ haipipe-paper-folder — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.5.0] — 2026-07-26 — Board-first and minimal; no STATUS.md, no 0-displays/
+
+Rewritten against the layout ruled on the design board (face QA6).
+
+- **The scaffold shrank and gained a runnable page.** Was `README` + `STATUS.md` + `.gitignore` + three EMPTY containers. Now `README` + `.gitignore` + `0-lifecycle/` carrying `board.md` and one `S-Seed-0-seed.md`, so a new paper is workable on day 0 instead of being a set of empty directories.
+- **`STATUS.md` is no longer created.** The frontier is derived from disk and from each page's own `state:`; a stored frontier can only go stale, and a stale one becomes a third answer to "where is this paper" that disagrees with the other two.
+- **`0-displays/` is gone from creation.** Displays are unnumbered (`displays/`) and arrive with the manuscript upgrade, one folder per unit. There is no top-level `figures/`.
+- **`1-probes/` is no longer pre-created.** It arrives on the first probe, like everything else: absent until allocated.
+- **One family, one folder** documented, with the note that `haipipe-board/stage.py resolve` owns the filename rule and this skill must not reimplement it.
+- **The manuscript upgrade section rewritten**: the deliverable is unnumbered (`<paper>.tex`, `<paper>.bib`, `sections/`, `appendices/`, `displays/`, the venue shell) and only `2-src/` carries a number. Ends with a hard requirement to run `/haipipe-paper-conform` and report the delete-test verdict.
+
+
 ## [0.4.0] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 4.0.1; older entries below keep their original numbers).

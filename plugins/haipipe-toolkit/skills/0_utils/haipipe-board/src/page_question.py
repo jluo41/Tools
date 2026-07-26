@@ -3,8 +3,8 @@ the old render(), moved verbatim). page_stage.py owns embedded source content;
 this file owns the q-template anatomy on stage."""
 import re
 
-from .body import (body, flat_rows, inline, mark_span, parse_comments,
-                   render_comments, sort_log)
+from .body import (body, flat_rows, inline, mark_span, note_body,
+                   parse_comments, render_comments, sort_log)
 from .common import esc, sec, stinfo
 
 STAGE_LABELS = {
@@ -92,13 +92,13 @@ def render_subsections(sections, open_first=True, flat=False):
 
 
 def face_name(q):
-    """"S Main 7 · Results" -> "Main 7 Results": the face's own name, for labels."""
+    """"S Main 7 · Results" -> "Main 7 Results": the page's own name, for labels."""
     return re.sub(r"\s+", " ", re.sub(r"^[QS]\s+", "", q.get("title", ""))
                   .replace("·", " ")).strip()
 
 
 def render_content(sections, q=None):
-    """Render a face's remaining named Content subsections.
+    """Render a page's remaining named Content subsections.
 
     On S pages the heading NAMES the stage ("Content · Main 7 Results") instead of
     counting subsections (JL 260725): an S page's Content is the stage's own
@@ -311,8 +311,8 @@ def render_question(q, prv, nxt):
     folds += det("🧠 Lesson", body(sec(q["sec"], "Lesson"), apparatus=False))
     folds += det("📖 Glossary", body(sec(q["sec"], "Glossary"), apparatus=False))
     log = sort_log(sec(q["sec"], "Log").strip())
-    nlog = len(re.findall(r"^\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
-    folds += det(f"📜 Log ({nlog})", body(log, apparatus=False))
+    nlog = len(re.findall(r"^(?:[-*]\s+)?\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
+    folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))
     return (
         f'<section class="slide q {cls}" id="{q["id"]}"'
         f' data-title="{esc(q["title"])}" data-file="{esc(q.get("file",""))}"'

@@ -4,12 +4,12 @@ owner: CC
 method: mirror QA4 and materialize S Content from stage, venue, and upstream contracts
 
 ## Question
-I open an empty `QA9-xxx.md` or `S-Main-4-theory.md`: what do I put in it so the generated face follows QA4?
+I open an empty `QA9-xxx.md` or `S-Main-4-theory.md`: what do I put in it so the generated page follows QA4?
 Which sections are required for Q, which are required for S, and which can be deleted wholesale?
 
 The generator only recognizes a fixed set of section names, so misspell one and that section **silently disappears, no error**; silent failure is the hardest kind to debug.
-Without a clear template, everyone writes a different-shaped face and the page turns messy, while colleagues and future agents touch this file every day.
-QA2 is the authoring side of QA4's reading contract: when QA4 changes Opening, Content placement, or the on-stage order, this template must follow in the same change or newly written Q and S faces drift back to the old shape.
+Without a clear template, everyone writes a different-shaped page and the page turns messy, while colleagues and future agents touch this file every day.
+QA2 is the authoring side of QA4's reading contract: when QA4 changes Opening, Content placement, or the on-stage order, this template must follow in the same change or newly written Q and S pages drift back to the old shape.
 
 For a new S page, filling the template should not begin from a generic empty Content block.
 The creator should resolve the owning stage template, overlay the venue template, then bring in the accepted and unresolved requirements named by previous Stage Contracts.
@@ -19,13 +19,14 @@ It writes the result as explicit `###` headings so the page remains understandab
 - ✅ Covered here
   **The inside of one Q or S source file**: which sections exist, which are required versus optional for each workflow kind, what goes in each, and what `ref/q-template.md` looks like.
 - ↪ Covered elsewhere
-  Which files are in the folder and how a face attaches to the board: that is `QA1`.
+  Which files are in the folder and how a page attaches to the board: that is `QA1`.
   The rendered reading order, folding, and visual hierarchy are `QA4`.
   How the words inside each section should be written, and what checks that it stayed readable, is `QA9`.
 
 ## Diagram
+
 ```
-copy ref/q-template.md                     source → QA4 rendered face
+copy ref/q-template.md                     source → QA4 rendered page
 ┌──────────────────────────────────────────────────────────────────┐
 │ # title · state · owner              required → headline/header  │
 │ method                               optional → header            │
@@ -56,8 +57,10 @@ copy ref/q-template.md                     source → QA4 rendered face
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA2
+
 ## Content
-The metadata block above the sections is required for identity: title, state, and owner become the index row and face header; method is optional.
+The metadata block above the sections is required for identity: title, state, and owner become the index row and page header; method is optional.
 S additionally declares explicit `requires`, `style-from`, and `provides`; dependency is never inferred from Pages order.
 The eight mappings below mirror QA4's visible sequence.
 
@@ -132,13 +135,13 @@ Retired `## Why here` remains parse-compatible for old boards but must not be ad
 - [x] Adding either workflow kind begins from the same source
       Copy the template and rename it without consulting an existing board.
       The usage comment explains Q and S filenames, their distinct closure semantics, and the optional exact `### Stage Record` and Q-consumer rules that apply only to S.
-- [x] Template follows QA4's current shared-face hierarchy
+- [x] Template follows QA4's current shared-page hierarchy
       The Q mapping is `Opening → Diagram → Content → Items to Finish → Where we are → Files`; S carries `## Stage Contract` inside Opening as a collapsed disclosure (JL 260725).
       Question is a lead plus rationale paragraph, Boundary is optional inside Opening, Q rationale starts Content, S rationale sits in Opening, an optional S Stage Record joins it when supplied, and Supporting folds stay below the main read.
       On S every Opening row now starts collapsed, so the template says the lead question is the only thing on stage.
-- [x] Template carries the rulings of 260725, so new faces cannot drift back
+- [x] Template carries the rulings of 260725, so new pages cannot drift back
       `ref/q-template.md` was updated the same day the rulings landed: one visible hierarchy for both kinds with Stage Contract inside Opening, all Opening rows collapsed on S, the Content law with its three destinations, the named Content heading, one sentence per source line, and a worked sentence-apparatus example in the Content skeleton.
-      This item exists because the template is the only file a new face inherits from.
+      This item exists because the template is the only file a new page inherits from.
       A ruling recorded on QA4 but missing from the template is a ruling that survives exactly until the next person copies the skeleton, which is how the old three-bullet Question shape kept reappearing after it had been retired.
 - [ ] S creation materializes a composed Content blueprint
       Given a stage template, venue template, and previous Stage Contracts, the creation path writes the resolved direct `###` headings into the new S Markdown.
@@ -155,14 +158,14 @@ Retired `## Why here` remains parse-compatible for old boards but must not be ad
 
 ## Where we are
 **Partial.
-QA2 and `ref/q-template.md` both match the face as it renders on 260725: Stage Contract inside a fully collapsed Opening, Content holding the stage's real product under a heading that names it, one sentence per line, and sentence apparatus in typed lanes.
+QA2 and `ref/q-template.md` both match the page as it renders on 260725: Stage Contract inside a fully collapsed Opening, Content holding the stage's real product under a heading that names it, one sentence per line, and sentence apparatus in typed lanes.
 The remaining work is unchanged and is a code gap, not a documentation one: `stage.py new` still writes generic Content instead of materializing the composed blueprint.**
 
-- 260726 JL · ➕ The ＋ button was a second definition of a new face, and now follows this one
-  JL opened a question from the index and found no `## Diagram` in it, and asked whether this face should change.
-  It should not. `## Diagram` is in the template, this face already rules it optional, and `QA4 §2` rules how it renders; nothing was violated by its absence.
+- 260726 JL · ➕ The ＋ button was a second definition of a new page, and now follows this one
+  JL opened a question from the index and found no `## Diagram` in it, and asked whether this page should change.
+  It should not. `## Diagram` is in the template, this page already rules it optional, and `QA4 §2` rules how it renders; nothing was violated by its absence.
   What was violated is the line above it here: Boundary and Files are "optional but strongly advised", and `Q_STUB` in `serve.py` wrote neither. That stub shared nothing with `ref/q-template.md` but the section names it happened to reuse, 4 of the template's 14.
-  Fixed by making the stub follow this face rather than sit beside it: Boundary and Files are written out, and the optional sections are listed in an author note, because nobody can choose a section they never learn exists.
+  Fixed by making the stub follow this page rather than sit beside it: Boundary and Files are written out, and the optional sections are listed in an author note, because nobody can choose a section they never learn exists.
   The durable version is generating the stub FROM the template so the two cannot disagree again. Not done; it is the item below.
 - 260726 CC · 🕳 Author notes were not dropped, though the template promised they were
   `ref/q-template.md` tells authors a note "is dropped at generation either way". The only strip lived in the Stage Contract path, so a note written anywhere else came out as escaped `&lt;!--` prose on the page.
@@ -180,7 +183,7 @@ The remaining work is unchanged and is a code gap, not a documentation one: `sta
 
 - 260725 CC · 🧪 Shared-template acceptance passed
   A first clean reader built and rendered one Q and one S, recovering the visible order, rationale placement, Content requiredness, and distinct closure semantics; it found one mild ambiguity about whether Stage Record was required.
-  After “S-only, optional” was made explicit, a second clean reader rendered three faces and confirmed that Stage Record moves into Opening collapsed when supplied and leaves no placeholder when absent.
+  After “S-only, optional” was made explicit, a second clean reader rendered three pages and confirmed that Stage Record moves into Opening collapsed when supplied and leaves no placeholder when absent.
 
 - What the template looks like
   The top block is `# title / state / owner / method`, followed by 14 recognized `##` sections.
@@ -207,7 +210,7 @@ The remaining work is unchanged and is a code gap, not a documentation one: `sta
 - `stage.py`
   Creates and synchronizes only the managed inherited-contract block.
 - `QA4-pagelayout.md`
-  The rendered face contract this source template must mirror.
+  The rendered page contract this source template must mirror.
 
 ## Law
 - Section names must be kept verbatim
@@ -225,7 +228,7 @@ The remaining work is unchanged and is a code gap, not a documentation one: `sta
   The resolved headings are written into the new Markdown and become author-owned.
 - QA2 changes with QA4
   QA2 is the authoring contract and QA4 is the rendered reading contract.
-  Any QA4 ruling that changes section placement, requiredness, or visible order must update `ref/q-template.md` and this face in the same change, followed by a fresh-context Q/S creation test.
+  Any QA4 ruling that changes section placement, requiredness, or visible order must update `ref/q-template.md` and this page in the same change, followed by a fresh-context Q/S creation test.
 - Fold order is fixed by build.py
   On the page it is always Why here · Discussion · Comments · Law · Lesson · Glossary · Log, regardless of file order.
 - Renaming a section must go through ALIAS
@@ -251,7 +254,7 @@ The generator raises no error, but a block is missing on the page. optional: if 
 >> CC0725: they were aligned in intent, and the live template had most current behavior, but QA2 still documented the older Q-only page: no Content in its diagram or Law, Question shown as a question-mark lead, and no S-specific requiredness. QA2 now mirrors QA4 as the source side of one shared Q/S contract; the fresh Q/S creation test is the remaining gate.
 
 ## Log
-260726 · ＋ button's stub brought in line with this face (JL asked why a generated Q had no Diagram): Boundary and Files written out per the strongly-advised rule, optional sections offered as an author note; `parse.strip_notes` added because notes were never actually dropped and a `## ` inside one created a phantom section
+260726 · ＋ button's stub brought in line with this page (JL asked why a generated Q had no Diagram): Boundary and Files written out per the strongly-advised rule, optional sections offered as an author note; `parse.strip_notes` added because notes were never actually dropped and a `## ` inside one created a phantom section
 260725 · `ref/q-template.md` brought up to the day's rulings: one hierarchy for both kinds, Opening fully collapsed on S, the Content law and its three destinations, venue contract placed after the managed markers, named Content heading, one sentence per line, sentence-apparatus example
 260725 · Stage Contract placement updated: renders inside Opening as a collapsed disclosure, not between Opening and Diagram (JL)
 260725 · S creation contract now materializes stage + venue + previous-contract inputs as page-owned Content headings

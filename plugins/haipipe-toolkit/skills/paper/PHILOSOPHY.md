@@ -2,7 +2,7 @@
 
 A paper is a delivery contract, not a writing folder.
 
-Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>/`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1b-claims/1b-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
+Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>/`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1b-claims/S-Work-1-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
 
 ## Lifecycle
 
@@ -42,7 +42,7 @@ task       executes internal work
 discovery  checks outside evidence
 probe      the paper's Q/A map: one ENTRY per question, bound BY PATH to the
            executor's answering QA file. It does not judge — the claim's status
-           lands in the paper's 0-lifecycle/1b-claims/1b-claims.md
+           lands in the paper's 0-lifecycle/1b-claims/S-Work-1-claims.md
 paper      selects evidence, writes prose, delivers
 ```
 
@@ -59,10 +59,10 @@ Ask first: costly task/PHI work, claim verdicts, multi-section edits, compile-to
 ## Folder model
 
 ```text
-STATUS.md                     0-lifecycle/{0..5}/
-0-sections/                   0-displays/displayNN-*/
+the S page's own `state:`                     0-lifecycle/{0..5}/
+sections/                   displays/displayNN-*/
 1-probes/PPNN_*.md       0-lifecycle/7-round/vYYMMDD/
-1-compile.sh                  1-config.yaml
+2-src/compile.sh                  1-config.yaml
 ```
 
 `0-` = source of truth. `1-` = process.
@@ -88,8 +88,8 @@ task/probe/discovery, what artifact it produces, what machine state
 it updates, and when it must stop and ask the user.
 
 Keep the paper folder fixed:
-STATUS.md, 0-lifecycle/<stage>/<stage>.tex, 0-sections/,
-0-displays/displayNN-<slug>/, 1-probes/PPNN_<topic>/,
+the S page's own `state:`, 0-lifecycle/<stage>/<stage>.tex, sections/,
+displays/displayNN-<slug>/, 1-probes/PPNN_<topic>/,
 0-lifecycle/7-round/vYYMMDD/S-Round-<n>-<vYYMMDD>.md.
 
 Preserve boundaries:

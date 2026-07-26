@@ -23,6 +23,7 @@ Downstream it decides what the board list page looks like (the same visual probl
   Nor which process the code runs in: that is `QE3`.
 
 ## Diagram
+
 ```
 shipped 260724 (boards_api.py + Boards view)          still missing
 ──────────────────────────────────────────            ─────────────────────
@@ -40,6 +41,8 @@ shipped 260724 (boards_api.py + Boards view)          still missing
 how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 (os.walk + prune list + depth cap — no cache needed yet)
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE2
 
 ## Items to Finish
 - [x] Decide how many SPACEs one service mounts

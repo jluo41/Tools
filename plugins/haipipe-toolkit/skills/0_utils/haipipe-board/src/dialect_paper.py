@@ -18,7 +18,8 @@ the only copy of anything.
 Citations resolve against the `.bib`; owed markers of every kind resolve
 against `1-probes/`, because `[Q-Section-4]` is not citation grammar or value
 grammar, it is the paper's ONE join key from a sentence to the question that
-owes it. Displays resolve against `0-displays/` and are the remaining slice.
+owes it. Displays resolve against `displays/`, or `0-displays/` on a paper
+laid out before QA6's 260726 ruling, and are the remaining slice.
 
 THIS MODULE IS DELETABLE. The board must build with it gone and every board
 that does not say `dialect: paper` must render byte-identical, which is the
@@ -28,6 +29,7 @@ mechanical form of "the board never assumes a paper". build.py asserts it.
 import difflib
 import re
 from pathlib import Path
+from urllib.parse import quote_plus
 
 # @article{key,  ...fields...   up to the next entry at column 0
 ENTRY = re.compile(r"^@\w+\s*\{\s*([^,\s]+)\s*,(.*?)(?=^@|\Z)", re.S | re.M)
@@ -45,14 +47,21 @@ def _fields(blob):
     return out
 
 
+def _surname(who):
+    """First author's surname, from either `Last, First` or `First Last`."""
+    first = (who or "").split(" and ")[0].strip()
+    if not first:
+        return ""
+    return first.split(",")[0].strip() if "," in first else first.split()[-1]
+
+
 def _one_line(f):
     """A bibtex entry as one readable line, for a tooltip."""
     who = f.get("author") or f.get("editor") or ""
     if " and " in who:
-        first = who.split(" and ")[0]
-        who = (first.split(",")[0] if "," in first else first.split()[-1]) + " et al."
+        who = _surname(who) + " et al."
     elif who:
-        who = who.split(",")[0] if "," in who else who.split()[-1]
+        who = _surname(who)
     where = (f.get("journal") or f.get("booktitle") or f.get("publisher")
              or f.get("school") or f.get("institution") or "")
     bits = [b for b in (who, f.get("year", ""), f.get("title", ""), where) if b]
@@ -217,18 +226,32 @@ class Entry:
                               + f.get("primaryclass", "")).lower():
             out.append((f"arXiv:{ep}", f"https://arxiv.org/abs/{ep}"))
         url = f.get("url", "").strip()
-        if url.startswith("http") and not any(url == h for _, h in out):
+        if url.startswith("http") and not any(url == x[1] for x in out):
             short = re.sub(r"^https?://(www\.)?", "", url)
             out.append((short[:58] + ("…" if len(short) > 58 else ""), url))
+        # Google Scholar, LAST and with its own glyph, because it is a SEARCH
+        # and everything above it is an identifier. A doi resolves to THE work;
+        # this resolves to a result page that can be wrong. It earns its place
+        # anyway: most pre-doi entries have no other link at all, and on this
+        # paper's own .bib only a minority carry one (JL 260726).
+        # Title plus first-author surname, and deliberately NO year: a preprint
+        # and its published version disagree by one, and the year is the field
+        # most likely to exclude the very result you wanted.
+        title = f.get("title", "").strip().rstrip(".").strip()
+        if title:
+            who = _surname(f.get("author") or f.get("editor") or "")
+            q = f'"{title}"' + (f" {who}" if who else "")
+            out.append(("Scholar", "https://scholar.google.com/scholar?q="
+                        + quote_plus(q), "🔎"))
         return out
 
 
 class Display:
-    """One `0-displays/displayNN-<slug>/` unit, as far as a chip needs it.
+    """One `displays/displayNN-<slug>/` unit, as far as a chip needs it.
 
     The unit's own float.tex is the authority on two things a sentence needs:
     what KIND it is (`\\begin{table}` vs `\\begin{figure}`, which is why QC3 and
-    QC4 are two faces) and what `\\label{}` the manuscript may point at.
+    QC4 are two pages) and what `\\label{}` the manuscript may point at.
     """
 
     __slots__ = ("id", "path", "kind", "label", "assets", "candidates",
@@ -313,10 +336,21 @@ class Paper:
         # index spans every .tex, not just 0-displays, because a \ref{} that
         # resolves to a section-local label is fine; one that resolves to
         # NOTHING compiles to `??` and is the defect worth naming.
+        # WHICH FOLDER HOLDS THE UNITS depends on when the paper was laid out.
+        # QA6 ruled 260726 that the deliverable is UNNUMBERED, so a conformed
+        # paper keeps its units in `displays/`; papers written before that
+        # ruling, including MISQ today, still use `0-displays/`. Both resolve.
+        # Getting this wrong is not a missing chip: a \ref{} to a unit the
+        # resolver cannot see falls through to the "resolves to a \label that
+        # is not a display unit" branch and renders GREEN, so a migrated paper
+        # would report every display reference as fine (measured 260726).
+        self.disp_dir = next((self.root / n for n in ("displays", "0-displays")
+                              if (self.root / n).is_dir()), self.root / "displays")
+        self.disp_rel = self.disp_dir.name
         self.displays = {}
-        self.by_short = {}      # "display02" -> the unit; the S-Display faces
+        self.by_short = {}      # "display02" -> the unit; the S-Display pages
         self.by_label = {}      # write the short form, a Section the long one
-        for d in sorted((self.root / "0-displays").glob("display*")):
+        for d in sorted(self.disp_dir.glob("display*")):
             if d.is_dir():
                 u = Display(d, self.root)
                 self.displays[u.id] = u
@@ -417,15 +451,15 @@ class Paper:
         """Unresolved markers in the paper's own `.tex`, which no chip can show.
 
         A chip only exists where the board renders text, and the board renders
-        its faces. `0-sections/*.tex` is the actual manuscript and is reached
-        only when a face embeds it, so a broken key can sit there compiling to
+        its pages. `sections/*.tex` (`0-sections/` pre-QA6) is the manuscript and is reached
+        only when a page embeds it, so a broken key can sit there compiling to
         `[?]` with a clean-looking board. This walks the tex directly and hands
         build.py a list to print. Reporting is all it does: the `.bib` is
         human-only and nothing here writes.
         """
         out = []
         for p in sorted(self.root.rglob("*.tex")):
-            if "_archive" in p.parts or "0-displays" in p.parts:
+            if "_archive" in p.parts or self.disp_rel in p.parts:
                 continue
             for i, ln in enumerate(p.read_text(encoding="utf-8",
                                                errors="replace").split("\n"), 1):
@@ -443,8 +477,12 @@ class Paper:
                                         i, "broken", f"\\citep{{{k}}} is not in the .bib"))
                 for m in REF_TEX.finditer(bare):
                     if m.group(1) not in self.labels:
+                        # `unowned`, not `broken`, and deliberately: the CHIP for
+                        # this same marker renders `unowned` (QC3's legend: "the
+                        # id, or the \ref{} label, resolves to nothing"), while
+                        # `broken` on a display means STALE. One fact, one word.
                         out.append((p.relative_to(self.root).as_posix(), i,
-                                    "broken",
+                                    "unowned",
                                     f"\\ref{{{m.group(1)}}} resolves to no "
                                     f"\\label anywhere; it compiles to ??"))
         # QD6's ⑥-empty diagnostic: a display nothing points at is a leftover.
@@ -452,13 +490,13 @@ class Paper:
         for p in self.root.rglob("*.tex"):
             if "_archive" in p.parts or ".claude" in p.parts:
                 continue
-            if "0-displays" in p.parts:      # a unit's own float.tex declares,
+            if self.disp_rel in p.parts:     # a unit's own float.tex declares,
                 continue                     # it does not cite
             cited |= set(REF_TEX.findall(
                 p.read_text(encoding="utf-8", errors="replace")))
         for u in self.displays.values():
             if u.label and u.label not in cited:
-                out.append((f"0-displays/{u.id}/float.tex", 0, "uncited",
+                out.append((f"{self.disp_rel}/{u.id}/float.tex", 0, "uncited",
                             f"\\label{{{u.label}}} is referenced by no section"))
         return out
 
@@ -615,7 +653,7 @@ class Paper:
         """-> (state, tooltip, meta) for `displayNN` or `displayNN-<slug>`."""
         u = self.unit(did)
         if u is None:
-            return ("unowned", f"{did} names NO unit under 0-displays/. "
+            return ("unowned", f"{did} names NO unit under {self.disp_rel}/. "
                                f"Nothing owns this id, so a sentence pointing "
                                f"here points at nothing.", {})
         state, tip = u.chip()
@@ -636,7 +674,7 @@ class Paper:
             p, line = where
             rel = p.relative_to(self.root).as_posix()
             return ("ok", f"\\ref{{{label}}} resolves to a \\label in {rel}:{line}, "
-                          f"which is NOT a 0-displays unit. Fine for a section "
+                          f"which is NOT a {self.disp_rel} unit. Fine for a section "
                           f"or equation label; check it if a display was meant.",
                     {"files": [(f"{rel}:{line}", p)]})
         near = difflib.get_close_matches(label, self.labels, n=3, cutoff=0.4)

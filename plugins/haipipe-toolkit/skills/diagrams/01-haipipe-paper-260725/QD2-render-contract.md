@@ -14,7 +14,7 @@ The approach is the smallest possible contract, one input shape, one output shap
 - ✅ Covered here
   Generic renderer inputs, outputs, refusal behavior, and the boundary with paper adapters.
 - ↪ Covered elsewhere
-  Evidence computation belongs under `QBb1`; paper queue handoff is `QBd3`; format embedding is `QD4`.
+  Evidence computation belongs under `QB9`; paper queue handoff is `QA9`; format embedding is `QD4`.
 
 ## Diagram
 ```
@@ -50,7 +50,7 @@ The approach is the smallest possible contract, one input shape, one output shap
    │ owns caption · label · placement · stable display_id ·  │
    │      the handoff on S-Display-N                         │
    └─────────────────────────────────────────────────────────┘
-   same shape as the dialect boundary in QBc5: the generic thing
+   same shape as the dialect boundary in QA8: the generic thing
    stays ignorant, and the caller supplies the meaning.
 ```
 

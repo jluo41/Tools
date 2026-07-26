@@ -4,8 +4,8 @@ description: "Build a tracked-changes PDF (latexdiff style) showing what changed
 argument-hint: "[baseline-commit-or-tag] [tag-name] [main-tex]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-19"
+  version: "0.2.0"
+  last_updated: "2026-07-26"
   summary: "Build a tracked-changes PDF (latexdiff style) showing what changed between a baseline commit and the current working tree."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -124,7 +124,7 @@ sandbox:
      If `silenced-changes.txt` exists, run `silence-minor-changes.pl`
         to silently accept matching (old, new) pairs outside protected
         blocks.
-5. Stage support files (.bib, .cls, .sty) and create the `0-displays`
+5. Stage support files (.bib, .cls, .sty) and create the `displays`
    symlink so figures resolve.
 6. Compile with the auto-detected compiler (pdflatex / lualatex / xelatex)
    in the standard 4-pass + bibtex pipeline.
@@ -159,7 +159,7 @@ Tighten the diff by editing files in the subdir:
   line so changes inside `\NAME{...}` stay visible.
 - **Synthesize a baseline that didn't quite exist** (e.g., abstract
   rewrite that pre-dates the chosen commit): edit `old/master.tex` or
-  `old/0-sections/<file>.tex` to be the version from an earlier commit,
+  `old/sections/<file>.tex` to be the version from an earlier commit,
   then re-run latexdiff + compile manually (skipping the driver's
   extract step).
 - **Class auto-detect picks wrong macros**: write a `config.sh` with
@@ -287,7 +287,7 @@ For each invocation, the script writes (and the user commits a subset):
 | `1-diff/vs-<tag>-<sha>/config.sh` | ✅ if exists | per-diff overrides |
 | `1-diff/vs-<tag>-<sha>/old/` | ❌ gitignored | baseline snapshot (regenerable) |
 | `1-diff/vs-<tag>-<sha>/new/` | ❌ gitignored | current snapshot (regenerable) |
-| `1-diff/vs-<tag>-<sha>/0-displays` | ❌ gitignored | symlink for figure resolution |
+| `1-diff/vs-<tag>-<sha>/displays` | ❌ gitignored | symlink for figure resolution |
 
 `templates/.gitignore.tpl` has the gitignore rules; copy to `1-diff/.gitignore`
 on first setup.
@@ -335,7 +335,7 @@ Do not run this skill:
   technique.
   Document them in a README inside the diff subdir so co-authors
   understand what they're looking at.
-- For figure-heavy papers, the `0-displays → new/0-displays` symlink is
+- For figure-heavy papers, the `displays → new/displays` symlink is
   load-bearing.
   If you see "missing graphics" errors, the symlink is broken.
 

@@ -1,23 +1,45 @@
 ---
 name: haipipe-paper-scaffold
-description: "Build a new paper folder in the gold-standard layout (npjDM2025 contract): driver tex, section wrappers, leaf stubs with paragraph banners, 0-displays, SI driver, 1-compile.sh. Input is a paper plan or just a title + section list; output is a compileable skeleton with zero prose. Trigger: scaffold paper, paper skeleton, new paper folder, build paper structure, init paper dir, 搭论文骨架, /haipipe-paper-scaffold."
+description: "THE MANUSCRIPT UPGRADE: add the LaTeX toolchain to a paper that has reached the Display or section frontier. Writes the unnumbered driver tex, sections/ wrappers + leaf stubs with paragraph banners, appendices/, displays/, the venue shell, and 2-src/compile.sh. Everything it writes is UNNUMBERED except 2-src/, because the number is the delete test. Input is a paper plan or a title + section list; output is a compileable skeleton with zero prose. Does NOT create the paper folder itself: that is haipipe-paper-folder, Board-first and minimal. Trigger: scaffold paper, manuscript upgrade, paper skeleton, build paper structure, add latex to a paper, /haipipe-paper-scaffold."
 argument-hint: "[plan-path-or-title] [--out <dir>] [--venue <v>] [--no-si]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-06-04"
-  summary: "Plan → new conforming paper folder skeleton (structure only, zero prose)."
+  version: "0.2.0"
+  last_updated: "2026-07-26"
+  summary: "The manuscript upgrade: plan → compileable LaTeX skeleton in the ruled layout (structure only, zero prose)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-scaffold (3-deliver)
 ================================
 
-Create a **new** paper folder that conforms to `2-phase/REF/paper-folder-anatomy.md`. This skill writes structure only: drivers, wrappers, leaf stubs, directories, the compile script.
-It never writes a body sentence; prose belongs to `1-lifecycle/haipipe-paper-stage/stages/5-section-edit/`.
+Perform the **manuscript upgrade**: give a paper that has reached the Display or section frontier
+its LaTeX toolchain. This skill writes structure only: the driver, wrappers, leaf stubs, the
+directories, the venue shell, the compile script. It never writes a body sentence; prose belongs to
+the section stage.
 
-If a folder already exists and merely has the wrong shape, stop and route to `haipipe-paper-restructure` instead.
-Never scaffold over existing content.
+**This skill does not create a paper.** `haipipe-paper-folder` does that, Board-first and minimal:
+a `README`, a `.gitignore`, and `0-lifecycle/` with `board.md` and one Seed page. A paper that never
+reaches Display never grows a LaTeX toolchain, and running this skill early is the mistake it is
+here to prevent.
+
+If a folder already exists and merely has the wrong shape, stop and route to
+`haipipe-paper-restructure` instead. Never scaffold over existing content.
+
+The layout contract (design board QA6, ruled 2026-07-26)
+---------------------------------------------------------
+
+**The NUMBER is the delete test.** `rm -rf 0-* 1-* 2-*` must leave a paper that still compiles and
+still submits. So everything this skill writes is UNNUMBERED, with exactly one exception:
+
+```text
+UNNUMBERED, the deliverable      <paper>.tex · <paper>.bib · sections/ · appendices/
+                                 displays/ · <venue>.cls · <venue>.bst
+NUMBERED, working machinery      2-src/compile.sh · compile.ps1 · config.yaml · setup.sh
+```
+
+There is no top-level `figures/` and no `Figure/`/`Table/` bucket: a display is a UNIT
+(`displays/displayNN-<slug>/`) and its render lives inside it, in `assets/`.
 
 Usage
 -----
@@ -60,12 +82,13 @@ Confirm the target directory is empty or absent.
 ### Step 1: Create the tree
 
 ```
-<out>/
-├── 0-sections/        0-displays/displayNN-<slug>/
-└── 0-lifecycle/7-round/
+<paper-root>/
+├── sections/          appendices/          displays/displayNN-<slug>/
+└── 2-src/
 ```
 
-(`0-extra/`, `1-diff/`, `1-review/` are created later by the skills that need them; do not pre-create empty process dirs.)
+`0-lifecycle/` already exists (this is an upgrade, not a creation) and this skill never writes into
+it. Do not pre-create empty process dirs, and never create a numbered folder other than `2-src/`.
 
 ### Step 2: Instantiate templates
 
@@ -74,25 +97,26 @@ Fill every placeholder; grep `{{` afterward to prove none leaked.
 
 | Template | Becomes | Notes |
 |----------|---------|-------|
-| `driver.tex.tpl` | `0-<paper>.tex` | one `\section{} + \input` pair per section from the plan |
-| `supplementary.tex.tpl` | `0-Supplementary-<paper>.tex` | skip with `--no-si`; mirrors the driver preamble |
+| `driver.tex.tpl` | `<paper>.tex` | one `\section{} + \input` pair per section from the plan |
+| `supplementary.tex.tpl` | `Supplementary-<paper>.tex` | skip with `--no-si`; mirrors the driver preamble |
 | `wrapper.tex.tpl` | `NN_<slug>.tex` for each section **with subsections** | only `\input` lines |
 | `leaf.tex.tpl` | every `NN_*.tex` without subsections, every `NN-MM_*.tex`, every `X_*.tex` | heading + one paragraph-banner placeholder per planned paragraph (or one TODO banner if the plan has no paragraph level) |
-| `compile.sh.tpl` | `1-compile.sh` | copy as-is, `chmod +x` |
-| `sections-README.md.tpl` | `0-sections/README.md` | file map reflecting the actual scaffolded list |
+| `compile.sh.tpl` | `2-src/compile.sh` | copy as-is, `chmod +x`; it is invoked from the paper ROOT, so every path inside it is root-relative |
+| `sections-README.md.tpl` | `sections/README.md` | file map reflecting the actual scaffolded list |
 
-Also create an empty `0-<paper>.bib` (a comment header only) and copy the venue style file (`arxiv.sty`, `naturemag.bst`, ...) from the gold paper or the venue kit when the venue needs one.
+Also create an empty `<paper>.bib` (a comment header only; the .bib is HUMAN-ONLY thereafter, an agent greps it and never writes it) and copy the venue style file (`arxiv.sty`, `naturemag.bst`, ...) from the gold paper or the venue kit when the venue needs one.
 
 ### Step 3: Wire and verify
 
 1. Driver `\input` list matches the files on disk, in `NN` order; wrappers `\input` their `NN-MM` leaves in order.
-2. Run `../haipipe-paper-conform/scripts/check_structure.sh <out>` → must exit 0.
-3. Run `./1-compile.sh` inside the folder → every master must produce a PDF (stub pages are fine).
+2. Run `../haipipe-paper-conform/scripts/check_structure.sh <paper-root>` → must exit 0. Its block J
+   is the delete test, and an upgrade that leaves J failing is not done.
+3. Run `2-src/compile.sh` from the paper root → every master must produce a PDF (stub pages are fine).
    If LaTeX is unavailable, say so explicitly; do not claim the skeleton compiles.
 
 ### Step 4: Hand off
 
-Report what to run next: `/haipipe-paper section-edit <section> draft` to draft prose into the stubs, section by section.
+Report what to run next: the section stage, to draft prose into the stubs one section at a time. State the conform verdict, including the delete test, in the summary.
 
 Leaf stub shape (what Step 2 writes)
 ------------------------------------
@@ -116,5 +140,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   what was scaffolded (sections, leaves, SI yes/no, compile result)
 artifacts: [<out>/ tree]
-next:      /haipipe-paper section-edit … (draft prose) or /haipipe-paper-conform (re-audit)
+next:      the section stage (draft prose) or /haipipe-paper-conform (re-audit)
 ```

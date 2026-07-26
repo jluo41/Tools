@@ -57,11 +57,11 @@ def esc(s):
 
 QNAME = re.compile(r"^Q[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 SNAME = re.compile(r"^S[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
-FACENAME = re.compile(r"^[QS][A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
+PAGENAME = re.compile(r"^[QS][A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 
 
 def _vet_path(name, pattern):
-    """Board-relative face path -> clean posix string, or None."""
+    """Board-relative page path -> clean posix string, or None."""
     name = (name or "").strip().replace("\\", "/")
     parts = [s for s in name.split("/") if s not in ("", ".")]
     if not parts or name.startswith("/") or ".." in parts:
@@ -81,9 +81,9 @@ def vet_qpath(name):
     return _vet_path(name, QNAME)
 
 
-def vet_facepath(name):
-    """Board-relative Q- or S-face path -> clean posix string, or None."""
-    return _vet_path(name, FACENAME)
+def vet_pagepath(name):
+    """Board-relative Q- or S-page path -> clean posix string, or None."""
+    return _vet_path(name, PAGENAME)
 
 
 def q_files(d):
@@ -98,12 +98,12 @@ def q_files(d):
         yield p
 
 
-def face_files(d):
-    """Q and S faces at any depth, with the same exclusions as q_files()."""
+def page_files(d):
+    """Q and S pages at any depth, with the same exclusions as q_files()."""
     for prefix in ("Q", "S"):
         for p in sorted(d.rglob(f"{prefix}*.md")):
             if any(s.startswith(("_", ".")) or s == "fig"
                    for s in p.relative_to(d).parts[:-1]):
                 continue
-            if FACENAME.match(p.name):
+            if PAGENAME.match(p.name):
                 yield p

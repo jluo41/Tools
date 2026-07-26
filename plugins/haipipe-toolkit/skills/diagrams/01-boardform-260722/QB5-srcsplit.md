@@ -17,6 +17,10 @@ JL named the organizing principle: modules named for what they render (`page_que
 - ↪ Covered elsewhere
   Moving CSS and JS out to `assets/` is `QB4`; what those modules actually render is `QA4`'s page layout; the live server's own behavior belongs to the `QD` group.
 
+## Diagram
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB5
+
 ## Items to Finish
 - [x] 📦 Six modules under src/
       `common` (shared with serve.py) · `parse` · `body` (the §5 grammar) · `page_board` (cover + shell) · `page_question` (the card) · `page_stage` (embeds + generic renderer).
@@ -49,5 +53,5 @@ Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py
 
 ## Log
 260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
-260725 1615 · dropped the retired "QF1" face id from the src/ rationale; the embed feature it named is unchanged
+260725 1615 · dropped the retired "QF1" page id from the src/ rationale; the embed feature it named is unchanged
 260724 · settled and shipped in the same body of work as QC3 and QF1

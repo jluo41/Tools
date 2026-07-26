@@ -26,17 +26,17 @@ runs: once
 needs_paper: true
 venue_aligned: true       # rewrite the display set when the paper retargets
 
-artifact: 0-lifecycle/4-display/4-display.md          # THE BRAIN — the only hand-edited stage file
-blocked_on: QB4            # ⚠️ DECLARED DANGLING. On the MISQ pilot this file is archived: its
+artifact: 0-lifecycle/3-display/4-display.md          # THE BRAIN — the only hand-edited stage file
+blocked_on: QB2            # ⚠️ DECLARED DANGLING. On the MISQ pilot this file is archived: its
                            # displays were split into eleven per-unit S-Display-<n> pages, each
                            # with its own gate. Repointing `artifact:` means adopting the per-unit
-                           # grain, and `runs:` below still says `once`. QB4 owns that ruling.
+                           # grain, and `runs:` below still says `once`. QB2 owns that ruling.
                            # Declared here so check-contracts.py reports this path as KNOWN
                            # rather than passing silently or failing anonymously.
-generated: 0-lifecycle/4-display/4-display.tex        # gallery, rebuilt wholesale by sync; hand-editing is a defect
-compiled: 0-lifecycle/4-display/4-display.pdf         # compile from the PAPER ROOT so 0-displays/ paths resolve
-inbox: 0-lifecycle/4-display/_DISPLAY_REQUEST.md      # DR rows other stages file; only THIS stage advances their status
-units: 0-displays/displayNN-<slug>/                   # README + float.tex + preview + assets/ candidates/ source/ versions/
+generated: 0-lifecycle/3-display/4-display.tex        # gallery, rebuilt wholesale by sync; hand-editing is a defect
+compiled: 0-lifecycle/3-display/4-display.pdf         # compile from the PAPER ROOT so displays/ paths resolve
+inbox: 0-lifecycle/3-display/_DISPLAY_REQUEST.md      # DR rows other stages file; only THIS stage advances their status
+units: displays/displayNN-<slug>/                   # README + float.tex + preview + assets/ candidates/ source/ versions/
 probes: 1-probes/PPNN_<topic>/
 template: template.md
 support: [figure-logic.md, checklist.md]
@@ -53,7 +53,7 @@ support: [figure-logic.md, checklist.md]
 #     · provenance       which run, which spec, which window, which log line
 #     Produced by the TASK layer (haipipe-task-for-display), never by a paper stage.
 #
-#   CONSUMER side (0-displays/<unit>/ · stake-aware · venue-bound · THIS stage)
+#   CONSUMER side (displays/<unit>/ · stake-aware · venue-bound · THIS stage)
 #     · WHICH rows/columns the argument needs, in what order, what is emphasised
 #     · venue formatting: caption style, column rules, width, float placement
 #     · \label / \ref wiring into the manuscript
@@ -86,7 +86,7 @@ worker_contract: ../../../4-display/ref/paper-adapter.md
                  # from their own folders; all 12 paths rewritten.
 
 # VENUE-ALIGNED. Read the pinned venue contract BEFORE proposing any display:
-#   0-lifecycle/2a-venue/S-Venue-0-venue.md
+#   0-lifecycle/2-venue/S-Venue-0-venue.md
 #     · Structural Blueprint -> per-section `Display units` rows = the venue's standard set + hero rule
 #     · Writing Principles   -> the display LIMITS (figure/table caps, table format, color rules)
 # The `[primary]` claim's display is the hero. Fall back to venue/playbook-<venue> `-> Display`
@@ -128,7 +128,7 @@ done_criteria:
 
 upstream: [narrative]
 downstream: [section-edit]
-handoff: "on CHECK confirm, update STATUS.md (current_layer, maturity: display) -> section-edit"
+handoff: "on CHECK confirm, append the gate row to this stage's S page ## Log -> section-edit"
 ---
 
 Display — the craft
@@ -163,7 +163,7 @@ authority to create a display unit, dispatch a renderer, or advance a `_DISPLAY_
 ```text
 another stage needs a display  -> it writes a DR row into _DISPLAY_REQUEST.md, status: requested
 this stage rules on the row    -> accepted (map row + block + unit) | declined (reason written back)
-this stage delivers            -> done (unit: 0-displays/displayNN-slug/) — now the section may \input it
+this stage delivers            -> done (unit: displays/displayNN-slug/) — now the section may \input it
 ```
 
 That asymmetry is why `commissions:` exists. The four renderers — table, figure, diagram,

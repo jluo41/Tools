@@ -1,5 +1,5 @@
 # A sentence with a Display · figure
-state: ✅ RULED
+state: ✅ SETTLED
 owner: JL
 method: the same stable id as a table, plus the two things a figure has and a table does not
 
@@ -12,9 +12,9 @@ Mechanically, nothing: both are display units behind a stable id. The difference
 The approach is the same stable id as a table, plus an explicit candidate state, because a figure changes behind its id while a table usually does not. What we want is that a sentence citing an unpromoted candidate says so, rather than reading as settled while the picture underneath it is still being chosen.
 ## Boundary
 - ✅ Covered here
-  The figure reference in prose, the `> Display:` lane for a figure, candidate promotion, and what hover shows.
+  The figure reference in prose, the `> Display:` lane for a figure, candidate promotion, and what the panel shows.
 - ↪ Covered elsewhere
-  The sentence itself is `QC0`; the rendering mechanism is `QA8` on the boardform board; a table is `QC3`; who owns rendering is `QD1`; how a figure is drawn is the Display family, not this board.
+  The sentence itself is `QC0`; the rendering mechanism is `QA9` on the boardform board; a table is `QC3`; who owns rendering is `QD1`; how a figure is drawn is the Display family, not this board.
 
 ## Diagram
 ```
@@ -57,6 +57,14 @@ The approach is the same stable id as a table, plus an explicit candidate state,
    a thumbnail is a PREVIEW, never the evidence. The card must name
    WHICH CANDIDATE it is showing, or it reassures the reader about
    the wrong picture.
+
+ WHERE THIS PAGE'S EVIDENCE LIVES IN THE BOARD FOLDER
+   the prose      QC4-sentence-display-figure.md  ## Content   (S6)
+   the unit       _fixture/displays/display02-discretion-gradient/
+     float.tex                    \label{fig:discretion-gradient}
+     assets/figure.png            LIVE, what the manuscript compiles
+     candidates/C-enriched.png    WAITING, and why the chip is amber
+   both pictures are in the panel; neither tells you it used the right column
 ```
 
 ## Content
@@ -67,21 +75,45 @@ The approach is the same stable id as a table, plus an explicit candidate state,
                             · state=candidate-c · promoted=no
 ```
 
+### S6 of the paragraph on `QC0`
+`QC0` carries one paragraph with all four attachment types. This is its last sentence, the one that sends the reader to a figure, written here and resolved against `_fixture/displays/display02-discretion-gradient/`:
+
+The association concentrates in the cohorts where the physician has prescribing latitude and flattens where opioids are protocolized (\ref{fig:discretion-gradient}).
+> Display: display02 · target=S-Display-2 · kind=figure · state=candidate-C · promoted=no
+
+Two chips, one unit, and both amber. Click either and the panel shows BOTH pictures, captioned LIVE and CANDIDATE, because `assets/figure.png` is what the manuscript compiles while `candidates/C-enriched.png` is what is waiting. These are the real files, and the amber says the prose may be describing a picture that will not ship.
+
+The paragraph's other sentences are the sibling pages': S1 to S3 the citations are `QC1`, S4 the numbers is `QC2`, S5 the table is `QC3`.
+
+### Why this is not `QC3` with a different file extension
+Look at the two display chips in that one paragraph. `QC3`'s table puts its ROWS in the panel, so a wrong number is checkable on sight. This one puts two PICTURES in the panel: you can see that both exist and which is live, and you still cannot tell from either image whether it was built from the right column. Same grammar, same resolver, same lane, and a reader's ability to check collapses. That asymmetry is the whole reason these are two faces rather than one.
+
+### A reference that resolves to nothing
+`\ref{fig:agreeableness_dist}` is cited in `0-sections/05-2_data_construction.tex:152` on this paper and matches no `\label`:
+
+The trait distribution is shown in \ref{fig:agreeableness_dist}.
+
 ### Candidates are the difference
 A figure unit typically holds several candidates and one promoted asset.
 The sentence must keep referring to the unit while the candidate behind it changes, and the lane must say which candidate is live and whether it has been promoted.
 This is live on the MISQ paper right now: `S-Display-2` sits at "candidate C rendered, awaiting promotion" and `S-Display-6` at "v1 live, candidate E awaiting promotion". A sentence citing either one today is citing something that is about to change.
 
-### Chip states
+### Chip states as built, and the five this page first proposed
 ```
- ✅ promoted     the live asset is the one the argument was written against
- 🟡 candidate    a candidate is rendered but not promoted: the prose may be
-                 describing a picture that will not ship
- ⏳ requested    a row exists; nothing rendered
- ⏸️ folded       the unit was merged into another (S-Display-3 into Figure 2)
- ⚠️ orphan       the sentence names an id no unit owns
+ what this page      what a chip        why
+ first proposed      actually renders
+ ─────────────────   ────────────────   ──────────────────────────────────
+ ✅ promoted          ✅ ok              the live asset IS what the argument
+                                        was written against
+ 🟡 candidate         ✦ ready           a candidate is rendered and not
+                                        promoted: the prose may be describing
+                                        a picture that will not ship
+ ⏳ requested         ⏳ owed            the unit folder exists, assets/ is empty
+ ⏸️ folded            —                  no detector; nothing computes it yet
+ ⚠️ orphan            ❓ unowned         the id, or the \ref{} label, resolves
+                                        to nothing
 ```
-`candidate` has no equivalent on the table page and is the state most likely to produce a sentence that quietly stops being true.
+Same five rows as `QC3` except `candidate`, which the table page has no equivalent for and which is the state most likely to produce a sentence that quietly stops being true. Two rows are worth reading twice: `promoted` and `candidate` collapsed into states `QC2` had already built, for the reason below, and `folded` is still only a word on this page.
 
 ### The panel as built
 The chip carries the unit id, its kind, its `\label`, the state sentence, the README's Reader Takeaway, and a link row that names **every asset and every candidate separately**, so the panel cannot be read as showing one picture when another is live.
@@ -143,8 +175,8 @@ Built and live on the MISQ board 260726, and it caught both figures this page pr
 
 The panel now shows the pictures side by side, captioned, so `display02`'s three-way disagreement is visible rather than described. Two gaps remain and both are in Items: a unit whose only asset is a `.pdf` still previews nothing, and `folded` has no detector because no README records a fold.
 
-- 260726 CC · 🔗 Closing this unblocks `QA8`'s chip renderer
-  `QA8` on the boardform board owns the MECHANISM: the fold, the badge, the drawer, the tint, the click-to-add.
+- 260726 CC · 🔗 Closing this unblocks `QA9`'s chip renderer
+  `QA9` on the boardform board owns the MECHANISM: the fold, the badge, the drawer, the tint, the click-to-add.
   Its one unbuilt item, inline-marker chips, is blocked on four rulings, and this face is the figure one: what the chip means, what states it has, and what resolves it, which here is a display id whose figure is not checkable on sight.
   The mechanism cannot be built against a guess, so that item stays open until all four of `QC1` to `QC4` say what to render.
 
@@ -154,6 +186,9 @@ The panel now shows the pictures side by side, captioned, so `display02`'s three
 - `candidate` and `ready` are one state. Something landed and the manuscript has not caught up, whether the thing that landed is a probe answer or a rendered figure.
 
 ## Log
+- 260726 · JL: "add the google scholar search link"; and "for the values, displays, figures, I cannot click them". Two changes. The citation panel's link row gained a `🔎 Scholar` search, last and with its own glyph because everything above it is an identifier and a query is not; on this paper 195 of 216 entries had no clickable pointer before it. And the chips inside a sentence drawer were dead: `<summary>` consumes the click before the nested button's default action runs, which is why citations opened and values, tables and figures did not. The panel is now asserted explicitly one frame later; `preventDefault` stays out of `board.js`.
+- 260726 · JL: "read QA6 ⑦ The paper folder, we have done many changes here, right?" Correct, and the board was teaching the superseded layout. QA6 ruled 260726 that the deliverable is UNNUMBERED (`displays/`, `sections/`) and the resolver still had `0-displays` hardcoded in six places. Proved it by renaming the fixture and rebuilding: four id chips went `unowned` and both `\ref{}` chips went GREEN through the "a \label that is not a display unit" branch, which is the silent false-green `QC3` and `QC4` exist to prevent. `Paper` now resolves `displays/` first and falls back to `0-displays/`; the fixture moved to the ruled name. Still open on QA6's side: `.board-refs.bbl` is machinery sitting in the unnumbered half.
+- 260726 · JL, on the embed: "I don't want you to refer something, please just make it real in the content, not refer a markdown". Reverted. The example prose is written directly in each page's `## Content`: `QC0` carries the whole paragraph, `QC1`-`QC4` carry only their own sentences from it, labelled by position. The rule that came out of it is the one on `QC0`: PROSE lives on the page, EVIDENCE lives in `_fixture/` (`.bib`, `.bst`, `0-displays/`, `1-probes/`), and `_fixture/` never holds a paragraph. Same visit fixed the panel: without `position-area` support the base `.chipcard` had no `max-height`, so a two-image figure panel grew past the viewport and spilled over the page.
 - 260726 · Built. Building it collapsed this page's proposed `candidate` state into `QC2`'s existing `ready`: they are the same fact in two vocabularies. `display02` came back STALE rather than merely candidate-waiting, which is a worse fact than `S-Display-2` records, and it was found by comparing mtimes rather than by reading anything a person wrote.
 
 ## Files

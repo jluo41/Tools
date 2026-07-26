@@ -45,7 +45,7 @@ Each stage in `1-lifecycle/` (seed, resource, claims, venue, pitch, narrative, d
 - One question: the stage answers exactly one question (the table in `PHILOSOPHY.md`), nothing more.
 - 1:1 mapping: one stage, one skill, with reads/writes/calls declared (`ref/04-lifecycle-map.md`).
 - Venue boundary: venue-FREE stages (seed, resource, claims) don't change on retarget; venue-ALIGNED stages (pitch onward) do.
-- Artifact: produces its stage doc + `_LOG`, and updates `STATUS.md current_layer`.
+- Artifact: produces its stage doc + `_LOG`, and updates `the S pages current_layer`.
 - Taste: the stage illuminates what exists and elicits a taste-bearing choice (`ref/09-stage-illuminate.md`).
 
 A stage that answers two questions, skips its `_LOG`, or decides on the user's behalf is not good, however clean its prose.

@@ -14,7 +14,7 @@ The approach is that renderers own the visual and adapters own the format, so ca
 - ✅ Covered here
   Consumer-side embedding and the special case of editable tables.
 - ↪ Covered elsewhere
-  Whole-document projections are `QBa3`; the generic render bundle is `QD2`; semantic Display identity is `QC3` for a table and `QC4` for a figure.
+  Whole-document projections are `QD7`; the generic render bundle is `QD2`; semantic Display identity is `QC3` for a table and `QC4` for a figure.
 
 ## Diagram
 ```

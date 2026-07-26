@@ -1,6 +1,6 @@
 # 2-phase / shared — tex file anatomy
 
-What **one `.tex` file** should look like in a `0-sections/`-style manuscript.
+What **one `.tex` file** should look like in a `sections/`-style manuscript.
 Grounded in `examples/ProjA-PhyTraitLandScape/paper/Paper-MapPhyTrait-npjDM2025/`.
 
 Every phase worker assumes this layout. Read it once; the topic skills refer
@@ -45,7 +45,7 @@ the file do not repeat it.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth]{0-displays/displayNN-<slug>/assets/plot.pdf}
+  \includegraphics[width=\textwidth]{displays/displayNN-<slug>/assets/plot.pdf}
   \caption{...}
   \label{fig:trait_satisfaction}
 \end{figure}

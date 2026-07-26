@@ -18,7 +18,7 @@ Skill: haipipe-paper-round
 > page per round under `0-lifecycle/7-round/`, with that round's received letters
 > beside it. `1-rounds/` and its five files are retired, and so is `latest.md`,
 > which was a stored pointer to the current round and would drift from the pages
-> exactly as `STATUS.md`'s `current_layer` did.
+> exactly as `the S-Round page`'s `current_layer` did.
 >
 > Why the five files go: `todo.md` duplicates `## Items to Finish`, which the board
 > already rules IS the queue; `decisions.md` duplicates the paper's decision
@@ -97,7 +97,7 @@ Every `todo.md` item should point to one target:
 | claim unsupported / too strong | `0-lifecycle/1b-claims` or probe |
 | display missing / stale | `0-lifecycle/4-display` or display task |
 | paragraph placement unclear | `0-lifecycle/5-section-edit` |
-| wording / flow / style | `0-sections/*.tex` or edit skill |
+| wording / flow / style | `sections/*.tex` or edit skill |
 | citation needed / wrong citation | discover or citation component |
 | reviewer response | respond/rebuttal skill |
 

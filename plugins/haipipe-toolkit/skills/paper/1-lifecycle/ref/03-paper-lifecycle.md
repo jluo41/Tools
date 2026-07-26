@@ -8,7 +8,6 @@ lives in tasks and discoveries.
 
 ```text
 <paper-root>/
-├── STATUS.md
 ├── 0-lifecycle/
 │   ├── 0-seed/          venue: FREE
 │   ├── 1b-claims/        venue: FREE
@@ -18,9 +17,9 @@ lives in tasks and discoveries.
 │   └── 5-section-edit/  venue: SPECIFIC (per-section norms)
 ├── 1-probes/       PPNN_<topic>/ probe files (flat cross-stage pool; campaign board in its README)
 ├── 0-lifecycle/7-round/
-├── 0-displays/
-├── 0-sections/
-└── 1-compile.sh
+├── displays/
+├── sections/
+└── 2-src/compile.sh
 ```
 
 Venue awareness gradient: FREE → FREE → LIGHT → MEDIUM → HEAVY → SPECIFIC.
@@ -89,7 +88,7 @@ wording.
 paper GAP -> question ENTRY (1-probes/) -> the PROBE phase's MATCH ->
 DISPATCH what MATCH cannot close -> the answering QA file -> the entry's
 `### a-executor` -> each Q-consumer's a-consumer in its stage doc -> the paper
-backfills (a claim's status flips in 1b-claims.md)
+backfills (a claim's status flips in S-Work-1-claims.md)
 ```
 
 Common routes:
@@ -100,7 +99,7 @@ claim needs its status settled       -> /haipipe-paper probe "<need>"  (raises a
                                         only what MATCH cannot close)
 claim needs outside context/citation -> /haipipe-discovery <question>
 display needs materialized result    -> /haipipe-task-for-display <need>
-settled claim status                 -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY
+settled claim status                 -> 0-lifecycle/1-work/S-Work-1-claims.md (the ONLY
                                         home of a claim's status; the probe entry
                                         carries only its `### a-executor`)
 ```

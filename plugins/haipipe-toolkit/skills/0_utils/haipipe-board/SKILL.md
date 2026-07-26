@@ -1,17 +1,17 @@
 ---
 name: haipipe-board
 description: >-
-  Open and run a BOARD: one topic, one folder tree, and one markdown face per ruling (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when sharing work with colleagues; or when the user says board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
+  Open and run a BOARD: one topic, one folder tree, and one markdown page per ruling (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when sharing work with colleagues; or when the user says board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
 metadata:
-  version: "0.25.0"
+  version: "0.27.0"
   last_updated: "2026-07-26"
-  summary: "check.py runs the structural half of QA9 over a board, and author notes in `<!-- -->` are finally dropped the way the template always promised."
+  summary: "A board's excalidraw round-trips: an injected boot script seeds the editor from fig/board.excalidraw and saves back into it, one frame's slice at a time, with embeds read-only so 28 iframes cannot overwrite each other."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-board — 一个话题，一叠问题，一页看板
 
-**一块板 = 一个文件夹。** 里面一个 ruling/stage 一个 `.md` face，外加一页谁都打得开的
+**一块板 = 一个文件夹。** 里面一个 ruling/stage 一个 `.md` page，外加一页谁都打得开的
 `board.html`。Q 是 ruling，S 是 lifecycle stage；两者共用一套版式，不共用关闭语义。
 
 它取代了 `/haipipe-session`（那个是只有干活的人自己看的工作日志）。
@@ -38,7 +38,7 @@ metadata:
   板是工作产物，skill 是交付包 —— 不放在同一个文件夹里。
 - **日期是开板那天，之后永不改。** 一个文件夹一个话题，后来的讨论往里追加，不另开。
 - **谁在这块板上，靠路径**：板文件夹**整棵树**里所有 `Q*.md` / `S*.md` 就是这块板的
-  faces（`_`/`.` 开头的段和 `fig/` 除外）。
+  pages（`_`/`.` 开头的段和 `fig/` 除外）。
   `## Pages` 只管排序和分组（仍只写文件名）；漏登记的照样显示（归 ⚠️ 组）并在命令行提醒 —— **漏登记只会丑，不会丢题**。
 - **Q/S 文件可以住进它讲的那个文件夹**：`4-display/QD2-….md` 和
   `4-display/S-Display-0-displays.md` 都会被发现。
@@ -47,13 +47,13 @@ metadata:
 - **`![[路径]]` / `![[路径#某节]]` 单独占一行**（QF1）＝把另一份文件的内容**按引用**嵌进这一题：
   生成时现读、零拷贝零漂移，板不学源文件的方言；嵌不到就地标红。详见 `ref/board-form.md` §5。
 - **不要再用 Pages 里的 `doc:` 行**（原 QF2，260726 退役）：要展示别处的文件，就用上面那条
-  `![[路径]]` 嵌进一个真正的 face —— 同样零拷贝，但页面有 state、有清单计数、有评论落点，
+  `![[路径]]` 嵌进一个真正的 page —— 同样零拷贝，但页面有 state、有清单计数、有评论落点，
   而 doc 页三样都没有。parser 仍认 `doc:`，只是为了不让老板子炸；今天全 SPACE 一块板都没在用。
 - **Paper lifecycle board 按 named S family 分组**：索引顺序固定为 `Seed → Work → Venue →
   Display → Main → Appendix → Submission`。Display 是独立的 evidence-presentation layer，
   不是 Work 的一个普通 item。这是 ownership/navigation order，不自动等于执行顺序；
   真实依赖写在 `## Pipeline`，例如 Narrative 后进入 Display，再分给 Main/Appendix。family 里的每个
-  S face 是一个具体、可 CHECK 的 page；
+  S page 是一个具体、可 CHECK 的 page；
   拦住它的 Q ruling 紧跟在该 S 后面。Seed 通常含 `S Seed` 和 `S Literature`；Main
   用数字 section；Appendix 用 `0, A, B...`；Submission 至少覆盖 reconcile、compile、
   review、submit。Submission 四页每一轮复用；外审意见让受影响的 Work/Display/Main/Appendix
@@ -97,17 +97,17 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
 ### open — 开一块**新**板
 
 1. 问清三件事：**这块板要解决什么**（→ `spine`）、**什么时候算完**（→ `close`）、
-   **有哪几个 face**（几个 Q ruling；有 lifecycle 的话，还有几个 S stage）。
-   这份 face 列表要用户点头才往下走 —— 这是唯一必须停下来问的地方。
+   **有哪几个 page**（几个 Q ruling；有 lifecycle 的话，还有几个 S stage）。
+   这份 page 列表要用户点头才往下走 —— 这是唯一必须停下来问的地方。
 2. 建 `<所属单位>/diagram/<NN>-<主题>-<YYMMDD>/`。
 3. 写 `board.md`：标题、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Pages`（三个都写上）。
-4. 每个 face 都复制同一份 `ref/q-template.md`，改名决定它是哪种：
+4. 每个 page 都复制同一份 `ref/q-template.md`，改名决定它是哪种：
    ruling → `Q<组字母><序号>-<slug>.md`；paper lifecycle page →
    `S-<Family>-<unit>-<slug>.md`，其中 Family 是 `Seed|Work|Venue|Display|Main|Appendix|Submission`
    （例如 `S-Seed-1-literature.md`、`S-Main-3-theory.md`、`S-Appendix-A-prompts.md`）。
    普通旧板的 `S0-<slug>.md` 继续兼容。
    `<slug>` 用短英文小写（`access`、`scheduling`），跟 `ref/board-example.md` 一致。
-   新开的 face 一律 `state: 🔴 OPEN`（Q 和 S 用同一套四个状态值，见下面「一个 Face」）。
+   新开的 page 一律 `state: 🔴 OPEN`（Q 和 S 用同一套四个状态值，见下面「一个 Page」）。
    owner 按性质给：要拍板/授权的给 JL，动手干的给负责同事的姓名缩写或 CC。
    S 还必须有显式 `## Stage Contract` 和 `## Content`（Q 不写 Stage Contract，Content
    选填）。不要从 Pages 前后顺序猜上游；在 S 顶部显式写
@@ -130,7 +130,7 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
 
 ### stage — 新建或刷新 lifecycle page
 
-S face 的“上一阶段要求”和 writing style 只能来自显式引用，不能从 Pages 邻接关系猜。
+S page 的“上一阶段要求”和 writing style 只能来自显式引用，不能从 Pages 邻接关系猜。
 `build.py` 永远只读 Markdown；真正写文件的是 `stage.py`：
 
 ```bash
@@ -183,6 +183,46 @@ python3 <skill>/watch.py <board 文件夹>     # 盯着，改任何 .md 自动�
 > chat（受限抽屉，`QD2`）和 terminal（真 CLI，`QD3`）这套**还在 QD 组定型中**。
 > 用法以那几题为准，别当成定死的规矩（见文末「板 ↔ SKILL.md」）。
 
+### excalidraw — 一块板一个 scene，一题一个 frame
+
+**一块板只有一个 `fig/board.excalidraw`，每个 page 在里面占一个 frame。**
+绝不拆成一题一个文件：只有同一张画布才说得清 page 之间的**关系**，
+而那正是画图唯一比 ASCII 强的地方（`QA4a`）。
+
+```bash
+docker run --rm -d -p 5610:80 excalidraw/excalidraw     # 编辑器，跑一次就行
+python3 <skill>/xcal.py <board 文件夹>                   # 按 board.md 重建 scene
+python3 <skill>/xcal.py <board 文件夹> --wire            # 顺手把每个 frame 的 URL 写进它那题的 ## Diagram
+```
+
+`board.md` 声明一次编辑器地址：`excalidraw: http://127.0.0.1:5599/_excalidraw`
+（`serve.py` 把容器代理在这个路径下，这样它走的是**唯一被转发的那个端口**，见 `QE6`）。
+两种 URL 指的是同一个文件：不带 `?frame=` 是整块板，**画关系就在这儿画**；
+带 `?frame=<题号>` 是那一题的 frame，由 `serve_frame()` 现算，页面上嵌的就是它。
+
+**画的东西会存回仓库**，靠的是 `serve.py` 往它代理的那个 app 里注入 `assets/xcal-boot.js`：
+开源版 Excalidraw 没有「存到服务器」这回事，它从 `#url=` 读、存进浏览器 ——
+所以那个脚本干脆把浏览器的 storage 接管了：进来时按文件把场景喂进去（因此**不再弹
+「Replace my content」**），编辑时每 1.5 秒把变化 POST 到 `/_board/excalidraw-save`。
+带 `frame=` 的保存**只换那一个 frame 的那一片**，其余 27 个原样不动 —— 这才是
+「一块板一个 scene」能被任何一页编辑的原因。
+
+⚖️ **页面里嵌的那个是只读的，写只发生在 ✏️ 那个标签页。**
+一块板一页一个 iframe，它们同源同一个 storage key，可编辑的话就是 28 个编辑器互相覆盖。
+所以：iframe 用内存 storage（能拖能缩放，什么都不存）；
+点「✏️ Edit this frame」开的新标签页才是唯一能写的，并且会上锁，第二个标签页自动退回只读。
+
+⚠️ 两个已知边界：**贴进去的图片存不下来**（`files` 不回传），
+**种子文本改了会被下次 `xcal.py` 覆盖回去**（画在旁边的东西不受影响）。
+
+每个 frame 会**用那题 `## Diagram` 里第一段 ``` ASCII 图当种子**填进去 ——
+frame 空着的话，读的人分不清是「还没画」还是「功能坏了」（JL 260726 就是这么撞上的）。
+种子是**单向**的：md 永远是唯一来源，画布里改了不会回流。
+
+重跑是安全的，这也是它敢做成脚本的原因：id 稳定（`frame-QA4a`），
+人挪过的 frame 保住位置，人画的东西原样带走，**页面已经退休的 frame 会被删掉**。
+`--fresh` 是唯一会毁东西的模式（重排全部、丢掉手画内容），所以它永远不是默认。
+
 ### comment — 评论（要 serve.py 跑着）
 
 - **页面上**：选中一句话 → 冒出「💬 Comment」→ 写评论 → 按 **Save**，
@@ -197,7 +237,21 @@ python3 <skill>/watch.py <board 文件夹>     # 盯着，改任何 .md 自动�
 ### sync — 干完活，同一轮里回写这一题
 
 **板和产物必须联动，否则板就是一份过期的漂亮东西。**
-在某个 face 下做完任何实质工作（写了文件、跑了实验、拿到了结论），**在同一轮里**回写它：
+
+⚠️ **触发条件是「这一轮做了实质的活」，不是「这一轮打开了某个 page」。**
+一整段 /haipipe-board 会话里做的每件实质工作，都归属于某一个 page —— 哪怕这活是从
+聊天里的一句话开始的，从头到尾没提过题号。所以顺序是：**先认领是哪一题，再干活，
+干完在同一轮回写**；一件活如果哪一题都不归，那它本身就是一道该开的新题。
+
+真实事故（JL 260726）：QA4a 的整条本地 excalidraw 路线当天建完并跑起来了，`QA4a` 却还写着
+`state: 🔴 OPEN` 和「Nothing is built and nothing is decided」。活是对的，回写没做，
+于是板上写的和机器上跑的是两件事 —— 这正是「过期的漂亮东西」。
+`check.py` 的 `open-with-done-items` / `partial-with-nothing-open` 就是抓这个的，
+但它只看得见 state 和勾，看不见正文，所以它是兜底，不是替代。
+
+**「做完了」= 回写完了。** 没回写就跟 JL 报完成，等于报了一件板上不存在的事。
+
+在某个 page 下做完任何实质工作（写了文件、跑了实验、拿到了结论），**在同一轮里**回写它：
 
 | 回写哪 | 写什么 |
 |---|---|
@@ -230,12 +284,12 @@ build.py            ../../haipipe-board/build.py
 
 ### close — 关板
 
-每个 face 到 `✅ SETTLED` 或 `⏸️ ON HOLD`，并满足 `close:`，这块板才关掉。
+每个 page 到 `✅ SETTLED` 或 `⏸️ ON HOLD`，并满足 `close:`，这块板才关掉。
 Q 和 S 用的是同一套状态值，翻到 ✅ 的凭据不同：Q 要 checkbox 全闭合，S 要它自己的
 **human gate 过了**（⏸️ 则是明确搁置）。首页按 named family 分别统计 S 里的 ✅。
 `close:` 那句话就是关板条件，写的时候要能验收，不是「差不多了」。
 
-## 📐 一个 Face
+## 📐 一个 Page
 
 ```markdown
 # 短标题（短语，≤14 字）
@@ -262,8 +316,8 @@ method: 一句话说怎么做
 **台面上的层次顺序是定死的**，Q 和 S 一样：
 `Opening → Diagram → Content → Items to Finish → Where we are`（Files 跟在状态后面）。
 Opening 放 Question 的第一段问句和 optional Boundary；optional Diagram 是独立一节，
-默认折叠，点节名才展开。Q face 的 Question 解释段自动成为 Content 的第一个
-“Why this matters” subsection（默认展开）。S face 的 Opening 里还有 “Why this matters”、
+默认折叠，点节名才展开。Q page 的 Question 解释段自动成为 Content 的第一个
+“Why this matters” subsection（默认展开）。S page 的 Opening 里还有 “Why this matters”、
 optional 的 `### Stage Record`、以及整个 `## Stage Contract` —— **这几行全部默认折叠**
 （JL 260725：台面上只留那句问句），所以 Stage Contract 不再单独占一节。S 的其余
 Content 仍在 `📚 Content`，节标题显示 stage 名（`📚 Content · Main 7 §6 Results`）而不是数
@@ -284,7 +338,7 @@ contract 归 `## Stage Contract`（写在 managed 标记之后，sync 不会动�
 - S 的 `## Stage Contract` 不属于 Content。它只带显式 `requires` 的上游 acceptance
   conditions 和 `style-from` 的写作规范；managed 部分由 `stage.py` 写，作者拥有
   `### Provides`。Pages 顺序绝不是 dependency inference。
-- 两种 face **共用同一套 `state:` 四个值**，没有第五个：新开的都是 🔴 OPEN，🟡 在做，
+- 两种 page **共用同一套 `state:` 四个值**，没有第五个：新开的都是 🔴 OPEN，🟡 在做，
   ⏸️ 明确搁置，✅ 的凭据按上面两条各自算。别在 `state:` 里写 `human-gated` 这种自造词。
 - Q-consumer checkbox means the answer landed, was interpreted, and was woven into Content. A
   deferred item closes only after its forward pointer is recorded.
@@ -339,18 +393,20 @@ division，`####` 是它里面的一个段落、永远是这一级。页面只�
 - 没定的题（🟡/🔴）**不进** manual —— 免得把「随手定的」写成铁律。
   （真踩过：`QD1` 的权限规则我一开始随手写死「只能改这一个文件」，后来被 JL 推翻成「跟 CLI 一样」。）
 - 所以 SKILL.md 永远 = **已定规矩之和**，不多不少。改它之前，先看那题 `✅` 了没。
-- 现在已毕业的：`QA2`（Q/S 共用源模板 → `ref/q-template.md`）· `QA4`（Q/S 共用 face 版式 → `ref/board-form.md §8`，显示规格不塞进这里）· `QA6`（评论落盘）· `QC1`（板放哪）· `QC3`（Q 可住进自己的文件夹）· `QB5`（Python 按页拆进 `src/`）。
-  现场层的 chat/terminal（`QD1`/`QD2`/`QD3`）还 🟡，上面只放了指针，没写成规矩。嵌入语法（原 `QF1`）已定进 `ref/board-form.md §5`；QF1 这个 face 本身 260725 退役，见板上 QF 组的说明。
+- 现在已毕业的：`QA2`（Q/S 共用源模板 → `ref/q-template.md`）· `QA4`（Q/S 共用 page 版式 → `ref/board-form.md §8`，显示规格不塞进这里）· `QA6`（评论落盘）· `QC1`（板放哪）· `QC3`（Q 可住进自己的文件夹）· `QB5`（Python 按页拆进 `src/`）。
+  现场层的 chat/terminal（`QD1`/`QD2`/`QD3`）还 🟡，上面只放了指针，没写成规矩。嵌入语法（原 `QF1`）已定进 `ref/board-form.md §5`；QF1 这个 page 本身 260725 退役，见板上 QF 组的说明。
 
 ## 📚 ref/
 
 | 文件 | 看它做什么 |
 |---|---|
-| `ref/q-template.md` | Q/S 共用 face 模板（历史文件名保留，避免旧链接失效） |
+| `ref/q-template.md` | Q/S 共用 page 模板（历史文件名保留，避免旧链接失效） |
 | `ref/board-form.md` | 完整规格：文件夹、编号、段落↔页面对应、语法表、Comments 格式、`## Links` |
 | `ref/writing-rules.md` | 怎么写才是人话 + 零背景审查的提示词和收敛判据 |
 | `ref/board-example.md` | 一块两题的最小示例 |
-| `stage.py` | 显式创建/同步 S face 的 inherited requirements 与 writing style |
+| `stage.py` | 显式创建/同步 S page 的 inherited requirements 与 writing style |
+| `check.py` | 结构自查（`QA9` 的机器那一半）：段落、state、引用、渲染出的 html、模板覆盖 |
+| `xcal.py` | 一块板一个 `fig/board.excalidraw`，一题一个 frame；`--wire` 把 URL 写回各题 |
 
 活的例子：`Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/` —— 这个 skill 自己的板（平铺形）。
 嵌套形（Q rulings + S stages）的活例子：`examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`。

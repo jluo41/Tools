@@ -61,7 +61,7 @@ REVISE is fully automatic.
 No comment-first, no waiting for human approval.
 
 ```
-1. READ the section tex or outline. Note venue from STATUS.md.
+1. READ the section tex or outline. Note venue from S-Venue-0-venue.md.
    If author samples exist (prior papers), read a sample first.
    Read ../../REF/prose-quality.md for universal rules.
 
@@ -121,7 +121,7 @@ Content decisions before language cleanup.
 
 ## Venue-specific calibration
 
-The skill reads the venue from `STATUS.md` and calibrates:
+The skill reads the venue from `S-Venue-0-venue.md` and calibrates:
 - **MISQ/ISR**: theory-forward, mechanism language OK, moderate hedging
 - **Nature/Science**: terse, direct, results-forward
 - **JAMA/Lancet**: clinical framing, patient-outcome language

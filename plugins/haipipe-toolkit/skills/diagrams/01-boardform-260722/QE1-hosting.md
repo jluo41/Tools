@@ -20,6 +20,7 @@ The choice also reaches downstream into whether auth is needed, how comments att
   Nor whether **work can be done on the board**: that is the `QD` group; this question only owns "where it opens from".
 
 ## Diagram
+
 ```
                      the static half         the live half (files must be local)
                   board.html               comment write-back · chat · terminal
@@ -28,6 +29,8 @@ The choice also reaches downstream into whether auth is needed, how comments att
 ② static export    ✅ opens anywhere         ❌ all gone             enough for a look
 ③ full on server   ✅                        ⚠️ needs auth + a write-permission audit   real collaboration
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE1
 
 ## Items to Finish
 - [ ] Sort out "who needs to see it, and which half"

@@ -25,8 +25,8 @@ runs: once
 needs_paper: true
 venue_free: true          # does not change when retargeting to another journal
 
-artifact: 0-lifecycle/1a-resource/S-Work-0-resources.md
-artifact_fallback: 0-lifecycle/1a-resource/1a-resource.md
+artifact: 0-lifecycle/1-work/S-Work-0-resources.md
+artifact_fallback: 0-lifecycle/1-work/1a-resource.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
@@ -91,7 +91,7 @@ done_criteria:
 
 upstream: [seed]
 downstream: [claims]
-handoff: "on CHECK confirm, update STATUS.md (current_layer, maturity: resource) -> claims"
+handoff: "on CHECK confirm, append the gate row to this stage's S page ## Log -> claims"
 ---
 
 Resource — the craft

@@ -5,7 +5,7 @@
 %% {{VENUE_NOTE}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% !TEX root = 0-Supplementary-{{PAPER_SLUG}}.tex
+% !TEX root = Supplementary-{{PAPER_SLUG}}.tex
 \documentclass{article}
 {{VENUE_STYLE_USEPACKAGE}}
 

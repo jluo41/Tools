@@ -32,7 +32,7 @@ Users invoke stage skills:
 The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · DRAFT phase** + **The DRAFT self-review checklist**. Follow those; on conflict, that file wins. Paper-specific additions:
 - **EVERY HOLE IS FILLED OR OWNED, EVERY STAGE.** `1-probes/` is the ONLY consumer-side source of truth and `_LOG_<stage>.md` is the ONLY sidecar. A hole you cannot fill leaves a placeholder carrying the id of the question that will settle it — `\cite{TOADD} [Q-<Stage>-<n>]`, `{VAL:? <what>} [Q-<Stage>-<n>]` — two markers side by side, never fused. A placeholder with no bracket is a defect: nobody owns it, so nobody will ever fill it. If no existing question would produce it, RAISE ONE; asking is cheap and the DRAFT gate decides what is worth pursuing.
 - **Citations**: grep the paper's `.bib` FIRST — real `\citep{key}` for hits, `\cite{TOADD} [Q-<Stage>-<n>]` where none fits. A key that does not grep is invented.
-- **T1 LOCAL**: a question answered by the paper's OWN registries (entries already `read` in `1-probes/` · `0-displays/` units · the `.bib` · `_LOG_<stage>.md`) roots its `### bank binding` there — `target` into the registry, `state: answered-local` (no bank dispatch). A display-shaped need reroutes to `0-lifecycle/4-display/_DISPLAY_REQUEST.md`.
+- **T1 LOCAL**: a question answered by the paper's OWN registries (entries already `read` in `1-probes/` · `displays/` units · the `.bib` · `_LOG_<stage>.md`) roots its `### bank binding` there — `target` into the registry, `state: answered-local` (no bank dispatch). A display-shaped need reroutes to `0-lifecycle/4-display/_DISPLAY_REQUEST.md`.
 - **RESOURCE stage**: read the `Q<n>` the stage drafted in `1a-resource.md`, open one q-executor ENTRY per question (its `### q-consumer` bullet carries the `Q<n>` id), and write the `-> PP<NN>` backlink into `1a-resource.md`. This happens BEFORE GATE 1, never after: GATE 1 *is* the DRAFT gate, and what the human approves there is the set of questions this step just opened. Opening an entry is not a commitment to dispatch it — asking is cheap, and the gate is where worth is decided.
 - One sentence per line; no markdown tables in probe files.
 - ⛔ **DRAFT DOES NOT TOUCH `1-probes/`.** It raises `## Q-<Stage>-<n>` blocks in the stage doc and stops. Writing a `### q-executor`, choosing a `route`, judging a `bank`, or setting a `target` is PROBE's ① and ②. (They ran here until 2026-07-20, purely so one human gate could review draft + plan together; stages now declare `gates: [check]`, so that reason is gone.)
@@ -113,7 +113,7 @@ Each stage reads from its predecessors:
 **Venue guard.**
 For venue-ALIGNED stages (pitch, narrative, display, section), resolve the venue before drafting:
 
-1. No `venue:` pinned in STATUS.md -> **STOP with an error**.
+1. No `venue:` pinned in `S-Venue-0-venue.md` -> **STOP with an error**.
    Report `status: blocked` and tell the user to run `/haipipe-paper venue` first.
    Never draft a venue-ALIGNED artifact against an invented venue.
 2. Venue pinned and the paper's `0-lifecycle/2a-venue/2a-venue.md` exists -> **read it FIRST** (the venue stage's compiled doc): Writing Principles + the Structural Blueprint block for the artifact being drafted.
@@ -317,7 +317,7 @@ When the user approves:
   Asking is cheap, so GATE 1 approves the QUESTIONS, not the SPEND — spend is authorized later, at the stage's GATE 1b, once the SCAN answers have landed.
 
 ### claims
-- Output: `0-lifecycle/1b-claims/1b-claims.md`
+- Output: `0-lifecycle/1b-claims/S-Work-1-claims.md`
 - On open: do NOT grep seed's `_LOG` for forward pointers — RESOURCE is their sole consumer, and re-consuming one it already took DOUBLE-DISPATCHES the same build.
   Read `_LOG_1a-resource.md` instead: only the pointers resource explicitly DECLINED to claims become entries in the Q-consumer (or are declined again in `_LOG`)
 - Reads the resource stage's `1a-resource.md`: the ingredients (data / reusable model / code) are settled there, but training this paper's model (fit) + eval are claims' own experiment; a claim whose ingredients are missing is marked BLOCKED-ON-RESOURCE, not re-asked
@@ -388,7 +388,7 @@ Stage skills call this as their DRAFT phase:
 |---|---|
 | seed | 0-seed.md (5 sections) |
 | resource | 1a-resource.md (2 sections: Demand N\<n\> + Questions Q\<n\> with their A) |
-| claims | 1b-claims.md (hypothesis list + evidence matrix) |
+| claims | S-Work-1-claims.md (hypothesis list + evidence matrix) |
 | pitch | 2b-pitch.md (cover letter) |
 | narrative | 3-narrative.md (story beats) |
 | display | 4-display.md (display map + Q-consumer + per-display blocks with candidates) |

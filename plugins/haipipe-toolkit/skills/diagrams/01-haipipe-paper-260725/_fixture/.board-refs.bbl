@@ -1,0 +1,41 @@
+\begin{thebibliography}{6}
+\newcommand{\enquote}[1]{``#1''}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{{\tt #1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem[{Graziano and Eisenberg(1997)}]{graziano1997agreeableness}
+Graziano, W.~G., and Eisenberg, N.~H. 1997. \enquote{Agreeableness: A dimension
+  of personality,} in {\it Handbook of Personality Psychology\/}, , Academic
+  Press, pp. 795--824.
+
+\bibitem[{Graziano et~al.(1996)Graziano, Jensen-Campbell, and
+  Hair}]{graziano1996perceiving}
+Graziano, W.~G., Jensen-Campbell, L.~A., and Hair, E.~C. 1996.
+  \enquote{Perceiving interpersonal conflict and reacting to it: the case for
+  agreeableness.} {\it Journal of personality and social psychology\/} (70:4),
+  p. 820.
+
+\bibitem[{Luo et~al.(2025)Luo, Han, Welivita, Di, Wu, Zhi, Agarwal, and
+  Gao}]{luo2025mapping}
+Luo, J., Han, R., Welivita, A., Di, Z., Wu, J., Zhi, X., Agarwal, R., and Gao,
+  G. 2025. \enquote{Mapping Patient-Perceived Physician Traits from Nationwide
+  Online Reviews with LLMs,} {\it arXiv preprint arXiv:251003997\/} .
+
+\bibitem[{Ozer and Benet-Martinez(2006)}]{ozer2006personality}
+Ozer, D.~J., and Benet-Martinez, V. 2006. \enquote{Personality and the
+  prediction of consequential outcomes,} {\it Annu Rev Psychol\/} (57:1), pp.
+  401--421.
+
+\bibitem[{Stock et~al.(2002)Stock, Wright, and Yogo}]{stock2002survey}
+Stock, J.~H., Wright, J.~H., and Yogo, M. 2002. \enquote{A survey of weak
+  instruments and weak identification in generalized method of moments,} {\it
+  Journal of Business \& Economic Statistics\/} (20:4), pp. 518--529.
+
+\bibitem[{Thielmann et~al.(2020)Thielmann, Spadaro, and
+  Balliet}]{thielmann2020personality}
+Thielmann, I., Spadaro, G., and Balliet, D. 2020. \enquote{Personality and
+  prosocial behavior: A theoretical framework and meta-analysis.} {\it
+  Psychological bulletin\/} (146:1), p.~30.
+
+\end{thebibliography}

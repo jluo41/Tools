@@ -20,6 +20,7 @@ It and `QD3` are two forms of one need with entirely different trade-offs, so ea
   Nor the real terminal: that is `QD3`.
 
 ## Diagram
+
 ```
   browser right-side drawer            serve.py (on the machine the files are on)
   ┌──────────────────┐   POST         ┌────────────────────────────────┐
@@ -35,6 +36,8 @@ It and `QD3` are two forms of one need with entirely different trade-offs, so ea
                                                   │ build.py after edits
                                                   ▼  reload the page to see it
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD2
 
 ## Items to Finish
 - [x] Starts a session, reads board files, answers correctly
@@ -76,7 +79,7 @@ It and `QD3` are two forms of one need with entirely different trade-offs, so ea
       `haichat-inlab`'s `boards_api.py` relays `/_board/chat` (NDJSON stream), `/_board/answer`, `/_board/stop` to the workstation serve.py; verified end to end: a "Reply with exactly: RELAY OK" turn streamed `delta`/`done` lines through port 8093.
       One implementation; the console is only a pipe (`QE3`'s Law).
 - [x] The drawer header is a clean utility bar (JL 260725)
-      The heavy blue banner became a neutral 56px header with a small mono face id, a single-line title that ellipsizes only when space runs out, and two compact square controls.
+      The heavy blue banner became a neutral 56px header with a small mono page id, a single-line title that ellipsizes only when space runs out, and two compact square controls.
       The terminal control uses stable `>_` text instead of a tiny platform-dependent keyboard emoji; both controls have hover, keyboard-focus, tooltip, and accessible labels.
 - [ ] Align the drawer with the Claude Code VS Code extension (JL 260724: "I want to duplicate it")
       Same engine underneath already (see Where we are, the extension's backend IS the local claude runtime this drawer drives).
@@ -96,7 +99,7 @@ The `🤖 Chat` you click on the page is this.
       The revised header uses one neutral surface and one control shape; id is metadata, title owns the remaining width, and terminal/close sit as a consistent pair.
 
 - The drawer also opens from the index page (JL 260725: "just add a chatbot in the index page")
-      The bottom-right 🤖 button on the index opens this same drawer with `file=board.md`: the orientation block carries the index's view (spine, close, every face's state and open comments), the restricted tier's "own files" widens to any `.md` inside the board folder (verified 260725: an in-board Write passed, a /tmp Write was denied), and the session id sits in `board.md`'s header (`session:` under `close:`), resuming like any question's.
+      The bottom-right 🤖 button on the index opens this same drawer with `file=board.md`: the orientation block carries the index's view (spine, close, every page's state and open comments), the restricted tier's "own files" widens to any `.md` inside the board folder (verified 260725: an in-board Write passed, a /tmp Write was denied), and the session id sits in `board.md`'s header (`session:` under `close:`), resuming like any question's.
       Everything else is unchanged: three tiers, streaming, the gate, ⌨ to the `QD3` terminal.
       No second engine.
 
@@ -210,7 +213,7 @@ Every tool use asks it for allow/deny first. effort: how much thinking the model
       but one question: is this output actually streaming out? It doesn't feel like it.
 
 ## Log
-260725 · Chat header cleaned: neutral utility bar, quiet face id, full CSS-ellipsized title, consistent 32px controls, and stable `>_` terminal mark replacing the tiny keyboard emoji
+260725 · Chat header cleaned: neutral utility bar, quiet page id, full CSS-ellipsized title, consistent 32px controls, and stable `>_` terminal mark replacing the tiny keyboard emoji
 260725 1115 · QD5 archived on JL's call (redundant with QD2/QD3: the index chatbot IS this drawer + the QD3 terminal on board.md); references cleaned in QD1 and board.md's QD intro; the "two agents, one file" rule stays open on QD1
 260725 1050 · A chatbot on the index (JL's ask on QC2): the drawer accepts file=board.md (board-flavored rules + orientation in serve.py, chatOpen('board') + index fab in board.js, session: in board.md's header rendered as data-bsession). Verified: orientation answer, session resume, in-board Write allowed, /tmp Write denied. This question's own machinery untouched
 260724 1510 · The wait line tells the truth now: serve.py emits stage events ("booting claude, the full tier loads the whole skill registry…" / "session up") so the drawer shows real progress instead of a static "…thinking"; the collapsed 💭 block is labeled "Thinking (N chars, click to reopen)". Also verified: RESUMED sessions stream thinking now (probe on QD6: 3 think events), yesterday's loose end ② is gone, cured by the explicit thinking={enabled} flag

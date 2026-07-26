@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create and synchronize lifecycle S faces with explicit inherited contracts.
+"""Create and synchronize lifecycle S pages with explicit inherited contracts.
 
     python3 stage.py new BOARD --family Main --unit 7 --slug results \
       --title "S Main 7 · Results" --requires S-Work-1,S-Main-0,S-Display-0 \
@@ -45,7 +45,7 @@ def subsection(text, name):
     return hit.group(1).strip() if hit else ""
 
 
-def source_excerpt(path, face, purpose):
+def source_excerpt(path, page, purpose):
     text = path.read_text(encoding="utf-8")
     sections = split_sections(text)
     stage_contract = sections.get("Stage Contract", "")
@@ -56,7 +56,7 @@ def source_excerpt(path, face, purpose):
         value = (
             subsection(stage_contract, "Provides")
             or sections.get("Provides", "")
-            or (face or {}).get("provides", "")
+            or (page or {}).get("provides", "")
         )
     else:
         value = (
@@ -68,15 +68,15 @@ def source_excerpt(path, face, purpose):
 
 
 def catalog(board):
-    meta, faces, warnings = parse_dir(board)
+    meta, pages, warnings = parse_dir(board)
     del meta, warnings
-    return faces, {q["id"].casefold(): q for q in faces if q.get("file")}
+    return pages, {q["id"].casefold(): q for q in pages if q.get("file")}
 
 
 def resolve_source(board, token, by_id):
-    face = by_id.get(token.casefold())
-    if face:
-        return board / face["file"], face
+    page = by_id.get(token.casefold())
+    if page:
+        return board / page["file"], page
     path = Path(token)
     path = path if path.is_absolute() else board / path
     return (path, None) if path.is_file() else (None, None)
@@ -117,20 +117,20 @@ def source_line(board, token, by_id, purpose):
     return lines
 
 
-def render_block(board, face, by_id):
-    digest = contract_digest(board, face, by_id)
+def render_block(board, page, by_id):
+    digest = contract_digest(board, page, by_id)
     lines = [
         f"{START} sha256={digest} -->",
         "### Required Inputs",
     ]
-    required = refs(face.get("requires", ""))
+    required = refs(page.get("requires", ""))
     if required:
         for token in required:
             lines.extend(source_line(board, token, by_id, "requirement"))
     else:
         lines.append("No upstream stage is required.")
     lines.extend(["", "### Writing Style"])
-    styles = refs(face.get("style_from", ""))
+    styles = refs(page.get("style_from", ""))
     if styles:
         for token in styles:
             lines.extend(source_line(board, token, by_id, "style"))
@@ -156,9 +156,9 @@ def update_hash(text, digest):
     return prefix + "\n" + line + "\n\n" + suffix
 
 
-def sync_face(board, face, by_id):
-    path = board / face["file"]
-    block, digest = render_block(board, face, by_id)
+def sync_face(board, page, by_id):
+    path = board / page["file"]
+    block, digest = render_block(board, page, by_id)
     text = path.read_text(encoding="utf-8")
     text = replace_managed(text, block)
     text = update_hash(text, digest)
@@ -166,37 +166,37 @@ def sync_face(board, face, by_id):
     return path
 
 
-def find_face(value, faces, by_id):
+def find_face(value, pages, by_id):
     hit = by_id.get(value.casefold())
     if hit:
         return hit
-    for face in faces:
-        if face.get("file") == value or Path(face.get("file", "")).name == value:
-            return face
-    raise SystemExit(f"stage face not found: {value}")
+    for page in pages:
+        if page.get("file") == value or Path(page.get("file", "")).name == value:
+            return page
+    raise SystemExit(f"stage page not found: {value}")
 
 
 def dependency_order(targets, by_id):
-    """Topologically order S faces from explicit references, never Pages order."""
+    """Topologically order S pages from explicit references, never Pages order."""
     wanted = {q["id"].casefold(): q for q in targets}
     ordered, visiting, done = [], set(), set()
 
-    def visit(face):
-        key = face["id"].casefold()
+    def visit(page):
+        key = page["id"].casefold()
         if key in done:
             return
         if key in visiting:
             cycle = " -> ".join(list(visiting) + [key])
             raise SystemExit(f"stage contract dependency cycle: {cycle}")
         visiting.add(key)
-        for value in (face.get("requires", ""), face.get("style_from", "")):
+        for value in (page.get("requires", ""), page.get("style_from", "")):
             for token in refs(value):
                 source = by_id.get(token.casefold())
                 if source and source["id"].casefold() in wanted:
                     visit(source)
         visiting.remove(key)
         done.add(key)
-        ordered.append(face)
+        ordered.append(page)
 
     for target in targets:
         visit(target)
@@ -217,7 +217,7 @@ def add_to_pages(board, group, filename):
 
 
 def resolve_filename(family, unit, slug):
-    """The one place an S face's filename is composed. Board tooling owns this (QC2).
+    """The one place an S page's filename is composed. Board tooling owns this (QC2).
 
     Any other layer that needs the name of a lifecycle page calls this rather than
     spelling `S-{family}-{unit}-{slug}.md` itself, so the rule cannot be duplicated
@@ -241,8 +241,8 @@ def new_stage(args):
     board = args.board.resolve()
     filename, family, unit, slug = resolve_filename(args.family, args.unit, args.slug)
     target_id = f"S-{family}-{unit}".casefold()
-    faces, by_id = catalog(board)
-    del faces
+    pages, by_id = catalog(board)
+    del pages
     if target_id in by_id:
         raise SystemExit(f"stage id already exists: S-{family}-{unit}")
     path = (board / (args.directory or "") / filename).resolve()
@@ -291,21 +291,21 @@ The stage page has been created; substantive work has not started.
 
 ## Files
 - `{path.relative_to(board).as_posix()}`
-  Canonical lifecycle face for this stage.
+  Canonical lifecycle page for this stage.
 """
     path.write_text(text, encoding="utf-8")
     if args.group:
         add_to_pages(board, args.group, filename)
-    faces, by_id = catalog(board)
-    face = find_face(filename, faces, by_id)
-    sync_face(board, face, by_id)
+    pages, by_id = catalog(board)
+    page = find_face(filename, pages, by_id)
+    sync_face(board, page, by_id)
     print(path)
 
 
 def main():
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
-    new = sub.add_parser("new", help="create one S face and its managed contract")
+    new = sub.add_parser("new", help="create one S page and its managed contract")
     new.add_argument("board", type=Path)
     new.add_argument("--family", required=True)
     new.add_argument("--unit", required=True)
@@ -321,7 +321,7 @@ def main():
 
     sync = sub.add_parser("sync", help="refresh managed contract blocks")
     sync.add_argument("board", type=Path)
-    sync.add_argument("face", nargs="?")
+    sync.add_argument("page", nargs="?")
     sync.add_argument("--all", action="store_true")
 
     check = sub.add_parser("check", help="report unsynchronized contracts")
@@ -341,21 +341,21 @@ def main():
         return
 
     board = args.board.resolve()
-    faces, by_id = catalog(board)
+    pages, by_id = catalog(board)
     if args.command == "sync":
-        targets = [q for q in faces if q.get("kind") == "stage" and
+        targets = [q for q in pages if q.get("kind") == "stage" and
                    (refs(q.get("requires", "")) or refs(q.get("style_from", "")))]
         if not args.all:
-            if not args.face:
-                raise SystemExit("sync needs FACE or --all")
-            targets = [find_face(args.face, faces, by_id)]
+            if not args.page:
+                raise SystemExit("sync needs PAGE or --all")
+            targets = [find_face(args.page, pages, by_id)]
         else:
             targets = dependency_order(targets, by_id)
-        for face in targets:
-            print(sync_face(board, face, by_id))
+        for page in targets:
+            print(sync_face(board, page, by_id))
         return
 
-    warnings = [contract_status(board, q, by_id) for q in faces]
+    warnings = [contract_status(board, q, by_id) for q in pages]
     warnings = [w for w in warnings if w]
     for warning in warnings:
         print(warning)

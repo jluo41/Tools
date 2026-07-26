@@ -19,29 +19,32 @@ It reaches downstream because SKILL.md is the skill's entry point and the only e
   How to **verify it suffices** once written: that is `QB2` (fresh-agent cold read).
 
 ## Diagram
+
 ```
 user types  /haipipe-board
           │
           ▼
       SKILL.md  ~280 lines (260725): operations only, details never inlined
-          ├─ the shape: what a board looks like (Q + S faces, group intros, embeds)
+          ├─ the shape: what a board looks like (Q + S pages, group intros, embeds)
           ├─ nine actions: view · open · add · build · sync · link · close   (offline)
           │                serve · comment                                    (live)
-          ├─ the sections of one Q/S face (the source side of QA4's contract)
+          ├─ the sections of one Q/S page (the source side of QA4's contract)
           ├─ three writing rules (no invented terms / purge stale lines / fresh-agent cold read)
           ├─ the four prohibitions
           └─ board ↔ SKILL.md: the graduation mechanism
                 │
                 ▼  go to ref/ only when detail is needed
-        ref/q-template.md     copy to add a Q or S face (mirrors QA4 since 0.15.1)
+        ref/q-template.md     copy to add a Q or S page (mirrors QA4 since 0.15.1)
         ref/board-form.md     full spec: numbering · section↔page · syntax table · embeds §5 · order §8
         ref/writing-rules.md  how to write plainly + cold-read prompt + convergence criterion
         ref/board-example.md  a minimal two-question example
 ```
 
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB1
+
 ## Items to Finish
 - [x] SKILL.md written
-      Shape · actions (view/open/add/build/sync/link/close + serve/comment) · the sections of one Q/S face · writing rules · prohibitions · ref/ index.
+      Shape · actions (view/open/add/build/sync/link/close + serve/comment) · the sections of one Q/S page · writing rules · prohibitions · ref/ index.
 - [x] Answers "how to open a new board"
       The open section, five steps, including the single place that must stop and ask the user (the Q list needs a nod).
 - [x] Answers "how to add a Q to a board"
@@ -59,10 +62,10 @@ user types  /haipipe-board
       QB2 ran (260723, GPU-cluster topic): a fresh agent, given only SKILL.md + ref/, opened a valid 5-question board on the first try, verdict YES.
       The single real gap it exposed (how to invoke build.py) is fixed into SKILL.md.
       Re-run 260725 against the shared Q/S skill (4 Q + 1 S), verdict YES again; see the next item for what it cost.
-- [x] 📝 The manual describes S faces on the writing side, not only the reading side
-      Until 260725 SKILL.md explained how an S face RENDERS but never how to create one: `open` asked "有哪几个 Q", step 4 named files `Q<letter><n>` only, `close` used the words "human-gated / explicitly parked" as if they were states, and nothing said how an S is listed in `## Pages`.
+- [x] 📝 The manual describes S pages on the writing side, not only the reading side
+      Until 260725 SKILL.md explained how an S page RENDERS but never how to create one: `open` asked "有哪几个 Q", step 4 named files `Q<letter><n>` only, `close` used the words "human-gated / explicitly parked" as if they were states, and nothing said how an S is listed in `## Pages`.
       QB2's re-run had to guess all of it (and guessed right, which is worse: the documents took credit for the agent's judgment).
-      Fixed in the same pass: `open` steps 1 and 4 now ask for Q **and** S faces and give both filename shapes plus S's required `## Content`; `close` and the Face section state that both kinds share the same four `state:` values, with ✅ meaning "checkboxes closed" on Q and "human gate passed" on S; `ref/board-form.md` §2 gained the S state mapping and the Pages rule (bare filename, free-text group heading), §3's example gained an S line; `ref/q-template.md`'s consumer record no longer assumes a paper's `1-probes/` tree.
+      Fixed in the same pass: `open` steps 1 and 4 now ask for Q **and** S pages and give both filename shapes plus S's required `## Content`; `close` and the Page section state that both kinds share the same four `state:` values, with ✅ meaning "checkboxes closed" on Q and "human gate passed" on S; `ref/board-form.md` §2 gained the S state mapping and the Pages rule (bare filename, free-text group heading), §3's example gained an S line; `ref/q-template.md`'s consumer record no longer assumes a paper's `1-probes/` tree.
       The build section also names the interpreter split (build/watch on any `python3`, `serve.py` on the venv for the SDK).
 
 
@@ -70,20 +73,20 @@ user types  /haipipe-board
 **Written, validated by QB2, and kept current through the 0.15.x series; the live layer stays pointer-only until the QD group settles.**
 
 - `SKILL.md`, ~280 lines as of 260725
-  Operations only: the shape (Q + S faces, group intros, embeds), nine actions (view / open / add / build / sync / link / close offline, serve / comment live), the sections of one Q/S face, three writing rules, four prohibitions, the graduation mechanism, a ref/ index.
+  Operations only: the shape (Q + S pages, group intros, embeds), nine actions (view / open / add / build / sync / link / close offline, serve / comment live), the sections of one Q/S page, three writing rules, four prohibitions, the graduation mechanism, a ref/ index.
   Spec and prose details never inlined; it enters the context on every invocation, shorter is better.
 - `ref/`, four files
   `q-template.md`: the shared Q/S source template; mirrors QA4's rendered contract (0.15.1).
   `board-form.md`, the full spec: folder, numbering, section↔page mapping, syntax table, embeds (§5), on-stage order (§8), Comments format, the invariant.
   `writing-rules.md`: hard writing rules + the zero-background review prompt, convergence criterion, and past scores.
-  `board-example.md`: a minimal two-question example; predates the Q/S merge (no S face, no Content section) and its prose is still Chinese, so the template, not it, is the authority on shape.
+  `board-example.md`: a minimal two-question example; predates the Q/S merge (no S page, no Content section) and its prose is still Chinese, so the template, not it, is the authority on shape.
 - `CHANGELOG.md`, one entry per body of work, version matching SKILL.md's `version:` line
-  Grown from 0.2.0 alongside the board: the Q/S face merge (0.13.0), the Opening and Diagram rulings (0.13.x-0.14.0), the index chatbot (0.15.0), and the QA2 template alignment (0.15.1) are all recorded there.
-  Its early self-correction stands: the invariant is "strip every script and every face plus all body text remains", asserted on every build.
+  Grown from 0.2.0 alongside the board: the Q/S page merge (0.13.0), the Opening and Diagram rulings (0.13.x-0.14.0), the index chatbot (0.15.0), and the QA2 template alignment (0.15.1) are all recorded there.
+  Its early self-correction stands: the invariant is "strip every script and every page plus all body text remains", asserted on every build.
 
-- 260725 CC · 📝 The S-face instructions caught up with the S-face renderer
+- 260725 CC · 📝 The S-page instructions caught up with the S-page renderer
   QB2's re-run exposed that every S instruction in the manual was about reading a stage, not writing one, so a newcomer had to invent the Pages listing, the state value, the filename, and the probe pointer.
-  All four are now written down (`open` steps 1/4, `close`, the Face section, `ref/board-form.md` §2/§3, `ref/q-template.md`).
+  All four are now written down (`open` steps 1/4, `close`, the Page section, `ref/board-form.md` §2/§3, `ref/q-template.md`).
   The lesson is general: **the reading contract graduated on its own and left the authoring contract behind**, which is invisible to anyone who already knows both.
 
 Still open: the live layer (serve/chat/terminal) graduates in only when the QD questions settle.
@@ -115,8 +118,8 @@ When the user types `/haipipe-board`, this is what gets read in. graduation: onc
 ## Discussion
 
 ## Log
-260725 1215 · S faces written into the manual's authoring side after QB2's re-run found four gaps (open steps 1/4 · close + Face state values · board-form §2/§3 Pages and state mapping · q-template probe pointer · the python3-vs-venv split); 0.16.0
-260725 1140 · Stale numbers purged in the QB alignment pass (JL's go): "128 lines / five actions / CHANGELOG up to 0.2.0" replaced with the 0.15.x reality (~280 lines, nine actions, Q/S face wording); ref/ descriptions updated, board-example.md's pre-merge shape noted
+260725 1215 · S pages written into the manual's authoring side after QB2's re-run found four gaps (open steps 1/4 · close + Page state values · board-form §2/§3 Pages and state mapping · q-template probe pointer · the python3-vs-venv split); 0.16.0
+260725 1140 · Stale numbers purged in the QB alignment pass (JL's go): "128 lines / five actions / CHANGELOG up to 0.2.0" replaced with the 0.15.x reality (~280 lines, nine actions, Q/S page wording); ref/ descriptions updated, board-example.md's pre-merge shape noted
 260724 1242 · Translated to English (JL 260724: everything on the board in English); purged the stale "written but not yet verified" lead: QB2 passed on 260723
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
 260723 1720 · QB2 acceptance passed → ticked "a fresh agent can open a board"; SKILL.md gains: invoke build.py with its path + slug/default-state/owner conventions

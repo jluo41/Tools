@@ -6,7 +6,7 @@ method: one responsibility per layer, one direction of control, progressive disc
 ## Question
 What is in the reusable skill package, what runs at each stage, and what does it put into the other folders? This is the one folder written once and used by every paper: 35 skills and 7,406 lines, each of them a promise that some stage worker will follow. The work here is ownership, not layout.
 
-This is one of two folders written once and used by every paper, `③` being the other. Everything in it is a promise: a contract a stage worker will follow, a script that will run, a template that will be filled. Nothing in it is about any particular paper, and the moment something here mentions one, it has stopped being reusable.
+This is one of three folders written once and used by every paper, `③` being the other. Everything in it is a promise: a contract a stage worker will follow, a script that will run, a template that will be filled. Nothing in it is about any particular paper, and the moment something here mentions one, it has stopped being reusable.
 
 The folder is already close to the right architecture, so the useful work is not a directory migration. It is ownership. Several skills still carry routing, craft, rendering, history and state at once, and the front door has grown to 556 lines, which every invocation pays for whether or not it needs them.
 
@@ -16,7 +16,7 @@ What is genuinely missing is the second half of the question above. A reader can
 - ✅ Covered here
   The layers, the direction of control, the anatomy of one callable skill, what each of the eight stages runs and produces, and what crosses this folder's edges.
 - ↪ Covered elsewhere
-  Which folder this is among the four is `QA1`; the design board that rules it is `QA3`; the paper it writes into is `QA4` and that paper's board is `QA5`; the contract form itself is `QE1`; the Display split is `QD1`.
+  Which folder this is among the four is `QA1`; the design board that rules it is `QA3`; the paper it writes into is `QA6` and that paper's board is `QA7`; the contract form itself is `QE1`; the Display split is `QD1`.
 
 ## Diagram
 ```
@@ -30,19 +30,19 @@ What is genuinely missing is the second half of the question above. A reader can
                          │           the Board, route. Decides WHICH, never HOW.
                          │           writes  NOTHING. A router that writes is a bug.
                          ▼
-   QA4 ──────────▶  0-enter/         which paper, which round
-   QA5                   │           → ⑦  .paper-console.yaml   session state
+   QA6 ──────────▶  0-enter/         which paper, which round
+   QA7                   │           → ⑦  .paper-console.yaml   session state
                          │           → ⑧  S-Round-<n>-<vYYMMDD>.md
                          │                and that round's letters beside it
                          ▼
-   QB1-QB5 ──────▶  1-lifecycle/     pick ONE S page, load ONE stage contract
-   QA7  (creation)       │           haipipe-paper-stage · index.yml · 8 contracts
+   QB1-QB11 ──────▶  1-lifecycle/     pick ONE S page, load ONE stage contract
+   QA8  (creation)       │           haipipe-paper-stage · index.yml · 8 contracts
    QE   (the form)       │           → ⑧  S-<Family>-<unit>-<slug>.md
                          │                create-page.py calls the Board's stage.py
                          ▼
-   QBb  (evidence) ─▶  2-phase/      the four phases, 13 workers, all on ONE page
+   QB7-QB11 (phases) ─▶ 2-phase/   the four phases, 13 workers, all on ONE page
    QC   (sentence)       │
-   QA8  (the runner)     │  DRAFT   → ⑧  the page's ## Content + its Q-consumer
+   QA9  (the runner)     │  DRAFT   → ⑧  the page's ## Content + its Q-consumer
                          │  PROBE   → ⑦  1-probes/PPnn_<topic>/QXn_<slug>.md
                          │           ↳ ACROSS THE WALL, read-only, to
                          │             tasks/ · discoveries/ → QA/<n>-<slug>.md
@@ -50,12 +50,12 @@ What is genuinely missing is the second half of the question above. A reader can
                          │  REVISE  → ⑧  the same page, plus %% why-comments
                          │  CHECK   → ⑧  state: ✅   WRITTEN BY A HUMAN
                          ▼
-   QBa  (projections) ▶ 3-deliver/   1-build · 2-audit · 3-polish · 4-ship
+   QB6 (the product) ──▶ 3-deliver/  1-build · 2-audit · 3-polish · 4-ship
    QD   (renderers)      │           → ⑦  0-sections/*.tex   GENERATED from ⑧
                          │           → ⑦  0-displays/…/float.tex
                          │           → ⑦  main.pdf · overleaf · the bundle
                          ▼
-   QA5 ──────────▶  4-respond/       → ⑧  the round's S-Round page: what came
+   QA7 ──────────▶  4-respond/       → ⑧  the round's S-Round page: what came
                          │                back, what was decided, what applied
                          ▼
    QD  ──────────▶  5-present/       → ⑦  slides.pdf · poster.pdf, from the
@@ -73,6 +73,11 @@ What is genuinely missing is the second half of the question above. A reader can
         evidence pointers
       ① gets NOTHING. Nothing a paper run produces is written back into
         the skill: that direction is graduation, and only ② may travel it.
+
+   ── which layers are ADAPTERS, and onto what ─────────────────────
+      1-lifecycle/  create-page.py ──▶ ③  the Board's stage.py
+      2-phase/      haipipe-paper-probe ──▶ ⑤  "only the paper-side deltas"
+      every other layer writes ⑦ or ⑧ directly and adapts onto nothing.
 
    consulted, never in the chain of command:
      venue/     knowledge packs, read lazily. NEVER lifecycle verbs.
@@ -136,7 +141,7 @@ CHECK    haipipe-paper-check          HUMAN GATE. Only a person may pass it.
                               is nothing to polish)
  pitch          D P R C       S-Venue-1-pitch.md                 —
  narrative      D P R C       S-Venue-2-narrative.md             —
- display        D P R C       per-unit, blocked on QB4           4-display.tex
+ display        D P R C       per-unit, blocked on QB2           4-display.tex
                               (11 S-Display pages on MISQ)       0-displays/…/
  section-edit   D P R C       S-Main-n · S-Appendix-x            0-sections/*.tex
                 PER UNIT      one page per section
@@ -208,7 +213,7 @@ Four things this roster says that no prose on this page did.
 
 **`4-respond/` has three overlapping rebuttal skills**: `haipipe-paper-rebuttal` (310), `paper-rebuttal` (146) and `rebuttal-response` (171). Nothing on this board rules which is the entry, and two of them predate the third. That is the clearest single ownership defect in the folder.
 
-**The naming is not uniform.** Five skills drop the `haipipe-` prefix: `paper-rebuttal`, `rebuttal-response`, `paper-poster`, `paper-slides`. A reader cannot tell from a name whether a skill belongs to this family, which matters because the prefix is how the family is discovered.
+**The naming is not uniform.** Four skills drop the `haipipe-` prefix: `paper-rebuttal`, `rebuttal-response`, `paper-poster`, `paper-slides`. A reader cannot tell from a name whether a skill belongs to this family, which matters because the prefix is how the family is discovered.
 
 ### Which board group rules which skill
 This is the `② ──graduates──▶ ①` edge, made addressable. Every group on the design board rules some part of this folder, and a ruling that reaches ✅ has to land somewhere concrete or it has not graduated. This is that target list, so nobody has to guess.
@@ -221,22 +226,24 @@ This is the `② ──graduates──▶ ①` edge, made addressable. Every gro
        THIS page. 556 lines at the front door is its open item.
  QA3  the skill board          NOTHING in ①, by design                    🟡
        it rules the board itself; that is what makes ② deletable
- QA4  the paper                haipipe-paper-folder/SKILL.md              🟡
+ QA6  the paper                haipipe-paper-folder/SKILL.md              🟡
                                haipipe-paper-enter/SKILL.md
        the scaffold contract. Already changed once today: 3 containers.
- QA5  the paper board          haipipe-paper-round/SKILL.md   <- REWRITE  🟡
+ QA7  the paper board          haipipe-paper-round/SKILL.md   <- REWRITE  🟡
                                haipipe-board's S-family list
        the round ruling landed here and the skill still contradicts it
  ───────────────────────────   ───────────────────────────────────────   ─────
- QB1-QB5  what a stage is      stages/*/stage.md  x8 . CONTRACT.md        🟡
-       the unit, phases, gate, grain, venue-free vs aligned
- QBa  what a stage writes      stage.md `artifact:` `generated:`          🟡
-                               3-deliver/ (the tex projection)
- QBb  how evidence gets in     2-phase/1-probe/haipipe-paper-probe/       🟡
-                               probe/haipipe-probe/ (the shared layer)
- QBc  who owns the page        create-page.py . haipipe-board/stage.py    🟡
+ QB1-QB2  adding a stage       stages/index.yml . CONTRACT.md . SKILL.md  🟡
+       the test that admits one, the four files, the two variation flags
+ QB3  the stage template      stages/*/template.md  x8                   🔴
+       create-page.py PARSES it; the file says "follow, don't ship"
+ QB4-QB6  the page it writes   create-page.py . haipipe-board/stage.py    🟡
+       who names it, what a second run does, what is generated from it
+ QB7-QB11 the four phases      2-phase/  x4 . ref/08-stage-gate.md        🟡
+       calling them, then DRAFT, PROBE, REVISE and the gate
+ QA8  who owns the page        create-page.py . haipipe-board/stage.py    🟡
        the one-file rule, dependencies, state, creation
- QBd  how work is DRIVEN       haipipe-paper-stage/SKILL.md (the runner)  🟡
+ QA9  how work is DRIVEN       haipipe-paper-stage/SKILL.md (the runner)  🟡
                                haipipe-board/serve.py (the live layer)
  ───────────────────────────   ───────────────────────────────────────   ─────
  QC   the sentence             2-phase/0-draft/draft-{citation,values,    🟡
@@ -253,9 +260,9 @@ Three things fall out of reading it as a column.
 
 `QA3` is the only group with no target in `①`, and that is not an omission. It rules the design board itself, which is exactly why `②` can be deleted without breaking anything.
 
-`QA6`, `QA7`, `QA8`, `QC` and `QD` each name a file in `0_utils/haipipe-board/` or `display/`, which are not inside this folder at all. Those are the rulings that cross a package boundary, and they are the ones most likely to be half-applied: a Law can graduate into the paper skill and quietly not reach the board tool that implements its other half.
+`QA4`, `QA8`, `QA9`, `QC` and `QD` each name a file in `0_utils/haipipe-board/` or `display/`, which are not inside this folder at all. Those are the rulings that cross a package boundary, and they are the ones most likely to be half-applied: a Law can graduate into the paper skill and quietly not reach the board tool that implements its other half.
 
-`QA5` is the live example of a ruling that landed and has not been carried: the round ruling is written on the board and `haipipe-paper-round/SKILL.md` still describes the layer it removed. It carries a superseded banner rather than a rewrite, so the gap is visible instead of silent.
+`QA7` is the live example of a ruling that landed and has not been carried: the round ruling is written on the board and `haipipe-paper-round/SKILL.md` still describes the layer it removed. It carries a superseded banner rather than a rewrite, so the gap is visible instead of silent.
 
 ### What crosses this folder's edge
 ```
@@ -297,13 +304,13 @@ Three things fall out of reading it as a column.
 - [x] 🎯 Map every board group to what it rules here
       The graduation edge is addressable: each group names the files a settled Law must land in (JL 260726).
 - [ ] 🔗 Carry the cross-package rulings
-      QA6, QA7, QA8, QC and QD each rule a file in `haipipe-board/` or `display/`, outside this folder. Nothing checks that a Law reached both halves.
+      QA4, QA8, QA9, QC and QD each rule a file in `haipipe-board/` or `display/`, outside this folder. Nothing checks that a Law reached both halves.
 - [x] 📋 List the roster with versions
       35 skills, their versions, dates and SKILL.md sizes, measured 260726.
 - [ ] 🧠 Rule which rebuttal skill is the entry
       `4-respond/` carries three: `haipipe-paper-rebuttal`, `paper-rebuttal`, `rebuttal-response`. Nothing says which one a session calls, and two predate the third.
 - [ ] 🏷 Make the naming uniform
-      Five skills drop the `haipipe-` prefix, which is how the family is discovered.
+      Four skills drop the `haipipe-` prefix, which is how the family is discovered.
 - [ ] ✂️ Make the front door thin
       Move stage craft, comment detail, evidence detail, and output-specific rules to their actual owners. 556 lines paid on every invocation.
 - [ ] 📏 Set a compactness acceptance test
@@ -340,3 +347,6 @@ The numbered family spine stays. Each layer owns one responsibility and control 
 Inside one skill: progressive disclosure. Metadata selects, `SKILL.md` carries the shortest complete procedure and names which conditional reference to read, and everything else loads only when its branch is taken. Design history never sits in the invocation path.
 
 Nothing in this folder names one paper. A rule that mentions a specific manuscript belongs in `⑦` or `⑧`, not here.
+
+## Log
+260726 · Added what a stage RUN does (13 workers, the per-stage write/generate table), the roster of 35 skills with versions, and the map of which board group rules which skill. The diagram gained a left column naming the ruling group per layer, on JL's ask. Reopened to 🟡: the edge map raised an unruled question, whether a stage may write into `⑦` without going through a page.

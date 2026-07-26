@@ -1,0 +1,50 @@
+% Multi-cohort Table 1 (C0 data anchor) -- tabular body only.
+% Numbers parsed from v0618 aggregated logs (probe P.0624-CD; see
+% probes/0624_cohort-descriptives/evidence.md). PARSE-not-recompute.
+% Generating task: tasks/Z01_Display_PhyTraitOpioid/06_table1_descriptives/
+%   (results/table1_multicohort/table_body.tex + table1_wide.csv; every cell
+%    traced to a describe.txt / reg-summarize log line in table1_long.csv).
+% Osteo column is PARTIAL (regression-stage logs only; no build funnel).
+% Cell legend (THREE non-numeric states):
+%   "--"                            row not summarized for this cohort (no in-domain claim).
+%   "n/a"                            cross-domain non-applicable (opioid vs diabetes outcome).
+%   \textcolor{red}{\textbf{TODO}}   in-domain cell genuinely absent from EVERY aggregated
+%                                    v0618 export; pending a server descriptives re-export.
+% The Unique patients / Unique physicians rows are hand-curated counts (not parser-
+% emitted; the reg logs carry observation N, not distinct counts); preserved here.
+% Requires \usepackage{xcolor} in the including preamble (display05 preview + gallery load it).
+\begin{tabular}{l rrrr r}
+\toprule
+ & \multicolumn{4}{c}{\textbf{Opioid cohorts}} & \textbf{Diabetes} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-6}
+\textbf{Characteristic} & \textbf{LBP} & \textbf{Cancer} & \textbf{Headache} & \textbf{Osteo$^{\dagger}$} & \textbf{T2D} \\
+\midrule
+\multicolumn{6}{l}{\textit{Analytic sample}} \\
+Analytic $N$ (encounters)      & 773{,}566 & 1{,}385{,}300 & 203{,}426 & 1{,}216{,}207$^{\dagger}$ & 1{,}208{,}934 \\
+\quad Unique patients          & 535{,}384 & 808{,}124 & 170{,}635 & \textcolor{red}{\textbf{TODO}} & 783{,}926 \\
+\quad Unique physicians        & 90{,}996 & 118{,}900 & 67{,}260 & \textcolor{red}{\textbf{TODO}} & 132{,}620 \\[4pt]
+\multicolumn{6}{l}{\textit{Patient characteristics}} \\
+Age, mean (yr)                 & 74.2 & 75.1 & 73.7 & 74.3 & 74.0 \\
+\quad SD                       & 6.67 & 6.98 & \textcolor{red}{\textbf{TODO}} & 6.94 & \textcolor{red}{\textbf{TODO}} \\
+Female, \%                     & 62.4 & 47.7 & 73.6 & 67.2 & 53.8 \\
+White, \%                      & 87.6 & 90.3 & 84.2 & 87.0 & \textcolor{red}{\textbf{TODO}} \\
+Black, \%                      & 5.7 & 4.3 & 6.4 & \textcolor{red}{\textbf{TODO}} & \textcolor{red}{\textbf{TODO}} \\
+LIS (low-income subsidy), \%   & 17.1 & 12.2 & 22.0 & 17.0 & 27.1 \\
+Dual eligible, \%              & 14.8 & 10.6 & 19.6 & 14.9 & 24.1 \\[4pt]
+\multicolumn{6}{l}{\textit{Exposure: perceived Agreeableness}} \\
+Agreeableness, mean            & 0.570 & 0.658 & 0.577 & 0.608 & 0.615 \\
+\quad SD                       & 0.39 & 0.38 & 0.40 & 0.38 & 0.39 \\[4pt]
+\multicolumn{6}{l}{\textit{Prescribing outcome}} \\
+Any opioid Rx, \%              & 17.25 & 8.12 & 8.51 & 6.99 & n/a \\
+\quad High-dose long-duration, \% & 13.77 & 3.94 & 5.97 & \textcolor{red}{\textbf{TODO}} & n/a \\
+Any diabetes Rx, \%            & n/a & n/a & n/a & n/a & 56.00 \\
+\quad Metformin Rx, \%         & n/a & n/a & n/a & n/a & 26.91 \\[4pt]
+\multicolumn{6}{l}{\textit{Selected comorbidities, \% (6 most prevalent; full 22-flag control set in appendix)}} \\
+Hypertension                   & 70.3 & \textcolor{red}{\textbf{TODO}} & \textcolor{red}{\textbf{TODO}} & 67.4 & \textcolor{red}{\textbf{TODO}} \\
+RA / osteoarthritis            & 66.8 & \textcolor{red}{\textbf{TODO}} & \textcolor{red}{\textbf{TODO}} & 77.4 & \textcolor{red}{\textbf{TODO}} \\
+Hyperlipidemia                 & 61.8 & \textcolor{red}{\textbf{TODO}} & \textcolor{red}{\textbf{TODO}} & 59.2 & \textcolor{red}{\textbf{TODO}} \\
+Ischemic heart disease         & 32.6 & \textcolor{red}{\textbf{TODO}} & \textcolor{red}{\textbf{TODO}} & 28.4 & \textcolor{red}{\textbf{TODO}} \\
+Diabetes                       & 27.9 & \textcolor{red}{\textbf{TODO}} & \textcolor{red}{\textbf{TODO}} & 24.9 & \textcolor{red}{\textbf{TODO}} \\
+Anemia                         & 27.8 & \textcolor{red}{\textbf{TODO}} & \textcolor{red}{\textbf{TODO}} & 27.8 & \textcolor{red}{\textbf{TODO}} \\
+\bottomrule
+\end{tabular}

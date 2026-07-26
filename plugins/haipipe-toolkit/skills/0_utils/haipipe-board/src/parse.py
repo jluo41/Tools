@@ -3,7 +3,7 @@ parse_board fills body.LINKS (mutation only — same dict object inline() reads)
 import re
 
 from .body import LINKS
-from .common import face_files, sec
+from .common import page_files, sec
 from .stage_contract import contract_status
 
 
@@ -55,6 +55,8 @@ def parse_board(board):
             LINKS[parts[0]] = parts[1].strip()
     return dict(title=title, spine=f("spine"), close=f("close"),
                 session=f("session"),   # 整板会话的 id（QD5）——serve.py 记在 board.md 头部
+                excalidraw=f("excalidraw"),  # the board's own Excalidraw host, e.g.
+                                            # http://127.0.0.1:5610 (self-hosted, QA4a)
                 dialect=f("dialect"),       # opt-in: `paper` resolves \citep{} at build time
                 paper_root=f("paper-root"),  # where that paper's .bib / 0-displays / 1-probes are
                 theme=sec(bs, "Topic"), pipeline=sec(bs, "Pipeline"), dir="")
@@ -120,8 +122,8 @@ def strip_notes(md):
     return "".join(parts)
 
 
-def parse_face(qid, txt, group="", file="", kind="question", family=""):
-    """One Q/S face (title, meta lines, and ## sections) -> data dict."""
+def parse_page(qid, txt, group="", file="", kind="question", family=""):
+    """One Q/S page (title, meta lines, and ## sections) -> data dict."""
     lines = txt.split("\n")
     i = 0
     while i < len(lines) and not lines[i].strip():
@@ -160,7 +162,7 @@ def parse_face(qid, txt, group="", file="", kind="question", family=""):
 
 def parse_q(qid, txt, group="", file=""):
     """Backward-compatible question parser used by legacy single-file boards."""
-    return parse_face(qid, txt, group, file, "question")
+    return parse_page(qid, txt, group, file, "question")
 
 
 def parse_file(md):
@@ -188,7 +190,7 @@ def parse_dir(d):
     # 小写子组字母，QAa/QAb 这样把一个组一分为二）或「数字+小写」（Q0s 这类
     # 排在字母组之前的前置组），数字是组内序号。
     disk, dupes = {}, []
-    for p in face_files(d):
+    for p in page_files(d):
         qm = re.match(r"Q([0-9][a-z]|[A-Z]*[a-z]?)(\d+)([a-z]?)", p.stem)
         full_sm = re.match(
             r"S-(Seed|Work|Venue|Display|Main|Appendix|Submission)-(\d+|[A-Z])(?:-|$)",
@@ -200,7 +202,7 @@ def parse_dir(d):
         if qm or sm:
             if qm:
                 key = (0, qm.group(1), int(qm.group(2)), qm.group(3))
-                face_id = "Q" + qm.group(1) + qm.group(2) + qm.group(3)
+                page_id = "Q" + qm.group(1) + qm.group(2) + qm.group(3)
                 kind = "question"
                 family = ""
             elif full_sm:
@@ -217,7 +219,7 @@ def parse_dir(d):
                 }[family]
                 unit_key = (0, int(unit)) if unit.isdigit() else (1, unit)
                 key = (1, family_order, *unit_key)
-                face_id = f"S-{family.title()}-{unit}"
+                page_id = f"S-{family.title()}-{unit}"
                 kind = "stage"
             else:
                 prefix = legacy_sm.group(1).upper()
@@ -225,7 +227,7 @@ def parse_dir(d):
                 family = {"S": "stage", "SM": "main", "SA": "appendix"}[prefix]
                 family_order = {"stage": 0, "main": 1, "appendix": 2}[family]
                 key = (1, family_order, 0, int(order.group(1)), order.group(2))
-                face_id = prefix + legacy_sm.group(2)
+                page_id = prefix + legacy_sm.group(2)
                 kind = "stage"
             if p.name in disk:
                 dupes.append(
@@ -233,7 +235,7 @@ def parse_dir(d):
                     f"({disk[p.name][2].relative_to(d)} and {p.relative_to(d)}); "
                     "keeping the first")
                 continue
-            disk[p.name] = (key, face_id, p, kind, family)
+            disk[p.name] = (key, page_id, p, kind, family)
     pages_txt = sec(split_sections(board), "Pages")
     if not disk and not re.search(r"^doc:", pages_txt, re.M):
         return parse_file(board)        # legacy: everything in one board.md
@@ -279,7 +281,7 @@ def parse_dir(d):
             order.append(("⚠️ Not in Pages" if listed else "", p))
 
     qs = [p if isinstance(p, dict)
-          else parse_face(disk[p.name][1], p.read_text(encoding="utf-8"), g,
+          else parse_page(disk[p.name][1], p.read_text(encoding="utf-8"), g,
                           p.relative_to(d).as_posix(), disk[p.name][3], disk[p.name][4])
           for g, p in order]
     for q, (g, p) in zip(qs, order):

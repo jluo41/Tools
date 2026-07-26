@@ -3,7 +3,7 @@
 The standard for tagging paragraphs so each one has a **stable handle** to edit,
 track, and reference across edit rounds. Every phase worker that touches section .tex/.md uses it.
 
-This formalizes the existing `0-sections/` banner. One change from the original:
+This formalizes the existing `sections/` banner. One change from the original:
 the identifying token is no longer the **positional** `P1/P2` (which renumbered on
 every insert) — it is a **stable id** that never moves.
 

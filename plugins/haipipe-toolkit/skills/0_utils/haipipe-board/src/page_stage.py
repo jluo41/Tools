@@ -1,7 +1,7 @@
 """Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
 `![[path#Section]]` embed and the generic markdown renderer behind it.
 
-A face stays q-template; whatever it embeds is shown VERBATIM-generically —
+A page stays q-template; whatever it embeds is shown VERBATIM-generically —
 headings (atx AND setext), fences, lists, quotes, record lines, paragraphs —
 with ZERO knowledge of the source's dialect. Content is read fresh at every
 build, so an embed can never drift from its source. A missing target renders
@@ -16,8 +16,9 @@ import re
 from .common import esc
 
 # One embed per line, on its own line: ![[relative/path.md]] or
-# ![[relative/path.md#Section heading]]
-EMBED = re.compile(r"^\s*!\[\[([^\]#|]+?)(?:#([^\]|]+))?\]\]\s*$")
+# ![[relative/path.md#Section heading]], with an optional `|source` tail that
+# shows the file's own bytes instead of rendering them.
+EMBED = re.compile(r"^\s*!\[\[([^\]#|]+?)(?:#([^\]|]+))?(?:\|([a-z]+))?\]\]\s*$")
 
 _SETEXT = re.compile(r"^\s*(=+|-+)\s*$")
 _ATX = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
@@ -214,14 +215,25 @@ def render_doc_slide(q, prv, nxt):
             + "".join(parts) + nav + '</section>')
 
 
-def embed_block(path_token, section):
+def embed_block(path_token, section, mode=None):
     """One `![[path]]` / `![[path#Section]]` line -> a live-from-source block.
     Every failure mode is VISIBLE on the page (missing file, wrong extension,
-    heading not found) — an embed never silently renders empty."""
+    heading not found) — an embed never silently renders empty.
+
+    `![[path#Section|source]]` shows the file's OWN BYTES in a <pre> instead of
+    rendering them. A page that teaches a source shape needs to print the source
+    beside the result; typing it out again is a copy, and a copy drifts (it
+    already did on QC0, where a hand-kept example and its own explanation ended
+    up naming different questions). One file, two views, no second copy.
+    """
     from . import body as B
     src = _find(path_token)
     label = esc(path_token) + (f'<span class="es">#{esc(section.strip())}</span>'
                                if section else "")
+    mode = (mode or "").strip().lower()
+    if mode and mode != "source":
+        return (f'<div class="embed miss">⚠ embed: unknown mode '
+                f'<code>|{esc(mode)}</code> (only <code>|source</code>)</div>')
     if src is None:
         return (f'<div class="embed miss">⚠ embed not found: '
                 f'<code>{esc(path_token)}</code></div>')
@@ -241,6 +253,10 @@ def embed_block(path_token, section):
         href = None
     head = (f'<a class="fp" href="{esc(href)}">📄 {label}</a>' if href
             else f'<span>📄 {label}</span>')
+    if mode == "source":
+        return (f'<div class="embed src"><div class="emh">{head}'
+                f'<span class="elive">source, verbatim</span></div>'
+                f'<div class="emb"><pre>{esc(text)}</pre></div></div>')
     return (f'<div class="embed"><div class="emh">{head}'
             f'<span class="elive">live from source</span></div>'
             f'<div class="emb">{render_doc(text)}</div></div>')

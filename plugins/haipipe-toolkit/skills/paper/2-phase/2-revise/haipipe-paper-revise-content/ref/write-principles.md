@@ -61,7 +61,7 @@ Recap of SKILL.md Hard Rule 4 + concrete don't-lists.
 
 **Paragraph-numbering (file-local, recap of SKILL.md Hard Rule 2)**:
 
-- Each `0-sections/0X-YY_*.tex` restarts at `P1.S1`. No continuous numbering across files.
+- Each `sections/0X-YY_*.tex` restarts at `P1.S1`. No continuous numbering across files.
 - Paragraph splits during work-in-progress (Phase 2) MAY use `P20a, P20b, ...` as transient labels; clean-up phase (Phase 3) renumbers to sequential `P3, P4, P5, ...`.
 - Sentence splits within a paragraph stay at `Sxa`/`Sxb` PERMANENTLY; don't renumber across split sentences within one paragraph.
 

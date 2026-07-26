@@ -22,6 +22,7 @@ Downstream it settles which of the two repos the code lives in, whether to branc
   Nor whether the body text is editable in the page: that is `QE4`.
 
 ## Diagram
+
 ```
 two candidates; the difference is what comes free and what it costs
 ─────────────────────────────────────────────────────────────────
@@ -47,6 +48,8 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
     invariant: strip every <script> from the page and every question and all
     body text is still there).
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE3
 
 ## Items to Finish
 - [x] Decide: does `build.py` producing a static page stay an invariant?

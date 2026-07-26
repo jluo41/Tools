@@ -19,6 +19,7 @@ It also tests one thing directly, whether the generator is truly backward-compat
   This question owns only the existing stock.
 
 ## Diagram
+
 ```
 01-sublabel-license-260722/  ──folded──►  02-method-260722/ (new format, 13 questions)
   validation core ①②⑤        ─►  QB3 take a score that is not self-assigned
@@ -28,6 +29,8 @@ It also tests one thing directly, whether the generator is truly backward-compat
   Di's note-update/audit      ─►  02/_source/ (archived, not destroyed)
   board.md/html/bak · deck.html · render.py  ─►  deleted
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB3
 
 ## Items to Finish
 - [x] `02-method-260722/` converted to the QA1 format: split into one file per question (13 `QX-slug.md`), Chinese section names → English, `[Q1]` → `QA1`, Diagram/Log added

@@ -1,4 +1,4 @@
-<!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1a-resource/1a-resource.md from this skeleton: replace every <…>, and each `<!-- RULE: … -->` comment is guidance to FOLLOW then DELETE — a RULE comment never appears in the finished doc. Delete this top line too. -->
+<!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/1a-resource.md from this skeleton: replace every <…>, and each `<!-- RULE: … -->` comment is guidance to FOLLOW then DELETE — a RULE comment never appears in the finished doc. Delete this top line too. -->
 1a-resource: <paper title> (what the paper's resources ARE, and whether they carry the claim)
 ============================================================================================
 

@@ -4,9 +4,9 @@ owner: JL
 method: keep the reasoning here, copy only the ruling out, and never let runtime depend on either
 
 ## Question
-What belongs on the design board for a skill, and what happens to a question once it is answered? This is the folder you are reading, and it is the easiest of the six to get wrong, because it looks like documentation and is not: documentation is what a worker follows, and this is the argument that produced it.
+What belongs on the design board for a skill, and what happens to a question once it is answered? This is the folder you are reading, and it is the easiest of the eight to get wrong, because it looks like documentation and is not: documentation is what a worker follows, and this is the argument that produced it.
 
-This is the folder you are reading. It is the easiest of the four to get wrong, because it looks like documentation and is not: documentation is what a worker follows, and this is the argument that produced it. The failure mode is that it becomes a second manual, drifts from the first, and a fresh agent cannot tell which one binds.
+This is the folder you are reading. It is the easiest of the eight to get wrong, because it looks like documentation and is not: documentation is what a worker follows, and this is the argument that produced it. The failure mode is that it becomes a second manual, drifts from the first, and a fresh agent cannot tell which one binds.
 
 
 The way through is to keep the reasoning here and copy only the ruling out, so a `## Law` graduates into the skill it governs while the argument that produced it stays behind. What we want at the end is a board that could be deleted without breaking anything: if a skill ever needs a Q page to run, something has been filed in the wrong folder.
@@ -14,7 +14,7 @@ The way through is to keep the reasoning here and copy only the ruling out, so a
 - ✅ Covered here
   What a design board holds, what leaves it when a question closes, and why nothing may depend on it.
 - ↪ Covered elsewhere
-  The paper board is the opposite object and is `QA5`; the skill a ruling graduates into is `QA2`; where any board lives on disk, and its face grammar, are ruled on the boardform board at its `QC1` and `QA2`.
+  The paper board is the opposite object and is `QA7`; the skill a ruling graduates into is `QA2`; where any board lives on disk, and its face grammar, are ruled on the boardform board at its `QC1@boardform` and `QA2@boardform`.
 
 ## Diagram
 ```
@@ -40,17 +40,17 @@ The way through is to keep the reasoning here and copy only the ruling out, so a
    ── which group lands where ────────────────────────────────────────
       group                    → ①  haipipe-paper        → ③  haipipe-board
       ──────────────────────   ─────────────────────────  ─────────────────
-      QA1  six folders         README · PHILOSOPHY        —
+      QA1  eight folders         README · PHILOSOPHY        —
       QA2  the skill set       the tree · front door      —
       QA3  the skill board     —  (it rules ② itself)     —
-      QA4  the paper           paper-folder · enter       —
-      QA5  the paper board     paper-round  ← owed        the S-family list
-      QA6  the tool            create-page.py             the whole package
-      QA7  who owns a region   create-page.py             stage.py · serve.py
-      QA8  driving work        haipipe-paper-stage        serve.py
-      QB1-5 what a stage is    stages/*.md · CONTRACT     —
-      QBa  what it writes      stage.md · 3-deliver/      —
-      QBb  evidence            2-phase/1-probe/           —
+      QA6  the paper           paper-folder · enter       —
+      QA7  the paper board     paper-round  ← owed        the S-family list
+      QA4  the tool            create-page.py             the whole package
+      QA8  who owns a region   create-page.py             stage.py · serve.py
+      QA9  driving work        haipipe-paper-stage        serve.py
+      QB1-3  adding a stage   index.yml · CONTRACT.md    —
+      QB4-6  the page written create-page.py · stage.py  —
+      QB7-11 the four phases  2-phase/ · ref/08-stage   —
       QC   the sentence        draft-* · revise-place     src/body.py
                                5-section-edit/template    src/dialect_paper.py
       QD   the display         1-lifecycle/4-display/     (display/ family)
@@ -111,7 +111,7 @@ No skill may import from here, read a Q face at runtime, or require one to exist
 
  the wall                   NOT THIS FOLDER'S EDGE. A design board never asks
                             the banks anything. It argues about the rules for
-                            asking, which is `QBb1`'s subject, not its own.
+                            asking, which is `QB9`'s subject, not its own.
 ```
 The asymmetry is the point: one edge out, none in, and everything else forbidden. That is what makes this folder deletable, and being deletable is how you know a design record has not quietly become a runtime dependency.
 
@@ -145,8 +145,11 @@ The gap is graduation itself: most settled faces have no `## Law` to copy, so th
 ## Law
 EVERY thing has a board, and a board holds the argument while the thing holds the instruction. A worker following a procedure never reads a Q face.
 
-There are three such pairs: `①`/`②` the paper skill, `③`/`④` the board tool, `⑦`/`⑧` one manuscript. The first two behave alike, as a record whose rulings graduate out. The third is the exception ruled at `QA5`, because nothing graduates out of a paper board.
+There are four such pairs: `①`/`②` the paper skill, `③`/`④` the board tool, `⑤`/`⑥` the probe layer, `⑦`/`⑧` one manuscript. The first two behave alike, as a record whose rulings graduate out. The third is the exception ruled at `QA7`, because nothing graduates out of a paper board.
 
 When a face reaches `✅`, its `## Law` is COPIED into the owning skill file and the skill binds from then on. The face stays, as the record of why. A settled face with no `## Law` has nothing to graduate and is not finished.
 
 `state:` on a design board is about the decision only. No runtime skill may import, read, or require a Q page: delete the board and the skill still runs.
+
+## Log
+260726 · `state:` pinned to mean the ruling only, and applied to all faces; 17 moved 🟡→✅ without a ruling being made. The graduation diagram now shows BOTH targets, `①` and `③`, because seven of thirteen groups land in both. Law generalized from one board to every thing/board pair.

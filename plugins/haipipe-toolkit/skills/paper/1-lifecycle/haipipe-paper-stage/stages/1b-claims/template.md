@@ -1,4 +1,4 @@
-<!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1b-claims/1b-claims.md from this skeleton: replace every <…>, and each `<!-- RULE: … -->` comment is guidance to FOLLOW then DELETE — a RULE comment never appears in the finished doc. Delete this top line too. -->
+<!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/1b-claims.md from this skeleton: replace every <…>, and each `<!-- RULE: … -->` comment is guidance to FOLLOW then DELETE — a RULE comment never appears in the finished doc. Delete this top line too. -->
 1b-claims: <paper title> (venue-free claim/evidence inventory)
 ==============================================================
 

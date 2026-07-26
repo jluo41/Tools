@@ -22,6 +22,7 @@ Downstream it decides which editor to use, whether to bring in Yjs, whether `HOL
   Nor who is allowed to edit: that is `QE1`'s authentication.
 
 ## Diagram
+
 ```
 three write-back paths that already work (QA6)      still not writable
 ─────────────────────────────────────────────       ──────────────────────
@@ -41,6 +42,8 @@ concurrency: three steps, do not skip one
                      ✅ real collaboration  ❌ markdown is no longer "just write the file";
                                               it needs a sync service in between
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE4
 
 ## Items to Finish
 - [ ] Decide which sections are editable from the page

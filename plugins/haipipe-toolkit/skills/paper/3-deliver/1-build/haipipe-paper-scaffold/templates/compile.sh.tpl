@@ -1,6 +1,6 @@
 #!/bin/bash
 # LaTeX Compilation Script with Auto-cleanup and Auto-discovery
-# Usage: ./1-compile.sh [options]
+# Usage: 2-src/compile.sh [options]
 #   -c, --clean-only    Only clean auxiliary files, don't compile
 #   -k, --keep          Keep auxiliary files after compilation
 #   -h, --help          Show this help message
@@ -14,7 +14,7 @@ set -e  # Exit on error
 find_compile_script() {
     local dir="$(pwd)"
     while [ "$dir" != "/" ]; do
-        if [ -f "$dir/1-compile.sh" ]; then
+        if [ -f "$dir/2-src/compile.sh" ]; then
             echo "$dir"
             return 0
         fi
@@ -24,15 +24,15 @@ find_compile_script() {
 }
 
 # If this script is not in the current directory, find it and re-run from there
-if [ ! -f "$(pwd)/1-compile.sh" ]; then
+if [ ! -f "$(pwd)/2-src/compile.sh" ]; then
     PAPER_DIR=$(find_compile_script)
     if [ -z "$PAPER_DIR" ]; then
-        echo "Error: Could not find 1-compile.sh in any parent directory"
+        echo "Error: Could not find 2-src/compile.sh in any parent directory"
         exit 1
     fi
     echo "📄 Found paper directory: $(basename "$PAPER_DIR")"
     cd "$PAPER_DIR"
-    exec bash "$PAPER_DIR/1-compile.sh" "$@"
+    exec bash "$PAPER_DIR/2-src/compile.sh" "$@"
 fi
 
 # Now we're in the correct directory - proceed with compilation
@@ -44,13 +44,21 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Auto-detect master tex files (every 0-*.tex, excluding generated -DIFF files).
-# The paper may be TWO documents: the main manuscript and the standalone
-# Supplementary Information. Both are compiled when present.
+# Auto-detect master tex files: an UNNUMBERED top-level .tex carrying \documentclass.
+# The number is the delete test (design board QA6): 0- 1- 2- is working machinery and
+# the deliverable is unnumbered, so a master can never be 0-*.tex. Generated -DIFF
+# files are excluded. The paper may be TWO documents, the main manuscript and the
+# standalone Supplementary Information; both are compiled when present.
 MAIN_TEXS=()
-while IFS= read -r _tex; do MAIN_TEXS+=("$_tex"); done < <(ls 0-*.tex 2>/dev/null | grep -v -- '-DIFF')
+while IFS= read -r _tex; do MAIN_TEXS+=("$_tex"); done < <(
+    for _f in *.tex; do
+        [ -e "$_f" ] || continue
+        case "$_f" in [0-9]-*|*-DIFF*) continue ;; esac
+        grep -q '\\documentclass' "$_f" && echo "$_f"
+    done
+)
 if [ ${#MAIN_TEXS[@]} -eq 0 ]; then
-    echo -e "${RED}No 0-*.tex file found!${NC}"
+    echo -e "${RED}No master found: expected an unnumbered top-level .tex with \\documentclass${NC}"
     exit 1
 fi
 
@@ -70,7 +78,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -h|--help)
             echo "LaTeX Compilation Script with Auto-cleanup"
-            echo "Usage: ./1-compile.sh [options]"
+            echo "Usage: 2-src/compile.sh [options]"
             echo ""
             echo "Options:"
             echo "  -c, --clean-only    Only clean auxiliary files, don't compile"
@@ -96,8 +104,9 @@ clean_aux_files() {
           *.nav *.snm *.vrb *.thm
 
     # Remove auxiliary files in subdirectories
-    rm -f 0-displays/*/*.aux
-    rm -f 0-sections/*.aux
+    rm -f displays/*/*.aux
+    rm -f sections/*.aux
+    rm -f appendices/*.aux
 
     echo -e "${GREEN}✓ Auxiliary files cleaned${NC}"
 }

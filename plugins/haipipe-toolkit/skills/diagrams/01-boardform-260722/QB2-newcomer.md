@@ -20,6 +20,7 @@ Downstream, this is the only acceptance gate that can be **re-run**, since every
   This question only judges whether it suffices.
 
 ## Diagram
+
 ```
 ┌ me, in this conversation ┐  a head full of things not in SKILL.md
 └──────────────────────────┘  → self-testing reveals nothing     ✗
@@ -33,6 +34,8 @@ Downstream, this is the only acceptance gate that can be **re-run**, since every
        ├─ match     → pass
        └─ mismatch  → fix SKILL.md, run again  ⟲
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB2
 
 ## Items to Finish
 - [x] Start an agent with no memory of this conversation; give it only SKILL.md + ref/ and one real topic
@@ -48,16 +51,16 @@ Downstream, this is the only acceptance gate that can be **re-run**, since every
       The single spot that could truly block someone (`build.py` lives in the skill dir, not the board folder, and how to invoke it was unclear) was fixed into SKILL.md (invoke with its path, do not cd in).
       Everything else was "which convention" minutiae (slug format, default state, owner assignment), also written into the open section.
 - [x] 🔁 Re-run after the Q/S merge (260725)
-      The 260723 verdict was earned against SKILL.md 0.3.0, before Q/S faces, Opening, the structure ops and the live layer existed, so by this question's own rule it had expired.
-      A fresh agent was given only SKILL.md + `ref/` (existing boards explicitly out of bounds) and asked to open a board on lab data-retention rules with 4 Q faces in 2 groups **plus one S stage**.
-      Verdict **YES**: it built on the first run, 5 faces discovered, the index counted `0/4 questions settled · 0/1 stages gated`, the S face's Stage Record was lifted into Opening, and it stopped at the right gate (it quoted the "Q list needs a nod" sentence and the question it would have asked).
+      The 260723 verdict was earned against SKILL.md 0.3.0, before Q/S pages, Opening, the structure ops and the live layer existed, so by this question's own rule it had expired.
+      A fresh agent was given only SKILL.md + `ref/` (existing boards explicitly out of bounds) and asked to open a board on lab data-retention rules with 4 Q pages in 2 groups **plus one S stage**.
+      Verdict **YES**: it built on the first run, 5 pages discovered, the index counted `0/4 questions settled · 0/1 stages gated`, the S page's Stage Record was lifted into Opening, and it stopped at the right gate (it quoted the "Q list needs a nod" sentence and the question it would have asked).
       Four documentation gaps it had to guess through were all fixed the same day, see Where we are.
 
 ## Where we are
 **Run twice, both YES: 260723 on the Q-only skill, 260725 on the shared Q/S skill. The four gaps the second run had to guess through are closed.**
 
 - 260725 CC · 🔁 Second run passed, and paid for itself in gaps
-  The agent produced a valid board and a correct build, so the verdict is YES, but everything it had to invent was about **S faces**, because the skill described them only for the reading side: ① how an S face is listed in `## Pages` (it invented a `### S · …` group, which happened to be right); ② what `state:` an S carries, since `close` said "human-gated / explicitly parked" while the template offered only four pill values; ③ the `open` procedure asked for "有哪几个 Q" and told you to name files `Q<letter><n>`, never mentioning S at all; ④ the Q-consumer `**Probe:**` line pointed at `1-probes/PPNN_topic/…`, which does not exist on a standalone board.
+  The agent produced a valid board and a correct build, so the verdict is YES, but everything it had to invent was about **S pages**, because the skill described them only for the reading side: ① how an S page is listed in `## Pages` (it invented a `### S · …` group, which happened to be right); ② what `state:` an S carries, since `close` said "human-gated / explicitly parked" while the template offered only four pill values; ③ the `open` procedure asked for "有哪几个 Q" and told you to name files `Q<letter><n>`, never mentioning S at all; ④ the Q-consumer `**Probe:**` line pointed at `1-probes/PPNN_topic/…`, which does not exist on a standalone board.
   All four were written into `SKILL.md` / `ref/board-form.md` / `ref/q-template.md` in the same pass (0.16.0).
   It also flagged that `build.py` runs on plain `python3` while `serve.py` needs the venv, now stated in the build section.
 - 260725 CC · ✅ The fixes were verified by a second fresh reader, not by us

@@ -110,3 +110,51 @@ inline in the template as `<!-- RULE: ... -->` comments, per `../../TEMPLATES.md
            stage. Its dependency half became the page's `requires:`; its ordering half survives
            as the optional `read_order:`, which states sequence and cannot create a dependency.
 ```
+
+## The paper-folder paths a contract may name
+
+Ruled 2026-07-26 on the design board (QA6). **The number is the delete test**: `rm -rf 0-* 1-* 2-*`
+must leave a paper that still compiles and still submits. A contract that names a path decides where
+a file actually lands, so these are bindings, not prose.
+
+```
+ 0-lifecycle/<family>/S-<Family>-<n>-<slug>.md   the artifact. One family, one folder
+ 1-probes/PPnn_<topic>/                          the near side of the wall
+ 2-src/compile.sh                                how the deliverable is BUILT
+
+ sections/ · appendices/                         GENERATED prose. UNNUMBERED: a journal gets it
+ displays/displayNN-<slug>/                      the unit. THE ONLY home of an asset
+ <paper>.tex · .bib · .pdf                       the deliverable. UNNUMBERED
+```
+
+Never name these, in any field or any comment:
+
+```
+ ✗ 0-sections/ · 0-displays/     the old numbered deliverable. A prefix here fails the delete test
+ ✗ figures/ · Figure/ · Table/   a second home for an asset. It lives in its unit's assets/
+ ✗ 1-compile.sh                  the build script is 2-src/compile.sh
+ ✗ STATUS.md                     RETIRED. See below
+```
+
+## STATUS.md is retired
+
+`STATUS.md` was the stored frontier: `current_layer`, `maturity`, the venue pin, and the Gate Ledger.
+Every part of it now has a better home, and the file itself is no longer created.
+
+```
+ current_layer · maturity   DERIVED, from each S page's own `state:` and from disk. The enter
+                            console had already stopped reading the stored value; a stored
+                            frontier can only go stale, and a stale one is a third answer to
+                            "where is this paper" that disagrees with the other two.
+ venue:                     S-Venue-0-venue.md frontmatter. One page owns the venue contract;
+                            a second copy could only disagree with it.
+ Gate Ledger                the S page's own `## Log`, one row on the page whose gate it was.
+                            This is the one part that is HISTORY and cannot be derived, so it
+                            needed a home rather than a deletion, and the reader is already
+                            standing on that page when they want it.
+```
+
+A `handoff:` therefore reads `on CHECK confirm, append the gate row to this stage's S page ## Log
+-> <next>`. It never advances a frontier, because there is no stored frontier to advance. That also
+dissolves the loopback problem: re-running an early stage on a paper whose frontier is further along
+records its gate and changes nothing else.

@@ -19,6 +19,7 @@ Downstream it decides where the skill's files live, how consumers import them, a
   What the page looks like (`QA4`), what the grammar is (`QA2`/`ref/board-form.md`), or where the SPACE layer runs (`QE3`, settled).
 
 ## Diagram
+
 ```
 today                                proposed split (inside the skill dir)
 ────────────────────────             ─────────────────────────────────────
@@ -34,6 +35,8 @@ should it move to haichat-board?  NO —
   every SPACE). haichat-board is ONE consumer importing it (QE3 Law). Move it
   there and offline builds + serve.py + other SPACEs all lose their parser.
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB4
 
 ## Items to Finish
 - [x] JL confirms the home

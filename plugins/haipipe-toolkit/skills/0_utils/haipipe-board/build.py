@@ -5,7 +5,7 @@ haipipe-board v0.1.0 — v0-series: never goes to 1.0.0 without JL saying so.
 
     python3 build.py [board-dir | board.md]
 
-House form (one face, one file):
+House form (one page, one file):
     <board-dir>/
       board.md        # title / spine: / close: / source: / ## 主题 / ## 流水线
       Q1-<slug>.md    # title / state: / owner: / method: / ## 问题 ...
@@ -13,7 +13,7 @@ House form (one face, one file):
       Q2-<slug>.md
       board.html      <- generated
 Legacy single-file boards ([BOARD]/[Qn] blocks in one board.md) still build.
-Q and S faces may sit in subfolders of the board.
+Q and S pages may sit in subfolders of the board.
 
 Why static: VS Code's Live Preview webview blocks inline JS, and html-ppt's
 base.css hides every `.slide` until runtime.js adds `.is-active`. A JS-built
@@ -60,6 +60,7 @@ if __name__ == "__main__":
     # `dialect: paper` never reaches the module at all: delete src/dialect_paper.py
     # and every other board on disk still renders byte-identical.
     boardbody.PAPER = None
+    boardbody.EXCAL_HOST = meta.get("excalidraw", "").split("#", 1)[0].strip().rstrip("/")
     if meta.get("dialect", "").split("#", 1)[0].strip():
         try:
             from src import dialect_paper            # noqa: E402
@@ -73,16 +74,16 @@ if __name__ == "__main__":
     txt = out.read_text(encoding="utf-8")
     # 真正要保的性质不是「没有 script」，而是「关掉 script 页面照样完整」。
     # 评论层是纯增强，所以改成直接验这一条：剥掉所有 <script> 之后，
-    # 每个 face 仍在，正文仍在。
+    # 每个 page 仍在，正文仍在。
     bare = re.sub(r"<script.*?</script>", "", txt, flags=re.S)
-    assert bare.count('class="slide q') == len(qs), "a face went missing after stripping JS"
+    assert bare.count('class="slide q') == len(qs), "a page went missing after stripping JS"
     plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", bare.split("<body", 1)[1])).strip()
     assert len(plain) > 1200, f"only {len(plain)} chars of body left after stripping JS"
-    print(f"✅ {out} · {len(qs)} faces · {len(plain)} chars of body survive with JS stripped · {txt.count(chr(60)+'script')} script block(s)")
+    print(f"✅ {out} · {len(qs)} pages · {len(plain)} chars of body survive with JS stripped · {txt.count(chr(60)+'script')} script block(s)")
     for w in warn:
         print(f"⚠️  {w}")
     # A chip can only appear where the board RENDERS text. The manuscript's own
-    # .tex is reached only when a face embeds it, so audit it directly and say
+    # .tex is reached only when a page embeds it, so audit it directly and say
     # so out loud rather than let a clean board imply a clean paper.
     if boardbody.PAPER is not None:
         rows = boardbody.PAPER.audit()

@@ -22,6 +22,7 @@ This is the threshold for "can the board serve as a collaboration dashboard": on
   Only "after a change, how do other browsers learn of it first".
 
 ## Diagram
+
 ```
   five routes, from zero infrastructure to a rewrite, side by side:
 
@@ -39,6 +40,8 @@ This is the threshold for "can the board serve as a collaboration dashboard": on
            Node pays off only for vite-style hot module replacement, and all we need is
            "md changed → tell the browser" — a much smaller ask.
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD6
 
 ## Items to Finish
 - [x] Pick a mechanism (manual / poll / SSE / WS)

@@ -20,6 +20,7 @@ It reaches downstream to the relative paths in `## Links`, and to the directory 
   Nor what the index page looks like: that is `QC2`.
 
 ## Diagram
+
 ```
 skills/0_utils/
 ├── diagram/                    ← boards: working artifacts, change daily
@@ -30,6 +31,8 @@ skills/0_utils/
 
 rule: <owning unit>/diagram/<NN>-<topic>-<YYMMDD>/
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QC1
 
 ## Items to Finish
 - [x] Decide where this board lives

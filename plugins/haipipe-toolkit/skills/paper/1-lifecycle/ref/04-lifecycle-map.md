@@ -48,18 +48,18 @@ Reconcile -> Compile -> Final Review -> Submit.
 
 | Step | Skill Procedure | Question | Action | Reads | Writes | External Calls | Human Output | Machine State | Stop / Gate |
 |---|---|---|---|---|---|---|---|---|---|
-| `enter` (console) | `haipipe-paper-enter` | Which paper is active, what layer, what open needs? | Resolve root, derive-from-disk dashboard, route input | STATUS.md, 0-lifecycle (incl. 7-round/), 0-displays, 0-sections, git | `.paper-console.yaml`, STATUS.md | none | dashboard panel | `.paper-console.yaml` | no paper root, ambiguous paper |
-| `0-seed` | `seed` | Why might this paper exist? | State possibility: question, motivations, claim shape | seed notes, project evidence | `0-lifecycle/0-seed/S-Seed-0-seed.md`, STATUS.md | none | seed contract | `S-Seed-0-seed.md` | not viable -> drop | venue: FREE |
-| `1-resource` | `resource` | What must EXIST for this paper to be testable, does it exist, can it CARRY the claim? | Derive Demand (one `N<n>` per `H<n>`), ASK the Questions (`Q<n>`); the PROBE phase opens an entry per Q and routes it | seed (Tentative Claim Shape), `S-Seed-0-seed.md` forward pointers | `0-lifecycle/1a-resource/S-Work-0-resources.md`, STATUS.md | the PROBE phase ONLY (never executes; mints no PP ids) | Demand + Questions (with their **A**) | `S-Work-0-resources.md` | GATE 1 (approve the questions + the SPEND), GATE 2 (exit) | venue: FREE |
-| `1-claims` | `claims` | What must be true? What evidence do we have? | Maintain claim ledger (the ONLY home of a claim's status), mark needs | seed, `S-Work-0-resources.md`, the answering QA files a probe section's `target:` names | `0-lifecycle/1b-claims/S-Work-1-claims.md`, STATUS.md | `/haipipe-probe`, `/haipipe-discovery`, `/haipipe-task` | claim ledger | `S-Work-1-claims.md` | claim unsupported/too strong, no route | venue: FREE |
-| `venue` | `venue` | Which venue fits, and pin it | Recommend best-fit venue, pin STATUS venue | seed, claims, topic, `venue/playbook-*` packs | `STATUS.md` `venue:` | none | venue shortlist + recommendation | `STATUS.md` `venue:` | no clear fit; venue change re-runs pitch | venue: (the chooser) |
-| `2-pitch` | `pitch` | What is the paper selling to THIS audience? = cover letter | Maintain one-minute story + cover letter: Editor's Chair Test, [primary] claim, RQ framing | seed, claims (venue-neutral H), `venue/playbook-<venue>` (framing) | `0-lifecycle/2b-pitch/S-Venue-1-pitch.md`, STATUS.md | none | pitch / cover letter | `S-Venue-1-pitch.md` | abstract/intro sells another story | venue: ALIGNED |
-| `3-narrative` | `narrative` | How do claims structure into a paper for THIS venue? | Build section-mirrored arc | claims, pitch, `venue/playbook-<venue>` (structure) | `0-lifecycle/3-narrative/S-Venue-2-narrative.md`, DR rows in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`, STATUS.md | none | narrative | `S-Venue-2-narrative.md` | arc weak -> pitch / claims | venue: ALIGNED |
-| `4-display` | `display` (+ render skills) | What figure/table carries each claim per THIS venue's limits? | Plan display map + units | claims, narrative, results, `venue/playbook-<venue>` (-> Display) | `0-lifecycle/4-display/4-display.tex`, `0-displays/README.md`, `0-displays/displayNN-<slug>/*`, STATUS.md | `/haipipe-task-for-display` | display map + units | `4-display.tex`, display units | display cannot support claim | venue: HEAVY |
-| `5-section-edit` | `section-edit` | How is each section written for THIS venue? | Per-section DRAFT -> PROBE -> REVISE -> CHECK | 3-narrative, display units, `venue/playbook-<venue>` | `0-lifecycle/5-section-edit/<section>/` (the section's S face), `0-sections/*.tex` | compile / overleaf | section outlines + draft PDF | section scaffolds, section files | writing exposes missing evidence -> 1-claims | venue: SPECIFIC |
-| `review` | `haipipe-paper-edit-{claim-audit,reviewer,proof-checker,submission-audit}` | Which layer is broken, or ready? | Adversarial audits, route verdict | PDF, lifecycle files, sections | review notes, `0-lifecycle/7-round/<round>/todo.md`, STATUS.md | reviewer agents / Codex | review verdict + routing | STATUS.md maturity | overclaim, broken layer, venue check fails |
+| `enter` (console) | `haipipe-paper-enter` | Which paper is active, what layer, what open needs? | Resolve root, derive-from-disk dashboard, route input | 0-lifecycle/board.md + every S page's `state:`, displays/, sections/, git | `.paper-console.yaml` | none | dashboard panel | `.paper-console.yaml` | no paper root, ambiguous paper |
+| `0-seed` | `seed` | Why might this paper exist? | State possibility: question, motivations, claim shape | seed notes, project evidence | `0-lifecycle/0-seed/S-Seed-0-seed.md` (+ its `## Log` gate row) | none | seed contract | `S-Seed-0-seed.md` | not viable -> drop | venue: FREE |
+| `1-resource` | `resource` | What must EXIST for this paper to be testable, does it exist, can it CARRY the claim? | Derive Demand (one `N<n>` per `H<n>`), ASK the Questions (`Q<n>`); the PROBE phase opens an entry per Q and routes it | seed (Tentative Claim Shape), `S-Seed-0-seed.md` forward pointers | `0-lifecycle/1-work/S-Work-0-resources.md` (+ its `## Log` gate row) | the PROBE phase ONLY (never executes; mints no PP ids) | Demand + Questions (with their **A**) | `S-Work-0-resources.md` | GATE 1 (approve the questions + the SPEND), GATE 2 (exit) | venue: FREE |
+| `1-claims` | `claims` | What must be true? What evidence do we have? | Maintain claim ledger (the ONLY home of a claim's status), mark needs | seed, `S-Work-0-resources.md`, the answering QA files a probe section's `target:` names | `0-lifecycle/1-work/S-Work-1-claims.md` (+ its `## Log` gate row) | `/haipipe-probe`, `/haipipe-discovery`, `/haipipe-task` | claim ledger | `S-Work-1-claims.md` | claim unsupported/too strong, no route | venue: FREE |
+| `venue` | `venue` | Which venue fits, and pin it | Recommend best-fit venue, pin it in the venue page's frontmatter | seed, claims, topic, `venue/playbook-*` packs | `S-Venue-0-venue.md` frontmatter `venue:` | none | venue shortlist + recommendation | `S-Venue-0-venue.md` | no clear fit; venue change re-runs pitch | venue: (the chooser) |
+| `2-pitch` | `pitch` | What is the paper selling to THIS audience? = cover letter | Maintain one-minute story + cover letter: Editor's Chair Test, [primary] claim, RQ framing | seed, claims (venue-neutral H), `venue/playbook-<venue>` (framing) | `0-lifecycle/2-venue/S-Venue-1-pitch.md` (+ its `## Log` gate row) | none | pitch / cover letter | `S-Venue-1-pitch.md` | abstract/intro sells another story | venue: ALIGNED |
+| `3-narrative` | `narrative` | How do claims structure into a paper for THIS venue? | Build section-mirrored arc | claims, pitch, `venue/playbook-<venue>` (structure) | `0-lifecycle/2-venue/S-Venue-2-narrative.md`, DR rows in `0-lifecycle/3-display/_DISPLAY_REQUEST.md` (+ its `## Log` gate row) | none | narrative | `S-Venue-2-narrative.md` | arc weak -> pitch / claims | venue: ALIGNED |
+| `4-display` | `display` (+ render skills) | What figure/table carries each claim per THIS venue's limits? | Plan display map + units | claims, narrative, results, `venue/playbook-<venue>` (-> Display) | the display S pages, `displays/displayNN-<slug>/*` (+ the `## Log` gate row) | `/haipipe-task-for-display` | display map + units | `4-display.tex`, display units | display cannot support claim | venue: HEAVY |
+| `5-section-edit` | `section-edit` | How is each section written for THIS venue? | Per-section DRAFT -> PROBE -> REVISE -> CHECK | 3-narrative, display units, `venue/playbook-<venue>` | `0-lifecycle/4-main/S-Main-*.md` (the section's S face), `sections/*.tex` | compile / overleaf | section outlines + draft PDF | section scaffolds, section files | writing exposes missing evidence -> 1-claims | venue: SPECIFIC |
+| `review` | `haipipe-paper-edit-{claim-audit,reviewer,proof-checker,submission-audit}` | Which layer is broken, or ready? | Adversarial audits, route verdict | PDF, lifecycle files, sections | review notes, the current `S-Round` page | reviewer agents / Codex | review verdict + routing | the S pages' `state:` | overclaim, broken layer, venue check fails |
 | `round` | `haipipe-paper-round` (enter/new/triage/apply/close) | Where does this round's discussion/decision/todo/applied go? | Open / triage / apply / close round | discussion, review, decisions | `0-lifecycle/7-round/vYYMMDD/S-Round-<n>-<vYYMMDD>.md`, `the S-Round pages themselves (no stored pointer)` | route each todo to a stage or evidence worker | round log | round files | unresolved item with no target |
-| `respond` | `haipipe-paper-rebuttal`, `4-respond/*` | How do reviews become revision + rebuttal? | Parse reviews, plan, draft, revise | reviews, submitted manuscript | `0-lifecycle/7-round/vYYMMDD/` rebuttal/submission subtree, `0-sections/*.tex` | `/haipipe-task`, `/haipipe-probe` for new experiments | rebuttal + revision | round files | reviewer needs new evidence, approval |
+| `respond` | `haipipe-paper-rebuttal`, `4-respond/*` | How do reviews become revision + rebuttal? | Parse reviews, plan, draft, revise | reviews, submitted manuscript | `0-lifecycle/7-round/vYYMMDD/` rebuttal/submission subtree, `sections/*.tex` | `/haipipe-task`, `/haipipe-probe` for new experiments | rebuttal + revision | round files | reviewer needs new evidence, approval |
 | `present` | `5-present/{paper-slides,paper-poster}` | How does the paper cash out? | Build slides / poster | final paper, pitch, displays | slides, poster | none | slides/poster | n/a | talk cannot explain in one minute -> pitch |
 
 ## Evidence Loop (back to probe)
@@ -73,13 +73,13 @@ The contract is `delivery-need.md` (paper-owned; no cross-skill shared file).
                           the executor answers in <task-folder>/QA/<n>-<slug>.md
 1-claims slot ◀─backfill─  the entry's `### a-executor` lands and each Q-consumer's
                            a-consumer interprets it; THE CLAIM'S STATUS IS WRITTEN IN
-                           1b-claims.md; the executor never edits paper prose
+                           S-Work-1-claims.md; the executor never edits paper prose
 ```
 
 Outbound points: `1-claims` (a claim's status is unsettled), `4-display` (display
 needs a run), and `review`/`respond` when an evidence gap surfaces. All route
 through `delivery-need.md`. The inbound backfill writes the claim's status in
-`0-lifecycle/1b-claims/S-Work-1-claims.md` (supported | refuted | inconclusive), citing the
+`0-lifecycle/1-work/S-Work-1-claims.md` (supported | refuted | inconclusive), citing the
 entry's `**target**:` QA file. Ownership split: the paper owns the NEED and the
 JUDGMENT; the EXECUTOR owns the FACT (its `<task-folder>/QA/<n>-<slug>.md`, general
 language, reusable by any paper). Anatomy: `probe/haipipe-probe/SKILL.md`.
@@ -90,11 +90,11 @@ The paper folder is fixed. Execution contracts and the board control plane are
 related but distinct:
 
 ```text
-STATUS.md
+0-lifecycle/board.md
 0-lifecycle/**/S-<Family>-<unit>-<slug>.md         lifecycle board face AND execution artifact
 0-lifecycle/{board.md,board.html}                  board index and generated view
-0-sections/*.tex
-0-displays/displayNN-<slug>/
+sections/*.tex
+displays/displayNN-<slug>/
 0-lifecycle/7-round/vYYMMDD/S-Round-<n>-<vYYMMDD>.md
 the S-Round pages themselves (no stored pointer)
 .paper-console.yaml   (console session state, at paper/project root)
@@ -118,7 +118,7 @@ content (see `paper-dashboard.md`) and its mapped S face reflects that result.
 /haipipe-paper resource         -> 1-resource (prereq | prerequisite | need | demand |
                                    "do we have the data" | "does the checkpoint exist")
 /haipipe-paper claims           -> 1-claims
-/haipipe-paper venue            -> venue (pin target journal in STATUS.md)
+/haipipe-paper venue            -> venue (pin target journal in S-Venue-0-venue.md)
 /haipipe-paper pitch            -> 2-pitch
 /haipipe-paper narrative        -> 3-narrative
 /haipipe-paper display|figures  -> 4-display (display contract + units)

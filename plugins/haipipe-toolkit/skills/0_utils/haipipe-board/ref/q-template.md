@@ -1,16 +1,16 @@
 # Short title (a phrase, not a sentence)
-<!-- On an S face the title carries the page's identity first: `S <Family> <unit> · <short title>`,
+<!-- On an S page the title carries the page's identity first: `S <Family> <unit> · <short title>`,
      for example `S Main 7 · §6 Results`. build.py derives the Content heading from it
      (`📚 Content · Main 7 §6 Results`), so a bare phrase there produces a heading that names nothing.
      When the artifact carries its own number and it is offset from the board index, put both in the
      title as above; then the reader is never left working out which 7 is meant.
-     Q faces keep the plain phrase. Delete this comment. -->
+     Q pages keep the plain phrase. Delete this comment. -->
 state: 🔴 OPEN
 owner: CC
 method: one line on how you plan to solve it (optional; delete the line if unused)
 
-<!-- S-only metadata. Uncomment the three lines below, in this position, for an S face; delete the
-     whole block for a Q face. `stage.py new` writes real values and generates the managed Stage
+<!-- S-only metadata. Uncomment the three lines below, in this position, for an S page; delete the
+     whole block for a Q page. `stage.py new` writes real values and generates the managed Stage
      Contract; never infer dependencies from Pages order. An S id resolves bare (`S-Work-1`); any
      other source needs its real filename including the extension (`QA1-dump-location.md`).
 requires: S-Work-1, S-Main-0, S-Display-0
@@ -28,7 +28,7 @@ provides: one compact phrase naming the downstream handoff
      The top four lines follow the same rule: # title, state, owner are required; method is
      optional (delete the whole line).
        - state takes exactly one: 🔴 OPEN (not started) · 🟡 PARTIAL (in progress) ·
-         ✅ SETTLED (done) · ⏸️ ON HOLD (parked). Q and S share these four values; a new face
+         ✅ SETTLED (done) · ⏸️ ON HOLD (parked). Q and S share these four values; a new page
          of either kind starts 🔴 OPEN. What ✅ means differs: on Q every checkbox is closed,
          on S that page's human gate passed (the index counts it under its named family).
          Never invent a fifth value such as `human-gated`.
@@ -40,12 +40,12 @@ provides: one compact phrase naming the downstream handoff
      heading line, and state: takes one status only.
      The visible hierarchy is fixed, and it is the SAME for both kinds:
        Opening -> Diagram -> Content -> Items to Finish -> Where we are -> Files.
-     Opening groups the Question lead + optional Boundary. On an S face it also carries "Why this
+     Opening groups the Question lead + optional Boundary. On an S page it also carries "Why this
      matters", an optional `### Stage Record`, and the whole Stage Contract, and EVERY one of
      those rows starts collapsed (JL 260725), so the lead question is the only thing on stage and
      each layer of orientation is one click away. Stage Contract is therefore not a section of its
      own on the page. Optional Diagram is its own collapsed section and opens only when its heading
-     is clicked. On Q faces, the remaining Question paragraph becomes Content's first "Why this
+     is clicked. On Q pages, the remaining Question paragraph becomes Content's first "Why this
      matters" subsection, which does start open. Explicit Content is optional for Q and required
      for S. When creating S Content, use the stage template as the base blueprint, overlay the venue
      template's reader/section/style constraints, then add accepted and unresolved requirements
@@ -59,8 +59,8 @@ provides: one compact phrase naming the downstream handoff
 required · One lead sentence, then one plain paragraph. **Reading this section alone, a
 zero-background person should understand what the question is.**
 
-The lead renders in `🧭 Opening` with Boundary. On Q faces, the paragraph below it renders as
-Content's first `Why this matters` subsection. On S faces, that paragraph renders inside Opening.
+The lead renders in `🧭 Opening` with Boundary. On Q pages, the paragraph below it renders as
+Content's first `Why this matters` subsection. On S pages, that paragraph renders inside Opening.
 
 The lead sentence is the actual question, written as a question, in plain words. It stays in
 Opening and is clickable.
@@ -121,14 +121,14 @@ It renders as its own `🖼 Diagram` section, collapsed by default. The heading 
 the figure appears only after the reader clicks it.
 
 For a richer figure, put an excalidraw share link on **its own line** below the ascii; it embeds
-as an interactive canvas (`https://app.excalidraw.com/s/...`), with a fallback link underneath.
-**Keep the ascii figure:** it has zero dependencies and stays when the canvas fails to load.
+as an interactive excalidraw (`https://app.excalidraw.com/s/...`), with a fallback link underneath.
+**Keep the ascii figure:** it has zero dependencies and stays when the excalidraw fails to load.
 
 ## Content
-S required · Q optional. The face's substantive material after orientation. Delete this explicit
+S required · Q optional. The page's substantive material after orientation. Delete this explicit
 section in a Q that needs no additional material.
 
-On an S face, Content is the stage's real product and nothing else (JL 260725). For a manuscript
+On an S page, Content is the stage's real product and nothing else (JL 260725). For a manuscript
 page that means the section itself: its parts, its paragraphs, its prose. Three kinds of material
 accumulate around a stage and belong elsewhere: the inherited venue or writing contract goes to
 `## Stage Contract`, settled flags and corrections go to `## Where we are` because they report
@@ -204,7 +204,7 @@ happened, why). Only the heading shows on stage; length is free in the fold.
       Written so it can be checked, not "basically there".
       The paragraph continues here.
 
-For an S face, former Q-consumer records live here as recognizable checklist items. Keep the id,
+For an S page, former Q-consumer records live here as recognizable checklist items. Keep the id,
 stake, route, and answer together:
 
 - [ ] 🔎 Q-Stage-1 · Concrete consumer question
@@ -223,7 +223,7 @@ required · The actual present state, with numbers where numbers exist (not "bas
 
 Open with one concise paragraph: what has been achieved, and what is still unproven. Then dated
 items, each prefixed `YYMMDD WHO ·`; build.py strips that into a muted right-aligned stamp, so the
-date and person never sit in the title text. Order by date. On S faces, summarize the stage; do
+date and person never sit in the title text. Order by date. On S pages, summarize the stage; do
 not repeat every consumer answer from Items to Finish.
 
 - 260723 CC · 🔀 What changed on this date

@@ -1,5 +1,5 @@
 # A sentence with a value
-state: ✅ RULED
+state: ✅ SETTLED
 owner: JL
 method: never let a number into prose without the run that produced it
 
@@ -12,9 +12,9 @@ A value is the attachment type with the shortest path to a retraction. A citatio
 The approach is to bind a number to the RUN that produced it rather than to a file path, since paths get reused and runs do not. What we want is a manuscript where a coefficient that changed after a re-run is detectable, instead of a claim that was true once and nobody noticed stopped being true.
 ## Boundary
 - ✅ Covered here
-  The value marker in prose, the `> Value:` lane, chip states, the hover card, and staleness against the producing run.
+  The value marker in prose, the `> Value:` lane, chip states, the panel a chip opens, and staleness against the producing run.
 - ↪ Covered elsewhere
-  The sentence itself is `QC0`; the rendering mechanism is `QA8`; how a question reaches the bank and comes back is `QBb1`; the placeholder grammar is `QBb3`.
+  The sentence itself is `QC0`; the rendering mechanism is `QA9`; how a question reaches the bank and comes back is `QB9`; the placeholder grammar is `QB8`.
 
 ## Diagram
 ```
@@ -53,6 +53,14 @@ The approach is to bind a number to the RUN that produced it rather than to a fi
    Indistinguishable from a correct one until someone tries to
    reproduce it. Every other state on this page is now visible;
    this one is invisible BY CONSTRUCTION.
+
+ WHERE THIS PAGE'S EVIDENCE LIVES IN THE BOARD FOLDER
+   the prose      QC2-sentence-value.md  ## Content   (S4)
+   the bracket    _fixture/1-probes/PP03_results-values/QX5_binary-exposure-flags.md
+                    q-consumer Q-Section-7 · state: answered
+   the digits     the same file's ### a-executor
+                    +0.0045 · +0.0009 · the figures each chip is checked against
+   the chain      probe → bank QA file → run folder, opened by the panel
 ```
 
 ## Content
@@ -64,6 +72,23 @@ The approach is to bind a number to the RUN that produced it rather than to a fi
                             · run=<run id> · state=verified
 ```
 The `{VAL:?}` marker carries a description of what is wanted, not a guess at it. Never invent a number to avoid a placeholder.
+
+### S4 of the paragraph on `QC0`
+`QC0` carries one paragraph with all four attachment types. This is its fourth sentence, the one that measures something, written here and checked against `_fixture/1-probes/PP03_results-values/QX5_binary-exposure-flags.md`:
+
+Physicians flagged as high-agreeableness are more likely to write a high-dose or long-duration prescription (+0.0045, p = 0.007) and to exceed the CDC high-risk level of 90 MME per day (+0.0009, p < 0.001) [Q-Section-7].
+> Value: is_high_mme_daily · probe=`_fixture/1-probes/PP03_results-values/QX5_binary-exposure-flags.md` · run=v0618 · state=verified
+
+`+0.0045`, `90` and `+0.0009` are each green because each appears in the run behind `[Q-Section-7]`, which is the fourth chip. Click any of them and the panel opens the probe entry, the bank's answer and the run folder. `p = 0.007` and `p < 0.001` are deliberately NOT chipped: a number after a comparison is a bound, not a measurement.
+
+The paragraph's other sentences are the sibling pages': S1 to S3 the citations are `QC1`, S5 the table is `QC3`, S6 the figure is `QC4`.
+
+### The case this page exists for
+One digit changed in that fourth sentence, nothing else:
+
+Physicians flagged as high-agreeableness are more likely to exceed the CDC high-risk level of 90 MME per day (+0.0019, p < 0.001) [Q-Section-7].
+
+`+0.0019` renders grey and dotted, `unver`. Note what that does and does not claim: the chip cannot call it WRONG, because an unmatched figure may equally be derived. What it does is make the difference visible between `+0.0009`, which matched a recorded figure, and `+0.0019`, which matched nothing, in a sentence where the prose showed no difference at all.
 
 ### Evidence enters through one door
 A paper stage may not compute. The number arrives through PROBE, from a task or discovery answer, and the lane records which one.
@@ -160,14 +185,14 @@ The first version returned the FIRST recorded figure that matched. On JL's own s
 
 So a match is now collected over DISTINCT values rather than occurrences. One value is a match. Two different values are an ambiguity, and both are named. That `1.21` is ambiguous is not a false positive: the same probe folder carries a recorded contradiction about which trait form that logit used, and a reader cannot tell from the sentence alone.
 
-### The hover card
+### What the panel carries
 The rendered value, its unit, the source path, the producing run, and the verification state.
 
 ## Items to Finish
 - [x] 🆔 Bind a value to its producing run
       Identity is the run, not the path, because the path is reused.
 - [x] 🎨 Build the value chip
-      `{VAL:? …}` renders as a chip resolved against `1-probes/`, with `ready` split out from `owed`. Half of `QA8`'s blocked inline-marker item, since the bracket resolver it needed also upgraded `QC1`.
+      `{VAL:? …}` renders as a chip resolved against `1-probes/`, with `ready` split out from `owed`. Half of `QA9`'s blocked inline-marker item, since the bracket resolver it needed also upgraded `QC1`.
 - [x] 🔗 Resolve the `[Q-…]` bracket once, for every marker type
       One resolver in `dialect_paper.Paper.question()`; citation, value and bare brackets all read it.
 - [ ] 📐 Define staleness
@@ -185,13 +210,16 @@ The rendered value, its unit, the source path, the producing run, and the verifi
 - [ ] 🧪 One live example plus one stale case
 
 ## Where we are
-The value chip is built and live on the MISQ board. Measured there, 215 chips resolve at build time:
+The value chip is built and live on the MISQ board. Measured there, 258 chips resolve at build time:
 
 ```
- 🔢 value    ✦ ready 13   ⏸ parked 11   ❓ unowned  2
- 📚 citation ✅ ok   135   ✦ ready  3   ⏳ owed  7   ❓ unowned 20   ⚠️ broken 2
+ 🔢 value    ✦ ready 13   ⏸ parked 11   ❓ unowned  1
+ 📚 citation ✅ ok   121   ✦ ready  3   ⏳ owed  7   ❓ unowned 11   ⚠️ broken 0
  🎯 bracket  ✅ ok    10   ⏳ owed  3   ❓ unowned  9
+ 🔢 number   ✓ ok    33   ⁉ amb    4   ? unver 10   ❓ unowned  6
+ 🖼 display  ✅ ok    11   ✦ ready  2   ⚠️ broken 3
 ```
+The citation row is lower than the one this page carried earlier, and the two `broken` are gone, because `> JL:`/`> CC:` lanes and `## Log` narration stopped being read as claims. Nothing was fixed to make that happen; the detector stopped counting people talking about citations as citations.
 
 The 13 `ready` values are the finding: thirteen sentences still say `{VAL:?}` while the answering probe entry already carries the number in its `### a-executor`. That is weaving work, not probing work, and nothing on the page said so before today.
 
@@ -208,8 +236,8 @@ The 4 ambiguous ones are the finding. They are not wrong numbers; they are numbe
 
 Two gaps remain: staleness still has no recorded timestamp to compare against, and a measured figure in a sentence with no bracket at all is still invisible, now by choice rather than by accident.
 
-- 260726 CC · 🔗 Closing this unblocks `QA8`'s chip renderer
-  `QA8` on the boardform board owns the MECHANISM: the fold, the badge, the drawer, the tint, the click-to-add.
+- 260726 CC · 🔗 Closing this unblocks `QA9`'s chip renderer
+  `QA9` on the boardform board owns the MECHANISM: the fold, the badge, the drawer, the tint, the click-to-add.
   Its one unbuilt item, inline-marker chips, is blocked on four rulings, and this face is the value one: what the chip means, what states it has, and what resolves it, which here is a number bound to the run that produced it.
   The mechanism cannot be built against a guess, so that item stays open until all four of `QC1` to `QC4` say what to render.
 
@@ -222,6 +250,9 @@ Two gaps remain: staleness still has no recorded timestamp to compare against, a
 - A number that cannot be checked is reported as unchecked, never as wrong. Derived and definitional figures are normal, and alarming on them would retire the feature within a day.
 
 ## Log
+- 260726 · JL: "add the google scholar search link"; and "for the values, displays, figures, I cannot click them". Two changes. The citation panel's link row gained a `🔎 Scholar` search, last and with its own glyph because everything above it is an identifier and a query is not; on this paper 195 of 216 entries had no clickable pointer before it. And the chips inside a sentence drawer were dead: `<summary>` consumes the click before the nested button's default action runs, which is why citations opened and values, tables and figures did not. The panel is now asserted explicitly one frame later; `preventDefault` stays out of `board.js`.
+- 260726 · JL: "read QA6 ⑦ The paper folder, we have done many changes here, right?" Correct, and the board was teaching the superseded layout. QA6 ruled 260726 that the deliverable is UNNUMBERED (`displays/`, `sections/`) and the resolver still had `0-displays` hardcoded in six places. Proved it by renaming the fixture and rebuilding: four id chips went `unowned` and both `\ref{}` chips went GREEN through the "a \label that is not a display unit" branch, which is the silent false-green `QC3` and `QC4` exist to prevent. `Paper` now resolves `displays/` first and falls back to `0-displays/`; the fixture moved to the ruled name. Still open on QA6's side: `.board-refs.bbl` is machinery sitting in the unnumbered half.
+- 260726 · JL, on the embed: "I don't want you to refer something, please just make it real in the content, not refer a markdown". Reverted. The example prose is written directly in each page's `## Content`: `QC0` carries the whole paragraph, `QC1`-`QC4` carry only their own sentences from it, labelled by position. The rule that came out of it is the one on `QC0`: PROSE lives on the page, EVIDENCE lives in `_fixture/` (`.bib`, `.bst`, `0-displays/`, `1-probes/`), and `_fixture/` never holds a paragraph. Same visit fixed the panel: without `position-area` support the base `.chipcard` had no `max-height`, so a two-image figure panel grew past the viewport and spilled over the page.
 - 260726 · JL: "include the Probe folder, and the task folder for each value". The number chip's panel now opens the four-hop chain (sentence, probe, bank answer, run folder), which is `QD6`'s chain applied to a value. Two refinements came out of reading the result: `p < 0.001` was being flagged ambiguous, which is wrong because an inequality is a bound and not a measurement; and a match now says whether it came from the answer block or from the question text, since a threshold the question named is weaker evidence than a figure the run returned. Ambiguous count fell 6 to 4.
 - 260726 · JL, reading `S-Main-7`: "could you make the value to be highlighted, instead of the Q-Section-xxx". Numbers in a bracketed sentence are now chips checked against the answering run, and `.qref` was demoted to a quiet marker. Shipping it immediately produced the bug it exists to prevent: `1.21` was reported as matching `1.20879`, a CI bound on the wrong exposure, because the checker took the first hit. Distinct-value collection and an `amb` state replaced it.
 - 260726 · The value chip and the shared `[Q-…]` resolver shipped. Building it changed the ruling: the bracket was going to be re-parsed per marker type, and it is one thing, so it resolves in one place. Four bracket ids turned out to be claimed by no probe entry at all, which no marker could previously show.

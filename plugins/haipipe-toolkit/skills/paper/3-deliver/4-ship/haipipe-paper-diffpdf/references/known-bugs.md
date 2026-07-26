@@ -139,7 +139,7 @@ shows zero changes inside `\ABSTRACT{...}`.
 baseline. The diff is faithful — there's nothing different between baseline
 and current.
 
-**Fix (synthetic baseline)**: edit `old/0-sections/00_abstract.tex` (or
+**Fix (synthetic baseline)**: edit `old/sections/00_abstract.tex` (or
 equivalent) to be the version from an EARLIER commit that pre-dates the
 rewrite. After editing, re-run latexdiff and recompile manually:
 

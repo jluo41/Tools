@@ -1,7 +1,9 @@
 # 2-phase/REF : paper folder anatomy
 
 What a whole paper folder should look like. Every paper build skill creates,
-migrates toward, or audits against this contract.
+migrates toward, or audits against this contract. `haipipe-paper-conform`
+is its executable form: if the two ever disagree, the script is the one that
+ran and this doc is the one that is wrong.
 
 The companion doc `2-phase/REF/tex-file-anatomy.md` defines the anatomy of
 one `.tex` file: driver / wrapper / leaf roles, paragraph banners, and local
@@ -9,75 +11,79 @@ editing rules. This doc defines the folder those files live in.
 
 ## The canonical tree
 
+Ruled 2026-07-26 on the design board (`skills/diagrams/01-haipipe-paper-260725`, face QA6).
+
 ```text
-<paper>/                                  e.g. Paper-Personality-Opioid-MedJournal/
-├── STATUS.md                             state, maturity, active round, next gates
-├── 0-<paper>.tex                         DRIVER: \documentclass, preamble, \section{} + \input
-├── 0-<paper>.bib                         bibliography, same stem as the driver
-├── 0-Supplementary-<paper>.tex           SI DRIVER, optional but standard
-├── 0-lifecycle/                          paper maturation spine (markdown-early; stage folders absent until their stage runs)
-│   ├── 0-seed/
-│   │   └── 0-seed.md                     why this paper might exist (venue-FREE)
-│   ├── 1a-resource/                       (is stage 1a, just before claims (1b), as 2a-venue/ and 2b-pitch/ share 2)
-│   │   └── 1a-resource.md                 what must EXIST for the paper to be testable (venue-FREE)
-│   ├── 1b-claims/
-│   │   └── 1b-claims.md                   claim ledger, support/GAP status (venue-FREE)
-│   ├── 2b-pitch/
-│   │   └── 2b-pitch.md                    cover letter / one-minute story (venue-ALIGNED)
-│   ├── 3-narrative/
-│   │   └── 3-narrative.md                paper-owned story arc (venue-ALIGNED)
-│   ├── 4-display/
-│   │   └── 4-display.tex                 claim -> display map + gallery PDF
-│   └── 5-section-edit/                   per-section scaffolds (DRAFT-PROBE-REVISE-CHECK)
-│       └── <NN_section>/                 section .md (REAL prose) + _LOG_<NN_section>.md
-├── 0-sections/                           all body prose, split per the grammar below
-│   ├── README.md                         one-screen map of section files
-│   ├── 00_abstract.tex
-│   ├── 01_introduction.tex
-│   ├── 02_results.tex
-│   ├── 02-00_overview.tex ... 02-0M_*.tex
-│   ├── 03_discussion.tex + 03-0M_*.tex
-│   ├── 04_methods.tex    + 04-0M_*.tex
-│   ├── 05_back-matter.tex
-│   └── A_*.tex  B_*.tex  C_*.tex         SI leaves, \input by the SI driver
-├── 0-displays/                           figure/table display units
-│   ├── README.md                         display index: role, claim, source, status
-│   ├── display01-<slug>/
-│   │   ├── README.md                     display contract
-│   │   ├── float.tex                     LaTeX float/caption/label
-│   │   ├── preview.tex                   standalone review wrapper
-│   │   ├── preview.pdf                   one-display review PDF
-│   │   ├── assets/                       exported figure/table files
-│   │   ├── source/                       scripts, source data, slides, drawings
-│   │   └── versions/                     dated exports
+<paper>/                              e.g. Paper-Personality2Opioid-MISQ2026/
+│
+├── 0-lifecycle/                      ✂️ THE BOARD, and nothing but the board
+│   ├── board.md · board.html         the spine; /haipipe-board builds the html
+│   ├── 0-seed/       S-Seed-*.md
+│   ├── 1-work/       S-Work-*.md      resources · claims
+│   ├── 2-venue/      S-Venue-*.md     venue (carries the `venue:` PIN) · pitch · narrative
+│   ├── 3-display/    S-Display-*.md
+│   ├── 4-main/       S-Main-*.md
+│   ├── 5-appendix/   S-Appendix-*.md
+│   ├── 6-submission/ S-Submission-*.md
+│   ├── 7-round/      S-Round-*.md     one page per round
+│   └── _archive/
+│
+├── 1-probes/                         ✂️ the near side of the wall
+│   └── PPnn_<topic>/QXn_<slug>.md    topic-scoped, cross-stage, one file per question
+│
+├── 2-src/                            ✂️ how the deliverable is BUILT, not what it is
+│   └── compile.sh · compile.ps1 · config.yaml · setup.sh
+│
+├── <paper>.tex                       📦 the driver: \documentclass, preamble, \input per section
+├── <paper>.bib                       📦 bibliography. HUMAN-ONLY: an agent greps, never writes
+├── <paper>.pdf                       📦 the compiled artifact
+├── Supplementary-<paper>.tex         📦 optional second driver
+├── sections/                         📦 GENERATED from 4-main pages. One way, md to tex
+│   ├── README.md                     one-screen map of section files
+│   └── NN_<slug>.tex · NN-MM_<slug>.tex
+├── appendices/                       📦 GENERATED from 5-appendix pages; A_*.tex .. Z_*.tex
+├── displays/                         📦 one folder per unit; THE ONLY home of an asset
 │   └── displayNN-<slug>/
-├── 0-extra/                              optional cover letter, IRB, checklists
-├── 1-probes/                        the probe-file pool (PPNN_<topic>/, one file per TOPIC, one ENTRY per question)
-├── 0-lifecycle/7-round/                             dated work rounds
-│   ├── latest.md                         active round pointer and summary
-│   └── vYYMMDD/
-│       ├── README.md                     round source, purpose, maturity, status
-│       ├── discussion.md                 raw discussion / review / meeting notes
-│       ├── decisions.md                  accepted paper intent
-│       ├── todo.md                       open needs and edits
-│       └── applied.md                    what changed where
-├── 1-config.yaml                         paths + metric definitions
-├── 1-compile.sh                          build entry point
-├── 1-diff/vs-<ref>/                      optional diff packages
-├── 1-review/{A-E,DECISIONS.md,HANDOFF.md}/ optional active review pipeline
-└── <venue>.sty / *.bst                   venue style files at top level
+│       ├── float.tex                 📦 the \caption + \label a section \inputs
+│       ├── assets/                   📦 the promoted render: figure.pdf | table-body.tex
+│       ├── README.md · preview.tex · preview.pdf     ✂️ never ship
+│       └── source/ · candidates/ · versions/         ✂️ never ship
+└── <venue>.cls · <venue>.bst         📦 the venue shell, copied, never authored
 ```
 
-## The `0-` / `1-` prefix semantics
+There is NO top-level `figures/`, and no `Figure/`/`Table/` bucket. A display is
+a UNIT and its render lives inside it. There is no `STATUS.md`: see below.
+
+## The prefix semantics: the NUMBER is the delete test
+
+```text
+rm -rf 0-* 1-* 2-*     and the paper still compiles and still submits
+```
 
 | Prefix | Meaning | Examples |
 |---|---|---|
-| `0-` | Manuscript source of truth: what defines the paper and what the venue receives | `0-<paper>.tex`, `0-lifecycle/`, `0-sections/`, `0-displays/`, `0-extra/` |
-| `1-` | Process artifacts: how the paper gets built, discussed, revised, checked | `0-lifecycle/7-round/`, `1-compile.sh`, `1-config.yaml`, `1-diff/`, `1-review/` |
+| `0-` `1-` `2-` | **working machinery**, deletable at submission | `0-lifecycle/`, `1-probes/`, `2-src/` |
+| unnumbered | **the deliverable**, what a journal receives | `<paper>.tex`, `.bib`, `.pdf`, `sections/`, `appendices/`, `displays/`, the venue shell |
 
-Sorting puts manuscript before process. A submission package is "everything
-needed from `0-` plus compiled PDFs"; `1-` folders explain the process and are
-not submitted unless the venue explicitly asks for them.
+Three numbered folders, and only three. A file that breaks the build when
+deleted has no business carrying a number, and a number is a promise that the
+thing is deletable.
+
+This INVERTS the pre-2026-07-26 rule, under which `0-` meant "manuscript source
+of truth" and `0-<paper>.tex` sat beside `0-lifecycle/`. The prefix then told a
+reader nothing, which is the only job a prefix has.
+
+`haipipe-paper-conform` runs this as an actual test: block J resolves every
+`\input`, `\includegraphics` and `\bibliography` target the masters reach and
+asserts none sits behind a number.
+
+## STATUS.md is retired
+
+There is no stored frontier. `current_layer` and `maturity` are DERIVED, from
+each S page's own `state:` and from disk; the venue pin lives in
+`S-Venue-0-venue.md` frontmatter; and the Gate Ledger, the one part that is
+HISTORY and cannot be derived, lives in each S page's own `## Log`, one row on
+the page whose gate it was.
 
 ## Lifecycle rules
 
@@ -96,7 +102,7 @@ not submitted unless the venue explicitly asks for them.
 The lifecycle is not linear. If a paragraph reveals an unsupported claim, loop
 back to `1-claims`. If a display cannot carry the claim, loop back to
 `4-display`. If coauthor discussion creates new open work, record it in
-`0-lifecycle/7-round/<round>/todo.md` and route each item to the right lifecycle stage.
+the current `S-Round` page's open items and route each item to the right lifecycle stage.
 
 ## Maturity ladder
 
@@ -105,18 +111,18 @@ current layer.
 
 | Maturity | Meaning | Expected artifacts |
 |---|---|---|
-| `seed` | paper-shaped possibility | 0-seed.md only |
-| `scaffold` | manuscript folder exists | lifecycle files, sections, compile script |
+| `seed` | paper-shaped possibility | board.md + S-Seed-0-seed.md only |
+| `scaffold` | manuscript folder exists | S pages, sections/, 2-src/compile.sh |
 | `claim-ledger` | claims are explicit | `1-claims` C-slots and open needs |
 | `display-map` | displays are planned | `4-display` maps claim -> display |
-| `section-map` | per-section scaffolds exist | `5-section-edit/<NN_section>/` outlines |
+| `section-map` | per-section pages exist | `4-main/S-Main-*.md` outlines |
 | `draft` | prose exists | main paper compiles with rough sections |
 | `submission-candidate` | checks mostly pass | compile, citations, displays, claims stable |
 | `submitted` | external venue state exists | submission metadata and frozen PDF |
-| `revision` | external/coauthor comments active | `0-lifecycle/7-round/<round>/todo.md` and `applied.md` |
+| `revision` | external/coauthor comments active | an open `S-Round` page |
 | `accepted/published` | final external state | camera-ready/final links |
 
-## `0-sections/` naming grammar
+## `sections/` naming grammar
 
 ```text
 NN_<slug>.tex          top-level section file, leaf or wrapper
@@ -152,21 +158,21 @@ number independently:
 \renewcommand{\thefigure}{S\arabic{figure}}
 ```
 
-Both documents `\input` from `0-sections/`. An SI leaf never appears in the
+Both documents `\input` from `sections/` and `appendices/`. An SI leaf never appears in the
 main driver and vice versa.
 
-## `0-displays/` rules
+## `displays/` rules
 
-`0-displays/` is the paper's display layer. Figures and tables are not just
+`displays/` is the paper's display layer. Figures and tables are not just
 assets; each unit carries a claim, evidence source, reader takeaway, caption,
 status, and placement.
 
 - Use one display-unit folder per figure/table family:
-  `0-displays/display01-main-gradient/`.
+  `displays/display01-main-gradient/`.
 - A display unit may contain one or many concrete results. For example,
   `display03-heterogeneity/` can hold a main table, appendix table, robustness
   preview, and the source scripts needed to regenerate them.
-- `0-displays/README.md` is the paper-level display index:
+- each unit's own `README.md` is its contract; there is no paper-level display index file, because the board's `3-display/` pages are the index:
   `ID | Type | Claim | Evidence Source | Section | Status | Canonical PDF`.
 - Each display unit has `README.md` with:
   `purpose`, `claim`, `source`, `inputs`, `exports`, `caption`, `placement`,
@@ -177,13 +183,13 @@ status, and placement.
   display its own reviewable PDF and lets the same unit be used in
   `0-lifecycle/4-display`, `0-lifecycle/5-section-edit`, and the main paper.
 - Main/SI paper paths are written relative to the paper root, for example:
-  `\input{0-displays/display01-main-gradient/float.tex}`.
+  `\input{displays/display01-main-gradient/float.tex}`.
 - Do not bake captions into figure PDFs. Assets are clean visual/table exports;
   captions live in LaTeX.
 - Source files live next to exports inside the display-unit folder. Retired
   assets move to unit-local `versions/`; do not delete provenance.
 
-## `0-lifecycle/7-round/` rules
+## `0-lifecycle/7-round/` rules (one S page per round)
 
 `0-lifecycle/7-round/` is the paper working-memory layer. A round is any dated work burst:
 agent discussion, author discussion, coauthor comments, reviewer comments,
@@ -199,10 +205,9 @@ decision pass, or application of edits.
 - `applied.md` records what changed where after items are handled.
 
 Rounds are process memory, not manuscript source. If a decision changes the
-paper, backfill it into `0-lifecycle/`, `0-sections/`, `0-displays/`, or
-`STATUS.md`.
+paper, backfill it into the right S page, `sections/`, or `displays/`.
 
-## `1-compile.sh` contract
+## `2-src/compile.sh` contract
 
 The build entry point every conforming folder ships:
 
@@ -219,15 +224,15 @@ The build entry point every conforming folder ships:
 
 Mechanical version: `3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh <paper-dir>`.
 
-- [ ] `STATUS.md` exists and reports current layer, maturity, and active round.
+- [ ] NO `STATUS.md` exists; the frontier is derived from each S page's `state:`.
 - [ ] `0-lifecycle/0-seed` through `0-lifecycle/5-section-edit` exist with stage TeX.
 - [ ] Exactly one driver per document; each `0-*.tex` master has `\documentclass`.
-- [ ] `1-compile.sh` is present, executable, and compiles all masters green.
-- [ ] Every `0-sections/*.tex` matches the naming grammar; `NN` and `NN-MM`
+- [ ] `2-src/compile.sh` is present, executable, and compiles all masters green.
+- [ ] Every `sections/*.tex` matches the naming grammar; `NN` and `NN-MM`
       sequences are contiguous.
 - [ ] Every section file is `\input` exactly once, with no orphans or double inputs.
 - [ ] Every `\input` and `\includegraphics` target exists on disk.
-- [ ] `0-displays/README.md` exists or every display unit has a complete
+- [ ] Every display unit has a complete
       `README.md`.
 - [ ] Every display unit has claim, evidence source, status, and a canonical
       preview PDF when the display is marked ready.
