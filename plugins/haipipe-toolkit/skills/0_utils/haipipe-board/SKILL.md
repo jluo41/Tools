@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one folder tree, and one markdown face per ruling (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when sharing work with colleagues; or when the user says board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
 metadata:
-  version: "0.23.0"
+  version: "0.24.0"
   last_updated: "2026-07-26"
-  summary: "A reversible UI taste pilot adds consistent keyboard focus, semantic radius tokens, and reduced-motion handling."
+  summary: "A 🖼 Diagram section can take an Excalidraw canvas from the page, and serve.py takes an explicit --host that still defaults to loopback."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -177,7 +177,7 @@ python3 <skill>/watch.py <board 文件夹>     # 盯着，改任何 .md 自动�
 .venv/bin/python <skill>/serve.py --root <仓库根> --port 5599
 ```
 
-跑起来之后，板不只是能读，还能：**评论直接落盘**（下一节就靠它）、在某一题上**开 chat 或 terminal 当场干活**。
+跑起来之后，板不只是能读，还能：**评论直接落盘**（下一节就靠它）、在某一题上**开 chat 或 terminal 当场干活**、给某一题的 🖼 Diagram **贴一张 excalidraw 画布**（写进 md 的就是作者手写的那一行；`QD7` 还在定型）。
 ⚖️ 一题一 session · 一 session 一窗口 · N 题 N 终端 —— 详见板的 `QD1` 的 `## Law`。
 
 > chat（受限抽屉，`QD2`）和 terminal（真 CLI，`QD3`）这套**还在 QD 组定型中**。

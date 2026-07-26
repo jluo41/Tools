@@ -465,6 +465,61 @@
     });
   }
 
+  /* ➕ Excalidraw (QD7, JL 260726): attach a canvas to a 🖼 Diagram from the page.
+     Save posts the URL, serve.py writes it as its own line inside ## Diagram, and the
+     canvas comes back through build.py like any other body content. Script-only, as
+     every write affordance is: with scripts stripped the figure and its link still read. */
+  function wireXcal() {
+    document.querySelectorAll('details.diagram-section').forEach(function (sec) {
+      if (sec.querySelector('.xadd')) return;
+      var face = sec.closest('section.slide.q');
+      if (!face || !face.dataset.file) return;
+      var dia = sec.querySelector('.dia');
+      if (!dia) return;
+      var has = !!sec.querySelector('.xcal');
+      var box = document.createElement('div');
+      box.className = 'xadd';
+      var open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'xadd-open';
+      open.textContent = has ? '🖌 Replace the Excalidraw canvas' : '🖌 Add an Excalidraw canvas';
+      var row = document.createElement('div');
+      row.className = 'xadd-row';
+      row.hidden = true;
+      var inp = document.createElement('input');
+      inp.type = 'text';
+      inp.placeholder = 'https://app.excalidraw.com/s/…';
+      var ok = document.createElement('button'); ok.type = 'button'; ok.textContent = 'Save';
+      var no = document.createElement('button'); no.type = 'button'; no.textContent = '✕';
+      var err = document.createElement('span'); err.className = 'xerr';
+      row.append(inp, ok, no, err);
+      box.append(open, row);
+      dia.appendChild(box);
+      open.onclick = function () { row.hidden = !row.hidden; if (!row.hidden) inp.focus(); };
+      no.onclick = function () { row.hidden = true; err.textContent = ''; };
+      async function save() {
+        var url = inp.value.trim();
+        if (!url) { inp.focus(); return; }
+        ok.disabled = true; err.textContent = '…';
+        var j = null;
+        try { j = await post('/_board/diagram', { file: face.dataset.file, url: url }); }
+        catch (e) { j = null; }
+        ok.disabled = false;
+        if (j === null) {
+          err.textContent = '';
+          say('serve.py is not running — paste the URL on its own line in ## Diagram yourself');
+          return;
+        }
+        if (!j.ok) { err.textContent = '⚠ ' + (j.err || 'write failed'); return; }
+        if (j.warn) say(j.warn);
+        err.textContent = '✔ saved';
+        (window.__boardRefresh || function () { location.reload(); })();
+      }
+      ok.onclick = save;
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') save(); });
+    });
+  }
+
   function wireResolve() {
     document.querySelectorAll('.cms').forEach(function (box) {
       var file = box.getAttribute('data-cfile');
@@ -1348,9 +1403,9 @@
   fabLbl();
   document.body.appendChild(fab);
 
-  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); wireStruct(); }
+  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); wireStruct(); wireXcal(); }
   window.__boardRewire = rewire;
-  marks(); paint(); wireResolve(); wireDadd();
+  marks(); paint(); wireResolve(); wireDadd(); wireXcal();
 })();
 
 /* ── live refresh (QD6, JL 260724) ─────────────────────────────────────────

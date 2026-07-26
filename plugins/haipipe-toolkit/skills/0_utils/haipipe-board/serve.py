@@ -39,7 +39,10 @@ That venv is uv-managed and has no pip — install into it with:
 it isn't already looking at.
 
 Deliberately narrow, because this is a write endpoint:
-  · binds 127.0.0.1 only
+  · binds 127.0.0.1 unless --host says otherwise. There is no auth of any kind
+    and /_term/ is a real shell, so every address you bind to is an address that
+    can run commands as you. A tailnet address (100.x) keeps that inside your own
+    devices; 0.0.0.0 hands it to the whole local network.
   · the target must sit inside --root, in a folder containing board.md
     · the filename must match Q*.md or S*.md
   · the only edits possible are "append a comment block" and "flip one checkbox"
@@ -622,6 +625,72 @@ class Handler(SimpleHTTPRequestHandler):
         lines.insert(j, f"> {lbl}: {text}")
         f.write_text("\n".join(lines), encoding="utf-8")
         return None, None
+
+    def add_diagram(self, f, p):
+        """➕ Excalidraw in 🖼 Diagram (JL 260726): paste a share URL on the page and it
+        lands on its own line inside `## Diagram` — the same line an author types by hand,
+        so the md stays the single source and the canvas comes back through build.py.
+        One canvas per face: pasting again replaces the old URL instead of stacking a
+        second iframe onto the section."""
+        url = (p.get("url") or "").strip()
+        if not re.fullmatch(r"https?://(?:app\.)?excalidraw\.com/\S+", url):
+            return None, "not an excalidraw share link (https://app.excalidraw.com/s/…)"
+        lines = f.read_text(encoding="utf-8").split("\n")
+        is_xcal = lambda s: re.fullmatch(r"\s*https?://(?:app\.)?excalidraw\.com/\S+\s*", s)
+
+        # ## Diagram 的范围。找的时候要跳 ``` 围栏：QA4 正文里就摆着 md 段落的示例，
+        # 不跳的话会写进示例里（评论层 260723 真踩过这个坑）。
+        fence, start, end = False, None, None
+        for i, ln in enumerate(lines):
+            if ln.lstrip().startswith("```"):
+                fence = not fence
+                continue
+            if fence:
+                continue
+            if start is None:
+                if re.match(r"^## (?:Diagram|图)\s*$", ln):
+                    start = i
+                continue
+            if re.match(r"^## ", ln):
+                end = i
+                break
+
+        if start is None:
+            # 没有 Diagram 这一节就现开一节，位置按固定层次：Diagram 在 Content 之前。
+            fence, anchor = False, None
+            for i, ln in enumerate(lines):
+                if ln.lstrip().startswith("```"):
+                    fence = not fence
+                    continue
+                if fence:
+                    continue
+                if re.match(r"^## (?:Content|Items to Finish|Done when|完成条件|清单)\b", ln):
+                    anchor = i
+                    break
+            block = ["## Diagram", url, ""]
+            if anchor is None:
+                lines += [""] + block
+            else:
+                lines[anchor:anchor] = block
+            f.write_text("\n".join(lines), encoding="utf-8")
+            return {"warn": "created ## Diagram holding only a canvas; the ascii figure is "
+                            "the part that survives being copied, so add one"}, None
+
+        end = end if end is not None else len(lines)
+        for j in range(start + 1, end):
+            if is_xcal(lines[j]):
+                lines[j] = url
+                f.write_text("\n".join(lines), encoding="utf-8")
+                return {"replaced": True}, None
+        k = end
+        while k - 1 > start and not lines[k - 1].strip():
+            k -= 1
+        lines[k:k] = ["", url]
+        f.write_text("\n".join(lines), encoding="utf-8")
+        has_ascii = any(lines[j].lstrip().startswith("```") for j in range(start + 1, end))
+        return ({} if has_ascii else
+                {"warn": "this Diagram has no ascii figure; the canvas is the half that "
+                         "disappears when it cannot load"}), None
 
     def add_comment(self, f, p):
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
@@ -1324,6 +1393,7 @@ class Handler(SimpleHTTPRequestHandler):
                 "/_board/resolve": self.resolve,
                 "/_board/discuss": self.add_discuss,
                 "/_board/sentence": self.add_sentence,
+                "/_board/diagram": self.add_diagram,
                 "/_board/chat": None}
         if self.path not in ACTS:
             return self.reply(404, {"ok": False, "err": "没有这个接口"})
@@ -1360,13 +1430,16 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=".")
     ap.add_argument("--port", type=int, default=5599)
+    ap.add_argument("--host", default="127.0.0.1",
+                    help="绑哪个地址。默认只绑 loopback；给 tailnet 地址（100.x）"
+                         "就能从自己别的设备直接打开，不用 VS Code 转发端口")
     ap.add_argument("--daemon", metavar="LOGFILE",
                     help="后台跑，输出写进这个文件")
     a = ap.parse_args()
     if a.daemon:
         daemonize(str(Path(a.daemon).resolve()))
     Handler.root = Path(a.root).resolve()
-    srv = ThreadingHTTPServer(("127.0.0.1", a.port),
+    srv = ThreadingHTTPServer((a.host, a.port),
                               partial(Handler, directory=str(Handler.root)))
     tok, src = oauth_token(Handler.root)
     try:
@@ -1374,8 +1447,10 @@ if __name__ == "__main__":
         sdk = "on"
     except ImportError:
         sdk = "off（这个 Python 没装 SDK，聊天接口不可用）"
-    print(f"📡 http://127.0.0.1:{a.port}  root={Handler.root}\n"
-          f"   评论 / 状态：直接写在这台机器上\n"
+    print(f"📡 http://{a.host}:{a.port}  root={Handler.root}\n"
+          + ("" if a.host == "127.0.0.1" else
+             f"   ⚠️ 绑的不是 loopback：{a.host} 能到的设备都能用 /_term/ 开 shell\n")
+          + f"   评论 / 状态：直接写在这台机器上\n"
           f"   聊天：{sdk} · 默认 {MODELS[DEFAULT_MODEL]} / effort={DEFAULT_EFFORT}\n"
           f"   OAuth 来源：{src}"
           + ("（长期 token）" if tok else "（沿用 claude 已登录的身份）")

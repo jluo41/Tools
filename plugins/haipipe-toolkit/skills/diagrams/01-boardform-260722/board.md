@@ -64,15 +64,18 @@ QC3-folderq.md
 ### QD · Working on the board
 The live layer: can you do real work on the board page itself?
 One session per question (QD1), the restricted in-page drawer (QD2), the
-unrestricted real terminal (QD3), LLM-assigned group icons (QD4), and how the
-page updates live without losing your chat (QD6). The index page's chatbot is the
-QD2 drawer / QD3 terminal opened on board.md; a separate board-agent question
-(QD5) was archived 260725 as redundant with them.
+unrestricted real terminal (QD3), LLM-assigned group icons (QD4), how the page
+updates live without losing your chat (QD6), and attaching an Excalidraw canvas
+to a face from the page itself (QD7, opened 260726; how that canvas renders is
+QA4 §2). The index page's chatbot is the QD2 drawer / QD3 terminal opened on
+board.md; a separate board-agent question (QD5) was archived 260725 as redundant
+with them.
 QD1-chat-per-question.md
 QD2-chat-sdk.md
 QD3-chat-terminal.md
 QD4-topicicon.md
 QD6-liveupdate.md
+QD7-diagramattach.md
 ### QE · Sharing the board
 Putting the board out there and making it a real thing others can open.
 QE1 is the parent question: local or server, and which half other people get. Its
@@ -81,13 +84,16 @@ forks: how a mounted SPACE shows all its boards (QE2, v1 shipped 260724 as
 settled 260724: static half stays an invariant, hybrid layer split, branch
 `feat/haichat-board`); whether the body text is editable in the page and what two
 people editing at once does (QE4); where Boards sits in the console (QE5, JL's
-call). The console also RELAYS the live layer: chat and terminal work through it,
-piped to the workstation serve.py, verified 260724.
+call); which address serve.py binds to and where that setting lives once the code
+is shared (QE6, opened 260726, the local half of QE1). The console also RELAYS the
+live layer: chat and terminal work through it, piped to the workstation serve.py,
+verified 260724.
 QE1-hosting.md
 QE2-mountspace.md
 QE3-whereitruns.md
 QE4-editlock.md
 QE5-consolescope.md
+QE6-bindaddress.md
 
 ## Links
 SKILL.md            ../../0_utils/haipipe-board/SKILL.md
@@ -101,6 +107,7 @@ ref/board-form.md   ../../0_utils/haipipe-board/ref/board-form.md
 ref/writing-rules.md ../../0_utils/haipipe-board/ref/writing-rules.md
 ref/board-example.md ../../0_utils/haipipe-board/ref/board-example.md
 haipipe-board/      ../../0_utils/haipipe-board/
+env.sh              ../../../../../../env.sh
 haipipe-paper-stage/ ../../paper/1-lifecycle/haipipe-paper-stage/
 0-lifecycle/        ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
 02-method-260722/   ../../../../subjective-label/diagram/02-method-260722/

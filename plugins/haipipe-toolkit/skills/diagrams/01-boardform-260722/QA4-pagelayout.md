@@ -93,11 +93,24 @@ The managed block is generated from explicit `requires` and `style-from` metadat
 Diagram gives one visual account of the flow, comparison, before/after, or option set.
 Its heading remains visible, but the figure starts hidden so a large canvas does not dominate the page before it is wanted.
 Keep it only when opening it replaces or clarifies prose; decoration does not earn a section.
-An Excalidraw share URL on its own line may be inserted whenever a figure is worth drawing on together: it renders as a live canvas plus a plain link, so colleagues can move boxes and comment in the drawing itself instead of describing edits in prose.
-It is optional and additive, an ASCII figure alone remains a complete Diagram, and the plain link is what keeps the section readable when the canvas cannot load.
+
+#### The ASCII figure is what the section owes
+(the part that must be there, because it is the part that survives leaving the page)
 An ASCII figure has to survive being copied, because copying a face into chat or an email is a thing the board exists for.
 Two trees drawn side by side do not: the column boundary is whitespace, it vanishes on paste, and the right column's rows land inside the left column's branches, so the figure asserts a structure that does not exist.
 Stack them instead, one complete tree at a time; columns are safe only for short parallel lists where a wrong reading is obvious at a glance.
+
+#### An Excalidraw canvas is optional, and empty is the default
+(nothing to write until a figure is worth drawing on together; then it is one line)
+A Diagram section with only an ASCII figure is complete, and most faces should stay that way.
+When a figure is worth drawing on together, put an Excalidraw share URL on a line of its own inside `## Diagram`, below the ASCII, with nothing else on that line.
+`https://app.excalidraw.com/s/1JWkKv8oMIX/4SD9kLApiQC` is the shape of it, and this face's own Diagram carries one as the worked example.
+A line matching `excalidraw.com/…` and nothing else becomes a `div.xcal`: a lazily loaded iframe of the canvas at 440px, growing to 520px when the face is opened alone, with an `↗ Open in Excalidraw` link directly underneath.
+Anything else on the line, a caption or a bullet marker, leaves it as ordinary prose with a plain link, so the rule is one URL, one line, no decoration.
+The embed is possible only because excalidraw.com sends no `X-Frame-Options` or `frame-ancestors`, which was measured rather than assumed, and which is a property of somebody else's server that can change without warning.
+That is exactly why the link underneath is not redundant: offline, behind a blocking proxy, or after Excalidraw changes its headers, the canvas is an empty box and the link is the only thing that still reaches the drawing.
+The ASCII figure stays for the same reason and is never replaced by the canvas: it is the version that survives a paste into chat, a printed page, and a reader with no network.
+So the canvas is where colleagues move boxes and argue about the shape, while the ASCII is what the board still says when the canvas is gone.
 
 ### 3 · Content — establish the substance
 Content carries the material the face exists to establish after orientation.
@@ -261,6 +274,9 @@ The shared Q/S reading path and inherited Stage Contract are implemented.
 The next piece is creation-time Content composition: stage template as the base blueprint, venue template as the reader/section/style overlay, and previous contracts as accepted and unresolved inputs.
 That rule is specified here and in QA2, but `stage.py new` does not yet materialize template- derived `###` headings.
 
+- 260726 JL · 🖼 Diagram's Excalidraw half got written down as a mechanism
+  Two lines said a share URL "may be inserted" and rendered "as a live canvas plus a plain link", which told a reader it existed without telling them how to do it.
+  JL asked for the how: `§2` now splits into the ASCII figure the section owes and the optional canvas, and the canvas paragraph gives the exact rule the code enforces, one URL alone on its own line, plus what it renders, why the fallback link is not redundant, and why empty is the normal state.
 - 260725 JL · 🚪 The lead question became the door, and Opening stopped folding
   A version earlier the same day hung the disclosure on the section name, so the page showed a shut row reading only "🧭 Opening" with the ruling's scope invisible inside it.
   JL called it back: nothing in Opening folds from its heading, and the question sentence is what you click.
@@ -514,6 +530,7 @@ job line: the full-line `(…)` directly under a paragraph heading, saying what 
       >> CC0723: the HTML skeleton + mapping table were added earlier; after the 260723 redesign the skeleton went stale and was removed: the mapping lives in `ref/board-form.md §4`, no second copy maintained here.
 
 ## Log
+260726 · `§2 Diagram` split into two paragraphs (JL: how do we add the excalidraw link and embed it?): the ASCII figure the section owes, and the optional canvas whose default is empty; the canvas paragraph now carries the one-URL-alone-on-a-line rule from `src/body.py`, the 440px / 520px render, the `↗ Open in Excalidraw` fallback, and the reason the fallback and the ASCII both stay
 260725 · Opening's drawer switched from chrome type to Content type (JL: "the display here is not good"): headings now 15px/650 with a rule between blocks and prose at Content's size and colour, matching `.csec>summary` and `.cbody p` exactly; the lead question went bold so the handle reads apart from what it opens
 260725 · Opening's drawer headings lost their icons (JL: make them read consistent): `🚧 Boundary` and `📋 Stage Contract` were the only two of seven with one, so all seven are now plain words. The `✅ Covered here` / `↪ Covered elsewhere` pair inside Boundary was left alone: it is a 260724 ruling of JL's own and lives in the markdown of all 78 faces
 260725 · Opening's drawer went flat (JL "I don't want to have >" / "why other information are gone"): Why this matters, Stage Record and the Stage Contract's three parts render as plain `.fh` headings like Boundary always did, so one click shows Required Inputs, Writing Style and the venue section instead of three more shut rows; the lead's `<p class="qlead">` markup was restored byte-for-byte so the serif face and 18px/21px sizing match the original again
