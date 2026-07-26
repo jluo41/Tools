@@ -1615,31 +1615,20 @@ document.addEventListener('click', function (ev) {
    If this ever does need suppressing, it must NOT use preventDefault; restore
    `details.open` on the next animation frame instead. */
 
-/* AND IT STILL DID NOT OPEN (JL 260726: "for the values, displays, figures, I
-   cannot click them"). Removing preventDefault was necessary and not
-   sufficient. `<summary>` runs its own activation behaviour on a click
-   anywhere inside it, and that consumes the event before the nested button's
-   default action (show popover) gets to run.
+/* AND THE REAL CAUSE WAS NEITHER OF THOSE (JL 260726: "for the values,
+   displays, figures, I cannot click them"). No handler belongs here at all.
 
-   The measurement that pinned it, on QC0, one build, same page:
-     3 citation chips  S1 S2 S3, sentences with NO `>` lane, plain <p>   OPEN
-     8 other chips     S4 S5 S6, sentences WITH a lane, so wrapped in
-                       <details class="sent"><summary>                   DEAD
-   which is exactly "citations work, values and displays do not". The embed
-   had been hiding it: render_doc builds no sentence drawers, so while the
-   example came from an embed every chip sat in a plain paragraph.
+   The story this file told for one revision was wrong, and the measurement
+   that killed it is worth keeping: with a click handler added to force the
+   panel open, chips inside a <summary> opened; with it removed, they ALSO
+   opened. So <summary> was never swallowing anything, and element.click()
+   was the wrong instrument, because it skips hit-testing. Testing what a real
+   MOUSE would hit found 11 of 11 chips unreachable: `.fig`, meant for markdown
+   images, also matched every figure PANEL (class `chipcard disp fig ready`),
+   and its display:block beat the UA rule that hides a closed popover. Five
+   invisible full-width panels sat over the page eating every click.
 
-   So the panel is asserted EXPLICITLY, one frame later, and only if the
-   browser did not already open it. preventDefault stays out of this file. */
-document.addEventListener('click', function (e) {
-  var chip = e.target && e.target.closest
-    && e.target.closest('button.chip[popovertarget]');
-  if (!chip || !chip.closest('summary')) return;
-  var panel = document.getElementById(chip.getAttribute('popovertarget'));
-  if (!panel || !panel.showPopover) return;
-  requestAnimationFrame(function () {
-    try {
-      if (!panel.matches(':popover-open')) panel.showPopover();
-    } catch (err) { /* another popover owns the top layer; leave it alone */ }
-  });
-});
+   Fixed in board.css by scoping that rule to `img.fig`, plus an explicit
+   `.chipcard:not(:popover-open){display:none}` so no future class collision
+   can resurrect a ghost. The chip needs NO script: `popovertarget` alone is
+   enough, inside a <summary> or out of it, verified in Chrome 150. */

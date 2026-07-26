@@ -38,6 +38,22 @@ from src import body as boardbody              # noqa: E402
 from src.parse import parse_dir, parse_file    # noqa: E402
 from src.page_board import render, scrub_cjk_comments, to_json  # noqa: E402
 
+# Marker SYNTAX a dialect would resolve. Used only to warn when a board writes
+# markers and declares no dialect; matching this is not knowing what a paper is.
+#
+# Code spans are stripped FIRST, and that is the whole precision of the check: a
+# board that MEANS a marker writes it in prose, while a board that DISCUSSES the
+# syntax quotes it. Measured 2026-07-26 across the four real boards: boardform
+# 13 mentions and probe-qa 2, all inside code, none meant.
+MARKERISH = re.compile(r"\\cite[pt]?\{|\{VAL:\?|\[Q-[A-Za-z]")
+_FENCE = re.compile(r"```.*?```", re.S)
+_INLINE = re.compile(r"`[^`\n]*`")
+
+
+def _meant_markers(text):
+    """Markers written as PROSE, with quoted syntax removed."""
+    return len(MARKERISH.findall(_INLINE.sub("", _FENCE.sub("", text))))
+
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if a != "--json"]
     as_json = "--json" in sys.argv[1:]
@@ -67,6 +83,22 @@ if __name__ == "__main__":
             boardbody.PAPER = dialect_paper.load(boardbody.BASE, meta)
         except ImportError:
             print("⚠️  dialect declared but no dialect module; markers stay plain text")
+    else:
+        # A board that writes marker SYNTAX and declares no dialect renders it as
+        # plain text and silently gets no cross-check. That is the one way this
+        # seam fails without saying anything, so say it here.
+        #
+        # The trigger is the board's own CONTENT, never its folder name: build.py
+        # must not learn what a paper is (the dialect stays deletable, QBc5).
+        _hits = sum(
+            _meant_markers(f.read_text(encoding="utf-8", errors="ignore"))
+            for f in sorted(target.glob("**/*.md"))
+        ) if target.is_dir() else _meant_markers(target.read_text(encoding="utf-8", errors="ignore"))
+        if _hits:
+            print(f"⚠️  {_hits} marker(s) found and NO `dialect:` declared, so they render as")
+            print("    plain text and nothing cross-checks them. Add to board.md frontmatter:")
+            print("        dialect: paper")
+            print("        paper-root: ..        # where the .bib, displays/ and 1-probes/ live")
     if as_json:
         print(to_json(meta, qs, warn))
         sys.exit(0)

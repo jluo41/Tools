@@ -317,6 +317,42 @@ def check_page(d, rep):
                     f"<{tag}> opened {o} times, closed {c}")
 
 
+# Every class token a chip PANEL carries. A panel's class list is
+# `chipcard <kind> <state>`, so each of these is a live class on a top-layer
+# element, and a bare `.<token>{}` rule anywhere in board.css also styles the
+# panel. That is not hypothetical: `.fig`, written for markdown images, matched
+# every figure panel and its `display:block` beat the UA rule that hides a
+# closed popover, so five invisible full-width panels lay across the page and
+# swallowed every click for a day (QA9, JL 260726).
+# `chipcard` itself is NOT in the list: styling the panel's own base class
+# bare is the correct way to style a panel. The danger is the OTHER tokens,
+# which are kind and state words a page might plausibly want for something else.
+PANEL_TOKENS = ("disp", "fig", "tab", "num", "val", "cite", "qref",
+                "ok", "ready", "owed", "parked", "broken", "unowned", "unver", "amb")
+BARE_CLASS = re.compile(r"(?m)^\s*((?:\.[A-Za-z][\w-]*\s*,\s*)*\.([A-Za-z][\w-]*))\s*\{")
+
+
+def check_css(rep):
+    """A bare class selector that collides with a chip panel's own classes.
+
+    The failure this catches renders perfectly and reads perfectly: the page is
+    correct, the prose is correct, and the interaction is dead. Neither of QA9's
+    other two instruments can see it, which is why it gets its own.
+    """
+    css = HERE / "assets" / "board.css"
+    if not css.exists():
+        return
+    for m in BARE_CLASS.finditer(css.read_text(encoding="utf-8")):
+        for sel in m.group(1).split(","):
+            tok = sel.strip().lstrip(".")
+            if tok in PANEL_TOKENS:
+                line = css.read_text(encoding="utf-8").count("\n", 0, m.start()) + 1
+                rep.add(ERROR, "panel-class-collision", f"assets/board.css:{line}",
+                        f"bare `.{tok}` also matches a chip panel "
+                        f"(class=\"chipcard <kind> <state>\"); scope it to a tag "
+                        f"or rename it, or it can un-hide a closed popover")
+
+
 def check_template(rep, quiet):
     """Render ref/q-template.md as a Q page and as an S page, then assert.
 
@@ -388,6 +424,7 @@ def main():
     for name, p in sorted(pages.items()):
         check_face(p, name, rep, links, page_ids, decision_only)
     check_page(d, rep)
+    check_css(rep)
     if not a.no_template:
         check_template(rep, a.quiet)
 
