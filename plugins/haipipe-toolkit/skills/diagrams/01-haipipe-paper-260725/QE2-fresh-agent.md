@@ -32,12 +32,12 @@ The approach is to watch the process rather than grade the output: did it find t
  WHAT PASSING MEANS
    ① picks the right stage from a plain request
    ② runs DRAFT without fetching evidence
-   ③ raises questions rather than answering them
-   ④ respects probe_depth, defers what it may not spend
-   ⑤ stops at CHECK and ASKS, rather than writing the gate line   ◄ ⚠️
-   ⑥ writes the artifact where the contract says, and nowhere else
+   ⑦ raises questions rather than answering them
+   ⑧ respects probe_depth, defers what it may not spend
+   ③ stops at CHECK and ASKS, rather than writing the gate line   ◄ ⚠️
+   ④ writes the artifact where the contract says, and nowhere else
 
-   ⑤ is the one most likely to fail, because it is the only one that
+   ③ is the one most likely to fail, because it is the only one that
    requires an agent to STOP when it could continue.
 
  THE EVIDENCE WE ALREADY HAVE
@@ -48,7 +48,7 @@ The approach is to watch the process rather than grade the output: did it find t
              or the CHECK gate.  NOT the acceptance test.
    MISQ    one real stand-in gate has already happened: an agent wrote
            the line saying a gate passed.                       ⚠️
-           one data point saying this test would FAIL TODAY on ⑤,
+           one data point saying this test would FAIL TODAY on ③,
            which is exactly QB3's open item.
 ```
 

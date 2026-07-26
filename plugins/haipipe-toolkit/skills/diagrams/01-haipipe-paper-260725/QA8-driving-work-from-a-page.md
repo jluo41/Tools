@@ -42,15 +42,15 @@ Four questions follow from that one stance: what the control plane is, what the 
           request / acceptance / status / owner / blocked-by / handoff
     ready ─► claimed ─► done      blocked names its dependency
     it lives HERE and not in a tracker: a queue in another system is a
-    second copy of the truth, which is exactly seam ③'s failure.
+    second copy of the truth, which is exactly seam ⑦'s failure.
 
- ③ THE RESULT LIVES ON THE ITEM THAT ASKED FOR IT
+ ⑦ THE RESULT LIVES ON THE ITEM THAT ASKED FOR IT
     ✗ request.md + HANDOFF.md + report.md   a SECOND queue that drifts
     ✅ handoff: artifact · preview · verification · consumer
     evidence still lives in its BANK-owned QA file. The handoff POINTS,
     never copies.
 
- ④ THE RUNNER IS PAGE-FIRST
+ ⑧ THE RUNNER IS PAGE-FIRST
     work --page <S-face> [--item I4]        and nothing else
     it DERIVES stage · phase · dependencies · worker · stop condition
     stops at:  🧠 a human decision   💸 spend authorization

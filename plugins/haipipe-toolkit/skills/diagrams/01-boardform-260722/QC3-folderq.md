@@ -5,6 +5,8 @@ method: recursive discovery in build.py + path vetting in serve.py; ruled by JL 
 
 ## Question
 Can a question file live inside the folder it is about, so a board can sit on top of an existing tree instead of mirroring it?
+The working answer is yes: discovery walks the whole tree, so a face sits beside what it discusses while `## Pages` keeps bare filenames for order alone.
+That unlocks the case which forced the question: a paper's own `0-lifecycle/` becomes a board in place, rather than a second structure kept in step by hand.
 
 The first consumer forced the question: JL wanted the MISQ paper's `0-lifecycle/` itself to be a board, with each stage folder acting as a question's home (the way `5-section-edit/` keeps one folder per unit).
 Flat-only discovery made that impossible: `build.py` only globbed the board's top level, and `serve.py` resolved comment write-backs as `board / filename`.
@@ -48,4 +50,5 @@ Flat boards are untouched; nested faces work end to end including comment write-
 - New questions born from the page are still created flat at the board root.
 
 ## Log
+260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260724 · settled and shipped; first consumer is the MISQ paper's 0-lifecycle board

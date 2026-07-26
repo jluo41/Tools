@@ -6,6 +6,8 @@ session: d650c47e-0d7d-464d-8405-a98a545fe552
 
 ## Question
 Besides the restricted drawer, can every Q also have **its own real terminal**, the full Claude Code with nothing missing?
+The working answer is one PTY per face, running where the files are and reaching the browser through the single port already forwarded.
+What turns on it is the ceiling of the live layer: the drawer is a rebuilt chat box, so anything needing a command or a skill stops there.
 
 The hard part is that the terminal must run on the machine the files are on and squeeze through Remote-SSH's single forwarded port, and several boards and questions open at once must not fight over ports.
 The drawer is ultimately a re-built chat box, so any job needing commands or skills gets stuck; without a real terminal the board can only do "edit some text" work.
@@ -238,6 +240,7 @@ Fine to use as a standalone tool; constraints bite when you copy it into somethi
       >> CC0723: you can; the UI blocked it, not the LAW. Different questions are different sessions; open more board tabs. (The ↗ pop-out button was later removed per JL.)
 
 ## Log
+260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260725 1105 · The terminal also opens on the index's chatbot (JL's ask on QC2, details on QD2): ⌨ in the board drawer posts /_board/term with file=board.md; verified live: ttyd up at /_term/117a3466ca18/, HTTP 200 through the proxy, SAME session id as the drawer (two front ends, one session holds), released clean
 260724 1925 · Width accounting aligned (JL's fig/image.png smear): vendored addon-unicode11 (emoji 1→2 cells, matches claude's wcwidth; offline-verified provider v11) + CJK font fallbacks + lineHeight 1.2 in the drawer's xterm; serve.py asset whitelist + soft-fail load; Lesson added
 260724 1550 · JL confirms in the browser: "It is better now."; the self-healing respawn + real cell metrics hold up live; ⑤ grace release, ⑥ WebGL, and the auth line keep this 🟡

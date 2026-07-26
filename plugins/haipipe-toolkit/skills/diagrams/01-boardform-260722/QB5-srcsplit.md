@@ -5,6 +5,8 @@ method: mechanical move first under a byte-identical gate, features second; modu
 
 ## Question
 How does the board's Python stay manageable now that build.py and serve.py have both crossed 40KB and features keep landing?
+The working answer is a `src/` split organized by what each module RENDERS, so the files are named for pages rather than for layers.
+What that buys is a seat for a feature before it is written, instead of one more branch inside a function nobody wants to open.
 
 QB4 already moved CSS/JS into `assets/`; the Python side was next.
 JL named the organizing principle: modules named for what they render (`page_question.py`, `page_stage.py`), which also gave the embed feature a clean seat before it was written.
@@ -46,5 +48,6 @@ Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py
 - The byte-identical gate caught a real user-visible bug on its first run (the state pill clobber). A refactor without that gate would have shipped the same bytes and nobody would have looked.
 
 ## Log
+260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260725 1615 · dropped the retired "QF1" face id from the src/ rationale; the embed feature it named is unchanged
 260724 · settled and shipped in the same body of work as QC3 and QF1

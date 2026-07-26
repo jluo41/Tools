@@ -29,20 +29,20 @@ The approach is a stable key in the prose, provenance in the lane beneath it, an
       ### q-consumer   Q-Section-1  ← the bracket, claimed
       ### bank binding route: discovery · target: …/QA/1-….md
                           │
- ③ the bank answers                               discovery / task layer
+ ⑦ the bank answers                               discovery / task layer
       ### a-executor   the reference, with identifiers
       state: answered │ read │ commissioned │ planned │ deferred
                           │
- ④ a HUMAN writes the .bib entry            ⛔ NO AGENT MAY DO THIS STEP
-    the one hard stop in the chain, and the reason ③ can sit for weeks
+ ⑧ a HUMAN writes the .bib entry            ⛔ NO AGENT MAY DO THIS STEP
+    the one hard stop in the chain, and the reason ⑦ can sit for weeks
                           │
- ⑤ REVISE places the key                          `haipipe-paper-revise-place`
+ ③ REVISE places the key                          `haipipe-paper-revise-place`
     \cite{TOADD} [Q-Section-1]  ──►  \citep{meyer2010review}
                           │
- ⑥ the board resolves and shows state             `dialect_paper.py`  (build time)
+ ④ the board resolves and shows state             `dialect_paper.py`  (build time)
 ```
 
-Steps ① to ⑤ are the paper skill's. Step ⑥ is the board's, and it only WATCHES: it
+Steps ① to ③ are the paper skill's. Step ④ is the board's, and it only WATCHES: it
 never writes a marker, a probe entry, or a `.bib` line. That split is `QBc5`.
 
 [2/2] WHAT THE READER GETS, AND WHERE THE SOURCE ACTUALLY IS
@@ -230,11 +230,11 @@ Two states remain unbuilt and both are named in Items: no chip yet distinguishes
 - `haipipe-paper-probe`
   ② Opens the probe entry and claims the bracket under `### q-consumer`. The bracket grammar ruled here is what it must write, or the chip cannot resolve.
 - `haipipe-paper-revise-place`
-  ⑤ Substitutes a landed key into the prose. It may only run after a human has written the `.bib` entry, which is the human-only rule enforced at the one place that would otherwise break it.
+  ③ Substitutes a landed key into the prose. It may only run after a human has written the `.bib` entry, which is the human-only rule enforced at the one place that would otherwise break it.
 - `haipipe-paper-revise-content`
   Rewrites sentences around a placed citation; must not fuse marker and bracket.
 - `dialect_paper.py`
-  ⑥ Resolves and reports. Never writes. Owned by `/haipipe-board`, boundary ruled in `QBc5`.
+  ④ Resolves and reports. Never writes. Owned by `/haipipe-board`, boundary ruled in `QBc5`.
 
 **Where the evidence lives**
 - `0-lifecycle/0-seed/S-Seed-0-seed.md`
@@ -259,7 +259,7 @@ A rewriter never touches a marker inside a code span or a tag attribute. Prose a
 
 ## Log
 - 260726 · JL: "where we link to the source? could we find it in the bib.tex?" The panel now carries the `.bib` file and line, the entry's own doi / eprint / url, and the raw bibtex. The `.bib` line is printed rather than linked into, because jumping to it would mean the board rendering a view of the bibliography, and that is human territory. Broken keys gained nearest-neighbour suggestions after the default fuzzy cutoff missed `stock2005testing` -> `stock2002survey`, which is the one case that mattered.
-- 260726 · Added the two diagrams and the skill map. The first is the reason this page exists: one citation crosses four skills plus a human, and the hard stop at step ④ is what makes `\cite{TOADD}` a state rather than an error.
+- 260726 · Added the two diagrams and the skill map. The first is the reason this page exists: one citation crosses four skills plus a human, and the hard stop at step ⑧ is what makes `\cite{TOADD}` a state rather than an error.
 - 260726 · Two corrections to what this page claimed the same morning. The 2 `broken` keys it called "the payoff" were prose inside `> JL:` and `> CC:` discussion lanes, asking for citations rather than making them; discussion lanes now opt out, which also removed 19 other false chips. And the one real broken key was never on the board at all, because it lives in `0-sections/D_iv_analysis.tex` and no face embeds that file; `build.py` now audits the `.tex` and prints it. Net: the detector went from 2 false positives and 1 miss, to 0 and 0.
 - 260726 · JL: "maybe not hover, how about click it, and when I click it, it will be an attached window". Built with native `popover`, no script. The argument that settled it was not comfort: a `title=` is an attribute, so the record was passing the survive-with-JS-stripped assertion without being counted by it. The page grew 42k, which is that evidence becoming real body text.
 260726 · Built the citation slice. `src/dialect_paper.py` (bib index + resolver), `body.py` `cite_chips()` with the code-span guard, `.chip` styles in `board.css`, `dialect:`/`paper-root:` parsed in `parse.py`, wired in `build.py`. Live on the MISQ board: 135 ok, 10 owed, 20 unowned, 2 broken. Two build bugs found and fixed on the way: a CSS comment containing a literal script tag broke the zero-script assertion, and the first version chipped inside backticks.

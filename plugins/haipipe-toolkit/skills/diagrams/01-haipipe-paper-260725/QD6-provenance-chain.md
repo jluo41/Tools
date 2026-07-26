@@ -25,21 +25,21 @@ The approach is six links, each of them independently checkable, running from th
        ▼
   ② data       source/source_data.csv, the snapshot read   ┐
        │                                                   │
-  ③ gen code   source/gen_<slug>.py                        │ inside ONE unit
+  ⑦ gen code   source/gen_<slug>.py                        │ inside ONE unit
        │       parses ②, NEVER recomputes                  │ directory, so a
        ▼                                                   │ CHECK can resolve
-  ④ result     assets/figure.pdf | table-body.tex          │ all four
+  ⑧ result     assets/figure.pdf | table-body.tex          │ all four
        │                                                   │
-  ⑤ float      float.tex: caption · \label · asset ref     ┘
+  ③ float      float.tex: caption · \label · asset ref     ┘
        │
        ▼
-  ⑥ reader     the section · paragraph · SENTENCE citing it
+  ④ reader     the section · paragraph · SENTENCE citing it
                                                            🧠 a human judgment
 
  WHY THIS IS A PAGE AND NOT A FIELD ON QD2
-   QD2's bundle is ② ③ ④ only.
+   QD2's bundle is ② ⑦ ⑧ only.
    it CANNOT carry ①: the renderer is HANDED evidence, not producing it.
-   it CANNOT carry ⑥: the citing sentence does not exist when it runs.
+   it CANNOT carry ④: the citing sentence does not exist when it runs.
    so the chain is the JOIN between the display family and the sentence
    family, and it sits between them rather than inside either.
 
@@ -51,10 +51,10 @@ The approach is six links, each of them independently checkable, running from th
    only a manual sweep caught it.                              ⚠️
 
  THE DIAGNOSTIC THE CHAIN GIVES YOU
-   ① empty AND ④ exists      the numbers were TYPED. the defect above.
-   ④ ≠ what ⑤ references     the manuscript shows a superseded asset
-   ③ missing                 nobody can rebuild it, including its author
-   ⑥ empty                   an uncited display: a leftover, not a display
+   ① empty AND ⑧ exists      the numbers were TYPED. the defect above.
+   ⑧ ≠ what ③ references     the manuscript shows a superseded asset
+   ⑦ missing                 nobody can rebuild it, including its author
+   ④ empty                   an uncited display: a leftover, not a display
 ```
 
 ## Content
@@ -62,24 +62,24 @@ The approach is six links, each of them independently checkable, running from th
 ```
  ①  run        the task output that produced the numbers        OUTSIDE the paper
  ②  data       source/source_data.csv, the snapshot read
- ③  gen code   source/gen_<slug>.py, which parses ② and never recomputes
- ④  result     assets/<figure.pdf | table-body.tex>
- ⑤  float      float.tex: caption, \label, asset reference
- ⑥  reader     the section, paragraph and sentence that cites it
+ ⑦  gen code   source/gen_<slug>.py, which parses ② and never recomputes
+ ⑧  result     assets/<figure.pdf | table-body.tex>
+ ③  float      float.tex: caption, \label, asset reference
+ ④  reader     the section, paragraph and sentence that cites it
 ```
 
-Links ② ③ ④ ⑤ all live inside one unit directory, so a check can resolve them the way the stage-contract checker resolves declared paths. Links ① and ⑥ are judgments a human makes: ① may sit on a secure server, and ⑥ is which sentence chose to point here.
+Links ② ⑦ ⑧ ③ all live inside one unit directory, so a check can resolve them the way the stage-contract checker resolves declared paths. Links ① and ④ are judgments a human makes: ① may sit on a secure server, and ④ is which sentence chose to point here.
 
-⑥ is a SENTENCE, and that is inherited rather than decided here. `QC0` settles it: a `>` line directly under a sentence attaches to that sentence, and the four attachment faces ride that one rule. So this chain does not carry a coordinate for ⑥; the `> Display:` lane under the citing sentence IS the link, and it points back by display id.
+④ is a SENTENCE, and that is inherited rather than decided here. `QC0` settles it: a `>` line directly under a sentence attaches to that sentence, and the four attachment faces ride that one rule. So this chain does not carry a coordinate for ④; the `> Display:` lane under the citing sentence IS the link, and it points back by display id.
 
-### Link ③ has two shapes
-Discovered by walking all eleven MISQ units on 2026-07-26, after the chain was written as if ③ always lived in the paper.
+### Link ⑦ has two shapes
+Discovered by walking all eleven MISQ units on 2026-07-26, after the chain was written as if ⑦ always lived in the paper.
 
 ```
- FIGURE   the paper draws it       ③ = source/gen_<slug>.py, reading the ② snapshot
-                                   ① and ③ are DIFFERENT places
- TABLE    a task generates it      ③ = a POINTER to the task, as source/REBUILD.md
-          and the paper copies     ① and ③ are the SAME task folder
+ FIGURE   the paper draws it       ⑦ = source/gen_<slug>.py, reading the ② snapshot
+                                   ① and ⑦ are DIFFERENT places
+ TABLE    a task generates it      ⑦ = a POINTER to the task, as source/REBUILD.md
+          and the paper copies     ① and ⑦ are the SAME task folder
 ```
 
 A task's generation code is never copied into the unit. The pointer is the link, and a copy would be a second source that drifts from the first. That is the same reasoning that killed the claim-to-display map.
@@ -90,7 +90,7 @@ A task's generation code is never copied into the unit. The pointer is the link,
 That is provenance, not a defect, and it must be written down. "Cannot rebuild, because the run is on the secure server and the report is dated v0618" tells a reader that a stale number is a data fact rather than a rendering bug. An empty `source/` tells them nothing, which is how four MISQ units sat unrebuildable without anyone noticing.
 
 ### Why this is a page and not a field on QD2
-`QD2`'s result bundle is ② ③ ④. It cannot carry ① because the renderer is handed evidence rather than producing it, and it cannot carry ⑥ because the citing sentence does not exist when the render runs. The chain is therefore the join between the display family and the sentence family, which is why it sits between them rather than inside either.
+`QD2`'s result bundle is ② ⑦ ⑧. It cannot carry ① because the renderer is handed evidence rather than producing it, and it cannot carry ④ because the citing sentence does not exist when the render runs. The chain is therefore the join between the display family and the sentence family, which is why it sits between them rather than inside either.
 
 ### The failure it exists to prevent
 This is not hypothetical. On 2026-07-21 a ruling flipped a section's primary exposure from a continuous score to a binary indicator. The prose was updated. The results table was not, because its numbers had been hand-authored and nothing linked them back to a producing run. The table silently contradicted the text it supported, and only a manual sweep caught it.
@@ -99,10 +99,10 @@ The rule that came out of it is binding: a consumer-side unit is GENERATED from 
 
 ### The diagnostic the chain gives you
 ```
- ① empty AND ④ exists     the numbers were typed. This is the defect above.
- ④ not what ⑤ references  the manuscript is showing a superseded asset
- ③ missing                nobody can rebuild it, including the person who made it
- ⑥ empty                  an uncited display: a leftover, not a display
+ ① empty AND ⑧ exists     the numbers were typed. This is the defect above.
+ ⑧ not what ③ references  the manuscript is showing a superseded asset
+ ⑦ missing                nobody can rebuild it, including the person who made it
+ ④ empty                  an uncited display: a leftover, not a display
 ```
 
 Each of those is a question a reader of a finished unit would otherwise have to ask by hand.
@@ -112,12 +112,12 @@ Each of those is a question a reader of a finished unit would otherwise have to 
       `S-Display-2` on the MISQ paper carries all six links and its seven paths resolve.
 - [x] 📐 The chain is in the page template
       New display pages are born with it, and a link that does not exist yet is written `(none yet)` with a reason.
-- [ ] 🧪 Resolve links ② to ⑤ automatically
+- [ ] 🧪 Resolve links ② to ③ automatically
       They are inside one directory, so this is the same check that settles stage-contract paths. Until it exists, a chain is true on the day it was written.
 - [ ] 📐 Carry ① through the render bundle
       `QD2`'s result schema should name the producing run, so a rendered unit cannot come back without one.
-- [x] 🧠 ⑥ points at the SENTENCE
-      Already ruled on `QC0`, which is settled: a `>` line directly under a sentence attaches to that sentence, and `QC3` and `QC4` ride that one rule rather than inventing their own. So ⑥ is not an open question here; it inherits.
+- [x] 🧠 ④ points at the SENTENCE
+      Already ruled on `QC0`, which is settled: a `>` line directly under a sentence attaches to that sentence, and `QC3` and `QC4` ride that one rule rather than inventing their own. So ④ is not an open question here; it inherits.
       `S-Display-2` writes `S-Main-7 · §6 P5`, which names the paragraph. The sentence is identified by the `> Display:` lane sitting under it, not by a coordinate in this chain.
 
 ## Where we are

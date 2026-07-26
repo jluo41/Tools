@@ -5,6 +5,8 @@ method: start an agent with no memory of this conversation and hand it only SKIL
 
 ## Question
 How do we prove this skill is **usable**, and not usable only by the person who wrote it?
+The working answer is to hand `SKILL.md` alone to an agent with no memory of building it, and watch HOW it works rather than what it produces.
+The repo settles what that is worth: `CLAUDE.md` makes a fresh-agent run the gate for any skill change, so one that has not passed is not finished.
 
 It is hard because the author's head holds a pile of things that never made it into SKILL.md, so self-testing in the same conversation can never reveal what is missing.
 Leaving it unproven is not an option here: the repo's `CLAUDE.md` hard-codes the rule that any skill change must be validated by a fresh agent before it counts as done, so unvalidated equals unfinished.
@@ -89,6 +91,7 @@ fresh agent: a separately started Claude that cannot see this conversation and s
 ## Discussion
 
 ## Log
+260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260725 1225 · Fixes verified by a third fresh reader (docs only, "NOT DOCUMENTED" allowed): all five previously-guessed points answered with quotes → ALL DOCUMENTED
 260725 1210 · Re-ran the acceptance against the shared Q/S skill (JL's go on the QB pass): fresh agent, 4 Q + 1 S on a lab data-retention topic, built first try, gate respected → verdict YES. Its four S-side documentation gaps (Pages listing · S state values · S absent from the open procedure · the probe pointer) were closed in SKILL.md and ref/ in the same pass; the deliberate Chinese-spec exception recorded; ## Law written
 260724 1242 · Translated to English (JL 260724: everything on the board in English); Where-we-are updated: the old "never ran" line predated the 260723 run

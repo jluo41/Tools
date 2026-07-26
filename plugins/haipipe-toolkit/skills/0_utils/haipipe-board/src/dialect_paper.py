@@ -332,6 +332,18 @@ class Paper:
                 self.labels.setdefault(
                     m.group(1), (p, t.count("\n", 0, m.start()) + 1))
         self.refs = _load_bbl(self.root)
+        # A probe's `target:` is written relative to the PROJECT, not the paper:
+        # `tasks/Z01_…/QA/4-….md`. Find the folder those resolve against by
+        # walking up for the banks themselves, rather than assuming a depth.
+        self.bank_root = None
+        here = self.root
+        for _ in range(4):
+            if (here / "tasks").is_dir() or (here / "discoveries").is_dir():
+                self.bank_root = here
+                break
+            if here.parent == here:
+                break
+            here = here.parent
         self.probes = []
         self.by_q = {}
         for p in sorted((self.root / "1-probes").rglob("QX*.md")):
@@ -398,8 +410,7 @@ class Paper:
         if len(ls) > 1:
             tip += f"\n(+{len(ls) - 1} more probe entr" \
                    f"{'y' if len(ls) == 2 else 'ies'} serve {qid})"
-        return (state, tip, {"files": [(p.rel, p.path) for p in ls],
-                             "target": ls[0].target})
+        return (state, tip, {"files": self.chain(ls)})
 
     # -- the manuscript the board does NOT render ---------------------------
     def audit(self):
@@ -451,6 +462,36 @@ class Paper:
                             f"\\label{{{u.label}}} is referenced by no section"))
         return out
 
+    # -- the chain from a number back to the run ----------------------------
+    def chain(self, probes):
+        """(label, path) for every link between a sentence and its run (QD6).
+
+        A value's provenance is four hops, and until now the chip showed one.
+        The probe entry says which question; the bank's QA file says what was
+        found; the task or discovery FOLDER is where it was actually computed.
+        Each is a real path or it is not offered at all: a link that 404s is
+        worse than no link, because it looks like provenance.
+        """
+        out, seen = [], set()
+        for pr in probes:
+            if pr.path not in seen:
+                seen.add(pr.path)
+                out.append((f"probe · {pr.rel}", pr.path))
+            t = (pr.target or "").split()[0] if pr.target else ""
+            if not t or t in ("NEW", "adjacent") or self.bank_root is None:
+                continue
+            qa = self.bank_root / t
+            if qa.is_file() and qa not in seen:
+                seen.add(qa)
+                out.append((f"answer · {qa.name}", qa))
+            # the run itself: the task or discovery folder the QA file sits in
+            folder = qa.parent.parent if qa.parent.name.upper() == "QA" \
+                else qa.parent
+            if folder.is_dir() and folder != self.bank_root and folder not in seen:
+                seen.add(folder)
+                out.append((f"run · {folder.name}/", folder))
+        return out
+
     # -- a number in the prose, against the run that produced it ------------
     def check_number(self, qid, raw):
         """Does this prose number appear in the probe that owes the sentence?
@@ -467,11 +508,12 @@ class Paper:
         ls = self.by_q.get(qid)
         if not ls:
             return ("unowned", f"{raw} points at {qid}, which NO probe entry "
-                               f"declares. Nothing can check this number.")
+                               f"declares. Nothing can check this number.", {})
         try:
             want = float(raw.replace(",", ""))
         except ValueError:
-            return ("unver", f"{raw} could not be read as a number.")
+            return ("unver", f"{raw} could not be read as a number.",
+                    {"files": self.chain(ls)})
         dec = len(raw.split(".")[1]) if "." in raw else 0
         # Collect every DISTINCT recorded value that rounds to the prose number,
         # not the first one found. Repeated occurrences of one value are one
@@ -491,24 +533,33 @@ class Paper:
                     continue
                 ctx = " ".join(pr.text[max(0, m.start() - 80):
                                        m.end() + 80].split())
-                hits.setdefault(got, (m.group(0), pr.id, ctx))
+                # WHERE it was found matters. A figure in the `### a-executor`
+                # block is the ANSWER. The same digits in the question text or
+                # the bank binding are a threshold the question named, or a path
+                # like v0618, and calling that a match would overclaim.
+                where = "answer" if m.group(0) in pr.answer else "question text"
+                hits.setdefault(got, (m.group(0), f"{pr.id} {where}", ctx, pr))
         if len(hits) == 1:
-            got, (shown, pid, ctx) = next(iter(hits.items()))
+            got, (shown, pid, ctx, pr) = next(iter(hits.items()))
             exact = "" if got == want else f" (recorded as {shown})"
-            return ("ok", f"{raw} MATCHES the run{exact}.\n{pid} · …{ctx}…")
+            return ("ok", f"{raw} MATCHES the run{exact}.\n{pid} · …{ctx}…",
+                    {"files": self.chain([pr])})
         if len(hits) > 1:
             lines = [f"{raw} is AMBIGUOUS: {len(hits)} DIFFERENT recorded "
                      f"figures round to it, so the run behind this number "
                      f"cannot be identified from the prose alone."]
-            for got, (shown, pid, ctx) in sorted(hits.items()):
+            for got, (shown, pid, ctx, _pr) in sorted(hits.items()):
                 lines.append(f"· {shown} — {pid} · …{ctx}…")
-            return ("amb", "\n".join(lines))
+            # every probe involved, so both candidate runs are one click away
+            return ("amb", "\n".join(lines),
+                    {"files": self.chain([h[3] for h in
+                                          (hits[k] for k in sorted(hits))])})
         return ("unver",
                 f"{raw} does not appear in {qid}'s answer.\nThat is not by "
                 f"itself wrong: a derived figure, a percentage computed from a "
                 f"ratio, or a threshold the design chose rather than measured "
                 f"will never appear. It means this number was NOT checked.\n"
-                f"{ls[0].id} · {ls[0].title}")
+                f"{ls[0].id} · {ls[0].title}", {"files": self.chain(ls)})
 
     # -- displays -----------------------------------------------------------
     def _preview(self, u):

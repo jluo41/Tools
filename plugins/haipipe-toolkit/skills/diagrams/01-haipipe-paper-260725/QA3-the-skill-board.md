@@ -31,14 +31,14 @@ The way through is to keep the reasoning here and copy only the ruling out, so a
               ┌────────────────┴────────────────┐
               ▼                                 ▼
    ┌────────────────────────┐        ┌────────────────────────────────┐
-   │ ① haipipe-paper        │        │ ⑤ haipipe-board                │
+   │ ① haipipe-paper        │        │ ③ haipipe-board                │
    │   35 skills · v0.3.2   │        │   v0.24.0 · serves 7 boards    │
    └────────────────────────┘        └────────────────────────────────┘
      from here on THIS binds,          and for many rulings, SO DOES
      not the board                     THIS. Both halves, or neither.
 
    ── which group lands where ────────────────────────────────────────
-      group                    → ①  haipipe-paper        → ⑤  haipipe-board
+      group                    → ①  haipipe-paper        → ③  haipipe-board
       ──────────────────────   ─────────────────────────  ─────────────────
       QA1  six folders         README · PHILOSOPHY        —
       QA2  the skill set       the tree · front door      —
@@ -56,10 +56,10 @@ The way through is to keep the reasoning here and copy only the ruling out, so a
       QD   the display         1-lifecycle/4-display/     (display/ family)
 
    ── the failure this two-headed arrow exists to name ───────────────
-      SEVEN groups land in ⑤ as well as ①. A Law applied to one side
+      SEVEN groups land in ③ as well as ①. A Law applied to one side
       only leaves a page and an implementation that disagree, and
       nothing detects it. Twice on 260726:
-        chips SHIPPED in ⑤, four faces here still called them unbuilt
+        chips SHIPPED in ③, four faces here still called them unbuilt
         the round ruling landed HERE, haipipe-paper-round still
           described the layer it removed
       A ruling that touches both halves is not graduated until it has
@@ -99,8 +99,8 @@ No skill may import from here, read a Q face at runtime, or require one to exist
                             SKILL.md, a stage contract, or a ref/ file. The
                             face stays behind as the record of WHY.
 
- ② ──▶ ③  the paper         NOTHING. A paper never reads this folder.
- ② ──▶ ④  the paper board   NOTHING, at runtime. The MISQ paper appears on
+ ② ──▶ ⑦  the paper         NOTHING. A paper never reads this folder.
+ ② ──▶ ⑧  the paper board   NOTHING, at runtime. The MISQ paper appears on
                             these pages only as EVIDENCE cited in an argument
                             ("11 of 16 settled faces carry no Law"), which is
                             a reading, not a dependency.
@@ -123,7 +123,7 @@ The asymmetry is the point: one edge out, none in, and everything else forbidden
 - [x] 🧭 `state:` means the ruling, not the code
       Applied to all 34 faces on 260726; implementation status lives in Items.
 - [x] 🗺 Say where each group's Law lands, in BOTH skills
-      Seven of thirteen groups land in `⑤` as well as `①` (260726).
+      Seven of thirteen groups land in `③` as well as `①` (260726).
 - [ ] 🧾 Write the Law on every settled face
       11 of the 16 `✅` faces carry no `## Law`, so nothing can graduate from them. That is the largest gap on this board.
 - [ ] 🧪 Prove the no-dependency rule
@@ -145,7 +145,7 @@ The gap is graduation itself: most settled faces have no `## Law` to copy, so th
 ## Law
 EVERY thing has a board, and a board holds the argument while the thing holds the instruction. A worker following a procedure never reads a Q face.
 
-There are three such pairs: `①`/`②` the paper skill, `⑤`/`⑥` the board tool, `③`/`④` one manuscript. The first two behave alike, as a record whose rulings graduate out. The third is the exception ruled at `QA5`, because nothing graduates out of a paper board.
+There are three such pairs: `①`/`②` the paper skill, `③`/`④` the board tool, `⑦`/`⑧` one manuscript. The first two behave alike, as a record whose rulings graduate out. The third is the exception ruled at `QA5`, because nothing graduates out of a paper board.
 
 When a face reaches `✅`, its `## Law` is COPIED into the owning skill file and the skill binds from then on. The face stays, as the record of why. A settled face with no `## Law` has nothing to graduate and is not finished.
 
