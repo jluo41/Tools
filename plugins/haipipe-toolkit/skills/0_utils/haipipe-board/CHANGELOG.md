@@ -5,6 +5,29 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## [0.24.0] — 2026-07-26
+
+**Diagram was the last body section you could only read. Now you can draw into it.**
+
+- `🖼 Diagram` gets a `🖌 Add an Excalidraw canvas` control (`QD7`). Paste a share URL, hit
+  Save, and `serve.py` writes it on a line of its own inside `## Diagram`: the same line an
+  author types by hand, so the md stays the single source and an older copy of the skill
+  still renders the result. Endpoint `/_board/diagram`, control `wireXcal` in `board.js`,
+  styles `.xadd`. The generator was not touched.
+- One canvas per face: a second paste replaces the first instead of stacking iframes. The
+  response says `replaced: true` when it did.
+- A face with no `## Diagram` gets one created immediately before `## Content`, which is where
+  the fixed on-stage order puts it, and the response warns that a canvas without an ASCII
+  figure is the half that disappears when it cannot load (`QA4 §2`).
+- A URL that is not `excalidraw.com` is refused with nothing written, and the section scan
+  skips fenced code blocks so example markdown inside `QA4` is never written into.
+- `serve.py` takes `--host`, still defaulting to `127.0.0.1` (`QE6`). The bind address is this
+  server's only access control, since there is no auth and `/_term/` is a real shell, so any
+  non-loopback bind now prints a warning line at startup. Nothing changes for anyone who does
+  not pass the flag.
+- `QA4 §2` documents the Excalidraw half as a mechanism rather than a mention: one URL alone
+  on its line, what it renders, and why the fallback link and the ASCII figure both stay.
+
 ## [0.23.0] — 2026-07-26
 
 **The first Board UI taste pilot is live, bounded by QA10.**
