@@ -2355,16 +2355,34 @@ with JavaScript off; the script only adds commenting.</p>
     badge(m, idx);
     return true;
   }
+  // One entry per TEXT NODE, not per character. The per-character version
+  // allocated a two-element array for every character in the section, so a
+  // 500k-character board with 84 comments built tens of millions of arrays at
+  // load and the tab never painted. Index by node, look up by binary search.
   function scan(sec) {
     var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, null);
-    var n, s = '', map = [];
+    var n, parts = [], nodes = [], at = 0;
     while ((n = w.nextNode())) {
       var p = n.parentNode;
       if (p.closest && p.closest('.folds, .qh, .nav, pre')) continue;
-      for (var i = 0; i < n.nodeValue.length; i++) map.push([n, i]);
-      s += n.nodeValue;
+      var v = n.nodeValue;
+      if (!v.length) continue;
+      nodes.push([n, at, v.length]);            // node, start in s, length
+      parts.push(v);
+      at += v.length;
     }
-    return { s: s, map: map };
+    return { s: parts.join(''), nodes: nodes };
+  }
+  // string index -> [textNode, offsetInNode]
+  function locate(t, i) {
+    var lo = 0, hi = t.nodes.length - 1;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1, e = t.nodes[mid];
+      if (i < e[1]) hi = mid - 1;
+      else if (i >= e[1] + e[2]) lo = mid + 1;
+      else return [e[0], i - e[1]];
+    }
+    return null;
   }
   function rx(q) {
     var parts = q.trim().split(/\s+/).map(function (x) {
@@ -2382,7 +2400,7 @@ with JavaScript off; the script only adds commenting.</p>
       m = rx(head).exec(t.s);
       if (!m) return false;
     }
-    var a = t.map[m.index], b = t.map[m.index + m[0].length - 1];
+    var a = locate(t, m.index), b = locate(t, m.index + m[0].length - 1);
     if (!a || !b) return false;
     var r = document.createRange();
     r.setStart(a[0], a[1]); r.setEnd(b[0], b[1] + 1);
