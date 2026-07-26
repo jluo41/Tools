@@ -5,6 +5,221 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## [0.23.0] — 2026-07-26
+
+**The first Board UI taste pilot is live, bounded by QA10.**
+
+- All native links, buttons, disclosures, fields, and explicit tab stops now share one
+  high-contrast `:focus-visible` ring; pointer interaction keeps its existing appearance.
+- Four semantic radius tokens replace unrelated one-off values: inline highlight, control,
+  surface, and pill. Focused faces keep their existing zero-radius, unframed reading mode.
+- `prefers-reduced-motion: reduce` now suppresses current and future transitions and animations.
+- The pilot is CSS-only and reversible: it changes no Markdown grammar, generated structure,
+  interaction contract, or dependency.
+
+## [0.22.0] — 2026-07-25
+
+**The page directory is now called Pages.**
+
+- New and migrated boards use `## Pages` for the filenames, groups, group introductions, and display order.
+- Parser and structure writers treat `Pages` as the canonical section while continuing to read old `Roster` headings.
+- Board prompts, warnings, examples, Paper page creation, and the seven active boards now use the same plain term.
+
+## [0.21.0] — 2026-07-25
+
+**Content gets a second heading level, and 🔹 gets its meaning back.**
+
+- `####` is now a first-class paragraph heading (`.ph`): no icon, one size below a group
+  title, its own spacing. It used to be flattened to `**bold**` before rendering, and a
+  full-line bold IS the group-title construct, so every paragraph arrived wearing 🔹 and
+  claiming to lead a run of items. Deleting the icon would have hidden the mistake; the
+  page was not over-decorating a paragraph, it was calling it something it is not.
+  On the MISQ board the split came out 113 paragraph headings · 82 job lines · 31 group
+  titles, with 🔹 left only on the 31 that really lead items.
+- A full-line `(…)` directly under a `####` heading is that paragraph's **job line**
+  (`.pj`): grey italic, on stage, one line only. It is the scan hook that lets a reader
+  see what each paragraph does without reading the prose, so it is not hidden behind a
+  click. Only the line immediately after the heading is read this way.
+- Focus-mode spacing fix: `.q:target .ph` (0,3,0) outranked `.ph:first-child` (0,2,0), so
+  the first paragraph after a section heading opened 22px low instead of 2px, and only in
+  sections that begin with a heading, which is why it read as inconsistency rather than as
+  a gap. `.gt` had already been patched for this once; both now share one selector.
+- **The rule these render:** Content carries exactly two levels and the depth lives in the
+  numbering, not the heading level. `###` is a division that folds on its own, `####` is one
+  paragraph inside it, and there is no third level because the page folds exactly one. A
+  division is written only when it holds something, so a flat section carries one
+  `### §1 Introduction` over its paragraphs while a subsectioned one starts at `### §6.1`.
+  The shape is then checkable without reading: the subsection count is the number of `###`
+  headings whose number contains a dot.
+- An S page title may carry the artifact's own number when it is offset from the board
+  index (`S Main 7 · §6 Results`), so the derived Content heading reads
+  `📚 Content · Main 7 §6 Results` and the two numbers stop competing on one screen.
+- New writing rule: **an ASCII figure must survive being copied.** Never draw two trees side
+  by side; the column boundary is whitespace, it disappears on paste, and the right column's
+  rows read as branches of the left one. Real case: a two-column comparison of two heading
+  trees came back pasted as one tree with the wrong nesting.
+- Docs caught up with code that had already shipped: the levels and the job line existed only
+  in `src/body.py` and `assets/board.css` and were documented in none of SKILL.md,
+  `ref/board-form.md` §4/§5, `ref/writing-rules.md`, or `ref/q-template.md`. All four now
+  carry them, and QA4 records the ruling, the Law, the Glossary terms, and the Lesson.
+
+## [0.20.0] — 2026-07-25
+
+**Sentence apparatus v1 (QA8): click a sentence, see its evidence.**
+
+- A plain sentence followed by `>` lines now renders as a native `<details>`: the sentence
+  stays on stage with a ⚑N badge; the `>` lines fold into a drawer beneath it. Typed lanes
+  name the attachments (`> Citation:` 📚 · `> Value:` 🔢 · `> Display:` 🖼 · `> Check:` ⚠️ ·
+  `> Q-consumer:` 🔎 · `> Link:` 🔗 · `> Source:` 📄 · `> Note:` 📝); `> WHO:` review threads
+  join the same drawer with their comment styling. Implemented in `src/body.py`
+  (`render_apparatus` + the `last_p` attachment walk) and `assets/board.css`.
+- Attachment is by adjacency: a `>` run under a sentence (blank lines tolerated) belongs to
+  that sentence; a run with no sentence above it renders as before, and the supporting folds
+  (Discussion, Why here, Law, Lesson, Glossary, Log) never fold apparatus.
+- Zero-script invariant holds (native details). Pages change only where `>` lines already
+  follow a sentence. Piloted on the boardform lab board (QA8 ruling + QA4 self-demonstrating
+  subsection); the MISQ paper board is untouched pending JL's acceptance.
+- Click-to-add: `POST /_board/sentence` inserts `> Lane: text` directly under the exact
+  sentence in the md (markdown-stripped anchor match, visible failure on a miss) and rebuilds.
+  On the page: click a bare sentence for the lane + text form, or the "➕ add to this
+  sentence" row inside any open drawer. Script-only enhancement over the no-JS reading path.
+- Sentence hover tint (accent at 8%) shows which sentence a click or selection will target.
+  The form opens on DOUBLE-click, leaving single click free for reading and selection.
+- Copy is section-level: every section heading carries a ⧉ button that copies that whole
+  section as clean plain text, folded drawers and item explanations included, with no badges,
+  buttons, or highlight formatting. A per-sentence copy button was tried and removed.
+- Every section folds from its own heading (Content, Items to Finish, Where we are, Files), the
+  native-details mechanism Diagram already used. All open by default except Diagram, since the
+  reading path must survive a reader who never clicks; folding is display-only, so Ctrl-F, the
+  section ⧉ copy, and the no-JS fallback are unaffected. Expand-all and ⧉ no longer toggle the
+  section they sit in, and ⧉ force-opens a folded section in its clone before copying.
+- `ref/q-template.md` brought up to these rulings, then hardened by a fresh-context cold read:
+  the apparatus example was itself hard-wrapped and taught the failure it warns about (a wrapped
+  lane becomes its own sentence row and steals the lanes below it); the S title convention that
+  feeds the Content heading was undocumented; the contract markers must not be hand-copied
+  (a hand-written sha reports the page unsynchronized, and sync replaces anything between them);
+  `requires:` resolves S ids bare but needs a real filename with extension for anything else.
+- Opening starts fully collapsed on S pages (JL 260725: "all the things here should be hidden").
+  Why this matters, the optional Stage Record, the Stage Contract, and the contract's own parts
+  all begin shut, so the lead question is the only thing on stage. Q pages are unchanged.
+- S Content holds the stage's real product only (QA4 Law, JL 260725). Inherited contract
+  material belongs to `## Stage Contract`, settled flags and corrections to `## Where we are`,
+  open work to `## Items to Finish`. The Content heading now NAMES the stage on S pages
+  (`📚 Content · Main 7 Results`) instead of counting subsections; Q pages keep the count.
+  Authored subsections under `## Stage Contract` are sync-safe: `replace_managed` rewrites
+  only the span between the `haipipe:contract` markers (verified on the MISQ Results page).
+- Comment highlights are painted with inset box-shadow instead of background-color, so text
+  copied into Word no longer carries the pale yellow fill; `code_or_link` stopped
+  double-escaping code spans (backticked `>` rendered as `&gt;`).
+
+## [0.19.0] — 2026-07-25
+
+**The reading pass: sentence lines, serif prose, Stage Contract inside Opening (JL 260725).**
+
+- Stage Contract now renders INSIDE Opening as one collapsed disclosure after Why this matters
+  and Stage Record (JL: "within the Opening. Not a separate section."). The standalone section
+  between Opening and Diagram is gone; comment anchors scan it as part of Opening. Source
+  anatomy is unchanged: S files keep their `## Stage Contract` section and managed markers.
+- One sentence per source line is a writing hard rule (ref/writing-rules.md). The renderer has
+  always given each plain prose line its own row, so a mid-sentence hard wrap became a broken
+  line on the page. Both live boards were re-flowed to sentence lines (boardform 25 faces,
+  MISQ lifecycle 42 faces); prose content untouched, only line boundaries.
+- Face prose (Opening lead, paragraphs, item titles, group titles) switched to a serif reading
+  stack: Charter / Georgia / Cambria with Times New Roman as the print-classic fallback. UI
+  chrome (ids, pills, bars, code) keeps its sans/mono faces.
+
+## [0.18.0] — 2026-07-25
+
+**Display is independent, and S pages inherit explicit requirements and writing style.**
+
+- Canonical paper families are now Seed, Work, Venue, Display, Main, Appendix, Submission.
+  Display owns the claim-to-display map, approved assets, captions, statistical labels, and
+  placement consumed by Main and Appendix.
+- S metadata accepts `requires`, `style-from`, `provides`, and `contract-source-hash`. Pages
+  adjacency never implies a dependency.
+- `stage.py new|sync|check` creates S pages, refreshes only the managed Stage Contract block,
+  and detects upstream source changes. `build.py` remains render-only and reports stale contracts.
+- `stage.py sync --all` follows the explicit dependency graph in topological order; Pages order
+  remains a navigation concern and never controls inheritance.
+- S pages render `Stage Contract` between Opening and Diagram. Required Inputs and Writing Style
+  stay separate from authored Content; upstream prose is linked and summarized, never copied whole.
+
+## [0.17.1] — 2026-07-25
+
+**S families are stable homes, while Pipeline owns execution and revision loops.**
+
+- The six-family index order no longer claims every paper runs as a simple family-by-family line.
+  A Pipeline may revisit Work/Displays after Narrative while keeping one stable Work group.
+- Submission pages are reused per initial submission and revision round. An external decision
+  reopens affected Work, Main, or Appendix pages, then returns through reconcile, compile, review,
+  and submit; it does not duplicate a new S page set for every round.
+
+## [0.17.0] — 2026-07-25
+
+**Paper lifecycle S pages now use readable, full-name families.**
+
+- Canonical filenames use `S-<Family>-<unit>-<slug>.md`, with six families in lifecycle order:
+  Seed, Work, Venue, Main, Appendix, Submission.
+- Seed can carry both `S Seed` and `S Literature`; Main exposes one page per manuscript section;
+  Appendix uses `0` for control and `A-F` for units; Submission makes reconcile, compile, review,
+  and submit explicit gates.
+- HTML ids are readable (`#S-Main-3`, `#S-Appendix-D`), badges name the family, JSON emits
+  `family`, and the index reports a separate progress fraction for each family.
+- Legacy `S0`, `SM0`, and `SA0` filenames remain parse-compatible for existing boards, but the
+  authoring docs and template no longer recommend those abbreviations.
+- The MISQ paper board was migrated end to end, including a new literature-seed page and three
+  terminal submission pages.
+
+## [0.16.1] — 2026-07-25
+
+**Paper lifecycle boards now expose the lifecycle as their primary index structure.**
+
+- One Pages group represents one paper stage, ordered S0 through S5.
+- The canonical S face is the first row; every Q row after it is a ruling owned by that stage.
+- Stage-only groups remain visible instead of being merged into broad QA/QB/QC buckets.
+- Group headings retain a unique Q family writer key, such as `QD · S4 · Display`, so index-side
+  add/archive controls keep working.
+- The MISQ paper lifecycle board was reorganized into one paper-level frontier group plus eight
+  stage groups, with S4→QD2-QD8 and S5→QE2-QE7 ownership explicit.
+
+## [0.16.0] — 2026-07-25
+
+**Creating an S lifecycle stage is documented, not only rendering one (QB pass).**
+
+The QB2 fresh-agent acceptance was re-run against the shared Q/S skill (4 Q faces + 1 S stage
+on a lab data-retention topic; SKILL.md + `ref/` only, existing boards out of bounds). Verdict
+YES, first-try build, gate respected, Stage Record lifted. Everything it had to invent was on
+the S **authoring** side, and all of it is now written down:
+
+- `SKILL.md` `open` steps 1 and 4 ask for Q **and** S faces, give both filename shapes
+  (`Q<letter><n>-<slug>.md` / `S<order>-<slug>.md`), state S's required `## Content`, and say how
+  an S is listed in `## Pages`.
+- `close` and the Face section: both kinds share the same four `state:` values, and a new face of
+  either kind starts 🔴 OPEN. ✅ means "every checkbox closed" on Q and "this stage's human gate
+  passed" on S (what the index counts as `stages gated`). `human-gated` is not a state value.
+- `ref/board-form.md` §2 gained the S state mapping plus the Pages rule (bare filename, free-text
+  group heading, own group or mixed in); §3's example gained an S line.
+- `ref/q-template.md`: the Q-consumer `**Probe:**` line no longer assumes a paper's `1-probes/`
+  tree; on a standalone board name the real route or write `not opened yet`. Its state legend now
+  carries the Q-versus-S ✅ distinction.
+- The build section names the interpreter split: `build.py` / `watch.py` run on any system
+  `python3`; only `serve.py` needs the repo `.venv` (the SDK requires 3.10+).
+
+Board-side records refreshed in the same pass: QB1's stale figures (128 lines / five actions /
+CHANGELOG 0.2.0) replaced with the 0.15.x reality, QB2's second run and a new `## Law`, QB4 noting
+that QB5's `src/` split superseded its 850-line build.py, and the `ALIAS` / `sec()` pointers in
+QB3 and QA2 repointed from `build.py` to `src/common.py`.
+
+## [0.15.2] — 2026-07-25
+
+**The QD2 chat drawer header is quieter, clearer, and consistent.**
+
+- The saturated accent banner became a neutral 56px utility bar separated by one hairline.
+- Face id is compact mono metadata; the full title uses the remaining width and ellipsizes in CSS,
+  preserving the complete title in a tooltip.
+- Terminal and close are matching 32px square controls with hover and keyboard-focus states,
+  accessible labels, and a stable `>_` terminal mark instead of a platform-dependent keyboard emoji.
+
 ## [0.15.1] — 2026-07-25
 
 **QA2's source-template contract now explicitly mirrors QA4's rendered Q/S face contract.**
@@ -113,19 +328,19 @@ Also in 0.12.1: **`scrub_cjk_comments` scoped to `<style>`/`<script>` blocks.** 
 
 **A board can sit on an existing tree (QC3), show other files' content live (QF1), and the Python got its src/ split (QB5).** All three driven by the first board laid directly over a paper's `0-lifecycle/`.
 
-- **folder questions (QC3, JL ruling).** A question is a `Q*.md` at ANY depth under the board folder: `q_files()` discovery (rglob, skipping path segments starting `_`/`.` and `fig/`), Roster keeps bare filenames, duplicate basenames warn and keep the first, the page's data-file carries the board-relative posix path, serve.py vets it (`vet_qpath`: no absolute, no `..`, basename must look like a Q file), archiving flattens into the board's `_archive/`, watch.py watches the whole tree. Flat boards untouched (regression: unchanged question set).
+- **folder questions (QC3, JL ruling).** A question is a `Q*.md` at ANY depth under the board folder: `q_files()` discovery (rglob, skipping path segments starting `_`/`.` and `fig/`), Pages keeps bare filenames, duplicate basenames warn and keep the first, the page's data-file carries the board-relative posix path, serve.py vets it (`vet_qpath`: no absolute, no `..`, basename must look like a Q file), archiving flattens into the board's `_archive/`, watch.py watches the whole tree. Flat boards untouched (regression: unchanged question set).
 - **embeds (QF1, JL: "can a markdown file incorporate another file?").** `![[path]]` / `![[path#Section]]` on its own line pulls another file's content into the slide at build time, by reference — zero copy, zero drift, zero dialect knowledge. `src/page_stage.py` renders generically (atx AND setext headings, fences, lists, quotes, `|` record lines) under a "live from source" header; every failure mode (missing file, non-md/txt, heading not found) is a visible warning box, never a silent gap; no recursive expansion. Comments on embedded text keep living in the FACE's `## Comments` and re-anchor against the re-rendered embed at rebuild. Still open on the board: the paper-side anchors handshake (haipipe-paper-stage contracts).
 - **src/ split (QB5, JL named the page modules).** build.py 995 → 70 lines, code moved VERBATIM to `src/{common,parse,body,page_board,page_question,page_stage}.py`; serve.py imports `QNAME`/`vet_qpath`/`q_files` from `src/common.py` instead of duplicating. Byte-identical proven on board.html AND `--json` BEFORE any feature landed.
 - **bugfix, found by the byte-identical gate:** the old single-function `render()` reused `lab`, so any question WITH comments wore the comments count in its state pill (`✅ 💬 Comments (0 open / 7) …`) instead of its state label. Reproduced first to prove the move pure, then fixed (`cm_lab` in `src/page_question.py`).
-- **doc slides (QF2, JL: "no need to generate QB3-claims.md").** A Roster line `doc: <path> <path>…` renders the listed source files DIRECTLY as one slide (id = first file's stem, title = its own `#`/setext title) — no Q wrapper at all. Doc slides are views, not questions: no state pill, no Items counting, no comment target, excluded from the settled count and the bar. Files are explicit, so `_LOG_*.md` can be shown even though `_` paths are excluded from Q discovery.
+- **doc slides (QF2, JL: "no need to generate QB3-claims.md").** A Pages line `doc: <path> <path>…` renders the listed source files DIRECTLY as one slide (id = first file's stem, title = its own `#`/setext title) — no Q wrapper at all. Doc slides are views, not questions: no state pill, no Items counting, no comment target, excluded from the settled count and the bar. Files are explicit, so `_LOG_*.md` can be shown even though `_` paths are excluded from Q discovery.
 - First consumer: `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/` — 14 ruling Q slides + 8 doc slides after JL's scope ruling ("I think 14 ruling faces"): every stage renders straight from its own docs (0-seed, 1a-resource, 1b-claims, 2a-venue, 2b-pitch, 3-narrative, 4-display + _DISPLAY_REQUEST, z-structure), while QA1 + QD2..QD8 + QE2..QE7 keep Q files, live embeds, and comment write-back (verified over HTTP on 5599). The settled bar counts the 14 rulings only.
 
 ## [0.10.0] — 2026-07-24
 
 **The index becomes editable (QC2, JL): groups introduce themselves, and the board's structure is writable from the page.**
 
-- New Roster grammar: plain lines between a `### ` group heading and its first `.md` entry are the GROUP INTRO. Line 1 renders as an always-visible sentence under the group header; further lines become the click-to-expand "what this group is for, why it is here" body. Rendered as a native `<details>`, so strip-scripts still leaves the whole board readable; `parse_dir` collects intros into `meta["groups"]` and the `--json` path carries them for free.
-- One structure writer: `structure_op()` in serve.py behind `POST /_board/structure`, imported by the console's boards_api (QE3: one writer set, never reimplemented). Ops: `add_group` (letter auto-picked, optional hook/body intro), `add_question` (seeds a stub Q file in the house shape, numbers past the group's max, lists it at the group's tail), `archive_question` (logs the move in the Q's `## Log`, moves the file to `_archive/` inside the board, drops the roster line; NEVER deletes), `archive_group` (refuses while the group lists any question).
+- New Pages grammar: plain lines between a `### ` group heading and its first `.md` entry are the GROUP INTRO. Line 1 renders as an always-visible sentence under the group header; further lines become the click-to-expand "what this group is for, why it is here" body. Rendered as a native `<details>`, so strip-scripts still leaves the whole board readable; `parse_dir` collects intros into `meta["groups"]` and the `--json` path carries them for free.
+- One structure writer: `structure_op()` in serve.py behind `POST /_board/structure`, imported by the console's boards_api (QE3: one writer set, never reimplemented). Ops: `add_group` (letter auto-picked, optional hook/body intro), `add_question` (seeds a stub Q file in the house shape, numbers past the group's max, lists it at the group's tail), `archive_question` (logs the move in the Q's `## Log`, moves the file to `_archive/` inside the board, drops the pages line; NEVER deletes), `archive_group` (refuses while the group lists any question).
 - Page controls (board.js/css): ＋Q on each group header, ＋Group at the index tail, hover 🗄 on rows and headers with a two-click "sure?" confirm and an inline mini form (no native dialogs). Wired into `__boardRewire`, so they survive QD6's in-place swaps; after each op the server rebuilds and the watcher refreshes the page under you.
 - Index rows carry `data-f` (their file name) and group headers carry `data-g`, so the page controls address md reality instead of guessing from display text.
 - Verified: a full add→archive round trip leaves board.md byte-identical; refusal paths (non-empty group, unknown op, taken letter) exercised over HTTP on 5599 and through the console relay on 8093; the boardform board's five groups now carry real intros (moved out of `## Pipeline`, which keeps only the overall narrative, so nothing is said twice).
@@ -221,7 +436,7 @@ Doc-consistency pass out of the first fresh-agent acceptance read (the QB2 known
 
 - **`ref/board-form.md` synced to the `<skill>/build.py` call.** §7 still showed the bare `python3 build.py <folder>`, which fails if you `cd` into the board folder (the script lives in the skill dir, not the board). It now reads `python3 <skill>/build.py <board 文件夹>` with the same "don't cd in" note the SKILL.md open/build sections carry. The last bare shorthand in SKILL.md's `sync` section was corrected too.
 - **`ref/board-form.md` §2 gains the slug + default-state rules.** `-<slug>` is short lowercase English, parser-ignored; a freshly-opened Q is always `state: 🔴 OPEN`. Both were in SKILL.md's open steps but missing from the "full spec".
-- **`ref/board-form.md` §3 marks board.md's required vs optional sections.** The Q-file spec (§4) already listed 必填/选填; board.md did not — `## Topic` / `## Pipeline` / `## Roster` required, `source:` / `## Links` optional, now stated.
+- **`ref/board-form.md` §3 marks board.md's required vs optional sections.** The Q-file spec (§4) already listed 必填/选填; board.md did not — `## Topic` / `## Pipeline` / `## Pages` required, `source:` / `## Links` optional, now stated.
 - **known-gap surfaced, not folded in.** The acceptance read hit a question the current model has no home for — where a note that is off the board's `spine` but worth keeping should go (not ⏸️ ON HOLD, which is on-topic-deferred; not a forced Q). Drafted as a question for the skill's own board; left off SKILL.md per the graduation rule (undecided stays out of the manual). Distinct from the existing `QB3` (migrate the two older boards).
 
 ## [0.4.0] — 2026-07-23
@@ -261,8 +476,8 @@ Known gaps (tracked on the board at `0_utils/diagram/01-boardform-260722/`): "Sy
 
 First working version. Board = a folder; `build.py` turns it into one static page.
 
-- **board form** — `<unit>/diagram/<NN>-<topic>-<YYMMDD>/` holds `board.md` (title · `spine:` · `close:` · `## Topic` · `## Pipeline` · `## Roster`) plus one `Q<A><n>-<slug>.md` per question, plus generated `board.html` and `fig/`.
-- **binding is by PATH** — every `Q*.md` in the folder is on the board; `## Roster` only sets order and grouping. An unlisted file still renders (under ⚠️) and warns on stderr — a missed roster entry can never drop a question.
+- **board form** — `<unit>/diagram/<NN>-<topic>-<YYMMDD>/` holds `board.md` (title · `spine:` · `close:` · `## Topic` · `## Pipeline` · `## Pages`) plus one `Q<A><n>-<slug>.md` per question, plus generated `board.html` and `fig/`.
+- **binding is by PATH** — every `Q*.md` in the folder is on the board; `## Pages` only sets order and grouping. An unlisted file still renders (under ⚠️) and warns on stderr — a missed pages entry can never drop a question.
 - **Q file sections in English** — `## Question / Diagram / Done when / Now / Why here / Glossary / Discussion / Log`. Chinese section names still parse, so older boards build unchanged.
 - **`## Done when` is a checklist** — `- [ ]` / `- [x]`, with an auto count (`3/5`) in the panel header.
 - **`## Diagram`** — a fenced ASCII diagram per question, readable in the md and rendered as-is in the page.

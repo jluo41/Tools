@@ -1,48 +1,82 @@
-# 长到 140 条，专挑难例
+# Grow to 140 items by hunting hard cases
 state: 🔴 OPEN
 owner: RA
-method: 按几何位置挑，专挑边界上的难例
+method: pick by geometric position, going after the hard cases on the border
 
 ## Question
-已经确认的 60 条种子，怎么挑出下一批 80 条送去标（凑够 140）？
+The 60 seed items are already confirmed, so how do we choose the next batch of 80 to send for labeling, reaching 140?
+
+JL's position is that picking at random is a waste.
+In the meeting he drew a figure: think of each review as a point in space, with the three labels as three regions.
+Most points sit near the middle of a region and can be told apart at a glance (about eight in ten), while a few sit on the border between regions and are ambiguous (about two in ten).
+The labeling effort should go into that two in ten, not be spent on items whose answer is obvious.
+The rule is therefore to pick by geometric position rather than draw at random from the pool.
+What makes this hard is that the position only exists once every review has been turned into a point in space, so this face stands on QD1 (how a sentence becomes a vector); if that does not land, picking by position is empty talk.
+While the question stays open the sample stays at 60, so QB2 (the three-layer examination) has no grown sample to examine and the labeling budget keeps going to items whose answer was never in doubt.
+
+## Boundary
+- ✅ Covered here
+  Which items go into the next batch: growing the confirmed 60 to 140 by deliberately selecting hard or informative cases instead of random ones.
+- ↪ Covered elsewhere
+  How a sentence becomes a point in space at all is QD1, and training the label-trained classifier that ZD wants the hard cases mined from is QD3.
+  Examining the grown sample in three layers is QB2, and finishing the remaining thousands after that is QC2.
 
 ## Diagram
 ```
-  把每条评论用 embedding 变成空间里一个点（见 QD1）
-  三个标签 = 三块区域：
+  Each review becomes one point in space through its embedding (see QD1)
+  Three labels = three regions:
 
-        HIGH  ●●●●●              ●  靠中心：一眼能分的典型（约八成）
-             ●●●● ◇◆ ●●●●        ◇◆ 卡交界：模棱两可的难例（约两成）
+        HIGH  ●●●●●              ●  near the center: typical, told apart at a glance (about 80%)
+             ●●●● ◇◆ ●●●●        ◇◆ stuck on the border: ambiguous, the hard cases (about 20%)
         LOW ●●● ◆◇   ◇◆ ●●● NONE
                   ↑
-      标注的力气花在这两成难例上，别浪费在一眼能看出答案的样本上
+      Spend the labeling effort on that 20%, not on items whose answer is obvious
 ```
 
-## Now
-完全没做。挑样本靠的那套工具代码在盘上（`lib/sample.py`），但没有任何地方在用它 —— 现在就是从大池子里直接取，没有按位置挑。
+## Items to Finish
+- [ ] 🎯 One run picks the next 80 from the 60 seeds
+      A single run takes the 60 confirmed seed items and returns the next batch of 80, reaching 140.
+      Nothing has been run yet, so this is the plain existence check: there is a command that goes from the confirmed seeds to a concrete batch of 80 items ready to be sent for labeling.
+      Until it runs once from end to end, the growth from 60 to 140 exists only as a plan written on this page.
+- [ ] 📐 The batch is picked by position, not drawn at random
+      Selection goes by geometric position in the space, not by a random draw from the pool.
+      A random draw mostly returns points near the middle of a region, which is exactly where the answer was never in doubt, so the labeling effort buys almost nothing.
+      Picking by geometric position aims the batch at the border between regions, where the answer is genuinely unclear and where a human label is worth paying for.
+      ZD's 2026-07-21 note pushes the mining one step further: take the hard cases from a label-trained classifier (`classify.py`, which is QD3) rather than from raw embedding distance.
+- [ ] 🔍 Easy and hard cases are told apart in the result
+      The output shows which items are the typical cases you can tell apart at a glance and which are the hard cases stuck on the border.
+      Without that split the batch is just 80 more items and nobody can check whether the selection did anything at all.
+      ZD's second note is stricter than a label on each item: the two kinds must not be poured into one pool.
+      A representative pool sampled at the base rate is where honest numbers come from, while an enriched pool of hard cases is only for refining the guideline.
 
-## Done when
-- [ ] 跑一次能从 60 条种子挑出下一批 80 条（凑够 140）
-- [ ] 挑的时候按几何位置来，不是从池子里随机取
-- [ ] 看得出哪些是「一眼能分的典型」、哪些是「卡交界的难例」
+## Where we are
+Nothing has been done here at all.
+The sampling code is on disk at `lib/sample.py`, but nothing anywhere calls it: items are currently taken straight from the big pool, with no selection by position.
 
-## Why here
-JL：随机挑就是浪费。他会上画了张图 —— 把每条数据想成空间里一个点，三个标签是三块区域；
-大部分点靠近区域中心，一眼能分（约八成），少数卡在区域交界，模棱两可（约两成）。
-标注的力气应该花在那两成难例上，别浪费在一眼就能看出答案的样本上。
+## Files
+- `lib/sample.py`
+  The picking code this face needs: it holds the distance and novelty scoring for hard cases, it already implements the two pools ZD asked for, and nothing calls it yet.
+- `lib/classify.py`
+  Where ZD's note redirects hard-case mining: the label-trained classifier, which is QD3, rather than raw embedding distance.
+- `_source/note-update-v3-260721.md`
+  ZD's 2026-07-21 notes; F5 and F6 are the two comments pinned on this face.
 
 ## Glossary
-难例：卡在两个标签交界、连人都拿不准的样本。这类最该让人来标，也最能暴露规则说不清的地方。
-把文本变成空间里的点：先用一个现成模型把每句话转成一串数字（坐标），意思相近的句子坐标就相近，于是「挑区域中心 / 挑交界」才有意义 —— 这一步就是 QD1。
+hard case: an item stuck on the border between two labels, where even a person is unsure; these are the ones most worth giving to a human, and they expose where the guideline fails to say enough.
+turning text into a point in space: an off-the-shelf model turns each sentence into a string of numbers (coordinates), and sentences with close meanings land at close coordinates, which is what makes picking from the middle or from the border mean anything; that step is QD1.
 
 ## Discussion
-> CC0723: 这题的「按位置挑」全踩在 QD1（句子怎么变向量）上 —— embedding 不落地，这里就是空话。挑难例的距离/新颖度打分在 `lib/sample.py`。
+> CC0723: everything this face calls picking by position rests on QD1 (how a sentence becomes a vector), so if the embeddings do not land, this is empty talk. The distance and novelty scoring for hard cases lives in `lib/sample.py`.
 
 ## Comments
-- [ ] ZD 「按几何位置来」 · 260721 1400
-      Di note-update-v3 F5：向量几何 ≠ 标签几何 —— embedding 里靠得近不代表标签一样（"I feel alive" vs "I feel nothing" 坐标很近、标签相反）。难例改从 label-trained 分类器（`classify.py`，即 QD3）挖，别用原始 embedding 距离；并删掉文档里「规则会重塑 embedding」这个错误说法。
-- [ ] ZD 「一眼能分的典型」 · 260721 1400
-      Di note-update-v3 F6：别把「专门挑出来的难例」和「代表性样本」混成一池。两个池子分开 —— 代表性池（按 base rate 抽，出诚实指标）vs enriched 难例池（只用来精炼规则）。`lib/sample.py` 已按两池实现。
+- [ ] ZD 「pick by geometric position」 · 260721 1400
+      note-update-v3 F5: vector geometry is not label geometry, so sitting close in the embedding does not mean carrying the same label ("I feel alive" and "I feel nothing" have very close coordinates and opposite labels).
+      Mine the hard cases from a label-trained classifier (`classify.py`, which is QD3) instead of raw embedding distance, and delete the claim in the docs that the guideline reshapes the embedding.
+- [ ] ZD 「typical cases you can tell apart at a glance」 · 260721 1400
+      note-update-v3 F6: do not mix deliberately selected hard cases and representative items into one pool.
+      Keep two pools: a representative pool sampled at the base rate, which is where honest numbers come from, versus an enriched hard-case pool used only for refining the guideline.
+      `lib/sample.py` is already implemented along those two pools.
 
 ## Log
-260723 1600 · 从旧 `[Q4]` 迁入；完成线拆成清单，Diagram 补上三区域图，链到 QD1
+260725 · rewritten to the current face format in English
+260723 1600 · migrated from the old `[Q4]`; the finish line was split into a checklist, the Diagram gained the three-region figure, and the face was linked to QD1

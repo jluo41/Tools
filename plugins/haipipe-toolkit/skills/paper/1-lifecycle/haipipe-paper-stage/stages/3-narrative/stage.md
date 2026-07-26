@@ -5,6 +5,11 @@ key: narrative
 order: "3"
 title: Narrative
 one_line: "How does the evidence compose into a section-mirrored, readiness-tagged story?"
+board_family: Venue        # JL ruling 2026-07-25: the narrative is the third half of the
+board_unit: "2"            # venue contract (what the outlet requires, what the paper promises,
+                           # the story that promise implies), not the zeroth Main section.
+board_slug: narrative      # family + unit + slug resolve the S-face filename;
+                           # haipipe-board/stage.py owns that resolution (QC2)
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -24,8 +29,11 @@ runs: once
 needs_paper: false        # argument-hint `[paper-dir-or-topic]` — a bare topic is accepted
 venue_aligned: true       # REWRITTEN when the paper is retargeted to another journal
 
-artifact: 0-lifecycle/3-narrative/3-narrative.md
-log: 0-lifecycle/3-narrative/_LOG_3-narrative.md
+artifact: 0-lifecycle/3-narrative/S-Venue-2-narrative.md
+artifact_fallback: 0-lifecycle/3-narrative/3-narrative.md
+                          # papers that predate the 2026-07-25 S-face restructure carry
+                          # the stage file under its old name. Use this ONLY when the
+                          # resolved S face is absent, and say which one you used.
 probes: 1-probes/PPNN_<topic>/
 display_request: 0-lifecycle/4-display/_DISPLAY_REQUEST.md   # one DR row per beat that needs a
                           # display, filed on this stage's behalf; the DISPLAY stage owns the file
@@ -35,10 +43,10 @@ template: template.md
 exit_when: "arc weak -> pitch / claims"   # the stage's own failure exit
 
 venue_contract:           # read BEFORE composing — see the craft body
-  read_first: 0-lifecycle/2a-venue/2a-venue.md   # Structural Blueprint beats + Writing Principles
-  fallback: venue/playbook-<venue>               # only if 2a-venue.md absent; no pack -> proceed without
+  read_first: 0-lifecycle/2a-venue/S-Venue-0-venue.md   # Structural Blueprint beats + Writing Principles
+  fallback: venue/playbook-<venue>               # only if S-Venue-0-venue.md absent; no pack -> proceed without
   stale: "recorded pack commit behind venue HEAD -> note 'consider /haipipe-paper-stage venue refresh',
-          but still use 2a-venue.md; never silently re-read packs"
+          but still use S-Venue-0-venue.md; never silently re-read packs"
 
 sections:                 # in order; the middle four MIRROR the paper's real sections, in reading order
   - Readiness Legend
@@ -52,9 +60,9 @@ sections:                 # in order; the middle four MIRROR the paper's real se
 
 readiness_tags: [READY, PENDING, INFER, LIT, GAP]   # exactly one per beat; meanings in the craft body
 
-inputs:                   # priority order
-  - 0-lifecycle/2b-pitch/2b-pitch.md      # the framing constraint, NOT evidence
-  - 0-lifecycle/1b-claims/1b-claims.md    # the spine; the ONLY home of a claim's status
+read_order:               # optional DRAFT craft order; dependencies live on the Board page
+  - 0-lifecycle/2b-pitch/S-Venue-1-pitch.md      # the framing constraint, NOT evidence
+  - 0-lifecycle/1b-claims/S-Work-1-claims.md    # the spine; the ONLY home of a claim's status
   - experiment results under figures/ · results/ · outputs/ · tasks/
   - review history and recorded limitations
   - repo source                           # one paragraph on what was BUILT, not what was proposed
@@ -82,7 +90,7 @@ done_criteria:
   - "every beat needing a display carries a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md"
   - "per-beat interrogation complete — an independent subagent ruled on every beat"
   - "Spine present, and every beat below it serves it"
-  - "venue contract consulted for arc shaping (2a-venue.md; pack fallback if absent)"
+  - "venue contract consulted for arc shaping (S-Venue-0-venue.md; pack fallback if absent)"
   - "_LOG entry records the current state"
   - "check-probe-cards.sh <paper_root> --stage narrative exits 0"
 
@@ -106,7 +114,7 @@ NARRATIVE  how the evidence COMPOSES into a section-mirrored, readiness-tagged s
 DISPLAY    what the reader must SEE; SECTION-EDIT writes the actual manuscript prose
 ```
 
-If the evidence forces a different pitch, update `2b-pitch.md` through the pitch stage and log the
+If the evidence forces a different pitch, update `S-Venue-1-pitch.md` through the pitch stage and log the
 shift. Never let the narrative silently diverge from the pitch it was built against.
 
 The five readiness tags

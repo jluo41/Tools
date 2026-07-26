@@ -1,37 +1,54 @@
-# 主观标注系统 —— 方法、引擎、和一个不是自己打的分数
-spine: 把这套主观标注系统定型 —— 上层的标注方法（JL 会上口头那套）、底下的引擎（句子怎么变向量、三层漏斗、训小模型）、外加一个不是自己打的分数；每一步都盘清「应该长什么样」和「现在代码里有没有」。
-close: 下面每个 Q 都到 ✅ SETTLED 或 ⏸️ ON HOLD。全部落定，这套系统就成文了。
+# Subjective labeling: the method, the engine, and a score we did not award ourselves
+spine: Settle this subjective-labeling system: the labeling method JL described in the meeting, the engine underneath it (how a sentence becomes a vector, the three-tier cascade, training a small classifier), and an externally awarded score. For every step, pin down what it should look like and whether the code already does it.
+close: Every Q below reaches ✅ SETTLED or ⏸️ ON HOLD. When they all land, the system is written down.
 
 ## Topic
-病人在网上写的医生评论，我们想给每一条打一个人格特质标签 —— 宜人性、尽责性、开放性……每个标签三档：HIGH / LOW / NONE。
-请真人来标又慢又贵，所以用一组大模型代替一队人类标注员。
-这块板做的事：把 JL 会上口头讲的那套标注方法定型，连同它底下的引擎和一个外部验证，盘清每一步「应该长什么样」和「现在代码里有没有」。
-人物：JL = 项目负责人，出方法、拍板（页面上 🧠）。RA = 干活的研究助手。CC = Claude Code，负责迁移和落盘。
-来源：collaborations/Event-Subject-Labeling/meetings/2026-07-17-1401 主观标注指南的AI辅助开发.md
+Patients write reviews of their doctors online, and we want to label each review for a personality trait: agreeableness, conscientiousness, openness, and so on.
+Every label takes one of three values, HIGH, LOW, or NONE.
+Asking real people to label is slow and expensive, so a set of large language models stands in for a team of human annotators.
+This board settles the labeling method JL described out loud in the meeting, together with the engine beneath it and one external validation, and for each step it records both what it should look like and whether the code already does it.
+
+Cast: JL is the project lead, who supplies the method and makes the calls, and shows as 🧠 on the page. RA is the research assistant doing the work. CC is Claude Code, responsible for migration and for writing things down. ZD is the colleague whose 2026-07-21 notes are pinned as comments.
+
+Words this board leans on. A guideline is the document stating what counts as HIGH, LOW, or NONE, which a model follows when it labels. The gallery is the set of answers JL personally confirmed, used as the ruler for measuring whether a model labels correctly. A construct is the trait being labeled. The cascade is the three-tier funnel that decides which items a cheap method can settle and which need an expensive one. A license is a score awarded by an outside dataset rather than by this project. The human ceiling is the agreement level real annotators reach on a public dataset, which is what makes a kappa number interpretable.
 
 ## Pipeline
-十三个 Q 分四组，编号里的字母就是组：**QA** 方法 · **QB** 扩张与验证 · **QC** 收尾判断 · **QD** 引擎。
-QA 是会上定的标注流程，样本从 60 条起步：QA1 造头 60 条 → QA2 分头标这 60 条 → QA3 弱模型考规则写清没。
-QB 把样本滚大、每版都验：QB1 从 60 长到 140 挑难例 → QB2 分三层考 → QB3 拿一个不是自己打的分数（外部 license）。
-QC 是还没答完、只能 JL 拍板的判断题：QC1 什么时候人能撒手 · QC2 剩几千条怎么标完 · QC3 用什么标准挑构念（objective）。
-QD 是底下的引擎，回答 spine 里「现在代码里有没有」那一半：QD1 句子怎么变向量 · QD2 三层漏斗怎么分工 · QD3 小分类器怎么训 · QD4 词表别写死自动生成。QD1/QD2 已在 `ref/` 里定型（✅），QD3/QD4 还在做（🔴/🟡）。
-上下两层是咬合的：QB1 挑难例踩在 QD1 上、QC2「训小模型接手」的实现就是 QD3、QD2 漏斗的 Tier 0 就是 QD1、QC3 的 objective 又是 QC1 收敛闸门的一环。
-QC3/QD4 和分发到各题的 Di 评论（F1–F8），都来自 Di 的 `_source/note-update-v3-260721.md`（原 01-license 板已折入本板后删除）。
+```
+QA · method        the labeling loop settled in the meeting, starting from 60 items
+  QA1 build the first 60  →  QA2 label them independently  →  QA3 weak-model exam
 
-## Roster
-### QA · 方法：会上定的标注流程
+QB · grow + verify  roll the sample up, verify every version
+  QB1 60 → 140, hard cases  →  QB2 three-layer exam  →  QB3 an external license
+
+QC · calls JL owes  open judgment, not open evidence
+  QC1 when can the human let go · QC2 how to finish the remaining thousands
+  QC3 what standard picks a construct
+
+QD · engine         answers the "does the code do it" half of the spine
+  QD1 sentence → vector ✅ · QD2 cascade ✅ · QD3 train the classifier 🟡
+  QD4 generate the lexicon instead of hard-coding it 🔴
+```
+The two layers interlock. QB1 picks hard cases by standing on QD1; the implementation of QC2's "let a small classifier take over" is QD3; the cascade's Tier 0 in QD2 is QD1 itself; and QC3's construct standard is one of the gates QC1 needs before a human can let go.
+QC3, QD4, and the ZD comments distributed across the other faces (F1 to F8) all come from `note-update-v3`; the former 01-license board folded into this one and was deleted.
+
+## Pages
+### QA · Method: the labeling loop settled in the meeting
+How the first labels come into existence at all, before any gallery or guideline exists.
 QA1-coldstart.md
 QA2-split-label.md
 QA3-weak-exam.md
-### QB · 扩张与验证
+### QB · Growing the sample and verifying each version
+Roll 60 items up to 140 by hunting hard cases, examine the result in three layers, then have an outside dataset award the score.
 QB1-grow-140.md
 QB2-layered-eval.md
 QB3-external-license.md
-### QC · 收尾判断（等 JL 拍板）
+### QC · Calls JL owes
+These are not waiting on evidence; they are waiting on a decision.
 QC1-when-stop.md
 QC2-scale-out.md
 QC3-objective.md
-### QD · 引擎：机器怎么跑
+### QD · Engine: how the machine actually runs
+The layer under the method: vectors, the cascade, the small classifier, and the lexicon.
 QD1-embedding.md
 QD2-cascade.md
 QD3-train-classifier.md

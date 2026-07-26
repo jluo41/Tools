@@ -1,6 +1,6 @@
 # 最小示例 —— 一块两题的板
 
-真实的板见 `0_utils/diagram/01-boardform-260722/`（这个 skill 自己的板，10 题）。
+真实的板见 `skills/diagrams/01-boardform-260722/`（这个 skill 自己的板，10 题）。
 这里只给一份能照抄的最小骨架。
 
 文件夹：`examples/ProjX-Demo/diagram/01-cohort-260801/`
@@ -23,7 +23,7 @@ source: collaborations/Event-Cohort/meetings/2026-08-01 入组讨论.md
 ## Pipeline
 两题有先后：先定「按什么条件筛」（QA1），再定「筛出来之后怎么验」（QA2）。
 
-## Roster
+## Pages
 ### QA · 先把标准定下来
 QA1-criteria.md
 QA2-validate.md

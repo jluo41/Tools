@@ -74,16 +74,34 @@
     badge(m, idx);
     return true;
   }
+  // One entry per TEXT NODE, not per character. The per-character version
+  // allocated a two-element array for every character in the section, so a
+  // 500k-character board with 84 comments built tens of millions of arrays at
+  // load and the tab never painted. Index by node, look up by binary search.
   function scan(sec) {
     var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, null);
-    var n, s = '', map = [];
+    var n, parts = [], nodes = [], at = 0;
     while ((n = w.nextNode())) {
       var p = n.parentNode;
       if (p.closest && p.closest('.folds, .qh, .nav, pre')) continue;
-      for (var i = 0; i < n.nodeValue.length; i++) map.push([n, i]);
-      s += n.nodeValue;
+      var v = n.nodeValue;
+      if (!v.length) continue;
+      nodes.push([n, at, v.length]);            // node, start in s, length
+      parts.push(v);
+      at += v.length;
     }
-    return { s: s, map: map };
+    return { s: parts.join(''), nodes: nodes };
+  }
+  // string index -> [textNode, offsetInNode]
+  function locate(t, i) {
+    var lo = 0, hi = t.nodes.length - 1;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1, e = t.nodes[mid];
+      if (i < e[1]) hi = mid - 1;
+      else if (i >= e[1] + e[2]) lo = mid + 1;
+      else return [e[0], i - e[1]];
+    }
+    return null;
   }
   function rx(q) {
     var parts = q.trim().split(/\s+/).map(function (x) {
@@ -101,7 +119,7 @@
       m = rx(head).exec(t.s);
       if (!m) return false;
     }
-    var a = t.map[m.index], b = t.map[m.index + m[0].length - 1];
+    var a = locate(t, m.index), b = locate(t, m.index + m[0].length - 1);
     if (!a || !b) return false;
     var r = document.createRange();
     r.setStart(a[0], a[1]); r.setEnd(b[0], b[1] + 1);
@@ -498,8 +516,8 @@
   chat.id = 'chat';
   chat.innerHTML =
     '<div class="hd"><span class="qid"></span><span class="ti"></span>' +
-    '<button class="term" title="Open this question in a real terminal (same session)">⌨</button>' +
-    '<button class="x" title="close">×</button></div>' +
+    '<button class="term" type="button" aria-label="Open terminal" title="Open this question in a real terminal (same session)">&gt;_</button>' +
+    '<button class="x" type="button" aria-label="Close chat" title="Close chat">×</button></div>' +
     '<div class="bd"></div><div class="tm"></div>' +
     '<div class="acts"></div>' +
     '<div class="tip"></div>' +
@@ -704,14 +722,15 @@
              title: sec.getAttribute('data-title') || '' };
     }
     chat.querySelector('.qid').textContent = isBoard ? '🗂 BOARD' : cq.id;
-    chat.querySelector('.ti').textContent = cq.title.slice(0, 30);
+    chat.querySelector('.ti').textContent = cq.title;
+    chat.querySelector('.ti').title = cq.title;
     chat.querySelector('textarea').placeholder = isBoard
       ? 'Ask about this board — e.g. what should we act on next?'
       : 'Ask about this question…';
     var bd = chat.querySelector('.bd'); bd.innerHTML = '';
     var log = chatLoad(cq.id);
     if (!log.length) bubble('sys', isBoard
-      ? 'This chat sees the WHOLE board — ask it which question to act on, or have it edit the Roster.'
+      ? 'This chat sees the WHOLE board — ask it which question to act on, or have it edit the Pages.'
       : 'This chat is attached to ' + cq.file);
     log.forEach(function (m) { bubble(m.k, m.t); });
     chat.querySelector('.tip').textContent = isBoard ? 'board.md · whole-board session' : cq.file;
@@ -937,7 +956,8 @@
       var e = chat.querySelector(s); if (e) e.style.display = on ? 'none' : '';
     });
     var b = chat.querySelector('.term');
-    b.textContent = on ? '💬' : '⌨';
+    b.textContent = on ? '←' : '>_';
+    b.setAttribute('aria-label', on ? 'Back to chat' : 'Open terminal');
     b.title = on ? 'Back to the web chat (hands the session back)' : 'Open this question in a real terminal (same session)';
     if (on && termT) setTimeout(fitTerm, 0);
   }
@@ -1386,7 +1406,11 @@
 document.addEventListener('click', function (ev) {
   var b = ev.target.closest && ev.target.closest('.secall');
   if (!b) return;
-  var sec = b.closest('.col, .f');
+  // The heading is now the section's own <summary>, so a click here would also
+  // fold the section. Expand-all must not do that (JL 260725).
+  ev.preventDefault();
+  ev.stopPropagation();
+  var sec = b.closest('.sect, .col, .f');
   if (!sec) return;
   var open = b.getAttribute('data-open') !== '1';
   sec.querySelectorAll('details.it').forEach(function (d) { d.open = open; });
@@ -1394,3 +1418,114 @@ document.addEventListener('click', function (ev) {
   var lbl = b.querySelector('.lbl');
   if (lbl) lbl.textContent = open ? 'collapse all' : 'expand all';
 });
+
+/* ➕ sentence apparatus add (QA8, JL 260725): click a bare prose sentence, or the
+   "➕ add to this sentence" row in an open drawer, and Save inserts `> Lane: text`
+   directly under that sentence in the markdown (POST /_board/sentence). Script-only
+   enhancement: without scripts the page still reads; writing needs serve.py anyway. */
+(function () {
+  var LANES = ['JL', 'CC', 'Note', 'Check', 'Citation', 'Value', 'Display',
+               'Q-consumer', 'Link', 'Source'];
+  var cur = null;
+  function close() { if (cur) { cur.remove(); cur = null; } }
+  function mk(afterEl, sentP, file) {
+    close();
+    var d = document.createElement('div');
+    d.className = 'sadd';
+    var sel = document.createElement('select');
+    LANES.forEach(function (u) { sel.appendChild(new Option(u, u)); });
+    try { sel.value = localStorage.getItem('board-sadd-last') || 'JL'; } catch (e) {}
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'Add to this sentence…';
+    var ok = document.createElement('button'); ok.type = 'button'; ok.textContent = 'Save';
+    var x = document.createElement('button'); x.type = 'button'; x.textContent = '✕';
+    var err = document.createElement('span'); err.className = 'serr';
+    d.append(sel, inp, ok, x, err);
+    x.onclick = close;
+    function save() {
+      var text = inp.value.trim();
+      if (!text) { inp.focus(); return; }
+      try { localStorage.setItem('board-sadd-last', sel.value); } catch (e) {}
+      err.textContent = '…';
+      fetch('/_board/sentence', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, file: file,
+          sentence: sentP.textContent.replace(/\s+/g, ' ').trim(),
+          lane: sel.value, text: text })
+      }).then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (!j.ok) { err.textContent = '⚠ ' + (j.err || 'failed'); return; }
+          err.textContent = '✔ saved';
+          setTimeout(close, 700);
+        })
+        .catch(function () { err.textContent = '⚠ serve.py not running?'; });
+    }
+    ok.onclick = save;
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') save(); });
+    afterEl.insertAdjacentElement('afterend', d);
+    cur = d;
+    inp.focus();
+  }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.sadd')) return;
+    var row = e.target.closest('.saddrow');
+    if (row) {
+      var det = row.closest('details.sent');
+      var qr = row.closest('section.slide.q');
+      if (det && qr) mk(row, det.querySelector('summary p'), qr.dataset.file);
+    }
+  });
+  // DOUBLE-click opens the ➕ form (JL 260725: single click stays free for
+  // reading and selecting; the incidental word-selection is cleared first).
+  document.addEventListener('dblclick', function (e) {
+    if (e.target.closest('.sadd')) return;
+    var p = e.target.closest('p');
+    if (!p || e.target.closest('a,code,button,select,input,textarea,summary,mark')) return;
+    var q = p.closest('section.slide.q');
+    if (!q) return;
+    if (p.closest('.folds,.sapp,.bd,.cmt,.cmb,.qh,.dadd,.spine')) return;
+    if (window.getSelection) window.getSelection().removeAllRanges();
+    mk(p, p, q.dataset.file);
+  });
+  // ⧉ copy a WHOLE SECTION (JL 260725: section-level, not per-sentence):
+  // every section heading carries a copy button; it copies the section's full
+  // text (folded drawers and item explanations included) as clean plain text —
+  // no badges, no forms, no highlight formatting.
+  document.querySelectorAll('section.slide.q .ch').forEach(function (ch) {
+    if (ch.querySelector('.chcopy')) return;
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'chcopy'; b.textContent = '⧉';
+    b.title = 'Copy this section as plain text';
+    b.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var box = ch.closest('summary') ? ch.closest('details') : ch.parentElement;
+      var c = box.cloneNode(true);
+      c.querySelectorAll('.ch,.sadd,.saddrow,.sbadge,button,select,input,textarea,.dadd')
+        .forEach(function (x) { x.remove(); });
+      if (c.tagName === 'DETAILS') c.open = true;   // the section itself may be folded
+      c.querySelectorAll('details').forEach(function (d) { d.open = true; });
+      c.style.cssText = 'position:absolute;left:-99999px;top:0;width:800px';
+      document.body.appendChild(c);
+      var t = c.innerText.replace(/\n{3,}/g, '\n\n').trim();
+      c.remove();
+      function done() { b.textContent = '✓'; setTimeout(function () { b.textContent = '⧉'; }, 700); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = t; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e2) {}
+        ta.remove(); done();
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t).then(done, fallback);
+      } else fallback();
+    });
+    ch.appendChild(b);
+  });
+  document.querySelectorAll('details.sent>.sapp').forEach(function (ap) {
+    var r = document.createElement('div');
+    r.className = 'saddrow';
+    r.textContent = '➕ add to this sentence';
+    ap.appendChild(r);
+  });
+})();

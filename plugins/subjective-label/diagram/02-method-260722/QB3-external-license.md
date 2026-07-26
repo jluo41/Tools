@@ -1,54 +1,88 @@
-# 拿一个不是自己打的分数
+# A score we did not award ourselves
 state: 🟡 PARTIAL
 owner: RA
-method: 在公开 per-rater 数据集（battery）上跑，看 κ 有没有到人类天花板
+method: run on public per-rater datasets (the battery) and see whether kappa reaches the human ceiling
 
 ## Question
-我们自己那个 0.93 是拿「规则作者看过、还亲手标过」的题考出来的，不算数。怎么拿一个**不是自己给自己打的分数**？
+Our own 0.93 came out of an exam whose items the guideline author had already seen and had personally labeled, so it does not count: how do we get a score that we did not award ourselves?
+
+The engine is written but it has never run on real data, and until it has, we cannot tell anyone outside the project that this method works.
+Correctness can only be borrowed from outside.
+One kind of public dataset makes that possible: the kind that keeps every individual annotator's raw score (per-rater) instead of publishing only the merged answer, because those raw scores show how much real people disagree with each other, and that is the human ceiling.
+Without a human ceiling there is nothing to read a kappa against.
+Reaching that ceiling on the battery is what awards the engine an autonomy license, which is one-off and engine-level: a new construct inherits the same credibility, as long as it is adjacent to the battery and the distance is written down.
+This face is also the expansion of QB2's fourth line, the one that adds a comparison against something external: QB2 owns the three internal layers, and this face owns the correctness borrowed from outside.
+
+## Boundary
+- ✅ Covered here
+  The externally awarded score: which public per-rater datasets make up the battery, the human ceiling read off each of them, the engine's kappa against that ceiling, and the license that follows.
+- ↪ Covered elsewhere
+  The three internal layers of the exam belong to QB2's layered evaluation and this face is only its fourth, external layer; the standard that picks a construct (the objective) is QC3.
 
 ## Diagram
 ```
-  出题的人 = 答题的人  ──►  0.93   但换没看过的题 → 0.667   ⬅ 方法上的一个洞
+  exam setter = exam taker  ──►  0.93   but on unseen items → 0.667   ⬅ a hole in the method
 
-  出路：正确性只能从外面借
-     公开数据集里有一类特殊的：保留了【每一位】人类标注者的原始打分（per-rater）
-        └─► 于是能算出「真人和真人之间彼此多不一致」＝ 人类天花板（human ceiling）
-     引擎在这组数据集（battery）上跑，κ 够到天花板 ＝ 拿到 autonomy license
-        └─► 一次性、引擎级：换新构念也继承这份可信度（前提是跟 battery 沾边，沾多远要写明）
+  the way out: correctness can only be borrowed from outside
+     one kind of public dataset is special: it keeps EVERY human annotator's raw score (per-rater)
+        └─► so we can compute how much real people disagree with each other = the human ceiling
+     run the engine on that set of datasets (the battery); kappa reaching the ceiling = an autonomy license
+        └─► one-off, engine-level: a new construct inherits the same credibility (it must be adjacent to the battery, and how far must be written down)
 ```
 
-## Now
-`lib/license.py` 写好了、自测过了（喂好数据判 PASS，喂随机数判 BELOW），但**从没碰过真实数据**；一个真实数据集都还没下载。
-候选来自 RA 调研 P02：POPQuorn · DICES · GoEmotions · LeWiDi。
-⚠️ GoEmotions 标的是情绪，跟人格特质不是一回事（已实测 κ 只有 0.25–0.30）—— 放进去得先想清楚它到底证明了什么。
-两个 JL 决定压着这条：**battery 名单** 和 **objective 标准**（见 Discussion）。
+## Items to Finish
+- [x] 🧪 `lib/license.py` passes its self-test
+      Well-formed data returns PASS and random numbers return BELOW.
+      This only shows that the scoring code behaves the way it is meant to on inputs we built ourselves.
+      It says nothing about whether the engine reaches the human ceiling, because the module has never seen a real dataset.
+      It is the one box on this face that is closed.
+- [ ] 📋 The battery list is settled · 🧠 waiting on JL
+      Every dataset on the list carries two things: what its human ceiling kappa is, and why it was chosen.
+      The candidates come from RA's survey P02: POPQuorn, DICES, GoEmotions, and LeWiDi.
+      This is a JL call rather than an RA call because the list decides how wide the license ends up being: the more varied the battery, the wider the license.
+      GoEmotions is the awkward candidate, since it labels emotions rather than personality traits, so putting it in means first working out what it would actually prove.
+- [ ] 🏃 The whole engine runs on the battery for real
+      One row lands per dataset: name, sample size, engine kappa, human ceiling, pass or not.
+      Nothing has touched real data yet and not one dataset has been downloaded, so this is the line that separates a module that passes its own self-test from a method someone outside the project would believe.
+      The shape of the row is the point: an engine kappa on its own says nothing, and it only becomes readable next to the human ceiling from the same dataset.
+- [ ] 📝 One overall verdict, with the license's coverage stated honestly
+      Write the verdict, say which kinds of construct this license covers and which it does not, then write it into `ref/ref-datasets.md`.
+      The license only covers constructs adjacent to the battery, and how far that adjacency stretches has to be reported rather than assumed.
+      Putting it in `ref/ref-datasets.md` is what keeps the claim somewhere it can be read back later, instead of living in whatever the run happened to print.
 
-## Done when
-- [x] `lib/license.py` 自测过了（喂好数据 PASS，喂随机数 BELOW）
-- [ ] battery 名单定下来，每个数据集配两样：人类天花板 κ 是多少、为什么选它 —— 🧠 等 JL 拍板
-- [ ] 整条引擎在 battery 上真跑一遍，每个数据集落一行：名字 · 样本量 · 引擎 κ · 人类天花板 · 过没过
-- [ ] 写一句总判定，并如实写明这份 license 覆盖哪类构念、不覆盖哪类，然后写进 `ref/ref-datasets.md`
+## Where we are
+`lib/license.py` is written and has passed its self-test (well-formed data judged PASS, random numbers judged BELOW), but it has never touched real data, and not a single real dataset has been downloaded yet.
+The candidates come from RA's survey P02: POPQuorn, DICES, GoEmotions, and LeWiDi.
+⚠️ GoEmotions labels emotions, which is not the same thing as a personality trait, and it has already measured out at a kappa of only 0.25 to 0.30, so putting it in means first being clear about what it would prove.
+Two JL decisions are holding this face down: the battery list, and the objective standard (the objective standard itself is QC3).
 
-## Why here
-引擎已经写好，但从没在真实数据上跑过。做完这条，才敢对外说这套方法有效。
-它也是 QB2「再加一层跟外部比」的展开：QB2 管自己那三层，这条管从外面借来的正确性。
+## Files
+- `lib/license.py`
+  Computes the engine's kappa against the human ceiling and returns PASS or BELOW; self-tested, never run on real data.
+- `ref/ref-datasets.md`
+  Where the battery, each dataset's human ceiling, the run results, and the license verdict get written down.
+- `ref/ref-config.md`
+  Holds the config field that names the battery, `license: {battery: [...]}`.
+- `_source/note-update-v3-260721.md`
+  ZD's design note; its F2 (construct transfer) and F3 (human ceiling) are the two comments pinned on this face.
 
 ## Glossary
-battery：用来考引擎的那组公开数据集（`ref-config.md` 里的字段名 `license: {battery: [...]}`）。
-autonomy license：一次性认证 —— 引擎在 battery 上达到人类天花板，之后换新构念也继承这份可信度。
-human ceiling：人类天花板 —— 真人之间彼此的一致性，我们的上限。
-per-rater：数据集保留了每一位标注者的原始打分，而不是只给合并后的「标准答案」。
+battery: the set of public datasets used to examine the engine (the field name `license: {battery: [...]}` in `ref-config.md`).
+autonomy license: a one-off certification; the engine reaches the human ceiling on the battery, and from then on a new construct inherits the same credibility.
+human ceiling: the agreement real annotators reach with each other, which is our upper bound.
+per-rater: the dataset keeps every single annotator's raw score, instead of publishing only the merged "gold answer".
 
 ## Discussion
-> CC0723: 这条从旧板 `01-sublabel-license-260722` 折进来 —— 折的是它的**验证内核**（原 ①battery / ②license-run / ⑤rerun-3dims）。旧板其余三件也各自安了家：③auto-lexicon → QD4 · ④objective → QC3 · ⑥b02-naming → QC2 的评论。
->> CC0723: 折完旧板已删；Di 的设计原文（note-update-v3 + workflow-audit）移到了本板 `_source/`，board.md 的 ## Links 指过去。
+> CC0723: This face was folded in from the old board `01-sublabel-license-260722`, and what was folded is its **validation core** (the old ①battery / ②license-run / ⑤rerun-3dims). The other three items on the old board each found a home too: ③auto-lexicon → QD4 · ④objective → QC3 · ⑥b02-naming → a comment on QC2.
+>> CC0723: The old board was deleted once the fold was done; ZD's original design documents (note-update-v3 + workflow-audit) moved into this board's `_source/`, and board.md's ## Links points there.
 
 ## Comments
-- [ ] ZD 「换新构念也继承这份可信度」 · 260721 1400
-      Di note-update-v3 F2：构念迁移缺口 —— 在数据集 A 上验证却宣称在 B 上成立。license 只覆盖跟 battery「沾边（adjacent）」的构念，沾多远要如实报告、不能默认。battery 越多样，license 越宽。
-- [ ] ZD 「人类天花板」 · 260721 1400
-      Di note-update-v3 F3：没有人类天花板，κ 高低没有参照。天花板来自公开的 per-rater 数据集（保留每一位标注者的原始打分），引擎级摊销一次，不是每个项目各算一次。
+- [ ] ZD 「a new construct inherits the same credibility」 · 260721 1400
+      ZD note-update-v3 F2: the construct transfer gap, where you validate on dataset A and then claim it holds on B. The license only covers constructs that are adjacent to the battery, and how far the adjacency stretches must be reported honestly rather than assumed. The more varied the battery, the wider the license.
+- [ ] ZD 「Without a human ceiling there is nothing to read a kappa against」 · 260721 1400
+      ZD note-update-v3 F3: with no human ceiling, a kappa being high or low has nothing to be measured against. The ceiling comes from public per-rater datasets (which keep every annotator's raw score) and is amortized once at engine level, not recomputed by each project separately.
 
 ## Log
-260723 1615 · ③④⑥ 各自安家（QD4 / QC3 / QC2 评论）；旧板已删、Di 原文移入 `_source/`；加 Di 的 F2/F3 评论
-260723 1600 · 新建：从 `01-sublabel-license-260722` 折入验证内核（0.93 不算数 → 借外部 → license）
+260725 · rewritten to the current face format in English
+260723 1615 · ③④⑥ each found a home (QD4 / QC3 / a QC2 comment); the old board deleted and ZD's originals moved into `_source/`; ZD's F2/F3 comments added
+260723 1600 · Created: the validation core folded in from `01-sublabel-license-260722` (0.93 does not count → borrow from outside → license)

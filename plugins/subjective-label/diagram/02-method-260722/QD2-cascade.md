@@ -1,56 +1,84 @@
-# 三层漏斗怎么分工
+# How the three-tier cascade divides the work
 state: ✅ SETTLED
 owner: CC
-method: Tier0 embedding-kNN → Tier1 小分类器 → Tier2 大模型 panel，越往下越贵越少
+method: Tier 0 embedding k-NN, then Tier 1 the small classifier, then Tier 2 the large-model panel; each level down is more expensive and takes fewer items
 
 ## Question
-铺全量的时候，怎么让「大部分容易的样本走便宜路、少数难的才惊动大模型」？
+When the whole corpus is being labeled, how do we make sure most of the easy items take a cheap route and only the few hard ones disturb an expensive model?
+
+This is the machine answer to QC2, which asks how the remaining thousands of items get finished at all, and the two options weighed there, (a) label the whole corpus outright and (b) train a small model to take over, are merged into a single funnel here.
+JL's "pick one" therefore becomes "set the thresholds": how much is handed to embedding inheritance, how much to the small classifier, and how much is allowed to reach the large model.
+Setting them is hard because the two ends of the funnel are priced very differently per item (~$0.00001 at Tier 0 against ~$0.05-0.20 at Tier 2), so a gate set too loose buys speed by inheriting wrong labels while a gate set too tight sends nearly everything to the panel and the run stops being affordable.
+While this stays open there is no rule saying which items a cheap method is allowed to settle, so a full-corpus run can be neither costed nor started.
+
+## Boundary
+- ✅ Covered here
+  Which tier settles an item and which escalates it, the threshold at each tier's gate, the record each item keeps of the route it took, and the routing modes that skip tiers.
+- ↪ Covered elsewhere
+  How a sentence becomes the vector Tier 0 compares against is QD1; how the Tier 1 classifier is trained is QD3; whether to finish the remaining thousands this way at all is QC2's call, and it is still ⏸️ ON HOLD.
 
 ## Diagram
 ```
-  ┌ Tier 0 · embedding k-NN ────────┐  ~$0.00001/条 · 最快 · 吃 60–80%
-  │  top-5 gallery 邻居同标签         │
-  │  且平均余弦相似度 ≥ 0.85 → 继承    │
-  └───────────┬─────────────────────┘ 不服 ↓
-  ┌ Tier 1 · 训练过的小分类器 ────────┐  ~$0.0001/条 · 快 · 吃 10–30%
-  │  概率 ≥0.70 且 margin ≥0.30 → 用它 │   （怎么训见 QD3）
-  └───────────┬─────────────────────┘ 不服 ↓
-  ┌ Tier 2 · 大模型 panel（3–5 persona）┐ ~$0.05–0.20/条 · 慢 · 吃 5–15%
-  │  多数票 support ≥0.6 → 用；<0.6 → 丢人工队列 │
-  └──────────────────────────────────┘
+  ┌ Tier 0 · embedding k-NN ──────────────────────┐  ~$0.00001/item · fastest · takes 60-80%
+  │  top-5 gallery neighbors share one label      │
+  │  and average cosine sim >= 0.85 → inherit     │
+  └────────────┬──────────────────────────────────┘ unresolved ↓
+  ┌ Tier 1 · trained small classifier ────────────┐  ~$0.0001/item · fast · takes 10-30%
+  │  prob >= 0.70 and margin >= 0.30 → use it     │   (how it is trained: QD3)
+  └────────────┬──────────────────────────────────┘ unresolved ↓
+  ┌ Tier 2 · large-model panel (3-5 personas) ────┐  ~$0.05-0.20/item · slow · takes 5-15%
+  │  majority support >= 0.6 → use it             │
+  │  support < 0.6 → drop into the human queue    │
+  └───────────────────────────────────────────────┘
 ```
 
-## Now
-**三层，越往下越贵、越少 —— 全定型了**
+## Items to Finish
+- [x] 🎯 The division of labor and the thresholds are pinned down
+      Each tier has one written rule for when it may settle an item, with the numbers fixed at `cascade_inherit_sim` 0.85, `accept_margin` 0.30, `accept_prob` 0.70, and panel support 0.6.
+      Tier 0 leans on the gallery: if the top-5 gallery neighbors all carry the same label and their average cosine similarity reaches 0.85, the item inherits that label instead of being labeled again.
+      Tier 1 leans on training: the classifier's label is used when its probability reaches 0.70 and its margin over the runner-up reaches 0.30.
+      Tier 2 leans on the panel: the majority vote is used when its support reaches 0.6, and anything below that is dropped into the human queue rather than forced.
+      Every tier that cannot meet its own bar escalates instead of guessing, which is what makes the funnel cheap at the top without being reckless.
+- [x] 🧾 Every item records `method` and `confidence`
+      The annotation written for each item carries `method: tier0/1/2` together with a `confidence`, so any label can be traced back to the tier that produced it.
+      Without that record the corpus is a flat pile of labels and there is no way to tell an inherited label apart from one the panel argued over.
+      With it the cheapest audit in the system becomes possible: "show me everything Tier 0 decided, is any of it obviously wrong".
+      That check is what keeps a loose Tier 0 threshold from quietly contaminating the whole run.
+- [x] 🔀 Three routing modes are supported
+      A run can be sent through `routing=panel`, `routing=single`, or `routing=cascade`, so the funnel can be bypassed when the point of the run is not cost.
+      `panel` sends every item to the full panel and is what the validation set uses, because a validation number measured through the cheap tiers would be measuring the cheap tiers.
+      `single` uses one labeler and is the cheapest option available.
+      `cascade` is the default and the mode the full-corpus rollout runs in.
 
-- 分工与阈值
-  Tier 0 靠 gallery（`cascade_inherit_sim` 0.85）· Tier 1 靠训练（`accept_prob` 0.70 / `accept_margin` 0.30）· Tier 2 靠 panel（support 0.6，再不服丢人工）。
-- 每条都记它走了哪层
-  annotation 里写 `method: tier0/1/2` + `confidence`，方便审计「给我看所有 Tier 0 判的，有没有明显错的」。
-- 能跳层
-  `routing=panel`（全 panel，验证集用）· `single`（最便宜）· `cascade`（默认，铺全量用）。
+## Where we are
+The three tiers, their thresholds, and the routing modes are all written down, and every checkbox on this face is closed.
+What is settled here is the shape of the funnel and the number at each gate, not yet the evidence that those numbers hold on this corpus: the shares in the diagram (60-80% at Tier 0, 10-30% at Tier 1, 5-15% at Tier 2) are what the design expects the split to be.
+The middle tier is the weakest part standing today, because QD3, the face that owns how the Tier 1 classifier is trained, is still 🟡 PARTIAL.
+QC2, the decision this funnel exists to serve, is still ⏸️ ON HOLD, so the funnel is specified and waiting rather than running.
 
-## Done when
-- [x] 三层的分工和阈值定死（`cascade_inherit_sim` 0.85 / `accept_margin` 0.30 / `accept_prob` 0.70 / support 0.6）
-- [x] 每条记录 `method` + `confidence`，可审计
-- [x] 支持 `routing=panel/single/cascade` 三种模式
-
-## Why here
-这就是 QC2「剩几千条怎么标完」的**机器答案** —— (a) 全量硬标和 (b) 训小模型接手，在这里被揉成一台漏斗，
-JL 那道「选一条」其实变成「设阈值」（多少交给 embedding 继承、多少交给小分类器、多少惊动大模型）。
+## Files
+- `ref/ref-cascade.md`
+  The reference this face was taken from: it holds each tier's invariant, its algorithm, its config block, and the routing modes, so a threshold change starts there.
+- `lib/embed.py`
+  Tier 0 runs on its `index` and `nearest` subcommands, which produce the top-5 gallery neighbors and the cosine similarities the 0.85 gate is applied to.
+- `lib/classify.py`
+  Tier 1's gate reads the probability and the `margin` that this file's `predict` emits, and the file already carries `accept_margin` 0.3 and `accept_prob` 0.7 as its defaults.
+- `ref/ref-config.md`
+  Where the classifier thresholds are declared as configuration (`accept_margin: 0.3, accept_prob: 0.7`), which is what makes a threshold change a config edit rather than a code edit.
 
 ## Law
-- 漏斗 ＝ 迭代搭出来的筛子：每轮 `/sl-iterate` 加一层（gallery 长 → Tier 0 多吃；分类器训 → Tier 1 起来；规则收紧 → Tier 2 更同意）。
-- Tier 0 靠 gallery、Tier 1 靠训练、Tier 2 靠 panel；三者阈值都在 `config.yaml`，调高更安全更贵，调低更快更险。
+- The cascade is a sieve built up by iteration: each `/sl-iterate` round adds one layer (the gallery grows so Tier 0 takes more, the classifier gets trained so Tier 1 comes up, the guideline tightens so Tier 2 agrees more).
+- Tier 0 rests on the gallery, Tier 1 on training, Tier 2 on the panel; all three thresholds live in `config.yaml`, where raising them is safer and more expensive and lowering them is faster and riskier.
 
 ## Glossary
-k-NN：找最近的 k 个邻居，看它们的标签。
-margin：分类器最高概率和第二名的差；差得越开，决策边界越清楚。
-persona：一个带特定视角的打标大模型；panel＝一组不同 persona 同时打。
-gallery：已标好并附了理由的例子册，Tier 0 就拿新样本跟它比。
+k-NN: find the k nearest neighbors and look at their labels.
+margin: the gap between the classifier's highest probability and its second highest; the wider the gap, the clearer the decision boundary.
+persona: one large-model labeler carrying a particular point of view; a panel is a set of different personas labeling at the same time.
+gallery: the set of answers JL personally confirmed, used as the ruler; Tier 0 compares each new item against it.
 
 ## Discussion
-> CC0723: Tier 0 靠 QD1（embedding）；Tier 1 那层怎么训在 QD3；这台漏斗是 QC2 的工程实现。三题串起来读＝铺全量的完整图。内容来自 `ref/ref-cascade.md`。
+> CC0723: Tier 0 rests on QD1 (embedding), how the Tier 1 layer is trained is QD3, and this funnel is the engineering implementation of QC2. Reading those three questions together gives the whole picture of the full-corpus rollout. The content comes from `ref/ref-cascade.md`.
 
 ## Log
-260723 1600 · 新建：把 `ref/ref-cascade.md` 的三层/阈值/routing 收进板，标 ✅（已定型）
+260725 · rewritten to the current face format in English
+260723 1600 · created: the three tiers, the thresholds, and the routing modes were brought in from `ref/ref-cascade.md` and the face was marked ✅ settled

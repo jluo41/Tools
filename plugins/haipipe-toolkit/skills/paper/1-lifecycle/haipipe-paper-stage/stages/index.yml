@@ -2,6 +2,9 @@
 # Everything else about a stage — phases, artifact paths, sections, done-criteria,
 # craft — lives in stages/<dir>/stage.md and is loaded ONLY for the stage picked.
 # Keep this file small. It is the one file read on every invocation.
+# Row order is execution order. Board ownership and navigation live in each
+# stage.md's board_family/board_unit identity; Board tooling owns filenames. Never reorder this index
+# to match the board's Seed/Work/Venue/Display/Main/Appendix/Submission grouping.
 #
 # migrated: false -> the router hands off to legacy_skill and stops.
 

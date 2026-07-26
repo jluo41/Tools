@@ -1,54 +1,86 @@
-# 小分类器怎么训
+# Training the small classifier
 state: 🟡 PARTIAL
 owner: RA
-method: 冻结的 embedding 上跑 logreg（默认），SetFit 可选升级；每轮 sl-iterate 重训
+method: logistic regression on frozen embeddings by default, SetFit as an optional upgrade; retrained at the end of every `/sl-iterate`
 
 ## Question
-漏斗中间那层（Tier 1）的小分类器，拿什么训、什么时候训、什么时候信它？
+The small classifier in the middle layer of the cascade (Tier 1): what is it trained on, when is it retrained, and when should its answer be trusted?
+
+JL named the modeling, embedding, and training line as something that has to be settled, and training is this face.
+It is also the concrete implementation of QC2's option (b), letting a small model take over the labeling.
+The middle layer of the QD2 cascade holds or fails on how well this classifier is trained: everything it cannot settle confidently is escalated to the Tier 2 panel, so a poorly trained classifier does not show up as wrong labels, it shows up as the panel being asked to do the work.
+While the two open lines below stand, the middle layer is specified but unproven: the accept thresholds have never been exercised inside a real project folder, and there is no rule yet for when the heavier SetFit or LoRA-BERT backend is worth paying for.
+
+## Boundary
+- ✅ Covered here
+  What the Tier 1 classifier is trained on, when it is retrained, and the thresholds that decide whether its prediction is used or escalated.
+- ↪ Covered elsewhere
+  How a sentence becomes a vector at all is QD1; how the three layers divide the work and what happens to the items this classifier cannot settle is QD2; whether the remaining thousands are labeled in full or handed to a small model is the call still open in QC2.
 
 ## Diagram
 ```
-  已标好的样本 ──► 冻结的 embedding（QD1）──► logistic regression（秒级训完）
-                                              │
-                                              ▼  预测 {label, prob, margin}
-                          prob ≥0.70 且 margin ≥0.30 ── 用它（Tier 1 出结果）
-                          否则 ──────────────────────► 升到 Tier 2 panel
+  already labeled items ──► frozen embedding (QD1) ──► logistic regression (trains in seconds)
+                                                        │
+                                                        ▼  predicts {label, prob, margin}
+                          prob ≥0.70 and margin ≥0.30 ── use it (Tier 1 answers)
+                          otherwise ────────────────────► escalate to the Tier 2 panel
 
-  重训：每轮 /sl-iterate 末尾自动重训
-  升级：sl-scale 前可 opt-in 换 SetFit / LoRA-BERT 做一次性高质量训
-  兜底：CV F1 < 0.6 → 收紧阈值，或干脆跳过 Tier 1（全交 panel）
+  retrain: automatically at the end of every /sl-iterate round
+  upgrade: before /sl-scale, opt in to SetFit / LoRA-BERT for a one-time high-quality training
+  fallback: CV F1 < 0.6 → tighten the thresholds, or skip Tier 1 entirely (everything goes to the panel)
 ```
 
-## Now
-**默认最轻**
+## Items to Finish
+- [x] 🧱 The default backend is settled
+      A logistic regression on the frozen embeddings, which trains in seconds.
+      Frozen means the embedding model itself is not fine-tuned: the vectors from QD1 are used directly as features, so training only fits a classifier on top of them.
+      That is what makes the middle layer cheap enough to retrain on every round instead of being something that has to be scheduled.
+      A heavier backend stays available as an option, SetFit or LoRA-BERT, run once before `/sl-scale` as a one-time high-quality training and only if the researcher opts in.
+- [x] ⏱️ The retrain trigger and the trust thresholds are settled
+      Retraining fires automatically at the end of every `/sl-iterate` round, and a prediction is used only when the top probability is at least 0.70 and the margin at least 0.30.
+      Retraining each round keeps the classifier in step with the labels confirmed so far, and under `residual` mode the next batch is drawn only from the items the current classifier still cannot settle, so every round goes after the next layer of what is left rather than re-covering what already works.
+      Anything under either threshold is escalated to the Tier 2 panel instead of being answered here.
+      There is also a floor: if cross-validated F1 falls below 0.6, the thresholds are tightened or Tier 1 is skipped altogether and everything goes to the panel.
+- [ ] ⬆️ Decide when a SetFit or LoRA upgrade is worth it
+      There is no rule yet for when the heavier backend earns its cost, and the answer moves with which route QC2 picks.
+      The upgrade exists as an option (one high-quality training run before `/sl-scale`, researcher opt-in), but nothing states the conditions under which it should be taken.
+      It cannot be settled on this face alone, because it depends on QC2's open choice between labeling the remaining thousands in full and training a small model to take over: the more work the classifier is asked to absorb, the more a better-trained backend is worth paying for.
+      This is one of the two reasons the face sits at 🟡.
+- [ ] 🧪 Run it once inside a real project folder
+      The code has self-tests, but it has never been run inside a real project folder.
+      The code is in `lib/classify.py` and its self-tests exist, which shows the training and prediction path executes, not that the thresholds mean anything on real data.
+      Until a real run happens, the accept values of 0.70 and 0.30 and the CV F1 floor of 0.6 are numbers on paper, and nobody knows what share of items Tier 1 would actually absorb.
+      This is the second reason the face sits at 🟡 rather than ✅.
 
-- backend
-  冻结的 embedding 上一个 logistic regression，秒级训完；可选升级 SetFit / LoRA-BERT（`/sl-scale` 前一次性高质量训，researcher opt-in）。
-- 重训触发
-  每轮 `/sl-iterate` 末尾自动重训；`residual` 模式下，下一批只从「当前分类器还搞不定的」里抽 —— 每轮都在打筛子的下一层。
-- 信不信它
-  top 概率 ≥0.70 且 margin ≥0.30 才用，否则升 Tier 2；CV F1 < 0.6 就收紧阈值或跳过 Tier 1。
-- 现在
-  代码在 `lib/classify.py`，自测有，但**没在真实项目文件夹里真跑过**。
+## Where we are
+The lightest option is the default and it is fully specified: a logistic regression on frozen embeddings, retrained automatically at the end of every `/sl-iterate` round, with a prediction accepted only at probability 0.70 and margin 0.30 or better and escalated to the Tier 2 panel otherwise.
+The code is in `lib/classify.py` and it has self-tests, but it has never actually been run inside a real project folder.
+The one open judgment is when the SetFit or LoRA-BERT upgrade is worth its cost, and that is tied to JL's undecided QC2 call.
 
-## Done when
-- [x] 定默认 backend（logreg on frozen embeddings）
-- [x] 定重训触发（每轮 `/sl-iterate` 末尾）和信任阈值（prob 0.70 / margin 0.30）
-- [ ] 定 SetFit / LoRA 升级什么时候值得（跟 QC2 的路线选择联动）
-- [ ] 在真实项目文件夹里跑通一次（现在只有自测）
+- 260723 CC · 🔀 The Tier 1 contract was pulled onto the board
+      The backend, the retrain trigger, and the accept thresholds were written down here as settled.
+      Two things were left open on purpose: the real run had not happened, and the upgrade criterion depends on JL's QC2 decision, so the face was created at 🟡 rather than ✅.
 
-## Why here
-JL 点名要 modeling / embedding / **training** 这条线。training 这块就是它 ——
-也是 QC2 (b)「训个小模型接手」的具体实现。QD2 漏斗中间那层能不能顶住，全看这个分类器训得好不好。
+## Files
+- `lib/classify.py`
+  Where the classifier is trained and where its predictions come from, so this is the file to open when anything on this face changes.
+- `lib/embed.py`
+  Produces the frozen vectors the classifier trains on; how a sentence becomes a vector at all is QD1's ruling, not this one.
+- `ref/ref-cascade.md`
+  Writes down Tier 1's contract: the accept thresholds, the retrain trigger, and the CV F1 fallback.
+- `ref/ref-config.md`
+  Its `classifier:` block declares the backend and the two thresholds, so changing either of them starts in the config.
 
 ## Glossary
-logreg：logistic regression，最轻的分类器，在冻结向量上几秒训完。
-frozen embedding：直接用 QD1 的向量当特征，不再微调 embedding 模型本身。
-SetFit：在少量样本上微调句向量模型的方法，比 logreg 准但更重。
-CV F1：交叉验证的 F1 分数，衡量分类器好坏；<0.6 就别太信它。
+logreg: logistic regression, the lightest classifier, trained on frozen vectors in a few seconds.
+frozen embedding: using QD1's vectors directly as features, without fine-tuning the embedding model itself.
+SetFit: a method that fine-tunes a sentence embedding model on a small number of examples, more accurate than logreg but heavier.
+CV F1: the cross-validated F1 score, which measures how good the classifier is; below 0.6 it should not be trusted much.
+residual: the sampling mode in which the next batch is drawn only from the items the current classifier still cannot settle.
 
 ## Discussion
-> CC0723: 这题＝ QC2 (b) 的工程实现、QD2 Tier 1 那层的内幕。留 🟡 的原因是「真跑」还没做、SetFit 升级判据跟 QC2 的 JL 决定绑在一起。
+> CC0723: This face is the engineering implementation of QC2 (b) and the inside of QD2's Tier 1 layer. It stays 🟡 because the real run has not been done and the criterion for the SetFit upgrade is bound to JL's QC2 decision.
 
 ## Log
-260723 1600 · 新建：把 Tier-1 分类器的 backend/重训/阈值收进板；「真跑」和「升级判据」留 🟡
+260725 · rewritten to the current face format in English
+260723 1600 · created: the Tier 1 classifier's backend, retrain trigger, and thresholds were pulled onto the board; the real run and the upgrade criterion were left 🟡

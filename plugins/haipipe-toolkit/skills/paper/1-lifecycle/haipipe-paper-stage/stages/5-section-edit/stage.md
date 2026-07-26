@@ -5,11 +5,14 @@ key: section-edit
 order: "5"
 title: Section Edit
 one_line: "Write ONE section as real, venue-quality prose."
+board_family: "Main or Appendix, according to section_kind"
+board_unit: "reader-order section number or appendix letter"
 
 phases: [draft, probe, revise, check]
 
-# ⚠️ THE ONLY PER-UNIT STAGE. The phase list above runs once PER SECTION, not once
-#    for the paper. `$2` is the unit, not the paper dir.
+# The phase list above runs once PER SECTION, not once for the paper. Display
+# qualifies by the same independent-gate rule, but its contract migration is separate.
+# `$2` is the unit, not the paper dir.
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
                            # Default is ONE, at CHECK. DRAFT/PROBE/REVISE run unattended.
                            # This is safe only because PROBE cannot spend: see probe_depth.
@@ -25,7 +28,7 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
                            # no gate. Raise it per invocation with `probe --depth N`.
 runs: per-unit
 unit: section
-units_from: 0-lifecycle/3-narrative/3-narrative.md
+units_from: 0-lifecycle/3-narrative/S-Venue-2-narrative.md
              # FALLBACK, for papers that predate the narrative stage: if that file is
              # absent, the unit list is the folders already scaffolded under
              # 0-lifecycle/5-section-edit/ (excluding z-structure/, which is the
@@ -40,14 +43,18 @@ argument_hint: "<section> [draft|probe|revise|check] [paper-path]"
 needs_paper: true
 venue_aligned: true       # rewritten on retarget to another journal
 
-artifact: 0-lifecycle/5-section-edit/{section}/{section}.md   # PER SECTION — one folder per unit
-log: 0-lifecycle/5-section-edit/{section}/_LOG_{section}.md
+artifact: 0-lifecycle/5-section-edit/{section}/S-{board_family}-{board_unit}-{board_slug}.md
+                          # PER SECTION — one folder per unit. `{section}` is the unit's folder;
+                          # the FILENAME is resolved by haipipe-board/stage.py from this unit's
+                          # family, unit and slug (QC2), never spelled by this stage. `board_family`
+                          # and `board_unit` are per-unit here, not per-stage: a unit's kind decides
+                          # Main vs Appendix and its reader order decides the number or letter.
 probes: 1-probes/PPNN_<topic>/
 output: 0-sections/*.tex   # GENERATED from the .md by sync; NEVER hand-authored
 template: <resolved per (venue, section_kind)>
           # PRINCIPLE (JL 2026-07-20): every (venue, kind) has its OWN template, summarized from
           # that outlet's exemplars — a MISQ introduction ≠ a Nature introduction in SHAPE. So the
-          # skeleton is NOT fixed here. The venue stage resolved it into 2a-venue.md's Section
+          # skeleton is NOT fixed here. The venue stage resolved it into S-Venue-0-venue.md's Section
           # Styles table (the `template:` path for this section's kind). Read THAT and copy it.
           #   venue has a pack template for this kind  -> use it (authoritative)
           #   pack exists but no template.md for this kind, OR a pack-less venue (grant/patent/
@@ -58,14 +65,13 @@ fallback_template: template.md     # generic scaffold — placeholder grammar, t
                           # mandatory Q-consumer block and its fill rules all live inline
                           # as <tpl: …> guidance. There is no separate format spec.
 
-inputs:                   # what DRAFT opens before writing, in this order
-  z-structure:   0-lifecycle/5-section-edit/z-structure/z-structure.md   # paper-level architecture
-  narrative:     0-lifecycle/3-narrative/3-narrative.md                  # the story beats
-  existing_tex:  0-sections/NN_section.tex                               # only if prose already exists
-  venue:         0-lifecycle/2a-venue/2a-venue.md                        # blueprint + writing principles
-  claims:        0-lifecycle/1b-claims/1b-claims.md                      # what this section must support
+read_order:               # optional DRAFT craft order; dependencies live on the Board page
+  venue:         0-lifecycle/2a-venue/S-Venue-0-venue.md                        # blueprint + writing principles
+  narrative:     0-lifecycle/3-narrative/S-Venue-2-narrative.md                  # the story beats
+  claims:        0-lifecycle/1b-claims/S-Work-1-claims.md                      # what this section must support
+  existing_tex:  0-sections/{NN}_{section}.tex                           # only if prose already exists
 
-venue_contract: 0-lifecycle/2a-venue/2a-venue.md
+venue_contract: 0-lifecycle/2a-venue/S-Venue-0-venue.md
 venue_read_first:         # DRAFT opens these BEFORE writing a sentence
   - "Structural Blueprint, THIS section's block — BINDING: subsections, ¶ per subsection,
      sentences per ¶, citation density, word budget, display limits"
@@ -78,17 +84,17 @@ section_kind: <one of the closed set in ../section-kinds.yml>
 
 venue_style_pack: |                # READ IT, do not resolve it.
   The VENUE stage already resolved every section style path and wrote them into
-  2a-venue.md's `Section Styles` table, one record line per kind. Read the row for this
+  S-Venue-0-venue.md's `Section Styles` table, one record line per kind. Read the row for this
   section's `section_kind:` and use the path it gives.
   · row is a path            -> that IS the deep-dive pack; REFERENCE ONLY, never binding
-  · row reads blueprint-only -> this outlet has no guide for this kind; the 2a-venue.md
+  · row reads blueprint-only -> this outlet has no guide for this kind; the S-Venue-0-venue.md
                                 Structural Blueprint block alone is sufficient to draft
   · table or row is MISSING  -> the venue stage has not been run (or is stale): say so and
                                 stop; do NOT glob the venue dir yourself
   ⛔ Never find(1) the venue directory, never glob a pack path, never spell a per-journal
      slug. Six outlets use slugs no consumer can derive (jno · diabcare · npjdm · natcomm ·
      MS-IS · MS-Marketing); that knowledge lives in ONE place, upstream.
-venue_fallback: "venue/ packs directly, only when 2a-venue.md is absent"
+venue_fallback: "venue/ packs directly, only when S-Venue-0-venue.md is absent"
 
 exit_when: "writing exposes missing evidence -> 1-claims"
 

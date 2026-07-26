@@ -5,6 +5,10 @@ key: seed
 order: "0"
 title: Seed
 one_line: "Why might this paper exist?"
+board_family: Seed
+board_unit: "0"
+board_slug: seed          # family + unit + slug resolve the S-face filename;
+                          # haipipe-board/stage.py owns that resolution (QC2)
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -24,8 +28,11 @@ runs: once
 needs_paper: true
 venue_free: true          # does not change when retargeting to another journal
 
-artifact: 0-lifecycle/0-seed/0-seed.md
-log: 0-lifecycle/0-seed/_LOG_0-seed.md
+artifact: 0-lifecycle/0-seed/S-Seed-0-seed.md
+artifact_fallback: 0-lifecycle/0-seed/0-seed.md
+                          # papers that predate the 2026-07-25 S-face restructure carry
+                          # the stage file under its old name. Use this ONLY when the
+                          # resolved S face is absent, and say which one you used.
 probes: 1-probes/PPNN_<topic>/
 template: template.md
 

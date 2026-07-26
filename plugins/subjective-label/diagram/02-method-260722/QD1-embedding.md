@@ -1,56 +1,81 @@
-# 句子怎么变成向量
+# How a sentence becomes a vector
 state: ✅ SETTLED
 owner: CC
-method: lib/embed.py 包 sentence-transformers / OpenAI；换模型只改 config 一行
+method: `lib/embed.py` wraps sentence-transformers and OpenAI; swapping the model changes one line of config
 
 ## Question
-一句评论怎么变成一串数字（向量），好让「挑难例、去重、铺全量」这些按距离算的事有意义 —— 用哪个模型、缓存怎么存、它能不能决定标签？
+How does one review sentence turn into a string of numbers (a vector), so that the work done by distance (picking hard cases, de-duplicating, covering the full corpus) means anything: which model produces it, how the cache is stored, and is it allowed to decide a label?
+
+JL asked this one directly: how does a sentence become an embedding.
+It is also the lowest foundation under the "does the code already do it" half of the spine, because QB1's hard-case picking, Tier 0 of the cascade in QD2, and QB2's de-duplication all stand on it.
+If it is not written down, the "pick by position" in those questions above is empty talk.
+The other half of the question is a guard rail rather than a build order: a vector is close to another vector for reasons that have nothing to do with the label, so letting distance decide a label would quietly corrupt every set that was picked by distance.
+
+## Boundary
+- ✅ Covered here
+  The embedding layer itself: which model turns a sentence into a vector, how the cache is keyed, and the standing rule that a vector never decides a label.
+- ↪ Covered elsewhere
+  How the cascade splits the work and uses this layer as its Tier 0 is QD2; hunting hard cases by distance to grow the gallery is QB1; deciding a label is the panel's job, which is QA2 for labeling independently and QA3 for putting a weak model through the exam.
 
 ## Diagram
 ```
-  一句评论  ──►  lib/embed.py  ──►  [0.02, -0.31, …]  384 维向量
-                                     意思近的句子 → 坐标近
+  one review  ──►  lib/embed.py  ──►  [0.02, -0.31, …]  384-dim vector
+                                       sentences close in meaning → close in coordinates
 
-  ⚖️ 一条铁律：embedding 是【速度工具】，不是【判断工具】
-       它只做：找候选 · 去重 · 铺全量        永不决定标签
-       标签只从 panel 推理来 —— 否则踩四个坑：
-         语义反转（"I feel alive" vs "I feel nothing" 坐标很近，标签相反）
-         反讽 / 体裁模仿 在向量空间里像目标
-         序数塌缩（"extremely high" vs "very high" 挤成一团）
-         不可解释（标错了指不出是哪个词害的）
+  ⚖️ one iron rule: embedding is a SPEED tool, not a JUDGMENT tool
+       it only does: find candidates · de-duplicate · cover the full corpus        it never decides a label
+       labels come only from panel reasoning, because four traps wait otherwise:
+         semantic inversion ("I feel alive" vs "I feel nothing" sit close together, opposite labels)
+         irony / genre imitation looks like the target in vector space
+         ordinal collapse ("extremely high" vs "very high" squash into one blob)
+         no explanation (when a label is wrong you cannot point at the word that caused it)
 ```
 
-## Now
-**一个模块、一个 agent、一段 config —— 全定型了**
+## Items to Finish
+- [x] 🎯 The default model is fixed, and so is the way to swap it
+      The default is `all-MiniLM-L6-v2`, and changing model means editing the `model` and `dim` lines in the config, nothing else.
+      `all-MiniLM-L6-v2` is 22M parameters, 384 dimensions, roughly 2K sentences per second on CPU, and free, which covers anything under 100K English items with no reason to deliberate.
+      For better quality or a large corpus the alternative is OpenAI `text-embedding-3-small`; for medical text it is `biobert`.
+      The swap stays a one-line edit because the choice lives in the `embedding:` block of `config.yaml` and nowhere else in the code.
+- [x] 🗄 The cache layout is fixed
+      Vectors are stored under a `sha1(model+text)` hash, so the cache is keyed by the pair `(model, text)`.
+      Because the model name is part of the key, switching models does not invalidate what is already cached.
+      A new model only recomputes on its first use, and the old entries stay usable if the choice is reverted.
+- [x] ⚖️ The principle is nailed down: embedding finds candidates and never decides a label
+      Its three jobs are finding candidates, de-duplicating, and covering the full corpus; the label itself always comes from panel reasoning.
+      `ref/ref-embeddings.md` records the four failure modes behind the rule.
+      Semantic inversion: "I feel alive" and "I feel nothing" sit close in coordinates and carry opposite labels.
+      Irony and genre imitation look like the target in vector space.
+      Ordinal collapse: "extremely high" and "very high" squash into one blob.
+      And there is no explanation: when a label comes out wrong you cannot point at the word that caused it.
 
+## Where we are
+One module, one agent, and one block of config, all three settled.
+`lib/embed.py` is the only place in the whole system that touches Hugging Face, OpenAI, or sentence-transformers, and everything else reaches it through the embedder agent, which offers embed, index, nearest, cluster, and stratified-sample.
+Nothing here is waiting on a decision: the model choice, the cache layout, and the rule that a vector never decides a label were all fixed in `ref/ref-embeddings.md` before this face was written, and this face only pins them where they can be read.
+
+## Files
 - `lib/embed.py`
-  全系统唯一碰 HF / OpenAI / sentence-transformers 的地方；对外由 embedder agent 提供 embed / index / nearest / cluster / stratified-sample。
-- 默认选型
-  `all-MiniLM-L6-v2`（22M · 384 维 · CPU ~2K/秒 · 免费）—— <100K 条英文，想跑就跑。要更好质量或大语料 → OpenAI `text-embedding-3-small`；医学文本 → `biobert`。
-- 换模型只改 config 一行
-  `config.yaml` 的 `embedding:` 段改 `model` + `dim` 即可；老缓存按 `sha1(model+text)` 存，换模型不失效，新模型首次用才重算。
-
-## Done when
-- [x] 定下默认模型（`all-MiniLM-L6-v2`）和换模型的方式（改 config 的 model + dim 一行）
-- [x] 定下缓存布局（按 `(model, text)` 哈希存，换模型不失效）
-- [x] 定死原则：embedding 只找候选、不决定标签（`ref-embeddings.md` 的四个失败模式）
-
-## Why here
-JL 直接问的就是「句子怎么变 embedding」。它也是 spine 里「现在代码里有没有」那一半最底层的地基 ——
-QB1 挑难例、QD2 漏斗的 Tier 0、QB2 去重都踩在它上面。不把它写下来，上面几题的「按位置挑」就是空话。
+  The single module behind this face, and the only one allowed to talk to Hugging Face, OpenAI, or sentence-transformers, so any change to the embedding layer starts here.
+- `ref/ref-embeddings.md`
+  The document this face was copied from: the model choice, the cache layout, and the four failure modes behind the iron rule.
+- `ref/ref-config.md`
+  Carries the `embedding:` block, which is the one place a model swap is edited.
 
 ## Law
-- embedding 只做 找候选 / 去重 / 铺全量，**永不决定标签**（标签只从 panel 推理来）。
-- 换 embedding 模型只动 `config.yaml` 的 `model` + `dim`；缓存按 `(model, text)` 哈希，换模型不失效。
-- 一个模块（`lib/embed.py`）、一个 agent（embedder）、一段 config（`embedding:`）—— 别在别处另起炉灶碰 HF。
+- Embedding only finds candidates, de-duplicates, and covers the full corpus, and **never decides a label** (labels come only from panel reasoning).
+- Swapping the embedding model touches only `model` and `dim` in `config.yaml`; the cache is keyed by the `(model, text)` hash, so a swap does not invalidate it.
+- One module (`lib/embed.py`), one agent (embedder), one block of config (`embedding:`): do not start a second place that touches Hugging Face.
 
 ## Glossary
-embedding / 向量：把一句话映射成一串数字，意思相近的句子数字也相近。
-余弦相似度：量两个向量方向多接近的数，1＝同向，0＝无关，用来判「像不像」。
-faiss：一个按向量找最近邻的库，`faiss-flat`（<100K 条）/ `faiss-ivf`（更大）。
+embedding / vector: mapping a sentence to a string of numbers, where sentences close in meaning get numbers that are close.
+cosine similarity: a number measuring how closely two vectors point the same way, 1 = same direction, 0 = unrelated, used to judge how alike two sentences are.
+faiss: a library that finds nearest neighbors by vector, `faiss-flat` (under 100K items) or `faiss-ivf` (larger).
+panel: the set of model labelers, whose reasoning is the only thing that decides a label.
 
 ## Discussion
-> CC0723: 这题是 QB1（挑难例）和 QD2（漏斗 Tier 0）的地基。内容全部来自 `ref/ref-embeddings.md`，那份文档早定型了，所以这题直接 ✅ —— 板不只装没定的题，也把已定的引擎事实钉在明面上。
+> CC0723: This face is the foundation under QB1 (hunting hard cases) and QD2 (Tier 0 of the cascade). Everything in it comes from `ref/ref-embeddings.md`, which was fixed long ago, so this face went straight to ✅: a board does not only hold the undecided questions, it also pins the settled engine facts where they can be seen.
 
 ## Log
-260723 1600 · 新建：把 `ref/ref-embeddings.md` 的选型/缓存/铁律收进板，标 ✅（已定型）
+260725 · rewritten to the current face format in English
+260723 1600 · created: pulled the model choice, the cache layout, and the iron rule out of `ref/ref-embeddings.md` onto the board and marked it ✅ (already fixed)

@@ -51,11 +51,11 @@ def resolve(token):
 
 
 def code_or_link(m):
-    tok = m.group(1)
+    tok = m.group(1)          # 已经过外层 esc()，别再转义一次（否则 `>` 显示成 &gt;）
     href = resolve(tok)
     if href:
-        return f'<a class="fp" href="{esc(href)}"><code>{esc(tok)}</code></a>'
-    return f"<code>{esc(tok)}</code>"
+        return f'<a class="fp" href="{esc(href)}"><code>{tok}</code></a>'
+    return f"<code>{tok}</code>"
 
 
 def inline(s):
@@ -238,7 +238,7 @@ def mark_span(html, needle, kls):
 
 
 # 组标题（整行加粗）开头若写了个 emoji，就拿它当记号：**🎨 版式落地** → 🎨。
-# 没写就默认 🔹。build.py 不去猜——图标随内容变，是作者写的，不是机器生成的（QA5 写法规矩）。
+# 没写就默认 🔹。build.py 不去猜——图标随内容变，是作者写的，不是机器生成的（QA9 写法规矩）。
 # 只认真 emoji 开头：中文、英文、▸(U+25B8) 都不在这些区段，不会误判成图标。
 _EMO = ("\U0001F000-\U0001FAFF"      # 大部分 emoji（🔹🎨📍…）
         "\U00002600-\U000027BF"      # 杂项符号 + dingbats（✅⚠⚙…）
@@ -250,7 +250,42 @@ GT_ICON = re.compile("^([" + _EMO + "]"
                      r"\s+(.+)$")
 
 
-def body(txt, fold_code=True):
+LANE = re.compile(r"^>+\s*(Citation|Value|Display|Check|Q-consumer|Link|Source|Note)"
+                  r"\s*[:：]\s*(.*)$", re.I)
+LANE_ICON = {"citation": "📚", "value": "🔢", "display": "🖼", "check": "⚠️",
+             "q-consumer": "🔎", "link": "🔗", "source": "📄", "note": "📝"}
+
+
+def render_apparatus(lines):
+    """一句话的随行装置（QA8，JL 260725）：typed `> Kind:` 行 + `> WHO:` 讨论，
+    折叠在它们讨论的那一句下面。返回 (html, 头行数)。"""
+    rows, heads = [], 0
+    for ln in lines:
+        m = LANE.match(ln)
+        if m:
+            kind = m.group(1).lower()
+            lbl = m.group(1)[0].upper() + m.group(1)[1:].lower()
+            rows.append(f'<div class="lane"><b>{LANE_ICON.get(kind, "📎")} {esc(lbl)}</b> '
+                        f'{inline(m.group(2))}</div>')
+            heads += 1
+            continue
+        m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*[「\"]([^」\"]+)[」\"]\s*[:：]\s*(.*)$", ln)
+        if m:
+            rows.append(f'<div class="cmt {who_class(m.group(2))}"><b>{esc(m.group(2))}</b>'
+                        f'<span class="qt">「{inline(m.group(3))}」</span> {inline(m.group(4))}</div>')
+            heads += 1
+            continue
+        m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*(\[[^\]]+\])?\s*[:：]\s*(.*)$", ln)
+        if m:
+            rows.append(f'<div class="cmt {who_class(m.group(2))}"><b>{esc(m.group(2))}</b> '
+                        f'{inline(m.group(4))}</div>')
+            heads += 1
+            continue
+        rows.append(f'<div class="lane-cont">{inline(ln.lstrip(">").strip())}</div>')
+    return "".join(rows), heads
+
+
+def body(txt, fold_code=True, apparatus=True):
     """paragraphs + ``` blocks + comment lanes + topic/explanation bullets -> html
 
     要点式排版（JL 260723）：一行 `- 小标题`，下面缩进两格的行是它的解释。
@@ -264,12 +299,15 @@ def body(txt, fold_code=True):
     """
     out, fence, blt, lg, flang = [], None, None, None, ""
     ifence = None    # 缩进在 item 下的 ``` 块：收进这个 item 的折叠区（JL 260724）
+    last_p, appar = None, {}   # 最近一句正文的 out 下标 → 它收集到的 `>` 装置行（QA8）
+    para_head = False          # 上一行是不是 #### 段落标题（决定紧跟的 (…) 是不是它的活儿）
 
     def flush():
         """把攒着的要点 / 勾选项吐出来。两者共用「小标题 + 缩进解释」这套结构。"""
-        nonlocal blt
+        nonlocal blt, last_p
         if blt is None:
             return
+        last_p = None
         kind, top, det, on = blt
         name_cls = "ct" if kind == "ck" else "bt"
         # item = 名字 + 解释。名字永远在台面上；有解释时把它收进 native <details>，
@@ -342,6 +380,7 @@ def body(txt, fold_code=True):
                 else:
                     out.append(f'<pre>{code}</pre>')
                 fence = None
+                last_p = None
             continue
         if fence is not None:
             fence.append(ln)
@@ -358,10 +397,17 @@ def body(txt, fold_code=True):
         m = re.match(r"^[-*]\s+(?!\[[ xX]\])(.+)$", ln)
         if m:
             flush()
+            last_p = None
             blt = ["blt", m.group(1).strip(), [], False]
             continue
         flush()
         if not ln.strip():
+            continue
+        # 句子随行装置（QA8，JL 260725）：紧跟在一句正文后面的 `>` 行
+        # （> Citation: / > Value: / > Check: / > JL: …，可隔空行）收进那一句的
+        # 抽屉；句尾挂 ⚑N，点开才现。没有前一句的 `>` 行照旧渲染。
+        if apparatus and ln.lstrip().startswith(">") and last_p is not None:
+            appar.setdefault(last_p, []).append(ln.strip())
             continue
         # 260723 0940 · 改了什么      （时间可省，省了就只显示日期）
         m = re.match(r"^(\d{6})(?:\s+(\d{3,4}))?\s*[·|]\s*(.*)$", ln)
@@ -374,10 +420,12 @@ def body(txt, fold_code=True):
             out.append(f'<div class="lg"><span class="d">{stamp}</span>'
                        f'<span>{inline(m.group(3))}</span></div>')
             lg = len(out) - 1
+            last_p = None
             continue
         m = re.match(r"^\s*[-*]\s*\[([ xX])\]\s*(.*)$", ln)   # - [ ] / - [x]
         if m:
             flush()
+            last_p = None
             blt = ["ck", m.group(2), [], m.group(1).lower() == "x"]
             continue
         # ![[path]] / ![[path#Section]]（QF1，JL 260724）：把另一份文件的内容按
@@ -387,6 +435,7 @@ def body(txt, fold_code=True):
         if m:
             flush()
             out.append(embed_block(m.group(1).strip(), m.group(2)))
+            last_p = None
             continue
         # 一行只放一个 excalidraw 分享链接 → 嵌成一块可交互画布，底下再给一条链接。
         # 为什么敢嵌：excalidraw.com 没有 X-Frame-Options / frame-ancestors（实测）。
@@ -398,7 +447,25 @@ def body(txt, fold_code=True):
                        f'referrerpolicy="no-referrer"></iframe>'
                        f'<a class="fp xopen" href="{u}" target="_blank" rel="noopener">'
                        f'↗ Open in Excalidraw</a></div>')
+            last_p = None
             continue
+        # #### = 段落标题（一节里的一个 ¶）。以前被压成 **…**，于是套上了组标题的
+        # 🔹，把「一个段落」说成了「领一串 item 的一句话」（JL 260725）。现在它是
+        # 自己的层级：没有图标，比组标题小，紧跟其后的整行括号是这一段的活儿。
+        m = re.match(r"^#{4,6}\s+(.+?)\s*$", ln)
+        if m:
+            out.append(f'<div class="ph">{inline(m.group(1))}</div>')
+            last_p = None
+            para_head = True
+            continue
+        # 段落标题后面紧跟的整行 (…) 是这一段要干的活：留在页面上（它是扫读用的），
+        # 但排成灰斜体，跟正文分开（JL 260725）。只认紧跟标题的那一行。
+        if para_head and re.match(r"^\(.+\)\s*$", ln):
+            out.append(f'<div class="pj">{inline(ln.strip()[1:-1].strip())}</div>')
+            last_p = None
+            para_head = False
+            continue
+        para_head = False
         # 整行加粗 = 组标题：领着下面一串 item 的一句话。图标 + 略大 + 上间距，
         # 夹在节标题(.ch)和 item 名字(.bt)中间一层，把层级拉开（JL 260723）。
         # 只认「整行都在 **…** 里」的（内部不含 **），混排的加粗照旧走 <p>。
@@ -409,6 +476,7 @@ def body(txt, fold_code=True):
             im = GT_ICON.match(inner)
             icon, txt = (im.group(1), im.group(2).strip()) if im else ("🔹", inner)
             out.append(f'<div class="gt"><span class="gi">{icon}</span>{inline(txt)}</div>')
+            last_p = None
             continue
         # > JL 「被选中的原句」: 评论    ← 行内评论；引号里那段会在正文里高亮
         m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*[「\"]([^」\"]+)[」\"]\s*[:：]\s*(.*)$", ln)
@@ -417,13 +485,22 @@ def body(txt, fold_code=True):
             k = who_class(who)
             out.append(f'<div class="cmt {k}"><b>{esc(who)}</b>'
                        f'<span class="qt">「{inline(m.group(3))}」</span> {inline(m.group(4))}</div>')
+            last_p = None
             continue
         m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*(\[[^\]]+\])?\s*[:：]\s*(.*)$", ln)
         if m:
             who = m.group(2)
             k = who_class(who)
             out.append(f'<div class="cmt {k}"><b>{esc(who)}</b> {inline(m.group(4))}</div>')
+            last_p = None
         else:
             out.append(f"<p>{inline(ln)}</p>")
+            last_p = len(out) - 1
     flush()
+    # 把收集到的装置行折进各自的句子（native <details>，零脚本不变量成立）
+    for idx, lines in appar.items():
+        inner, heads = render_apparatus(lines)
+        out[idx] = ('<details class="sent"><summary>' + out[idx]
+                    + f'<span class="sbadge">⚑ {heads}</span></summary>'
+                    f'<div class="sapp">{inner}</div></details>')
     return "\n".join(out)

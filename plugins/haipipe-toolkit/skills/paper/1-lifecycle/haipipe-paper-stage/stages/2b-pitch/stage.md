@@ -5,6 +5,10 @@ key: pitch
 order: "2b"
 title: Pitch
 one_line: "Why would THIS venue's editor send this paper out for review?"
+board_family: Venue
+board_unit: "1"
+board_slug: pitch          # family + unit + slug resolve the S-face filename;
+                          # haipipe-board/stage.py owns that resolution (QC2)
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -24,8 +28,11 @@ runs: once
 needs_paper: true
 venue_aligned: true       # REWRITES when the venue changes (claims does not — it is venue-free)
 
-artifact: 0-lifecycle/2b-pitch/2b-pitch.md
-log: 0-lifecycle/2b-pitch/_LOG_2b-pitch.md
+artifact: 0-lifecycle/2b-pitch/S-Venue-1-pitch.md
+artifact_fallback: 0-lifecycle/2b-pitch/2b-pitch.md
+                          # papers that predate the 2026-07-25 S-face restructure carry
+                          # the stage file under its old name. Use this ONLY when the
+                          # resolved S face is absent, and say which one you used.
 archive: 0-lifecycle/2b-pitch/archive/vNN_<reason>.md
 probes: 1-probes/PPNN_<topic>/
 template: template.md
@@ -35,13 +42,13 @@ support: [readability.md]   # the 9 global language rules, section lead cues, ho
 exit_when: "abstract/intro sells another story"   # the stage's own failure exit
 
 venue_contract:           # read FIRST, before a word is drafted — see the craft body
-  read: 0-lifecycle/2a-venue/2a-venue.md
+  read: 0-lifecycle/2a-venue/S-Venue-0-venue.md
   blocks: [Venue Profile, Fit Assessment]
   shapes: [Editor's Chair Test, "[primary] designation", RQ framing, Audience and Venue Fit]
-  fallback: "venue/playbook-<venue> ONLY if 2a-venue.md is absent; with neither, proceed without
+  fallback: "venue/playbook-<venue> ONLY if S-Venue-0-venue.md is absent; with neither, proceed without
              venue inputs and say so"
   stale: "provenance commit older than venue HEAD -> note 'venue contract stale — consider
-          /haipipe-paper-stage venue refresh', still use 2a-venue.md; never silently re-read packs"
+          /haipipe-paper-stage venue refresh', still use S-Venue-0-venue.md; never silently re-read packs"
   rewrite_when: "venue changes"
 
 sections:                 # in order; all twelve must carry real content
@@ -76,7 +83,7 @@ done_criteria:
   - "a flat paragraph missing the labeled sections is restructured before any gate can pass"
   - "Hook carries >=2 candidates, each committing to ONE narrative move, one marked
      (recommended lead), none hidden or collapsed"
-  - "Editor's Chair Test quotes the venue question from 2a-venue.md and answers it in one
+  - "Editor's Chair Test quotes the venue question from S-Venue-0-venue.md and answers it in one
      sentence per primary claim"
   - "exactly ONE [primary] claim designated for THIS venue, supporting claims named"
   - "H→RQ mapping complete as record lines, each carrying its own 'why this RQ for this venue'"
@@ -115,7 +122,7 @@ NARRATIVE  how does the arc RUN?       the section-mirrored expansion of this pi
 The venue contract is read FIRST
 --------------------------------
 
-Before a word is drafted, read `0-lifecycle/2a-venue/2a-venue.md` — its **Venue Profile** and
+Before a word is drafted, read `0-lifecycle/2a-venue/S-Venue-0-venue.md` — its **Venue Profile** and
 **Fit Assessment** blocks. Nothing substitutes for them. They shape four sections: the Editor's
 Chair Test question, the `[primary]` designation, the RQ framing, and Audience and Venue Fit.
 
