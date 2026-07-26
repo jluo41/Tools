@@ -151,6 +151,22 @@ def build(folder, root, fresh=False):
             x += w + GAP_X
         y += rh + GAP_Y
 
+    # Excalidraw ENRICHES what it loads: it adds `index` (the z-order), `autoResize`,
+    # `boundElements`, and bumps version/versionNonce/updated. If a regen wrote its
+    # plainer version back, the next person to open the editor would save that
+    # normalisation again, so `xcal.py` and the browser would each dirty the file in
+    # turn forever. So: when the generated element says nothing new, keep the one
+    # already on disk, whatever the app has since added to it.
+    # `boundElements` is in here because the app rewrites our null to [], and a
+    # real binding it later records is the app's to own, not this script's.
+    VOLATILE = {"version", "versionNonce", "updated", "boundElements"}
+    same = 0
+    for i, e in enumerate(mine):
+        o = old.get(e["id"])
+        if o and all(o.get(k) == v for k, v in e.items() if k not in VOLATILE):
+            mine[i] = o
+            same += 1
+
     # Anything this script mints is prefixed; Excalidraw's own ids are random,
     # so the prefix is what tells a human's drawing from ours. Without it a
     # RETIRED page's frame would survive every regen as if a human had drawn
@@ -175,6 +191,7 @@ def build(folder, root, fresh=False):
     print(f"   seeded with an ASCII figure : {seeded}/{len(pages)}")
     print(f"   kept a human's frame position: {kept_xy}")
     print(f"   kept a human's element       : {len(human)}")
+    print(f"   unchanged, left exactly as-is: {same}/{len(mine)}")
     if dropped:
         print(f"   dropped the frame of a page that is gone: {', '.join(dropped)}")
     # A kept position and a recomputed width can collide: a page whose figure
@@ -195,7 +212,7 @@ def build(folder, root, fresh=False):
 # an excalidraw URL sitting alone on a line — NOT `\s*`, which spans newlines
 # and so swallows the blank lines around it (found 260726, after one run left 28
 # pages with `## Items to Finish` welded to the URL above it)
-XURL = re.compile(r"^[ \t]*https?://[^\s]*excalidraw[^\s]*[ \t]*$\n?", re.M)
+XURL = re.compile(r"^[ \t]*(https?://[^\s]*excalidraw[^\s]*)[ \t]*$\n?", re.M)
 
 
 def wire(folder, pages, rel, host, port):
@@ -209,6 +226,7 @@ def wire(folder, pages, rel, host, port):
         sys.exit("board.md has no `excalidraw:` line, so there is no host to "
                  "compose a URL from")
     n_rep = n_add = n_new = 0
+    theirs = []
     for p in pages:
         f = folder / p["file"]
         txt = f.read_text(encoding="utf-8")
@@ -237,6 +255,14 @@ def wire(folder, pages, rel, host, port):
                    + txt[anchor.start():])
             n_new += 1
         else:
+            # A page may deliberately hold a link to somebody ELSE'S excalidraw,
+            # pasted by hand from the page itself (QD7). That is a human's work
+            # in exactly the sense the scene rules protect, so leave it: this
+            # command wires a page to ITS frame, it does not claim the section.
+            held = [u for u in XURL.findall(m.group(1))]
+            if any(not u.strip().startswith(host + "/") for u in held):
+                theirs.append(p["file"])
+                continue
             body, n = XURL.subn("", m.group(1))
             n_rep += bool(n)
             n_add += not n
@@ -245,6 +271,9 @@ def wire(folder, pages, rel, host, port):
             txt = txt[:m.start(1)] + body + txt[m.end(1):]
         f.write_text(txt, encoding="utf-8")
     print(f"   ## Diagram: replaced {n_rep} · appended {n_add} · created {n_new}")
+    if theirs:
+        print(f"   left alone, holds an excalidraw that is not this board's: "
+              f"{', '.join(theirs)}")
 
 
 def find_root(start):

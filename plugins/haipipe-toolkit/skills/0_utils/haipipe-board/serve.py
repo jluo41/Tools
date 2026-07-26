@@ -1561,14 +1561,17 @@ class Handler(SimpleHTTPRequestHandler):
         # turned into a variable, and the boot script appends it once seeding
         # has actually finished.
         if "text/html" in ctype:
-            body = re.sub(
-                rb'<script type="module"([^>]*?)src="([^"]+)"([^>]*)></script>',
-                rb'<script>window.__haipipeApp="\2"</script>', body, count=1)
             tag = b'<script src="/_excalidraw/_haipipe-xcal.js"></script>'
-            if b"<head>" in body:
-                body = body.replace(b"<head>", b"<head>" + tag, 1)
-            else:
-                body = tag + body
+            # The boot script must come AFTER the variable it reads. Injecting it
+            # at <head> put it first, so it ran with __haipipeApp still undefined,
+            # returned quietly, and the app never started at all: a blank page
+            # with a correct badge on it (found 260726 in headless Chrome).
+            body, n = re.subn(
+                rb'<script type="module"([^>]*?)src="([^"]+)"([^>]*)></script>',
+                rb'<script>window.__haipipeApp="\2"</script>' + tag, body, count=1)
+            if not n:                       # no module to hold; seed anyway
+                body = (body.replace(b"<head>", b"<head>" + tag, 1)
+                        if b"<head>" in body else tag + body)
         self.send_response(status)
         if ctype:
             self.send_header("Content-Type", ctype)

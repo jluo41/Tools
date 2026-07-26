@@ -5,6 +5,84 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## [0.29.0] — 2026-07-26 — warn when a board writes markers and declares no dialect
+
+The `dialect: paper` seam had exactly one silent failure: a board that writes `\citep{}`, `{VAL:?}` or `[Q-…]` and forgets the two frontmatter lines renders them as plain text, produces an EMPTY marker report, and looks completely fine. Nothing said anything. On a paper board that is the loss of the family's only cross-check of prose against the `.bib` and the display units.
+
+`build.py` now says so, on the `else` branch that previously did nothing.
+
+**The trigger is the board's own CONTENT, never its folder name.** A dialect is deletable (QBc5) and `build.py` must not learn what a paper is, so it does not look for `0-lifecycle/`; it looks for marker syntax.
+
+**Code spans are stripped first, and that is the whole precision of the check.** A board that MEANS a marker writes it in prose; a board that DISCUSSES the syntax quotes it. Measured across the four real boards on 2026-07-26: `01-boardform-260722` has 13 mentions and `01-probe-qa-260726` has 2, all inside code fences or backticks, none meant. A naive raw match warned on both; stripping code first gives zero false positives on all four, while a real paper board with the two lines removed reports 429.
+
+Verified: `Paper-Personality2Opioid-MISQ2026/0-lifecycle` builds byte-identically (40 pages, 22 markers), and the same folder with `dialect:`/`paper-root:` deleted now warns loudly with the exact two lines to add.
+
+
+## [0.28.1] — 2026-07-26
+
+**Driven by a real browser at last, which found two things nothing else had.** JL asked "will it work?", and the honest answer was that nobody knew: 0.27 and 0.28 were verified against a server and a stub. Chrome is installed on this machine and Node 22 ships a WebSocket, so the DevTools protocol closed that gap.
+
+- **The app never started.** `proxy_excalidraw()` injected the boot script at `<head>`,
+  which put it BEFORE the `window.__haipipeApp` assignment it reads, so `start()`
+  returned quietly and no module was ever appended. The page rendered a correct badge
+  over a blank screen. The boot tag now goes immediately AFTER the assignment. This had
+  been shipped, reviewed and reasoned about twice without being noticed, because every
+  test up to that point stubbed the very thing that was broken.
+- **Opening a page dirtied the repo.** Excalidraw renormalises everything it loads
+  (`version`, `versionNonce`, `updated`, `boundElements` null → []), so the editor saved
+  one second after opening with nothing drawn. Two halves to the fix: the tab compares
+  element CONTENT rather than raw JSON, and `xcal.py` keeps an element the browser has
+  enriched instead of writing its plainer version back. Without the second half the two
+  would have dirtied the file in turn forever, each undoing the other.
+
+End to end in headless Chrome: the app mounts, our seed is what it loads, pressing `r`
+and dragging produces a rectangle, and that rectangle arrives in `fig/board.excalidraw`
+inside `frame-QB3` with the other 88 elements untouched and no page errors. Opening the
+editor twice leaves the file byte-identical the second time; two `xcal.py` runs do too.
+
+## [0.28.0] — 2026-07-26
+
+**A pasted image survives, as a real file in `fig/assets/` rather than as base64 inside the scene.**
+
+JL: *"could we make it saved? we can have an assets folder for it."* Right on both counts, and the folder is the part that matters. Excalidraw keeps images as base64 dataURLs INSIDE the document, so one screenshot is megabytes that git then re-diffs every time anyone nudges a box.
+
+- **Bytes out, pointer in.** `stash_files()` decodes each dataURL into
+  `fig/assets/<fileId>.<ext>` and leaves `{id, mimeType, path}` in the scene.
+  `hydrate_files()` does the reverse on the way out, for the elements being
+  returned only. Fetched through `serve.py` the scene is self-contained and the
+  editor never knows; the files map is MERGED on save, so an image saved by an
+  earlier tick is never lost by a later one.
+- **Every `.excalidraw` GET now goes through the scene handler**, not only
+  `?frame=` ones, because a whole-scene fetch needs rehydrating too.
+- **IndexedDB, not localStorage.** Images live in `files-db`/`files-store`, keyed
+  by fileId, which localStorage seeding never touched. The boot script seeds and
+  reads that store directly.
+- **The app's own module script is now HELD.** `proxy_excalidraw()` turns it into
+  `window.__haipipeApp` and the boot script appends it once seeding has actually
+  finished. A classic script in `<head>` was enough to beat localStorage, which
+  is synchronous; it is NOT enough for IndexedDB, and an app that boots mid-seed
+  renders grey placeholders. A URL with no `board=` starts the app immediately,
+  so a plain visit to the editor is unaffected.
+- **An image is uploaded once.** The tab tracks which fileIds the server already
+  has (seeded from the scene it loaded), so a 1.5s save tick does not re-send a
+  megabyte screenshot every time a line moves.
+
+Verified over HTTP end to end: a PNG saved, landed byte-identical on disk, left
+no base64 in the scene, and came back byte-identical through both the frame URL
+and the whole-scene URL; a frame with no images gets an empty files map. Plus 13
+new browser-stub assertions (app held until the seed lands, a plain visit still
+boots, an image sent once and not again) and the 25 existing ones still passing.
+
+⚠️ The cost of the split, worth naming because "open it in any Excalidraw" was an
+argument for owning the file: read straight off disk by the VS Code or Obsidian
+plugin, images show as missing, since the bytes are beside the scene rather than
+in it. Through the server they are there.
+
+⚠️ Still open on `QA4a`: deleting an image element leaves its file in
+`fig/assets/` (removing it automatically would leave undo with nothing to come
+back to), and editing the seeded ASCII text is still reverted by the next
+`xcal.py` run.
+
 ## [0.27.0] — 2026-07-26
 
 **The excalidraw round-trips: what you draw lands in `fig/board.excalidraw`, and opening another page no longer offers to throw it away.**

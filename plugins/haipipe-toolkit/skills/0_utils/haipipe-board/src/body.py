@@ -840,20 +840,32 @@ def body(txt, fold_code=True, apparatus=True):
         # and every page composes its own `#url=` off it: declare once, compose
         # per page, which is the identity rule this board keeps relearning.
         m = re.match(r"^\s*(https?://(?:app\.)?excalidraw\.com/\S+)\s*$", ln)
+        ours = False
         if not m and EXCAL_HOST:
             m = re.match(r"^\s*(" + re.escape(EXCAL_HOST) + r"/\S+)\s*$", ln)
+            ours = bool(m)
         if m:
             u = esc(m.group(1))
-            # READ here, EDIT in a tab. A board carries one iframe per page and
-            # they share an origin, so an editable embed would have every page
-            # writing the same browser storage and reading back somebody else's
-            # drawing. The embed is view-only; ✏️ Edit opens the one tab that
-            # writes, and what it writes is the file every page reads (QA4a).
-            ed = u + ("&amp;" if "?" in u else "?") + "edit=1"   # u is already escaped
+            # READ here, EDIT in a tab, but ONLY for a scene we serve. A board
+            # carries one iframe per page and they share an origin, so an
+            # editable embed would have every page writing the same browser
+            # storage and reading back somebody else's drawing. ✏️ Edit opens
+            # the one tab that writes, and what it writes is the file every
+            # page reads (QA4a).
+            #
+            # A pasted app.excalidraw.com link is still a first-class thing to
+            # put here (QD7) and it gets the plain link it always had: there is
+            # no frame in it to edit, `edit=1` would mean nothing to that app,
+            # and the save loop lives on our origin, not theirs.
+            if ours:
+                ed, label = (u + ("&amp;" if "?" in u else "?") + "edit=1",
+                             "✏️ Edit this frame")
+            else:
+                ed, label = u, "↗ Open in Excalidraw"
             out.append(f'<div class="xcal"><iframe src="{u}" loading="lazy" '
                        f'referrerpolicy="no-referrer"></iframe>'
                        f'<a class="fp xopen" href="{ed}" target="_blank" rel="noopener">'
-                       f'✏️ Edit this frame</a>'
+                       f'{label}</a>'
                        f'<code class="xurl">{u}</code></div>')
             last_p = None
             continue

@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one folder tree, and one markdown page per ruling (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when sharing work with colleagues; or when the user says board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
 metadata:
-  version: "0.27.0"
+  version: "0.29.0"
   last_updated: "2026-07-26"
-  summary: "A board's excalidraw round-trips: an injected boot script seeds the editor from fig/board.excalidraw and saves back into it, one frame's slice at a time, with embeds read-only so 28 iframes cannot overwrite each other."
+  summary: "A board's excalidraw round-trips, images included: the editor is seeded from fig/board.excalidraw and saves back into it one frame at a time, with pasted images kept as real files in fig/assets/ rather than base64 in the scene."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -212,8 +212,15 @@ python3 <skill>/xcal.py <board 文件夹> --wire            # 顺手把每个 fr
 所以：iframe 用内存 storage（能拖能缩放，什么都不存）；
 点「✏️ Edit this frame」开的新标签页才是唯一能写的，并且会上锁，第二个标签页自动退回只读。
 
-⚠️ 两个已知边界：**贴进去的图片存不下来**（`files` 不回传），
-**种子文本改了会被下次 `xcal.py` 覆盖回去**（画在旁边的东西不受影响）。
+**贴进去的图片也存得下来**，但不塞进 scene 里：字节写到 `fig/assets/<fileId>.<ext>`，
+scene 里只留一个指针（JL 260726 提的这个文件夹）。
+Excalidraw 自己是把 base64 塞在文档里的 —— 一张截图就是几 MB，之后每挪一个框 git 都要重 diff 一遍，
+版本库扛不住。读的时候 `serve.py` 再还原成 dataURL，所以**从服务器取到的 scene 是自包含的**，
+编辑器完全不知道这回事。
+⚠️ 代价：**直接用 VS Code / Obsidian 插件打开磁盘上那个文件，图片是空的**（只有指针）。
+
+⚠️ 两个已知边界：**种子文本改了会被下次 `xcal.py` 覆盖回去**（画在旁边的东西不受影响）；
+**删掉图片元素，它的文件还留在 `fig/assets/` 里**（不自动删，删了就没法撤销）。
 
 每个 frame 会**用那题 `## Diagram` 里第一段 ``` ASCII 图当种子**填进去 ——
 frame 空着的话，读的人分不清是「还没画」还是「功能坏了」（JL 260726 就是这么撞上的）。

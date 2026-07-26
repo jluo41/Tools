@@ -67,25 +67,11 @@ The typed lanes are JL's extension of that same convention, proposed in the MISQ
       All ten affected pages were swept: nine venue contracts moved into `## Stage Contract` and five settled-flags blocks into `## Where we are`, every line verbatim under a guard that aborts the page if a single moved line would be lost.
       Content is now the section itself, and each heading names it (`📚 Content · Main 7 Results`, `📚 Content · Main 9 Conclusion`).
       `stage.py sync --all` then ran and left every authored venue contract untouched, which proves an authored subsection under `## Stage Contract` survives sync.
-- [ ] 🎨 Inline-marker chips
-      `\citep{}` / `\cite{TOADD}` / `{VAL:? …}` / `[Q-X-n]` render as status chips inside the sentence, resolved against the paper's .bib, `1-probes/`, and `0-displays/`.
-      The ruling this needed is NOT one decision: it is four, one per attachment type, and each has a page that owns it in the paper board's `QC` group.
-      `QC1@paper` citation, `QC2@paper` value, `QC3@paper` table, `QC4@paper` figure, over `QC0@paper` which owns the sentence unit itself. Each states its own chip states, its own hover card, and its own write rule, because the four are not symmetric: a citation ends in a `.bib` entry only a human may write, a value binds to a producing run rather than a path, a table is checkable on sight and a figure is not.
-      This board keeps the MECHANISM (the fold, the badge, the drawer, the tint, click-to-add). The paper board owns what each marker MEANS and what resolves it.
-      **Partly shipped as of 260726, and this line said the opposite for most of that day.** The `dialect: paper` opt-in exists, `src/dialect_paper.py` is in this skill's own `src/`, `build.py` loads it behind the `dialect:` key, and the MISQ paper board declares it: citations resolve against the `.bib` and `[Q-X-n]` joins against `1-probes/`, with displays named in the module as the remaining slice. Where that code is allowed to live is ruled on the paper board, at `QA4@paper`, which is a ruling about this skill's source tree made somewhere else. It was `QBc5`, then `QA6`, and the paper board has re-lettered twice since this line was written; `check.py` caught the dead link on the next run, which is the whole reason the Links are declared.
-      So what is left here is the display half, which is `QC3@paper` and `QC4@paper`. Keep this item open until those two say what to render.
-      The pointers were `QCb1`-`QCb4` until the paper board re-lettered on 260726, and this line aimed at the dead ids for a day. All five are declared in `board.md`'s `## Links` now, so a dead one is a click away from being caught.
-
-## Where we are
-v1 shipped 260725 on this board only: `src/body.py` gained `render_apparatus` and the attachment walk, `assets/board.css` gained `.sent` / `.sbadge` / `.sapp` / `.lane`, and QA4 carries the live demo.
-The hover tint and the click-to-add ➕ flow shipped the same day: `/_board/sentence` in `serve.py`, the form and drawer row in `assets/board.js`, smoke-tested live on QA4.
-The MISQ paper board took the rollout the same day (the 📄 item): 20 typed lanes, 52 sentence drawers, every `> JL:` line intact.
-Interaction refinements, 260725 evening: double-click opens the form (single click freed for reading), and every section heading carries a ⧉ button that copies the whole section as plain text (the per-sentence hover copy was tried and removed on JL's call).
-
-## Files
-The apparatus has two halves and they live in different files, so a change to one is easy to make without noticing the other.
-Reading them in this order gives the whole path: a lane is written by `serve.py`, stored in the md, and rendered by `src/body.py`.
-
+- [x] 🎨 Inline-marker chips
+      Shipped 260726 and live on two boards. `\citep{}` / `\cite{TOADD}` / `{VAL:? …}` / `[Q-X-n]` / `displayNN` / `\ref{tab:|fig:}` render as status chips resolved at build time against the paper's `.bib`, `1-probes/` and `displays/`, and each opens a native `popover` panel carrying the reference as the paper's own `.bst` sets it, the rows of a table, or both pictures of a figure.
+      The four rulings that blocked it are made: `QC1@paper` citation, `QC2@paper` value, `QC3@paper` table, `QC4@paper` figure, over `QC0@paper` which owns the sentence unit. Measured on the MISQ board: 258 chips.
+      The mechanism half lives here, and it stayed script-free: `popovertarget` alone opens the panel, inside a sentence's `<summary>` or out of it, verified in Chrome 150.
+      ⚠️ The lesson this cost, and it belongs to this page because it is a MECHANISM defect and not a paper one: a panel's class list is `chipcard <kind> <state>`, so a bare `.fig{}` rule in `board.css` written for markdown images also matched every figure panel. Its `display:block` beat the UA rule that hides a closed popover, and five invisible full-width panels lay across the page swallowing every click. `QA9`'s `check.py` now fails on any bare class selector that collides with a panel token.
 - `src/body.py`
   RENDER. The attachment walk (`last_p`, `appar`) and `render_apparatus`: which `>` lines fold under which sentence, and the ⚑ badge count.
 - `serve.py`

@@ -7,7 +7,7 @@ method: settle what can be generated before deciding what to pay for; the hosted
 ## Question
 Can a board own ONE excalidraw, carrying a frame per page, with each page's Diagram opening at its own frame?
 Yes, and it is running: one scene in the repo, 28 frames, an open-source editor in a container reached through the one port that is forwarded, and what you draw is written back to the file.
-What is still a question is the edges of that: an image pasted into a scene does not survive, regenerating overwrites the seeded figure, and none of it has been through a real browser yet.
+What is still a question is the edges of that: regenerating overwrites the seeded figure, and a deleted image leaves its file behind.
 
 Before this, an excalidraw was pasted per page, one at a time, by a human who drew it somewhere else.
 That works and it loses the thing a board most wants from a drawing, which is the relationships BETWEEN pages: the Pipeline ASCII in `board.md` is exactly that attempt, made in a medium that cannot show a link.
@@ -212,7 +212,14 @@ An embed therefore gets an IN-MEMORY storage: it renders the frame, pans and zoo
 Editing happens in the tab that "✏️ Edit this frame" opens, and a lock in real storage keeps that to one tab at a time; a second tab silently drops to read-only and says so.
 The app refuses to restore `viewModeEnabled` from storage, which is the obvious way to do this and does not work; it does restore `activeTool` and `zenModeEnabled`, so a locked hand tool and zen mode do the job better, because panning survives.
 
-#### P7. A frame saves its own slice, which is what makes one file safe to share
+#### P7. An image is a file on disk, not base64 in the scene
+(`fig/assets/<fileId>.png`, with a pointer in the scene; JL 260726)
+Excalidraw stores a pasted image as a base64 dataURL inside the document, which is the one thing a version-controlled scene cannot afford: a single screenshot is megabytes that git re-diffs every time anyone moves a box.
+So the save endpoint decodes the bytes into `fig/assets/` and leaves `{"id", "mimeType", "path"}` behind, and the read endpoint turns the pointer back into a dataURL for whichever elements it is returning.
+Fetched through `serve.py` the scene is therefore self-contained, exactly as the editor expects; read straight off disk by the VS Code or Obsidian plugin it is not, and images will show as missing there.
+That is the cost of the split and it is worth naming, because "open the file in any Excalidraw" was one of the arguments for owning the file in the first place.
+
+#### P8. A frame saves its own slice, which is what makes one file safe to share
 (`/_board/excalidraw-save` merges; it does not overwrite)
 Editing QB3 replaces the elements whose `frameId` is QB3's and leaves the other 27 frames byte-identical, verified by comparing every other slice before and after.
 The frame's id and name are forced back on save, because the name IS the page's link and an editor rename would break that page.
@@ -284,15 +291,26 @@ Storing the whole URL per page is the version that breaks all at once, and this 
 - [x] 🔁 A drawing made in the browser returns to `fig/board.excalidraw`
       `serve.py` injects `assets/xcal-boot.js` into the app it proxies; the script seeds the editor from the file and POSTs changes to `/_board/excalidraw-save`, which merges that frame's slice.
       Verified server-side on 260726 by drawing into QB3 over HTTP: the element landed, it was adopted by the frame, all 27 other frames stayed byte-identical, and both an unknown frame name and a path outside `--root` were refused.
-      Verified client-side against a stubbed browser (22 assertions): an embed leaves real storage untouched, the editing tab seeds and saves, a deleted element is stripped, an idle tick posts nothing, and a second editing tab is refused the pen.
-      NOT yet verified in a real browser, because no browser was reachable from this session.
+      Verified client-side against a stubbed browser (38 assertions): an embed leaves real storage untouched, the editing tab seeds and saves, a deleted element is stripped, an idle tick posts nothing, and a second editing tab is refused the pen.
+      Then verified in a REAL browser, which is the only test that counted: headless Chrome driven over the DevTools protocol opened the frame, pressed `r`, dragged a rectangle, and the rectangle arrived in `fig/board.excalidraw` inside `frame-QB3` with the other 88 elements untouched.
 - [x] 🚪 Opening another page stops destroying what you drew
       The "Replace my content" dialog came from `#url=`, which is now gone: the URL is `?board=&frame=` and the boot script seeds storage directly, so there is no external scene to confirm against.
       An embed persists nothing at all, so 28 iframes on one origin can no longer overwrite each other.
-- [ ] 🖼 An image pasted into the scene survives
-      Excalidraw keeps images in a `files` map beside the elements, and the save endpoint writes `elements` only.
-      So a pasted image renders while the tab is open and is gone on reload, which is worse than refusing it.
-      This closes when `files` round-trips too, or when the endpoint says plainly that it does not.
+- [x] 🖼 An image pasted into the scene survives
+      The bytes go to `fig/assets/<fileId>.<ext>` and the scene keeps a pointer, on JL's suggestion of a folder for them (260726).
+      Inline was the alternative and it is what Excalidraw itself does: one screenshot is megabytes of base64 that git then re-diffs on every stroke, so the sidecar is the version a repo can live with.
+      The server rehydrates on the way out, so the editor still receives the dataURL it expects and the split is invisible to it.
+      Images are also read from and written to IndexedDB rather than localStorage, which is where Excalidraw actually keeps them, and that being async is why the app's own script is now held until the seed lands.
+      Verified over HTTP: a PNG saved, landed on disk byte-identical, left no base64 in the scene, and came back byte-identical through both the frame and the whole-scene URL.
+- [ ] 🧹 A deleted image does not leave its bytes behind
+      `fig/assets/` is only ever written to: removing the image element drops it from the scene and leaves the file on disk.
+      Deleting it automatically is the wrong default, because an undo would then have nothing to come back to.
+      This closes when there is a way to sweep the unreferenced ones deliberately, or the rule is written where it will be read.
+- [x] 🔇 Opening a page to look at it does not dirty the repo
+      Excalidraw rewrites `version`, `versionNonce`, `updated` and `boundElements` on everything it loads, so the first build saved the file one second after the editor opened, with nothing drawn.
+      The tab now compares CONTENT rather than raw JSON, and `xcal.py` keeps an element the browser has enriched rather than writing its plainer version back.
+      Without the second half the two would have dirtied the file in turn forever, each undoing the other.
+      Measured, not assumed: opening the editor twice in a row leaves the file byte-identical the second time, and two `xcal.py` runs in a row do too.
 - [ ] 🌱 A regen does not quietly revert what someone drew over a seed
       The seeded ASCII text is a generated element, so `xcal.py` rewrites it; editing that text in Excalidraw and then regenerating loses the edit.
       Drawings around it are safe (unprefixed ids are kept) and this only touches the seed itself.
@@ -310,7 +328,8 @@ Storing the whole URL per page is the version that breaks all at once, and this 
 ## Where we are
 The arrow now points both ways: one scene, 28 frames, every page reading its own frame and any page able to edit it, with what you draw landing in `fig/board.excalidraw`.
 The route is settled and it is the cheapest of the four: no key, no subscription, no exporter.
-What is left is not the loop but its edges: images do not round-trip, a regen still overwrites the seeded text, and none of it has been exercised in a real browser yet, only against a stub.
+Images round-trip too, as files in `fig/assets/` with a pointer in the scene, and the whole thing has now been driven by a real browser rather than argued about: headless Chrome drew a rectangle and it landed in the file.
+What is left is smaller: a regen still overwrites the seeded ASCII text, and an image whose element is deleted leaves its file behind.
 
 - 260726 JL · 🔁 Editing saved nothing, and switching pages destroyed it
       JL drew on a frame, found the change did not persist, and then found that opening another page offered to overwrite the drawing.
@@ -376,6 +395,8 @@ When a script edits a section, rebuilding the section from its parts is safe in 
 >> CC0726: two causes, and only the second was ours. The dialog's confirm is called "Replace my content", and the frame behind it held nothing, because 28 named empty frames was the whole scene. Frames are seeded from the pages' ASCII figures as of this entry.
 
 ## Log
+260726 · DRIVEN BY A REAL BROWSER (JL: "will it work?"): headless Chrome over the DevTools protocol, which found two things no amount of reading would have. First, the boot script was injected BEFORE the variable it reads, so the app never started at all behind a correct-looking badge. Second, merely opening the editor rewrote the file, because Excalidraw renormalises everything it loads
+260726 · IMAGES SAVED (JL: "could we make it saved? we can have assets/excalidraw folder for it"): bytes to `fig/assets/<fileId>.<ext>`, a pointer in the scene, rehydrated on read; images live in IndexedDB not localStorage, so the app's own module script is now held until that seed lands
 260726 · CLOSED THE LOOP (JL: "when I edit the excalidraw, the changes won't save ... what I added will be gone"): `assets/xcal-boot.js` injected into the proxied app takes over the browser's storage, `#url=` replaced by `?board=&frame=`, `/_board/excalidraw-save` merges one frame's slice, an embed persists nothing and the ✏️ tab holds a lock; images and the seed-overwrite are the two edges left
 260726 · SEEDED and made re-runnable: `xcal.py` added (scene from `board.md`, `--wire` for the URLs, `--fresh` for a relayout), each frame now carries its page's ASCII figure, retired frames are dropped and human drawings kept, 28 pages wired; one bad regex damaged 4 pages on the way and the repair is in the script
 260726 · BUILT the local route end to end: excalidraw in a container, proxied at `/_excalidraw/` so it rides the one forwarded port, `serve_frame()` projecting `?frame=<page>` out of one scene, and `board.md` declaring the host once

@@ -202,7 +202,22 @@
 
   /* ---- 3. write back, from the editing tab only ---------------------- */
   if (!edit) return;
-  var last = JSON.stringify(els), busy = false;
+  // Compare on CONTENT, not on the raw JSON. Excalidraw rewrites `version`,
+  // `versionNonce` and `updated` on every element the moment it loads a scene,
+  // so a raw comparison reports a change the instant the editor opens and the
+  // file gets rewritten by merely being looked at (found 260726 in headless
+  // Chrome: "✓ saved" one second after load, nothing drawn). Key order differs
+  // between our writer and the app's, so it is normalised here too.
+  var VOLATILE = { version: 1, versionNonce: 1, updated: 1 };
+  function sig(list) {
+    return JSON.stringify(list.map(function (e) {
+      var o = {};
+      Object.keys(e).sort().forEach(function (k) { if (!VOLATILE[k]) o[k] = e[k]; });
+      return o;
+    }));
+  }
+
+  var last = sig(els), busy = false;
   var sent = {};                            // fileIds the server already has
   Object.keys(scene.files || {}).forEach(function (id) { sent[id] = 1; });
   function flush(unloading) {
@@ -211,7 +226,7 @@
     var live;
     try { live = JSON.parse(now).filter(function (e) { return !e.isDeleted; }); }
     catch (e) { return; }
-    var body = JSON.stringify(live);
+    var body = sig(live);
     if (body === last) return;
     if (unloading) {
       // No time for IndexedDB on the way out, so this carries elements only.

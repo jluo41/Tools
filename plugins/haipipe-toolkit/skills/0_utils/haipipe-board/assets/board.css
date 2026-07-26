@@ -787,6 +787,12 @@ details.gi summary:hover{color:var(--fg)}
   border-left-width:4px;border-radius:var(--radius-surface);background:var(--card);
   color:var(--fg);font:14.5px/1.62 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
   box-shadow:0 10px 34px rgba(0,0,0,.20)}
+/* And a closed panel STAYS closed, whatever else matches it. The collision
+   above cost a day; this makes the next one impossible rather than subtle,
+   since (0,2,0) outranks any single class a chip kind or state can add. */
+@supports selector(:popover-open){
+  .chipcard:not(:popover-open){display:none}
+}
 .chipcard::backdrop{background:rgba(0,0,0,.10)}
 .chipcard.ok{border-left-color:var(--done)}
 .chipcard.ready{border-left-color:var(--accent)}
@@ -896,7 +902,15 @@ details.gi summary:hover{color:var(--fg)}
 .chip.qref.unowned{opacity:1;color:var(--todo);border-color:var(--todo)}
 
 /* A figure in the body: an excalidraw drawing, a screenshot, anything ![](…) */
-.fig{max-width:100%;height:auto;display:block;margin:12px 0;
+/* SCOPED TO THE IMAGE (JL 260726). Unscoped, `.fig` also matched every chip
+   PANEL, because a figure panel's class list is `chipcard disp fig <state>`.
+   Its `display:block` beat the UA's `[popover]:not(:popover-open){display:none}`,
+   so every figure panel rendered permanently, in normal flow, full width, on
+   top of the page. They were invisible against the background and swallowed
+   every click in the band they covered: measured on QC0, 11 of 11 chips were
+   unreachable by a real mouse while all 11 responded to element.click().
+   That is the whole of "I cannot click the values, displays, figures". */
+img.fig{max-width:100%;height:auto;display:block;margin:12px 0;
  border:1px solid var(--line);border-radius:var(--radius-surface);background:var(--card)}
 .xadd-row .xnew{border-style:dashed;color:var(--accent);border-color:var(--accent)}
 .xadd-row .xnew:disabled{opacity:.5;cursor:default}
