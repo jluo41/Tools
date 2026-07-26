@@ -4,15 +4,50 @@ owner: JL
 method: keep the one-question rule; decide whether it is enforced or merely stated
 
 ## Question
-What makes something a lifecycle stage rather than a task, a phase, or a folder?
+What makes something a lifecycle stage rather than a task, a phase, or a folder? The working answer is one question, one artifact, one gate. What the rule is worth depends entirely on whether it is strong enough to refuse a ninth stage.
 
 The working answer is: a stage answers exactly ONE question, produces ONE artifact, and closes at ONE human gate. That rule is what stops the lifecycle turning into a folder of chores, and it is already doing real work: it is why "compile the manuscript" is not a stage of section-edit, and why the eight stages have the shapes they do. What is unsettled is whether anything enforces it.
 
+
+The way to settle it is to state the test, one question and one artifact and one gate, and then hold the eight existing stages against it rather than reasoning in the abstract. What we want is a rule strong enough to say no to a ninth stage, because a definition that admits everything is not doing any work.
 ## Boundary
 - ✅ Covered here
   The definition of a stage, and the one-question rule.
 - ↪ Covered elsewhere
   The four phases inside a stage are `QB2`; the gate is `QB3`; whether a stage may run per-unit is `QB4`.
+
+## Diagram
+```
+ THE 1:1:1 RULE                     what makes a folder a STAGE
+
+   ONE question   ──►  ONE artifact  ──►  ONE human gate
+   "why might this      the seed page      CHECK: JL says yes
+    paper exist?"
+
+ THE EIGHT, AS THEY STAND
+   0-seed          why might this paper exist?              venue-FREE
+   1a-resource     does the evidence EXIST, can it carry?      │
+   1b-claims       which claims are supported / weak / GAP?    │
+   ─────────────────────────────────────────────────────────── │
+   2a-venue        which outlet, and what does it demand?    ← the pin
+   2b-pitch        what is it selling, in one minute?          │
+   3-narrative     how do claims become an arc?             venue-ALIGNED
+   4-display       what figure or table carries each claim?    │
+   5-section-edit  does each section's prose do its job?       │
+
+ THE CLEAVE THAT PROVES THE RULE
+   1a-resource  "does it EXIST and can it carry a claim"   may never train
+        ╎                                                   may never evaluate
+   1b-claims    "what does running it SAY"                  runs the experiment
+   Collapse these two and the paper loses the difference between
+   HAVING EVIDENCE and HAVING A VERDICT.
+
+ WHAT IS NOT SETTLED
+   nothing checks the rule. A stage grows a second question SILENTLY,
+   and the only symptom is a gate nobody can pass:
+      4-display  ──►  "is the display stage done?"  across 11 assets
+                      13-record checklist · never closed  (fixed in QB4)
+```
 
 ## Content
 ### The eight questions, as they stand

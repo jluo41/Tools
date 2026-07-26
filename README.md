@@ -47,8 +47,16 @@ cd Tools
 .\install.ps1                          # marketplace + auto-detected project skills
 .\install.ps1 -Project C:\path\repo    # link into a specific workspace
 .\install.ps1 -Global                  # also link into ~\.claude\skills
+.\install.ps1 -Hooks                   # configure sound hooks in settings.json
+.\install.ps1 -All                     # marketplace + global + hooks
 .\install.ps1 -Symlink                 # use symlinks instead (needs admin / Dev Mode)
+.\install.ps1 -NoMarketplace           # skip marketplace registration
 ```
+
+Agents are single `.md` files, so without `-Symlink` they are copied rather than
+linked. The installer records what it wrote in `.jluo41-tools-agents.json` inside
+the agents directory, which is how a re-run can refresh its own copies and delete
+retired ones while never touching an agent file you wrote yourself.
 
 Junctions use absolute targets, so re-run `install.ps1` if you relocate the
 repo. The generated links are OS/machine-specific — gitignore
@@ -76,18 +84,26 @@ Skill discovery is recursive, so deeply nested skills such as
 This symlinks all skills to `~/.claude/skills/` so they are available in every
 Claude Code session.
 
-Duplicate skill names are resolved deterministically because one skills
-directory cannot contain two symlinks with the same basename. The installer
-prefers standalone diagram skills over haipipe utility mirrors and active paper
-skills over `_paper-writing-backup` snapshots.
+`_archive/` and `_paper-writing-backup/` are excluded, by both installers, so a
+retired skill never lands in your skills directory.
+
+Duplicate skill names are resolved deterministically because one skills directory
+cannot contain two symlinks with the same basename. No promotion rule is live
+today: every skill name is currently unique, so the tie-break is a stable
+plugin/path sort and whichever loses is reported on stdout.
 
 ### Hooks
 
 ```bash
-./install.sh --hooks
+./install.sh --hooks        # macOS / Linux
+.\install.ps1 -Hooks        # Windows
 ```
 
-This configures Claude Code sound hooks in `~/.claude/settings.json`.
+This configures Claude Code sound hooks in `~/.claude/settings.json`. The per-OS
+sound table lives in `install-hooks.json` and is read by both installers, so they
+cannot drift; each keeps its own small writer, which is why the PowerShell one
+needs no Python. A sound file missing on your machine is reported and its hook
+stays silent.
 
 ### Update
 

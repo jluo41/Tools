@@ -215,7 +215,14 @@ def prime_context(f, board, root):
     title = tm.group(1).strip() if tm else ""
     qm = re.search(r"^## Question\s*\n(.*?)(?=\n## |\Z)", txt, re.S | re.M)
     qtext = " ".join(qm.group(1).split()) if qm else ""
-    nopen = len(re.findall(r"^-\s*\[ \]\s", txt, re.M))
+    # Count the two kinds of open box SEPARATELY (QA8a, 260726). This was one
+    # number over the whole file, announced as "unresolved comments", so a face
+    # with one comment and one open item was reported as two comments. Measured
+    # cost: a cold agent noticed the discrepancy, could not resolve it, and
+    # invented an explanation for it, which is worse than saying nothing.
+    cm = re.search(r"^## (?:Comments|评论)\s*$(.*?)(?=^## |\Z)", txt, re.S | re.M)
+    ncom = len(re.findall(r"^-\s*\[ \]\s", cm.group(1), re.M)) if cm else 0
+    nitem = len(re.findall(r"^-\s*\[ \]\s", txt, re.M)) - ncom
     btitle, bname = "", Path(board).name
     bmd = Path(board) / "board.md"
     if bmd.exists():
@@ -230,8 +237,10 @@ def prime_context(f, board, root):
     ]
     if qtext:
         lines.append(f"  · What it asks: {qtext[:280]}")
-    if nopen:
-        lines.append(f"  · It has {nopen} unresolved comment(s) in its ## Comments — read them before acting.")
+    if ncom:
+        lines.append(f"  · {ncom} unresolved comment(s) in its ## Comments: read them before acting.")
+    if nitem:
+        lines.append(f"  · {nitem} unticked item(s) in its ## Items to Finish: that is the open work, not comments.")
     lines.append("Read that file for the full picture. You already know which face and board "
                  "this is; wait for the user's instruction.")
     return "\n".join(lines)
@@ -264,8 +273,24 @@ the question touches — not just the board folder. The one question you belong 
 is the file given below (a path relative to the repo root). That board folder
 holds `board.md` (board-level title/spine/pages) and one `QX-<slug>.md` per
 question, each with fixed sections:
-## Question / ## Diagram / ## Done when / ## Now / ## Why here /
-## Lesson / ## Glossary / ## Discussion / ## Comments / ## Log
+## Question / ## Boundary / ## Diagram / ## Content / ## Items to Finish /
+## Where we are / ## Files / ## Law / ## Lesson / ## Glossary /
+## Discussion / ## Comments / ## Log
+(Old boards may still say `## Done when` for Items to Finish and `## Now` for
+Where we are; both are accepted. `## Why here` is retired.)
+
+Two different things can be attached to a face, and they live in different
+places:
+  · a COMMENT is pinned to a quoted sentence and sits in `## Comments`.
+  · a LANE is a `>` line written DIRECTLY UNDER a sentence in the body, bound
+    to it by adjacency alone, and typed by its first word:
+        The coefficient is 0.42 in the pooled model.
+        > Check: 0.42 is from the robust-SE run, not the clustered one
+        > JL: please fix this before the next draft
+    Lanes are Citation, Value, Display, Check, Q-consumer, Link, Source, Note,
+    plus `> JL:` and `> CC:` threads. A lane is addressed to whoever works on
+    that sentence, which on this turn is you. Read them as requests about the
+    sentence immediately above, not as quoted prose.
 
 Scope, and it is hard:
   · You may READ anywhere in the repo.
@@ -373,6 +398,15 @@ def _slugify(t):
     return "-".join(s.split("-")[:5])[:48] or "question"
 
 
+# The skeleton the ＋ button writes. It follows QA2, which rules that Question,
+# Items to Finish and Where we are are required, that Boundary and Files are
+# "optional but strongly advised", and that everything else is optional.
+#
+# Advised sections are written OUT, so declining one is a deletion rather than an
+# omission. Optional ones are listed in a comment instead: an author cannot choose
+# a section they never learn exists (JL 260726, after a new face arrived with no
+# Diagram and nothing said one was available), and a comment is dropped at render,
+# so the page never shows a box opened onto nothing.
 Q_STUB = """# {title}
 state: 🔴 OPEN
 owner: JL
@@ -384,12 +418,36 @@ Then one paragraph on why it is hard, what breaks while it stays open, and what
 it affects downstream. This file is a stub from the index page's ＋ button;
 writing standard: ref/writing-rules.md (English only, no em-dashes).
 
+## Boundary
+- ✅ Covered here
+  What this face decides.
+- ↪ Covered elsewhere
+  What it does not, and the id of the face that does. An exclusion with no
+  destination leaves the reader stranded.
+
+<!-- Optional sections, in the order they render. Uncomment the ones this face
+     earns and delete this comment; empty beats wrong, so leave out what you
+     cannot fill (grammar: ref/q-template.md, layout: QA4).
+
+## Diagram      one ascii figure of the shape or flow, collapsed on the page.
+                An excalidraw share URL alone on a line embeds as a canvas.
+## Content      ### is a division that folds, #### is one paragraph inside it.
+## Law          rules this face has settled.
+## Lesson       traps hit, with the concrete failure attached.
+## Glossary     words an outsider would stumble on: `term: explanation`.
+## Discussion   loose threads, `> JL:` and `>> CC0726:`.
+-->
+
 ## Items to Finish
 - [ ] 🎯 Name what counts as done
       One sentence saying exactly how this line is judged met.
 
 ## Where we are
 Nothing yet: the question was just opened.
+
+## Files
+- `path/to/thing`
+  Its role in this question, and where you start when this question changes.
 
 ## Log
 {stamp} · Opened from the index page (＋ Question)

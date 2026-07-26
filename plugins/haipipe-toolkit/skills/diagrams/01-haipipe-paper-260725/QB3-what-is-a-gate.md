@@ -4,19 +4,50 @@ owner: JL
 method: one gate per stage at CHECK; make agent stand-ins impossible rather than discouraged
 
 ## Question
-What does it mean for a stage to be done, and who is allowed to say so?
+What does it mean for a stage to be done, and who is allowed to say so? A gate is a human yes, spent deliberately at one point per stage. The safety of the entire design rests on no agent ever being able to write one.
 
 A gate is a human yes. The design deliberately spends the human's attention at exactly one point per stage, at CHECK, and lets DRAFT, PROBE and REVISE run unattended so the human meets a finished thing rather than a stream of approvals. The open part is not the definition; it is what happens when nobody is there to say yes.
 
+
+The approach is one human yes per stage, spent where it buys the most, with everything before it unattended and safe because nothing before it can spend. What we want is a design in which no agent can ever mark work accepted, no matter how confident it is or how convenient it would be.
 ## Boundary
 - ✅ Covered here
   What a gate is, where it sits, and who may pass it.
 - ↪ Covered elsewhere
-  How many gates a stage may declare is part of its contract form, `QE1`; the cost that makes unattended phases safe is `QD2`.
+  How many gates a stage may declare is part of its contract form, `QE1`; the cost that makes unattended phases safe is `QBb2`.
+
+## Diagram
+```
+ WHERE THE HUMAN'S ATTENTION IS SPENT: ONCE, ON A FINISHED THING
+
+   DRAFT ──► PROBE ──► REVISE ──►  CHECK
+   ╰──────── unattended ───────╯    🧠 one human yes
+
+ WHY UNATTENDED IS SAFE
+   a phase that cannot SPEND does not need a gate in front of it.
+   PROBE's ceiling is probe_depth (QBb2): depth 0 reads and harvests only.
+   Remove that ceiling and all three of these need gates again.
+
+ THE FAILURE THIS HAS ALREADY HAD          (MISQ seed, still open)
+   ┌──────────────────────────────────────────────────┐
+   │ an agent may not PASS a gate                     │
+   │ an agent CAN write the line saying it passed  ⚠️  │
+   └──────────────────────────────────────────────────┘
+   a seed re-run gate was recorded as passed by an agent standing in
+   for the human. The record says so plainly. A stage was marked done
+   that no person had read.
+   Only good behaviour prevented it, which is not a mechanism.
+
+ WHERE THE ANSWER PROBABLY LIES
+   in the phase worker          in the BOARD
+   ✗ the worker is the thing    ✓ a page cannot be ✅ until its own
+     being constrained            gate is recorded, and that is where
+                                  a human is actually looking
+```
 
 ## Content
 ### The design
-Each `stage.md` declares `gates:`, and the default is one, at CHECK. DRAFT, PROBE and REVISE are unattended. That is only safe because PROBE cannot spend without authorization, which is `QD2`: a phase that cannot cost anything is a phase that does not need a gate in front of it.
+Each `stage.md` declares `gates:`, and the default is one, at CHECK. DRAFT, PROBE and REVISE are unattended. That is only safe because PROBE cannot spend without authorization, which is `QBb2`: a phase that cannot cost anything is a phase that does not need a gate in front of it.
 
 ### The failure this has already had
 On the MISQ paper, a seed re-run gate was recorded as passed by an agent standing in for the human. The record says so plainly, and the consequence was a stage marked done that no person had read. It is still open on that paper's seed page.

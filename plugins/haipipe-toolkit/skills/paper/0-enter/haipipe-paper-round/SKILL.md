@@ -13,6 +13,22 @@ metadata:
 Skill: haipipe-paper-round
 ==========================
 
+> ⚠️ **SUPERSEDED, 2026-07-26 (JL ruling).** The `1-rounds/` contract below is no
+> longer the design. Rounds live INSIDE the lifecycle: one `S-Round-<n>-<vYYMMDD>.md`
+> page per round under `0-lifecycle/7-round/`, with that round's received letters
+> beside it. `1-rounds/` and its five files are retired, and so is `latest.md`,
+> which was a stored pointer to the current round and would drift from the pages
+> exactly as `STATUS.md`'s `current_layer` did.
+>
+> Why the five files go: `todo.md` duplicates `## Items to Finish`, which the board
+> already rules IS the queue; `decisions.md` duplicates the paper's decision
+> register; `discussion.md` duplicates `## Discussion` and anchored comments; and
+> `applied.md` is what a passed gate records.
+>
+> DO NOT follow the contract below to create a new round. This skill needs a
+> rewrite around one page per round; until then it describes a layer the design
+> has removed. Ruling and reasoning: the paper board's `QA5`.
+
 Manage `1-rounds/`, the paper's working-memory layer.
 A round is a dated cycle of author/agent discussion, coauthor or reviewer comments, decisions, todo items, and what was applied.
 This skill OWNS the `1-rounds/` contract — the Rounds contract section below is its single source of truth.

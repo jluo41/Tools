@@ -1,0 +1,63 @@
+{
+  "_comment": [
+    "Sound-hook table, read by BOTH installers: install.sh --hooks and install.ps1 -Hooks.",
+    "It lives here rather than inside either script because a table copied into two",
+    "scripts is a table that drifts. Each installer keeps its own ~15-line writer, which",
+    "is why Windows needs no Python.",
+    "",
+    "Per OS: 'command' is the shell command written into settings.json, with {sound}",
+    "replaced by the file and, on Linux, {player} by the first player found on PATH.",
+    "Linux sound names are relative to the first directory in 'sound_dirs' that exists."
+  ],
+
+  "darwin": {
+    "label": "macOS",
+    "command": "afplay {sound}",
+    "sounds": {
+      "SessionStart":       "/System/Library/Sounds/Hero.aiff",
+      "Stop":               "/System/Library/Sounds/Glass.aiff",
+      "TaskCompleted":      "/System/Library/Sounds/Purr.aiff",
+      "PermissionRequest":  "/System/Library/Sounds/Blow.aiff",
+      "Notification":       "/System/Library/Sounds/Ping.aiff",
+      "SubagentStart":      "/System/Library/Sounds/Submarine.aiff",
+      "SubagentStop":       "/System/Library/Sounds/Pop.aiff",
+      "PostToolUseFailure": "/System/Library/Sounds/Basso.aiff"
+    }
+  },
+
+  "linux": {
+    "label": "Linux",
+    "command": "{player} {sound}",
+    "players": ["paplay", "aplay"],
+    "sound_dirs": [
+      "/usr/share/sounds/freedesktop/stereo",
+      "/usr/share/sounds/gnome/default/alerts",
+      "/usr/share/sounds/ubuntu/stereo"
+    ],
+    "sounds": {
+      "SessionStart":       "service-login.oga",
+      "Stop":               "complete.oga",
+      "TaskCompleted":      "complete.oga",
+      "PermissionRequest":  "dialog-warning.oga",
+      "Notification":       "message.oga",
+      "SubagentStart":      "service-login.oga",
+      "SubagentStop":       "service-logout.oga",
+      "PostToolUseFailure": "dialog-error.oga"
+    }
+  },
+
+  "windows": {
+    "label": "Windows",
+    "command": "powershell -NoProfile -WindowStyle Hidden -Command \"(New-Object Media.SoundPlayer '{sound}').PlaySync()\"",
+    "sounds": {
+      "SessionStart":       "C:\\Windows\\Media\\chimes.wav",
+      "Stop":               "C:\\Windows\\Media\\tada.wav",
+      "TaskCompleted":      "C:\\Windows\\Media\\ding.wav",
+      "PermissionRequest":  "C:\\Windows\\Media\\notify.wav",
+      "Notification":       "C:\\Windows\\Media\\notify.wav",
+      "SubagentStart":      "C:\\Windows\\Media\\chimes.wav",
+      "SubagentStop":       "C:\\Windows\\Media\\ding.wav",
+      "PostToolUseFailure": "C:\\Windows\\Media\\chord.wav"
+    }
+  }
+}

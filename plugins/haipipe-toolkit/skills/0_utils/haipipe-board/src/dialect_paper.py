@@ -1,0 +1,618 @@
+"""The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
+
+A board declares this in board.md:
+
+    dialect: paper
+    paper-root: ..
+
+and then `\\citep{key}` in a sentence stops being grey prose and becomes a chip
+that knows whether the key exists.
+
+WHY BUILD TIME. The board's invariant is that stripping every <script> leaves
+the substance intact. Evidence resolved in JavaScript would vanish under that
+test. So the index is built once, here, and each chip ships with a `title=`,
+which is a native browser tooltip: hover already works with no script at all.
+JavaScript may later upgrade that tooltip into a rich card, and it may not be
+the only copy of anything.
+
+Citations resolve against the `.bib`; owed markers of every kind resolve
+against `1-probes/`, because `[Q-Section-4]` is not citation grammar or value
+grammar, it is the paper's ONE join key from a sentence to the question that
+owes it. Displays resolve against `0-displays/` and are the remaining slice.
+
+THIS MODULE IS DELETABLE. The board must build with it gone and every board
+that does not say `dialect: paper` must render byte-identical, which is the
+mechanical form of "the board never assumes a paper". build.py asserts it.
+"""
+
+import difflib
+import re
+from pathlib import Path
+
+# @article{key,  ...fields...   up to the next entry at column 0
+ENTRY = re.compile(r"^@\w+\s*\{\s*([^,\s]+)\s*,(.*?)(?=^@|\Z)", re.S | re.M)
+# title = {...}  /  title = "..."  /  year = 2018
+FIELD = re.compile(r"(\w+)\s*=\s*(?:\{(.*?)\}|\"(.*?)\"|(\d+))\s*,?\s*$",
+                   re.S | re.M)
+BRACES = re.compile(r"[{}]")
+
+
+def _fields(blob):
+    out = {}
+    for m in FIELD.finditer(blob):
+        val = m.group(2) or m.group(3) or m.group(4) or ""
+        out[m.group(1).lower()] = BRACES.sub("", " ".join(val.split()))
+    return out
+
+
+def _one_line(f):
+    """A bibtex entry as one readable line, for a tooltip."""
+    who = f.get("author") or f.get("editor") or ""
+    if " and " in who:
+        first = who.split(" and ")[0]
+        who = (first.split(",")[0] if "," in first else first.split()[-1]) + " et al."
+    elif who:
+        who = who.split(",")[0] if "," in who else who.split()[-1]
+    where = (f.get("journal") or f.get("booktitle") or f.get("publisher")
+             or f.get("school") or f.get("institution") or "")
+    bits = [b for b in (who, f.get("year", ""), f.get("title", ""), where) if b]
+    return " · ".join(bits)
+
+
+# ---------------------------------------------------------------- probes --
+# A probe entry names the sentences it serves in its `### q-consumer` block.
+# Two decorations are in live use across the folders (`* **Q-Section-2** — …`
+# and `- Q-Section-1 (§7.2): …`), so read the ID and ignore the bullet.
+QID = re.compile(r"\bQ-[A-Za-z]+-\d+\b")
+CITE_TEX = re.compile(r"\\cite[tp]?\*?\{([^}]*)\}")
+REF_TEX = re.compile(r"\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}")
+# what a browser can put in an <img>. A .pdf asset cannot be previewed,
+# and the panel says so rather than showing a broken frame.
+IMG = (".png", ".jpg", ".jpeg", ".svg", ".webp", ".gif")
+# any number as it is written in a probe answer: 1.21494 · 765,701 · 0.001
+NUMTOK = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+")
+
+
+def _sections(text):
+    """A probe file split on its `### ` headings, keyed lowercase."""
+    out, cur, buf = {}, "", []
+    for ln in text.split("\n"):
+        if ln.startswith("### "):
+            out[cur] = "\n".join(buf).strip()
+            cur, buf = ln[4:].strip().lower(), []
+        else:
+            buf.append(ln)
+    out[cur] = "\n".join(buf).strip()
+    return out
+
+
+def _field(block, name):
+    """`**state**: answered` and `- state: deferred` are both in use."""
+    m = re.search(rf"^[-*\s]*(?:\*\*)?{name}(?:\*\*)?\s*:\s*(.+)$",
+                  block, re.M | re.I)
+    return m.group(1).strip() if m else ""
+
+
+# How far the answer is from the prose. Ordered worst-last on purpose: when two
+# probe entries serve the same sentence, the one that is FURTHEST along wins,
+# because the sentence can be written as soon as any one of them lands.
+RANK = {"answered": 0, "read": 1, "commissioned": 2, "planned": 3, "deferred": 4}
+
+
+class Probe:
+    """One `1-probes/PPnn_*/QXn_*.md` entry, as far as a chip needs it."""
+
+    def __init__(self, path, root):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        secs = _sections(text)
+        bind = secs.get("bank binding", "")
+        self.path = path
+        self.rel = path.relative_to(root).as_posix()
+        self.id = f"{path.parent.name.split('_')[0]}/{path.stem.split('_')[0]}"
+        self.title = next((l.lstrip("# ").strip() for l in text.split("\n")
+                           if l.startswith("#")), path.stem)
+        self.state = (_field(bind, "state").split("·")[0].split("(")[0]
+                      .strip().lower() or "planned")
+        self.route = _field(bind, "route")
+        self.target = _field(bind, "target")
+        self.answer = secs.get("a-executor", "")
+        self.text = text          # searched when checking a prose number
+        self.asks = sorted(set(QID.findall(secs.get("q-consumer", ""))))
+
+    @property
+    def rank(self):
+        return RANK.get(self.state, 3)
+
+    def chip(self):
+        """-> (state, tooltip) for a sentence that points at this probe.
+
+        `answered` is CHECKED, not believed: a probe may say answered while its
+        `### a-executor` block is empty, which is the one contradiction that
+        looks finished from the prose side.
+        """
+        where = f"{self.id} · {self.title}"
+        head = " ".join(self.answer.split())[:220]
+        if self.state == "answered":
+            if not self.answer.strip():
+                return ("broken",
+                        f"{where}\nstate says answered but its a-executor block "
+                        f"is EMPTY. Nothing was harvested; this reads as done "
+                        f"and is not.")
+            return ("ok", f"{where}\nANSWERED · {head}")
+        if self.state == "read":
+            return ("owed",
+                    f"{where}\nREAD — the bank answers this, but a-executor is "
+                    f"not harvested yet.\ntarget: {self.target}")
+        if self.state == "deferred":
+            return ("parked",
+                    f"{where}\nDEFERRED on purpose (cost ceiling), not "
+                    f"forgotten.\n{head}")
+        return ("owed",
+                f"{where}\n{self.state.upper()} · route {self.route or '?'}\n"
+                f"target: {self.target}")
+
+
+# ------------------------------------------------------- the bibliography --
+# `refs.py` runs the paper's OWN .bst through bibtex and leaves the result here.
+# The dialect only reads it: see QBc5 and refs.py's header for why the write is
+# a separate, explicit command.
+BBL_ITEM = re.compile(r"\\bibitem(?:\[[^\]]*\])?\{([^}]*)\}(.*?)"
+                      r"(?=\\bibitem|\\end\{thebibliography\})", re.S)
+# LaTeX the .bbl emits, in the order it has to be undone
+TEX_FIX = [
+    (re.compile(r"\\enquote\{(.*?)\}", re.S), "\u201c\\1\u201d"),
+    (re.compile(r"\{\\it\s*(.*?)\\/\}", re.S), "\\1"),
+    (re.compile(r"\{\\(?:it|bf|em|tt|sc)\s*(.*?)\}", re.S), "\\1"),
+    (re.compile(r"\\(?:textit|textbf|emph|texttt|url)\{(.*?)\}", re.S), "\\1"),
+    (re.compile(r"\\natexlab\{(.*?)\}"), "\\1"),
+    (re.compile(r"\\newblock|\\urlprefix|\\/"), ""),
+    (re.compile(r"\\&"), "&"),
+    (re.compile(r"\\%"), "%"),
+    (re.compile(r"~"), " "),
+    (re.compile(r"--"), "\u2013"),
+    (re.compile(r"[{}]"), ""),
+]
+
+
+def _detex(s):
+    for rx, rep in TEX_FIX:
+        s = rx.sub(rep, s)
+    return " ".join(s.split())
+
+
+def _load_bbl(root):
+    """key -> the reference string the manuscript will actually print."""
+    p = root / ".board-refs.bbl"
+    if not p.is_file():
+        p = next((q for q in sorted(root.glob("*.bbl"))), None)
+    if p is None or not p.is_file():
+        return {}
+    text = p.read_text(encoding="utf-8", errors="replace")
+    return {m.group(1).strip(): _detex(m.group(2))
+            for m in BBL_ITEM.finditer(text)}
+
+
+class Entry:
+    """One bibtex entry, with enough to POINT AT it: which file, which line,
+    and the raw text as written. The chip's panel shows the entry and links to
+    the line, so "does this key exist" and "what is it" are one click, not a
+    grep. Nothing here writes: the .bib is human-only."""
+
+    __slots__ = ("key", "fields", "path", "line", "raw")
+
+    def __init__(self, key, fields, path, line, raw):
+        self.key, self.fields, self.path = key, fields, path
+        self.line, self.raw = line, raw
+
+    def links(self):
+        """(label, href) for every way this entry names its own source."""
+        f, out = self.fields, []
+        doi = f.get("doi", "").strip()
+        if doi:
+            d = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", doi).strip()
+            if d:
+                out.append((f"doi {d}", f"https://doi.org/{d}"))
+        ep = f.get("eprint", "").strip()
+        if ep and "arxiv" in (f.get("archiveprefix", "") + f.get("journal", "")
+                              + f.get("primaryclass", "")).lower():
+            out.append((f"arXiv:{ep}", f"https://arxiv.org/abs/{ep}"))
+        url = f.get("url", "").strip()
+        if url.startswith("http") and not any(url == h for _, h in out):
+            short = re.sub(r"^https?://(www\.)?", "", url)
+            out.append((short[:58] + ("…" if len(short) > 58 else ""), url))
+        return out
+
+
+class Display:
+    """One `0-displays/displayNN-<slug>/` unit, as far as a chip needs it.
+
+    The unit's own float.tex is the authority on two things a sentence needs:
+    what KIND it is (`\\begin{table}` vs `\\begin{figure}`, which is why QC3 and
+    QC4 are two faces) and what `\\label{}` the manuscript may point at.
+    """
+
+    __slots__ = ("id", "path", "kind", "label", "assets", "candidates",
+                 "versions", "data", "stale", "takeaway", "placement")
+
+    def __init__(self, d, root):
+        self.id, self.path = d.name, d
+        float_tex = d / "float.tex"
+        ft = float_tex.read_text(encoding="utf-8", errors="replace") \
+            if float_tex.is_file() else ""
+        m = re.search(r"\\begin\{(table|figure)\*?\}", ft)
+        self.kind = m.group(1) if m else "figure"
+        m = re.search(r"\\label\{([^}]*)\}", ft)
+        self.label = m.group(1) if m else ""
+        self.assets = _names(d / "assets")
+        self.candidates = _names(d / "candidates")
+        self.versions = _names(d / "versions")
+        self.data = next((p for p in (d / "source").glob("source_data.*")), None)
+        # STALE: the numbers were re-run after the asset was built. The unit
+        # looks finished and the manuscript is showing the older picture.
+        newest = max((p.stat().st_mtime for p in (d / "assets").glob("*")),
+                     default=0)
+        self.stale = bool(self.data and newest
+                          and self.data.stat().st_mtime > newest)
+        rd = d / "README.md"
+        txt = rd.read_text(encoding="utf-8", errors="replace") if rd.is_file() else ""
+        self.takeaway = _para(txt, "Reader Takeaway")
+        self.placement = _para(txt, "Placement")
+
+    def chip(self):
+        """-> (state, tooltip). Reported worst-first: a stale unit that also has
+        candidates is reported STALE, because that is the one that misleads."""
+        head = f"{self.id} · {self.kind}" + (f" · {self.label}" if self.label else "")
+        tail = ("\n" + self.takeaway) if self.takeaway else ""
+        if not self.assets:
+            return ("owed", f"{head}\nREQUESTED — the unit exists and nothing is "
+                            f"built in assets/ yet.{tail}")
+        if self.stale:
+            also = (f"\nIt ALSO has {len(self.candidates)} candidate(s) waiting: "
+                    f"{', '.join(self.candidates)}") if self.candidates else ""
+            return ("broken", f"{head}\nSTALE — {self.data.name} was re-run AFTER "
+                              f"{'/'.join(self.assets[:2])} was built. The "
+                              f"manuscript is showing the older numbers.{also}{tail}")
+        if self.candidates:
+            return ("ready", f"{head}\nCANDIDATE waiting: "
+                             f"{', '.join(self.candidates)}\nassets/ still holds "
+                             f"{', '.join(self.assets)}, so the compiled paper "
+                             f"shows the OLD one.{tail}")
+        return ("ok", f"{head}\n{', '.join(self.assets)}"
+                      + (f" · {len(self.versions)} superseded"
+                         if self.versions else "") + tail)
+
+
+def _names(d):
+    return sorted(p.name for p in d.glob("*")
+                  if p.is_file() and p.name != ".gitkeep") if d.is_dir() else []
+
+
+def _para(txt, heading):
+    m = re.search(rf"^#+\s*{heading}\s*$(.*?)(?=^#|\Z)", txt, re.S | re.M)
+    return " ".join(m.group(1).split())[:200] if m else ""
+
+
+class Paper:
+    """One paper's resolvable index. Built once per board build."""
+
+    def __init__(self, root):
+        self.root = Path(root)
+        self.bib = {}
+        self.bib_files = []
+        for p in sorted(self.root.glob("*.bib")):
+            self.bib_files.append(p.name)
+            text = p.read_text(encoding="utf-8", errors="replace")
+            for m in ENTRY.finditer(text):
+                key = m.group(1).strip()
+                if key in self.bib:
+                    continue
+                self.bib[key] = Entry(key, _fields(m.group(2)), p,
+                                      text.count("\n", 0, m.start()) + 1,
+                                      m.group(0).rstrip().rstrip(","))
+        # Displays, and the LaTeX labels the whole paper declares. The label
+        # index spans every .tex, not just 0-displays, because a \ref{} that
+        # resolves to a section-local label is fine; one that resolves to
+        # NOTHING compiles to `??` and is the defect worth naming.
+        self.displays = {}
+        self.by_short = {}      # "display02" -> the unit; the S-Display faces
+        self.by_label = {}      # write the short form, a Section the long one
+        for d in sorted((self.root / "0-displays").glob("display*")):
+            if d.is_dir():
+                u = Display(d, self.root)
+                self.displays[u.id] = u
+                self.by_short.setdefault(u.id.split("-", 1)[0], u)
+                if u.label:
+                    self.by_label.setdefault(u.label, u)
+        self.labels = {}
+        for p in sorted(self.root.rglob("*.tex")):
+            if "_archive" in p.parts or ".claude" in p.parts:
+                continue
+            t = p.read_text(encoding="utf-8", errors="replace")
+            for m in re.finditer(r"\\label\{([^}]*)\}", t):
+                self.labels.setdefault(
+                    m.group(1), (p, t.count("\n", 0, m.start()) + 1))
+        self.refs = _load_bbl(self.root)
+        self.probes = []
+        self.by_q = {}
+        for p in sorted((self.root / "1-probes").rglob("QX*.md")):
+            pr = Probe(p, self.root)
+            self.probes.append(pr)
+            for q in pr.asks:
+                self.by_q.setdefault(q, []).append(pr)
+        for q, ls in self.by_q.items():
+            ls.sort(key=lambda pr: pr.rank)
+
+    def _near(self, key):
+        """Keys a broken one might have MEANT, best first.
+
+        Plain fuzzy matching is not enough here: `stock2005testing` against
+        `stock2002survey` scores ~0.6 and falls off the edge of the default
+        cutoff, which is exactly the case that matters. Bibtex keys are
+        author-year-word, so the author run is the strong signal and is matched
+        directly; fuzz only fills in behind it.
+        """
+        stem = re.match(r"[A-Za-z]+", key)
+        out = []
+        if stem:
+            s = stem.group(0).lower()
+            out = sorted(k for k in self.bib
+                         if k.lower().startswith(s) and k != key)
+        for k in difflib.get_close_matches(key, self.bib, n=4, cutoff=0.55):
+            if k not in out and k != key:
+                out.append(k)
+        return out[:3]
+
+    # -- citations ----------------------------------------------------------
+    def citation(self, key):
+        """-> (state, label, tooltip, meta).
+
+        `meta` is DATA, never html: the dialect resolves and the board renders
+        (QBc5). Keys: `entry` (path, line, raw bibtex), `links` (label, href to
+        the actual source), `suggest` (near-miss keys, for a broken one).
+        """
+        e = self.bib.get(key)
+        if e is None:
+            near = self._near(key)
+            tip = f"NOT IN .bib — {key} does not resolve and will compile to [?]"
+            if near:
+                tip += "\nDid you mean: " + ", ".join(near)
+            return ("broken", key, tip,
+                    {"suggest": [(k, _one_line(self.bib[k].fields))
+                                 for k in near]})
+        ref = self.refs.get(key)
+        return ("ok", key, (ref or _one_line(e.fields) or key),
+                {"entry": e, "links": e.links(), "reference": ref})
+
+    # -- the [Q-X-n] join key -----------------------------------------------
+    def question(self, qid):
+        """-> (state, tooltip, meta) for a bracket. `unowned` means NO probe
+        entry declares this id, so the bracket promises a question nobody is
+        holding. `meta` carries the probe file so the panel can link to it."""
+        ls = self.by_q.get(qid)
+        if not ls:
+            return ("unowned",
+                    f"{qid} is claimed by NO probe entry. Nothing in 1-probes/ "
+                    f"declares it under ### q-consumer, so nothing will resolve "
+                    f"this marker.", {})
+        state, tip = ls[0].chip()
+        if len(ls) > 1:
+            tip += f"\n(+{len(ls) - 1} more probe entr" \
+                   f"{'y' if len(ls) == 2 else 'ies'} serve {qid})"
+        return (state, tip, {"files": [(p.rel, p.path) for p in ls],
+                             "target": ls[0].target})
+
+    # -- the manuscript the board does NOT render ---------------------------
+    def audit(self):
+        """Unresolved markers in the paper's own `.tex`, which no chip can show.
+
+        A chip only exists where the board renders text, and the board renders
+        its faces. `0-sections/*.tex` is the actual manuscript and is reached
+        only when a face embeds it, so a broken key can sit there compiling to
+        `[?]` with a clean-looking board. This walks the tex directly and hands
+        build.py a list to print. Reporting is all it does: the `.bib` is
+        human-only and nothing here writes.
+        """
+        out = []
+        for p in sorted(self.root.rglob("*.tex")):
+            if "_archive" in p.parts or "0-displays" in p.parts:
+                continue
+            for i, ln in enumerate(p.read_text(encoding="utf-8",
+                                               errors="replace").split("\n"), 1):
+                bare = re.sub(r"(?<!\\)%.*$", "", ln)      # drop LaTeX comments
+                for m in CITE_TEX.finditer(bare):
+                    for k in (x.strip() for x in m.group(1).split(",")):
+                        if not k:
+                            continue
+                        if k.upper() == "TOADD":
+                            if not re.match(r"\s*\[Q-[A-Za-z]+-\d+\]", bare[m.end():]):
+                                out.append((p.relative_to(self.root).as_posix(),
+                                            i, "unowned", r"\cite{TOADD} with no [Q-…]"))
+                        elif k not in self.bib:
+                            out.append((p.relative_to(self.root).as_posix(),
+                                        i, "broken", f"\\citep{{{k}}} is not in the .bib"))
+                for m in REF_TEX.finditer(bare):
+                    if m.group(1) not in self.labels:
+                        out.append((p.relative_to(self.root).as_posix(), i,
+                                    "broken",
+                                    f"\\ref{{{m.group(1)}}} resolves to no "
+                                    f"\\label anywhere; it compiles to ??"))
+        # QD6's ⑥-empty diagnostic: a display nothing points at is a leftover.
+        cited = set()
+        for p in self.root.rglob("*.tex"):
+            if "_archive" in p.parts or ".claude" in p.parts:
+                continue
+            if "0-displays" in p.parts:      # a unit's own float.tex declares,
+                continue                     # it does not cite
+            cited |= set(REF_TEX.findall(
+                p.read_text(encoding="utf-8", errors="replace")))
+        for u in self.displays.values():
+            if u.label and u.label not in cited:
+                out.append((f"0-displays/{u.id}/float.tex", 0, "uncited",
+                            f"\\label{{{u.label}}} is referenced by no section"))
+        return out
+
+    # -- a number in the prose, against the run that produced it ------------
+    def check_number(self, qid, raw):
+        """Does this prose number appear in the probe that owes the sentence?
+
+        Matching is NUMERIC and precision-aware, never string equality: the
+        prose rounds, so `1.21` has to match a recorded `1.21494`. It rounds the
+        recorded number to the prose's own decimals and compares.
+
+        A non-match is NOT a defect and is never reported as one. `21% higher
+        odds` is derived from an odds ratio of 1.21 and will legitimately never
+        appear; so will a threshold the design chose rather than measured. Only
+        a MATCH is an assertion. Everything else says it could not be checked.
+        """
+        ls = self.by_q.get(qid)
+        if not ls:
+            return ("unowned", f"{raw} points at {qid}, which NO probe entry "
+                               f"declares. Nothing can check this number.")
+        try:
+            want = float(raw.replace(",", ""))
+        except ValueError:
+            return ("unver", f"{raw} could not be read as a number.")
+        dec = len(raw.split(".")[1]) if "." in raw else 0
+        # Collect every DISTINCT recorded value that rounds to the prose number,
+        # not the first one found. Repeated occurrences of one value are one
+        # match; two different values are an AMBIGUITY, and saying "matches"
+        # there is a false reassurance of exactly the kind this exists to catch.
+        # Live case: `1.21` rounds to both 1.21494 (the binary-exposure odds
+        # ratio the sentence means) and 1.20879 (a CI bound of the CONTINUOUS
+        # exposure). Reporting either one alone would assert the wrong run.
+        hits = {}
+        for pr in ls:
+            for m in NUMTOK.finditer(pr.text):
+                try:
+                    got = float(m.group(0).replace(",", ""))
+                except ValueError:
+                    continue
+                if round(got, dec) != round(want, dec):
+                    continue
+                ctx = " ".join(pr.text[max(0, m.start() - 80):
+                                       m.end() + 80].split())
+                hits.setdefault(got, (m.group(0), pr.id, ctx))
+        if len(hits) == 1:
+            got, (shown, pid, ctx) = next(iter(hits.items()))
+            exact = "" if got == want else f" (recorded as {shown})"
+            return ("ok", f"{raw} MATCHES the run{exact}.\n{pid} · …{ctx}…")
+        if len(hits) > 1:
+            lines = [f"{raw} is AMBIGUOUS: {len(hits)} DIFFERENT recorded "
+                     f"figures round to it, so the run behind this number "
+                     f"cannot be identified from the prose alone."]
+            for got, (shown, pid, ctx) in sorted(hits.items()):
+                lines.append(f"· {shown} — {pid} · …{ctx}…")
+            return ("amb", "\n".join(lines))
+        return ("unver",
+                f"{raw} does not appear in {qid}'s answer.\nThat is not by "
+                f"itself wrong: a derived figure, a percentage computed from a "
+                f"ratio, or a threshold the design chose rather than measured "
+                f"will never appear. It means this number was NOT checked.\n"
+                f"{ls[0].id} · {ls[0].title}")
+
+    # -- displays -----------------------------------------------------------
+    def _preview(self, u):
+        """What the panel should SHOW rather than link to.
+
+        A figure's evidence is the picture, so the picture goes in the panel.
+        QC4's law then binds: every image is labelled LIVE or CANDIDATE, because
+        a card showing one picture while another is what the manuscript compiles
+        is worse than a card showing nothing. PDFs cannot be an <img>, so a unit
+        with only a .pdf asset still shows nothing and says so.
+
+        A table's evidence is its rows, so the table body is shown as text. That
+        is QC3's "preview of the table itself, not a thumbnail of one".
+        """
+        out = []
+        for a in u.assets:
+            if a.lower().endswith(IMG):
+                out.append(("img", f"LIVE · {a}", u.path / "assets" / a, ""))
+        for c in u.candidates:
+            if c.lower().endswith(IMG):
+                out.append(("img", f"CANDIDATE · {c}",
+                            u.path / "candidates" / c, ""))
+        for a in u.assets:
+            if a.lower().endswith(".tex"):
+                p = u.path / "assets" / a
+                body = p.read_text(encoding="utf-8", errors="replace")
+                lines = body.split("\n")
+                txt = "\n".join(lines[:40])
+                if len(lines) > 40:
+                    txt += f"\n… {len(lines) - 40} more lines"
+                out.append(("text", f"LIVE · {a}", p, txt))
+        return out
+
+    def _dmeta(self, u):
+        links = []
+        for name, p in (("float.tex", u.path / "float.tex"),
+                        ("README", u.path / "README.md"),
+                        (u.data.name if u.data else "", u.data)):
+            if name and p and p.is_file():
+                links.append((name, p))
+        for a in u.assets:
+            links.append((a, u.path / "assets" / a))
+        for c in u.candidates:
+            links.append((f"candidate {c}", u.path / "candidates" / c))
+        return {"files": links, "target": u.placement or "",
+                "preview": self._preview(u)}
+
+    def unit(self, did):
+        """`display04` and `display04-main-regression` are the same unit."""
+        return self.displays.get(did) or self.by_short.get(did)
+
+    def display(self, did):
+        """-> (state, tooltip, meta) for `displayNN` or `displayNN-<slug>`."""
+        u = self.unit(did)
+        if u is None:
+            return ("unowned", f"{did} names NO unit under 0-displays/. "
+                               f"Nothing owns this id, so a sentence pointing "
+                               f"here points at nothing.", {})
+        state, tip = u.chip()
+        return (state, tip, self._dmeta(u))
+
+    def ref(self, label):
+        """-> (state, tooltip, meta) for a `\\ref{tab:…}` / `\\ref{fig:…}`.
+
+        Three outcomes, and the middle one is the reason this resolves against
+        every .tex rather than only against 0-displays.
+        """
+        u = self.by_label.get(label)
+        if u is not None:
+            state, tip = u.chip()
+            return (state, f"\\ref{{{label}}} → {tip}", self._dmeta(u))
+        where = self.labels.get(label)
+        if where:
+            p, line = where
+            rel = p.relative_to(self.root).as_posix()
+            return ("ok", f"\\ref{{{label}}} resolves to a \\label in {rel}:{line}, "
+                          f"which is NOT a 0-displays unit. Fine for a section "
+                          f"or equation label; check it if a display was meant.",
+                    {"files": [(f"{rel}:{line}", p)]})
+        near = difflib.get_close_matches(label, self.labels, n=3, cutoff=0.4)
+        tip = (f"\\ref{{{label}}} resolves to NO \\label anywhere in this paper. "
+               f"It compiles to ??")
+        if near:
+            tip += "\nlabels that DO exist, nearest first: " + ", ".join(near)
+        return ("unowned", tip, {})
+
+    def summary(self):
+        return (f"{len(self.bib)} bib keys from "
+                f"{', '.join(self.bib_files) or 'no .bib'}"
+                f"{f', {len(self.refs)} rendered references' if self.refs else ''}; "
+                f"{len(self.probes)} probe entries serving {len(self.by_q)} "
+                f"question ids")
+
+
+def _value(raw):
+    """A board.md header value, without its trailing `# comment`."""
+    return (raw or "").split("#", 1)[0].strip()
+
+
+def load(board_dir, meta):
+    """Return a Paper for a board that declares `dialect: paper`, else None."""
+    if _value(meta.get("dialect")).lower() != "paper":
+        return None
+    root = (Path(board_dir) / (_value(meta.get("paper_root")) or "..")).resolve()
+    if not root.is_dir():
+        return None
+    return Paper(root)

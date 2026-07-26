@@ -4,6 +4,7 @@ import json
 import re
 from pathlib import Path
 
+from . import body as bd
 from .body import body, inline, parse_comments
 from .common import esc, sec, stinfo
 from .page_question import render_question
@@ -129,6 +130,9 @@ def render(meta, qs):
                       close=inline(meta["close"]), bar=bar, done=done, n=nq,
                       stagebar=stagebar,
                       ctx=ctx, index=idx, cards="\n".join(cards), js=JS, css=CSS,
+                      # chip panels last: they are top-layer, so DOM position
+                      # is free, and out here they are never inside a <summary>
+                      popcards="\n".join(bd.CARDS),
                       boarddir=esc(meta.get("dir", "")),
                       bsession=esc(meta.get("session", "")))
 
@@ -169,7 +173,7 @@ TPL = """<!DOCTYPE html>
 <code>S-Appendix-A-xxx.md</code>. Edit those, then rebuild:
 <code>python3 build.py</code>.<br>Every face is real HTML — the page reads fine
 with JavaScript off; the script only adds commenting.</p>
-</div>{js}</body></html>
+</div>{popcards}{js}</body></html>
 """
 
 _CJK = re.compile(r"[一-鿿]")

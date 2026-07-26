@@ -1584,3 +1584,14 @@ document.addEventListener('click', function (ev) {
     ap.appendChild(r);
   });
 })();
+
+/* A chip inside a sentence's <summary> would toggle that sentence's drawer on
+   the way to opening its own panel. The panel is native and opens either way;
+   this only stops the drawer from flapping. Enhancement only: with scripts off,
+   both simply happen, and the panel content is still real body text. */
+(function () {
+  document.addEventListener('click', function (e) {
+    var c = e.target.closest && e.target.closest('button.chip');
+    if (c && c.closest('summary')) e.preventDefault();
+  });
+})();

@@ -39,7 +39,7 @@ the file do not repeat it.
 
 ```latex
 % optional top matter: a pointer to the side-car logic/diagram file for this section
-%% Logic + proposed edits: ../1-rounds/vXXXX/02-05_..._logic.txt
+%% Logic + proposed edits: ../0-lifecycle/7-round/vXXXX/02-05_..._logic.txt
 
 \subsection{Trait--Rating Correlation}
 
@@ -72,7 +72,7 @@ Rules:
    preamble to "test it alone."
 4. **Figure/table blocks** carry a stable `\label`; do not churn it.
 5. **No project-journal prose in the file** — provenance notes belong in the
-   commit message or a side-car `1-rounds/` log, not the `.tex` (one-line
+   commit message or a side-car `0-lifecycle/7-round/` log, not the `.tex` (one-line
    bracket hints in a banner are the only exception).
 
 ## The `\input` tree (how files connect)

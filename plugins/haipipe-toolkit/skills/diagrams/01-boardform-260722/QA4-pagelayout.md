@@ -191,6 +191,25 @@ Law, Lesson, Glossary, Discussion, Comments, and Log sit below the main reading 
 They preserve rules, failures, vocabulary, deliberation, pinned remarks, and change history for readers who need them, while Opening through Files remains a clean first pass.
 Retired Why here content is still parsed here for compatibility, but new rationale belongs in Question.
 
+### 8 · The group-title marker, and who fills it
+A whole-line `**bold**` is a GROUP TITLE: it renders as `div.gt > span.gi`, and the span carries an emoji.
+Write one at the head of the bold text and it is used; write none and the renderer supplies the default 🔹, because `build.py` has no brain and must never guess (`GT_ICON` in `src/body.py`).
+That is the whole hand-written mechanism and it has worked since 260723.
+
+#### P1. A group title has to actually lead a group
+(the rule that was ruled and never enforced, and the number that shows it)
+A group title is a line that leads a run of items. A paragraph is never written in bold, which is `§3`'s rule, and a `####` heading is what a paragraph gets instead.
+Counted 260726: this board carries 36 whole-line `**bold**` lines, and 20 of them are followed by prose rather than by a run of items.
+Each of those 20 renders as a decorated 🔹 sitting in front of a paragraph, which is the exact confusion `§3` was written to remove, one level up.
+`check.py` now reports them as `bold-not-a-group-title`; the paper board, written after the ruling, scores zero.
+
+#### P2. Automatic assignment is a live-layer job, and it is blocked on P1
+(absorbed from QD4 on 260726)
+`build.py` is a static generator with no network and no model, so automating the choice there would mean keyword guessing against free-form sentences.
+`serve.py` already holds an OAuth login and the SDK, so an endpoint there could read a face, find the group titles with no emoji, and fill them, exactly as the ➕ affordances already write single lines into the markdown.
+It is blocked on `P1` rather than on effort: assigning icons to a set that is 55% mislabelled would decorate the mistakes instead of revealing them.
+Of the 36 lines today, 5 carry a hand-written icon and 11 are genuine group titles still on the default, so the population that actually wants filling is 11, not 36.
+
 ## Items to Finish
 - [x] 🖼 Unframed
       A question opened on its own carries no border, no rounded corners, and no card background, so the content sits directly on the page.
@@ -268,11 +287,33 @@ Retired Why here content is still parsed here for compatibility, but new rationa
       Content now names the intended reader outcome for Opening, Diagram, Content, Items to Finish, Where we are, Files, and the supporting folds.
       These meanings were moved out of Law because they describe how to read the page, not a hidden implementation constraint.
 
+- [ ] 🧹 The 20 bold lines that are not group titles are fixed first
+      Counted 260726: of 36 whole-line `**bold**` lines, 20 are followed by prose rather than by a run of items, so they render as a 🔹 group title in front of a paragraph.
+      `§3` already forbids this and nothing enforced it; `check.py` now reports each one as `bold-not-a-group-title`.
+      This blocks the icon work below: assigning icons to a set that is 55% mislabelled would decorate the mistakes rather than reveal them.
+- [ ] 🔀 How icon assignment triggers   (from QD4)
+      A button (one click, cheap, controllable, reversible) against auto-on-save (spends money on every save and edits the markdown while you type).
+      Every write affordance built since QD4 opened is button-triggered, so this may close by precedent rather than by argument; see Discussion.
+- [ ] 🤖 Model and overwrite policy   (from QD4)
+      Which model picks the emoji, and the rule that only group titles WITHOUT an emoji are filled, never overwriting what an author wrote.
+      Picking an emoji is a small job, so a small model should do it.
+- [ ] 📄 Scope   (from QD4)
+      One face at a time, or the whole board in a pass.
+- [ ] 🔨 Built and verified   (from QD4)
+      A `serve.py` endpoint plus a page button; assigned emoji are visible in the markdown, editable by hand, and revertible.
+
 ## Where we are
 Partial.
 The shared Q/S reading path and inherited Stage Contract are implemented.
 The next piece is creation-time Content composition: stage template as the base blueprint, venue template as the reader/section/style overlay, and previous contracts as accepted and unresolved inputs.
 That rule is specified here and in QA2, but `stage.py new` does not yet materialize template- derived `###` headings.
+
+- 260726 JL · 🎨 QD4 merged in, and the count stopped flattering itself
+  JL: "I think we can merge this one to QA4 ... I think most content in the QA4 is already done".
+  Both halves of that are right, and they pull against each other. This face was 17/18 before the merge and is 17/23 after it, because the icon question was parked on another face while the grammar it depends on lived here.
+  That is the same shape as the QA6 and QA7 merge earlier the same day: a split let one face look finished while the thing it defined had an unfinished half somewhere else.
+  What moved: the group-title marker, the 36/5/11/20 count, and QD4's four forks. What stayed behind: nothing, QD4 is deleted.
+  One tension worth recording rather than hiding: the eventual endpoint is live-layer work and the QD group owns the live layer. It sits here because the icon is a layout marker and its blocking prerequisite is this face's own `§3` rule, so the ruling and the thing it rules are together.
 
 - 260726 JL · 🖼 Diagram's Excalidraw half got written down as a mechanism
   Two lines said a share URL "may be inserted" and rendered "as a live canvas plus a plain link", which told a reader it existed without telling them how to do it.
@@ -499,6 +540,9 @@ paragraph heading: a `####` line naming one paragraph inside a division; it carr
 job line: the full-line `(…)` directly under a paragraph heading, saying what that paragraph does; it stays on stage in grey italic as a scan hook.
 
 ## Discussion
+> JL: could group-title icons be assigned in realtime by an LLM?
+>> CC0723: yes, serve.py already has an LLM. But "realtime" forks: button-triggered (recommended: cheap, controllable) against auto-on-save (expensive, edits your md while you type). build.py stays dumb; clever work goes to the LLM layer.
+>> CC0726 (proposal, JL's to accept): the three forks may already be answered by precedent. Every write affordance built on this board since is button-triggered and none overwrites what a human wrote: the comment layer, `QA8`'s ➕ lane, `QC2`'s ＋Q and ＋Group, and `QD7`'s 🖌 canvas, which replaces only its own line. Scope has the same answer four times: the face the button sits on. If that reads right, trigger, overwrite policy and scope close as written down rather than as newly decided, leaving the model choice and the build. Not ticked, because QD4 warned about `QD1` being overturned after I picked for you.
 > JL: can this slide be more like the slides in /html-ppt? I don't want it boxed in.
 >> CC0722: in focus mode the border, corners, and card background are gone, the title is at 38px, and the header is squeezed into a marquee bar.
 > JL: what matters most is the Question section: one paragraph plus a few bullets. Right now a zero-background reader can hardly understand it.
@@ -530,6 +574,7 @@ job line: the full-line `(…)` directly under a paragraph heading, saying what 
       >> CC0723: the HTML skeleton + mapping table were added earlier; after the 260723 redesign the skeleton went stale and was removed: the mapping lives in `ref/board-form.md §4`, no second copy maintained here.
 
 ## Log
+260726 · QD4 merged in (JL): `§8` added with the marker, the 36/5/11/20 count and the blocked automation; QD4's four items absorbed plus a new cleanup item that blocks them; 17/18 -> 17/23, which is the honest number now that the icon question sits with the grammar it depends on
 260726 · `§2 Diagram` split into two paragraphs (JL: how do we add the excalidraw link and embed it?): the ASCII figure the section owes, and the optional canvas whose default is empty; the canvas paragraph now carries the one-URL-alone-on-a-line rule from `src/body.py`, the 440px / 520px render, the `↗ Open in Excalidraw` fallback, and the reason the fallback and the ASCII both stay
 260725 · Opening's drawer switched from chrome type to Content type (JL: "the display here is not good"): headings now 15px/650 with a rule between blocks and prose at Content's size and colour, matching `.csec>summary` and `.cbody p` exactly; the lead question went bold so the handle reads apart from what it opens
 260725 · Opening's drawer headings lost their icons (JL: make them read consistent): `🚧 Boundary` and `📋 Stage Contract` were the only two of seven with one, so all seven are now plain words. The `✅ Covered here` / `↪ Covered elsewhere` pair inside Boundary was left alone: it is a 260724 ruling of JL's own and lives in the markdown of all 78 faces

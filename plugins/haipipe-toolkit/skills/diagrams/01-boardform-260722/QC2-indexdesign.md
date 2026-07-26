@@ -33,7 +33,7 @@ top of board.html (no question opened yet)
 │   (click ▸ → expands: what / why this group) │    click to expand the why
 │  ✅ QA1  Board folder shape        🔧 CC      │  ← what does each row show?
 │  🟡 QA4  Single Question Webpage…  🔧 CC  7/9 │     how is completion colored?
-│  🔴 QD4  LLM topic icons        🗄 🔧 CC  0/4 │     hover 🗄 = archive (2-click)
+│  🔴 QA4  group-title icons        🗄 🔧 CC  0/4 │     hover 🗄 = archive (2-click)
 │  …                                            │
 │  [＋ Group]                                   │
 └──────────────────────────────────────────────┘

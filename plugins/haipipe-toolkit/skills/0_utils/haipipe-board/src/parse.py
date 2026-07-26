@@ -55,6 +55,8 @@ def parse_board(board):
             LINKS[parts[0]] = parts[1].strip()
     return dict(title=title, spine=f("spine"), close=f("close"),
                 session=f("session"),   # 整板会话的 id（QD5）——serve.py 记在 board.md 头部
+                dialect=f("dialect"),       # opt-in: `paper` resolves \citep{} at build time
+                paper_root=f("paper-root"),  # where that paper's .bib / 0-displays / 1-probes are
                 theme=sec(bs, "Topic"), pipeline=sec(bs, "Pipeline"), dir="")
 
 
@@ -89,6 +91,35 @@ def parse_doc(d, paths):
                 sec={})
 
 
+def strip_notes(md):
+    """Drop `<!-- ... -->` author notes, BEFORE the text is cut into sections.
+
+    `ref/q-template.md` has always told authors a note "is dropped at generation
+    either way". It was not: the only strip lived in the Stage Contract path, and
+    the template's own notes happen to sit above the first `## `, where nothing
+    renders. Written anywhere else a note came out as escaped `&lt;!--` prose
+    (found 260726, adding a menu of optional sections to the ＋ button's stub).
+
+    Order matters and cost an attempt to learn: `split_sections` reads any line
+    starting `## ` as a heading, including one INSIDE a comment, so a note that
+    lists `## Diagram` used to be torn in half and left a phantom section behind.
+    Stripping first is what makes such a menu writable at all.
+
+    Fenced blocks are protected, so a figure may still show a comment on purpose,
+    and `<!-- haipipe:... -->` is kept because stage_contract reads those markers.
+    """
+    if "<!--" not in md:
+        return md
+    parts = re.split(r"(```)", md)
+    inside = False
+    for i, seg in enumerate(parts):
+        if seg == "```":
+            inside = not inside
+        elif not inside:
+            parts[i] = re.sub(r"<!--(?!\s*haipipe:).*?-->", "", seg, flags=re.S)
+    return "".join(parts)
+
+
 def parse_face(qid, txt, group="", file="", kind="question", family=""):
     """One Q/S face (title, meta lines, and ## sections) -> data dict."""
     lines = txt.split("\n")
@@ -115,8 +146,16 @@ def parse_face(qid, txt, group="", file="", kind="question", family=""):
         if m:
             meta[m.group(1).replace("-", "_")] = m.group(2).strip()
         i += 1
+    # Author notes are dropped ONCE, here, so every downstream renderer sees clean
+    # text. Doing it per-renderer was the old shape and it missed paths: a comment
+    # written under ## Question came out as escaped `&lt;!--` prose on the page,
+    # while ref/q-template.md had always promised it "is dropped at generation
+    # either way" (found 260726). Fenced blocks are protected so a figure may still
+    # show one, and `<!-- haipipe:contract:* -->` is kept because stage_contract
+    # reads those markers back out of the rendered section.
+    body_md = strip_notes("\n".join(lines[i:]))
     return dict(id=qid, title=qt, group=group, file=file, kind=kind, family=family,
-                sec=split_sections("\n".join(lines[i:])), **meta)
+                sec=split_sections(body_md), **meta)
 
 
 def parse_q(qid, txt, group="", file=""):

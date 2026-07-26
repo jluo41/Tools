@@ -24,7 +24,7 @@ recomputes from raw evidence (that is a `haipipe-task-for-display` task).
 ## Output: write into a display unit
 
 The table goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
-`../ref/display-unit-output-contract.md`.
+`../../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/table-body.tex` (the `tabular`/`threeparttable`
 block), with `float.tex` the wrapper that `\input`s it (caption + label); rebuild spec
 -> `source/gen_*.py` + the aggregated CSV path.
@@ -197,7 +197,7 @@ mcp__codex__codex:
 
 The display unit layout (asset -> `assets/table-body.tex` wrapped by `float.tex`,
 rebuild spec -> `source/gen_table*.py` + the aggregated CSV) is the shared contract:
-`../ref/display-unit-output-contract.md`.
+`../../ref/display-unit-output-contract.md`.
 
 ## Relation to the Display Stage and Tasks
 

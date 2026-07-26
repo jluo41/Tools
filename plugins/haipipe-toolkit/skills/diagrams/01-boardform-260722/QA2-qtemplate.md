@@ -148,10 +148,27 @@ Retired `## Why here` remains parse-compatible for old boards but must not be ad
       Passed 260725 through two fresh-context runs.
       The first rendered a Q and S correctly but exposed that Stage Record's optionality was only implied; after the wording was repaired across QA2, QA4, and the template, a second reader rendered one Q plus S variants with and without Stage Record and found no material contradiction.
 
+- [ ] 🧬 The ＋ button's stub is generated from this template, not written beside it
+      `Q_STUB` in `serve.py` is hand-written and was 4 sections against the template's 14; it now agrees on the required and advised ones, and the two definitions still exist.
+      This closes when the stub is derived from `ref/q-template.md` at runtime, keeping the required and advised headings, dropping the guidance prose, and listing the rest as a note.
+      Until then the failure mode is the one JL hit: the template changes and the button does not.
+
 ## Where we are
 **Partial.
 QA2 and `ref/q-template.md` both match the face as it renders on 260725: Stage Contract inside a fully collapsed Opening, Content holding the stage's real product under a heading that names it, one sentence per line, and sentence apparatus in typed lanes.
 The remaining work is unchanged and is a code gap, not a documentation one: `stage.py new` still writes generic Content instead of materializing the composed blueprint.**
+
+- 260726 JL · ➕ The ＋ button was a second definition of a new face, and now follows this one
+  JL opened a question from the index and found no `## Diagram` in it, and asked whether this face should change.
+  It should not. `## Diagram` is in the template, this face already rules it optional, and `QA4 §2` rules how it renders; nothing was violated by its absence.
+  What was violated is the line above it here: Boundary and Files are "optional but strongly advised", and `Q_STUB` in `serve.py` wrote neither. That stub shared nothing with `ref/q-template.md` but the section names it happened to reuse, 4 of the template's 14.
+  Fixed by making the stub follow this face rather than sit beside it: Boundary and Files are written out, and the optional sections are listed in an author note, because nobody can choose a section they never learn exists.
+  The durable version is generating the stub FROM the template so the two cannot disagree again. Not done; it is the item below.
+- 260726 CC · 🕳 Author notes were not dropped, though the template promised they were
+  `ref/q-template.md` tells authors a note "is dropped at generation either way". The only strip lived in the Stage Contract path, so a note written anywhere else came out as escaped `&lt;!--` prose on the page.
+  It went unnoticed because the template's own notes sit above the first `## `, where nothing renders. Nobody had put one in a section until the stub menu needed to.
+  Worse than cosmetic: `split_sections` reads any line starting `## ` as a heading, including one inside a comment, so a note listing `## Diagram` was torn in half and left a phantom section behind.
+  `parse.strip_notes` now removes notes before sectioning, protects fenced blocks so a figure may still show one on purpose, and keeps `<!-- haipipe:... -->` for the contract markers. All seven boards in the repo rebuild unchanged.
 
 - 260725 JL · 🧬 S Content composition added
   Stage owns the base blueprint, Venue overlays outlet-specific structure and style, and previous contracts contribute accepted and unresolved inputs.
@@ -234,6 +251,7 @@ The generator raises no error, but a block is missing on the page. optional: if 
 >> CC0725: they were aligned in intent, and the live template had most current behavior, but QA2 still documented the older Q-only page: no Content in its diagram or Law, Question shown as a question-mark lead, and no S-specific requiredness. QA2 now mirrors QA4 as the source side of one shared Q/S contract; the fresh Q/S creation test is the remaining gate.
 
 ## Log
+260726 · ＋ button's stub brought in line with this face (JL asked why a generated Q had no Diagram): Boundary and Files written out per the strongly-advised rule, optional sections offered as an author note; `parse.strip_notes` added because notes were never actually dropped and a `## ` inside one created a phantom section
 260725 · `ref/q-template.md` brought up to the day's rulings: one hierarchy for both kinds, Opening fully collapsed on S, the Content law and its three destinations, venue contract placed after the managed markers, named Content heading, one sentence per line, sentence-apparatus example
 260725 · Stage Contract placement updated: renders inside Opening as a collapsed disclosure, not between Opening and Diagram (JL)
 260725 · S creation contract now materializes stage + venue + previous-contract inputs as page-owned Content headings

@@ -61,7 +61,7 @@ Ask first: costly task/PHI work, claim verdicts, multi-section edits, compile-to
 ```text
 STATUS.md                     0-lifecycle/{0..5}/
 0-sections/                   0-displays/displayNN-*/
-1-probes/PPNN_*.md       1-rounds/vYYMMDD/
+1-probes/PPNN_*.md       0-lifecycle/7-round/vYYMMDD/
 1-compile.sh                  1-config.yaml
 ```
 
@@ -90,7 +90,7 @@ it updates, and when it must stop and ask the user.
 Keep the paper folder fixed:
 STATUS.md, 0-lifecycle/<stage>/<stage>.tex, 0-sections/,
 0-displays/displayNN-<slug>/, 1-probes/PPNN_<topic>/,
-1-rounds/vYYMMDD/{README,discussion,decisions,todo,applied}.md.
+0-lifecycle/7-round/vYYMMDD/S-Round-<n>-<vYYMMDD>.md.
 
 Preserve boundaries:
 - for claim-related evidence, paper routes through a stage's PROBE phase; there

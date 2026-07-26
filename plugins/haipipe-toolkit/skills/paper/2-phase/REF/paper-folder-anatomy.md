@@ -53,7 +53,7 @@ editing rules. This doc defines the folder those files live in.
 │   └── displayNN-<slug>/
 ├── 0-extra/                              optional cover letter, IRB, checklists
 ├── 1-probes/                        the probe-file pool (PPNN_<topic>/, one file per TOPIC, one ENTRY per question)
-├── 1-rounds/                             dated work rounds
+├── 0-lifecycle/7-round/                             dated work rounds
 │   ├── latest.md                         active round pointer and summary
 │   └── vYYMMDD/
 │       ├── README.md                     round source, purpose, maturity, status
@@ -73,7 +73,7 @@ editing rules. This doc defines the folder those files live in.
 | Prefix | Meaning | Examples |
 |---|---|---|
 | `0-` | Manuscript source of truth: what defines the paper and what the venue receives | `0-<paper>.tex`, `0-lifecycle/`, `0-sections/`, `0-displays/`, `0-extra/` |
-| `1-` | Process artifacts: how the paper gets built, discussed, revised, checked | `1-rounds/`, `1-compile.sh`, `1-config.yaml`, `1-diff/`, `1-review/` |
+| `1-` | Process artifacts: how the paper gets built, discussed, revised, checked | `0-lifecycle/7-round/`, `1-compile.sh`, `1-config.yaml`, `1-diff/`, `1-review/` |
 
 Sorting puts manuscript before process. A submission package is "everything
 needed from `0-` plus compiled PDFs"; `1-` folders explain the process and are
@@ -96,7 +96,7 @@ not submitted unless the venue explicitly asks for them.
 The lifecycle is not linear. If a paragraph reveals an unsupported claim, loop
 back to `1-claims`. If a display cannot carry the claim, loop back to
 `4-display`. If coauthor discussion creates new open work, record it in
-`1-rounds/<round>/todo.md` and route each item to the right lifecycle stage.
+`0-lifecycle/7-round/<round>/todo.md` and route each item to the right lifecycle stage.
 
 ## Maturity ladder
 
@@ -113,7 +113,7 @@ current layer.
 | `draft` | prose exists | main paper compiles with rough sections |
 | `submission-candidate` | checks mostly pass | compile, citations, displays, claims stable |
 | `submitted` | external venue state exists | submission metadata and frozen PDF |
-| `revision` | external/coauthor comments active | `1-rounds/<round>/todo.md` and `applied.md` |
+| `revision` | external/coauthor comments active | `0-lifecycle/7-round/<round>/todo.md` and `applied.md` |
 | `accepted/published` | final external state | camera-ready/final links |
 
 ## `0-sections/` naming grammar
@@ -183,13 +183,13 @@ status, and placement.
 - Source files live next to exports inside the display-unit folder. Retired
   assets move to unit-local `versions/`; do not delete provenance.
 
-## `1-rounds/` rules
+## `0-lifecycle/7-round/` rules
 
-`1-rounds/` is the paper working-memory layer. A round is any dated work burst:
+`0-lifecycle/7-round/` is the paper working-memory layer. A round is any dated work burst:
 agent discussion, author discussion, coauthor comments, reviewer comments,
 decision pass, or application of edits.
 
-- Round folders are direct children of `1-rounds/`: `1-rounds/v260621/`.
+- Round folders are direct children of `0-lifecycle/7-round/`: `0-lifecycle/7-round/v260621/`.
 - The round id is the branch/round name. Do not add another branch folder.
 - `latest.md` points to the active round and may include a short summary.
 - `discussion.md` stores raw discussion and incoming comments.
@@ -231,5 +231,5 @@ Mechanical version: `3-deliver/1-build/haipipe-paper-conform/scripts/check_struc
       `README.md`.
 - [ ] Every display unit has claim, evidence source, status, and a canonical
       preview PDF when the display is marked ready.
-- [ ] `1-rounds/latest.md` exists when any active round is open.
+- [ ] `the S-Round pages themselves (no stored pointer)` exists when any active round is open.
 - [ ] No stray aux files remain after compile cleanup.

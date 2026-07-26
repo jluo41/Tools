@@ -4,15 +4,51 @@ owner: JL
 method: keep the split; state exactly what retargeting rewrites
 
 ## Question
-Which stages survive a change of target journal, and which must be rewritten?
+Which stages survive a change of target journal, and which must be rewritten? The lifecycle splits at venue, and exactly where that line falls decides whether retargeting a paper is a bounded operation or an open-ended rewrite.
 
 The lifecycle splits at venue: seed, resource and claims are venue-FREE, and pitch through section-edit are venue-ALIGNED. The split is what lets a rejected paper be retargeted without redoing its evidence, which is a real and frequent event, so the boundary has to be exact rather than approximately right.
 
+
+The approach is a per-stage flag decided by one question: could a different journal change this stage's answer? What we want is a retarget that touches only what it must, so moving a paper to another outlet is a bounded operation rather than a rewrite with unclear edges.
 ## Boundary
 - ✅ Covered here
   Which stages are rewritten on retarget, and what "rewritten" means for each.
 - ↪ Covered elsewhere
   How a venue pack binds a section is `QE1`'s contract form question; the claims themselves belong to the claims stage.
+
+## Diagram
+```
+ THE LINE FALLS BETWEEN WHAT IS TRUE AND HOW IT IS TOLD
+
+   venue-FREE                    survives retargeting untouched
+   ┌─────────────────────────────────────────────────┐
+   │ 0-seed        why might this exist               │
+   │ 1a-resource   does the evidence exist and carry  │  THE SCIENCE
+   │ 1b-claims     supported / weak / GAP             │
+   └─────────────────────────────────────────────────┘
+                        │
+                   2a-venue   ◄── THE PIN
+                        │
+   ┌─────────────────────────────────────────────────┐
+   │ 2b-pitch      what is it selling, to whom        │
+   │ 3-narrative   reveal order, section list         │  THE TELLING
+   │ 4-display     display budget, conventions        │
+   │ 5-section-edit house style, citation density     │
+   └─────────────────────────────────────────────────┘
+   venue-ALIGNED                 rewritten on retarget
+
+ WHY EXACTLY THERE
+   a claim's status does not change because a different editor reads it.
+   a narrative's ORDER does. So does the display budget, and the house
+   style. Everything downstream of the pin is an outlet property.
+
+ THE CASE THAT TESTS IT, AND STILL LANDS ALIGNED
+   MISQ ──rejected──► another outlet
+     evidence   KEPT       every claim, every number, every probe entry
+     figures    MOSTLY LOST  display limits and conventions differ
+   That is expensive. It is still the right side of the line: a figure
+   is an argument made FOR a venue, not a fact about the world.
+```
 
 ## Content
 ### The split as it stands
