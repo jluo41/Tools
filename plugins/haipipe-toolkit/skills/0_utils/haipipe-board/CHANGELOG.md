@@ -5,6 +5,41 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## [0.25.0] — 2026-07-26
+
+**A board can now be checked, and an author note finally behaves the way the template said it did.**
+
+- `check.py <board-dir>`: the structural half of `QA9`, read-only, four families.
+  BOARD (`board.md` against disk, declared Links resolve, ids unique), FACE (required
+  sections, the four state values, references resolve, one sentence per line, no
+  em-dash, English-only), PAGE (the built html: local hrefs resolve, tags balance,
+  ids unique, the zero-script invariant), and TEMPLATE (render `ref/q-template.md`
+  as a Q AND an S, then assert each of QA9's 15 constructs). It reuses `src/parse.py`
+  rather than carrying its own grammar. Report-only, exit 0; `--strict` exits 1 on
+  ERROR and waits on JL's ruling about whether a red result blocks a change.
+- A construct the template never demonstrates is reported as a GAP rather than
+  skipped, which found three on the first run: code block, group title, excalidraw
+  canvas are documented and untested.
+- `parse.strip_notes`: `<!-- ... -->` author notes are dropped BEFORE the text is cut
+  into sections. `ref/q-template.md` has always told authors a note "is dropped at
+  generation either way" and it was not: the only strip lived in the Stage Contract
+  path, so a note written anywhere else came out as escaped `&lt;!--` prose. Order
+  matters and cost two attempts to learn, because `split_sections` reads a `## ` line
+  INSIDE a comment as a heading, so a note listing sections was torn in half and left
+  a phantom section behind. Fenced blocks are protected and `<!-- haipipe:… -->` is kept.
+- The index page's ＋ button writes Boundary and Files, which `QA2` rules "strongly
+  advised", and offers the optional sections as an author note. Its stub was a second
+  definition of a new face carrying 4 of the template's 14 sections; a face generated
+  from it arrived with no Diagram and nothing said one was available.
+- `prime_context` counts unresolved comments and unticked items separately and names
+  each. One number announced as "unresolved comments" made a cold agent notice the
+  mismatch, fail to resolve it, and invent an explanation for it.
+- `CHAT_RULES` lists the current section names, with the retired ones named as
+  accepted aliases, and explains what a `>` lane is and that it is addressed to the
+  turn reading it. It had described a face layout retired days earlier.
+- Index rows lost their coloured left stripe (`QA10`). Every row already opens with
+  the state emoji, so the bar restated it in a second language.
+
 ## [0.24.0] — 2026-07-26
 
 **Diagram was the last body section you could only read. Now you can draw into it.**
