@@ -1,18 +1,55 @@
 # Is the unit of work the stage, or the checkable page?
-state: 🟡 PARTIAL
+state: ✅ SETTLED
 owner: JL
 method: rule the grain once; the artifact and the naming questions both follow it
 
 ## Question
-Does one stage produce one artifact, or one artifact per thing a human can gate?
+Does one stage produce one artifact, or one artifact per thing a human can gate? Seven of the eight stages assume one per stage and one does not. The answer decides how many pages a paper's board has, and whether that number is a design consequence or a matter of taste.
 
 Seven of the eight stages assume one artifact per stage. One, section-edit, declares `runs: per-unit` and produces one artifact per manuscript section. That exception was not a compromise; it is the shape the work actually has, and the question is whether the other stages should follow it.
 
+
+The way through is to let the grain follow the gate: a thing that a human accepts separately gets a page of its own, and a thing accepted as a whole gets one. What we want is for the number of pages to stop being a matter of taste and become a consequence of how the work is actually approved.
 ## Boundary
 - ✅ Covered here
   What one run of a stage produces, and therefore how many gates it has.
 - ↪ Covered elsewhere
-  What that artifact IS is `QC1`; what it is called is `QC2`.
+  What that artifact IS is `QBa1`; what it is called is `QBa2`.
+
+## Diagram
+```
+ THE TEST: COULD A HUMAN APPROVE ONE UNIT AND REJECT ANOTHER?
+
+   yes ──► per-unit          no ──► one artifact for the stage
+
+ THE WORKED EXAMPLE, BOTH WAYS
+
+  BEFORE  one artifact for 4-display
+  ┌────────────────────────────────────────────────────┐
+  │ gate: "is the display stage done?"                 │
+  │   display01 …  display02 …  display03 …  ×11       │
+  │   different statuses · different source data ·     │
+  │   different blockers                               │
+  │   13-record checklist   ──►   NEVER CLOSED  ⚠️      │
+  └────────────────────────────────────────────────────┘
+
+  AFTER  one page per asset
+  ┌──────────────┐┌──────────────┐┌──────────────┐
+  │ display01    ││ display02    ││ display04    │  …
+  │ gate: ✅      ││ gate: ⏳      ││ gate: ✅      │
+  └──────────────┘└──────────────┘└──────────────┘
+   each question answerable in a sentence
+
+ HOW THE EIGHT FALL OUT
+   per-unit        4-display          11 assets, independent gates
+                   5-section-edit     runs: per-unit, already true
+   single-output   0-seed · 1a-resource · 1b-claims ·
+                   2a-venue · 2b-pitch · 3-narrative
+                   one thing each; per-unit machinery buys nothing
+
+ THE RULE IS NOT "EVERYTHING IS PER-UNIT"
+   it is "per-unit where the WORK is per-unit", and the gate is the test.
+```
 
 ## Content
 ### The argument from the gate

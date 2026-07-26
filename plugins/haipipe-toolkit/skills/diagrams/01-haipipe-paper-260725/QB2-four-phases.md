@@ -4,15 +4,53 @@ owner: JL
 method: keep DPRC; pin down what each phase may and may not do
 
 ## Question
-Why does every stage run DRAFT, PROBE, REVISE, CHECK, and why may evidence enter at only one of them?
+Why does every stage run DRAFT, PROBE, REVISE, CHECK, and why may evidence enter at only one of them? The order is not workflow convenience. It is what makes an unattended run safe, and what lets every fact in the finished paper be traced back through a single door.
 
 The phases are not a workflow convenience. They exist so that a claim's evidence has exactly one entry point, which is what makes a finished paper auditable: every number and every citation can be traced back to the probe entry that produced it. If DRAFT could fetch evidence, or REVISE could quietly add a citation, that trace breaks and nobody can tell what was verified from what was plausible.
 
+
+The approach is to fix the order and give exactly one phase the right to bring evidence in. What we want is that every fact in the finished paper can be traced back through a single door, so a reader asking where a number came from always has one place to look rather than four.
 ## Boundary
 - ✅ Covered here
   What each phase may do, and the rule that evidence enters only at PROBE.
 - ↪ Covered elsewhere
-  The mechanics of a probe entry are `QD1`; what PROBE may spend is `QD2`; what DRAFT writes where it does not yet know is `QD3`.
+  The mechanics of a probe entry are `QBb1`; what PROBE may spend is `QBb2`; what DRAFT writes where it does not yet know is `QBb3`.
+
+## Diagram
+```
+ ONE DOOR FOR EVIDENCE, AND THIS IS WHY THE TRACE HOLDS
+
+  ┌ DRAFT ──────────┐   writes the artifact
+  │ raise questions │   RAISES questions · never answers one
+  └────────┬────────┘   {VAL:? …} [Q-Section-4]   \cite{TOADD} [Q-…]
+           │
+  ┌ PROBE ─▼─────────────────────────────────────────┐  ⬅ THE ONLY DOOR
+  │ ① organize  strip the stake, make it executable  │
+  │ ② match     is the answer already in the bank?   │
+  │ ③ dispatch  what match cannot close  ──► task /  │
+  │                                          discovery│
+  │ ④ point     the probe entry names its target     │
+  │ ⑤ interpret bring it back WITH its caveats       │
+  └────────┬─────────────────────────────────────────┘
+           │
+  ┌ REVISE ▼────────┐   rewrite to venue quality
+  │ unattended      │   substitute answers that LANDED
+  └────────┬────────┘   leaves %% {CC-*}: why-comments
+           │            NEVER introduces a fact
+  ┌ CHECK ─▼────────┐   🧠 the human, once per stage
+  │ the only gate   │   reads the changes and the reasons TOGETHER
+  └─────────────────┘
+
+ WHAT THE RULE BUYS
+   every number and every citation in the finished paper
+   traces back to the probe entry that produced it.
+   If DRAFT could fetch, or REVISE could add a citation,
+   nobody could tell VERIFIED from PLAUSIBLE.
+
+ IT BECAME LITERALLY TRUE ON 2026-07-20
+   before   DRAFT: write + organize + match      "mostly one door"
+   after    DRAFT: write.  PROBE: ① … ⑤          one door
+```
 
 ## Content
 ### What each phase is for

@@ -125,7 +125,7 @@ If the file does not exist or lacks these sections, the dashboard says "pitch no
 7. `0-displays/*/README.md`
 8. `0-sections/README.md`
 9. `0-sections/*.tex` names and short headers/comments only; do not read full long sections unless needed to diagnose section-edit drift.
-10. `1-rounds/latest.md`, then the referenced round README, `discussion.md`, `decisions.md`, `todo.md`, and `applied.md` if they exist.
+10. `the S-Round pages themselves (no stored pointer)`, then the referenced round README, `discussion.md`, `decisions.md`, `todo.md`, and `applied.md` if they exist.
 11. Git state:
    - `git status --short --branch`
    - `git log --oneline --max-count=3`
@@ -190,7 +190,7 @@ For each paper:
 4. If STATUS.md current_layer is ahead of the disk frontier, flag DRIFT.
 5. Surface open needs from 1-claims GAP rows, 4-display missing units,
    5-section-edit open checklist items, section TODOs, and
-   1-rounds/<round>/todo.md.
+   0-lifecycle/7-round/<round>/todo.md.
 ```
 
 ### Render skeleton
@@ -250,7 +250,7 @@ Story     one sentence (may wrap ~2 lines), in the paper's working language;
 Open needs block (printed directly under the panel; short, it is "what to do next", not a report). Route each per Delivery Need Routing in `../../haipipe-paper/SKILL.md`:
 
 ```text
-Open needs (from 1-rounds/<round>/todo.md + 1-claims planned/GAP rows + missing displays):
+Open needs (from 0-lifecycle/7-round/<round>/todo.md + 1-claims planned/GAP rows + missing displays):
   - <gap> -> <route>     e.g. Materialize Display 01-04 -> /haipipe-task-for-display
   - <gap> -> <route>     e.g. Backfill C1-C5 evidence anchors -> /haipipe-paper probe "<need>"
                               (opens a question ENTRY in 1-probes/; the PROBE phase MATCHes
@@ -303,7 +303,7 @@ Infer maturity separately from current layer -- read it from artifacts, never as
 | sections compile with prose | `draft` |
 | checks/audits mostly pass | `submission-candidate` |
 | frozen PDF + submission metadata | `submitted` |
-| active 1-rounds round after external/coauthor review | `revision` |
+| an S-Round page open after external/coauthor review | `revision` |
 | final external state | `accepted/published` |
 
 Need diagnosis is separate from lifecycle layer.

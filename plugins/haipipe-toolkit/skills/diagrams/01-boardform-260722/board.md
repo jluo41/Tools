@@ -15,30 +15,42 @@ Five groups; the letter in each Q's id is the group it was opened under. The fir
 ### QA · Defining a board
 Pin down the thing itself; nothing downstream is safe until this group lands.
 Folder shape, then the shared Q/S source template, how one opened face's page is
-laid out, how to add inline comments, the lifecycle of one comment, the sentence
-apparatus, what is checked after any change, and which visual-taste rules improve
-the work surface without turning it into a marketing page. Three rulings shipped and
+laid out and how its group titles are marked, inline comments and what becomes of
+one, the sentence apparatus, whether any agent sees what gets attached, what is
+checked after any change, and which visual-taste rules improve the work surface
+without turning it into a marketing page. Three rulings shipped and
 were retired as faces because their law lives in `ref/board-form.md`: projection,
 one file with two modes (former QA3, §8, its JS-only extras parked with it);
 embedding another file by reference, `![[path#Section]]` (former QF1, §5); and the
 `doc:` row that rendered source files as a slide with no Q wrapper (former QF2,
 retired 260726, superseded by that embed, which does the same job inside a real
-face). QA5 merged into QA9 on 260726: writing prose a stranger can read and
-checking that the page still renders what the template promises are two checks on
-one trigger, so they are one face.
+face). Two merges on 260726, both for the same reason, that a face which builds a thing
+and a face which rules what becomes of it are one subject: QA5 into QA9 (writing
+prose a stranger can read and checking the page still renders what the template
+promises are two checks on one trigger), and QA7 into QA6 (building a comment and
+ruling its remaining life; the split had let QA6 sit ✅ while the thing it built
+had no ending). QD4 joined QA4 the same day for the same reason, and cost QA4 its
+flattering 17/18: the icon question had been parked in another group while the
+grammar it depends on lived here.
 ```
-  folder  →  Q template  →  page layout  →  comments  →  lifecycle  →  sentence ⚑
-   QA1         QA2            QA4           QA6          QA7           QA8
-                  └──────────────┴── after a change, does it still hold up? ──► QA9
-                              └── scoped visual taste, audit before editing ──► QA10
-                                       structure renders  ·  prose reads
+  folder  →  Q template  →  page layout  →  comments + lifecycle  →  sentence ⚑
+   QA1         QA2            QA4                 QA6                  QA8
+                                                                        |
+                                              does the chat see the     |
+                                              sentence's attachments?  QA8a
+                  |
+                  |    after a change, does it still hold up?  ──►  QA9
+                  |    scoped visual taste, audit before editing ──►  QA10
+                  |
+                  └─ structure renders · prose reads · the work surface stays a
+                     work surface · what the page collects reaches the worker
 ```
 QA1-form.md
 QA2-qtemplate.md
 QA4-pagelayout.md
 QA6-comments.md
-QA7-lifecycle.md
 QA8-sentence.md
+QA8a-sentence-chat.md
 QA9-acceptance.md
 QA10-ui-taste.md
 ### QB · Shipping the skill
@@ -64,16 +76,16 @@ QC3-folderq.md
 ### QD · Working on the board
 The live layer: can you do real work on the board page itself?
 One session per question (QD1), the restricted in-page drawer (QD2), the
-unrestricted real terminal (QD3), LLM-assigned group icons (QD4), how the page
-updates live without losing your chat (QD6), and attaching an Excalidraw canvas
-to a face from the page itself (QD7, opened 260726; how that canvas renders is
-QA4 §2). The index page's chatbot is the QD2 drawer / QD3 terminal opened on
-board.md; a separate board-agent question (QD5) was archived 260725 as redundant
-with them.
+unrestricted real terminal (QD3), how the page updates live without losing your
+chat (QD6), and attaching an Excalidraw canvas to a face from the page itself
+(QD7, opened 260726; how that canvas renders is QA4 §2). The index page's chatbot
+is the QD2 drawer / QD3 terminal opened on board.md. Two faces left this group:
+a board-agent question (QD5) archived 260725 as redundant with QD2 and QD3, and
+LLM-assigned group icons (QD4) merged into QA4 on 260726, because the icon is a
+layout marker and what blocks it is QA4's own rule about what a group title is.
 QD1-chat-per-question.md
 QD2-chat-sdk.md
 QD3-chat-terminal.md
-QD4-topicicon.md
 QD6-liveupdate.md
 QD7-diagramattach.md
 ### QE · Sharing the board
@@ -98,6 +110,7 @@ QE6-bindaddress.md
 ## Links
 SKILL.md            ../../0_utils/haipipe-board/SKILL.md
 build.py            ../../0_utils/haipipe-board/build.py
+check.py            ../../0_utils/haipipe-board/check.py
 watch.py            ../../0_utils/haipipe-board/watch.py
 serve.py            ../../0_utils/haipipe-board/serve.py
 CHANGELOG.md        ../../0_utils/haipipe-board/CHANGELOG.md
@@ -108,6 +121,14 @@ ref/writing-rules.md ../../0_utils/haipipe-board/ref/writing-rules.md
 ref/board-example.md ../../0_utils/haipipe-board/ref/board-example.md
 haipipe-board/      ../../0_utils/haipipe-board/
 env.sh              ../../../../../../env.sh
+paper-board/        ../01-haipipe-paper-260725/
+QC0@paper           ../01-haipipe-paper-260725/QC0-sentence-unit.md
+QC1@paper           ../01-haipipe-paper-260725/QC1-sentence-citation.md
+QC2@paper           ../01-haipipe-paper-260725/QC2-sentence-value.md
+QC3@paper           ../01-haipipe-paper-260725/QC3-sentence-display-table.md
+QC4@paper           ../01-haipipe-paper-260725/QC4-sentence-display-figure.md
+QA6@paper           ../01-haipipe-paper-260725/QA6-the-board-tool.md
+src/dialect_paper.py ../../0_utils/haipipe-board/src/dialect_paper.py
 haipipe-paper-stage/ ../../paper/1-lifecycle/haipipe-paper-stage/
 0-lifecycle/        ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
 02-method-260722/   ../../../../subjective-label/diagram/02-method-260722/

@@ -17,7 +17,7 @@ lives in tasks and discoveries.
 │   ├── 4-display/       venue: HEAVY
 │   └── 5-section-edit/  venue: SPECIFIC (per-section norms)
 ├── 1-probes/       PPNN_<topic>/ probe files (flat cross-stage pool; campaign board in its README)
-├── 1-rounds/
+├── 0-lifecycle/7-round/
 ├── 0-displays/
 ├── 0-sections/
 └── 1-compile.sh
@@ -64,7 +64,7 @@ current stage; a paper can be mature yet loop back to claims.
 | `draft` | Section text exists | main paper compiles with rough prose |
 | `submission-candidate` | Checks mostly pass | citations, claims, displays, compile stable |
 | `submitted` | External venue state exists | submission metadata, frozen PDF |
-| `revision` | External comments active | `1-rounds/<round>/` has review/todo/applied |
+| `revision` | External comments active | `0-lifecycle/7-round/<round>/` has review/todo/applied |
 | `accepted/published` | Final external state | camera-ready/final links |
 
 ## Loopback Rule
@@ -78,7 +78,7 @@ explains the failure:
 | story arc weak or abstract disagrees | `2-pitch` / `3-narrative` |
 | display cannot support claim | `4-display` |
 | paragraph has no job/evidence anchor | `5-section-edit` |
-| reviewer/coauthor comment unresolved | `1-rounds` then target lifecycle stage |
+| reviewer/coauthor comment unresolved | the round's S-Round page, then the target lifecycle stage |
 
 ## Handoff To Evidence Workers
 

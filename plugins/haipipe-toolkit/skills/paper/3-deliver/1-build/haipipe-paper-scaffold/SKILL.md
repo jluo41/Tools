@@ -62,7 +62,7 @@ Confirm the target directory is empty or absent.
 ```
 <out>/
 ├── 0-sections/        0-displays/displayNN-<slug>/
-└── 1-rounds/
+└── 0-lifecycle/7-round/
 ```
 
 (`0-extra/`, `1-diff/`, `1-review/` are created later by the skills that need them; do not pre-create empty process dirs.)

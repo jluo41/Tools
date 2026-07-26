@@ -65,7 +65,12 @@ The typed lanes are JL's extension of that same convention, proposed in the MISQ
       `stage.py sync --all` then ran and left every authored venue contract untouched, which proves an authored subsection under `## Stage Contract` survives sync.
 - [ ] 🎨 Inline-marker chips
       `\citep{}` / `\cite{TOADD}` / `{VAL:? …}` / `[Q-X-n]` render as status chips inside the sentence, resolved against the paper's .bib, `1-probes/`, and `0-displays/`.
-      Needs the `dialect: paper` opt-in ruling before code.
+      The ruling this needed is NOT one decision: it is four, one per attachment type, and each has a page that owns it in the paper board's `QC` group.
+      `QC1@paper` citation, `QC2@paper` value, `QC3@paper` table, `QC4@paper` figure, over `QC0@paper` which owns the sentence unit itself. Each states its own chip states, its own hover card, and its own write rule, because the four are not symmetric: a citation ends in a `.bib` entry only a human may write, a value binds to a producing run rather than a path, a table is checkable on sight and a figure is not.
+      This board keeps the MECHANISM (the fold, the badge, the drawer, the tint, click-to-add). The paper board owns what each marker MEANS and what resolves it.
+      **Partly shipped as of 260726, and this line said the opposite for most of that day.** The `dialect: paper` opt-in exists, `src/dialect_paper.py` is in this skill's own `src/`, `build.py` loads it behind the `dialect:` key, and the MISQ paper board declares it: citations resolve against the `.bib` and `[Q-X-n]` joins against `1-probes/`, with displays named in the module as the remaining slice. Where that code is allowed to live is ruled on the paper board, at `QA6@paper`, which is a ruling about this skill's source tree made somewhere else. It was `QBc5` when this line was written and the paper board re-lettered within the hour; `check.py` caught the dead link on the next run, which is the whole reason the Links are declared.
+      So what is left here is the display half, which is `QC3@paper` and `QC4@paper`. Keep this item open until those two say what to render.
+      The pointers were `QCb1`-`QCb4` until the paper board re-lettered on 260726, and this line aimed at the dead ids for a day. All five are declared in `board.md`'s `## Links` now, so a dead one is a click away from being caught.
 
 ## Where we are
 v1 shipped 260725 on this board only: `src/body.py` gained `render_apparatus` and the attachment walk, `assets/board.css` gained `.sent` / `.sbadge` / `.sapp` / `.lane`, and QA4 carries the live demo.
@@ -74,12 +79,21 @@ The MISQ paper board took the rollout the same day (the 📄 item): 20 typed lan
 Interaction refinements, 260725 evening: double-click opens the form (single click freed for reading), and every section heading carries a ⧉ button that copies the whole section as plain text (the per-sentence hover copy was tried and removed on JL's call).
 
 ## Files
+The apparatus has two halves and they live in different files, so a change to one is easy to make without noticing the other.
+Reading them in this order gives the whole path: a lane is written by `serve.py`, stored in the md, and rendered by `src/body.py`.
+
 - `src/body.py`
-  The attachment walk (`last_p`, `appar`) and `render_apparatus`.
+  RENDER. The attachment walk (`last_p`, `appar`) and `render_apparatus`: which `>` lines fold under which sentence, and the ⚑ badge count.
+- `serve.py`
+  WRITE. `add_sentence` and the `/_board/sentence` route: the anchor match, and the rule that a new lane is appended at the end of the sentence's existing run.
+- `haipipe-board/assets/board.js`
+  The ➕ control that calls it: the lane dropdown, the input, and the `.saddrow` row inside an open drawer.
 - `assets/board.css`
-  The `.sent` summary row, ⚑ badge, drawer, and lane styles.
+  The `.sent` summary row, ⚑ badge, drawer, lane styles, and the hover tint.
 - `QA4-pagelayout.md`
   The self-demonstrating "Sentence apparatus" subsection.
+- `QA8a-sentence-chat.md`
+  Whether anything attached this way reaches the chat opened on the same face.
 
 ## Log
 260725 · copy moved from per-sentence hover to section headings (JL): ⧉ on every section header copies the whole section as plain text, folded parts included

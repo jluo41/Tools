@@ -114,16 +114,27 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       It has run twice and both times returned findings that were acted on rather than argued with.
       The format is fixed: unreadable sentences quoted, undefined words listed with the file they first appear in, missing premises named, then a grade per face.
       The evidence that the format works is that its output changed the board: `## Topic` and `## Pipeline` exist because the first run said the files explain a recipe's format without ever saying what the dish is.
-- [ ] 🧪 The template renders as both a Q face and an S face with no hand editing
+- [x] 🧪 The template renders as both a Q face and an S face with no hand editing
       Copying `ref/q-template.md` twice and renaming the copies must be enough to produce one valid Q page and one valid S page.
       The two paths have broken independently, so checking one proves little about the other: Stage Contract exists only on S, Why this matters moves between Opening and Content depending on the kind, and the Content heading names the stage on S while counting subsections on Q.
       If the template cannot render as both without editing, that is itself a finding, because the documentation says one file serves both kinds.
-- [ ] 📋 Every construct the documentation names is asserted with its class
+      Ticked 260726: `check.py` copies the template into a temp board twice, once as `QT1-template.md` and once as `S-Main-1-template.md`, builds it, and fails if fewer than two faces come out. No hand editing was needed.
+- [x] 📋 Every construct the documentation names is asserted with its class
       The list in the Diagram is the starting set, and it should be derived from `ref/board-form.md` rather than from the renderer, so a construct dropped from the code fails instead of quietly disappearing from both sides.
       The assertion should name the construct in words a reader recognizes, since the value of the check is that it says the job line stopped rendering, not that a selector count changed.
-- [ ] 🕳 Gaps in the template are reported as gaps, not silently skipped
+      Ticked 260726: the 15 constructs from this face's own Diagram are the table in `check.py`, each reported by name and by class, so a failure reads `job line · div.pj` rather than a count.
+- [x] 🕳 Gaps in the template are reported as gaps, not silently skipped
       When the documentation names a construct the template never demonstrates, the check reports a hole to fill rather than passing by default.
       This is the half that improves the template over time, and it is the half a renderer-only test would miss entirely.
+      Ticked 260726, and it earned itself on the first run: three constructs are documented and never demonstrated, so `code block`, `group title` and `excalidraw canvas` came back as GAP. The template is now measurably incomplete instead of assumed complete.
+- [ ] 🏷 A retired id can be told apart from a live one
+      Every `unresolved-id` warning on the first run was a deliberate historical mention: `QCb1`-`QCb4` in QA8 recording what the ids used to be, and `QF2` in QC3 naming a retired ruling.
+      A live reference and a historical one are typographically identical today, so no check can separate them and neither can a reader.
+      This closes when the convention exists, whichever way it goes: a retired id written without backticks, or marked, or listed once on the board.
+- [ ] 🧩 A board can declare which rules it opts out of
+      `settled-with-open-items` is the boardform board's rule and is explicitly NOT the paper board's, which rules that `state:` is about the decision and that implementation lives in the item list.
+      `check.py` currently detects that by pattern-matching the sentence the paper board happens to use to say so, which works and is fragile.
+      This closes when a board can state its own variant in `board.md` rather than having it guessed from prose.
 - [ ] 🤖 A standing zero-background reviewer, not one summoned by hand
       Today the cold read is a fresh agent someone remembers to dispatch, with the prompt copied out of `ref/writing-rules.md` each time.
       The rules and the prompt are written down, but they are not packaged so that one command runs the review over a board and returns the report.
@@ -167,6 +178,12 @@ The writing rules exist and the cold read has run twice by hand; the structural 
   A coined translation for battery, plus outward anchoring, act one, and three-set gate, none of which appear in any source document.
   These do the most damage of any writing fault, because the reader assumes they are jargon, goes looking for a definition, and finds nothing, so they lose confidence in the whole page rather than in one phrase.
 
+- 260726 CC · 🧰 The structural half exists and runs
+  `check.py <board-dir>` covers four families: board.md against disk, each face's required sections and state value and references, the built page's links and tag balance and id uniqueness, and the template fixture rendered as both a Q and an S with all 15 constructs asserted.
+  It reuses `src/parse.py` rather than carrying its own parser, so it checks the thing that ships instead of a second opinion.
+  Report-only, exit 0, with `--strict` waiting for the ruling below. First run on this board: 0 error, 31 warn, 3 gap; first run on the paper board: 3 error, 8 warn.
+  It found two things on its first outing that a person had missed for a day, and two of its own rules were wrong in ways only a real run exposes: it counted `<details>` inside CSS comments, and it applied this board's settled-items rule to a board that had ruled otherwise. Both are fixed; both are the argument for running it rather than describing it.
+
 ## Files
 - `ref/writing-rules.md`
   The prose check's deliverable and its standard: the hard writing rules, the zero-background review prompt, and the convergence criterion.
@@ -185,6 +202,9 @@ The writing rules exist and the cold read has run twice by hand; the structural 
 - `SKILL.md`
   Its writing section excerpts the three deadliest rules and points at `ref/writing-rules.md`.
 
+- `check.py`
+  The structural half. Four families, the 15-construct table, and the gap report. Read-only.
+
 ## Glossary
 zero-background reader: someone who has never touched this project, played by a freshly started agent because it genuinely does not know, while the author knows too much unwritten context to test anything themselves.
 subagent: a separately started Claude that sees only the files it is handed, not the conversation that produced them.
@@ -196,6 +216,7 @@ construct: one grammar element the documentation promises, such as a paragraph h
 >> CC0726: merged on JL's ruling. The two instruments stay distinct inside this face; what merged is the trigger, which was the item open on both.
 
 ## Log
+260726 · `check.py` written and run (JL: "do you think you need to write a python script to check the basic webpage and Q-md structure"): 🧪 📋 🕳 ticked, two new items opened by what the first run exposed (retired-id convention, board-local rules); the cold-read half and the shared trigger stay open
 260726 · QA5 merged in on JL's ruling: title widened from "Checking the template against its own page", the cold read and its two ticked items came across with their history, and the duplicated "runs automatically after a change" item became one. File renamed `QA9-rendercheck.md` to `QA9-acceptance.md`; the id is unchanged so `#QA9` still resolves
 260726 · opened as QA9 after three construct-level regressions in two days (`####` rendering as a group title, the Opening fold moving onto the section name, the drawer's half-iconed headings), each caught by JL reading a page rather than by anything we run
 260724 1242 · (from QA5) Translated to English (JL 260724: everything on the board in English)

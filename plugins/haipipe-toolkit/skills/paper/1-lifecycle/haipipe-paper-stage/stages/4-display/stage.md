@@ -81,7 +81,7 @@ exit_when: "display cannot support claim"   # the stage's own failure exit
 # Display is the ONLY stage that hands units to workers; the four renderers stay
 # independently registered skills, invoked by name, and are NOT part of this contract.
 commissions: [haipipe-display-table, haipipe-display-figure, haipipe-display-diagram, haipipe-display-illustration]
-worker_contract: ../../../4-display/ref/display-unit-output-contract.md
+worker_contract: ../../../4-display/ref/paper-adapter.md
                  # RELOCATED 2026-07-20. The four renderer skills read it as ../ref/…
                  # from their own folders; all 12 paths rewritten.
 

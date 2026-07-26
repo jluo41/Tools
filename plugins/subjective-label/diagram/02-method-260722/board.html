@@ -97,8 +97,12 @@ body:has(.q:target) .q:target{display:block;margin-top:6px}
 .nav a:hover{border-color:var(--accent)}
 .nav .all{margin:0 auto;color:var(--mut)}
 .q:target .top{display:none}
+/* No coloured stripe on the left (JL 260726). The row already opens with the
+   state emoji, so the 4px bar restated it in a second language, and eight of
+   them stacked down the index read as a chart rather than as a list. The
+   completion wash below is different information and stays. */
 .ir{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;
- border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:var(--radius-surface);margin:6px 0;
+ border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;
  text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden;--fill:0}
 
 .ir::before{content:"";position:absolute;inset:0;pointer-events:none;
@@ -109,8 +113,6 @@ body:has(.q:target) .q:target{display:block;margin-top:6px}
 .ir > *{position:relative;z-index:1}
 .ir:hover{border-color:var(--accent)}
 h3.sec .hint a{color:var(--accent);text-decoration:none}
-.ir.todo{border-left-color:var(--todo)}.ir.wip{border-left-color:var(--wip)}
-.ir.done{border-left-color:var(--done)}.ir.hold{border-left-color:var(--hold)}
 
 .grp{font-size:16px;font-weight:700;color:var(--fg);letter-spacing:-.01em;
  margin:26px 0 9px;padding:0 0 6px 2px;border-bottom:1px solid var(--line)}
@@ -160,6 +162,17 @@ a.src:hover{opacity:1;color:var(--accent);text-decoration:underline}
 .xcal iframe{width:100%;height:440px;border:1px solid var(--line);border-radius:var(--radius-surface);
  background:var(--card);display:block}
 .xcal .xopen{display:inline-block;margin-top:6px;font-size:12.5px}
+
+.xadd{margin:10px 0 2px}
+.xadd-open{background:none;border:1px dashed var(--line);color:var(--mut);cursor:pointer;
+ border-radius:var(--radius-surface);padding:4px 9px;font:inherit;font-size:12.5px}
+.xadd-open:hover{color:var(--fg);border-color:var(--mut)}
+.xadd-row{display:flex;gap:6px;align-items:center;margin-top:7px;flex-wrap:wrap}
+.xadd-row input{flex:1 1 320px;min-width:0;font:inherit;font-size:12.5px;padding:4px 7px;
+ border:1px solid var(--line);border-radius:var(--radius-surface);background:var(--bg);color:var(--fg)}
+.xadd-row button{font:inherit;font-size:12.5px;padding:4px 9px;cursor:pointer;
+ border:1px solid var(--line);border-radius:var(--radius-surface);background:var(--card);color:var(--fg)}
+.xerr{font-size:12px;color:var(--mut)}
 .q:target .xcal iframe{height:520px}
 
 .fls{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius-surface);
@@ -510,6 +523,10 @@ mark{background:transparent;box-shadow:inset 0 0 0 1000px rgba(255,214,0,.34);co
 
 .dia{margin:0 0 18px}
 .dia pre{margin:0;padding:15px 17px;line-height:1.55}
+/* an ascii diagram inside Content: it IS the content, not a code listing.
+   Same reading comfort as the .dia signature diagram, without the fold chrome. */
+pre.asc{margin:10px 0;padding:13px 15px;line-height:1.55;overflow-x:auto}
+
 .q:target .dia{margin:0 0 24px}
 .q:target .dia pre{font-size:13px;line-height:1.6}
 .col.now{border-left:3px solid var(--wip)}
@@ -693,6 +710,122 @@ details.gi summary:hover{color:var(--fg)}
 .pill.docp{border:1px solid var(--line);color:var(--mut);background:var(--pre)}
 .ir.doc .s{filter:none}
 .ir.doc .t{color:var(--mut)}
+
+/* ── chips: an inline marker that knows its own state (QC1, 260726) ──────────
+   Resolved at BUILD time by src/dialect_paper.py, so the `title=` tooltip is a
+   native browser hover and survives every script block being stripped. JS may later
+   upgrade it to a rich card; it may never be the only copy. */
+.chip{display:inline-block;padding:0 .38em;margin:0 .08em;border-radius:4px;
+  font:600 .84em/1.5 var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);
+  vertical-align:baseline;cursor:pointer;border:1px solid transparent;
+  white-space:nowrap;max-width:22em;overflow:hidden;text-overflow:ellipsis;
+  text-align:inherit}
+.chip.cite::before{content:"📚 ";font-weight:400}
+.chip.val::before{content:"🔢 ";font-weight:400}
+.chip.qref::before{content:"🎯 ";font-weight:400}
+.chip.ok{background:color-mix(in srgb,var(--ok,#2e7d32) 12%,transparent);
+  color:var(--ok,#2e7d32);border-color:color-mix(in srgb,var(--ok,#2e7d32) 28%,transparent)}
+.chip.owed{background:color-mix(in srgb,var(--warn,#b26a00) 12%,transparent);
+  color:var(--warn,#b26a00);border-color:color-mix(in srgb,var(--warn,#b26a00) 30%,transparent)}
+.chip.broken,.chip.unowned{background:color-mix(in srgb,var(--bad,#c62828) 14%,transparent);
+  color:var(--bad,#c62828);border-color:var(--bad,#c62828);font-weight:700}
+/* ready = the answering probe LANDED and the prose still says owed. Not an
+   error and not fine: work sitting on the table, so it gets its own colour
+   rather than hiding inside `owed`. parked = deferred on purpose (QC2). */
+.chip.ready{background:color-mix(in srgb,var(--acc,#1565c0) 13%,transparent);
+  color:var(--acc,#1565c0);border-color:color-mix(in srgb,var(--acc,#1565c0) 34%,transparent)}
+.chip.parked{background:color-mix(in srgb,var(--mut,#6b7280) 12%,transparent);
+  color:var(--mut,#6b7280);border-color:color-mix(in srgb,var(--mut,#6b7280) 28%,transparent)}
+.chip.broken::after{content:" ⚠";font-weight:400}
+.chip.unowned::after{content:" ❓";font-weight:400}
+.chip.ready::after{content:" ✦";font-weight:400}
+.chip.parked::after{content:" ⏸";font-weight:400}
+.chip:hover{filter:brightness(1.08);max-width:none}
+@media (prefers-color-scheme:dark){
+  .chip.ok{color:#7fd18a}.chip.owed{color:#e0a34d}.chip.broken,.chip.unowned{color:#ef7d78}
+  .chip.ready{color:#78b6f0}.chip.parked{color:#9aa3af}
+}
+
+/* ── the chip's panel: click a chip, the record opens beside it ──────────────
+   Native HTML popover, no script. The panel is REAL body text (not a title=
+   attribute), so it is counted by the build's survive-with-JS-stripped check,
+   is Ctrl-F findable, and prints. `title=` stays on the chip underneath as the
+   floor for anything that does not support popover. */
+.chipcard{margin:auto;max-width:38em;padding:13px 16px;border:1px solid var(--line);
+  border-left-width:4px;border-radius:var(--radius-surface);background:var(--card);
+  color:var(--fg);font:14.5px/1.62 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  box-shadow:0 10px 34px rgba(0,0,0,.20)}
+.chipcard::backdrop{background:rgba(0,0,0,.10)}
+.chipcard.ok{border-left-color:var(--done)}
+.chipcard.ready{border-left-color:var(--accent)}
+.chipcard.owed{border-left-color:var(--wip)}
+.chipcard.parked{border-left-color:var(--hold)}
+.chipcard.broken,.chipcard.unowned{border-left-color:var(--todo)}
+.cch{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;
+  padding-bottom:8px;margin-bottom:9px;border-bottom:1px solid var(--line)}
+.cch b{font:600 14px var(--mono,ui-monospace,Menlo,monospace);word-break:break-all}
+.cck{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);
+  letter-spacing:.05em;text-transform:uppercase}
+.ccb p{margin:0 0 7px}.ccb p:last-child{margin-bottom:0}
+.ccb p:first-child{font-weight:600}
+/* Anchored BESIDE the chip that was clicked, where the browser supports it;
+   centred on screen where it does not, which is still perfectly readable.
+
+   Two traps live here, and the first version hit both.
+   ① The popover UA stylesheet is `position:fixed; inset:0; margin:auto`.
+      Setting margin:0 without releasing `inset:0` pins the panel to the
+      TOP-LEFT CORNER. `inset:auto` is what hands positioning to the anchor.
+   ② position-area takes one axis vocabulary at a time. `bottom span-inline-end`
+      mixes physical with logical, so the whole declaration is dropped and the
+      panel keeps whatever the previous rule left it. Stay logical throughout.
+   The @supports test is `anchor-name`, the actual feature, not one spelling of
+   one of its properties: Chrome 125-128 shipped this as `inset-area`, and both
+   spellings are emitted because an unknown declaration is ignored on its own. */
+@supports (anchor-name:--a){
+  .chipcard{
+    position:fixed;
+    inset:auto;                       /* ① release the UA's inset:0 */
+    margin:0;
+    inset-area:block-end span-inline-end;      /* Chrome 125-128 */
+    position-area:block-end span-inline-end;   /* current name */
+    position-try-fallbacks:flip-block,flip-inline;
+    position-try-options:flip-block,flip-inline;
+    max-height:min(60vh,34em);overflow:auto;
+    max-width:min(38em,calc(100vw - 2rem))}
+}
+/* the panel's source block: definition first, then the source itself */
+.ccl{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:10px;
+  padding-top:9px;border-top:1px solid var(--line)}
+.ccl a,.ccl span{font:12.5px ui-monospace,Menlo,monospace;text-decoration:none;
+  color:var(--accent);border:1px solid var(--line);border-radius:var(--radius-control);
+  padding:2px 8px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.ccl a:hover{border-color:var(--accent);background:var(--pre)}
+.ccl .cctgt{color:var(--mut)}
+.ccraw{margin:9px 0 0;padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
+  font:12px/1.55 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-word;
+  max-height:16em;overflow:auto;color:var(--fg)}
+.ccsug{margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+.ccsug div{font:12.5px/1.7 ui-monospace,Menlo,monospace;color:var(--mut)}
+.ccsug b{color:var(--done);font-weight:600}
+/* display chips: a table and a figure are two faces (QC3 / QC4), so the icon
+   says which one the sentence is pointing at before you read the state. */
+.chip.tab::before{content:"▦ ";font-weight:400}
+.chip.fig::before{content:"📈 ";font-weight:400}
+/* the panel's PREVIEW: a figure shows its picture, a table shows its rows.
+   The caption is not decoration. QC4's law: a card that shows one image while
+   another is what the manuscript compiles is worse than a card showing none,
+   so LIVE and CANDIDATE are stated on every single one. */
+.ccprev{margin:11px 0 0;padding:0}
+.ccprev figcaption{font:11px ui-monospace,Menlo,monospace;color:var(--mut);
+  letter-spacing:.05em;margin-bottom:5px}
+.ccprev img{display:block;max-width:100%;max-height:15em;width:auto;height:auto;
+  border:1px solid var(--line);border-radius:var(--radius-control);
+  background:#fff;padding:5px}
+.ccprev .ccraw{margin:0;max-height:14em}
+/* the rendered reference: hanging indent, the way a bibliography reads */
+.ccref{font:14px/1.6 Charter,"Bitstream Charter",Georgia,Cambria,serif;
+  padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
+  text-indent:-1.4em;padding-left:calc(11px + 1.4em)}
 </style></head><body class="single" data-board="/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/subjective-label/diagram/02-method-260722"><div class="wrap" id="top" data-bsession="">
 
 <h1 class="h1">Subjective labeling: the method, the engine, and a score we did not award ourselves</h1>
@@ -704,7 +837,7 @@ details.gi summary:hover{color:var(--fg)}
 <p>Asking real people to label is slow and expensive, so a set of large language models stands in for a team of human annotators.</p>
 <p>This board settles the labeling method JL described out loud in the meeting, together with the engine beneath it and one external validation, and for each step it records both what it should look like and whether the code already does it.</p>
 <p>Cast: JL is the project lead, who supplies the method and makes the calls, and shows as 🧠 on the page. RA is the research assistant doing the work. CC is Claude Code, responsible for migration and for writing things down. ZD is the colleague whose 2026-07-21 notes are pinned as comments.</p>
-<p>Words this board leans on. A guideline is the document stating what counts as HIGH, LOW, or NONE, which a model follows when it labels. The gallery is the set of answers JL personally confirmed, used as the ruler for measuring whether a model labels correctly. A construct is the trait being labeled. The cascade is the three-tier funnel that decides which items a cheap method can settle and which need an expensive one. A license is a score awarded by an outside dataset rather than by this project. The human ceiling is the agreement level real annotators reach on a public dataset, which is what makes a kappa number interpretable.</p></div></details><details class="ctx"><summary>🔄 Pipeline — how these Qs are ordered</summary><div class="fb"><details class="it codef"><summary class="cs">&lt;/&gt; code · 13 lines</summary><pre>QA · method        the labeling loop settled in the meeting, starting from 60 items
+<p>Words this board leans on. A guideline is the document stating what counts as HIGH, LOW, or NONE, which a model follows when it labels. The gallery is the set of answers JL personally confirmed, used as the ruler for measuring whether a model labels correctly. A construct is the trait being labeled. The cascade is the three-tier funnel that decides which items a cheap method can settle and which need an expensive one. A license is a score awarded by an outside dataset rather than by this project. The human ceiling is the agreement level real annotators reach on a public dataset, which is what makes a kappa number interpretable.</p></div></details><details class="ctx"><summary>🔄 Pipeline — how these Qs are ordered</summary><div class="fb"><pre class="asc">QA · method        the labeling loop settled in the meeting, starting from 60 items
   QA1 build the first 60  →  QA2 label them independently  →  QA3 weak-model exam
 
 QB · grow + verify  roll the sample up, verify every version
@@ -716,7 +849,7 @@ QC · calls JL owes  open judgment, not open evidence
 
 QD · engine         answers the &quot;does the code do it&quot; half of the spine
   QD1 sentence → vector ✅ · QD2 cascade ✅ · QD3 train the classifier 🟡
-  QD4 generate the lexicon instead of hard-coding it 🔴</pre></details>
+  QD4 generate the lexicon instead of hard-coding it 🔴</pre>
 <p>The two layers interlock. QB1 picks hard cases by standing on QD1; the implementation of QC2&#x27;s &quot;let a small classifier take over&quot; is QD3; the cascade&#x27;s Tier 0 in QD2 is QD1 itself; and QC3&#x27;s construct standard is one of the gates QC1 needs before a human can let go.</p>
 <p>QC3, QD4, and the ZD comments distributed across the other faces (F1 to F8) all come from <a class="fp" href="_source/note-update-v3-260721.md"><code>note-update-v3</code></a>; the former 01-license board folded into this one and was deleted.</p></div></details>
 
@@ -744,7 +877,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <a class="ir todo" href="#QD4" data-f="QD4-auto-lexicon.md" title="0% done"><span class="s">🔴</span><span class="i">QD4</span><span class="t">Generate the lexicon instead of hard-coding it</span><span class="obadge">💬 1</span><span class="w">🔧 RA</span></a></div>
 
 <span id="all"></span>
-<section class="slide q todo" id="QA1" data-title="Cold start: talk first, do not force-label" data-file="QA1-coldstart.md" data-session=""><div class="qh"><span class="qid">QA1</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· 60 items plus dialogue with a strong model (raised in the meeting)</span><a class="src" href="QA1-coldstart.md" target="_blank" title="Open this question's raw markdown">📄 QA1-coldstart.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA1 </span>Cold start: talk first, do not force-label</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">When a new construct is just starting and nothing exists yet, where does the very first batch of labels come from?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> How the first labels come into existence when there is no guideline and no gallery yet: the strong model finds relevant items in the corpus, and the dialogue with JL produces a first guideline plus 60 confirmed answers at once.</p><p class="brow"><b>↪ Covered elsewhere</b> Who labels those 60 items and how only the disagreements are reported is QA2; putting a weak model through the exam on the resulting answers is QA3; growing the 60 up to 140 by hunting hard cases is QB1.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  ✗ old way:  draw a random batch  →  make a person label it cold
+<section class="slide q todo" id="QA1" data-title="Cold start: talk first, do not force-label" data-file="QA1-coldstart.md" data-session=""><div class="qh"><span class="qid">QA1</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· 60 items plus dialogue with a strong model (raised in the meeting)</span><a class="src" href="QA1-coldstart.md" target="_blank" title="Open this question's raw markdown">📄 QA1-coldstart.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA1 </span>Cold start: talk first, do not force-label</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">When a new construct is just starting and nothing exists yet, where does the very first batch of labels come from?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> How the first labels come into existence when there is no guideline and no gallery yet: the strong model finds relevant items in the corpus, and the dialogue with JL produces a first guideline plus 60 confirmed answers at once.</p><p class="brow"><b>↪ Covered elsewhere</b> Who labels those 60 items and how only the disagreements are reported is QA2; putting a weak model through the exam on the resulting answers is QA3; growing the 60 up to 140 by hunting hard cases is QB1.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  ✗ old way:  draw a random batch  →  make a person label it cold
                                       the person&#x27;s judgment gets dragged along by the items
                                       the guideline is patched together from off-the-cuff reactions
 
@@ -763,7 +896,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>gallery: the set of answers JL personally confirmed, used as the ruler for measuring whether a model labels correctly.</p>
 <p>construct: the trait being labeled.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>migrated from the old <code>[Q1]</code> single-file format to the new format; the finish line was split into a checklist and a Diagram was added</span></div></div></details></div><div class="nav"><span></span><a class="all" href="#top">☰ Index</a><a href="#QA2">QA2 →</a></div></section>
-<section class="slide q wip" id="QA2" data-title="Label independently, report only the disagreements" data-file="QA2-split-label.md" data-session=""><div class="qh"><span class="qid">QA2</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· several models label independently, one item at a time</span><a class="src" href="QA2-split-label.md" target="_blank" title="Open this question's raw markdown">📄 QA2-split-label.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA2 </span>Label independently, report only the disagreements</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Who labels these 60 items, and how should the labeling run so that it does not waste JL&#x27;s time?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> How the 60 items are labeled once they exist: how many labelers, whether they label independently of each other, and which disagreements reach JL.</p><p class="brow"><b>↪ Covered elsewhere</b> Where the first 60 items and the first guideline come from at all is QA1; having a strong model produce the answers while a weak model sits the exam is QA3; growing the 60 up to 140 by hunting hard cases is QB1.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  several models each label the same item independently
+<section class="slide q wip" id="QA2" data-title="Label independently, report only the disagreements" data-file="QA2-split-label.md" data-session=""><div class="qh"><span class="qid">QA2</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· several models label independently, one item at a time</span><a class="src" href="QA2-split-label.md" target="_blank" title="Open this question's raw markdown">📄 QA2-split-label.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA2 </span>Label independently, report only the disagreements</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Who labels these 60 items, and how should the labeling run so that it does not waste JL&#x27;s time?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> How the 60 items are labeled once they exist: how many labelers, whether they label independently of each other, and which disagreements reach JL.</p><p class="brow"><b>↪ Covered elsewhere</b> Where the first 60 items and the first guideline come from at all is QA1; having a strong model produce the answers while a weak model sits the exam is QA3; growing the 60 up to 140 by hunting hard cases is QB1.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  several models each label the same item independently
         │
         ├─ all agree ──► passes automatically, recorded (JL is not disturbed)
         └─ they differ ──► sorted into four kinds:
@@ -781,7 +914,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>guideline: the document stating what counts as HIGH, LOW, or NONE, which a model follows when it labels.</p>
 <p>panel: the set of model labelers.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>migrated out of the old <code>[Q2]</code>; the finish line was split into a checklist, the disagreement sorting already built was ticked, and the two parts still to change were left open</span></div></div></details></div><div class="nav"><a href="#QA1">← QA1</a><a class="all" href="#top">☰ Index</a><a href="#QA3">QA3 →</a></div></section>
-<section class="slide q todo" id="QA3" data-title="The strong model supplies the answers, the weak model sits the exam" data-file="QA3-weak-exam.md" data-session=""><div class="qh"><span class="qid">QA3</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· a weak model labels the 60 items from the guideline alone, then is scored against the gallery</span><span class="obadge">💬 1</span><a class="src" href="QA3-weak-exam.md" target="_blank" title="Open this question's raw markdown">📄 QA3-weak-exam.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA3 </span>The strong model supplies the answers, the weak model sits the exam</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Once a version of the guideline is written, how do we know it is written clearly enough?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Weak models label the same 60 items with the guideline as their only instruction, and each one reports a single agreement score against the gallery.</p><p class="brow"><b>↪ Covered elsewhere</b> Producing those 60 gallery answers in the first place is QA1, the panel labeling independently and reporting only its disagreements is QA2, and whether the labels are correct rather than merely reproducible from the guideline is measured on outside data in QB3.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  strong model (expensive) ──► produces the 60 gallery answers
+<section class="slide q todo" id="QA3" data-title="The strong model supplies the answers, the weak model sits the exam" data-file="QA3-weak-exam.md" data-session=""><div class="qh"><span class="qid">QA3</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· a weak model labels the 60 items from the guideline alone, then is scored against the gallery</span><span class="obadge">💬 1</span><a class="src" href="QA3-weak-exam.md" target="_blank" title="Open this question's raw markdown">📄 QA3-weak-exam.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QA3 </span>The strong model supplies the answers, the weak model sits the exam</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Once a version of the guideline is written, how do we know it is written clearly enough?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Weak models label the same 60 items with the guideline as their only instruction, and each one reports a single agreement score against the gallery.</p><p class="brow"><b>↪ Covered elsewhere</b> Producing those 60 gallery answers in the first place is QA1, the panel labeling independently and reporting only its disagreements is QA2, and whether the labels are correct rather than merely reproducible from the guideline is measured on outside data in QB3.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  strong model (expensive) ──► produces the 60 gallery answers
   guideline
         │
         ▼  label those 60 items by following the guideline
@@ -801,7 +934,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>gallery: the set of answers JL personally confirmed, used as the ruler for measuring whether a model labels correctly.</p>
 <p>weak model / strong model: the expensive strong model produces the gallery answers and the cheap weak model sits the exam, so a cheap model labeling correctly from the guideline alone is what shows the guideline is genuinely clear.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>migrated from the old <code>[Q3]</code>; the finish line was split into a checklist and a Diagram was added</span></div></div></details></div><div class="nav"><a href="#QA2">← QA2</a><a class="all" href="#top">☰ Index</a><a href="#QB1">QB1 →</a></div></section>
-<section class="slide q todo" id="QB1" data-title="Grow to 140 items by hunting hard cases" data-file="QB1-grow-140.md" data-session=""><div class="qh"><span class="qid">QB1</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· pick by geometric position, going after the hard cases on the border</span><span class="obadge">💬 2</span><a class="src" href="QB1-grow-140.md" target="_blank" title="Open this question's raw markdown">📄 QB1-grow-140.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB1 </span>Grow to 140 items by hunting hard cases</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">The 60 seed items are already confirmed, so how do we choose the next batch of 80 to send for labeling, reaching 140?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Which items go into the next batch: growing the confirmed 60 to 140 by deliberately selecting hard or informative cases instead of random ones.</p><p class="brow"><b>↪ Covered elsewhere</b> How a sentence becomes a point in space at all is QD1, and training the label-trained classifier that ZD wants the hard cases mined from is QD3. Examining the grown sample in three layers is QB2, and finishing the remaining thousands after that is QC2.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  Each review becomes one point in space through its embedding (see QD1)
+<section class="slide q todo" id="QB1" data-title="Grow to 140 items by hunting hard cases" data-file="QB1-grow-140.md" data-session=""><div class="qh"><span class="qid">QB1</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· pick by geometric position, going after the hard cases on the border</span><span class="obadge">💬 2</span><a class="src" href="QB1-grow-140.md" target="_blank" title="Open this question's raw markdown">📄 QB1-grow-140.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB1 </span>Grow to 140 items by hunting hard cases</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">The 60 seed items are already confirmed, so how do we choose the next batch of 80 to send for labeling, reaching 140?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Which items go into the next batch: growing the confirmed 60 to 140 by deliberately selecting hard or informative cases instead of random ones.</p><p class="brow"><b>↪ Covered elsewhere</b> How a sentence becomes a point in space at all is QD1, and training the label-trained classifier that ZD wants the hard cases mined from is QD3. Examining the grown sample in three layers is QB2, and finishing the remaining thousands after that is QC2.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  Each review becomes one point in space through its embedding (see QD1)
   Three labels = three regions:
 
         HIGH  ●●●●●              ●  near the center: typical, told apart at a glance (about 80%)
@@ -823,7 +956,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <div class="cm" data-quote="typical cases you can tell apart at a glance" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“typical cases you can tell apart at a glance”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>note-update-v3 F6: do not mix deliberately selected hard cases and representative items into one pool.</p><p>Keep two pools: a representative pool sampled at the base rate, which is where honest numbers come from, versus an enriched hard-case pool used only for refining the guideline.</p><p><a class="fp" href="../../lib/sample.py"><code>lib/sample.py</code></a> is already implemented along those two pools.</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>hard case: an item stuck on the border between two labels, where even a person is unsure; these are the ones most worth giving to a human, and they expose where the guideline fails to say enough.</p>
 <p>turning text into a point in space: an off-the-shelf model turns each sentence into a string of numbers (coordinates), and sentences with close meanings land at close coordinates, which is what makes picking from the middle or from the border mean anything; that step is QD1.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>migrated from the old <code>[Q4]</code>; the finish line was split into a checklist, the Diagram gained the three-region figure, and the face was linked to QD1</span></div></div></details></div><div class="nav"><a href="#QA3">← QA3</a><a class="all" href="#top">☰ Index</a><a href="#QB2">QB2 →</a></div></section>
-<section class="slide q wip" id="QB2" data-title="A three-layer exam, not a single number" data-file="QB2-layered-eval.md" data-session=""><div class="qh"><span class="qid">QB2</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· three layers of our own, plus one external layer</span><span class="obadge">💬 2</span><a class="src" href="QB2-layered-eval.md" target="_blank" title="Open this question's raw markdown">📄 QB2-layered-eval.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB2 </span>A three-layer exam, not a single number</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">When a guideline is revised, how do we know it genuinely got better instead of having memorized the items it already saw?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> The three layers this project runs on itself: the gallery, older items that were labeled but are not in the gallery, and items never seen before.</p><p class="brow"><b>↪ Covered elsewhere</b> The fourth layer, a score awarded by an outside dataset rather than by this project, is QB3. How the sample itself grows from 60 to 140 by hunting hard cases is QB1.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  Every revised guideline reports three numbers at once:
+<section class="slide q wip" id="QB2" data-title="A three-layer exam, not a single number" data-file="QB2-layered-eval.md" data-session=""><div class="qh"><span class="qid">QB2</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· three layers of our own, plus one external layer</span><span class="obadge">💬 2</span><a class="src" href="QB2-layered-eval.md" target="_blank" title="Open this question's raw markdown">📄 QB2-layered-eval.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB2 </span>A three-layer exam, not a single number</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">When a guideline is revised, how do we know it genuinely got better instead of having memorized the items it already saw?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> The three layers this project runs on itself: the gallery, older items that were labeled but are not in the gallery, and items never seen before.</p><p class="brow"><b>↪ Covered elsewhere</b> The fourth layer, a score awarded by an outside dataset rather than by this project, is QB3. How the sample itself grows from 60 to 140 by hunting hard cases is QB1.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  Every revised guideline reports three numbers at once:
     ① on the gallery                              did the change do anything
     ② on older items (labeled, not in the gallery)  did it break rules that used to work
     ③ on items never seen before                  does it still hold on new data (= generalization)
@@ -850,7 +983,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>guideline: the document stating what counts as HIGH, LOW, or NONE.</p>
 <p>held-out: a set of items set aside fresh each round that the guideline has never seen, used to measure generalization.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>migrated in from the old <code>[Q5]</code>; the finish lines were split into a checklist, layer ① ticked and the external layer linked to QB3</span></div></div></details></div><div class="nav"><a href="#QB1">← QB1</a><a class="all" href="#top">☰ Index</a><a href="#QB3">QB3 →</a></div></section>
-<section class="slide q wip" id="QB3" data-title="A score we did not award ourselves" data-file="QB3-external-license.md" data-session=""><div class="qh"><span class="qid">QB3</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· run on public per-rater datasets (the battery) and see whether kappa reaches the human ceiling</span><span class="obadge">💬 2</span><a class="src" href="QB3-external-license.md" target="_blank" title="Open this question's raw markdown">📄 QB3-external-license.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB3 </span>A score we did not award ourselves</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Our own 0.93 came out of an exam whose items the guideline author had already seen and had personally labeled, so it does not count: how do we get a score that we did not award ourselves?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> The externally awarded score: which public per-rater datasets make up the battery, the human ceiling read off each of them, the engine&#x27;s kappa against that ceiling, and the license that follows.</p><p class="brow"><b>↪ Covered elsewhere</b> The three internal layers of the exam belong to QB2&#x27;s layered evaluation and this face is only its fourth, external layer; the standard that picks a construct (the objective) is QC3.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  exam setter = exam taker  ──►  0.93   but on unseen items → 0.667   ⬅ a hole in the method
+<section class="slide q wip" id="QB3" data-title="A score we did not award ourselves" data-file="QB3-external-license.md" data-session=""><div class="qh"><span class="qid">QB3</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· run on public per-rater datasets (the battery) and see whether kappa reaches the human ceiling</span><span class="obadge">💬 2</span><a class="src" href="QB3-external-license.md" target="_blank" title="Open this question's raw markdown">📄 QB3-external-license.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QB3 </span>A score we did not award ourselves</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Our own 0.93 came out of an exam whose items the guideline author had already seen and had personally labeled, so it does not count: how do we get a score that we did not award ourselves?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> The externally awarded score: which public per-rater datasets make up the battery, the human ceiling read off each of them, the engine&#x27;s kappa against that ceiling, and the license that follows.</p><p class="brow"><b>↪ Covered elsewhere</b> The three internal layers of the exam belong to QB2&#x27;s layered evaluation and this face is only its fourth, external layer; the standard that picks a construct (the objective) is QC3.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  exam setter = exam taker  ──►  0.93   but on unseen items → 0.667   ⬅ a hole in the method
 
   the way out: correctness can only be borrowed from outside
      one kind of public dataset is special: it keeps EVERY human annotator&#x27;s raw score (per-rater)
@@ -878,7 +1011,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>per-rater: the dataset keeps every single annotator&#x27;s raw score, instead of publishing only the merged &quot;gold answer&quot;.</p></div></details><details class="fold"><summary>📜 Log (3)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:15</span><span>③④⑥ each found a home (QD4 / QC3 / a QC2 comment); the old board deleted and ZD&#x27;s originals moved into <code>_source/</code>; ZD&#x27;s F2/F3 comments added</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>Created: the validation core folded in from <code>01-sublabel-license-260722</code> (0.93 does not count → borrow from outside → license)</span></div></div></details></div><div class="nav"><a href="#QB2">← QB2</a><a class="all" href="#top">☰ Index</a><a href="#QC1">QC1 →</a></div></section>
-<section class="slide q hold" id="QC1" data-title="When the human can let go" data-file="QC1-when-stop.md" data-session=""><div class="qh"><span class="qid">QC1</span><span class="pill hold">⏸️ ON HOLD</span><span class="mut">🧠 JL decides</span><span class="mut">· two signals, the guideline matching JL&#x27;s judgment and the guideline no longer changing</span><span class="obadge">💬 1</span><a class="src" href="QC1-when-stop.md" target="_blank" title="Open this question's raw markdown">📄 QC1-when-stop.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC1 </span>When the human can let go</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">How far does the iteration have to go before we can stop and let the loop run on its own?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> The convergence gate itself: what has to be true before a human stops reviewing every batch.</p><p class="brow"><b>↪ Covered elsewhere</b> How each version is examined round by round is QB2, and the standard that scores a construct is QC3, which feeds one of this gate&#x27;s conditions. What happens after the guideline is final, labeling the remaining thousands, is QC2.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  Stopping is judged on two signals (both must hold to call it converged):
+<section class="slide q hold" id="QC1" data-title="When the human can let go" data-file="QC1-when-stop.md" data-session=""><div class="qh"><span class="qid">QC1</span><span class="pill hold">⏸️ ON HOLD</span><span class="mut">🧠 JL decides</span><span class="mut">· two signals, the guideline matching JL&#x27;s judgment and the guideline no longer changing</span><span class="obadge">💬 1</span><a class="src" href="QC1-when-stop.md" target="_blank" title="Open this question's raw markdown">📄 QC1-when-stop.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC1 </span>When the human can let go</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">How far does the iteration have to go before we can stop and let the loop run on its own?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> The convergence gate itself: what has to be true before a human stops reviewing every batch.</p><p class="brow"><b>↪ Covered elsewhere</b> How each version is examined round by round is QB2, and the standard that scores a construct is QC3, which feeds one of this gate&#x27;s conditions. What happens after the guideline is final, labeling the remaining thousands, is QC2.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  Stopping is judged on two signals (both must hold to call it converged):
      Signal 1  the guideline matches the author&#x27;s (JL&#x27;s) judgment
                ⚠️ how does this become an action a system can judge? not decided
      Signal 2  the guideline is stable, it no longer changes
@@ -895,7 +1028,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <div class="blt"><details class="it row"><summary><div class="bt nof"><span class="ttl"><a class="fp" href="../../ref/ref-config.md"><code>ref/ref-config.md</code></a></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">Holds the <code>convergence:</code> thresholds, which is where a decided number of rounds would be written down.</p></div></details></div>
 <div class="blt"><details class="it row"><summary><div class="bt nof"><span class="ttl"><a class="fp" href="_source/note-update-v3-260721.md"><code>_source/note-update-v3-260721.md</code></a></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">ZD&#x27;s note, whose F8 entry is the comment pinned on this face.</p></div></details></div></details><div class="folds"><details class="fold"><summary>💬 Discussion (0)</summary><div class="fb"><p class="mut">No discussion yet — add a line under <code>## Discussion</code> in QC1-when-stop.md: <code>&gt; JL: …</code></p><div class="dadd" data-file="QC1-when-stop.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QC1-when-stop.md"><div class="cm" data-quote="how many consecutive rounds with no change to the guideline count as stable" data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“how many consecutive rounds with no change to the guideline count as stable”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>note-update-v3 F8: stability is not correctness, and a guideline that stops changing is not thereby a right one.</p><p>Besides stability, the convergence gate needs a small enough held-out gap plus an objective score (downstream or discriminance, see QC3).</p><p>All three have to hold before it counts as converged.</p></div></div></div></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>migrated from the old <code>[Q6]</code>; the two questions the meeting left unanswered were split into the checklist</span></div></div></details></div><div class="nav"><a href="#QB3">← QB3</a><a class="all" href="#top">☰ Index</a><a href="#QC2">QC2 →</a></div></section>
-<section class="slide q hold" id="QC2" data-title="How to finish the remaining thousands" data-file="QC2-scale-out.md" data-session=""><div class="qh"><span class="qid">QC2</span><span class="pill hold">⏸️ ON HOLD</span><span class="mut">🧠 JL decides</span><span class="mut">· (a) label everything, or (b) train a small classifier to take over</span><span class="obadge">💬 1</span><a class="src" href="QC2-scale-out.md" target="_blank" title="Open this question's raw markdown">📄 QC2-scale-out.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC2 </span>How to finish the remaining thousands</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Once the guideline is final, how do the remaining thousands of items get labeled?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Which route finishes the corpus once the guideline is final: label everything with the guideline, or hand the rest to a trained small classifier, and which of the two JL picks.</p><p class="brow"><b>↪ Covered elsewhere</b> How that small classifier is trained is QD3; how the cascade divides the work between the cheap tiers and the model panel is QD2.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  Two routes came out of the meeting:
+<section class="slide q hold" id="QC2" data-title="How to finish the remaining thousands" data-file="QC2-scale-out.md" data-session=""><div class="qh"><span class="qid">QC2</span><span class="pill hold">⏸️ ON HOLD</span><span class="mut">🧠 JL decides</span><span class="mut">· (a) label everything, or (b) train a small classifier to take over</span><span class="obadge">💬 1</span><a class="src" href="QC2-scale-out.md" target="_blank" title="Open this question's raw markdown">📄 QC2-scale-out.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC2 </span>How to finish the remaining thousands</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">Once the guideline is final, how do the remaining thousands of items get labeled?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Which route finishes the corpus once the guideline is final: label everything with the guideline, or hand the rest to a trained small classifier, and which of the two JL picks.</p><p class="brow"><b>↪ Covered elsewhere</b> How that small classifier is trained is QD3; how the cascade divides the work between the cheap tiers and the model panel is QD2.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  Two routes came out of the meeting:
      (a) label all 5000 items with the guideline                 expensive
      (b) train a small model on the batch already labeled,
          and let it take over the rest                           cheaper and faster
@@ -918,7 +1051,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <div class="blt"><details class="it row"><summary><div class="bt nof"><span class="ttl"><a class="fp" href="../../ref/ref-cascade.md"><code>ref/ref-cascade.md</code></a></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">The reference for the three-tier cascade: it describes the three tiers, their per-item cost, and roughly what share of items each one absorbs, which is where a route choice shows up as a threshold.</p></div></details></div>
 <div class="blt"><details class="it row"><summary><div class="bt nof"><span class="ttl"><a class="fp" href="_source/note-update-v3-260721.md"><code>_source/note-update-v3-260721.md</code></a></span><span class="cv"></span></div></summary><div class="bd"><p class="ld">ZD&#x27;s note, the source of the comment pinned on this face.</p></div></details></div></details><div class="folds"><details class="fold"><summary>💬 Discussion (1)</summary><div class="fb"><div class="cmt cc"><b>CC0723</b> the technical implementation of (b) is QD3 (how the Tier-1 small classifier is trained), and how (a) and (b) coexist inside one cascade is QD2 (the three-tier funnel). This face is the method-level question of which route to take, QD3 is the engineering question of how to train it, and the two should not be mixed.</div><div class="dadd" data-file="QC2-scale-out.md"><textarea placeholder="Write a thought into the discussion…"></textarea><div class="row"><select></select><button class="dsave" type="button">➕ Add to discussion</button></div></div></div></details><details class="fold" open><summary>💬 Comments (1 open / 1)</summary><div class="fb"><div class="cms" data-cfile="QC2-scale-out.md"><div class="cm" data-quote="Only 48 of the 5000 items are labeled so far." data-done=""><div class="cmh"><span class="bx">☐</span><b class="u2">ZD</b><span class="cq">“Only 48 of the 5000 items are labeled so far.”</span><span class="cw">26-07-21 14:00</span><span class="cs">open</span></div><div class="cmb"><p>ZD note-update-v3, closing hygiene (folded in from the old 01-license board, item ⑥): two B02 folders collide under <code>examples/Project-Subjective-Label/tasks/</code>.</p><p>The disk has <code>B02_dim_conscientiousness</code> while the note writes <code>B02_dim_openness</code>, and openness already has its own <code>B03_dim_openness</code>; the branch <code>b03-openness</code> (commit f7e97f2) is unmerged.</p><p>Numbering has to be unique, <code>INDEX.md</code> has to match what is on disk, and the branch has to be either merged or dropped, before rerun results can be cited.</p><p>⚠️ This one is housekeeping on the physical task folders, outside this board&#x27;s method and engine scope, and it is pinned here only so it does not get lost.</p></div></div></div></div></details><details class="fold"><summary>📖 Glossary</summary><div class="fb"><p>train a small model to take over: use the few hundred items already labeled by people and by the models as teaching material, train a small fast dedicated model, then hand the remaining thousands to it, which saves money and time; this is QD3&#x27;s Tier-1 classifier.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>migrated from the old <code>[Q7]</code>; its relationship with QD2 and QD3 written into the Diagram and the Discussion</span></div></div></details></div><div class="nav"><a href="#QC1">← QC1</a><a class="all" href="#top">☰ Index</a><a href="#QC3">QC3 →</a></div></section>
-<section class="slide q todo" id="QC3" data-title="What standard picks a construct" data-file="QC3-objective.md" data-session=""><div class="qh"><span class="qid">QC3</span><span class="pill todo">🔴 OPEN</span><span class="mut">🧠 JL decides</span><span class="mut">· pick one of two: downstream predictive power, or discriminance (separable from sibling traits)</span><span class="obadge">💬 2</span><a class="src" href="QC3-objective.md" target="_blank" title="Open this question's raw markdown">📄 QC3-objective.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC3 </span>What standard picks a construct</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">When several large models each propose a construct candidate and the best one is then picked automatically, which standard (objective) does the picking use: downstream (can the label predict a downstream outcome, for example a physician&#x27;s opioid prescribing volume) or discriminance (is the label separable from sibling traits)?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Which of the two objectives this project declares, downstream or discriminance, and the reason recorded next to the choice.</p><p class="brow"><b>↪ Covered elsewhere</b> When the human can let go of the loop is QC1, and this ruling is one of the gates it needs; running the auto-select over the remaining thousands is QC2; grading a resulting label set in three layers is QB2; the score awarded by an outside dataset is QB3.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  mode=auto: several large models each propose a construct definition and each labels a batch
+<section class="slide q todo" id="QC3" data-title="What standard picks a construct" data-file="QC3-objective.md" data-session=""><div class="qh"><span class="qid">QC3</span><span class="pill todo">🔴 OPEN</span><span class="mut">🧠 JL decides</span><span class="mut">· pick one of two: downstream predictive power, or discriminance (separable from sibling traits)</span><span class="obadge">💬 2</span><a class="src" href="QC3-objective.md" target="_blank" title="Open this question's raw markdown">📄 QC3-objective.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QC3 </span>What standard picks a construct</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">When several large models each propose a construct candidate and the best one is then picked automatically, which standard (objective) does the picking use: downstream (can the label predict a downstream outcome, for example a physician&#x27;s opioid prescribing volume) or discriminance (is the label separable from sibling traits)?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Which of the two objectives this project declares, downstream or discriminance, and the reason recorded next to the choice.</p><p class="brow"><b>↪ Covered elsewhere</b> When the human can let go of the loop is QC1, and this ruling is one of the gates it needs; running the auto-select over the remaining thousands is QC2; grading a resulting label set in three layers is QB2; the score awarded by an outside dataset is QB3.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  mode=auto: several large models each propose a construct definition and each labels a batch
         │
         ▼  score against the objective, keep the highest
      ┌─ downstream     the label predicts a downstream outcome (opioid-Rx regression)
@@ -946,7 +1079,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>discriminance: whether the label separates from sibling traits.</p>
 <p>operational vs theoretical construct: what an objective picks is the labeling that best serves the stated purpose, which is not necessarily the psychological trait in the textbook sense; unless it separately passes a construct-validity cross-check, it may not simply be called &quot;openness&quot;.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:15</span><span>created: folded in from item ④ of the 01-license board; absorbed ZD&#x27;s note-update-v3 Part 2, 3, and 10 (the objective is the only human input autonomy keeps, plus the operational-construct honesty boundary)</span></div></div></details></div><div class="nav"><a href="#QC2">← QC2</a><a class="all" href="#top">☰ Index</a><a href="#QD1">QD1 →</a></div></section>
-<section class="slide q done" id="QD1" data-title="How a sentence becomes a vector" data-file="QD1-embedding.md" data-session=""><div class="qh"><span class="qid">QD1</span><span class="pill done">✅ SETTLED</span><span class="mut">🔧 CC</span><span class="mut">· <a class="fp" href="../../lib/embed.py"><code>lib/embed.py</code></a> wraps sentence-transformers and OpenAI; swapping the model changes one line of config</span><a class="src" href="QD1-embedding.md" target="_blank" title="Open this question's raw markdown">📄 QD1-embedding.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD1 </span>How a sentence becomes a vector</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">How does one review sentence turn into a string of numbers (a vector), so that the work done by distance (picking hard cases, de-duplicating, covering the full corpus) means anything: which model produces it, how the cache is stored, and is it allowed to decide a label?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> The embedding layer itself: which model turns a sentence into a vector, how the cache is keyed, and the standing rule that a vector never decides a label.</p><p class="brow"><b>↪ Covered elsewhere</b> How the cascade splits the work and uses this layer as its Tier 0 is QD2; hunting hard cases by distance to grow the gallery is QB1; deciding a label is the panel&#x27;s job, which is QA2 for labeling independently and QA3 for putting a weak model through the exam.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  one review  ──►  lib/embed.py  ──►  [0.02, -0.31, …]  384-dim vector
+<section class="slide q done" id="QD1" data-title="How a sentence becomes a vector" data-file="QD1-embedding.md" data-session=""><div class="qh"><span class="qid">QD1</span><span class="pill done">✅ SETTLED</span><span class="mut">🔧 CC</span><span class="mut">· <a class="fp" href="../../lib/embed.py"><code>lib/embed.py</code></a> wraps sentence-transformers and OpenAI; swapping the model changes one line of config</span><a class="src" href="QD1-embedding.md" target="_blank" title="Open this question's raw markdown">📄 QD1-embedding.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD1 </span>How a sentence becomes a vector</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">How does one review sentence turn into a string of numbers (a vector), so that the work done by distance (picking hard cases, de-duplicating, covering the full corpus) means anything: which model produces it, how the cache is stored, and is it allowed to decide a label?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> The embedding layer itself: which model turns a sentence into a vector, how the cache is keyed, and the standing rule that a vector never decides a label.</p><p class="brow"><b>↪ Covered elsewhere</b> How the cascade splits the work and uses this layer as its Tier 0 is QD2; hunting hard cases by distance to grow the gallery is QB1; deciding a label is the panel&#x27;s job, which is QA2 for labeling independently and QA3 for putting a weak model through the exam.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  one review  ──►  lib/embed.py  ──►  [0.02, -0.31, …]  384-dim vector
                                        sentences close in meaning → close in coordinates
 
   ⚖️ one iron rule: embedding is a SPEED tool, not a JUDGMENT tool
@@ -971,7 +1104,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>faiss: a library that finds nearest neighbors by vector, <code>faiss-flat</code> (under 100K items) or <code>faiss-ivf</code> (larger).</p>
 <p>panel: the set of model labelers, whose reasoning is the only thing that decides a label.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>created: pulled the model choice, the cache layout, and the iron rule out of <a class="fp" href="../../ref/ref-embeddings.md"><code>ref/ref-embeddings.md</code></a> onto the board and marked it ✅ (already fixed)</span></div></div></details></div><div class="nav"><a href="#QC3">← QC3</a><a class="all" href="#top">☰ Index</a><a href="#QD2">QD2 →</a></div></section>
-<section class="slide q done" id="QD2" data-title="How the three-tier cascade divides the work" data-file="QD2-cascade.md" data-session=""><div class="qh"><span class="qid">QD2</span><span class="pill done">✅ SETTLED</span><span class="mut">🔧 CC</span><span class="mut">· Tier 0 embedding k-NN, then Tier 1 the small classifier, then Tier 2 the large-model panel; each level down is more expensive and takes fewer items</span><a class="src" href="QD2-cascade.md" target="_blank" title="Open this question's raw markdown">📄 QD2-cascade.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD2 </span>How the three-tier cascade divides the work</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">When the whole corpus is being labeled, how do we make sure most of the easy items take a cheap route and only the few hard ones disturb an expensive model?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Which tier settles an item and which escalates it, the threshold at each tier&#x27;s gate, the record each item keeps of the route it took, and the routing modes that skip tiers.</p><p class="brow"><b>↪ Covered elsewhere</b> How a sentence becomes the vector Tier 0 compares against is QD1; how the Tier 1 classifier is trained is QD3; whether to finish the remaining thousands this way at all is QC2&#x27;s call, and it is still ⏸️ ON HOLD.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  ┌ Tier 0 · embedding k-NN ──────────────────────┐  ~$0.00001/item · fastest · takes 60-80%
+<section class="slide q done" id="QD2" data-title="How the three-tier cascade divides the work" data-file="QD2-cascade.md" data-session=""><div class="qh"><span class="qid">QD2</span><span class="pill done">✅ SETTLED</span><span class="mut">🔧 CC</span><span class="mut">· Tier 0 embedding k-NN, then Tier 1 the small classifier, then Tier 2 the large-model panel; each level down is more expensive and takes fewer items</span><a class="src" href="QD2-cascade.md" target="_blank" title="Open this question's raw markdown">📄 QD2-cascade.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD2 </span>How the three-tier cascade divides the work</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">When the whole corpus is being labeled, how do we make sure most of the easy items take a cheap route and only the few hard ones disturb an expensive model?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Which tier settles an item and which escalates it, the threshold at each tier&#x27;s gate, the record each item keeps of the route it took, and the routing modes that skip tiers.</p><p class="brow"><b>↪ Covered elsewhere</b> How a sentence becomes the vector Tier 0 compares against is QD1; how the Tier 1 classifier is trained is QD3; whether to finish the remaining thousands this way at all is QC2&#x27;s call, and it is still ⏸️ ON HOLD.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  ┌ Tier 0 · embedding k-NN ──────────────────────┐  ~$0.00001/item · fastest · takes 60-80%
   │  top-5 gallery neighbors share one label      │
   │  and average cosine sim &gt;= 0.85 → inherit     │
   └────────────┬──────────────────────────────────┘ unresolved ↓
@@ -998,7 +1131,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>persona: one large-model labeler carrying a particular point of view; a panel is a set of different personas labeling at the same time.</p>
 <p>gallery: the set of answers JL personally confirmed, used as the ruler; Tier 0 compares each new item against it.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>created: the three tiers, the thresholds, and the routing modes were brought in from <a class="fp" href="../../ref/ref-cascade.md"><code>ref/ref-cascade.md</code></a> and the face was marked ✅ settled</span></div></div></details></div><div class="nav"><a href="#QD1">← QD1</a><a class="all" href="#top">☰ Index</a><a href="#QD3">QD3 →</a></div></section>
-<section class="slide q wip" id="QD3" data-title="Training the small classifier" data-file="QD3-train-classifier.md" data-session=""><div class="qh"><span class="qid">QD3</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· logistic regression on frozen embeddings by default, SetFit as an optional upgrade; retrained at the end of every <code>/sl-iterate</code></span><a class="src" href="QD3-train-classifier.md" target="_blank" title="Open this question's raw markdown">📄 QD3-train-classifier.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD3 </span>Training the small classifier</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">The small classifier in the middle layer of the cascade (Tier 1): what is it trained on, when is it retrained, and when should its answer be trusted?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> What the Tier 1 classifier is trained on, when it is retrained, and the thresholds that decide whether its prediction is used or escalated.</p><p class="brow"><b>↪ Covered elsewhere</b> How a sentence becomes a vector at all is QD1; how the three layers divide the work and what happens to the items this classifier cannot settle is QD2; whether the remaining thousands are labeled in full or handed to a small model is the call still open in QC2.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  already labeled items ──► frozen embedding (QD1) ──► logistic regression (trains in seconds)
+<section class="slide q wip" id="QD3" data-title="Training the small classifier" data-file="QD3-train-classifier.md" data-session=""><div class="qh"><span class="qid">QD3</span><span class="pill wip">🟡 PARTIAL</span><span class="mut">🔧 RA</span><span class="mut">· logistic regression on frozen embeddings by default, SetFit as an optional upgrade; retrained at the end of every <code>/sl-iterate</code></span><a class="src" href="QD3-train-classifier.md" target="_blank" title="Open this question's raw markdown">📄 QD3-train-classifier.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD3 </span>Training the small classifier</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">The small classifier in the middle layer of the cascade (Tier 1): what is it trained on, when is it retrained, and when should its answer be trusted?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> What the Tier 1 classifier is trained on, when it is retrained, and the thresholds that decide whether its prediction is used or escalated.</p><p class="brow"><b>↪ Covered elsewhere</b> How a sentence becomes a vector at all is QD1; how the three layers divide the work and what happens to the items this classifier cannot settle is QD2; whether the remaining thousands are labeled in full or handed to a small model is the call still open in QC2.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  already labeled items ──► frozen embedding (QD1) ──► logistic regression (trains in seconds)
                                                         │
                                                         ▼  predicts {label, prob, margin}
                           prob ≥0.70 and margin ≥0.30 ── use it (Tier 1 answers)
@@ -1024,7 +1157,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>CV F1: the cross-validated F1 score, which measures how good the classifier is; below 0.6 it should not be trusted much.</p>
 <p>residual: the sampling mode in which the next batch is drawn only from the items the current classifier still cannot settle.</p></div></details><details class="fold"><summary>📜 Log (2)</summary><div class="fb"><div class="lg"><span class="d">26-07-25</span><span>rewritten to the current face format in English</span></div>
 <div class="lg"><span class="d">26-07-23 16:00</span><span>created: the Tier 1 classifier&#x27;s backend, retrain trigger, and thresholds were pulled onto the board; the real run and the upgrade criterion were left 🟡</span></div></div></details></div><div class="nav"><a href="#QD2">← QD2</a><a class="all" href="#top">☰ Index</a><a href="#QD4">QD4 →</a></div></section>
-<section class="slide q todo" id="QD4" data-title="Generate the lexicon instead of hard-coding it" data-file="QD4-auto-lexicon.md" data-session=""><div class="qh"><span class="qid">QD4</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· a large model derives the lexicon from the construct definition, and that lexicon feeds lib/sample.py</span><span class="obadge">💬 1</span><a class="src" href="QD4-auto-lexicon.md" target="_blank" title="Open this question's raw markdown">📄 QD4-auto-lexicon.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD4 </span>Generate the lexicon instead of hard-coding it</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">The engine&#x27;s first step estimates how common a construct is in the corpus by reading a keyword list, so how does that list get generated from the construct definition instead of being written into the code by hand?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Deriving the keyword list from the construct definition and computing the base rate from it, with no hand-written word left anywhere in the run.</p><p class="brow"><b>↪ Covered elsewhere</b> Turning a sentence into a vector is QD1, hunting the hard cases that grow the sample from 60 to 140 is QB1, and the standard that picks which construct to label at all is QC3.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre>  construct.definition ──► generated by a model ──► lexicon (keyword list)
+<section class="slide q todo" id="QD4" data-title="Generate the lexicon instead of hard-coding it" data-file="QD4-auto-lexicon.md" data-session=""><div class="qh"><span class="qid">QD4</span><span class="pill todo">🔴 OPEN</span><span class="mut">🔧 RA</span><span class="mut">· a large model derives the lexicon from the construct definition, and that lexicon feeds lib/sample.py</span><span class="obadge">💬 1</span><a class="src" href="QD4-auto-lexicon.md" target="_blank" title="Open this question's raw markdown">📄 QD4-auto-lexicon.md</a><a class="top" href="#top">↑ Index</a></div><h2 class="h2"><span class="hid">QD4 </span>Generate the lexicon instead of hard-coding it</h2><div class="opening"><div class="ask"><div class="ch opening-head"><span class="chl">🧭 Opening</span></div><details class="it row qd"><summary><p class="qlead"><span class="qt">The engine&#x27;s first step estimates how common a construct is in the corpus by reading a keyword list, so how does that list get generated from the construct definition instead of being written into the code by hand?</span><span class="cv"></span></p></summary><div class="bd qbd"><div class="fh">Boundary</div><p class="brow"><b>✅ Covered here</b> Deriving the keyword list from the construct definition and computing the base rate from it, with no hand-written word left anywhere in the run.</p><p class="brow"><b>↪ Covered elsewhere</b> Turning a sentence into a vector is QD1, hunting the hard cases that grow the sample from 60 to 140 is QB1, and the standard that picks which construct to label at all is QC3.</p></div></details></div></div><details class="diagram-section"><summary class="ch"><span class="chl">🖼 Diagram</span></summary><div class="dia"><pre class="asc">  construct.definition ──► generated by a model ──► lexicon (keyword list)
                                                        │
                                                        ▼
                                           estimate the base rate (how common the construct is)
@@ -1130,16 +1263,34 @@ with JavaScript off; the script only adds commenting.</p>
     badge(m, idx);
     return true;
   }
+  // One entry per TEXT NODE, not per character. The per-character version
+  // allocated a two-element array for every character in the section, so a
+  // 500k-character board with 84 comments built tens of millions of arrays at
+  // load and the tab never painted. Index by node, look up by binary search.
   function scan(sec) {
     var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, null);
-    var n, s = '', map = [];
+    var n, parts = [], nodes = [], at = 0;
     while ((n = w.nextNode())) {
       var p = n.parentNode;
       if (p.closest && p.closest('.folds, .qh, .nav, pre')) continue;
-      for (var i = 0; i < n.nodeValue.length; i++) map.push([n, i]);
-      s += n.nodeValue;
+      var v = n.nodeValue;
+      if (!v.length) continue;
+      nodes.push([n, at, v.length]);            // node, start in s, length
+      parts.push(v);
+      at += v.length;
     }
-    return { s: s, map: map };
+    return { s: parts.join(''), nodes: nodes };
+  }
+  // string index -> [textNode, offsetInNode]
+  function locate(t, i) {
+    var lo = 0, hi = t.nodes.length - 1;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1, e = t.nodes[mid];
+      if (i < e[1]) hi = mid - 1;
+      else if (i >= e[1] + e[2]) lo = mid + 1;
+      else return [e[0], i - e[1]];
+    }
+    return null;
   }
   function rx(q) {
     var parts = q.trim().split(/\s+/).map(function (x) {
@@ -1157,7 +1308,7 @@ with JavaScript off; the script only adds commenting.</p>
       m = rx(head).exec(t.s);
       if (!m) return false;
     }
-    var a = t.map[m.index], b = t.map[m.index + m[0].length - 1];
+    var a = locate(t, m.index), b = locate(t, m.index + m[0].length - 1);
     if (!a || !b) return false;
     var r = document.createRange();
     r.setStart(a[0], a[1]); r.setEnd(b[0], b[1] + 1);
@@ -1492,6 +1643,61 @@ with JavaScript off; the script only adds commenting.</p>
         if (j.ok) { localStorage.setItem(WK, sel.value); (window.__boardRefresh || function () { location.reload(); })(); }
         else say(j.err || 'write failed');
       };
+    });
+  }
+
+  /* ➕ Excalidraw (QD7, JL 260726): attach a canvas to a 🖼 Diagram from the page.
+     Save posts the URL, serve.py writes it as its own line inside ## Diagram, and the
+     canvas comes back through build.py like any other body content. Script-only, as
+     every write affordance is: with scripts stripped the figure and its link still read. */
+  function wireXcal() {
+    document.querySelectorAll('details.diagram-section').forEach(function (sec) {
+      if (sec.querySelector('.xadd')) return;
+      var face = sec.closest('section.slide.q');
+      if (!face || !face.dataset.file) return;
+      var dia = sec.querySelector('.dia');
+      if (!dia) return;
+      var has = !!sec.querySelector('.xcal');
+      var box = document.createElement('div');
+      box.className = 'xadd';
+      var open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'xadd-open';
+      open.textContent = has ? '🖌 Replace the Excalidraw canvas' : '🖌 Add an Excalidraw canvas';
+      var row = document.createElement('div');
+      row.className = 'xadd-row';
+      row.hidden = true;
+      var inp = document.createElement('input');
+      inp.type = 'text';
+      inp.placeholder = 'https://app.excalidraw.com/s/…';
+      var ok = document.createElement('button'); ok.type = 'button'; ok.textContent = 'Save';
+      var no = document.createElement('button'); no.type = 'button'; no.textContent = '✕';
+      var err = document.createElement('span'); err.className = 'xerr';
+      row.append(inp, ok, no, err);
+      box.append(open, row);
+      dia.appendChild(box);
+      open.onclick = function () { row.hidden = !row.hidden; if (!row.hidden) inp.focus(); };
+      no.onclick = function () { row.hidden = true; err.textContent = ''; };
+      async function save() {
+        var url = inp.value.trim();
+        if (!url) { inp.focus(); return; }
+        ok.disabled = true; err.textContent = '…';
+        var j = null;
+        try { j = await post('/_board/diagram', { file: face.dataset.file, url: url }); }
+        catch (e) { j = null; }
+        ok.disabled = false;
+        if (j === null) {
+          err.textContent = '';
+          say('serve.py is not running — paste the URL on its own line in ## Diagram yourself');
+          return;
+        }
+        if (!j.ok) { err.textContent = '⚠ ' + (j.err || 'write failed'); return; }
+        if (j.warn) say(j.warn);
+        err.textContent = '✔ saved';
+        (window.__boardRefresh || function () { location.reload(); })();
+      }
+      ok.onclick = save;
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') save(); });
     });
   }
 
@@ -2355,9 +2561,9 @@ with JavaScript off; the script only adds commenting.</p>
   fabLbl();
   document.body.appendChild(fab);
 
-  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); wireStruct(); }
+  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); wireStruct(); wireXcal(); }
   window.__boardRewire = rewire;
-  marks(); paint(); wireResolve(); wireDadd();
+  marks(); paint(); wireResolve(); wireDadd(); wireXcal();
 })();
 
 /* ── live refresh (QD6, JL 260724) ─────────────────────────────────────────
@@ -2534,6 +2740,17 @@ document.addEventListener('click', function (ev) {
     r.className = 'saddrow';
     r.textContent = '➕ add to this sentence';
     ap.appendChild(r);
+  });
+})();
+
+/* A chip inside a sentence's <summary> would toggle that sentence's drawer on
+   the way to opening its own panel. The panel is native and opens either way;
+   this only stops the drawer from flapping. Enhancement only: with scripts off,
+   both simply happen, and the panel content is still real body text. */
+(function () {
+  document.addEventListener('click', function (e) {
+    var c = e.target.closest && e.target.closest('button.chip');
+    if (c && c.closest('summary')) e.preventDefault();
   });
 })();
 </script>

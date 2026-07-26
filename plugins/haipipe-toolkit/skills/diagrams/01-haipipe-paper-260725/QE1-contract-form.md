@@ -4,15 +4,56 @@ owner: CC
 method: keep the split; keep the index small enough to read on every invocation
 
 ## Question
-How should a stage be described, so that a router can pick it cheaply and an executor can run it correctly?
+How should a stage be described, so that a router can pick it cheaply and an executor can run it correctly? A tiny index is read on every single invocation and the full contract only for the stage actually picked, and that split is a real constraint on what may live where.
 
 The design splits the description in two: a tiny index read on every invocation, and a full contract loaded only for the stage actually picked. That split is a real constraint on what may live where, and it is the reason the index has stayed readable while the contracts have grown.
 
+
+The approach is a two-file split, a tiny index read on every invocation and a full contract loaded only for the stage picked, with the required fields stated rather than inferred. What we want is for a stranger to be able to write a correct new stage contract without comparing eight existing ones to guess the pattern.
 ## Boundary
 - ✅ Covered here
   What lives in `index.yml`, what lives in `stage.md`, what a contract must declare, and how `artifact:` resolves.
 - ↪ Covered elsewhere
-  Who owns the filename is `QC2`; which dependency declaration is authoritative is `QF2`; whether display's grain is per-unit is `QB4`.
+  Who owns the filename is `QBa2`; which dependency declaration is authoritative is `QBc2`; whether display's grain is per-unit is `QB4`.
+
+## Diagram
+```
+ TWO FILES, BECAUSE THEY ARE READ AT DIFFERENT RATES
+
+ ┌ stages/index.yml ─────────────────────────────────┐
+ │ key · order · dir · triggers · migrated           │  READ EVERY TIME
+ │ JUST enough to resolve WHICH stage is meant       │  even when the
+ └──────────────────┬────────────────────────────────┘  request turns out
+                    │ one row wins                      to be about
+                    ▼                                   something else
+ ┌ stages/<order>-<key>/stage.md ────────────────────┐
+ │ phases · gates · probe_depth · artifact ·         │  LOADED ONLY for
+ │ venue contract · craft prose                      │  the stage picked
+ └───────────────────────────────────────────────────┘
+
+ ANYTHING ADDED TO THE INDEX IS PAID FOR BY EVERY USER, FOREVER.
+ That is why board navigation lives in stage.md, and the header says so.
+
+ THE REQUIRED CORE, MEASURED 260726 rather than asserted
+   24 fields   in ALL EIGHT contracts        ──► the real common core
+   43 fields   in one to six of them         ──► genuinely optional
+   the core was REAL and had simply never been written down, which is
+   why no reader could tell required from optional. Now in CONTRACT.md,
+   grouped by the question each field answers.
+
+ WHAT THE CONTRACTS WERE ACTUALLY DECLARING, before the repair
+   22 of 31 declared paths DID NOT EXIST on the paper they pointed at
+     8x  artifact:    every stage named the PRE-restructure filename
+     8x  log:         _LOG_<stage>.md — zero have ever existed
+     6x  read paths   read_order · units_from · venue_contract · read_first
+   a DRAFT run would have created 0-seed/0-seed.md beside the
+   S-Seed-0-seed.md that replaced it.  ⚠️
+   the restructure happened on the PAPER and was never told to the SKILL.
+
+ STILL OWED TO JL  🧠
+   ① where contract CHECKING lives    A paper skill · B haipipe-board · C none
+   ② does craft prose belong in a contract, or split from the fields
+```
 
 ## Content
 ### The split

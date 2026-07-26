@@ -50,12 +50,330 @@ def resolve(token):
     return None
 
 
+LABEL_TOK = re.compile(r"^(?:tab|fig):[a-z0-9_-]+$")
+
+
 def code_or_link(m):
     tok = m.group(1)          # 已经过外层 esc()，别再转义一次（否则 `>` 显示成 &gt;）
+    # `fig:discretion-gradient` in backticks is a FLOAT LABEL, not a path. It
+    # resolves to nothing, so it would render as inert grey code; make it a chip
+    # here, because the rewriter is forbidden to reach inside a code span.
+    if PAPER is not None and LABEL_TOK.match(tok):
+        return _ref(tok)
     href = resolve(tok)
     if href:
         return f'<a class="fp" href="{esc(href)}"><code>{tok}</code></a>'
     return f"<code>{tok}</code>"
+
+
+# The paper dialect's index, or None. build.py sets it once per build; a board
+# that does not declare `dialect: paper` never pays for any of this.
+PAPER = None
+
+# Every paper marker in ONE alternation, so a single left-to-right pass
+# consumes each one exactly once and nothing a chip emits is ever re-scanned.
+#   1 keys  2 qid   \citep{a,b} · \cite{TOADD} [Q-Section-4]
+#   3 desc  4 qid   {VAL:? what the number is} [Q-Section-4]
+#   5 qid           a bare [Q-Section-4], which the other two did not claim
+#   6 did           displayNN, with or without its slug. The S-Display faces
+#                   write the SHORT form ("registry id display02"); a Section
+#                   writes the long one. Both name the same unit.
+#   7 label         \ref{tab:…} / \autoref{fig:…}, the LaTeX form
+#   8 label         a bare tab:… / fig:… label, which is how a face names a
+#                   float without writing LaTeX. Not inside \label{}.
+# The bracket sits BESIDE its marker and is never fused into it.
+# The display id is fenced by lookarounds so `0-displays/display02-x/float.tex`
+# stays a path: no shorter prefix can satisfy the trailing guard either.
+MARKER = re.compile(
+    r"\\cite[tp]?\*?\{([^}]*)\}(?:\s*\[(Q-[A-Za-z]+-\d+)\])?"
+    r"|\{VAL:\?([^}]*)\}(?:\s*\[(Q-[A-Za-z]+-\d+)\])?"
+    r"|\[(Q-[A-Za-z]+-\d+)\]"
+    r"|(?<![\w/-])(display\d{2}(?:-[a-z0-9-]+)?)(?![\w/-])"
+    r"|\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}"
+    r"|(?<![\w:/{-])((?:tab|fig):[a-z0-9_-]+)(?![\w-])"
+    #   9 num  10 pct   a NUMBER in the prose. Last in the alternation on
+    #                   purpose: every branch above consumes its own digits
+    #                   first, so the 2 in [Q-Section-2], the 04 in display04
+    #                   and the 2024 in \citep{smith2024} are never seen here.
+    #                   Only chipped when the string already carries a [Q-…],
+    #                   which is what scopes this to sentences that CLAIM
+    #                   something measured (see cite_chips).
+    r"|(?<![\w.,$/-])(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+)(%)?(?![\w.,]*[\w])")
+
+# A year is a date, not a measurement, and a lone 0 or 1 is almost never a
+# finding. Skipping them is the difference between a highlight and a mess.
+YEAR = re.compile(r"^(1[89]|20)\d{2}$")
+
+
+# One popover panel per chip. They are COLLECTED rather than emitted inline,
+# because a chip usually sits inside a sentence's <summary>, which may hold
+# phrasing content only: a <div popover> there would be invalid HTML. The top
+# layer ignores DOM position, so they all flush at the end of the document.
+CARDS = []
+CHIP_N = 0
+
+
+def _rel(p):
+    """An absolute path -> an href relative to board.html."""
+    try:
+        import os
+        return os.path.relpath(p, BASE)
+    except (ValueError, TypeError):
+        return None
+
+
+def _sources(meta):
+    """The dialect returns DATA about where a marker's source lives (QBc5);
+    turning it into links is the board's job, and it happens here.
+
+    Three kinds, in the order a reader wants them: the DEFINITION (which .bib
+    file, which line), the SOURCE ITSELF (doi / arXiv / url, off-site), and the
+    raw entry as written, so the panel answers "is this the right work" without
+    a round trip.
+    """
+    if not meta:
+        return ""
+    # A figure's evidence is the picture, so the panel SHOWS it rather than
+    # linking to it, and every image is labelled LIVE or CANDIDATE (QC4's law).
+    # A table's evidence is its rows, so the body is shown as text (QC3).
+    prev = []
+    for kind, label, path, text in meta.get("preview", []):
+        href = _rel(path)
+        cap = f'<figcaption>{esc(label)}</figcaption>'
+        if kind == "img" and href:
+            prev.append(f'<figure class="ccprev">{cap}'
+                        f'<img src="{esc(href)}" alt="{esc(label)}" '
+                        f'loading="lazy"></figure>')
+        elif kind == "text":
+            prev.append(f'<figure class="ccprev">{cap}'
+                        f'<pre class="ccraw">{esc(text)}</pre></figure>')
+    # A citation's preview is the REFERENCE as the manuscript will print it,
+    # rendered by the paper's own .bst (see refs.py). Same job as the picture
+    # for a figure and the rows for a table: show the thing, do not describe it.
+    if meta.get("reference"):
+        prev.append('<figure class="ccprev"><figcaption>AS IT WILL PRINT · '
+                    'the paper\'s own .bst</figcaption>'
+                    f'<div class="ccref">{esc(meta["reference"])}</div></figure>')
+    prev = "".join(prev)
+    out = []
+    e = meta.get("entry")
+    if e is not None:
+        href = _rel(e.path)
+        where = f"{e.path.name}:{e.line}"
+        out.append(f'<a class="fp" href="{esc(href)}">📄 {esc(where)}</a>'
+                   if href else f"<span>📄 {esc(where)}</span>")
+    for lbl, href in meta.get("links", []):
+        out.append(f'<a class="fp" href="{esc(href)}" target="_blank" '
+                   f'rel="noopener">🔗 {esc(lbl)}</a>')
+    for rel, path in meta.get("files", []):
+        href = _rel(path)
+        out.append(f'<a class="fp" href="{esc(href)}">📄 {esc(rel)}</a>'
+                   if href else f"<span>📄 {esc(rel)}</span>")
+    if meta.get("target"):
+        out.append(f'<span class="cctgt">🎯 {esc(meta["target"])}</span>')
+    # preview first: it is the answer to "is this the right thing", and the
+    # links are what you reach for only once it is not.
+    html = prev + (f'<div class="ccl">{"".join(out)}</div>' if out else "")
+    if e is not None:
+        html += f'<pre class="ccraw">{esc(e.raw)}</pre>'
+    if meta.get("suggest"):
+        rows = "".join(f'<div><b>{esc(k)}</b> {esc(one)}</div>'
+                       for k, one in meta["suggest"])
+        html += (f'<div class="ccsug"><span class="cck">keys that DO resolve, '
+                 f'nearest first</span>{rows}</div>')
+    return html
+
+
+def _chip(kind, state, label, tip, meta=None):
+    """A chip is a BUTTON that opens an attached panel, and the panel is real
+    body text (JL 260726).
+
+    The `title=` stays underneath as the floor: hover keeps working, and if
+    `popover` is unsupported the record is still reachable. The gain over a
+    tooltip is not comfort. A tooltip lives in an ATTRIBUTE, which the build's
+    "chars of body surviving with JS stripped" assertion does not count, so the
+    evidence passed that test on a technicality. In a panel it is counted,
+    Ctrl-F findable, and printable.
+    """
+    global CHIP_N
+    CHIP_N += 1
+    cid, anc = f"pc{CHIP_N}", f"--a{CHIP_N}"
+    # The tooltip IS the reference for a resolved citation, because hover is the
+    # floor and the floor should carry the best thing available. In the panel
+    # that would print it twice, so the body drops any line the preview repeats.
+    shown = (meta or {}).get("reference", "")
+    rows = [x.strip() for x in tip.split("\n")
+            if x.strip() and x.strip() != shown]
+    body = "".join(f"<p>{esc(x)}</p>" for x in rows)
+    CARDS.append(
+        f'<div popover id="{cid}" class="chipcard {kind} {state}"'
+        f' style="position-anchor:{anc}">'
+        f'<div class="cch"><span class="cck">{esc(kind)} · {esc(state)}</span>'
+        f'<b>{esc(label)}</b></div>'
+        f'<div class="ccb">{body}</div>{_sources(meta)}</div>')
+    return (f'<button type="button" class="chip {kind} {state}"'
+            f' popovertarget="{cid}" style="anchor-name:{anc}"'
+            f' title="{esc(tip)}">{esc(label)}</button>')
+
+
+def _unesc(s):
+    """inline() escapes before we run, so a captured description arrives as
+    `the model&#x27;s MAE`. Put it back before it goes into a title=, which
+    _chip escapes again."""
+    for a, b in (("&#x27;", "'"), ("&quot;", '"'), ("&gt;", ">"),
+                 ("&lt;", "<"), ("&amp;", "&")):
+        s = s.replace(a, b)
+    return s
+
+
+# A landed answer under a marker that still says "owed" is not an error and not
+# fine: it is work sitting on the table, and it deserves its own colour.
+def _landed(state, tip, meta, still):
+    if state != "ok":
+        return state, tip, meta
+    return ("ready",
+            f"THE ANSWER HAS LANDED and the prose still says {still}.\n{tip}",
+            meta)
+
+
+# Never rewrite inside a code span or inside a tag's attributes. A page that
+# DISCUSSES placeholders writes `\cite{TOADD}` in backticks, and chipping that
+# turns documentation into a false defect report.
+NO_CHIP = re.compile(r"(<code>.*?</code>|<[^>]+>)", re.S)
+
+# The same trap one level up (260726). A human writing
+#   > JL: I think you should use \citep{xxx}
+#   > CC: Mafi 2013 is still open -> add \citep{mafi...} or a \cite{TOADD}
+# is ASKING for a citation, not making one. Backticks are optional in a comment
+# and nobody will remember them, so the whole discussion lane opts out instead.
+# Typed evidence lanes (`> Citation:`, `> Value:`, `> Display:`) still chip:
+# those ARE claims about the sentence, and their state is the point.
+QBRACKET = re.compile(r"\[(Q-[A-Za-z]+-\d+)\]")
+
+NOTE = False
+
+
+def note(s):
+    """inline() for discussion text: same rendering, no chips."""
+    global NOTE
+    prev, NOTE = NOTE, True
+    try:
+        return inline(s)
+    finally:
+        NOTE = prev
+
+
+def _cite(keys_raw, qid, raw):
+    keys = [k.strip() for k in keys_raw.split(",") if k.strip()]
+    out, took_q = [], False
+    for k in keys:
+        if k.upper() != "TOADD":
+            state, label, tip, meta = PAPER.citation(k)
+            out.append(_chip("cite", state, label, tip, meta))
+            continue
+        if not qid:
+            out.append(_chip("cite", "unowned", "TOADD (no question)",
+                             "a placeholder with no [Q-…] bracket beside it. "
+                             "Nothing will ever resolve this one."))
+            continue
+        took_q = True
+        state, tip, meta = _landed(*PAPER.question(qid), "TOADD")
+        out.append(_chip("cite", state, f"TOADD → {qid}",
+                         "owed citation. The .bib is HUMAN-ONLY: an agent may "
+                         "grep it and report a missing key, never write one.\n"
+                         + tip, meta))
+    if not out:
+        return raw
+    if qid and not took_q:                 # \citep{realkey} [Q-…]: keep both
+        out.append(_qref(qid))
+    return "".join(out)
+
+
+def _value(desc, qid):
+    d = " ".join(_unesc(desc).split())
+    want = ("WANTED: " + d) if d else \
+        "WANTED: the marker does not even say WHICH number is missing."
+    if not qid:
+        return _chip("val", "unowned", "VAL? (no question)",
+                     want + "\nNo [Q-…] bracket beside it, so no question owes "
+                     "this number and nothing will ever fill it.")
+    state, tip, meta = _landed(*PAPER.question(qid), "{VAL:?}")
+    return _chip("val", state, f"VAL? → {qid}", f"{want}\n{tip}", meta)
+
+
+def _qref(qid):
+    state, tip, meta = PAPER.question(qid)
+    return _chip("qref", state, qid, tip, meta)
+
+
+def _number(raw, pct, qid):
+    """A measured number in a sentence that names the question owing it.
+
+    JL 260726: the NUMBER is the claim and the bracket is the bookkeeping, so
+    the number is what carries the colour. The bracket stays, quieter, because
+    it is still the binding.
+    """
+    if YEAR.match(raw) and not pct:
+        return raw + (pct or "")
+    if not pct and len(raw) == 1 and raw in "01":
+        return raw
+    state, tip = PAPER.check_number(qid, raw)
+    return _chip("num", state, raw + (pct or ""), tip)
+
+
+def _kind(u, fallback_label=""):
+    """A table and a figure are two faces (QC3, QC4) because a reader can check
+    a table on sight and cannot check a figure at all, so the chip says which
+    BEFORE the state. When the unit is unknown the label prefix is the only
+    hint there is, and an unresolved marker still deserves the right icon."""
+    if u is not None:
+        return "tab" if u.kind == "table" else "fig"
+    return "tab" if fallback_label.startswith("tab:") else "fig"
+
+
+def _display(did):
+    state, tip, meta = PAPER.display(did)
+    return _chip("disp " + _kind(PAPER.unit(did)), state, did, tip, meta)
+
+
+def _ref(label):
+    state, tip, meta = PAPER.ref(label)
+    return _chip("disp " + _kind(PAPER.by_label.get(label), label),
+                 state, label, tip, meta)
+
+
+def cite_chips(s):
+    """Rewrite every paper marker into a chip that knows its own state.
+
+    Runs LAST in inline(), so the HTML it emits is never re-processed by the
+    earlier substitutions. Without the paper dialect it is a no-op.
+    """
+    if PAPER is None or NOTE:
+        return s
+    # Numbers are only chipped in a sentence that already names the question
+    # owing them. Without this scope every section number, count and year on
+    # the board would light up, and the signal would be worth nothing.
+    owner = QBRACKET.search(s)
+    qid_here = [owner.group(1) if owner else ""]
+
+    def one(m):
+        if m.group(9):                       # a number in the prose
+            return (_number(m.group(9), m.group(10), qid_here[0])
+                    if qid_here[0] else m.group(0))
+        if m.group(7) or m.group(8):         # \ref{tab:…}, or a bare label
+            return _ref(m.group(7) or m.group(8))
+        if m.group(6):                       # a bare displayNN-<slug>
+            return _display(m.group(6))
+        if m.group(5):                       # a bare [Q-…]
+            return _qref(m.group(5))
+        if m.group(3) is not None:           # {VAL:? …}
+            return _value(m.group(3), m.group(4))
+        return _cite(m.group(1), m.group(2), m.group(0))
+
+    parts = NO_CHIP.split(s)
+    for i in range(0, len(parts), 2):      # even slices are plain text
+        parts[i] = MARKER.sub(one, parts[i])
+    return "".join(parts)
 
 
 def inline(s):
@@ -68,7 +386,7 @@ def inline(s):
     # href="…" / src="…" 里的地址 —— 否则会把链接再套一层链接。
     s = re.sub(r'(?<![\"\'=])(https?://[^\s<>"\')]+)',
                r'<a class="fp" href="\1" target="_blank" rel="noopener">\1</a>', s)
-    return s
+    return cite_chips(s)
 
 
 CM_HEAD = re.compile(
@@ -115,11 +433,12 @@ def render_comments(items):
         reps, main = [], []
         for b in c["body"]:
             (reps if b.startswith(">") else main).append(b)
-        body = "".join(f"<p>{inline(x)}</p>" for x in main)
+        # A comment is a person talking ABOUT the prose, so no chips (see note()).
+        body = "".join(f"<p>{note(x)}</p>" for x in main)
         body += "".join(
             f'<div class="cmt {who_class(re.match(chr(62)+"*.?([A-Z]{1,4})", x).group(1))}">'
-            f'{inline(x.lstrip(chr(62)).strip())}</div>'
-            if re.match(r">+\s*([A-Z]{1,4})", x) else f"<p>{inline(x)}</p>"
+            f'{note(x.lstrip(chr(62)).strip())}</div>'
+            if re.match(r">+\s*([A-Z]{1,4})", x) else f"<p>{note(x)}</p>"
             for x in reps)
         # 已解决的评论：正文折叠起来，台面上只留一行标题（JL 260723：solved 该 collapse，别铺开全文）。
         # 没解决的：正文照常展开，等着你处理。
@@ -133,7 +452,7 @@ def render_comments(items):
             f' data-done="{"1" if c["done"] else ""}"><div class="cmh">'
             f'<span class="bx">{"☑" if c["done"] else "☐"}</span>'
             f'<b class="{who_class(c["who"])}">{esc(c["who"])}</b>'
-            f'<span class="cq">“{inline(c["quote"])}”</span>{when}'
+            f'<span class="cq">“{note(c["quote"])}”</span>{when}'
             + (f'<span class="cs unpin" title="The quoted sentence is not in this '
                'question\'s body — it may have been said in chat, or the original may have '
                'been edited since. No history is kept, so we only say it is not in the body.">'
@@ -259,7 +578,7 @@ LANE_ICON = {"citation": "📚", "value": "🔢", "display": "🖼", "check": "�
 def render_apparatus(lines):
     """一句话的随行装置（QA8，JL 260725）：typed `> Kind:` 行 + `> WHO:` 讨论，
     折叠在它们讨论的那一句下面。返回 (html, 头行数)。"""
-    rows, heads = [], 0
+    rows, heads, in_note = [], 0, False
     for ln in lines:
         m = LANE.match(ln)
         if m:
@@ -268,25 +587,43 @@ def render_apparatus(lines):
             rows.append(f'<div class="lane"><b>{LANE_ICON.get(kind, "📎")} {esc(lbl)}</b> '
                         f'{inline(m.group(2))}</div>')
             heads += 1
+            in_note = False           # a typed evidence lane: chips ON
             continue
         m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*[「\"]([^」\"]+)[」\"]\s*[:：]\s*(.*)$", ln)
         if m:
             rows.append(f'<div class="cmt {who_class(m.group(2))}"><b>{esc(m.group(2))}</b>'
-                        f'<span class="qt">「{inline(m.group(3))}」</span> {inline(m.group(4))}</div>')
+                        f'<span class="qt">「{note(m.group(3))}」</span> {note(m.group(4))}</div>')
             heads += 1
+            in_note = True            # a person talking: chips OFF
             continue
         m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*(\[[^\]]+\])?\s*[:：]\s*(.*)$", ln)
         if m:
             rows.append(f'<div class="cmt {who_class(m.group(2))}"><b>{esc(m.group(2))}</b> '
-                        f'{inline(m.group(4))}</div>')
+                        f'{note(m.group(4))}</div>')
             heads += 1
+            in_note = True
             continue
-        rows.append(f'<div class="lane-cont">{inline(ln.lstrip(">").strip())}</div>')
+        # a continuation line inherits the mode of the lane it continues
+        render = note if in_note else inline
+        rows.append(f'<div class="lane-cont">{render(ln.lstrip(">").strip())}</div>')
     return "".join(rows), heads
+
+
+DIAGRAM_MAX_LINES = 40   # a fence this long or shorter, in one of these
+DIAGRAM_LANGS = {"", "text", "txt", "plain", "ascii", "diagram"}   # ...shows on stage
 
 
 def body(txt, fold_code=True, apparatus=True):
     """paragraphs + ``` blocks + comment lanes + topic/explanation bullets -> html
+
+    An `<!-- ... -->` block is dropped, everywhere, not rendered as escaped text.
+    `ref/q-template.md` has always told authors a comment "is dropped at
+    generation either way", and that was only true where nobody looked: the sole
+    strip lived in the Stage Contract path, and the template's own comments
+    happen to sit outside any rendered section. Written anywhere else the comment
+    came out as visible `&lt;!--` prose (found 260726 while making the ＋ button's
+    stub name its optional sections). Notes to the author now behave the way the
+    template promised.
 
     要点式排版（JL 260723）：一行 `- 小标题`，下面缩进两格的行是它的解释。
         - 选中就能评论
@@ -371,14 +708,21 @@ def body(txt, fold_code=True, apparatus=True):
                 flang = ln.lstrip()[3:].strip()
             else:
                 code = esc(chr(10).join(fence))
-                if fold_code:
+                # An UNTAGGED short fence is an ascii diagram, not code: it is the
+                # picture the sentence above is making, and hiding it behind
+                # "</> code · 4 lines" costs a click to see the thing you came for
+                # (JL 260726). Fold real code (language-tagged) and long blocks only.
+                is_diagram = (flang.lower() in DIAGRAM_LANGS
+                              and len(fence) <= DIAGRAM_MAX_LINES)
+                if fold_code and not is_diagram:
                     lab = ('&lt;/&gt; code'
                            + (f' · {esc(flang)}' if flang else '')
                            + f' · {len(fence)} lines')
                     out.append(f'<details class="it codef"><summary class="cs">{lab}'
                                f'</summary><pre>{code}</pre></details>')
                 else:
-                    out.append(f'<pre>{code}</pre>')
+                    out.append(f'<pre{" class=" + chr(34) + "asc" + chr(34) if is_diagram else ""}>'
+                               f'{code}</pre>')
                 fence = None
                 last_p = None
             continue
@@ -484,14 +828,14 @@ def body(txt, fold_code=True, apparatus=True):
             who = m.group(2)
             k = who_class(who)
             out.append(f'<div class="cmt {k}"><b>{esc(who)}</b>'
-                       f'<span class="qt">「{inline(m.group(3))}」</span> {inline(m.group(4))}</div>')
+                       f'<span class="qt">「{note(m.group(3))}」</span> {note(m.group(4))}</div>')
             last_p = None
             continue
         m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*(\[[^\]]+\])?\s*[:：]\s*(.*)$", ln)
         if m:
             who = m.group(2)
             k = who_class(who)
-            out.append(f'<div class="cmt {k}"><b>{esc(who)}</b> {inline(m.group(4))}</div>')
+            out.append(f'<div class="cmt {k}"><b>{esc(who)}</b> {note(m.group(4))}</div>')
             last_p = None
         else:
             out.append(f"<p>{inline(ln)}</p>")

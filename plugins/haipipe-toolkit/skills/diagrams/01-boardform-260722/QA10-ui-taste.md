@@ -14,7 +14,7 @@ The useful question is narrower: which bias-correction rules improve a research 
 - ✅ Covered here
   The Board's visual design read, density and motion settings, typography and surface consistency, accessibility checks, and an audit-first adoption protocol.
 - ↪ Covered elsewhere
-  The shared single-face structure stays with `QA4`; prose and structural acceptance stay with `QA9`; automatic group-title emoji selection stays with `QD4`; Paper and venue writing style belongs to the Paper lifecycle.
+  The shared single-face structure stays with `QA4`; prose and structural acceptance stay with `QA9`; automatic group-title emoji selection stays with `QA4`, which absorbed QD4 on 260726; Paper and venue writing style belongs to the Paper lifecycle.
 
 ## Diagram
 ```text
@@ -148,6 +148,12 @@ Focused pages keep their existing unframed treatment; the pilot changes only key
 radius vocabulary, and motion preference handling.
 No external skill has been installed and no dependency has been added.
 
+- 260726 JL · 🎨 The index rows lost their coloured left stripe
+  JL asked for the red and green bars down the left of the index to go.
+  Removed: `.ir`'s 4px `border-left` and the four `.ir.todo/.wip/.done/.hold` colour rules. The row keeps its 1px border and its hover accent.
+  Nothing was lost, which is why it was safe: every row already opens with the state emoji, so the bar restated the state in a second language, and stacked down a 27-row index the bars read as a chart rather than as a list.
+  Two neighbours were deliberately left alone: the pale green completion wash on each row is different information (percent done, not state), and the face's own left stripe on `.slide.q` is a different surface.
+
 - 260726 CC · 🧪 Applied the first reversible UI taste pilot
       Added global keyboard focus, semantic radius tokens, and reduced-motion handling.
       Kept the existing focused-page framing because the source audit showed it already satisfies
@@ -164,7 +170,7 @@ No external skill has been installed and no dependency has been added.
   Owns the existing shared face hierarchy and the unframed reading intent this audit must preserve.
 - `QA9-acceptance.md`
   Owns repeatable post-change checks once a visual rule becomes mechanical.
-- `QD4-topicicon.md`
+- `QA4-pagelayout.md`
   Owns automatic icon assignment; this Q does not reopen the semantic role of authored icons.
 
 ## Discussion

@@ -52,6 +52,20 @@ if __name__ == "__main__":
         out = target.with_suffix(".html")
     else:
         sys.exit(f"not found: {target}")
+    # The paper dialect, if this board declares it. Built once, before rendering,
+    # so every chip ships resolved and hover works with no script at all.
+    #
+    # A DIALECT IS DELETABLE (QBc5). The board must not depend on knowing what a
+    # paper is, so the import is guarded and a board that does not declare
+    # `dialect: paper` never reaches the module at all: delete src/dialect_paper.py
+    # and every other board on disk still renders byte-identical.
+    boardbody.PAPER = None
+    if meta.get("dialect", "").split("#", 1)[0].strip():
+        try:
+            from src import dialect_paper            # noqa: E402
+            boardbody.PAPER = dialect_paper.load(boardbody.BASE, meta)
+        except ImportError:
+            print("⚠️  dialect declared but no dialect module; markers stay plain text")
     if as_json:
         print(to_json(meta, qs, warn))
         sys.exit(0)
@@ -67,3 +81,13 @@ if __name__ == "__main__":
     print(f"✅ {out} · {len(qs)} faces · {len(plain)} chars of body survive with JS stripped · {txt.count(chr(60)+'script')} script block(s)")
     for w in warn:
         print(f"⚠️  {w}")
+    # A chip can only appear where the board RENDERS text. The manuscript's own
+    # .tex is reached only when a face embeds it, so audit it directly and say
+    # so out loud rather than let a clean board imply a clean paper.
+    if boardbody.PAPER is not None:
+        rows = boardbody.PAPER.audit()
+        if rows:
+            print(f"📄 {len(rows)} unresolved marker(s) in the paper's .tex, "
+                  f"which this board does not render:")
+            for path, line, kind, why in rows:
+                print(f"    {kind:<8} {path}:{line}  {why}")

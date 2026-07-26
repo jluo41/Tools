@@ -15,7 +15,7 @@ A paper is a delivery contract, not a writing folder. It owns one manuscript's s
 ├── 0-sections/               manuscript prose .tex
 ├── 0-displays/displayNN-*/   figure/table units
 ├── 1-probes/PPNN_<topic>/   the paper's questions, one ENTRY each -> bound BY PATH to a QA file
-├── 1-rounds/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
+├── 0-lifecycle/7-round/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 ├── 1-config.yaml
 └── 1-compile.sh
 ```
@@ -41,7 +41,7 @@ paper/
 ├── PHILOSOPHY.md         design philosophy
 ├── README.md             this file — canonical skill-tree + router + maturity rules
 ├── 0-enter/             haipipe-paper-enter (Console; owns the dashboard spec)
-│                        + haipipe-paper-round (owns the 1-rounds/ contract)
+│                        + haipipe-paper-round (owns the 0-lifecycle/7-round/ contract)
 ├── 1-lifecycle/         STAGE orchestrators, one numbered folder per stage
 │     ref/               lifecycle references (03-paper-lifecycle, 04-lifecycle-map, 08-stage-gate, 09-stage-illuminate)
 │     haipipe-paper-stage/stages/0-seed/
@@ -151,7 +151,7 @@ Maturity answers "how real is the paper?"
 | `1-lifecycle/ref/04-lifecycle-map.md` | stage-to-procedure map with reads/writes/calls |
 | `1-lifecycle/ref/08-stage-gate.md` | exit criteria, confirm-before-advance gate, Evidence Principles (总纲) |
 | `haipipe-paper/SKILL.md` | Closing Block · Comment lifecycle · Delivery Need Routing · Evidence Routing Protocol |
-| `0-enter/haipipe-paper-round/SKILL.md` | `1-rounds/` contract, file semantics, triage targets |
+| `0-enter/haipipe-paper-round/SKILL.md` | `0-lifecycle/7-round/` contract, file semantics, triage targets |
 | `0-enter/haipipe-paper-enter/SKILL.md` | the dashboard spec: derive-from-disk frontier, glyphs, render skeleton |
 | `3-deliver/haipipe-paper-deliver/SKILL.md` | Lifecycle TeX Quality Standard (self-contained compilable tex with Pn.Sm tags) |
 | `EVALUATION.md` | how to judge the skill: the top-down umbrella → phase → stage review |
@@ -161,7 +161,7 @@ Maturity answers "how real is the paper?"
 
 | Retired | Use instead |
 |---|---|
-| `1-feedback/` | `1-rounds/` |
+| `1-feedback/` | `0-lifecycle/7-round/` |
 | `architecture-minimap`, `paper-plan`, `display-contract`, `5-minimap` | `1b-claims`, `3-narrative`, `4-display`, `5-section-edit` |
 | `0-displays/Figures/` `Tables/` buckets | `0-displays/displayNN-<slug>/` |
 | project-level narrative coordination | paper owns its story; gaps route to probe |

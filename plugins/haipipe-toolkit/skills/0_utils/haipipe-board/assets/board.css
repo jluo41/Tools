@@ -96,8 +96,12 @@ body:has(.q:target) .q:target{display:block;margin-top:6px}
 .nav a:hover{border-color:var(--accent)}
 .nav .all{margin:0 auto;color:var(--mut)}
 .q:target .top{display:none}
+/* No coloured stripe on the left (JL 260726). The row already opens with the
+   state emoji, so the 4px bar restated it in a second language, and eight of
+   them stacked down the index read as a chart rather than as a list. The
+   completion wash below is different information and stays. */
 .ir{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;
- border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:var(--radius-surface);margin:6px 0;
+ border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;
  text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden;--fill:0}
 /* 完成度上色：白底 → 绿。绿色叠加层的透明度 = 完成比例（--fill 0..1）。
    从左往右填，像进度条，但很淡，不抢正文。 */
@@ -109,8 +113,6 @@ body:has(.q:target) .q:target{display:block;margin-top:6px}
 .ir > *{position:relative;z-index:1}
 .ir:hover{border-color:var(--accent)}
 h3.sec .hint a{color:var(--accent);text-decoration:none}
-.ir.todo{border-left-color:var(--todo)}.ir.wip{border-left-color:var(--wip)}
-.ir.done{border-left-color:var(--done)}.ir.hold{border-left-color:var(--hold)}
 /* 索引里的分组标题：放大 + 底下一条线，跟 Q 页里的节标题（.ch）同一套语言（JL 260723） */
 .grp{font-size:16px;font-weight:700;color:var(--fg);letter-spacing:-.01em;
  margin:26px 0 9px;padding:0 0 6px 2px;border-bottom:1px solid var(--line)}
@@ -539,6 +541,10 @@ mark{background:transparent;box-shadow:inset 0 0 0 1000px rgba(255,214,0,.34);co
 /* ## 图 —— 这一题想干嘛，一张 ascii 图先说清楚 */
 .dia{margin:0 0 18px}
 .dia pre{margin:0;padding:15px 17px;line-height:1.55}
+/* an ascii diagram inside Content: it IS the content, not a code listing.
+   Same reading comfort as the .dia signature diagram, without the fold chrome. */
+pre.asc{margin:10px 0;padding:13px 15px;line-height:1.55;overflow-x:auto}
+
 .q:target .dia{margin:0 0 24px}
 .q:target .dia pre{font-size:13px;line-height:1.6}
 .col.now{border-left:3px solid var(--wip)}
@@ -725,3 +731,147 @@ details.gi summary:hover{color:var(--fg)}
 .pill.docp{border:1px solid var(--line);color:var(--mut);background:var(--pre)}
 .ir.doc .s{filter:none}
 .ir.doc .t{color:var(--mut)}
+
+/* ── chips: an inline marker that knows its own state (QC1, 260726) ──────────
+   Resolved at BUILD time by src/dialect_paper.py, so the `title=` tooltip is a
+   native browser hover and survives every script block being stripped. JS may later
+   upgrade it to a rich card; it may never be the only copy. */
+.chip{display:inline-block;padding:0 .38em;margin:0 .08em;border-radius:4px;
+  font:600 .84em/1.5 var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);
+  vertical-align:baseline;cursor:pointer;border:1px solid transparent;
+  white-space:nowrap;max-width:22em;overflow:hidden;text-overflow:ellipsis;
+  text-align:inherit}
+.chip.cite::before{content:"📚 ";font-weight:400}
+.chip.val::before{content:"🔢 ";font-weight:400}
+.chip.qref::before{content:"🎯 ";font-weight:400}
+.chip.ok{background:color-mix(in srgb,var(--ok,#2e7d32) 12%,transparent);
+  color:var(--ok,#2e7d32);border-color:color-mix(in srgb,var(--ok,#2e7d32) 28%,transparent)}
+.chip.owed{background:color-mix(in srgb,var(--warn,#b26a00) 12%,transparent);
+  color:var(--warn,#b26a00);border-color:color-mix(in srgb,var(--warn,#b26a00) 30%,transparent)}
+.chip.broken,.chip.unowned{background:color-mix(in srgb,var(--bad,#c62828) 14%,transparent);
+  color:var(--bad,#c62828);border-color:var(--bad,#c62828);font-weight:700}
+/* ready = the answering probe LANDED and the prose still says owed. Not an
+   error and not fine: work sitting on the table, so it gets its own colour
+   rather than hiding inside `owed`. parked = deferred on purpose (QC2). */
+.chip.ready{background:color-mix(in srgb,var(--acc,#1565c0) 13%,transparent);
+  color:var(--acc,#1565c0);border-color:color-mix(in srgb,var(--acc,#1565c0) 34%,transparent)}
+.chip.parked{background:color-mix(in srgb,var(--mut,#6b7280) 12%,transparent);
+  color:var(--mut,#6b7280);border-color:color-mix(in srgb,var(--mut,#6b7280) 28%,transparent)}
+.chip.broken::after{content:" ⚠";font-weight:400}
+.chip.unowned::after{content:" ❓";font-weight:400}
+.chip.ready::after{content:" ✦";font-weight:400}
+.chip.parked::after{content:" ⏸";font-weight:400}
+.chip:hover{filter:brightness(1.08);max-width:none}
+@media (prefers-color-scheme:dark){
+  .chip.ok{color:#7fd18a}.chip.owed{color:#e0a34d}.chip.broken,.chip.unowned{color:#ef7d78}
+  .chip.ready{color:#78b6f0}.chip.parked{color:#9aa3af}
+}
+
+/* ── the chip's panel: click a chip, the record opens beside it ──────────────
+   Native HTML popover, no script. The panel is REAL body text (not a title=
+   attribute), so it is counted by the build's survive-with-JS-stripped check,
+   is Ctrl-F findable, and prints. `title=` stays on the chip underneath as the
+   floor for anything that does not support popover. */
+.chipcard{margin:auto;max-width:38em;padding:13px 16px;border:1px solid var(--line);
+  border-left-width:4px;border-radius:var(--radius-surface);background:var(--card);
+  color:var(--fg);font:14.5px/1.62 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  box-shadow:0 10px 34px rgba(0,0,0,.20)}
+.chipcard::backdrop{background:rgba(0,0,0,.10)}
+.chipcard.ok{border-left-color:var(--done)}
+.chipcard.ready{border-left-color:var(--accent)}
+.chipcard.owed{border-left-color:var(--wip)}
+.chipcard.parked{border-left-color:var(--hold)}
+.chipcard.broken,.chipcard.unowned{border-left-color:var(--todo)}
+.cch{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;
+  padding-bottom:8px;margin-bottom:9px;border-bottom:1px solid var(--line)}
+.cch b{font:600 14px var(--mono,ui-monospace,Menlo,monospace);word-break:break-all}
+.cck{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);
+  letter-spacing:.05em;text-transform:uppercase}
+.ccb p{margin:0 0 7px}.ccb p:last-child{margin-bottom:0}
+.ccb p:first-child{font-weight:600}
+/* Anchored BESIDE the chip that was clicked, where the browser supports it;
+   centred on screen where it does not, which is still perfectly readable.
+
+   Two traps live here, and the first version hit both.
+   ① The popover UA stylesheet is `position:fixed; inset:0; margin:auto`.
+      Setting margin:0 without releasing `inset:0` pins the panel to the
+      TOP-LEFT CORNER. `inset:auto` is what hands positioning to the anchor.
+   ② position-area takes one axis vocabulary at a time. `bottom span-inline-end`
+      mixes physical with logical, so the whole declaration is dropped and the
+      panel keeps whatever the previous rule left it. Stay logical throughout.
+   The @supports test is `anchor-name`, the actual feature, not one spelling of
+   one of its properties: Chrome 125-128 shipped this as `inset-area`, and both
+   spellings are emitted because an unknown declaration is ignored on its own. */
+@supports (anchor-name:--a){
+  .chipcard{
+    position:fixed;
+    inset:auto;                       /* ① release the UA's inset:0 */
+    margin:0;
+    inset-area:block-end span-inline-end;      /* Chrome 125-128 */
+    position-area:block-end span-inline-end;   /* current name */
+    position-try-fallbacks:flip-block,flip-inline;
+    position-try-options:flip-block,flip-inline;
+    max-height:min(60vh,34em);overflow:auto;
+    max-width:min(38em,calc(100vw - 2rem))}
+}
+/* the panel's source block: definition first, then the source itself */
+.ccl{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:10px;
+  padding-top:9px;border-top:1px solid var(--line)}
+.ccl a,.ccl span{font:12.5px ui-monospace,Menlo,monospace;text-decoration:none;
+  color:var(--accent);border:1px solid var(--line);border-radius:var(--radius-control);
+  padding:2px 8px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.ccl a:hover{border-color:var(--accent);background:var(--pre)}
+.ccl .cctgt{color:var(--mut)}
+.ccraw{margin:9px 0 0;padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
+  font:12px/1.55 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-word;
+  max-height:16em;overflow:auto;color:var(--fg)}
+.ccsug{margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+.ccsug div{font:12.5px/1.7 ui-monospace,Menlo,monospace;color:var(--mut)}
+.ccsug b{color:var(--done);font-weight:600}
+/* display chips: a table and a figure are two faces (QC3 / QC4), so the icon
+   says which one the sentence is pointing at before you read the state. */
+.chip.tab::before{content:"▦ ";font-weight:400}
+.chip.fig::before{content:"📈 ";font-weight:400}
+/* the panel's PREVIEW: a figure shows its picture, a table shows its rows.
+   The caption is not decoration. QC4's law: a card that shows one image while
+   another is what the manuscript compiles is worse than a card showing none,
+   so LIVE and CANDIDATE are stated on every single one. */
+.ccprev{margin:11px 0 0;padding:0}
+.ccprev figcaption{font:11px ui-monospace,Menlo,monospace;color:var(--mut);
+  letter-spacing:.05em;margin-bottom:5px}
+.ccprev img{display:block;max-width:100%;max-height:15em;width:auto;height:auto;
+  border:1px solid var(--line);border-radius:var(--radius-control);
+  background:#fff;padding:5px}
+.ccprev .ccraw{margin:0;max-height:14em}
+/* the rendered reference: hanging indent, the way a bibliography reads */
+.ccref{font:14px/1.6 Charter,"Bitstream Charter",Georgia,Cambria,serif;
+  padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
+  text-indent:-1.4em;padding-left:calc(11px + 1.4em)}
+/* ── the NUMBER is the claim; the bracket is the bookkeeping (JL 260726) ─────
+   Before this, [Q-Section-2] was the loud thing in a sentence and the figure it
+   owed was plain grey text. Backwards: a reader checks the number. So a number
+   chip is the prominent one and .qref is demoted to a quiet trailing marker. */
+.chip.num{font:600 .95em/1.4 var(--mono,ui-monospace,Menlo,monospace);
+  padding:1px .4em;border-radius:3px}
+.chip.num::before{content:none}
+.chip.num.ok{background:color-mix(in srgb,var(--done) 16%,transparent);
+  border-color:color-mix(in srgb,var(--done) 42%,transparent)}
+.chip.num.ok::after{content:" ✓";font-weight:400;opacity:.75}
+/* unver = not checkable, NOT wrong. A derived percentage or a chosen threshold
+   will never appear in a run. Quiet, dotted, no alarm colour. */
+.chip.num.unver{background:transparent;color:var(--mut);
+  border:0;border-bottom:1.5px dotted var(--mut);border-radius:0}
+.chip.num.unver::after{content:" ?";font-weight:400;opacity:.7}
+/* amb = it rounds to two DIFFERENT recorded figures. The number may be right
+   and its provenance is not determinable, which is worth a real warning. */
+.chip.num.amb{background:color-mix(in srgb,var(--wip) 16%,transparent);
+  color:var(--wip);border-color:var(--wip);font-weight:700}
+.chip.num.amb::after{content:" ⁉";font-weight:400}
+.chipcard.amb{border-left-color:var(--wip)}
+.chipcard.unver{border-left-color:var(--mut)}
+/* the bracket, demoted: still clickable, no longer the thing you look at */
+.chip.qref{font-size:.72em;padding:0 .3em;opacity:.62;background:transparent;
+  border-color:color-mix(in srgb,var(--mut) 30%,transparent);color:var(--mut)}
+.chip.qref::before{content:"🎯";font-size:.85em;opacity:.8}
+.chip.qref:hover{opacity:1}
+.chip.qref.unowned{opacity:1;color:var(--todo);border-color:var(--todo)}

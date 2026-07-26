@@ -13,6 +13,7 @@
 #                         <path>/.codex/skills/ when those directories exist
 #   --hooks               Also configure sound hooks in settings.json
 #   --all                 Do everything (marketplace + global + hooks)
+#   --no-marketplace      Skip marketplace registration (mirrors install.ps1)
 #
 # Skills are enumerated dynamically from plugins/**/skills/*/SKILL.md, so adding
 # or moving a plugin needs no edits here — just re-run. Anything under legacy/ is
@@ -23,7 +24,9 @@
 # symlink" guard below skip them, so they silently drift from Tools — keep the
 # dir gitignored and regenerate, exactly like .claude/skills/.)
 #
-# Sound hooks work on macOS (afplay) and Linux (paplay/aplay).
+# Sound hooks work on macOS (afplay), Linux (paplay/aplay), and Windows via
+# install.ps1. The per-OS table lives in install-hooks.json so both installers
+# read the same one.
 
 set -e
 
@@ -36,13 +39,15 @@ SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 # Parse flags
 DO_GLOBAL=false
 DO_HOOKS=false
+DO_MARKETPLACE=true
 PROJECT_PATH=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --global)  DO_GLOBAL=true ;;
-        --hooks)   DO_HOOKS=true ;;
-        --all)     DO_GLOBAL=true; DO_HOOKS=true ;;
-        --project) PROJECT_PATH="$2"; shift ;;
+        --global)         DO_GLOBAL=true ;;
+        --hooks)          DO_HOOKS=true ;;
+        --all)            DO_GLOBAL=true; DO_HOOKS=true ;;
+        --no-marketplace) DO_MARKETPLACE=false ;;
+        --project)        PROJECT_PATH="$2"; shift ;;
     esac
     shift
 done
@@ -58,22 +63,23 @@ fi
 
 # ─── 1. Marketplace registration ─────────────────────────────────────────────
 
-echo "Installing jluo41-tools marketplace..."
+if [ "$DO_MARKETPLACE" = true ]; then
+    echo "Installing jluo41-tools marketplace..."
 
-mkdir -p "$CLAUDE_DIR/plugins/marketplaces"
+    mkdir -p "$CLAUDE_DIR/plugins/marketplaces"
 
-if [ -L "$MARKETPLACE_DIR" ]; then
-    rm "$MARKETPLACE_DIR"
-elif [ -d "$MARKETPLACE_DIR" ]; then
-    echo "  Warning: $MARKETPLACE_DIR already exists as a directory. Removing..."
-    rm -rf "$MARKETPLACE_DIR"
-fi
+    if [ -L "$MARKETPLACE_DIR" ]; then
+        rm "$MARKETPLACE_DIR"
+    elif [ -d "$MARKETPLACE_DIR" ]; then
+        echo "  Warning: $MARKETPLACE_DIR already exists as a directory. Removing..."
+        rm -rf "$MARKETPLACE_DIR"
+    fi
 
-ln -s "$SCRIPT_DIR" "$MARKETPLACE_DIR"
-echo "  Symlinked $SCRIPT_DIR -> $MARKETPLACE_DIR"
+    ln -s "$SCRIPT_DIR" "$MARKETPLACE_DIR"
+    echo "  Symlinked $SCRIPT_DIR -> $MARKETPLACE_DIR"
 
-if [ -f "$KNOWN_FILE" ]; then
-    python3 -c "
+    if [ -f "$KNOWN_FILE" ]; then
+        python3 -c "
 import json
 with open('$KNOWN_FILE', 'r') as f:
     data = json.load(f)
@@ -88,22 +94,41 @@ data['jluo41-tools'] = {
 with open('$KNOWN_FILE', 'w') as f:
     json.dump(data, f, indent=2)
 "
-    echo "  Registered in known_marketplaces.json"
+        echo "  Registered in known_marketplaces.json"
+    else
+        echo "  Warning: $KNOWN_FILE not found. Claude Code may not be installed."
+    fi
 else
-    echo "  Warning: $KNOWN_FILE not found. Claude Code may not be installed."
+    echo "Skipping marketplace registration (--no-marketplace)."
 fi
 
+# Plugin list is READ from plugins/*/.claude-plugin/plugin.json rather than typed
+# here, because a hand-written list rots: it still named a `diagram-skill` plugin
+# months after that plugin was gone, and never gained the ones added since.
 echo ""
 echo "Done! Available plugins:"
-echo "  chronicle         - Session, daily, email, and Obsidian chronicle workflows"
-echo "  diagram-skill     - Visual artifacts: diagram-ascii, diagram-ascii-canvas, diagram-drawio, diagram-excalidraw, progress-log"
-echo "  figure-to-svg     - Replicate figures/icons as editable SVG: figure-to-svg (whole figure) + icon-to-svg (one icon)"
-echo "  haipipe           - HAI-Pipe research toolkit: data, NN, endpoint, task, experiment, paper, application"
-echo "  subjective-label  - Subjective-label iterator (init, iterate, scale, status, validate)"
+python3 -c "
+import json, os, sys
+root = os.path.join('$SCRIPT_DIR', 'plugins')
+for d in sorted(os.listdir(root)):
+    if d.startswith(('_', '.')) or not os.path.isdir(os.path.join(root, d)):
+        continue
+    man = os.path.join(root, d, '.claude-plugin', 'plugin.json')
+    name, desc = d, ''
+    if os.path.exists(man):
+        try:
+            m = json.load(open(man))
+            name = m.get('name') or d
+            desc = ' '.join((m.get('description') or '').split())
+        except Exception:
+            desc = '(unreadable plugin.json)'
+    else:
+        desc = '(no plugin.json; not installable as a plugin)'
+    print(f'  {name:<18}- {desc[:96]}')
+"
 echo ""
 echo "Install in Claude Code with e.g.:"
 echo "  /plugin install haipipe@jluo41-tools"
-echo "  /plugin install diagram-skill@jluo41-tools"
 echo "  /plugin install subjective-label@jluo41-tools"
 
 # ─── 2. Global skill installation (--global) ─────────────────────────────────
@@ -126,17 +151,16 @@ enumerate_skills() {
         rel_path="${skill_path#"$plugins_root/$plugin_name/skills/"}"
         skill_name="$(basename "$skill_path")"
 
-        # Duplicate skill names cannot both be symlinked into one skills dir.
-        # Keep the canonical copy deterministically:
-        #   1. standalone diagram-skill wins over haipipe utility mirrors
-        #   2. active paper skills win over _paper-writing-backup snapshots
-        #   3. otherwise sort by plugin/path for stable installs
+        # Duplicate skill names cannot both be symlinked into one skills dir, so
+        # one has to win deterministically. Lower priority wins; ties fall back to
+        # a stable plugin/path sort.
+        #
+        # No promotion rule is live today (2026-07-26). Two were removed because
+        # neither could ever fire: `diagram-skill/*` named a plugin that no longer
+        # exists, and `_paper-writing-backup/*` sat under a directory that is
+        # pruned above and is now gone. Every skill name is currently unique, so
+        # dedup never has to choose. Add a case here if that changes.
         priority=50
-        case "$plugin_name/$rel_path" in
-            diagram-skill/*) priority=10 ;;
-            haipipe-toolkit/0_utils/diagram-*) priority=70 ;;
-            haipipe-toolkit/F_paper/_paper-writing-backup/*) priority=80 ;;
-        esac
 
         printf '%03d\t%s\t%s\t%s\t%s\n' "$priority" "$skill_name" "$skill_path" "$plugin_name" "$rel_path"
     done | sort -t $'\t' -k2,2 -k1,1n -k4,4 -k5,5 | awk -F '\t' '
@@ -339,85 +363,59 @@ if [ "$DO_HOOKS" = true ]; then
     echo ""
     echo "Configuring sound hooks in settings.json..."
 
-    python3 << 'PYEOF'
+    HOOKS_TABLE="$SCRIPT_DIR/install-hooks.json" python3 << 'PYEOF'
 import json, platform, shutil, os
 
 settings_file = os.path.expanduser("~/.claude/settings.json")
 
-# Detect OS and pick sound player + sound files
-system = platform.system()
+# The sound table is shared with install.ps1 (install-hooks.json), so the two
+# installers cannot drift. Each keeps its own writer; that is why Windows needs
+# no Python.
+with open(os.environ["HOOKS_TABLE"], "r") as f:
+    table = json.load(f)
 
-if system == "Darwin":
-    # macOS
-    player = "afplay"
-    sounds = {
-        "SessionStart":       "/System/Library/Sounds/Hero.aiff",
-        "Stop":               "/System/Library/Sounds/Glass.aiff",
-        "TaskCompleted":      "/System/Library/Sounds/Purr.aiff",
-        "PermissionRequest":  "/System/Library/Sounds/Blow.aiff",
-        "Notification":       "/System/Library/Sounds/Ping.aiff",
-        "SubagentStart":      "/System/Library/Sounds/Submarine.aiff",
-        "SubagentStop":       "/System/Library/Sounds/Pop.aiff",
-        "PostToolUseFailure": "/System/Library/Sounds/Basso.aiff",
-    }
-elif system == "Linux":
-    # Linux — try paplay (PulseAudio) first, fall back to aplay (ALSA)
-    player = "paplay" if shutil.which("paplay") else "aplay"
-    # freedesktop sound theme paths (Ubuntu/Debian/Fedora)
-    sound_dirs = [
-        "/usr/share/sounds/freedesktop/stereo",
-        "/usr/share/sounds/gnome/default/alerts",
-        "/usr/share/sounds/ubuntu/stereo",
-    ]
-    # Find first existing sound directory
-    sound_dir = next((d for d in sound_dirs if os.path.isdir(d)), sound_dirs[0])
-    sounds = {
-        "SessionStart":       f"{sound_dir}/service-login.oga",
-        "Stop":               f"{sound_dir}/complete.oga",
-        "TaskCompleted":      f"{sound_dir}/complete.oga",
-        "PermissionRequest":  f"{sound_dir}/dialog-warning.oga",
-        "Notification":       f"{sound_dir}/message.oga",
-        "SubagentStart":      f"{sound_dir}/service-login.oga",
-        "SubagentStop":       f"{sound_dir}/service-logout.oga",
-        "PostToolUseFailure": f"{sound_dir}/dialog-error.oga",
-    }
-else:
-    print(f"  Unsupported OS: {system}. Skipping sound hooks.")
-    exit(0)
+key = {"Darwin": "darwin", "Linux": "linux", "Windows": "windows"}.get(platform.system())
+spec = table.get(key) if key else None
+if not spec:
+    print(f"  Unsupported OS: {platform.system()}. Skipping sound hooks.")
+    raise SystemExit(0)
 
-# Load existing settings
+sounds = dict(spec["sounds"])
+command = spec["command"]
+
+if key == "linux":
+    # First player on PATH, first sound dir that exists. Both fall back to the
+    # head of their list so the settings are written even on a bare container.
+    player = next((p for p in spec["players"] if shutil.which(p)), spec["players"][0])
+    sound_dir = next((d for d in spec["sound_dirs"] if os.path.isdir(d)), spec["sound_dirs"][0])
+    command = command.replace("{player}", player)
+    sounds = {ev: f"{sound_dir}/{name}" for ev, name in sounds.items()}
+
+settings = {}
 if os.path.exists(settings_file):
     with open(settings_file, "r") as f:
         settings = json.load(f)
-else:
-    settings = {}
 
-# Build hooks config
-hooks = {}
-for event, sound_file in sounds.items():
-    hooks[event] = [
-        {
-            "matcher": "*",
-            "hooks": [
-                {
-                    "type": "command",
-                    "command": f"{player} {sound_file}",
-                    "async": True
-                }
-            ]
-        }
-    ]
-
-# Merge — overwrite hooks section, preserve everything else
-settings["hooks"] = hooks
+# Merge — overwrite the hooks section, preserve everything else
+settings["hooks"] = {
+    event: [{"matcher": "*",
+             "hooks": [{"type": "command",
+                        "command": command.replace("{sound}", sound),
+                        "async": True}]}]
+    for event, sound in sounds.items()
+}
 
 with open(settings_file, "w") as f:
     json.dump(settings, f, indent=2)
 
-print(f"  OS: {system}, player: {player}")
+missing = [s for s in sounds.values() if not os.path.exists(s)]
+print(f"  OS: {spec['label']}")
 print(f"  Configured {len(sounds)} sound hooks:")
 for event, sound in sounds.items():
     print(f"    {event:22s} -> {os.path.basename(sound)}")
+if missing:
+    print(f"  Note: {len(missing)} sound file(s) not found on this machine; "
+          f"those hooks stay silent.")
 PYEOF
 
     echo "  Sound hooks installed."
@@ -431,3 +429,4 @@ echo "  ./install.sh --global                Symlink skills to ~/.claude/skills/
 echo "  ./install.sh --project /path/to/repo  Symlink skills to repo's .claude/skills/ and .codex/skills/"
 echo "  ./install.sh --hooks                 Configure sound hooks in settings.json"
 echo "  ./install.sh --all                   Do everything (marketplace + global + hooks)"
+echo "  ./install.sh --no-marketplace        Skip marketplace registration"

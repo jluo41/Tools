@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper-folder
-description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + four empty container dirs (0-lifecycle, 0-displays, 1-rounds, 1-probes). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
+description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + three empty container dirs (0-lifecycle, 0-displays, 1-probes). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
 metadata:
   version: "0.4.0"
   last_updated: "2026-07-14"
-  summary: "Minimal quick paper-folder scaffold (README + STATUS + .gitignore + empty 0-lifecycle/0-displays/1-rounds/1-probes/); stage files absent-until-written; manuscript machinery is an on-request upgrade. History: ./CHANGELOG.md."
+  summary: "Minimal quick paper-folder scaffold (README + STATUS + .gitignore + empty 0-lifecycle/0-displays/1-probes/); stage files absent-until-written; manuscript machinery is an on-request upgrade. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -29,7 +29,6 @@ Paper-<Name>/
 ├── .gitignore          # LaTeX artifacts; preserves 0-displays/**/*.pdf (contract below)
 ├── 0-lifecycle/        # EMPTY -- each stage skill creates its own N-stage/ on first run
 ├── 0-displays/         # EMPTY -- display units land here (owner: display stage + renderers)
-├── 1-rounds/           # EMPTY -- dated work rounds (owner: haipipe-paper-round)
 └── 1-probes/           # EMPTY -- the probe-file pool (README.md + flat PPNN_<topic>/ probe files, created on first probe; one cross-stage pool, one file per TOPIC)
 ```
 
@@ -68,9 +67,7 @@ Do NOT include a `| venue |` row at creation.
 *.out
 *.pdf
 !0-displays/**/*.pdf
-!1-rounds/*/submission/**/*.pdf
-!1-rounds/*/rebuttal-report/**/*.pdf
-!1-rounds/*/diff/**/*.pdf
+!0-lifecycle/7-round/**/*.pdf
 *.synctex.gz
 *.fdb_latexmk
 *.fls
@@ -121,7 +118,9 @@ Not this skill's job
 ```
 repo + submodule wiring        -> /haipipe-paper enter (get-or-create branch)
 stage files (0-seed.md, ...)   -> each stage skill, on first run
-rounds (1-rounds/vYYMMDD/)     -> haipipe-paper-round (contract: ../../../0-enter/haipipe-paper-round/SKILL.md)
+rounds (0-lifecycle/7-round/)  -> haipipe-paper-round (contract: ../../../0-enter/haipipe-paper-round/SKILL.md)
+                               # JL 260726: rounds live INSIDE the lifecycle as S-Round pages,
+                               # one page per round, letters beside it. 0-lifecycle/7-round/ is retired.
 probe files (PPNN_<topic>/)  -> /haipipe-paper probe verbs (fn/probes.md)
 display units                  -> display stage + renderer family
 venue knowledge                -> venue/playbook-<venue> packs
