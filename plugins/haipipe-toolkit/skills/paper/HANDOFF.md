@@ -1,63 +1,252 @@
-# Paper Skill Handoff — 2026-07-18
+# HAIPipe Paper Handoff — 2026-07-25
 
-A skill-dev session established a **stage-template charter** for the paper lifecycle and rolled the first **5 of 9** stages under it, plus **Option A**: lettered the paper-output folders (`1a/1b/2a/2b`) across the skills AND migrated 2 live manuscripts. Committed + pushed to `main` (`9be568f7`). This doc maps the remaining 4 stages and the conventions every future stage must follow. Design partner: JL, live co-design throughout.
+Status: **active design and implementation handoff**. This replaces the 2026-07-18 handoff.
+The Paper Board is the durable source of decisions and open work; this file is the compact entry
+point for a fresh Codex or Claude Code session.
 
-## Where things stand
+## Objective
 
-- Branch: **`main`** only (local + `origin`; the stale `wip/display-3.5x-unpushed` was deleted — v3.5.1, superseded by main's display v4.1.1 — and `origin/stata-specialists` pruned).
-- This session = one commit: **`9be568f7`** "paper: stage-template charter (C1-C6) + Q-<Stage>-<n> ids + Option A paper-output lettering" — 82 files, scoped to `skills/paper/` only.
-- **The charter hub is `1-lifecycle/TEMPLATES.md`** — the single source of truth for stage-template design. **Read it first.**
-- **5 of 9 stages rolled**: seed · resource · claims · venue · pitch. Remaining: **narrative · display · section-edit · review**.
+Make HAIPipe Paper a compact, Board-first lifecycle system that a fresh session can operate from
+one page without reading a previous transcript:
 
-## The charter — what EVERY stage template must obey (`1-lifecycle/TEMPLATES.md`)
+```text
+Paper Board
+  → choose one S page and one ready item
+  → haipipe-paper-stage resolves the stage contract
+  → a bounded worker performs the work
+  → the result, verification, state, and handoff return to that same page
+  → CHECK stops at a visible human gate
+```
 
-| # | Rule |
+The Board is the control plane. Sessions are replaceable workers. The paper, its queues, comments,
+decisions, previews, and handoffs must remain understandable after any session disappears.
+
+## Read first
+
+Read these in order:
+
+1. `diagram/01-haipipe-paper-260725/board.md` — topic, pipeline, and the complete list of Pages.
+2. The **one Q page you will work on** — read it completely, especially `Items to Finish`,
+   `Where we are`, and `Law`.
+3. `../0_utils/haipipe-board/SKILL.md` — Board grammar and same-turn write-back rules.
+4. `1-lifecycle/haipipe-paper-stage/SKILL.md` — only if the work touches stage execution.
+5. `diagram/01-haipipe-paper-260725/CODEX-SUGGESTIONS.md` — historical consolidation and proposed
+   execution sequence; useful context, but not a runtime contract.
+
+Do not begin by loading every Q page or every stage contract. The Board index chooses the page;
+the stage router chooses exactly one stage.
+
+## Current Board
+
+Path:
+
+```text
+Tools/plugins/haipipe-toolkit/skills/paper/diagram/01-haipipe-paper-260725/
+```
+
+Current shape:
+
+```text
+34 Q pages
+├── 2  ✅ SETTLED
+├── 31 🟡 PARTIAL
+└── 1  🔴 OPEN
+```
+
+The Q groups are:
+
+| Group | Owns |
 |---|---|
-| C1 | Fill-rules live INLINE in `ref/<stage>-template.md` as `<!-- RULE: … -->` comments — follow then DELETE (never ship in the filled doc). The template is the single source of BOTH skeleton and rules; the SKILL never restates fill-rules. No wiki. |
-| C2 | UNIFORM `Q-consumer` section, every stage: `## Q-<Stage>-<n> · <title>` + `Description` / `Reason` / `Answer` — the SAME fields everywhere (the PROBE stage collects every stage's questions through one pipeline). Stage-specific discipline → RULE guidance, not different fields. Every question ANSWERABLE + SPECIFIC (a concrete check, never "is it good?"). |
-| C3 | Question ids are `Q-<Stage>-<n>` (Q-Seed-1, Q-Resource-1, Q-Claim-1, Q-Venue-1, Q-Pitch-1, …). Leading `Q-` = one greppable namespace AND disambiguates from content ids (`Resource 1`, `C1`). |
-| C4 | A question is CITED inline in the sentence it hangs on: `[Q-<Stage>-1]` (forward link); `Reason` names the anchor(s) (back link). M:N allowed — a claim lists many questions; a question may serve many claims. |
-| C5 | DPRC loop: DRAFT drops `[Q-…]` in → PROBE fills `Answer` (evidence, stops there) → REVISE weaves the answer into every citing sentence AND discharges the bracket. Born from content, dies into content. |
-| C6 | Each SKILL states its ONE core question (seed "why might this paper exist?"; resource "does it EXIST + CARRY the claim?"; claims "what do we claim + is it supported?"; venue "which venue + what does it require of the final paper?"; pitch "why would the editor send it out for review?"). |
+| QA | skill package, live paper folder, family layers, compact skill anatomy |
+| QB | stage, DPRC phases, human gate, page grain, venue alignment |
+| QC | authored Content and LaTeX/Word/HTML projections |
+| QD | PROBE evidence boundary, spending ceiling, placeholders |
+| QE | stage contract form and fresh-agent acceptance |
+| QF | shared Board/Paper page ownership, dependencies, state, creation |
+| QG | Board control plane, executable queue, in-item handoff, page-first runner |
+| QH | Content structure, sentence unit, semantic attachments, hover preview |
+| QI | Display ownership, render contract, renderer families, format adapters |
 
-Also binding: **no pipe tables in filled stage docs** (use record lines); **prose-craft (readability) is a SEPARATE `ref/<stage>-readability.md`** for prose-heavy stages only (pitch has one), pointing to the shared REVISE-phase refs — never merged into the template.
+Settled rulings:
 
-## What changed this session (by area)
+- `QC2`: Board tooling owns filenames and resolves pages from stable family + unit identity.
+- `QF2`: the S page's explicit `requires:` is the authoritative dependency declaration.
 
-| Area | Change |
-|---|---|
-| **charter** | new `1-lifecycle/TEMPLATES.md` (C1–C6 + prefix table + live adoption matrix + per-stage notes). Retired the interim template-skill-split doc (JL: rules live in templates, not a wiki). |
-| **seed** (v4.2.0) | template → `<!-- RULE -->` comments; `Probes` → `Q-consumer` (`## Q-Seed-<n>`); NEW `Landscape` section (seed-only); inline `[Q-Seed-1]` citation; PROBE-vs-REVISE loop boundary clarified. |
-| **resource** (v2.3.0) | **description-first reframe**: `Demand` (N-per-hypothesis) → `Resource Description` (`## Resource <n>` + `### topics` + `### Serves & carries`); existence/fitness/**KILLS** discipline kept as RULE; CGM worked-example cut. |
-| **claims** (v5.2.0) | uniform `## Q-Claim-<n>`; **M:N** claim↔question; **answerable+specific** rule (decompose a claim into small typed questions — fit/eval/robustness/placebo); **`Evidence Campaign` section DELETED** (redundant); each claim's `Evidence: [Q-Claim-1 …]` lists its questions; status aggregates. |
-| **venue** (v3.4.0) | **resource-shaped**: 6 blocks → `Venue Decision` · `Relevant Files` (new) · `Requirements` (Structural Blueprint + Writing Principles) · `Q-consumer`; Fit Assessment **pipe table → record lines**; unwrapped the old ```text fence + `#` header. |
-| **pitch** (v4.4.0) | markdown-`##` style → sibling `=====`/`-----`; added `## Q-Pitch-<n>` Q-consumer; **H→RQ pipe table → record lines**; venue-doc reads repointed to the reshaped venue (Venue Decision / Requirements). |
-| **id format** | `<Stage>-Q<n>` → **`Q-<Stage>-<n>`** swept across all done stages + hub (~80 ids). |
-| **Option A — paper-output lettering** | `0-lifecycle/{1-resource,1-claims,2-venue,2-pitch}` → `{1a-resource,1b-claims,2a-venue,2b-pitch}` (fixes the venue<pitch / claims<resource sort order). Swept ~60 skill files incl. `.sh` scripts (`check-probe-cards.sh`). |
-| **venue+pitch skill FOLDERS** | `1-lifecycle/haipipe-paper-venue` → `1-lifecycle/2a-venue/haipipe-paper-venue` (fixed a real folder-DEPTH inconsistency — venue was one level shallow; `../../venue` → `../../../venue`); `2-pitch/` → `2b-pitch/`. Symlinks re-pointed. |
-| **manuscripts migrated** | `Paper-Personality2Opioid-MISQ2026` (1-claims/2-venue/2-pitch → 1b/2a/2b) + `Paper-PhyPatSim` (1-claims → 1b): git mv folders + inner files + content refs. **Uncommitted in their own repos.** |
+Everything else must be treated as provisional until its page reaches `✅ SETTLED`.
 
-## Verified vs NOT verified
+## Design laws already established
 
-**Verified (static):** commit scoped to `skills/paper/` only (0 unrelated files bundled); 0 stale paper-output refs across skills + the 2 papers; `check-probe-cards.sh` reads `1a-resource`; venue's `../../../venue` resolves to the same (absent-in-this-checkout) `venue/` pack dir it always did; the LaTeX compile does NOT read `0-lifecycle/` (folder renames can't break compilation); skill descriptions + symlinks reflect the new paths.
+1. **Board, not CLI, is the user-facing control plane.** A CLI may remain an internal execution
+   mechanism or recovery path.
+2. **The section is `## Pages`.** Older `## Roster` boards remain readable only for compatibility.
+3. **One independently gated lifecycle unit has one canonical S page.** Display and Section can
+   have many pages because their units gate independently.
+4. **Board owns the page shell and filename; Paper owns stage-specific Content composition.**
+   `haipipe-paper-stage/create-page.py` composes the two.
+5. **`## Content` contains the stage's real product.** Contracts, status, queues, comments, and
+   provenance have their own lanes.
+6. **`## Items to Finish` is the page's executable queue.** Do not create a request file for each
+   change.
+7. **A completed item's handoff stays on that item.** For a live stage, do not create
+   `_DISPLAY_REQUEST.md`, `DISPLAY_REQUEST.md`, or a separate Handoff sidecar.
+8. **Evidence enters Paper only through PROBE.** Paper does not recompute values or conduct its own
+   literature search; Task and Discovery own those evidence artifacts.
+9. **Display meaning stays with the consumer; reusable rendering belongs to Display; low-level
+   drawing engines belong to Utils.** A Section points to a stable `display_id`.
+10. **One authored Content source projects into HTML, LaTeX/PDF, and Word.** These are adapters,
+    not three manuscripts maintained by hand.
+11. **Only a human may pass CHECK.** An unattended worker may prepare the gate but cannot write the
+    approval.
+12. **One writer owns one page at a time.** Different pages may be worked concurrently.
 
-**NOT verified (needs a real run):** no paper was DRAFTED through any reshaped template; the reshaped resource/claims/venue/pitch templates were never filled end-to-end; the DPRC citation loop (`[Q-…]` → PROBE → REVISE discharge) is unexercised.
+## What exists now
 
-## How to continue
+- The Paper Board has the full QA–QI question architecture and builds successfully.
+- Board terminology has been migrated from `Roster` to `Pages` across active boards, docs, UI, and
+  Paper integration. Legacy parsing remains.
+- `haipipe-board` is at working-tree version `0.22.0`.
+- `haipipe-paper-stage` is a single router for all eight lifecycle stages:
+  `seed · resource · claims · venue · pitch · narrative · display · section-edit`.
+- `haipipe-paper-stage/create-page.py` exists and delegates page shell and managed contract creation
+  to `haipipe-board/stage.py`.
+- Board stage contracts support explicit `requires:`, `style-from:`, and `provides:` plus stale
+  contract detection and explicit sync.
+- All seven active Boards were rebuilt successfully after the `Pages` migration.
+- A fresh-context agent successfully created and rebuilt a Board using `## Pages`.
 
-1. **Roll the remaining 4 stages** under the charter, in order:
-   - **narrative** — prose-heavy; also give it a `ref/narrative-readability.md` (craft only).
-   - **display** — already has a Q-consumer; check for a pipe table to convert.
-   - **section-edit** — rename its "Questions Raised" → `Q-consumer`. **OPEN DECISION**: per-section id scoping — `Q-Section-<n>` vs a `<Section>`-scoped id (a section stage runs per-section).
-   - **review** — no template exists yet; create one under the charter (or decide it's template-free).
-2. **pitch-readability decision** (JL, 2026-07-18): keep `pitch-readability.md` SEPARATE (prose-craft, not fill-rules); fix its stale `1-pitch.tex` ref; trim the rules that duplicate the REVISE-phase refs (`revise-content/ref/write-principles.md`, `revise-humanizer/ref/pattern-catalog.md`) → point instead. Add a charter line: prose-heavy stages MAY carry `ref/<stage>-readability.md`.
-3. **Commit the 2 manuscript repos** (SELECTIVE staging — each carries pre-existing uncommitted edits, so NOT `add -A`) + **bump the parent `Physician-SPACE` submodule pointers** (Tools → `9be568f7`, plus the 2 migrated paper submodules).
+The `Tools` repository is currently on `main` with substantial **uncommitted** Board and Paper
+work. Preserve it. Do not reset, restore, mass-reformat, or use `git add -A`. Inspect scoped diffs
+before editing.
 
-## Deferred / out of scope
+## What is not finished
 
-- **Manuscript-repo commits + parent pointer bumps** — continue #3 (the papers + tooling are already consistent on disk; this is housekeeping).
-- **Prior 2026-07-17 delivery-side handoff items are STILL OPEN** (a different half of the family, untouched this session) — see below.
+These capabilities are designed on the Board but are not yet complete:
 
-## Prior session — delivery side (2026-07-17), still open
+- the frozen queue-item schema and claim/release behavior (`QG2`);
+- the compact in-item handoff syntax and writer migration (`QG3`);
+- the page-first stage runner and worker routing (`QG4`);
+- Board actions for **Work this item** and **Work this queue** (`QG1`);
+- sentence roles and sibling checks (`QBa3`);
+- citation/value/Display attachment grammar and failure behavior (`QBa4`);
+- citation/value/Display hover cards (`QBa5`);
+- reusable Display request/result schema and package boundary (`QI1–QI3`);
+- semantic table and document adapter interfaces (`QI4`, `QC3`);
+- final Paper skill compaction and live paper scaffold (`QA2–QA4`);
+- a real Paper stage run from a clean context (`QE2`);
+- a real section rendered to HTML, LaTeX/PDF, and Word;
+- an end-to-end run on an actual paper. The Paper stage skill itself records this as its acceptance
+  test.
 
-The previous handoff (in git history, `9be568f7^`) reorganized the DELIVERY side (`3-deliver`, new `haipipe-paper-deliver` umbrella, `EVALUATION.md`, ~1000-line bloat trim) — all **committed but NOT run end-to-end**. Still open there: drive one paper through delivery (scaffold→conform→audit→polish→ship); `haipipe-paper-polish` (the merged 3-pass skill) never executed; `paper-poster` residual (~450 lines to rewrite, not just extract); and the **paper F2 bug** — `haipipe-paper-check` still asserts "DRAFT runs fully automatic", contradicting both DRAFT workers + `probe/haipipe-probe/SKILL.md`.
+Do not report those as implemented merely because their Q pages describe the intended design.
+
+## Recommended continuation order
+
+```text
+QG2 queue contract
+  → QG3 in-item handoff
+  → QG4 page-first runner
+  → QG1 Board controls
+  → QE2 fresh-agent acceptance
+
+QBa3 sentence unit
+  → QBa4 semantic attachments
+  → QBa5 hover previews
+  → QC3 multi-format projection
+
+QI1 ownership
+  → QI2 render contract
+  → QI3 renderer packaging
+  → QI4 adapters
+  → QC3 multi-format projection
+
+QA2 family layers
+  → QA3 compact skill anatomy
+  → QA4 live paper scaffold
+```
+
+Recommended next page: **`QG2-items-are-the-queue.md`**. Freeze the queue contract before writing
+runner code or Board buttons. After QG2, continue to QG3; the runner must not invent either
+contract.
+
+Independent sessions may work on the QG, QH, QI, and QA chains concurrently, but two sessions must
+not edit the same Q page or the same implementation file at the same time.
+
+## Session working protocol
+
+For every continuation session:
+
+1. Read this handoff and `board.md`.
+2. Select one Q page; announce the exact page before changing files.
+3. Read that page completely and work only its unchecked `Items to Finish`.
+4. Inspect existing uncommitted changes in every file you intend to edit.
+5. Update the real implementation or contract; do not only rewrite the Board's proposal.
+6. In the same turn, update the owning Q page:
+   - check only items actually verified;
+   - replace `Where we are` with current truth;
+   - record a concise `Log` entry when useful;
+   - change `state:` only when its finish conditions justify it.
+7. Rebuild the Board.
+8. If any skill changed, run a fresh-context agent test as required by repository `AGENTS.md`.
+9. Stop at a human ruling, spend authorization, unresolved dependency, shared-file collision, or
+   CHECK gate.
+
+Do not create a new Q, design note, request file, or handoff file when an existing owning page can
+hold the work. Add an item or comment to that page instead.
+
+## Validation
+
+Rebuild the Paper Board:
+
+```bash
+python3 Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/build.py \
+  Tools/plugins/haipipe-toolkit/skills/paper/diagram/01-haipipe-paper-260725
+```
+
+Validate the Board skill after Board changes:
+
+```bash
+python3 /Users/jluo41/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board
+```
+
+Check changed source before handoff:
+
+```bash
+git -C Tools diff --check -- \
+  plugins/haipipe-toolkit/skills/0_utils/haipipe-board \
+  plugins/haipipe-toolkit/skills/paper
+```
+
+For a skill revision, static checks are not sufficient. Give a fresh-context agent a realistic
+task, inspect whether it invoked and followed the skill correctly, revise if needed, and repeat.
+
+## Copy-paste prompt for a new session
+
+```text
+Continue the HAIPipe Paper Board work in:
+Tools/plugins/haipipe-toolkit/skills/paper/
+
+First read:
+1. /Users/jluo41/Desktop/Physician-SPACE/AGENTS.md
+2. Tools/plugins/haipipe-toolkit/skills/paper/HANDOFF.md
+3. Tools/plugins/haipipe-toolkit/skills/paper/diagram/01-haipipe-paper-260725/board.md
+
+Then select exactly one existing Q page from the Board and read it completely. Start with
+QG2-items-are-the-queue.md unless I name another page. Work its unchecked Items to Finish,
+inspect and preserve all existing uncommitted changes, update the real implementation plus the
+same Q page, and rebuild the Board.
+
+The Board is the control plane; sessions are replaceable workers. Use ## Pages, not Roster.
+Do not create request or handoff sidecars when an owning page exists. Do not infer dependencies
+from Pages order. Do not claim designed capabilities are implemented without testing them.
+Do not let an agent pass a human CHECK gate.
+
+If you revise a skill, validate it through a fresh-context agent before calling it complete.
+Do not commit, push, reset, restore, or mass-stage unless I explicitly ask.
+```
+
+## Handoff boundary
+
+This file hands off the **Paper skill and its design Board**, not one live manuscript. Work for a
+specific paper belongs on that paper's S pages and queue items. Update this file only when the
+cross-session entry point, continuation order, or system-wide state materially changes.

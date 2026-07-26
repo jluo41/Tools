@@ -5,6 +5,10 @@ key: claims
 order: "1b"
 title: Claims
 one_line: "Which claims are supported, refuted, or inconclusive?"
+board_family: Work
+board_unit: "1"
+board_slug: claims          # family + unit + slug resolve the S-face filename;
+                          # haipipe-board/stage.py owns that resolution (QC2)
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -24,8 +28,11 @@ runs: once
 needs_paper: true
 venue_free: true          # does not change when retargeting to another journal
 
-artifact: 0-lifecycle/1b-claims/1b-claims.md
-log: 0-lifecycle/1b-claims/_LOG_1b-claims.md
+artifact: 0-lifecycle/1b-claims/S-Work-1-claims.md
+artifact_fallback: 0-lifecycle/1b-claims/1b-claims.md
+                          # papers that predate the 2026-07-25 S-face restructure carry
+                          # the stage file under its old name. Use this ONLY when the
+                          # resolved S face is absent, and say which one you used.
 probes: 1-probes/PPNN_<topic>/
 template: template.md
 
@@ -46,7 +53,7 @@ status:                   # THIS STAGE IS THE ONLY HOME OF A CLAIM'S STATUS — 
   vocabulary: [supported, refuted, inconclusive]
   confidence: "per-claim, written beside the status"
   claim_type: [associational, causal, in-sample, generalizing]
-  blocked: "BLOCKED-ON-RESOURCE — cites the resource row it waits on (`-> N<n>` in 1a-resource.md)"
+  blocked: "BLOCKED-ON-RESOURCE — cites the resource row it waits on (`-> N<n>` in S-Work-0-resources.md)"
   written_at: "INTERPRET, when a probe entry's `### a-executor` lands and its a-consumer reads it"
 
 formatting:

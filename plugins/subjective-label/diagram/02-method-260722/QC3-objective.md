@@ -1,51 +1,82 @@
-# 用什么标准挑构念
+# What standard picks a construct
 state: 🔴 OPEN
 owner: JL
-method: 二选一：downstream 预测力 / discriminance（跟兄弟特质分得开）
+method: pick one of two: downstream predictive power, or discriminance (separable from sibling traits)
 
 ## Question
-让多个大模型各提一个构念候选、再自动挑最好的那个 —— 挑的时候用哪个标准（objective）？downstream（标签能不能预测下游结果，比如医生的阿片类处方量）还是 discriminance（这个标签跟兄弟特质分不分得开）？
+When several large models each propose a construct candidate and the best one is then picked automatically, which standard (objective) does the picking use: downstream (can the label predict a downstream outcome, for example a physician's opioid prescribing volume) or discriminance (is the label separable from sibling traits)?
+
+ZD's note-update-v3 Part 2 makes the point that this engine can run near-fully autonomously on exactly one condition, that a stated standard takes the place of a person's judgment.
+Without an objective, "which construct and which label is right" is underdetermined and someone has to rule on it item by item; with one, it turns into a problem that can be optimized and automated.
+The objective is the only human input that full autonomy keeps.
+So while this stays open, QC2's auto-select has nothing to start from, and the scores QB2 produces cannot be judged good or bad.
+The construct the objective picks is an operational construct, not the psychological trait a textbook describes, so the choice made here also decides what the resulting labels may honestly be called.
+This face folded in from item ④ of the 01-license board.
+
+## Boundary
+- ✅ Covered here
+  Which of the two objectives this project declares, downstream or discriminance, and the reason recorded next to the choice.
+- ↪ Covered elsewhere
+  When the human can let go of the loop is QC1, and this ruling is one of the gates it needs; running the auto-select over the remaining thousands is QC2; grading a resulting label set in three layers is QB2; the score awarded by an outside dataset is QB3.
 
 ## Diagram
 ```
-  mode=auto：多个大模型各提一个构念定义 + 各标一批样本
+  mode=auto: several large models each propose a construct definition and each labels a batch
         │
-        ▼  按 objective 打分，挑最高的那个
-     ┌─ downstream    标签能预测下游结果（opioid-Rx 回归）
-     └─ discriminance  标签跟兄弟特质（尽责性/开放性…）分得开
+        ▼  score against the objective, keep the highest
+     ┌─ downstream     the label predicts a downstream outcome (opioid-Rx regression)
+     └─ discriminance  the label separates from sibling traits (conscientiousness, openness, ...)
         │
-        ▼  针对模型之间的分歧再自动打磨
-     选出的构念 = 工程构念（operational），不等于教科书上的那个心理特质
+        ▼  then polish automatically against the disagreements between the models
+     the picked construct = an operational construct, not the psychological trait in the textbook
 
-  ⚠️ objective 是「全自治」唯一保留的人类输入 —— 没有它，「哪个构念/标签对」欠定，必须有人拍。
+  ⚠️ the objective is the one human input full autonomy keeps: without it, which construct
+     and which label is right is underdetermined, and a person has to rule on it.
 ```
 
-## Now
-`lib/construct.py` 两种 objective 都支持了（自测：好的候选赢、冗余/退化的判 0），但**医生这个项目的标准还空着**。
-⚠️ 卡点：CMS 数据是 PHI，`_WorkSpace/1-CMS-Store` 和 `2-Data-Store` 只能待在安全服务器上 —— 笔记本上跑不了真的 downstream，除非找一个能合法搬出来的聚合指标当代理。
+## Items to Finish
+- [ ] 🧠 Pick one of the two and write down why
+      JL names downstream or discriminance for this project and records the reason next to the choice, so this is a call waiting on him, not on more evidence.
+      Both standards are already available in code, so nothing is blocked technically; what is missing is the declaration of what the labels are for in this project, which is what an objective states.
+      Once it is named, construct auto-selection has a criterion to maximize and convergence has something to plateau against; until then every downstream judgment about a candidate is somebody's opinion.
+- [ ] 📉 (a) If downstream is chosen: name the outcome and say how it is computed without moving PHI
+      The choice is only usable once it says which downstream outcome the label is scored against and how that score is produced while the data stays where it must stay.
+      CMS data is PHI: `_WorkSpace/1-CMS-Store` and `2-Data-Store` can only live on the secure server, so a real downstream score cannot be computed on a laptop.
+      The way out, if there is one, is an aggregate measure that may legally be moved out of the secure environment and used as a proxy, which is exactly what this item has to pin down before downstream can be declared.
+- [ ] 🧭 (b) If discriminance is chosen: use it for this round and push downstream to a later board
+      This round runs on discriminance alone, and the downstream question moves to the next board rather than staying open here.
+      Discriminance asks only whether the label separates from sibling traits, which needs no PHI and can therefore run now.
+      Choosing it is the cheaper path and it closes this face for the current round, at the cost of leaving predictive validity unanswered until a later board picks it up.
+- [x] 🛠 `lib/construct.py` implements both objectives and has been self-tested
+      Both objectives are implemented and the self-test behaves: a good candidate wins, and redundant or degenerate candidates score 0.
+      A redundant candidate copies a sibling trait, and a degenerate one is nearly constant, so a scoring rule that could not push both to the bottom would let the auto-selection pick a construct that carries no information.
+      This is the part of the question that is already finished; what remains is not code but the declaration of which objective this project runs on.
 
-## Done when
-- [ ] 二选一并写下理由 —— 🧠 等 JL 拍板
-- [ ] (a) 选 downstream：说明接哪个指标、怎么在不搬 PHI 的前提下算出来
-- [ ] (b) 选 discriminance：这一轮先用它，downstream 推到下一块板
-- [x] `lib/construct.py` 两种都实现并自测过
+## Where we are
+The engine side is done and the project side is empty.
+`lib/construct.py` supports both objectives and its self-test passes, but the standard for this physician project has not been named, so construct auto-selection has nothing to optimize.
+⚠️ The blocker on the downstream branch is that CMS data is PHI: `_WorkSpace/1-CMS-Store` and `2-Data-Store` stay on the secure server, so a real downstream score cannot be run on a laptop unless some aggregate measure that may legally leave the secure environment stands in as a proxy.
 
-## Why here
-Di 的 note-update-v3 Part 2 点破：这套引擎能做到「近乎全自治」，唯一的前提是**有一个标准替代人的判断** ——
-没有 objective，「哪个构念、哪个标签是对的」就是欠定的、必须有人一条条拍；有了它，就变成一个能优化、能自动化的问题。
-所以这一题不定，QC2 的 auto-select 无从下手，QB2 跑出来的成绩也没法判好坏。它从 01-license 的 ④ 折进来。
+## Files
+- `lib/construct.py`
+  It scores construct candidates against an objective and keeps the highest, so whichever standard is chosen takes effect here.
+- `lib/converge.py`
+  It reads `objective_score` when deciding whether a run has converged, which is the second place the same standard is used.
+- `_source/note-update-v3-260721.md`
+  ZD's 2026-07-21 note, whose Part 2, Part 3, and Part 10 are where the objective, the objective-driven construct selection, and the operational-construct boundary come from.
 
 ## Glossary
-objective：挑构念候选、判收敛时用的那个标准（downstream / discriminance / dataset_match）。是这套引擎里不可自动化掉的那一点人类输入。
-downstream：看标签能不能预测下游结果（如医生的阿片类处方量）。
-discriminance：看标签跟兄弟特质分不分得开。
-工程构念 / 理论构念（operational vs theoretical）：objective 挑出来的是「最服务于这个目的的标注」，不一定就是教科书意义上的那个心理特质 —— 除非它另外通过构念效度交叉核对，否则不许直接叫它「开放性」。
+objective: the standard used when picking among construct candidates and when judging convergence (downstream / discriminance / dataset_match); it is the one piece of human input in this engine that cannot be automated away.
+downstream: whether the label predicts a downstream outcome, for example a physician's opioid prescribing volume.
+discriminance: whether the label separates from sibling traits.
+operational vs theoretical construct: what an objective picks is the labeling that best serves the stated purpose, which is not necessarily the psychological trait in the textbook sense; unless it separately passes a construct-validity cross-check, it may not simply be called "openness".
 
 ## Comments
-- [ ] ZD 「唯一保留的人类输入」 · 260721 1400
-      Di note-update-v3 Part 2/3：全流程里需要人的地方只剩三个 —— 说出 objective（每类构念一次，本来就在研究设计里）、给 engine license 签字（引擎一辈子一次）、极端个案人工复核（可选、可关）。其余全自动。这一题就是那三个里的第一个。
-- [ ] ZD 「工程构念（operational），不等于教科书上的那个心理特质」 · 260721 1400
-      Di note-update-v3 Part 10 诚实边界：objective 挑出来的构念要如实报成「工程特征」，不能直接宣称它就是「开放性」；还要防 objective-gaming（自动挑出的构念可能钻 confound 空子 → 用 downstream held-out 兜：换没见过的数据还预测得准吗）。
+- [ ] ZD 「The objective is the only human input that full autonomy keeps.」 · 260721 1400
+      ZD's note-update-v3 Part 2 and Part 3: in the whole flow only three places still need a person, stating the objective (once per construct family, and it is already part of the research design), signing the engine license (once in the engine's lifetime), and manual review of extreme cases (optional, and it can be switched off). Everything else runs automatically. This question is the first of those three.
+- [ ] ZD 「The construct the objective picks is an operational construct, not the psychological trait a textbook describes, so the choice made here also decides what the resulting labels may honestly be called.」 · 260721 1400
+      ZD's note-update-v3 Part 10, the honesty boundary: a construct selected by an objective has to be reported as an engineered feature and cannot simply be claimed to be "openness". It also warns about objective-gaming, since an auto-selected construct can exploit confounds, and the backstop is a downstream held-out: does it still predict on data it has never seen?
 
 ## Log
-260723 1615 · 新建：从 01-license 的 ④ 折入；吸收 Di note-update-v3 Part 2/3/10（objective 是自治的唯一人类输入 + 工程构念诚实边界）
+260725 · rewritten to the current face format in English
+260723 1615 · created: folded in from item ④ of the 01-license board; absorbed ZD's note-update-v3 Part 2, 3, and 10 (the objective is the only human input autonomy keeps, plus the operational-construct honesty boundary)

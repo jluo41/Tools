@@ -4,6 +4,7 @@ import re
 
 from .body import LINKS
 from .common import face_files, sec
+from .stage_contract import contract_status
 
 
 def split_blocks(src):
@@ -58,7 +59,7 @@ def parse_board(board):
 
 
 def parse_doc(d, paths):
-    """Roster `doc:` line -> a doc-slide entry (QF2): the listed files render
+    """Pages `doc:` line -> a doc-slide entry (QF2): the listed files render
     directly on one slide, no Q file involved. id = the first file's parent
     folder when it has one (the folder IS the slide's identity:
     `2b-pitch/PITCH_LOG.md` -> `2b-pitch`; also keeps two `README.md`s from
@@ -88,7 +89,7 @@ def parse_doc(d, paths):
                 sec={})
 
 
-def parse_face(qid, txt, group="", file="", kind="question"):
+def parse_face(qid, txt, group="", file="", kind="question", family=""):
     """One Q/S face (title, meta lines, and ## sections) -> data dict."""
     lines = txt.split("\n")
     i = 0
@@ -96,13 +97,25 @@ def parse_face(qid, txt, group="", file="", kind="question"):
         i += 1
     qt = lines[i].lstrip("# ").strip() if i < len(lines) else qid
     i += 1
-    meta = {"state": "🔴", "owner": "", "method": "", "session": ""}
+    meta = {
+        "state": "🔴",
+        "owner": "",
+        "method": "",
+        "session": "",
+        "requires": "",
+        "style_from": "",
+        "provides": "",
+        "contract_source_hash": "",
+    }
     while i < len(lines) and not lines[i].startswith("## "):
-        m = re.match(r"^(state|owner|method|session):\s*(.*)$", lines[i].strip())
+        m = re.match(
+            r"^(state|owner|method|session|requires|style-from|provides|contract-source-hash):\s*(.*)$",
+            lines[i].strip(),
+        )
         if m:
-            meta[m.group(1)] = m.group(2).strip()
+            meta[m.group(1).replace("-", "_")] = m.group(2).strip()
         i += 1
-    return dict(id=qid, title=qt, group=group, file=file, kind=kind,
+    return dict(id=qid, title=qt, group=group, file=file, kind=kind, family=family,
                 sec=split_sections("\n".join(lines[i:])), **meta)
 
 
@@ -123,11 +136,11 @@ def parse_dir(d):
     """house form: board.md + Q<n>-<slug>.md files in one folder tree.
 
     The Q files ARE the board — binding is by PATH (under the board folder),
-    the way 1-probes/ does it, so a question can never desync from its roster
-    entry. board.md's optional `## 清单` only sets ORDER and GROUPING; a file
+    the way 1-probes/ does it, so a question can never desync from its Pages
+    entry. board.md's optional `## Pages` only sets ORDER and GROUPING; a file
     on disk that nobody listed is still rendered (under ⚠️), never silently
     dropped. Since QC3 a Q file may sit in a subfolder (its home folder); the
-    Roster keeps listing bare filenames.
+    Pages section keeps listing bare filenames.
     """
     bp = d / "board.md"
     board = re.sub(r"^\[BOARD\]\s*\n", "",
@@ -138,16 +151,42 @@ def parse_dir(d):
     disk, dupes = {}, []
     for p in face_files(d):
         qm = re.match(r"Q([0-9][a-z]|[A-Z]*[a-z]?)(\d+)([a-z]?)", p.stem)
-        sm = re.match(r"S(\d+[a-z]?)", p.stem, re.I)
+        full_sm = re.match(
+            r"S-(Seed|Work|Venue|Display|Main|Appendix|Submission)-(\d+|[A-Z])(?:-|$)",
+            p.stem,
+            re.I,
+        )
+        legacy_sm = re.match(r"(SM|SA|S)(\d+[a-z]?)", p.stem, re.I)
+        sm = full_sm or legacy_sm
         if qm or sm:
             if qm:
                 key = (0, qm.group(1), int(qm.group(2)), qm.group(3))
                 face_id = "Q" + qm.group(1) + qm.group(2) + qm.group(3)
                 kind = "question"
+                family = ""
+            elif full_sm:
+                family = full_sm.group(1).lower()
+                unit = full_sm.group(2).upper()
+                family_order = {
+                    "seed": 0,
+                    "work": 1,
+                    "venue": 2,
+                    "display": 3,
+                    "main": 4,
+                    "appendix": 5,
+                    "submission": 6,
+                }[family]
+                unit_key = (0, int(unit)) if unit.isdigit() else (1, unit)
+                key = (1, family_order, *unit_key)
+                face_id = f"S-{family.title()}-{unit}"
+                kind = "stage"
             else:
-                order = re.match(r"(\d+)([a-z]?)", sm.group(1), re.I)
-                key = (1, "", int(order.group(1)), order.group(2))
-                face_id = "S" + sm.group(1)
+                prefix = legacy_sm.group(1).upper()
+                order = re.match(r"(\d+)([a-z]?)", legacy_sm.group(2), re.I)
+                family = {"S": "stage", "SM": "main", "SA": "appendix"}[prefix]
+                family_order = {"stage": 0, "main": 1, "appendix": 2}[family]
+                key = (1, family_order, 0, int(order.group(1)), order.group(2))
+                face_id = prefix + legacy_sm.group(2)
                 kind = "stage"
             if p.name in disk:
                 dupes.append(
@@ -155,14 +194,14 @@ def parse_dir(d):
                     f"({disk[p.name][2].relative_to(d)} and {p.relative_to(d)}); "
                     "keeping the first")
                 continue
-            disk[p.name] = (key, face_id, p, kind)
-    roster_txt = sec(split_sections(board), "Roster")
-    if not disk and not re.search(r"^doc:", roster_txt, re.M):
+            disk[p.name] = (key, face_id, p, kind, family)
+    pages_txt = sec(split_sections(board), "Pages")
+    if not disk and not re.search(r"^doc:", pages_txt, re.M):
         return parse_file(board)        # legacy: everything in one board.md
 
     order, seen, warn, group, gintro = [], set(), dupes, "", {}
     in_fence = False
-    for raw in roster_txt.split("\n"):
+    for raw in pages_txt.split("\n"):
         ln = raw.strip()
         if in_fence:                       # 组介绍里的 ``` ascii 图：整段按原样收，不 strip（保住对齐）
             gintro.setdefault(group, []).append(raw)
@@ -183,7 +222,7 @@ def parse_dir(d):
                 order.append((group, disk[name][2]))
                 seen.add(name)
             else:
-                warn.append(f"{name} is listed in the Roster but no such file exists")
+                warn.append(f"{name} is listed in Pages but no such file exists")
         elif ln.startswith("```") and group:
             in_fence = True
             gintro.setdefault(group, []).append(raw)
@@ -194,19 +233,24 @@ def parse_dir(d):
             # which MAY include a ``` ascii diagram (JL 260724).
             gintro.setdefault(group, []).append(raw)
     listed = bool(order)
-    for name, (key, qid, p, kind) in sorted(disk.items(), key=lambda kv: kv[1][0]):
+    for name, (key, qid, p, kind, family) in sorted(disk.items(), key=lambda kv: kv[1][0]):
         if name not in seen:
             if listed:
-                warn.append(f"{name} is not listed in board.md's ## Roster")
-            order.append(("⚠️ Not in Roster" if listed else "", p))
+                warn.append(f"{name} is not listed in board.md's ## Pages")
+            order.append(("⚠️ Not in Pages" if listed else "", p))
 
     qs = [p if isinstance(p, dict)
           else parse_face(disk[p.name][1], p.read_text(encoding="utf-8"), g,
-                          p.relative_to(d).as_posix(), disk[p.name][3])
+                          p.relative_to(d).as_posix(), disk[p.name][3], disk[p.name][4])
           for g, p in order]
     for q, (g, p) in zip(qs, order):
         if isinstance(p, dict):
             q["group"] = g
+    by_id = {q["id"].casefold(): q for q in qs if q.get("file")}
+    for q in qs:
+        status = contract_status(d, q, by_id)
+        if status:
+            warn.append(status)
     meta = parse_board(board)
     meta["dir"] = str(d.resolve())
     meta["groups"] = {g: ls for g, ls in gintro.items() if ls}

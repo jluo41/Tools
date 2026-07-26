@@ -9,7 +9,7 @@ House form (one face, one file):
     <board-dir>/
       board.md        # title / spine: / close: / source: / ## 主题 / ## 流水线
       Q1-<slug>.md    # title / state: / owner: / method: / ## 问题 ...
-      S0-<slug>.md    # optional lifecycle stage; same grammar + ## Content
+      S-Seed-0-<slug>.md  # optional named lifecycle page; same grammar + ## Content
       Q2-<slug>.md
       board.html      <- generated
 Legacy single-file boards ([BOARD]/[Qn] blocks in one board.md) still build.

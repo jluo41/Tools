@@ -5,6 +5,8 @@ key: display
 order: "4"
 title: Display
 one_line: "What evidence artifacts must the reader SEE, and are they ready?"
+board_family: Display
+board_unit: "0"
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -25,9 +27,14 @@ needs_paper: true
 venue_aligned: true       # rewrite the display set when the paper retargets
 
 artifact: 0-lifecycle/4-display/4-display.md          # THE BRAIN — the only hand-edited stage file
+blocked_on: QB4            # ⚠️ DECLARED DANGLING. On the MISQ pilot this file is archived: its
+                           # displays were split into eleven per-unit S-Display-<n> pages, each
+                           # with its own gate. Repointing `artifact:` means adopting the per-unit
+                           # grain, and `runs:` below still says `once`. QB4 owns that ruling.
+                           # Declared here so check-contracts.py reports this path as KNOWN
+                           # rather than passing silently or failing anonymously.
 generated: 0-lifecycle/4-display/4-display.tex        # gallery, rebuilt wholesale by sync; hand-editing is a defect
 compiled: 0-lifecycle/4-display/4-display.pdf         # compile from the PAPER ROOT so 0-displays/ paths resolve
-log: 0-lifecycle/4-display/_LOG_4-display.md
 inbox: 0-lifecycle/4-display/_DISPLAY_REQUEST.md      # DR rows other stages file; only THIS stage advances their status
 units: 0-displays/displayNN-<slug>/                   # README + float.tex + preview + assets/ candidates/ source/ versions/
 probes: 1-probes/PPNN_<topic>/
@@ -79,11 +86,11 @@ worker_contract: ../../../4-display/ref/display-unit-output-contract.md
                  # from their own folders; all 12 paths rewritten.
 
 # VENUE-ALIGNED. Read the pinned venue contract BEFORE proposing any display:
-#   0-lifecycle/2a-venue/2a-venue.md
+#   0-lifecycle/2a-venue/S-Venue-0-venue.md
 #     · Structural Blueprint -> per-section `Display units` rows = the venue's standard set + hero rule
 #     · Writing Principles   -> the display LIMITS (figure/table caps, table format, color rules)
 # The `[primary]` claim's display is the hero. Fall back to venue/playbook-<venue> `-> Display`
-# ONLY when 2a-venue.md is absent; never silently re-read packs behind a pinned contract.
+# ONLY when S-Venue-0-venue.md is absent; never silently re-read packs behind a pinned contract.
 venue_inputs: [Structural Blueprint display units, Writing Principles display limits]
 
 sections:                 # in order
@@ -113,7 +120,7 @@ done_criteria:
   - "every display block carries claim, takeaway, evidence source, status, caption job, fragility"
   - "no block stuck at `candidates`: a winner is promoted with a recorded why per loser, or the block is parked"
   - "4-display.tex regenerated from the md; 4-display.pdf compiles from the paper root and is current"
-  - "every display referenced in 3-narrative.md; no _DISPLAY_REQUEST.md row left `requested`"
+  - "every display referenced in S-Venue-2-narrative.md; no _DISPLAY_REQUEST.md row left `requested`"
   - "Render & sweep items all terminal (Outcome filled, or struck by the user and logged); no `✋` item run while its gating thread was unruled"
   - "every display carries an independent interrogation verdict (keep-main | keep-supplement | fix | demote | cut)"
   - "checklist.md walked and all items pass"

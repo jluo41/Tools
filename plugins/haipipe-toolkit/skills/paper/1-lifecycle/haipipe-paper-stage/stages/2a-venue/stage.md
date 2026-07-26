@@ -5,6 +5,10 @@ key: venue
 order: "2a"
 title: Venue
 one_line: "Which venue does this paper target, and what does that venue REQUIRE of it?"
+board_family: Venue
+board_unit: "0"
+board_slug: venue          # family + unit + slug resolve the S-face filename;
+                          # haipipe-board/stage.py owns that resolution (QC2)
 
 phases: [draft, probe, check]
                           # THREE phases — no REVISE. Venue produces a CONTRACT (a scored
@@ -30,6 +34,10 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
                            # no gate. Raise it per invocation with `probe --depth N`.
 runs: once
 needs_paper: false        # a bare free-text topic/abstract is a valid input; no folder needed
+venue_role: chooser       # NEITHER venue_free NOR venue_aligned: this is the stage that PICKS
+                          # the venue, so the axis every other stage sits on is the thing this
+                          # one produces. Declared rather than left blank, so a missing
+                          # venue_free/venue_aligned stays a real failure everywhere else.
                           # (with no folder, run --no-pin: there is nothing to write into)
 
 modes:
@@ -40,8 +48,11 @@ modes:
                Writing Principles from current pack state, update the provenance header
                (new venue commit + derived date), log the delta. Never re-opens the choice."
 
-artifact: 0-lifecycle/2a-venue/2a-venue.md
-log: 0-lifecycle/2a-venue/_LOG_2a-venue.md
+artifact: 0-lifecycle/2a-venue/S-Venue-0-venue.md
+artifact_fallback: 0-lifecycle/2a-venue/2a-venue.md
+                          # papers that predate the 2026-07-25 S-face restructure carry
+                          # the stage file under its old name. Use this ONLY when the
+                          # resolved S face is absent, and say which one you used.
 probes: 1-probes/PPNN_<topic>/
 pins: STATUS.md            # `venue: <pack-slug>` (+ optional `venue_outlet: <journal-dir>`)
 template: template.md
@@ -109,14 +120,14 @@ done_criteria:
      `style: — blueprint-only` / `template: — generic-fallback` when the pack lacks that file, so
      'no pack file' is distinguishable from 'not checked'"
   - "at least one Q-Venue-<n> raised or answered (the recent-publications check)"
-  - "every <!-- RULE --> comment deleted from the filled 2a-venue.md"
+  - "every <!-- RULE --> comment deleted from the filled S-Venue-0-venue.md"
 
 upstream: [claims]         # reads 0-lifecycle/{0-seed,1a-resource,1b-claims} when they exist;
                            # a bare topic has none and the profile is built from the text
 downstream: [pitch]
 consumed_by: [pitch, narrative, display, section-edit, revise, revise-results, revise-humanizer]
-                           # the venue-ALIGNED readers. 2a-venue.md is their single consumption
-                           # point; the packs are a FALLBACK only when 2a-venue.md is absent.
+                           # the venue-ALIGNED readers. S-Venue-0-venue.md is their single consumption
+                           # point; the packs are a FALLBACK only when S-Venue-0-venue.md is absent.
 handoff: "on CHECK confirm, write STATUS.md `venue:` (+ `venue_outlet:`) -> pitch, which re-runs
           its [primary] designation, RQ framing, and Editor's Chair Test for this venue"
 ---

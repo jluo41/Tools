@@ -11,14 +11,22 @@ from .page_stage import render_doc_slide
 
 
 def render(meta, qs):
-    # Questions and lifecycle stages share one face grammar, but their progress
-    # answers different things: rulings settle; stages pass a human gate.
+    # Questions and S families share one face grammar, but their progress answers
+    # different things: rulings settle; lifecycle pages pass human CHECK gates.
     qonly = [q for q in qs if q.get("kind") not in ("doc", "stage")]
     sonly = [q for q in qs if q.get("kind") == "stage"]
     done = sum(1 for q in qonly if q["state"].startswith("✅"))
     nq = len(qonly)
-    gated = sum(1 for q in sonly if q["state"].startswith("✅"))
-    ns = len(sonly)
+    sfamilies = [
+        ("seed", "Seed"),
+        ("work", "Work"),
+        ("venue", "Venue"),
+        ("display", "Display"),
+        ("main", "Main"),
+        ("appendix", "Appendix"),
+        ("submission", "Submission"),
+        ("stage", "legacy stages"),
+    ]
     bar = "█" * round(done / nq * 14) + "░" * (14 - round(done / nq * 14)) if nq else ""
     n = len(qs)
 
@@ -110,7 +118,13 @@ def render(meta, qs):
         ctx += (f'<details class="ctx"><summary>🔄 Pipeline — how these Qs are ordered</summary>'
                 f'<div class="fb">{body(meta["pipeline"])}</div></details>')
 
-    stagebar = f' · {gated}/{ns} stages gated' if ns else ""
+    stagebits = []
+    for family, label in sfamilies:
+        faces = [q for q in sonly if (q.get("family") or "stage") == family]
+        if faces:
+            gated = sum(1 for q in faces if q["state"].startswith("✅"))
+            stagebits.append(f"{gated}/{len(faces)} {label}")
+    stagebar = (" · " + " · ".join(stagebits)) if stagebits else ""
     return TPL.format(title=esc(meta["title"]), spine=inline(meta["spine"]),
                       close=inline(meta["close"]), bar=bar, done=done, n=nq,
                       stagebar=stagebar,
@@ -150,7 +164,9 @@ TPL = """<!DOCTYPE html>
 {cards}
 
 <p class="foot">Content comes from <code>board.md</code> (board-level), <code>QX-xxx.md</code>
-(one per ruling), and <code>SX-xxx.md</code> (one per lifecycle stage). Edit those, then rebuild:
+(one per ruling), and named lifecycle pages such as <code>S-Seed-0-xxx.md</code>,
+<code>S-Display-0-xxx.md</code>, <code>S-Main-3-xxx.md</code>, or
+<code>S-Appendix-A-xxx.md</code>. Edit those, then rebuild:
 <code>python3 build.py</code>.<br>Every face is real HTML — the page reads fine
 with JavaScript off; the script only adds commenting.</p>
 </div>{js}</body></html>
@@ -195,7 +211,12 @@ def to_json(meta, qs, warn):
         return dict(id=q["id"], title=q["title"], group=q["group"], file=q["file"],
                     state=q["state"], state_token=tok, state_label=lab,
                     owner=q["owner"], method=q["method"], session=q["session"],
-                    kind=q.get("kind", ""), files=q.get("files", []),
+                    kind=q.get("kind", ""), family=q.get("family", ""),
+                    requires=q.get("requires", ""),
+                    style_from=q.get("style_from", ""),
+                    provides=q.get("provides", ""),
+                    contract_source_hash=q.get("contract_source_hash", ""),
+                    files=q.get("files", []),
                     done=sum(1 for b in boxes if b.lower() == "x"), total=len(boxes),
                     comments_open=sum(1 for c in cms if not c["done"]),
                     comments_total=len(cms),

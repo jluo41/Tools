@@ -180,7 +180,7 @@ def render_doc(text):
 
 
 def render_doc_slide(q, prv, nxt):
-    """One Roster `doc:` entry -> one slide (QF2): the listed source files
+    """One Pages `doc:` entry -> one slide (QF2): the listed source files
     rendered directly, stacked, each under a linked header. No state pill, no
     Items counting, no comment target — the sources stay untouched and the
     slide is a pure view of them."""

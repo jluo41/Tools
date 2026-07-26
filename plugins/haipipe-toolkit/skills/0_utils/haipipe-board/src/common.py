@@ -12,6 +12,7 @@ STN = {k.replace("️", ""): v for k, v in ST.items()}
 # 一个槽位可以有多个段名：规范名 -> [别名…]。中文老名字一直认（老板子不用改就能重新生成），
 # 260723 改版又加了两个新名：Done when -> 「Items to Finish」、Now -> 「Where we are」。
 ALIAS = {"Question": ["Opening", "问题"], "Boundary": ["边界"], "Diagram": ["图"],
+         "Stage Contract": ["Inherited Requirements", "阶段契约"],
          "Content": ["内容"],
          "Files": ["文件"],
          "Done when": ["完成线", "Items to Finish"],
@@ -19,7 +20,8 @@ ALIAS = {"Question": ["Opening", "问题"], "Boundary": ["边界"], "Diagram": [
          "Why here": ["为什么在这块板"],
          "Glossary": ["名词"], "Discussion": ["讨论"], "Comments": ["评论"],
          "Law": ["规矩"], "Lesson": ["教训"], "Log": ["日志"],
-         "Topic": ["主题"], "Pipeline": ["流水线"], "Roster": ["清单"], "Links": ["链接"]}
+         "Topic": ["主题"], "Pipeline": ["流水线"],
+         "Pages": ["页面目录", "Roster", "清单"], "Links": ["链接"]}
 
 
 def sec(d, key):

@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-stage
 description: "One door for every paper lifecycle stage: seed · resource · claims · venue · pitch · narrative · display · section-edit. Reads stages/index.yml, loads ONLY the requested stage's contract, and drives its declared phases. Trigger: 写 seed, 立项, resource, 我们有什么, claims, 主张, H1, venue, 选刊, 投哪个期刊, pitch, 卖点, hook, narrative, 叙事, 大纲, display, 图表, figure, table, section edit, 写某一节, /haipipe-paper-stage."
-argument-hint: "[stage-name] [paper-dir | topic] [draft|probe|revise|check] [stage-args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-07-20"
-  summary: "Stage router. One registered skill replacing 8 per-stage skills; per-stage contract+craft live as DATA under stages/<order>-<key>/stage.md (no name: field, so they do not register). Only ONE stage's file is ever loaded per invocation. All 8 stages migrated; the legacy skills are still on disk and untouched. UNTESTED end-to-end."
+  version: "0.6.0"
+  last_updated: "2026-07-25"
+  summary: "Board-first stage router: Paper is the public page creator; Board owns the shell, filename, pages, and optional inherited contracts."
+  # version history: ./CHANGELOG.md
 ---
 
 Skill: haipipe-paper-stage
@@ -42,6 +42,21 @@ migrated: false  -> Skill("<legacy_skill>", args="<the rest of $ARGUMENTS>") and
 over the per-stage skills this replaces, and it is the specific failure mode this layout exists to
 avoid. One invocation, one stage file.
 
+**Step 2a — ensure this stage's Board page exists.**
+The Paper stage is the only public creator for paper lifecycle pages. Resolve the page by the
+selected contract's stable `board_family` + `board_unit`; do not store or guess a literal
+filename. If the page is absent, create its Board shell and stage-specific Content scaffold with:
+
+```sh
+python3 create-page.py <stage-key> <paper-root>
+```
+
+`create-page.py` selects the stage template, then calls `haipipe-board/stage.py new` for the
+filename, face grammar, listing under Pages, and managed Stage Contract. It does not draft the
+research substance. For a dynamic `runs: per-unit` page, pass the resolved identity and directory
+with `--family`, `--unit`, `--slug`, and `--directory`. Do not create a sidecar request or handoff
+file; unfinished work stays in that page's `## Items to Finish`.
+
 **Step 3 — read the loop, once.**
 The four-phase loop, the gates, and the phase-transition contract are NOT restated per stage.
 They live at:
@@ -60,14 +75,44 @@ not happen.
   `Q-Venue-<n>` entries that PROBE answers, but produces a contract rather than prose, so it has
   no REVISE. Run what the stage declares; never pad a list to four.
 - INVARIANT: `phases` always ends with `check`. That is the human gate.
-- `runs: per-unit` (section-edit) means the phase list runs once PER UNIT, and `$2` is the unit,
-  not the paper dir.
+- `runs: per-unit` means the phase list runs once PER UNIT. Use it when units have independent
+  human gates. Section Edit already implements this grain; Display qualifies by the same rule,
+  but its current central-artifact contract remains `runs: once` until the tracked migration is
+  complete. A stage whose output gates as one thing remains `runs: once`.
 - `commissions:` names worker skills this stage hands units to (display → the four renderers).
   Those workers stay independently registered and are invoked by name.
 - `gates:` declares this stage's HUMAN stops, the same way `phases:` declares its phases. The
   default is `[check]` — ONE gate, at the end. DRAFT, PROBE and REVISE run unattended.
   `1a-resource` is the exception and declares its own, per a standing ruling.
   Never open a gate a stage did not declare, and never skip one it did.
+
+**Step 4a — synchronize the lifecycle board mapping.**
+Each stage contract declares two stable identity fields:
+
+```text
+board_family   stable ownership group: Seed, Work, Venue, Display, Main, or Appendix
+board_unit     the page's unit inside that family
+```
+
+Board tooling owns the filename and resolves it from that identity. These fields do not change
+stage execution order and do not replace `artifact:`. The actual run still follows
+`stages/index.yml`, `upstream`, and `downstream`; for example Narrative is followed by the
+independent Display family before manuscript sections consume its assets. After any phase changes
+the artifact, sync the resolved S face in the same turn: update its `state:`,
+`## Items to Finish`, and `## Where we are`, then rebuild the board. When the S face embeds the
+artifact, do not copy its Content. Submission and revision are downstream board rounds, not extra
+router stages here.
+
+The mapped S face may declare `requires:`, `style-from:`, and `provides:`; all three are optional.
+When present, they are board contracts, not router edges: `requires` is the sole authoritative
+dependency declaration and names upstream outputs this page must honor,
+`style-from` names the venue or project writing contract, and `provides` states the compact
+downstream handoff. A stage contract may carry `read_order:` as optional craft guidance for the
+sequence in which DRAFT opens material; it is not a second dependency graph. Create or refresh the
+managed `## Stage Contract` block with
+`haipipe-board/stage.py`; never copy whole upstream Content, and never let `build.py` edit
+Markdown. If the board reports a stale contract after an upstream change, run explicit
+`stage.py sync` before CHECK.
 
 **Step 4b — the PROBE ceiling.**
 `probe_depth:` is what makes a single CHECK gate safe: PROBE may only dispatch work whose cost
@@ -130,6 +175,7 @@ exists", so on a mature paper it was unreachable for every stage, resource inclu
 ```text
 haipipe-paper-stage/
 ├── SKILL.md                   this file — the only registered skill here
+├── create-page.py             Paper's public creator; composes Board shell + stage scaffold
 └── stages/
     ├── index.yml              the index (small, always read)
     └── <order>-<key>/         one folder per stage
@@ -147,7 +193,7 @@ haipipe-paper-stage/
 Adding a stage = one folder + one row in `index.yml`. No new skill, no version bump, no
 `description` edit.
 
-## Status — v0.4.0, all 8 stages live, CUTOVER DONE, first real run driven 2026-07-21
+## Status — v0.6.0, all 8 stages live, Board-first Seed creation ready
 
 ```text
 ✅ seed · resource · claims · venue · pitch · narrative · display · section-edit

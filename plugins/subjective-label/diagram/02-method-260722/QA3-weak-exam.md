@@ -1,42 +1,70 @@
-# 强模型出答案，弱模型考试
+# The strong model supplies the answers, the weak model sits the exam
 state: 🔴 OPEN
 owner: RA
-method: 弱模型对着规则标 60 条，跟标准答案比
+method: a weak model labels the 60 items from the guideline alone, then is scored against the gallery
 
 ## Question
-一版规则写好之后，怎么知道它「写得够清楚」？
+Once a version of the guideline is written, how do we know it is written clearly enough?
+
+Clarity cannot be read off the guideline by whoever wrote it, and the strong model that produced the gallery cannot grade its own answers either.
+The test JL set is to hand the guideline to a cheap weak model that had no part in writing it, let it label the same 60 items with nothing else to go on, and see whether it lands on the gallery's answers.
+What this exam measures is whether the guideline is clear enough that a different, cheaper model can read it too.
+It does not measure whether two models happen to think alike, which is all that agreement between two peers can show.
+While this stays open the project has no clarity number at all, so a guideline that only reads clearly to whoever wrote it can pass unnoticed, and every later comparison of versions carries that ambiguity forward.
+
+## Boundary
+- ✅ Covered here
+  Weak models label the same 60 items with the guideline as their only instruction, and each one reports a single agreement score against the gallery.
+- ↪ Covered elsewhere
+  Producing those 60 gallery answers in the first place is QA1, the panel labeling independently and reporting only its disagreements is QA2, and whether the labels are correct rather than merely reproducible from the guideline is measured on outside data in QB3.
 
 ## Diagram
 ```
-  强模型（贵）──► 出 60 条标准答案
-  规则（guideline）
+  strong model (expensive) ──► produces the 60 gallery answers
+  guideline
         │
-        ▼  照着规则去标那 60 条
-  弱模型 A ─┐
-  弱模型 B ─┼─► 各自跟【标准答案】比一致度 ──► 各报一个分
-  弱模型 C ─┘        （模型之间不互相比）
+        ▼  label those 60 items by following the guideline
+  weak model A ─┐
+  weak model B ─┼─► each scored against the [gallery] ──► each reports one number
+  weak model C ─┘        (models are never scored against each other)
 
-  连便宜模型照着规则都标得对 = 规则真写清楚了
+  even a cheap model labels them right = the guideline really is written clearly
 ```
 
-## Now
-现在是两个模型平级互评 —— 两个平级模型意见一致，只能说明它俩想法像，说明不了规则写清楚了。
+## Items to Finish
+- [ ] 🧪 Several cheap weak models label the 60 items from the guideline
+      A handful of cheap weak models sit the exam, labeling the same 60 items with the guideline as their only instruction.
+      Cheap is the point here: the expensive strong model is already spent on producing the gallery answers, and what the run has to find out is how much the guideline carries on its own, without the reader supplying the missing judgment.
+      A weak model reading the guideline cold is the closest thing available to a stranger picking the document up.
+- [ ] 📊 Each weak model reports one agreement score against the gallery
+      Every weak model's labels are compared with the gallery and reduced to one number per model.
+      One number per model keeps the result readable: you can see at a glance whether the guideline travels to a labeler that had nothing to do with writing it.
+      This number is the clarity metric, which ZD's note asks to be reported separately from the panel's internal agreement and from correctness.
+- [ ] 🚫 No model is compared with another model
+      Every comparison runs against the gallery; the weak models are never scored against each other.
+      The gallery is the only ruler here because it holds the answers JL confirmed personally, so a score against it means something outside the models.
+      A score of one model against another only measures how similar two labelers are, and it can stay high for reasons that have nothing to do with the guideline.
 
-## Done when
-- [ ] 几个便宜的弱模型照着规则去标那 60 条
-- [ ] 每个弱模型跟标准答案比一致度，各报一个分
-- [ ] 模型之间不互相比 —— 都只跟标准答案比
+## Where we are
+Nothing of this exam has been run yet: no weak model has labeled the 60 items from the guideline alone.
+What runs today is two peer models cross-checking each other.
+When those two agree it tells us the two of them reason alike, which is not evidence that the guideline is written clearly.
 
-## Why here
-JL：拿弱模型去套这份规则、跟标准答案比；模型之间就别互相比了，都跟标准答案比。
-考的是「规则写得清不清楚，换个便宜模型也读得懂」，不是「两个模型碰巧想法一样」。
+## Files
+- `_source/note-update-v3-260721.md`
+  ZD's note of 2026-07-21, whose F4 row is why this face's number is reported as clarity, separately from reliability and correctness.
 
 ## Glossary
-弱模型 / 强模型：能力强的贵模型用来出标准答案，能力弱的便宜模型用来考试。如果连便宜模型照着规则都标得对，说明规则真的写清楚了。
+guideline: the document stating what counts as HIGH, LOW, or NONE, which a model follows when it labels.
+gallery: the set of answers JL personally confirmed, used as the ruler for measuring whether a model labels correctly.
+weak model / strong model: the expensive strong model produces the gallery answers and the cheap weak model sits the exam, so a cheap model labeling correctly from the guideline alone is what shows the guideline is genuinely clear.
 
 ## Comments
-- [ ] ZD 「换个便宜模型也读得懂」 · 260721 1400
-      Di note-update-v3 F4：说得清 ≠ 标得对。三个数要分开报 —— reliability（panel 内部 κ）、clarity（executor-independence，就是这题的弱模型考试）、correctness（只在公开数据上量，见 QB3）。别把「弱模型也标得一致」当成「标得对」。
+- [ ] ZD 「What this exam measures is whether the guideline is clear enough that a different, cheaper model can read it too.」 · 260721 1400
+      From ZD's note-update-v3, row F4: clarity is not correctness.
+      The three numbers have to be reported separately: reliability (the panel's internal kappa), clarity (executor-independence, which is exactly this face's weak-model exam), and correctness (measured only on public data, see QB3).
+      Do not read "the weak models agree too" as "the labels are right".
 
 ## Log
-260723 1600 · 从旧 `[Q3]` 迁入；完成线拆成清单，加 Diagram
+260725 · rewritten to the current face format in English
+260723 1600 · migrated from the old `[Q3]`; the finish line was split into a checklist and a Diagram was added

@@ -1,15 +1,235 @@
-# HANDOFF · S-faces: haipipe-paper-stage and haipipe-board become one format
+# HANDOFF · haipipe-board and the paper lifecycle
 
 Date: 2026-07-25
-From: the session that built the MISQ lifecycle board (QC3 folder-Qs, QB5 src split,
-      QF1 embeds, QF2 doc slides) and then designed S-faces with JL.
-For: the next session (fresh context) that will BUILD the S-face pilot.
-Status of this design: SETTLED in discussion with JL through 2026-07-25, EXCEPT the
-      open items in section 9. Nothing below is implemented yet. No commits anywhere.
+For: the next fresh Codex session
+Status: current resume point; sections 1 onward are a historical design record, not active
+instructions.
 
-READ THIS WHOLE FILE BEFORE TOUCHING ANY FILE. The design went through several
-reversals; earlier ideas (a `stage:` adapter directive, deriving sections at build
-time) are DEAD, superseded by the S-face design in section 4. Do not resurrect them.
+## START HERE
+
+### Goal
+
+One paper lifecycle should be readable and writable through the same Q/S webpage grammar.
+Each S page must show its orientation, inherited contract, substantive Content, finish
+conditions, and current state. Creating a new S page should eventually compose its Content
+blueprint from:
+
+```
+shared board shell
+    + owning Stage template
+    + target Venue template
+    + previous Stage Contracts
+    = explicit, page-owned Content headings in the new Markdown
+```
+
+The composition happens when the page is created. `build.py` stays render-only and must never
+derive or overwrite Content at render time.
+
+### What is complete
+
+- Q and S share one rendered face grammar:
+  `Opening → Stage Contract (S only) → Diagram → Content → Items to Finish →
+  Where we are → Files`.
+- Opening uses a compass. It contains the question/stage lead and optional Boundary.
+  Q rationale becomes Content's open Why this matters; S rationale remains in Opening.
+  An optional S `### Stage Record` also moves into Opening and starts collapsed.
+- Diagram is an independent native disclosure and starts hidden. Its content still survives
+  with JavaScript removed.
+- Q-consumers are checklist records under S Items to Finish. They close only after the answer
+  is interpreted and integrated into Content, or a deferred forward pointer is recorded.
+- Canonical S families are `Seed, Work, Venue, Display, Main, Appendix, Submission`.
+  Display is independent because both Main and Appendix consume it.
+- Roster is navigation only. The paper Pipeline owns execution:
+  `Seed → Work → Venue → Narrative → Display → Main/Appendix → Submission`.
+- The live MISQ lifecycle has `14 Q + 28 S = 42` faces, no parser warnings, no `_LOG_*.md`
+  lifecycle files, and no legacy `S-Work-2` Display references.
+- S metadata supports `requires`, `style-from`, `provides`, and
+  `contract-source-hash`. `stage.py new|sync|check` owns the managed Stage Contract.
+- `stage.py sync --all` follows the explicit dependency graph in topological order, never
+  Roster order. Sync preserves author-owned Content, Items to Finish, Where we are, and
+  `### Provides`.
+- `haipipe-board` is `0.18.0`; `haipipe-paper-stage` is `0.5.0`.
+
+### Current board questions
+
+| Face | State | Progress | Remaining work |
+|---|---|---:|---|
+| QA2 · shared source template | PARTIAL | 6/7 | Materialize composed S Content at creation |
+| QA4 · shared webpage layout | PARTIAL | 16/17 | Same materializer, specified as a four-layer model |
+| QC2 · index design | PARTIAL | 4/8 | Front-page questions, row fields, completion color, three-second priority test |
+| QD2 · board chat | PARTIAL | 16/18 | VS Code extension parity and long-task handling |
+
+QA2 and QA4 intentionally returned from SETTLED to PARTIAL on 2026-07-25. Their final open item
+is real: the composition rule is documented, but `stage.py new` still creates generic Content
+instead of resolving Stage and Venue templates into stage-specific `###` headings.
+
+### Settled composition rule
+
+1. The shared board shell fixes visible page layers; it does not invent disciplinary Content.
+2. The Stage template supplies base subsection jobs, required artifacts, and gate conditions.
+3. The Venue template overlays reader expectations, section conventions, length, terminology,
+   claim boundaries, and writing style. It may refine, but not erase, required stage work.
+4. Previous Stage Contracts contribute accepted inputs and visibly unresolved requirements.
+5. The creator writes the result as explicit direct `###` headings in the new S Markdown.
+6. The new page owns those headings. Later contract sync must not overwrite them.
+
+Stage Contract is dependency and writing provenance. It is not a second live copy of Content.
+Do not copy whole upstream pages into a new page.
+
+### Next implementation task
+
+Implement creation-time Content materialization without changing render-time behavior:
+
+1. Read the real paper Stage templates and the paper-resolved Venue grammar before selecting
+   an API. For the MISQ pilot, start with
+   `0-lifecycle/2a-venue/S-Venue-0-venue.md` under `### Section Styles`; its rows point to the
+   canonical `venue/playbook-utd-is/MISQ/MISQ-<section>/{template,style}.md` sources.
+2. Decide how `stage.py new` receives the Stage and Venue sources. Do not add speculative
+   metadata keys until those source grammars are understood.
+3. Resolve Stage first, Venue second, previous contracts third.
+4. Write stage-specific direct `###` headings and useful guide text into the new Markdown.
+5. Keep `sync` scoped to the managed Stage Contract. Template changes after creation should
+   produce an explicit review/staleness signal, not silently rewrite authored Content.
+6. Add focused tests for precedence, missing sources, venue constraints that conflict with a
+   required stage artifact, and preservation of authored Content.
+7. Run the required fresh-context skill test. When it passes, close the final QA2/QA4 items and
+   return both faces to SETTLED.
+
+### Primary files
+
+```
+Tools/plugins/haipipe-toolkit/skills/0_utils/diagram/
+  handoff.md
+  01-boardform-260722/
+    board.md
+    board.html
+    QA2-qtemplate.md
+    QA4-pagelayout.md
+    QC2-indexdesign.md
+    QD2-chat-sdk.md
+
+Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/
+  SKILL.md
+  stage.py
+  src/stage_contract.py
+  src/parse.py
+  src/page_question.py
+  ref/q-template.md
+  ref/board-form.md
+
+Tools/plugins/haipipe-toolkit/skills/paper/1-lifecycle/haipipe-paper-stage/
+  SKILL.md
+  stages/index.yml
+  stages/<stage>/stage.md
+  stages/<stage>/template.md
+
+Tools/plugins/haipipe-toolkit/skills/paper/venue/playbook-utd-is/MISQ/
+  MISQ-<section>/template.md
+  MISQ-<section>/style.md
+  taste.md
+
+examples/Project-Personality-OpioidRx/papers/
+  Paper-Personality2Opioid-MISQ2026/0-lifecycle/
+    board.md
+    board.html
+    2a-venue/S-Venue-0-venue.md
+```
+
+The paper-specific `S-Venue-0-venue.md` is the primary resolver. Read its already-resolved
+Section Styles rows first. Direct playbook files are the referenced section templates/styles,
+not a replacement for that paper-specific decision.
+
+### First inspection commands
+
+Run these before designing the creation API:
+
+```bash
+sed -n '1,260p' \
+  Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/stage.py
+
+sed -n '1,220p' \
+  Tools/plugins/haipipe-toolkit/skills/paper/1-lifecycle/\
+haipipe-paper-stage/stages/5-section-edit/template.md
+
+sed -n '90,155p' \
+  examples/Project-Personality-OpioidRx/papers/\
+Paper-Personality2Opioid-MISQ2026/0-lifecycle/2a-venue/S-Venue-0-venue.md
+
+sed -n '1,220p' \
+  Tools/plugins/haipipe-toolkit/skills/paper/venue/playbook-utd-is/\
+MISQ/MISQ-results/template.md
+```
+
+### Build and validation
+
+```bash
+python3 Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/build.py \
+  Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722
+
+python3 Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/build.py \
+  examples/Project-Personality-OpioidRx/papers/\
+Paper-Personality2Opioid-MISQ2026/0-lifecycle
+
+python3 Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/stage.py check \
+  examples/Project-Personality-OpioidRx/papers/\
+Paper-Personality2Opioid-MISQ2026/0-lifecycle
+```
+
+The next implementation should add focused stdlib tests at
+`Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/tests/test_stage_content.py`
+and run them with:
+
+```bash
+python3 -m unittest discover \
+  -s Tools/plugins/haipipe-toolkit/skills/0_utils/haipipe-board/tests \
+  -p 'test_stage_content.py'
+```
+
+Required fresh-context validation is a new subagent run, not a shell test. Use this exact prompt:
+
+> Read the revised haipipe-board SKILL.md and q-template with no conversation context. In a
+> temporary board, create one S Results page from a Stage template, a Venue template, and two
+> previous Stage Contracts. Build it, explain the resulting Content headings and precedence,
+> edit one authored Content paragraph, run contract sync, and prove the paragraph survived.
+> Fail if build modified Markdown, Venue erased required stage work, or unresolved previous
+> requirements disappeared.
+
+Current generated results:
+
+- Boardform dogfood: `26 faces`, `281216` plain-text characters survive without JS.
+- MISQ paper: `42 faces`, `14 Q`, `28 S`, `28/28` Stage Contracts, zero warnings.
+- Navigation: `Seed → Work → Venue → Display → Main → Appendix → Submission`.
+- Both local URLs return HTTP 200.
+- No screenshots were used or are needed; validate generated HTML and parser output.
+
+URLs:
+
+- `http://127.0.0.1:5599/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.html#QA4`
+- `http://127.0.0.1:5599/examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/board.html#top`
+
+### Hard boundaries
+
+- Do not infer dependencies or template precedence from Roster order.
+- Do not make `build.py` modify Markdown.
+- Do not overwrite authored Content during contract sync.
+- Do not merge Display back into Work.
+- Do not resurrect short family names such as `SA`, `SM`, or `S4`.
+- Do not restore lifecycle `_LOG_*.md` sidecars.
+- Do not change the legacy paper-stage artifact/log execution contract piecemeal.
+- Do not use screenshots for this work.
+- The worktree contains other user changes. Never revert or clean unrelated files.
+
+### Suggested first prompt for the new session
+
+> Read `Tools/plugins/haipipe-toolkit/skills/0_utils/diagram/handoff.md`, then inspect the real
+> paper Stage and Venue template grammars. Design and implement creation-time S Content
+> materialization in `stage.py new`, keeping build render-only and existing authored Content
+> protected. Finish QA2 and QA4 only after a fresh-context skill test passes.
+
+## HISTORICAL DESIGN RECORD
+
+Everything below preserves how the S-face design was reached. Earlier naming and adapter ideas
+are superseded by START HERE and must not override it.
 
 
 ## 1 · What problem this solves
@@ -71,13 +291,13 @@ Board skill (all board code lives here):
     watch.py            auto-rebuild
     assets/board.css, assets/board.js   inlined at build time
     SKILL.md            version 0.12.0 (a CONCURRENT session bumped it while
-                        building the CMS board 01-cmsdata-260724; re-read SKILL.md
+                        building the CMS board 01-cmsstore-260724; re-read SKILL.md
                         and CHANGELOG.md before bumping again)
     ref/board-form.md   the board grammar spec
     ref/writing-rules.md  cold-read rules
 
 Board-skill's OWN board (dogfood, flat):
-  Tools/plugins/haipipe-toolkit/skills/0_utils/diagram/01-boardform-260722/
+  Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/
     QA1..QF2 faces · board.md · board.html
     QF1-embed.md is 🟡 with "paper-side handshake" open: the S-face design
     SUPERSEDES that handshake item (see section 8, bookkeeping).
@@ -288,7 +508,7 @@ File by file. Everything stays inside src/ plus serve.py's shared imports.
   · q_files(): rglob currently only `Q*.md`; must also yield `S*.md` (same
     segment filter). Watch for collisions: no existing file in either live board
     starts with `S` (verified for 01-boardform-260722 and the MISQ 0-lifecycle;
-    re-verify with a glob before shipping, and check 01-cmsdata-260724 too, the
+    re-verify with a glob before shipping, and check 01-cmsstore-260724 too, the
     CMS board another session built).
 - src/parse.py
   · parse_q() already parses the S-face body correctly (generic section splitter;
@@ -319,7 +539,7 @@ File by file. Everything stays inside src/ plus serve.py's shared imports.
 Regression gates (run ALL before showing JL):
 1. Rebuild the flat dogfood board 01-boardform-260722: byte-identical to before
    your change (it contains no S-faces, so ANY diff is a bug).
-2. Rebuild the CMS board 01-cmsdata-260724 if present: same byte-identical rule.
+2. Rebuild the CMS board 01-cmsstore-260724 if present: same byte-identical rule.
 3. Rebuild the MISQ 0-lifecycle board: 15 Q faces + 8 doc slides + 1 S-face
    (pilot), 0 roster warnings, no-JS assertion passes (build.py asserts it).
 4. `build.py <dir> --json` still emits and the new kind field appears.

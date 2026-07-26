@@ -5,6 +5,10 @@ key: resource
 order: "1a"
 title: Resource
 one_line: "Does what this paper needs EXIST, and can it CARRY the claim?"
+board_family: Work
+board_unit: "0"
+board_slug: resources          # family + unit + slug resolve the S-face filename;
+                          # haipipe-board/stage.py owns that resolution (QC2)
 
 phases: [draft, probe, revise, check]
 probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
@@ -21,8 +25,11 @@ runs: once
 needs_paper: true
 venue_free: true          # does not change when retargeting to another journal
 
-artifact: 0-lifecycle/1a-resource/1a-resource.md
-log: 0-lifecycle/1a-resource/_LOG_1a-resource.md
+artifact: 0-lifecycle/1a-resource/S-Work-0-resources.md
+artifact_fallback: 0-lifecycle/1a-resource/1a-resource.md
+                          # papers that predate the 2026-07-25 S-face restructure carry
+                          # the stage file under its old name. Use this ONLY when the
+                          # resolved S face is absent, and say which one you used.
 probes: 1-probes/PPNN_<topic>/
 template: template.md
 

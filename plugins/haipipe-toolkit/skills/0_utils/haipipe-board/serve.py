@@ -184,7 +184,7 @@ def board_prime_context(board, root):
     lines.append(f"  · Faces ({ndone}/{nall} settled):")
     lines.extend(rows)
     lines.append(
-        "Board-level work is yours: which face to act on next, ## Roster order and "
+        "Board-level work is yours: which face to act on next, ## Pages order and "
         "grouping in board.md, cross-question consistency. Deep work inside one "
         "question belongs to that question's own chat. Read board.md for the full "
         "picture; wait for the user's instruction.")
@@ -202,7 +202,11 @@ def prime_context(f, board, root):
     except ValueError:
         rel = f.name
     txt = Path(f).read_text(encoding="utf-8", errors="ignore")
-    m = re.match(r"(Q[A-Za-z0-9]+)", f.name)
+    m = re.match(
+        r"((?:Q[A-Za-z0-9]+|S-(?:Seed|Work|Venue|Display|Main|Appendix|Submission)-(?:\d+|[A-Z])|S(?:M|A)?\d+[a-z]?))",
+        f.name,
+        re.I,
+    )
     qid = m.group(1) if m else Path(f).stem
     tm = re.search(r"^#\s+(.*)$", txt, re.M)
     title = tm.group(1).strip() if tm else ""
@@ -216,16 +220,16 @@ def prime_context(f, board, root):
         if bm:
             btitle = bm.group(1).strip()
     lines = [
-        "You are opened on ONE question of a haipipe board. Orientation:",
+        "You are opened on ONE face of a haipipe board. Orientation:",
         f"  · Board: {btitle or bname}   (folder: {bname})",
-        f"  · Question: {qid} — {title}",
-        f"  · This question's file (relative to your cwd = the repo root): {rel}",
+        f"  · Face: {qid} — {title}",
+        f"  · This face's file (relative to your cwd = the repo root): {rel}",
     ]
     if qtext:
         lines.append(f"  · What it asks: {qtext[:280]}")
     if nopen:
         lines.append(f"  · It has {nopen} unresolved comment(s) in its ## Comments — read them before acting.")
-    lines.append("Read that file for the full picture. You already know which question and board "
+    lines.append("Read that file for the full picture. You already know which face and board "
                  "this is; wait for the user's instruction.")
     return "\n".join(lines)
 
@@ -255,7 +259,7 @@ CHAT_RULES = """You are attached to ONE question on a haipipe board.
 Your working directory is the WHOLE repo (the SPACE), so you can read any code
 the question touches — not just the board folder. The one question you belong to
 is the file given below (a path relative to the repo root). That board folder
-holds `board.md` (board-level title/spine/roster) and one `QX-<slug>.md` per
+holds `board.md` (board-level title/spine/pages) and one `QX-<slug>.md` per
 question, each with fixed sections:
 ## Question / ## Diagram / ## Done when / ## Now / ## Why here /
 ## Lesson / ## Glossary / ## Discussion / ## Comments / ## Log
@@ -299,14 +303,14 @@ the index page, not one question.
 
 Your working directory is the WHOLE repo (the SPACE), so you can read any code
 the board discusses. The board folder given below holds `board.md` (title ·
-`spine:` · `close:` · ## Topic / ## Pipeline / ## Roster) and one `QX-<slug>.md`
+`spine:` · `close:` · ## Topic / ## Pipeline / ## Pages) and one `QX-<slug>.md`
 or `SN-<slug>.md` per face.
 
 Scope, and it is hard:
   · You may READ anywhere in the repo.
   · You may EDIT ONLY markdown files INSIDE the board folder (board.md and the
     face files). Nothing outside it, and never board.html — it is generated.
-  · Board-level work is yours: which face to act on next, ## Roster order,
+  · Board-level work is yours: which face to act on next, ## Pages order,
     grouping and group intros, cross-question consistency. Deep work inside one
     question belongs to that question's own chat.
   · Every face you change, add one line at the TOP of its ## Log:
@@ -326,8 +330,8 @@ directory is the WHOLE repo (the SPACE) — you have the full toolbelt, may call
 skills, and may reach any file the board is about.
 
 The board folder given below holds `board.md` (title · `spine:` · `close:` ·
-## Topic / ## Pipeline / ## Roster) and one `QX-<slug>.md` or `SN-<slug>.md`
-per face. Board-level work is yours: which face to act on next, the Roster,
+## Topic / ## Pipeline / ## Pages) and one `QX-<slug>.md` or `SN-<slug>.md`
+per face. Board-level work is yours: which face to act on next, the Pages section,
 cross-question edits. Never hand-edit board.html — it is generated. Whatever
 face you change, add one line at the TOP of its `## Log`:
 `YYMMDD HHMM · what changed`. Unresolved comments are
@@ -394,27 +398,31 @@ def structure_op(board, p):
 
     Deliberately module-level and self-free, like the comment writers, so the
     console (boards_api.py) can import it instead of reimplementing (QE3 Law).
-    All edits go through board.md's ## Roster plus the Q files themselves.
+    All edits go through board.md's ## Pages plus the Q files themselves.
     Archive NEVER deletes: files move to _archive/ inside the board folder and
     stay recoverable by hand.
     """
     op = (p.get("op") or "").strip()
     bp = board / "board.md"
     lines = bp.read_text(encoding="utf-8").split("\n")
-    rs = next((i for i, ln in enumerate(lines) if re.match(r"^## Roster\b", ln)), None)
-    if rs is None:
-        return None, "board.md has no ## Roster section"
-    rend = next((i for i in range(rs + 1, len(lines)) if lines[i].startswith("## ")),
+    ps = next(
+        (i for i, ln in enumerate(lines)
+         if re.match(r"^## (?:Pages|Roster)\b", ln)),
+        None,
+    )
+    if ps is None:
+        return None, "board.md has no ## Pages section"
+    pend = next((i for i in range(ps + 1, len(lines)) if lines[i].startswith("## ")),
                 len(lines))
     heads = []                              # (line idx, letter, full heading)
-    for i in range(rs + 1, rend):
+    for i in range(ps + 1, pend):
         m = re.match(r"^### Q([0-9][a-z]|[A-Z]+[a-z]?)\b", lines[i].strip())
         if m:
             heads.append((i, m.group(1), lines[i].strip()[4:].strip()))
 
     def block_end(hi):                      # lines belonging to the group at hi
         j = hi + 1
-        while j < rend and not lines[j].strip().startswith("### "):
+        while j < pend and not lines[j].strip().startswith("### "):
             j += 1
         return j
 
@@ -438,8 +446,8 @@ def structure_op(board, p):
         for ln in (p.get("body") or "").split("\n"):
             if ln.strip():
                 block.append(ln.strip())
-        at = rend                           # append at the section's true tail
-        while at > rs + 1 and not lines[at - 1].strip():
+        at = pend                           # append at the section's true tail
+        while at > ps + 1 and not lines[at - 1].strip():
             at -= 1
         lines[at:at] = block
         write()
@@ -459,7 +467,7 @@ def structure_op(board, p):
         pat = re.compile(rf"^Q{letter}(\d+)")
         nums = [int(mm.group(1)) for f in q_files(board)
                 if (mm := pat.match(f.name))]
-        nums += [int(mm.group(1)) for ln in lines[rs:rend]
+        nums += [int(mm.group(1)) for ln in lines[ps:pend]
                  if (mm := pat.match(ln.strip()))]
         fname = f"Q{letter}{max(nums, default=0) + 1}-{_slugify(title)}.md"
         f = board / fname
@@ -494,8 +502,8 @@ def structure_op(board, p):
             t = t.rstrip("\n") + "\n\n## Log\n" + note + "\n"
         f.write_text(t, encoding="utf-8")
         shutil.move(str(f), str(dest))
-        base = name.rsplit("/", 1)[-1]          # Roster lists bare filenames
-        lines[rs:rend] = [ln for ln in lines[rs:rend]
+        base = name.rsplit("/", 1)[-1]          # Pages lists bare filenames
+        lines[ps:pend] = [ln for ln in lines[ps:pend]
                           if ln.strip() not in (name, base)]
         write()
         return {"file": name, "to": f"_archive/{dest.name}"}, None
@@ -570,6 +578,51 @@ class Handler(SimpleHTTPRequestHandler):
         return (r.stdout or r.stderr).strip()
 
     # ---- the two writes ----------------------------------------------
+    def add_sentence(self, f, p):
+        """➕ on a sentence (QA8, JL 260725): insert `> Lane: text` directly under
+        that sentence in the source md — the same line an author types by hand.
+        Anchor rule = the comment layer's: exact sentence match, miss fails visibly."""
+        lane = re.sub(r"[^A-Za-z0-9-]", "", p.get("lane") or "Note")[:12] or "Note"
+        text = " ".join((p.get("text") or "").split())
+        sent = " ".join((p.get("sentence") or "").split())
+        if not sent or not text:
+            return None, "sentence or text is empty"
+
+        def plain(s):
+            s = re.sub(r"`([^`]+)`", r"\1", s)
+            s = re.sub(r"\*\*((?:(?!\*\*).)+)\*\*", r"\1", s)
+            s = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", s)
+            return " ".join(s.split())
+
+        lines = f.read_text(encoding="utf-8").split("\n")
+        fence, hit = False, None
+        for i, ln in enumerate(lines):
+            if ln.lstrip().startswith("```"):
+                fence = not fence
+                continue
+            s = ln.strip()
+            if fence or not s or s.startswith(("#", ">", "|")) or re.match(r"^[-*]\s", s):
+                continue
+            if plain(s) == sent:
+                hit = i
+                break
+        if hit is None:
+            return None, "这句话在源文件里没找到（可能已被改动）—— 没写入"
+        j = hit + 1                      # append at the END of the existing apparatus run
+        while j < len(lines):
+            if lines[j].lstrip().startswith(">"):
+                j += 1
+                continue
+            if (not lines[j].strip() and j + 1 < len(lines)
+                    and lines[j + 1].lstrip().startswith(">")):
+                j += 1
+                continue
+            break
+        lbl = lane if re.fullmatch(r"[A-Z]{1,4}", lane) else lane[0].upper() + lane[1:].lower()
+        lines.insert(j, f"> {lbl}: {text}")
+        f.write_text("\n".join(lines), encoding="utf-8")
+        return None, None
+
     def add_comment(self, f, p):
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
         quote = " ".join((p.get("quote") or "").split())
@@ -1270,6 +1323,7 @@ class Handler(SimpleHTTPRequestHandler):
         ACTS = {"/_board/comment": self.add_comment,
                 "/_board/resolve": self.resolve,
                 "/_board/discuss": self.add_discuss,
+                "/_board/sentence": self.add_sentence,
                 "/_board/chat": None}
         if self.path not in ACTS:
             return self.reply(404, {"ok": False, "err": "没有这个接口"})
