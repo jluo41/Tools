@@ -8,13 +8,17 @@ When a sentence carries evidence (a citation, a number, a display, a probe bindi
 
 One sentence per source line (0.19.0) made the sentence the board's atomic row, and the paper dialect already writes evidence next to it: `> CHECK:` blocks and `> JL:` / `> CC:` threads sit directly under the sentence they discuss, while placeholders (`\cite{TOADD}`, `{VAL:? …}`, `[Q-Section-n]`) sit inside it.
 Until now the board rendered all of that as loose sibling paragraphs, so a reviewed sentence drowned in its own apparatus.
-JL asked for the sentence to be clickable with the hidden things beneath it (260725, asked in both working sessions); this face is the single ruling both sessions implement against, piloted on this board as the experiment lab before anything touches the MISQ paper board.
+JL asked for the sentence to be clickable with the hidden things beneath it (260725, asked in both working sessions); this page is the single ruling both sessions implement against, piloted on this board as the experiment lab before anything touches the MISQ paper board.
 
 ## Boundary
 - ✅ Covered here
   The apparatus lane grammar (`> Kind:` lines under a sentence), which `>` runs attach and which do not, the ⚑ badge, and the drawer rendering.
 - ↪ Covered elsewhere
   Inline-marker chips (`\citep` resolution, probe-state coloring) are the paper dialect layer, not yet ruled; `QA4` owns the page order the drawer lives in; comment pinning stays `QA6`.
+
+## Diagram
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA8
 
 ## Content
 ### Lane grammar
@@ -68,7 +72,7 @@ The typed lanes are JL's extension of that same convention, proposed in the MISQ
       The ruling this needed is NOT one decision: it is four, one per attachment type, and each has a page that owns it in the paper board's `QC` group.
       `QC1@paper` citation, `QC2@paper` value, `QC3@paper` table, `QC4@paper` figure, over `QC0@paper` which owns the sentence unit itself. Each states its own chip states, its own hover card, and its own write rule, because the four are not symmetric: a citation ends in a `.bib` entry only a human may write, a value binds to a producing run rather than a path, a table is checkable on sight and a figure is not.
       This board keeps the MECHANISM (the fold, the badge, the drawer, the tint, click-to-add). The paper board owns what each marker MEANS and what resolves it.
-      **Partly shipped as of 260726, and this line said the opposite for most of that day.** The `dialect: paper` opt-in exists, `src/dialect_paper.py` is in this skill's own `src/`, `build.py` loads it behind the `dialect:` key, and the MISQ paper board declares it: citations resolve against the `.bib` and `[Q-X-n]` joins against `1-probes/`, with displays named in the module as the remaining slice. Where that code is allowed to live is ruled on the paper board, at `QA6@paper`, which is a ruling about this skill's source tree made somewhere else. It was `QBc5` when this line was written and the paper board re-lettered within the hour; `check.py` caught the dead link on the next run, which is the whole reason the Links are declared.
+      **Partly shipped as of 260726, and this line said the opposite for most of that day.** The `dialect: paper` opt-in exists, `src/dialect_paper.py` is in this skill's own `src/`, `build.py` loads it behind the `dialect:` key, and the MISQ paper board declares it: citations resolve against the `.bib` and `[Q-X-n]` joins against `1-probes/`, with displays named in the module as the remaining slice. Where that code is allowed to live is ruled on the paper board, at `QA4@paper`, which is a ruling about this skill's source tree made somewhere else. It was `QBc5`, then `QA6`, and the paper board has re-lettered twice since this line was written; `check.py` caught the dead link on the next run, which is the whole reason the Links are declared.
       So what is left here is the display half, which is `QC3@paper` and `QC4@paper`. Keep this item open until those two say what to render.
       The pointers were `QCb1`-`QCb4` until the paper board re-lettered on 260726, and this line aimed at the dead ids for a day. All five are declared in `board.md`'s `## Links` now, so a dead one is a click away from being caught.
 
@@ -93,7 +97,7 @@ Reading them in this order gives the whole path: a lane is written by `serve.py`
 - `QA4-pagelayout.md`
   The self-demonstrating "Sentence apparatus" subsection.
 - `QA8a-sentence-chat.md`
-  Whether anything attached this way reaches the chat opened on the same face.
+  Whether anything attached this way reaches the chat opened on the same page.
 
 ## Log
 260725 · copy moved from per-sentence hover to section headings (JL): ⧉ on every section header copies the whole section as plain text, folded parts included

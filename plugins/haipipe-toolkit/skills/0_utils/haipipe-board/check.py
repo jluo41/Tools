@@ -8,7 +8,7 @@ automated and the first should never have needed a human.
 
 What it does NOT do, and cannot:
   · judge whether the prose is readable — that is the cold read
-  · judge whether a page's claims about the code are TRUE. On 2026-07-26 a face
+  · judge whether a page's claims about the code are TRUE. On 2026-07-26 a page
     said the drawer AI had comments "injected into its system prompt"; the
     markdown was flawless, every construct rendered, and the sentence was simply
     false for three days. A structural pass is fully compatible with a page that
@@ -16,7 +16,7 @@ What it does NOT do, and cannot:
 
 Three families:
   BOARD     board.md: Pages against disk, declared Links resolve, ids unique
-  FACE      each Q*/S* md: required sections, state value, references resolve,
+  PAGE      each Q*/S* md: required sections, state value, references resolve,
             one sentence per line, no em-dash, English-only
   PAGE      the built board.html: local hrefs resolve, tags balance, ids unique
   TEMPLATE  render ref/q-template.md as a Q and as an S, then assert each
@@ -42,17 +42,17 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from src.common import ALIAS, face_files  # noqa: E402
+from src.common import ALIAS, page_files  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 STATES = {"✅ SETTLED", "🟡 PARTIAL", "🔴 OPEN", "⏸️ ON HOLD"}
 
-# Sections a face cannot be complete without. Aliases are accepted because old
+# Sections a page cannot be complete without. Aliases are accepted because old
 # boards still use them and ALIAS is the renderer's own table.
 REQUIRED = ["Question", "Done when", "Now"]
 
 # QA9's construct table: source form -> the class the renderer must produce.
-# Kept in this order so the report reads like the table on that face.
+# Kept in this order so the report reads like the table on that page.
 CONSTRUCTS = [
     ("lead is the door",     "details.it.row.qd",  r'<details class="it row qd"'),
     ("Opening never folds",  "div.ch.opening-head", r'class="ch opening-head"'),
@@ -137,7 +137,7 @@ def check_board(d, rep):
 
     # Not every rule is universal. The haipipe-paper board rules that `state:`
     # is about the DECISION and that implementation lives in Items to Finish, so
-    # a ✅ face there legitimately carries unticked boxes. Detected by reading
+    # a ✅ page there legitimately carries unticked boxes. Detected by reading
     # what the board says about itself, which is fragile: a board has no way to
     # DECLARE which rules it opts out of, and that gap is an item on QA9.
     decision_only = bool(re.search(
@@ -148,18 +148,18 @@ def check_board(d, rep):
             rep.add(WARN, "board-missing-key", "board.md",
                     f"no `{key}:` line; the board cannot say what it is for or when it ends")
 
-    faces = {p.name: p for p in face_files(d)}
+    pages = {p.name: p for p in page_files(d)}
     listed = re.findall(r"^([QS][^\s/]*\.md)\s*$", text, re.M)
     for name in listed:
-        if name not in faces:
+        if name not in pages:
             rep.add(ERROR, "pages-ghost", f"board.md -> {name}",
                     "## Pages names a file that is not on disk")
-    for name in sorted(faces):
+    for name in sorted(pages):
         if name not in listed:
             rep.add(WARN, "not-in-pages", name,
                     "on disk but not in ## Pages, so it renders under the ⚠️ group")
     seen = {}
-    for name in sorted(faces):
+    for name in sorted(pages):
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
         if not m:
             continue
@@ -174,10 +174,10 @@ def check_board(d, rep):
         if not (d / target).exists():
             rep.add(ERROR, "dead-link", f"board.md -> {token}",
                     f"declared Link target does not exist: {target}")
-    return faces, links, decision_only
+    return pages, links, decision_only
 
 
-def check_face(path, name, rep, links, face_ids, decision_only=False):
+def check_face(path, name, rep, links, page_ids, decision_only=False):
     text = path.read_text(encoding="utf-8")
 
     for canon in REQUIRED:
@@ -195,16 +195,16 @@ def check_face(path, name, rep, links, face_ids, decision_only=False):
     if not re.search(r"^owner:\s*\S", text, re.M):
         rep.add(WARN, "no-owner", name, "no `owner:` line, so nobody is named as responsible")
 
-    # A face id in backticks should resolve, either to a declared Link or to a
+    # A page id in backticks should resolve, either to a declared Link or to a
     # file on this board. Historical mentions of a retired id look identical to
     # live references today, which is why these are WARN: see the retired-id
     # convention item on QA9.
     for lineno, ln in strip_fences(text):
         for tok in re.findall(r"`([QS][A-Za-z]*\d+[a-z]?(?:@\w+)?)`", ln):
-            if tok in links or tok in face_ids:
+            if tok in links or tok in page_ids:
                 continue
             rep.add(WARN, "unresolved-id", f"{name}:{lineno}",
-                    f"`{tok}` is neither a face on this board nor a declared Link")
+                    f"`{tok}` is neither a page on this board nor a declared Link")
 
     for lineno, ln in strip_fences(text):
         if "—" in ln:
@@ -217,7 +217,7 @@ def check_face(path, name, rep, links, face_ids, decision_only=False):
     #
     # Only inside prose. The `state:` / `owner:` / `method:` header is lowercase
     # and unterminated by design, and a first draft of this rule flagged three
-    # lines on every face for it, which is how a checker teaches people to stop
+    # lines on every page for it, which is how a checker teaches people to stop
     # reading its output.
     prev_open, in_prose = False, False
     for lineno, ln in strip_fences(text):
@@ -262,6 +262,20 @@ def check_face(path, name, rep, links, face_ids, decision_only=False):
     elif st == "✅ SETTLED" and ticked != total:
         rep.add(WARN, "settled-with-open-items", name,
                 f"state is SETTLED with {total - ticked} unticked item(s); on a Q every box must close")
+    # The two staleness shapes, both real: a page that was worked on and never
+    # written back reads OPEN with ticks under it (QA4a said "nothing is built
+    # and nothing is decided" while the thing was running, JL 260726), and a
+    # page that finished and was never closed reads PARTIAL with nothing left.
+    # SKILL.md's `sync` action already requires the write-back; this is the only
+    # thing that notices when a session skips it.
+    elif st == "🔴 OPEN" and ticked:
+        rep.add(WARN, "open-with-done-items", name,
+                f"state is OPEN with {ticked}/{total} item(s) ticked; "
+                "either the state is stale or the ticks are (SKILL.md `sync`)")
+    elif st == "🟡 PARTIAL" and total and ticked == total:
+        rep.add(WARN, "partial-with-nothing-open", name,
+                "state is PARTIAL with every item ticked; either it is SETTLED "
+                "or an item is missing (SKILL.md `sync`)")
     if total == 0:
         rep.add(WARN, "no-items", name, "no checklist at all, so nothing defines done")
 
@@ -304,7 +318,7 @@ def check_page(d, rep):
 
 
 def check_template(rep, quiet):
-    """Render ref/q-template.md as a Q face and as an S face, then assert.
+    """Render ref/q-template.md as a Q page and as an S page, then assert.
 
     The template is the fixture because it is the file authors copy. Checking a
     hand-written specimen would let the template rot while the specimen passed.
@@ -347,10 +361,10 @@ def check_template(rep, quiet):
             del in_src
 
         if 'class="slide q' not in html:
-            rep.add(ERROR, "template-no-face", "ref/q-template.md", "rendered to no face at all")
+            rep.add(ERROR, "template-no-page", "ref/q-template.md", "rendered to no page at all")
         if html.count('class="slide q') < 2:
             rep.add(ERROR, "template-one-mode", "ref/q-template.md",
-                    "the fixture did not render as both a Q face and an S face")
+                    "the fixture did not render as both a Q page and an S page")
 
 
 def main():
@@ -365,14 +379,14 @@ def main():
 
     d = Path(a.board).resolve()
     rep = Report()
-    faces, links, decision_only = check_board(d, rep)
-    face_ids = set()
-    for name in faces:
+    pages, links, decision_only = check_board(d, rep)
+    page_ids = set()
+    for name in pages:
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
         if m:
-            face_ids.add(m.group(1))
-    for name, p in sorted(faces.items()):
-        check_face(p, name, rep, links, face_ids, decision_only)
+            page_ids.add(m.group(1))
+    for name, p in sorted(pages.items()):
+        check_face(p, name, rep, links, page_ids, decision_only)
     check_page(d, rep)
     if not a.no_template:
         check_template(rep, a.quiet)
@@ -383,7 +397,7 @@ def main():
 
     c = rep.counts()
     if not a.quiet:
-        print(f"\n{len(faces)} faces · "
+        print(f"\n{len(pages)} pages · "
               f"{c.get(ERROR, 0)} error · {c.get(WARN, 0)} warn · {c.get(GAP, 0)} gap")
         if not rep.rows:
             print("nothing structural to report. The cold read is the other half; "

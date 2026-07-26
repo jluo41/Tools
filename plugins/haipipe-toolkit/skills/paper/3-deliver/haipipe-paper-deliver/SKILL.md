@@ -25,7 +25,7 @@ The four sub-groups (by verb-intent)
 
 ```
 1-build/    structure the folder, ZERO prose
-   scaffold        plan → conforming empty skeleton (tex + dirs + 1-compile.sh)
+   scaffold        plan → conforming empty skeleton (tex + dirs + 2-src/compile.sh)
    restructure     non-conforming paper → gold layout, prose byte-identical
    conform         conformance audit, report-only
    folder          minimal container (README + STATUS + dirs); the get-or-create bootstrap
@@ -90,9 +90,9 @@ Lifecycle TeX Quality Standard
 
 THE single source of truth for the quality bar every compiled paper `.tex` must meet. Any skill that WRITES or EDITS one of those files — inside this group or upstream in `1-lifecycle/` — meets it at write time and edit time.
 
-Scope: this standard applies to the DISPLAY stage (`0-lifecycle/4-display/4-display.tex`) and the section files (`0-sections/*.tex`) ONLY. All other lifecycle stages are markdown (`<stage>.md` + `_LOG_<stage>.md`) and do not compile.
+Scope: this standard applies to the DISPLAY stage (`0-lifecycle/4-display/4-display.tex`) and the section files (`sections/*.tex`) ONLY. All other lifecycle stages are markdown (`<stage>.md` + `_LOG_<stage>.md`) and do not compile.
 
-Every compiled paper `.tex` (the display stage `4-display.tex` and `0-sections/*.tex`) is a **deliverable**, not a fragment or draft.
+Every compiled paper `.tex` (the display stage `4-display.tex` and `sections/*.tex`) is a **deliverable**, not a fragment or draft.
 
 ### Rules
 

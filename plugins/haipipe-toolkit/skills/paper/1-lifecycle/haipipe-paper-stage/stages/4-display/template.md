@@ -1,10 +1,10 @@
 <!-- TEMPLATE · ONE DISPLAY ASSET = ONE S PAGE.
-     Copy this file to 0-lifecycle/4-display/S-Display-<N>-<slug>.md, fill it, and DELETE every
+     Copy this file to 0-lifecycle/3-display/S-Display-<N>-<slug>.md, fill it, and DELETE every
      RULE comment as you satisfy it. A RULE comment never ships in the filled page.
 
      WHAT CHANGED (2026-07-26): this stage used to emit ONE gallery document holding every
      display as a `### Figure N -- displayNN` block. Displays gate independently, so the unit of
-     work is the asset, not the gallery (QB4). The gallery survives only as the GENERATED
+     work is the asset, not the gallery (QB2). The gallery survives only as the GENERATED
      4-display.tex, which \inputs each unit's float.tex.
 
      WHAT THIS PAGE IS NOT. It does not hold anything true of more than one asset:
@@ -67,10 +67,10 @@ status: <planned | data-ready | candidates | rendered | input-ready | inserted |
          ① means a number was typed by hand, which the output contract forbids. -->
 
 ① run       <task folder that produced the numbers, or "concept (no data)">
-② data      0-displays/displayNN-<slug>/source/source_data.csv
+② data      displays/displayNN-<slug>/source/source_data.csv
 ③ gen code  <see the two shapes below>
-④ result    0-displays/displayNN-<slug>/assets/<figure.pdf | table-body.tex>
-⑤ float     0-displays/displayNN-<slug>/float.tex
+④ result    displays/displayNN-<slug>/assets/<figure.pdf | table-body.tex>
+⑤ float     displays/displayNN-<slug>/float.tex
 ⑥ reader    <S-Main-N> · §<X> P<n>
 
 rebuild: <the one command that regenerates ④, or why it cannot be run here>
@@ -124,13 +124,13 @@ caption job: <what the caption must explain without overclaiming>
 ## Files
 <!-- RULE: name the ARTIFACTS, not the folder. "the unit folder" is not a way to reach anything.
      Cross-page dependencies come after the artifacts. -->
-- `0-displays/displayNN-<slug>/source/gen_<slug>.py`
+- `displays/displayNN-<slug>/source/gen_<slug>.py`
   Regenerates the asset from the snapshot beside it.
-- `0-displays/displayNN-<slug>/source/source_data.csv`
+- `displays/displayNN-<slug>/source/source_data.csv`
   The snapshot this render read. Replaced, never edited.
-- `0-displays/displayNN-<slug>/assets/<asset>`
+- `displays/displayNN-<slug>/assets/<asset>`
   The live asset. `float.tex` is the only thing that references it.
-- `0-displays/displayNN-<slug>/float.tex`
+- `displays/displayNN-<slug>/float.tex`
   Caption, `\label`, and the asset reference. A number typed in here is a defect.
 
 ## Log

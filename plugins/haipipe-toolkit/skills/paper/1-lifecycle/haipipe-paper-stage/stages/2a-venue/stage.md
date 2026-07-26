@@ -48,13 +48,16 @@ modes:
                Writing Principles from current pack state, update the provenance header
                (new venue commit + derived date), log the delta. Never re-opens the choice."
 
-artifact: 0-lifecycle/2a-venue/S-Venue-0-venue.md
-artifact_fallback: 0-lifecycle/2a-venue/2a-venue.md
+artifact: 0-lifecycle/2-venue/S-Venue-0-venue.md
+artifact_fallback: 0-lifecycle/2-venue/2a-venue.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 probes: 1-probes/PPNN_<topic>/
-pins: STATUS.md            # `venue: <pack-slug>` (+ optional `venue_outlet: <journal-dir>`)
+pins: 0-lifecycle/2-venue/S-Venue-0-venue.md   # the pin lives on THIS stage's own S page, in its
+                           # frontmatter: `venue: <pack-slug>` (+ optional `venue_outlet: <journal-dir>`).
+                           # Every reader that used to grep STATUS.md reads it here. One page owns the
+                           # venue contract; a second copy could only disagree with it.
 template: template.md
 
 packs: ../../../../venue/  # the venue knowledge directory: playbook-*/README.md (`-> Claims`
@@ -106,7 +109,7 @@ dispatch_scope:            # venue questions are concrete LOOKUPS, never 'is thi
   - editor-and-competition # who handles this at the outlet; what competing papers are in flight
 
 done_criteria:
-  - "venue pinned in STATUS.md (skipped under --no-pin, which writes nothing anywhere)"
+  - "venue pinned in S-Venue-0-venue.md frontmatter (skipped under --no-pin, which writes nothing anywhere)"
   - "provenance header records pack slug @ venue commit + outlet dir"
   - "Venue Decision carries the pick, 1-2 backups, the nearest rejected + its hard disqualifier,
      the outlet's one-sentence desk test + this paper's answer, and desk-reject risks"
@@ -128,8 +131,9 @@ downstream: [pitch]
 consumed_by: [pitch, narrative, display, section-edit, revise, revise-results, revise-humanizer]
                            # the venue-ALIGNED readers. S-Venue-0-venue.md is their single consumption
                            # point; the packs are a FALLBACK only when S-Venue-0-venue.md is absent.
-handoff: "on CHECK confirm, write STATUS.md `venue:` (+ `venue_outlet:`) -> pitch, which re-runs
-          its [primary] designation, RQ framing, and Editor's Chair Test for this venue"
+handoff: "on CHECK confirm, write `venue:` (+ `venue_outlet:`) into S-Venue-0-venue.md's frontmatter
+          and append the gate row to its ## Log -> pitch, which re-runs its [primary] designation,
+          RQ framing, and Editor's Chair Test for this venue"
 ---
 
 Venue — the craft

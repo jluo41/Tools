@@ -5,6 +5,89 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## [0.27.0] — 2026-07-26
+
+**The excalidraw round-trips: what you draw lands in `fig/board.excalidraw`, and opening another page no longer offers to throw it away.**
+
+JL, on the 0.26.0 build: *"When I edit the excalidraw, the changes won't save. And when I open another new Page, it asks me to reopen again and overwrite the current one. What I added will be gone."* Both symptoms had one cause: the open-source app loads from `#url=` and saves to the browser, so the file was in the loop at neither end.
+
+- **`assets/xcal-boot.js`, injected by the proxy.** `proxy_excalidraw()` now rewrites the
+  app's HTML to add one classic `<script>` in `<head>`, which is the only window in
+  which `localStorage` can be replaced (a module script is deferred; a classic one in
+  head is not). The script seeds the editor from the scene file and, in the editing
+  tab, pushes changes back. `#url=` is gone, so the "Replace my content" dialog has
+  nothing to confirm and never appears.
+- **The URL changed**: `?board=<scene>&frame=<page>` replaces `#url=…`. `xcal.py --wire`
+  writes the new form; `board.md`'s `excalidraw:` line is unchanged.
+- **`POST /_board/excalidraw-save` MERGES.** With `frame=`, only that frame's slice is
+  replaced and the other 27 are left byte-identical, which is what lets one file be
+  edited from any page. The frame's id and name are forced back on save because the
+  name IS the page's link; a deleted frame is restored; deleted elements are dropped;
+  the write is atomic. Without `frame=`, the whole scene is replaced.
+- **An embed reads, a tab writes.** A board page carries one iframe per page, all on one
+  origin sharing one storage key, so an editable embed would be 28 editors overwriting
+  each other and then reading the result back as their own. An embed gets an in-memory
+  storage and persists nothing; "✏️ Edit this frame" opens the one tab that writes, and
+  a lock in real storage keeps it to one tab (a second drops to read-only and says so).
+  The app REFUSES to restore `viewModeEnabled` from storage, found by reading its own
+  per-key policy table; `activeTool` and `zenModeEnabled` do restore, and a locked hand
+  tool is better anyway because panning and zooming still work.
+
+Verified server-side over HTTP (a rectangle drawn into QB3 lands in that frame, the
+other 27 slices compare identical, an unknown frame name and a path outside `--root`
+are both refused) and client-side against a stubbed browser, 22 assertions covering
+both modes, the save payload, the idle tick, and lock contention. **Not yet exercised
+in a real browser**: no browser was reachable from the session that wrote it.
+
+⚠️ Two edges left, both on `QA4a`: a pasted IMAGE does not survive, because Excalidraw
+keeps images in a `files` map and the endpoint writes `elements` only; and editing the
+seeded ASCII text in Excalidraw is reverted by the next `xcal.py` run, since that text
+is a generated element (drawings around it are kept).
+
+## [0.26.0] — 2026-07-26
+
+**A board owns one excalidraw, a page owns one frame in it, and the frame opens onto the figure that page already had.**
+
+- `xcal.py <board-dir>`: builds `fig/board.excalidraw` from `board.md` and the pages.
+  One scene, one frame per page, one row per `## Pages` group with the group's name
+  above it, each frame sized to what it holds. `--wire` also puts every frame's URL
+  into its page's `## Diagram`, replacing whatever was there. It is a separate script
+  from `build.py` on purpose: `build.py` runs on every file save and a scene regen
+  must not.
+- **Frames are seeded** with each page's first `## Diagram` fenced block, as one
+  monospace text element. JL opened `?frame=QB3` on 260726 and found a blank
+  rectangle, which is exactly what had been built: 28 named frames with nothing in
+  them. A scaffold and its content are two deliverables and only the second one is
+  visible, so shipping the first reads as a broken feature. The seed is ONE-WAY;
+  the markdown stays the source, and 25 of 28 pages had a figure to give.
+- **Re-running is safe**, which is the only reason it is a script. Every minted id is
+  prefixed (`frame-QA4a`, `t-QA4a-fig`) so a regen renames nothing and no page's link
+  dies; an unprefixed id is a human's drawing and is carried through; a frame a human
+  moved keeps its position; a prefixed frame whose page has been retired is DROPPED,
+  which is `QA4a`'s dead-frame rule. Verified by injecting both cases. `--fresh` is the
+  one destructive mode and is never the default. Overlapping frames are reported,
+  since a kept position plus a recomputed width can collide.
+- `check.py` gained `open-with-done-items` and `partial-with-nothing-open`. SKILL.md's
+  `sync` action has always required writing a page back in the same round; nothing
+  ever noticed when a session skipped it. `QA4a` said "nothing is built and nothing is
+  decided" on the day its whole route was built and running (JL 260726: think about
+  how to update the related Q along the session). The check only sees `state:` and the
+  boxes, so it is a backstop under the rule, not a replacement for it.
+- SKILL.md: an `excalidraw` action, and `sync` now says the trigger is **substantive
+  work in the session**, not opening a page. Every piece of real work belongs to some
+  page even when it started as a line of chat, and work that belongs to no page is a
+  new page. "Done" means written back.
+
+⚠️ **Not closed: the write-back.** `#url=` loads, the editor saves to the browser, so
+nothing drawn returns to `fig/board.excalidraw`. The scene is a view of the markdown
+and not yet a place to work.
+
+🩹 One regex cost four pages. `^\s*<url>\s*$` looks line-anchored and is not, because
+`\s` spans newlines: it ate the blank lines around the URL, and an off-by-one on
+`hit.end()` took the `#` of the next heading with it, welding `## Diagram` to the URL
+on three pages and giving a fourth two `## Diagram` sections. All four were repaired
+and `--wire` now rebuilds the section instead of splicing into it.
+
 ## [0.25.0] — 2026-07-26
 
 **A board can now be checked, and an author note finally behaves the way the template said it did.**

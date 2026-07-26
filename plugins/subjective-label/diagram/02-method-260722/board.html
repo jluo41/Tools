@@ -781,14 +781,22 @@ details.gi summary:hover{color:var(--fg)}
    The @supports test is `anchor-name`, the actual feature, not one spelling of
    one of its properties: Chrome 125-128 shipped this as `inset-area`, and both
    spellings are emitted because an unknown declaration is ignored on its own. */
-@supports (anchor-name:--a){
-  .chipcard{
-    position:fixed;
-    inset:auto;                       /* ① release the UA's inset:0 */
-    margin:0;
-    inset-area:block-end span-inline-end;      /* Chrome 125-128 */
-    position-area:block-end span-inline-end;   /* current name */
+/* Test the property that actually POSITIONS, not the one that names the anchor.
+   The first version tested `anchor-name` and then relied on `position-area`. A
+   browser with anchor-name but without position-area passed the test, took
+   `inset:auto`, and had nothing left to place the panel with, so it landed
+   wherever its static position fell: off-screen. Each override below is guarded
+   by the exact property it uses, and the unguarded base stays centred. */
+@supports (position-area:block-end){
+  .chipcard{position:fixed;inset:auto;margin:0;
+    position-area:block-end span-inline-end;
     position-try-fallbacks:flip-block,flip-inline;
+    max-height:min(60vh,34em);overflow:auto;
+    max-width:min(38em,calc(100vw - 2rem))}
+}
+@supports (inset-area:block-end) and (not (position-area:block-end)){
+  .chipcard{position:fixed;inset:auto;margin:0;
+    inset-area:block-end span-inline-end;
     position-try-options:flip-block,flip-inline;
     max-height:min(60vh,34em);overflow:auto;
     max-width:min(38em,calc(100vw - 2rem))}
@@ -826,6 +834,38 @@ details.gi summary:hover{color:var(--fg)}
 .ccref{font:14px/1.6 Charter,"Bitstream Charter",Georgia,Cambria,serif;
   padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
   text-indent:-1.4em;padding-left:calc(11px + 1.4em)}
+/* ── the NUMBER is the claim; the bracket is the bookkeeping (JL 260726) ─────
+   Before this, [Q-Section-2] was the loud thing in a sentence and the figure it
+   owed was plain grey text. Backwards: a reader checks the number. So a number
+   chip is the prominent one and .qref is demoted to a quiet trailing marker. */
+.chip.num{font:600 .95em/1.4 var(--mono,ui-monospace,Menlo,monospace);
+  padding:1px .4em;border-radius:3px}
+.chip.num::before{content:none}
+.chip.num.ok{background:color-mix(in srgb,var(--done) 16%,transparent);
+  border-color:color-mix(in srgb,var(--done) 42%,transparent)}
+.chip.num.ok::after{content:" ✓";font-weight:400;opacity:.75}
+/* unver = not checkable, NOT wrong. A derived percentage or a chosen threshold
+   will never appear in a run. Quiet, dotted, no alarm colour. */
+.chip.num.unver{background:transparent;color:var(--mut);
+  border:0;border-bottom:1.5px dotted var(--mut);border-radius:0}
+.chip.num.unver::after{content:" ?";font-weight:400;opacity:.7}
+/* amb = it rounds to two DIFFERENT recorded figures. The number may be right
+   and its provenance is not determinable, which is worth a real warning. */
+.chip.num.amb{background:color-mix(in srgb,var(--wip) 16%,transparent);
+  color:var(--wip);border-color:var(--wip);font-weight:700}
+.chip.num.amb::after{content:" ⁉";font-weight:400}
+.chipcard.amb{border-left-color:var(--wip)}
+.chipcard.unver{border-left-color:var(--mut)}
+/* the bracket, demoted: still clickable, no longer the thing you look at */
+.chip.qref{font-size:.72em;padding:0 .3em;opacity:.62;background:transparent;
+  border-color:color-mix(in srgb,var(--mut) 30%,transparent);color:var(--mut)}
+.chip.qref::before{content:"🎯";font-size:.85em;opacity:.8}
+.chip.qref:hover{opacity:1}
+.chip.qref.unowned{opacity:1;color:var(--todo);border-color:var(--todo)}
+
+/* A figure in the body: an excalidraw drawing, a screenshot, anything ![](…) */
+.fig{max-width:100%;height:auto;display:block;margin:12px 0;
+ border:1px solid var(--line);border-radius:var(--radius-surface);background:var(--card)}
 </style></head><body class="single" data-board="/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/subjective-label/diagram/02-method-260722"><div class="wrap" id="top" data-bsession="">
 
 <h1 class="h1">Subjective labeling: the method, the engine, and a score we did not award ourselves</h1>
@@ -853,7 +893,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 <p>The two layers interlock. QB1 picks hard cases by standing on QD1; the implementation of QC2&#x27;s &quot;let a small classifier take over&quot; is QD3; the cascade&#x27;s Tier 0 in QD2 is QD1 itself; and QC3&#x27;s construct standard is one of the gates QC1 needs before a human can let go.</p>
 <p>QC3, QD4, and the ZD comments distributed across the other faces (F1 to F8) all come from <a class="fp" href="_source/note-update-v3-260721.md"><code>note-update-v3</code></a>; the former 01-license board folded into this one and was deleted.</p></div></details>
 
-<h3 class="sec" id="qlist">ALL FACES<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>
+<h3 class="sec" id="qlist">ALL PAGES<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>
 <div class="idx"><div class="grp" data-g="QA · Method: the labeling loop settled in the meeting"><span class="gt">QA · Method: the labeling loop settled in the meeting</span></div>
 <div class="gi one">How the first labels come into existence at all, before any gallery or guideline exists.</div>
 <a class="ir todo" href="#QA1" data-f="QA1-coldstart.md" title="0% done"><span class="s">🔴</span><span class="i">QA1</span><span class="t">Cold start: talk first, do not force-label</span><span class="w">🔧 RA</span></a>
@@ -1183,7 +1223,7 @@ QD · engine         answers the &quot;does the code do it&quot; half of the spi
 (one per ruling), and named lifecycle pages such as <code>S-Seed-0-xxx.md</code>,
 <code>S-Display-0-xxx.md</code>, <code>S-Main-3-xxx.md</code>, or
 <code>S-Appendix-A-xxx.md</code>. Edit those, then rebuild:
-<code>python3 build.py</code>.<br>Every face is real HTML — the page reads fine
+<code>python3 build.py</code>.<br>Every page is real HTML — the page reads fine
 with JavaScript off; the script only adds commenting.</p>
 </div>
 <script>
@@ -1653,8 +1693,8 @@ with JavaScript off; the script only adds commenting.</p>
   function wireXcal() {
     document.querySelectorAll('details.diagram-section').forEach(function (sec) {
       if (sec.querySelector('.xadd')) return;
-      var face = sec.closest('section.slide.q');
-      if (!face || !face.dataset.file) return;
+      var page = sec.closest('section.slide.q');
+      if (!page || !page.dataset.file) return;
       var dia = sec.querySelector('.dia');
       if (!dia) return;
       var has = !!sec.querySelector('.xcal');
@@ -1683,7 +1723,7 @@ with JavaScript off; the script only adds commenting.</p>
         if (!url) { inp.focus(); return; }
         ok.disabled = true; err.textContent = '…';
         var j = null;
-        try { j = await post('/_board/diagram', { file: face.dataset.file, url: url }); }
+        try { j = await post('/_board/diagram', { file: page.dataset.file, url: url }); }
         catch (e) { j = null; }
         ok.disabled = false;
         if (j === null) {
@@ -1899,11 +1939,11 @@ with JavaScript off; the script only adds commenting.</p>
   
   var BOARDFIX =
     'You are on the WHOLE board. Work through every unresolved comment (`- [ ]`) ' +
-    'in the ## Comments of EVERY face file on this board. For each one:\n' +
-    '1. Edit that face\'s body the way the comment asks;\n' +
+    'in the ## Comments of EVERY page file on this board. For each one:\n' +
+    '1. Edit that page\'s body the way the comment asks;\n' +
     '2. Flip that line to `- [x]` and reply on an indented line below it with ' +
     '`>> CC<MMDD>: what you did`;\n' +
-    '3. Add one line at the TOP of that face\'s ## Log: `YYMMDD HHMM · what changed`.\n' +
+    '3. Add one line at the TOP of that page\'s ## Log: `YYMMDD HHMM · what changed`.\n' +
     'If you cannot do one, or disagree, do NOT flip it to [x] — write why underneath.\n' +
     'End with a short per-file summary of what you changed.';
 
@@ -1925,7 +1965,7 @@ with JavaScript off; the script only adds commenting.</p>
                function () { chatSend(isBoard ? BOARDFIX : FIXALL); }, true);
     if (isBoard) {
       add('🧭 Which question should I act on?', function () {
-        chatSend('Answer only, do not edit any file: which face on this board should ' +
+        chatSend('Answer only, do not edit any file: which page on this board should ' +
                  'be acted on next, and why? Consider state, unchecked items and open ' +
                  'comments. Give 1-3 candidates, one line each: id · reason.');
       });
@@ -2743,15 +2783,18 @@ document.addEventListener('click', function (ev) {
   });
 })();
 
-/* A chip inside a sentence's <summary> would toggle that sentence's drawer on
-   the way to opening its own panel. The panel is native and opens either way;
-   this only stops the drawer from flapping. Enhancement only: with scripts off,
-   both simply happen, and the panel content is still real body text. */
-(function () {
-  document.addEventListener('click', function (e) {
-    var c = e.target.closest && e.target.closest('button.chip');
-    if (c && c.closest('summary')) e.preventDefault();
-  });
-})();
+/* A chip inside a sentence's <summary> also toggles that sentence's drawer on
+   its way to opening its own panel. That is left alone ON PURPOSE.
+
+   The first version called e.preventDefault() here to stop the drawer flapping.
+   Showing a popover IS the button's default action, so that cancelled the panel
+   as well: on every sentence carrying a `>` lane, clicking a chip did nothing at
+   all. A cosmetic guard silently disabled the feature it was decorating, and it
+   only showed up on the composite example, where every chip sits in a lane.
+
+   Opening the drawer is not a defect anyway: the lane under the sentence holds
+   the same evidence the panel is about, so getting both is better than either.
+   If this ever does need suppressing, it must NOT use preventDefault; restore
+   `details.open` on the next animation frame instead. */
 </script>
 </body></html>

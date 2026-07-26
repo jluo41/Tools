@@ -8,16 +8,16 @@ A paper is a delivery contract, not a writing folder. It owns one manuscript's s
 
 ```text
 <paper-root>/
-├── STATUS.md                current layer, maturity, active round
+├── 0-lifecycle/board.md                current layer, maturity, active round
 ├── 0-<paper>.tex/.bib       main manuscript shell
 ├── 0-lifecycle/              maturation spine (md + _LOG; display = tex + pdf)
 │   ├── 0-seed/  1a-resource/  1b-claims/  2b-pitch/  3-narrative/  4-display/  5-editing/
-├── 0-sections/               manuscript prose .tex
-├── 0-displays/displayNN-*/   figure/table units
+├── sections/               manuscript prose .tex
+├── displays/displayNN-*/   figure/table units
 ├── 1-probes/PPNN_<topic>/   the paper's questions, one ENTRY each -> bound BY PATH to a QA file
 ├── 0-lifecycle/7-round/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 ├── 1-config.yaml
-└── 1-compile.sh
+└── 2-src/compile.sh
 ```
 
 `0-` = source of truth (content). `1-` = process (build + revise).
@@ -163,7 +163,7 @@ Maturity answers "how real is the paper?"
 |---|---|
 | `1-feedback/` | `0-lifecycle/7-round/` |
 | `architecture-minimap`, `paper-plan`, `display-contract`, `5-minimap` | `1b-claims`, `3-narrative`, `4-display`, `5-section-edit` |
-| `0-displays/Figures/` `Tables/` buckets | `0-displays/displayNN-<slug>/` |
+| `displays/Figures/` `Tables/` buckets | `displays/displayNN-<slug>/` |
 | project-level narrative coordination | paper owns its story; gaps route to probe |
 | `haipipe-paper-{conference,journal,is}` | `venue/playbook-<venue>` + lifecycle verbs |
 | `haipipe-paper-{create,revise}` | `haipipe-paper-stage/stages/5-section-edit/` (drives the DRAFT/REVISE phases) |

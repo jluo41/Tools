@@ -70,16 +70,19 @@ def code_or_link(m):
 # that does not declare `dialect: paper` never pays for any of this.
 PAPER = None
 
+# The board's own Excalidraw host, set per build from board.md's `excalidraw:` key.
+EXCAL_HOST = ""
+
 # Every paper marker in ONE alternation, so a single left-to-right pass
 # consumes each one exactly once and nothing a chip emits is ever re-scanned.
 #   1 keys  2 qid   \citep{a,b} · \cite{TOADD} [Q-Section-4]
 #   3 desc  4 qid   {VAL:? what the number is} [Q-Section-4]
 #   5 qid           a bare [Q-Section-4], which the other two did not claim
-#   6 did           displayNN, with or without its slug. The S-Display faces
+#   6 did           displayNN, with or without its slug. The S-Display pages
 #                   write the SHORT form ("registry id display02"); a Section
 #                   writes the long one. Both name the same unit.
 #   7 label         \ref{tab:…} / \autoref{fig:…}, the LaTeX form
-#   8 label         a bare tab:… / fig:… label, which is how a face names a
+#   8 label         a bare tab:… / fig:… label, which is how a page names a
 #                   float without writing LaTeX. Not inside \label{}.
 # The bracket sits BESIDE its marker and is never fused into it.
 # The display id is fenced by lookarounds so `0-displays/display02-x/float.tex`
@@ -164,9 +167,13 @@ def _sources(meta):
         where = f"{e.path.name}:{e.line}"
         out.append(f'<a class="fp" href="{esc(href)}">📄 {esc(where)}</a>'
                    if href else f"<span>📄 {esc(where)}</span>")
-    for lbl, href in meta.get("links", []):
+    for item in meta.get("links", []):
+        # (label, href) or (label, href, glyph). The glyph is how a SEARCH link
+        # is told apart from an identifier at a glance, without a second row.
+        lbl, href = item[0], item[1]
+        icon = item[2] if len(item) > 2 else "🔗"
         out.append(f'<a class="fp" href="{esc(href)}" target="_blank" '
-                   f'rel="noopener">🔗 {esc(lbl)}</a>')
+                   f'rel="noopener">{icon} {esc(lbl)}</a>')
     for rel, path in meta.get("files", []):
         href = _rel(path)
         out.append(f'<a class="fp" href="{esc(href)}">📄 {esc(rel)}</a>'
@@ -265,6 +272,23 @@ def note(s):
         NOTE = prev
 
 
+def note_body(txt, **kw):
+    """body() for narration ABOUT the work (`## Log`): same rendering, no chips.
+
+    Same ruling as the discussion lanes, for the same reason. A log line QUOTES
+    markers while explaining what changed; it does not make the claim. Left
+    chipped, a line saying "the composite named [Q-Section-7] while its
+    explanation named [Q-Section-1]" scopes number-chipping across the whole
+    line, and its own DATE came out as an unverified measurement (260726).
+    """
+    global NOTE
+    prev, NOTE = NOTE, True
+    try:
+        return body(txt, **kw)
+    finally:
+        NOTE = prev
+
+
 def _cite(keys_raw, qid, raw):
     keys = [k.strip() for k in keys_raw.split(",") if k.strip()]
     out, took_q = [], False
@@ -324,7 +348,7 @@ def _number(raw, pct, qid):
 
 
 def _kind(u, fallback_label=""):
-    """A table and a figure are two faces (QC3, QC4) because a reader can check
+    """A table and a figure are two pages (QC3, QC4) because a reader can check
     a table on sight and cannot check a figure at all, so the chip says which
     BEFORE the state. When the unit is unknown the label prefix is the only
     hint there is, and an unresolved marker still deserves the right icon."""
@@ -388,9 +412,23 @@ def cite_chips(s):
 def inline(s):
     s = esc(s)
     s = re.sub(r"`([^`]+)`", code_or_link, s)
-    s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a class="fp" href="\2">\1</a>', s)
-    s = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", s)
-    s = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", r'<img alt="\1" src="\2">', s)
+    # The next three run OUTSIDE code spans only. `code_or_link` has already
+    # emitted <code>…</code>, and a rule applied over the whole string reaches
+    # inside it: a page that WROTE `![](path)` in backticks, to talk about the
+    # syntax, had it rendered as a real (and dead) image.
+    #
+    # IMAGE BEFORE LINK, because `![alt](path)` contains `[alt](path)`, so a link
+    # rule running first consumes it and leaves a literal `!` in front of a link.
+    # No markdown image had ever rendered on any board for that reason; QD3's
+    # screenshot had been showing as `!` plus a link since the day it was added.
+    def _marks(seg):
+        seg = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)",
+                     r'<img class="fig" alt="\1" src="\2" loading="lazy">', seg)
+        seg = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a class="fp" href="\2">\1</a>', seg)
+        return re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", seg)
+
+    parts = re.split(r"(<code>.*?</code>)", s, flags=re.S)
+    s = "".join(p if i % 2 else _marks(p) for i, p in enumerate(parts))
     # 裸 URL 自动变链接（放最后）。前面那个 lookbehind 是为了别去动已经躺在
     # href="…" / src="…" 里的地址 —— 否则会把链接再套一层链接。
     s = re.sub(r'(?<![\"\'=])(https?://[^\s<>"\')]+)',
@@ -471,7 +509,11 @@ def render_comments(items):
     return "\n".join(rows)
 
 
-LG_HEAD = re.compile(r"^(\d{6})(?:\s+(\d{3,4}))?\s*[·|]\s*(.*)$")
+# The leading `- ` is optional and must be: nearly every Log line on every board
+# is written as a bullet (`- 260726 · …`), and without it those lines matched
+# nothing. They were neither sorted nor counted, so a page could show four
+# entries under a header reading "Log (0)".
+LG_HEAD = re.compile(r"^(?:[-*]\s+)?(\d{6})(?:\s+(\d{3,4}))?\s*[·|]\s*(.*)$")
 
 
 def sort_log(txt):
@@ -787,19 +829,32 @@ def body(txt, fold_code=True, apparatus=True):
         m = EMBED.match(ln)
         if m:
             flush()
-            out.append(embed_block(m.group(1).strip(), m.group(2)))
+            out.append(embed_block(m.group(1).strip(), m.group(2), m.group(3)))
             last_p = None
             continue
         # 一行只放一个 excalidraw 分享链接 → 嵌成一块可交互画布，底下再给一条链接。
         # 为什么敢嵌：excalidraw.com 没有 X-Frame-Options / frame-ancestors（实测）。
         # 为什么还要那条链接：断网 / iframe 被拦时，画布是空的，链接仍然点得开 —— 不靠 iframe 才读得到。
+        # A self-hosted Excalidraw is embedded on the same terms as the hosted one.
+        # The host is not guessable, so board.md declares it once (`excalidraw:`)
+        # and every page composes its own `#url=` off it: declare once, compose
+        # per page, which is the identity rule this board keeps relearning.
         m = re.match(r"^\s*(https?://(?:app\.)?excalidraw\.com/\S+)\s*$", ln)
+        if not m and EXCAL_HOST:
+            m = re.match(r"^\s*(" + re.escape(EXCAL_HOST) + r"/\S+)\s*$", ln)
         if m:
             u = esc(m.group(1))
+            # READ here, EDIT in a tab. A board carries one iframe per page and
+            # they share an origin, so an editable embed would have every page
+            # writing the same browser storage and reading back somebody else's
+            # drawing. The embed is view-only; ✏️ Edit opens the one tab that
+            # writes, and what it writes is the file every page reads (QA4a).
+            ed = u + ("&amp;" if "?" in u else "?") + "edit=1"   # u is already escaped
             out.append(f'<div class="xcal"><iframe src="{u}" loading="lazy" '
                        f'referrerpolicy="no-referrer"></iframe>'
-                       f'<a class="fp xopen" href="{u}" target="_blank" rel="noopener">'
-                       f'↗ Open in Excalidraw</a></div>')
+                       f'<a class="fp xopen" href="{ed}" target="_blank" rel="noopener">'
+                       f'✏️ Edit this frame</a>'
+                       f'<code class="xurl">{u}</code></div>')
             last_p = None
             continue
         # #### = 段落标题（一节里的一个 ¶）。以前被压成 **…**，于是套上了组标题的

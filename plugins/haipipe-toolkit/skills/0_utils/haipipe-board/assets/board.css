@@ -725,6 +725,11 @@ details.gi summary:hover{color:var(--fg)}
 .embed .er{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
   white-space:pre;overflow-x:auto;line-height:1.6}
 .embed.miss{border-color:var(--todo);color:var(--todo);padding:7px 11px;font-size:13.5px}
+/* `|source`: the same file, shown as its own bytes. Flat against the frame so
+   it reads as a listing rather than as a second rendered block. */
+.embed.src .emb{padding:0}
+.embed.src .emb pre{margin:0;border-radius:0;background:transparent;
+  font-size:12.5px;line-height:1.62}
 
 /* ── QF2 · doc slides: source files rendered directly, no Q wrapper ───── */
 .slide.doc .embed.doc .emb{max-height:none}
@@ -772,7 +777,13 @@ details.gi summary:hover{color:var(--fg)}
    attribute), so it is counted by the build's survive-with-JS-stripped check,
    is Ctrl-F findable, and prints. `title=` stays on the chip underneath as the
    floor for anything that does not support popover. */
-.chipcard{margin:auto;max-width:38em;padding:13px 16px;border:1px solid var(--line);
+/* The CLAMP belongs on the base rule, not only on the anchored variants. A
+   figure panel carries two images; unclamped it grows past the viewport, spills
+   over the page and reads as a broken overlay (JL 260726, screenshot). The
+   anchored variants below tighten it further; nothing may leave it off. */
+.chipcard{margin:auto;max-width:min(38em,calc(100vw - 2rem));padding:13px 16px;
+  max-height:min(72vh,40em);overflow:auto;overscroll-behavior:contain;
+  border:1px solid var(--line);
   border-left-width:4px;border-radius:var(--radius-surface);background:var(--card);
   color:var(--fg);font:14.5px/1.62 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
   box-shadow:0 10px 34px rgba(0,0,0,.20)}
@@ -802,14 +813,22 @@ details.gi summary:hover{color:var(--fg)}
    The @supports test is `anchor-name`, the actual feature, not one spelling of
    one of its properties: Chrome 125-128 shipped this as `inset-area`, and both
    spellings are emitted because an unknown declaration is ignored on its own. */
-@supports (anchor-name:--a){
-  .chipcard{
-    position:fixed;
-    inset:auto;                       /* ① release the UA's inset:0 */
-    margin:0;
-    inset-area:block-end span-inline-end;      /* Chrome 125-128 */
-    position-area:block-end span-inline-end;   /* current name */
+/* Test the property that actually POSITIONS, not the one that names the anchor.
+   The first version tested `anchor-name` and then relied on `position-area`. A
+   browser with anchor-name but without position-area passed the test, took
+   `inset:auto`, and had nothing left to place the panel with, so it landed
+   wherever its static position fell: off-screen. Each override below is guarded
+   by the exact property it uses, and the unguarded base stays centred. */
+@supports (position-area:block-end){
+  .chipcard{position:fixed;inset:auto;margin:0;
+    position-area:block-end span-inline-end;
     position-try-fallbacks:flip-block,flip-inline;
+    max-height:min(60vh,34em);overflow:auto;
+    max-width:min(38em,calc(100vw - 2rem))}
+}
+@supports (inset-area:block-end) and (not (position-area:block-end)){
+  .chipcard{position:fixed;inset:auto;margin:0;
+    inset-area:block-end span-inline-end;
     position-try-options:flip-block,flip-inline;
     max-height:min(60vh,34em);overflow:auto;
     max-width:min(38em,calc(100vw - 2rem))}
@@ -839,7 +858,7 @@ details.gi summary:hover{color:var(--fg)}
 .ccprev{margin:11px 0 0;padding:0}
 .ccprev figcaption{font:11px ui-monospace,Menlo,monospace;color:var(--mut);
   letter-spacing:.05em;margin-bottom:5px}
-.ccprev img{display:block;max-width:100%;max-height:15em;width:auto;height:auto;
+.ccprev img{display:block;max-width:100%;max-height:12em;width:auto;height:auto;
   border:1px solid var(--line);border-radius:var(--radius-control);
   background:#fff;padding:5px}
 .ccprev .ccraw{margin:0;max-height:14em}
@@ -875,3 +894,15 @@ details.gi summary:hover{color:var(--fg)}
 .chip.qref::before{content:"🎯";font-size:.85em;opacity:.8}
 .chip.qref:hover{opacity:1}
 .chip.qref.unowned{opacity:1;color:var(--todo);border-color:var(--todo)}
+
+/* A figure in the body: an excalidraw drawing, a screenshot, anything ![](…) */
+.fig{max-width:100%;height:auto;display:block;margin:12px 0;
+ border:1px solid var(--line);border-radius:var(--radius-surface);background:var(--card)}
+.xadd-row .xnew{border-style:dashed;color:var(--accent);border-color:var(--accent)}
+.xadd-row .xnew:disabled{opacity:.5;cursor:default}
+
+/* [hidden] is display:none in the UA sheet, and .xadd-row's display:flex
+   outranks it, so the paste row was never hidden however often JS set it. */
+.xadd-row[hidden]{display:none}
+.xcal .xurl{display:block;margin-top:4px;font-size:11.5px;color:var(--mut);
+ word-break:break-all;user-select:all}

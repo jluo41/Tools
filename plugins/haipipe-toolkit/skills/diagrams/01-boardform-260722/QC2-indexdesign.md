@@ -22,6 +22,7 @@ Downstream it drives group ordering, state display, completion coloring, and def
   Nor which folder the board lives in: that is `QC1`.
 
 ## Diagram
+
 ```
 top of board.html (no question opened yet)
 ┌──────────────────────────────────────────────┐
@@ -46,23 +47,25 @@ top of board.html (no question opened yet)
             nothing is ever deleted, and the md stays the single source of truth
 ```
 
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QC2
+
 ## Content
 ### 1 · Board orientation — say what this board is doing
-The top strip gives the board name, spine, and close condition before showing any individual face.
+The top strip gives the board name, spine, and close condition before showing any individual page.
 It should let a newcomer understand the board's common question and the condition for finishing it without opening a row.
 
 ### 2 · Overall progress — show how far the board has moved
 The global progress area reports settled Q rulings and passed S gates as separate workflow signals.
-It answers "how far along is this board?" without implying that a paused face is complete or allowing lifecycle stages to inflate question settlement.
+It answers "how far along is this board?" without implying that a paused page is complete or allowing lifecycle stages to inflate question settlement.
 
-### 3 · Group — explain why these faces belong together
+### 3 · Group — explain why these pages belong together
 Each group header names one coherent part of the board and carries a short, always-visible introduction.
 Opening the introduction reveals what the group is for and why it exists.
 Group controls add a Q or archive an empty group, but the explanation remains the primary reading signal.
 
-### 4 · Face row — identify the next action
+### 4 · Page row — identify the next action
 Each row exposes only the evidence needed to choose whether to open it: workflow state, id, title, open-comment signal, owner, and finish ratio.
-Its most important eventual job is to make "which face needs action, and whose action is it?" answerable within three seconds.
+Its most important eventual job is to make "which page needs action, and whose action is it?" answerable within three seconds.
 
 ### 5 · Ordering — make priority legible
 Group order and row order tell the reader what to scan first.
@@ -77,14 +80,14 @@ Seed includes S Seed and S Literature; Main and Appendix expose every reader-fac
 A paper-level ruling may sit before Seed only when it genuinely governs the full lifecycle.
 
 ### 6 · Structure controls — edit without hiding the source
-`＋Q`, `＋Group`, and archive controls are page-side writers into `board.md` and the face files.
+`＋Q`, `＋Group`, and archive controls are page-side writers into `board.md` and the page files.
 They make the index operational while preserving markdown as the single source of truth; archive moves material rather than deleting it.
 
 ### 7 · Board chat — discuss the board as a whole
-Board chat is the place to ask how the work should proceed or which face to examine next before opening one.
+Board chat is the place to ask how the work should proceed or which page to examine next before opening one.
 It supports deliberation, but it cannot replace the index's visual three-second answer because a reader should not need a conversation to discover the next action.
 
-### After a face opens
+### After a page opens
 QC2 stops at the index.
 QA4 owns the opened Q/S webpage and now defines its own numbered Content sections: Opening, Diagram, Content, Items to Finish, Where we are, Files, and Supporting folds.
 The two specifications use the same principle without mixing their responsibilities.
@@ -99,8 +102,8 @@ The two specifications use the same principle without mixing their responsibilit
       Shipped as one writer, `POST /_board/structure` (ops `add_group` / `add_question` / `archive_question` / `archive_group`) living in serve.py and imported by the console (QE3 Law). ＋Q seeds a stub Q file and lists it under its group; ＋Group appends a `### QX · title` heading with its intro; archive MOVES a question to `_archive/` and only removes a group once it lists nothing.
       Verified 260724: full add→archive round trip leaves board.md byte-identical, refusal paths clean over HTTP on 5599 and through the console on 8093.
 - [x] 📚 Every index component explains its purpose
-      Content now describes the eventual reader outcome for board orientation, overall progress, groups, face rows, ordering, structure controls, and board chat.
-      The opened-face section meanings stay in QA4 so QC2 remains an index specification.
+      Content now describes the eventual reader outcome for board orientation, overall progress, groups, page rows, ordering, structure controls, and board chat.
+      The opened-page section meanings stay in QA4 so QC2 remains an index specification.
 - [ ] Settle the questions the front page must answer
       At least three: what is this board doing · how far along is it · **which question do I act on now**.
       The third is the hardest and the one that matters.
@@ -140,7 +143,7 @@ The two specifications use the same principle without mixing their responsibilit
 
 - 260725 JL · 📚 Index anatomy made explicit
   JL asked for Content to explain what each webpage section is for.
-  QC2 now defines its own seven index components and points to QA4 for the opened Q/S face, keeping the ownership boundary visible.
+  QC2 now defines its own seven index components and points to QA4 for the opened Q/S page, keeping the ownership boundary visible.
 
 - 260725 CC · 🤖 A chatbot on the index (JL's ask)
   The bottom-right button now shows on the index too, labeled "🤖 Board chat".
@@ -176,9 +179,9 @@ The two specifications use the same principle without mixing their responsibilit
 > JL: QC2 Index page design 我们在这个地方需要能够添加和删除板块，也就是说，既能添加和删除 question group，也能添加和删除 question item。 另外，在 question group 之间，也需要有一个非常短的句子来介绍一下这个 group。我想的是这样的：比如你有一个 question group（像 QC、QA 这种），下面配一个简单的介绍（sentence）。当我们点击它的时候，它就会向下展开，弹出一个下拉的介绍。 这个介绍主要用来解释这个 group 是干嘛的，以及我们为什么要在这里使用它。大概就是这样的一个意思。
 >> CC0724: both shipped. (1) Group intros: every group header now carries one always-visible sentence; click the ▸ and it drops open into the longer "what this group is for, why it is here" body. It lives in board.md's ## Pages as plain lines under the ### heading (first line = the sentence, the rest = the dropdown), rendered as a native details element, so it survives script-stripping and stays hand-editable. (2) Add/delete: ＋Q on each group header, ＋Group at the end of the list, and a hover 🗄 on every row and header. All of them only write the md through one endpoint (/_board/structure in serve.py, relayed by the console); "delete" is an archive that moves the file into _archive/, so nothing is ever lost. Try it on this page: hover a group header.
 > JL: could we have the chatbot in the index page, so we can discuss how to work in the index page. (260725)
->> CC0725: built. The bottom-right 🤖 button now shows on the index as "🤖 Board chat"; it opens the same QD2 drawer (and QD3 terminal via ⌨), attached to board.md, primed with the index's own view: spine, close condition, every face's state and open comments. It has a canned 🧭 "Which question should I act on?" button, and its 🔧 button works comments board-wide. Implementation details are recorded on QD2; this page only owns the entry point.
+>> CC0725: built. The bottom-right 🤖 button now shows on the index as "🤖 Board chat"; it opens the same QD2 drawer (and QD3 terminal via ⌨), attached to board.md, primed with the index's own view: spine, close condition, every page's state and open comments. It has a canned 🧭 "Which question should I act on?" button, and its 🔧 button works comments board-wide. Implementation details are recorded on QD2; this page only owns the entry point.
 > JL: Content should explain, section by section, what each part of the Q webpage is eventually for: Opening, Diagram, and so on. (260725)
->> CC0725: agreed on the principle and kept the ownership clean. QC2 now explains the index's own seven components; QA4 explains the seven parts of an opened Q/S face and is linked from QC2's final Content subsection.
+>> CC0725: agreed on the principle and kept the ownership clean. QC2 now explains the index's own seven components; QA4 explains the seven parts of an opened Q/S page and is linked from QC2's final Content subsection.
 > JL: how do we make this match the paper stages? (260725)
 >> CC0725: this first became stage-first, then the paper exposed a clearer stable abstraction:
 >> seven full-name S families. Seed, Work, Venue, Display, Main, Appendix, and Submission are now the groups;
@@ -191,7 +194,7 @@ The two specifications use the same principle without mixing their responsibilit
 260725 · Family order clarified as navigation, Pipeline as execution; Submission pages now repeat across revision rounds
 260725 · Full-name S families replaced temporary S/SM/SA grouping: Seed (including Literature), Work, Venue, Main, Appendix, Submission
 260725 · Lifecycle board grouping settled: stage-order groups, canonical S first, owned Q rulings after; MISQ board reorganized to match
-260725 · Content now defines seven index components and explicitly hands the opened Q/S face to QA4; QA4 received the parallel section-purpose map
+260725 · Content now defines seven index components and explicitly hands the opened Q/S page to QA4; QA4 received the parallel section-purpose map
 260725 1040 · 🤖 Board chat entry landed on the index (JL's ask; it is the QD2 drawer / QD3 terminal opened on board.md, details on QD2): fab shows on the index, label switches, follow() returns to the board session
 260724 1553 · JL's two asks shipped: Pages-intro grammar + details.gi render (build.py), structure_op writer + /_board/structure (serve.py, imported by boards_api), page controls ＋Q/＋Group/🗄 (board.js/css); board.md's five groups got intros, Pipeline slimmed to the narrative; round trip byte-identical, refusals verified on 5599 + 8093; 🔴 → 🟡
 260724 1242 · Translated to English (JL 260724: everything on the board in English)

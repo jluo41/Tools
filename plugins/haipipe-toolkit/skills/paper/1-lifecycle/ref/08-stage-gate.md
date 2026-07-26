@@ -7,7 +7,7 @@ A stage is only "done" when an EXPLICIT APPROVAL ACTION closes it. The system mu
 Gate Modes
 -----------
 
-Mode lives in STATUS.md (`gate_mode: copilot | autopilot`, default copilot) and can be overridden per invocation (e.g. "run seed --autopilot").
+Mode lives in the stage's S page frontmatter (`gate_mode: copilot | autopilot`, default copilot) and can be overridden per invocation (e.g. "run seed --autopilot").
 
 ```
 🧑 copilot   (default)  the human reads the exit-criteria report, adds > JL: comments,
@@ -41,7 +41,7 @@ Gate Protocol (per-stage loop)
    move to <next>?" and WAIT. autopilot: dispatch the reviewer subagent and
    take its verdict.
 5. Only on **explicit approval** (human confirm, or reviewer approve): update
-   STATUS.md current_layer to the next stage and write the ledger row with the
+   append the ledger row to this stage's S page `## Log`, with the
    actor.
 
 In copilot mode the system **STOPS at Step 4 and WAITS**. In autopilot mode the reviewer's verdict IS the Step-4 action; a restart verdict loops back instead of advancing.
@@ -168,7 +168,7 @@ Where the principles are enforced:
 ①  haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent
    "fresh evidence must land" — the answer is a FILE: <task-folder>/QA/<n>-<slug>.md,
    which the entry's `**target**:` then points at;
-   a CLAIM's status lands in 0-lifecycle/1b-claims/1b-claims.md — per-claim,
+   a CLAIM's status lands in 0-lifecycle/1-work/S-Work-1-claims.md — per-claim,
    per-paper, private; the probe entry carries only its `### a-executor`.
 ②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);
    author writes the claim status from the QA file; paper-probe worker mechanical acceptance
@@ -184,17 +184,17 @@ Per-Stage Exit Criteria
 | seed | Seed question stated? Motivations stated? Tentative claim shape stated? |
 | resource | Does every hypothesis have a resource that is HAVE+FIT, or a COMMISSIONED build with an owner and a DATE, or a SCOPE CUT the human said out loud? Every BUILD question carries `cross-project:` (path or `none-found`)? `check-probe-cards.sh <paper_root> --stage resource` exits 0? |
 | claims | Every claim has status (supported/weak/GAP)? Each claim tied to an evidence source? GAP claims have delivery needs recorded? |
-| venue | Shortlist ranked with per-venue rationale? Venue pinned in STATUS.md? |
+| venue | Shortlist ranked with per-venue rationale? `venue:` pinned in `S-Venue-0-venue.md` frontmatter? |
 | pitch | Hook section with >=2 candidate hooks? Surprise stated? Implication/so-what stated? Why-believe with evidence pointers? Editor's Chair Test passed? [primary] claim designated? |
 | narrative | All claims carried in the arc? Claim-evidence matrix complete? Figure inventory present? Per-beat subagent review comments in small font? |
 | display | Gallery README present? Every display unit has README + float.tex? Per-unit interrogation verdict present? 4-display.tex + PDF compiled and current? |
 | section-edit | Every section has a scaffold (outline + _LOG)? Every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]` bracket? DRAFT-PROBE-REVISE-CHECK complete per section? Section checklists pass? |
 
 
-Confirmation Ledger in STATUS.md
+Confirmation Ledger: one row per gate, on the S page whose gate it was
 ---------------------------------
 
-STATUS.md carries a **Gate Ledger** -- one row per stage, with the APPROVAL ACTOR:
+Each S page's `## Log` carries its own **Gate row**, with the APPROVAL ACTOR. Ruled 2026-07-26 (design board QA6): the ledger was the one part of the retired `STATUS.md` that is HISTORY and cannot be derived from disk, so it needed a home rather than a deletion. It sits on the page whose gate it was, where a reader is already standing:
 
     | Stage | Approved | Actor | Date | Notes |
     |-------|----------|-------|------|-------|

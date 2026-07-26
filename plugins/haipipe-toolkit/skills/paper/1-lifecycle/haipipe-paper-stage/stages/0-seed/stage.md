@@ -71,11 +71,14 @@ done_criteria:
 
 upstream: []
 downstream: [resource]
-handoff: "on CHECK confirm, update STATUS.md's gate ledger and hand to resource.
-          ⚠️ ONLY advance `current_layer` when this stage IS the frontier. A LOOPBACK — running
-          seed again on a paper whose frontier is further along — records the gate and leaves
-          `current_layer` alone; demoting a paper because an early stage re-ran is a data loss,
-          not a promotion. See ../../../ref/08-stage-gate.md." 
+handoff: "on CHECK confirm, append the gate row to this stage's S page ## Log and hand to resource.
+          The row is HISTORY (who confirmed, when, what was deferred), which is the one thing about a
+          paper that cannot be derived from disk. It goes on the page whose gate it was, so a reader
+          is already standing where they want it.
+          There is no frontier to advance and none to protect: the frontier is DERIVED from each
+          page's own `state:`, so a LOOPBACK — running seed again on a paper whose frontier is
+          further along — simply records its gate and changes nothing else. That is what retiring
+          the stored `current_layer` bought. See ../../../ref/08-stage-gate.md."
 ---
 
 Seed — the craft
@@ -156,7 +159,7 @@ anything new; never rewrite a legacy pointer to match, the consume-grep already 
 Not from the seed
 -----------------
 
-Do not create `0-sections/`, displays, or compile obligations here — those start later.
+Do not create `sections/`, displays, or compile obligations here — those start later.
 Do not reference a target venue: venue selection happens after claims
 (`seed -> resource -> claims -> [venue] -> pitch`).
 Evidence inventory, routing, and gap analysis belong to claims, not here.

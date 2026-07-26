@@ -4,8 +4,8 @@ description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: read
 argument-hint: "[from-buffer <paper_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-07-19"
+  version: "0.7.0"
+  last_updated: "2026-07-26"
   summary: "The paper's PROBE-phase worker — runs ①ORGANIZE→②MATCH→③DISPATCH→④POINT→⑤INTERPRET for a paper (all five; ①② came back here from DRAFT on 2026-07-20). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is owned by ../../../../probe/haipipe-probe/SKILL.md. This file is only the paper-side deltas. History: ./CHANGELOG.md."
 ---
 
@@ -72,7 +72,7 @@ The stage doc's Q-consumer is the input. For each `## Q-<Stage>-<n>` block, find
   its qa gate's ② DIGEST, from artifacts already on disk. That is depth 0: cheap, nothing runs, and
   it passes any ceiling. Do not mistake it for `answered` and skip the dispatch; do not mistake it
   for expensive and defer it.
-- T1 LOCAL is this worker's, at ②: root the question against the paper's OWN registries and set `target` + `state: answered-local`, then write the entry's `### a-executor`. The CLOSED whitelist: entries already `read` or `answered-local` in `1-probes/` · `0-displays/` units + index · the `.bib` · `_LOG_<stage>.md`.
+- T1 LOCAL is this worker's, at ②: root the question against the paper's OWN registries and set `target` + `state: answered-local`, then write the entry's `### a-executor`. The CLOSED whitelist: entries already `read` or `answered-local` in `1-probes/` · `displays/` units · the `.bib` · the stage's S page `## Log`.
   Fully answered there → write the `### a-executor`, set `answered-local`, do NOT dispatch. Adopt the POINTER, never the verdict (a reused value re-verifies against its ORIGINAL source at PLACE).
 - DISPLAY-shaped needs are REROUTED, not collected: a question asking for a display unit that does not exist becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`; close the entry `answered-local` with the `### a-executor` "rerouted to display stage: DRNN".
 - RESOURCE (paper only): the resource stage's DRAFT opened one probe ENTRY per `Q<n>` it drafted, and the human then APPROVED that set at GATE 1 — so by the time this worker runs, every entry it sees is GATE-1-approved (present, not DECLINED in `_LOG_1a-resource.md`) — its `### q-consumer` names that resource `Q<n>`, `**blocks**: N<n>` under `### bank binding` — and wrote the `**Q<n> (N<n>) -> PP<NN>**` backlink into `1a-resource.md`, the mechanical proof `check-probe-cards.sh --stage resource` tests. The ownership chain: the STAGE DRAFT asks (Q<n>) + opens the entry → the HUMAN approves at GATE 1 (the DRAFT gate) → this worker ③ dispatches / ④ points → ⑤ writes the A back. The stage never mints a PP id. If a legacy DRAFT left the intake undone, this worker opens the missing entries on first touch (transition only).
@@ -165,7 +165,7 @@ HARVEST (⑤) begins. ════════
 - HARVEST — inline, in this worker, into the SAME `### a-executor`. Whatever reusable material the answer carries rides along with the answer:
   - **source anchors** (literature): transcribe each into the `### a-executor` in the QA file's own words, with its identifiers. NEVER generate bibtex; NEVER touch `.bib`. Carry provenance at TWO levels and never flatten them — `VERIFIED-by-discovery` is arXiv-level, NOT bibtex-level, so a source stays 🔍 until a human confirms it. An entry carrying only identity fields (title/authors/year) and no statement of WHAT the source found is a DEFECTIVE harvest: the reader must be able to see what each source contributes without opening the discovery folder.
   - **values** (numbers): transcribe the number AND the named source path it came from. FABRICATION GUARD: the literal value string must grep in its named source file — `grep -F '<value>' <source>` — and a value with no source hit is REJECTED. The parquet/script decides, never the prose.
-  - **display units**: name the landed `0-displays/<unit>/` path. LINK ONLY UNITS THAT EXIST (or whose DR row is `done` with the unit path filled) — a `requested`/`accepted` DR row stays 📨 pending and is flagged for CHECK; never pre-place a `\ref` for a display that does not exist yet, or the tex compiles to `??`.
+  - **display units**: name the landed `displays/<unit>/` path. LINK ONLY UNITS THAT EXIST (or whose DR row is `done` with the unit path filled) — a `requested`/`accepted` DR row stays 📨 pending and is flagged for CHECK; never pre-place a `\ref` for a display that does not exist yet, or the tex compiles to `??`.
   Placing any of this INTO manuscript prose is REVISE's job (`haipipe-paper-revise-place`), not this worker's. This worker transcribes; it does not edit the manuscript.
 
 PROOF 5: per entry the `### a-executor` copy + the stage-doc a-consumer line, the claim-ledger diff (if it serves a claim), the `grep -A2 'Q<n>' 1a-resource.md` for a resource write-back, and — for any harvested value — the `grep -F` output proving it appears in its named source.

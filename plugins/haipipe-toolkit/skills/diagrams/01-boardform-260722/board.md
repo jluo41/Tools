@@ -2,6 +2,7 @@
 
 spine: A board = one folder. One markdown file per question inside it, plus one HTML page anyone can open. Pin that shape down, write it into SKILL.md, so someone else (and a future me with no memory) can open a board by following it.
 close: Every Q on this board reaches ✅ or ⏸️. SKILL.md is written, and a fresh agent with no background can read only that and open a decent board, and then this skill is done.
+excalidraw: http://127.0.0.1:5599/_excalidraw
 session: 3e951d68-1c6d-4f22-af82-76dd70bb356d
 ## Topic
 What a board is for: a topic has several undecided questions; lay them out on one page anyone can open and comment on; settle them one by one, then close the board.
@@ -9,23 +10,24 @@ Cast: JL = the one who decides. CC = Claude Code, who does the work. Colleagues 
 What makes this board unusual: its subject IS the board itself, a board used to define boards.
 
 ## Pipeline
-Five groups; the letter in each Q's id is the group it was opened under. The first two (QA defines the thing, QB ships it) are the main line; QC, QD and QE each own one area and can be thought about in parallel. Each group's own intro lives with it in the ## Pages below and shows on the index page under the group header (QC2). The former "QF · A board on top of other formats" group merged into QA on 260725 and its last face was retired on 260726, so no QF id remains.
+Five groups; the letter in each Q's id is the group it was opened under. The first two (QA defines the thing, QB ships it) are the main line; QC, QD and QE each own one area and can be thought about in parallel. Each group's own intro lives with it in the ## Pages below and shows on the index page under the group header (QC2). The former "QF · A board on top of other formats" group merged into QA on 260725 and its last page was retired on 260726, so no QF id remains.
 
 ## Pages
 ### QA · Defining a board
 Pin down the thing itself; nothing downstream is safe until this group lands.
-Folder shape, then the shared Q/S source template, how one opened face's page is
-laid out and how its group titles are marked, inline comments and what becomes of
+Folder shape, then the shared Q/S source template, how one opened page's page is
+laid out and how its group titles are marked, whether the whole board can share one
+excalidraw with a frame per page, inline comments and what becomes of
 one, the sentence apparatus, whether any agent sees what gets attached, what is
 checked after any change, and which visual-taste rules improve the work surface
 without turning it into a marketing page. Three rulings shipped and
-were retired as faces because their law lives in `ref/board-form.md`: projection,
+were retired as pages because their law lives in `ref/board-form.md`: projection,
 one file with two modes (former QA3, §8, its JS-only extras parked with it);
 embedding another file by reference, `![[path#Section]]` (former QF1, §5); and the
 `doc:` row that rendered source files as a slide with no Q wrapper (former QF2,
 retired 260726, superseded by that embed, which does the same job inside a real
-face). Two merges on 260726, both for the same reason, that a face which builds a thing
-and a face which rules what becomes of it are one subject: QA5 into QA9 (writing
+page). Two merges on 260726, both for the same reason, that a page which builds a thing
+and a page which rules what becomes of it are one subject: QA5 into QA9 (writing
 prose a stranger can read and checking the page still renders what the template
 promises are two checks on one trigger), and QA7 into QA6 (building a comment and
 ruling its remaining life; the split had let QA6 sit ✅ while the thing it built
@@ -35,6 +37,8 @@ grammar it depends on lived here.
 ```
   folder  →  Q template  →  page layout  →  comments + lifecycle  →  sentence ⚑
    QA1         QA2            QA4                 QA6                  QA8
+                               |
+                one excalidraw per board, a frame per page  ──►  QA4a
                                                                         |
                                               does the chat see the     |
                                               sentence's attachments?  QA8a
@@ -48,6 +52,7 @@ grammar it depends on lived here.
 QA1-form.md
 QA2-qtemplate.md
 QA4-pagelayout.md
+QA4a-board-excalidraw.md
 QA6-comments.md
 QA8-sentence.md
 QA8a-sentence-chat.md
@@ -77,9 +82,9 @@ QC3-folderq.md
 The live layer: can you do real work on the board page itself?
 One session per question (QD1), the restricted in-page drawer (QD2), the
 unrestricted real terminal (QD3), how the page updates live without losing your
-chat (QD6), and attaching an Excalidraw canvas to a face from the page itself
-(QD7, opened 260726; how that canvas renders is QA4 §2). The index page's chatbot
-is the QD2 drawer / QD3 terminal opened on board.md. Two faces left this group:
+chat (QD6), and attaching an excalidraw to a page from the page itself
+(QD7, opened 260726; how that excalidraw renders is QA4 §2). The index page's chatbot
+is the QD2 drawer / QD3 terminal opened on board.md. Two pages left this group:
 a board-agent question (QD5) archived 260725 as redundant with QD2 and QD3, and
 LLM-assigned group icons (QD4) merged into QA4 on 260726, because the icon is a
 layout marker and what blocks it is QA4's own rule about what a group title is.
@@ -127,7 +132,7 @@ QC1@paper           ../01-haipipe-paper-260725/QC1-sentence-citation.md
 QC2@paper           ../01-haipipe-paper-260725/QC2-sentence-value.md
 QC3@paper           ../01-haipipe-paper-260725/QC3-sentence-display-table.md
 QC4@paper           ../01-haipipe-paper-260725/QC4-sentence-display-figure.md
-QA6@paper           ../01-haipipe-paper-260725/QA6-the-board-tool.md
+QA4@paper           ../01-haipipe-paper-260725/QA4-the-board-tool.md
 src/dialect_paper.py ../../0_utils/haipipe-board/src/dialect_paper.py
 haipipe-paper-stage/ ../../paper/1-lifecycle/haipipe-paper-stage/
 0-lifecycle/        ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/

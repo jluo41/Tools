@@ -16,7 +16,7 @@ resolve. Display owns rendering; Paper owns what a display MEANS. Neither reache
 
 ## Resolving the unit
 
-Apply this whenever the target is a paper folder: a directory with `0-displays/`, or `STATUS.md`,
+Apply this whenever the target is a paper folder: a directory with `displays/`, or `the paper's S pages`,
 or `0-lifecycle/`.
 
 1. If the caller passed a unit id (`displayNN-slug`) or `--display-unit <dir>`, use it.
@@ -24,11 +24,11 @@ or `0-lifecycle/`.
 3. Else scaffold a new one: `Skill("haipipe-paper-stage", "display scaffold displayNN-<slug>")`.
    Pick the next free `displayNN`.
 
-Only when no paper and no `0-displays/` is found does a renderer fall back to a flat
+Only when no paper and no `displays/` is found does a renderer fall back to a flat
 `figures/ai_generated/`, and it says so in its return.
 
 The unit directory handed to the renderer is therefore
-`0-displays/displayNN-<slug>/`, and that is the only thing the renderer needs to know about this
+`displays/displayNN-<slug>/`, and that is the only thing the renderer needs to know about this
 paper.
 
 ## Paths are paper-root-relative
@@ -37,10 +37,10 @@ paper.
 full path from the paper root:
 
 ```latex
-\includegraphics{0-displays/displayNN-<slug>/assets/figure.pdf}   % NOT assets/figure.pdf
+\includegraphics{displays/displayNN-<slug>/assets/figure.pdf}   % NOT assets/figure.pdf
 ```
 
-Same for `preview.tex`'s `\input`. `preview.pdf` compiles FROM THE PAPER ROOT so `0-displays/`
+Same for `preview.tex`'s `\input`. `preview.pdf` compiles FROM THE PAPER ROOT so `displays/`
 paths resolve. The caller passes this base to the renderer; the renderer does not derive it.
 
 ## What the paper owns and the renderer never touches
@@ -53,7 +53,7 @@ paths resolve. The caller passes this base to the renderer; the renderer does no
 
 ## The combined gallery
 
-`0-lifecycle/4-display/4-display.tex` is GENERATED and `\input`s each unit's `float.tex`, so a
+`0-lifecycle/3-display/4-display.tex` is GENERATED and `\input`s each unit's `float.tex`, so a
 correctly filed unit appears in the combined gallery automatically. Renderers never edit
 `4-display.tex`. Hand-editing it is a defect.
 

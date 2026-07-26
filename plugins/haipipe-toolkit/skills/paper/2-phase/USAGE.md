@@ -78,4 +78,4 @@ Restarting DRAFT reopens content decisions with you; PROBE/REVISE restarts run a
 - DRAFT is the only phase that negotiates content with you; PROBE and REVISE never wait on a human.
 - Nothing enters `.bib` and no number is invented -- probe proposes, you verify in CHECK.
 - Unresolved `> USER:` threads keep a section open; silence is not consent.
-- No ad-hoc plots: display needs become `0-displays/` units backed by tasks.
+- No ad-hoc plots: display needs become `displays/` units backed by tasks.

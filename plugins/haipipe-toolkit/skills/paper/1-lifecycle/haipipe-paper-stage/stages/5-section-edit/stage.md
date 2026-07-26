@@ -28,10 +28,10 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
                            # no gate. Raise it per invocation with `probe --depth N`.
 runs: per-unit
 unit: section
-units_from: 0-lifecycle/3-narrative/S-Venue-2-narrative.md
+units_from: 0-lifecycle/2-venue/S-Venue-2-narrative.md
              # FALLBACK, for papers that predate the narrative stage: if that file is
              # absent, the unit list is the folders already scaffolded under
-             # 0-lifecycle/5-section-edit/ (excluding z-structure/, which is the
+             # 0-lifecycle/4-main/ (excluding z-structure/, which is the
              # architecture doc, not a manuscript section). Say which source you used.
 
 # ⚠️ ARGUMENT ORDER CHANGES on cutover — the section is no longer positional 1:
@@ -43,14 +43,14 @@ argument_hint: "<section> [draft|probe|revise|check] [paper-path]"
 needs_paper: true
 venue_aligned: true       # rewritten on retarget to another journal
 
-artifact: 0-lifecycle/5-section-edit/{section}/S-{board_family}-{board_unit}-{board_slug}.md
+artifact: 0-lifecycle/4-main/S-{board_family}-{board_unit}-{board_slug}.md
                           # PER SECTION — one folder per unit. `{section}` is the unit's folder;
                           # the FILENAME is resolved by haipipe-board/stage.py from this unit's
                           # family, unit and slug (QC2), never spelled by this stage. `board_family`
                           # and `board_unit` are per-unit here, not per-stage: a unit's kind decides
                           # Main vs Appendix and its reader order decides the number or letter.
 probes: 1-probes/PPNN_<topic>/
-output: 0-sections/*.tex   # GENERATED from the .md by sync; NEVER hand-authored
+output: sections/*.tex   # GENERATED from the .md by sync; NEVER hand-authored
 template: <resolved per (venue, section_kind)>
           # PRINCIPLE (JL 2026-07-20): every (venue, kind) has its OWN template, summarized from
           # that outlet's exemplars — a MISQ introduction ≠ a Nature introduction in SHAPE. So the
@@ -66,12 +66,12 @@ fallback_template: template.md     # generic scaffold — placeholder grammar, t
                           # as <tpl: …> guidance. There is no separate format spec.
 
 read_order:               # optional DRAFT craft order; dependencies live on the Board page
-  venue:         0-lifecycle/2a-venue/S-Venue-0-venue.md                        # blueprint + writing principles
-  narrative:     0-lifecycle/3-narrative/S-Venue-2-narrative.md                  # the story beats
-  claims:        0-lifecycle/1b-claims/S-Work-1-claims.md                      # what this section must support
-  existing_tex:  0-sections/{NN}_{section}.tex                           # only if prose already exists
+  venue:         0-lifecycle/2-venue/S-Venue-0-venue.md                        # blueprint + writing principles
+  narrative:     0-lifecycle/2-venue/S-Venue-2-narrative.md                  # the story beats
+  claims:        0-lifecycle/1-work/S-Work-1-claims.md                      # what this section must support
+  existing_tex:  sections/{NN}_{section}.tex                           # only if prose already exists
 
-venue_contract: 0-lifecycle/2a-venue/S-Venue-0-venue.md
+venue_contract: 0-lifecycle/2-venue/S-Venue-0-venue.md
 venue_read_first:         # DRAFT opens these BEFORE writing a sentence
   - "Structural Blueprint, THIS section's block — BINDING: subsections, ¶ per subsection,
      sentences per ¶, citation density, word budget, display limits"
@@ -122,8 +122,8 @@ formatting:
   template_residue: "grep -c '<tpl' {section}.md must print 0"
 
 displays: file-only       # JL ruling: this stage FILES a display request, it never CREATES one
-display_request: 0-lifecycle/4-display/_DISPLAY_REQUEST.md   # a DR row goes here; the units
-                          # themselves come from 0-displays/ and 0-lifecycle/4-display/
+display_request: 0-lifecycle/3-display/_DISPLAY_REQUEST.md   # a DR row goes here; the units
+                          # themselves come from displays/ and 0-lifecycle/3-display/
 display_split: |          # BINDING, owned by ../4-display/stage.md (`display_split:`) — read it there.
   A DR row filed from here names BOTH halves of the unit, because they have different owners:
     `bank deliverable:`     the numbers — source_data.csv + provenance, produced by the TASK
@@ -153,14 +153,14 @@ done_criteria:
      user-owned notes section"
   - "every display need is a DR row that came back `done` with its unit linked"
   - "6-axis CHECK gate PASSes: structure · citation · values · display · venue · proof"
-  - "newest [REVISE] carries a `workers:` line and 0-sections/*.tex is synced from the .md"
+  - "newest [REVISE] carries a `workers:` line and sections/*.tex is synced from the .md"
   - "_LOG entry records the current state"
   - "check-probe-cards.sh <paper_root> --stage section-edit exits 0"
 
 upstream: [narrative, display]
 downstream: [round]
-handoff: "on CHECK confirm, update STATUS.md for THIS section; the stage is not finished until
-          every unit from units_from has passed -> round"
+handoff: "on CHECK confirm, append the gate row to THIS section's S page ## Log; the stage is not
+          finished until every unit from units_from has passed -> round"
 ---
 
 Section Edit — the craft
@@ -202,7 +202,7 @@ File a display; never draw one
 ------------------------------
 
 A section that needs a figure or a table writes a DR row into the display stage's inbox and
-stops there. This stage has no renderer and never writes to `0-displays/`. The display stage owns
+stops there. This stage has no renderer and never writes to `displays/`. The display stage owns
 whether the evidence can carry the picture; section-edit owns only whether the prose needs one.
 
 What DRAFT prose IS — and is NOT
@@ -255,7 +255,7 @@ a clean file.
 Backward-fill, once, at scaffold
 --------------------------------
 
-When the section ALREADY has prose in `0-sections/*.tex`, the `.md` is filled FROM it — once:
+When the section ALREADY has prose in `sections/*.tex`, the `.md` is filled FROM it — once:
 
 ```text
 1  read the tex

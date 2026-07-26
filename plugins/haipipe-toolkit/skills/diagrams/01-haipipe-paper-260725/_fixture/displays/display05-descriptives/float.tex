@@ -1,0 +1,52 @@
+% Table 1 -- multi-cohort cohort descriptives (C0 data anchor).
+% Rebuilt from legacy single-cohort table by probe P.0624-CD (parse-not-recompute
+% over v0618 aggregated logs). float.tex owns table env + caption + notes;
+% assets/table-body.tex owns the tabular.
+\begin{table}[htbp]
+\centering
+\caption{Cohort descriptive statistics across the five analytic cohorts (Table~1, C0 data anchor).
+Analytic samples are Medicare first-pair encounters (2015--2020); see build-funnel note below.}
+\label{tab:descriptives}
+\small
+\input{0-displays/display05-descriptives/assets/table-body.tex}
+\par\smallskip
+\begin{flushleft}
+\footnotesize
+\textit{Build funnel} (data-pipeline cohorts; identical filter chain, encounters remaining):
+first-pair $\rightarrow$ anchor year 2016--2019 $\rightarrow$ age 65--95 $\rightarrow$
+exclude cancer/hospice/ESRD $\rightarrow$ $\geq$180d coverage $\rightarrow$ 3-mo Rx coverage
+$\rightarrow$ survived 1\,yr $\rightarrow$ MD/DO physician $\rightarrow$ 5--100 reviews.
+Endpoints: LBP $7{,}386{,}454\!\rightarrow\!773{,}566$; Cancer $15{,}658{,}490\!\rightarrow\!1{,}385{,}300$;
+Headache $3{,}216{,}764\!\rightarrow\!203{,}426$; T2D $14{,}539{,}965\!\rightarrow\!1{,}208{,}934$.
+The cancer-exclusion step is a no-op for the Cancer and T2D cohorts by design.
+
+\smallskip
+\textit{Note:} One column per analytic cohort. Exposure is review-inferred physician
+Agreeableness (continuous $\sim$0--1; \textit{High} $=$ score $\geq 0.75$). The four
+opioid/diabetes data-pipeline cohorts share one identical first-pair filter chain and a
+single trait construction, supporting a combined Table~1; outcome rows differ by domain
+(opioid prescribing vs.\ diabetes-drug prescribing) and are not read across the
+opioid/T2D boundary. ``n/a'' denotes an outcome that does not apply to that domain.
+\textcolor{red}{\textbf{TODO}} marks an in-domain cell that is genuinely absent from
+\emph{every} aggregated v0618 export (not missing data): the regression-stage logs for
+these cohorts carry only the variables their specifications use, so a descriptive that
+was never summarized cannot be recovered by parsing. Each such cell is
+\textbf{pending a server descriptives re-export}. The TODO cells are: Headache and T2D
+age~SD; T2D White~\%; Osteo and T2D Black~\%; Osteo high-dose-long-duration~\%;
+Osteo unique-patient and unique-physician counts; and the six per-condition comorbidity prevalences for
+Cancer, Headache, and T2D (whose logs summarize only an aggregate \texttt{comorbid\_count},
+not the 22-flag per-condition set available for LBP and Osteo).
+$^{\dagger}$\,Osteoarthritis is \textbf{partial}: its figures come from the
+regression-stage logs (no data-pipeline build folder exists in this export), so it has
+no build funnel and its $N$ is the fully-controlled regression $N$ (loaded $1{,}216{,}207$).
+Of the osteo cells, age (mean and SD), female, White~\% (mean \texttt{bene\_race\_white}~$=0.870$),
+LIS, dual, Agreeableness, and any-opioid-Rx~\% (\texttt{tab is\_opioid\_rx}~$=6.99$) are read
+from the regression-stage \texttt{summarize}/\texttt{tab} output; unique-patient count,
+unique-physician count, and high-dose-long-duration~\% are not summarized at the regression
+stage and are marked \textcolor{red}{\textbf{TODO}} pending a server descriptives re-export.
+(The osteo OLS does report an \texttt{npi\_id} cluster count of $\sim$97{,}027, but that is the
+distinct-physician count of the controlled estimation sample, a different construct from the
+full-cohort unique-physician counts shown for the other columns, so it is not used here.)
+Source: v0618 \texttt{Report-From-CMS-Server} aggregated logs (probe P.0624-CD).
+\end{flushleft}
+\end{table}

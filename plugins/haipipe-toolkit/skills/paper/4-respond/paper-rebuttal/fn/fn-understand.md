@@ -111,7 +111,7 @@ Step 3: Annotate paragraph by paragraph
         Provide a clickable file:line reference AND quote the text:
 
         > CC: Paper source:
-        >   `0-sections/05_baseline_results.tex:229`
+        >   `sections/05_baseline_results.tex:229`
         >   > "{quoted text from your paper that triggered the concern}"
         >   → This framing caused the reviewer's concern. Needs rewrite.
 
@@ -121,7 +121,7 @@ Step 3: Annotate paragraph by paragraph
         If the concern is about something MISSING from the paper (e.g.,
         "no fairness mitigation"), note where it SHOULD be added:
         > CC: Paper source: not present.
-        >   Suggested location: after `0-sections/05_baseline_results.tex:275`
+        >   Suggested location: after `sections/05_baseline_results.tex:275`
         >   (end of Section 5.2 Fairness Analysis)
         >   → Add new Section 5.4: Fairness-Aware Training
 

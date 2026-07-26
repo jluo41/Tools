@@ -29,13 +29,13 @@ runs: once
 needs_paper: false        # argument-hint `[paper-dir-or-topic]` — a bare topic is accepted
 venue_aligned: true       # REWRITTEN when the paper is retargeted to another journal
 
-artifact: 0-lifecycle/3-narrative/S-Venue-2-narrative.md
-artifact_fallback: 0-lifecycle/3-narrative/3-narrative.md
+artifact: 0-lifecycle/2-venue/S-Venue-2-narrative.md
+artifact_fallback: 0-lifecycle/2-venue/3-narrative.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 probes: 1-probes/PPNN_<topic>/
-display_request: 0-lifecycle/4-display/_DISPLAY_REQUEST.md   # one DR row per beat that needs a
+display_request: 0-lifecycle/3-display/_DISPLAY_REQUEST.md   # one DR row per beat that needs a
                           # display, filed on this stage's behalf; the DISPLAY stage owns the file
                           # and advances its statuses
 template: template.md
@@ -43,7 +43,7 @@ template: template.md
 exit_when: "arc weak -> pitch / claims"   # the stage's own failure exit
 
 venue_contract:           # read BEFORE composing — see the craft body
-  read_first: 0-lifecycle/2a-venue/S-Venue-0-venue.md   # Structural Blueprint beats + Writing Principles
+  read_first: 0-lifecycle/2-venue/S-Venue-0-venue.md   # Structural Blueprint beats + Writing Principles
   fallback: venue/playbook-<venue>               # only if S-Venue-0-venue.md absent; no pack -> proceed without
   stale: "recorded pack commit behind venue HEAD -> note 'consider /haipipe-paper-stage venue refresh',
           but still use S-Venue-0-venue.md; never silently re-read packs"
@@ -61,8 +61,8 @@ sections:                 # in order; the middle four MIRROR the paper's real se
 readiness_tags: [READY, PENDING, INFER, LIT, GAP]   # exactly one per beat; meanings in the craft body
 
 read_order:               # optional DRAFT craft order; dependencies live on the Board page
-  - 0-lifecycle/2b-pitch/S-Venue-1-pitch.md      # the framing constraint, NOT evidence
-  - 0-lifecycle/1b-claims/S-Work-1-claims.md    # the spine; the ONLY home of a claim's status
+  - 0-lifecycle/2-venue/S-Venue-1-pitch.md      # the framing constraint, NOT evidence
+  - 0-lifecycle/1-work/S-Work-1-claims.md    # the spine; the ONLY home of a claim's status
   - experiment results under figures/ · results/ · outputs/ · tasks/
   - review history and recorded limitations
   - repo source                           # one paragraph on what was BUILT, not what was proposed
@@ -87,7 +87,7 @@ done_criteria:
   - "no [GAP] or [PENDING] beat without a Q-consumer block and a question ENTRY in 1-probes/"
   - "no placeholder without its bracket — a \\cite{TOADD} or {VAL:?} carrying no [Q-Narrative-<n>]
      is a hole no question will ever fill"
-  - "every beat needing a display carries a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md"
+  - "every beat needing a display carries a DR row in 0-lifecycle/3-display/_DISPLAY_REQUEST.md"
   - "per-beat interrogation complete — an independent subagent ruled on every beat"
   - "Spine present, and every beat below it serves it"
   - "venue contract consulted for arc shaping (S-Venue-0-venue.md; pack fallback if absent)"
@@ -96,7 +96,7 @@ done_criteria:
 
 upstream: [pitch]
 downstream: [display]
-handoff: "on CHECK confirm, update STATUS.md (current_layer, maturity: narrative) -> display"
+handoff: "on CHECK confirm, append the gate row to this stage's S page ## Log -> display"
 ---
 
 Narrative — the craft
@@ -208,7 +208,7 @@ Narrative asks per BEAT — a beat that cannot be sourced is a beat that cannot 
 🕳️ gap beat      A [GAP] beat has no evidence at all. What would produce it, and is it worth
                   producing? Every [GAP] is a question or a cut — never a maybe.
 🖼️ display need  Does this beat need the reader to SEE something? Then it owes a DR row in
-                  0-lifecycle/4-display/_DISPLAY_REQUEST.md, not a promise.
+                  0-lifecycle/3-display/_DISPLAY_REQUEST.md, not a promise.
 🧵 arc break     Does the throughline survive this beat order, or does the argument need a fact
                   we have not established to get from here to there?
 ```
@@ -216,7 +216,7 @@ Narrative asks per BEAT — a beat that cannot be sourced is a beat that cannot 
 Not from the narrative
 ----------------------
 
-No manuscript prose, no `0-sections/`, no compile obligations — those are section-edit's.
+No manuscript prose, no `sections/`, no compile obligations — those are section-edit's.
 Do not invent claims the data does not support: if the ledger says partial, the beat says partial.
 Honest limitations save the paper; reviewers punish overclaiming far harder than modest claims.
 ONE narrative per paper, never one per experiment — two stories are two papers, not one narrative.

@@ -20,6 +20,7 @@ It is also the shared foundation of `QD2` (drawer) and `QD3` (terminal): change 
   The implementations: the web drawer is `QD2`, the real terminal is `QD3`; both also open on the whole board through the index page's chatbot (recorded on `QD2`).
 
 ## Diagram
+
 ```
   board level (this very conversation — the "session for top")
   ┌────────────────────────────────────────────────────┐
@@ -39,6 +40,8 @@ It is also the shared foundation of `QD2` (drawer) and `QD3` (terminal): change 
   why this board is a natural fit: one file per question — the context boundary
   and the session boundary already coincide.
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD1
 
 ## Items to Finish
 - [x] Spell out what board level and question level each own

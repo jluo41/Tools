@@ -12,7 +12,7 @@ from .page_stage import render_doc_slide
 
 
 def render(meta, qs):
-    # Questions and S families share one face grammar, but their progress answers
+    # Questions and S families share one page grammar, but their progress answers
     # different things: rulings settle; lifecycle pages pass human CHECK gates.
     qonly = [q for q in qs if q.get("kind") not in ("doc", "stage")]
     sonly = [q for q in qs if q.get("kind") == "stage"]
@@ -121,10 +121,10 @@ def render(meta, qs):
 
     stagebits = []
     for family, label in sfamilies:
-        faces = [q for q in sonly if (q.get("family") or "stage") == family]
-        if faces:
-            gated = sum(1 for q in faces if q["state"].startswith("✅"))
-            stagebits.append(f"{gated}/{len(faces)} {label}")
+        pages = [q for q in sonly if (q.get("family") or "stage") == family]
+        if pages:
+            gated = sum(1 for q in pages if q["state"].startswith("✅"))
+            stagebits.append(f"{gated}/{len(pages)} {label}")
     stagebar = (" · " + " · ".join(stagebits)) if stagebits else ""
     return TPL.format(title=esc(meta["title"]), spine=inline(meta["spine"]),
                       close=inline(meta["close"]), bar=bar, done=done, n=nq,
@@ -161,7 +161,7 @@ TPL = """<!DOCTYPE html>
 
 {ctx}
 
-<h3 class="sec" id="qlist">ALL FACES<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>
+<h3 class="sec" id="qlist">ALL PAGES<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>
 <div class="idx">{index}</div>
 
 <span id="all"></span>
@@ -171,7 +171,7 @@ TPL = """<!DOCTYPE html>
 (one per ruling), and named lifecycle pages such as <code>S-Seed-0-xxx.md</code>,
 <code>S-Display-0-xxx.md</code>, <code>S-Main-3-xxx.md</code>, or
 <code>S-Appendix-A-xxx.md</code>. Edit those, then rebuild:
-<code>python3 build.py</code>.<br>Every face is real HTML — the page reads fine
+<code>python3 build.py</code>.<br>Every page is real HTML — the page reads fine
 with JavaScript off; the script only adds commenting.</p>
 </div>{popcards}{js}</body></html>
 """

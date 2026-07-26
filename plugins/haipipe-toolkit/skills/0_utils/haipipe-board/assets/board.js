@@ -472,8 +472,8 @@
   function wireXcal() {
     document.querySelectorAll('details.diagram-section').forEach(function (sec) {
       if (sec.querySelector('.xadd')) return;
-      var face = sec.closest('section.slide.q');
-      if (!face || !face.dataset.file) return;
+      var page = sec.closest('section.slide.q');
+      if (!page || !page.dataset.file) return;
       var dia = sec.querySelector('.dia');
       if (!dia) return;
       var has = !!sec.querySelector('.xcal');
@@ -482,7 +482,7 @@
       var open = document.createElement('button');
       open.type = 'button';
       open.className = 'xadd-open';
-      open.textContent = has ? '🖌 Replace the Excalidraw canvas' : '🖌 Add an Excalidraw canvas';
+      open.textContent = '🖌 Excalidraw Canvas';
       var row = document.createElement('div');
       row.className = 'xadd-row';
       row.hidden = true;
@@ -490,9 +490,25 @@
       inp.type = 'text';
       inp.placeholder = 'https://app.excalidraw.com/s/…';
       var ok = document.createElement('button'); ok.type = 'button'; ok.textContent = 'Save';
+      // ✨ mint one instead of going to make it yourself. serve.py creates the
+      // scene through the Excalidraw+ API and writes the link back, so the paste
+      // field is for a drawing that already exists, not a chore.
+      var mk = document.createElement('button'); mk.type = 'button';
+      mk.className = 'xnew'; mk.textContent = '✨ Create one for me';
       var no = document.createElement('button'); no.type = 'button'; no.textContent = '✕';
       var err = document.createElement('span'); err.className = 'xerr';
-      row.append(inp, ok, no, err);
+      row.append(inp, ok, mk, no, err);
+      mk.onclick = async function () {
+        mk.disabled = true; err.textContent = 'creating…';
+        var j = null;
+        try { j = await post('/_board/excalidraw', { file: face.dataset.file }); }
+        catch (e) { j = null; }
+        mk.disabled = false;
+        if (j === null) { err.textContent = ''; say('serve.py is not running'); return; }
+        if (!j.ok) { err.textContent = ''; say(j.err || 'could not create one'); return; }
+        err.textContent = '✔ created';
+        (window.__boardRefresh || function () { location.reload(); })();
+      };
       box.append(open, row);
       dia.appendChild(box);
       open.onclick = function () { row.hidden = !row.hidden; if (!row.hidden) inp.focus(); };
@@ -502,7 +518,7 @@
         if (!url) { inp.focus(); return; }
         ok.disabled = true; err.textContent = '…';
         var j = null;
-        try { j = await post('/_board/diagram', { file: face.dataset.file, url: url }); }
+        try { j = await post('/_board/diagram', { file: page.dataset.file, url: url }); }
         catch (e) { j = null; }
         ok.disabled = false;
         if (j === null) {
@@ -721,14 +737,14 @@
     'If you cannot do one, or disagree, do NOT flip it to [x] — write why underneath.\n' +
     'End with a short summary of what you changed.';
 
-  /* BOARDFIX = FIXALL 的整板版（QD5）：不是这一题的评论，是每个 face 的。 */
+  /* BOARDFIX = FIXALL 的整板版（QD5）：不是这一题的评论，是每个 page 的。 */
   var BOARDFIX =
     'You are on the WHOLE board. Work through every unresolved comment (`- [ ]`) ' +
-    'in the ## Comments of EVERY face file on this board. For each one:\n' +
-    '1. Edit that face\'s body the way the comment asks;\n' +
+    'in the ## Comments of EVERY page file on this board. For each one:\n' +
+    '1. Edit that page\'s body the way the comment asks;\n' +
     '2. Flip that line to `- [x]` and reply on an indented line below it with ' +
     '`>> CC<MMDD>: what you did`;\n' +
-    '3. Add one line at the TOP of that face\'s ## Log: `YYMMDD HHMM · what changed`.\n' +
+    '3. Add one line at the TOP of that page\'s ## Log: `YYMMDD HHMM · what changed`.\n' +
     'If you cannot do one, or disagree, do NOT flip it to [x] — write why underneath.\n' +
     'End with a short per-file summary of what you changed.';
 
@@ -750,7 +766,7 @@
                function () { chatSend(isBoard ? BOARDFIX : FIXALL); }, true);
     if (isBoard) {
       add('🧭 Which question should I act on?', function () {
-        chatSend('Answer only, do not edit any file: which face on this board should ' +
+        chatSend('Answer only, do not edit any file: which page on this board should ' +
                  'be acted on next, and why? Consider state, unchecked items and open ' +
                  'comments. Give 1-3 candidates, one line each: id · reason.');
       });
@@ -827,7 +843,7 @@
     chat.classList.add('on'); document.body.classList.add('chaton');
 
     /* 第一步：先把浏览器里还没写盘的评论同步过去 —— 不然 chat 读不到它们。
-       整板会话看得见每个 face，所以把所有还没写盘的都同步，不只这一个文件的。 */
+       整板会话看得见每个 page，所以把所有还没写盘的都同步，不只这一个文件的。 */
     var mine = isBoard ? db.length
                        : db.filter(function (c) { return c.file === cq.file; }).length;
     if (mine) {
@@ -1585,13 +1601,45 @@ document.addEventListener('click', function (ev) {
   });
 })();
 
-/* A chip inside a sentence's <summary> would toggle that sentence's drawer on
-   the way to opening its own panel. The panel is native and opens either way;
-   this only stops the drawer from flapping. Enhancement only: with scripts off,
-   both simply happen, and the panel content is still real body text. */
-(function () {
-  document.addEventListener('click', function (e) {
-    var c = e.target.closest && e.target.closest('button.chip');
-    if (c && c.closest('summary')) e.preventDefault();
+/* A chip inside a sentence's <summary> also toggles that sentence's drawer on
+   its way to opening its own panel. That is left alone ON PURPOSE.
+
+   The first version called e.preventDefault() here to stop the drawer flapping.
+   Showing a popover IS the button's default action, so that cancelled the panel
+   as well: on every sentence carrying a `>` lane, clicking a chip did nothing at
+   all. A cosmetic guard silently disabled the feature it was decorating, and it
+   only showed up on the composite example, where every chip sits in a lane.
+
+   Opening the drawer is not a defect anyway: the lane under the sentence holds
+   the same evidence the panel is about, so getting both is better than either.
+   If this ever does need suppressing, it must NOT use preventDefault; restore
+   `details.open` on the next animation frame instead. */
+
+/* AND IT STILL DID NOT OPEN (JL 260726: "for the values, displays, figures, I
+   cannot click them"). Removing preventDefault was necessary and not
+   sufficient. `<summary>` runs its own activation behaviour on a click
+   anywhere inside it, and that consumes the event before the nested button's
+   default action (show popover) gets to run.
+
+   The measurement that pinned it, on QC0, one build, same page:
+     3 citation chips  S1 S2 S3, sentences with NO `>` lane, plain <p>   OPEN
+     8 other chips     S4 S5 S6, sentences WITH a lane, so wrapped in
+                       <details class="sent"><summary>                   DEAD
+   which is exactly "citations work, values and displays do not". The embed
+   had been hiding it: render_doc builds no sentence drawers, so while the
+   example came from an embed every chip sat in a plain paragraph.
+
+   So the panel is asserted EXPLICITLY, one frame later, and only if the
+   browser did not already open it. preventDefault stays out of this file. */
+document.addEventListener('click', function (e) {
+  var chip = e.target && e.target.closest
+    && e.target.closest('button.chip[popovertarget]');
+  if (!chip || !chip.closest('summary')) return;
+  var panel = document.getElementById(chip.getAttribute('popovertarget'));
+  if (!panel || !panel.showPopover) return;
+  requestAnimationFrame(function () {
+    try {
+      if (!panel.matches(':popover-open')) panel.showPopover();
+    } catch (err) { /* another popover owns the top layer; leave it alone */ }
   });
-})();
+});

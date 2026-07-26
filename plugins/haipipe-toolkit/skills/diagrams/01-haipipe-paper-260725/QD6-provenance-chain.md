@@ -14,7 +14,7 @@ The approach is six links, each of them independently checkable, running from th
 - ✅ Covered here
   The chain from the producing run to the citing sentence, and which of its links a check can settle.
 - ↪ Covered elsewhere
-  The renderer's own contract is `QD2`; who may trigger a render is `QD5`; what a sentence pointing at a display means is `QC3` and `QC4`; how evidence is commissioned in the first place is `QBb1`.
+  The renderer's own contract is `QD2`; who may trigger a render is `QD5`; what a sentence pointing at a display means is `QC3` and `QC4`; how evidence is commissioned in the first place is `QB9`.
 
 ## Diagram
 ```

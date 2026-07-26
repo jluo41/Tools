@@ -14,7 +14,7 @@ The approach is a two-file split, a tiny index read on every invocation and a fu
 - ✅ Covered here
   What lives in `index.yml`, what lives in `stage.md`, what a contract must declare, and how `artifact:` resolves.
 - ↪ Covered elsewhere
-  Who owns the filename is `QBa2`; which dependency declaration is authoritative is `QBc2`; whether display's grain is per-unit is `QB4`.
+  Who owns the filename is `QB4`; which dependency declaration is authoritative is `QA8`; whether display's grain is per-unit is `QB2`.
 
 ## Diagram
 ```
@@ -103,10 +103,10 @@ Below the frontmatter each contract carries prose about doing the work well. `CO
 - [ ] 🧠 Rule whether craft prose belongs in the contract
       `CONTRACT.md` states the case for keeping it. That is a proposal, not a ruling.
 - [ ] 📐 Give display a resolvable artifact
-      `4-display` is the one stage whose `artifact:` still dangles. It declares `blocked_on: QB4`, so a check reports it as KNOWN rather than passing it silently. It cannot resolve until QB4 rules whether display is per-unit.
+      `4-display` is the one stage whose `artifact:` still dangles. It declares `blocked_on: QB2`, so a check reports it as KNOWN rather than passing it silently. It cannot resolve until QB2 rules whether display is per-unit.
 
 ## Where we are
-The form is now stated rather than inferred, and the contracts point at files that exist. Every declared path on the eight contracts resolves against the MISQ paper except `4-display`'s artifact, which is declared blocked on QB4 rather than left dangling.
+The form is now stated rather than inferred, and the contracts point at files that exist. Every declared path on the eight contracts resolves against the MISQ paper except `4-display`'s artifact, which is declared blocked on QB2 rather than left dangling.
 
 Two things are open and both need JL. Where the checking lives is unruled, so the checker exists in the paper skill provisionally and may move or be deleted. Whether craft prose belongs in a contract is argued in `CONTRACT.md` but not decided.
 
@@ -128,4 +128,4 @@ A declared path that cannot be resolved is declared `blocked_on: <Q page>` with 
 A stage repointed onto a new layout declares `artifact_fallback:` for as long as any live paper predates that layout, and a run says which of the two it used.
 
 ## Log
-260726 · Measured the eight contracts: 24 fields common to all, 43 stage-specific. Wrote `CONTRACT.md`. Repointed 22 dangling paths; retired `log:`; added `board_slug`, `artifact_fallback`, `venue_role`, `blocked_on`. Extracted the filename rule into `stage.py`'s `resolve_filename()`. Left `4-display` blocked on QB4, and both rulings open.
+260726 · Measured the eight contracts: 24 fields common to all, 43 stage-specific. Wrote `CONTRACT.md`. Repointed 22 dangling paths; retired `log:`; added `board_slug`, `artifact_fallback`, `venue_role`, `blocked_on`. Extracted the filename rule into `stage.py`'s `resolve_filename()`. Left `4-display` blocked on QB2, and both rulings open.

@@ -43,13 +43,13 @@ The approach is to watch the process rather than grade the output: did it find t
  THE EVIDENCE WE ALREADY HAVE
    260725  a clean-context agent created a missing Seed page, paged it,
            and stopped before DRAFT.
-           ✅ validates the CREATOR boundary (QBc4)
+           ✅ validates the CREATOR boundary (QA8)
            ✗ did not exercise the four phases, the probe ceiling,
              or the CHECK gate.  NOT the acceptance test.
    MISQ    one real stand-in gate has already happened: an agent wrote
            the line saying a gate passed.                       ⚠️
            one data point saying this test would FAIL TODAY on ③,
-           which is exactly QB3's open item.
+           which is exactly QB11's open item.
 ```
 
 ## Content
@@ -68,8 +68,8 @@ The repository's own rule for skill work is that a fresh agent must be watched f
 The fifth is the one most likely to fail, because it is the one that requires an agent to stop when it could continue.
 
 ### What we know already
-One real stand-in gate has happened on the MISQ paper. That is one data point suggesting this test would fail today on the gate line, which is exactly `QB3`'s open item.
-`QBd4` now defines the page-first runner this acceptance test should exercise.
+One real stand-in gate has happened on the MISQ paper. That is one data point suggesting this test would fail today on the gate line, which is exactly `QB11`'s open item.
+`QA9` now defines the page-first runner this acceptance test should exercise.
 
 On 2026-07-25, a clean-context agent followed the revised skill to create a missing Seed Board page, pages it, and stop before DRAFT. That validates the new creator boundary only; it did not exercise the four phases, probe ceiling, or CHECK gate and therefore is not the acceptance test below.
 

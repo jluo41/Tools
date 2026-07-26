@@ -4,7 +4,7 @@ Date: <YYYY-MM-DD>
 
 The design contract for ONE paper: a one-page, evidence-tracked story. It is NOT a draft of the paper. It mirrors the paper's REAL sections (Intro -> Methods -> Results -> Discussion), and every beat carries a readiness tag wired to the probe pipeline plus an interrogation comment.
 
-How to use: copy this file to `<paper>/0-lifecycle/3-narrative/3-narrative.md`, then replace every `<...>` placeholder. Delete beats you do not need; add beats the paper needs. Keep the readiness legend and the comment vocabulary. A filled real-world exemplar (older .tex form, same structure) lives at `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal/0-lifecycle/3-narrative/3-narrative.tex`.
+How to use: copy this file to `<paper>/0-lifecycle/2-venue/3-narrative.md`, then replace every `<...>` placeholder. Delete beats you do not need; add beats the paper needs. Keep the readiness legend and the comment vocabulary. A filled real-world exemplar (older .tex form, same structure) lives at `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal/0-lifecycle/2-venue/3-narrative.tex`.
 
 ## Readiness Legend
 

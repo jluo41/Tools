@@ -5,7 +5,7 @@ method: recursive discovery in build.py + path vetting in serve.py; ruled by JL 
 
 ## Question
 Can a question file live inside the folder it is about, so a board can sit on top of an existing tree instead of mirroring it?
-The working answer is yes: discovery walks the whole tree, so a face sits beside what it discusses while `## Pages` keeps bare filenames for order alone.
+The working answer is yes: discovery walks the whole tree, so a page sits beside what it discusses while `## Pages` keeps bare filenames for order alone.
 That unlocks the case which forced the question: a paper's own `0-lifecycle/` becomes a board in place, rather than a second structure kept in step by hand.
 
 The first consumer forced the question: JL wanted the MISQ paper's `0-lifecycle/` itself to be a board, with each stage folder acting as a question's home (the way `5-section-edit/` keeps one folder per unit).
@@ -13,9 +13,13 @@ Flat-only discovery made that impossible: `build.py` only globbed the board's to
 
 ## Boundary
 - ✅ Covered here
-  Where a face file may physically live: recursive discovery under the board folder, which path segments are excluded, and how comment write-back stays safe once a path rather than a bare filename is in play.
+  Where a page file may physically live: recursive discovery under the board folder, which path segments are excluded, and how comment write-back stays safe once a path rather than a bare filename is in play.
 - ↪ Covered elsewhere
-  Where the board folder itself belongs and what it is named is `QC1`; how the index orders and groups the faces it finds is `QC2`; showing a folder's own documents without a face wrapper was `QF2`, retired 260726: embed them into a real face with `![[path]]` instead (`ref/board-form.md` §5).
+  Where the board folder itself belongs and what it is named is `QC1`; how the index orders and groups the pages it finds is `QC2`; showing a folder's own documents without a page wrapper was `QF2`, retired 260726: embed them into a real page with `![[path]]` instead (`ref/board-form.md` §5).
+
+## Diagram
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QC3
 
 ## Items to Finish
 - [x] 🔍 Recursive discovery shipped
@@ -27,11 +31,11 @@ Flat-only discovery made that impossible: `build.py` only globbed the board's to
 - [x] 🧪 Flat regression passed
       The skill's own board rebuilt with an unchanged question set; the script-free invariant held.
 - [x] 🎴 First consumer live
-      The MISQ `0-lifecycle/` board: 22 questions, faces inside stage folders down to depth 2.
+      The MISQ `0-lifecycle/` board: 22 questions, pages inside stage folders down to depth 2.
 
 ## Where we are
 Shipped 260724.
-Flat boards are untouched; nested faces work end to end including comment write-back (smoke-tested against `4-display/QD2-d01-iv-reporting.md`).
+Flat boards are untouched; nested pages work end to end including comment write-back (smoke-tested against `4-display/QD2-d01-iv-reporting.md`).
 
 ## Files
 - `build.py`
@@ -46,7 +50,7 @@ Flat boards are untouched; nested faces work end to end including comment write-
 - Path segments starting with `_` or `.` (archives, previews) and `fig/` are not part of the board.
 - The Pages keeps listing bare filenames; a duplicate basename anywhere in the tree warns and keeps the first.
 - The page carries the board-relative posix path; serve.py vets it (no absolute, no `..`, basename must match `Q*.md`).
-- Archiving a nested face flattens it into the board's top-level `_archive/`.
+- Archiving a nested page flattens it into the board's top-level `_archive/`.
 - New questions born from the page are still created flat at the board root.
 
 ## Log

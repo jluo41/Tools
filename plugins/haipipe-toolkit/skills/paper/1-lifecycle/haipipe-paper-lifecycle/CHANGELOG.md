@@ -4,6 +4,13 @@ haipipe-paper-lifecycle — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.4.0] — 2026-07-26 — the router names paths that exist
+
+Aligned with the paper-folder layout ruled 2026-07-26 on the design board (`skills/diagrams/01-haipipe-paper-260725`, face QA6): `0-sections/` to `sections/`, `0-displays/` to `displays/` (one folder per unit, the only home of an asset, no top-level `figures/`), `1-compile.sh` to `2-src/compile.sh`, and `STATUS.md` retired. 14 path corrections across the verb table, the skill roster, the stage descriptions and the two ASCII maps. The router is where a reader learns what a verb produces, so every wrong path here is a wrong expectation set before the work starts.
+
+Notable: the `haipipe-paper-folder` roster line described the old three-empty-container scaffold including `STATUS.md`; it now describes the Board-first one.
+
+
 ## [0.3.1] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 3.1.1; older entries below keep their original numbers).

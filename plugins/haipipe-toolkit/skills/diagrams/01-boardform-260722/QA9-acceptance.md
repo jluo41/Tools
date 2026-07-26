@@ -11,32 +11,33 @@ It fails structurally when a construct stops rendering what the documentation sa
 Both failures are invisible to the person who made them, and for the same reason: the author reads the page with everything they know already loaded, so a broken construct still looks like what they meant and an unreadable sentence still reads fine.
 Both have happened repeatedly and both were caught by a human noticing, which is the part that does not scale.
 On the structural side, three regressions landed on 260725 and 260726, and every one of them left the build green: `####` was flattened into the group-title construct so 113 paragraphs claimed to lead a run of items, the Opening disclosure moved onto the section name and left a shut row with the ruling's scope invisible inside it, and the drawer under the lead question ended up half iconed with its prose in the page's metadata voice.
-On the writing side, the second cold read of this board graded one face incomprehensible and five half-understood while every structural check on those faces was passing, and the first one came back with the line that still describes the failure best: it explains the format of a recipe without ever saying what the dish is.
+On the writing side, the second cold read of this board graded one page incomprehensible and five half-understood while every structural check on those pages was passing, and the first one came back with the line that still describes the failure best: it explains the format of a recipe without ever saying what the dish is.
 JL's rule sits above both: if it is not easy to read, writing that much is rubbish, and unreadable equals unwritten.
 The two checks are different instruments and must stay different, but they answer to one trigger, because the thing that keeps failing is not either check: it is that nothing runs after a change.
 
 ## Boundary
 - ✅ Covered here
   Both checks and the single trigger they share: asserting that each documented construct renders with the class the documentation names, running a zero-background reader over the prose, and deciding what happens when either comes back red.
-  The rules the prose check enforces live in `ref/writing-rules.md`, which is this face's deliverable.
+  The rules the prose check enforces live in `ref/writing-rules.md`, which is this page's deliverable.
 - ↪ Covered elsewhere
-  What the template should say is `QA2` and what the page layout should be is `QA4`; this face only checks that what we generate is faithful to both.
+  What the template should say is `QA2` and what the page layout should be is `QA4`; this page only checks that what we generate is faithful to both.
   Whether a stranger can open a board at all from `SKILL.md` alone is `QB2`, which tests the handover rather than any one page.
 
 ## Diagram
+
 ```
   a change lands
-       │   src/ · assets/board.css · any face's prose
+       │   src/ · assets/board.css · any page's prose
        ▼
   ┌────────────────────────────────────────────────────────┐
   │  ONE TRIGGER, TWO CHECKS                                │
   └───────────┬──────────────────────────┬──────────────────┘
               │                          │
       STRUCTURE                     PROSE
-      fixture: ref/q-template.md    fixture: every face of a real board
+      fixture: ref/q-template.md    fixture: every page of a real board
       copied twice, no editing      as its authors actually wrote it
-        ├─ a Q face                 run by a fresh-context agent that
-        └─ an S face                has never seen the project
+        ├─ a Q page                 run by a fresh-context agent that
+        └─ an S page                has never seen the project
               │                          │
         build.py                    answers exactly three things
               │                      ① which sentence is unreadable
@@ -44,7 +45,7 @@ The two checks are different instruments and must stay different, but they answe
               │                      ③ what premise is missing
         assert each construct             │
               │                          │
-        boolean per row             a graded report per face
+        boolean per row             a graded report per page
               │                          │
               └────────────┬─────────────┘
                            ▼
@@ -73,6 +74,8 @@ The two checks are different instruments and must stay different, but they answe
     catches neither kind: too much unwritten context is already loaded
 ```
 
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA9
+
 ## Content
 ### The two checks are different instruments
 The structural check asks a question with a fact for an answer, and the prose check asks one that requires judgment.
@@ -96,13 +99,13 @@ It is also the cheapest possible fixture, because it is not a fixture at all: th
   The template exercises the construct, the documentation names a class, and the page does not produce it.
   The fix belongs in `src/` or `assets/board.css`, and the report should name the construct in words rather than a selector, because the useful sentence is "the job line stopped rendering".
 - The template has a hole
-  The documentation names a construct that the template never demonstrates, so a new face inherits no example of it and the check has nothing to assert.
+  The documentation names a construct that the template never demonstrates, so a new page inherits no example of it and the check has nothing to assert.
   The fix belongs in `ref/q-template.md`, and this half is the reason to run against the template at all, since a renderer-only test would pass while the hole stayed open.
 
 ### The zero-background reader, and why it cannot be simulated
 The reviewer is a separately started agent that sees only the markdown files it is handed, not the conversation that produced them.
 Its brief is fixed and narrow, and it is told not to praise or summarize: name the unreadable sentence and quote it, list the undefined word and say where it first appears, state the missing premise.
-It grades each face clear, half, or unreadable, where half means the reader can restate what is asked but not why it matters or what counts as done.
+It grades each page clear, half, or unreadable, where half means the reader can restate what is asked but not why it matters or what counts as done.
 The prompt and the rules it enforces live in `ref/writing-rules.md`, so the check and its standard are one document rather than a habit.
 
 ## Items to Finish
@@ -112,21 +115,30 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       This was ticked on 260723 under QA5 and is inherited unchanged.
 - [x] 📄 The cold read has a report format that produces usable findings
       It has run twice and both times returned findings that were acted on rather than argued with.
-      The format is fixed: unreadable sentences quoted, undefined words listed with the file they first appear in, missing premises named, then a grade per face.
+      The format is fixed: unreadable sentences quoted, undefined words listed with the file they first appear in, missing premises named, then a grade per page.
       The evidence that the format works is that its output changed the board: `## Topic` and `## Pipeline` exist because the first run said the files explain a recipe's format without ever saying what the dish is.
-- [x] 🧪 The template renders as both a Q face and an S face with no hand editing
+- [x] 🧪 The template renders as both a Q page and an S page with no hand editing
       Copying `ref/q-template.md` twice and renaming the copies must be enough to produce one valid Q page and one valid S page.
       The two paths have broken independently, so checking one proves little about the other: Stage Contract exists only on S, Why this matters moves between Opening and Content depending on the kind, and the Content heading names the stage on S while counting subsections on Q.
       If the template cannot render as both without editing, that is itself a finding, because the documentation says one file serves both kinds.
-      Ticked 260726: `check.py` copies the template into a temp board twice, once as `QT1-template.md` and once as `S-Main-1-template.md`, builds it, and fails if fewer than two faces come out. No hand editing was needed.
+      Ticked 260726: `check.py` copies the template into a temp board twice, once as `QT1-template.md` and once as `S-Main-1-template.md`, builds it, and fails if fewer than two pages come out. No hand editing was needed.
 - [x] 📋 Every construct the documentation names is asserted with its class
       The list in the Diagram is the starting set, and it should be derived from `ref/board-form.md` rather than from the renderer, so a construct dropped from the code fails instead of quietly disappearing from both sides.
       The assertion should name the construct in words a reader recognizes, since the value of the check is that it says the job line stopped rendering, not that a selector count changed.
-      Ticked 260726: the 15 constructs from this face's own Diagram are the table in `check.py`, each reported by name and by class, so a failure reads `job line · div.pj` rather than a count.
+      Ticked 260726: the 15 constructs from this page's own Diagram are the table in `check.py`, each reported by name and by class, so a failure reads `job line · div.pj` rather than a count.
 - [x] 🕳 Gaps in the template are reported as gaps, not silently skipped
       When the documentation names a construct the template never demonstrates, the check reports a hole to fill rather than passing by default.
       This is the half that improves the template over time, and it is the half a renderer-only test would miss entirely.
-      Ticked 260726, and it earned itself on the first run: three constructs are documented and never demonstrated, so `code block`, `group title` and `excalidraw canvas` came back as GAP. The template is now measurably incomplete instead of assumed complete.
+      Ticked 260726, and it earned itself on the first run: three constructs are documented and never demonstrated, so `code block`, `group title` and `excalidraw` came back as GAP. The template is now measurably incomplete instead of assumed complete.
+- [x] 🥀 A page that stopped describing its own work is reported
+      Structure and prose were the two failures this page opened with, and a third turned up on 260726 that neither instrument can see: a page that renders perfectly and reads well while saying something that is no longer true.
+      `QA4a` carried `state: 🔴 OPEN` and "nothing is built and nothing is decided" on the day its whole route was built, wired into 28 pages, and running, because the session did the work from chat and never went back to the page that owned it.
+      `check.py` now reports `open-with-done-items` and `partial-with-nothing-open`, which is the cheapest signal that exists: a state and its own boxes disagreeing.
+      It sees `state:` and the checkboxes and nothing else, so it catches the shape and never the content; the rule it backs up is `SKILL.md`'s `sync`, which now says the trigger is substantive work in the session rather than opening a page.
+- [ ] 🥀 Staleness is caught in the PROSE, not only in the state line
+      The mechanical check would have missed `QA4a` entirely if the state had been flipped and the paragraph left alone, which is the more likely half of this failure.
+      The cold reader is the instrument that could see it, since a stranger comparing `## Where we are` against the repo is exactly what it does, and nothing currently asks it to.
+      This closes when the cold read's prompt names contradiction-with-reality as a finding class, alongside the unreadable sentence and the undefined word.
 - [ ] 🏷 A retired id can be told apart from a live one
       Every `unresolved-id` warning on the first run was a deliberate historical mention: `QCb1`-`QCb4` in QA8 recording what the ids used to be, and `QF2` in QC3 naming a retired ruling.
       A live reference and a historical one are typographically identical today, so no check can separate them and neither can a reader.
@@ -144,7 +156,7 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       What is missing is what counts as passing when findings keep arriving but get smaller, since without it the review either never ends or ends whenever someone is tired of it.
       Inherited open from QA5.
 - [ ] 🔁 One trigger runs both checks after a change, and the result is reported
-      An edit to `src/`, to `assets/board.css`, or to any face's prose should be followed by the checks, with the result stated rather than assumed.
+      An edit to `src/`, to `assets/board.css`, or to any page's prose should be followed by the checks, with the result stated rather than assumed.
       This single item is why the two questions merged: it was open on both, worded almost identically, and it is the only reason either check keeps failing to happen.
       The structural half is fast enough to run on every renderer edit, and the prose half is slow enough that it should run per revision rather than per keystroke, so the trigger dispatches them at different rates from one place.
 - [ ] 🧠 JL rules whether a red result blocks a change or only reports it
@@ -156,21 +168,21 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
 Neither check runs by itself, and that has been the state since 260723.
 The writing rules exist and the cold read has run twice by hand; the structural check has never been built, and today's verification was done with one-off scripts that were written, run once, and discarded.
 
-- 260726 JL · 🔗 QA5 merged into this face
+- 260726 JL · 🔗 QA5 merged into this page
   CC argued for keeping them apart, because a boolean construct assertion and a graded cold read are different instruments with different fixtures and different runners.
-  JL ruled to merge, and the merge is on the trigger: both faces were carrying the same unbuilt item about running automatically after a change, and splitting one mechanism across two faces is what left it unbuilt on both.
-  The instruments stay distinct inside this face, and QA5's ticked history came with it rather than being restarted.
+  JL ruled to merge, and the merge is on the trigger: both pages were carrying the same unbuilt item about running automatically after a change, and splitting one mechanism across two pages is what left it unbuilt on both.
+  The instruments stay distinct inside this page, and QA5's ticked history came with it rather than being restarted.
 
-- 260726 JL · 🧭 Opened as a face rather than written as a script
-  CC was about to write the structural checker directly, and JL stopped it: an unsettled ruling gets a face first, and the code follows the ruling instead of preceding it.
+- 260726 JL · 🧭 Opened as a page rather than written as a script
+  CC was about to write the structural checker directly, and JL stopped it: an unsettled ruling gets a page first, and the code follows the ruling instead of preceding it.
   Writing the script first would have produced a check whose acceptance nobody had agreed.
 
 - 260723 CC · 📉 The second cold read graded this board honestly and it was not good
-  Nine faces: two clear, six half-understood, one incomprehensible, and the incomprehensible one was QA4.
+  Nine pages: two clear, six half-understood, one incomprehensible, and the incomprehensible one was QA4.
   Its three sharpest findings were that the word board is ambiguous in a self-referential context so the reader guesses throughout, that QA2's diagram said top and bottom while QA4's body said side by side about the same fact, and that `build.py`, skill, `/html-ppt`, and focus mode appear across five files and are defined nowhere.
   The two self-contradictions were fixed the same day; the undefined-terms finding is still open, which is why it is worth saying that a structural check would have passed all nine.
 
-- 260722 CC · 📉 The first cold read, seven faces, and the line that still stings
+- 260722 CC · 📉 The first cold read, seven pages, and the line that still stings
   One clear, five vague, one incomprehensible, with roughly 35 terms used and never explained.
   The verdict was that the files explain the format of a recipe without ever saying what the dish is, and `## Topic` and `## Pipeline` exist because of it.
 
@@ -179,7 +191,7 @@ The writing rules exist and the cold read has run twice by hand; the structural 
   These do the most damage of any writing fault, because the reader assumes they are jargon, goes looking for a definition, and finds nothing, so they lose confidence in the whole page rather than in one phrase.
 
 - 260726 CC · 🧰 The structural half exists and runs
-  `check.py <board-dir>` covers four families: board.md against disk, each face's required sections and state value and references, the built page's links and tag balance and id uniqueness, and the template fixture rendered as both a Q and an S with all 15 constructs asserted.
+  `check.py <board-dir>` covers four families: board.md against disk, each page's required sections and state value and references, the built page's links and tag balance and id uniqueness, and the template fixture rendered as both a Q and an S with all 15 constructs asserted.
   It reuses `src/parse.py` rather than carrying its own parser, so it checks the thing that ships instead of a second opinion.
   Report-only, exit 0, with `--strict` waiting for the ruling below. First run on this board: 0 error, 31 warn, 3 gap; first run on the paper board: 3 error, 8 warn.
   It found two things on its first outing that a person had missed for a day, and two of its own rules were wrong in ways only a real run exposes: it counted `<details>` inside CSS comments, and it applied this board's settled-items rule to a board that had ruled otherwise. Both are fixed; both are the argument for running it rather than describing it.
@@ -188,11 +200,11 @@ The writing rules exist and the cold read has run twice by hand; the structural 
 - `ref/writing-rules.md`
   The prose check's deliverable and its standard: the hard writing rules, the zero-background review prompt, and the convergence criterion.
 - `ref/q-template.md`
-  The structural check's fixture and subject: the file copied for every new face, and the one whose promises the check verifies.
+  The structural check's fixture and subject: the file copied for every new page, and the one whose promises the check verifies.
 - `ref/board-form.md`
   The syntax table the structural assertions should be derived from, section 5 for the body grammar and section 4 for the section mapping.
 - `src/page_question.py`
-  The face renderer, which owns the Opening drawer, the Content subsections, and the Stage Contract.
+  The page renderer, which owns the Opening drawer, the Content subsections, and the Stage Contract.
 - `src/body.py`
   The body grammar: paragraph headings, job lines, group titles, sentence apparatus, typed lanes, and code folds.
 - `assets/board.css`
@@ -213,16 +225,17 @@ construct: one grammar element the documentation promises, such as a paragraph h
 ## Discussion
 > JL: I want a new Q about how to write a Q's body so people can actually understand it. We can have a subagent review every md so someone with limited knowledge can still follow.
 > JL: QA5 Writing it so people understand this one can be absorbed into QA9 Checking the template against its own page, right?
->> CC0726: merged on JL's ruling. The two instruments stay distinct inside this face; what merged is the trigger, which was the item open on both.
+>> CC0726: merged on JL's ruling. The two instruments stay distinct inside this page; what merged is the trigger, which was the item open on both.
 
 ## Log
+260726 · a THIRD failure named and half instrumented (JL: "during the session when we use /haipipe-board, you should think about how to update the related Q along the session"): a page can render and read while no longer being true, `check.py` now reports the state-against-its-own-boxes shape, and the prose half is open as a cold-read finding class
 260726 · `check.py` written and run (JL: "do you think you need to write a python script to check the basic webpage and Q-md structure"): 🧪 📋 🕳 ticked, two new items opened by what the first run exposed (retired-id convention, board-local rules); the cold-read half and the shared trigger stay open
 260726 · QA5 merged in on JL's ruling: title widened from "Checking the template against its own page", the cold read and its two ticked items came across with their history, and the duplicated "runs automatically after a change" item became one. File renamed `QA9-rendercheck.md` to `QA9-acceptance.md`; the id is unchanged so `#QA9` still resolves
 260726 · opened as QA9 after three construct-level regressions in two days (`####` rendering as a group title, the Opening fold moving onto the section name, the drawer's half-iconed headings), each caught by JL reading a page rather than by anything we run
 260724 1242 · (from QA5) Translated to English (JL 260724: everything on the board in English)
 260723 1710 · (from QA5) Ticked during the board-wide review: `ref/writing-rules.md` written and the cold read run twice, so state went 🟡; the automation half stayed open and is still open here
 260723 0945 · (from QA5) Fixed the two self-contradictions the second cold read found: QA4's side-by-side against the actual stacked layout, and the three names one section was going by
-260723 0925 · (from QA5) Second cold read, nine faces: two clear, six half, one incomprehensible
+260723 0925 · (from QA5) Second cold read, nine pages: two clear, six half, one incomprehensible
 260723 0915 · (from QA5) JL: "if it is not easy to read, writing that much is rubbish", opened as a question
-260722 1900 · (from QA5) Added `## Topic` and `## Pipeline` after the first cold read; terms moved into per-face `## Glossary`
-260722 1830 · (from QA5) First cold read, seven faces: one clear, five vague, one incomprehensible, roughly 35 unexplained terms
+260722 1900 · (from QA5) Added `## Topic` and `## Pipeline` after the first cold read; terms moved into per-page `## Glossary`
+260722 1830 · (from QA5) First cold read, seven pages: one clear, five vague, one incomprehensible, roughly 35 unexplained terms

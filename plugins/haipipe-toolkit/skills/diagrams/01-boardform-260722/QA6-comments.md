@@ -11,7 +11,7 @@ The browser is on the user's laptop and the files are on the server, so a browse
 Comments that live only in a browser vanish on the next machine and never enter git, which is not "discussion on the board" but a private sticky note.
 Building it is only half the problem, because a feature that writes comments answers none of "they pile up forever", "broken quotes that nobody repairs", or "can a board close with open comments".
 With open comments sitting in `## Comments` and nothing saying what they mean, the close condition is hollow: a question can be marked ✅ carrying three of them.
-So this face owns the whole span, from the selection that creates a comment to the rule that lets a board close in spite of one, and it defines the storage syntax inside `.md` that `QB1`'s SKILL.md needs in order to describe commenting at all.
+So this page owns the whole span, from the selection that creates a comment to the rule that lets a board close in spite of one, and it defines the storage syntax inside `.md` that `QB1`'s SKILL.md needs in order to describe commenting at all.
 
 ## Boundary
 - ✅ Covered here
@@ -23,6 +23,7 @@ So this face owns the whole span, from the selection that creates a comment to t
   Where the comment block sits on the page: that is `QA4`.
 
 ## Diagram
+
 ```
 BUILDING ONE
        select a sentence on board.html
@@ -84,6 +85,8 @@ How a comment travels from "HTML in the browser" to "md on disk" to being read b
   What ③ receives at start is a COUNT, not the text; QA8a owns that gap.
 ```
 
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA6
+
 ## Items to Finish
 - [x] 🖱 Select a sentence → write a comment → instant highlight + 💬 at the sentence end
 - [x] ✍️ Anyone can sign with their own initials, not just the original defaults
@@ -143,12 +146,12 @@ The lifecycle is the unfinished half. Only ①②③ exist, and they emerged whi
   While a question still has open comments its header carries a `💬 N`.
 - Who reads a comment, and when (JL asked 260723; corrected 260726)
   After the disk write there are two readers, both reading the same place, the md's `## Comments`: ① this CC session, where you say "read QA6" and I Read the file, scooping the new comments right then, a snapshot on demand with no automatic sensing; ② the AI attached to this question in the drawer or terminal.
-  The second one used to be described here as having open comments "injected into its system prompt", and that is not what the code does: `prime_context` gives it the board, the face id and title, the file path, the first 280 characters of `## Question`, and a COUNT of unresolved boxes, then tells it to read the file.
+  The second one used to be described here as having open comments "injected into its system prompt", and that is not what the code does: `prime_context` gives it the board, the page id and title, the file path, the first 280 characters of `## Question`, and a COUNT of unresolved boxes, then tells it to read the file.
   So neither reader is pushed the text; both must open the md, and the difference is only that the drawer AI is told at start that unresolved items exist.
   "The agent cannot see it" still happens only while a comment is browser-side in localStorage, not yet on disk, but "it was told" is weaker than this page claimed. `QA8a` owns that gap.
 - They pile up forever
   Solved comments have no exit; `## Comments` only grows.
-  This board is two days old and this face already holds 11.
+  This board is two days old and this page already holds 11.
 - Why anchors kept "getting lost", three layers (JL asked 260723)
   ① Scan range too narrow: highlighting used to skip `## Diagram`, so selecting words inside the figure got wrongly flagged. → Fixed; figures are scanned too.
   ② Quotes crossing inline tags: a sentence containing `code`/**bold** cannot match tagged HTML as plain text. → Fixed: when exact match fails, fall back to "strip tags + normalize whitespace" containment; if present, it does not count as lost.
@@ -187,7 +190,7 @@ Edit the original sentence and the quote no longer matches; the comment drifts.
 The only correct move is making "broken" visible instead of pretending it did not happen.
 
 **A page can describe a mechanism more generously than the mechanism behaves.**
-This face said the drawer AI had open comments "injected into its system prompt". It does not; it is handed a count and told to read the file.
+This page said the drawer AI had open comments "injected into its system prompt". It does not; it is handed a count and told to read the file.
 Nobody noticed for three days because the sentence was plausible and nobody re-read `prime_context` against it.
 
 ## Glossary
@@ -264,7 +267,7 @@ draft: a comment still in the browser, not yet written into `.md`, and invisible
       serve.py edits the md on this machine and regenerates the html. Verified.
 
 ## Log
-260726 · QA7 merged in (JL: "could we merge QA6 and QA7 to be one QA6"). Building a comment and ruling its remaining life are one subject, and the split let this face sit ✅ while the thing it built had no ending. State drops ✅ → 🟡 because QA7's three open items came with it; owner CC → JL because all three are rulings. Every QA7 comment is kept and marked `(from QA7)`, both Discussion threads survive, and the item list gained the emoji icons the current form asks for without a word of its text changing. The claim that open comments are "injected into the system prompt" was corrected against `prime_context`, which passes a count; `QA8a` opened for that gap
+260726 · QA7 merged in (JL: "could we merge QA6 and QA7 to be one QA6"). Building a comment and ruling its remaining life are one subject, and the split let this page sit ✅ while the thing it built had no ending. State drops ✅ → 🟡 because QA7's three open items came with it; owner CC → JL because all three are rulings. Every QA7 comment is kept and marked `(from QA7)`, both Discussion threads survive, and the item list gained the emoji icons the current form asks for without a word of its text changing. The claim that open comments are "injected into the system prompt" was corrected against `prime_context`, which passes a count; `QA8a` opened for that gap
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question
 260723 1735 · (QA7) Closed two open comments: ① JL 1519 "board or question" → Done-when and Now rewritten in two-level form; ② JL 1518 "one-click re-anchor is exactly what I want" → promoted from nice-to-have to the formal acceptance bar

@@ -1,4 +1,4 @@
-<!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2b-pitch/2b-pitch.md from this skeleton: replace every <…>, and each `<!-- RULE: … -->` comment is guidance to FOLLOW then DELETE — a RULE comment never appears in the finished doc. Delete this top line too. -->
+<!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/2b-pitch.md from this skeleton: replace every <…>, and each `<!-- RULE: … -->` comment is guidance to FOLLOW then DELETE — a RULE comment never appears in the finished doc. Delete this top line too. -->
 2b-pitch: <paper title> (<Venue>)
 ==================================
 

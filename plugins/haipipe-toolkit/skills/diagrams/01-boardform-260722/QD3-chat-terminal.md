@@ -6,7 +6,7 @@ session: d650c47e-0d7d-464d-8405-a98a545fe552
 
 ## Question
 Besides the restricted drawer, can every Q also have **its own real terminal**, the full Claude Code with nothing missing?
-The working answer is one PTY per face, running where the files are and reaching the browser through the single port already forwarded.
+The working answer is one PTY per page, running where the files are and reaching the browser through the single port already forwarded.
 What turns on it is the ceiling of the live layer: the drawer is a rebuilt chat box, so anything needing a command or a skill stops there.
 
 The hard part is that the terminal must run on the machine the files are on and squeeze through Remote-SSH's single forwarded port, and several boards and questions open at once must not fight over ports.
@@ -20,6 +20,7 @@ It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 
   The rules themselves: that is `QD1`; nor the web drawer: that is `QD2`.
 
 ## Diagram
+
 ```
    browser (JL's laptop)                        server (the files live here)
    ┌──────────────────┐                         ┌──────────────────────────────┐
@@ -37,6 +38,8 @@ It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 
    why 5599 reverse proxy + unix sockets: only 5599 is forwarded to the laptop; no port pool —
    one socket file per question (no "which port / will they run out"). ttyd -b mounts a subpath; serve.py forwards verbatim (WS included).
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD3
 
 ## Items to Finish
 - [x] A ⌨ entry on every Q card
@@ -119,7 +122,7 @@ Built, and it lives in the page. ⌨ in the drawer header enters the terminal; c
 - Of the security boundary, only "auth" remains unwritten
       The guardrails are no longer weak: unix sockets (no scannable TCP port), entry only through the 5599 proxy, keys must be registered.
       The single gap: ttyd itself does no auth; whoever reaches 5599 can use it.
-      Pure-local + SSH forwarding today, good enough; the day it faces the outside, auth comes first.
+      Pure-local + SSH forwarding today, good enough; the day it pages the outside, auth comes first.
       Parked until exposure is real.
 - Auto-release on tab close: the drawer's own terminal is reaped, the rest rely on the fallback
       Closing a whole board page reaps the drawer's open terminal via the pagehide beacon.

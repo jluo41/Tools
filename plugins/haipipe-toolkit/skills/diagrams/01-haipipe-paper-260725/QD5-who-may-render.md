@@ -14,7 +14,7 @@ The approach is a commissioning asymmetry plus a candidate mode: a render can al
 - ✅ Covered here
   Who commissions a render, whether it spends, and what a returned render may replace.
 - ↪ Covered elsewhere
-  Which layer owns which part is `QD1`; the renderer's own input and output contract is `QD2`; the spending ladder itself is `QBb2`; what makes the result auditable afterwards is `QD6`.
+  Which layer owns which part is `QD1`; the renderer's own input and output contract is `QD2`; the spending ladder itself is `QB9`; what makes the result auditable afterwards is `QD6`.
 
 ## Diagram
 ```

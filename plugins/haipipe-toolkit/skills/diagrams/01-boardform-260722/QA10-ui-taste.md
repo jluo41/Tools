@@ -14,9 +14,10 @@ The useful question is narrower: which bias-correction rules improve a research 
 - ✅ Covered here
   The Board's visual design read, density and motion settings, typography and surface consistency, accessibility checks, and an audit-first adoption protocol.
 - ↪ Covered elsewhere
-  The shared single-face structure stays with `QA4`; prose and structural acceptance stay with `QA9`; automatic group-title emoji selection stays with `QA4`, which absorbed QD4 on 260726; Paper and venue writing style belongs to the Paper lifecycle.
+  The shared single-page structure stays with `QA4`; prose and structural acceptance stay with `QA9`; automatic group-title emoji selection stays with `QA4`, which absorbed QD4 on 260726; Paper and venue writing style belongs to the Paper lifecycle.
 
 ## Diagram
+
 ```text
 external taste rules
         |
@@ -24,7 +25,7 @@ external taste rules
 scope filter: research control plane, not marketing page
         |
         v
-read-only audit of index, face, chat, mobile, dark, and no-JS
+read-only audit of index, page, chat, mobile, dark, and no-JS
         |
         v
 at most three isolated prototypes
@@ -36,6 +37,8 @@ human comparison
 Board specification      Q records why
 and QA9 checks           it does not fit
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA10
 
 ## Content
 ### Proposed Board design read
@@ -67,8 +70,8 @@ These are a proposal for JL to settle, not current Board law.
 - It has no `prefers-reduced-motion` rule.
   Existing transitions are short, but the rule should exist before richer live controls arrive.
 - Rounded bordered surfaces appear at many nested levels: spine, context, index row, slide, boundary, files, comparison column, chat, and comments.
-  The focused face and its major inner sections already remove these frames, preserving QA4's
-  unframed reading intent; the index and all-face views still need visual comparison before
+  The focused page and its major inner sections already remove these frames, preserving QA4's
+  unframed reading intent; the index and all-page views still need visual comparison before
   any further surface reduction is justified.
 - Radius values range across several unrelated numbers and full pills.
   A small semantic radius system may make the interface more coherent without flattening useful distinctions.
@@ -91,7 +94,7 @@ This is a source-level first pass, not a completed visual or accessibility audit
 - No mandatory GSAP, scroll pinning, cinematic motion, or randomized layout selection.
 - No default `8 / 6 / 4` dial settings.
 - No blanket emoji ban.
-  Board icons carry authored information and are already governed by the face grammar.
+  Board icons carry authored information and are already governed by the page grammar.
 - No new font, framework, icon, motion, or design-system dependency merely to satisfy an aesthetic preference.
 - No change that makes hidden JavaScript necessary for reading the complete Board.
 
@@ -104,13 +107,13 @@ The redesign variant is the closer model because it begins with scan, diagnose, 
 
 ### Proposed pilot
 Run the first pilot on this Board itself.
-Capture the index, one dense Q face, the chat drawer, mobile width, and dark mode before changing CSS.
+Capture the index, one dense Q page, the chat drawer, mobile width, and dark mode before changing CSS.
 Prototype no more than three changes in one pass: visible keyboard focus, a semantic radius vocabulary, and a reduced-motion fallback.
 Do not change content structure or interaction behavior during the visual comparison.
 Keep a change only if a fresh reader scans state faster, reads the page comfortably, and can still identify every boundary the old styling communicated.
 
 ### Pilot verification · 260726
-- Desktop computed width remained `1440 / 1440`; the focused face kept `border: none`,
+- Desktop computed width remained `1440 / 1440`; the focused page kept `border: none`,
   `border-radius: 0`, and a transparent background.
 - At `390px`, document and body scroll width both remained `390px`.
   Only preformatted diagrams were wider, and they retain their intentional local horizontal scroll.
@@ -118,7 +121,7 @@ Keep a change only if a fresh reader scans state faster, reads the page comforta
   `3px` offset, and the dedicated light-mode focus color `rgb(7, 95, 189)`.
 - Emulated reduced motion matched successfully and reduced both transition and animation duration
   to `0.01ms`.
-- Light, dark, focused-face, index, and mobile screenshots rendered without visible regression.
+- Light, dark, focused-page, index, and mobile screenshots rendered without visible regression.
 - All seven active Boards rebuilt successfully, and every build reported that its body survives
   with JavaScript stripped.
 
@@ -131,13 +134,13 @@ received the same full visual comparison.
 - [ ] 📋 Freeze the borrow and reject lists
       Decide which external taste rules may enter the Board audit and which remain permanently out of scope.
 - [ ] 🔍 Complete the baseline audit
-      Inspect index, focused face, chat, comments, mobile, dark mode, keyboard flow, and the script-stripped page with screenshots and concrete findings.
+      Inspect index, focused page, chat, comments, mobile, dark mode, keyboard flow, and the script-stripped page with screenshots and concrete findings.
 - [x] 🧪 Prototype at most three changes
       Added one shared high-contrast `:focus-visible` ring, four radius tokens
       (`inline`, `control`, `surface`, `pill`), and a `prefers-reduced-motion` fallback.
       No markup, information architecture, or dependency changed.
 - [ ] 👁 Compare with fresh readers
-      Ask one fresh reader to locate the next open item and explain one dense face before and after, then record what improved and what regressed.
+      Ask one fresh reader to locate the next open item and explain one dense page before and after, then record what improved and what regressed.
 - [ ] 📐 Graduate or reject each rule
       Adopted display rules move to `ref/board-form.md`; mechanical acceptance checks move to `QA9`; rejected rules remain recorded here with their reason.
 
@@ -152,7 +155,7 @@ No external skill has been installed and no dependency has been added.
   JL asked for the red and green bars down the left of the index to go.
   Removed: `.ir`'s 4px `border-left` and the four `.ir.todo/.wip/.done/.hold` colour rules. The row keeps its 1px border and its hover accent.
   Nothing was lost, which is why it was safe: every row already opens with the state emoji, so the bar restated the state in a second language, and stacked down a 27-row index the bars read as a chart rather than as a list.
-  Two neighbours were deliberately left alone: the pale green completion wash on each row is different information (percent done, not state), and the face's own left stripe on `.slide.q` is a different surface.
+  Two neighbours were deliberately left alone: the pale green completion wash on each row is different information (percent done, not state), and the page's own left stripe on `.slide.q` is a different surface.
 
 - 260726 CC · 🧪 Applied the first reversible UI taste pilot
       Added global keyboard focus, semantic radius tokens, and reduced-motion handling.
@@ -167,7 +170,7 @@ No external skill has been installed and no dependency has been added.
 - `ref/board-form.md`
   Settled visual rules graduate here only after the pilot and human ruling.
 - `QA4-pagelayout.md`
-  Owns the existing shared face hierarchy and the unframed reading intent this audit must preserve.
+  Owns the existing shared page hierarchy and the unframed reading intent this audit must preserve.
 - `QA9-acceptance.md`
   Owns repeatable post-change checks once a visual rule becomes mechanical.
 - `QA4-pagelayout.md`

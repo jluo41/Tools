@@ -22,6 +22,7 @@ Downstream it touches the SPA's top-level routes (`/individual` · `/group` toda
   Nor exposure/auth: that is `QE1`.
 
 ## Diagram
+
 ```
 ①  today (v1)                ②  third top-level entry        ③  SPACE shell above all
    /individual                   /individual   patient           pick SPACE first
@@ -34,6 +35,8 @@ Downstream it touches the SPA's top-level routes (`/individual` · `/group` toda
    cheap, shipped, findable      honest: three subjects —        SPACEs are truly in use;
                                  patient · cohort · workroom     overkill today
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE5
 
 ## Items to Finish
 - [x] JL picks ① / ② / ③

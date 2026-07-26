@@ -4,8 +4,8 @@ description: "Compile LaTeX paper to PDF, fix errors, and verify output. Use whe
 argument-hint: "[paper-directory]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
+  version: "0.2.0"
+  last_updated: "2026-07-26"
   summary: "Compile LaTeX paper to PDF, fix errors, and verify output."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -53,7 +53,7 @@ ls $PAPER_DIR/main.tex
 # Should exist
 ls $PAPER_DIR/references.bib
 ls $PAPER_DIR/sections/*.tex
-ls $PAPER_DIR/figures/*.pdf 2>/dev/null || ls $PAPER_DIR/figures/*.png 2>/dev/null
+ls $PAPER_DIR/displays/*/assets/*.pdf 2>/dev/null || ls $PAPER_DIR/displays/*/assets/*.png 2>/dev/null
 ```
 
 ### Step 2: First Compilation Attempt
@@ -86,7 +86,7 @@ LaTeX Warning: Reference `fig:xyz' on page 3 undefined
 
 **Missing figures:**
 ```
-! LaTeX Error: File `figures/fig1.pdf' not found.
+! LaTeX Error: File `displays/display01-hero/assets/figure.pdf' not found.
 ```
 → Check if the file exists with a different extension (.png vs .pdf).
 Update the `\includegraphics` path.

@@ -1,15 +1,15 @@
 <tpl: GENERIC FALLBACK TEMPLATE. PRINCIPLE (JL 2026-07-20): every (venue, section-kind) has its OWN template, summarized from that outlet's exemplars. This file is used ONLY when the venue has no pack, or the pack has no template.md for this kind. For a pack-having venue, section-edit copies the venue-specific template resolved into 2a-venue.md's Section Styles table instead of this one. See stage.md `template:` and ../section-kinds.yml.>
-<tpl: THIS FILE IS A TEMPLATE **and** its own rulebook. DRAFT copies it to 0-lifecycle/5-section-edit/{section}/{section}.md and fills it in.>
+<tpl: THIS FILE IS A TEMPLATE **and** its own rulebook. DRAFT copies it to 0-lifecycle/4-main/{section}.md and fills it in.>
 <tpl: Fill every <angle-bracket> slot. DELETE every line starting with "<tpl:" as you fill — a finished .md contains ZERO of them. Mechanical gate: `grep -c '<tpl' {section}.md` must print 0 before the ⛔ STOP presentation.>
 <tpl: A finished .md has FOUR parts, top to bottom: (1) title + venue header, (2) structure overview, (3) paragraph blocks, (4) Questions Raised block. Content norms come from the venue blueprint (2a-venue.md block, BINDING) + the style pack (REFERENCE ONLY). Craft rules — what DRAFT prose is, the placeholder forms, the comment lifecycle — are in stage.md.>
 
 # Section <N>: <Title> -- Structure
 
 venue: <MISQ 2026> · section-type: <methods (+results flavor)>
-blueprint: 0-lifecycle/2a-venue/2a-venue.md (<methods> block)   <- BINDING: budget, structure, density
+blueprint: 0-lifecycle/2-venue/2a-venue.md (<methods> block)   <- BINDING: budget, structure, density
 style: <resolved venue path, e.g. venue/playbook-utd-is/MISQ/MISQ-methods/style.md · MISQ-results/style.md>   (reference only)
 <tpl: DRAFT writes this header ONCE, at scaffold. The four fields:
-       venue         the pin read from STATUS.md — an EXAMPLE above; any venue works (ISR, Nature, JAMA, a grant, a patent)
+       venue         the pin read from S-Venue-0-venue.md — an EXAMPLE above; any venue works (ISR, Nature, JAMA, a grant, a patent)
        section-type  this section's mapping (e.g. 4-llmtrait -> methods)
        blueprint     the paper's 2a-venue.md block — the authoritative digest
        style         the deep-dive pack, resolved from the blueprint's [source:] tag
@@ -66,7 +66,7 @@ Q-consumer
      · STAGE-PREFIXED ID — `Q-Section-<n>`. The id in the heading and the id in the inline anchor are THE SAME TOKEN, exactly as in every sibling stage.
      · ANCHORED, not detached — Reason names the exact §<N> P<x>.S<y> sentence(s) that raised it; that is how a reader jumps back.
      · EVERY {VAL:?}, every \cite{TOADD}, every heavier need becomes a numbered question. Only items resolving paper-local (a pointer the draft already sees) go under Settled Flags instead.
-     · A missing DISPLAY UNIT is NEVER a question — it is a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md. section-edit FILES display requests; it never creates displays.
+     · A missing DISPLAY UNIT is NEVER a question — it is a DR row in 0-lifecycle/3-display/_DISPLAY_REQUEST.md. section-edit FILES display requests; it never creates displays.
      · Bullet lines, never markdown tables, anywhere in this block (JL standing rule).
      · At PROBE-run time heavier bank questions are DISPATCHED via 1-probes/PP<NN>_<topic>/ (executor-facing q-executor:, no stake) + a 1-probes/README.md bullet row (`- PP<NN> · <stage/section> · <state> · <one-line need> · file: <path>`); the harvested answer flows BACK into the Answer field here.
      · The ⛔ STOP presentation shows this block, so the user reviews STRUCTURE and QUESTIONS at the same gate.

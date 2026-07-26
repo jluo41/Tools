@@ -46,7 +46,7 @@ On restart, the restarted phase reads the `> CHECK:` comments + their `> USER:` 
 ## How It Works
 
 1. **Run**: execute all applicable sub-checkers.
-   For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts).
+   For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./2-src/compile.sh`; `--depth` widens the tex/bib scan for deep layouts).
    For the PROBE invariants (`planned` entries, unresolvable `**target**`s, an `answered` target whose `### a-executor` is still empty, bibtex/tables in probe files) run the paper probe checker (locate it per **Locating the probe checker** below) — any FAIL line means the gate CANNOT go green (a `state: planned` entry at this gate = a probe that never ran).
    Judgment checks (citation support, value provenance, display correctness) stay manual.
 2. **Report**: present results as a structured pass/fail table (see Report Format).
@@ -82,7 +82,7 @@ Without it, ONE in-flight `commissioned` build reds the gate of EVERY downstream
 
 ## Gate Modes (copilot | autopilot)
 
-Mode spec is owned by `../../../1-lifecycle/ref/08-stage-gate.md` (`gate_mode` in STATUS.md, default copilot).
+Mode spec is owned by `../../../1-lifecycle/ref/08-stage-gate.md` (`gate_mode` in the stage's S page `## Log`, default copilot).
 What changes INSIDE this worker:
 
 ```
@@ -160,7 +160,7 @@ What CHECK walks is the **stage doc** (or section `.md`) and the paper's **`1-pr
 
 | Check | How to verify | Pass condition |
 |---|---|---|
-| all needed displays linked | check \ref{fig/tab} in tex resolve to 0-displays/ | all resolve |
+| all needed displays linked | check \ref{fig/tab} in tex resolve to displays/ | all resolve |
 | no missing displays | compare narrative display needs vs linked units | all covered |
 | pending DR rows listed | grep `0-lifecycle/4-display/_DISPLAY_REQUEST.md` for rows not `done` | 📨 ⚠️ if any remain (never pre-place a `\ref` for a unit that does not exist) |
 
@@ -185,7 +185,7 @@ JL 2026-07-07: "统一提议。")
 | terms consistent | grep for term variants (e.g., "clinical ambiguity" vs "clinical uncertainty") | one term per concept |
 | claims traceable | each claim sentence has either a citation or is "our study" framing | no unsupported claims |
 | \label/\ref resolve | `./checks.sh` (broken \ref + orphan \label) | zero broken refs (orphans ⚠️) |
-| compiles clean | `./checks.sh --compile` (wraps ./1-compile.sh) | zero LaTeX errors |
+| compiles clean | `./checks.sh --compile` (wraps ./2-src/compile.sh) | zero LaTeX errors |
 | no TODO markers | `./checks.sh` (TODO/FIXME/XXX) | zero matches |
 
 ### 🔬 PROOF checks — only if the section has proofs

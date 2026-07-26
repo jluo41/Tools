@@ -11,7 +11,7 @@ Everything downstream of the written argument. `1-lifecycle` decides what the pa
 ├── README.md          ← you are here   (folder contract: ../2-phase/REF/paper-folder-anatomy.md)
 │
 ├── 1-build/     ── structure the folder, zero prose
-│   ├── haipipe-paper-scaffold        BUILD NEW: plan → conforming empty skeleton (tex + dirs + 1-compile.sh)
+│   ├── haipipe-paper-scaffold        BUILD NEW: plan → conforming empty skeleton (tex + dirs + 2-src/compile.sh)
 │   ├── haipipe-paper-restructure     MIGRATE: non-conforming paper → gold layout, prose byte-identical
 │   ├── haipipe-paper-conform           VERIFY: conformance audit, report-only
 │   └── haipipe-paper-folder          minimal container (README + STATUS + dirs); the get-or-create bootstrap

@@ -3,8 +3,8 @@ name: haipipe-paper-stage
 description: "One door for every paper lifecycle stage: seed · resource · claims · venue · pitch · narrative · display · section-edit. Reads stages/index.yml, loads ONLY the requested stage's contract, and drives its declared phases. Trigger: 写 seed, 立项, resource, 我们有什么, claims, 主张, H1, venue, 选刊, 投哪个期刊, pitch, 卖点, hook, narrative, 叙事, 大纲, display, 图表, figure, table, section edit, 写某一节, /haipipe-paper-stage."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-07-25"
+  version: "0.7.0"
+  last_updated: "2026-07-26"
   summary: "Board-first stage router: Paper is the public page creator; Board owns the shell, filename, pages, and optional inherited contracts."
   # version history: ./CHANGELOG.md
 ---

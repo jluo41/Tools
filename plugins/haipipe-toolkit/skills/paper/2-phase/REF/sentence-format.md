@@ -31,7 +31,7 @@ A multiple regression confirmed each trait contributes independently.
 - **One sentence per line.** Each `%% ---- Pn.Sm ----` tag sits directly above its
   sentence; a lone `%` line may separate sentences for readability.
 
-This is the same `Pn.Sm` convention the real npjDM `0-sections/` files already
+This is the same `Pn.Sm` convention the real npjDM `sections/` files already
 use — the format pass makes every task-folder consistent with it.
 
 ## What format-check does (and does not) do

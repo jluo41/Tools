@@ -20,6 +20,7 @@ It also decides directly whether a colleague can claim one question and edit it 
   Nor **where in the repo** the folder lives or what it is named: that is `QC1`.
 
 ## Diagram
+
 ```
 NN-topic-YYMMDD/
 ├── board.md        global: title · spine · close · Topic · Pipeline · Pages
@@ -33,6 +34,8 @@ who is on the board   →  by path: every Q*.md in the folder; drop a file in an
 order and grouping    →  by board.md's ## Pages: file names only, titles never copied
 missed registration   →  still displayed (grouped under ⚠️) + a one-line CLI warning
 ```
+
+http://127.0.0.1:5599/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA1
 
 ## Items to Finish
 - [x] List the files the folder must contain, one line each on what it owns

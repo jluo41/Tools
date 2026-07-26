@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.7.0] — 2026-07-26 — T1 LOCAL whitelist and DR unit paths
+
+Aligned with the paper-folder layout ruled 2026-07-26 on the design board (`skills/diagrams/01-haipipe-paper-260725`, face QA6): `0-sections/` to `sections/`, `0-displays/` to `displays/` (one folder per unit, the only home of an asset, no top-level `figures/`), `1-compile.sh` to `2-src/compile.sh`, and `STATUS.md` retired. Two live bindings: the T1 LOCAL whitelist (what a probe worker may read without crossing the wall) named `0-displays/` and `_LOG_<stage>.md`; both moved, the latter into the stage's S page `## Log`. And the display-link rule named `0-displays/<unit>/`.
+
+
 ## [0.6.1] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 6.1.0; older entries below keep their original numbers).

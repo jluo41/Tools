@@ -27,7 +27,7 @@ SKILL.md 是最短的操作说明；这一份是查得到细节的地方。
 0-lifecycle/                    ← 整个文件夹就是板
   board.md
   QA1-frontier.md               顶层的题照旧
-  0-seed/S-Seed-0-seed.md       lifecycle face 住在自己的 folder
+  0-seed/S-Seed-0-seed.md       lifecycle page 住在自己的 folder
   4-display/QD2-d01-….md        住在自己家里的题
   5-section-edit/6-results/QE5-….md      深度不限
   board.html
@@ -54,7 +54,7 @@ QC1                QC 组
 组内**下一号**（页面 ＋Q 用的规则）＝ 盘上全树 + Pages 里该组的最大号 + 1（QC3 之后全树数，别只看板根）。
 `-<slug>` 只是给人认文件的短英文小写（`access`、`scheduling`），解析不看它，跟 `board-example.md` 一致。新开的 Q 一律 `state: 🔴 OPEN`。
 
-Paper lifecycle 的 S face 用完整 family 名：`S-<Family>-<unit>-<slug>.md`。Family 固定为
+Paper lifecycle 的 S page 用完整 family 名：`S-<Family>-<unit>-<slug>.md`。Family 固定为
 `Seed`、`Work`、`Venue`、`Display`、`Main`、`Appendix`、`Submission`；unit 可用数字，也可在
 Appendix 使用字母。例：`S-Seed-1-literature.md`、`S-Main-4-theory.md`、
 `S-Appendix-B-validation.md`。Q 是 ruling；S 是 lifecycle page。两者共用段落 grammar，
@@ -63,12 +63,12 @@ Appendix 使用字母。例：`S-Seed-1-literature.md`、`S-Main-4-theory.md`、
 
 **S 的 `state:` 用同一套四个值**（没有第五个值，别自己造 `human-gated` 这种词）：
 `🔴 OPEN` 没开始 · `🟡 PARTIAL` 在做 · `✅ SETTLED` = **这个 stage 的 human gate 过了**
-（首页对应 family 的 `N/M` 数的就是 S face 里的 ✅）· `⏸️ ON HOLD` 明确搁置。
+（首页对应 family 的 `N/M` 数的就是 S page 里的 ✅）· `⏸️ ON HOLD` 明确搁置。
 新开的 S 跟新开的 Q 一样，一律 `🔴 OPEN`。区别只在**凭什么翻到 ✅**：Q 要 checkbox 全闭合，
 S 要它自己的 human gate 过了（`SKILL.md` 的 close 段说的 human-gated / explicitly parked
 就是这两个值，不是两个新状态）。
 
-**S face 在 `## Pages` 里跟 Q 文件一个写法**：一行一个裸文件名
+**S page 在 `## Pages` 里跟 Q 文件一个写法**：一行一个裸文件名
 （`S-Main-2-introduction.md`），放在哪个 `### ` 组下面就归哪组。普通 board 的组标题
 是自由文本；**paper lifecycle board 默认按 named family 分组**：
 
@@ -120,7 +120,7 @@ QA2-qtemplate.md
 ### QB · 另一组
 QB1-skillmd.md
 ### QB · Seed Group
-S face 跟 Q 一样只写裸文件名。
+S page 跟 Q 一样只写裸文件名。
 S-Seed-0-seed.md
 S-Seed-1-literature.md
 ```
@@ -128,20 +128,20 @@ S-Seed-1-literature.md
 **Pages 只管排序和分组**，标题正文一概不抄（抄了就会不同步）。
 
 **`doc:` 行（原 QF2，JL 260724；**260726 退役**，别再用）**：要展示别处的文件，改用 §5 的
-`![[路径]]` 嵌进一个真正的 face —— 同样零拷贝，但页面有 state、有清单计数、有评论落点。
+`![[路径]]` 嵌进一个真正的 page —— 同样零拷贝，但页面有 state、有清单计数、有评论落点。
 下面这段只为老板子留着，parser 仍认它（今天全 SPACE 无人使用）：`doc: notes/readme.md` ——
 把列出的源文件**直接**渲染成一页（id = 第一份文件**所在文件夹**名，顶层文件才取文件名主干 ——
 这样 `2b-pitch/PITCH_LOG.md` 的页叫 `2b-pitch`，两个 `README.md` 也不会撞；标题取第一份文件
 自己的 `#`/setext 标题，没有就用 id）。
 没有 Q 文件包着，所以也没有 state、没有清单计数、没有评论落点；doc 页是「看」，不是「题」，
 不进 settled 计数和进度条。只保留它兼容旧板；lifecycle stage 要参与 checklist、gate 和评论，
-就写成 S face。
+就写成 S page。
 
 **Group intro (QC2, 260724)**: plain lines between a `### ` heading and that group's first `.md` line are the group's intro. Line 1 is always visible under the header on the index page; any further lines open on click (rendered as a native `<details>`, so the no-script invariant holds). Intro lines must not end in `.md`. The index page's ＋Q / ＋Group / 🗄 buttons write exactly this grammar through `POST /_board/structure` (`structure_op()` in serve.py, imported by the console): `add_question {group, title}` seeds a stub Q file and lists it under its group; `add_group {title, letter?, hook?, body?}` appends a `### QX · title` heading (letter auto-picked); `archive_question {q}` moves that file to `_archive/` inside the board folder (never deletes; since QC3 build.py DOES glob subfolders, so it is the `_` prefix that hides `_archive/` from discovery — archived files leave the page for that reason); `archive_group {group}` removes a group only when it lists no questions. Over HTTP the payload also carries `path` (the page's own location.pathname); called directly it is `structure_op(board_dir, payload)`, and importing serve.py is side-effect free (`serve_forever` sits behind `__main__`).
 
 **必填**：`# 标题`、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Pages` —— 这三段都要写，别省掉 `## Pipeline`。`source:`、`## Links` 选填。
 
-## 4. Q/S Face
+## 4. Q/S Page
 
 段落名与页面位置一一对应：
 
@@ -185,7 +185,7 @@ provides:       → contract  本页给下游的短交付说明（S only）
 ## Log          → .folds    折叠
 ```
 
-**两种 face 都必填**：`# 标题`、`state:`、`owner:`、`## Question`、
+**两种 page 都必填**：`# 标题`、`state:`、`owner:`、`## Question`、
 `## Items to Finish`、`## Where we are`。S 另外必填 `## Stage Contract` 和
 `## Content`；Q 删除 Stage Contract、可省 Content。
 `## Boundary` 和 `## Files` 选填但**强烈建议写**；其余（`method:`、`## Diagram` 和所有折叠段）**选填**，用不上就整段删掉。
@@ -210,13 +210,13 @@ subsections 留在 Content。Q 的显式 Content 可省。
 中文名（`## 问题` `## 现在什么样` …）、
 以及改版前的 `## Done when`（＝`## Items to Finish`）和 `## Now`（＝`## Where we are`）。
 
-**S face 的 Q-consumer 规则**：不另开顶层 `## Q-consumer`。每个 consumer 是
+**S page 的 Q-consumer 规则**：不另开顶层 `## Q-consumer`。每个 consumer 是
 `## Items to Finish` 里的 checklist item，标题保留 `Q-<Stage>-<n>`，折叠详情保留
 Description / Reason / Probe / Answer。只有 Answer 已落地、已解释、已织回 Content 才勾
 `[x]`；deferred 只有写下 forward pointer 才能闭合。`## Where we are` 只总结 stage，
 不复述每个 consumer answer。
 
-**S face 的 Stage Contract 规则**：依赖只读顶层 metadata，不从 Pages 顺序或 filename
+**S page 的 Stage Contract 规则**：依赖只读顶层 metadata，不从 Pages 顺序或 filename
 数字猜：
 
 ```markdown
@@ -272,7 +272,7 @@ haipipe-board/      ../../haipipe-board/
 | `- [ ]` / `- [x]` + 缩进解释 | 勾选清单，栏头自动数出 `3/5`；S 的 Q-consumer 也用这一行形 |
 | ` ``` ` 围栏 | 原样输出的 `<pre>`（ascii 图、代码、目录树）。**两棵树别并排画**：列的边界是空白，一复制就没了，右边那列会读成左边的分支 —— 板本来就是拿去贴进聊天和邮件的。要对比就竖着叠，一次一棵完整的树 |
 | item 解释行里**缩进的** ` ``` ` 围栏 | 收进**这个 item 的折叠区**（不 flush 成兄弟块）：dedent 后原样 `<pre>`，位置随你放（摘要后、正文段之间都行）。顶格的围栏照旧是兄弟块（JL 260724，QC10 CABG 板首用） |
-| 单独一行 `![[路径]]` / `![[路径#某节]]` | **嵌入**（QF1）：把另一份文件（整份或某一节）按引用嵌进这一题，生成时现读。路径相对板根，找不到再逐级向上找（≤8 级）；只吃 `.md`/`.txt`；`#某节` 认 `##` 标题**和** setext（下划线）标题；嵌不到 / 找不到那节 → 就地一块红色警告，绝不悄悄空掉；嵌进来的内容里再写 `![[…]]` 不展开（防环）。钉在嵌入文字上的评论仍写进**这一题**的 `## Comments`，重建时在新渲染的嵌入块里重新锚定 —— 源文件删了那句话才会显示 unanchored |
+| 单独一行 `![[路径]]` / `![[路径#某节]]` / `![[路径#某节\|source]]` | **嵌入**（QF1）：把另一份文件（整份或某一节）按引用嵌进这一题，生成时现读。路径相对板根，找不到再逐级向上找（≤8 级）；只吃 `.md`/`.txt`；`#某节` 认 `##` 标题**和** setext（下划线）标题；嵌不到 / 找不到那节 → 就地一块红色警告，绝不悄悄空掉；嵌进来的内容里再写 `![[…]]` 不展开（防环）。钉在嵌入文字上的评论仍写进**这一题**的 `## Comments`，重建时在新渲染的嵌入块里重新锚定 —— 源文件删了那句话才会显示 unanchored。`\|source` 结尾 = 同一份文件**照原字节**摊成 `<pre>`（不渲染、不上 chip），给「先给源码、再给渲染结果」这种页面用：两块都是同一份文件在生成时读两次，所以不可能对不上。别的 mode 一律就地红字报错 |
 | 单独一行一个 excalidraw 分享链接 | 嵌成可交互画布（iframe）+ 一条「↗ 在 Excalidraw 打开」兜底链接 |
 | 裸 `https://…` | 自动变成可点链接（不会把已在 `href=` 里的再套一层） |
 | `` `code` `` `**粗**` `![](fig/x.png)` | 行内代码 / 加粗 / 图片 |
@@ -316,7 +316,7 @@ python3 <skill>/watch.py <board 文件夹>     # 盯着，改任何 .md 自动�
 
 一个文件两种模式，没有第二份 deck：
 
-- **平铺**（默认）：主干 + Q settled / S gated 两个进度信号 + 索引 + 所有 faces，滚着读。
+- **平铺**（默认）：主干 + Q settled / S gated 两个进度信号 + 索引 + 所有 pages，滚着读。
 - **聚焦**：点索引任意一行，`:target` + `:has()` 纯 CSS 把其余全收起来，屏上只剩那一题；
   去掉边框圆角底色，标题 38px，底部 `← 上一题 · ☰ 全部 · 下一题 →`。投屏用这个。
 

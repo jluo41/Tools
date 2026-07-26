@@ -57,7 +57,7 @@ VALUE      {VAL:? mean MME difference, LBP cohort} [Q-X-n]
 
 DISPLAY    a need whose DR row is `done` with its unit path filled
              ↓
-           \input{0-displays/displayNN-slug/float.tex} + \ref{fig:...}
+           \input{displays/displayNN-slug/float.tex} + \ref{fig:...}
              ↓ the DR row is still `requested` or `accepted`
            leave it 📨 pending, flag it. NEVER pre-place a \ref for a unit that
            does not exist — it compiles to `??` and nothing downstream re-checks

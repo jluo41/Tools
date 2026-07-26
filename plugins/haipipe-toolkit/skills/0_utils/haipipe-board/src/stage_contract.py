@@ -1,7 +1,7 @@
-"""Managed requirements and writing-style contracts for S faces.
+"""Managed requirements and writing-style contracts for S pages.
 
 This module is intentionally independent of the board parser. The parser calls
-``contract_status`` after it has assembled the face map; ``stage.py`` calls the
+``contract_status`` after it has assembled the page map; ``stage.py`` calls the
 other helpers when it explicitly creates or synchronizes a stage.
 """
 import hashlib
@@ -18,9 +18,9 @@ def refs(value):
 
 
 def _resolve(board, token, by_id):
-    face = by_id.get(token.casefold())
-    if face and face.get("file"):
-        return board / face["file"], face
+    page = by_id.get(token.casefold())
+    if page and page.get("file"):
+        return board / page["file"], page
     path = Path(token)
     path = path if path.is_absolute() else board / path
     if path.is_file():
@@ -28,11 +28,11 @@ def _resolve(board, token, by_id):
     return None, None
 
 
-def contract_digest(board, face, by_id):
+def contract_digest(board, page, by_id):
     """Hash only explicit contract sources, never the destination page."""
     h = hashlib.sha256()
-    for kind, value in (("requires", face.get("requires", "")),
-                        ("style-from", face.get("style_from", ""))):
+    for kind, value in (("requires", page.get("requires", "")),
+                        ("style-from", page.get("style_from", ""))):
         for token in refs(value):
             path, _ = _resolve(Path(board), token, by_id)
             h.update(f"{kind}:{token}\0".encode("utf-8"))
@@ -45,26 +45,26 @@ def contract_digest(board, face, by_id):
     return h.hexdigest()[:16]
 
 
-def contract_status(board, face, by_id):
+def contract_status(board, page, by_id):
     """Return one parser warning for a missing or stale managed contract."""
-    if face.get("kind") != "stage":
+    if page.get("kind") != "stage":
         return ""
-    if not refs(face.get("requires", "")) and not refs(face.get("style_from", "")):
+    if not refs(page.get("requires", "")) and not refs(page.get("style_from", "")):
         return ""
-    for value in (face.get("requires", ""), face.get("style_from", "")):
+    for value in (page.get("requires", ""), page.get("style_from", "")):
         for token in refs(value):
             path, _ = _resolve(Path(board), token, by_id)
             if not path:
-                return f"{face['id']} Stage Contract source not found: {token}"
-    source = Path(board) / face.get("file", "")
+                return f"{page['id']} Stage Contract source not found: {token}"
+    source = Path(board) / page.get("file", "")
     text = source.read_text(encoding="utf-8") if source.is_file() else ""
-    saved = face.get("contract_source_hash", "")
-    current = contract_digest(board, face, by_id)
+    saved = page.get("contract_source_hash", "")
+    current = contract_digest(board, page, by_id)
     if START not in text or END not in text or not saved:
-        return f"{face['id']} has dependencies but its Stage Contract has not been synchronized"
+        return f"{page['id']} has dependencies but its Stage Contract has not been synchronized"
     if saved != current:
         return (
-            f"{face['id']} Stage Contract is stale "
+            f"{page['id']} Stage Contract is stale "
             f"(saved {saved}, current {current}); run stage.py sync"
         )
     return ""

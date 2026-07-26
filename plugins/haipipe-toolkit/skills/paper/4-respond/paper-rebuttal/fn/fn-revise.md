@@ -52,9 +52,9 @@ Step 2: Collect paper source locations from annotations
   Read every annotated review in A-review-content/. Extract all
   CC paper source references:
 
-    `0-sections/05_baseline_results.tex:229` → rewrite event conclusion
-    `0-sections/03_dataset_design.tex:23` → correct 66.2% error
-    `0-sections/06_discussion.tex:39` → add data limitation
+    `sections/05_baseline_results.tex:229` → rewrite event conclusion
+    `sections/03_dataset_design.tex:23` → correct 66.2% error
+    `sections/06_discussion.tex:39` → add data limitation
 
 Step 3: Merge into a structured checklist
 --------------------------------------------

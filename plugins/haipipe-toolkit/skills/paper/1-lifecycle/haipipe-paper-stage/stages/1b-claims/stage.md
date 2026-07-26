@@ -28,8 +28,8 @@ runs: once
 needs_paper: true
 venue_free: true          # does not change when retargeting to another journal
 
-artifact: 0-lifecycle/1b-claims/S-Work-1-claims.md
-artifact_fallback: 0-lifecycle/1b-claims/1b-claims.md
+artifact: 0-lifecycle/1-work/S-Work-1-claims.md
+artifact_fallback: 0-lifecycle/1-work/1b-claims.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
@@ -78,7 +78,7 @@ done_criteria:
 
 upstream: [resource]
 downstream: [venue]       # claims is venue-free; venue is pinned AFTER it, then pitch
-handoff: "on CHECK confirm, update STATUS.md (current_layer, maturity: claims) -> venue (-> pitch directly if the venue is already pinned)"
+handoff: "on CHECK confirm, append the gate row to this stage's S page ## Log -> venue (-> pitch directly if the venue is already pinned)"
 ---
 
 Claims — the craft
