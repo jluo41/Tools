@@ -116,6 +116,25 @@ The first build had the emphasis backwards, and JL caught it on `S-Main-7` (2607
 
 A reader checks the number. The bracket is still there and still clickable, demoted to a quiet trailing marker, because it remains the binding. This closes the "unbound number" item in the only way that was ever going to work: a bare numeral gets no marker of its own, but a numeral in a sentence that ALREADY names its question can be chipped by inheriting that binding.
 
+### The chip opens the whole chain, not just the probe
+JL 260726: "include the Probe folder, and the task folder for each value". A number chip's panel now carries every hop between the sentence and the run:
+
+```
+ ⑧ the sentence      …(odds ratio 1.21, p < 0.001) [Q-Section-2]
+ ⑦ probe             1-probes/PP03_results-values/QX5_binary-exposure-flags.md
+                     the paper's binding: which question, and its state
+ ② answer            tasks/Z01_Display_PhyTraitOpioid/QA/4-binary-exposure-flags.md
+                     the bank's harvested answer
+ ① run               tasks/Z01_Display_PhyTraitOpioid/
+                     where it was actually computed
+```
+
+This is `QD6`'s provenance chain applied to a value rather than a display, and it makes the number the entry point to its own audit. Each link is offered only if the path really exists: a link that 404s is worse than no link, because it looks like provenance.
+
+The `target:` a probe records is written relative to the PROJECT, not the paper, so the bank root is found by walking up for the folder that actually holds `tasks/` or `discoveries/` rather than assuming a depth.
+
+An ambiguous number links EVERY probe involved, so both candidate runs are one click apart and the reader can settle it.
+
 ### What a number chip actually checks
 Not that it looks like a number. That it appears in the run the sentence points at.
 
@@ -131,6 +150,8 @@ Not that it looks like a number. That it appears in the run the sentence points 
 ```
 
 Matching is numeric and precision-aware rather than string equality, because the prose rounds: `1.21` has to match a recorded `1.21494`, so the recorded figure is rounded to the prose's own decimals before comparing.
+
+Two things are deliberately NOT checked. A number after a comparison is a bound, not a measurement: `p < 0.001` never claimed the figure equals a thousandth, and checking it found every recorded p-value below one and called the sentence ambiguous. And the tooltip says whether a match came from the probe's `### a-executor` block or from its question text, because a threshold the question named is weaker evidence than a figure the run returned.
 
 `unver` is deliberately quiet, with no alarm colour. Asserting a defect on every unmatched number would make the feature worthless within a day, because most sentences carry at least one derived or definitional figure. Only a MATCH is an assertion; everything else says it was not checked.
 
@@ -153,6 +174,8 @@ The rendered value, its unit, the source path, the producing run, and the verifi
       State exactly what makes a value stale, and whether a stale value blocks the section's gate or only flags it. The chip has no `stale` state yet because nothing records WHEN a number was woven in against when its run last executed.
 - [x] 🔍 Chip the number itself
       Numerals in a sentence that names its question are chipped and checked against the answering run. JL 260726: "make the value to be highlighted, instead of the Q-Section-xxx". 65 on the MISQ board.
+- [x] 🔗 Open the whole chain from the number
+      probe entry, bank QA answer, and the run folder, each linked only when the path exists. JL 260726.
 - [x] ⁉ Report ambiguity rather than picking one
       A prose number that rounds to two different recorded figures is reported as ambiguous with both named, not silently matched to whichever was found first.
 - [ ] 🔍 Numbers in a sentence with NO bracket
@@ -175,13 +198,13 @@ The 13 `ready` values are the finding: thirteen sentences still say `{VAL:?}` wh
 Numbers are now chipped and checked against the run behind them. 65 on the MISQ board:
 
 ```
- ✓ ok       39   a recorded figure rounds to it
- ⁉ amb       6   it rounds to two or more DIFFERENT recorded figures
- ? unver    13   nothing recorded rounds to it; derived or definitional
- ❓ unowned   7   its bracket names a question no probe entry declares
+ ✓ ok       33   a recorded figure rounds to it
+ ⁉ amb       4   it rounds to two or more DIFFERENT recorded figures
+ ? unver    10   nothing recorded rounds to it; derived or definitional
+ ❓ unowned   6   its bracket names a question no probe entry declares
 ```
 
-The 6 ambiguous ones are the finding. They are not wrong numbers; they are numbers whose provenance the prose cannot pin down, and one of them was reported as a confident match by the first version of this checker.
+The 4 ambiguous ones are the finding. They are not wrong numbers; they are numbers whose provenance the prose cannot pin down, and one of them was reported as a confident match by the first version of this checker.
 
 Two gaps remain: staleness still has no recorded timestamp to compare against, and a measured figure in a sentence with no bracket at all is still invisible, now by choice rather than by accident.
 
@@ -199,6 +222,7 @@ Two gaps remain: staleness still has no recorded timestamp to compare against, a
 - A number that cannot be checked is reported as unchecked, never as wrong. Derived and definitional figures are normal, and alarming on them would retire the feature within a day.
 
 ## Log
+- 260726 · JL: "include the Probe folder, and the task folder for each value". The number chip's panel now opens the four-hop chain (sentence, probe, bank answer, run folder), which is `QD6`'s chain applied to a value. Two refinements came out of reading the result: `p < 0.001` was being flagged ambiguous, which is wrong because an inequality is a bound and not a measurement; and a match now says whether it came from the answer block or from the question text, since a threshold the question named is weaker evidence than a figure the run returned. Ambiguous count fell 6 to 4.
 - 260726 · JL, reading `S-Main-7`: "could you make the value to be highlighted, instead of the Q-Section-xxx". Numbers in a bracketed sentence are now chips checked against the answering run, and `.qref` was demoted to a quiet marker. Shipping it immediately produced the bug it exists to prevent: `1.21` was reported as matching `1.20879`, a CI bound on the wrong exposure, because the checker took the first hit. Distinct-value collection and an `amb` state replaced it.
 - 260726 · The value chip and the shared `[Q-…]` resolver shipped. Building it changed the ruling: the bracket was going to be re-parsed per marker type, and it is one thing, so it resolves in one place. Four bracket ids turned out to be claimed by no probe entry at all, which no marker could previously show.
 

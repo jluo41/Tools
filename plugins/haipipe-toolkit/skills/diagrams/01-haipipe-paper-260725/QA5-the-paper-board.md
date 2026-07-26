@@ -1,4 +1,4 @@
-# ④ The paper board: what is worked, and why nothing leaves
+# ⑧ The paper board: what is worked, and why nothing leaves
 state: 🟡 PARTIAL
 owner: JL
 method: one S page per independently gated unit, state read off the pages, and no second pointer anywhere
@@ -18,7 +18,7 @@ The approach is one page per independently gated unit, with state read off the p
 
 ## Diagram
 ```
-   ④ PAPER BOARD    Paper-X/0-lifecycle/          39 S faces on the MISQ paper
+   ⑧ PAPER BOARD    Paper-X/0-lifecycle/          39 S faces on the MISQ paper
 
    S-Seed 0,1        why this paper can exist, and where it sits
         ↓
@@ -51,7 +51,7 @@ The approach is one page per independently gated unit, with state read off the p
 
    ── nothing graduates ───────────────────────────────────────────
       ② a ruling closes and its Law LEAVES for the skill
-      ④ a gate passes and the Content STAYS, because it is the paper
+      ⑧ a gate passes and the Content STAYS, because it is the paper
 ```
 
 ## Content
@@ -63,7 +63,7 @@ Eight named families organize ownership: Seed, Work, Venue, Display, Main, Appen
 ### The eighth family: Round
 (JL 260726)
 
-A submission round used to live in `③` as `1-rounds/vYYMMDD/{README,discussion,decisions,todo,applied}.md`. It moves here, as one S page per round, `0-lifecycle/7-round/S-Round-<n>-<vYYMMDD>.md`.
+A submission round used to live in `⑦` as `1-rounds/vYYMMDD/{README,discussion,decisions,todo,applied}.md`. It moves here, as one S page per round, `0-lifecycle/7-round/S-Round-<n>-<vYYMMDD>.md`.
 
 The reason is not tidiness. That folder duplicated four mechanisms this board already owns, and one of them was actively dangerous.
 ```
@@ -88,28 +88,28 @@ The frontier is the earliest page in pipeline order whose gate has not passed, r
 ### Nothing graduates
 A design board empties as its rulings leave. A paper board never empties. When an S page passes its gate it keeps everything: the Content is the paper, the gate record is the provenance, and the queue is the history of how it got there.
 
-Delete `②` and the skill still runs. Delete `④` and the paper loses its frontier, its queue and its state, and the manuscript in `③` becomes a folder of files nobody can say anything true about.
+Delete `②` and the skill still runs. Delete `⑧` and the paper loses its frontier, its queue and its state, and the manuscript in `⑦` becomes a folder of files nobody can say anything true about.
 
 ### What crosses this folder's edge
 ```
- ① ──▶ ④  the skill set     IN. The stage runner reads one contract from ①,
+ ① ──▶ ⑧  the skill set     IN. The stage runner reads one contract from ①,
                             works one S page here, and dispatches a bounded
                             worker that returns to this same page. Creating a
                             page is create-page.py in ① calling haipipe-board's
                             stage.py: Board owns the filename and face grammar,
                             Paper owns the Content jobs.
 
- ④ ──▶ ③  the paper         OUT, by generation only. An S page's ## Content IS
+ ⑧ ──▶ ⑦  the paper         OUT, by generation only. An S page's ## Content IS
                             the section; 0-sections/*.tex is produced FROM it.
                             One direction, always: md to tex, never back.
 
- ④ ──▶ the wall             OUT, through the page. A Q-consumer block on an S
-                            page becomes an entry in ③'s 1-probes/, and the
+ ⑧ ──▶ the wall             OUT, through the page. A Q-consumer block on an S
+                            page becomes an entry in ⑦'s 1-probes/, and the
                             landed answer comes back to the sentence that owes
                             it. The page is where a question is raised and
                             where its answer is woven in.
 
- ④ ──▶ ②                    NOTHING. This board never writes to a design board,
+ ⑧ ──▶ ②                    NOTHING. This board never writes to a design board,
                             and a design board's rulings reach it only after
                             they have graduated into ① and a worker follows them.
 ```
@@ -126,7 +126,7 @@ Every edge here runs through a page. That is the whole design: there is no path 
       `1-rounds/`'s record half duplicated the queue, the register, the discussion layer and a passed gate, and its `latest.md` was a stored frontier pointer. One S page per round, not four (JL 260726).
 - [ ] 🛠 Build the Round family
       `0-lifecycle/7-round/`, the `S-Round` family in the Board's family list, and `haipipe-paper-round`'s rewrite: it still OWNS a five-file `1-rounds/` contract with a `latest.md`, so a worker following it today would recreate exactly what this ruling removed.
-- [ ] 📐 Say what stays in `③`
+- [ ] 📐 Say what stays in `⑦`
       Reviewer letters, decision letters and the submitted PDF sit beside the round page in `0-lifecycle/7-round/`. `1-rounds/` is retired. `haipipe-paper-folder` no longer scaffolds it.
 - [ ] 📐 State the difference where a worker reads it
       This page and `QA3` state it. A stage worker reads `stage.md`, which says nothing about which kind of board it is writing into.

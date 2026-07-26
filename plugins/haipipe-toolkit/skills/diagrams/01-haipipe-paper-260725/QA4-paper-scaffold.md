@@ -1,4 +1,4 @@
-# ③ The paper: what exists on disk
+# ⑦ The paper: what exists on disk
 state: 🟡 PARTIAL
 owner: JL
 method: create the smallest runnable paper, then add manuscript machinery only when the lifecycle reaches it
@@ -69,26 +69,26 @@ The exact generated-versus-authored boundary follows `QBa1`.
 
 ### What crosses this folder's edge
 ```
- ① ──▶ ③  the skill set     IN. A stage run writes here, and only a stage run
+ ① ──▶ ⑦  the skill set     IN. A stage run writes here, and only a stage run
                             does. The paper CONSUMES the settled contract and
                             never stores a copy of it: no SKILL.md, no stage
                             contract, and no venue pack is ever copied in.
 
- ④ ──▶ ③  the paper board   IN, and this is the edge that surprises people.
+ ⑧ ──▶ ⑦  the paper board   IN, and this is the edge that surprises people.
                             0-lifecycle/ is INSIDE this folder, and it is where
                             the paper's real Content lives. 0-sections/*.tex is
                             GENERATED from those pages, never hand-authored, so
                             the manuscript files here are build products.
 
- ③ ──▶ the wall             OUT. 1-probes/ holds one entry per question this
+ ⑦ ──▶ the wall             OUT. 1-probes/ holds one entry per question this
                             paper cannot answer, each bound BY PATH to a
                             QA/<n>-<slug>.md in tasks/ or discoveries/. The
                             paper may not compute and may not read the
                             literature; it asks, and it records where it asked.
 
- ③ ──▶ ②                    NOTHING. A paper never writes to a design board.
+ ⑦ ──▶ ②                    NOTHING. A paper never writes to a design board.
 ```
-So almost nothing here is authored in place. The prose arrives from `④`, the numbers and citations arrive across the wall, and the build products are generated. What this folder genuinely owns is the shape: which containers exist, and which of them are allowed to be empty.
+So almost nothing here is authored in place. The prose arrives from `⑧`, the numbers and citations arrive across the wall, and the build products are generated. What this folder genuinely owns is the shape: which containers exist, and which of them are allowed to be empty.
 
 ## Items to Finish
 - [x] 🌱 Choose a minimal scaffold

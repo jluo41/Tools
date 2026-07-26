@@ -1,4 +1,4 @@
-# ⑤ /haipipe-board: the tool both boards are built with
+# ③ /haipipe-board: the tool both boards are built with
 state: 🟡 PARTIAL
 owner: JL
 method: name it as a peer this skill depends on, and keep every paper-specific behaviour behind one declared seam
@@ -6,7 +6,7 @@ method: name it as a peer this skill depends on, and keep every paper-specific b
 ## Question
 /haipipe-board is not part of /haipipe-paper, and half this board's rulings land in it. What is the relationship, and where is its edge? Two separate skills write the same markdown file to produce a paper and its board, and this face is how they manage that without ever colliding.
 
-The map is three pairs, each a thing and the board that governs it (`QA1`). This face is the middle row: `⑤` the tool, whose own board is `⑥`. What the grid alone does not show is that this one folder builds the entire right-hand column, its own board included. `haipipe-board` is at `0_utils/`, it is version 0.24.0, it is 356 lines of `SKILL.md` over nine `src/` modules, and it renders SEVEN boards across this repo, of which two are ours.
+The map is three pairs, each a thing and the board that governs it (`QA1`). This face is the middle row: `③` the tool, whose own board is `④`. What the grid alone does not show is that this one folder builds the entire right-hand column, its own board included. `haipipe-board` is at `0_utils/`, it is version 0.24.0, it is 356 lines of `SKILL.md` over nine `src/` modules, and it renders SEVEN boards across this repo, of which two are ours.
 
 That makes it a fifth thing, and it earns the number by the same test that excluded the evidence banks. We rule nothing about what is inside `tasks/`, so the banks are a wall rather than a room. We rule a great deal about `haipipe-board`: who composes an S filename, who creates a page, what `## Items to Finish` means, what a `>` lane binds to, and how a citation chip resolves. Nine faces on this board already rule its behaviour. A thing you rule that much is not outside the map.
 
@@ -16,13 +16,13 @@ The danger it creates is specific and it has already happened twice today. A rul
 - ✅ Covered here
   What `haipipe-board` is to this skill, which of its behaviours this board may rule, the `dialect: paper` seam, and how a ruling reaches both halves.
 - ↪ Covered elsewhere
-  What a board IS, its face grammar, where it lives on disk, and its live layer are ruled on `⑥`, the board tool's OWN board at `diagrams/01-boardform-260722/`, 27 faces. `⑤` and `⑥` are a thing/board pair exactly as `①` and `②` are, which is why this face may rule the contract between us and never what a board is. The two boards it renders for us are `QA3` and `QA5`. Who owns a shared page is the `QBc` group; how work is driven from a page is `QBd`. Both belong under this face and are lettered `QBc`/`QBd` only until the rename is safe.
+  What a board IS, its face grammar, where it lives on disk, and its live layer are ruled on `④`, the board tool's OWN board at `diagrams/01-boardform-260722/`, 27 faces. `③` and `④` are a thing/board pair exactly as `①` and `②` are, which is why this face may rule the contract between us and never what a board is. The two boards it renders for us are `QA3` and `QA5`. Who owns a shared page is the `QBc` group; how work is driven from a page is `QBd`. Both belong under this face and are lettered `QBc`/`QBd` only until the rename is safe.
 
 ## Diagram
 ```
    TWO SKILLS, ONE FILE, TWO PRODUCTS
 
-   ① haipipe-paper                        ⑤ haipipe-board
+   ① haipipe-paper                        ③ haipipe-board
      the SUBSTANCE                          the SHELL · the RENDER
      what a stage decides and writes        · the WRITE-BACK
      35 skills · v0.3.2                     v0.24.0 · serves 7 boards
@@ -32,9 +32,9 @@ The danger it creates is specific and it has already happened twice today. A rul
                                  │  and never write the same REGION
                                  ▼
    ┌──────────────────────────────────────────────────────────────┐
-   │  ④  0-lifecycle/…/S-<Family>-<unit>-<slug>.md               │
+   │  ⑧  0-lifecycle/…/S-<Family>-<unit>-<slug>.md               │
    │                                                               │
-   │     ⑤ owns   the filename · the face grammar · the Pages     │
+   │     ③ owns   the filename · the face grammar · the Pages     │
    │              row · the managed Stage Contract block ·         │
    │              anything a human types into the page             │
    │     ① owns   Question · Boundary · Content · Items to         │
@@ -43,51 +43,51 @@ The danger it creates is specific and it has already happened twice today. A rul
                                    │  ① GENERATES from it, one way
                                    ▼
    ┌──────────────────────────────────────────────────────────────┐
-   │  ③  0-sections/*.tex · 0-displays/…/float.tex · main.pdf    │
+   │  ⑦  0-sections/*.tex · 0-displays/…/float.tex · main.pdf    │
    └──────────────────────────────────────────────────────────────┘
 
    ── who does what, step by step ────────────────────────────────
 
-    step             ① haipipe-paper            ⑤ haipipe-board
+    step             ① haipipe-paper            ③ haipipe-board
     ───────────────  ─────────────────────────  ──────────────────────────
     1 create a page  picks the stage and its    stage.py new: composes the
                      template; create-page.py   filename, writes the face,
                      is the public entry        adds the Pages row and the
-                                                managed contract  ──▶ ④
+                                                managed contract  ──▶ ⑧
     2 DRAFT          writes ## Content and      —
                      the Q-consumer block
     3 render         —                          build.py: md → board.html,
                                                 folds the > lanes, resolves
-                                                chips against ③'s .bib and
+                                                chips against ⑦'s .bib and
                                                 1-probes/
     4 a human reads  —                          serve.py: a comment, or a new
                                                 > lane on a sentence, written
-                                                BACK into ④'s markdown
+                                                BACK into ⑧'s markdown
     5 PROBE          asks across the wall and   —
-                     records the pointer in ④
-    6 REVISE         rewrites ④'s Content       —
+                     records the pointer in ⑧
+    6 REVISE         rewrites ⑧'s Content       —
     7 sync           owns everything else on    stage.py sync: refreshes ONLY
                      the page                   the managed block
     8 CHECK          prepares the gate          —      a HUMAN writes ✅
-    9 generate       3-deliver reads ④'s        —
-                     Content   ──▶ ③
+    9 generate       3-deliver reads ⑧'s        —
+                     Content   ──▶ ⑦
 
    ── the two asymmetries that make it work ──────────────────────
-      only ⑤ writes ④ from a human's click.  ① has no UI; every
+      only ③ writes ⑧ from a human's click.  ① has no UI; every
         comment, every sentence lane, every ticked box arrives
         through serve.py.
-      only ① writes ③.  The tool never touches a manuscript file;
+      only ① writes ⑦.  The tool never touches a manuscript file;
         it does not know what LaTeX is.
 
    ── the seam ───────────────────────────────────────────────────
       a board declares       dialect: paper
-      and only then does ⑤ resolve \citep{}, {VAL:?} and [Q-X-n]
-      against ③'s .bib and 1-probes/. A board that does not declare
+      and only then does ③ resolve \citep{}, {VAL:?} and [Q-X-n]
+      against ⑦'s .bib and 1-probes/. A board that does not declare
       it renders byte-identical and pays nothing. That one line is
       the entire paper-specific surface of a generic tool.
 
    ── the two-way gap this face exists to close ──────────────────
-      260726  chips SHIPPED in ⑤; four faces here still called
+      260726  chips SHIPPED in ③; four faces here still called
               them unbuilt
       260726  the round ruling landed HERE; haipipe-paper-round
               still described the layer it removed
@@ -96,12 +96,12 @@ The danger it creates is specific and it has already happened twice today. A rul
 
 ## Content
 ### It has a board of its own, and that is why we may not rule it
-`⑤` is not a bare dependency: it is the THING half of its own pair, and `⑥` is its board. Its rulings graduate into it the same way `②`'s graduate into `①`. That symmetry is what settles the ownership line below. A rule about board grammar belongs on `⑥` and would drift if restated here; a rule about the paper contract belongs here and would never be found by someone working on the tool if it were filed there.
+`③` is not a bare dependency: it is the THING half of its own pair, and `④` is its board. Its rulings graduate into it the same way `②`'s graduate into `①`. That symmetry is what settles the ownership line below. A rule about board grammar belongs on `④` and would drift if restated here; a rule about the paper contract belongs here and would never be found by someone working on the tool if it were filed there.
 
 ### One file, two writers, disjoint regions
-The collaboration works because the two skills never contend for the same lines. `⑤` composes the filename, writes the face shell, maintains the Pages row and the managed Stage Contract block, and is the only path by which anything a human types reaches the page. `①` owns the substance: Question, Boundary, Content, Items to Finish, Where we are.
+The collaboration works because the two skills never contend for the same lines. `③` composes the filename, writes the face shell, maintains the Pages row and the managed Stage Contract block, and is the only path by which anything a human types reaches the page. `①` owns the substance: Question, Boundary, Content, Items to Finish, Where we are.
 
-Two asymmetries follow, and both are load-bearing. `①` has no interface of its own, so every comment, every sentence lane and every ticked box arrives through `serve.py`. And `⑤` never touches a manuscript file; it does not know what LaTeX is, which is why generation into `③` is entirely `①`'s.
+Two asymmetries follow, and both are load-bearing. `①` has no interface of its own, so every comment, every sentence lane and every ticked box arrives through `serve.py`. And `③` never touches a manuscript file; it does not know what LaTeX is, which is why generation into `⑦` is entirely `①`'s.
 
 ### What this board may rule about it
 ```
@@ -137,7 +137,7 @@ The line is ownership, not politeness. A rule about the paper dialect stated onl
 ```
 
 ### How a ruling reaches both halves
-It does not, today. That is the open item. A Law that graduates from `②` lands in a paper skill file by the map on `QA2`, and nothing carries it across into `⑤` or checks that it arrived. Both failures on 2026-07-26 were found by hand, one of them by nearly overwriting the other session's work.
+It does not, today. That is the open item. A Law that graduates from `②` lands in a paper skill file by the map on `QA2`, and nothing carries it across into `③` or checks that it arrived. Both failures on 2026-07-26 were found by hand, one of them by nearly overwriting the other session's work.
 
 ## Items to Finish
 - [x] 🖐 Name it as the fifth thing

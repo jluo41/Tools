@@ -5,6 +5,8 @@ method: boards live under "<owning unit>/diagram/", apart from the skill itself;
 
 ## Question
 Where in the repo does a board's folder go, and how is it named?
+The working answer is that a board lives with the unit it serves, as `<owner>/diagram/<NN>-<topic>-<YYMMDD>/`, dated on the day it opens and never renamed.
+What turns on it is everything that points at a board: the relative paths in `## Links`, and whether a dozen boards spread across owners can be found at all.
 
 It is hard because boards serve all kinds of owners (a plugin, a task folder, a paper), so there is no single "all boards go here" place.
 Leave it and boards will multiply and get assigned to RAs, and once locations and names drift, nothing can be found and no other document can point at a board reliably.
@@ -75,6 +77,7 @@ The board lives in that thing's `diagram/`.
 >> CC0722: moved. `haipipe-board/` keeps only the skill itself (`build.py` + `ref/`). The rule is recorded in "Where we are" above.
 
 ## Log
+260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260726 · JL moved every board to `skills/diagrams/`: this one from `0_utils/diagram/01-boardform-260722/`, alongside `01-haipipe-paper-260725/`. The folder is one level shallower, so all 21 declared paths in `## Links` were re-resolved against the new location and verified to exist; `SKILL.md` and `ref/board-example.md` had their live pointers repointed
 260724 1242 · Translated to English (JL 260724: everything on the board in English)
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` and `## Files`; the retired `## Why here` merged into Question

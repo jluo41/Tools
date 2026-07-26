@@ -27,10 +27,10 @@ The approach is to fix the order and give exactly one phase the right to bring e
   ┌ PROBE ─▼─────────────────────────────────────────┐  ⬅ THE ONLY DOOR
   │ ① organize  strip the stake, make it executable  │
   │ ② match     is the answer already in the bank?   │
-  │ ③ dispatch  what match cannot close  ──► task /  │
+  │ ⑦ dispatch  what match cannot close  ──► task /  │
   │                                          discovery│
-  │ ④ point     the probe entry names its target     │
-  │ ⑤ interpret bring it back WITH its caveats       │
+  │ ⑧ point     the probe entry names its target     │
+  │ ③ interpret bring it back WITH its caveats       │
   └────────┬─────────────────────────────────────────┘
            │
   ┌ REVISE ▼────────┐   rewrite to venue quality
@@ -49,7 +49,7 @@ The approach is to fix the order and give exactly one phase the right to bring e
 
  IT BECAME LITERALLY TRUE ON 2026-07-20
    before   DRAFT: write + organize + match      "mostly one door"
-   after    DRAFT: write.  PROBE: ① … ⑤          one door
+   after    DRAFT: write.  PROBE: ① … ③          one door
 ```
 
 ## Content

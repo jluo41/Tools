@@ -6,7 +6,7 @@ method: one seam at a time, each ruled for its own reason
 ## Question
 Two skills write one markdown file. Which regions belong to which, and what happens at every seam between them? Five seams were ruled separately and each for its own reason: who may write which section, which dependency declaration binds, where a paper's state lives, who brings a page into being, and how far the board may go in running paper-specific code.
 
-`QA6` draws the collaboration: `①` owns the substance, `⑤` owns the shell, the render and the write-back, and they never contend for the same lines. This face is that ownership line in detail, seam by seam, because each seam was ruled separately and each was ruled for a different reason.
+`QA6` draws the collaboration: `①` owns the substance, `③` owns the shell, the render and the write-back, and they never contend for the same lines. This face is that ownership line in detail, seam by seam, because each seam was ruled separately and each was ruled for a different reason.
 
 Five seams exist: who may write which section, which of two dependency declarations binds, where a paper's own state lives, who brings a page into being, and how far the board may go in running paper-specific code.
 
@@ -21,9 +21,9 @@ Five seams exist: who may write which section, which of two dependency declarati
  FIVE SEAMS IN ONE MARKDOWN FILE, EACH RULED FOR A DIFFERENT REASON
 
  ┌ S-Main-7-results.md ─────────────────────────────────────────┐
- │ # title / state: / owner:              ◄ ⑤ BOARD  furniture  │ ① who writes
+ │ # title / state: / owner:              ◄ ③ BOARD  furniture  │ ① who writes
  │ <!-- haipipe:contract:start -->                              │   which region
- │   inherited requirements + GATE STATES  ◄ ⑤ GENERATED,       │
+ │   inherited requirements + GATE STATES  ◄ ③ GENERATED,       │
  │ <!-- haipipe:contract:end -->             will be OVERWRITTEN│
  │                                                              │
  │ ## Question · Boundary                 ◄ ① PAPER  substance  │
@@ -40,19 +40,19 @@ Five seams exist: who may write which section, which of two dependency declarati
                            GATE STATE  ◄ only one form can say
                            "it exists AND has not passed"
 
- ③ WHERE PAPER STATE LIVES
+ ⑦ WHERE PAPER STATE LIVES
     ✗ STATUS.md current_layer   hand-written, disagreed with its own
                                 gate ledger for MONTHS
     ✅ the frontier is READ      the earliest page whose gate has not
                                 passed. Derived, so it cannot disagree
                                 with itself. STATUS.md now MIRRORS.
 
- ④ WHO CREATES A PAGE
+ ⑧ WHO CREATES A PAGE
     Paper Stage is the ONLY public creator ──calls──► stage.py new
     board owns filename · face grammar · Pages insertion · managed block
     paper owns the stage-specific Content jobs
 
- ⑤ HOW FAR THE BOARD MAY GO IN RUNNING PAPER CODE
+ ③ HOW FAR THE BOARD MAY GO IN RUNNING PAPER CODE
     a dialect holds GRAMMAR + RESOLUTION, never rendering, never writing.
     THE LAW IS A TEST: delete src/dialect_paper.py and every board that
     does not declare `dialect: paper` renders BYTE-IDENTICAL.

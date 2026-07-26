@@ -6,6 +6,8 @@ method: read what prime_context and CHAT_RULES actually hand the agent, then rul
 
 ## Question
 When someone attaches something to a sentence on the page, a `> Check:` lane or a comment, does the agent that will act on that sentence see it?
+Measured rather than assumed, the answer is yes if it reads the file, since a lane is an ordinary line in the markdown.
+Everything turns on that "if": the agent is handed a count and a pointer, never the text, a plain session in the workspace gets nothing at all, and neither is told when something arrives mid-session.
 
 The page has become a place where things get attached: a comment pinned to a selection, a typed `>` lane folded under a sentence, and now a canvas dropped into a Diagram.
 Every one of those writes into the face's markdown, which is the whole point of the design, and an agent working on that face opens the same markdown, so the obvious assumption is that whatever you attach, whoever works on it is looking at it.
@@ -198,6 +200,7 @@ push / pull: whether the agent is handed the attached text at start, or must rea
 >> CC0726: opened as QA8a: a sub-question of QA8, sorted right after it, and named for the sentence because that is what it is about. The short answer is in §1: it sees the file, so it sees the lane once it reads, but it is handed a count rather than the text and is never told that lanes exist.
 
 ## Log
+260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260726 · widened from the drawer to any agent (JL: "not limited to the draw chat, also any claude code session for the workspace dir"): second channel added to the Diagram, `P1b` and `P6b` written, one new item; the plain session gets no orientation at all, which is worse than the case this face opened on
 260726 · worked (JL: "please work on QA8a"): 🔢 and 📖 fixed in `serve.py`, 🧪 measured with one scoped turn before and after; the ruling `P6` and the mid-session signal `P7` deliberately untouched, since both are JL's and implementing either would settle the ruling by hand
 260726 · renamed QA11 -> QA8a and retitled for the sentence (JL: "if it is sentence related, call it QA8a"); `§2` added with the four write destinations measured from a throwaway face rather than described

@@ -6,11 +6,11 @@ method: one responsibility per layer, one direction of control, progressive disc
 ## Question
 What is in the reusable skill package, what runs at each stage, and what does it put into the other folders? This is the one folder written once and used by every paper: 35 skills and 7,406 lines, each of them a promise that some stage worker will follow. The work here is ownership, not layout.
 
-This is one of two folders written once and used by every paper, `⑤` being the other. Everything in it is a promise: a contract a stage worker will follow, a script that will run, a template that will be filled. Nothing in it is about any particular paper, and the moment something here mentions one, it has stopped being reusable.
+This is one of two folders written once and used by every paper, `③` being the other. Everything in it is a promise: a contract a stage worker will follow, a script that will run, a template that will be filled. Nothing in it is about any particular paper, and the moment something here mentions one, it has stopped being reusable.
 
 The folder is already close to the right architecture, so the useful work is not a directory migration. It is ownership. Several skills still carry routing, craft, rendering, history and state at once, and the front door has grown to 556 lines, which every invocation pays for whether or not it needs them.
 
-What is genuinely missing is the second half of the question above. A reader can see which layers exist and cannot see what a stage RUN actually does: which workers it dispatches, what it writes, where it writes it, and what appears in the paper as a result. That is the part this face now carries, because it is also the map of how `①` touches `③` and `④`.
+What is genuinely missing is the second half of the question above. A reader can see which layers exist and cannot see what a stage RUN actually does: which workers it dispatches, what it writes, where it writes it, and what appears in the paper as a result. That is the part this face now carries, because it is also the map of how `①` touches `⑦` and `⑧`.
 
 ## Boundary
 - ✅ Covered here
@@ -31,34 +31,34 @@ What is genuinely missing is the second half of the question above. A reader can
                          │           writes  NOTHING. A router that writes is a bug.
                          ▼
    QA4 ──────────▶  0-enter/         which paper, which round
-   QA5                   │           → ③  .paper-console.yaml   session state
-                         │           → ④  S-Round-<n>-<vYYMMDD>.md
+   QA5                   │           → ⑦  .paper-console.yaml   session state
+                         │           → ⑧  S-Round-<n>-<vYYMMDD>.md
                          │                and that round's letters beside it
                          ▼
    QB1-QB5 ──────▶  1-lifecycle/     pick ONE S page, load ONE stage contract
    QA7  (creation)       │           haipipe-paper-stage · index.yml · 8 contracts
-   QE   (the form)       │           → ④  S-<Family>-<unit>-<slug>.md
+   QE   (the form)       │           → ⑧  S-<Family>-<unit>-<slug>.md
                          │                create-page.py calls the Board's stage.py
                          ▼
    QBb  (evidence) ─▶  2-phase/      the four phases, 13 workers, all on ONE page
    QC   (sentence)       │
-   QA8  (the runner)     │  DRAFT   → ④  the page's ## Content + its Q-consumer
-                         │  PROBE   → ③  1-probes/PPnn_<topic>/QXn_<slug>.md
+   QA8  (the runner)     │  DRAFT   → ⑧  the page's ## Content + its Q-consumer
+                         │  PROBE   → ⑦  1-probes/PPnn_<topic>/QXn_<slug>.md
                          │           ↳ ACROSS THE WALL, read-only, to
                          │             tasks/ · discoveries/ → QA/<n>-<slug>.md
                          │             The answer is never copied in; it is pointed at.
-                         │  REVISE  → ④  the same page, plus %% why-comments
-                         │  CHECK   → ④  state: ✅   WRITTEN BY A HUMAN
+                         │  REVISE  → ⑧  the same page, plus %% why-comments
+                         │  CHECK   → ⑧  state: ✅   WRITTEN BY A HUMAN
                          ▼
    QBa  (projections) ▶ 3-deliver/   1-build · 2-audit · 3-polish · 4-ship
-   QD   (renderers)      │           → ③  0-sections/*.tex   GENERATED from ④
-                         │           → ③  0-displays/…/float.tex
-                         │           → ③  main.pdf · overleaf · the bundle
+   QD   (renderers)      │           → ⑦  0-sections/*.tex   GENERATED from ⑧
+                         │           → ⑦  0-displays/…/float.tex
+                         │           → ⑦  main.pdf · overleaf · the bundle
                          ▼
-   QA5 ──────────▶  4-respond/       → ④  the round's S-Round page: what came
+   QA5 ──────────▶  4-respond/       → ⑧  the round's S-Round page: what came
                          │                back, what was decided, what applied
                          ▼
-   QD  ──────────▶  5-present/       → ③  slides.pdf · poster.pdf, from the
+   QD  ──────────▶  5-present/       → ⑦  slides.pdf · poster.pdf, from the
                                           ACCEPTED paper
 
    ── read the LEFT column and the graduation edge is addressable ──
@@ -68,8 +68,8 @@ What is genuinely missing is the second half of the question above. A reader can
       all, because it rules the board itself.
 
    ── read the RIGHT column and the placement rule falls out ───────
-      ④ gets everything a stage DECIDES or writes as prose
-      ③ gets everything GENERATED from those decisions, plus the
+      ⑧ gets everything a stage DECIDES or writes as prose
+      ⑦ gets everything GENERATED from those decisions, plus the
         evidence pointers
       ① gets NOTHING. Nothing a paper run produces is written back into
         the skill: that direction is graduation, and only ② may travel it.
@@ -126,7 +126,7 @@ CHECK    haipipe-paper-check          HUMAN GATE. Only a person may pass it.
 
 ### What each stage writes, and what appears in the paper
 ```
- stage          phases        writes into ④ the paper board      generates in ③
+ stage          phases        writes into ⑧ the paper board      generates in ⑦
  ────────────   ───────────   ─────────────────────────────────  ──────────────────
  seed           D P R C       S-Seed-0-seed.md                   —
  resource       D P R C       S-Work-0-resources.md              —
@@ -141,7 +141,7 @@ CHECK    haipipe-paper-check          HUMAN GATE. Only a person may pass it.
  section-edit   D P R C       S-Main-n · S-Appendix-x            0-sections/*.tex
                 PER UNIT      one page per section
 ```
-Five of the eight produce nothing in `③` at all: their whole product is a page in `④`. Only display and section-edit generate manuscript files, and both generate them FROM the page, never the other way round.
+Five of the eight produce nothing in `⑦` at all: their whole product is a page in `⑧`. Only display and section-edit generate manuscript files, and both generate them FROM the page, never the other way round.
 
 ### The anatomy of one skill
 ```
@@ -263,11 +263,11 @@ Three things fall out of reading it as a column.
                              Law is COPIED into a SKILL.md, a stage contract, or
                              a ref/ file. Nothing here may read the board back.
 
- ① ──▶ ③ the paper           OUT, only through a stage run. A worker writes the
+ ① ──▶ ⑦ the paper           OUT, only through a stage run. A worker writes the
                              page and any generated manuscript file. No skill
                              file is ever copied into a paper.
 
- ① ──▶ ④ the paper board     OUT, and this is the one people forget. Creating a
+ ① ──▶ ⑧ the paper board     OUT, and this is the one people forget. Creating a
                              page is `create-page.py`, which selects the stage
                              and template here, then calls haipipe-board's
                              `stage.py` for the shell. Board owns the filename,
@@ -282,7 +282,7 @@ Three things fall out of reading it as a column.
  rarely    the layer map, the anatomy, the phase list           a QA/QB ruling
  per rule  a stage contract's fields                            a graduated Law
  per venue a pack under venue/                                  a new outlet
- never     anything naming one paper                            that is ③ or ④
+ never     anything naming one paper                            that is ⑦ or ⑧
 ```
 
 ## Items to Finish
@@ -293,7 +293,7 @@ Three things fall out of reading it as a column.
 - [x] 🔭 Say what a stage RUN does, not just which layers exist
       The four phases, the thirteen workers, and the per-stage write and generate table (260726, JL's ask).
 - [x] 🔀 State this folder's three edges
-      What comes in from `②`, what goes out to `③` and `④`, and that only PROBE crosses the wall.
+      What comes in from `②`, what goes out to `⑦` and `⑧`, and that only PROBE crosses the wall.
 - [x] 🎯 Map every board group to what it rules here
       The graduation edge is addressable: each group names the files a settled Law must land in (JL 260726).
 - [ ] 🔗 Carry the cross-package rulings
@@ -310,8 +310,8 @@ Three things fall out of reading it as a column.
       A fresh agent should identify the entry, stop conditions, and next owner without reading family history.
 - [ ] 🧹 Inventory the current paper skills
       Classify every extra file as runtime reference, deterministic script, reusable asset, or design history.
-- [ ] 🧠 Rule what a stage may write into `③` directly
-      Today only display and section-edit generate manuscript files, and only from their page. Whether any stage may write to `③` without a page is unstated, and a worker with a plausible reason will eventually do it.
+- [ ] 🧠 Rule what a stage may write into `⑦` directly
+      Today only display and section-edit generate manuscript files, and only from their page. Whether any stage may write to `⑦` without a page is unstated, and a worker with a plausible reason will eventually do it.
 - [ ] 🧪 Trace one request through the layers
       A fresh session should move from Board to stage runner to worker to the same page without another orchestrator.
 
@@ -320,7 +320,7 @@ The ownership map, the anatomy, and now the per-stage run map are recorded. None
 
 The two zoom levels, family and folder, were separate faces until 260726, when they merged: both answer "what is inside `①`", and splitting them put two of QA's four faces on one quadrant.
 
-Reopened to 🟡 on 260726: the edge map raised a real unruled question, which is whether a stage may write into `③` without going through a page.
+Reopened to 🟡 on 260726: the edge map raised a real unruled question, which is whether a stage may write into `⑦` without going through a page.
 
 ## Files
 - `haipipe-paper/SKILL.md`
@@ -339,4 +339,4 @@ The numbered family spine stays. Each layer owns one responsibility and control 
 
 Inside one skill: progressive disclosure. Metadata selects, `SKILL.md` carries the shortest complete procedure and names which conditional reference to read, and everything else loads only when its branch is taken. Design history never sits in the invocation path.
 
-Nothing in this folder names one paper. A rule that mentions a specific manuscript belongs in `③` or `④`, not here.
+Nothing in this folder names one paper. A rule that mentions a specific manuscript belongs in `⑦` or `⑧`, not here.

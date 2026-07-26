@@ -45,10 +45,10 @@ QA · where things LIVE      separate the skill package from a live paper first
    QA1 the map: six folders in three pairs, four legal crossings
         ├──→ QA2 ① the skill set     what ships
         ├──→ QA3 ② the skill board   what is argued, and what LEAVES
-        ├──→ QA4 ③ the paper         what exists on disk   ← QBa1 QBc1 QBc3 QBc4
-        ├──→ QA5 ④ the paper board   what is worked, and why NOTHING leaves
+        ├──→ QA4 ⑦ the paper         what exists on disk   ← QBa1 QBc1 QBc3 QBc4
+        ├──→ QA5 ⑧ the paper board   what is worked, and why NOTHING leaves
         │         QA3 and QA5 are written as opposites on purpose
-        └──→ QA6 ⑤ /haipipe-board     the TOOL both boards are made of
+        └──→ QA6 ③ /haipipe-board     the TOOL both boards are made of
               ├──→ QA7 who owns which REGION of the shared page
               └──→ QA8 how work is DRIVEN from a page
                    merged 260726 from QBc×5 + QBd×4, every Law kept
@@ -76,7 +76,7 @@ QD · the DISPLAY            what the reader LOOKS AT       →  0-displays/
    QD1 ownership → QD2 render contract ──┬──→ QD3 renderer taxonomy
                                          ├──→ QD4 format adapters → QBa3
                                          └──→ QD5 who may commission one
-   QD6 provenance ①run →②data →③code →④asset →⑤float →⑥sentence   joins QD to QC
+   QD6 provenance ①run →②data →⑦code →⑧asset →③float →④sentence   joins QD to QC
    QC3/QC4 CITE a display; QD1-QD5 MAKE one. Different jobs, different owners.
 
 QE · shipping the skill     the contract form and the acceptance test

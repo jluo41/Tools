@@ -103,6 +103,8 @@ MARKER = re.compile(
 # A year is a date, not a measurement, and a lone 0 or 1 is almost never a
 # finding. Skipping them is the difference between a highlight and a mess.
 YEAR = re.compile(r"^(1[89]|20)\d{2}$")
+# a comparison immediately before the number: `p < 0.001`, `N >= 500`
+CMP = re.compile(r"(?:&lt;|&gt;|<|>|≤|≥|=)\s*$")
 
 
 # One popover panel per chip. They are COLLECTED rather than emitted inline,
@@ -317,8 +319,8 @@ def _number(raw, pct, qid):
         return raw + (pct or "")
     if not pct and len(raw) == 1 and raw in "01":
         return raw
-    state, tip = PAPER.check_number(qid, raw)
-    return _chip("num", state, raw + (pct or ""), tip)
+    state, tip, meta = PAPER.check_number(qid, raw)
+    return _chip("num", state, raw + (pct or ""), tip, meta)
 
 
 def _kind(u, fallback_label=""):
@@ -358,6 +360,13 @@ def cite_chips(s):
 
     def one(m):
         if m.group(9):                       # a number in the prose
+            # `p < 0.001` is a BOUND, not a measurement. Checking it against the
+            # run finds every recorded p-value under a thousandth and calls the
+            # sentence ambiguous, which is noise: the sentence never claimed the
+            # figure equals 0.001. Numbers after a comparison are left alone.
+            # (The text is already HTML-escaped here, so the operator is &lt;.)
+            if CMP.search(m.string[max(0, m.start() - 7):m.start()]):
+                return m.group(0)
             return (_number(m.group(9), m.group(10), qid_here[0])
                     if qid_here[0] else m.group(0))
         if m.group(7) or m.group(8):         # \ref{tab:…}, or a bare label
