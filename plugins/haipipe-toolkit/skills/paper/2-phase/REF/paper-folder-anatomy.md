@@ -81,7 +81,7 @@ asserts none sits behind a number.
 
 There is no stored frontier. `current_layer` and `maturity` are DERIVED, from
 each S page's own `state:` and from disk; the venue pin lives in
-`S-Venue-0-venue.md` frontmatter; and the Gate Ledger, the one part that is
+`S-Venue-0-venue.md`'s `state:` line; and the Gate Ledger, the one part that is
 HISTORY and cannot be derived, lives in each S page's own `## Log`, one row on
 the page whose gate it was.
 
@@ -181,7 +181,7 @@ status, and placement.
   Section prose owns the lead-in and placement decision.
 - `preview.tex` compiles one display unit to `preview.pdf`; this gives each
   display its own reviewable PDF and lets the same unit be used in
-  `0-lifecycle/4-display`, `0-lifecycle/5-section-edit`, and the main paper.
+  `0-lifecycle/3-display`, `0-lifecycle/4-main`, and the main paper.
 - Main/SI paper paths are written relative to the paper root, for example:
   `\input{displays/display01-main-gradient/float.tex}`.
 - Do not bake captions into figure PDFs. Assets are clean visual/table exports;
@@ -195,14 +195,12 @@ status, and placement.
 agent discussion, author discussion, coauthor comments, reviewer comments,
 decision pass, or application of edits.
 
-- Round folders are direct children of `0-lifecycle/7-round/`: `0-lifecycle/7-round/v260621/`.
-- The round id is the branch/round name. Do not add another branch folder.
-- `latest.md` points to the active round and may include a short summary.
-- `discussion.md` stores raw discussion and incoming comments.
-- `decisions.md` stores accepted paper intent.
-- `todo.md` stores open needs and their target: lifecycle stage, probe,
-  discover, task, display, or paper edit.
-- `applied.md` records what changed where after items are handled.
+- Each round is one `S-Round-<n>-<vYYMMDD>.md` page directly under
+  `0-lifecycle/7-round/`; received letters may sit beside their owning page.
+- The page's `## Discussion` stores raw discussion and incoming comments.
+- Its `## Items to Finish` is the only round queue.
+- Decisions and applied work are recorded in the same page's Content and
+  `## Log`; there is no `latest.md` or five-file round sidecar bundle.
 
 Rounds are process memory, not manuscript source. If a decision changes the
 paper, backfill it into the right S page, `sections/`, or `displays/`.
@@ -225,7 +223,9 @@ The build entry point every conforming folder ships:
 Mechanical version: `3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh <paper-dir>`.
 
 - [ ] NO `STATUS.md` exists; the frontier is derived from each S page's `state:`.
-- [ ] `0-lifecycle/0-seed` through `0-lifecycle/5-section-edit` exist with stage TeX.
+- [ ] Allocated Board families use `0-seed`, `1-work`, `2-venue`,
+      `3-display`, `4-main`, `5-appendix`, `6-submission`, and `7-round`;
+      absent-until-allocated families need not be pre-created.
 - [ ] Exactly one driver per document; each `0-*.tex` master has `\documentclass`.
 - [ ] `2-src/compile.sh` is present, executable, and compiles all masters green.
 - [ ] Every `sections/*.tex` matches the naming grammar; `NN` and `NN-MM`

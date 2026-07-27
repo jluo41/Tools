@@ -55,7 +55,7 @@ QA · where things LIVE      ① writes the paper and owns NEITHER channel out o
         │    QA5 ⑤ the EVIDENCE channel  /haipipe-probe
         │
         ├─ what they produce
-        │    QA6 ⑦ the paper           what exists on disk   ← QB6 QA8
+        │    QA6 ⑦ the paper           what exists on disk   ← QB2d QA8
         │    QA7 ⑧ its board           what is worked, and why NOTHING leaves
         │              QA3 and QA7 are written as opposites on purpose
         │
@@ -65,48 +65,53 @@ QA · where things LIVE      ① writes the paper and owns NEITHER channel out o
 
    ④ and ⑥ get no face: they are the design records of skills we do not own.
 
-QB · a STAGE: adding one, and running one
-   ✍️ AUTHOR TIME      you write these once, by hand
-        QB1 what it DECLARES    24 fields · 7 blocks · 3 readers
-        QB2 how it may VARY    how many pages · does it survive a new journal
-        QB3 its TEMPLATE       a skeleton to fill, or a spec to parse
+QB · a STAGE: hand it a page, and a predefined flow runs over it
+   🎛 THE STAGE        what the skill reads to know what to do
+        QB1  the contract    24 fields · 7 blocks · 3 readers · this map
 
-   ⚙️ RUN TIME         the router does these on every invocation
-        QB4 ──▶ the BOARD      who names the page
-        QB5                    …and on the SECOND run, what happens to it
-        QB6                    …and what is only GENERATED from it
-        QB7 ──▶ the PHASES     how they are called, and may one be skipped
-                 QB8  DRAFT    what must it refuse to write
-                 QB9  PROBE    what may it do alone
-                 QB10 REVISE   when may it change a sentence already read
-                 QB11 CHECK    who says done, and on what evidence
-    rebuilt 260726. The group used to ask what a stage IS; it now asks what
-    you DO with one, in the order the router does it. Six faces that
-    described rather than asked were deleted; three questions are new (the
-    template, the second run, the skip); the probe loop and the cost ladder
-    shrank to the paper's half, because ⑥ owns the mechanism.
+   📄 THE PAGE         the thing you hand it
+        QB2  one markdown file · four regions · four owners
+              QB2a  what SHAPES it     a skeleton to fill, or a spec to parse
+              QB2b  what it is CALLED  identity ▸ filename, and how many
+              QB2c  a SECOND run       a page you have already edited
+              QB2d  what comes OUT     md ▸ tex, one way, never back
 
-QC · the SENTENCE           what the reader READS          →  0-sections/
+   🔁 THE FLOW         the predefined thing that modifies it
+        QB3  the phase list · always ends `check` · may one be skipped
+              QB3a  DRAFT    what it adds, and what it refuses to write
+              QB3b  PROBE    what it may do alone
+              QB3c  REVISE   changing a sentence already read
+              QB3d  CHECK    who says done, and on what evidence
+    restructured 260726 on JL's model: a skill, a page, a flow. Four faces
+    that read as interchangeable became QB2a-d, because each describes the
+    same object from a different angle. The old "how a stage varies" face
+    dissolved: `runs:` joined QB2b, where the identity fields that decide
+    how many pages exist already live, and `venue_aligned:` went to QA6,
+    which owns the stage set.
+
+QC · the SENTENCE           what the reader READS          →  sections/
    QC0 the sentence unit ──┬──→ QC1 citation           the .bib, human-only
                            ├──→ QC2 value              bound to the producing run
                            ├──→ QC3 Display · table    display id, source_data.csv
                            └──→ QC4 Display · figure   display id, candidates
-   all five read ONE paragraph, out of ONE file, and each names only its own chips
+   ROWS ▲ what hangs on a sentence  ·  COLUMNS ▼ where it is delivered
+                           ┌──→ QC5 as LaTeX           sections/ appendices/ \input
+                           └──→ QC6 as Word            no .bib, no \input, no comment
    all four resolve `QA8@boardform`'s one blocked item: inline chips, `dialect: paper`
 
-QD · the DISPLAY            what the reader LOOKS AT       →  0-displays/
+QD · the DISPLAY            what the reader LOOKS AT       →  displays/
    QD1 ownership → QD2 render contract ──┬──→ QD3 renderer taxonomy
                                          ├──→ QD4 format adapters → QD7
                                          └──→ QD5 who may commission one
-   QD6 provenance ①run →②data →⑦code →⑧asset →③float →④sentence   joins QD to QC
-   QD7 one Content, several projections: LaTeX · Word · HTML   (was QB11)
+   QD6 provenance ①run →②data →③code →④asset →⑤float →⑥sentence   joins QD to QC
+   QD7 one Content, several projections: LaTeX · Word · HTML   (was QB3d)
    QC3/QC4 CITE a display; QD1-QD5 MAKE one. Different jobs, different owners.
 
 QE · shipping the skill     the contract form and the acceptance test
    QE1 contract form → QE2 fresh-agent acceptance
 ```
 Five letters, and three of them are folders. QB is `0-lifecycle/`, the machinery that produces
-things. QC is `0-sections/` and QD is `0-displays/`, which are the only two kinds of thing a
+things. QC is `sections/` and QD is `displays/`, both UNNUMBERED per QA6, which are the only two
 reader of the finished paper actually meets: sentences, and the displays they point at. QA is the
 coordinate system that has to be settled before any of it is placed, and QE is whether a stranger
 can run the result.
@@ -138,50 +143,65 @@ QA7-the-paper-board.md
 QA8-owning-the-shared-page.md
 QA9-driving-work-from-a-page.md
 
-### QB · A stage: adding one, and running one
-The lifecycle itself. Eight stages exist and run today, so nothing here is hypothetical: the
-questions are whether the rules those stages already follow are the right ones, and whether they
-are written anywhere a stranger would find them. Read it as the router reads a stage. First author
-time, the three things a person writes by hand: the twenty-four fields a stage declares and who
-reads each one, how it declares its two variations, and what its template is. Then run time, in execution order: the page gets named, and
-we ask what a second run does to it and what is only generated from it; then the phase list is
-walked, and each of DRAFT, PROBE, REVISE and CHECK gets the one question it actually turns on.
+### QB · A stage: a page in, a predefined flow over it
+The lifecycle itself, read the way you actually use it: you hand the skill a stage page and it
+modifies that page in a fixed order. So the group is three things. `QB1` is what the skill READS to
+know what to do, the contract, whose twenty-four fields have exactly three readers and only two of
+them are programs. `QB2` is the PAGE you hand it, one markdown file with four owners that never
+collide, and its four sub-faces ask what shapes it, what it is called, what a second run does to it,
+and what is generated out of it. `QB3` is the FLOW, the declared phase list, and its four sub-faces
+are DRAFT, PROBE, REVISE and CHECK.
 
-Rebuilt on 260726, and the rebuild deleted more than it moved. Six faces asked "what is X" and
-answered it, which is a glossary entry rather than a question, and they are in `_archive/`. Three
-questions are new and each was found by reading the code rather than the docs: `template.md` is
-parsed while its own header says it is copied, a second run has six different rules in five
-shapes, and one stage already declares a three-phase list. `QB9` shrank to the paper's half of the
-probe contract, because `QA1`'s Law says ⑥ owns the loop and the ladder.
+WHICH stages this skill has and what each one asks is `QA6`, not here. Restructured on 260726: the
+flat eleven read as interchangeable in the middle, so the two clusters became lettered, and the
+"how a stage varies" face dissolved into `QB2b` and `QA6`.
 QB1-what-a-stage-declares.md
-QB2-how-a-stage-varies.md
-QB3-stage-template.md
-QB4-who-names-the-page.md
-QB5-the-second-run.md
-QB6-write-vs-generate.md
-QB7-calling-the-phases.md
-QB8-draft.md
-QB9-probe.md
-QB10-revise.md
-QB11-check.md
+QB2-the-page.md
+QB2a-its-template.md
+QB2b-its-name.md
+QB2c-the-second-run.md
+QB2d-what-comes-out.md
+QB3-the-flow.md
+QB3a-draft.md
+QB3b-probe.md
+QB3c-revise.md
+QB3d-check.md
 
-### QC · The sentence, and what hangs on it
-The first of the two things a reader actually meets, and the home of `0-sections/`. The Board
+### QC · The sentence: what hangs on it, and where it is delivered
+The first of the two things a reader actually meets, and the home of `sections/`. The Board
 ships the mechanism at `QA8@boardform`: one sentence per source line, a `>` lane bound by
 adjacency, a badge, a drawer, a write-back endpoint. What it cannot decide is what a citation, a
 value or a Display MEANS, and it says so: its one unbuilt item, inline chips, is blocked on a
 paper-side ruling. These pages are that ruling, split by TYPE, because the four look symmetric and
 are not. A citation ends in a `.bib` entry only a human may write. A value binds to a run, not a
 file. A table is checkable on sight; a figure is not, and it has candidates.
-All five read the SAME paragraph, embedded from one file, so the asymmetry is visible in one object
-rather than argued across four examples that used to drift apart.
+The group is a MATRIX (JL 260726). QC1-QC4 are ROWS, what hangs on a sentence. QC5 and QC6 are
+COLUMNS, where it is delivered. Every cell differs, which is why one shared "projections" face was
+always going to be too thin to say anything.
+```
+                 │ QC5 ──▶ LaTeX          │ QC6 ──▶ Word
+ ────────────────┼────────────────────────┼─────────────────────────
+ QC1 citation    │ \citep{key} + .bib     │ ⚠️ no .bib. a field, or
+                 │ + .bst does the rest   │    baked text to maintain
+ QC2 value       │ the number, inline     │ the number, inline  ✅ same
+ QC3 table       │ \input{displays/<u>/   │ ⚠️ must EMBED the rendered
+                 │ float.tex} + \ref      │    table. No \input exists.
+ QC4 figure      │ \includegraphics in    │ ⚠️ must EMBED the image, and
+                 │ the unit's float       │    invent its own numbering
+ ────────────────┼────────────────────────┼─────────────────────────
+ ### §6.1        │ \subsection            │ a Heading style
+ > lanes         │ DROPPED                │ DROPPED             ✅ same
+ %% {CC-*}:      │ survives as a comment  │ 🔴 NOWHERE TO PUT IT
+```
 QC0-sentence-unit.md
 QC1-sentence-citation.md
 QC2-sentence-value.md
 QC3-sentence-display-table.md
 QC4-sentence-display-figure.md
+QC5-sentence-to-latex.md
+QC6-sentence-to-word.md
 ### QD · The Display, and who may render it
-The second thing a reader meets, and the home of `0-displays/`. Separate from QC because citing a
+The second thing a reader meets, and the home of `displays/`. Separate from QC because citing a
 display and MAKING one are different jobs: `QC3` and `QC4` ask what a sentence points at and what
 state that pointer is in, while these ask who owns the rendering. Paper owns the visual argument;
 Display owns reusable rendering; Task owns computed evidence; Deliver owns target-format
@@ -193,6 +213,16 @@ QD4-format-adapters.md
 QD5-who-may-render.md
 QD6-provenance-chain.md
 QD7-one-content-many-formats.md
+### Q-Skill · Keeping the skills true to this board
+A ruling that stays on a board binds nothing, because no runtime reads a design board. This group
+owns the seam between the two: when a ruling becomes shipped text, when a version and a CHANGELOG
+entry are owed, and where a reader looks to see which of the 35 skills are current. It exists
+because on 2026-07-26 the two halves disagreed three times in one day, in three different
+directions, and nothing detected any of them. Whether a shipped skill then WORKS is `QE2`, not here.
+QS1-graduation.md
+QS2-versioning.md
+QS3-status.md
+
 ### QE · Shipping the skill
 Hand it over so a fresh agent can run a stage without us. Last, because it is the test of
 everything above it.
@@ -207,8 +237,8 @@ index.yml          ../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml
 CONTRACT.md        ../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md
 venue/             ../../paper/venue/
 haipipe-probe/     ../../probe/haipipe-probe/
-haipipe-board/     ../../0_utils/haipipe-board/
-dialect_paper.py   ../../0_utils/haipipe-board/src/dialect_paper.py
+haipipe-board/     ../../board/haipipe-board/
+dialect_paper.py   ../../board/haipipe-board/src/dialect_paper.py
 haipipe-paper-probe          ../../paper/2-phase/1-probe/haipipe-paper-probe/
 haipipe-paper-revise-place   ../../paper/2-phase/2-revise/haipipe-paper-revise-place/
 haipipe-paper-revise-results ../../paper/2-phase/2-revise/haipipe-paper-revise-results/
@@ -217,10 +247,12 @@ haipipe-paper-revise-content ../../paper/2-phase/2-revise/haipipe-paper-revise-c
 4-display/         ../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/
 boardform-board/   ../01-boardform-260722/
 probe-board/       ../01-probe-qa-260726/
-QB2@probe          ../01-probe-qa-260726/QB2-cost-ladder.md
-QB1@probe          ../01-probe-qa-260726/QB1-five-step-loop.md
-QA8@boardform      ../01-boardform-260722/QA8-sentence.md
-QA8a@boardform     ../01-boardform-260722/QA8a-sentence-chat.md
+QB1@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB1-the-order.md
+QB3@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB3-match.md
+QC1@probe          ../01-probe-qa-260726/QC-the-contract/QC1-qa-state-line.md
+QB6@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB6-interpret.md
+QA8@boardform      ../01-boardform-260722/QA-defining-a-board/QA8-sentence.md
+QA8a@boardform     ../01-boardform-260722/QA-defining-a-board/QA8a-sentence-chat.md
 paper-folder/      ../../paper/3-deliver/1-build/haipipe-paper-folder/
 display/           ../../display/
 paper-display/     ../../paper/1-lifecycle/4-display/

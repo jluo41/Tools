@@ -1,11 +1,11 @@
 ---
 name: haipipe-paper-draft-citation
-description: "DRAFT-phase citation auditor (internal). Walks a stage doc or section for assertions that need a source, decides which already have a real \\citep{key} in the .bib, and REPORTS every remaining hole to haipipe-paper-draft — where it is, that it owes `\\cite{TOADD}`, and which `Q-<Stage>-<n>` will produce the key (or UNOWNED). READ-ONLY: the hub holds the pen for the manuscript, the Q-consumer, and 1-probes/. Never searches, never writes bibtex, never writes anything. Users invoke stage skills (seed, claims, section-edit...), not this skill directly."
-argument-hint: "[stage-or-section] [paper-path]"
+description: "DRAFT-phase citation auditor (internal). Reports assertions that need sources, real existing bib keys, and every remaining hole with its owning Q-consumer id. READ-ONLY: the DRAFT hub writes the manuscript and S-page Q-consumer; PROBE alone writes 1-probes/. Never searches or writes bibtex."
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-19"
+  argument_hint: "[stage-or-section] [paper-path]"
+  version: "0.1.2"
+  last_updated: "2026-07-26"
   summary: "DRAFT-phase citation auditor: find every assertion that owes a source, report the real key when the .bib already has it, and report every remaining hole with the question that owes it. READ-ONLY; the hub writes. Acquisition is a question's job, not this skill's — it never searches. History: ./CHANGELOG.md."
 ---
 
@@ -24,7 +24,9 @@ What this skill does NOT do
 - It does NOT search. Finding a paper is a question's job: the ENTRY's `### q-executor` goes to `Agent(haipipe-discovery-orchestrator-agent)`.
 - It does NOT generate bibtex and NEVER touches `0-*.bib`. Generated bibtex means hallucinated authors, wrong years, wrong journals, wrong pages — the failure is silent and survives into the submitted PDF.
 - It does NOT verify a source (does the DOI resolve? does the paper actually say this?). That is `haipipe-paper-check-evidence`.
-- It does NOT WRITE, anywhere. Not the manuscript, not the stage doc, not `1-probes/`. It walks and reports; `haipipe-paper-draft` holds the pen for all three, and `haipipe-paper-revise-place` places landed keys later. One writer per file — two lanes editing one sentence is a race.
+- It does NOT WRITE, anywhere. It walks and reports;
+  `haipipe-paper-draft` writes the manuscript and Q-consumer, PROBE writes
+  `1-probes/`, and `haipipe-paper-revise-place` places landed keys later.
 
 
 AUDIT — what owes a source
@@ -86,14 +88,10 @@ Finding the right `[Q-<Stage>-<n>]`, cheapest first:
      → reuse its id. Most citation holes land here: a novelty question, a
        landscape question, a prior-art question already asks for exactly the
        anchors the prose is missing.
-2. an existing q-executor ENTRY in 1-probes/ asks it
-     → add a `### q-consumer` bullet to that entry, reuse its consumer id.
-3. nothing would produce it
+2. nothing would produce it
      → REPORT it back to haipipe-paper-draft as UNOWNED, naming the assertion and
-       what would settle it. The hub raises the `## Q-<Stage>-<n>` and authors its
-       ENTRY at its Step 4b — this lane never writes to the stage doc's Q-consumer
-       or to 1-probes/. One writer per file; three lanes writing one probe file is
-       a race. Asking is cheap, so report every one; the DRAFT gate decides worth.
+       what would settle it. The hub raises the `## Q-<Stage>-<n>`; PROBE later
+       finds or opens the entry. This lane writes neither file.
 ```
 
 A bare `\cite{TOADD}` with no bracket is a defect. It means no question will ever produce that key — a hole with no owner, which is exactly the state DRAFT exists to prevent.
@@ -105,7 +103,7 @@ Done criteria
 - [ ] Every factual assertion is reported as carrying a real `\citep{key}`, or as owing `\cite{TOADD}`
 - [ ] Every `\citep{key}` greps in the paper's `.bib`
 - [ ] Every `[Q-<Stage>-<n>]` names a Q-consumer that exists in the stage doc
-- [ ] WRONG-CONTEXT / WEAK flags recorded in `_LOG_<stage>.md` for the evidence check
+- [ ] WRONG-CONTEXT / WEAK flags returned for the hub to record in the owning S page's `## Items to Finish` and `## Log`
 - [ ] Nothing written anywhere — the report IS the output
 
 

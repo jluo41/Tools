@@ -21,8 +21,10 @@ which skill it concerns; there is no separate `skill:` field.
 ## Capture: `/haipipe-paper feedback "<text>"`
 
 ```
-1. Read the active paper + frontier from .paper-console.yaml if present
-   (the active stage is the SECONDARY routing signal).
+1. Read only the active paper identity from `.paper-console.yaml` if present.
+   Re-read that paper's `0-lifecycle/board.md` and relevant S pages, then derive
+   the frontier and active stage from their disk predicates and `state:` gates
+   (the derived active stage is the SECONDARY routing signal).
 2. INFER the target skill (see "Routing the capture" below).
 3. Resolve the skill -> its feedback/ folder PATH (see "Inbox paths").
    If that folder is missing, create it + a one-line README (template below).
@@ -69,7 +71,8 @@ guess: a wrong MERGE buries a distinct concern, a wrong SPLIT regrows the inbox.
 
 ```
 signal A (primary):   a routing keyword appears in the feedback TEXT
-signal B (secondary): the active lifecycle stage in .paper-console.yaml
+signal B (secondary): the active lifecycle stage freshly derived from the
+                      Board, S-page gates, and disk artifacts
 resolve:
   0. CROSS-CUTTING GUARD (runs BEFORE keyword match). The TEST is SEMANTIC:
      does the complaint assert a rule about the lifecycle/spine AS A WHOLE
@@ -83,8 +86,9 @@ resolve:
            before done", or the same idea with no trigger word at all
            (e.g. "the PDF never rebuilds when I finish a stage" = a per-stage
            recompile rule -> fallback, NOT -display even mid-display-stage).
-         - names a known cross-cutting concern: stage strip, stage gate /
-           user-confirm, status tail, illuminate-every-stage,
+         - names a known cross-cutting concern: Board/session tail (including
+           reports that use the retired "stage strip" or "status tail" names),
+           stage gate / user-confirm, illuminate-every-stage,
            compile-pdf-every-stage, diagram-ascii habit, interrogate-every-unit,
            probe-routing from paper, construction beat.
        Rule of thumb: "would this complaint be equally true at the seed stage,
@@ -120,8 +124,8 @@ citation, bibtex, references            -> haipipe-paper-draft-citation
   (NB: "every/each stage must compile a PDF" is the cross-cutting guard,
    not a haipipe-paper-compile bug -> fallback, per resolve step 0)
 --------------------------------------------------------------------------
-NO MATCH  (cross-cutting discipline: stage strip, illuminate-every-stage,
-          compile-pdf-every-stage, stage gate / user-confirm, status tail,
+NO MATCH  (cross-cutting discipline: Board/session tail, illuminate-every-stage,
+          compile-pdf-every-stage, stage gate / user-confirm,
           diagram-ascii habit, interrogate-every-unit, probe-routing from
           paper, construction-beat) ........... -> orchestrator fallback (this folder)
 ```

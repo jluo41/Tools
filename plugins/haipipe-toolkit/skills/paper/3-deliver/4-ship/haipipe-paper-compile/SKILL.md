@@ -1,16 +1,15 @@
 ---
 name: haipipe-paper-compile
-description: "Compile LaTeX paper to PDF, fix errors, and verify output. Use when user says \"编译论文\", \"compile paper\", \"build PDF\", \"生成PDF\", or wants to compile LaTeX into a submission-ready PDF."
-argument-hint: "[paper-directory]"
+description: "Compile a paper-owned LaTeX target to PDF, fix build errors, and verify output. Resolves a specific `.tex`, the Display gallery at `0-lifecycle/3-display/4-display.tex`, or the paper's unnumbered master/`2-src/compile.sh`. Compilation never approves a Board gate or advances to submission. Trigger: 编译论文, compile paper, compile Display, build PDF, 生成PDF."
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   last_updated: "2026-07-26"
-  summary: "Compile LaTeX paper to PDF, fix errors, and verify output."
+  summary: "Target-aware LaTeX compilation: explicit tex, canonical Display gallery, or full-paper master. Verifies the PDF and reports Board gate state without changing it."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# Paper Compile: LaTeX to Submission-Ready PDF
+# Paper Compile: LaTeX Target to Verified PDF
 
 Compile the LaTeX paper and fix any issues: **$ARGUMENTS**
 
@@ -21,7 +20,12 @@ Compile the LaTeX paper and fix any issues: **$ARGUMENTS**
 - **ENGINE = `pdflatex`** — LaTeX engine.
   Options: `pdflatex` (default), `xelatex` (for CJK/custom fonts), `lualatex`.
 - **MAX_COMPILE_ATTEMPTS = 3** — Maximum attempts to fix errors and recompile.
-- **PAPER_DIR = `paper/`** — Directory containing LaTeX source files.
+- **TARGET** — resolved from the request:
+  1. an explicit `.tex` path;
+  2. “Display” → `<paper>/0-lifecycle/3-display/4-display.tex`;
+  3. “full paper” → run `<paper>/2-src/compile.sh` when present, otherwise
+     select the requested unnumbered root `*.tex` carrying `\documentclass`.
+  If several masters exist and the user did not name one, ask; never guess.
 - **MAX_PAGES** — Page limit.
   ML conferences: main body to Conclusion end (excluding references & appendix).
   ICLR=9, NeurIPS=9, ICML=8.
@@ -30,53 +34,66 @@ Compile the LaTeX paper and fix any issues: **$ARGUMENTS**
 
 ## Workflow
 
-### Step 1: Verify Prerequisites
+### Step 1: Resolve the paper root and target
 
-Check that the compilation environment is ready:
+Resolve before running a compiler. Never assume `paper/main.tex`.
 
-```bash
-# Check LaTeX installation
-which pdflatex && which latexmk && which bibtex
+1. An explicit `.tex` path wins.
+2. A Display request resolves to
+   `<paper>/0-lifecycle/3-display/4-display.tex`.
+3. A full-paper request uses `<paper>/2-src/compile.sh` when it exists.
+   Otherwise find unnumbered root `*.tex` files carrying `\documentclass`.
+4. If more than one full-paper master remains and the user did not name one,
+   ask which target to use. Do not pick by timestamp or filename.
 
-# If not installed, provide instructions:
-# macOS: brew install --cask mactex-no-gui
-# Ubuntu: sudo apt-get install texlive-full
-# Server: conda install -c conda-forge texlive-core
-```
+The paper root is the nearest ancestor containing `0-lifecycle/`. Confirm the
+resolved target is inside that paper. Reject a missing target rather than
+silently compiling another file.
 
-Verify all required files exist:
-
-```bash
-# Must exist
-ls $PAPER_DIR/main.tex
-
-# Should exist
-ls $PAPER_DIR/references.bib
-ls $PAPER_DIR/sections/*.tex
-ls $PAPER_DIR/displays/*/assets/*.pdf 2>/dev/null || ls $PAPER_DIR/displays/*/assets/*.png 2>/dev/null
-```
-
-### Step 2: First Compilation Attempt
+Check the requested toolchain without installing anything:
 
 ```bash
-cd $PAPER_DIR
-
-# Clean previous build artifacts
-latexmk -C
-
-# Full compilation (pdflatex + bibtex + pdflatex × 2)
-latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex 2>&1 | tee compile.log
+command -v latexmk
+command -v pdflatex
+command -v bibtex
 ```
+
+If the required compiler is absent, return `blocked` with platform-appropriate
+installation guidance. Do not modify the paper or declare its Board gate failed.
+
+### Step 2: Compile the resolved target
+
+For a full paper with its owned build script:
+
+```bash
+(cd "$PAPER_ROOT" && ./2-src/compile.sh)
+```
+
+For an explicit target or the Display gallery, compile from the paper root so
+root-relative `\input` paths continue to resolve, while placing output beside
+the target:
+
+```bash
+(cd "$PAPER_ROOT" && latexmk -pdf -interaction=nonstopmode -halt-on-error \
+  -output-directory="$(dirname "$TARGET_REL")" "$TARGET_REL")
+```
+
+Do not run a root-wide clean before compiling. It can remove useful diagnostics
+and unrelated target artifacts. Capture the compiler output and inspect the
+target's own `.log`; after a successful direct compile, `latexmk -c` may clean
+that target's auxiliaries while preserving its PDF.
 
 ### Step 3: Error Diagnosis and Auto-Fix
 
-If compilation fails, read `compile.log` and fix common errors:
+If compilation fails, read the resolved target's log and fix only the error
+needed to build that target:
 
 **Missing packages:**
 ```
 ! LaTeX Error: File `somepackage.sty' not found.
 ```
-→ Install via `tlmgr install somepackage` or remove the `\usepackage` if unused.
+→ Report the dependency. Installing system packages requires the user's
+environment authority; removing a package is valid only when it is truly unused.
 
 **Undefined references:**
 ```
@@ -100,7 +117,7 @@ LaTeX Warning: Citation `smith2024' undefined
 **`[VERIFY]` markers in text:**
 → Search for `[VERIFY]` markers left by `/haipipe-paper section-edit`.
 These indicate unverified citations or facts.
-Search for the correct information or flag to the user.
+Flag them as content/evidence findings; compilation does not discharge them.
 
 **Overfull hbox:**
 ```
@@ -130,27 +147,24 @@ for attempt in 1..MAX_COMPILE_ATTEMPTS:
 ```
 
 For each error:
-1. Read the error message from `compile.log`
+1. Read the error message from the resolved target's log
 2. Locate the source file and line number
 3. Apply the fix
 4. Recompile
 
-**Stuck after 2 attempts?**
-If Codex plugin is installed, invoke `/codex:rescue` — Codex can independently read the LaTeX source and `compile.log` to spot issues Claude missed (e.g., conflicting packages, encoding problems, subtle macro errors).
-If not installed, continue with Claude's own diagnosis.
+Stop after `MAX_COMPILE_ATTEMPTS`. Return the first unresolved compiler error,
+the source location, and the exact target. Do not route to an optional plugin or
+rewrite unrelated prose.
 
 ### Step 5: Post-Compilation Checks
 
-After successful compilation, verify the output:
+Derive the expected PDF by replacing the target's `.tex` suffix with `.pdf`.
+For a build-script run, use the PDF path reported by the script and verify it is
+an unnumbered deliverable.
 
 ```bash
-# Check PDF exists and has content
-ls -la main.pdf
-# Check page count
-pdfinfo main.pdf | grep Pages
-
-# macOS: open for visual inspection
-# open main.pdf
+test -s "$TARGET_PDF"
+pdfinfo "$TARGET_PDF"
 ```
 
 **Visual review (automated):**
@@ -165,23 +179,19 @@ This is a quick visual scan, not a full review — the improvement loop does dee
 
 **Automated checks:**
 
-- [ ] PDF file exists and is > 100KB (not empty/corrupt)
-- [ ] Total page count is reasonable (MAX_PAGES + appendix + references)
-- [ ] No "??" in the PDF (undefined references — grep the log)
-- [ ] No "[?]" in the PDF (undefined citations — grep the log)
+- [ ] PDF exists, is non-empty, and `pdfinfo` can parse it
+- [ ] No unresolved-reference or unresolved-citation warning in the target log
 - [ ] Figures are rendered (not missing image placeholders)
-
-```bash
-# Check for undefined references
-grep -c "LaTeX Warning.*undefined" compile.log
-
-# Check for missing citations
-grep -c "Citation.*undefined" compile.log
-```
+- [ ] The PDF is not stale: its mtime is at least the target `.tex` mtime
+- [ ] Every Display `\input{displays/<unit>/float.tex}` resolves when the
+      target is the gallery
+- [ ] Every master-reachable `\input`, `\includegraphics`, and bibliography
+      target resolves when the target is a full paper
 
 ### Step 6: Page Count Verification
 
-**CRITICAL**: Verify paper fits within MAX_PAGES.
+This step applies to a **full-paper target only**. A Display gallery reports its
+page count but has no venue page-limit verdict.
 
 **For ML conferences (ICLR/NeurIPS/ICML/CVPR/ACL/AAAI):** Main body = first page through end of Conclusion section (not necessarily §5 — could be §6, §7, or §8 depending on structure).
 References and appendix are NOT counted.
@@ -189,26 +199,8 @@ References and appendix are NOT counted.
 **For IEEE venues:** The TOTAL page count (including references) must fit within the limit.
 There is no separate "main body" counting — everything up to and including the references counts.
 
-**Precise check using `pdftotext`:**
-```bash
-# Extract text and find where Conclusion ends vs References begin
-pdftotext main.pdf - | python3 -c "
-import sys
-text = sys.stdin.read()
-pages = text.split('\f')
-for i, page in enumerate(pages):
-    if 'Ethics Statement' in page or 'Reproducibility' in page:
-        print(f'Conclusion ends on page {i+1}')
-    if any(w in page for w in ['References', 'Bibliography']):
-        lines = [l for l in page.split('\n') if l.strip()]
-        for l in lines[:3]:
-            if 'References' in l or 'Bibliography' in l:
-                print(f'References start on page {i+1}')
-                break
-"
-```
-
-If Conclusion ends mid-page and References start on the same page, the main body is that page number (e.g., if both are on page 9, main body = ~8.5 pages, which is fine for a 9-page limit since it leaves room for the References header).
+Use the venue pinned on the Venue S page. If no venue or limit is pinned, report
+the measured page count and `limit: unknown`; never guess a compliance verdict.
 
 If over limit:
 - Identify which sections are longest
@@ -216,25 +208,23 @@ If over limit:
 - Report: "Main body is X pages (limit: MAX_PAGES).
   Suggestion: move [specific content] to appendix."
 
-### Step 6.5: Stale File Detection
+### Step 7: Read, never mutate, the Board gate
 
-Check for orphaned section files not referenced by `main.tex`:
+Compilation and approval are independent:
 
-```bash
-# Find all .tex files in sections/ and check which are \input'ed by main.tex
-for f in paper/sections/*.tex; do
-    base=$(basename "$f")
-    if ! grep -q "$base" paper/main.tex; then
-        echo "WARNING: $f is not referenced by main.tex — consider removing"
-    fi
-done
+```text
+compiler verdict  = did the resolved target produce a valid PDF?
+Board verdict     = did the owning S page reach ✅ with an approval receipt?
 ```
 
-This prevents confusion from leftover files when section structure changes (e.g., old `5_conclusion.tex` left behind after restructuring to 7 sections).
+Read the owning S page's first state token and its `## Log`. A green state
+without an actor/date approval receipt is stale and must be reported as such.
+This skill never writes an S-page state, appends a receipt, advances the
+frontier, or recommends submission merely because compilation succeeded.
 
-### Step 7: Submission Readiness
-
-For conference submission, additional checks:
+Run submission-readiness checks only when the user explicitly asks, only for a
+full-paper target, and only after all required Board gates are green with
+receipts:
 
 - [ ] **Anonymous**: no author names, affiliations, or self-citations that reveal identity
 - [ ] **Page limit**: main body within MAX_PAGES (to end of Conclusion)
@@ -252,24 +242,28 @@ For conference submission, additional checks:
 ## Compilation Report
 
 - **Status**: SUCCESS / FAILED
-- **PDF**: paper/main.pdf
-- **Pages**: X (main body to Conclusion) + Y (references) + Z (appendix)
-- **Within page limit**: YES/NO (MAX_PAGES = N)
+- **Target**: <resolved tex or 2-src/compile.sh>
+- **PDF**: <resolved PDF>
+- **Pages**: X; full-paper breakdown when applicable
+- **Within page limit**: YES / NO / NOT APPLICABLE / UNKNOWN
 - **Errors fixed**: [list of auto-fixed issues]
 - **Warnings remaining**: [list of non-critical warnings]
 - **Undefined references**: 0
 - **Undefined citations**: 0
+- **Board gate**: approved / open / stale / not associated (read-only)
 
 ### Next Steps
 - [ ] Visual inspection of PDF
-- [ ] Run `/haipipe-paper section-edit` to fix any content issues
-- [ ] Submit to [venue] via OpenReview / CMT / HotCRP
+- [ ] If content/evidence warnings remain, return to the owning Paper stage
+- [ ] If the owning S page is not approved, run `/haipipe-paper <stage> check`
 ```
 
 ## Key Rules
 
 - **Never delete the user's source files** — only modify to fix errors
-- **Keep compile.log** — useful for debugging
+- **Never hardcode `main.tex`** — resolve the requested target
+- **Compilation is not approval** — never mutate or infer a Board gate
+- **Never recommend submission from compiler success alone**
 - **Don't suppress warnings** — report them, let the user decide
 - **If LaTeX is not installed**, provide clear installation instructions rather than failing silently
 - **Font embedding is critical** — some venues reject PDFs with non-embedded fonts

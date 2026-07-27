@@ -50,13 +50,21 @@ any of them is incomplete.
                  exit_when      the stage's own failure exit
 ```
 
+`sections:` describes the stage's LOGICAL product.
+On a Board-first paper S page, every ordinary section becomes a direct `###`
+division under `## Content`, while the logical `Q-consumer` section is adapted
+into recognizable `- [ ] 🔎 Q-<Stage>-<n>` records under
+`## Items to Finish`.
+It is never emitted as a second `## Q-consumer` content block.
+`create-page.py` enforces this adapter.
+
 `upstream` and `downstream` are craft orientation, not a dependency graph. The authoritative
 dependency declaration is the S page's own `requires:` (QF2), because that one carries the
 upstream page's live gate state and cannot go stale.
 
 ## How `artifact:` resolves
 
-The stage names the DIRECTORY and the identity. Board tooling owns the FILENAME (QC2), which
+The stage names the DIRECTORY and the identity. Board tooling owns the FILENAME (QB4@paper), which
 it composes as `S-<board_family>-<board_unit>-<board_slug>.md`.
 
 ```
@@ -146,7 +154,10 @@ Every part of it now has a better home, and the file itself is no longer created
                             console had already stopped reading the stored value; a stored
                             frontier can only go stale, and a stale one is a third answer to
                             "where is this paper" that disagrees with the other two.
- venue:                     S-Venue-0-venue.md frontmatter. One page owns the venue contract;
+ the venue pin              S-Venue-0-venue.md's `state:` line, e.g. `✅ PINNED · MISQ 2026`.
+                            NOT a `venue:` frontmatter key: the board's face grammar is a
+                            CLOSED whitelist (haipipe-board src/parse.py) and would not see
+                            one. One page owns the venue contract;
                             a second copy could only disagree with it.
  Gate Ledger                the S page's own `## Log`, one row on the page whose gate it was.
                             This is the one part that is HISTORY and cannot be derived, so it

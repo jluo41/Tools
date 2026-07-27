@@ -7,7 +7,9 @@ A stage is only "done" when an EXPLICIT APPROVAL ACTION closes it. The system mu
 Gate Modes
 -----------
 
-Mode lives in the stage's S page frontmatter (`gate_mode: copilot | autopilot`, default copilot) and can be overridden per invocation (e.g. "run seed --autopilot").
+Mode is an invocation/session choice (`copilot | autopilot`, default copilot);
+it is not Board frontmatter. Record the selected mode and approval actor in the
+owning S page's `## Log`.
 
 ```
 🧑 copilot   (default)  the human reads the exit-criteria report, adds > JL: comments,
@@ -31,8 +33,8 @@ Gate Protocol (per-stage loop)
 
 0. **Illuminate + Elicit** -- surface taste-bearing choices before drafting
    (see 09-stage-illuminate.md).
-1. **Produce** the stage artifact (markdown `<stage>.md` + `_LOG`; display
-   produces `4-display.tex`).
+1. **Produce** the stage artifact on its S page (`## Content` + `## Log`);
+   display also produces compiled assets.
 2. **Review** the artifact content. Display only: compile the PDF (Lifecycle TeX
    Quality Standard, ../../3-deliver/haipipe-paper-deliver/SKILL.md). Markdown stages
    have no compile step; their gate is content review.
@@ -54,7 +56,7 @@ The CHECK phase is the ONLY door out of a stage. Its verdicts move in exactly tw
 
 ```
 ♻️ backward, WITHIN the stage    restart from DRAFT | PROBE | REVISE (a phase re-opens; never another stage)
-✅ forward, ACROSS the gate      proceed (or accept-with-issues) -> current_layer advances to the next stage
+✅ forward, ACROSS the gate      proceed (or accept-with-issues) -> the derived frontier moves to the next stage
 ```
 
 Going BACK across stages (e.g. redoing seed while the frontier is section-edit) is NOT a CHECK outcome. That is a lifecycle loopback: re-enter the earlier stage directly (`/haipipe-paper seed`; 🔥 moves there, 🚀 stays at the frontier), and that stage runs its own DPRC cycle and its own CHECK gate.
@@ -81,10 +83,16 @@ Phase Transition Contract (within a stage)
 
 The gate governs stage EXITS; this contract governs phase VISIBILITY inside the stage. A live seed run silently skipped PROBE and REVISE and drifted into CHECK without ever announcing it -- the user discovered the phase by accident. Every stage skill obeys:
 
-1. **Announce every boundary.** Entering a phase = one line in the reply ("PROBE: dispatching seed landscape...") + a `[PHASE]` entry in the stage `_LOG` + the phase line of the closing block moves 🔥.
-2. **No silent skips.** A phase may be skipped only by an EXPLICIT logged verdict: one reply line with the reason, `[PROBE] skipped -- <reason>` in `_LOG`, and `--` on the phase line. "The draft looks fine" is a verdict to record, not a license to say nothing. Defaults: a NEW stage artifact runs all four phases; skip is for re-entries and minor edits.
+1. **Announce every boundary.** Entering a phase = one line in the reply
+   ("PROBE: dispatching seed landscape...") + a `[PHASE]` entry in the owning S
+   page's `## Log` + the phase line of the closing block moves 🔥.
+2. **No silent skips.** Run the stage's declared `phases:` list in order. A
+   declared phase may be skipped only by an EXPLICIT logged verdict: one reply
+   line with the reason, `[PROBE] skipped -- <reason>` in the S page's `## Log`,
+   and `--` on the phase line. A phase absent from `phases:` is also `--`, but is
+   omitted by contract rather than skipped at runtime.
 3. **CHECK is never implicit.** Entering CHECK means presenting the exit-criteria report and the approval ask (Steps 3-4 above). An elicitation reply does not become CHECK because the user responds to it; if the user starts giving CHECK-style feedback early, say so and open CHECK properly.
-4. **PROBE dispatches through the probe worker only, and the worker dispatches the EXECUTOR ORCHESTRATORS directly.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> its five-step loop -> `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, carrying the section's `q-executor:` block VERBATIM and nothing else. The SWEEP is the paper-side MATCH (② of the loop), which greps the bank's QA corpus and READS the hits — so the reuse decision belongs to the worker, and a question that MATCH closes is never dispatched at all. The worker is the ONLY exit for evidence work -- a stage never dispatches ANY agent for evidence (general-purpose included), and no scope label creates an exception: "audit", "re-verify", "quick check" are evidence work and take the same door. (Live Paper-Probe-Test: an elicited AUDIT scope had no named route, so the stage hand-rolled a general-purpose web auditor -- 18 redundant verifications of ledger entries already marked VERIFIED, with results that had no landing path.) Stage skills never call `/haipipe-probe`, discovery agents, or task agents directly; the worker reads the bank's QA corpus (a READABLE index the executor published FOR readers) and NOTHING ELSE inline -- opening `results/`, reading a plan.yaml, grepping the code is bank work and breaks LAW 1; the DEPTH of any dispatched work is the executor's private business, decided in its own clean context. STAGES are bound the same way: a stage never reads project evidence (discoveries/, task results, legacy probes/) inline -- it knows WHAT is missing from its own DRAFT content, and the agent's anchored return (takeaways + sources manifest) is the paper side's only evidence window. Evidence scope is PROJECT-LOCAL at every layer: neither stages nor agents scan or read sibling projects' ledgers -- cross-project reuse is a USER decision (JL 2026-07-05); a plausible other-project source is named as an unread hypothesis, never consumed. The same discipline continues below the paper side: the probe agent never runs searches inline -- fresh external evidence goes through discovery (ENRICH or full) and LANDS in sources.md before any return (the Evidence Principles below are the general statement).
+4. **PROBE dispatches through one isolated collector.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> ① ORGANIZE + ② MATCH in the family worker -> `Agent(haipipe-probe-q-executor-agent)` for ③ DISPATCH + ④ POINT -> ⑤ INTERPRET back in the family worker. The collector alone calls `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, carrying each `### q-executor` block VERBATIM and nothing else. A question that MATCH closes is never handed to the collector. The worker/collector chain is the ONLY exit for evidence work -- a stage never dispatches any evidence agent itself, and no scope label creates an exception: "audit", "re-verify", and "quick check" take the same door. The family worker may grep and read the published `QA/*.md` bank index for MATCH, but it never opens raw results, runs bank work, or writes a QA file. The collector never sees the stage page or stake. Evidence scope is project-local; a plausible sibling-project source is named as an unread hypothesis until the user authorizes reuse.
 
 
 Evidence Principles (总纲)
@@ -184,11 +192,11 @@ Per-Stage Exit Criteria
 | seed | Seed question stated? Motivations stated? Tentative claim shape stated? |
 | resource | Does every hypothesis have a resource that is HAVE+FIT, or a COMMISSIONED build with an owner and a DATE, or a SCOPE CUT the human said out loud? Every BUILD question carries `cross-project:` (path or `none-found`)? `check-probe-cards.sh <paper_root> --stage resource` exits 0? |
 | claims | Every claim has status (supported/weak/GAP)? Each claim tied to an evidence source? GAP claims have delivery needs recorded? |
-| venue | Shortlist ranked with per-venue rationale? `venue:` pinned in `S-Venue-0-venue.md` frontmatter? |
+| venue | Shortlist ranked with per-venue rationale? Outlet named on `S-Venue-0-venue.md`'s `state:` line? |
 | pitch | Hook section with >=2 candidate hooks? Surprise stated? Implication/so-what stated? Why-believe with evidence pointers? Editor's Chair Test passed? [primary] claim designated? |
 | narrative | All claims carried in the arc? Claim-evidence matrix complete? Figure inventory present? Per-beat subagent review comments in small font? |
 | display | Gallery README present? Every display unit has README + float.tex? Per-unit interrogation verdict present? 4-display.tex + PDF compiled and current? |
-| section-edit | Every section has a scaffold (outline + _LOG)? Every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]` bracket? DRAFT-PROBE-REVISE-CHECK complete per section? Section checklists pass? |
+| section-edit | Every section has an S-page scaffold (outline + `## Log`)? Every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]` bracket? Its declared phase sequence is complete? Section checklists pass? |
 
 
 Confirmation Ledger: one row per gate, on the S page whose gate it was
@@ -202,7 +210,9 @@ Each S page's `## Log` carries its own **Gate row**, with the APPROVAL ACTOR. Ru
     | claims | yes | reviewer-agent | 2026-06-22 | autopilot; 2 deferred human items in queue |
     | pitch | no | -- | -- | -- |
 
-(Older ledgers with a `Confirmed` column read as Actor = human.) The stage strip's checkmark means "approved in the ledger", NOT "artifact exists on disk". A stage with an artifact on disk but no ledger approval is unapproved.
+(Older ledgers with a `Confirmed` column read as Actor = human.) The S page's
+first `state:` token becomes `✅` only after approval in the ledger. An artifact
+on disk without both is unapproved.
 
 
 Autonomy Policy

@@ -2,7 +2,7 @@
 
 A paper is a delivery contract, not a writing folder.
 
-Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>/`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1b-claims/S-Work-1-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
+Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>/`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1-work/S-Work-1-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
 
 ## Lifecycle
 
@@ -11,7 +11,7 @@ enter > 0-seed > 1-resource > 1-claims > [venue] > 2-pitch > 3-narrative > 4-dis
         > 5-section-edit > review > submit > round/respond > present
 ```
 
-`1-resource` and `1-claims` share the number 1, deliberately, exactly as `2-venue` and `2-pitch` already do. The number is decoration; the spine key is the bare name `resource`, and `stage-strip.sh` strips the digit before matching. Nothing renumbers.
+`1-resource` and `1-claims` share the number 1, deliberately, exactly as `2-venue` and `2-pitch` already do. The number is decoration; frontier derivation matches the bare stage key `resource`. Nothing renumbers.
 
 Early stages are markdown (argument documents need no compilation); display and section-edit carry tex. Each stage answers one question:
 
@@ -42,13 +42,13 @@ task       executes internal work
 discovery  checks outside evidence
 probe      the paper's Q/A map: one ENTRY per question, bound BY PATH to the
            executor's answering QA file. It does not judge — the claim's status
-           lands in the paper's 0-lifecycle/1b-claims/S-Work-1-claims.md
+           lands in the paper's 0-lifecycle/1-work/S-Work-1-claims.md
 paper      selects evidence, writes prose, delivers
 ```
 
 ## Paper Console
 
-`/haipipe-paper` inside a paper opens a Paper Console: a context-aware working session for one active paper. The console resolves the paper root, derives current state from disk (not stored status), renders a dashboard, records session state in `.paper-console.yaml`, and routes follow-up input through the lifecycle.
+`/haipipe-paper` inside a paper opens the paper's Board: a context-aware working session for one active paper. The console resolves the paper root, builds and opens `0-lifecycle/board.html`, derives the artifact frontier and S-page gates from disk, stores only the paper identity in `.paper-console.yaml`, and routes follow-up input through the lifecycle.
 
 ## Copilot policy
 
@@ -61,7 +61,7 @@ Ask first: costly task/PHI work, claim verdicts, multi-section edits, compile-to
 ```text
 the S page's own `state:`                     0-lifecycle/{0..5}/
 sections/                   displays/displayNN-*/
-1-probes/PPNN_*.md       0-lifecycle/7-round/vYYMMDD/
+1-probes/PPNN_<topic>/   0-lifecycle/7-round/vYYMMDD/
 2-src/compile.sh                  1-config.yaml
 ```
 

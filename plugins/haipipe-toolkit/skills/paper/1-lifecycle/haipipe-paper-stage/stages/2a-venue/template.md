@@ -1,4 +1,4 @@
-<!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/2a-venue.md from this skeleton: replace every <…>, and each `<!-- RULE: … -->` comment is guidance to FOLLOW then DELETE — a RULE comment never appears in the finished doc. Delete this top line too. -->
+<!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/S-Venue-0-venue.md from this skeleton: replace every <…>, and each `<!-- RULE: … -->` comment is guidance to FOLLOW then DELETE. Delete this top line too. -->
 2a-venue: <paper title>
 ========================
 
@@ -42,22 +42,24 @@ Section Styles (RESOLVED here — downstream reads this table, never re-derives)
      concatenation happens to work for MISQ and FAILS on six other outlets.
        VEN=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -type d -maxdepth 4 -path '*skills/paper/venue' 2>/dev/null | head -1)
        "$VEN/<pack>/<outlet>"/*-<kind>/style.md
+       "$VEN/<pack>/<outlet>"/*-<kind>/template.md
      WHICH kinds to look for, and which this outlet actually HAS, is in
      `stages/2a-venue/section-kinds.yml` (closed set of 10; `theory-model` aliases to `theory`;
      `theory` and `related-work` are DIFFERENT sections, never aliased to each other).
-     One record line per kind. A kind this outlet lacks still gets a row, reading `— blueprint-only`,
-     so a reader can tell "no pack" apart from "not checked". Record lines, never a pipe table. -->
+     One record line per kind. Every line carries BOTH labelled fields. For a missing file write
+     exactly `style: — blueprint-only` or `template: — generic-fallback`, so a reader can tell
+     "no pack file" apart from "not checked". Record lines, never a pipe table. -->
 
-abstract       <resolved path, e.g. venue/playbook-utd-is/MISQ/MISQ-abstract/style.md>
-introduction   <resolved path>
-theory         <resolved path, or `— blueprint-only (this outlet has no theory guide)`>
-related-work   <resolved path, or `— blueprint-only`>
-methods        <resolved path>
-results        <resolved path>
-discussion     <resolved path>
-appendix       <resolved path, or `— blueprint-only`>
-letter         <outlet-specific: JAMA family only; otherwise `— n/a`>
-significance   <outlet-specific: PNAS only; otherwise `— n/a`>
+abstract · style: <resolved .../*-abstract/style.md | — blueprint-only> · template: <resolved .../*-abstract/template.md | — generic-fallback>
+introduction · style: <resolved .../*-introduction/style.md | — blueprint-only> · template: <resolved .../*-introduction/template.md | — generic-fallback>
+theory · style: <resolved .../*-theory/style.md | — blueprint-only> · template: <resolved .../*-theory/template.md | — generic-fallback>
+related-work · style: <resolved .../*-related-work/style.md | — blueprint-only> · template: <resolved .../*-related-work/template.md | — generic-fallback>
+methods · style: <resolved .../*-methods/style.md | — blueprint-only> · template: <resolved .../*-methods/template.md | — generic-fallback>
+results · style: <resolved .../*-results/style.md | — blueprint-only> · template: <resolved .../*-results/template.md | — generic-fallback>
+discussion · style: <resolved .../*-discussion/style.md | — blueprint-only> · template: <resolved .../*-discussion/template.md | — generic-fallback>
+appendix · style: <resolved .../*-appendix/style.md | — blueprint-only> · template: <resolved .../*-appendix/template.md | — generic-fallback>
+letter · style: <resolved .../*-letter/style.md | — blueprint-only> · template: <resolved .../*-letter/template.md | — generic-fallback>
+significance · style: <resolved .../*-significance/style.md | — blueprint-only> · template: <resolved .../*-significance/template.md | — generic-fallback>
 
 
 Requirements (what the final paper must do)
@@ -90,9 +92,14 @@ Abstract: <word limit, structure (prose vs labeled), arc>.
 
 Q-consumer
 ----------
-<!-- RULE: the venue-fit questions this stage raises — one `## Q-Venue-<n>` block per question, uniform Description / Reason / Answer (the PROBE stage collects every stage's Q-consumer through one pipeline). ANSWERABLE + SPECIFIC — a concrete lookup (recent-publications check, competing-paper / editor check), never a vague "is this a good fit?". `Reason` names the venue decision/requirement it bears on; cite the question inline in the Venue Decision, e.g. [Q-Venue-1]. Answer empty in DRAFT; PROBE fills it with the finding + [source: PP<nn>]. -->
+<!-- RULE: logical source for Board `## Items to Finish`: each venue-fit question becomes one
+     `- [ ] 🔎 Q-Venue-<n>` checklist record there, with Description / Reason / Probe / Answer.
+     ANSWERABLE + SPECIFIC — a concrete lookup (recent-publications check, competing-paper /
+     editor check), never a vague "is this a good fit?". `Reason` names the venue decision or
+     requirement it bears on; cite it inline in Venue Decision. -->
 
-## Q-Venue-<n> · <question title — e.g. recent-publications check>
-Description: <the specific lookup — one sentence per line>
-Reason: <which venue decision/requirement it bears on, and why it matters if wrong>
-Answer: <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>
+- [ ] 🔎 Q-Venue-<n> · <question title — e.g. recent-publications check>
+      **Description:** <the specific lookup — one sentence per line>
+      **Reason:** <which venue decision/requirement it bears on, and why it matters if wrong>
+      **Probe:** not opened yet
+      **Answer:** <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>

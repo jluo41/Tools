@@ -1,12 +1,11 @@
 ---
 name: haipipe-paper-check
-description: "CHECK phase worker (internal). Called by stage skills as the human gate in the DPRC lifecycle. How many gates a stage opens is declared by its own contract's `gates:` field; the default is ONE, here at CHECK, with DRAFT/PROBE/REVISE unattended. PROBE and REVISE run fully automatic; CHECK is where the human reviews quality, flags, and REVISE why-comments at once. Runs automated sub-checkers, produces a unified pass/fail report, then the human verifies and decides. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
-argument-hint: "[section-name-or-number] [paper-path]"
+description: "CHECK phase worker (internal). Called as a stage's declared human gate. All current paper stages declare one gate here; earlier declared phases run unattended. Runs automated sub-checkers, seeds in-file CHECK comments, and presents the approval or restart decision."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-07-19"
-  summary: "CHECK phase worker (internal) -- the LAST human gate of a stage, and by default its ONLY one: runs the deterministic sub-checkers (./checks.sh), seeds `> CHECK:` comments in-file at every flag site, and gates human review. What it walks is the stage doc + the paper's `1-probes/` entries; its probe invariants are stated over ENTRIES (`state: planned`, unresolvable `**target**`, an `answered` target with an empty `### a-executor`). History: ./CHANGELOG.md."
+  version: "0.3.4"
+  last_updated: "2026-07-26"
+  summary: "CHECK phase worker (internal) -- the LAST human gate of a stage, and by default its ONLY one: runs the deterministic sub-checkers (./checks.sh), seeds `> CHECK:` comments in-file at every flag site, and gates human review. Its compile option follows the canonical 2-src build or an explicit tex target. What it walks is the stage doc + the paper's `1-probes/` entries. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,16 +13,14 @@ Skill: haipipe-paper-check (internal phase worker)
 =====================================================
 
 CHECK phase worker.
-Called by stage skills as the auto-gate for the DPRC lifecycle.
+Called by stage skills as the gate at the end of their declared phase sequence.
 **HOW MANY GATES A STAGE OPENS IS THE STAGE'S OWN DECLARATION, not this file's.** Read `gates:` in the stage's contract at `../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md` before you open anything:
 
 ```text
-gates: [check]           the default, and what 7 of 8 stages declare.
+gates: [check]           the default, and what all 8 current stages declare.
                          DRAFT, PROBE and REVISE run unattended; THIS is the only stop.
                          Safe because probe_depth caps PROBE at free work — an unattended
                          run cannot spend, so there is nothing earlier to authorize.
-gates: [draft, check]    what `1a-resource` declares, per a standing ruling: its GATE 1
-                         approves the QUESTIONS and the SPEND before any of it goes out.
 ```
 
 ⛔ Never open a gate the contract did not declare, and never skip one it did. If `gates:` is
@@ -46,16 +43,21 @@ On restart, the restarted phase reads the `> CHECK:` comments + their `> USER:` 
 ## How It Works
 
 1. **Run**: execute all applicable sub-checkers.
-   For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./2-src/compile.sh`; `--depth` widens the tex/bib scan for deep layouts).
+   For deterministic text checks run
+   `./checks.sh <tex-or-dir> [--md <working-doc>] [--stage-page <S-page>] [--depth N] [--compile]`
+   and paste its ✅/⚠️/❌ lines. `--stage-page` verifies the newest REVISE
+   provenance record in that S page's `## Log`.
    For the PROBE invariants (`planned` entries, unresolvable `**target**`s, an `answered` target whose `### a-executor` is still empty, bibtex/tables in probe files) run the paper probe checker (locate it per **Locating the probe checker** below) — any FAIL line means the gate CANNOT go green (a `state: planned` entry at this gate = a probe that never ran).
    Judgment checks (citation support, value provenance, display correctness) stay manual.
 2. **Report**: present results as a structured pass/fail table (see Report Format).
-2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item is planted as ONE `> CHECK:` comment at the exact spot it refers to -- in the stage doc (or section `.md`), in the `1-probes/PP*.md` entry, or in the tex -- one line stating the issue + the judgment needed, with concrete values, never an abstract description.
+2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item is planted as ONE `> CHECK:` comment at the exact spot it refers to -- in the stage doc (or section `.md`), in the `1-probes/PP*/*.md` entry, or in the tex -- one line stating the issue + the judgment needed, with concrete values, never an abstract description.
 The chat report is the map; the in-file `> CHECK:` comments are what the human actually walks.
 A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass).
 3. **Human review**: the human walks the `> CHECK:` comments and replies `> USER:` under each (see Human Actions During CHECK for the per-track steps).
 4. **Decide**: proceed / restart / new round / accept / park.
-5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` comments and their `> USER:` replies and responds to each; resolved threads archive to `_LOG` per the Comment lifecycle section in `../../../haipipe-paper/SKILL.md`.
+5. **On restart**: the restarted phase reads the `> CHECK:` comments and their
+   `> USER:` replies and responds to each; resolved threads move verbatim to the
+   owning S page's `## Log`.
 
 
 ## Locating the probe checker
@@ -82,7 +84,9 @@ Without it, ONE in-flight `commissioned` build reds the gate of EVERY downstream
 
 ## Gate Modes (copilot | autopilot)
 
-Mode spec is owned by `../../../1-lifecycle/ref/08-stage-gate.md` (`gate_mode` in the stage's S page `## Log`, default copilot).
+Mode spec is owned by `../../../1-lifecycle/ref/08-stage-gate.md`. Mode is an
+invocation/session choice, default copilot, and the selected mode plus actor is
+recorded in the S page's `## Log`.
 What changes INSIDE this worker:
 
 ```
@@ -110,7 +114,7 @@ The judgment step always happens; autopilot only changes WHO sits in the review 
 Five groups of checks, one per phase (+ META, + PROOF).
 Checks that don't apply to a section are marked `-- skipped` (e.g., proof checks for a section without proofs, values checks for a section without numbers).
 
-The deterministic text-match rows below are runnable in one shot: `./checks.sh <tex-or-paper-dir> --md <stage-doc-or-section.md> --md <1-probes/PP*.md>`.
+The deterministic text-match rows below are runnable in one shot: `./checks.sh <tex-or-paper-dir> --md <stage-doc-or-section.md> --md <1-probes/PP*/*.md>`.
 The judgment rows (does the citation SUPPORT the claim, is the VALUE traceable, does the DISPLAY match) are human/reviewer work and are described once under **Human Actions During CHECK** -- the tables here only say what gets flagged, not how the human resolves it.
 
 ### 📝 DRAFT checks — verify the outline is well-formed
@@ -134,7 +138,7 @@ What CHECK walks is the **stage doc** (or section `.md`) and the paper's **`1-pr
 |---|---|---|
 | entries verify clean | `sh "$CHK" <paper_root> --stage <stage-key>` (locate `$CHK` per **Locating the probe checker**) | exit 0; any FAIL line reds the gate |
 | every hole is OWNED | grep the stage doc / section `.md` for `\cite{TOADD}` and `{VAL:?` | each carries a `[Q-<Stage>-<n>]` id (a bare placeholder = a hole nobody owns) |
-| every owner resolves | each `[Q-<Stage>-<n>]` has a Q-consumer block in the stage doc and a `## QX<n>` entry bound to it in `1-probes/` | no dangling id |
+| every owner resolves | each `[Q-<Stage>-<n>]` has a recognizable Q-consumer checklist record in the S page's `## Items to Finish` and a `## QX<n>` entry bound to it in `1-probes/` | no dangling id |
 | harvest landed | each such entry's `### a-executor` is non-empty | ⚠️ if any is still empty (the answer has not come back) |
 
 **Citation:**
@@ -145,7 +149,7 @@ What CHECK walks is the **stage doc** (or section `.md`) and the paper's **`1-pr
 | 🔍 sources listed | grep the entries' `### a-executor` bodies for `🔍` | ⚠️ if any remain (human verifies during CHECK) |
 | all factual assertions cited | compare factual sentences vs cited sentences | no uncited factual claims |
 | all \cite{key} in .bib | `./checks.sh` (broken \cite) | zero broken refs |
-| no bibtex in markdown | `./checks.sh --md <stage-doc> --md <1-probes/PP*.md>` | zero bibtex blocks (bibtex lives ONLY in .bib) |
+| no bibtex in markdown | `./checks.sh --md <stage-doc> --md <1-probes/PP*/*.md>` | zero bibtex blocks (bibtex lives ONLY in .bib) |
 
 **Values:**
 
@@ -162,7 +166,7 @@ What CHECK walks is the **stage doc** (or section `.md`) and the paper's **`1-pr
 |---|---|---|
 | all needed displays linked | check \ref{fig/tab} in tex resolve to displays/ | all resolve |
 | no missing displays | compare narrative display needs vs linked units | all covered |
-| pending DR rows listed | grep `0-lifecycle/4-display/_DISPLAY_REQUEST.md` for rows not `done` | 📨 ⚠️ if any remain (never pre-place a `\ref` for a unit that does not exist) |
+| pending DR rows listed | grep `0-lifecycle/3-display/_DISPLAY_REQUEST.md` for rows not `done` | 📨 ⚠️ if any remain (never pre-place a `\ref` for a unit that does not exist) |
 
 ### 💎 REVISE checks — verify prose quality
 
@@ -312,7 +316,7 @@ Reply `> USER:` under each as you go (plus any free `> USER:` comments of your o
 
 ### Citation verification
 
-1. Open the `1-probes/PP*.md` entries the report names and find all 🔍 sources in their `### a-executor` bodies (harvested candidates not yet in .bib)
+1. Open the `1-probes/PP*/*.md` entries the report names and find all 🔍 sources in their `### a-executor` bodies (harvested candidates not yet in .bib)
 2. Click the `> SEARCH: [Scholar](url)` link for each 🔍 source
 3. Read the paper abstract, confirm it supports what the `### a-executor` says the source establishes
 4. On Scholar, click the cite icon, select BibTeX, copy the bibtex block
@@ -325,7 +329,7 @@ Bibtex lives ONLY in `.bib`, never in a probe entry or any markdown.**
 
 ### Values verification
 
-1. Open the `1-probes/PP*.md` entries the report names and find all ⚠️ (mismatch) and 🔍 (source unknown) values in their `### a-executor` bodies
+1. Open the `1-probes/PP*/*.md` entries the report names and find all ⚠️ (mismatch) and 🔍 (source unknown) values in their `### a-executor` bodies
 2. For ⚠️ values: open the source path the `### a-executor` names, confirm which number is correct (prose or source)
 3. For 🔍 values: locate the source the agent could not find
 4. For ❌ method claims: confirm the method is implemented or decide to drop the claim
@@ -337,7 +341,7 @@ Bibtex lives ONLY in `.bib`, never in a probe entry or any markdown.**
 2. Check that each display's content matches the claim it supports
 3. Check that numbers in displays match the values harvested in the entries' `### a-executor` bodies
 4. Add `> USER:` comments on layout, labeling, content, or revisions needed
-5. Flag any DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` still short of `done`; on restart the agent re-routes it
+5. Flag any DR row in `0-lifecycle/3-display/_DISPLAY_REQUEST.md` still short of `done`; on restart the agent re-routes it
 
 ### Decide
 
@@ -356,32 +360,38 @@ When the human restarts from a phase (e.g., "restart from PROBE"):
 
 ## Applicability Beyond Section-Edit
 
-This checker pattern works for ANY lifecycle stage that follows DRAFT→PROBE→REVISE→CHECK.
+This checker pattern works for any declared phase list ending in CHECK. Venue
+omits REVISE; the checker does not invent it.
 For non-section-edit stages:
 
 | Stage | DRAFT checks | PROBE checks | REVISE checks | META checks |
 |---|---|---|---|---|
-| seed | 3 sections filled (question/motivations/claim shape) | every entry serving a `Q-Seed-<n>` has a resolving `**target**` on disk and a non-empty `### a-executor`, and each Q-consumer's answer is written back into 0-seed.md | seed is readable | ready to advance to **resource** |
-| resource | 2 sections only — Demand (one `**N<n> (H<n>)**` per hypothesis in the seed's Tentative Claim Shape) + Questions (`**Q<n> (N<n>)**`, no PP ids, no probe types); every seed `[FORWARD -> RESOURCE\|CLAIMS]` pointer consumed (N row, Q, or explicit DECLINE in _LOG); `[GATE] draft-review: approved` in _LOG quoting the user | every approved Q has landed its **A**, or is a `commissioned` BUILD entry; entries verify clean SCOPED TO THIS STAGE: `sh "$CHK" <paper_root> --stage resource` exits 0 (locate `$CHK` per **Locating the probe checker**) | default `[REVISE] skipped -- ledger doc`; NOT skipped when a fitness ruling is woolly | **the load-bearing sentence, asked verbatim:** "Does every hypothesis have a resource that is HAVE+FIT, or a COMMISSIONED build with an owner and a DATE, or a SCOPE CUT the human said out loud?" |
+| seed | all five declared sections filled (Seed Question, Motivations, Landscape, Tentative Claim Shape, Q-consumer) | every entry serving a `Q-Seed-<n>` has a resolving `**target**` on disk and a non-empty `### a-executor`, and each Q-consumer's answer is written back into 0-seed.md | seed is readable | ready to advance to **resource** |
+| resource | `Resource Description` + `Q-consumer` on `S-Work-0-resources.md`; every resource closes on `### Serves & carries`; every Seed forward pointer is consumed or explicitly declined in that page's `## Log` | every `Q-Resource-<n>` has landed its Answer, is explicitly deferred, or is a `commissioned` BUILD entry; scoped checker exits 0 | if declared, sharpen woolly fitness rulings | **the load-bearing sentence, asked verbatim:** "Does every hypothesis have a resource that is HAVE+FIT, or a COMMISSIONED build with an owner and a DATE, or a SCOPE CUT the human said out loud?" |
 | claims | H1/H2/H3 listed | all claims linked to evidence | claims well-stated | no unsupported GAPs |
+| venue | Venue Decision + Relevant Files + Section Styles + Requirements + Q-consumer are filled; each Section Styles row resolves both `style:` and `template:` | every `Q-Venue-<n>` has a real entry and landed Answer, or a declared above-ceiling `deferred` entry; scoped checker exits 0 | `--` (Venue omits REVISE by declaration) | the pin remains provisional until CHECK records the approving actor and date |
 | pitch | cover letter drafted | venue pack consulted | readability rules pass | Editor's Chair Test |
 | narrative | design contract drafted | claims linked to beats | arc/flow coherent | all beats [READY] |
 | display | display plan exists | all displays generated | visual quality | all linked in tex |
 
-When invoked for a non-section-edit stage, the checker reads the stage's SKILL.md to discover its done-gate criteria, then checks those criteria mechanically.
+When invoked for a non-section-edit stage, the checker resolves that stage's
+`../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md`, reads
+its declared `phases:`, `template:`, and `done_criteria:`, and treats that
+contract as authoritative. It never looks for a per-stage `SKILL.md`.
 
-**Resource gate — the pass/fail rulings the load-bearing sentence implies** (spec: `../../../1-lifecycle/haipipe-paper-stage/stages/1a-resource/stage.md`, GATE 2):
+**Resource gate — the pass/fail rulings the load-bearing sentence implies**
+(spec: `../../../1-lifecycle/haipipe-paper-stage/stages/1a-resource/stage.md`):
 
 ```text
 commissioned + owner: + eta: in the FUTURE            -> PASS   (a build in flight must not red the gate)
 commissioned + no owner:                              -> FAIL   (an unowned build is a wish)
 commissioned + eta: PASSED, no receipt                -> FAIL   (C6: `commissioned` is not a laundering token)
 a BUILD entry with no `cross-project:`                -> FAIL   (C4: empty is a FAIL; `none-found` is legal)
-commissioned, no `[GATE] spend-authorized` in _LOG    -> FAIL   (dispatched behind the human's back; a gate
-                                                                 that can be walked around is not a gate)
+commissioned, no matching human `--depth N` authorization
+  recorded in the S page's ## Log                    -> FAIL   (dispatched behind the human's back)
 a fitness ruling that does not say what it KILLS      -> FAIL   ("probably fine" is a DEFECT, not an answer)
 a demand with NO resource                             -> NOT A FAILURE. It is a SCOPE CUT, said out loud
-                                                                by the human and logged in _LOG. The paper
+                                                                by the human and logged in the S page. The paper
                                                                 gets smaller; the paper does not get wrong.
 ```
 
@@ -415,7 +425,7 @@ CHECK phase is done when:
 - [ ] Every `> CHECK:` comment has a `> USER:` reply, or is covered by the recorded decision (accept/park logs unanswered ones as deferred)
 - [ ] Human has decided: proceed / restart / new round / accept / park
 - [ ] If restart: agent re-runs the phase reading the `> CHECK:` threads + free `> USER:` comments, then re-checks
-- [ ] _LOG updated with check result + human actions taken
+- [ ] Owning S page `## Log` updated with check result + human actions taken
 
 
 ## Who calls this skill
@@ -425,12 +435,13 @@ Stage skills call this as their CHECK phase:
 | Stage skill | What this skill checks |
 |---|---|
 | seed | seed.md done-gate (promotion criteria) |
-| resource | Demand + Questions (the load-bearing sentence; `--stage resource` entry pass; 3 exits) |
+| resource | `Resource Description` + `Q-consumer` (the load-bearing sentence; `--stage resource` entry pass; 3 exits) |
 | claims | hypothesis list + evidence linkage |
+| venue | five-section venue contract + paired style/template resolutions + scoped venue probes + approval receipt |
 | pitch | cover letter (Editor's Chair Test, readability) |
 | narrative | story beats (all [READY], arc/flow coherence) |
 | display | display plan (all units generated, linked in tex) |
-| section-edit | section outline + tex (full DPRC check: draft + probe + revise + meta + proof) |
+| section-edit | section S page + tex (declared phases + meta + proof) |
 
 ## Sibling phase workers
 

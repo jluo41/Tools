@@ -3,6 +3,24 @@ haipipe-paper-draft — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.6.2] — 2026-07-26 — Board-native question records
+
+- DRAFT writes stage substance only under `## Content`.
+- The logical Q-consumer now materializes as checklist records under
+  `## Items to Finish`; no literal Q-consumer Content block is emitted.
+
+## [0.6.1] — 2026-07-26 — Resource follows its stage contract
+
+- Replaced the retired Demand/Questions row schema with the authoritative
+  `Resource Description` + `Q-consumer` structure.
+- Forward pointers now land in a resource topic plus an owned
+  `Q-Resource-<n>`, or are explicitly declined in the S-page Log.
+
+## [0.6.0] — 2026-07-26 — DRAFT raises questions; PROBE owns entries
+
+- DRAFT now writes only S-page Content and Q-consumer questions.
+- Removed probe-entry authoring, MATCH, and the obsolete DRAFT human gate.
+- Phase records and resolved comments now land in the owning S page's `## Log`.
 
 ## [0.5.2] — 2026-07-24
 

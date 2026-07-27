@@ -1,0 +1,44 @@
+<svg height="200.00" width="200.00" xmlns="http://www.w3.org/2000/svg" class="board-mark-svg" viewBox="0.00 0.00 200.00 200.00" role="img" aria-labelledby="board-mark-title">
+  <title id="board-mark-title">HAI-Pipe Board</title>
+  <defs>
+    <!-- Each face has its own restrained gradient so the mark keeps the chosen
+         folded-card depth without depending on shadows or raster effects. -->
+    <linearGradient id="board-mark-top" x1="0" y1="0" x2="1" y2="1">
+      <stop class="board-mark-top-a" offset="0" stop-color="#2947d6"/>
+      <stop class="board-mark-top-b" offset="1" stop-color="#1d35b5"/>
+    </linearGradient>
+    <linearGradient id="board-mark-left" x1="0" y1="0" x2="1" y2="1">
+      <stop class="board-mark-left-a" offset="0" stop-color="#b394f6"/>
+      <stop class="board-mark-left-b" offset="1" stop-color="#9569ee"/>
+    </linearGradient>
+    <linearGradient id="board-mark-right" x1="0" y1="0" x2="1" y2="1">
+      <stop class="board-mark-right-a" offset="0" stop-color="#1678ff"/>
+      <stop class="board-mark-right-b" offset="1" stop-color="#0862ee"/>
+    </linearGradient>
+    <linearGradient id="board-mark-bottom" x1="0" y1="0" x2="1" y2="1">
+      <stop class="board-mark-bottom-a" offset="0" stop-color="#082965"/>
+      <stop class="board-mark-bottom-b" offset="1" stop-color="#011a4a"/>
+    </linearGradient>
+    <!-- The centre is a real aperture, not a white overlay, so the mark works
+         on the Board's light and dark surfaces. -->
+    <clipPath id="board-mark-aperture">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M0 0h200v200H0zM78 72h44v47H96l-26 27a6 6 0 0 1-8 0l-6-6 22-22z"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#board-mark-aperture)">
+    <!-- Back face -->
+    <rect x="36" y="8" width="128" height="128" rx="20" fill="url(#board-mark-top)"/>
+
+    <!-- Side faces: diagonal inner shoulders expose the back face and create
+         the interlocking-board silhouette of the selected raster concept. -->
+    <path fill="url(#board-mark-left)"
+          d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z"/>
+    <path fill="url(#board-mark-right)"
+          d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z"/>
+
+    <!-- Front face -->
+    <rect x="36" y="116" width="128" height="76" rx="20" fill="url(#board-mark-bottom)"/>
+  </g>
+</svg>

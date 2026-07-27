@@ -1,168 +1,109 @@
 ---
 name: haipipe-paper-round
-description: "Manage the paper's 1-rounds/ working-memory layer: dated work rounds holding discussion, decisions, todo, and applied logs. Subcommands enter|new|triage|apply|close open or resume a round, start a dated vYYMMDD round, turn discussion/review into routed todo items, record applied backfills, and close the round. Use for paper round, work round, round todo, decisions, applied, latest round, open a round, triage review, 2-rounds."
-argument-hint: "[enter|new|triage|apply|close] [paper-dir] [args...]"
+description: "Manage dated paper work rounds as first-class Board S pages under `0-lifecycle/7-round/`. Subcommands enter|new|triage|apply|close open or resume an S-Round page, create the next page, turn discussion/review into its Items queue, route work, record applied history in its Log, and close it with an explicit receipt. No latest pointer or round sidecars. Trigger: paper round, work round, round todo, decisions, applied, latest round, open a round, triage review."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-07-19"
-  summary: "Rounds layer: enter/new/triage/apply/close over 1-rounds/vYYMMDD/. Owns the 1-rounds/ contract — folder shape, file semantics, round lifecycle, triage targets, dashboard rule. History: ./CHANGELOG.md."
+  version: "0.2.0"
+  last_updated: "2026-07-26"
+  summary: "Rounds are one-page Board work units: `0-lifecycle/7-round/S-Round-<n>-<vYYMMDD>.md`, with discussion, queue, decisions, applied history, and closing receipt on the same face. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-round
 ==========================
 
-> ⚠️ **SUPERSEDED, 2026-07-26 (JL ruling).** The `1-rounds/` contract below is no
-> longer the design. Rounds live INSIDE the lifecycle: one `S-Round-<n>-<vYYMMDD>.md`
-> page per round under `0-lifecycle/7-round/`, with that round's received letters
-> beside it. `1-rounds/` and its five files are retired, and so is `latest.md`,
-> which was a stored pointer to the current round and would drift from the pages
-> exactly as `the S-Round page`'s `current_layer` did.
->
-> Why the five files go: `todo.md` duplicates `## Items to Finish`, which the board
-> already rules IS the queue; `decisions.md` duplicates the paper's decision
-> register; `discussion.md` duplicates `## Discussion` and anchored comments; and
-> `applied.md` is what a passed gate records.
->
-> DO NOT follow the contract below to create a new round. This skill needs a
-> rewrite around one page per round; until then it describes a layer the design
-> has removed. Ruling and reasoning: the paper board's `QA5`.
-
-Manage `1-rounds/`, the paper's working-memory layer.
-A round is a dated cycle of author/agent discussion, coauthor or reviewer comments, decisions, todo items, and what was applied.
-This skill OWNS the `1-rounds/` contract — the Rounds contract section below is its single source of truth.
-
-Use `round`, not `feedback`: the contents are broader than external feedback.
-
-Read first: `../../PHILOSOPHY.md`, `../../1-lifecycle/ref/04-lifecycle-map.md`.
-
-Rounds contract
----------------
-
-`1-rounds/` is the paper working-memory layer. It stores dated work rounds: author/agent
-discussions, coauthor comments, reviewer comments, decisions, todo items, and what was
-applied.
-
-### Folder contract
+Rounds are paper working memory expressed in the same Board grammar as every
+other lifecycle unit. One round equals one page:
 
 ```text
-1-rounds/
-├── latest.md            active-round pointer
-└── vYYMMDD/
-    ├── README.md        round header: source, date, purpose, maturity, status
-    ├── discussion.md    raw discussion / review text / meeting notes
-    ├── decisions.md     decisions accepted as paper intent
-    ├── todo.md          open needs, edits, probes, displays, citations
-    └── applied.md       backfill log: what changed where
+0-lifecycle/7-round/
+├── S-Round-0-v260726.md
+├── reviewer-letter-v260726.md   # optional received material beside its page
+└── ...
 ```
 
-The round id is the date, `vYYMMDD` (e.g. `v260621`).
-The round id is the branch/round name — do not nest another branch level above it:
+There is no `latest.md`, `todo.md`, `decisions.md`, `discussion.md`, or
+`applied.md`. Those would duplicate the S face and drift.
 
-```text
-good: 1-rounds/v260621/
-bad:  1-rounds/<branch-name>/v260621/
-```
+Page contract
+-------------
 
-### File semantics
+Each `S-Round-<n>-<vYYMMDD>.md` uses the Board S-page structure:
 
-| File | Purpose |
+- `state:` is `🔴`/`🟡` while work remains and `✅` only after close approval.
+- `## Content` records source, purpose, accepted decisions, and applied summary.
+- `## Items to Finish` is the only queue. Every item names its target.
+- `## Discussion` holds raw discussion, anchored comments, and received-letter pointers.
+- `## Where we are` is the current concise handoff.
+- `## Log` holds dated triage/application events and the close receipt.
+
+Triage routes
+-------------
+
+| Item | Target |
 |---|---|
-| `latest.md` | Points to the active round id and optional summary |
-| `README.md` | Round header: source, date, purpose, maturity, status |
-| `discussion.md` | Raw discussion / review text / meeting notes |
-| `decisions.md` | Decisions accepted as paper intent |
-| `todo.md` | Open needs, edits, probes, displays, citations |
-| `applied.md` | Backfill log: what changed where |
-
-### Round lifecycle
-
-```text
-open round
-  -> collect discussion
-  -> extract decisions
-  -> triage todo/open needs
-  -> route each item to lifecycle/evidence worker
-  -> record applied backfills
-  -> close or keep active
-```
-
-### Triage targets
-
-Every `todo.md` item should point to one target:
-
-| Todo type | Target |
-|---|---|
-| claim unsupported / too strong | `0-lifecycle/1b-claims` or probe |
-| display missing / stale | `0-lifecycle/4-display` or display task |
-| paragraph placement unclear | `0-lifecycle/5-section-edit` |
-| wording / flow / style | `sections/*.tex` or edit skill |
-| citation needed / wrong citation | discover or citation component |
-| reviewer response | respond/rebuttal skill |
-
-### Dashboard rule
-
-`/haipipe-paper enter` must surface open round items alongside lifecycle status.
-Round todo items are first-class open needs, not afterthoughts.
+| claim unsupported / too strong | `0-lifecycle/1-work/S-Work-1-claims.md`, then that stage's PROBE |
+| display missing / stale | DR row in `0-lifecycle/3-display/_DISPLAY_REQUEST.md` |
+| paragraph placement unclear | owning `0-lifecycle/4-main/S-Main-*.md` page |
+| appendix issue | owning `0-lifecycle/5-appendix/S-Appendix-*.md` page |
+| wording / flow / style | owning S page, then its declared REVISE/CHECK sequence |
+| citation / value evidence | owning Q-consumer, then that stage's PROBE collector route |
+| reviewer response | `haipipe-paper-rebuttal` plus this S-Round page |
 
 Subcommands
 -----------
 
 ```text
-/haipipe-paper round enter [paper-dir]    open/resume the active round; show open todo
-/haipipe-paper round new [paper-dir]      start a dated vYYMMDD round; point latest.md at it
-/haipipe-paper round triage [paper-dir]   discussion -> decisions + routed todo
-/haipipe-paper round apply [paper-dir]    route/execute todo; record applied backfills
-/haipipe-paper round close [paper-dir]    mark the round closed; update latest.md
+/haipipe-paper round enter [paper-dir]
+/haipipe-paper round new [paper-dir] [source/purpose]
+/haipipe-paper round triage [paper-dir] [S-Round page]
+/haipipe-paper round apply [paper-dir] [S-Round page]
+/haipipe-paper round close [paper-dir] [S-Round page]
 ```
 
 ### enter
 
-Read `1-rounds/latest.md`, then the active round's README/discussion/decisions/todo/applied.
-Render the round panel: source, status, and unresolved todo with their targets.
-Read-only.
-Defer the broader paper dashboard to the Paper Console (`haipipe-paper-enter`).
+Read all `0-lifecycle/7-round/S-Round-*.md` pages. Derive the active round from
+non-green state plus date/unit order; never read or create a stored pointer.
+Show its source, `Where we are`, and open Items. Then open the paper Board at
+that page.
 
 ### new
 
-Create `1-rounds/vYYMMDD/` with the five contract files (README header plus discussion/decisions/todo/applied stubs).
-Point `1-rounds/latest.md` at it.
-Ask for the round source/purpose if not given.
-Do not pre-create rebuttal/submission subtrees; `haipipe-paper-rebuttal` adds those for external-review rounds.
+Confirm source/purpose if missing. Allocate the next unused numeric unit and
+today's `vYYMMDD`; never overwrite an existing page. Create one S page with
+real Question/Boundary/Content/Items/Where/Discussion/Log sections and rebuild
+the Board. Received material is copied or linked beside the page only when the
+user supplied it.
 
 ### triage
 
-Read `discussion.md` (raw review/meeting text).
-Extract decisions into `decisions.md` and open needs into `todo.md`.
-Every todo item points to one target, per the Triage targets table in the Rounds contract above.
+Read the page's Discussion and any received letters it names. Add accepted
+decisions to Content and actionable work to Items, each with one target from
+the table above. Triage does not execute the work.
 
 ### apply
 
-For each todo item, route to its target stage or evidence worker (Skill/Task), or apply it directly when low-risk.
-Record each change in `applied.md` as a backfill log (what changed, where, which todo it closes).
-Gate costly or claim-committing actions per the copilot policy.
+Route each selected Item to its owning lifecycle stage. Evidence always enters
+through that stage's Q-consumer and PROBE worker/collector chain. Record what
+changed and which item it closes in this page's `## Log`; keep unresolved work
+visible.
 
 ### close
 
-Mark the round `status: closed` in its README, summarize what was applied and what carried over, and update `latest.md` (point to a new active round or `none`).
-Carry unresolved todo items into the next round.
+Require every Item to be checked or explicitly parked with a reason. Present
+the close summary and ask for approval. Only after approval set the first state
+token to `✅` and append the gate receipt with actor/date to `## Log`.
+No round pointer is updated.
 
-Routing
--------
+Routing and return
+------------------
 
 ```text
 1. First token in {enter,new,triage,apply,close} -> that subcommand.
-2. Else if an active round exists                  -> enter.
-3. Else                                            -> new.
+2. Else if a non-green S-Round page exists       -> enter.
+3. Else                                          -> ask whether to create a new round.
 ```
 
-Return Contract
----------------
-
-```text
-status:    ok | blocked | failed
-summary:   1-3 sentences
-artifacts: [round files read/written]
-next:      suggested next command (often a lifecycle stage or evidence worker)
-```
+Return the Paper closing block from `../../haipipe-paper/SKILL.md`, deep-linked
+to the active S-Round page. Do not append a second Board status strip.

@@ -8,7 +8,7 @@ one_line: "Which venue does this paper target, and what does that venue REQUIRE 
 board_family: Venue
 board_unit: "0"
 board_slug: venue          # family + unit + slug resolve the S-face filename;
-                          # haipipe-board/stage.py owns that resolution (QC2)
+                          # haipipe-board/stage.py owns that resolution (QB4@paper)
 
 phases: [draft, probe, check]
                           # THREE phases — no REVISE. Venue produces a CONTRACT (a scored
@@ -41,7 +41,7 @@ venue_role: chooser       # NEITHER venue_free NOR venue_aligned: this is the st
                           # (with no folder, run --no-pin: there is nothing to write into)
 
 modes:
-  default:    "recommend a ranked shortlist, then ASK before writing STATUS venue"
+  default:    "recommend a ranked shortlist; at CHECK ask before changing the S-page `state:` line to `✅ PINNED · <venue> <year>`"
   "--no-pin": "advise only — recommend and STOP; write no file at all
                (for 'just tell me which journal', or a bare topic with no paper folder)"
   refresh:    "re-derive ONLY — keep the existing pin, re-transcribe Structural Blueprint +
@@ -55,7 +55,10 @@ artifact_fallback: 0-lifecycle/2-venue/2a-venue.md
                           # resolved S face is absent, and say which one you used.
 probes: 1-probes/PPNN_<topic>/
 pins: 0-lifecycle/2-venue/S-Venue-0-venue.md   # the pin lives on THIS stage's own S page, in its
-                           # frontmatter: `venue: <pack-slug>` (+ optional `venue_outlet: <journal-dir>`).
+                           # on its `state:` line: `state: ✅ PINNED · <venue> <year>`. NOT a
+                           # `venue:` frontmatter key — the board's face grammar is a CLOSED
+                           # whitelist (haipipe-board src/parse.py) and would not parse one.
+                           # The pack slug + outlet dir go in the body's provenance header.
                            # Every reader that used to grep STATUS.md reads it here. One page owns the
                            # venue contract; a second copy could only disagree with it.
 template: template.md
@@ -68,7 +71,7 @@ packs: ../../../../venue/  # the venue knowledge directory: playbook-*/README.md
 
 exit_when: "no clear fit; venue change re-runs pitch"
 
-sections:                  # in order; all five must carry real content
+sections:                  # logical order; Q-consumer adapts to Board Items to Finish
   - Venue Decision         #   (a provenance header sits above them: pack @ commit, outlet dir)
   - Relevant Files
   - Section Styles         #   the RESOLVED per-kind pack paths (style + template) — see owns_resolution
@@ -79,10 +82,11 @@ owns_resolution: |         # THIS stage resolves, ONCE, what every downstream st
                            # otherwise re-derive per section:
   · venue label -> pack slug         (the map in the craft body)
   · pack + outlet -> section styles + templates  (the Section Styles table in the artifact)
-  Each kind row resolves TWO pack paths by the same glob: `*-<kind>/style.md` (how it reads,
+  Each kind row resolves TWO pack paths by parallel globs: `*-<kind>/style.md` (how it reads,
   reference) and `*-<kind>/template.md` (the skeleton section-edit drafts into, authored from
   this outlet's exemplars — the PRINCIPLE, see ../section-kinds.yml). Both, or an explicit
-  `— none` per file, so a missing template is distinguishable from an unchecked one.
+  `style: — blueprint-only` / `template: — generic-fallback` per missing file, so a missing
+  pack file is distinguishable from an unchecked one.
   Downstream NEVER globs, finds, or spells a pack path. section-edit reads its row and stops.
   The kind vocabulary and which kinds each outlet actually has: ../section-kinds.yml
   Resolution is a GLOB (`*-<kind>`), never concatenation — the per-journal slug is arbitrary
@@ -93,11 +97,12 @@ kinds_file: ../section-kinds.yml
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "no #/##/### — EXCEPT the Q-consumer blocks, which are `## Q-Venue-<n> · <title>`"
+  headings: "direct `###` divisions under Board Content; Q-consumer records are checklist items
+             under `## Items to Finish`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
   fit_record: "the Venue Decision's Fit is RECORD LINES, never a pipe table"
 
-q_id_pattern: "## Q-Venue-<n> · <title>"
+q_id_pattern: "- [ ] 🔎 Q-Venue-<n> · <title>"
 q_anchor: "[Q-Venue-<n>] cited inline in the Venue Decision sentence it rests on"
 closed_when: "PROBE writes the finding + [source: PP<nn>] into the Answer field. That is where
               the loop closes for this stage — there is no REVISE to weave it back into prose,
@@ -109,7 +114,7 @@ dispatch_scope:            # venue questions are concrete LOOKUPS, never 'is thi
   - editor-and-competition # who handles this at the outlet; what competing papers are in flight
 
 done_criteria:
-  - "venue pinned in S-Venue-0-venue.md frontmatter (skipped under --no-pin, which writes nothing anywhere)"
+  - "outlet named on S-Venue-0-venue.md's `state:` line (skipped under --no-pin, which writes nothing anywhere)"
   - "provenance header records pack slug @ venue commit + outlet dir"
   - "Venue Decision carries the pick, 1-2 backups, the nearest rejected + its hard disqualifier,
      the outlet's one-sentence desk test + this paper's answer, and desk-reject risks"
@@ -122,16 +127,16 @@ done_criteria:
      giving BOTH its resolved style: path and its resolved template: path — or an explicit
      `style: — blueprint-only` / `template: — generic-fallback` when the pack lacks that file, so
      'no pack file' is distinguishable from 'not checked'"
-  - "at least one Q-Venue-<n> raised or answered (the recent-publications check)"
+  - "at least one Q-Venue-<n> raised (the recent-publications check), and every raised Q has a real probe entry; above-ceiling work is a `deferred` entry with `**deferred**: depth-<n> · <reason>`"
   - "every <!-- RULE --> comment deleted from the filled S-Venue-0-venue.md"
 
-upstream: [claims]         # reads 0-lifecycle/{0-seed,1a-resource,1b-claims} when they exist;
+upstream: [claims]         # reads Board S pages in 0-lifecycle/{0-seed,1-work} when they exist;
                            # a bare topic has none and the profile is built from the text
 downstream: [pitch]
 consumed_by: [pitch, narrative, display, section-edit, revise, revise-results, revise-humanizer]
                            # the venue-ALIGNED readers. S-Venue-0-venue.md is their single consumption
                            # point; the packs are a FALLBACK only when S-Venue-0-venue.md is absent.
-handoff: "on CHECK confirm, write `venue:` (+ `venue_outlet:`) into S-Venue-0-venue.md's frontmatter
+handoff: "on CHECK confirm, write the pinned outlet onto S-Venue-0-venue.md's `state:` line
           and append the gate row to its ## Log -> pitch, which re-runs its [primary] designation,
           RQ framing, and Editor's Chair Test for this venue"
 ---
@@ -172,10 +177,11 @@ grant (NSF / NSFC / KAKENHI / ERC …)           -> playbook-grant
 patent (CNIPA / USPTO / EPO)                   -> playbook-patent
 ```
 
-This stage OWNS that map — every other stage resolves a human `venue:` label through it, so prefer
-writing the pack slug into STATUS directly. A named venue with no pack (NEJM, Lancet, ICLR,
-NeurIPS…) stays a bare `venue_outlet:` formatting target: recommend it honestly, say no pack
-exists, and the lifecycle wiring no-ops.
+This stage OWNS that map — every other stage resolves the pinned outlet through this S page.
+Write the pack slug and outlet directory in the page body's provenance header.
+A named venue with no pack (NEJM, Lancet, ICLR, NeurIPS…) remains an honest
+formatting target recorded in that body: say no pack exists, and let pack-specific
+lifecycle wiring no-op.
 
 Score five dimensions, High/Med/Low, one line each
 --------------------------------------------------
@@ -222,9 +228,11 @@ header exists so staleness is DETECTABLE: if `venue/` has moved past the recorde
 The pin is a gate, not a side effect
 ------------------------------------
 
-Ask before writing `venue:`, and ask again before OVERWRITING an existing one. A venue change is
-not a metadata edit: it re-runs pitch's [primary] designation and RQ framing, and reshapes
-narrative, displays, section-edit, and prose. Claims does not move — it is venue-free.
+At CHECK, ask before changing the S page's `state:` line to
+`✅ PINNED · <venue> <year>`, and ask again before overwriting an existing pin.
+A venue change is not a metadata edit: it re-runs pitch's [primary] designation
+and RQ framing, and reshapes narrative, displays, section-edit, and prose.
+Claims does not move — it is venue-free.
 
 Not from the venue
 ------------------

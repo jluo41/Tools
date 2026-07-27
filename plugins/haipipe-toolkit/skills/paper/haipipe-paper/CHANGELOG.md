@@ -3,6 +3,52 @@ haipipe-paper — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.4.4] — 2026-07-26 — one evidence dispatch topology
+
+- Synchronized the active Paper probe reference and behavioral preference with
+  the runtime chain: Paper PROBE performs ORGANIZE/MATCH, the isolated
+  q-executor collector performs DISPATCH/POINT, and task/discovery remain
+  behind that collector.
+- Removed the last active instruction that told a Paper worker to dispatch
+  directly to task/discovery.
+- Corrected active probe-entry globs to the topic-folder anatomy
+  `1-probes/PP*/*.md`.
+- Removed active migration instructions for old probe sidecar paths; the Paper
+  contract now exposes only the current topic-folder anatomy.
+
+## [0.4.3] — 2026-07-26 — stage declarations are authoritative
+
+- Replaced the universal four-phase/two-gate story with each stage's
+  `phases:` and `gates:` declarations; current stages gate only at CHECK and
+  Venue omits REVISE.
+- Moved phase/comment history from `_LOG` sidecars into owning S pages.
+- Corrected probe ownership: DRAFT raises Q-consumers; PROBE authors entries
+  and owns ORGANIZE through INTERPRET.
+- Removed the unsupported `argument-hint` frontmatter key so the user-facing
+  orchestrator passes the current `skill-creator` validator.
+
+## [0.4.2] — 2026-07-26 — one composed tail, one probe phase
+
+- Declared Paper as Board's canonical enclosing-skill case: Paper emits one
+  closing block with the active Board deep link and never appends the direct
+  Board `status.py` strip.
+- Restored the four-slot DPRC line (`draft | probe | revise | check`) and
+  removed the retired `cite` / `val` / `disp` probe sub-tracks.
+
+## [0.4.1] — 2026-07-26 — derived state has one home
+
+- Replaced the stale `current_layer` gate wording with the actual stage-closing approval action.
+- Removed remaining `STATUS` references from delivery routing; open needs and resumable state live on Board/S pages, the claim ledger, probe entries, and their target files.
+
+
+## [0.4.0] — 2026-07-26 — the Closing Block carries the board URL, not a stage strip
+
+Implements the single-door ruling (design board `skills/diagrams/01-haipipe-paper-260725`, faces `QA1` + `QA4`, JL 2026-07-26): **`/haipipe-paper` is the single thing a human types**, and it CALLS `haipipe-board` to build and open the paper's `0-lifecycle/`. `haipipe-board` remains its own door for boards that are not inside a paper. Calling is not owning: `haipipe-board` still owns the format, the build, the filename rule, the html and the write-back.
+
+- **The `stage:` line and `stage-strip.sh` are RETIRED.** The strip was specified in the 260622 feedback as reading `STATUS.md current_layer`, with the stated precondition that a stale value would make it lie. `STATUS.md` is retired and the board renders the spine, so the strip has neither a source nor a job. It was a worse copy of something the human already has open.
+- **A deep-linked `board:` line replaces it**, pointing at the page this session is working, so one click lands on it.
+- **The `phase:` line survives, and the reason is stated.** It is the only thing in the closing block the board does NOT show: a page's `state:` is its gate status, not the live DPRC progress of a run in flight. The stage line was derivable from the board and therefore redundant; the phase line is not.
+
 
 ## [0.3.2] — 2026-07-24
 

@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-revise-humanizer
-description: "Remove AI-writing patterns from academic prose while preserving scholarly precision, evidence-tied claims, and venue voice. Six-layer audit (general AI-tells, academic AI-tells, legitimate constructs, claim-evidence discipline, voice/venue, funding-proposal mode). Fully automatic: applies fixes directly, leaves %% {CC-humanizer}: why-comments for CHECK. Trigger: humanize, de-AI, remove AI tells, academic voice, humanizer, /haipipe-paper-revise-humanizer."
-argument-hint: "[section-or-file] [--grant] [--venue <venue>]"
+description: "Remove AI-writing patterns from academic prose while preserving scholarly precision, evidence-tied claims, and venue voice. Six-layer audit plus a venue-grounded SciWrite clarity pass. Default mode applies fixes directly with %% {CC-humanizer}: why-comments; explicit original-preserving or sentence-apparatus review produces word-level Note-lane candidates instead. Trigger: humanize, de-AI, remove AI tells, academic voice, humanizer, sentence apparatus, /haipipe-paper-revise-humanizer."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.3"
-  last_updated: "2026-07-07"
-  summary: "De-AI academic prose via 6-layer audit. Fully automatic. REVISE worker."
+  argument_hint: "[section-or-file] [--grant] [--venue <venue>]"
+  version: "0.2.4"
+  last_updated: "2026-07-27"
+  summary: "De-AI academic prose via six-layer audit plus venue-grounded SciWrite clarity gates; supports auditable candidate-diff review."
   source: "Based on AIScientists-Dev/academic-humanizer (MIT license). Catalog VENDORED at ./ref/pattern-catalog.md (upstream submodule under references/ is provenance only)"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -20,7 +20,7 @@ This skill reviews HOW sentences sound.
 ## Reference
 
 The full pattern catalog is VENDORED in this skill: `ref/pattern-catalog.md` (+ `ref/before-after.md` worked examples).
-Read it before every audit pass.
+Read it and `ref/venue-sciwrite.md` before every audit pass.
 It contains:
 - 12+ general AI-tell patterns with before/after examples
 - 11 academic-specific AI-tell categories with examples
@@ -77,6 +77,19 @@ No comment-first, no waiting for human approval.
 
 4. DONE: the comments stay for CHECK to review.
    The human sees what changed and why, can add > USER: to restart if needed.
+
+## Venue-grounded clarity gate
+
+Before applying any language edit, enforce the four gates in `ref/venue-sciwrite.md`:
+
+1. **Meaning invariance:** preserve claims, scope, causal strength, defined terms, numbers, citations, and display references.
+2. **Venue fit:** read the owning S page's `## Stage Contract` and its inherited venue-writing contract before using any exemplar shape.
+3. **SciWrite clarity:** remove clutter, restore a direct verb where it does not replace a technical term, fix buried predicates, and keep terminology exact.
+4. **Human voice:** remove AI tells without deleting legitimate hedging, passive voice, or authorial `we`.
+
+Examples teach the shape of a move, never wording to copy. A candidate that fails any gate is not proposed.
+
+When the author selected candidate-diff mode in `haipipe-paper-revise`, do not change prose directly. Emit the complete candidate in an adjacent `> Note:` lane using the required `~~removed~~` and `*inserted*` notation, model/date suffix, and no-TeX-sync rule defined by that hub.
 ```
 
 ## Key rules from the reference

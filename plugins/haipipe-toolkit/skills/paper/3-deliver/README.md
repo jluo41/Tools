@@ -14,7 +14,7 @@ Everything downstream of the written argument. `1-lifecycle` decides what the pa
 │   ├── haipipe-paper-scaffold        BUILD NEW: plan → conforming empty skeleton (tex + dirs + 2-src/compile.sh)
 │   ├── haipipe-paper-restructure     MIGRATE: non-conforming paper → gold layout, prose byte-identical
 │   ├── haipipe-paper-conform           VERIFY: conformance audit, report-only
-│   └── haipipe-paper-folder          minimal container (README + STATUS + dirs); the get-or-create bootstrap
+│   └── haipipe-paper-folder          minimal Board-first container (README + 0-lifecycle Board + one Seed page)
 │
 ├── 2-audit/     ── read-only, produce findings (no mutation)
 │   ├── haipipe-paper-claim-audit         every number/claim traces to raw results

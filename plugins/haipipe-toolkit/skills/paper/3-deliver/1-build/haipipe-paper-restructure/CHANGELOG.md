@@ -13,6 +13,8 @@ Rewritten against the layout ruled on the design board (face QA6). This skill wa
 - **The mapping table rewritten** with the real starting shape, including the two cases the old table had no row for: renaming a numbered deliverable, and unitizing a flat `Figure/`/`Table/` bucket.
 - **Two new execute rules**: leave `0-lifecycle/` alone (it is the board, and `/haipipe-board` owns it), and never create a `STATUS.md`; retiring an existing one is a separate ruling, not a side effect of a folder migration.
 - **Repair mode** gains the delete-test remedy and loses the row that told it to move assets into `Figures/`/`Tables/` buckets.
+- Preserved the invocation hint under `metadata.argument_hint`, which conforms to
+  the current Skill frontmatter schema.
 
 
 ## [0.1.1] — 2026-07-24

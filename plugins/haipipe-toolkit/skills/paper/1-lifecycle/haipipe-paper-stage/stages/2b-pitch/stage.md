@@ -8,7 +8,7 @@ one_line: "Why would THIS venue's editor send this paper out for review?"
 board_family: Venue
 board_unit: "1"
 board_slug: pitch          # family + unit + slug resolve the S-face filename;
-                          # haipipe-board/stage.py owns that resolution (QC2)
+                          # haipipe-board/stage.py owns that resolution (QB4@paper)
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -51,7 +51,7 @@ venue_contract:           # read FIRST, before a word is drafted — see the cra
           /haipipe-paper-stage venue refresh', still use S-Venue-0-venue.md; never silently re-read packs"
   rewrite_when: "venue changes"
 
-sections:                 # in order; all twelve must carry real content
+sections:                 # logical order; Q-consumer adapts to Board Items to Finish
   - Title
   - One-Minute Pitch
   - Hook
@@ -68,12 +68,13 @@ sections:                 # in order; all twelve must carry real content
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "no #/##/### — EXCEPT the Q-consumer blocks, which are `## Q-Pitch-<n> · <title>`"
+  headings: "direct `###` divisions under Board Content; Q-consumer records are checklist items
+             under `## Items to Finish`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
   records: "Primary Claim + RQ Framing uses record lines, never a pipe table"
   length: "readable in one minute; fits on one screen"
 
-q_id_pattern: "## Q-Pitch-<n> · <title>"
+q_id_pattern: "- [ ] 🔎 Q-Pitch-<n> · <title>"
 q_anchor: "[Q-Pitch-<n>] cited inline wherever a point rests on the open check (usually Evidence)"
 closed_when: "PROBE writes the finding + [source: PP<nn>] into Answer; REVISE weaves it back in
               and discharges the [Q-Pitch-<n>] bracket"
@@ -94,8 +95,8 @@ done_criteria:
      the artifact it updates"
   - "readability.md passes — global language rules, per-section lead cues, reviewer checklist;
      reads aloud without stumbling"
-  - "Q-consumer present (`## Q-Pitch-<n>`), each block anchored to a draft assertion"
-  - "_LOG entry records the current state; a SEMANTIC shift cites its source and archives the
+  - "Q-consumer present (`- [ ] 🔎 Q-Pitch-<n>` in Items to Finish), each record anchored to a draft assertion"
+  - "the S page's ## Log records the current state; a SEMANTIC shift cites its source and archives the
      prior version to archive/vNN_<reason>.md"
   - "the paper-family probe-card checker, scoped `--stage pitch`, exits 0"
 

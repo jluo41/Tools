@@ -4,7 +4,7 @@
 
 Date: YYYY-MM-DD
 Status: DRAFT
-Venue-ALIGNED cover letter. Read STATUS `venue` + `2a-venue.md` (+ the pack) before filling this in. Claims holds venue-neutral H1/H2/H3; this pitch reframes them as venue-specific RQs for the target editor. Readability cues + worked examples: `readability.md`.
+Venue-ALIGNED cover letter. Read `S-Venue-0-venue.md` before filling this in. Claims holds venue-neutral H1/H2/H3; this pitch reframes them as venue-specific RQs for the target editor. Readability cues + worked examples: `readability.md`.
 
 
 Title
@@ -46,7 +46,7 @@ Implication — So What
 
 Editor's Chair Test
 -------------------
-<!-- RULE: read `2a-venue.md` (+ the pack) for the editor's-chair question. Every primary claim gets a one-sentence answer. This is a VENUE question, not an evidence question. -->
+<!-- RULE: read `S-Venue-0-venue.md` for the editor's-chair question. Every primary claim gets a one-sentence answer. This is a VENUE question, not an evidence question. -->
 
 **<Venue>:** "<editor's-chair question from the venue pack>"
 <one-sentence answer from the primary claim.>
@@ -93,9 +93,13 @@ Next Evidence Move
 
 Q-consumer
 ----------
-<!-- RULE: the pitch-fit questions this stage raises — one `## Q-Pitch-<n>` block per question, uniform Description / Reason / Answer (the PROBE stage collects every stage's Q-consumer through one pipeline). ANSWERABLE + SPECIFIC — a concrete check (framing risk, competing paper, does the editor's-chair answer hold), never a vague "is the pitch good?". `Reason` names the pitch element it bears on; cite the question inline (e.g. in Evidence), [Q-Pitch-1]. Answer empty in DRAFT; PROBE fills it + [source: PP<nn>]. -->
+<!-- RULE: logical source for Board `## Items to Finish`: each pitch-fit question becomes one
+     `- [ ] 🔎 Q-Pitch-<n>` checklist record there, with Description / Reason / Probe / Answer.
+     ANSWERABLE + SPECIFIC — a concrete framing/competition/editor-chair check, never a vague
+     "is the pitch good?". -->
 
-## Q-Pitch-<n> · <question title>
-Description: <the specific check — one sentence per line>
-Reason: <which pitch element it bears on, and why it matters if wrong>
-Answer: <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>
+- [ ] 🔎 Q-Pitch-<n> · <question title>
+      **Description:** <the specific check — one sentence per line>
+      **Reason:** <which pitch element it bears on, and why it matters if wrong>
+      **Probe:** not opened yet
+      **Answer:** <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>

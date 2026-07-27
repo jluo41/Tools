@@ -67,6 +67,9 @@ Commands
 **Research axis:**
 
 ```
+/haipipe-board        cross-cutting work surface — one topic, Q/S pages,
+                      inline discussion, synchronization, and review
+
 /haipipe-task         the internal executor — Plan → Build → Execute → Report
 /haipipe-task qa "<question>" [<leaf>]          ← THE QUESTION DOOR
                       One question, GENERAL language (no paper ref, no stake).
@@ -127,8 +130,10 @@ skills/
 ├── probe/             🌉 the constitution + the claim JUDGE (G1/G2/G3)
 ├── paper/             📄 academic consumer — stages × DPRC
 ├── application/       📱 non-academic consumer — venue-gated
+├── board/             🧭 shared Board skill + read-only reviewer agent
+├── diagrams/          🗺 working design Boards; kept outside delivery skills
 ├── project/           📦 container setup
-├── 0_utils/ 0_connect/   diagrams, connectors, venue playbooks
+├── 0_utils/ 0_connect/   utilities and connectors
 └── insight/           🪦 RETIRED 2026-07-12 — tombstone only
 ```
 
@@ -145,6 +150,7 @@ ARCHITECTURE.md          the whole model — the two banks, the probe bridge, th
 USAGE.md                 recipes: the commands, in the order you actually use them
 Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/       the probe design record + every ruling behind it
 skills/STRUCTURE.md      the skill-tree mental model
+skills/board/README.md   the first-class Board family and its reviewer
 skills/probe/haipipe-probe/SKILL.md    the probe constitution (read before touching probes)
 ```
 

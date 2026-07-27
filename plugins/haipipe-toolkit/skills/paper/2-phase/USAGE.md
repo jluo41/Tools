@@ -1,24 +1,28 @@
 # 2-phase -- how to use it
 
-Concrete recipes for the phase engine. You never invoke a phase skill directly: you run a **stage skill** from `1-lifecycle/` and it drives the four phases internally, stopping at BOTH judgment gates for you — the DRAFT structure review and the CHECK quality review (see "Two human gates" below). Paths below use a real example manuscript:
+Concrete recipes for the phase engine. You never invoke a phase skill directly:
+run a **stage skill** from `1-lifecycle/`; it drives the phases and gates
+declared by `stage.md`. All current stages stop once, at CHECK. Paths below use
+a real example manuscript:
 
 ```
 PAPER=examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026
-SEC=$PAPER/0-lifecycle/5-section-edit
+SEC=$PAPER/0-lifecycle/4-main
 ```
 
 ## TL;DR
 
 ```
-1. /haipipe-paper-stage section-edit introduction draft   → DRAFT writes a REAL prose draft, then ⛔ STOPS
-2. You review the STRUCTURE (¶ jobs, order, coverage) in the .md; comment > USER: inline
-3. Your verb advances:  … introduction probe  → PROBE fills {VAL:?} / \cite{TOADD} sources (agent-only)
-                        … introduction revise → REVISE workers polish + sync to tex (agent-only)
-4. It opens CHECK: checker report + probe flags + %% {CC-*} why-comments to eyeball
-5. You decide: proceed / restart <phase> / accept with edits / park → loop until clean → compile
+1. /haipipe-paper-stage section-edit introduction → DRAFT writes real prose + Q-consumers
+2. PROBE authors/matches entries and dispatches only within the supplied --depth ceiling
+3. REVISE workers place answers, polish, and sync to tex
+4. CHECK opens: checker report + probe flags + %% {CC-*} why-comments
+5. You decide: proceed / restart <phase> / accept with edits / park
 ```
 
-Two human gates: structure review after DRAFT, quality review at CHECK. The agent never advances past a gate on its own — your verb (or "go") is the approval. Unattended (autopilot), a fresh-context reviewer subagent stands in and decides at each gate; the gate is delegated, never skipped. Same engine behind every stage: `seed | claims | pitch | narrative | display | section-edit`.
+One current human gate: quality review at CHECK. In autopilot, a fresh-context
+reviewer subagent may stand in at that gate. Venue omits REVISE; the stage
+contract, not this recipe, is authoritative.
 
 ## A. Run a stage (the normal path)
 
@@ -26,9 +30,9 @@ Two human gates: structure review after DRAFT, quality review at CHECK. The agen
 
 What happens, phase by phase:
 
-- **DRAFT** 🤖→🧑 -- `haipipe-paper-draft` settles structure + writes REAL prose (one sentence per line, real `\citep{}` keys from .bib) into `$SEC/1-introduction/1-introduction.md`, reading the stage's template from `1-lifecycle/` (venue style is applied later, in REVISE). It leaves every hole FILLED or OWNED: a hole it cannot close carries the id of the question that will settle it — `\cite{TOADD} [Q-Section-2]`, `{VAL:? median follow-up} [Q-Section-3]`, or a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` — and the matching `## QX<n>` entry is authored in `1-probes/`. Then it ⛔ STOPS for your review of the structure AND the probe plan — nothing advances until your verb.
-- **PROBE** 🤖 -- `haipipe-paper-probe` runs that plan forward: it dispatches each entry the bank still owes, points the entry's `**target**` at the answering QA file, and harvests the answer into the entry's `### a-executor`. Agent-only; nothing gates on you.
-- **REVISE** 🤖 -- `haipipe-paper-revise` changes the prose directly per `REF/prose-quality.md`: `-place` runs FIRST and substitutes each landed answer into its placeholder, then `-content` (incl. its weave step for paragraph flow), `-humanizer`, and `-results` for results sections, leaving `%% {CC-*}:` why-comments. No comment-first pause. Proof-carrying: reached only via `Skill()` dispatch, `.md` first then sync to tex, and the `[REVISE]` `_LOG` entry must carry its `workers:` line.
+- **DRAFT** 🤖 -- settles structure + writes real prose and Q-consumer questions. It does not author probe entries or add an extra gate.
+- **PROBE** 🤖 -- authors each entry, MATCHes existing QA, dispatches only work allowed by `--depth`, points targets, and harvests answers.
+- **REVISE** 🤖 -- when declared, runs `-place` FIRST, then the prose workers. Its `[REVISE]` record and `workers:` line live in the owning S page's `## Log`.
 - **CHECK** 🧑 -- `haipipe-paper-check` presents the 6-axis report with all probe flags. This is where you come in.
 
 ## B. Review a CHECK report
@@ -53,11 +57,14 @@ Feedback lives as blockquote threads in the working `.md`, directly under the te
 > CC: agreed; moved it to P1.S2 and demoted the old opener to P2
 ```
 
-Rules: the agent replies in one line under your comment; the thread stays in place until you confirm; on resolve it moves to `_LOG_1-introduction.md`. Full convention: `../haipipe-paper/SKILL.md`, Comment lifecycle.
+Rules: the agent replies in one line under your comment; the thread stays in
+place until you confirm; on resolve it moves verbatim to the owning S page's
+`## Log`. Full convention: `../haipipe-paper/SKILL.md`, Comment lifecycle.
 
 ## D. Restart a phase after CHECK feedback
 
-Phase order is fixed (draft → probe → revise → check), so a restart re-runs the named phase **and everything downstream**:
+Phase order follows the stage's declared list, so a restart re-runs the named
+phase and the declared phases downstream of it:
 
 > The Table 2 numbers changed -- re-probe values for the results section.
 
@@ -65,7 +72,7 @@ Phase order is fixed (draft → probe → revise → check), so a restart re-run
 
 > Restart draft -- the outline needs a new beat for the discretion boundary.
 
-Restarting DRAFT reopens content decisions with you; PROBE/REVISE restarts run automatic and land back at CHECK.
+Restarts run automatically through the remaining declared phases and land back at CHECK.
 
 ## E. The effort dial
 
@@ -75,7 +82,7 @@ Restarting DRAFT reopens content decisions with you; PROBE/REVISE restarts run a
 
 ## F. Boundaries (always true)
 
-- DRAFT is the only phase that negotiates content with you; PROBE and REVISE never wait on a human.
+- DRAFT authors content and questions; unresolved taste choices remain inline for CHECK.
 - Nothing enters `.bib` and no number is invented -- probe proposes, you verify in CHECK.
 - Unresolved `> USER:` threads keep a section open; silence is not consent.
 - No ad-hoc plots: display needs become `displays/` units backed by tasks.

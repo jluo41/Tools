@@ -1,11 +1,11 @@
 ---
 name: haipipe-paper-revise-results
 description: "REVISE phase worker for Results sections. Fully automatic. Repairs subsection flow, paragraph openings, reader guidance, and argumentative progression when figures/evidence/claims are fixed but narration reads figure-by-figure. Applies fixes directly, leaves %% {CC-results}: comments explaining WHY for CHECK review. Trigger: results revision, fix results flow, /haipipe-paper-revise-results."
-argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.3"
-  last_updated: "2026-07-08"
+  argument_hint: "[section-name-or-number] [paper-path]"
+  version: "0.2.4"
+  last_updated: "2026-07-26"
   summary: "REVISE worker for Results sections. Fixes narration flow. Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -19,10 +19,14 @@ It is narrower than `haipipe-paper-draft` and `haipipe-paper-optimizer`: the job
 
 Before you start, read the shared prose rules: `../../REF/prose-quality.md` (one idea per sentence, no em-dash, compress not split, no AI voice, <=6 sentences/paragraph, Pn.Sn markers) — all revise workers enforce them; the checks below are results-specific ADDITIONS, not replacements.
 
-Also read the venue's results conventions from the paper's `0-lifecycle/2a-venue/2a-venue.md`: the Structural Blueprint's Results block (results reported + detail, display units) and the Writing Principles (statistical reporting, effect sizes, tables vs figures).
-Fall back to the pinned `venue/playbook-*` pack only when 2a-venue.md is absent; no pack -> skip venue norms (the results-specific checks below still apply).
+Also read the venue's results conventions from
+`0-lifecycle/2-venue/S-Venue-0-venue.md`: its Results blueprint and Writing
+Principles. Fall back to the pinned venue pack only when that S page is absent.
 
-Use `haipipe-paper-draft` when WHAT the section says is still unsettled — that is a DRAFT-phase content decision, and it re-opens the DRAFT gate. Use `haipipe-paper-revise-content` when the content is right and the PROSE needs rewriting; rewriting for style is REVISE's own job and never goes back to DRAFT. (Venue style comes from the paper's `0-lifecycle/2a-venue/2a-venue.md`, with the pinned `venue/playbook-*` pack as fallback.)
+Use `haipipe-paper-draft` when WHAT the section says is still unsettled; a
+CHECK restart can return there. Use `haipipe-paper-revise-content` when the
+content is right and the prose needs rewriting. Venue style comes from
+`S-Venue-0-venue.md`, with the pinned pack as fallback.
 Use `haipipe-paper-optimizer` when the claim hierarchy, evidence chain, or figure logic is still unstable.
 Use this skill when the section is largely right but still reads like stitched figure captions rather than a controlled argument.
 

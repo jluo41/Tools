@@ -8,7 +8,7 @@ one_line: "Why might this paper exist?"
 board_family: Seed
 board_unit: "0"
 board_slug: seed          # family + unit + slug resolve the S-face filename;
-                          # haipipe-board/stage.py owns that resolution (QC2)
+                          # haipipe-board/stage.py owns that resolution (QB4@paper)
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -38,7 +38,7 @@ template: template.md
 
 exit_when: "not viable -> drop the paper"   # the stage's own failure exit
 
-sections:                 # in order; all five must carry real content
+sections:                 # logical order; Q-consumer adapts to Board Items to Finish
   - Seed Question
   - Motivations
   - Landscape
@@ -48,10 +48,11 @@ sections:                 # in order; all five must carry real content
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "no #/##/### — EXCEPT the Q-consumer blocks, which are `## Q-Seed-<n> · <title>`"
+  headings: "direct `###` divisions under Board `## Content`; Q-consumer records are checklist
+             items under `## Items to Finish`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
 
-q_id_pattern: "## Q-Seed-<n> · <title>"
+q_id_pattern: "- [ ] 🔎 Q-Seed-<n> · <title>"
 q_anchor: "[Q-Seed-<n>] cited inline in every sentence the question hangs on"
 closed_when: "REVISE weaves the Answer back in and discharges the [Q-Seed-<n>] bracket"
 
@@ -59,14 +60,14 @@ dispatch_scope:           # what may LEAVE this stage — see the craft body, pr
   - occupied-ground       # is the angle new? closest prior art on each half of the pairing
   - obtainability         # does the external data EXIST and can we get it? (in principle only)
 defer_to: resource        # anything else: keep the Q block, `Answer: deferred -> RESOURCE`,
-                          # emit `**[FORWARD -> RESOURCE] PPNN_<slug>**` in the _LOG
+                          # emit `**[FORWARD -> RESOURCE] PPNN_<slug>**` in this S page's ## Log
 
 done_criteria:
-  - "all five sections filled with real content; every <!-- RULE --> comment deleted"
-  - "every question the draft hangs on is a Q-consumer block, anchored to a draft assertion"
+  - "all four Content divisions plus the Q-consumer records carry real content; every <!-- RULE --> comment deleted"
+  - "every question the draft hangs on is a Q-consumer checklist record, anchored to a draft assertion"
   - "each Q marked DISPATCHED (an entry in 1-probes/) or DEFERRED (no entry, forward pointer)"
   - "no bare \\cite{TOADD} — the citation command and its [Q-Seed-<n>] bracket sit side by side"
-  - "_LOG entry records the current state"
+  - "the S page's ## Log records phase history and the gate row"
   - "check-probe-cards.sh <paper_root> --stage seed exits 0"
 
 upstream: []
@@ -78,7 +79,7 @@ handoff: "on CHECK confirm, append the gate row to this stage's S page ## Log an
           There is no frontier to advance and none to protect: the frontier is DERIVED from each
           page's own `state:`, so a LOOPBACK — running seed again on a paper whose frontier is
           further along — simply records its gate and changes nothing else. That is what retiring
-          the stored `current_layer` bought. See ../../../ref/08-stage-gate.md."
+          a derived frontier makes possible. See ../../../ref/08-stage-gate.md."
 ---
 
 Seed — the craft
@@ -133,10 +134,9 @@ DRAFT may search; PROBE must bind
 Inline WebSearch is legitimate DRAFT fuel — orientation that becomes prose plus `planned`
 q-executor entries. It is NEVER evidence.
 
-PROBE must ALWAYS run the real worker. An inline result binds to nothing, so the PROBE phase did
-not happen. The invariant that separates the two is ENTRY STATE: DRAFT leaves an entry `planned`
-(a `NEW` target) or `answered` (an existing target), with NO `### a-executor` yet. Only PROBE's
-harvest writes the `### a-executor` and reaches `read`.
+PROBE must ALWAYS run the real worker. An inline result binds to nothing.
+DRAFT raises the Q-consumer question; PROBE alone opens the entry, MATCHes it,
+dispatches within the ceiling, and harvests `### a-executor`.
 
 Profiling OUR OWN data belongs in RESOURCE. Such a question may well have been RAISED here — it
 was deferred at the gate, and it is not dispatched from this stage.
@@ -144,7 +144,7 @@ was deferred at the gate, and it is not dispatched from this stage.
 The forward pointer has ONE emitted form
 ----------------------------------------
 
-Seed emits, in `_LOG_0-seed.md`, ASCII arrow, destination RESOURCE:
+Seed emits, in its S page's `## Log`, ASCII arrow, destination RESOURCE:
 
 ```text
 **[FORWARD -> RESOURCE] PPNN_<slug>**

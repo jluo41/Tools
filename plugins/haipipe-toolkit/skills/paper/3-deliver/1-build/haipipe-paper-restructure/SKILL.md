@@ -1,9 +1,9 @@
 ---
 name: haipipe-paper-restructure
-description: "Migrate an existing paper into the layout ruled 2026-07-26 (design board QA6, the delete test): un-number the deliverable, split a monolithic driver into sections/ + appendices/, rewire the \\input tree, normalize NN-MM naming, unitize loose assets into displays/<unit>/assets/, move the build script to 2-src/. Prose stays byte-identical; gated by prose parity + compile parity + the delete test. Also handles in-layout repairs: renumber after deletes, rehouse stray assets. Trigger: restructure paper, migrate paper layout, un-number a paper, convert 0-sections to sections, delete test failing, renumber sections, close numbering gap, /haipipe-paper-restructure."
-argument-hint: "[paper-dir] [--plan-only] [--repair]"
+description: "Migrate an existing paper into the layout ruled 2026-07-26 (design board QA6, the delete test): un-number the deliverable, split a monolithic driver into sections/ + appendices/, rewire the \\input tree, normalize NN-MM naming, unitize loose assets into displays/unit/assets/, move the build script to 2-src/. Prose stays byte-identical; gated by prose parity + compile parity + the delete test. Also handles in-layout repairs: renumber after deletes, rehouse stray assets. Trigger: restructure paper, migrate paper layout, un-number a paper, convert 0-sections to sections, delete test failing, renumber sections, close numbering gap, /haipipe-paper-restructure."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion
 metadata:
+  argument_hint: "[paper-dir] [--plan-only] [--repair]"
   version: "0.2.0"
   last_updated: "2026-07-26"
   summary: "Existing paper → the ruled layout; prose byte-identical, compile verified, delete test passing."
@@ -111,7 +111,7 @@ Naming decisions (`NN` order per venue, slugs from subsection titles) are made h
 4. Rewrite every path that moved: `\includegraphics`, table `\input`, `\bibliography`.
 5. Install `2-src/compile.sh` from `../haipipe-paper-scaffold/templates/compile.sh.tpl` if no conforming build script exists; `chmod +x`. If one exists at the old root path, `git mv` it and fix its internal paths, which are root-relative.
 6. Leave `0-lifecycle/` alone. It is the board; migrating it is `/haipipe-board`'s job, not this skill's, and its purity is checked separately by `conform` block D.
-7. Do not create a `STATUS.md`. `STATUS.md` is RETIRED (design board QA6, 260726): the frontier is derived from disk, the venue pin lives in `S-Venue-0-venue.md` frontmatter, and the Gate Ledger lives in each S page's `## Log`. If one exists, migrate its gate rows onto their S pages FIRST, then remove it, and say in the report which rows moved where. Never drop a ledger row: it is history, and it is the only part of that file that cannot be re-derived.
+7. Do not create a `STATUS.md`. `STATUS.md` is RETIRED (design board QA6, 260726): the frontier is derived from disk, the venue pin lives on `S-Venue-0-venue.md`'s `state:` line, and the Gate Ledger lives in each S page's `## Log`. If one exists, migrate its gate rows onto their S pages FIRST, then remove it, and say in the report which rows moved where. Never drop a ledger row: it is history, and it is the only part of that file that cannot be re-derived.
 
 ### Phase 4: Verify
 

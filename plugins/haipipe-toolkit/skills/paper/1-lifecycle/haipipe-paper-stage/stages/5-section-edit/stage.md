@@ -46,7 +46,7 @@ venue_aligned: true       # rewritten on retarget to another journal
 artifact: 0-lifecycle/4-main/S-{board_family}-{board_unit}-{board_slug}.md
                           # PER SECTION — one folder per unit. `{section}` is the unit's folder;
                           # the FILENAME is resolved by haipipe-board/stage.py from this unit's
-                          # family, unit and slug (QC2), never spelled by this stage. `board_family`
+                          # family, unit and slug (QB4@paper), never spelled by this stage. `board_family`
                           # and `board_unit` are per-unit here, not per-stage: a unit's kind decides
                           # Main vs Appendix and its reader order decides the number or letter.
 probes: 1-probes/PPNN_<topic>/
@@ -98,11 +98,11 @@ venue_fallback: "venue/ packs directly, only when S-Venue-0-venue.md is absent"
 
 exit_when: "writing exposes missing evidence -> 1-claims"
 
-sections:                 # the .md's four parts, top to bottom
+sections:                 # logical parts; Q-consumer adapts to Board Items to Finish
   - Title + venue header
   - Structure overview
   - Paragraph blocks
-  - Q-consumer                          # the mandatory last block
+  - Q-consumer                          # mandatory checklist records under Items to Finish
 
 prose_rule: |
   The .md holds REAL prose — complete academic sentences the user can read as a paper, one
@@ -114,11 +114,12 @@ prose_rule: |
   The .bib is human-only; the agent learns a key by grepping it after the human adds it.
 
 formatting:
-  headings: "## for subsections · ### for paragraphs · ## per Q-consumer entry"
+  headings: "direct `###` divisions and `####` paragraphs under Board Content; checklist records
+             under `## Items to Finish` per Q-consumer"
   line_breaks: "one sentence per line, blank line between; never prefix a sentence with S1./S2."
   preview: "one short line per paragraph (~80-120 chars) — a scan hook, not a mini-abstract"
   latex: "citation commands are the ONLY LaTeX allowed in the .md; no %% markers"
-  tables: "bullet lines, never markdown tables, anywhere in the Q-consumer block"
+  tables: "bullet lines, never markdown tables, anywhere in a Q-consumer record"
   template_residue: "grep -c '<tpl' {section}.md must print 0"
 
 displays: file-only       # JL ruling: this stage FILES a display request, it never CREATES one
@@ -135,7 +136,7 @@ display_split: |          # BINDING, owned by ../4-display/stage.md (`display_sp
 display_gate: "the section's display axis cannot pass CHECK until the DR row is `done` and the
                unit is linked"
 
-q_id_pattern: "## Q-Section-<n> · <title>"   # unified across all 8 stages: the heading id
+q_id_pattern: "- [ ] 🔎 Q-Section-<n> · <title>"
                                             # and the inline anchor are THE SAME TOKEN
 q_anchor: "[Q-Section-<n>] beside the {VAL:?} or \\cite{TOADD} it will fill; the entry's
            Reason names the §<N> P<x>.S<y> sentence(s) that raised it — the back-link"
@@ -148,13 +149,13 @@ done_criteria:
   - "every paragraph carries heading + one-line preview + real prose sentences"
   - "no bare {VAL:?} or \\cite{TOADD} — each sits beside its [Q-<Stage>-<n>]; a TOADD that
      survives into compiled tex fails CHECK"
-  - "the Q-consumer block is the .md's LAST content, in the unified
-     `## Q-Section-<n>` + Description/Reason/Answer shape, followed by Settled Flags and the
-     user-owned notes section"
+  - "the Q-consumer records live only in the S page's `## Items to Finish`, in the unified
+     `- [ ] 🔎 Q-Section-<n>` + Description/Reason/Probe/Answer shape; they never duplicate
+     themselves under Content"
   - "every display need is a DR row that came back `done` with its unit linked"
   - "6-axis CHECK gate PASSes: structure · citation · values · display · venue · proof"
   - "newest [REVISE] carries a `workers:` line and sections/*.tex is synced from the .md"
-  - "_LOG entry records the current state"
+  - "the S page's ## Log records phase history and the gate row"
   - "check-probe-cards.sh <paper_root> --stage section-edit exits 0"
 
 upstream: [narrative, display]
@@ -182,7 +183,7 @@ gap instead of closing it, and the gap survives into review.
 
 📛 **Norm conflict.** The section-type norm and the venue blueprint disagree here. The blueprint
 is BINDING and the playbook is reference, so the blueprint wins on numbers. But record WHY in the
-_LOG: a conflict that keeps recurring in the same section is evidence the section is mapped to
+the S page's `## Log`: a conflict that keeps recurring in the same section is evidence the section is mapped to
 the wrong type, and that is a structure problem, not a prose one.
 
 The other two things worth raising are lane OUTPUT, not judgement — an owed number the values
@@ -249,8 +250,9 @@ Edit surgically
 Change the specific lines under discussion. A full-file rewrite of a `.md` carrying `> USER:`
 comments is forbidden — the rewrite is how threads get silently dropped. The agent never deletes,
 rewords, or relocates a `> USER:` comment; it replies underneath with `> CC:`. Only the user
-declares a thread resolved, and a resolved thread MOVES to `_LOG` verbatim. Each phase starts from
-a clean file.
+declares a thread resolved, and a resolved thread MOVES to the owning S page's
+`## Log` verbatim. Active threads may cross internal phase boundaries and are
+settled or routed at CHECK.
 
 Backward-fill, once, at scaffold
 --------------------------------

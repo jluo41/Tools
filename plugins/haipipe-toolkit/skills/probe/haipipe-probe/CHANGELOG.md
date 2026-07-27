@@ -3,6 +3,53 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.10.4] — 2026-07-26 — Q-consumer is a logical role
+
+- Defined the consumer-family adapter: Board-first paper S pages store
+  Q-consumers as checklist records in `## Items to Finish`; non-Board
+  consumers may retain a literal section.
+- Kept Description, Reason, Probe, and Answer together while ensuring Content
+  contains only the stage's substantive product.
+
+## [0.10.3] — 2026-07-26 — audit copy is not a dispatch leak
+
+- Resolved the stake contradiction: the authoritative stake remains in the
+  stage doc, while its original wording may appear only in the review-only
+  `### q-consumer` copy. It is forbidden in q-executor, a-executor, collector
+  payloads, bindings, and the bank.
+- Canonicalized paper's terminal `concern` state to match the executable
+  checker: `route: none`, no bank/target, and final `discussed:` receipt.
+- Kept one universal file anatomy: even `concern` requires all four
+  subsections and a real stake-free q-executor; it is recorded but never
+  dispatched.
+
+## [0.10.2] — 2026-07-26 — bank and target agree
+
+- Made MATCH deterministic: `reuse` always targets an existing QA answer;
+  `run` / `code` / `new` carry `NEW path` until the executor returns one.
+- This removes the last canonical wording that permitted an impossible
+  `reuse` binding without a readable QA file.
+
+## [0.10.1] — 2026-07-26 — one topic folder, one file per q-executor
+
+- Corrected the opening definition to match the operative anatomy.
+- Repointed the rationale to the live first-class Probe design Board under
+  `skills/diagrams/01-probe-qa-260726/`.
+- Removed historical topology wording from the current operational contract
+  and synchronized the fillable template: DRAFT raises Q-consumers only,
+  PROBE authors entries and dispatches through the collector.
+
+## [0.10.0] — 2026-07-26 — one phase owner, one dispatch wall
+
+- Made the current phase model executable in one way only: DRAFT writes stage
+  content and Q-consumers; PROBE owns ORGANIZE through INTERPRET; CHECK is the
+  current human gate.
+- Removed the retired DRAFT│PROBE approval gate and the conflicting rule that
+  made DRAFT author/match probe entries.
+- Standardized dispatch through `haipipe-probe-q-executor-agent`; the collector
+  alone calls the task/discovery executor orchestrators in its isolated context.
+- Removed the unsupported `argument-hint` frontmatter key.
+
 ## [0.9.9] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 9.9.0; older entries below keep their original numbers).

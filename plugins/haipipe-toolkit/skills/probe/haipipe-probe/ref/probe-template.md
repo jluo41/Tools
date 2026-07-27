@@ -8,9 +8,10 @@
 
 A probe TOPIC is a FOLDER `1-probes/PPNN_<topic>/`, holding one FILE per Q-EXECUTOR.
 A Q-executor is a question in its executor-facing form — stripped of stake, ready to send to the bank.
-Each q-executor file records who needs it, where it goes in the bank, and the answer that came back; the folder groups the q-executors that share a topic.
+Each q-executor file records who needs it, its bank binding and returned answer, or the explicit terminal `concern` ruling when no bank can close it; the folder groups the q-executors that share a topic.
 PP<NN> is a consumer-local number naming the folder — pick the next free NN (`ls 1-probes/` is the authority; the first topic is `PP01`), and no PP number ever crosses to the bank.
-There is no `Why` section here — the stake lives in each Q-consumer, in the stage doc, not in this file.
+There is no `Why` section here — the authoritative stake lives in each stage-doc Q-consumer.
+The original question is copied under `### q-consumer` for review and may retain that stake, but only `### q-executor` is dispatchable.
 
 Each q-executor is one FILE `QXn_<slug>.md`, holding a single `## QX<n>` entry whose fields are grouped under four `###` subsections:
 📤 q-executor (the question) · 🙋 q-consumer (who needs it) · 🔗 bank binding (how it reaches the bank) · 📥 a-executor (the answer).
@@ -18,7 +19,7 @@ Those four emojis are the map — they mark the same four subsections again in t
 
 ON-DISK LAYOUT — a topic is a FOLDER, one q-executor per file:
   1-probes/PPNN_<topic>/QXn_<slug>.md   ← each file is one `## QX<n>` entry, path-addressable.
-The flat single-file `1-probes/PPNN_<topic>.md` (many `## QX` crammed in one file) is RETIRED — check-probe-cards.sh globs `PP*/*.md` only. Each file keeps its `## QX<n>` heading, so the section parser is unchanged.
+`check-probe-cards.sh` globs `PP*/*.md`, and every file carries one `## QX<n>` heading.
 
 
 🔀 Executor side here, consumer side in the stage doc
@@ -62,10 +63,10 @@ Accepted: <a> | <b>
 * **Q-<Stage>-<n>** — <another consumer's original question, if this q-executor serves several>
 
 ### bank binding
-**route**: task | discovery
+**route**: task | discovery | none (concern only)
 **bank**: reuse | run | code | new
 **target**: <bank>/<group>/<folder>/QA/<n>-<slug>.md | NEW ?
-**state**: planned | commissioned | answered | read | answered-local | failed
+**state**: planned | commissioned | answered | read | answered-local | deferred | failed | concern
 
 ### a-executor
 <empty until harvest; then a copy of the QA file's answer — one sentence per line, one source per bullet>
@@ -76,7 +77,7 @@ Accepted: <a> | <b>
 
 🔖 QX<n>  (the entry heading)
 -----------------------------
-A topic-local id for this q-executor — QX1, QX2, … within this file.
+A topic-local id for this q-executor — QX1, QX2, … within its topic folder.
 It is not a Q-consumer id and not a bank id.
 Each layer keeps its own local id (Q-Seed-1 in the stage doc, QX1 here, QA/<n> in the bank), and nothing shares an id across the wall.
 
@@ -97,11 +98,16 @@ The checker's --stage gate greps these ids for the stage word (Q-Seed-1 → seed
 
 🔗 bank binding  (how it reaches the bank)
 ------------------------------------------
-Four fields that say how this q-executor reaches the bank; all authored at PROBE (①②).
-`route` — which bank: `task` for internal work (data, a run, a regression), `discovery` for outside evidence (prior-art, landscape). Authoritative — the executor runs it, it does not re-decide.
-`bank` — what the bank needs, judged by reading it (a read-only grep is allowed): `reuse` (a results folder already answers it), `run` (folder + code exist, needs a run), `code` (folder exists, code needs a change first), `new` (nothing exists, create a folder). This is the plan; `state` is where it actually is now.
+Normal entries use four fields that say how this q-executor reaches the bank; all are authored at PROBE (①②).
+A terminal `concern` uses only `route: none` plus `state: concern` because no bank or target exists.
+`route` — which bank: `task` for internal work (data, a run, a regression), `discovery` for outside evidence (prior-art, landscape). Authoritative — the executor runs it, it does not re-decide. Use `none` only for terminal `concern`.
+`bank` — what the bank needs, judged by reading it (a read-only grep is allowed): `reuse` (a specific existing QA file answers it), `run` (folder + code exist, needs a run), `code` (folder exists, code needs a change first), `new` (nothing exists, create a folder). This is the plan; `state` is where it actually is now.
 `target` — the path to the answering QA FILE, never the folder. `NEW ?` while the folder is undecided; `NEW <path>` once chosen but the QA digest is unwritten. Binding is by path.
-`state` — the live lifecycle, derived from disk, never asserted: `planned`, `commissioned`, `answered`, `read`, `answered-local`, `deferred`, `failed`.
+`state` — the live lifecycle: `planned`, `commissioned`, `answered`, `read`, `answered-local`, `deferred`, `failed`, `concern`.
+All bank-facing values are derived from disk, never asserted.
+`concern` is the consumer-side terminal exception for a doubt no task or discovery can close.
+It keeps all four subsections and a real stake-free `q-executor`, uses `route: none`, omits `bank` and `target`, and leaves `a-executor` empty.
+At final delivery add `**discussed**: <where the manuscript bears the limitation>`.
 
 `deferred` — the PROBE CEILING landed here. The entry's `bank` verdict maps to a depth ABOVE the
 stage's `probe_depth`, so answering it would cost money nobody has authorized. This is a CORRECT
@@ -125,19 +131,23 @@ Each Q-consumer then writes its own a-consumer in its stage doc, anchored `[sour
 It is the LONGEST body in the file and the one a human actually reads, so its readability matters most: one sentence per line, and one source per bullet — never a wall of prose.
 
 
-✍️ For the creator (what DRAFT writes, and what PROBE runs)
-==========================================================
+✍️ For the phase workers
+========================
 
-DRAFT authors the whole plan, so one human gate reviews the draft and its probe plan together.
-For each question the draft raised:
+DRAFT writes the stage content and raises each Q-consumer on the owning S page.
+It writes no probe entry and never opens `1-probes/`.
+
+PROBE authors the plan. For each question DRAFT raised:
   1. Find or open the q-executor entry (`## QX<n>`) — if an existing q-executor already asks it, add a bullet under its `### q-consumer` instead of opening a new entry.
   2. Write `### q-executor` — strip the stake, add the Deliverable and Accepted lines.
   3. Under `### q-consumer`, copy in each consumer's id and original question.
   4. Under `### bank binding`, write `route` and `bank` (read the bank read-only, judge reuse / run / code / new), set `target`, and leave `state: planned`.
   5. Leave `### a-executor` empty.
-PROBE then runs the plan forward: it dispatches the `run` / `code` / `new` entries, points each target, and copies the QA answer into `### a-executor`.
+PROBE then runs the plan forward: it hands authorized `run` / `code` / `new` entries as a set to `haipipe-probe-q-executor-agent`, points each target, and copies the QA answer into `### a-executor`.
+For a true terminal `concern`, PROBE writes the neutral q-executor plus the review-only q-consumer copy, sets `route: none` and `state: concern`, and does not dispatch.
 
 ➕ Optional fields (add only when they apply)
 --------------------------------------------
 Build-lane, only at `state: commissioned`, for days-to-weeks work: add `**owner**:`, `**eta**:`, `**blocks**:`, `**cross-project**:` under `### bank binding`.
 Harvest lanes, when the answer yields reusable artifacts: `**values**:` / `**sources**:` / `**displays**:`, each `harvest: OWED` until its sub-worker accepts it.
+Terminal concern, at final delivery: add `**discussed**: <section/paragraph carrying the limitation>`.

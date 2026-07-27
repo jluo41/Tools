@@ -8,7 +8,7 @@ one_line: "Which claims are supported, refuted, or inconclusive?"
 board_family: Work
 board_unit: "1"
 board_slug: claims          # family + unit + slug resolve the S-face filename;
-                          # haipipe-board/stage.py owns that resolution (QC2)
+                          # haipipe-board/stage.py owns that resolution (QB4@paper)
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -43,10 +43,10 @@ commissions:              # claims RUNS THE EXPERIMENT — it hands units OUT to
   - haipipe-task-orchestrator-agent        # fit + eval; settles an INTERNAL experimental claim
   - haipipe-discovery-orchestrator-agent   # external cohorts/context/citations; never settles a claim alone
 
-sections:                 # in order; all three must carry real content
+sections:                 # logical order; Q-consumer adapts to Board Items to Finish
   - Hypotheses            # venue-NEUTRAL; the H1 -> RQ1 reframing happens in PITCH, not here
   - Claims                # one C<n>: statement + status + `Evidence: [Q-Claim-<n> …]`
-  - Q-consumer            # one `## Q-Claim-<n>` per question: Description / Reason / Answer
+  - Q-consumer            # one Board checklist record per question: Description / Reason / Probe / Answer
 
 status:                   # THIS STAGE IS THE ONLY HOME OF A CLAIM'S STATUS — per-claim,
                           # private to this paper, NEVER in a probe file. No `## Verdict` section.
@@ -59,21 +59,22 @@ status:                   # THIS STAGE IS THE ONLY HOME OF A CLAIM'S STATUS — 
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "no #/##/### — EXCEPT the Q-consumer blocks, which are `## Q-Claim-<n> · <title>`"
+  headings: "direct `###` divisions under Board Content; Q-consumer records are checklist items
+             under `## Items to Finish`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
 
-q_id_pattern: "## Q-Claim-<n> · <title> — the title NAMES the angle, e.g. `· main coefficient (fit)`"
+q_id_pattern: "- [ ] 🔎 Q-Claim-<n> · <title> — the title NAMES the angle, e.g. `· main coefficient (fit)`"
 q_anchor: "[Q-Claim-<n>] listed on the `Evidence:` line of EVERY claim it bears on, and set beside every owed value it will fill"
 closed_when: "REVISE feeds each landed Answer into the status of every claim it settles"
 
 done_criteria:
-  - "all three sections filled with real content; every <!-- RULE --> comment deleted"
+  - "both Content divisions plus the Q-consumer records carry real content; every <!-- RULE --> comment deleted"
   - "every claim carries a status and an `Evidence:` line naming the Q-Claim-<n>s that settle it"
   - "every GAP/inconclusive claim has a plan and a question ENTRY — or is BLOCKED-ON-RESOURCE citing its `-> N<n>` row"
   - "every settled claim passes BOTH stages: the cited file exists with the number in it, AND a probe entry whose `target:` QA file resolves on disk carries the answer in its `### a-executor`"
   - "no aspirational anchor cited as evidence — a `planned` entry settles nothing"
   - "no bare {VAL:?} or \\cite{TOADD} — the marker and its [Q-Claim-<n>] bracket sit side by side"
-  - "_LOG entry records the current state"
+  - "the S page's ## Log records phase history and the gate row"
   - "check-probe-cards.sh <paper_root> --stage claims exits 0"
 
 upstream: [resource]

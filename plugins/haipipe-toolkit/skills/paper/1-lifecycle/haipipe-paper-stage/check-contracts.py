@@ -23,7 +23,7 @@ STAGES = HERE / "stages"
 # The S filename rule belongs to Board tooling (QC2). Import it rather than
 # re-spelling it here, so a checker can never disagree with the creator.
 _spec = importlib.util.spec_from_file_location(
-    "board_stage", HERE.parents[2] / "0_utils" / "haipipe-board" / "stage.py")
+    "board_stage", HERE.parents[2] / "board" / "haipipe-board" / "stage.py")
 board_stage = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(board_stage)
 resolve_filename = board_stage.resolve_filename
@@ -38,7 +38,11 @@ REQUIRED = [
     "done_criteria", "closed_when", "exit_when",
 ]
 FAMILIES = {"Seed", "Work", "Venue", "Display", "Main", "Appendix", "Submission"}
-PATH_FIELD = re.compile(r"^\s*([a-z][a-z0-9_]*):\s+(0-lifecycle/\S+|0-sections/\S+)")
+PATH_FIELD = re.compile(
+    r"^\s*([a-z][a-z0-9_]*):\s+"
+    r"(0-lifecycle/\S+|0-sections/\S+|0-displays/\S+)"
+)
+RETIRED_PATH_PREFIXES = ("0-sections/", "0-displays/")
 RETIRED = {"log": "retired 2026-07-26; the S face carries the history",
            "inputs": "retired by QF2; use the page's requires: and optional read_order:"}
 
@@ -77,6 +81,13 @@ def main():
         for key, why in RETIRED.items():
             if key in f:
                 problems.append(f"{where}: retired field `{key}` is back ({why})")
+        for line in fm.splitlines():
+            m = PATH_FIELD.match(line)
+            if m and m.group(2).startswith(RETIRED_PATH_PREFIXES):
+                problems.append(
+                    f"{where}: `{m.group(1)}` names retired deliverable path "
+                    f"`{m.group(2)}`; use unnumbered `sections/` / `displays/`"
+                )
 
         if f.get("board_family") not in FAMILIES and "or" not in f.get("board_family", ""):
             problems.append(f"{where}: board_family `{f.get('board_family')}` is not a family")

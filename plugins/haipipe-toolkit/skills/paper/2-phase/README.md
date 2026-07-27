@@ -1,12 +1,12 @@
-# 2-phase -- DRAFT-PROBE-REVISE-CHECK (shared across lifecycle stages)
+# 2-phase -- declared phase engine (shared across lifecycle stages)
 
 The **phase dimension** of the paper skill architecture. Phase workers are shared across all lifecycle stages (seed, claims, pitch, narrative, display, section-edit). The hub for section-edit lives in `1-lifecycle/haipipe-paper-stage/stages/5-section-edit//`.
 
 ```
-Per-stage lifecycle:  DRAFT 🤖→🧑 → PROBE 🤖 → REVISE 🤖 → CHECK 🧑
-                      ⛔ two gates: the DRAFT structure review and CHECK.
-                      Unattended? a fresh-context reviewer subagent stands in
-                      at each gate — the gate is delegated, never skipped.
+Typical stage:        DRAFT 🤖 → PROBE 🤖 → REVISE 🤖 → CHECK 🧑
+Venue stage:          DRAFT 🤖 → PROBE 🤖 ───────────→ CHECK 🧑
+                      stage.md declares the ordered phases and gates.
+                      All current stages have one human gate: CHECK.
 
 Status strip:
 phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
@@ -23,14 +23,14 @@ phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 │                                         paragraph-indexing, sentence-format, tex-file-anatomy,
 │                                         paper-folder-anatomy)
 │
-├── 0-draft/                            ← DRAFT: settle structure + sentences, ORGANIZE + MATCH
-│   ├── haipipe-paper-draft                 hub: structure + draft sentences + the probe plan
+├── 0-draft/                            ← DRAFT: settle structure + sentences + raise Q-consumers
+│   ├── haipipe-paper-draft                 hub: structure + draft sentences + questions
 │   ├── haipipe-paper-draft-citation        source holes → \cite{TOADD} [Q-<Stage>-<n>]
 │   ├── haipipe-paper-draft-values          number holes → {VAL:? <what>} [Q-<Stage>-<n>]
 │   └── haipipe-paper-draft-display         display holes → DR row in _DISPLAY_REQUEST.md
 │
-├── 1-probe/                            ← PROBE: agent-only, flag for CHECK
-│   └── haipipe-paper-probe                 DISPATCH → POINT → INTERPRET (harvest inline)
+├── 1-probe/                            ← PROBE: agent-only within the --depth ceiling
+│   └── haipipe-paper-probe                 ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET
 │
 ├── 2-revise/                           ← REVISE: venue-quality prose (auto)
 │   ├── haipipe-paper-revise                hub: routes the pass
@@ -54,12 +54,13 @@ haipipe-paper-{phase}-{what}    phase workers (this directory)
 
 ## Phase automation
 
-- **DRAFT** 🤖→🧑: agent writes the REAL draft (complete prose with real `\citep{}` keys from .bib) AND authors the probe plan (① ORGANIZE + ② MATCH). Every hole ends FILLED or OWNED → ⛔ HARD STOP: user reviews structure + the probe plan together; the user's verb/"go" is the gate (logged `[GATE]` in _LOG)
-- **PROBE** 🤖: agent-only — runs the plan forward (③ DISPATCH → ④ POINT → ⑤ INTERPRET), flags for CHECK, no human gate
-- **REVISE** 🤖: agent-only and PROOF-CARRYING — reached only via `Skill(haipipe-paper-revise)` (never inline); changes the prose directly per prose-quality.md on the .md FIRST then syncs to tex; leaves why-comments; `[REVISE]` _LOG entry carries `workers: content ✓ humanizer ✓ …`
+- **DRAFT** 🤖: writes the artifact and raises every unresolved Q-consumer question. It does not touch `1-probes/` and opens no gate unless `stage.md` explicitly declares one.
+- **PROBE** 🤖: owns ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET; dispatch is limited by the human-supplied `--depth` ceiling.
+- **REVISE** 🤖: when declared, is PROOF-CARRYING — reached only via `Skill(haipipe-paper-revise)`; changes the prose directly, leaves why-comments, and records `workers: content ✓ humanizer ✓ …` in the owning S page's `## Log`.
 - **CHECK** 🧑: human + agent (auto-checkers report, human decides: proceed/restart/accept/park). Never commit before CHECK opens.
 
-The user drives phases with VERBS on the stage skill (`/haipipe-paper-stage section-edit <section> [draft|probe|revise|check]`); a bare invocation shows status and proposes — never runs — the next phase. The agent never self-advances past a human gate.
+The stage router runs its declared phases in order. A phase verb can restart or
+target one phase. The agent never self-advances past a declared human gate.
 
 ## Holes: FILLED or OWNED
 
@@ -68,14 +69,20 @@ DRAFT's done-state. Every hole in the prose is either FILLED, or OWNED — carry
 ```
 a source it cannot verify   →  \cite{TOADD} [Q-<Stage>-<n>]
 a number it does not have   →  {VAL:? <what>} [Q-<Stage>-<n>]
-a display that does not exist →  a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md
+a display that does not exist →  a DR row in 0-lifecycle/3-display/_DISPLAY_REQUEST.md
 ```
 
-Each `Q-<Stage>-<n>` is a Q-consumer in the stage doc (it holds the STAKE) bound to a `## QX<n>` ENTRY in `1-probes/PPNN_<topic>/` (it holds the question). PROBE dispatches the entry, harvests the answer into its `### a-executor`; REVISE's `-place` worker substitutes the landed answer into the placeholder.
+Each `Q-<Stage>-<n>` is a Q-consumer in the stage doc (it holds the
+STAKE). PROBE binds it to a `QXn_<slug>.md` ENTRY in
+`1-probes/PPNN_<topic>/`, dispatches within the ceiling, and harvests the answer
+into `### a-executor`; REVISE's `-place` worker substitutes landed answers.
 
 ## The probe phase
 
-ALL acquisition goes through `haipipe-paper-probe`, executing the plan DRAFT authored. `1-probes/` is the only consumer-side source of truth; `_LOG_<stage>.md` is the only sidecar. Full contract: `1-probe/README.md` and `../../probe/haipipe-probe/SKILL.md`.
+ALL acquisition goes through `haipipe-paper-probe`, which authors and executes
+the plan from the S page's Q-consumer. `1-probes/` is the consumer-side source
+of truth; phase history lives in the owning S page's `## Log`. Full contract:
+`1-probe/README.md` and `../../probe/haipipe-probe/SKILL.md`.
 
 `check-probe-cards.sh` FAILs a `planned` entry, an unresolvable `target`, and an `answered` target whose `### a-executor` is still empty — at the worker's VERIFY step and again at the CHECK gate.
 
@@ -84,16 +91,13 @@ Hard boundary: the DISPATCHED executor finds, the paper follows pointers, the hu
 ## Progression order
 
 ```
-DRAFT first, PROBE second, REVISE third, CHECK last:
+DRAFT first, PROBE second, each remaining declared phase next, CHECK last:
 
-  draft (structure + REAL prose; every hole FILLED or OWNED; the probe plan authored)
+  draft (structure + REAL prose; every hole FILLED or OWNED; Q-consumers raised)
            ↓
-  ⛔ user structure review — [GATE] logged, user's verb advances
+  probe (author entries, MATCH, dispatch allowed work, point + harvest)
            ↓
-  probe (dispatch the OWNED questions, point each target, harvest into a-executor)
-           ↓
-  revise (place runs FIRST and lands the answers; then the workers change the .md
-          directly, leave why-comments, sync .md → tex; workers line in _LOG)
+  revise (when declared: place runs FIRST; workers update prose and log provenance)
            ↓
   check (verification gate → human decision; commits only after)
            ↓

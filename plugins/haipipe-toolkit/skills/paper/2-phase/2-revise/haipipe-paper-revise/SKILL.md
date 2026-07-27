@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-revise
-description: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality after PROBE. REVISE = the agent CHANGES the prose directly AND leaves %% {CC-*}: why-comments explaining each change; the human gives preferences in CHECK. Dispatches place, content, humanizer, and results workers; place runs first and substitutes landed answers into their placeholders. Fully automatic (no human gate). Users invoke stage skills (pitch, narrative, section-edit...), not this skill directly."
-argument-hint: "[section-name-or-number] [paper-path]"
+description: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality after PROBE. Default REVISE changes prose directly and leaves %% {CC-*}: why-comments; an explicit author request for original-preserving or sentence-apparatus review instead enables candidate-diff mode, which leaves prose unchanged and writes word-level Note-lane diffs. Dispatches place, content, humanizer, and results workers; place runs first. Users invoke stage skills (pitch, narrative, section-edit...), not this skill directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-07-26"
-  summary: "REVISE phase worker (internal): rewrite draft prose to venue-quality -- change directly, leave why-comments, then sync .md -> tex. Proof-carrying: stage hubs MUST reach REVISE through this skill (never hand-edit inline) and the [REVISE] _LOG entry MUST carry a `workers:` line. Dispatches place/content/humanizer/results workers (place first). History: ./CHANGELOG.md."
+  argument_hint: "[section-name-or-number] [paper-path]"
+  version: "0.2.2"
+  last_updated: "2026-07-27"
+  summary: "REVISE phase worker (internal): default direct revision plus an author-selected candidate-diff mode for auditable, original-preserving wording review."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -18,12 +18,15 @@ Called by stage skills (pitch, narrative, section-edit) to rewrite draft prose t
 The stage defines WHAT was drafted.
 This skill defines HOW to revise it.
 
-**What the REVISE contract means.** The agent CHANGES the prose directly AND leaves `%% {CC-*}:` comments explaining WHY each non-trivial change was made.
+**What the REVISE contract means.** By default, the agent CHANGES the prose directly and leaves `%% {CC-*}:` comments explaining WHY each non-trivial change was made.
 The human does not approve changes here; the human gives preferences in CHECK (via `> USER:` comments), and a REVISE restart responds to them.
 
+**Author-selected exception.** When the author explicitly asks to retain the original sentence, show deletions/additions, use the Board's sentence apparatus, or review candidates before applying, run **candidate-diff mode**. This mode leaves every original sentence unchanged and writes a `> Note:` candidate beneath it. It is a review artifact, not a completed direct REVISE.
+
 **Proof-carrying (binding).** A stage hub reaches REVISE ONLY through `Skill(haipipe-paper-revise)` — hand-editing the prose inline is a protocol violation ("the REVISE phase did not happen").
-Every run writes a `[REVISE]` entry in the stage's `_LOG` with a workers line: `workers: place ✓ content ✓ humanizer ✓ results --` (✓ ran · -- skipped-with-reason).
-`checks.sh --log` FAILs a `[REVISE]` entry without it.
+Every run writes a `[REVISE]` entry in the owning S page's `## Log` with a
+workers line: `workers: place ✓ content ✓ humanizer ✓ results --` (✓ ran · --
+skipped-with-reason). `checks.sh --stage-page` fails a `[REVISE]` entry without it.
 Order of operations: revise the working `.md` FIRST, then sync to tex — never tex-first (the .md is the document the human reads and comments in).
 
 **Not user-facing.** Users invoke stage skills:
@@ -50,10 +53,27 @@ No comment-first protocol, no human gate.
 The agent reads prose-quality.md + venue style profile, applies fixes, leaves `%% {CC-*}:` why-comments, and moves on.
 Human review of revised prose happens in CHECK.
 
+## Revision modes
+
+### Default direct mode
+
+Apply the four workers to the source `.md`, leave `%% {CC-*}:` why-comments for non-trivial edits, then sync the accepted source to TeX. This is the normal autonomous REVISE path.
+
+### Candidate-diff mode
+
+Use this mode only after an explicit author request for reviewable alternatives. Read `haipipe-paper-revise-humanizer/ref/venue-sciwrite.md` before proposing any change.
+
+1. Keep the source sentence, its citations, values, display lanes, and user comments byte-intact.
+2. Put one complete proposed sentence in an adjacent `> Note:` lane. Mark removed text as `~~removed~~` and inserted or replacement text as `*inserted*`.
+3. Append `· <verified model label> · YYYY-MM-DD`; never invent a model name or version.
+4. Make only minimum, meaning-preserving changes. Do not add or remove a claim, qualifier, causal strength, number, citation, display reference, or defined term.
+5. Place the Note after any existing adjacent `> Citation:`, `> Value:`, or `> Display:` lanes so the entire apparatus folds under the same sentence.
+6. Do not sync candidate Notes to TeX, call the source revised, or mark REVISE complete. Promote only author-accepted candidates in a later direct REVISE or CHECK action.
+
 ## Universal rules
 
 All revise workers read and enforce `../../REF/prose-quality.md`. Installed skills flatten the tree (symlinks under `~/.claude/skills/`), so that relative path is NOT reliable — locate it layout-agnostically:
-`PQ=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in _LOG).
+`PQ=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in the S page's `## Log`).
 The rules:
 
 - One idea per sentence
@@ -64,12 +84,15 @@ The rules:
 - <=6 sentences per paragraph
 - Pn.Sn markers on every sentence
 
-Venue-specific norms (word budget, tone, section arc) come from the paper's `0-lifecycle/2a-venue/2a-venue.md` (Writing Principles + the relevant Structural Blueprint block) and override where they conflict.
-Read `venue/playbook-*/style-profile.md` directly only as fallback when 2a-venue.md is absent, or as a deep dive via its `[source: ...]` tags.
+Venue-specific norms come from
+`0-lifecycle/2-venue/S-Venue-0-venue.md` and override where they conflict.
+Read a venue pack directly only as fallback when that S page is absent, or as a
+deep dive via its `[source: ...]` tags.
 
 **Venue guard** (same rule as DRAFT): when revising a venue-ALIGNED artifact, no `venue:` pinned in S-Venue-0-venue.md -> STOP with `status: blocked` and point the user to `/haipipe-paper venue`.
-Venue pinned -> read the paper's `0-lifecycle/2a-venue/2a-venue.md` FIRST; fall back to the pinned `venue/playbook-*` pack only when it is absent (no matching pack either -> STOP the same way).
-Fallback pack present but per-section style file missing -> revise with the general style-profile and flag the gap in `_LOG` + the CHECK report.
+Venue pinned -> read `S-Venue-0-venue.md` FIRST; fall back to the pinned pack
+only when it is absent. If a per-section style file is missing, flag the gap in
+the S page's `## Items to Finish` and `## Log`, and in CHECK.
 Never silently invent venue norms.
 
 ## Dispatch logic
@@ -92,10 +115,11 @@ REVISE is fully automatic.
 The agent:
 
 1. Reads the working .md and current .tex
-2. Applies prose-quality.md rules directly TO THE .MD, leaving `%% {CC-*}:` why-comments on non-trivial changes (in the tex after sync; the .md stays markup-free apart from citation commands)
-3. Syncs the revised .md → .tex (Pn.Sn markers; tex prose never edited directly)
-4. Writes the `[REVISE]` _LOG entry with the `workers:` line
-5. Hands back to the stage hub, which OPENS CHECK — never commit or conclude before the CHECK gate opens
+2. Uses default direct mode or the author-selected candidate-diff mode above
+3. In direct mode, applies prose-quality.md rules to the .MD, leaves `%% {CC-*}:` why-comments on non-trivial changes, and syncs the revised .md → .tex (Pn.Sn markers; tex prose never edited directly)
+4. In candidate-diff mode, writes only `> Note:` lanes in the .MD and rebuilds the Board; it does not change or sync the manuscript prose
+5. Writes the owning S page's `[REVISE]` Log entry only for a completed direct run; candidate-diff mode records an `[REVIEW]` entry if the project uses logs
+6. Hands back to the stage hub, which opens CHECK after direct REVISE — never commit or conclude before the CHECK gate opens
 
 No stopping for comments mid-pass.
 No waiting for approval.

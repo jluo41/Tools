@@ -49,14 +49,14 @@ NC='\033[0m' # No Color
 # the deliverable is unnumbered, so a master can never be 0-*.tex. Generated -DIFF
 # files are excluded. The paper may be TWO documents, the main manuscript and the
 # standalone Supplementary Information; both are compiled when present.
+# Built with a plain loop, not a process substitution: bash 3.2, which is what macOS
+# ships, mis-parses a `case` pattern's `)` inside `<(...)` and dies on this block.
 MAIN_TEXS=()
-while IFS= read -r _tex; do MAIN_TEXS+=("$_tex"); done < <(
-    for _f in *.tex; do
-        [ -e "$_f" ] || continue
-        case "$_f" in [0-9]-*|*-DIFF*) continue ;; esac
-        grep -q '\\documentclass' "$_f" && echo "$_f"
-    done
-)
+for _f in *.tex; do
+    [ -e "$_f" ] || continue
+    case "$_f" in [0-9]-*|*-DIFF*) continue ;; esac
+    grep -q '\\documentclass' "$_f" && MAIN_TEXS+=("$_f")
+done
 if [ ${#MAIN_TEXS[@]} -eq 0 ]; then
     echo -e "${RED}No master found: expected an unnumbered top-level .tex with \\documentclass${NC}"
     exit 1

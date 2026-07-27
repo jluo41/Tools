@@ -11,25 +11,24 @@
 # into the CHECK REPORT and seed > CHECK: comments at the reported line numbers.
 #
 # Usage:
-#   checks.sh <tex-file-or-paper-dir> [--md <file> ...] [--log <file>] [--depth N] [--compile]
+#   checks.sh <tex-file-or-paper-dir> [--md <file> ...] [--stage-page <file>] [--depth N] [--compile]
 #
 #   <tex-file-or-paper-dir>  a single .tex, OR a paper dir (all *.tex scanned)
 #   --md <file>              a markdown working doc — a stage doc (0-lifecycle/<stage>/*.md),
-#                            a section .md, or a 1-probes/PP*.md entry file — to scan for
+#                            a section .md, or a 1-probes/PP*/*.md entry file — to scan for
 #                            bibtex leakage; repeatable
-#   --log <file>             a _LOG_*.md changelog: verify the newest [REVISE]
-#                            entry carries its `workers:` proof line, and warn
-#                            if REVISE ran with no [GATE] draft-review on record
+#   --stage-page <file>      the owning S page: verify its newest [REVISE]
+#                            entry under ## Log carries a `workers:` proof line
 #   --depth N                find maxdepth for *.tex / *.bib when target is a dir
 #                            (default 2; raise for deeper layouts / split bibs)
-#   --compile                run ./1-compile.sh in the paper dir and grep its log
-#                            for LaTeX errors (opt-in; slow; needs a TeX toolchain)
+#   --compile                run the paper-owned 2-src/compile.sh, or compile the
+#                            explicitly named .tex target (opt-in; slow)
 #
 # Exit code: 0 if no ❌ (FAIL) items, 1 if any ❌. ⚠️ never fails the run.
 # ❌ tier: em-dash, TODO/FIXME, bibtex-in-md, broken \cite, broken \ref, compile,
 #          [REVISE] entry without workers: line.
 # ⚠️ tier: AI-voice, orphan \label, Pn.Sn sequence, cite-with-no-bib-found,
-#          REVISE-without-[GATE]-draft-review.
+#          (warnings remain non-failing).
 # Caveat: .bib discovery is bounded by --depth; a split .bib deeper than DEPTH
 # makes its keys report as broken \cite — raise --depth rather than trusting a red.
 # ============================================================================
@@ -37,19 +36,19 @@ set -uo pipefail
 
 TARGET="${1:-}"
 if [[ -z "$TARGET" ]]; then
-  echo "usage: checks.sh <tex-file-or-paper-dir> [--md <file> ...] [--depth N] [--compile]" >&2
+  echo "usage: checks.sh <tex-file-or-paper-dir> [--md <file> ...] [--stage-page <file>] [--depth N] [--compile]" >&2
   exit 2
 fi
 shift || true
 
 MD_FILES=()
-LOG_FILES=()
+STAGE_PAGES=()
 DEPTH=2
 COMPILE=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --md) shift; if [[ -z "${1:-}" || "${1:-}" == --* ]]; then echo "--md needs a file argument" >&2; exit 2; fi; MD_FILES+=("$1") ;;
-    --log) shift; if [[ -z "${1:-}" || "${1:-}" == --* ]]; then echo "--log needs a file argument" >&2; exit 2; fi; LOG_FILES+=("$1") ;;
+    --stage-page|--log) shift; if [[ -z "${1:-}" || "${1:-}" == --* ]]; then echo "--stage-page needs a file argument" >&2; exit 2; fi; STAGE_PAGES+=("$1") ;;
     --depth) shift; DEPTH="${1:-2}"
              if ! [[ "$DEPTH" =~ ^[0-9]+$ ]]; then echo "--depth needs a numeric argument, got: $DEPTH" >&2; exit 2; fi ;;
     --compile) COMPILE=1 ;;
@@ -60,9 +59,11 @@ done
 
 # Resolve tex files and paper dir.
 if [[ -f "$TARGET" ]]; then
+  TARGET="$(cd "$(dirname "$TARGET")" && pwd -P)/$(basename "$TARGET")"
   TEX_FILES=("$TARGET")
   PAPER_DIR="$(dirname "$TARGET")"
 elif [[ -d "$TARGET" ]]; then
+  TARGET="$(cd "$TARGET" && pwd -P)"
   PAPER_DIR="$TARGET"
   TEX_FILES=()
   while IFS= read -r _f; do [[ -n "$_f" ]] && TEX_FILES+=("$_f"); done < <(find "$TARGET" -maxdepth "$DEPTH" -name '*.tex' -not -path '*/_archive/*' -not -path '*/_external/*' | sort)
@@ -214,15 +215,15 @@ for f in ${TEX_FILES[@]+"${TEX_FILES[@]}"}; do
   fi
 done
 
-# ── REVISE: proof-carrying dispatch (--log) ──────────────────────────────────
-#    Newest-first _LOG: the FIRST `## … [REVISE]` heading is the latest run.
-#    Its block (up to the next `## ` heading) must carry a `workers:` line —
+# ── REVISE: proof-carrying dispatch (--stage-page) ───────────────────────────
+#    Under the S page's newest-first ## Log, the FIRST `[REVISE]` entry is the
+#    latest run. Its block must carry a `workers:` line —
 #    proof the 2-revise workers were dispatched, not hand-edited inline.
-for lf in ${LOG_FILES[@]+"${LOG_FILES[@]}"}; do
+for lf in ${STAGE_PAGES[@]+"${STAGE_PAGES[@]}"}; do
   if [[ ! -f "$lf" ]]; then
-    echo "⚠️ --log file not found: $lf"; continue
+    echo "⚠️ --stage-page file not found: $lf"; continue
   fi
-  revise_block=$(awk '/^## .*\[REVISE\]/{grab=1; next} grab && /^## /{exit} grab{print}' "$lf")
+  revise_block=$(awk '/^##[#]? .*\[REVISE\]/{if (!found) {found=1; grab=1; next}} grab && /^##[#]? /{exit} grab{print}' "$lf")
   if ! grep -q '\[REVISE\]' "$lf"; then
     echo "-- REVISE proof skipped ($(basename "$lf"): no [REVISE] entry yet)"
   elif echo "$revise_block" | grep -q 'workers:'; then
@@ -230,26 +231,41 @@ for lf in ${LOG_FILES[@]+"${LOG_FILES[@]}"}; do
   else
     echo "❌ $(basename "$lf"): newest [REVISE] entry has NO workers: line (revise workers not dispatched?)"; FAIL=1
   fi
-  if grep -q '\[REVISE\]' "$lf" && ! grep -q '\[GATE\] draft-review' "$lf"; then
-    echo "⚠️ $(basename "$lf"): [REVISE] present but no [GATE] draft-review on record (draft gate skipped?)"
-  fi
 done
 
 # ── META: compile clean (opt-in; --compile) ──────────────────────────────────
 if [[ $COMPILE -eq 1 ]]; then
-  if [[ -f "$PAPER_DIR/1-compile.sh" ]]; then
-    clog=$(cd "$PAPER_DIR" && bash 1-compile.sh 2>&1)
+  COMPILE_ROOT="$PAPER_DIR"
+  while [[ "$COMPILE_ROOT" != "/" && ! -d "$COMPILE_ROOT/0-lifecycle" ]]; do
+    COMPILE_ROOT="$(dirname "$COMPILE_ROOT")"
+  done
+
+  if [[ -f "$COMPILE_ROOT/2-src/compile.sh" ]]; then
+    clog=$(cd "$COMPILE_ROOT" && bash 2-src/compile.sh 2>&1)
     cerr=$(echo "$clog" | grep -iE '^!|LaTeX Error|Undefined control sequence|Emergency stop' | head -20)
     if [[ -z "$cerr" ]]; then
-      echo "✅ compiles clean (1-compile.sh)"
+      echo "✅ compiles clean (2-src/compile.sh)"
     else
       echo "❌ compile errors:"; echo "$cerr" | sed 's/^/    /'; FAIL=1
     fi
+  elif [[ -f "$TARGET" && "$TARGET" == *.tex ]]; then
+    if ! command -v latexmk >/dev/null 2>&1; then
+      echo "❌ --compile requested for $TARGET but latexmk is unavailable"; FAIL=1
+    else
+      clog=$(cd "$COMPILE_ROOT" && latexmk -pdf -interaction=nonstopmode -halt-on-error \
+        -output-directory="$(dirname "$TARGET")" "$TARGET" 2>&1)
+      cerr=$(echo "$clog" | grep -iE '^!|LaTeX Error|Undefined control sequence|Emergency stop' | head -20)
+      if [[ -z "$cerr" ]]; then
+        echo "✅ compiles clean ($(basename "$TARGET"))"
+      else
+        echo "❌ compile errors:"; echo "$cerr" | sed 's/^/    /'; FAIL=1
+      fi
+    fi
   else
-    echo "⚠️ --compile requested but no 1-compile.sh in $PAPER_DIR"
+    echo "⚠️ --compile requested but no 2-src/compile.sh exists; pass a specific .tex target"
   fi
 else
-  echo "-- compile check skipped (pass --compile to run ./1-compile.sh)"
+  echo "-- compile check skipped (pass --compile to run 2-src/compile.sh or the named .tex)"
 fi
 
 echo "─────────────────────────────────────────────"

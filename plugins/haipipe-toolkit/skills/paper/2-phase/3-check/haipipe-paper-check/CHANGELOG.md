@@ -3,6 +3,32 @@ haipipe-paper-check — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.3.4] — 2026-07-26 — CHECK follows the Board adapter
+
+- Placeholder ownership now resolves against Q-consumer checklist records in
+  the S page's `## Items to Finish`, never a duplicate Content block.
+
+## [0.3.3] — 2026-07-26 — CHECK reads declared stage contracts
+
+- Non-section gates now resolve `stages/<order>-<key>/stage.md`; CHECK no
+  longer asks for nonexistent per-stage SKILL files.
+- Added Venue's declared no-REVISE path and paired style/template gate.
+- Updated Resource checks to `Resource Description` + `Q-consumer`.
+
+## [0.3.2] — 2026-07-26
+
+- Re-rooted `checks.sh --compile` from retired root `1-compile.sh` to the
+  canonical `2-src/compile.sh`.
+- An explicitly named `.tex` target can compile directly with output beside
+  that target; a paper directory without a build script no longer causes the
+  checker to guess a master.
+- Corrected CHECK's active probe-entry globs to `1-probes/PP*/*.md`.
+
+## [0.3.1] — 2026-07-26 — one current gate, S-page proof
+
+- All current stages declare their one human gate at CHECK.
+- `checks.sh --stage-page` reads REVISE provenance from the S page's `## Log`.
+- Resource spend is authorized by the human-supplied `--depth`, not a DRAFT gate.
 
 ## [0.3.0] — 2026-07-24
 

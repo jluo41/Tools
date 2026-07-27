@@ -53,7 +53,7 @@ input:       a SET of q-executors the bank still OWES — the consumer's 1-probe
              bank verdict is run | code | new and whose state is planned or commissioned (NOT yet
              answered/read) — each with its QX<n> id + its route (task | discovery), and the
              project_root. answered/read entries are never sent: there is nothing left to collect.
-does:        ③ DISPATCH (per the DRAFT-authored bank verdict) → ④ POINT
+does:        ③ DISPATCH (per the PROBE-authored bank verdict) → ④ POINT
 dispatches:  Agent(haipipe-task-orchestrator-agent) · Agent(haipipe-discovery-orchestrator-agent)
 output:      per q-executor: { entry, target: QA-file path | in-flight | failed }
 ```
@@ -75,7 +75,7 @@ Per `../haipipe-probe/SKILL.md`:
              entry's route), the `### q-executor` VERBATIM, run_in_background for fresh work.
              Dedup across the batch first (T0 JOIN) so two identical q-executors never dispatch
              the same run. OMIT the target folder for fresh work (the orchestrator picks it);
-             pass a folder only when the DRAFT plan already named an existing one (run/code/ENRICH).
+             pass a folder only when the PROBE plan already named an existing one (run/code/ENRICH).
              It returns a QA-file PATH.
 ④ POINT      write each entry's target: at its answering QA file (the target field only — never
              the stake). state: is DERIVED, never asserted.
