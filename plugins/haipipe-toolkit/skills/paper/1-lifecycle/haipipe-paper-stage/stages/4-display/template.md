@@ -4,7 +4,7 @@
 
      WHAT CHANGED (2026-07-26): this stage used to emit ONE gallery document holding every
      display as a `### Figure N -- displayNN` block. Displays gate independently, so the unit of
-     work is the asset, not the gallery (QB2). The gallery survives only as the GENERATED
+     work is the asset, not the gallery (QB2b). The gallery survives only as the GENERATED
      4-display.tex, which \inputs each unit's float.tex.
 
      WHAT THIS PAGE IS NOT. It does not hold anything true of more than one asset:
@@ -112,7 +112,7 @@ caption job: <what the caption must explain without overclaiming>
      closes only when the answer landed AND was woven into the Spec or the caption.
      Numbers come from the bank, never from the agent: a value the agent typed is a defect, not
      a draft. Route it through PROBE. -->
-- [ ] 🧠 Q-Display-<n> · <what evidence this asset needs>
+- [ ] 🔎 Q-Display-<n> · <what evidence this asset needs>
       Which link of the chain it fills, and what breaks if the number differs.
 - [ ] 📈 <build, render, or promote step>
 - [ ] 🧠 Close this unit's gate

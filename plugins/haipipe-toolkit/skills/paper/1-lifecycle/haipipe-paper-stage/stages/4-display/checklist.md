@@ -5,13 +5,13 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 ## Stage doc (`0-lifecycle/3-display/`) — the md → tex → pdf trio
 - [ ] `4-display.md` present and is the ONLY hand-edited stage file (canonical template `template.md`): Venue Set + gallery config, Display Map (row order = narrative order = gallery order), Probes (`###` sub-items, seed/claims shape), one paper-section group per section (`venue expects:` line; each display a `###` subsection; grouping matches the map's `section` column), Parking section.
 - [ ] Legacy files migrated and gone: no `4-display-probes.md`, no `4-display-preview.txt` / contact-sheet file, no `%% {USER}:` comments left in the tex (all merged VERBATIM into the md; `[MIGRATE]` logged).
-- [ ] `_LOG_4-display.md` exists (created at first invocation; missing = defect).
+- [ ] The Display S page has a `## Log`.
 - [ ] `_DISPLAY_REQUEST.md` inbox consumed: no row left `requested` (each `accepted`/`declined` with reason; delivered units flipped `done (unit: ...)`).
 - [ ] `Probes` entries all terminal: every `###` entry `done` with its `Outcome:` filled, or user-skipped (logged at the gate); no `✋` entry run while its gating thread was unruled, none silently dropped. PROBE's S0 cross-stage sweep ran (or was explicitly skipped with a logged reason): unfiled section/narrative display needs are DR rows, not invisible.
 - [ ] `4-display.tex` is REGENERATED from the md by sync — never hand-edited: `\section*{<paper section>}` banner at each section change, a named `\subsection*{Figure N. <name>}` / `Table N. <name>` per display, small-font interrogation verdicts, `\input` per unit, Parking section last (parked units never `\input` into the manuscript).
 - [ ] Gallery sizing knobs (width cap, float pinning, spacing) live in the md's gallery config and are emitted into the generated tex preamble — never pushed into a unit's `float.tex` or source spec.
 - [ ] `4-display.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit, from the paper root so `displays/` paths resolve).
-- [ ] Shaped to the VENUE display set (read STATUS `venue`; consult the paper's `0-lifecycle/2-venue/2a-venue.md` Structural Blueprint display units + Writing Principles display limits; fall back to `../../../venue/playbook-<venue>` `-> Display` only if 2a-venue.md is absent). For UTD-IS (MISQ/ISR/MS-IS): research-model figure as the hero, a research-design figure, a hypothesis-test table, descriptives.
+- [ ] Shaped to the VENUE display set from `0-lifecycle/2-venue/S-Venue-0-venue.md`; fall back to the venue pack only when that page is absent.
 - [ ] The `[primary]` claim's display is the HERO (first figure).
 - [ ] Figures/tables numbered by order of appearance.
 
@@ -21,7 +21,7 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 - [ ] Method candidates recorded: 2–3 lettered candidate lines for non-trivial displays (different forms/routes, incl. diagram/illustration where apt); every line PROBE-filled (output + one-line self-assessment) or explicitly struck.
 - [ ] No markdown pipe tables anywhere in `4-display.md` (JL 2026-07-10): map, Probes, candidates, and Parking are record lines; tabular text appears only inside fenced sketches.
 - [ ] No block stuck at `candidates`: winner promoted to `assets/` with a recorded why per loser (losers in `versions/`), or the block is parked. A `> USER:` preference decides — never overruled.
-- [ ] `> USER:` threads kept VERBATIM in the block; every one has a `> CC:` reply or a user resolution (resolved threads moved to `_LOG`). No comments in unit files or the generated tex.
+- [ ] `> USER:` threads kept VERBATIM in the block; every one has a `> CC:` reply or a user resolution (resolved threads moved to the owning S page's `## Log`). No comments in unit files or generated tex.
 - [ ] Per-display interrogation verdict recorded (keep-main / keep-supplement / fix / demote / cut + one sharp reason), from the independent render-review subagent (builder ≠ judge).
 
 ## Per display unit (`displays/displayNN-<slug>/`)

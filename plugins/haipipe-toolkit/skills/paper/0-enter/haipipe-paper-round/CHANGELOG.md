@@ -3,6 +3,13 @@ haipipe-paper-round — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.0] — 2026-07-26 — one round, one Board page
+
+- Replaced the retired `1-rounds/` five-file bundle and `latest.md` pointer
+  with `0-lifecycle/7-round/S-Round-<n>-<vYYMMDD>.md`.
+- Moved discussion, queue, decisions, applied history, and close receipt onto
+  the owning S page; routes now use the grouped Board families and stage PROBE.
+- Removed the unsupported `argument-hint` frontmatter key.
 
 ## [0.1.0] — 2026-07-24
 

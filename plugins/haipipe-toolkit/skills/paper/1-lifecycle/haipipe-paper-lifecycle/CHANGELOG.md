@@ -3,6 +3,52 @@ haipipe-paper-lifecycle — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.5.5] — 2026-07-26 — one Resource vocabulary
+
+- Updated lifecycle maps to the stage-owned `Resource Description` +
+  `Q-consumer` artifact instead of the retired Demand/Questions rows.
+
+## [0.5.4] — 2026-07-26 — current frontmatter contract
+
+- Removed the unsupported `argument-hint` key so the lifecycle router passes
+  the current `skill-creator` validator.
+
+## [0.5.3] — 2026-07-26 — declared phases, one CHECK gate
+
+- Router documentation now follows each stage's declared phase list.
+- Removed the stale DRAFT gate and `_LOG` provenance contract.
+- Updated live S-page and display-renderer routes.
+
+## [0.5.2] — 2026-07-26 — return into one disk-derived Paper tail
+
+- Removed the reachable instruction to render a retired stage strip from
+  `STATUS.md`.
+- Specialist results are internal payloads; the user sees one composed Paper
+  closing block with the active Board link and four-slot DPRC phase line.
+
+
+## [0.5.1] — 2026-07-26 — the venue pin reads the `state:` line, not an invented frontmatter key
+
+Found by running the skill against `Paper-Personality2Opioid-MISQ2026` rather than by reading it.
+
+Yesterday's `STATUS.md` retirement moved the venue pin to "`S-Venue-0-venue.md` frontmatter, `venue:`". That field does not parse. `haipipe-board`'s face grammar is a CLOSED whitelist (`src/parse.py:145`): `state|owner|method|session|requires|style-from|provides|contract-source-hash`. A `venue:` key is invisible to the board, so the frontier predicate failed on the only real paper, and the fix was never going to be "add the key" — the whitelist is `haipipe-board`'s, ruled on its own board.
+
+The pin needed no new field. It was already on the page's own `state:` line: `state: ✅ PINNED · MISQ 2026`. Corrected in 12 places across the stage contract, the console, the router, the two refs, the anatomy spec and `restructure`.
+
+Recorded on design-board face `QA4` as the third cross-package gap of the day, with the rule it produced: **`haipipe-paper` may not invent a face-grammar key.** It uses a key that already parses, or it goes to the board's own board and asks.
+
+
+## [0.5.0] — 2026-07-26 — the router calls haipipe-board, and surfaces its marker report
+
+New `Board Refresh` section. Before this the router had **zero** references to `haipipe-board`, `build.py` or `board.html`: it dispatched every stage verb, each of which writes an S page, and none of them ever rebuilt the board the human is looking at.
+
+- **The three entry points, with paths that resolve from this folder**: `build.py` (after every write, idempotent, ~1s), `watch.py` (once per session, polls mtimes, and closes the browser's "Sync to md" gap where a human's comment lands in the markdown but `board.html` stays stale until someone runs Python), `serve.py` (the live layer on 5599; never `file://`).
+- **The build's marker report is documented as the content check**, because nothing else in the family cross-checks prose against the `.bib` and the display units. Its three categories decoded: `broken` (a `\citep{}` not in the `.bib`, HUMAN-ONLY to fix), `unowned` (a placeholder with no `[Q-…]`, or a `\ref{}` with no `\label` — a `??` in the PDF), `uncited` (a display unit no section references). Worked example from `Paper-Personality2Opioid-MISQ2026`: 40 pages, 22 markers, 1/12/9, where the 9 uncited say the display layer ran ahead of the sections rather than that the displays are wrong.
+- **The two `board.md` lines that make chips resolve at all** (`dialect: paper`, `paper-root: ..`). Without them the markers render as plain text and the report above is empty and useless.
+- **Failure rules**: say what failed and print the path anyway; never hand-edit `board.html`; `open` acts on the machine the agent runs on, not necessarily where the human is sitting.
+
+Implements the single-door ruling (design board faces `QA1` + `QA4`, JL 2026-07-26). Calling is not owning: `haipipe-board` still owns the build, the filename rule, the html and the write-back.
+
 
 ## [0.4.0] — 2026-07-26 — the router names paths that exist
 

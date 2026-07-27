@@ -1,12 +1,11 @@
 ---
 name: haipipe-paper-enter
-description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`, `/haipipe-paper enter <paper-path>`, `/haipipe-paper status [paper-path]`, or when starting work in an existing paper folder. GET-OR-CREATE: a missing path offers to create the paper (confirm-gated, repo-backed inside Project-* repos). Derives state from disk (not stored status), renders an open-needs dashboard (frontier, maturity, claim/display/round gaps, loopback diagnosis, next commands), records session state in .paper-console.yaml, and routes free-form input through the lifecycle in copilot mode."
-argument-hint: "[paper-path] [--org <owner>] [free-form input]"
+description: "THE SINGLE DOOR into a paper. Use for `/haipipe-paper`, `/haipipe-paper enter PAPER_PATH`, `/haipipe-paper status [paper-path]`, or when starting work in an existing paper folder. Resolves the paper root, GET-OR-CREATEs a missing path (confirm-gated, repo-backed inside Project-* repos), then CALLS haipipe-board to build the paper`s 0-lifecycle/ into board.html and push its URL to the browser: the human ends up LOOKING at the board, and never types /haipipe-board for a paper. Derives the frontier from disk and from each S page`s state (nothing derived is stored), then prints only what a terminal is good at: the URL, one frontier line, open needs with routes, and the recommended next command. Records only the active paper identity in .paper-console.yaml and routes free-form input through the lifecycle in copilot mode."
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "0.5.0"
+  version: "0.6.6"
   last_updated: "2026-07-26"
-  summary: "Paper Console: a derive-from-disk dashboard + lifecycle router, and THE home of the dashboard spec (golden rule, frontier predicates, glyphs, shallow check, render skeleton). Renders the 9-stage spine (seed · resource · claims · venue · pitch · narrative · display · section-edit · review) and a four-glyph DPRC phase strip; the resource predicate honours the `n/a` exemption for pre-2026-07-14 papers. History: ./CHANGELOG.md."
+  summary: "Paper Console: the single door that opens the Board, re-derives artifact, S-page state, and gate-receipt truth from disk before routing, and stores only an identity pointer for the active paper. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -20,8 +19,8 @@ The console:
 ```text
 1. resolves the paper root
 2. derives current state from disk, not from stored status
-3. renders a dashboard panel (lifecycle frontier + maturity + open needs)
-4. records session state in .paper-console.yaml at the paper root
+3. builds and opens the Board, then prints its URL, frontier, and open needs
+4. records only the active paper identity in .paper-console.yaml
 5. routes later free-form user input through the lifecycle
 ```
 
@@ -46,7 +45,7 @@ When the given path does not exist, do NOT fail -- offer to create, but CONFIRM 
 The main job is to expose the paper's current debt board: open claim gaps, display/table gaps, section-edit phase gaps, round todo gaps, and evidence needs that may require probe/discover/task work.
 The user often does not know the next stage in advance; the dashboard makes the next need visible.
 
-Follow-up paper actions in the same session must treat that dashboard, especially `current_layer`, `next_layer`, and open needs/gates, as the working context.
+Before every follow-up paper action, re-read `board.md` and the relevant S pages, then re-derive the frontier, open needs, and gates from disk before routing.
 A fresh Claude/Codex session should run `enter` again.
 
 Story ownership rule: this paper owns its own story, claim wording, narrative, displays, and section editing.
@@ -101,6 +100,60 @@ If no paper root is found, report `status: blocked` and suggest:
 /haipipe-paper-lifecycle folder "<paper-path>"
 ```
 
+## Open the Board (the FIRST thing enter does after resolving the root)
+
+Ruled 2026-07-26 (design board `QA1`, `QA4`). **`/haipipe-paper` is the single
+thing a human types.** For a board inside a paper, `haipipe-board` is CALLED,
+never typed. Before this ruling the console read `board.md` as a data file and
+rendered its own text panel, so a human who wanted to SEE the paper had to type
+a second skill with the `0-lifecycle/` path by hand.
+
+```text
+   👤 types ONE command
+        │
+        ▼
+   /haipipe-paper enter <paper-path>
+        │
+        ├─ resolve the paper root
+        ├─ get-or-create when the path is new
+        │     └ haipipe-paper-folder: board.md + ONE Seed page
+        ├─ CALL ③ haipipe-board on <paper-root>/0-lifecycle/
+        │     ├ build.py   the S pages → board.html
+        │     └ serve.py   push the URL to the browser
+        └─ print the URL, the frontier line, and the open needs
+```
+
+**Calling is not owning.** `③` owns the format, the build, the filename rule,
+the html and the write-back; this console renders none of it and never will.
+
+### The three moments ① calls ③
+
+```text
+1 ENTER                    here. The human is looking at ⑧ before work starts.
+2 AFTER EVERY WRITE TO ⑧   a stage run, a phase worker, a CHECK gate: each ends
+                           with a rebuild, or the human reads a paper that no
+                           longer exists. Owned by haipipe-paper-stage.
+3 BEFORE ① ACTS            a comment or a `>` lane arrived through serve.py, so
+                           ⑧'s markdown changed underneath. Re-read; never cache.
+```
+
+### When the push fails
+
+The URL reaches the human over the VS Code IPC socket on port 5599. After this
+ruling that path is on the critical path of EVERY paper session, so it must
+never fail silently:
+
+```text
+✅  say the push failed, print the URL, continue with the text lines
+✗   report success when only the build succeeded
+✗   fall back to file:// — it is not the same page and the live layer is dead
+```
+
+A silent success is indistinguishable from a dead port forward, which is exactly
+how a session was lost on 2026-07-25. Note also that `open` on this machine acts
+on the machine Claude runs on, which is not necessarily where the human is
+sitting: hand over the URL, do not assume you can show it.
+
 ## Read Order
 
 Read only files that exist, in this order:
@@ -115,13 +168,13 @@ If the page does not exist, the dashboard says "pitch not yet written".
    - `0-lifecycle/0-seed/S-Seed-*.md`
    - `0-lifecycle/1-work/S-Work-0-resources.md` (venue-FREE prerequisite contract; absent on every pre-2026-07-14 paper -- see the resource exemption below)
    - `0-lifecycle/1-work/S-Work-1-claims.md`
-   - `0-lifecycle/2-venue/S-Venue-0-venue.md` (the venue PIN lives in its frontmatter)
+   - `0-lifecycle/2-venue/S-Venue-0-venue.md` (the venue PIN is on its `state:` line, e.g. `state: ✅ PINNED · MISQ 2026`)
    - `0-lifecycle/2-venue/S-Venue-2-narrative.md`
    - `0-lifecycle/3-display/` display pages
 4. Main and appendix sections: scan `0-lifecycle/4-main/` and `0-lifecycle/5-appendix/` for
    `S-Main-*.md` / `S-Appendix-*.md`. Derive per-section DPRC status from each page's `state:`
    and from what exists on disk.
-4b. `1-probes/PP*.md`: the paper's open questions. Per entry read its `**state**` and whether `### a-executor` is filled — this is what the phase strip's `probe` glyph is derived from.
+4b. `1-probes/PP*/*.md`: the paper's open questions, one `QXn` file per q-executor inside each topic folder. Per entry read its `**state**` and whether `### a-executor` is filled — this is what the phase strip's `probe` glyph is derived from.
 5. Explicit need records in lifecycle TeX comments or markdown tables.
    Search for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, and `open`.
 6. `displays/*/README.md` -- one per unit; there is no top-level index and no `figures/`.
@@ -141,7 +194,8 @@ The dashboard is a derive-from-disk preflight. It orients the session before the
 
 ```text
 A stage is done only when its S page resolves on disk with real content
-(not the scaffold stub) and that page's own `state:` says so.
+(not the scaffold stub), that page's own `state:` begins `✅`, and its
+`## Log` contains the approval receipt for the declared gate.
 
 There is no stored frontier to disagree with. STATUS.md is retired, which
 retires DRIFT with it: DRIFT existed only to name the gap between a stored
@@ -159,16 +213,23 @@ The dashboard uses the paper lifecycle spine:
 -> 5-section-edit -> review
 ```
 
-(`1-resource` and `1-claims` share the number 1, deliberately, exactly as `2-venue` and `2-pitch` already do. The number is decoration; the spine key is the bare name `resource`, and `stage-strip.sh` strips the digit before matching.)
+(`1-resource` and `1-claims` share the number 1, deliberately, exactly as `2-venue` and `2-pitch` already do. The number is decoration; the spine key is the bare name `resource`, and a frontier predicate matches on that bare name.)
 
-The frontier is the first stage whose disk predicate fails.
+For every row below, `done` is a conjunction: the disk predicate passes, the
+stage's S page has first state token `✅`, AND the page's `## Log` contains a
+gate row with `Approved = yes`, an actor, and a date. For a stage represented
+by several S pages, every required page must satisfy all three. Content with
+`🔴`, `🟡`, or `⏸️`, or a green page with no gate receipt, is not done and may
+not advance; it is the current gate.
+
+The frontier is the first stage whose conjunction is not satisfied.
 
 | Stage | Done when | Next action if frontier |
 |---|---|---|
 | `0-seed` | `0-lifecycle/0-seed/S-Seed-0-seed.md` has question / motivations / claim-shape content | `/haipipe-paper seed` |
-| `1-resource` | `0-lifecycle/1-work/S-Work-0-resources.md` exists with its two sections (Demand, Questions); **`n/a` counts as a PASS** -- see the resource exemption in Diagnosis Rules | `/haipipe-paper resource` |
+| `1-resource` | `0-lifecycle/1-work/S-Work-0-resources.md` exists with real `Resource Description` and `Q-consumer` content; **`n/a` counts as a PASS** only under the resource exemption in Diagnosis Rules | `/haipipe-paper resource` |
 | `1-claims` | `0-lifecycle/1-work/S-Work-1-claims.md` ledger non-empty, each row has a status (anchor `planned` still counts as a status; unmaterialized evidence is an open need, not a stage fail) | `/haipipe-paper claims` |
-| `venue` | `0-lifecycle/2-venue/S-Venue-0-venue.md` frontmatter carries `venue:` pinned to a playbook pack | `/haipipe-paper venue` |
+| `venue` | `0-lifecycle/2-venue/S-Venue-0-venue.md` exists and its `state:` line names the pinned outlet (`✅ PINNED · <venue> <year>`) | `/haipipe-paper venue` |
 | `2-pitch` | `0-lifecycle/2-venue/S-Venue-1-pitch.md` has a one-line pitch | `/haipipe-paper pitch` |
 | `3-narrative` | `0-lifecycle/2-venue/S-Venue-2-narrative.md` has an arc | `/haipipe-paper narrative` |
 | `4-display` | the display pages map claim -> display and `displays/displayNN-<slug>/` units exist | `/haipipe-paper display` |
@@ -192,86 +253,31 @@ BLOCKED  explicit blocker (open need / failed gate)
 For each paper:
 
 ```text
-1. Read `0-lifecycle/board.md` for the page list, then each page's `state:` line.
-2. For each stage, test its disk predicate above.
-3. The frontier IS the first failing stage. Nothing stores it, so nothing can be wrong about it.
-4. If a page's own `state:` claims done but its disk predicate fails, flag STALE on that page.
-5. Surface open needs from claims GAP rows, missing display units, open section checklist
+1. Read `0-lifecycle/board.md` for the page list, then each page's first `state:` emoji and `## Log`.
+2. For each stage, test its disk predicate, its required S-page state, and its declared-gate receipt.
+3. The frontier IS the first stage where either half fails. Nothing stores it.
+4. Predicate fail + `✅`, or `✅` with no approval receipt, is STALE: the page over-claims completion.
+5. Predicate pass + a non-`✅` gate (or missing receipt) is BLOCKED at that stage: recommend
+   `/haipipe-paper <stage> check`, never the next stage.
+6. Surface open needs from claims GAP rows, missing display units, open section checklist
    items, section TODOs, and the current S-Round page's open items.
 ```
 
 ### Render skeleton
 
-Lead with a paper header, then a one-line Story, then the progress spine. This is the panel a session sees on enter. Keep it tight; open needs follow below it.
-
-```text
-📄 <paper-folder-name>  ·  <venue>
-
-  Story: <one plain sentence: the angle + the surprising mechanism + scope/caveat,
-         compressed from 2b-pitch.md (fallback 3-narrative). Append "(关联,非因果)"
-         when 1-claims marks the claim observational.>
-
-  进度  seed ─ resource ─ claims ─ venue ─ pitch ─ narrative ─ display ─ section-edit ─ review
-         <g>    <g>        <g>      <g>     <g>     <g>         <g>       <g>            <g>
-                                                       🔥 这里(<one-clause why this is the frontier>)
-```
-
-Per-stage glyph (derive-from-disk; show each stage's TRUE state, not a blanket todo downstream):
-
-```text
-✅ done       the stage predicate passes AND the artifacts it references resolve
-(草稿)         the artifact exists but is rough / incomplete (e.g. sections drafted but thin)
-⬜ todo       absent, empty, or its referenced anchors do not resolve
-🔥 frontier   the FIRST stage that is not ✅; overlay it and annotate "← 这里"
-⚠️ stale      this stage's S page `state:` claims done but the disk predicate fails
-```
-
-Worked example (MedJournal, derived from disk on 2026-06-22):
-
-```text
-📄 Paper-Personality-Opioid-MedJournal  ·  medical journal (IMRAD)
-
-  Story: 患者感知的医生"可亲和性"(LLM 从评论里测)越高 → 腰背痛阿片处方强度越高,
-         主要走"已开药者剂量"而非开药人数,双重资格人群更明显。(关联,非因果)
-
-  进度  seed ─ resource ─ claims ─ venue ─ pitch ─ narrative ─ display ─ section-edit ─ review
-         ✅     n/a        ✅       ✅      ✅      ✅          🔥        (草稿)          ⬜
-                                                              ← 这里(displays/ 只有 display00,01-04 没建)
-```
-
-(`resource n/a` = the exemption in Diagnosis Rules. This paper was seeded before the resource stage shipped, so the frontier walks past resource to claims; `n/a` is a PASS and is NOT drift.)
-
-Frontier = display: the display pages name Display 01-04 but `displays/` has only display00. section-edit shows (草稿) because `sections/*.tex` have rough prose while their display anchors are unbuilt.
-The Story line is the compressed 2-pitch one-liner; if the pitch is only a flat summary, compress it but keep it one sentence.
-
-Field sources:
-
-```text
-<venue>   S-Venue-0-venue.md frontmatter `venue:` (+ optional `venue_outlet:`)
-<paper>   the paper folder name
-Story     one sentence (may wrap ~2 lines), in the paper's working language;
-          compressed from S-Venue-1-pitch.md's lead + the mechanism + the scope clause;
-          append the observational caveat iff S-Work-1-claims.md marks the claim observational
-```
-
-Open needs block (printed directly under the panel; short, it is "what to do next", not a report). Route each per Delivery Need Routing in `../../haipipe-paper/SKILL.md`:
-
-```text
-Open needs (from 0-lifecycle/7-round/<round>/todo.md + 1-claims planned/GAP rows + missing displays):
-  - <gap> -> <route>     e.g. Materialize Display 01-04 -> /haipipe-task-for-display
-  - <gap> -> <route>     e.g. Backfill C1-C5 evidence anchors -> /haipipe-paper probe "<need>"
-                              (opens a question ENTRY in 1-probes/; the PROBE phase MATCHes
-                               the bank first, and commissions only if nothing answers it)
-```
-
-Round todo items and claim/display gaps are first-class open needs, not afterthoughts. The dashboard lists them with a suggested route (probe/discovery/task/display/paper-edit).
+RETIRED 2026-07-26. The console no longer renders a panel; `⑧` is the panel.
+See Output Format below for the three lines the terminal still prints.
 
 ## Diagnosis Rules
 
 Derive the current layer from disk, following the Dashboard Spec above.
-A stage is done only when its S page resolves on disk with real content (not the scaffold stub).
-The frontier is the first stage whose disk predicate fails, and it is derived on every run rather than stored.
-If a page's own `state:` claims more progress than disk shows, flag STALE on that page and trust disk.
+A stage is done only when its S page resolves with real content and every
+required S-page gate has first token `✅`.
+The frontier is the first stage where the content predicate or gate predicate
+fails, and it is derived on every run rather than stored.
+If `state: ✅` claims more progress than disk shows, flag STALE and trust disk.
+If disk content passes but the gate is not `✅`, stop at that stage and request
+its CHECK approval; never infer permission to advance from content alone.
 
 Per-stage inference when disk is the source of truth:
 
@@ -280,7 +286,7 @@ Per-stage inference when disk is the source of truth:
 | only `README.md` / seed lifecycle | `0-seed` |
 | seed exists but resource is absent/thin (and NOT exempt -- see below) | `0-seed -> 1-resource` |
 | resource settled (or exempt) but claims are absent/thin | `1-resource -> 1-claims` |
-| claims exist but `venue:` is not pinned in S-Venue-0-venue.md | `1-claims -> venue` |
+| claims exist but S-Venue-0-venue.md's `state:` line is not pinned | `1-claims -> venue` |
 | venue pinned but pitch is absent/thin | `venue -> 2-pitch` |
 | pitch exists but narrative is absent/thin | `2-pitch -> 3-narrative` |
 | narrative exists but display units are missing | `3-narrative -> 4-display` |
@@ -293,8 +299,9 @@ So for the resource predicate, `n/a` is an ACCEPTED PASS: a paper whose seed gat
 Without this, every live paper's frontier REGRESSES to `resource` and the console reports DRIFT on seeds JL personally approved.
 The exemption is per-paper and backwards-only -- a paper seeded after 2026-07-14 gets no exemption, and an absent `S-Work-0-resources.md` is a real frontier.
 
-(The stage strip renders such a paper `resource ⬜` -- that is the strip's artifact-on-disk test, not a frontier claim.
-`⬜` on an exempt paper is NOT drift; do not flag it.)
+(The Board may still show an exempt Resource page as not started because it
+renders the page itself, not the compatibility exemption. Do not call that
+drift.)
 
 Infer maturity separately from current layer -- read it from artifacts, never assumed:
 
@@ -345,155 +352,55 @@ Loopback diagnosis follows the paper lifecycle:
 
 ## Output Format
 
-The dashboard leads with WHAT THE PAPER IS ABOUT, then WHERE IT STANDS, then WHAT TO DO NEXT.
-Operational details come after orientation.
+**The BOARD is the panel. The terminal is the pointer to it.**
 
-Render the stage strip deterministically with the helper, never hand-typed:
+Ruled 2026-07-26. Before this, the console rendered a full text dashboard: a
+paper-identity table, a two-line focus strip, a current-state block, a stable
+block and an artifacts-read list. `⑧` renders every one of those, in a browser,
+with comment lanes a terminal cannot have. Two renderers of one truth is one
+too many, and the terminal was always the weaker one.
 
-```sh
-sh "${CLAUDE_SKILL_DIR:-.}/../../haipipe-paper/stage-strip.sh" <paper-root>
-```
-
-It prints one line driven by the DERIVED frontier (the shallow check above), over the 9-stage spine `seed resource claims venue pitch narrative display section-edit review`. It was originally driven by `STATUS.md current_layer`; that stored value is retired, and the strip reads disk.
-Real output (Paper-ScalingGlucose-NatSeries2026, 2026-07-14):
-
-```text
-seed ✅  resource ⬜  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
-```
-
-(`resource ⬜` on a live paper is the EXEMPTION, not drift -- the stage postdates the paper.
-See the resource exemption in Diagnosis Rules.)
-
-This strip appears twice: once near the top (orientation) and once as the VERY LAST LINE of the reply (closing every reply in the session, not just the first dashboard; see the orchestrator's "Stage Strip" rule).
-
-Per the Lifecycle TeX Quality Standard (`../../3-deliver/haipipe-paper-deliver/SKILL.md`), a stale PDF is a defect: flag any stage whose `.tex` is newer than its `.pdf` as a stale deliverable in the Open Needs section.
-
-Body order -- sections MUST appear in this sequence:
+What a terminal is genuinely good at is three things. Print exactly these, in
+this order, and stop:
 
 ```markdown
-## Paper Identity
+📋 <board URL>          ← FIRST. The human reads the paper THERE.
+   (if the push failed, say so on this line and print the URL anyway)
 
-| Field | Value |
-|---|---|
-| Paper | <title from 0-lifecycle/board.md> |
-| Venue | <venue: from S-Venue-0-venue.md frontmatter> |
-| Path | ... |
-| Branch | ... |
-
-## What This Paper Is About
-
-<2-3 sentence summary distilled from the \section*{One-Minute Pitch} paragraph
-and the pitch lead of 0-lifecycle/2-venue/S-Venue-1-pitch.md.
-If no pitch exists, print: "Pitch not yet written -- run /haipipe-paper pitch.">
-
-## Focus Strip (two lines)
-
-The strip uses two markers to show both where we are and how far the paper has reached. Full convention in the haipipe-paper umbrella SKILL.md, Closing Block section (the single source of truth).
-
-| Marker | Meaning |
-|---|---|
-| 🔥 | **Active now** -- the stage/phase we are currently working on |
-| 🚀 | **Frontier** -- the farthest stage/phase the paper has ever reached |
-
-Every line carries EXACTLY one 🔥 and EXACTLY one 🚀, never zero. "Reached" means entered, not completed: a virgin paper working its first phase renders `draft 🔥🚀`, not `draft 🔥`. The markers split only on loopback (🚀 stays at the frontier slot while 🔥 moves back); when they land on the same item, collapse to `🔥🚀`.
-
-**Line 1 (stage):** all lifecycle stages. 🔥 marks the active stage, 🚀 marks the frontier. If the active stage is section-edit, append the specific section name in parentheses.
-
-**Line 2 (phase):** the DPRC phase status within the 🔥 stage. 🔥 marks the active phase, 🚀 marks the farthest phase reached at the frontier stage. Four glyphs, one per phase, the same at every stage.
-
-Examples:
-
-Working at the frontier -- THE default case, e.g. a fresh paper in seed/DRAFT (active = frontier, markers collapse):
-```
-stage:   seed 🔥🚀  resource ⬜  claims ⬜  venue ⬜  pitch ⬜  narrative ⬜  display ⬜  →  section-edit ⬜  →  review ⬜
-phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
-```
-
-Working the resource stage (the venue-FREE prerequisite stage between seed and claims):
-```
-stage:   seed ✅  resource 🔥🚀  claims ⬜  venue ⬜  pitch ⬜  narrative ⬜  display ⬜  →  section-edit ⬜  →  review ⬜
-phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
-```
-
-Frontier at section-edit (section name appended; probe shows sub-tracks). `resource ⬜` here is the EXEMPTION -- this paper predates the stage, and that is a PASS, not drift:
-```
-stage:   seed ✅  resource ⬜  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit (§1 introduction) 🔥🚀  →  review ⬜
-phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
-```
-
-Loopback: redoing seed while paper has reached section-edit (🚀 stays at the frontier; seed has no probe sub-tracks):
-```
-stage:   seed 🔥  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
-phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
-```
-
-Loopback to pitch while frontier is display:
-```
-stage:   seed ✅  resource ✅  claims ✅  venue ✅  pitch 🔥  narrative ✅  display 🚀  →  section-edit ⬜  →  review ⬜
-phase:   draft ✅  │  probe ⬜  │  revise 🔥  │  check 🚀
-```
-
-How to derive:
-- 🔥 stage = what the user is actively working on (explicit request or current task).
-- 🚀 stage = the lifecycle frontier (farthest stage whose disk predicate passed). If the user specifies a section ("work on §3"), the section name appears in parentheses after the stage.
-- The section name comes from the outline file name (e.g., `1-introduction.md` -> `§1 introduction`, `3-theory.md` -> `§3 theory`).
-- Phase status is derived from disk (same rules as before):
-  - draft ✅ if the stage doc / section .md has its structure block + real prose, and every hole is FILLED or OWNED (each `\cite{TOADD}` / `{VAL:?` carries a `[Q-<Stage>-<n>]` id); 🕳️ N if N holes are unowned
-  - probe ✅ if every entry serving this stage has a resolving `**target**` and a non-empty `### a-executor`; 📨 N if N are still open (`planned` / `commissioned` / `answered`-but-unharvested); -- if the stage raised no questions
-  - revise ✅ if prose revised (tex synced from the .md)
-  - check ✅ if _LOG has a check entry
-- Every stage reads the same four glyphs. `probe` is ONE track: the phase strip never splits it.
-
-DPRC phase automation:
-- DRAFT, PROBE, REVISE are automatic (🤖) -- agent runs without stopping for human input
-- TWO human gates (🧑): DRAFT ends at a STOP for structure review, and CHECK presents its report for user review; the user's verb advances a gate, never the agent
-- When user says "work on §N", run DPR automatically, then present the CHECK report
-
-Only show the FOCAL stage/section, not a grid of all sections. The user sees one clear focus point, not a spreadsheet.
-
-## Current State
-
-| Field | Value |
-|---|---|
-| Current layer | ... |
-| Next layer | ... |
-| Maturity | ... |
-| Active round | <vYYMMDD or none> |
-
-## Stable
-
-- ...
+<paper-folder-name> · <venue: from S-Venue-0-venue.md> · frontier: <stage>
+<one sentence on what the paper is about, from S-Venue-1-pitch.md's lead.
+ If no pitch page exists: "Pitch not yet written — run /haipipe-paper pitch.">
 
 ## Open Needs
-
-| Need | Type | Source | Suggested route |
-|---|---|---|---|
-| ... | probe/display/discovery/task/paper-edit | ... | ... |
-
-## Loopback Diagnosis
-
-- ... (omit if none)
+  - <gap> -> <route>       one line each, route per Delivery Need Routing
+  - <gap> -> <route>       in `../../haipipe-paper/SKILL.md`
 
 ## Recommended Next
-
-1. `/haipipe-paper-lifecycle ...`
-2. ...
-
-## Artifacts Read
-
-- ...
-
-(return-contract tail here)
-
-stage:   seed 🔥  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
-phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
+  <the single highest-leverage command>
 ```
 
-The two-line focus strip is the VERY LAST thing, placed after the return-contract tail.
-It appears at the top of the dashboard AND as the last two lines of every reply.
-Keep the dashboard concise.
-The goal is to orient the session, not to rewrite the paper.
-Full marker convention in the haipipe-paper umbrella SKILL.md, Closing Block section.
+That is the whole panel. If a reader wants more, the URL is on the first line.
+
+### What was RETIRED with the text dashboard
+
+```text
+Paper Identity table   ⑧'s board.md header carries it
+Focus Strip 🔥/🚀      ⑧'s spine shows every page's state at once
+the 9-stage strip      a worse copy of that spine; no second renderer remains
+Current State / Stable ⑧'s per-page `state:` IS this
+Artifacts Read         a log of the console's own work, useful to nobody
+```
+
+Loopback is no longer a rendered block either: with the frontier derived and
+nothing stored, re-running an earlier stage is ordinary, not an anomaly to
+diagnose. Say it in one clause on the frontier line if it is worth saying.
+
+Per the Lifecycle TeX Quality Standard (`../../3-deliver/haipipe-paper-deliver/SKILL.md`),
+a stale PDF is a defect: list any stage whose `.tex` is newer than its `.pdf`
+under Open Needs.
+
+Keep it concise. The goal is to orient the session and hand over the URL, not
+to rewrite the paper.
 
 ## Free-form Routing
 
@@ -515,7 +422,7 @@ round / todo               -> round skills
 rebuttal / respond         -> rebuttal skills
 ```
 
-If the input does not name a stage, route to the current frontier from the dashboard.
+If the input does not name a stage, re-derive the current frontier from disk, then route to it.
 If the input is ambiguous, ask before acting.
 
 ## Copilot Policy
@@ -542,36 +449,19 @@ Record the console session at the paper/project root (the nearest directory cont
 .paper-console.yaml
 ```
 
-Suggested fields:
+Fields:
 
 ```yaml
 paper_root: <path>
 active_paper: <Paper-Name>
-current_layer: <frontier stage>
-maturity: <maturity rung>
-active_round: <vYYMMDD or none>
-open_needs: <count>
 updated: <YYMMDD>
 ```
 
-This is session state, not manuscript content.
-A fresh session re-derives it from disk.
+This file is an identity pointer, not a state cache.
+Never store frontier, maturity, round, gate, or open-need values here; re-derive them from the Board, S pages, probe entries, and their targets on every action.
 
 ## Return Contract
 
 Every reply from a paper specialist (and every enter dashboard) MUST end with the closing block defined in `../../haipipe-paper/SKILL.md` (Closing Block section, the single source of truth).
 Omitting it is a protocol violation.
-Shape:
-
-```text
-── 📄 paper · seed 🔥 ─────────────────────────
-status:  ok · seed
-next:    <single recommended command>
-──────────────────────────────────────────────
-stage:   seed 🔥  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
-phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
-```
-
-`status` merges the state and the active stage on one line: `ok` (dashboard rendered, session ready) · `blocked` (missing paper root or unresolvable state) · `failed` (read error or inconsistent disk state).
-NO `paper_root` or `current_layer` lines in the tail -- the header rule and the stage line already carry them.
-Render the stage line with `../../haipipe-paper/stage-strip.sh`; the closing block is the very last thing in every reply.
+Do not copy or redefine its shape here; use the umbrella contract verbatim so the Board URL and phase line cannot drift.

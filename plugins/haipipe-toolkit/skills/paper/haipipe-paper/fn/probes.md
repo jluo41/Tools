@@ -2,42 +2,39 @@ Probe files (paper)
 ====================
 
 The paper accumulates its open QUESTIONS as **probe files** during lifecycle work (seed,
-resource, claims, pitch, narrative, display, section-edit). The DRAFT phase RAISES the questions
-AND authors their probe plan (① ORGANIZE + ② MATCH: q-executor / route / bank / target); the
-PROBE phase runs the plan forward (③ DISPATCH → ④ POINT → ⑤ INTERPRET) and binds each to an answer.
+resource, claims, pitch, narrative, display, section-edit). DRAFT raises the
+Q-consumer questions on the owning S page. PROBE owns the complete loop:
+① ORGANIZE → ② MATCH → ③ DISPATCH → ④ POINT → ⑤ INTERPRET.
 
-The MODEL itself is owned by `../../../probe/haipipe-probe/SKILL.md` (v9.5.0).
+The MODEL itself is owned by `../../../probe/haipipe-probe/SKILL.md`.
 Read that; this file only carries the paper-side paths and verbs. The application twin is the
 same document with application paths.
 
-Location — one FLAT pool, one file per TOPIC
-----------------------------------------------
+Location — one flat pool of topic folders, one file per entry
+--------------------------------------------------------------
 
 ```
 <paper>/
 └── 1-probes/
-    ├── PP01_welldoc-feasibility.md   one file per TOPIC, question entries inside
-    ├── PP02_cgm-horizon.md
+    ├── PP01_welldoc-feasibility/
+    │   ├── QX1_cycle-indicator.md
+    │   └── QX2_coverage.md
+    ├── PP02_cgm-horizon/
+    │   └── QX1_forecast-window.md
     └── README.md                     a GENERATED board (see below); the files win
 ```
 
-- `1-probes/` — a single flat pool at the paper root. Never a per-stage folder.
+- `1-probes/` — a single pool at the paper root. Topic folders are never stage folders.
 - Stage affinity is an ENTRY's `### q-consumer` bullet, never the file's path. One flat cross-stage pool.
 - PP numbers are **paper-local footnote numbers**. `ls 1-probes/` is the numbering authority.
   There is no ledger, and no PP id ever crosses to the task/discovery bank — so two papers may
   both carry a PP03 with nothing to reconcile, the way two books both carry a footnote 4.
-- **Legacy migration (on first touch):** a file found in `1-probe-plans/` or
-  `0-lifecycle/<stage>/_PROBE/` is rewritten into `1-probes/` in the new shape by whatever verb
-  touched it. Log the move in the stage `_LOG`. Do not migrate what you did not touch.
-  `1-probes/` is the only consumer-side source of truth; `_LOG_<stage>.md` is the only sidecar.
-
 Probe file anatomy
 -------------------
 
-Full spec: `probe/haipipe-probe/SKILL.md` → "The probe file". In brief — there is NO `## Why` (the stake
-lives in each Q-consumer, in the stage doc, not here); one file per TOPIC; one `## QX<n>` ENTRY per
-Q-EXECUTOR, each with four `###` subsections. The file is Q-executor-oriented — the consumers hang
-off it.
+Full spec: `probe/haipipe-probe/SKILL.md` → "The probe file". Each
+`QXn_<slug>.md` file contains one `## QX<n>` entry with four `###` subsections.
+The topic is its parent `PPNN_<topic>/` folder.
 
 ```markdown
 # PP01 — WellDoc data feasibility
@@ -105,7 +102,7 @@ failed           a reading with a dead target · the task-folder was deleted · 
 
 An entry in flight is `commissioned`.
 A claim's STATUS (`supported | refuted | inconclusive` + confidence + claim_type)
-lives in `0-lifecycle/1b-claims/1b-claims.md`. It is not a probe field.
+lives in `0-lifecycle/1-work/S-Work-1-claims.md`. It is not a probe field.
 
 Binding is by PATH, never by id
 --------------------------------
@@ -130,8 +127,7 @@ Commands
 ---------
 
 ```
-/haipipe-paper probe "<question>"   raise a question -> a QX<n> ENTRY in the right topic's probe
-                                    file (creating the file if the topic is new)
+/haipipe-paper probe "<question>"   raise a question -> a QX<n> entry file in the right topic folder
 /haipipe-paper probe                show the board (derived from 1-probes/ on disk, never stored)
 /haipipe-paper probe run            run the five-step loop over every open entry
 /haipipe-paper probe run PP01       run it for one probe file
@@ -139,11 +135,11 @@ Commands
 
 All four go through `haipipe-paper-probe` (the PROBE phase worker) — the single door.
 
-The loop — DRAFT authors ①②; haipipe-paper-probe runs ③④⑤
-----------------------------------------------------------
+The loop — haipipe-paper-probe owns ① through ⑤
+-----------------------------------------------
 
 ```
-DRAFT authors the plan (probe v9.5.0):
+PROBE authors and runs the plan:
   ① ORGANIZE   collect the questions into 1-probes/, grouped by topic; find-or-open each
                `## QX<n>`, write its `### q-executor` (stake stripped), copy the Q-consumer
                under `### q-consumer`, and choose its `route`:
@@ -151,12 +147,11 @@ DRAFT authors the plan (probe v9.5.0):
                ROOT each question to a SPECIFIC folder: set `bank` (reuse | run | code | new)
                and `target` (an existing QA path, or `NEW <path>`).
                → most entries should stop HERE. A NEW dispatch is the EXCEPTION, not the norm.
-  ── ONE human gate reviews draft + probe plan together ──
-PROBE runs the plan forward (route/bank are AUTHORITATIVE — executed, not re-decided):
-  ③ DISPATCH   target: NEW only: the `### q-executor` block, VERBATIM, to
-                 Agent(haipipe-task-orchestrator-agent)
-                 Agent(haipipe-discovery-orchestrator-agent)
-               their clean context IS the wall; dispatch goes direct.
+  ③ DISPATCH   target: NEW only: hand the authorized entries as a SET to
+                 Agent(haipipe-probe-q-executor-agent)
+               whose clean context IS the wall. The collector sends each
+               `### q-executor` VERBATIM to the task/discovery orchestrator
+               selected by its authoritative route and writes back each target.
   ④ POINT      target: → the answering QA FILE (open it, read the state: line)
   ⑤ INTERPRET  `### a-executor` (copy the QA answer, HARVEST inline: source anchors,
                  values, display-unit paths) → each consumer's a-consumer in its stage
@@ -173,8 +168,8 @@ Lifecycle Integration
 
 Any lifecycle stage can raise a question:
 - 0-seed: "NEED-1 (probe): expand ex ante audit" -> an entry in the matching topic's probe file
-- 1-resource: each GATE-1-approved `Q<n>` -> an entry, plus a `-> PP<NN>` backlink written back
-  into 1a-resource.md (that backlink is the mechanical proof the question was ASKED, and the
+- 1-resource: each `Q<n>` -> an entry, plus a `-> PP<NN>` backlink written back
+  into S-Work-0-resources.md (that backlink is the mechanical proof the question was ASKED, and the
   CHECK gate tests it)
 - 2-claims: every GAP / weak claim -> an entry
 

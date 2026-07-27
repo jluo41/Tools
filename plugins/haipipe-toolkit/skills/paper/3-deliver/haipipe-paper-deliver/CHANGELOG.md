@@ -3,6 +3,18 @@ haipipe-paper-deliver — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.1.2] — 2026-07-26
+
+- Made `folder` an internal scaffold leaf: direct folder-creation requests route
+  through confirm-gated `haipipe-paper-enter`.
+- Clarified the TeX standard's composition boundary. Display galleries may
+  input unit `float.tex` files and masters may input section/appendix leaves;
+  only prose-owning section and appendix files require `Pn.Sm` sentence tags.
+
+## [0.1.1] — 2026-07-26
+
+- Aligned delivery with the first-class Board contract: the folder bootstrap is Board-first, Display now lives at `0-lifecycle/3-display/`, and phase/gate history lives in each S page's `## Log` rather than a `_LOG_<stage>.md` sidecar.
+- Removed the unsupported `argument-hint` frontmatter key so this orchestrator passes the current `skill-creator` validator.
 
 ## [0.1.0] — 2026-07-24
 

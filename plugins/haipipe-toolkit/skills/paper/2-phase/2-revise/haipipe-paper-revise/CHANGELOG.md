@@ -3,6 +3,13 @@ haipipe-paper-revise — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.1] — 2026-07-26 — provenance lives on the S page
+
+- `[REVISE]` worker proof now lives in the owning S page's `## Log`.
+- `checks.sh --stage-page` replaces the retired `_LOG` input.
+- Venue guidance reads `S-Venue-0-venue.md`.
+- Preserved the invocation hint under `metadata.argument_hint`, which conforms to
+  the current Skill frontmatter schema.
 
 ## [0.2.0] — 2026-07-26 — the venue guard reads the venue page
 

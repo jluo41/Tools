@@ -8,7 +8,7 @@ one_line: "Does what this paper needs EXIST, and can it CARRY the claim?"
 board_family: Work
 board_unit: "0"
 board_slug: resources          # family + unit + slug resolve the S-face filename;
-                          # haipipe-board/stage.py owns that resolution (QC2)
+                          # haipipe-board/stage.py owns that resolution (QB4@paper)
 
 phases: [draft, probe, revise, check]
 probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank's own ladder
@@ -49,7 +49,7 @@ exits:                    # THREE, not the usual two — see the craft body
             written as seeded. 🔥 moves back to seed; 🚀 stays at the frontier."
   park:    "maturity: resource-blocked — the demand is real, the resource is in flight or behind a DUA"
 
-sections:                 # in order; both must carry real content
+sections:                 # logical order; Q-consumer adapts to Board Items to Finish
   - Resource Description
   - Q-consumer
 
@@ -58,11 +58,11 @@ keyed_on: "H<n> — never C<n>; claim ids do not exist yet at resource time"
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "`## Resource <n> · <name>` with `### <topic>` sub-topics, closing on `### Serves & carries`;
-             `## Q-Resource-<n> · <title>` in the Q-consumer"
+  headings: "`### Resource <n> · <name>` under Board Content with `#### <topic>` paragraphs,
+             closing on `#### Serves & carries`; Q-consumers are checklist records in Items to Finish"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
 
-q_id_pattern: "## Q-Resource-<n> · <title>"
+q_id_pattern: "- [ ] 🔎 Q-Resource-<n> · <title>"
 q_anchor: "[Q-Resource-<n>] cited inline in the `### Serves & carries` (or topic) line it tests"
 closed_when: "PROBE writes the Answer from the answering QA file — existence AND fitness AND what it
               KILLS, carrying [source: PP<NN>]. The bracket STAYS; a ledger keeps its questions."
@@ -76,17 +76,17 @@ build_requires: "`cross-project:` on every BUILD question — a sibling-project 
                  Empty is a FAIL: it makes a `probe --depth N` raise spend blind."
 
 done_criteria:
-  - "both sections filled with real content; every <!-- RULE --> comment deleted"
-  - "every `## Resource <n>` closes with a `### Serves & carries` naming its H<n> and whether it
+  - "Resource Description Content and Q-consumer Items both carry real content; every <!-- RULE --> comment deleted"
+  - "every `### Resource <n>` closes with a `#### Serves & carries` naming its H<n> and whether it
      carries them — or, if it cannot, what that KILLS"
   - "every hypothesis has a resource that is HAVE+FIT, or a COMMISSIONED acquisition with an OWNER
      and a DATE, or a SCOPE CUT the human said out loud"
-  - "every question is a `## Q-Resource-<n>` block, cited inline in the line it tests"
+  - "every question is a `- [ ] 🔎 Q-Resource-<n>` record in Items to Finish, cited inline in the line it tests"
   - "no woolly Answer — 'probably fine' is a DEFECT; the Answer names existence, fitness, and the kill"
   - "every BUILD question carries `cross-project:` (path or `none-found`)"
   - "no BUILD dispatched on a default run (depth 0); any BUILD fired only after an explicit
-     `probe --depth N`, recorded in the _LOG (or `n/a -- no BUILD questions`)"
-  - "_LOG entry records the current state"
+     `probe --depth N`, recorded in this S page's ## Log (or `n/a -- no BUILD questions`)"
+  - "the S page's ## Log records phase history and the gate row"
   - "check-probe-cards.sh <paper_root> --stage resource exits 0"
 
 upstream: [seed]

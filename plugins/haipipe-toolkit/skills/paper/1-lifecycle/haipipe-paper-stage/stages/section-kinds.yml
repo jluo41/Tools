@@ -3,7 +3,7 @@
 # SHARED reference data at the stages/ root, sibling to index.yml — static, measured, read
 # by more than one stage, owned by none of them. (It was born under 2a-venue/ on 2026-07-20
 # and moved here 2026-07-20 so no stage reaches into another stage's folder to read it.)
-# Read by: venue (resolves the per-kind pack paths into 2a-venue.md) and section-edit (picks
+# Read by: venue (resolves per-kind pack paths into S-Venue-0-venue.md) and section-edit (picks
 # its section's kind). narrative/display do NOT read it despite an earlier claim they did.
 #
 # PRINCIPLE (JL 2026-07-20): every (venue, section-kind) is its OWN thing, summarized from that
@@ -30,7 +30,7 @@
 #      Five outlets have neither.
 
 resolution:
-  # 1. read the paper's 0-lifecycle/2a-venue/2a-venue.md provenance header -> <pack>, <outlet>
+  # 1. read the paper's 0-lifecycle/2-venue/S-Venue-0-venue.md provenance header
   #    NEVER guess either from the human venue label.
   # 2. locate the venue dir layout-agnostically (installed skills flatten the tree):
   #      VEN=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" \
@@ -39,7 +39,7 @@ resolution:
   #      "$VEN/<pack>/<outlet>"/*-<kind>/{style,template}.md
   # 4. 0 hits  -> `style: (pack missing — blueprint only)` + flag for CHECK. Never invent a path.
   #    >1 hits -> FAIL. Do not pick one.
-  # The BLUEPRINT in 2a-venue.md is BINDING and is sufficient to draft without any pack;
+  # The BLUEPRINT in S-Venue-0-venue.md is BINDING and sufficient without a pack;
   # the pack is the REFERENCE deep-dive only.
   glob_style:    "<VEN>/<pack>/<outlet>/*-<kind>/style.md"
   glob_template: "<VEN>/<pack>/<outlet>/*-<kind>/template.md"
@@ -63,7 +63,7 @@ aliases:                     # on-disk directory suffix -> canonical kind
   theory-model: theory       # MS-IS names it this; same section, different label
 
 # WHICH OUTLET HAS WHICH — measured, not assumed. An absent kind means that outlet has no
-# pack file for it: fall back to the 2a-venue.md blueprint block alone.
+# pack file for it: fall back to the S-Venue-0-venue.md blueprint block alone.
 outlets:
   playbook-utd-is:
     MISQ:                    [abstract, introduction, theory, methods, results, discussion, appendix]

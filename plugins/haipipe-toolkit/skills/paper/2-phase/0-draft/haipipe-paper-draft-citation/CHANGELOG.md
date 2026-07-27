@@ -3,6 +3,12 @@ haipipe-paper-draft-citation — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.1.2] — 2026-07-26
+
+- The lane reports Q-consumer holes only; PROBE, not DRAFT, writes entries.
+- Evidence-check flags are recorded on the owning S page.
+- Preserved the invocation hint under `metadata.argument_hint`, which conforms to
+  the current Skill frontmatter schema.
 
 ## [0.1.1] — 2026-07-24
 

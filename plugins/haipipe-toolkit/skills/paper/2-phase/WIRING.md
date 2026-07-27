@@ -37,23 +37,24 @@ user → /haipipe-paper <stage> [<target>] [draft|probe|revise|check]
              │
              ▼  the stage skill (the STAGE CONTRACT: aim + template + rules)
                 dispatches the phase engine via Skill(), in order:
-       haipipe-paper-draft    → drafts from the stage's template AND authors the probe plan
-                                (①ORGANIZE + ②MATCH) → ⛔ STOP: structure review (gate 1 of 2)
-       haipipe-paper-probe    → runs the DRAFT-authored plan FORWARD (③DISPATCH ④POINT ⑤INTERPRET);
-                                the whole loop is PROBE's, and ①② happened at DRAFT, and are AUTHORITATIVE.
+       haipipe-paper-draft    → drafts from the stage template and raises Q-consumers
+       haipipe-paper-probe    → owns ①ORGANIZE ②MATCH ③DISPATCH ④POINT ⑤INTERPRET;
                                 ③ hands each entry's `### q-executor` block VERBATIM to
                                 Agent(haipipe-probe-q-executor-agent) — the stake-free collector,
                                 which is the ONLY door to the bank (LAW 1: this worker never calls
                                 an executor orchestrator itself).
-       haipipe-paper-revise   → runs -place (FIRST, binding order) → -content → -humanizer → -results;
-                                proof: workers line in _LOG
+       haipipe-paper-revise   → when declared, runs -place (FIRST) → -content → -humanizer → -results;
+                                proof: workers line in the owning S page's ## Log
        haipipe-paper-check    → 6-axis report, presented to the human (CHECK 🧑)
 ```
 
-Two human gates: after DRAFT (structure) and at CHECK (quality). PROBE/REVISE run automatic between them. The agent never self-advances past a gate — the user's verb is the approval. Hubs own the fan-out to their workers, so a stage skill only ever names the four hubs, and a phase executed without its `Skill()` dispatch did not happen.
+`stage.md` is authoritative for phase order and gates. All current stages have
+one human gate at CHECK; Venue omits REVISE. The agent never self-advances past
+a declared gate. Hubs own worker fan-out, and a phase executed without its
+`Skill()` dispatch did not happen.
 
 ## Related, but not in 2-phase/
 
 - Whole-paper passes (`haipipe-paper-polish`, `-diffpdf`, …) live in `3-deliver/` -- same discovery convention, different scope.
-- The section-edit stage hub is `1-lifecycle/haipipe-paper-stage/stages/5-section-edit//`; its per-paper working files land in the manuscript's `0-lifecycle/5-section-edit/`.
+- The section-edit stage hub is `1-lifecycle/haipipe-paper-stage/stages/5-section-edit/`; its per-paper Board pages land in the manuscript's `0-lifecycle/4-main/` (appendix pages in `0-lifecycle/5-appendix/`).
 - Comment threads produced during CHECK follow the Comment lifecycle section in `../haipipe-paper/SKILL.md`.

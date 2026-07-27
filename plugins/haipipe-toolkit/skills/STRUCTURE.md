@@ -2,7 +2,8 @@ HAI-Pipe Toolkit Skill Structure
 ================================
 
 Status: draft (2026-06-20; probe layer rewritten to the v3 Q/A model 2026-07-14;
-        insight layer RETIRED 2026-07-12)
+        insight layer RETIRED 2026-07-12; Board promoted to a first-class family
+        2026-07-26)
 Scope: top-level mental model for the skill folder. Read this before grepping the
        tree — 39 of its SKILL.md files are ARCHIVED, not live (see `_archive/` below).
 Spec:  the probe layer's contract is `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` (approved 2026-07-14).
@@ -92,7 +93,9 @@ Current Folders
 Current top-level folders are the working structure:
 
 ```
-0_*          utilities, connectors, venue playbooks
+0_*          utilities and connectors
+board        cross-cutting Board skill + read-only reviewer agent
+diagrams     working design Boards, kept outside delivery skills
 project      project container setup
 task         inside-execution layer: lifecycle hub + task-domain families
 discovery    outside-evidence layer: Search / Review / Idea
@@ -101,12 +104,19 @@ paper        academic deliverables (stages × DPRC phases)
 application  report / message / UI deliverables
 ```
 
-The `probe` bucket holds NO folder in the execution tree, no live gateway, and no
-agents. It holds ONE skill — `haipipe-probe` (probe-file anatomy,
+The `probe` bucket holds NO folder in the execution tree and no live gateway.
+It holds ONE skill — `haipipe-probe` (probe-file anatomy,
 path binding, the QA/ contract, the qa verb, the five-step loop, the cost ladder, the
-two LAWS, status derivation, the writer table). A probe is communication between a
+two LAWS, status derivation, the writer table) — plus one thin, stake-free
+question collector in `probe/agents/`. A probe is communication between a
 consumer and an executor; the claim's status is authored by the consumer, in its own
 `1-claims.md`, from the answered QA file.
+
+The `board` bucket is a first-class cross-cutting family rather than a utility:
+`board/haipipe-board/` owns the format, renderer, local service, write-back, and
+checks; `board/agents/` owns the read-only fresh-context reviewer. The Board used
+to design that package remains at `diagrams/01-boardform-260722/`, because working
+design records and delivery skills have different lifecycles.
 
 There is no `narrative` bucket — narrative is a paper STAGE
 (`paper/1-lifecycle/3-narrative/`), not a layer. The bucket is `discovery`,

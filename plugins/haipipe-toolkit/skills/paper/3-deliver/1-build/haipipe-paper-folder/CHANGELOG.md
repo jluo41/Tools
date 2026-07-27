@@ -3,6 +3,13 @@ haipipe-paper-folder — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.5.1] — 2026-07-26 — Display owns its review gallery
+
+- Kept lifecycle families control-plane first while declaring the one live
+  exception: `3-display/` may hold `_DISPLAY_REQUEST.md`, `_preview/`, and the
+  directly compilable `4-display.tex` / `4-display.pdf` gallery governed by its
+  S pages.
+
 
 ## [0.5.0] — 2026-07-26 — Board-first and minimal; no STATUS.md, no 0-displays/
 

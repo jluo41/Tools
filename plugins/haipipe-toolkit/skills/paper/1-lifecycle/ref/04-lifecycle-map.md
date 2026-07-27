@@ -7,10 +7,11 @@ separate set of verbs.
 
 ## Map
 
-Phase dimension: every stage skill below internally runs DRAFT -> PROBE ->
-REVISE -> CHECK via the `2-phase/` workers
-(`haipipe-paper-{draft,probe,revise,checker}`). Users invoke stage skills
-only; the human gates are the DRAFT structure review (stage STOP) and CHECK.
+Phase dimension: every stage skill below runs the ordered `phases:` declared by
+its `stage.md` through the `2-phase/` workers
+(`haipipe-paper-{draft,probe,revise,check}`). Most stages declare DRAFT ->
+PROBE -> REVISE -> CHECK; Venue declares DRAFT -> PROBE -> CHECK. Users invoke
+stage skills only; every current stage has one human gate, CHECK.
 
 ## Board Projection
 
@@ -48,18 +49,18 @@ Reconcile -> Compile -> Final Review -> Submit.
 
 | Step | Skill Procedure | Question | Action | Reads | Writes | External Calls | Human Output | Machine State | Stop / Gate |
 |---|---|---|---|---|---|---|---|---|---|
-| `enter` (console) | `haipipe-paper-enter` | Which paper is active, what layer, what open needs? | Resolve root, derive-from-disk dashboard, route input | 0-lifecycle/board.md + every S page's `state:`, displays/, sections/, git | `.paper-console.yaml` | none | dashboard panel | `.paper-console.yaml` | no paper root, ambiguous paper |
+| `enter` (console) | `haipipe-paper-enter` | Which paper is active, what stage is blocked, what open needs remain? | Resolve root, open Board, derive artifacts + S gates from disk, route input | 0-lifecycle/board.md + every S page's `state:`, displays/, sections/, git | `.paper-console.yaml` identity pointer only | `haipipe-board` | Board URL + frontier + open needs | the S pages and artifacts; no console state cache | no paper root, ambiguous paper |
 | `0-seed` | `seed` | Why might this paper exist? | State possibility: question, motivations, claim shape | seed notes, project evidence | `0-lifecycle/0-seed/S-Seed-0-seed.md` (+ its `## Log` gate row) | none | seed contract | `S-Seed-0-seed.md` | not viable -> drop | venue: FREE |
-| `1-resource` | `resource` | What must EXIST for this paper to be testable, does it exist, can it CARRY the claim? | Derive Demand (one `N<n>` per `H<n>`), ASK the Questions (`Q<n>`); the PROBE phase opens an entry per Q and routes it | seed (Tentative Claim Shape), `S-Seed-0-seed.md` forward pointers | `0-lifecycle/1-work/S-Work-0-resources.md` (+ its `## Log` gate row) | the PROBE phase ONLY (never executes; mints no PP ids) | Demand + Questions (with their **A**) | `S-Work-0-resources.md` | GATE 1 (approve the questions + the SPEND), GATE 2 (exit) | venue: FREE |
-| `1-claims` | `claims` | What must be true? What evidence do we have? | Maintain claim ledger (the ONLY home of a claim's status), mark needs | seed, `S-Work-0-resources.md`, the answering QA files a probe section's `target:` names | `0-lifecycle/1-work/S-Work-1-claims.md` (+ its `## Log` gate row) | `/haipipe-probe`, `/haipipe-discovery`, `/haipipe-task` | claim ledger | `S-Work-1-claims.md` | claim unsupported/too strong, no route | venue: FREE |
-| `venue` | `venue` | Which venue fits, and pin it | Recommend best-fit venue, pin it in the venue page's frontmatter | seed, claims, topic, `venue/playbook-*` packs | `S-Venue-0-venue.md` frontmatter `venue:` | none | venue shortlist + recommendation | `S-Venue-0-venue.md` | no clear fit; venue change re-runs pitch | venue: (the chooser) |
+| `1-resource` | `resource` | What must EXIST for this paper to be testable, does it exist, can it CARRY the claim? | Derive Demand (one `N<n>` per `H<n>`), ASK the Questions (`Q<n>`); the PROBE phase opens an entry per Q and routes it within the invocation's `--depth` ceiling | seed (Tentative Claim Shape), `S-Seed-0-seed.md` forward pointers | `0-lifecycle/1-work/S-Work-0-resources.md` (+ its `## Log` gate row) | the PROBE phase ONLY (never executes bank work inline) | Demand + Questions (with their **A**) | `S-Work-0-resources.md` | CHECK gate; `--depth` is the separate human spend authorization | venue: FREE |
+| `1-claims` | `claims` | What must be true? What evidence do we have? | Maintain claim ledger (the ONLY home of a claim's status), mark needs | seed, `S-Work-0-resources.md`, the answering QA files a probe entry's `target:` names | `0-lifecycle/1-work/S-Work-1-claims.md` (+ its `## Log` gate row) | the stage's `haipipe-paper-probe` worker → isolated collector | claim ledger | `S-Work-1-claims.md` | claim unsupported/too strong, no route | venue: FREE |
+| `venue` | `venue` | Which venue fits, and pin it | Recommend best-fit venue; PROBE records every lookup as an entry; CHECK pins the venue page's `state:` line | seed, claims, topic, `venue/playbook-*` packs | `S-Venue-0-venue.md` + its `## Log` gate row | the stage's `haipipe-paper-probe` worker → isolated collector | venue shortlist + recommendation | `S-Venue-0-venue.md` | no clear fit; missing entry/receipt; venue change re-runs pitch | venue: (the chooser) |
 | `2-pitch` | `pitch` | What is the paper selling to THIS audience? = cover letter | Maintain one-minute story + cover letter: Editor's Chair Test, [primary] claim, RQ framing | seed, claims (venue-neutral H), `venue/playbook-<venue>` (framing) | `0-lifecycle/2-venue/S-Venue-1-pitch.md` (+ its `## Log` gate row) | none | pitch / cover letter | `S-Venue-1-pitch.md` | abstract/intro sells another story | venue: ALIGNED |
 | `3-narrative` | `narrative` | How do claims structure into a paper for THIS venue? | Build section-mirrored arc | claims, pitch, `venue/playbook-<venue>` (structure) | `0-lifecycle/2-venue/S-Venue-2-narrative.md`, DR rows in `0-lifecycle/3-display/_DISPLAY_REQUEST.md` (+ its `## Log` gate row) | none | narrative | `S-Venue-2-narrative.md` | arc weak -> pitch / claims | venue: ALIGNED |
 | `4-display` | `display` (+ render skills) | What figure/table carries each claim per THIS venue's limits? | Plan display map + units | claims, narrative, results, `venue/playbook-<venue>` (-> Display) | the display S pages, `displays/displayNN-<slug>/*` (+ the `## Log` gate row) | `/haipipe-task-for-display` | display map + units | `4-display.tex`, display units | display cannot support claim | venue: HEAVY |
 | `5-section-edit` | `section-edit` | How is each section written for THIS venue? | Per-section DRAFT -> PROBE -> REVISE -> CHECK | 3-narrative, display units, `venue/playbook-<venue>` | `0-lifecycle/4-main/S-Main-*.md` (the section's S face), `sections/*.tex` | compile / overleaf | section outlines + draft PDF | section scaffolds, section files | writing exposes missing evidence -> 1-claims | venue: SPECIFIC |
-| `review` | `haipipe-paper-edit-{claim-audit,reviewer,proof-checker,submission-audit}` | Which layer is broken, or ready? | Adversarial audits, route verdict | PDF, lifecycle files, sections | review notes, the current `S-Round` page | reviewer agents / Codex | review verdict + routing | the S pages' `state:` | overclaim, broken layer, venue check fails |
-| `round` | `haipipe-paper-round` (enter/new/triage/apply/close) | Where does this round's discussion/decision/todo/applied go? | Open / triage / apply / close round | discussion, review, decisions | `0-lifecycle/7-round/vYYMMDD/S-Round-<n>-<vYYMMDD>.md`, `the S-Round pages themselves (no stored pointer)` | route each todo to a stage or evidence worker | round log | round files | unresolved item with no target |
-| `respond` | `haipipe-paper-rebuttal`, `4-respond/*` | How do reviews become revision + rebuttal? | Parse reviews, plan, draft, revise | reviews, submitted manuscript | `0-lifecycle/7-round/vYYMMDD/` rebuttal/submission subtree, `sections/*.tex` | `/haipipe-task`, `/haipipe-probe` for new experiments | rebuttal + revision | round files | reviewer needs new evidence, approval |
+| `review` | `haipipe-paper-{claim-audit,reviewer,optimizer}` | Which layer is broken, or ready? | Adversarial audits, route verdict | PDF, lifecycle files, sections | review notes, the current `S-Round` page | reviewer agents / Codex | review verdict + routing | the S pages' `state:` | overclaim, broken layer, venue check fails |
+| `round` | `haipipe-paper-round` (enter/new/triage/apply/close) | Where does this round's discussion/decision/todo/applied go? | Open / triage / apply / close round | discussion, review, decisions | `0-lifecycle/7-round/S-Round-<n>-<vYYMMDD>.md`; received letters sit beside it | route each todo to a stage or evidence worker | round log | the S-Round page; no stored pointer | unresolved item with no target |
+| `respond` | `haipipe-paper-rebuttal`, `4-respond/*` | How do reviews become revision + rebuttal? | Parse reviews, plan, draft, revise | reviews, submitted manuscript | the owning S-Round page, received letters, `sections/*.tex` | route new evidence through the affected stage's PROBE worker | rebuttal + revision | round files | reviewer needs new evidence, approval |
 | `present` | `5-present/{paper-slides,paper-poster}` | How does the paper cash out? | Build slides / poster | final paper, pitch, displays | slides, poster | none | slides/poster | n/a | talk cannot explain in one minute -> pitch |
 
 ## Evidence Loop (back to probe)
@@ -97,17 +98,17 @@ sections/*.tex
 displays/displayNN-<slug>/
 0-lifecycle/7-round/vYYMMDD/S-Round-<n>-<vYYMMDD>.md
 the S-Round pages themselves (no stored pointer)
-.paper-console.yaml   (console session state, at paper/project root)
+.paper-console.yaml   (active paper identity only, at paper/project root)
 ```
 
 The execution artifact path is defined by each `stage.md`, and it IS the S face:
 `artifact:` resolves to `S-<board_family>-<board_unit>-<board_slug>.md` in the
-stage's directory, with the filename owned by Board tooling (QC2). `log:` was
+stage's directory, with the filename owned by Board tooling (QB4@paper). `log:` was
 retired on 2026-07-26: no live paper ever carried a `_LOG_*.md`, and the S face
 already holds current state, remaining work, and history in one page.
 Only `4-display` compiles its execution artifact (`4-display.tex` + PDF). A
 stage is done only when its execution artifact resolves on disk with real
-content (see `paper-dashboard.md`) and its mapped S face reflects that result.
+content and every required S face has first state token `✅`.
 
 ## Command Routing
 
@@ -126,10 +127,10 @@ content (see `paper-dashboard.md`) and its mapped S face reflects that result.
 /haipipe-paper section-edit     -> 5-section-edit
 
 # 4-display render verbs (data-driven vs concept), dispatched via haipipe-paper-lifecycle:
-/haipipe-paper table            -> haipipe-paper-stage display-table        (data CSV -> LaTeX table)
-/haipipe-paper figure           -> haipipe-paper-stage display-figure       (data CSV -> plot; SINGULAR = plots)
-/haipipe-paper diagram          -> haipipe-paper-stage display-diagram      (concept -> deterministic vector SVG)
-/haipipe-paper illustration     -> haipipe-paper-stage display-illustration (concept -> AI raster, Codex bridge)
+/haipipe-paper table            -> haipipe-display-table        (data CSV -> LaTeX table)
+/haipipe-paper figure           -> haipipe-display-figure       (data CSV -> plot; SINGULAR = plots)
+/haipipe-paper diagram          -> haipipe-display-diagram      (concept -> deterministic vector SVG)
+/haipipe-paper illustration     -> haipipe-display-illustration (concept -> AI raster, Codex bridge)
 /haipipe-paper write|edit       -> 5-section-edit (per-section prose work)
 /haipipe-paper review           -> review
 /haipipe-paper round            -> round

@@ -3,7 +3,7 @@ name: haipipe-paper-stage
 description: "One door for every paper lifecycle stage: seed · resource · claims · venue · pitch · narrative · display · section-edit. Reads stages/index.yml, loads ONLY the requested stage's contract, and drives its declared phases. Trigger: 写 seed, 立项, resource, 我们有什么, claims, 主张, H1, venue, 选刊, 投哪个期刊, pitch, 卖点, hook, narrative, 叙事, 大纲, display, 图表, figure, table, section edit, 写某一节, /haipipe-paper-stage."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.0"
+  version: "0.8.3"
   last_updated: "2026-07-26"
   summary: "Board-first stage router: Paper is the public page creator; Board owns the shell, filename, pages, and optional inherited contracts."
   # version history: ./CHANGELOG.md
@@ -54,11 +54,14 @@ python3 create-page.py <stage-key> <paper-root>
 `create-page.py` selects the stage template, then calls `haipipe-board/stage.py new` for the
 filename, face grammar, listing under Pages, and managed Stage Contract. It does not draft the
 research substance. For a dynamic `runs: per-unit` page, pass the resolved identity and directory
-with `--family`, `--unit`, `--slug`, and `--directory`. Do not create a sidecar request or handoff
-file; unfinished work stays in that page's `## Items to Finish`.
+with `--family`, `--unit`, `--slug`, and `--directory`; Section-edit also requires
+`--section-kind`, which resolves the exact template from the Venue page's `Section Styles`
+record (or its declared generic fallback). `--template` is an explicit repair/testing override,
+not the normal routing path. Do not create a sidecar request or handoff file; unfinished work
+stays in that page's `## Items to Finish`.
 
 **Step 3 — read the loop, once.**
-The four-phase loop, the gates, and the phase-transition contract are NOT restated per stage.
+The declared phase loop, the gates, and the phase-transition contract are NOT restated per stage.
 They live at:
 
 ```text
@@ -83,7 +86,6 @@ not happen.
   Those workers stay independently registered and are invoked by name.
 - `gates:` declares this stage's HUMAN stops, the same way `phases:` declares its phases. The
   default is `[check]` — ONE gate, at the end. DRAFT, PROBE and REVISE run unattended.
-  `1a-resource` is the exception and declares its own, per a standing ruling.
   Never open a gate a stage did not declare, and never skip one it did.
 
 **Step 4a — synchronize the lifecycle board mapping.**
@@ -170,6 +172,41 @@ serves this stage while the stage doc still has unanswered Q-consumer blocks —
 green would mean "nothing was ever opened". Before that fix it was keyed on "any probe file
 exists", so on a mature paper it was unreachable for every stage, resource included.
 
+## Rebuild the Board after every write
+
+Ruled 2026-07-26 (design board `QA1`, `QA4`). `/haipipe-paper` is the single
+thing a human types, and `enter` leaves them LOOKING at `⑧` in a browser. That
+makes a stale `board.html` a defect, not an inconvenience: the human is reading
+a picture of a paper that no longer exists.
+
+```text
+   a stage run writes S-<Family>-<n>-<slug>.md
+        │
+        ├─ DRAFT   → ## Content + Q-consumer records in ## Items to Finish
+        ├─ PROBE   → the entry pointers
+        ├─ REVISE  → the same page + %% why-comments, when declared
+        ├─ CHECK   → state: ✅   (a HUMAN writes this)
+        │
+        └─ then ALWAYS: call ③ haipipe-board build on 0-lifecycle/
+                        and put the deep link in the closing block
+```
+
+**Two directions, both mandatory.**
+
+```text
+AFTER a write   rebuild, or the browser shows the previous version
+BEFORE a read   RE-READ the page off disk. A human comment or a `>` lane
+                may have arrived through serve.py since this session last
+                looked, so ⑧'s markdown can change underneath ①. Never
+                cache a page across a phase boundary.
+```
+
+The second is the one that keeps the two-channel design honest: `③` writes `⑧`
+from a human's click, so `①` may never assume it wrote the page last.
+
+Calling is not owning. `③` owns the build, the filename rule and the html;
+this skill calls it and renders nothing.
+
 ## Layout
 
 ```text
@@ -193,7 +230,7 @@ haipipe-paper-stage/
 Adding a stage = one folder + one row in `index.yml`. No new skill, no version bump, no
 `description` edit.
 
-## Status — v0.6.0, all 8 stages live, Board-first Seed creation ready
+## Status — all 8 stages live, Board-first creation ready
 
 ```text
 ✅ seed · resource · claims · venue · pitch · narrative · display · section-edit
@@ -216,20 +253,5 @@ haipipe-paper-check        gate table keyed on stage NAME, not skill name
                            and all 12 relative paths were rewritten
 ```
 
-⚠️ NOT yet driven end-to-end on a real paper. The first real run is the acceptance test.
-
-Known divergences found while migrating, none resolved:
-
-```text
-template vs contract disagree, 4 stages
-  claims        SKILL says supported|refuted|inconclusive; template says supported/weak/GAP
-  narrative     SKILL says no #/##/###; its own template uses ## throughout
-  display       template uses `## Q1 · <title>`; every sibling + the checker's PASS 4 want
-                the `## Q-Display-<n>` family form
-  section-edit  heading is `### §<N>-Q<n>` while the inline anchor is `[Q-<Stage>-<n>]` —
-                not the 1:1 token match seed has
-
-resource        the source runs THREE human stops (GATE 1, GATE 1b spend-after-scan, GATE 2);
-                ref/04-lifecycle-map.md records only two, and that map was the source used
-                for `exit_when`. GATE 1b's substance is folded into gates.gate_1.
-```
+The stage system has been driven against a real MISQ paper. Known business
+blockers remain declared on their S pages; they are not hidden by this router.

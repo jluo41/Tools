@@ -3,6 +3,11 @@ haipipe-paper-draft-display — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.1] — 2026-07-26 — Board-family path
+
+- Routed DR rows to the live `0-lifecycle/3-display/_DISPLAY_REQUEST.md` inbox
+  and updated the example source to a `4-main/S-Main-*.md` Board page.
+- Removed the unsupported `argument-hint` frontmatter key.
 
 ## [0.2.0] — 2026-07-26 — unit paths
 

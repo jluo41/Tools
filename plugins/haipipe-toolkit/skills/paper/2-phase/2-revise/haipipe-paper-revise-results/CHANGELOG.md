@@ -3,6 +3,12 @@ haipipe-paper-revise-results — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.4] — 2026-07-26
+
+- Venue guidance now reads `S-Venue-0-venue.md`.
+- DRAFT is a CHECK restart target, not a separate human gate.
+- Preserved the invocation hint under `metadata.argument_hint`, which conforms to
+  the current Skill frontmatter schema.
 
 ## [0.2.3] — 2026-07-24
 

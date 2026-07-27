@@ -1,16 +1,25 @@
 ---
 name: haipipe-paper-revise-place
-description: "REVISE-phase placement worker (internal). Runs FIRST in the revise chain: for every placeholder whose owed answer has landed, substitute the real thing into the prose — `\\cite{TOADD} [Q-X-n]` → `\\citep{key}`, `{VAL:? <what>} [Q-X-n]` → the number, a done DR row → `\\input` + `\\ref`. Leaves untouched, and flags, every placeholder whose answer has not landed. Never verifies, never searches, never invents. Users invoke stage skills, not this skill directly."
-argument-hint: "[stage-or-section] [paper-path]"
+description: "REVISE-phase placement worker (internal). Runs FIRST in the revise chain: for every placeholder whose owed answer has landed, substitute the real thing into the prose — `\\cite{TOADD} [Q-X-n]` → `\\citep{key}`, `{VAL:? value} [Q-X-n]` → the number, a done DR row → `\\input` + `\\ref`. Leaves untouched, and flags, every placeholder whose answer has not landed. Never verifies, never searches, never invents. Users invoke stage skills, not this skill directly."
 allowed-tools: Bash, Read, Edit, Grep, Glob
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-07-19"
+  argument_hint: "[stage-or-section] [paper-path]"
+  version: "0.1.1"
+  last_updated: "2026-07-26"
   summary: "REVISE-phase placement worker: substitute landed answers into the prose and discharge their brackets. Runs BEFORE content and humanizer, so those workers see final text rather than placeholders. A placeholder whose answer has not landed stays put and is flagged. History: ./CHANGELOG.md."
 ---
 
 haipipe-paper-revise-place
 ===========================
+
+> **Where this grammar was ruled.** This worker implements three rulings on the
+> paper design board, and it may not drift from them without that board changing
+> first: `QC1@paper` the citation (and its HUMAN-ONLY `.bib` boundary, which is
+> why this worker may place a key and may never write one), `QC2@paper` the value
+> (a number binds to the RUN that produced it, not to a path), `QC3@paper` /
+> `QC4@paper` the Display (a stable unit id, projected as `\ref{}`). The bracket
+> `[Q-X-n]` is ONE join key shared by all of them, ruled once on `QC2@paper`, and
+> it sits BESIDE its marker and is never fused into it.
 
 The first worker in the REVISE chain.
 
@@ -91,7 +100,7 @@ Done criteria
 --------------
 
 - [ ] Every placeholder whose entry is `read` and whose answer landed has been substituted, bracket discharged
-- [ ] Every placeholder whose answer has NOT landed is untouched, bracket intact, and flagged in the `[REVISE]` `_LOG` entry
+- [ ] Every placeholder whose answer has NOT landed is untouched, bracket intact, and flagged in the `[REVISE]` entry in the owning S page's `## Log`
 - [ ] No `\ref` written for a display unit that does not exist
 - [ ] Every number written at its source's precision
 - [ ] Every `\citep{key}` greps in the paper's `.bib`

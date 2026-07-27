@@ -108,7 +108,7 @@ haipipe-task/       ../../task/haipipe-task/
 haipipe-discovery/  ../../discovery/haipipe-discovery/
 paper-board/        ../01-haipipe-paper-260725/
 boardform-board/    ../01-boardform-260722/
-QA1@paper           ../01-haipipe-paper-260725/QA1-eight-folders.md
-QA5@paper           ../01-haipipe-paper-260725/QA5-the-probe-layer.md
-QB9@paper           ../01-haipipe-paper-260725/QB9-probe.md
-QC1@paper           ../01-haipipe-paper-260725/QC1-sentence-citation.md
+QA1@paper           ../01-haipipe-paper-260725/QA-where-things-live/QA1-eight-folders.md
+QA5@paper           ../01-haipipe-paper-260725/QA-where-things-live/QA5-the-probe-layer.md
+QB9@paper           ../01-haipipe-paper-260725/QB-a-stage-a-page-and-a-flow/QB3b-probe.md
+QC1@paper           ../01-haipipe-paper-260725/QC-the-sentence-what-hangs-on-it/QC1-sentence-citation.md

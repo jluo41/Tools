@@ -6,7 +6,7 @@
 #   the NUMBER is the delete test. `rm -rf 0-* 1-* 2-*` must leave a paper that
 #   still compiles and still submits.
 #
-#   0-lifecycle/  the board, and nothing but the board
+#   0-lifecycle/  the Board control plane; 3-display also owns its review gallery
 #   1-probes/     the near side of the wall
 #   2-src/        how the deliverable is BUILT, not what it is
 #   everything unnumbered  IS the deliverable
@@ -20,9 +20,10 @@ DIR="${1:-.}"
 cd "$DIR" 2>/dev/null || { echo "✗ not a directory: $DIR"; exit 2; }
 
 FAIL=0
+ERR=0
 WARN=0
 ok()   { printf '  ✓ %s\n' "$*"; }
-bad()  { printf '  ✗ %s\n' "$*"; FAIL=1; }
+bad()  { printf '  ✗ %s\n' "$*"; FAIL=1; ERR=$((ERR+1)); }
 warn() { printf '  ⚠ %s\n' "$*"; WARN=$((WARN+1)); }
 hdr()  { printf '\n-- %s\n' "$*"; }
 
@@ -73,8 +74,8 @@ if [ -d displays ]; then
 fi
 ok "asset-home check complete"
 
-# ---------- D. 0-lifecycle purity + one family, one folder ----------
-hdr "D. 0-lifecycle/ purity and family mapping"
+# ---------- D. 0-lifecycle ownership + one family, one folder ----------
+hdr "D. 0-lifecycle/ ownership and family mapping"
 for e in 0-lifecycle/*; do
   [ -e "$e" ] || continue
   b=$(basename "$e")
@@ -97,13 +98,18 @@ for f in 0-lifecycle/*/*; do
   b=$(basename "$f")
   [ "$d" = "_archive" ] && continue
   [ "$b" = "_archive" ] && continue      # every family may keep its own _archive/
+  if [ "$d" = "3-display" ]; then
+    case "$b" in
+      4-display.tex|4-display.pdf|_DISPLAY_REQUEST.md|_preview) continue ;;
+    esac
+  fi
   case "$b" in
     S-*.md) ;;
     *)
       if [ -d "$f" ]; then
-        bad "0-lifecycle/$d/$b/ is a folder inside a family folder; a family holds S pages and _archive/, nothing else"
+        bad "0-lifecycle/$d/$b/ is an unowned folder; only 3-display/_preview is allowed beside S pages and _archive/"
       else
-        bad "0-lifecycle/$d/$b is not an S page; the board is pure (move build products and sidecars out)"
+        bad "0-lifecycle/$d/$b is not an owned S-page or Display gallery/inbox artifact"
       fi
       continue ;;
   esac
@@ -165,14 +171,22 @@ if [ -n "$(echo $SECTION_FILES | tr -d ' ')" ]; then
   TGAPS=$(ls sections 2>/dev/null | grep -E '^[0-9]{2}_' | sed -E 's/^([0-9]{2})_.*/\1/' | sort -u | awk '
     NR > 1 && $1 + 0 != prev + 1 { printf "section numbering gap: %02d then %02d\n", prev, $1 + 0 }
     { prev = $1 + 0 }')
-  if [ -n "$TGAPS" ]; then echo "$TGAPS" | while read -r line; do printf '  ✗ %s\n' "$line"; done; FAIL=1; fi
+  if [ -n "$TGAPS" ]; then
+    echo "$TGAPS" | while read -r line; do printf '  ✗ %s\n' "$line"; done
+    ERR=$((ERR+$(printf '%s\n' "$TGAPS" | wc -l | tr -d ' ')))
+    FAIL=1
+  fi
 
   GAPS=$(ls sections 2>/dev/null | grep -E '^[0-9]{2}-[0-9]{2}_' | sed -E 's/^([0-9]{2})-([0-9]{2})_.*/\1 \2/' | sort | awk '
     function flush(  i) { for (i = 1; i < n; i++) if (mm[i] != mm[i-1] + 1) printf "subsection numbering gap in %s: %02d then %02d (close the gap, rewire \\input)\n", g, mm[i-1], mm[i] }
     $1 != g { if (g != "") flush(); g = $1; n = 0 }
     { mm[n++] = $2 + 0 }
     END { if (g != "") flush() }')
-  if [ -n "$GAPS" ]; then echo "$GAPS" | while read -r line; do printf '  ✗ %s\n' "$line"; done; FAIL=1; fi
+  if [ -n "$GAPS" ]; then
+    echo "$GAPS" | while read -r line; do printf '  ✗ %s\n' "$line"; done
+    ERR=$((ERR+$(printf '%s\n' "$GAPS" | wc -l | tr -d ' ')))
+    FAIL=1
+  fi
 
   for g in $(ls sections 2>/dev/null | grep -E '^[0-9]{2}-' | cut -c1-2 | sort -u); do
     ls sections/${g}_*.tex >/dev/null 2>&1 || warn "section $g has NN-MM leaves but no ${g}_<slug>.tex wrapper"
@@ -252,9 +266,9 @@ else ok "no lingering aux files"; fi
 # ---------- verdict ----------
 echo ""
 if [ "$FAIL" -eq 0 ]; then
-  echo "== verdict: ✓ conforms ($WARN warning(s))"
+  echo "== verdict: ✓ conforms (0 error(s), $WARN warning(s))"
   exit 0
 else
-  echo "== verdict: ✗ non-conforming ($WARN warning(s)); see haipipe-paper-conform/SKILL.md for fix routing"
+  echo "== verdict: ✗ non-conforming ($ERR error(s), $WARN warning(s)); see haipipe-paper-conform/SKILL.md for fix routing"
   exit 1
 fi

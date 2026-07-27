@@ -3,7 +3,7 @@
 #
 # THE FILENAME IS LOAD-BEARING AND DOES NOT CHANGE (65 refs across 33 files).
 # Its INTERNALS were rewritten 2026-07-14 for the probe redesign
-# (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL; rulings R1-R18). It no longer checks
+# (`skills/diagrams/01-probe-qa-260726/`). It no longer checks
 # "cards": it checks PROBE FILES made of QUESTION SECTIONS.
 #
 # (paper family. The application family carries the same file, same rules, same shared
@@ -64,8 +64,10 @@
 #                              no task or discovery can settle. It is legitimate, so it never
 #                              reds the gate; it is a DOUBT, so it must stay VISIBLE: it is
 #                              reported as a `CONCERN` roster line, every run. Being terminal,
-#                              it is EXEMPT from the probe-not-run tooth and from every
-#                              bank-binding requirement (no q-executor, no target, no owner).
+#                              it is EXEMPT from the probe-not-run tooth and from executor
+#                              bank-binding requirements (no target, bank, or owner). It still
+#                              carries the standard four subsections and a real stake-free
+#                              q-executor so every probe file keeps one anatomy.
 #                              THE ONE TOOTH IT KEEPS bites only under `--final`: a concern
 #                              must be DISCUSSED. `**discussed**: <where the limitation text
 #                              bears it>` is how the paper proves it carried the doubt into
@@ -74,11 +76,11 @@
 #                              yet, which is why the tooth is flag-gated.
 #
 # PASS 2: NO SIDECAR WORKING DOCS under <paper_root>/0-lifecycle/. `1-probes/` is the ONLY
-#   consumer-side source of truth for evidence, and `_LOG_*` is the ONLY kept sidecar. Any
+#   consumer-side source of truth for evidence; stage history lives in each S page's ## Log. Any
 #   `_CITATION_*`, `_VALUES_*`, `_DISPLAY_*`, `_DISCOVERY_*` or `_EVIDENCE_*` file is a
 #   SECOND, UNCHECKED LEDGER: it duplicates what the probe files own, drifts from them
 #   silently, and nothing in this checker asserts over it. FAIL sidecar-present(<name>).
-#   ONE EXCEPTION, AND IT IS ALIVE: `0-lifecycle/4-display/_DISPLAY_REQUEST.md` is the display
+#   ONE EXCEPTION, AND IT IS ALIVE: `0-lifecycle/3-display/_DISPLAY_REQUEST.md` is the display
 #   stage's live inbox, not a ledger. It is never flagged.
 #
 # PASS 3: THE BANK -- two rules on the same files, <project_root>/{tasks,discoveries}/**/QA/*.md.
@@ -96,9 +98,9 @@
 #   PASS 3 also FAILs the RETIRED bank machinery: an `_ASK/` or `_ANS/` folder, or a PP id
 #   in a QA filename. The bank is PROBE-UNAWARE (R2): none of those may exist.
 #
-# PASS 4: THE MANUSCRIPT -- PLACEHOLDER OWNERSHIP (D9). Scans the STAGE DOCS
-#   (<paper_root>/0-lifecycle/<stage>/<stage>.md and 5-section-edit/<section>/<section>.md --
-#   the doc whose basename IS its folder's, never a `_`-sidecar, never a probe file).
+# PASS 4: THE MANUSCRIPT -- PLACEHOLDER OWNERSHIP (D9). Scans Board-native
+#   `<paper_root>/0-lifecycle/<family>/S-*.md` pages, never an `_` sidecar,
+#   README, archive, or probe file.
 #
 #   EVERY PLACEHOLDER NAMES THE QUESTION THAT WILL SETTLE IT. Two adjacent markers:
 #       \cite{TOADD} [Q-<Stage>-<n>]
@@ -134,11 +136,6 @@
 #   BOTH of them missed the canonical bare-label leak `- C6: <question> -> NO`.)
 #   THE STATE-LINE LOGIC IS FACTORED THE SAME WAY -- the `QA_STATE` shell-function block,
 #   called by PASS 1 (a section's target) and PASS 3 (the bank's own files). Same reason.
-#
-# LEGACY: pre-v8 locations (1-probe-plans/PP*.md, 0-lifecycle/*/_PROBE/PP*.md) are still
-#   GLOBBED, and reported as MIGRATE -- they are read-only history until a run touches them,
-#   at which point ORGANIZE rewrites them into 1-probes/ in the new shape. A legacy file is
-#   NOT silently passed: it is surfaced, so nobody mistakes "not checked" for "fine".
 #
 # --stage <key>  Assert only the entries that SERVE this stage (a `### q-consumer` id names it,
 #   e.g. `Q-Seed-1` -> seed). Entries with no `### q-consumer` always assert. Without it, ONE
@@ -221,7 +218,7 @@ function strip_paths(s,   t) {
   t = s
   gsub(/https?:\/\/[^ \t]*/, " ", t)
   # known path prefixes (the bank + the consumer roots)
-  gsub(/(tasks|discoveries|results|papers|applications|interventions|examples|configs|runs|workflow|_WorkSpace|0-lifecycle|1-probes|1-probe-plans|0-displays|0-artifacts|scripts|notebooks)\/[^ \t]*/, " ", t)
+  gsub(/(tasks|discoveries|results|papers|applications|interventions|examples|configs|runs|workflow|_WorkSpace|0-lifecycle|1-probes|0-artifacts|scripts|notebooks)\/[^ \t]*/, " ", t)
   # any slashed token that carries a file extension: foo/bar.md, a/b/c.json
   gsub(/[^ \t]*\/[^ \t]*\.[A-Za-z][A-Za-z]*[^ \t]*/, " ", t)
   return t
@@ -276,7 +273,7 @@ function stake_leak(s,   low) {
 #   PASS 1  a question section at `state: read`  -> is its target QA file FINISHED?
 #   PASS 3  the bank's own QA files              -> is this claim VALID, ALIVE, HONEST?
 #
-# A QA FILE IS A TICKET THAT BECOMES A RECEIPT (R19/R20; Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ PART 3b,
+# A QA FILE IS A TICKET THAT BECOMES A RECEIPT (`skills/diagrams/01-probe-qa-260726/`,
 # JL ruling 2026-07-14). It carries exactly ONE MUTABLE FIELD -- the state line:
 #
 #     # Q — <the question, restated by the executor in its own words>
@@ -428,13 +425,15 @@ for probe in "$paper_root"/1-probes/PP*/*.md; do
       # collapses consecutive tabs into one delimiter and every empty field (an absent
       # owner, an empty a-executor) silently SHIFTS the rest of the record. That shift is
       # invisible -- it produces confident wrong answers, not errors.
-      printf "SEC%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", \
+      printf "SEC%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", \
         SEP, FN, SEP, qname, SEP, state, SEP, target, SEP, qconsumer, SEP, owner, SEP, eta, \
         SEP, blocks, SEP, xproj, SEP, (reading_nonempty ? "1" : "0"), SEP, owed+0, \
-        SEP, leak+0, SEP, (has_qexec ? "1" : "0"), SEP, route, SEP, discussed
+        SEP, leak+0, SEP, (has_qexec ? "1" : "0"), SEP, route, SEP, discussed, SEP, bank, \
+        SEP, (has_bank ? "1" : "0"), SEP, (has_target ? "1" : "0"), SEP, cross_stake+0
       qname=""; state=""; target=""; qconsumer=""; owner=""; eta=""; blocks=""; xproj=""
-      route=""; discussed=""
+      route=""; discussed=""; bank=""
       reading_nonempty=0; owed=0; qx_claimid=0; qx_stage=0; qx_stake=0
+      cross_stake=0; has_bank=0; has_target=0
       in_qexec=0; in_qcons=0; in_bank=0; in_aexec=0; has_qexec=0
     }
     # A new ENTRY: `## QX<n>` (the probe file is a list of q-executors).
@@ -453,9 +452,10 @@ for probe in "$paper_root"/1-probes/PP*/*.md; do
     # `### bank binding` fields, written `**field**: value`.
     in_bank && /^[[:space:]]*\*\*state\*\*:/  { state=$0;  sub(/^.*\*\*state\*\*:[[:space:]]*/, "", state);  gsub(/[[:space:]].*$/, "", state) }
     in_bank && /^[[:space:]]*\*\*route\*\*:/  { route=$0;  sub(/^.*\*\*route\*\*:[[:space:]]*/, "", route);  gsub(/[[:space:]].*$/, "", route) }
+    in_bank && /^[[:space:]]*\*\*bank\*\*:/   { has_bank=1; bank=$0; sub(/^.*\*\*bank\*\*:[[:space:]]*/, "", bank); gsub(/[[:space:]].*$/, "", bank) }
     # `**discussed**:` -- a concern'"'"'s ONLY obligation: WHERE the limitation text bears it.
     in_bank && /^[[:space:]]*\*\*discussed\*\*:/ { discussed=$0; sub(/^.*\*\*discussed\*\*:[[:space:]]*/, "", discussed); sub(/[[:space:]]*$/, "", discussed) }
-    in_bank && /^[[:space:]]*\*\*target\*\*:/ { target=$0; sub(/^.*\*\*target\*\*:[[:space:]]*/, "", target); sub(/[[:space:]]*$/, "", target) }
+    in_bank && /^[[:space:]]*\*\*target\*\*:/ { has_target=1; target=$0; sub(/^.*\*\*target\*\*:[[:space:]]*/, "", target); sub(/[[:space:]]*$/, "", target) }
     in_bank && /\*\*owner\*\*:/ { owner=$0; sub(/^.*\*\*owner\*\*:[[:space:]]*/, "", owner); sub(/[[:space:]]*·.*$/, "", owner); sub(/[[:space:]]*$/, "", owner) }
     # No {n} intervals: mawk does not enable them by default, so spell the date out.
     in_bank && /\*\*eta\*\*:[[:space:]]*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/ {
@@ -481,6 +481,10 @@ for probe in "$paper_root"/1-probes/PP*/*.md; do
       if (stake_leak($0))         qx_stake++
     }
 
+    # The review-only q-consumer copy is the sole legal stake-bearing surface.
+    # Bank bindings and returned answers must remain executor-shaped too.
+    (in_bank || in_aexec) && stake_leak($0) { cross_stake++ }
+
     # `### a-executor` body: non-empty iff the harvest happened (=> state read).
     in_aexec {
       r=$0; gsub(/[[:space:]]/, "", r)
@@ -489,9 +493,9 @@ for probe in "$paper_root"/1-probes/PP*/*.md; do
     END { flush() }
   ' "$probe" > /tmp/.probe_sections.$$ 2>/dev/null
 
-  while IFS="$(printf '\037')" read -r tag f qname state target qconsumer owner eta blocks xproj reading owed leak has_qexec route discussed; do
+  while IFS="$(printf '\037')" read -r tag f qname state target qconsumer owner eta blocks xproj reading owed leak has_qexec route discussed bank has_bank has_target cross_stake; do
     [ "$tag" = "SEC" ] || continue
-    owed=${owed:-0}; leak=${leak:-0}
+    owed=${owed:-0}; leak=${leak:-0}; cross_stake=${cross_stake:-0}
 
     # --stage: an entry asserts at stage X's gate only if one of its `### q-consumer`
     # ids names stage X (e.g. `Q-Seed-1` -> seed). Trailing-s tolerant (claims -> Q-Claim).
@@ -508,18 +512,25 @@ for probe in "$paper_root"/1-probes/PP*/*.md; do
     # LAW 2 and the harvest tooth bind EVERY entry, `concern` included: a concern still has
     # prose, and prose still must not disclose the stake.
     [ "$leak" -gt 0 ] && problems="$problems LAW2-q-executor-leak(${leak}: consumer vocab or stake disclosed);"
+    [ "$cross_stake" -gt 0 ] && problems="$problems LAW2-nonconsumer-stake-leak(${cross_stake}: stake disclosed outside review-only q-consumer);"
     [ "$owed" -gt 0 ] && problems="$problems harvest-owed(${owed}-lane);"
 
     # THE CONCERN CARVE-OUT (D10). A `concern` is TERMINAL: the bank was never asked because
-    # the bank CANNOT answer -- no q-executor to write, no route to take, no target to point
-    # at. Demanding those fields would force a fake dispatch just to clear the gate, which
-    # turns the honest record of a limitation into laundering. So the bank-binding checks are
-    # skipped wholesale here, and rule 12's own tooth (below) is the only one that applies.
+    # the bank CANNOT answer -- no bank verdict or target exists. It still carries a neutral
+    # q-executor so the one-file-per-q-executor anatomy remains universal, but that text is
+    # never dispatched. The executor bank-binding checks are skipped here; rule 12's own
+    # teeth are the only ones that apply.
     if [ "$state" = "concern" ]; then
-      case "$route" in
-        ''|none|--) : ;;
-        *) problems="$problems concern-with-route($route -- a concern is TERMINAL: **route**: none);" ;;
-      esac
+      [ "$has_qexec" = "0" ] \
+        && problems="$problems no-q-executor(the ### q-executor subsection is missing);"
+      [ "$route" != "none" ] \
+        && problems="$problems concern-route-not-none(${route:-missing} -- require exactly **route**: none);"
+      [ "$has_bank" = "1" ] \
+        && problems="$problems concern-with-bank(${bank:-empty} -- omit the **bank** field);"
+      [ "$has_target" = "1" ] \
+        && problems="$problems concern-with-target(${target:-empty} -- omit the **target** field);"
+      [ "$reading" != "0" ] \
+        && problems="$problems concern-with-a-executor(a terminal concern returns no executor answer);"
       # --final ONLY. Mid-lifecycle the limitations text does not exist yet, so this would
       # fire on every honest concern the moment it is filed -- and a tooth that bites correct
       # work is a tooth that gets muted.
@@ -534,6 +545,15 @@ for probe in "$paper_root"/1-probes/PP*/*.md; do
       fi
       continue
     fi
+
+    case "$route" in
+      task|discovery) : ;;
+      *) problems="$problems invalid-route(${route:-missing} -- expected task|discovery);" ;;
+    esac
+    case "$bank" in
+      reuse|run|code|new) : ;;
+      *) problems="$problems invalid-bank(${bank:-missing} -- expected reuse|run|code|new);" ;;
+    esac
 
     [ "$has_qexec" = "0" ] && [ "$state" != "answered-local" ] \
       && problems="$problems no-q-executor(the ### q-executor subsection is missing);"
@@ -672,9 +692,12 @@ for probe in "$paper_root"/1-probes/PP*/*.md; do
         # nobody has authorized paying for it. That is a CORRECT outcome -- but it must be
         # DECLARED, never inferred, or it is indistinguishable from a skipped PROBE.
         # The declaration is a `**deferred**: depth-<n> · <what it would take>` line.
-        if ! grep -qiE '^\*\*deferred\*\*:[[:space:]]*depth-[0-9]' "$f"; then
+        if ! grep -qiE '^\*\*deferred\*\*:[[:space:]]*depth-[0-9]' "$paper_root/$f"; then
           problems="$problems deferred-undeclared(state: deferred needs a '**deferred**: depth-<n> - <what it would take>' line; without it this is a bare planned entry wearing a costume);"
         fi
+        ;;
+      *)
+        problems="$problems invalid-state(${state:-missing});"
         ;;
     esac
 
@@ -688,28 +711,20 @@ for probe in "$paper_root"/1-probes/PP*/*.md; do
   rm -f /tmp/.probe_sections.$$
 done
 
-# Legacy locations: surfaced, never silently passed.
-for legacy in "$paper_root"/1-probe-plans/PP*.md \
-              "$paper_root"/0-lifecycle/*/_PROBE/PP*.md \
-              "$paper_root"/0-lifecycle/*/*/_PROBE/PP*.md; do
-  [ -e "$legacy" ] || continue
-  echo "MIGRATE  ${legacy#"$paper_root"/}  -- pre-v8 location; ORGANIZE rewrites it into 1-probes/ on first touch"
-done
-
 # ---------------------------------------------------------------------------
 # RESOURCE-STAGE PASS (paper-only; JL Q-not-PP ruling, 2026-07-14). Fires ONLY for
-# `--stage resource`, and only on a paper that HAS a 1a-resource.md.
+# `--stage resource`, and only on a paper that has S-Work-0-resources.md.
 #
 # The resource stage writes Q's and is FORBIDDEN to mint a PP id: the PROBE worker's
-# ORGANIZE step opens one SECTION per GATE-1-approved Q, in a probe file under
-# 1-probes/, and writes a `-> PP<NN>` backlink into 1a-resource.md. That backlink is
+# ORGANIZE opens one entry per Q, in a probe topic under
+# 1-probes/, and writes a `-> PP<NN>` backlink into S-Work-0-resources.md. That backlink is
 # the ONLY mechanical proof the question was ever ASKED -- so this is where it gets
 # tested. Per Q<n> (its header line through the line before the next Q header)
 # require exactly one of:
 #
 #   A:           the answer LANDED (answered | answered-local | scope-cut)
 #   -> PP<NN>    ASKED; the probe file exists and its sections assert in PASS 1
-#   DECLINED     the human said no at GATE 1 (logged in _LOG_1a-resource.md)
+#   DECLINED     deliberately declined in the same S page's ## Log
 #
 # A Q with NONE of the three is an UNASKED QUESTION: nothing was opened, nothing was
 # dispatched -- and before this pass the gate went GREEN over it, because no section
@@ -717,22 +732,30 @@ done
 # backlink to a probe file that is not on disk is not proof either: it FAILs as a
 # dangling backlink.
 # ---------------------------------------------------------------------------
-res_md="$paper_root/0-lifecycle/1a-resource/1a-resource.md"
-res_log="$paper_root/0-lifecycle/1a-resource/_LOG_1a-resource.md"
+res_md="$paper_root/0-lifecycle/1-work/S-Work-0-resources.md"
+res_log="$res_md"
 res_open=0
 if [ "$stage_filter" = "resource" ] && [ -f "$res_md" ]; then
   rname=${res_md#"$paper_root"/}
   rprob=""
   # One line per Q, in document order: "<qid> <answered:0|1> <PPNN|->".
-  # `**` is stripped first, so `**Q1 (N1) -> PP12**` and a bare `Q1 ...` both parse.
+  # Accept legacy Q1 rows and Board-native checklist items such as
+  # `- [ ] 🔎 Q-Resource-1 · ...`.
   qtable=$(awk '
     { raw = $0; s = raw; gsub(/\*/, "", s); sub(/^[ \t]+/, "", s) }
-    s ~ /^Q[0-9]+([^0-9]|$)/ {
-      match(s, /^Q[0-9]+/); cur = substr(s, RSTART, RLENGTH)
+    s ~ /Q-Resource-[0-9]+/ || s ~ /^Q[0-9]+([^0-9]|$)/ {
+      if (match(s, /Q-Resource-[0-9]+/)) cur = substr(s, RSTART, RLENGTH)
+      else { match(s, /^Q[0-9]+/); cur = substr(s, RSTART, RLENGTH) }
       if (!(cur in seen)) { seen[cur] = 1; order[++n] = cur; ans[cur] = 0; pp[cur] = "-" }
     }
     cur != "" {
-      if (s ~ /^A:/) ans[cur] = 1
+      if (s ~ /^(A|Answer):/) {
+        v=s; sub(/^[^:]*:[ \t]*/, "", v); gsub(/[*_]/, "", v)
+        lv=tolower(v)
+        if (v != "" && lv !~ /^</ && lv !~ /^empty/ && lv !~ /^pending/ &&
+            lv !~ /empty (at|in) draft/ && lv !~ /probe (fills|organizes)|filled( later)? by probe/)
+          ans[cur] = 1
+      }
       if (match(raw, /(->|→)[ \t]*PP[0-9]+/)) {
         tok = substr(raw, RSTART, RLENGTH); sub(/^.*PP/, "PP", tok); pp[cur] = tok
       }
@@ -753,10 +776,9 @@ if [ "$stage_filter" = "resource" ] && [ -f "$res_md" ]; then
     q_ans=$(printf '%s' "$row" | awk '{print $2}')
     q_pp=$(printf '%s' "$row" | awk '{print $3}')
 
-    # DECLINED at GATE 1: the human said no out loud, in _LOG. Never opened,
-    # never answered -- and it must not red the gate forever. Narrow exemption:
-    # the Q id and the word DECLINED on the SAME _LOG line.
-    if [ -f "$res_log" ] && grep -iE "\b${q}\b" "$res_log" | grep -qi 'declined'; then
+    # A deliberately declined question must not red the gate forever. Narrow
+    # exemption: the Q id and DECLINED occur in the S page's ## Log.
+    if [ -f "$res_log" ] && grep -iE "(^|[^A-Za-z0-9])${q}([^A-Za-z0-9]|$)" "$res_log" | grep -qi 'declined'; then
       IFS='
 '
       continue
@@ -768,9 +790,7 @@ if [ "$stage_filter" = "resource" ] && [ -f "$res_md" ]; then
       # asked. The backlink must resolve to a real probe file, or it is laundering.
       res_open=$((res_open + 1))
       c_hit=0
-      for c in "$paper_root"/1-probes/"$q_pp"*/*.md \
-               "$paper_root"/1-probe-plans/"$q_pp"*.md \
-               "$paper_root"/0-lifecycle/*/_PROBE/"$q_pp"*.md; do
+      for c in "$paper_root"/1-probes/"$q_pp"*/*.md; do
         [ -e "$c" ] && c_hit=1
       done
       [ "$c_hit" -eq 0 ] && rprob="$rprob dangling-backlink(${q} -> ${q_pp}, no probe file);"
@@ -786,7 +806,7 @@ if [ "$stage_filter" = "resource" ] && [ -f "$res_md" ]; then
 
   if [ -n "$rprob" ]; then
     echo "FAIL  $rname  --$rprob"
-    echo "      (every Q needs an A:, a -> PP<NN> backlink, or a DECLINED line in _LOG)"
+    echo "      (every Q needs an A:, a -> PP<NN> backlink, or a DECLINED line in the S page's ## Log)"
     fail=1
   elif [ -n "$qtable" ]; then
     echo "PASS  $rname  (every Q answered, asked or declined)"
@@ -805,27 +825,26 @@ fi
 gen_open=0
 if [ -n "$stage_filter" ] && [ "$stage_filter" != "resource" ]; then
   case "$stage_filter" in
-    seed)         _sdirs="$paper_root/0-lifecycle/0-seed" ;;
-    claims)       _sdirs="$paper_root/0-lifecycle/1b-claims" ;;
-    venue)        _sdirs="$paper_root/0-lifecycle/2a-venue" ;;
-    pitch)        _sdirs="$paper_root/0-lifecycle/2b-pitch" ;;
-    narrative)    _sdirs="$paper_root/0-lifecycle/3-narrative" ;;
-    display)      _sdirs="$paper_root/0-lifecycle/4-display" ;;
-    section-edit) _sdirs=$(find "$paper_root/0-lifecycle/5-section-edit" -mindepth 1 -maxdepth 1 -type d 2>/dev/null) ;;
-    *)            _sdirs="" ;;
+    seed)         _sfiles="$paper_root/0-lifecycle/0-seed/S-Seed-0-seed.md" ;;
+    claims)       _sfiles="$paper_root/0-lifecycle/1-work/S-Work-1-claims.md" ;;
+    venue)        _sfiles="$paper_root/0-lifecycle/2-venue/S-Venue-0-venue.md" ;;
+    pitch)        _sfiles="$paper_root/0-lifecycle/2-venue/S-Venue-1-pitch.md" ;;
+    narrative)    _sfiles="$paper_root/0-lifecycle/2-venue/S-Venue-2-narrative.md" ;;
+    display)      _sfiles=$(find "$paper_root/0-lifecycle/3-display" -maxdepth 1 -name '*.md' 2>/dev/null) ;;
+    section-edit) _sfiles=$(find "$paper_root/0-lifecycle/4-main" "$paper_root/0-lifecycle/5-appendix" -name 'S-*.md' 2>/dev/null) ;;
+    *)            _sfiles="" ;;
   esac
-  for _sd in $_sdirs; do
-    [ -d "$_sd" ] || continue
-    for _sf in "$_sd"/*.md; do
+  for _sf in $_sfiles; do
       [ -f "$_sf" ] || continue
-      case "$_sf" in *_LOG_*) continue ;; esac
       _o=$(awk '
-        # An Answer field is CLOSED only if it carries a real finding, or says
-        # `deferred`. Every template ships a placeholder there -- `<empty in
+        # An Answer field is CLOSED only if it carries a real finding. `deferred`
+        # is not a receipt on the S page: it is valid only when a real probe entry
+        # records `state: deferred` plus its depth declaration. Every template ships a placeholder there -- `<empty in
         # DRAFT ...>`, `_(empty at DRAFT ...)_`, `_pending -- filled by PROBE_`
         # -- and a detector that treats a placeholder as an answer reports a
         # stage with zero open questions, which is the vacuous green again.
-        /^#{2,3}[ \t]+(Q-[A-Za-z]+-[0-9]+|Q[0-9]+|§[0-9]+-Q[0-9]+)/ {
+        /^#{2,3}[ \t]+(Q-[A-Za-z]+-[0-9]+|Q[0-9]+|§[0-9]+-Q[0-9]+)/ ||
+        /^[ \t]*-[ \t]*\[[ xX]\].*Q-[A-Za-z]+-[0-9]+/ {
           if (inq && !ans) o++
           inq=1; ans=0; next
         }
@@ -833,7 +852,7 @@ if [ -n "$stage_filter" ] && [ "$stage_filter" != "resource" ]; then
           v=$0; sub(/^[^:]*:[ \t]*/, "", v)
           gsub(/[*_]/, "", v); gsub(/^[ \t()]+|[ \t()]+$/, "", v)
           lv=tolower(v)
-          if (lv ~ /deferred/)                       ans=1   # closed on purpose
+          if (lv ~ /deferred/)                       ans=0
           else if (v == "")                          ans=0
           else if (lv ~ /^</ || lv ~ /^empty/ || lv ~ /^pending/)            ans=0
           else if (lv ~ /empty (at|in) draft/)                              ans=0
@@ -843,7 +862,6 @@ if [ -n "$stage_filter" ] && [ "$stage_filter" != "resource" ]; then
         END { if (inq && !ans) o++; print o+0 }
       ' "$_sf")
       gen_open=$((gen_open + _o))
-    done
   done
 fi
 
@@ -866,17 +884,17 @@ fi
 # ---------------------------------------------------------------------------
 # PASS 2 -- NO SIDECAR WORKING DOCS under 0-lifecycle/.
 #
-# `1-probes/` is the ONLY consumer-side source of truth for evidence, and `_LOG_*` is the
-# ONLY kept sidecar. A `_CITATION_` / `_VALUES_` / `_DISPLAY_` / `_DISCOVERY_` / `_EVIDENCE_`
+# `1-probes/` is the ONLY consumer-side source of truth for evidence. Stage
+# history belongs in the owning S page's ## Log. A `_CITATION_` / `_VALUES_` /
+# `_DISPLAY_` / `_DISCOVERY_` / `_EVIDENCE_`
 # file is a SECOND LEDGER of the same facts -- and a second ledger is worse than none: it
 # drifts from the probe files silently, nothing in this checker asserts over it, and the
 # stale copy is the one a later run reads. The ban was written down and nothing enforced it,
 # so the files kept reappearing. This is the enforcement.
 #
-# THE ONE LIVE EXCEPTION: 0-lifecycle/4-display/_DISPLAY_REQUEST.md. It is the display
+# THE ONE LIVE EXCEPTION: 0-lifecycle/3-display/_DISPLAY_REQUEST.md. It is the display
 # stage's INBOX -- a request queue the display stage drains, not a ledger of settled facts.
 # It is carved out BY EXACT BASENAME, so a `_DISPLAY_5-empirical.md` ledger still FAILs.
-# `_LOG_*` is not matched at all: it is the kept sidecar.
 # ---------------------------------------------------------------------------
 if [ -d "$paper_root/0-lifecycle" ]; then
   find "$paper_root/0-lifecycle" -type f \
@@ -885,7 +903,7 @@ if [ -d "$paper_root/0-lifecycle" ]; then
   | sort \
   | while IFS= read -r side; do
       [ "$(basename "$side")" = "_DISPLAY_REQUEST.md" ] && continue
-      echo "FAIL  ${side#"$paper_root"/}  -- sidecar-present($(basename "$side")): a SECOND ledger of what 1-probes/ owns. Fold it into the probe file (or _LOG_) and DELETE it"
+      echo "FAIL  ${side#"$paper_root"/}  -- sidecar-present($(basename "$side")): a SECOND ledger of what 1-probes/ owns. Fold evidence into the probe entry and history into the owning S page's ## Log"
     done > /tmp/.probe_sidecars.$$
   if [ -s /tmp/.probe_sidecars.$$ ]; then
     cat /tmp/.probe_sidecars.$$
@@ -970,9 +988,8 @@ done
 # surfaces at a reviewer. The owner bracket is what makes the hole ASSERT: it forces the
 # placeholder to name a Q-consumer, and (c) below forces that Q-consumer to be REAL.
 #
-# THE DOC SET: `<stage>/<stage>.md` -- the working doc whose basename IS its folder's. That
-# one rule excludes every `_`-sidecar, every README, and every parked draft without a
-# blocklist to maintain.
+# THE DOC SET: Board-native `0-lifecycle/<family>/S-*.md` pages. That rule
+# excludes `_` sidecars, README files, and archived drafts without a blocklist.
 #
 # THE USE/MENTION PROBLEM IS THE WHOLE DIFFICULTY. These docs discuss the convention
 # constantly ("0 {VAL:?}, 3 \cite{TOADD}"), and a checker that reads a TALLY as a placeholder
@@ -980,36 +997,31 @@ done
 # one shape rule: a LIVE `{VAL:?}` always describes the value it is standing in for, so the
 # bare token is always a mention.
 # ---------------------------------------------------------------------------
-for docdir in "$paper_root"/0-lifecycle/*/ "$paper_root"/0-lifecycle/5-section-edit/*/; do
-  [ -d "$docdir" ] || continue
-  dbase=${docdir%/}; dbase=${dbase##*/}
-  doc="$docdir$dbase.md"
+for doc in "$paper_root"/0-lifecycle/*/S-*.md "$paper_root"/0-lifecycle/*/*/S-*.md; do
   [ -f "$doc" ] || continue
+  dbase=${doc##*/}; dbase=${dbase%.md}
 
   # --stage: a stage doc asserts at its OWN stage's gate. Without this, one section's unowned
   # placeholders would red every other stage's CHECK -- the same whole-paper-glob problem
   # ruling C8-i carved out for PASS 1, and the same fix (shared stage_stem).
   #
-  # A DOC HAS TWO STAGE NAMES, AND BOTH MUST MATCH. Its BASENAME names it (`6-results` ->
-  # `results`), and for every top-level stage that IS its stage. But a SECTION doc lives at
-  # 0-lifecycle/5-section-edit/<section>/<section>.md and is named for the SECTION, never for
-  # its owning stage -- so a basename-only derivation makes `--stage section-edit` match
-  # NOTHING. Not "fail loudly": match nothing, print nothing, EXIT 0. That is the VACUOUS
-  # GREEN this file names elsewhere, sitting on the stage that accumulates the most
-  # placeholders in a mature paper. (Measured 2026-07-19 on Paper-Personality2Opioid-MISQ2026:
-  # `--stage section-edit` printed zero lines and exited 0 while 19 unowned placeholders sat
-  # in four section docs -- every one of them invisible to the gate that owns them.)
-  # So derive BOTH and accept either: the OWNER (path) keeps `--stage section-edit` honest,
-  # the BASENAME keeps per-section runs (`--stage results`) working.
+  # Board families group several stage keys, so derive the owner from the
+  # S-page filename. Main and Appendix are owned by section-edit.
   if [ -n "$stage_filter" ]; then
-    _dstage=$(printf '%s' "$dbase" | sed 's/^[0-9]*[a-z]*-//')
     _downer=""
-    case "$docdir" in */0-lifecycle/5-section-edit/*/) _downer="section-edit" ;; esac
+    case "$dbase" in
+      S-Seed-*)      _downer="seed" ;;
+      S-Work-0-*)    _downer="resource" ;;
+      S-Work-1-*)    _downer="claims" ;;
+      S-Venue-0-*)   _downer="venue" ;;
+      S-Venue-1-*)   _downer="pitch" ;;
+      S-Venue-2-*)   _downer="narrative" ;;
+      S-Display-*)   _downer="display" ;;
+      S-Main-*|S-Appendix-*) _downer="section-edit" ;;
+      S-Round-*)     _downer="round" ;;
+    esac
     _want=$(stage_stem "$stage_filter")
-    _hit=0
-    [ "$(stage_stem "$_dstage")" = "$_want" ] && _hit=1
-    [ -n "$_downer" ] && [ "$(stage_stem "$_downer")" = "$_want" ] && _hit=1
-    [ "$_hit" -eq 1 ] || continue
+    [ -n "$_downer" ] && [ "$(stage_stem "$_downer")" = "$_want" ] || continue
   fi
 
   dprob=$(awk '
@@ -1029,9 +1041,10 @@ for docdir in "$paper_root"/0-lifecycle/*/ "$paper_root"/0-lifecycle/5-section-e
 
     # ---- read 1: the Q-consumers this doc DEFINES (`## Q-<Stage>-<n>`).
     NR == FNR {
-      if ($0 ~ /^##[[:space:]]*Q-[A-Za-z]+-[0-9]+/) {
-        h = $0; sub(/^##[[:space:]]*/, "", h)
-        match(h, /^Q-[A-Za-z]+-[0-9]+/); defined[substr(h, RSTART, RLENGTH)] = 1
+      if ($0 ~ /^##[[:space:]]*Q-[A-Za-z]+-[0-9]+/ ||
+          $0 ~ /^[[:space:]]*-[[:space:]]*\[[ xX]\].*Q-[A-Za-z]+-[0-9]+/) {
+        h = $0
+        match(h, /Q-[A-Za-z]+-[0-9]+/); defined[substr(h, RSTART, RLENGTH)] = 1
       }
       next
     }
@@ -1088,7 +1101,7 @@ for docdir in "$paper_root"/0-lifecycle/*/ "$paper_root"/0-lifecycle/5-section-e
     printf '      (every placeholder names the question that settles it: %s [Q-<Stage>-<n>] · {VAL:? <what>} [Q-<Stage>-<n>])\n' '\cite{TOADD}'
     fail=1
   else
-    echo "PASS  ${doc#"$paper_root"/}  (every placeholder is owned)"
+    echo "PASS  ${doc#"$paper_root"/}  (every manuscript placeholder is owned; Q-consumer status is reported above)"
   fi
 done
 

@@ -3,6 +3,51 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+## [Unreleased] — 2026-07-26 — Board becomes a first-class family
+
+- Promoted `haipipe-board` from `skills/0_utils/` to
+  `skills/board/haipipe-board/`, parallel to paper, probe, and task.
+- Added `skills/board/agents/haipipe-board-reviewer-agent.md`, a read-only
+  fresh-context judge for mechanical, readability, and visible-staleness checks,
+  and registered it through the plugin's top-level `agents/`.
+- Kept all working design Boards in `skills/diagrams/`; no diagram folder moved.
+- Repointed the Paper lifecycle integration, HAIChat Board API, live Board
+  links, top-level structure documentation, and installed Claude/Codex skill
+  symlinks to the new path.
+- Made Paper Enter the single composed door: it rebuilds/opens the first-class
+  Board, stores only paper identity, derives the frontier from artifacts,
+  S-page state, and actor/date gate receipts, and leaves phase/gate history in
+  each owning S page's `## Log`.
+- Unified evidence execution on one path: DRAFT raises Q-consumers, PROBE owns
+  the five-step loop, and only the isolated q-executor collector calls the
+  task/discovery orchestrators. Deferred work now needs a real deferred entry,
+  so a prose-only Venue deferral cannot pass vacuously.
+- Unified Resource on its stage-owned `Resource Description` + `Q-consumer`
+  schema across DRAFT, Lifecycle, Enter, and CHECK.
+- Made CHECK resolve the authoritative `stages/<order>-<key>/stage.md`, added
+  Venue's no-REVISE gate path, and made Venue resolve both labelled `style:`
+  and `template:` paths for every section kind.
+- Clarified the probe wall: the original stake may survive only in the
+  review-only q-consumer copy; q-executor, a-executor, collector payloads,
+  bindings, and bank files remain clean. Canonicalized the paper-only terminal
+  `concern` state while preserving the universal four-subsection anatomy.
+- Completed the Board-first adapter: a stage template's logical Q-consumer is
+  now generated and operated as checklist records in `## Items to Finish`,
+  never as a duplicate block under `## Content`; all 95 venue section
+  templates use the same record and current DRAFT→PROBE→REVISE→CHECK sequence.
+- Made the stage page generator merge Setext overview divisions with ATX
+  paragraph divisions, so venue-specific section templates retain both the
+  structural overview and prose scaffold while keeping Q records Board-only.
+- Tightened executable probe validation: a terminal `concern` now requires
+  exactly `route: none`, rejects bank/target/returned-answer fields and
+  non-consumer stake leakage, while valid normal and declared-deferred entries
+  continue to pass. Deferred declarations are resolved from the paper root.
+- Made the stage-contract checker reject retired `0-sections/` and
+  `0-displays/` field values instead of accepting them as resolvable paths.
+- Aligned delivery with the new control plane: Folder creation routes through
+  confirm-gated Enter, Display owns its gallery exception in `3-display/`, and
+  Compile resolves explicit, Display, or full-paper targets while keeping
+  compiler success separate from Board approval.
 
 ## [Unreleased] — 2026-07-14
 

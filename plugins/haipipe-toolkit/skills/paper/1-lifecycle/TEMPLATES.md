@@ -14,7 +14,7 @@ C6  CORE QUESTION (a SKILL check, not a template field). Each stage's SKILL stat
 
 Stage prefix table (C3) — CONFIRMED · Scheme A (JL 2026-07-18)
 -------------------------------------------------------------
-Principle: the id is `Q-` + the stage's canonical spine name (capitalized) + index — the stage name is vocabulary you already use (maps 1:1 to the S page and the stage strip), and the leading `Q-` marks it a question. (Alt considered: stage-first `Seed-Q1` — rejected: collides visually with same-named content ids like `Resource 1` / `C1`, and questions don't share one greppable prefix. Also 3–4 char codes Rsrc/Clm/Narr/… — rejected for legend cost + ambiguity.)
+Principle: the id is `Q-` + the stage's canonical spine name (capitalized) + index — the stage name is vocabulary you already use (maps 1:1 to the owning Board S page), and the leading `Q-` marks it a question. (Alt considered: stage-first `Seed-Q1` — rejected: collides visually with same-named content ids like `Resource 1` / `C1`, and questions don't share one greppable prefix. Also 3–4 char codes Rsrc/Clm/Narr/… — rejected for legend cost + ambiguity.)
   seed          Q-Seed-<n>
   resource      Q-Resource-<n>
   claims        Q-Claim-<n>       (singular reads better in an id)

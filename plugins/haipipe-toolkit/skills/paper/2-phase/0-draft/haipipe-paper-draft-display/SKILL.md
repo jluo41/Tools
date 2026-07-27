@@ -1,10 +1,9 @@
 ---
 name: haipipe-paper-draft-display
 description: "DRAFT-phase display auditor (internal). Walks a stage doc or section for claims that need visual support, maps each need to an existing displays/ unit where one fits, and files a DR row in the display stage's request file for each one that does not. Never creates a display, never plots, never links a unit that does not exist yet. Users invoke stage skills (narrative, section-edit...), not this skill directly."
-argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-07-26"
   summary: "DRAFT-phase display auditor: decide which claims need visual support, map each to an existing unit, and file a DR row in the display stage's inbox for each missing one. The paper layer plans, it does not plot. History: ./CHANGELOG.md."
 ---
@@ -61,11 +60,11 @@ For each need, in order:
      → file a DR row. This is the ONLY way a display comes into being from here.
 ```
 
-The DR row, appended to `0-lifecycle/4-display/_DISPLAY_REQUEST.md`:
+The DR row, appended to `0-lifecycle/3-display/_DISPLAY_REQUEST.md`:
 
 ```markdown
 ## DR03 -- <short title>                        status: requested
-- from: 5-section-edit/4-llmtrait · P4 · 2026-07-10
+- from: 4-main/S-Main-5-measurement.md · P4 · 2026-07-10
 - claim: <the exact claim the display must support>
 - form: figure | table | diagram | illustration   (suggestion; the display stage decides)
 - evidence: <source hint: tasks/ path · metrics.json · a landed ### a-executor>
@@ -97,7 +96,7 @@ Done criteria
 --------------
 
 - [ ] Every claim needing visual support maps to a unit path or a DR id
-- [ ] Every missing unit has a DR row in the 4-display inbox
+- [ ] Every missing unit has a DR row in the `3-display` inbox
 - [ ] Every DR row names the exact claim it must support
 - [ ] No `\ref` written for a unit that does not exist
 - [ ] No plot created, no display content edited

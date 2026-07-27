@@ -27,10 +27,10 @@ needs_paper: true
 venue_aligned: true       # rewrite the display set when the paper retargets
 
 artifact: 0-lifecycle/3-display/4-display.md          # THE BRAIN — the only hand-edited stage file
-blocked_on: QB2            # ⚠️ DECLARED DANGLING. On the MISQ pilot this file is archived: its
+blocked_on: QB2b            # ⚠️ DECLARED DANGLING. On the MISQ pilot this file is archived: its
                            # displays were split into eleven per-unit S-Display-<n> pages, each
                            # with its own gate. Repointing `artifact:` means adopting the per-unit
-                           # grain, and `runs:` below still says `once`. QB2 owns that ruling.
+                           # grain, and `runs:` below still says `once`. QB2b owns that ruling.
                            # Declared here so check-contracts.py reports this path as KNOWN
                            # rather than passing silently or failing anonymously.
 generated: 0-lifecycle/3-display/4-display.tex        # gallery, rebuilt wholesale by sync; hand-editing is a defect
@@ -104,12 +104,13 @@ sections:                 # in order
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "`###` per display inside its paper-section group and per Render-&-sweep item — EXCEPT Q-consumer blocks, which are `## Q-Display-<n> · <title>`"
+  headings: "`###` per display inside its paper-section group and per Render-&-sweep item;
+             Q-consumer records are checklist items under `## Items to Finish`"
   line_breaks: "one sentence per line (semantic line breaks)"
   no_pipe_tables: "BINDING (JL 2026-07-10). Every would-be table is record lines. Aligned plain text INSIDE a fenced ASCII sketch is fine — it sketches a LaTeX table, it is not doc structure."
   mirroring: "the md's group/subsection tree mirrors the generated gallery's \\section*/\\subsection* one-to-one; a display's paper section is stated ONCE, by its group header"
 
-q_id_pattern: "## Q-Display-<n> · <title>"   # unified across all 8 stages 2026-07-20; template.md updated to match
+q_id_pattern: "- [ ] 🔎 Q-Display-<n> · <title>"
 q_anchor: "[Q-Display-<n>] cited inline in the display block whose evidence the question supplies"
 closed_when: "REVISE lands the numbers in the rendered unit and discharges the [Q-Display-<n>] bracket"
 

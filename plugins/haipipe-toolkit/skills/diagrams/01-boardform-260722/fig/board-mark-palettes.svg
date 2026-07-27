@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 920" role="img" aria-labelledby="title desc">
+  <title id="title">HAI-Pipe Board mark palette studies</title>
+  <desc id="desc">The selected four-card Board mark shown in Original, Clinical Teal, Warm Editorial, and Graphite Aurora color schemes.</desc>
+  <defs>
+    <clipPath id="aperture">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M0 0h200v200H0zM78 72h44v47H96l-26 27a6 6 0 0 1-8 0l-6-6 22-22z"/>
+    </clipPath>
+    <filter id="lift" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#15213d" flood-opacity=".09"/>
+    </filter>
+  </defs>
+
+  <rect width="920" height="920" rx="32" fill="#f8f8f5"/>
+  <text x="54" y="62" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="25" font-weight="700">Board mark · palette studies</text>
+  <text x="54" y="91" fill="#6d7280" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="14">Identical geometry; color is the only variable.</text>
+
+  <!-- Original -->
+  <g transform="translate(42 122)">
+    <rect width="400" height="352" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(82 24) scale(1.18)" clip-path="url(#aperture)" filter="url(#lift)">
+      <rect x="36" y="8" width="128" height="128" rx="20" fill="#2947d6"/>
+      <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="#a981f4"/>
+      <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="#0b69fd"/>
+      <rect x="36" y="116" width="128" height="76" rx="20" fill="#021b4e"/>
+    </g>
+    <text x="24" y="300" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">Original</text>
+    <text x="24" y="326" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">indigo · lavender · cobalt · navy</text>
+  </g>
+
+  <!-- Clinical Teal -->
+  <g transform="translate(478 122)">
+    <rect width="400" height="352" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(82 24) scale(1.18)" clip-path="url(#aperture)" filter="url(#lift)">
+      <rect x="36" y="8" width="128" height="128" rx="20" fill="#0f6f73"/>
+      <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="#57c8b8"/>
+      <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="#19a7ce"/>
+      <rect x="36" y="116" width="128" height="76" rx="20" fill="#073b4c"/>
+    </g>
+    <text x="24" y="300" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">Clinical Teal</text>
+    <text x="24" y="326" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">deep teal · mint · cyan · ink</text>
+  </g>
+
+  <!-- Warm Editorial -->
+  <g transform="translate(42 510)">
+    <rect width="400" height="352" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(82 24) scale(1.18)" clip-path="url(#aperture)" filter="url(#lift)">
+      <rect x="36" y="8" width="128" height="128" rx="20" fill="#8e3b76"/>
+      <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="#f28c73"/>
+      <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="#e8a317"/>
+      <rect x="36" y="116" width="128" height="76" rx="20" fill="#4a2348"/>
+    </g>
+    <text x="24" y="300" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">Warm Editorial</text>
+    <text x="24" y="326" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">plum · coral · amber · aubergine</text>
+  </g>
+
+  <!-- Graphite Aurora -->
+  <g transform="translate(478 510)">
+    <rect width="400" height="352" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(82 24) scale(1.18)" clip-path="url(#aperture)" filter="url(#lift)">
+      <rect x="36" y="8" width="128" height="128" rx="20" fill="#4f46e5"/>
+      <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="#8b5cf6"/>
+      <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="#14b8a6"/>
+      <rect x="36" y="116" width="128" height="76" rx="20" fill="#111827"/>
+    </g>
+    <text x="24" y="300" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">Graphite Aurora</text>
+    <text x="24" y="326" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">indigo · violet · teal · graphite</text>
+  </g>
+</svg>

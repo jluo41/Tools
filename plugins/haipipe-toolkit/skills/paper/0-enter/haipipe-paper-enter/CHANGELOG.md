@@ -3,6 +3,61 @@ haipipe-paper-enter — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.6.6] — 2026-07-26 — Resource frontier uses the live schema
+
+- Resource completion now requires real `Resource Description` and
+  `Q-consumer` content, matching its stage contract and template.
+
+## [0.6.5] — 2026-07-26 — a green state needs its receipt
+
+- Frontier completion now requires the disk predicate, first `state:` token
+  `✅`, and an approved gate row with actor/date in the S page's `## Log`.
+- A green page missing that receipt is STALE and reopens CHECK rather than
+  advancing.
+- Corrected the console scan to the current probe anatomy,
+  `1-probes/PP*/*.md` (one q-executor file inside each topic folder).
+- Removed the unsupported `argument-hint` frontmatter key.
+
+## [0.6.4] — 2026-07-26 — no retired strip vocabulary
+
+- The compatibility exemption now explains the Board projection directly.
+- Venue pin detection names the actual S-page `state:` line.
+
+## [0.6.3] — 2026-07-26 — content and gate form one frontier predicate
+
+- Made frontier selection test both the disk artifact predicate and the
+  required S-page `✅` gate.
+- Content that exists under `🔴`, `🟡`, or `⏸️` now stops at the current stage
+  and recommends its CHECK action instead of silently advancing.
+- Kept `✅` plus missing content as the narrower STALE over-claim case.
+
+## [0.6.2] — 2026-07-26 — session pointer, not a second state store
+
+- Reduced `.paper-console.yaml` to paper identity fields only: `paper_root`, `active_paper`, and `updated`.
+- Every follow-up action now re-reads the Board and relevant S pages and derives frontier, gates, maturity, round, and open needs from disk before routing.
+- Removed the local closing-block example; the enter skill now consumes the umbrella's canonical block verbatim.
+
+## [0.6.1] — 2026-07-26 — the venue pin reads the `state:` line, not an invented frontmatter key
+
+Found by running the skill against `Paper-Personality2Opioid-MISQ2026` rather than by reading it.
+
+Yesterday's `STATUS.md` retirement moved the venue pin to "`S-Venue-0-venue.md` frontmatter, `venue:`". That field does not parse. `haipipe-board`'s face grammar is a CLOSED whitelist (`src/parse.py:145`): `state|owner|method|session|requires|style-from|provides|contract-source-hash`. A `venue:` key is invisible to the board, so the frontier predicate failed on the only real paper, and the fix was never going to be "add the key" — the whitelist is `haipipe-board`'s, ruled on its own board.
+
+The pin needed no new field. It was already on the page's own `state:` line: `state: ✅ PINNED · MISQ 2026`. Corrected in 12 places across the stage contract, the console, the router, the two refs, the anatomy spec and `restructure`.
+
+Recorded on design-board face `QA4` as the third cross-package gap of the day, with the rule it produced: **`haipipe-paper` may not invent a face-grammar key.** It uses a key that already parses, or it goes to the board's own board and asks.
+
+
+## [0.6.0] — 2026-07-26 — enter OPENS the board, and stops being a second renderer
+
+Implements the single-door ruling (design board `skills/diagrams/01-haipipe-paper-260725`, faces `QA1` + `QA4`, JL 2026-07-26): **`/haipipe-paper` is the single thing a human types**, and it CALLS `haipipe-board` to build and open the paper's `0-lifecycle/`. `haipipe-board` remains its own door for boards that are not inside a paper. Calling is not owning: `haipipe-board` still owns the format, the build, the filename rule, the html and the write-back.
+
+- **New `## Open the Board`, the first thing `enter` does after resolving the root.** Before this, the console read `board.md` as a data file and never called `haipipe-board` at all: a human who wanted to SEE the paper typed a second skill, with the `0-lifecycle/` path, by hand. Now `enter` resolves the root, get-or-creates when the path is new, calls `build.py` + `serve.py`, and hands over the URL.
+- **The 152-line text dashboard is gone.** The paper-identity table, the two-line focus strip, the current-state block, the stable block and the artifacts-read list were a second renderer of the same S pages. The board renders every one of them, in a browser, with comment lanes a terminal cannot have. `SKILL.md` 570 to 421 lines.
+- **What the terminal still prints, and why**: the board URL first, one frontier line, one sentence on what the paper is about, Open Needs with routes, Recommended Next. That is what a terminal is genuinely good at, and it is also the fallback when the push fails.
+- **The push may never fail silently.** The URL travels over the VS Code IPC socket on 5599, and after this ruling that path is on the critical path of every paper session. Say it failed, print the URL anyway, never fall back to `file://`. A silent success is indistinguishable from a dead port forward, which is how a session was lost on 2026-07-25.
+- **Loopback diagnosis retired as a rendered block.** With the frontier derived and nothing stored, re-running an earlier stage is ordinary rather than an anomaly worth a section.
+
 
 ## [0.5.0] — 2026-07-26 — derives the frontier for real, and DRIFT is retired with STATUS.md
 

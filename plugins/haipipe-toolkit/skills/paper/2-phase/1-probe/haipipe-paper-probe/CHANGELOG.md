@@ -3,6 +3,44 @@ haipipe-paper-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.7.4] — 2026-07-26 — read questions from Board Items
+
+- Paper PROBE now reads recognizable `Q-<Stage>-<n>` checklist records from
+  the S page's `## Items to Finish`, matching Board's first-class S-page form.
+- The review-only q-consumer copy may preserve original stake; only the
+  q-executor crosses to the collector.
+- The checker now enforces terminal `concern` mechanically: exactly
+  `route: none`, no bank/target field, an empty a-executor, and a real
+  q-executor. It rejects stake on bank-binding or a-executor surfaces and
+  validates normal route, bank, and state vocabularies.
+- Deferred declarations are read through their paper-root-qualified entry path;
+  the checker no longer greps a nonexistent CWD-relative `1-probes/...` path and
+  falsely reports a declared deferral as undeclared.
+
+## [0.7.3] — 2026-07-26 — reuse means an existing QA answer
+
+- Removed the contradictory `bank: reuse` plus `target: NEW` path.
+- `reuse` now always points to a specific readable QA file and skips dispatch.
+  Existing raw results without a QA digest are `run` and pass through the
+  normal depth-1 authorization ceiling.
+- Removed compatibility globs for `1-probe-plans/` and lifecycle `_PROBE/`
+  sidecars. The checker now recognizes only the current `1-probes/PP*/*.md`
+  anatomy.
+
+## [0.7.2] — 2026-07-26 — collector topology in every live reference
+
+- Updated the per-stage dispatch map to route a set of owed entries through
+  `haipipe-probe-q-executor-agent`; only that collector calls task/discovery.
+- Replaced the stale “DRAFT-time MATCH” wording with PROBE-time MATCH.
+- Clarified the PASS 4 message so manuscript-placeholder ownership cannot be
+  mistaken for a pass on still-open Q-consumers.
+
+## [0.7.1] — 2026-07-26 — full-loop ownership and S-page history
+
+- PROBE owns ORGANIZE, MATCH, DISPATCH, POINT, and INTERPRET.
+- Resource entries are opened from `S-Work-0-resources.md`; `--depth` governs
+  spend without a DRAFT gate.
+- Phase history moved from `_LOG` into the owning S page.
 
 ## [0.7.0] — 2026-07-26 — T1 LOCAL whitelist and DR unit paths
 

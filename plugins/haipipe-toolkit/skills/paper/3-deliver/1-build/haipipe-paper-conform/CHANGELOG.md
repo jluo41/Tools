@@ -3,6 +3,19 @@ haipipe-paper-build-check — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.2] — 2026-07-26 — report both error and warning counts
+
+- The mechanical verdict now reports its error count as well as its warning
+  count. A non-conforming paper no longer ends with only the number of
+  non-blocking warnings.
+
+## [0.2.1] — 2026-07-26 — recognize the Display-owned exception
+
+- Block D now permits the canonical `3-display/_DISPLAY_REQUEST.md`,
+  `_preview/`, and directly compilable `4-display.tex` / `4-display.pdf`
+  gallery while continuing to reject unowned sidecars and build products in
+  every other lifecycle family.
+- Removed the unsupported `argument-hint` frontmatter key.
 
 ## [0.2.0] — 2026-07-26 — audits the ruled layout, and runs the delete test as an actual test
 

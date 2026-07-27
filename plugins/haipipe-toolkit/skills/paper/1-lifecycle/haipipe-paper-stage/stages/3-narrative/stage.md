@@ -9,7 +9,7 @@ board_family: Venue        # JL ruling 2026-07-25: the narrative is the third ha
 board_unit: "2"            # venue contract (what the outlet requires, what the paper promises,
                            # the story that promise implies), not the zeroth Main section.
 board_slug: narrative      # family + unit + slug resolve the S-face filename;
-                           # haipipe-board/stage.py owns that resolution (QC2)
+                           # haipipe-board/stage.py owns that resolution (QB4@paper)
 
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
@@ -72,11 +72,12 @@ on_conflict: "trust the most data-grounded source (claims ledger > experiment fi
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "no #/##/### — EXCEPT the Q-consumer blocks, which are `## Q-Narrative-<n> · <title>`"
+  headings: "direct `###` divisions under Board Content; Q-consumer records are checklist items
+             under `## Items to Finish`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
   comments: "short plain sentences, one idea each; compress rather than nest, split rather than join"
 
-q_id_pattern: "## Q-Narrative-<n> · <title>"
+q_id_pattern: "- [ ] 🔎 Q-Narrative-<n> · <title>"
 q_anchor: "[Q-Narrative-<n>] cited inline on every beat the question hangs on; written
            `\\cite{TOADD} [Q-Narrative-<n>]` / `{VAL:? <what>} [Q-Narrative-<n>]` —
            marker and bracket side by side, never fused"
@@ -84,14 +85,14 @@ closed_when: "REVISE weaves the Answer into the beat and discharges the [Q-Narra
 
 done_criteria:
   - "every beat carries exactly one readiness tag; no untagged beat"
-  - "no [GAP] or [PENDING] beat without a Q-consumer block and a question ENTRY in 1-probes/"
+  - "no [GAP] or [PENDING] beat without a Q-consumer checklist record and a question ENTRY in 1-probes/"
   - "no placeholder without its bracket — a \\cite{TOADD} or {VAL:?} carrying no [Q-Narrative-<n>]
      is a hole no question will ever fill"
   - "every beat needing a display carries a DR row in 0-lifecycle/3-display/_DISPLAY_REQUEST.md"
   - "per-beat interrogation complete — an independent subagent ruled on every beat"
   - "Spine present, and every beat below it serves it"
   - "venue contract consulted for arc shaping (S-Venue-0-venue.md; pack fallback if absent)"
-  - "_LOG entry records the current state"
+  - "the S page's ## Log records phase history and the gate row"
   - "check-probe-cards.sh <paper_root> --stage narrative exits 0"
 
 upstream: [pitch]

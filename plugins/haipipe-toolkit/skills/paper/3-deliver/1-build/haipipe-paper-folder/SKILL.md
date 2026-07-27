@@ -1,8 +1,8 @@
 ---
 name: haipipe-paper-folder
-description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + .gitignore + 0-lifecycle/ carrying board.md and one Seed page, so a new paper is runnable on day 0. Every other page is absent-until-allocated; 1-probes/ arrives on the first probe and 2-src/ + the manuscript machinery (master tex, sections/, compile script) is an on-request upgrade at the Display or section frontier. THE NUMBER IS THE DELETE TEST: 0-lifecycle 1-probes 2-src are working machinery, everything unnumbered is the deliverable. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
+description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + .gitignore + 0-lifecycle/ carrying board.md and one Seed page, so a new paper is runnable on day 0. Every other page is absent-until-allocated; 1-probes/ arrives on the first probe and 2-src/ + the manuscript machinery (master tex, sections/, compile script) is an on-request upgrade at the Display or section frontier. THE NUMBER IS THE DELETE TEST: 0-lifecycle 1-probes 2-src are working machinery, everything unnumbered is the deliverable. Reached via /haipipe-paper enter (get-or-create on a missing path), then haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
 metadata:
-  version: "0.5.0"
+  version: "0.5.1"
   last_updated: "2026-07-26"
   summary: "Minimal Board-first paper-folder scaffold (README + .gitignore + 0-lifecycle/ with board.md and one Seed page); everything else absent-until-allocated; manuscript machinery is an on-request upgrade. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -71,9 +71,12 @@ The folder name IS the S family name, and a page's name places it: `S-Main-7-res
 `4-main/`, and nothing else could be. `haipipe-board/stage.py resolve` owns that filename rule; do
 not reimplement it here.
 
-**The board is PURE.** Every file inside `0-lifecycle/` is an S page or the board's own index, never
-a `.tex`, an asset, a build product or a scratch sidecar. The moment something else lands there the
-board stops being a control plane and becomes a folder that happens to contain some pages.
+**The board is CONTROL-PLANE FIRST.** Every family holds S pages and its
+`_archive/`. One owned exception exists: `3-display/` also holds the display
+stage's request inbox, directly compilable gallery `4-display.tex` /
+`4-display.pdf`, and `_preview/`. Those artifacts belong to the Display stage
+whose Board pages govern them. No other family accepts `.tex`, assets, build
+products, or scratch sidecars.
 
 **No STATUS.md.** The frontier is DERIVED from disk, by the enter console and by each page's own
 `state:`. A stored frontier can only go stale, and a stale one is worse than none: it becomes a
@@ -119,6 +122,8 @@ Display never grows a LaTeX toolchain.
 sections/                      # GENERATED from 0-lifecycle/4-main/ pages. One way, md to tex
 appendices/                    # GENERATED from 0-lifecycle/5-appendix/ pages
 displays/                      # one folder per unit; THE ONLY home of an asset
+0-lifecycle/3-display/
+  4-display.tex · 4-display.pdf  # Display-owned review gallery; inputs unit float.tex files
 <venue>.cls · <venue>.bst      # the venue shell, copied, never authored
 2-src/compile.sh · compile.ps1 · config.yaml · setup.sh        # NUMBERED: how it is built
 ```

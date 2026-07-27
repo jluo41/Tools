@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 870" role="img" aria-labelledby="title desc">
+  <title id="title">HAI-Pipe Board mark check palette selections</title>
+  <desc id="desc">Six color studies for the four-card Board mark, each with a white review check on the dark front card.</desc>
+  <defs>
+    <clipPath id="aperture">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M0 0h200v200H0zM78 72h44v47H96l-26 27a6 6 0 0 1-8 0l-6-6 22-22z"/>
+    </clipPath>
+    <filter id="lift" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#15213d" flood-opacity=".10"/>
+    </filter>
+
+    <!-- 01 Forest Gold -->
+    <linearGradient id="fg-top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2c7a5b"/><stop offset="1" stop-color="#15523e"/>
+    </linearGradient>
+    <linearGradient id="fg-left" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b8d7b0"/><stop offset="1" stop-color="#7dbd94"/>
+    </linearGradient>
+    <linearGradient id="fg-right" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3c969"/><stop offset="1" stop-color="#c99124"/>
+    </linearGradient>
+    <linearGradient id="fg-bottom" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#214f45"/><stop offset="1" stop-color="#0d3028"/>
+    </linearGradient>
+
+    <!-- 02 Cobalt Coral -->
+    <linearGradient id="cc-top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4361ee"/><stop offset="1" stop-color="#2541c4"/>
+    </linearGradient>
+    <linearGradient id="cc-left" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb199"/><stop offset="1" stop-color="#f2737b"/>
+    </linearGradient>
+    <linearGradient id="cc-right" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#30c5e8"/><stop offset="1" stop-color="#008dcc"/>
+    </linearGradient>
+    <linearGradient id="cc-bottom" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#173b74"/><stop offset="1" stop-color="#0a234b"/>
+    </linearGradient>
+
+    <!-- 03 Rose Quartz -->
+    <linearGradient id="rq-top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b14b7d"/><stop offset="1" stop-color="#7c2854"/>
+    </linearGradient>
+    <linearGradient id="rq-left" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6c1cb"/><stop offset="1" stop-color="#db8298"/>
+    </linearGradient>
+    <linearGradient id="rq-right" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c084fc"/><stop offset="1" stop-color="#9333ea"/>
+    </linearGradient>
+    <linearGradient id="rq-bottom" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#612048"/><stop offset="1" stop-color="#321126"/>
+    </linearGradient>
+
+    <!-- 04 Slate Ice -->
+    <linearGradient id="si-top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#64829b"/><stop offset="1" stop-color="#3e5e78"/>
+    </linearGradient>
+    <linearGradient id="si-left" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d1eaf4"/><stop offset="1" stop-color="#9bc7d9"/>
+    </linearGradient>
+    <linearGradient id="si-right" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#58c5d8"/><stop offset="1" stop-color="#168ba9"/>
+    </linearGradient>
+    <linearGradient id="si-bottom" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#334155"/><stop offset="1" stop-color="#172033"/>
+    </linearGradient>
+
+    <!-- 05 Monochrome Indigo -->
+    <linearGradient id="mi-top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="mi-left" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a5b4fc"/><stop offset="1" stop-color="#818cf8"/>
+    </linearGradient>
+    <linearGradient id="mi-right" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#312e81"/>
+    </linearGradient>
+    <linearGradient id="mi-bottom" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#18144e"/>
+    </linearGradient>
+
+    <!-- 06 Black Electric -->
+    <linearGradient id="be-top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#413b5e"/><stop offset="1" stop-color="#26233d"/>
+    </linearGradient>
+    <linearGradient id="be-left" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a855f7"/><stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="be-right" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f8fff"/><stop offset="1" stop-color="#0066e6"/>
+    </linearGradient>
+    <linearGradient id="be-bottom" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111827"/><stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1380" height="870" rx="32" fill="#f7f7f4"/>
+  <text x="48" y="54" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="25" font-weight="700">Board mark + review check · color selections</text>
+  <text x="48" y="83" fill="#6d7280" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="14">Identical interlocking-card geometry. The white check always lives on the dark front card.</text>
+
+  <!-- 01 Forest Gold -->
+  <g transform="translate(45 112)">
+    <rect width="410" height="340" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(97 12) scale(1.08)" filter="url(#lift)">
+      <g clip-path="url(#aperture)">
+        <rect x="36" y="8" width="128" height="128" rx="20" fill="url(#fg-top)"/>
+        <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="url(#fg-left)"/>
+        <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="url(#fg-right)"/>
+        <rect x="36" y="116" width="128" height="76" rx="20" fill="url(#fg-bottom)"/>
+      </g>
+      <path d="M88 159l12 12 29-32" fill="none" stroke="#fff" stroke-width="8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="278" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">01 · Forest Gold</text>
+    <text x="24" y="306" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">evergreen · sage · gold · forest ink</text>
+    <text x="386" y="306" text-anchor="end" fill="#2c7a5b"
+          font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700">GROUNDED</text>
+  </g>
+
+  <!-- 02 Cobalt Coral -->
+  <g transform="translate(485 112)">
+    <rect width="410" height="340" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(97 12) scale(1.08)" filter="url(#lift)">
+      <g clip-path="url(#aperture)">
+        <rect x="36" y="8" width="128" height="128" rx="20" fill="url(#cc-top)"/>
+        <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="url(#cc-left)"/>
+        <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="url(#cc-right)"/>
+        <rect x="36" y="116" width="128" height="76" rx="20" fill="url(#cc-bottom)"/>
+      </g>
+      <path d="M88 159l12 12 29-32" fill="none" stroke="#fff" stroke-width="8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="278" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">02 · Cobalt Coral</text>
+    <text x="24" y="306" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">cobalt · coral · cyan · deep navy</text>
+    <text x="386" y="306" text-anchor="end" fill="#3157d5"
+          font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700">ENERGETIC</text>
+  </g>
+
+  <!-- 03 Rose Quartz -->
+  <g transform="translate(925 112)">
+    <rect width="410" height="340" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(97 12) scale(1.08)" filter="url(#lift)">
+      <g clip-path="url(#aperture)">
+        <rect x="36" y="8" width="128" height="128" rx="20" fill="url(#rq-top)"/>
+        <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="url(#rq-left)"/>
+        <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="url(#rq-right)"/>
+        <rect x="36" y="116" width="128" height="76" rx="20" fill="url(#rq-bottom)"/>
+      </g>
+      <path d="M88 159l12 12 29-32" fill="none" stroke="#fff" stroke-width="8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="278" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">03 · Rose Quartz</text>
+    <text x="24" y="306" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">berry · blush · orchid · wine</text>
+    <text x="386" y="306" text-anchor="end" fill="#9b3d6f"
+          font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700">EXPRESSIVE</text>
+  </g>
+
+  <!-- 04 Slate Ice -->
+  <g transform="translate(45 482)">
+    <rect width="410" height="340" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(97 12) scale(1.08)" filter="url(#lift)">
+      <g clip-path="url(#aperture)">
+        <rect x="36" y="8" width="128" height="128" rx="20" fill="url(#si-top)"/>
+        <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="url(#si-left)"/>
+        <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="url(#si-right)"/>
+        <rect x="36" y="116" width="128" height="76" rx="20" fill="url(#si-bottom)"/>
+      </g>
+      <path d="M88 159l12 12 29-32" fill="none" stroke="#fff" stroke-width="8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="278" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">04 · Slate Ice</text>
+    <text x="24" y="306" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">slate · frost · aqua · charcoal</text>
+    <text x="386" y="306" text-anchor="end" fill="#476a86"
+          font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700">CALM</text>
+  </g>
+
+  <!-- 05 Monochrome Indigo -->
+  <g transform="translate(485 482)">
+    <rect width="410" height="340" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(97 12) scale(1.08)" filter="url(#lift)">
+      <g clip-path="url(#aperture)">
+        <rect x="36" y="8" width="128" height="128" rx="20" fill="url(#mi-top)"/>
+        <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="url(#mi-left)"/>
+        <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="url(#mi-right)"/>
+        <rect x="36" y="116" width="128" height="76" rx="20" fill="url(#mi-bottom)"/>
+      </g>
+      <path d="M88 159l12 12 29-32" fill="none" stroke="#fff" stroke-width="8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="278" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">05 · Monochrome Indigo</text>
+    <text x="24" y="306" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">periwinkle · iris · indigo · midnight</text>
+    <text x="386" y="306" text-anchor="end" fill="#4f46e5"
+          font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700">COHESIVE</text>
+  </g>
+
+  <!-- 06 Black Electric -->
+  <g transform="translate(925 482)">
+    <rect width="410" height="340" rx="22" fill="#fff" stroke="#e3e4e8"/>
+    <g transform="translate(97 12) scale(1.08)" filter="url(#lift)">
+      <g clip-path="url(#aperture)">
+        <rect x="36" y="8" width="128" height="128" rx="20" fill="url(#be-top)"/>
+        <path d="M28 34h44l36 38v51l-36 43H28A20 20 0 0 1 8 146V54a20 20 0 0 1 20-20z" fill="url(#be-left)"/>
+        <path d="M128 34h44a20 20 0 0 1 20 20v92a20 20 0 0 1-20 20h-64V72z" fill="url(#be-right)"/>
+        <rect x="36" y="116" width="128" height="76" rx="20" fill="url(#be-bottom)"/>
+      </g>
+      <path d="M88 159l12 12 29-32" fill="none" stroke="#fff" stroke-width="8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="278" fill="#182033" font-family="-apple-system, BlinkMacSystemFont, sans-serif"
+          font-size="18" font-weight="700">06 · Black Electric</text>
+    <text x="24" y="306" fill="#777c88" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="12">smoke · electric violet · blue · black</text>
+    <text x="386" y="306" text-anchor="end" fill="#6d28d9"
+          font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700">DRAMATIC</text>
+  </g>
+</svg>
