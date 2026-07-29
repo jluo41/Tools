@@ -200,7 +200,24 @@ def parse_dir(d):
         # the id, and it stays greppable across the repo.
         named_qm = re.match(r"Q-([A-Z][A-Za-z]*)-(.+)$", p.stem)
         full_sm = re.match(
-            r"S-(Seed|Work|Venue|Display|Main|Appendix|Submission)-(\d+|[A-Z])(?:-|$)",
+            # The unit is a NUMBER (a manuscript section), a single CAPITAL
+            # (an appendix), or a CAPITALISED WORD. The third is for a page that
+            # is not a manuscript unit at all: a family's control page, which
+            # `board.md` describes as answering "only what no single asset can".
+            # Display and Appendix put theirs at unit 0; Main could not, because
+            # unit 0 there is the Abstract, so `S-Main-Dash` needed a name
+            # (JL 2026-07-27). Added last in the alternation, so a numbered unit
+            # still matches first and no existing page re-parses.
+            #
+            # A number plus a letter plus a TAIL is a VARIANT of that member
+            # (JL 2026-07-28): same claim and same job under a different
+            # specification, inheriting its parent's letter so that adding one
+            # renames nothing. `S-Display-4al2` is `4a` on the binary trait_l2
+            # exposure. It leads the alternation because `\d+[a-z]?` would
+            # otherwise consume `4a` and then fail the `-|$` that follows,
+            # which made such a page silently unparseable rather than rejected.
+            r"S-(Seed|Work|Venue|Display|Main|Appendix|Submission)-"
+            r"(\d+[a-z][a-z0-9]+|\d+[a-z]?|[A-Z]|[A-Z][a-z]+)(?:-|$)",
             p.stem,
             re.I,
         )

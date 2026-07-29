@@ -1,5 +1,5 @@
 # ② The skill board: what is argued, and what leaves
-state: 🟡 PARTIAL
+state: ✅ SETTLED · the Law-copy and the no-dependency proof are open in Items
 owner: JL
 method: keep the reasoning here, copy only the ruling out, and never let runtime depend on either
 
@@ -161,4 +161,5 @@ When a face reaches `✅`, its `## Law` is COPIED into the owning skill file and
 `state:` on a design board is about the decision only. No runtime skill may import, read, or require a Q page: delete the board and the skill still runs.
 
 ## Log
+260727 · Audited against `board.md`'s decision-only rule, which says `state:` is about the DECISION and that implementation does not gate this board. Every open item here is implementation or a test, not an undecided question, so the page was reporting itself as open because code was missing. Flipped with no ruling made.
 260726 · `state:` pinned to mean the ruling only, and applied to all faces; 17 moved 🟡→✅ without a ruling being made. The graduation diagram now shows BOTH targets, `①` and `③`, because seven of thirteen groups land in both. Law generalized from one board to every thing/board pair.

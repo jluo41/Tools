@@ -42,9 +42,9 @@ total: <p> ¶ · <s> sentences · ~<w> words   (venue budget for this section: <
 
 <First real sentence — complete academic prose, close to submission register.>
 
-<Second sentence; cite with a real key grep-verified in the .bib \citep{<key>}, or \cite{TOADD} [Q-Section-<n>] when no key fits — the bracket names the question that will produce the key, side by side, never fused.>
+<Second sentence; cite with a real key grep-verified in the .bib \citep{<key>}, or \cite{TOADD} [Q-Sec<unit><Slug>-<n>] when no key fits — the bracket names the question that will produce the key, side by side, never fused.>
 
-<A sentence whose number is unverified writes it anyway: ... at {VAL:? <what the number is>} [Q-Section-<n>] ...>
+<A sentence whose number is unverified writes it anyway: ... at {VAL:? <what the number is>} [Q-Sec<unit><Slug>-<n>] ...>
 
 <tpl: each paragraph block = heading + preview, then prose, then any comment threads. ONE sentence per line, BLANK line between sentences (each becomes a Pn.Sn marker at sync). No S-number prefixes. No LaTeX except citation commands. Never invent a key or a number — placeholder rules are in stage.md.>
 <tpl: user threads sit under the sentence they discuss and are NEVER deleted/reworded/relocated:>
@@ -65,7 +65,12 @@ Q-consumer
      A DRAFT that omits the recognizable checklist records, or duplicates them under Content,
      is INCOMPLETE and FAILS CHECK.
      DRAFT proposes the questions; PROBE authors/matches entries and fills each Answer within the invocation's depth ceiling; CHECK is the human gate.
-     · STAGE-PREFIXED ID — `Q-Section-<n>`. The id in the heading and the id in the inline anchor are THE SAME TOKEN, exactly as in every sibling stage.
+     · STAGE-PREFIXED ID — `Q-Sec<unit><Slug>-<n>`, both halves read off this unit's S page
+       filename `S-<Family>-<unit>-<slug>.md`: S-Main-0-abstract -> `Q-Sec0Abstract-<n>`,
+       S-Main-6-results -> `Q-Sec6Results-<n>`, S-Appendix-A-prompts -> `Q-SecAPrompts-<n>`.
+       This stage runs per-unit, so THE UNIT IS THE STAGE and its token carries the unit; a
+       shared `Q-Section-<n>` collides across units (JL 2026-07-27). The id in the heading and
+       the id in the inline anchor are THE SAME TOKEN, exactly as in every sibling stage.
      · ANCHORED, not detached — Reason names the exact §<N> P<x>.S<y> sentence(s) that raised it; that is how a reader jumps back.
      · EVERY {VAL:?}, every \cite{TOADD}, every heavier need becomes a numbered question. Only items resolving paper-local (a pointer the draft already sees) go into the Board page's Where we are / Log instead.
      · A missing DISPLAY UNIT is NEVER a question — it is a DR row in 0-lifecycle/3-display/_DISPLAY_REQUEST.md. section-edit FILES display requests; it never creates displays.
@@ -74,7 +79,7 @@ Q-consumer
      · CHECK presents the Board page, so the user reviews STRUCTURE and QUESTIONS at the declared human gate.
      · PROBE fills the Answer, REVISE weaves it into the owned sentence, and CHECK verifies both the placement and its source.>
 
-- [ ] 🔎 Q-Section-<n> · <question title>
+- [ ] 🔎 Q-Sec<unit><Slug>-<n> · <question title>
       **Description:** <what the question wants to know — one sentence per line; what a good answer looks like>
       **Reason:** <which §<N> P<x>.S<y> sentence(s) cite this id, and why each matters if that assertion is wrong · serves: <claim id / stage> · track: <citation | values | display | discovery | decision | wording>>
       **Probe:** not opened yet

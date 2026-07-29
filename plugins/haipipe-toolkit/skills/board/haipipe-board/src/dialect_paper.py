@@ -16,9 +16,9 @@ JavaScript may later upgrade that tooltip into a rich card, and it may not be
 the only copy of anything.
 
 Citations resolve against the `.bib`; owed markers of every kind resolve
-against `1-probes/`, because `[Q-Section-4]` is not citation grammar or value
+against `1-probes/`, because `[Q-Sec6Results-4]` is not citation grammar or value
 grammar, it is the paper's ONE join key from a sentence to the question that
-owes it. Displays resolve against `displays/` and are the remaining slice.
+owes it. Displays resolve against the display WORKSPACE (`0-lifecycle/3-display/\nworkspace/`, legacy `displays/`) and are the remaining slice.
 
 THIS MODULE IS DELETABLE. The board must build with it gone and every board
 that does not say `dialect: paper` must render byte-identical, which is the
@@ -69,14 +69,26 @@ def _one_line(f):
 
 # ---------------------------------------------------------------- probes --
 # A probe entry names the sentences it serves in its `### q-consumer` block.
-# Two decorations are in live use across the folders (`* **Q-Section-2** — …`
-# and `- Q-Section-1 (§7.2): …`), so read the ID and ignore the bullet.
-QID = re.compile(r"\bQ-[A-Za-z]+-\d+\b")
+# Two decorations are in live use across the folders (`* **Q-Sec7Discussion-2** — …`
+# and `- Q-Sec7Discussion-1 (§7.2): …`), so read the ID and ignore the bullet.
+# The stage token accepts DIGITS: a stage that `runs: per-unit` names its unit
+# in it (`Q-Sec0Abstract-1`), which is the only way nine section units stop
+# colliding on one id. Letters-only silently un-chipped every such bracket.
+QID = re.compile(r"\bQ-[A-Za-z0-9]+-\d+\b")
 CITE_TEX = re.compile(r"\\cite[tp]?\*?\{([^}]*)\}")
 REF_TEX = re.compile(r"\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}")
 # what a browser can put in an <img>. A .pdf asset cannot be previewed,
 # and the panel says so rather than showing a broken frame.
 IMG = (".png", ".jpg", ".jpeg", ".svg", ".webp", ".gif")
+# The per-asset Display page names its unit in `### What it shows`.  Both the
+# current pilot's `Registry id:` and the standard template's `unit:` form are
+# accepted. A paired page may deliberately use an alphabetic registry identity
+# such as ``display01a`` rather than retaining a misleading legacy sequence.
+S_DISPLAY_UNIT = re.compile(
+    r"(?im)^\s*(?:registry\s+id|unit)\s*:\s*"
+    r"((?:S-Display-\d+[a-z]?(?:[a-z]\d+)?|display\d{2}[a-z]?)"
+    r"(?:-[a-z0-9-]+)?)\b"
+)
 # any number as it is written in a probe answer: 1.21494 · 765,701 · 0.001
 NUMTOK = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+")
 
@@ -245,8 +257,30 @@ class Entry:
         return out
 
 
+def _short(uid):
+    r"""The stable prefix a page may write instead of the full unit name.
+
+    `S-Display-4a-main-regression` -> `S-Display-4a`, `display04a-main-regression`
+    -> `display04a`. Splitting on the first hyphen was right when every id began
+    with `display`; under the workspace layout the first two hyphens belong to
+    the `S-Display-` prefix itself, and splitting there would key every unit on
+    the string `S`, collapsing the whole set onto whichever sorted first.
+
+    THE VARIANT TAIL IS PART OF THE KEY. A letter plus a tail is the same claim
+    under a different specification (`4al2` and `4al5` are the main regression on
+    the binary and continuous exposures). Stopping at the letter would return
+    `S-Display-4a` for both, so `by_short` would keep whichever sorted first and
+    the other would be unreachable by its short form (JL 260728).
+    """
+    m = re.match(r"(S-Display-\d+[a-z]?(?:[a-z]\d+)?|display\d{2}[a-z]?)", uid)
+    return m.group(1) if m else uid.split("-", 1)[0]
+
+
 class Display:
-    """One `displays/displayNN-<slug>/` unit, as far as a chip needs it.
+    """One display unit folder, as far as a chip needs it.
+
+    Named `S-Display-<id>-<slug>/` under the workspace layout, after the page
+    that owns it, or `displayNN[a]-<slug>/` under the legacy one.
 
     The unit's own float.tex is the authority on two things a sentence needs:
     what KIND it is (`\\begin{table}` vs `\\begin{figure}`, which is why QC3 and
@@ -254,8 +288,8 @@ class Display:
     """
 
     __slots__ = ("id", "path", "kind", "label", "assets", "candidates",
-                 "versions", "data", "stale", "takeaway", "placement",
-                 "preview", "preview_stale")
+                 "versions", "pptx", "data", "stale", "takeaway", "placement",
+                 "preview", "preview_img", "preview_stale", "float_target")
 
     def __init__(self, d, root):
         self.id, self.path = d.name, d
@@ -266,10 +300,37 @@ class Display:
         self.kind = m.group(1) if m else "figure"
         m = re.search(r"\\label\{([^}]*)\}", ft)
         self.label = m.group(1) if m else ""
+        # The printable wrapper is authoritative about the live artifact.  A
+        # Board must show that file separately from preview.pdf, otherwise a
+        # stale or legacy wrapper hides what the manuscript is actually using.
+        self.float_target = None
+        for pat in (r"\\includegraphics(?:\[[^]]*\])?\{([^}]*)\}",
+                    r"\\input\{([^}]*)\}"):
+            m = re.search(pat, ft)
+            if not m:
+                continue
+            raw = m.group(1).strip()
+            candidate = (root / raw).resolve()
+            if candidate.is_file():
+                self.float_target = candidate
+                break
         self.assets = _names(d / "assets")
         self.candidates = _names(d / "candidates")
         self.versions = _names(d / "versions")
-        self.data = next((p for p in (d / "source").glob("source_data.*")), None)
+        # A PPTX is an editable authoring source, never the paper's printable
+        # artifact. Prefer the new `recipe/` home, but surface legacy copies so
+        # a Board can still point a human to the file they may repair. The
+        # compiled float below remains the review truth.
+        self.pptx = []
+        for folder, role in (("recipe", "editable"), ("source", "legacy"),
+                             ("candidates", "candidate"), ("versions", "version")):
+            for p in sorted((d / folder).glob("*.pptx")):
+                self.pptx.append((role, p))
+        # New units read the approved intake snapshot.  Legacy source/ units
+        # remain inspectable until an explicit provenance-safe migration.
+        self.data = next((p for p in (d / "intake" / "inputs").glob("source_data.*")), None)
+        if self.data is None:
+            self.data = next((p for p in (d / "source").glob("source_data.*")), None)
         # STALE: the numbers were re-run after the asset was built. The unit
         # looks finished and the manuscript is showing the older picture.
         newest = max((p.stat().st_mtime for p in (d / "assets").glob("*")),
@@ -284,6 +345,15 @@ class Display:
         # showing LaTeX source where a reader wanted rows.
         pv = d / "preview.pdf"
         self.preview = pv if pv.is_file() else None
+        # A PDF only renders where the browser has a PDF viewer. VS Code's
+        # webview does not, so `<object type=application/pdf>` fell back to a
+        # bare link and every display panel on every page was an empty box
+        # (JL 260727, "WHERE IS THE DISPLAY"). A raster of the same compiled
+        # float renders in an <img> everywhere, so it is preferred when present
+        # and the PDF stays reachable beside it.
+        #   regenerate: pdftocairo -png -r 130 -singlefile preview.pdf preview
+        pvi = d / "preview.png"
+        self.preview_img = pvi if pvi.is_file() else None
         # A preview built before the asset it previews is worse than none, so it
         # is labelled rather than hidden: the reader decides what to trust.
         self.preview_stale = bool(self.preview and newest
@@ -348,16 +418,37 @@ class Paper:
         # index spans every .tex, not just displays/, because a \ref{} that
         # resolves to a section-local label is fine; one that resolves to
         # NOTHING compiles to `??` and is the defect worth naming.
-        self.disp_dir = self.root / "displays"
-        self.disp_rel = self.disp_dir.name
+        # WHERE THE UNITS LIVE. Two layouts, and the board always reads the
+        # SOURCE one, because candidates/, versions/ and preview.png exist only
+        # there and a card without them cannot be judged.
+        #   workspace (current):  0-lifecycle/3-display/workspace/S-Display-<id>-<slug>/
+        #                         `displays/` is a BUILD TARGET carrying float
+        #                         + assets only, generated by build-displays.py,
+        #                         the same relationship `sections/` has to the
+        #                         S-Main pages.
+        #   legacy:               displays/display<NN><a>-<slug>/ was the source
+        # A unit folder now shares its NAME with the S-Display page that owns
+        # it, which is what retires the derived join in `_sdisplay_read` below.
+        ws = self.root / "0-lifecycle" / "3-display" / "workspace"
+        if ws.is_dir():
+            self.disp_dir, self.disp_glob = ws, "S-Display-*"
+        else:
+            self.disp_dir, self.disp_glob = self.root / "displays", "display*"
+        self.disp_rel = self.disp_dir.relative_to(self.root).as_posix()
+        # Path PARTS that hold a float and therefore declare rather than cite.
+        # Under the workspace layout that is BOTH trees: the generated
+        # `displays/` carries a copy of every float, so indexing it would
+        # declare every \label{} twice and report a collision against itself.
+        self.disp_parts = {self.disp_dir.name, "displays"}
+        self._sd_cache = {}     # unit id -> (S-Display id, its state: line)
         self.displays = {}
         self.by_short = {}      # "display02" -> the unit; the S-Display pages
         self.by_label = {}      # write the short form, a Section the long one
-        for d in sorted(self.disp_dir.glob("display*")):
+        for d in sorted(self.disp_dir.glob(self.disp_glob)):
             if d.is_dir():
                 u = Display(d, self.root)
                 self.displays[u.id] = u
-                self.by_short.setdefault(u.id.split("-", 1)[0], u)
+                self.by_short.setdefault(_short(u.id), u)
                 if u.label:
                     self.by_label.setdefault(u.label, u)
         self.labels = {}
@@ -368,6 +459,7 @@ class Paper:
             for m in re.finditer(r"\\label\{([^}]*)\}", t):
                 self.labels.setdefault(
                     m.group(1), (p, t.count("\n", 0, m.start()) + 1))
+        self.printed = self._input_closure()
         self.refs = _load_bbl(self.root)
         # A probe's `target:` is written relative to the PROJECT, not the paper:
         # `tasks/Z01_…/QA/4-….md`. Find the folder those resolve against by
@@ -462,7 +554,7 @@ class Paper:
         """
         out = []
         for p in sorted(self.root.rglob("*.tex")):
-            if "_archive" in p.parts or self.disp_rel in p.parts:
+            if "_archive" in p.parts or self.disp_parts & set(p.parts):
                 continue
             for i, ln in enumerate(p.read_text(encoding="utf-8",
                                                errors="replace").split("\n"), 1):
@@ -472,7 +564,7 @@ class Paper:
                         if not k:
                             continue
                         if k.upper() == "TOADD":
-                            if not re.match(r"\s*\[Q-[A-Za-z]+-\d+\]", bare[m.end():]):
+                            if not re.match(r"\s*\[Q-[A-Za-z0-9]+-\d+\]", bare[m.end():]):
                                 out.append((p.relative_to(self.root).as_posix(),
                                             i, "unowned", r"\cite{TOADD} with no [Q-…]"))
                         elif k not in self.bib:
@@ -493,8 +585,8 @@ class Paper:
         for p in self.root.rglob("*.tex"):
             if "_archive" in p.parts or ".claude" in p.parts:
                 continue
-            if self.disp_rel in p.parts:     # a unit's own float.tex declares,
-                continue                     # it does not cite
+            if self.disp_parts & set(p.parts):   # a unit's own float.tex
+                continue                         # declares, it does not cite
             cited |= set(REF_TEX.findall(
                 p.read_text(encoding="utf-8", errors="replace")))
         for u in self.displays.values():
@@ -617,14 +709,24 @@ class Paper:
         is QC3's "preview of the table itself, not a thumbnail of one".
         """
         out = []
+        stale = " ⚠️ OLDER THAN THE ASSET" if u.preview_stale else ""
+        # The ASSET leads, because it IS the figure, cropped to the artwork the
+        # float sets. preview.* is a whole letter page with the figure adrift in
+        # white, which reduced the actual evidence to a thumbnail. A .pdf asset
+        # cannot be an <img>, but it is a real readable display as an <object>,
+        # which is exactly what body.py renders for the "pdf" kind.
+        for a in u.assets:
+            if a.lower().endswith(".pdf"):
+                out.append(("pdf", f"LIVE · {a}", u.path / "assets" / a, ""))
+            elif a.lower().endswith(IMG):
+                out.append(("img", f"LIVE · {a}", u.path / "assets" / a, ""))
+        # The compiled float follows: it is the only view that shows the caption
+        # typeset under the figure. preview.png is NOT shown, because it is the
+        # same page at lower fidelity and it was what buried the asset.
         if u.preview is not None:
             out.append(("pdf",
-                        "AS THE FLOAT WILL PRINT · preview.pdf"
-                        + (" ⚠️ OLDER THAN THE ASSET" if u.preview_stale else ""),
+                        "AS THE FLOAT WILL PRINT, caption included · preview.pdf" + stale,
                         u.preview, ""))
-        for a in u.assets:
-            if a.lower().endswith(IMG):
-                out.append(("img", f"LIVE · {a}", u.path / "assets" / a, ""))
         for c in u.candidates:
             if c.lower().endswith(IMG):
                 out.append(("img", f"CANDIDATE · {c}",
@@ -651,13 +753,15 @@ class Paper:
             links.append((a, u.path / "assets" / a))
         for c in u.candidates:
             links.append((f"candidate {c}", u.path / "candidates" / c))
+        for role, p in u.pptx:
+            links.append((f"PPTX {role} · {p.name}", p))
         sd, sdstate = self._sdisplay(u)
         return {"files": links, "target": u.placement or "",
                 "sdisplay": sd, "sdstate": sdstate,
                 "preview": self._preview(u)}
 
     def _sdisplay(self, u):
-        """-> (S-Display face id, that page's own `state:` line).
+        r"""-> (S-Display face id, that page's own `state:` line).
 
         WHY THIS EXISTS. The panel's takeaway comes from the unit's README, and
         on this paper the README is wrong about the unit's state for EIGHT of
@@ -666,14 +770,48 @@ class Paper:
         The S page is the authority, so the panel now carries a one-click link
         to it AND quotes its state line, rather than presenting the README's
         version of reality with no way to check it.
-        `displayNN-<slug>` -> `S-Display-N`, which is how the `> Display:` lanes
-        on this paper already spell the target.
+        `displayNN[a]-<slug>` -> `S-Display-N[A]`, which is how the `> Display:`
+        lanes on this paper spell the target.  The optional letter keeps paired
+        Display registry identities aligned with their S page without changing
+        LaTeX's printed figure counter.
+
+        Cached: every chip asks twice now, once to gate its state and once to
+        build its panel, and the lookup walks the tree.
         """
-        m = re.match(r"display0*(\d+)", u.id)
+        if u.id in self._sd_cache:
+            return self._sd_cache[u.id]
+        self._sd_cache[u.id] = out = self._sdisplay_read(u)
+        return out
+
+    def _sdisplay_read(self, u):
+        # WORKSPACE LAYOUT: the folder is NAMED for its page, so the join is a
+        # lookup and not a guess. This is the whole point of the rename. The
+        # derived branch below could return a face id for a page that does not
+        # exist, hand back an empty state, and let a 🔴 unit paint green.
+        direct = sorted(self.root.rglob(f"{u.id}.md"))
+        for f in direct:
+            if "_archive" in f.parts:
+                continue
+            head = f.read_text(encoding="utf-8", errors="replace")[:1200]
+            st = re.search(r"^state:\s*(.+)$", head, re.M)
+            # The face id must carry the VARIANT TAIL. `4al2` and `4al5` are two
+            # pages, and stopping at the letter gave both the anchor `S-Display-4A`,
+            # which exists on neither, so both cards silently lost their page link.
+            m = re.match(r"S-Display-(\d+)([a-z]?(?:[a-z]\d+)?)", u.id)
+            sid = (f"S-Display-{m.group(1)}{m.group(2).upper()}" if m
+                   else u.id)
+            return (sid, st.group(1).strip() if st else "")
+
+        # LEGACY LAYOUT: derive the page name from the unit id. Kept so a paper
+        # that has not migrated still builds; it is the fragile path and the
+        # workspace layout exists to avoid it.
+        m = re.match(r"display0*(\d+)([a-z]?)", u.id)
         if not m:
             return ("", "")
-        sid = "S-Display-%s" % m.group(1)
-        for f in sorted(self.root.rglob(sid + "-*.md")):
+        number, suffix = m.group(1), m.group(2)
+        sid = "S-Display-%s%s" % (number, suffix.upper())
+        stem = "S-Display-%s%s-" % (number, suffix)
+        for f in sorted(self.root.rglob(stem + "*.md")):
             if "_archive" in f.parts:
                 continue
             head = f.read_text(encoding="utf-8", errors="replace")[:1200]
@@ -685,30 +823,153 @@ class Paper:
         """`display04` and `display04-main-regression` are the same unit."""
         return self.displays.get(did) or self.by_short.get(did)
 
+    def unit_for_sdisplay(self, content):
+        """Return the Display unit declared by one per-asset S-Display page.
+
+        Page identifiers and unit folders share the intentional paired suffix
+        when one exists (`1a` -> `display01a`). The explicit unit record is
+        still the only safe join; parsing a title would confuse identity with
+        a printed figure number.
+        """
+        m = S_DISPLAY_UNIT.search(content or "")
+        return self.unit(m.group(1)) if m else None
+
     def display(self, did):
-        """-> (state, tooltip, meta) for `displayNN` or `displayNN-<slug>`."""
+        """-> (state, tooltip, meta) for `displayNN[a]` or its long form."""
         u = self.unit(did)
         if u is None:
             return ("unowned", f"{did} names NO unit under {self.disp_rel}/. "
                                f"Nothing owns this id, so a sentence pointing "
                                f"here points at nothing.", {})
-        state, tip = u.chip()
+        state, tip = self._gate(u, *u.chip())
         return (state, tip, self._dmeta(u))
+
+    # `worst state wins` spans BOTH sources of truth about a unit (QC4, JL
+    # 260727). `Unit.chip()` reads DISK: are the assets built, are they stale,
+    # is a candidate waiting. The S-Display page records something disk cannot
+    # know: whether the unit is AGREED. A unit can be perfectly built and still
+    # be one the author has folded away, and before this the chip painted that
+    # green. Measured on the MISQ board: 22 chips read `ok` while linking to a
+    # page saying folded or blocked, `display03` worst at 10 green chips on a
+    # unit JL folded into Figure 2 on 2026-07-10.
+    #
+    # Only 🔴 and ⏸️ downgrade. 🟡 is the normal condition of a live paper and
+    # does not make a citation wrong; downgrading it would amber almost every
+    # chip on the board and the distinction would stop informing. So the line
+    # is: green means agreed AND built, and anything else means do not lean on
+    # this unit yet. The disk state is never discarded, only outranked, and the
+    # tooltip says both plus the S page's own words, because a downgrade whose
+    # reason is invisible is the defect this replaces.
+    GATE = {"🔴": ("owed", "NOT AGREED"), "⏸️": ("parked", "PARKED"),
+            "⏸": ("parked", "PARKED")}
+
+    def _gate(self, u, state, tip):
+        sid, sdstate = self._sdisplay(u)
+        if not sdstate:
+            return (state, tip)
+        for mark, (gated, word) in self.GATE.items():
+            if sdstate.startswith(mark):
+                return (gated,
+                        f"{tip}\n\n{word} — {sid} says `{sdstate}`.\n"
+                        f"Disk says {state.upper()}, and the unit's own page "
+                        f"outranks it: whether the assets are built is a "
+                        f"different question from whether the paper may lean "
+                        f"on them. Open {sid} to see what it is waiting on.")
+        return (state, tip)
+
+    def _input_closure(self):
+        r"""Every .tex the MASTER actually reaches, resolved.
+
+        WHY. `self.labels` spans every .tex on disk on purpose, so a section-local
+        label still resolves. The cost is that "a `\label` exists somewhere" got
+        reported as "this pointer works", and those are different questions: a
+        float that no reachable section `\input`s declares its label in a file
+        LaTeX never opens, so the `\ref` prints `??` while the board paints green.
+        Measured on the MISQ board 260728: `tab:descriptives` read ok EIGHT times
+        on one page and prints `??`, and `tab:main_results` read ok while its only
+        declaration sits in a retired `_old/` file behind an orphan section.
+        """
+        # WHICH MASTER. A paper may ship from a GENERATED tree while an older
+        # hand-written one still builds beside it. On the MISQ board that is
+        # `3-dist/tex/paper.tex`, which `md2tex.py` fills one-way from the S-Main
+        # pages, against a legacy root master over `sections/`. Measuring the
+        # legacy one reported `??` for nine displays that were in the shipped PDF
+        # all along, so the generated tree wins when it exists (JL 260728).
+        dist = self.root / "3-dist" / "tex" / "paper.tex"
+        if dist.is_file():
+            masters = [dist]
+        else:
+            masters = sorted(p for p in self.root.glob("*.tex")
+                             if re.search(r"^\s*\\begin\{document\}",
+                                          p.read_text(encoding="utf-8",
+                                                      errors="replace"), re.M))
+        seen, queue = set(), list(masters)
+        while queue:
+            p = queue.pop()
+            rp = p.resolve()
+            if rp in seen or not p.is_file():
+                continue
+            seen.add(rp)
+            text = p.read_text(encoding="utf-8", errors="replace")
+            # md2tex compiles with TEXINPUTS=".:<paper root>:", so an \input
+            # resolves against EITHER the file's own directory or the paper root.
+            # Trying only one silently loses half the tree.
+            for m in re.finditer(r"^[^%\n]*\\(?:input|include)\{([^}]+)\}",
+                                 text, re.M):
+                raw = m.group(1).strip()
+                for base in (p.parent, self.root):
+                    hit = next((c for c in (base / raw, base / (raw + ".tex"))
+                                if c.is_file()), None)
+                    if hit:
+                        queue.append(hit)
+                        break
+        return seen
+
+    def _prints(self, path):
+        """Does LaTeX ever open this file? No master found means do not judge."""
+        return (not self.printed) or path.resolve() in self.printed
+
+    # A pointer that cannot resolve in the PDF is not `ok`, whatever the unit's
+    # own state is. This is `_gate`'s principle, worst state wins, applied to a
+    # second thing disk cannot see. It downgrades the `\ref` CHIP only, never the
+    # unit CARD: a card answers "is this display built and agreed", which stays
+    # true of an unwired float, while a `\ref` chip IS the claim that the pointer
+    # works. Downgrading both would amber the whole set and stop informing.
+    UNREACHED = ("owed", "\nBUT IT PRINTS ?? TODAY: {where} is not reached by "
+                         "the master's \\input tree, so LaTeX never opens the "
+                         "file that declares this label. Wire the float into a "
+                         "section that the master reads, or the pointer stays "
+                         "broken in the PDF however finished the display is.")
 
     def ref(self, label):
         """-> (state, tooltip, meta) for a `\\ref{tab:…}` / `\\ref{fig:…}`.
 
-        Three outcomes, and the middle one is the reason this resolves against
-        every .tex rather than only against displays/.
+        Four outcomes now. The third exists because a label that resolves on
+        DISK still prints `??` when nothing the master reads declares it.
         """
         u = self.by_label.get(label)
         if u is not None:
-            state, tip = u.chip()
+            state, tip = self._gate(u, *u.chip())
+            f = u.path / "float.tex"
+            # The unit lives in the workspace; the SHIPPED copy is what a section
+            # inputs, so reachability is asked of the built tree when there is one.
+            built = self.root / "displays" / u.path.name / "float.tex"
+            target = built if built.is_file() else f
+            if not self._prints(target):
+                where = target.relative_to(self.root).as_posix()
+                state = self.UNREACHED[0]
+                tip += self.UNREACHED[1].format(where=where)
             return (state, f"\\ref{{{label}}} → {tip}", self._dmeta(u))
         where = self.labels.get(label)
         if where:
             p, line = where
             rel = p.relative_to(self.root).as_posix()
+            if not self._prints(p):
+                return ("owed",
+                        f"\\ref{{{label}}} resolves to a \\label in {rel}:{line}, "
+                        f"which the master NEVER READS, so it compiles to ??. "
+                        f"A label on disk is not a label in the document.",
+                        {"files": [(f"{rel}:{line}", p)]})
             return ("ok", f"\\ref{{{label}}} resolves to a \\label in {rel}:{line}, "
                           f"which is NOT a {self.disp_rel} unit. Fine for a section "
                           f"or equation label; check it if a display was meant.",

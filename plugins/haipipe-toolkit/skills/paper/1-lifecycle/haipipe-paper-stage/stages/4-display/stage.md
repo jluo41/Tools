@@ -24,6 +24,10 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
                            # no gate. Raise it per invocation with `probe --depth N`.
 runs: once
 needs_paper: true
+on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
+                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # `## Log`. Everything else: compute the change, SHOW it, ask.
+                         # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_aligned: true       # rewrite the display set when the paper retargets
 
 artifact: 0-lifecycle/3-display/4-display.md          # THE BRAIN — the only hand-edited stage file
@@ -36,7 +40,8 @@ blocked_on: QB2b            # ⚠️ DECLARED DANGLING. On the MISQ pilot this f
 generated: 0-lifecycle/3-display/4-display.tex        # gallery, rebuilt wholesale by sync; hand-editing is a defect
 compiled: 0-lifecycle/3-display/4-display.pdf         # compile from the PAPER ROOT so displays/ paths resolve
 inbox: 0-lifecycle/3-display/_DISPLAY_REQUEST.md      # DR rows other stages file; only THIS stage advances their status
-units: displays/displayNN-<slug>/                   # README + float.tex + preview + assets/ candidates/ source/ versions/
+units: displays/displayNN-<slug>/                   # README + intake/ + recipe/ + float.tex + preview + assets/ candidates/ versions/
+intake_contract: ../../../../../display/ref/display-intake-contract.md
 probes: 1-probes/PPNN_<topic>/
 template: template.md
 support: [figure-logic.md, checklist.md]
@@ -53,13 +58,21 @@ support: [figure-logic.md, checklist.md]
 #     · provenance       which run, which spec, which window, which log line
 #     Produced by the TASK layer (haipipe-task-for-display), never by a paper stage.
 #
+#   INTAKE bridge (displays/<unit>/intake/ · provenance-bound · THIS stage)
+#     · manifest.yaml      task holder + run + canonical artifact + hashes + permitted use
+#     · inputs/source_data.csv  a small, approved snapshot of the bank aggregate
+#     · never raw data, never an untracked copy, never a renderer-selected subset
+#
 #   CONSUMER side (displays/<unit>/ · stake-aware · venue-bound · THIS stage)
 #     · WHICH rows/columns the argument needs, in what order, what is emphasised
 #     · venue formatting: caption style, column rules, width, float placement
 #     · \label / \ref wiring into the manuscript
+#     · exact caption, label, and placement live in this unit's Paper-owned `### Wrapper`
+#       block; a renderer may serialize them but never invent or revise them
 #
-# THE RULE: a consumer-side unit is GENERATED FROM the bank's source_data.csv.
-#           Hand-typing numbers into a unit's .tex is a DEFECT, not a shortcut.
+# THE RULE: a consumer-side unit is GENERATED FROM its intake snapshot, whose manifest points
+#           back to the bank's source_data.csv. Hand-typing numbers into a unit's .tex is a
+#           DEFECT, not a shortcut.
 #
 # WHY BINDING — the failure it exists to prevent, observed 2026-07-21:
 #   a ruling flipped §6's primary exposure from the continuous score to the binary
@@ -70,7 +83,8 @@ support: [figure-logic.md, checklist.md]
 #   one cannot.
 #
 # CONSEQUENCE FOR DR ROWS: a DR names BOTH halves — `bank deliverable:` and
-#   `consumer deliverable:`. A DR naming only one is incomplete and may not be accepted.
+#   `consumer deliverable:` — plus the proposed `intake source:` that identifies the task holder,
+#   run, and CSV to snapshot. A DR naming only one half is incomplete and may not be accepted.
 #   Structurally a DR row IS the display-flavoured q-executor: same crossing, same
 #   ownership rule, a different artifact shape.
 display_split: binding
@@ -110,20 +124,22 @@ formatting:
   no_pipe_tables: "BINDING (JL 2026-07-10). Every would-be table is record lines. Aligned plain text INSIDE a fenced ASCII sketch is fine — it sketches a LaTeX table, it is not doc structure."
   mirroring: "the md's group/subsection tree mirrors the generated gallery's \\section*/\\subsection* one-to-one; a display's paper section is stated ONCE, by its group header"
 
-q_id_pattern: "- [ ] 🔎 Q-Display-<n> · <title>"
-q_anchor: "[Q-Display-<n>] cited inline in the display block whose evidence the question supplies"
-closed_when: "REVISE lands the numbers in the rendered unit and discharges the [Q-Display-<n>] bracket"
+q_id_pattern: "- [ ] 🔎 Q-Display<unit>-<n> · <title>"
+q_anchor: "[Q-Display<unit>-<n>] cited inline in the display block whose evidence the question supplies"
+closed_when: "each Q-consumer Answer lands in the asset's Spec, Wrapper, caption, or cited reader sentence; REVISE then discharges the matching [Q-Display<unit>-<n>] bracket"
 
-status_vocabulary: [planned, data-ready, candidates, rendered, input-ready, inserted, reviewed]
+status_vocabulary: [planned, data-ready, intake-ready, candidates, rendered, input-ready, inserted, reviewed]
 
 done_criteria:
   - "4-display.md present; Display Map consistent with units on disk — no orphans either way"
   - "every display block carries claim, takeaway, evidence source, status, caption job, fragility"
+  - "every numeric unit has intake/manifest.yaml with task holder, canonical artifact, matching snapshot hash, and permitted use"
   - "no block stuck at `candidates`: a winner is promoted with a recorded why per loser, or the block is parked"
   - "4-display.tex regenerated from the md; 4-display.pdf compiles from the paper root and is current"
   - "every display referenced in S-Venue-2-narrative.md; no _DISPLAY_REQUEST.md row left `requested`"
   - "Render & sweep items all terminal (Outcome filled, or struck by the user and logged); no `✋` item run while its gating thread was unruled"
   - "every display carries an independent interrogation verdict (keep-main | keep-supplement | fix | demote | cut)"
+  - "every unresolved semantic or evidence need is a complete Q-consumer record in Items to Finish; known build work remains a normal item"
   - "checklist.md walked and all items pass"
   - "check-probe-cards.sh <paper_root> --stage display exits 0"
 
@@ -155,6 +171,24 @@ DISPLAY       which beats must be SEEN rather than told, and can we show them?
 SECTION-EDIT  the prose around the display it is already handed.
 ```
 
+Items to Finish is the Q-consumer adapter
+------------------------------------------
+
+On a Board-first Display page, `## Items to Finish` carries two deliberately different row types:
+
+```text
+🔎 Q-Display<unit>-<n>   an unresolved question with a stake — Description, Reason,
+                         Probe, and Answer; it closes only when the answer is woven into
+                         the display's Spec, Wrapper, caption, or citing sentence.
+🛠 / 📈 / 📤 work item    a known action — materialize intake, edit an approved source,
+                         render, inspect, promote, or update float.tex.
+```
+
+Do not disguise a known repair as a Q-consumer, and do not leave an uncertainty as an unlabeled
+build item. The distinction keeps PROBE responsible for answers and the renderer responsible for
+execution. Because displays now gate per unit, the Q id includes that unit (`Q-Display1A-1`),
+not a paper-wide ambiguous `Q-Display-1`.
+
 The one stage that COMMISSIONS
 ------------------------------
 
@@ -164,6 +198,7 @@ authority to create a display unit, dispatch a renderer, or advance a `_DISPLAY_
 ```text
 another stage needs a display  -> it writes a DR row into _DISPLAY_REQUEST.md, status: requested
 this stage rules on the row    -> accepted (map row + block + unit) | declined (reason written back)
+this stage binds inputs        -> intake-ready (manifest + approved snapshot)
 this stage delivers            -> done (unit: displays/displayNN-slug/) — now the section may \input it
 ```
 
@@ -172,18 +207,19 @@ illustration — stay separate registered skills; this stage hands each a UNIT a
 and they write back per the unit output contract. It never renders inline, and never lets another
 stage render around it.
 
-Numbers come from a task, never from the agent
+Numbers enter through intake, never from the agent
 ----------------------------------------------
 
-The hard line of this stage, and the one most often crossed under deadline. A data display's
-asset is RENDERED from task-produced evidence on disk — a landed QA file's anchors, a parser's
-`metrics.json`, a `source_data.csv` — and the rebuild spec in the unit's `source/` points back at
-that task output. `float.tex` only ever REFERENCES the asset.
+The hard line of this stage, and the one most often crossed under deadline. A task produces the
+canonical evidence on disk — a landed QA file's anchors, a parser's `metrics.json`, a
+`source_data.csv`. Display materializes the small approved summary it needs in `intake/inputs/`
+and records the task holder, run, artifact, hashes, and use in `intake/manifest.yaml`.
+The rebuild recipe in `recipe/` reads that snapshot. `float.tex` only ever REFERENCES the asset.
 
 Numbers typed into `float.tex` are a placeholder, not a display. The test is not "are they
-correct" — it is: **when the numbers change, can this display be regenerated?** If not, it cannot
-be drafted; the need goes back through the evidence route. PHI rides along: raw data stays
-server-side, only aggregates land in a unit's `source/`.
+correct" — it is: **when the numbers change, can this display be regenerated and traced to its
+task?** If not, it cannot be drafted; the need goes back through the evidence route. PHI rides
+along: raw data stays server-side, only approved aggregates land in a unit's `intake/`.
 
 Concept figures (no data) skip the evidence route — but a study-flow, provenance, or CONSORT
 diagram is annotated with REAL Ns from the data description, never hand-drawn ones.

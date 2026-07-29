@@ -22,7 +22,9 @@ Principle: the id is `Q-` + the stage's canonical spine name (capitalized) + ind
   pitch         Q-Pitch-<n>
   narrative     Q-Narrative-<n>
   display       Q-Display-<n>
-  section-edit  Q-Section-<n>     (per-section — id scoping OPEN)
+  section-edit  Q-Sec<unit><Slug>-<n>   (PER-UNIT: the unit IS the stage —
+                                   Q-Sec0Abstract-<n>, Q-Sec6Results-<n>,
+                                   Q-SecAPrompts-<n>. RULED JL 2026-07-27)
   review        Q-Review-<n>
 
 Adoption matrix (live)
@@ -43,7 +45,10 @@ Per-stage notes
 seed          Landscape section is SEED-ONLY (JL 2026-07-18). Reference instance for C1–C5.
 resource      Description-first: `Resource Description` (## Resource N + ### topics + ### Serves & carries), NOT a Demand/needs list (JL 2026-07-18). Feasibility gate lives in Serves & carries + the Q-consumer.
 claims        M:N claims↔questions — a claim = several small TYPED questions (fit/eval/robustness/placebo…); a question may settle several claims. Answerable+specific questions only.
-section-edit  per-section; prefix may need section scoping (Q-Section-<n> vs Q-<Section>-<n>).
+section-edit  per-unit, and the token carries the unit: `Q-Sec<unit><Slug>-<n>`, both halves read off
+              the S page filename `S-<Family>-<unit>-<slug>.md`. RULED JL 2026-07-27; the old shared
+              `Q-Section-<n>` collided across the nine units and broke the probe layer's own
+              consumer-ids-never-collide invariant.
 
 Rollout (spine order)
 ---------------------
@@ -51,5 +56,4 @@ Apply the charter one stage at a time, seed → review. Done: seed, resource, cl
 
 Open
 ----
-- section-edit id scoping: Q-Section-<n> vs per-section Q-<Section>-<n>.
 - review: no `review-template.md` exists yet — create one under the charter?

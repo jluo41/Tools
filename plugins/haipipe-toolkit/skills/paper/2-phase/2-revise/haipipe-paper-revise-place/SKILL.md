@@ -4,7 +4,7 @@ description: "REVISE-phase placement worker (internal). Runs FIRST in the revise
 allowed-tools: Bash, Read, Edit, Grep, Glob
 metadata:
   argument_hint: "[stage-or-section] [paper-path]"
-  version: "0.1.1"
+  version: "0.1.2"
   last_updated: "2026-07-26"
   summary: "REVISE-phase placement worker: substitute landed answers into the prose and discharge their brackets. Runs BEFORE content and humanizer, so those workers see final text rather than placeholders. A placeholder whose answer has not landed stays put and is flagged. History: ./CHANGELOG.md."
 ---
@@ -60,7 +60,9 @@ CITATION   \cite{TOADD} [Q-X-n]
 
 VALUE      {VAL:? mean MME difference, LBP cohort} [Q-X-n]
              ↓ the entry is `read` and its a-executor carries the number
-           12.9                              ← bracket discharged
+           12.9 [Q-X-n]                      ← bracket KEPT, and a lane added
+           > Value: <what the number is> · probe=<entry path> · run=<run id>
+                    · state=verified
            Write the number at the precision the SOURCE states. Do not round
            to make a sentence read better; rounding is a claim about precision.
 
@@ -77,9 +79,28 @@ DISPLAY    a need whose DR row is `done` with its unit path filled
 The discharge rule
 -------------------
 
-A bracket comes off ONLY when the thing it owned is actually in the prose. `\cite{TOADD} [Q-X-n]` → `\citep{key}` removes both markers together, because the hole is filled and the question no longer owns anything here.
+A CITATION's bracket comes off; a VALUE's does not, and the two are asymmetric for a reason
+that is mechanical rather than stylistic.
 
-A bracket left standing is not a failure — it is an accurate statement that the hole is still open. Removing a bracket while leaving the placeholder is the failure: the hole becomes unowned, and nothing will ever fill it.
+`\cite{TOADD} [Q-X-n]` → `\citep{key}` removes both markers together, because `\citep{key}` is
+SELF-CHECKING: the key either greps in the paper's `.bib` or it does not, forever, with no
+bracket needed. That is why a page of settled citations still reports every one of them.
+
+A NUMBER has no such property. `12.9` is just digits, and the ONLY thing that ties it to the run
+that produced it is the bracket, which is why `body.py` checks a prose number only on a sentence
+that carries one. Discharging a value's bracket therefore does not tidy up a finished sentence,
+it makes a verified number unverifiable, and the board goes dark on the work that is MOST
+finished. Measured on MISQ 260727: `S-Main-0`'s headline `12.90` had been placed under the old
+rule and reports nothing, while `S-Main-6`, which still carries its brackets, reports 41 markers.
+The signal was inverted — brightest where least was done.
+
+So a placed value keeps its bracket AND gains a `> Value:` lane naming the entry, the run and
+`state=verified`. That is `QC0`'s S4 exactly, which is the worked example of a FINISHED sentence
+and not of a pending one, and it is why `QC0` reports 3 numbers `ok`.
+
+A bracket left standing over an unfilled placeholder is not a failure either — it is an accurate
+statement that the hole is still open. Removing a bracket while leaving the placeholder is the
+failure: the hole becomes unowned, and nothing will ever fill it.
 
 
 Order of operations

@@ -23,7 +23,7 @@ That is not a design analogy, it is written in the skill. `haipipe-paper-probe/S
    ┌──────────────────────────────┐                ┌────────────────────────┐
    │ 0-lifecycle/…/S-Main-7.md    │                │ examples/Project-*/    │
    │   a sentence owes a number   │                │   tasks/       19 grps │
-   │   {VAL:? …} [Q-Section-4]    │                │   discoveries/         │
+   │   {VAL:? …} [Q-Sec6Results-4]    │                │   discoveries/         │
    │            │                 │                │                        │
    │   ## Q-consumer              │                │  owned by /haipipe-task│
    │     the STAKE lives here     │                │  and /haipipe-discovery│
@@ -107,6 +107,22 @@ Moving it would break a path two families bind to, force a cross-stage topic int
       The boundary is page-versus-file, not working-state-versus-output: probes ARE working state, and they stay outside because a probe file cannot BECOME a page. Its four-section shape is `⑤`'s and is shared with `/haipipe-application`.
       EXPIRY: if `/haipipe-application` ever stops binding `1-probes/`, the shared-contract half of this ruling dies and only the weaker page-versus-file argument remains. Re-open it then rather than treating this as permanent (JL 260726).
       Topic-scoped, ungated, and shared with `/haipipe-application`; the inverse of the round case on all three counts.
+- [x] 🔑 A per-unit stage's consumer id carries the unit (JL 260727)
+      `/haipipe-probe` already states the invariant — a Q-consumer id is CONSUMER-LOCAL and
+      "the ids never collide across consumers" — and section-edit was breaking it, because it
+      `runs: per-unit` while spelling one shared `Q-Section-<n>` for all nine units. So this is
+      not a new rule; it is the repair of one already written down. The token is
+      `Q-Sec<unit><Slug>-<n>`, both halves read off the S page filename
+      `S-<Family>-<unit>-<slug>.md`, so an id cannot drift from the page that owns it.
+      No change to `/haipipe-probe`: `Q-<Stage>-<n>` was always right, and the per-unit stage
+      is what the `<Stage>` resolves to.
+      MEASURED on the MISQ paper, and this is why it mattered: `Q-Section-1` named three
+      different questions on three pages, and the resolver takes the FURTHEST-ALONG match, so
+      a DEFERRED §7 citation question inherited the state of an ANSWERED §6 results entry.
+      Six chips on `S-Main-7` read `ok`/`ready` while the page's own records read DEFERRED, and
+      three on `S-Main-4` read `ready` while its records said no live probe owns them. Renaming
+      both sides moved all nine to `parked`/`unowned`, with zero evidence changed. A shared
+      consumer id does not merely confuse a reader; it manufactures false greens.
 - [ ] 📐 State which half of the probe contract this board may rule
       The paper-side deltas, yes; the anatomy and the QA state line, no. Written above as prose and not yet checkable.
 - [ ] 🧠 Rule what happens when `⑤`'s contract changes
@@ -138,7 +154,28 @@ A question crosses the wall as a STRING with its stake stripped, and the answer 
 
 The probe layer is therefore VISIBLE from the board without living in it: an S page's Q-consumer names its questions, and the sentence chips resolve their states. That is the outcome moving it would have been trying to buy.
 
+A Q-consumer id is CONSUMER-LOCAL and MUST NOT collide across consumers, so a stage that
+`runs: per-unit` names its unit in its own token: `Q-Sec<unit><Slug>-<n>`, both halves read off
+the S page filename. `/haipipe-probe`'s `Q-<Stage>-<n>` is unchanged; the per-unit stage is what
+`<Stage>` resolves to. This is not a cosmetic id rule, because the resolver takes the
+FURTHEST-ALONG match among the entries claiming an id: a shared id lets a DEFERRED question
+inherit an ANSWERED one's state, which is a manufactured green on the exact chip a reader trusts.
+
 This ruling carries an expiry test. If `/haipipe-application` stops binding `1-probes/`, re-open it.
 
 ## Log
 260726 · Created on JL's observation that `1-probes/`, the q-executor vocabulary and the bank were nowhere on the board. Ruled that probes do NOT move into `⑧`, with the reason sharpened from purity to page-versus-file, and an expiry test recorded against `/haipipe-application`.
+260727 · JL ruled the per-unit consumer id (`Q-Sec0Abstract-<n>`, `Q-Sec6Results-<n>`) and it
+  went in the same day. Three things had to move that the ruling itself does not mention, and
+  each was a letters-only id regex that silently dropped the new token rather than erroring:
+  `dialect_paper.py` (2 sites), `body.py` (4 sites) and `check-probe-cards.sh` (8 sites). The
+  last one bit during the work: after the rename the shell gate reported ten `cite-unowned` /
+  `value-unowned` defects on pages whose brackets were sitting right there in the prose. A
+  scheme change is therefore never only a rename; it is a rename plus every regex that ever
+  hard-coded the old shape, and none of them fail loudly.
+  Fixing that gate also closed `_TODO` E2: `stage_stem()` derived `section-edit` and grepped
+  `q-section-edit`, which matched nothing, so section-edit had a permanent vacuous green. It
+  now maps to `Sec` and the gate asserts 12 probe entries and 16 stage pages — surfacing five
+  PP03 entries whose QA files exist but were never harvested into `### a-executor`, and two
+  PP05 answers that landed in the bank and were never read back. That work was always owed and
+  nothing could see it.

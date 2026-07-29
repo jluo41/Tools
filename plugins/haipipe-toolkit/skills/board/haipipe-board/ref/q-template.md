@@ -186,6 +186,11 @@ paragraph it silently attaches to whatever line precedes it. A concern that belo
 rather than to one sentence (a missing script, a sweep still owed) has no sentence to attach to
 and belongs in `## Items to Finish`.
 
+Use standard Markdown `![](path.png)` to show an image inline. The same form with a local `.pdf`
+path, `![](path.pdf)`, renders a readable PDF object with an `open PDF` fallback link. On a
+Display page, `preview.pdf` remains the generated Current Float; use an explicit PDF subsection
+only when the reader also needs to inspect the underlying live display artifact.
+
 ### Second content subsection
 Continue with the next coherent part of the stage.
 

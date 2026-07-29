@@ -3,7 +3,7 @@ name: haipipe-paper-probe
 description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads the Board S page's Q-consumer records from Items to Finish and ①ORGANIZEs each question into an ENTRY FILE in papers/P/1-probes/PPNN_topic/ — one q-executor per `QXn_slug.md` file (`## QXn` + `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`; the stake stays in the S-page record and its review-only copy), ②MATCHes it against the bank with a read-only grep, ③DISPATCHes only what the stage's probe_depth ceiling allows, ④POINTs each target, ⑤INTERPRETs the answer back. DRAFT raises questions and nothing else. Binds by PATH to a QA file in the probe-unaware task/discovery bank; dispatches through the shared collector, never running bank work inline. Users invoke stage skills, not this directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "0.7.4"
+  version: "0.7.5"
   last_updated: "2026-07-26"
   summary: "The paper's PROBE-phase worker — runs ①ORGANIZE→②MATCH→③DISPATCH→④POINT→⑤INTERPRET for a paper (all five; ①② came back here from DRAFT on 2026-07-20). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is owned by ../../../../probe/haipipe-probe/SKILL.md. This file is only the paper-side deltas. History: ./CHANGELOG.md."
 ---

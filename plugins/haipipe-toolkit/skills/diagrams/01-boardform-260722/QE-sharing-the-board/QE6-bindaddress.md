@@ -100,8 +100,15 @@ That is the same wall `QE1` describes from the hosting side, and this question i
 ## Where we are
 The flag exists and works, the default is unchanged, and nothing is committed.
 The ruling itself is untouched: what the shipped default should be, and where a per-machine override belongs, are both still open, and JL owns them.
-The working arrangement today is option ② from the diagram: the server stays on `127.0.0.1:5599` and JL re-forwards port 5599 in VS Code, which was confirmed working on 260726.
-That is a per-restart manual step for one person, so it answers the practical need without answering the question.
+**The running server is on option ④, not option ②.** As of 260727 the live process is
+`serve.py --root <repo> --port 5599 --host 100.121.165.84 --daemon`, which listens on both the
+tailnet address and loopback, so both paths work at once and the VS Code forward is live as well.
+This page said until 260727 that the arrangement was loopback-only; that was true when JL said
+"maybe just use the local version" on 260726 and stopped being true when the server was next
+started with the flag. Option ④'s cost is the one written in the diagram: every device on the
+tailnet reaches `/_term/`, and `tailscale status` lists a node owned by a different account.
+`--host` still defaults to loopback, so nothing about a clone of `Tools` changed; what changed is
+only how this machine is started, which is exactly the per-machine setting with no home yet.
 
 - 260726 CC · 🕳 A board that looked broken was never reached at all
       A push of the board URL produced an endlessly loading tab, and the cause was not the board.
@@ -146,5 +153,8 @@ tailnet: the private mesh network Tailscale gives one owner's devices, addressed
 >> CC0726: put the server back on loopback the same turn. The flag stays in place and defaults to loopback, so nothing changes for anyone who clones Tools, and this question now owns the ruling rather than the running server.
 
 ## Log
+260727 · Corrected a stale claim: this page described the running arrangement as loopback-only,
+       while the live process has been started with `--host 100.121.165.84`, so the machine is on
+       option ④. Found while answering `QE1`'s public-hosting question. Default and code unchanged.
 260726 1150 · JL re-forwarded 5599 against the live listener and the board opened; recorded as option ② working, plus three lessons on why it had not
 260726 1130 · opened after the loopback bind and a dead VS Code forward made a working board look broken; `--host` implemented, default unchanged, nothing committed

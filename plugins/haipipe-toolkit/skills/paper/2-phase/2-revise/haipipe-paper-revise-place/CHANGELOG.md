@@ -3,6 +3,20 @@ haipipe-paper-revise-place — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.1.2] — 2026-07-27 — a VALUE keeps its bracket; only a CITATION discharges
+
+- **The discharge rule was wrong for values and it was making verified numbers
+  unverifiable.** `\citep{key}` is self-checking against the `.bib` forever, so its bracket is
+  genuinely redundant once the key is placed. A bare `12.9` has no such property: the bracket is
+  the ONLY thing tying it to the run, and `body.py` checks a prose number only on a bracketed
+  sentence. Discharging it did not tidy a finished sentence, it blinded the board to it.
+- A placed value now reads `12.9 [Q-X-n]` plus a `> Value:` lane naming the entry, the run and
+  `state=verified`. This is not new design — it is `QC0@paper`'s S4, which has been the worked
+  example of a FINISHED sentence since 260726, and is why `QC0` reports 3 numbers `ok`.
+- Measured on MISQ: `S-Main-0`'s headline `12.90` was placed under the old rule and its page
+  reports 0 markers, while `S-Main-6`, still carrying its brackets, reports 41. The board was
+  brightest where least was finished.
+
 ## [0.1.1] — 2026-07-26
 
 - Open-placeholder flags now land in the owning S page's `[REVISE]` log entry.

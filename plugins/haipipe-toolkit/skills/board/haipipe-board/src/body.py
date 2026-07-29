@@ -75,12 +75,22 @@ EXCAL_HOST = ""
 
 # Every paper marker in ONE alternation, so a single left-to-right pass
 # consumes each one exactly once and nothing a chip emits is ever re-scanned.
-#   1 keys  2 qid   \citep{a,b} · \cite{TOADD} [Q-Section-4]
-#   3 desc  4 qid   {VAL:? what the number is} [Q-Section-4]
-#   5 qid           a bare [Q-Section-4], which the other two did not claim
-#   6 did           displayNN, with or without its slug. The S-Display pages
-#                   write the SHORT form ("registry id display02"); a Section
-#                   writes the long one. Both name the same unit.
+#   1 keys  2 qid   \citep{a,b} · \cite{TOADD} [Q-Sec6Results-4]
+#   3 desc  4 qid   {VAL:? what the number is} [Q-Sec6Results-4]
+#   5 qid           a bare [Q-Sec6Results-4], which the other two did not claim
+#                   The stage token may carry digits (a per-unit stage names
+#                   its unit in it), which is why it is [A-Za-z0-9]+ below.
+#   6 did           a display unit, in either layout and either length:
+#                   S-Display-4a · S-Display-4a-main-regression (workspace, the
+#                   folder is named for its page) · display02 · display02-x
+#                   (legacy). A page may write the SHORT form and a Section the
+#                   long one; both name the same unit.
+#                   ALWAYS A CARD, ruled by JL 260727. A unit name in prose
+#                   renders as the evidence card, never as a bare page link,
+#                   because the card already carries the owning page's anchor
+#                   and its state line, so the card is a strict superset. The
+#                   page ANCHOR keeps the uppercase short id (S-Display-4A),
+#                   so the two identities never collide on one string.
 #   7 label         \ref{tab:…} / \autoref{fig:…}, the LaTeX form
 #   8 label         a bare tab:… / fig:… label, which is how a page names a
 #                   float without writing LaTeX. Not inside \label{}.
@@ -88,15 +98,16 @@ EXCAL_HOST = ""
 # The display id is fenced by lookarounds so `displays/display02-x/float.tex`
 # stays a path: no shorter prefix can satisfy the trailing guard either.
 MARKER = re.compile(
-    r"\\cite[tp]?\*?\{([^}]*)\}(?:\s*\[(Q-[A-Za-z]+-\d+)\])?"
-    r"|\{VAL:\?([^}]*)\}(?:\s*\[(Q-[A-Za-z]+-\d+)\])?"
-    r"|\[(Q-[A-Za-z]+-\d+)\]"
-    r"|(?<![\w/-])(display\d{2}(?:-[a-z0-9-]+)?)(?![\w/-])"
+    r"\\cite[tp]?\*?\{([^}]*)\}(?:\s*\[(Q-[A-Za-z0-9]+-\d+)\])?"
+    r"|\{VAL:\?([^}]*)\}(?:\s*\[(Q-[A-Za-z0-9]+-\d+)\])?"
+    r"|\[(Q-[A-Za-z0-9]+-\d+)\]"
+    r"|(?<![\w/-])((?:S-Display-\d+[a-z]?(?:[a-z]\d+)?|display\d{2}[a-z]?)"
+    r"(?:-[a-z0-9-]+)?)(?![\w/-])"
     r"|\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}"
     r"|(?<![\w:/{-])((?:tab|fig):[a-z0-9_-]+)(?![\w-])"
     #   9 num  10 pct   a NUMBER in the prose. Last in the alternation on
     #                   purpose: every branch above consumes its own digits
-    #                   first, so the 2 in [Q-Section-2], the 04 in display04
+    #                   first, so the 6 and 2 in [Q-Sec6Results-2], the 04 in display04
     #                   and the 2024 in \citep{smith2024} are never seen here.
     #                   Only chipped when the string already carries a [Q-…],
     #                   which is what scopes this to sentences that CLAIM
@@ -106,8 +117,15 @@ MARKER = re.compile(
 # A year is a date, not a measurement, and a lone 0 or 1 is almost never a
 # finding. Skipping them is the difference between a highlight and a mess.
 YEAR = re.compile(r"^(1[89]|20)\d{2}$")
-# a comparison immediately before the number: `p < 0.001`, `N >= 500`
-CMP = re.compile(r"(?:&lt;|&gt;|<|>|≤|≥|=)\s*$")
+# A BOUND immediately before the number: `p < 0.001`, `N >= 500`. The sentence
+# never claimed the figure EQUALS that, so checking it against the run finds
+# every recorded value under the bound and cries ambiguity.
+# A bare `=` is NOT a bound and must not be here (JL 260727). `N = 1,204,607`
+# is a measurement stated the ordinary way, and swallowing it silently
+# un-checked four of the five cohort sample sizes on `S-Main-5`, which is the
+# whole sampling claim of the paper. `=?` still absorbs the `=` of `<=` / `>=`,
+# so the case the guard was written for is unaffected.
+CMP = re.compile(r"(?:&lt;|&gt;|<|>|≤|≥)=?\s*$")
 
 
 # One popover panel per chip. They are COLLECTED rather than emitted inline,
@@ -278,7 +296,7 @@ NO_CHIP = re.compile(r"(<code>.*?</code>|<[^>]+>)", re.S)
 # and nobody will remember them, so the whole discussion lane opts out instead.
 # Typed evidence lanes (`> Citation:`, `> Value:`, `> Display:`) still chip:
 # those ARE claims about the sentence, and their state is the point.
-QBRACKET = re.compile(r"\[(Q-[A-Za-z]+-\d+)\]")
+QBRACKET = re.compile(r"\[(Q-[A-Za-z0-9]+-\d+)\]")
 
 NOTE = False
 
@@ -416,7 +434,7 @@ def cite_chips(s):
                     if qid_here[0] else m.group(0))
         if m.group(7) or m.group(8):         # \ref{tab:…}, or a bare label
             return _ref(m.group(7) or m.group(8))
-        if m.group(6):                       # a bare displayNN-<slug>
+        if m.group(6):                       # a unit name -> ALWAYS the card
             return _display(m.group(6))
         if m.group(5):                       # a bare [Q-…]
             return _qref(m.group(5))
@@ -433,7 +451,7 @@ def cite_chips(s):
 def inline(s):
     s = esc(s)
     s = re.sub(r"`([^`]+)`", code_or_link, s)
-    # The next three run OUTSIDE code spans only. `code_or_link` has already
+    # The next four run OUTSIDE code spans only. `code_or_link` has already
     # emitted <code>…</code>, and a rule applied over the whole string reaches
     # inside it: a page that WROTE `![](path)` in backticks, to talk about the
     # syntax, had it rendered as a real (and dead) image.
@@ -443,9 +461,21 @@ def inline(s):
     # No markdown image had ever rendered on any board for that reason; QD3's
     # screenshot had been showing as `!` plus a link since the day it was added.
     def _marks(seg):
-        seg = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)",
-                     r'<img class="fig" alt="\1" src="\2" loading="lazy">', seg)
+        def media(m):
+            alt, src = m.group(1), m.group(2)
+            # A PDF is a real readable display, not a broken image. Keep the
+            # familiar Markdown image form so a page author need not write raw
+            # HTML (which Board escapes), but render it as a native PDF object
+            # with an always-visible fallback link for viewer-less browsers.
+            if re.search(r"\.pdf(?:[?#].*)?$", src, re.I):
+                return (f'<object class="figpdf" data="{src}" '
+                        f'type="application/pdf"><a class="fp" href="{src}">'
+                        f'open {alt or "PDF"}</a></object>')
+            return f'<img class="fig" alt="{alt}" src="{src}" loading="lazy">'
+
+        seg = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", media, seg)
         seg = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a class="fp" href="\2">\1</a>', seg)
+        seg = re.sub(r"~~([^~]+)~~", r"<del>\1</del>", seg)
         return re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", seg)
 
     # Code spans are held OUT of _marks so `**` inside them stays literal. But

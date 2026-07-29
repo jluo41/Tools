@@ -179,7 +179,7 @@ This is the first face of the group because every other one rules a part of the 
 
    ── AND WORD? IT DOES NOT EXIST ──────────────────────────────────
       no pandoc, no python-docx, no converter in any `.py` or `.sh`
-      in the whole family. Word is a PROPOSED projection on `QD7`
+      in the whole family. Word is a PROPOSED projection on `QC6`, and the many-consumer rule is `QC3@display`
       and nothing more. Its adapter diagram is a design, not a
       shipped path, and the same is true of HTML except for the
       board's own rendering.

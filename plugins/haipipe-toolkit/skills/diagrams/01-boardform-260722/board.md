@@ -145,11 +145,11 @@ board-agents/       ../../board/agents/
 haipipe-board-reviewer-agent.md ../../board/agents/haipipe-board-reviewer-agent.md
 env.sh              ../../../../../../env.sh
 paper-board/        ../01-haipipe-paper-260725/
-QC0@paper           ../01-haipipe-paper-260725/QC-the-sentence-what-hangs-on-it/QC0-sentence-unit.md
-QC1@paper           ../01-haipipe-paper-260725/QC-the-sentence-what-hangs-on-it/QC1-sentence-citation.md
-QC2@paper           ../01-haipipe-paper-260725/QC-the-sentence-what-hangs-on-it/QC2-sentence-value.md
-QC3@paper           ../01-haipipe-paper-260725/QC-the-sentence-what-hangs-on-it/QC3-sentence-display-table.md
-QC4@paper           ../01-haipipe-paper-260725/QC-the-sentence-what-hangs-on-it/QC4-sentence-display-figure.md
+QC0@paper           ../01-haipipe-paper-260725/QC-the-sentence-with-evidence-card/QC0-sentence-unit.md
+QC1@paper           ../01-haipipe-paper-260725/QC-the-sentence-with-evidence-card/QC1-sentence-citation.md
+QC2@paper           ../01-haipipe-paper-260725/QC-the-sentence-with-evidence-card/QC2-sentence-value.md
+QC3@paper           ../01-haipipe-paper-260725/QC-the-sentence-with-evidence-card/QC3-sentence-display-table.md
+QC4@paper           ../01-haipipe-paper-260725/QC-the-sentence-with-evidence-card/QC4-sentence-display-figure.md
 QA4@paper           ../01-haipipe-paper-260725/QA-where-things-live/QA4-the-board-tool.md
 src/dialect_paper.py ../../board/haipipe-board/src/dialect_paper.py
 src/common.py       ../../board/haipipe-board/src/common.py

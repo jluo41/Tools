@@ -4,6 +4,11 @@ haipipe-display-diagram — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [0.2.0] — 2026-07-27 — Display Intake
+
+- Requires Intake context before FigureSpec drafting and forbids inventing real numeric facts.
+- Uses `recipe/` for FigureSpec files and `displays/` for paper units.
+
 ## [0.1.3] — 2026-07-24 · moved to display/
 
 Moved to `display/` and renamed `haipipe-paper-display-diagram → haipipe-display-diagram` — generic JSON-spec → SVG renderer.

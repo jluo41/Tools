@@ -3,7 +3,7 @@ name: haipipe-paper-check
 description: "CHECK phase worker (internal). Called as a stage's declared human gate. All current paper stages declare one gate here; earlier declared phases run unattended. Runs automated sub-checkers, seeds in-file CHECK comments, and presents the approval or restart decision."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "0.3.4"
+  version: "0.3.5"
   last_updated: "2026-07-26"
   summary: "CHECK phase worker (internal) -- the LAST human gate of a stage, and by default its ONLY one: runs the deterministic sub-checkers (./checks.sh), seeds `> CHECK:` comments in-file at every flag site, and gates human review. Its compile option follows the canonical 2-src build or an explicit tex target. What it walks is the stage doc + the paper's `1-probes/` entries. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -236,7 +236,7 @@ PASSED: NN   FAILED: NN   WARNING: NN   SKIPPED: NN
 
 ## 📚 PROBE
   ✅ check-probe-cards.sh --stage section-edit: exit 0 (4 entries)
-  ✅ every hole OWNED (3 \cite{TOADD}, all carrying a Q-Section-<n> id)
+  ✅ every hole OWNED (3 \cite{TOADD}, all carrying this unit's Q-Sec<unit><Slug>-<n> id)
   ✅ citation density: 0.41 (norm ≥ 0.25)
   ❌ 2 🔍 sources unverified (Eddy 1984, Deyo 2015 — PP02 QX1 a-executor)
   -- values: skipped (no numbers in this section)

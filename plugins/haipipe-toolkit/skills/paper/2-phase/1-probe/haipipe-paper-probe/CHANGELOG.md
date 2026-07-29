@@ -3,6 +3,22 @@ haipipe-paper-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.7.5] — 2026-07-27 — the section-edit gate stops being vacuously green
+
+- **`stage_stem()` maps `section-edit -> Sec`.** It previously derived the stem by stripping a
+  trailing `s`, producing `section-edit`, and grepped `q-section-edit` — which matched NO id
+  under either the old or the new scheme. Every probe entry genuinely serving this stage
+  therefore failed the `--stage` filter and the gate reported a permanent green over
+  unasserted work. `Sec` matches every per-unit id and collides with no other stage
+  (`q-seed` does not contain `q-sec`).
+- **The checker's own id regex now accepts a per-unit token**, widened to `[A-Za-z0-9]+` at
+  all 8 sites. Left letters-only it read every renamed bracket as absent and reported ten
+  false `cite-unowned` / `value-unowned` defects on pages whose brackets were in the prose.
+- Effect on the MISQ paper: the gate now asserts 12 probe entries and 16 stage pages, and
+  surfaces work nothing could previously see — 5 `PP03` entries whose QA files exist but were
+  never harvested into `### a-executor`, and 2 `PP05` answers that landed in the bank
+  unread. One real defect remains, `S-Main-5`'s 4 `\cite{TOADD}` with no bracket at all.
+
 ## [0.7.4] — 2026-07-26 — read questions from Board Items
 
 - Paper PROBE now reads recognizable `Q-<Stage>-<n>` checklist records from

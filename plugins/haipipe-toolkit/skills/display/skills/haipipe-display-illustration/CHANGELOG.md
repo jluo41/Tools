@@ -3,6 +3,15 @@ haipipe-display-illustration — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.1] — 2026-07-27 — Caller-owned wrapper semantics
+
+- Requires an explicit Paper-approved caption and label when finalizing into a display unit.
+- Preserves an existing unit wrapper rather than changing its caption, label, or placement.
+
+## [0.2.0] — 2026-07-27 — Display Intake
+
+- Requires Intake context before prompt planning and prohibits unsupported numeric facts in illustrations.
+- Uses `recipe/` for prompt and review receipts, supports new `displays/` units, and preserves legacy `source/` units in the helper.
 
 ## [0.1.3] — 2026-07-24 · moved to display/
 

@@ -41,6 +41,10 @@ units_from: 0-lifecycle/2-venue/S-Venue-2-narrative.md
 argument_hint: "<section> [draft|probe|revise|check] [paper-path]"
 
 needs_paper: true
+on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
+                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # `## Log`. Everything else: compute the change, SHOW it, ask.
+                         # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_aligned: true       # rewritten on retarget to another journal
 
 artifact: 0-lifecycle/4-main/S-{board_family}-{board_unit}-{board_slug}.md
@@ -112,6 +116,11 @@ prose_rule: |
   Placeholder and bracket sit SIDE BY SIDE, never fused — a placeholder with no bracket is a
   hole no question will ever fill. Never invent a key or a number to avoid a placeholder.
   The .bib is human-only; the agent learns a key by grepping it after the human adds it.
+  A FINISHED sentence carrying a number is `12.90 [Q-<Stage>-<n>]` with a `> Value:` lane under
+  it naming the entry, the run and `state=verified` — the real number, the bracket still there,
+  and the lane. That is QC0@paper's S4. The bracket is what ties a bare number to the run that
+  produced it, so it comes off for a CITATION (where `\citep{key}` checks itself against the
+  .bib) and never for a VALUE.
 
 formatting:
   headings: "direct `###` divisions and `####` paragraphs under Board Content; checklist records
@@ -127,30 +136,59 @@ display_request: 0-lifecycle/3-display/_DISPLAY_REQUEST.md   # a DR row goes her
                           # themselves come from displays/ and 0-lifecycle/3-display/
 display_split: |          # BINDING, owned by ../4-display/stage.md (`display_split:`) — read it there.
   A DR row filed from here names BOTH halves of the unit, because they have different owners:
-    `bank deliverable:`     the numbers — source_data.csv + provenance, produced by the TASK
-                            layer (haipipe-task-for-display); a paper stage never authors them.
+    `bank deliverable:`     the numbers — canonical source_data.csv + provenance, produced by the
+                            TASK layer (haipipe-task-for-display); a paper stage never authors them.
+    `intake source:`        the exact task holder, run, and aggregate that the Display stage will
+                            snapshot into intake/manifest.yaml + intake/inputs/.
     `consumer deliverable:` the framing — which rows/columns the argument needs — plus venue
-                            formatting and \label/\ref wiring; rendered FROM that source_data.csv.
+                            formatting and \label/\ref wiring; rendered FROM that intake snapshot.
   A DR naming only one half is incomplete. Hand-typing numbers into a unit's .tex is a DEFECT:
   it is how a display silently drifts out of agreement with the prose it supports.
 display_gate: "the section's display axis cannot pass CHECK until the DR row is `done` and the
                unit is linked"
 
-q_id_pattern: "- [ ] 🔎 Q-Section-<n> · <title>"
-                                            # and the inline anchor are THE SAME TOKEN
-q_anchor: "[Q-Section-<n>] beside the {VAL:?} or \\cite{TOADD} it will fill; the entry's
-           Reason names the §<N> P<x>.S<y> sentence(s) that raised it — the back-link"
-closed_when: "PROBE writes the Answer + the target: QA-file path; CHECK's human
-              verifies and the agent THEN places the real \\citep{}/value, retiring the
-              placeholder and its bracket together"
+q_id_pattern: "- [ ] 🔎 Q-Sec<unit><Slug>-<n> · <title>"
+                                            # and the inline anchor are THE SAME TOKEN.
+                                            # THE STAGE TOKEN IS THIS UNIT, not the word
+                                            # "Section" (JL 2026-07-27). This stage
+                                            # `runs: per-unit`, so each unit IS the stage
+                                            # instance, and `Q-<Stage>-<n>` resolves to
+                                            # `Q-Sec0Abstract-<n>`, `Q-Sec6Results-<n>`.
+                                            # Derive both halves from the S page filename,
+                                            # `S-<Family>-<unit>-<slug>.md`, so the id can
+                                            # never drift from the page that owns it:
+                                            #   S-Main-0-abstract    -> Q-Sec0Abstract-<n>
+                                            #   S-Main-6-results     -> Q-Sec6Results-<n>
+                                            #   S-Appendix-A-prompts -> Q-SecAPrompts-<n>
+                                            # A shared `Q-Section-<n>` collided across the
+                                            # nine units and broke the probe layer's own
+                                            # invariant that consumer ids never collide
+                                            # (haipipe-probe/SKILL.md). Measured on MISQ:
+                                            # `Q-Section-1` named three different questions
+                                            # on three different pages.
+q_anchor: "[Q-Sec<unit><Slug>-<n>] beside the {VAL:?} or \\cite{TOADD} it will fill; the
+           entry's Reason names the §<N> P<x>.S<y> sentence(s) that raised it — the back-link"
+closed_when: "PROBE writes the Answer + the target: QA-file path; CHECK's human verifies and
+              the agent THEN places the real thing. A CITATION retires its placeholder AND its
+              bracket together, because \\citep{key} is self-checking against the .bib forever.
+              A VALUE retires only the placeholder: the number replaces {VAL:?}, the bracket
+              STAYS, and a `> Value:` lane naming the entry, the run and state=verified is
+              written under the sentence. That is QC0@paper's S4, the worked example of a
+              FINISHED sentence. Discharging a value's bracket makes a verified number
+              unverifiable, because a bare number has nothing tying it to its run and the
+              resolver only checks numbers on a bracketed sentence."
 
 done_criteria:
   - "grep -c '<tpl' {section}.md = 0; structure overview matches the paragraph blocks"
   - "every paragraph carries heading + one-line preview + real prose sentences"
   - "no bare {VAL:?} or \\cite{TOADD} — each sits beside its [Q-<Stage>-<n>]; a TOADD that
      survives into compiled tex fails CHECK"
+  - "every PLACED number carries its [Q-<Stage>-<n>] and a `> Value:` lane. A number sitting in
+     prose with neither is unverifiable and reports NOTHING on the board, which is worse than a
+     placeholder because it looks finished. Measured on MISQ 260727: S-Main-0's headline 12.90
+     had been placed with its bracket discharged and the whole page reported 0 markers"
   - "the Q-consumer records live only in the S page's `## Items to Finish`, in the unified
-     `- [ ] 🔎 Q-Section-<n>` + Description/Reason/Probe/Answer shape; they never duplicate
+     `- [ ] 🔎 Q-Sec<unit><Slug>-<n>` + Description/Reason/Probe/Answer shape; they never duplicate
      themselves under Content"
   - "every display need is a DR row that came back `done` with its unit linked"
   - "6-axis CHECK gate PASSes: structure · citation · values · display · venue · proof"
@@ -227,9 +265,9 @@ Three placeholder forms, and nothing guessed
 --------------------------------------------
 
 ```text
-{VAL:? <what>} [Q-Section-<n>]   a number PROBE must trace to a source, + the question that owes it
+{VAL:? <what>} [Q-Sec6Results-<n>]  a number PROBE must trace to a source, + the question that owes it
 \citep{key} / \citet{key}        a REAL citation — the key must ALREADY EXIST in the .bib
-\cite{TOADD} [Q-Section-<n>]     a citation slot with no suitable .bib key yet, + its question
+\cite{TOADD} [Q-Sec6Results-<n>]    a citation slot with no suitable .bib key yet, + its question
 ```
 
 The placeholder and its anchor bracket are **two markers side by side, never fused**. The bracket
@@ -264,9 +302,14 @@ When the section ALREADY has prose in `sections/*.tex`, the `.md` is filled FROM
 2  extract the paragraph structure (% Para [id] banners, or %% ---- Pn.Sn ---- markers)
 3  per paragraph: write the heading + preview, then copy the sentences as prose lines —
    one per line, blank-line separated, markers stripped
-4  preserve every existing > USER: comment EXACTLY where it was
+4  preserve every existing > <ACTOR>: comment lane EXACTLY where it was —
+   match the LANE SHAPE, never one id: `> JL:` and `> USER:` are the same thing
 5  present the populated .md for review
 ```
 
 This is the ONLY time text flows tex → `.md`. From then on the `.md` is the source and tex is
 sync output; a second backward-fill would overwrite authored prose with a build product.
+
+Everything else a re-run may and may not touch is `stages/CONTRACT.md`, "The second run", which
+supersedes the local rules this file used to carry alone (QB2c, ruled 2026-07-27). `on_rerun:` in the
+contract block above is the declaration; this step is the one case that predates it.

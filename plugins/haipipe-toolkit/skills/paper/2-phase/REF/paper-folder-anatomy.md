@@ -47,12 +47,16 @@ Ruled 2026-07-26 on the design board (`skills/diagrams/01-haipipe-paper-260725`,
 │       ├── float.tex                 📦 the \caption + \label a section \inputs
 │       ├── assets/                   📦 the promoted render: figure.pdf | table-body.tex
 │       ├── README.md · preview.tex · preview.pdf     ✂️ never ship
-│       └── source/ · candidates/ · versions/         ✂️ never ship
+│       └── intake/ · recipe/ · candidates/ · versions/         ✂️ never ship
 └── <venue>.cls · <venue>.bst         📦 the venue shell, copied, never authored
 ```
 
 There is NO top-level `figures/`, and no `Figure/`/`Table/` bucket. A display is
 a UNIT and its render lives inside it. There is no `STATUS.md`: see below.
+
+For new units, `intake/` holds a provenance-bound summary input package and `recipe/` holds the
+code, prompt, or FigureSpec that turns it into the asset. Existing units may retain the legacy
+`source/` layout until a deliberate unit migration; do not rename a working paper as cleanup.
 
 ## The prefix semantics: the NUMBER is the delete test
 
@@ -175,10 +179,11 @@ status, and placement.
 - each unit's own `README.md` is its contract; there is no paper-level display index file, because the board's `3-display/` pages are the index:
   `ID | Type | Claim | Evidence Source | Section | Status | Canonical PDF`.
 - Each display unit has `README.md` with:
-  `purpose`, `claim`, `source`, `inputs`, `exports`, `caption`, `placement`,
-  `status`, and `open needs`.
-- `float.tex` owns the LaTeX float, caption, label, and asset/table-body input.
-  Section prose owns the lead-in and placement decision.
+  `purpose`, `claim`, `source`, `inputs`, `exports`, `caption job`, `status`, and
+  `open needs`. It mirrors the unit contract but is not a second source for literal wrapper text.
+- The unit's `S-Display-<n>` page owns the literal `### Wrapper` (caption, label, and float
+  placement). `float.tex` serializes that Paper-approved wrapper and references the asset/table-body.
+  Section prose owns the lead-in and narrative location decision.
 - `preview.tex` compiles one display unit to `preview.pdf`; this gives each
   display its own reviewable PDF and lets the same unit be used in
   `0-lifecycle/3-display`, `0-lifecycle/4-main`, and the main paper.

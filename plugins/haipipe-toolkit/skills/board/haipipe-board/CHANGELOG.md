@@ -5,6 +5,113 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## [0.45.0] - 2026-07-28 - a variant tail is part of the unit's identity
+
+- **`S-Display-<n><letter><tail>` now resolves**, e.g. `S-Display-4al2` and `S-Display-4al5`, the same claim under two specifications. Three places stopped at the letter and each failed differently: the chip pattern rendered NO card for either; `_short()` returned `S-Display-4a` for both so `by_short` kept whichever sorted first; and the face-id derivation gave both the anchor `S-Display-4A`, which exists on neither page, so both cards silently lost their owning-page link.
+- All three now carry the tail. The legacy `display<NN><a>` form is untouched, and `S-Display-Dash` (a page, not a unit) and `S-Display-4A` (the uppercase page anchor) still do not chip, so the two identities never compete for one string.
+
+## [0.44.0] - 2026-07-28 - a member may have variants, and both the parser and the minter had to learn it
+
+- **`src/parse.py`, the unit pattern.** A page id was `\d+[a-z]?`, a number plus at most one letter, so `S-Display-4al2-main-regression.md` matched NOTHING. The failure mode was the bad one: the file parsed as no page at all, `board.md` reported "listed in Pages but no such file exists", and the page was invisible rather than rejected with a reason. The alternation now leads with `\d+[a-z][a-z0-9]+`, so a VARIANT id parses and `4a` still parses exactly as before.
+- **`stage.py`, `resolve_filename`.** It accepted only a number or one uppercase letter, so the minter could not create `4a` either, and every block-plus-member page in the MISQ paper had been made by hand while this function's own docstring called it "the one place an S page's filename is composed". Widened to the same grammar, preserving case for a lowercase member id and still upper-casing a single appendix letter.
+- **What a variant MEANS, so the tail does not become a free-for-all:** the same claim and the same job under a different specification of the exposure or method, INHERITING its parent's letter. That inheritance is the point. Letters are reading order, so a unit reading right after `4a` would otherwise have to become `4b` and shift `4b` and `4c` down, and the MISQ board measured that cascade twice on 2026-07-27 at roughly 750 rewritten lines across 105 files.
+- **`4a-l2` is not available, on a mechanical ground.** The page-id regex stops at the first hyphen, so a hyphenated tail parses as `S-Display-4A` and collides with its own parent. The tail runs on: `4al2`.
+- **Verified on the MISQ board:** 42 pages, the new page ordered between `S-Display-4A` and `S-Display-4B`, 0 stale-contract warnings, every other page id unchanged, and `build-displays.py` shipping 11 units.
+
+## [0.44.0] - 2026-07-28 - measure the master the paper SHIPS
+
+- **A paper may have two tex trees, and 0.43.0 measured the wrong one.** On the MISQ board `3-dist/tex/paper.tex` is the live deliverable, generated one-way from the S-Main pages by `md2tex.py`, while a root master over hand-written `sections/` still builds beside it. `_input_closure()` globbed the ROOT for `\begin{document}`, so it saw only the legacy tree and reported `??` for nine displays that were in the shipped PDF all along. It now prefers `3-dist/tex/paper.tex` when present.
+- **An `\input` resolves against the file's own directory OR the paper root.** `md2tex.py` compiles with `TEXINPUTS=".:<paper root>:"`, which is how `\input{S-Main-3-theory}` and `\input{displays/S-Display-1a-hero-concept/float}` both work from inside `3-dist/tex/`. A walker trying only one base silently loses half the tree.
+- **Net effect on that board:** one `\ref` chip still reports `??`, `fig:llm-measurement`, whose unit is deliberately folded. Verified by regenerating: `paper.pdf` at 47 pages, nine unit labels in `paper.aux`, zero undefined references.
+- **The lesson worth keeping:** "a label exists on disk" (0.42.0), "a label reaches the master" (0.43.0), and "which master" (this one) are three different questions, and only the third makes the second mean anything.
+
+## [0.43.0] - 2026-07-28 - a label on disk is not a label in the document
+
+- **`Registry._input_closure()`.** The label index spans every `.tex` on purpose, so a section-local label still resolves. The cost was that "a `\label` exists somewhere" was reported as "this pointer works", and those are different questions: a float that no reachable section `\input`s declares its label in a file LaTeX never opens, so the `\ref` compiles to `??` while the chip painted green. `ref()` now resolves the master's real `\input`/`\include` closure once and downgrades any label declared outside it.
+- **Measured on the MISQ board before the fix:** `tab:descriptives` read `ok` EIGHT times on one page and printed `??`; `tab:main_results` read `ok` while its only declaration sat in a retired `displays/_old/` file reached solely by an orphan section. After: all 22 display chips on that page match ground truth.
+- **It downgrades the `\ref` CHIP, never the unit CARD.** A card answers "is this display built and agreed", which stays true of an unwired float; a `\ref` chip IS the claim that the pointer resolves. This is `_gate`'s worst-state-wins applied to a second thing disk cannot see, and it deliberately stops short of the cards for the same reason `[AMBER]` does not downgrade one: ambering the whole set would stop the distinction informing.
+- **No master, no judgement.** `_prints()` returns True when no `\begin{document}` file is found, so a board whose paper-root has no master is not painted amber wholesale.
+
+## [0.42.0] - 2026-07-27 - a display unit is named for the page that owns it
+
+- **The unit-to-page join is a LOOKUP, not a guess.** `_sdisplay_read` used to derive an S-Display page name from the unit folder with `display0*(\d+)([a-z]?)` and rglob a stem. When either side was renamed the derivation still produced a face id, found no file, and returned an EMPTY state line, so the AGREED downgrade never fired and a `[RED]` blocked unit painted green on the board. Where a unit folder shares its name with its page, the page is now read directly. The derived branch is kept, and labelled as the fragile one, so a paper that has not migrated still builds.
+- **Two layouts, detected not configured.** `Registry` prefers `0-lifecycle/3-display/workspace/S-Display-*/` when it exists and falls back to `displays/display*/`. The board always reads the SOURCE tree, because `candidates/`, `versions/` and `preview.png` exist only there and a card without them cannot be judged.
+- **Both trees are excluded from the cite scan.** Under the workspace layout `displays/` holds a GENERATED copy of every float, so indexing it would declare each `\label{}` twice and report a collision against itself. `disp_parts` replaces the single `disp_rel in p.parts` test at both sites.
+- **`_short()` replaces `id.split("-", 1)[0]`.** That split was correct only while every id began with `display`; on `S-Display-4a-main-regression` the first hyphen belongs to the prefix, so every unit would have keyed on `S` and the whole set would have collapsed onto whichever sorted first.
+- **ALWAYS A CARD (JL 2026-07-27).** A unit name in prose renders as the evidence card, never as a bare page link: the card already carries the owning page's anchor and its state line, so it is a strict superset of the link. MARKER group 6 now accepts `S-Display-<n><letter>[-slug]` alongside the legacy form. The page ANCHOR keeps the uppercase short id (`S-Display-4A`), which the new alternative does not match, so the two identities never compete for one string. `S-Display-Dash`, a page and not a unit, does not match either.
+
+## [0.41.9] — 2026-07-27 — a Display exposes its alternatives without selecting one
+
+- Every allocated paper Display now places `Display Versions` between the live artifact and the real folder tree. It lists the current `float.tex` target, every stored version, unpromoted candidate, and non-current asset as directly openable files.
+- The projection does not manufacture version chronology or approval from filenames: only `float.tex` identifies the printed artifact. The explanatory posture states that provenance and supersession require a manifest or stage record.
+- Display identities may now use an intentional alphabetic paired suffix such as `display01a` / `display01b`; marker resolution and the S-Display bridge preserve that suffix without changing LaTeX's figure counter.
+
+## [0.41.8] — 2026-07-27 — every Display page reviews the same three concrete things
+
+- A resolved paper Display page now begins its Content with the compiled Current Float, the exact live artifact referenced by `float.tex`, and an ASCII view of the unit directory as it exists on disk.
+- The folder view marks a `source/`-only unit as legacy rather than implying that `intake/` and `recipe/` already exist. A new-style unit reports the target layout. This makes staged migration visible without moving assets or inventing provenance.
+
+## [0.41.7] — 2026-07-27 — an authored PDF can be inspected beside the compiled float
+
+- Standard Markdown image syntax now recognizes a local `.pdf` target. `![](path.pdf)` renders a native PDF object with an `open PDF` fallback, rather than an invalid `<img>`.
+- A Display page can therefore show the generated `preview.pdf` Current Float first and, when comparison matters, show the underlying live display PDF in the next Content subsection. The two files have different review jobs and no longer have to compete for one preview slot.
+
+## [0.41.6] — 2026-07-27 — a live refresh no longer throws you back to the index
+
+- **The live refresh silently un-routed the page.** `tick()` swaps `div.wrap` wholesale, and the
+  page router is pure CSS (`body:has(.q:target) .q:target{display:block}`). `:target` binds to an
+  ELEMENT, not to an id: replacing the wrap destroys the section the hash pointed at, the fresh
+  one carries the same id, and the browser never re-resolves the fragment. Nothing matches, so
+  `body:not(:has(.q:target)) .q{display:none}` hid every page and the index came back — with the
+  hash still in the URL, which is why it read as "the refresh threw me out" rather than as a bug.
+- Fixed by re-navigating to the hash after the swap. Only a real navigation re-resolves `:target`;
+  `history.replaceState` does not.
+- Reproduced and the repair verified in headless Chrome, on a minimal page with the same three
+  CSS rules: before swap `stage=true index=false`; after swap `stage=false index=true` with the
+  hash still present; after repair `stage=true index=false`.
+- Found by JL: "after the refresh, I was went to the index page, not the Stage page."
+
+## [0.41.5] — 2026-07-27 — a sentence with evidence answers the same gesture
+
+- **`summary` removed from the dblclick guard, and the form now lands in the drawer body.**
+  `QA8@boardform` rules that double-click opens the add-form on a BARE sentence while a drawer
+  gets its own `➕ add to this sentence` row, and that row is real — `board.js` appends one to
+  every `.sapp` at load. But it is reachable only once the drawer is already OPEN, so on a
+  sentence carrying evidence the gesture people actually learned did nothing, silently. 116 of
+  the MISQ board's sentences are already drawers, and that number only grows as the evidence
+  card becomes the default phase output, so both shapes now answer double-click.
+- **The placement is the subtle half.** `mk` does `afterEl.insertAdjacentElement('afterend', …)`,
+  so reusing the bare-sentence call on a drawer would insert the form INSIDE `<summary>`, where
+  every click toggles the drawer and the inputs cannot be used. A drawer now passes the same two
+  arguments the `➕` row path passes — insert at the end of the drawer body, while naming the
+  summary's sentence as the target line — and opens the drawer first, since the two clicks
+  toggled it net-zero.
+- The remaining guard clauses still cover what `summary` stood in for: the sentence text resolves
+  to the inner `p`, the `.sbadge` has no `p` ancestor so `!p` catches it, and a marker is a
+  `<button>`.
+- Found by JL double-clicking a sentence that had just gained a `> Value:` lane.
+
+## [0.41.4] — 2026-07-27 — paper Display pages expose the editable source without replacing the float
+
+- A per-asset `S-Display` page keeps the standard Q-template order and places its compiled
+  `preview.pdf` as the first `📚 Content` subsection. It resolves the unit from the page's explicit
+  `Registry id:` or `unit:` record, not from a fragile `1a` / `01` title conversion.
+- The same subsection now links any PowerPoint source beside `open PDF`. A new source belongs in
+  `recipe/`; legacy PPTX files in `source/`, `candidates/`, or `versions/` stay discoverable with
+  an honest role label. PPTX is editable work material; `preview.pdf` is still the printable
+  float, caption, label, and placement that a reviewer inspects.
+
+## [0.41.3] — 2026-07-27 — the id regex accepts a per-unit stage token
+
+- **A Q-consumer id may carry digits in its stage token.** `Q-[A-Za-z]+-\d+` rejected
+  `Q-Sec6Results-3`, so a paper whose per-unit stage names its unit in the id (JL's
+  2026-07-27 ruling) had every bracket silently un-chipped: no error, no warning, just
+  grey prose where a chip belonged. Widened to `[A-Za-z0-9]+` at all six sites —
+  `dialect_paper.py` `QID` and its `\cite{TOADD}`-bracket lookahead, `body.py`'s
+  `MARKER` alternation (3) and `QBRACKET`.
+- Verified on the MISQ paper: 10 of 10 bracket chips on `S-Main-6` still resolve `qref
+  ok` after both sides of every binding were renamed.
+
 ## [0.41.2] — 2026-07-27 — folds that stay shut, and two renderer defects
 
 - **An item body may contain no blank line.** `body.py` calls `flush()` on a

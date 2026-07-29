@@ -1,0 +1,29 @@
+{
+  "schema": "haipipe-display-input/v1",
+  "created_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "task": {
+    "holder": "tasks/CNN_display/<NN>_summary_export",
+    "run": "results/<run-id>",
+    "git_sha": "<producing-code-git-sha>"
+  },
+  "output": {
+    "artifact": "results/<run-id>/source_data.csv",
+    "sha256": "<sha256-of-source_data.csv>",
+    "row_count": 0,
+    "approved_for_display_intake": true,
+    "contains_raw_or_phi": false
+  },
+  "derived_from": [
+    {
+      "artifact": "<upstream-task-result-or-report>",
+      "sha256": "<upstream-artifact-sha256>",
+      "role": "source-result"
+    }
+  ],
+  "selection": {
+    "columns": ["<column>"],
+    "group_by": ["<grouping-column>"],
+    "filters": ["<filter-or-none>"],
+    "unit_of_analysis": "<one-row-means-what>"
+  }
+}

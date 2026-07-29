@@ -4,9 +4,9 @@ description: "Render a publication-quality LaTeX table from an aggregated data f
 argument-hint: "[table-spec-or-data-path]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-06-22"
-  summary: "Render publication-quality LaTeX tables from aggregated data files into a paper display unit."
+  version: "0.2.1"
+  last_updated: "2026-07-27"
+  summary: "Render publication-quality LaTeX tables from a provenance-bound Display Intake into a display unit."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,11 +23,16 @@ recomputes from raw evidence (that is a `haipipe-task-for-display` task).
 
 ## Output: write into a display unit
 
-The table goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
+The table goes into a `displays/displayNN-<slug>/` unit per the shared contract:
 `../../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/table-body.tex` (the `tabular`/`threeparttable`
-block), with `float.tex` the wrapper that `\input`s it (caption + label); rebuild spec
--> `source/gen_*.py` + the aggregated CSV path.
+block), with caller-owned `float.tex` the wrapper that `\input`s it (caption + label + placement); rebuild recipe
+-> `recipe/gen_*.py`, reading only the approved aggregate in `intake/inputs/`.
+
+For a new unit, read `intake/manifest.yaml` before doing anything else.
+It must name the task holder, run, canonical artifact, and snapshot that this table may use.
+Do not search task folders or select rows from an arbitrary CSV.
+Legacy units that contain only `source/` remain legacy and are not silently migrated.
 
 ## Scope: What This Skill Can and Cannot Do
 
@@ -59,27 +64,26 @@ rows, panels, table notes) can be done properly.
 - **SE_STYLE = `paren-below`** — Standard errors in parentheses on the line below each coefficient.
 - **DECIMALS = 3** — Default decimal places for coefficients; 0-2 for counts/N.
 - **NOTES = `threeparttable`** — Table notes go in a `threeparttable` `tablenotes` block, not in `\caption{}`.
-- **FORMAT = `tex`** — Output is a standalone `float.tex` fragment, input-able by the paper.
+- **FORMAT = `tex`** — Output is `assets/table-body.tex`; the caller-owned `float.tex` wraps it.
 - **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for table quality review.
 
 ## Inputs
 
-1. **Display contract** — the unit's `README.md` (claim, caption intent, section, source) under `0-displays/displayNN-<slug>/`
-2. **Aggregated data file** — a CSV/JSON of *already-computed* results (e.g. a regression export from a `Z0N_Display` task).
+1. **Display contract** — the unit's `README.md` (claim, caption intent, section) under `displays/displayNN-<slug>/`
+2. **Display Intake** — `intake/manifest.yaml` plus an aggregated CSV/JSON snapshot of *already-computed* results.
    Never raw PHI data.
 3. **Optional table spec** — column order, which models, star thresholds, decimals, transpose (variables-as-rows vs models-as-columns), rows to bold
 
-If no display contract exists, scan for aggregated data files and ask which table to render.
+If no display contract or verified intake exists, stop and ask the caller to create one.
 
 ## Workflow
 
 ### Step 1: Read the Display Contract and Locate Data
 
-Read `0-displays/displayNN-<slug>/README.md` for the claim this table must defend,
+Read `displays/displayNN-<slug>/README.md` for the claim this table must defend,
 the target section, and the caption intent.
-Locate the aggregated data file it
-cites.
-Confirm the file holds *aggregated* results, not row-level PHI.
+Read `intake/manifest.yaml`, then its declared snapshot path.
+Confirm the snapshot holds *aggregated* results, not row-level PHI, and that its hash matches.
 
 ### Step 2: Infer the Table Type
 
@@ -104,9 +108,10 @@ emits the `.tex`. Numbers come from the file, never hardcoded.
 
 ```python
 # gen_table2_main_regression.py
+from pathlib import Path
 import pandas as pd
 
-df = pd.read_csv('source/reg_main.csv')   # columns: term, m1_coef, m1_se, m1_p, m2_coef, ...
+df = pd.read_csv('intake/inputs/reg_main.csv')   # columns: term, m1_coef, m1_se, m1_p, m2_coef, ...
 
 def stars(p):
     return '***' if p < 0.001 else '**' if p < 0.01 else '*' if p < 0.05 else ''
@@ -115,9 +120,6 @@ def cell(coef, se, p):
     return f"{coef:.3f}{stars(p)}", f"({se:.3f})"
 
 lines = [
-    r"\begin{table}[t]", r"\centering",
-    r"\caption{Effect of agreeableness on opioid prescribing.}",
-    r"\label{tab:main}",
     r"\begin{threeparttable}",
     r"\begin{tabular}{l S[table-format=-1.3] S[table-format=-1.3]}",
     r"\toprule",
@@ -138,10 +140,11 @@ lines += [
     r"\item Standard errors in parentheses. * p$<$0.05, ** p$<$0.01, *** p$<$0.001.",
     r"\end{tablenotes}",
     r"\end{threeparttable}",
-    r"\end{table}",
 ]
-open('float.tex', 'w').write("\n".join(lines) + "\n")
-print("Wrote float.tex")
+out = Path('assets/table-body.tex')
+out.parent.mkdir(parents=True, exist_ok=True)
+out.write_text("\n".join(lines) + "\n", encoding='utf-8')
+print(f"Wrote {out}")
 ```
 
 ### Step 5: Run the Script, Emit the Include, and Verify
@@ -150,18 +153,11 @@ print("Wrote float.tex")
 python gen_table*.py
 ```
 
-Confirm `float.tex` exists, compiles standalone, and the numbers match the source
-file by spot-check.
-Then write the one-line `latex_include.tex` (`\input{...float.tex}`)
-for the master shell.
-
-**float.tex convention:** match the display unit.
-If the unit's scaffold splits
-the float into a caption/label wrapper (`float.tex`) that `\input`s a body asset
-(`assets/table-body.tex`), emit the `tabular`/`threeparttable` block into the body
-asset and leave the wrapper alone.
-If the unit has no such split, a self-contained
-`float.tex` (the example above) is correct.
+Confirm `assets/table-body.tex` exists and the numbers match the declared Intake
+snapshot by spot-check. The Paper caller supplies and approves `float.tex` (caption,
+label, placement); it `\input`s the body asset. Do not create `latex_include.tex` or
+write a self-contained wrapper: a table renderer never invents or changes paper-facing
+caption semantics.
 
 ### Step 6: Table Quality Review with REVIEWER_MODEL
 
@@ -178,7 +174,7 @@ mcp__codex__codex:
     3. Is numeric alignment correct (decimal-aligned)?
     4. Does the table exceed column/text width?
     5. Any missing rows (Observations, R^2, controls indicator)?
-    [paste float.tex + caption]
+    [paste assets/table-body.tex + caller-approved caption]
 ```
 
 ### Step 7: Quality Checklist
@@ -196,14 +192,14 @@ mcp__codex__codex:
 ## Output
 
 The display unit layout (asset -> `assets/table-body.tex` wrapped by `float.tex`,
-rebuild spec -> `source/gen_table*.py` + the aggregated CSV) is the shared contract:
+approved values -> `intake/inputs/`, rebuild recipe -> `recipe/gen_table*.py`) is the shared contract:
 `../../ref/display-unit-output-contract.md`.
 
 ## Relation to the Display Stage and Tasks
 
 ```
-Z0N_Display task (server, PHI)  --aggregated CSV-->  this skill (laptop-safe)  -->  float.tex
-        computes the numbers                          typesets the table
+display-input task (server, PHI)  --aggregate + provenance-->  Intake  -->  this skill  -->  table body
+        computes the numbers                                 freezes approved values     (Paper wraps it)
 ```
 
 The heavy computation (regression, descriptives) is a `haipipe-task-for-display`
@@ -219,6 +215,6 @@ typesetting.
 ```
 status:    ok | blocked | failed
 summary:   which table(s) rendered, from which data file, into which display unit
-artifacts: [float.tex, gen script, latex_include.tex paths]
+artifacts: [assets/table-body.tex, recipe/gen script, preview paths]
 next:      suggested next command (often /haipipe-paper-display build or insert)
 ```

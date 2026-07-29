@@ -31,7 +31,7 @@ Sourced from user feedback across multiple sessions. These are non-negotiable pr
 
 ## Comment rules
 
-- **Preserve USER comments verbatim.** Never compress, summarize, translate, or replace `> USER:` or `%% Comments: {USER}` lines. Keep them exactly as written, even when applying the edit they request.
+- **Preserve human comment lanes verbatim.** Never compress, summarize, translate, or replace a `> <ACTOR>:` lane or a `%% Comments: {<ACTOR>}` line, whoever the actor is. Keep them exactly as written, even when applying the edit they request. Match the LANE SHAPE, not one id: `> USER:` is canonical (`2-phase/USAGE.md:53`) and `> JL:` is a tolerated alias, and on 2026-07-27 all 47 human comment lines on the MISQ paper read `> JL:` while `> USER:` appeared on none of them, so a rule keyed to one id protected nothing. Ruled in `stages/CONTRACT.md` under "The second run" (QB2c).
 - **One-line CC responses.** When replying to user inline comments, keep the response to ONE line. Multi-line response blocks make the file unreadable.
 - **No elaborate tagging.** Don't add (done)/(old) tags on every comment. Focus effort on prose changes.
 

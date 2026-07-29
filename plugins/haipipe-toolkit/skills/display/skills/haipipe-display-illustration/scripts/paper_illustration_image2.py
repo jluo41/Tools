@@ -29,6 +29,14 @@ def output_dir(workspace: Path) -> Path:
     return (workspace / "figures" / "ai_generated").resolve()
 
 
+def unit_recipe_dir(unit: Path) -> Path:
+    """Keep legacy source/ units intact while new Intake units write recipe/."""
+    source = unit / "source"
+    if source.is_dir() and not (unit / "intake").exists() and not (unit / "recipe").exists():
+        return source
+    return unit / "recipe"
+
+
 def ensure_png_file(path: Path) -> None:
     if not path.is_file():
         raise FileNotFoundError(f"missing PNG file: {path}")
@@ -98,12 +106,12 @@ def build_latex_include(caption: str, label: str) -> str:
     )
 
 
-def build_float_tex(rel_asset: str, caption: str, label: str) -> str:
+def build_float_tex(rel_asset: str, caption: str, label: str, placement: str) -> str:
     """float.tex for a display unit: references the asset under assets/."""
     return "\n".join(
         [
-            "% Rendered by haipipe-display-illustration; rebuild spec in source/prompt.md.",
-            r"\begin{figure}[t]",
+            "% Rendered by haipipe-display-illustration; rebuild recipe recorded beside this unit.",
+            f"\\begin{{figure}}[{placement}]",
             r"\centering",
             f"\\includegraphics[width=\\textwidth]{{{rel_asset}}}",
             f"\\caption{{{caption}}}",
@@ -138,18 +146,19 @@ def run_finalize_unit(
     best_image: Path,
     caption: str,
     label: str,
+    placement: str,
     score: float | None,
     review_summary: str | None,
     json_out: Path | None = None,
 ) -> int:
-    """Finalize into a 0-displays/<unit>/ display unit (the contract path)."""
+    """Finalize into a display unit, preserving legacy source/ layouts when present."""
     best_image = best_image.expanduser().resolve()
     ensure_png_file(best_image)
     unit = display_unit.expanduser().resolve()
     assets = unit / "assets"
-    source = unit / "source"
+    recipe = unit_recipe_dir(unit)
     assets.mkdir(parents=True, exist_ok=True)
-    source.mkdir(parents=True, exist_ok=True)
+    recipe.mkdir(parents=True, exist_ok=True)
 
     # paths relative to the paper root, for LaTeX \includegraphics / \input
     try:
@@ -164,15 +173,15 @@ def run_finalize_unit(
     final_image = assets / "figure.png"
     float_tex = unit / "float.tex"
     preview_tex = unit / "preview.tex"
-    review_log = source / "review_log.json"
+    review_log = recipe / "review_log.json"
 
     shutil.copy2(best_image, final_image)
-    # Do NOT clobber a hand-edited float.tex (caption/label live there). Only
+    # Do NOT clobber a hand-edited float.tex (caption/label/placement live there). Only
     # author it on first finalize; on re-finalize the asset is refreshed but the
-    # existing float.tex (and its caption) is preserved.
+    # existing float.tex (and its semantic fields) is preserved.
     float_written = not float_tex.is_file()
     if float_written:
-        float_tex.write_text(build_float_tex(rel_asset, caption, label), encoding="utf-8")
+        float_tex.write_text(build_float_tex(rel_asset, caption, label, placement), encoding="utf-8")
     if not preview_tex.is_file():
         preview_tex.write_text(build_preview_tex(rel_float), encoding="utf-8")
 
@@ -187,6 +196,7 @@ def run_finalize_unit(
         "reviewSummary": review_summary,
         "caption": caption,
         "label": label,
+        "placement": placement,
     }
     write_json(review_log, review_payload)
 
@@ -268,7 +278,7 @@ def run_verify(workspace: Path, *, display_unit: Path | None = None, json_out: P
         unit = display_unit.expanduser().resolve()
         final_image = unit / "assets" / "figure.png"
         float_tex = unit / "float.tex"
-        review_log = unit / "source" / "review_log.json"
+        review_log = unit_recipe_dir(unit) / "review_log.json"
         errors: list[str] = []
         artifacts = {
             "figureFinal": {"path": str(final_image), "exists": final_image.is_file()},
@@ -360,22 +370,27 @@ def build_parser() -> argparse.ArgumentParser:
     finalize.add_argument("--best-image", required=True, help="Accepted PNG to promote to figure_final.png")
     finalize.add_argument(
         "--caption",
-        default="[Replace with a paper-ready caption].",
-        help="Caption text to place in latex_include.tex",
+        help="Caller-approved caption text. Required with --display-unit; used in latex_include.tex otherwise.",
     )
-    finalize.add_argument("--label", default="fig:replace-me", help="LaTeX figure label")
+    finalize.add_argument(
+        "--label",
+        help="Caller-approved LaTeX figure label. Required with --display-unit; used in latex_include.tex otherwise.",
+    )
+    finalize.add_argument(
+        "--placement",
+        help="Caller-approved float placement such as t or htbp. Required with --display-unit.",
+    )
     finalize.add_argument("--score", type=float, help="Final review score")
     finalize.add_argument("--review-summary", help="Short review summary for review_log.json")
     finalize.add_argument(
         "--display-unit",
-        help="Target 0-displays/<unit>/ dir (contract path). When set, writes assets/figure.png "
-        "+ float.tex + source/review_log.json instead of flat figures/ai_generated/.",
+        help="Target displays/<unit>/ dir. New Intake units receive recipe/review_log.json; legacy source/ units stay legacy.",
     )
     finalize.add_argument("--json-out", help="Optional path to save the JSON result")
 
     verify = subparsers.add_parser("verify", help="Verify that final artifacts were emitted correctly")
     verify.add_argument("--workspace", help="Paper or project workspace root")
-    verify.add_argument("--display-unit", help="Verify a 0-displays/<unit>/ unit instead of flat figures/")
+    verify.add_argument("--display-unit", help="Verify a displays/<unit>/ unit instead of flat figures/")
     verify.add_argument("--json-out", help="Optional path to save the JSON result")
 
     return parser
@@ -393,12 +408,17 @@ def main() -> int:
     if args.command == "finalize":
         display_unit = getattr(args, "display_unit", None)
         if display_unit:
+            if not args.caption or not args.label or not args.placement:
+                parser.error(
+                    "--display-unit requires explicit --caption, --label, and --placement from the caller"
+                )
             return run_finalize_unit(
                 workspace,
                 Path(display_unit),
                 best_image=Path(args.best_image),
                 caption=args.caption,
                 label=args.label,
+                placement=args.placement,
                 score=args.score,
                 review_summary=args.review_summary,
                 json_out=json_out,
@@ -406,8 +426,8 @@ def main() -> int:
         return run_finalize(
             workspace,
             best_image=Path(args.best_image),
-            caption=args.caption,
-            label=args.label,
+            caption=args.caption or "[Replace with a paper-ready caption].",
+            label=args.label or "fig:replace-me",
             score=args.score,
             review_summary=args.review_summary,
             json_out=json_out,

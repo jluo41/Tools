@@ -1,7 +1,7 @@
 fn-scaffold: Scaffold a display task-folder
 =============================================
 
-Produce a paper figure or table from upstream eval results.
+Produce the verified display-ready summary input for a paper figure or table from upstream results.
 Group letter default: **C** (display).
 
 Output: `tasks/C{NN}_<group>/{NN}_<task_name>/`.
@@ -20,9 +20,9 @@ Step 2 — Collect metadata
 - 2-digit NN: next free in this group.
 - snake_case task_name: descriptive
   (e.g., `main_figure_mae_vs_modelsize`, `table_ablation_horizons`).
-- Kind: `figure` | `table`.
+- Intended display kind: `figure` | `table` | `diagram` | `illustration`.
 - Source runs: list of `<task_path>/results/<run>/` to aggregate from.
-- Output format: `.pdf` + `.png` for figures; `.tex` + `.csv` for tables.
+- Output format: `source_data.csv` + `provenance.json`; optional diagnostic images stay under `diagnostics/`.
 - `_meta:` block.
 
 
@@ -38,7 +38,7 @@ C{NN}_<group>/
     ├── runs/
     │   └── <kind>_<name>.sh
     ├── results/
-    │   └── <run>/                           *.pdf, *.png, *.tex, source_data.csv
+    │   └── <run>/                           source_data.csv, provenance.json, diagnostics/ (optional)
     └── notebooks/
 ```
 
@@ -49,9 +49,14 @@ Step 4 — Seed config
 Copy `ref/config-seed.yaml` to `configs/<kind>_<name>.yaml`.
 Fill in:
 - `_meta:` block.
-- `kind:` (figure | table).
+- `display_kind:` (figure | table | diagram | illustration).
 - `source_runs:` — list of upstream result paths.
-- `plot_params:` (figure) or `table_params:` (table).
+- `summary_params:` — selected columns, grouping, filters, and unit of analysis.
+
+The run must also write `results/<run>/provenance.json` using
+`ref/provenance-template.json`.
+It records the producing task holder, run, output hash, upstream artifacts, selected columns,
+filters, and the assertion that the CSV is display-safe and contains no raw or PHI data.
 
 
 Step 5 — Run-script
@@ -64,8 +69,11 @@ Set `TASK_NAME="{NN}_{task_name}"`.
 Step 6 — Next step
 -------------------
 
-After scaffolding, suggest running the task (`bash runs/<run>.sh`).
-Figure crafting standards (axes, palette, legend layout) live with whatever document layer consumes the output; this skill only guarantees the results/ contract.
+After scaffolding, suggest running the task (`bash runs/<run>.sh`), then materializing its
+`source_data.csv` into the display unit's `intake/` with a manifest that names this task holder,
+run, canonical artifact, hashes, and permitted use.
+Figure crafting standards (axes, palette, legend layout) live with Display; this skill only
+guarantees the summary-data and provenance contract.
 
 
 Step 7 — Report
@@ -86,6 +94,8 @@ MUST NOT
 - Modify upstream `results/<run>/` files (read-only inputs).
 - Embed model-training logic — display tasks consume, they don't compute.
 - Create `README.md`.
+- Treat a PDF, PNG, or TeX emitted here as a canonical paper asset. Diagnostics are allowed only
+  under `results/<run>/diagnostics/`; the Display unit owns the promoted asset and its wrapper.
 
 
 First-run gate

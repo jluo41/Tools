@@ -1481,6 +1481,18 @@
             var y = window.scrollY;
             old.replaceWith(nw);
             if (window.__boardRewire) window.__boardRewire();
+            // RE-BIND :target, or the swap silently returns you to the index.
+            // The page router is pure CSS (`body:has(.q:target) .q:target`), and
+            // :target binds to an ELEMENT, not to an id. Replacing div.wrap
+            // destroys the section the hash pointed at; the fresh one carries the
+            // same id but the browser never re-resolves the fragment, so nothing
+            // matches, `.q{display:none}` hides every page and the index comes
+            // back — with the hash still in the URL, which is why it reads as
+            // "the refresh threw me out" rather than as a bug. Only a real
+            // navigation re-resolves it; history.replaceState does not.
+            // Verified in headless Chrome 260727 (JL).
+            var h = location.hash;
+            if (h) { location.hash = ''; location.hash = h; }
             window.scrollTo(0, y);
             last = lm;
             var n = document.createElement('div');
@@ -1580,11 +1592,35 @@ document.addEventListener('click', function (ev) {
   document.addEventListener('dblclick', function (e) {
     if (e.target.closest('.sadd')) return;
     var p = e.target.closest('p');
-    if (!p || e.target.closest('a,code,button,select,input,textarea,summary,mark')) return;
+    // `summary` is NOT excluded (JL 260727). `QA8@boardform` says double-click
+    // opens the form on a BARE sentence and a drawer gets its own ➕ row, which is
+    // a real second path — but it is only reachable once the drawer is already
+    // open, so on a sentence that carries evidence the gesture people actually
+    // learned did nothing at all, silently. As the evidence card becomes the
+    // default that stops being an edge case: 116 of this board's sentences are
+    // already drawers. So both shapes now answer the same gesture.
+    // The other clauses still cover what `summary` stood in for: the sentence text
+    // resolves to the inner `p`, the `.sbadge` has no `p` ancestor so `!p` catches
+    // it, and a marker is a `<button>`.
+    if (!p || e.target.closest('a,code,button,select,input,textarea,mark')) return;
     var q = p.closest('section.slide.q');
     if (!q) return;
     if (p.closest('.folds,.sapp,.bd,.cmt,.cmb,.qh,.dadd,.spine')) return;
     if (window.getSelection) window.getSelection().removeAllRanges();
+    // WHERE the form goes differs by shape, and getting this wrong is silent.
+    // `mk` does `afterEl.insertAdjacentElement('afterend', …)`, so passing the
+    // summary's own `p` would drop the form INSIDE the <summary>, where every
+    // click toggles the drawer and the inputs cannot be used. A drawer therefore
+    // takes the same two arguments the ➕ row path uses: insert at the END OF THE
+    // DRAWER BODY, while still naming the summary's sentence as the target line.
+    var det = p.closest('details.sent');
+    if (det) {
+      det.open = true;                       // two clicks toggled it net-zero
+      var sapp = det.querySelector('.sapp');
+      mk(det.querySelector('.saddrow') || sapp || p, det.querySelector('summary p'),
+         q.dataset.file);
+      return;
+    }
     mk(p, p, q.dataset.file);
   });
   // ⧉ copy a WHOLE SECTION (JL 260725: section-level, not per-sentence):

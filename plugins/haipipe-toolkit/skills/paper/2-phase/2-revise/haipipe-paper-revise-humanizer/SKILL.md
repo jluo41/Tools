@@ -89,7 +89,7 @@ Before applying any language edit, enforce the four gates in `ref/venue-sciwrite
 
 Examples teach the shape of a move, never wording to copy. A candidate that fails any gate is not proposed.
 
-When the author selected candidate-diff mode in `haipipe-paper-revise`, do not change prose directly. Emit the complete candidate in an adjacent `> Note:` lane using the required `~~removed~~` and `*inserted*` notation, model/date suffix, and no-TeX-sync rule defined by that hub.
+When the author selected candidate-diff mode in `haipipe-paper-revise`, do not change prose directly. Emit the complete candidate in an adjacent `> Note:` lane using the required `~~removed~~` and `**inserted**` notation, model/date suffix, and no-TeX-sync rule defined by that hub.
 ```
 
 ## Key rules from the reference

@@ -1,7 +1,7 @@
 # REVISE · When may it change a sentence a human has already read?
 state: 🟡 PARTIAL
 owner: JL
-method: substitute only what has landed, run place first, and leave a why-comment for every non-trivial change
+method: substitute only what has landed, run place first, revise directly by default, and expose author-requested candidates as sentence apparatus
 
 ## Question
 REVISE is the only phase that rewrites prose a person has already read, and it does it without asking. That makes it the phase most likely to be distrusted, and distrust here is expensive in a specific way: if a reader cannot see what an agent altered, the only safe response is to re-read everything, and at that point the phase has cost more than it saved.
@@ -137,6 +137,15 @@ A bracket whose answer has not landed stays exactly as it is and gets flagged. `
 ### The rule everything rests on, half enforced
 The why-comment convention is stated in four worker contracts, and what is checked is the dispatch rather than the comment: `checks.sh --stage-page` FAILs a newest `[REVISE]` entry with no `workers:` line, which proves the four workers ran and says nothing about whether they explained themselves. The shipped rule is also narrower than it sounds. It asks for a comment on every NON-TRIVIAL change, and `place` states outright that a pure `TOADD` to `\citep{key}` swap needs none, so the comments can never be counted against the edits. If a worker stops commenting on the changes that do need it, the failure is silent and the symptom appears at the gate as a human who cannot tell what changed, which reads like the human's problem rather than the worker's.
 
+### Venue-grounded scientific prose, not generic de-AI rewriting
+AI prose is not fixed by deleting adjectives alone. The recurring defects are defensive repetition, formulaic framing, inflated importance, and a sentence that jumps from observation to conclusion without the connecting warrant. `revise-content` owns the paragraph's argument and hinge; `revise-humanizer` owns the sentence's language. Neither may repair a missing warrant by inventing evidence.
+
+The language pass begins with the writing contract, not a generic "sound human" prompt. The section's venue `template.md` supplies its paragraph move, `style.md` supplies section-specific constraints and anti-patterns, and the pack-wide `style-profile.md` supplies the paper's voice. The paper-local `S-Venue-0` then adapts that contract to its contribution and causal boundary. Exemplars teach the shape of a move, never wording to reuse.
+
+Every proposed wording change must pass four gates: preserve meaning, scope, causal strength, numbers, citations, displays, and defined terms; retain the paragraph's venue job; improve clarity by removing clutter or repairing a buried predicate without replacing technical language; and remove AI tells without deleting legitimate hedging, passive voice, authorial `we`, or evidence-bound qualification. SciWrite supplies the clarity checks, while evidence and numeric integrity remain CHECK responsibilities.
+
+The default remains direct REVISE with `%% {CC-*}` why-comments. When the author explicitly requests original-preserving review, REVISE switches to candidate-diff mode: it leaves source prose and TeX unchanged, and attaches one full `> Note:` candidate beneath the source sentence. The diff uses `~~removed~~` and `**inserted**`, followed by a verified model label and date. The Board renders the first as a deletion line and the second in bold. A candidate is not an applied revision and cannot close REVISE.
+
 ## Items to Finish
 - [x] 📐 The four workers exist, and the chain orders them
       `place · content · humanizer · results` under `2-phase/2-revise/`, dispatched by the `haipipe-paper-revise` chain (`SKILL.md:43-46`, `:90`).
@@ -146,6 +155,10 @@ The why-comment convention is stated in four worker contracts, and what is check
       `place` leaves and flags every placeholder whose answer has not landed, and never verifies, searches or invents.
 - [x] 🔍 REVISE's provenance is already mechanical
       `checks.sh --stage-page` FAILs a newest `[REVISE]` entry with no `workers:` line, and `5-section-edit/stage.md:158` declares it as a `done_criteria`. The check this face called nonexistent covers dispatch; it does not cover comments.
+- [x] ✍️ Venue-grounded SciWrite and humanizer gates are declared
+      The language worker now resolves venue style before editing and applies meaning, venue-fit, clarity, and human-voice gates. It preserves evidence-bound hedging, passive voice, authorial `we`, numbers, citations, and technical terms.
+- [x] 📝 Author-selected candidate-diff mode is implemented
+      Original prose stays intact; one adjacent `> Note:` carries a complete `~~removed~~` / `**inserted**` candidate plus model/date. The Board renders the diff, and candidate Notes never sync to TeX.
 - [~] ↪ MOVED to `QB1` · whether this phase's discipline earns a contract field. `QB1` owns that ruling for both fieldless faces, `QB2c` and this one, and states it as one item rather than two.
 - [ ] 🔧 Correct the comment rule from "every change" to "non-trivial"
       Four shipped contracts say non-trivial, and `-place/SKILL.md:94` says a pure `TOADD` to `\citep{key}` swap needs no comment. This face's Law said every change, which makes the phase look defective exactly when it is behaving correctly, and made the check below unwritable.
@@ -161,9 +174,9 @@ The why-comment convention is stated in four worker contracts, and what is check
       `sections/04_personality_extraction.tex` is the only real test on disk: 13 of the paper's 17 comments are in that one file. Can a human accept or reject each change without opening the previous version?
 
 ## Where we are
-The four workers exist, the chain order is implemented with `place` first, and the why-comment convention is used on the MISQ paper. The phase does what it says.
+The four workers exist, the chain order is implemented with `place` first, and the why-comment convention is used on the MISQ paper. The language worker now resolves venue style before clarity and anti-AI edits, rather than treating academic prose as a generic paraphrase problem.
 
-Two gaps, both about trust rather than mechanism. Nothing checks that an edit carried a comment, and nothing says what happens when a landed answer makes its own sentence wrong.
+Candidate-diff mode has been exercised on the MISQ Abstract and Introduction. Its deletion and addition markup renders in the Board, but does not enter TeX. Two gaps remain about trust rather than mechanism: nothing checks that an edit carried a comment, and nothing says what happens when a landed answer makes its own sentence wrong.
 
 ## Files
 - `2-phase/2-revise/haipipe-paper-revise/`
@@ -172,6 +185,10 @@ Two gaps, both about trust rather than mechanism. Nothing checks that an edit ca
   The substitution worker that runs first and refuses to do anything else.
 - `2-phase/2-revise/haipipe-paper-revise-content/`
   Section, paragraph, weave, sentence; its siblings are `-humanizer` and `-results`.
+- `2-phase/2-revise/haipipe-paper-revise-humanizer/ref/venue-sciwrite.md`
+  The four language gates and the candidate-diff grammar.
+- `venue/playbook-utd-is/`
+  The per-section `template.md` and `style.md`, plus the pack-wide `style-profile.md` and MISQ taste signals.
 
 ## Law
 REVISE runs unattended because it cannot spend, cannot fetch and cannot assert. Everything it writes is either a landed answer or a rephrasing of what was already there.
@@ -179,6 +196,10 @@ REVISE runs unattended because it cannot spend, cannot fetch and cannot assert. 
 `place` runs FIRST. It substitutes only placeholders whose answers have landed, leaves and flags every other, and never verifies, searches or invents. Discharging a bracket whose answer has not landed turns a visible hole into an invisible claim, and is the one defect this phase must never have.
 
 Every worker leaves a `%%` why-comment for every NON-TRIVIAL change. The human at CHECK reads the comments, not the diff; a judgment made without a comment is a defect, and a self-evident substitution is not. `place` names the exemption outright: a pure `\cite{TOADD}` to `\citep{key}` swap needs no comment. So the comment count is never the edit count, and REVISE's mechanical handle is the `workers:` provenance line plus the tag on each comment, not an arithmetic identity.
+
+Language quality is venue-first and meaning-preserving. A generic de-AI pass may remove clutter, inflated framing, formulaic transitions, empty intensifiers, and buried predicates. It may not change a claim, its scope or causal strength, a defined term, a number, a citation, a display reference, or evidence-tied hedging. The writer reads the section template and style before changing its sentences; SciWrite gives the clarity test and the humanizer protects scholarly voice.
+
+Default REVISE applies accepted prose directly and leaves why-comments. An explicit author request for original-preserving review selects candidate-diff mode instead: leave the sentence and TeX untouched, then attach one complete `> Note:` line using `~~removed~~` and `**inserted**` with a verified model/date suffix. That Note is review evidence only, not an applied revision.
 
 ## Discussion
 > CC 260727: the comment rule's threshold is a real fork, and this face had been asserting the wrong side of it without noticing. The shipped word is NON-TRIVIAL, which leaves what deserves a comment to the worker's judgment. The alternative is EVERY change, mechanically, including each `TOADD` to `\citep{key}` swap. Option A, keep "non-trivial": costs the family any arithmetic check forever, so the only mechanical handles are the `workers:` provenance line and the tag on each comment, and a worker that quietly decides its judgment calls were trivial is undetectable. Option B, "every change": buys the N-for-N assertion this face had already written down as though it were true, and costs the human at CHECK real reading, because a section discharging twenty placeholders would open with twenty comments that say nothing a reader could not see. My recommendation is A, keep "non-trivial", and bind the TAG instead of the count: the tag check is one grep, it already fails on 4 of 17 comments, and it catches the failure that actually happened on disk, which is not a missing comment but a comment attributed to a worker that does not exist. Option B would be the right answer only if CHECK's cost were free, and the whole reason three phases run unattended is that it is not.
@@ -189,3 +210,5 @@ Every worker leaves a `%%` why-comment for every NON-TRIVIAL change. The human a
 260726 · Opening gained the same structural point as `QB2c`: none of this phase's discipline is a contract field, so the enforcement questions have been asked of something never written down where a stage is defined. The why-comment check was also promoted from "enforced nowhere" to a concrete assertion, since the diff and the comments are both already on disk.
 
 260727 · Verified against the four shipped worker contracts and the live paper, and two of this face's load-bearing statements were wrong. First, the comment rule is NOT "every change": `haipipe-paper-revise/SKILL.md:21` and `:99`, `-content/SKILL.md:37` and its own checklist at `:74` all say NON-TRIVIAL, and `-place/SKILL.md:94` goes further, stating that a pure `TOADD` to `\citep{key}` swap needs no comment. The Law, the Diagram and the Content paragraph said otherwise, so the N-regions-to-N-comments assertion this face had promoted the day before was unwritable: it would fail on every correct `place` run. It is deleted and replaced by the check the contracts do support, that every `%% {CC-<tag>}` must name a declared revise worker. Reading the MISQ paper for that gave the check its teeth before anyone writes it: `sections/*.tex` holds 17 comments under SIX tag names, and `display`, `cite` and `values` name DRAFT-phase finders rather than revise workers, so 4 of 17 already point at a worker that does not exist, `place` has left none at all, and `appendices/` adds a seventh free-form tag. The tag set had never been declared, which is why it drifted, so declaring it is now the item that unblocks the check. Second, "enforced nowhere" was also wrong: `checks.sh --stage-page` already asserts at FAIL tier that the newest `[REVISE]` entry in the owning S page's `## Log` carries a `workers:` line, and `5-section-edit` declares that as a `done_criteria`. So REVISE's dispatch is bound and only its comments are loose. That check has nonetheless never fired, because the MISQ `0-lifecycle/` carries zero `[REVISE]` entries, which is now a `🧪` item. The contract-field ruling was handed to `QB1`, which already owns it for both fieldless faces and was tracking the same decision twice.
+
+260727 · Added the venue-grounded scientific-prose ruling from the MISQ revision session. The diagnosis is not "AI words" alone: content owns logical warrants and paragraph hinges, while humanizer owns language. Venue `template.md` and `style.md`, the shared `style-profile.md`, SciWrite's clarity checks, and the humanizer's preservation rules are now one four-gate protocol. The author-selected candidate-diff exception was implemented and tested on Main 0 and Main 1: source prose stays unchanged; the Board displays `~~deleted~~` and `**added**`; TeX is not synced. A fresh-context agent followed the new grammar and refused a fragment-only candidate or TeX sync.

@@ -3,8 +3,8 @@ name: haipipe-paper
 description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through PROBE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.4.4"
-  last_updated: "2026-07-26"
+  version: "0.4.5"
+  last_updated: "2026-07-27"
   summary: "Front door for the Board-first paper lifecycle. Each stage runs the phases and gates declared by its stage.md; current stages use one CHECK gate, and Venue intentionally omits REVISE. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -39,7 +39,9 @@ stages declare all four slots:
 PROBE is the ONLY phase that touches the bank, and it reaches it only through a probe file and a clean-context agent — the paper session never runs bank work itself.
 Venue currently declares `draft → probe → check`, so its REVISE slot is shown
 as `--`. Never invent a phase that the stage did not declare.
-There is no `discover` or `task` verb: calling the bank is the PROBE's job, not the paper's.
+There is no generic `discover` or `task` lifecycle verb: a claim-bearing bank need goes through
+PROBE, not an inline paper run. The narrow display exception is a missing, non-claim display-ready
+aggregate; it is recorded in the Display request and goes to `haipipe-task-for-display`.
 A standalone utility question a human wants (a quick lit scan, a data check) goes to the bank's OWN door — `/haipipe-task qa` or `/haipipe-discovery qa` — typed by a person, never proxied by the paper.
 
 
@@ -59,7 +61,7 @@ narrative | story | contract                 -> haipipe-paper-stage narrative
 display | figures | figures-tables           -> haipipe-paper-stage display     (also "figure plan", "gallery", "preview pdf")
 section-edit | section | sec | §N            -> haipipe-paper-stage section-edit (per-section prose work)
 table | figure | plot | diagram |
-  illustration | figure1 | framework         -> haipipe-paper-lifecycle <renderer verb> (display renderer family; 做表/画图/架构图)
+  illustration | figure1 | framework         -> haipipe-paper-stage display first (allocate/bind the unit); then commission the matching Display renderer
 build | scaffold | restructure | conform | folder |
   audit | review | claim-audit | reviewer | optimizer |
   polish | consistency | format | typeset |
@@ -417,7 +419,8 @@ Do NOT route through a project-level narrative layer (there isn't one).
 
 ```
 claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (an ENTRY in 1-probes/; PROBE does MATCH first, and dispatches only what MATCH cannot close)
-figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
+figure/table lacks its verified display-ready aggregate           -> /haipipe-task-for-display <need>
+figure/table has a verified aggregate and needs a paper asset     -> haipipe-paper-stage display → Intake → matching Display renderer
 settled claim status (supported|refuted|inconclusive             -> 0-lifecycle/1-work/S-Work-1-claims.md (the ONLY home of a claim's status; the
   + confidence + claim_type)                                        probe entry carries only the `### a-executor` copy of the bank's answer.
                                                                     answer)
@@ -433,7 +436,7 @@ the S-page content and its Q-consumer questions.
 Two entry rules (who the delivery calls):
 
 - a CLAIM need (a claim's status is at stake) -> raise a question ENTRY and let the PROBE phase route it. The paper never calls a raw compute agent for a claim-bearing need, and never executes bank work inline (LAW 1).
-- a pure ARTIFACT / render need (no claim at stake, e.g. re-render a figure) -> call `/haipipe-task-for-display` directly; the display references the rendered asset.
+- a pure RENDER need (no claim at stake, e.g. re-render a figure) -> return to the Paper Display stage; it reuses the approved Intake and commissions the renderer. Call `/haipipe-task-for-display` only when the display-ready aggregate itself is missing or must change.
 
 ALL evidence enters through a stage's PROBE phase; the paper never calls the bank directly.
 Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs.
@@ -476,7 +479,7 @@ LOOP until (no open needs) OR (gate hit) OR (only server-blocked left):
   1. enter    derive frontier + open needs from disk (the queue)
   2. pick     the next actionable need (skip server-blocked)
   3. route    claim -> a question ENTRY (the PROBE phase dispatches it) ;
-              artifact -> task-for-display ; prose -> edit
+              missing aggregate -> task-for-display ; render -> Display → Intake → renderer ; prose -> edit
   4. execute  write the artifact locally, or wait for the dispatched QA file
   5. backfill update the slot/display/entry; mark the need returned
   6. -> 1

@@ -2,19 +2,19 @@
 # Schema: task/haipipe-workflow/ref/plan-schema.md
 # Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
 #
-# Typical display phases: Load → Plot → Export
-# All outputs light (results/<run>/{*.pdf, *.png, *.tex, source_data.csv}).
+# Typical display-input phases: Load → Summarize → Validate → Export
+# All outputs are small, display-safe inputs (results/<run>/{source_data.csv, provenance.json}).
 
 # ─── Header ──────────────────────────────────────────────────────
-name: figure-<NAME>
-purpose: "Produce paper figure <NAME> from upstream eval results"
+name: display-input-<NAME>
+purpose: "Produce a verified display-ready summary for <NAME> from upstream results"
 skill: haipipe-task-for-display
 
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
     config: configs/<RUN>.yaml
-    figure_type: <figure | table>
+    display_kind: <figure | table | diagram | illustration>
   files_in:
     - <NN>_<TASK>.py
     - configs/<RUN>.yaml
@@ -34,50 +34,42 @@ phases:
           - results/<UPSTREAM_RUN>/metrics.json
         files_out: []
 
-  - title: Plot
-    detail: "render figures or format tables"
+  - title: Summarize
+    detail: "select and aggregate the exact values the display may use"
     steps:
-      - label: "plot:render"
+      - label: "summary:aggregate"
         type: agent
         required: true
-        prompt: "Render matplotlib/seaborn figure or LaTeX table"
+        prompt: "Produce the small display-ready aggregate; do not choose visual styling or emit a paper asset."
         files_in: []
         files_out: []
 
-      - label: "plot:annotate"
+  - title: Validate
+    detail: "verify the aggregate and record its provenance"
+    steps:
+      - label: "validate:provenance"
         type: agent
-        required: false
-        prompt: "Add annotations, significance markers, legends"
+        required: true
+        prompt: "Record task holder, run, upstream artifacts, selected columns, filters, checksums, and the display-safety assertion in provenance.json."
         files_in: []
         files_out: []
 
   - title: Export
-    detail: "save publication-ready outputs"
+    detail: "save the portable input package for a Display Intake"
     steps:
-      - label: "export:figure"
+      - label: "export:display-input"
         type: agent
         required: true
-        prompt: "Save PDF + PNG + source_data.csv to results/<RUN>/"
+        prompt: "Save source_data.csv + provenance.json to results/<RUN>/; optional diagnostics stay in diagnostics/."
         files_in: []
         files_out:
-          - results/<RUN>/<FIGURE>.pdf
-          - results/<RUN>/<FIGURE>.png
           - results/<RUN>/source_data.csv
-
-      - label: "export:tex"
-        type: agent
-        required: false
-        prompt: "Generate LaTeX include fragment (.tex)"
-        files_in: []
-        files_out:
-          - results/<RUN>/<FIGURE>.tex
+          - results/<RUN>/provenance.json
 
 # ─── O: Output ───────────────────────────────────────────────────
 output:
   returns:
     status: ok
   files_out:
-    - results/<RUN>/<FIGURE>.pdf
-    - results/<RUN>/<FIGURE>.png
     - results/<RUN>/source_data.csv
-    - results/<RUN>/<FIGURE>.tex
+    - results/<RUN>/provenance.json
