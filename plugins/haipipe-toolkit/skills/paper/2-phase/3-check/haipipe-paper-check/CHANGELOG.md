@@ -3,6 +3,11 @@ haipipe-paper-check — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.3.5] — 2026-07-27 — the reported id follows the per-unit scheme
+
+- The PROBE-axis example line now names this unit's own `Q-Sec<unit><Slug>-<n>` id rather
+  than the retired shared `Q-Section-<n>` (JL ruling 2026-07-27).
+
 ## [0.3.4] — 2026-07-26 — CHECK follows the Board adapter
 
 - Placeholder ownership now resolves against Q-consumer checklist records in

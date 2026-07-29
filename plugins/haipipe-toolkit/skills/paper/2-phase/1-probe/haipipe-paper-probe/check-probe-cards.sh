@@ -168,7 +168,19 @@ done
 # in PASS 1 (an entry's `### q-consumer` ids) and by the --stage gate in PASS 4 (a stage doc's
 # own identity). Same map, two callers -- and the same reason LEAK_AWK and QA_STATE are
 # functions: a second hand-typed copy is a drift that nothing catches.
-stage_stem() { printf '%s' "${1%s}"; }
+#
+# `section-edit` is the one key the trailing-s rule cannot derive, because that stage
+# `runs: per-unit` and each unit names itself in its own ids: `Q-Sec0Abstract-1`,
+# `Q-Sec6Results-3`, `Q-Sec0Control-9`. The common stem is `Sec`, which no other stage
+# shares (`Q-Seed-` does not contain `q-sec`). Deriving `section-edit` and grepping
+# `q-section-edit` matched NOTHING, so every entry serving this stage failed the gate and
+# section-edit reported a permanent vacuous green (_TODO E2 on the MISQ paper).
+stage_stem() {
+  case "$1" in
+    section-edit) printf '%s' "Sec" ;;
+    *)            printf '%s' "${1%s}" ;;
+  esac
+}
 
 # Resolve project_root: FIRST ancestor of paper_root containing discoveries/.
 # Never git rev-parse here -- repo-backed projects are their own git repos, so
@@ -843,8 +855,8 @@ if [ -n "$stage_filter" ] && [ "$stage_filter" != "resource" ]; then
         # DRAFT ...>`, `_(empty at DRAFT ...)_`, `_pending -- filled by PROBE_`
         # -- and a detector that treats a placeholder as an answer reports a
         # stage with zero open questions, which is the vacuous green again.
-        /^#{2,3}[ \t]+(Q-[A-Za-z]+-[0-9]+|Q[0-9]+|§[0-9]+-Q[0-9]+)/ ||
-        /^[ \t]*-[ \t]*\[[ xX]\].*Q-[A-Za-z]+-[0-9]+/ {
+        /^#{2,3}[ \t]+(Q-[A-Za-z0-9]+-[0-9]+|Q[0-9]+|§[0-9]+-Q[0-9]+)/ ||
+        /^[ \t]*-[ \t]*\[[ xX]\].*Q-[A-Za-z0-9]+-[0-9]+/ {
           if (inq && !ans) o++
           inq=1; ans=0; next
         }
@@ -1041,10 +1053,10 @@ for doc in "$paper_root"/0-lifecycle/*/S-*.md "$paper_root"/0-lifecycle/*/*/S-*.
 
     # ---- read 1: the Q-consumers this doc DEFINES (`## Q-<Stage>-<n>`).
     NR == FNR {
-      if ($0 ~ /^##[[:space:]]*Q-[A-Za-z]+-[0-9]+/ ||
-          $0 ~ /^[[:space:]]*-[[:space:]]*\[[ xX]\].*Q-[A-Za-z]+-[0-9]+/) {
+      if ($0 ~ /^##[[:space:]]*Q-[A-Za-z0-9]+-[0-9]+/ ||
+          $0 ~ /^[[:space:]]*-[[:space:]]*\[[ xX]\].*Q-[A-Za-z0-9]+-[0-9]+/) {
         h = $0
-        match(h, /Q-[A-Za-z]+-[0-9]+/); defined[substr(h, RSTART, RLENGTH)] = 1
+        match(h, /Q-[A-Za-z0-9]+-[0-9]+/); defined[substr(h, RSTART, RLENGTH)] = 1
       }
       next
     }
@@ -1064,7 +1076,7 @@ for doc in "$paper_root"/0-lifecycle/*/S-*.md "$paper_root"/0-lifecycle/*/*/S-*.
       rest = line
       while (match(rest, /\\cite\{TOADD\}/)) {
         rest = substr(rest, RSTART + RLENGTH)
-        if (rest !~ /^[ \t]*\[Q-[A-Za-z]+-[0-9]+\]/) { cu++; note(culines, "x", FNR) }
+        if (rest !~ /^[ \t]*\[Q-[A-Za-z0-9]+-[0-9]+\]/) { cu++; note(culines, "x", FNR) }
       }
       # (b) {VAL:? <what>} -- a LIVE placeholder describes its value; bare `{VAL:?}` is a mention.
       rest = line
@@ -1073,11 +1085,11 @@ for doc in "$paper_root"/0-lifecycle/*/S-*.md "$paper_root"/0-lifecycle/*/*/S-*.
         rest = substr(rest, RSTART + RLENGTH)
         body = tok; sub(/^\{VAL:\?/, "", body); sub(/\}$/, "", body); gsub(/[ \t]/, "", body)
         if (body == "") continue
-        if (rest !~ /^[ \t]*\[Q-[A-Za-z]+-[0-9]+\]/) { vu++; note(vulines, "x", FNR) }
+        if (rest !~ /^[ \t]*\[Q-[A-Za-z0-9]+-[0-9]+\]/) { vu++; note(vulines, "x", FNR) }
       }
       # (c) every owner bracket must resolve to a `## Q-...` heading in THIS doc.
       rest = line
-      while (match(rest, /\[Q-[A-Za-z]+-[0-9]+\]/)) {
+      while (match(rest, /\[Q-[A-Za-z0-9]+-[0-9]+\]/)) {
         id = substr(rest, RSTART + 1, RLENGTH - 2)
         rest = substr(rest, RSTART + RLENGTH)
         if (!(id in defined)) note(dang, id, FNR)

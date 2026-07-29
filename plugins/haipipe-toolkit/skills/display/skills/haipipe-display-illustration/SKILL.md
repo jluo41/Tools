@@ -4,9 +4,9 @@ description: "AI-illustration renderer of the display family: generate publicati
 argument-hint: "[description-or-method-file]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-06-22"
-  summary: "AI-illustration renderer of the display family (Codex native image generation)."
+  version: "0.2.1"
+  last_updated: "2026-07-27"
+  summary: "AI-illustration renderer that uses a Display Intake for approved narrative context and facts."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -17,11 +17,18 @@ and a **local Codex app-server MCP bridge** as the raster renderer.
 
 ## Output: write into a display unit
 
-Output goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
+Output goes into a `displays/displayNN-<slug>/` unit per the shared contract:
 `../../ref/display-unit-output-contract.md`.
-THIS renderer's row: asset -> `assets/figure.png`; rebuild spec -> `source/prompt.md`
-(final prompt + bridge job + score) + `source/review_log.json`; finalize with
+THIS renderer's row: asset -> `assets/figure.png`; rebuild spec -> `recipe/prompt.md`
+(final prompt + bridge job + score) + `recipe/review_log.json`; finalize with
 `--display-unit <unit-dir>` (Step 7).
+
+For a new unit, read `intake/manifest.yaml` before planning the prompt.
+The manifest supplies approved narrative context and any facts the illustration may state.
+This renderer takes no values source for a purely conceptual image.
+If the image includes a real N, percentage, coefficient, or other estimate, that fact MUST be a
+declared `role: values` intake source; never let image generation invent it.
+Legacy `source/` units remain valid only through the compatibility path in the shared contract.
 
 ## Fit & Readiness (haipipe)
 
@@ -53,7 +60,7 @@ rather than falling back to a shell/Python bitmap.
 - **OPTIONAL_TEXT_CRITIC = `mcp__codex__codex`** — Optional text-only second opinion for layout/style checks
 - **MAX_ITERATIONS = 5** — Maximum refinement rounds
 - **TARGET_SCORE = 9** — Minimum acceptable score (1-10)
-- **OUTPUT_DIR** — for a paper: the display unit `0-displays/displayNN-slug/` (asset -> `assets/figure.png`, iterations + receipts -> `source/`).
+- **OUTPUT_DIR** — for a paper: the display unit `displays/displayNN-slug/` (asset -> `assets/figure.png`, iterations + receipts -> `recipe/`).
   Only with no paper: the flat fallback `figures/ai_generated/`.
 - **TEXT_LANGUAGE = `English`** — Default figure text language unless the user requests otherwise
 - **NATIVE_IMAGE_REQUIREMENT = `strict`** — Accept only native `imageGeneration` output; reject shell/Python fallbacks
@@ -135,15 +142,16 @@ Render this checklist explicitly before starting:
 
 ```text
 📋 paper-illustration-image2 integration checklist:
-   [ ] 0. Resolve/scaffold the display unit (see the contract): 0-displays/displayNN-slug/
-   [ ] 1. preflight --workspace <paper-root> --json-out 0-displays/displayNN-slug/source/preflight.json
-   [ ] 2. Confirm preflight JSON says ok=true before rendering
-   [ ] 3. Render via mcp__codex-image2__generate_start + generate_status
-   [ ] 4. Finalize into the unit: finalize --workspace <paper-root> --display-unit 0-displays/displayNN-slug --best-image <best_png> (Step 7)
-   [ ] 5. Verify: verify --workspace <paper-root> --display-unit 0-displays/displayNN-slug
+   [ ] 0. Resolve/scaffold the display unit (see the contract): displays/displayNN-slug/
+   [ ] 1. Read intake/manifest.yaml and confirm all facts in the prompt are declared there
+   [ ] 2. preflight --workspace <paper-root> --json-out displays/displayNN-slug/recipe/preflight.json
+   [ ] 3. Confirm preflight JSON says ok=true before rendering
+   [ ] 4. Render via mcp__codex-image2__generate_start + generate_status
+   [ ] 5. Finalize into the unit: finalize --workspace <paper-root> --display-unit displays/displayNN-slug --best-image <best_png> (Step 7)
+   [ ] 6. Verify: verify --workspace <paper-root> --display-unit displays/displayNN-slug
 ```
 
-1. Resolve the target display unit (`0-displays/displayNN-slug/`); scaffold it via
+1. Resolve the target display unit (`displays/displayNN-slug/`); scaffold it via
    `Skill("haipipe-paper-stage", "display scaffold ...")` if it does not exist.
    Only when
    there is no paper, fall back to creating `figures/ai_generated/`.
@@ -152,12 +160,12 @@ Render this checklist explicitly before starting:
    - conceptual method figure
    - workflow illustration
 3. Prefer **English figure text** unless the user asked otherwise.
-4. Run preflight (receipt into the unit's `source/`):
+4. Confirm the Intake context is complete, then run preflight (receipt into the unit's `recipe/`):
 
 ```bash
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" preflight \
   --workspace <paper-root> \
-  --json-out 0-displays/displayNN-slug/source/preflight.json
+  --json-out displays/displayNN-slug/recipe/preflight.json
 ```
 
 5. If preflight is not `ok=true`, stop and say so clearly.
@@ -222,7 +230,7 @@ Call `mcp__codex-image2__generate_start` with:
 - `prompt`: the final image prompt
 - `cwd`: the paper workspace (paper root)
 - `outputPath`: `figures/ai_generated/figure_vN.png`. NOTE: the bridge HARD-LOCKS output under `figures/ai_generated/`; it rejects any path outside it (so you cannot render straight into the unit).
-  Iterations render here as scratch; `finalize --display-unit` then promotes the accepted one to `0-displays/displayNN-slug/assets/figure.png` and you copy it to `source/` for provenance.
+  Iterations render here as scratch; `finalize --display-unit` then promotes the accepted one to `displays/displayNN-slug/assets/figure.png` and writes review provenance to `recipe/`.
 - `system`: a short instruction like `Academic paper figure. Prefer crisp English labels.`
 - `timeoutSeconds`: a bounded render timeout such as `180`
 
@@ -264,29 +272,30 @@ Keep refinement feedback concrete:
 When accepted, finalize INTO THE DISPLAY UNIT (the contract path; see the "Output:
 write into a display unit" section above and
 `../../ref/display-unit-output-contract.md`). Pass
-`--display-unit <0-displays/displayNN-slug>` so the helper writes
-`assets/figure.png` + `float.tex` (with your caption + label) + `source/review_log.json`,
+`--display-unit <displays/displayNN-slug>` so the helper writes
+`assets/figure.png` + `float.tex` (only from the caller-approved caption + label + placement, never
+invented or changed) + `recipe/review_log.json`,
 then compile `preview.pdf` from the paper root.
 
 ```bash
 # Paper target — write into the display unit (DEFAULT for a paper):
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" finalize \
   --workspace <paper-root> \
-  --display-unit <paper-root>/0-displays/displayNN-slug \
-  --best-image <paper-root>/0-displays/displayNN-slug/figure_vN.png \
-  --caption "Paper-ready caption." --label "fig:slug" \
+  --display-unit <paper-root>/displays/displayNN-slug \
+  --best-image <paper-root>/figures/ai_generated/figure_vN.png \
+  --caption "Paper-ready caption." --label "fig:slug" --placement "t" \
   --score 9 --review-summary "Accepted after strict review."
 
 # also drop the rebuild spec the helper does not author:
-#   0-displays/displayNN-slug/source/prompt.md  (final prompt + bridge job + score)
+#   displays/displayNN-slug/recipe/prompt.md  (final prompt + bridge job + score)
 
-# compile the unit preview from the paper ROOT so 0-displays/ paths resolve:
-pdflatex -interaction=nonstopmode -output-directory 0-displays/displayNN-slug \
-  0-displays/displayNN-slug/preview.tex
+# compile the unit preview from the paper ROOT so displays/ paths resolve:
+pdflatex -interaction=nonstopmode -output-directory displays/displayNN-slug \
+  displays/displayNN-slug/preview.tex
 
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" verify \
-  --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug \
-  --json-out <paper-root>/0-displays/displayNN-slug/source/verify.json
+  --workspace <paper-root> --display-unit <paper-root>/displays/displayNN-slug \
+  --json-out <paper-root>/displays/displayNN-slug/recipe/verify.json
 ```
 
 Fallback (NO paper / scratch only): omit `--display-unit`; the helper writes the
@@ -304,18 +313,18 @@ existing hand-edited `float.tex` is preserved, not clobbered):
 
 ```bash
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" finalize \
-  --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug \
-  --best-image <paper-root>/0-displays/displayNN-slug/assets/figure.png \
-  --caption "..." --label "fig:slug"
+  --workspace <paper-root> --display-unit <paper-root>/displays/displayNN-slug \
+  --best-image <paper-root>/displays/displayNN-slug/assets/figure.png \
+  --caption "..." --label "fig:slug" --placement "t"
 
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" verify \
-  --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug
+  --workspace <paper-root> --display-unit <paper-root>/displays/displayNN-slug
 ```
 
 (No-paper fallback: omit `--display-unit` to repair into flat `figures/ai_generated/`.)
 
 ## Output Structure
 
-The display unit layout (asset -> `assets/figure.png`, rebuild spec -> `source/prompt.md`
-+ `source/review_log.json` + `source/verify.json`) and the no-paper flat fallback are
+The display unit layout (asset -> `assets/figure.png`, rebuild spec -> `recipe/prompt.md`
++ `recipe/review_log.json` + `recipe/verify.json`) and the no-paper flat fallback are
 the shared contract: `../../ref/display-unit-output-contract.md`.

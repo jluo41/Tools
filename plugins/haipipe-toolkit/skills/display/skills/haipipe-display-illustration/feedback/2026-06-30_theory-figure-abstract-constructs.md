@@ -3,7 +3,7 @@ status: open
 created: 2026-06-30
 updated: 2026-06-30
 occurrences: 1
-context: MISQ theory figure (display01-hero-concept)
+context: MISQ theory figure (display01a-hero-concept)
 fixed_in: ""
 regressed: ""
 ---

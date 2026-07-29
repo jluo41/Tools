@@ -1,5 +1,5 @@
 # On the second run, what happens to a page a human has edited?
-state: 🔴 OPEN
+state: ✅ SETTLED · Ⓒ+Ⓑ, declared as `on_rerun:` in all 8 contracts; the checker is open in Items
 owner: JL
 method: find the one rule that already exists in eight versions, pick it, and put it where the writer is
 
@@ -63,8 +63,11 @@ What is at risk is specific and is the most expensive content on the board: a `>
         "a second backward-fill would overwrite authored prose with
          a build product"
 
-   ⑦ stages/5-section-edit/stage.md:267            ◀ FOUND 260727
+   ⑦ stages/5-section-edit/stage.md:301            ◀ FOUND 260727
         "preserve every existing > USER: comment EXACTLY where it was"
+        📍 was :267 the same morning. FIFTH line-number drift in this
+           inventory, and the argument against fixing this with another
+           line-keyed rule in another file.
 
    ⑧ 2-phase/REF/prose-quality.md:34               ◀ FOUND 260727
         "Never compress, summarize, translate, or replace `> USER:`
@@ -76,8 +79,10 @@ What is at risk is specific and is the most expensive content on the board: a `>
 
    ── THE TOKEN SPLIT, which is why ⑦ and ⑧ protect nothing ─────────
       the two rules say      > USER:
-      the live pages say     > JL:    45 lines, 7 of 40 MISQ S pages
+      the live pages say     > JL:    47 lines, 8 of 40 MISQ S pages
       > USER: on any live S page                       0 occurrences
+      (re-counted 260727 pm: 45 lines / 7 pages the same morning, so
+       the protected thing is GROWING while the rule cannot see it)
       2-phase/USAGE.md:53    rules `> USER:` canonical and `> JL:` a
                              tolerated alias WHEN READING
       board SKILL.md:475     forbids deleting a `> JL:` line
@@ -172,14 +177,17 @@ A `> JL:` line is never deleted. That is a standing law of the board (`board SKI
 ## Items to Finish
 - [x] 🔍 Re-measure the scattered rules against disk
       Done 260727. Eight rules, not six: `stages/5-section-edit/stage.md:267` and `2-phase/REF/prose-quality.md:34` were missing from the inventory, and both are the human-comment protection this face was asking for. The 2026-06-22 feedback note no longer exists anywhere in the tree; its rule was promoted into `ref/09-stage-illuminate.md:25`. Four of the six cited line numbers had drifted.
-- [ ] 🧠 Rule the second run, and where it is DECLARED
-      Ⓐ refuse and report · Ⓑ diff-and-ask · Ⓒ protected regions declared on the page · Ⓓ append a revision beside the old. This is two decisions, not one, because `stages/CONTRACT.md` has no re-run field: pick the behaviour, then pick whether it is declared as a page-level protected region (Ⓒ is the only option that puts it where a human is already looking) or as a stage-level `on_rerun:` in each `stage.md`. Ⓑ has been the written rule since it graduated into `ref/09-stage-illuminate.md:25` and has never been built.
-- [ ] 🔧 Make the preservation rules name the token pages use
-      `stages/5-section-edit/stage.md:267` and `2-phase/REF/prose-quality.md:34` both protect `> USER:`. All 45 human comment lines across 7 of the 40 MISQ S pages read `> JL:`, and `> USER:` appears on none of them. `2-phase/USAGE.md:53` makes `> JL:` a tolerated alias when reading, so the mismatch is legal and silent, and `prose-quality.md` is required reading for every REVISE worker (`haipipe-paper-revise/SKILL.md:56`), which means the rule that runs most often is the one keyed to the absent string.
-- [ ] 📐 Name what an S page protects beyond comments
-      The two rules above cover the comment line and nothing else. `state:`, `## Where we are`, ticked boxes in `## Items to Finish`, and the GATE rows in `## Log` are named by no rule in the stage path. The Ledger rows (`ref/08-stage-gate.md:205`) are the one item on the page that cannot be re-derived from disk if a run overwrites them.
-- [ ] 🔧 Fix or delete the guard that reaches no page
-      `stages/5-section-edit/template.md:92` and its 95 venue copies say "Agents never overwrite below this line", and `create-page.py :: template_divisions()` emits only division titles plus the first `<!-- RULE -->`, so all 96 copies are compiled out. `## My Notes & Feedback` sits on 0 of the 40 live MISQ S pages and in 5 archived flat files under `0-lifecycle/4-main/_archive/`. Either the creator carries the marker onto the page or the line is deleted from 96 files.
+- [x] 🧠 Rule the second run, and where it is DECLARED
+      Ruled 260727: **Ⓒ protected regions, with Ⓑ as the behaviour for everything outside them**, declared as `on_rerun: diff-and-ask` in all eight `stage.md` contracts and specified once in `stages/CONTRACT.md` under "The second run". Both halves of the two-decision shape are answered: the behaviour is Ⓑ, which had been the written rule in `ref/09-stage-illuminate.md:25` and never built, and the declaration is a stage field rather than a page marker, because the page-marker version already exists in 96 files and reaches 0 pages.
+      Ⓐ was rejected: it would stop the venue-change cascade from ever running unattended, which is most of the value of the lifecycle. Ⓓ was rejected: it doubles the page count.
+- [x] 🔧 Make the preservation rules name the token pages use
+      Done 260727. Both now match the LANE SHAPE `> <ACTOR>:` rather than one id: `2-phase/REF/prose-quality.md`, which every REVISE worker must read, and `5-section-edit/stage.md`'s backfill step. Neither of the 47 `> JL:` lines was touched, which was the point: rewriting them to `> USER:` would have made one name true everywhere by performing the single edit `board SKILL.md:475` exists to forbid.
+- [x] 📐 Name what an S page protects beyond comments
+      Done 260727, in the ruling itself. Five things are named and protected, not one: any `> <ACTOR>:` lane, `state:`, `## Where we are`, a ticked box in `## Items to Finish`, and a GATE row in `## Log`. The last is called out as the only item on the page that cannot be re-derived from disk if a run overwrites it (`ref/08-stage-gate.md:205`).
+- [x] 🔧 Fix or delete the guard that reaches no page
+      Resolved 260727 as NEITHER, which the item did not offer. Protection now keys to constructs that are already on every page, so no marker has to survive template compilation for the rule to hold, and the hand-drawn line in 96 files is superseded rather than implemented or deleted. Deleting it from 96 files is cosmetic and can happen whenever those files are next touched; carrying it onto pages would have added a marker whose only job the ruling already does.
+- [ ] 🔧 Teach `create-page.py` and the checker to enforce it
+      The ruling is declared and specified; nothing verifies it. Two mechanical pieces: a re-run must diff before writing, and one assertion that no run has changed a protected construct. `on_rerun:` now exists in all eight contracts, so the checker has a field to read, which is what it never had.
 - [ ] 🔍 Assert every green S page carries a human GATE row
       `haipipe-paper-enter/SKILL.md:259` already rules that `✅` with no approval receipt is STALE, and nothing asserts it. The evidence is on disk: 40 S pages, each with a `state:` line and a `## Log`. `S-Seed-0-seed.md:189` is the row this catches, because its actor is an agent, and a bad second run is exactly how a green page acquires one.
 - [ ] 🔧 Retire or generalise the local rules the ruling replaces
@@ -188,9 +196,21 @@ A `> JL:` line is never deleted. That is a standing law of the board (`board SKI
       `0-lifecycle/4-main/S-Main-2-introduction.md` carries 19 `> JL:` lines, the most on the paper. Re-run section-edit on it and read what survived. Nobody knows today, which is the finding.
 
 ## Where we are
-Nothing is ruled and the risk is live. Every stage can be re-run today, re-runs are routine rather than exceptional, and the protection a page receives depends on which stage is running rather than on what the page holds.
+Ruled and declared 260727. `on_rerun: diff-and-ask` is in all eight `stage.md` contracts, the rule is specified once in `stages/CONTRACT.md` under "The second run", and the two preservation rules now match the lane shape `> <ACTOR>:` instead of the one id that was never on a page.
 
-One re-run has already produced a real defect: a MISQ seed gate recorded as passed by an agent standing in for the human. That is `QB3d`'s failure to prevent, and this is the occasion that produced it.
+```
+ BEFORE                              AFTER
+ 8 rules · 7 files · 5 shapes        1 field · 8 contracts · 1 spec
+ 0 contract fields for a re-run      on_rerun:, and the checker has
+                                       something to read for the first time
+ protection keyed to `> USER:`       keyed to `> <ACTOR>:`
+   0 of 47 live comment lines          47 of 47
+ 1 construct named (the comment)     5 named, incl. the GATE row
+```
+
+⚠️ Declared is not enforced, and that distinction is the whole remaining risk. Nothing yet computes a diff before writing, and nothing asserts that a run left the five protected constructs alone. Until that lands, this ruling is a rule an agent is asked to obey rather than a step something performs, which is the same shape `QC5` names for its own missing generator. It is the open item above, and by this board's own close rule an unwritten checker does not hold the ruling open.
+
+One re-run has already produced a real defect: a MISQ seed gate recorded as passed by an agent standing in for the human. The rule now forbids it, and nothing yet catches it. That half is `QB3d`'s, and the specific row is still an open item on `S-Seed-0-seed.md:157`.
 
 ## Files
 - `haipipe-paper-stage/create-page.py`
@@ -211,7 +231,18 @@ One re-run has already produced a real defect: a MISQ seed gate recorded as pass
   Line 189, the gate row that names an agent as the approving actor, and line 157, the item asking JL to confirm or reject it.
 
 ## Law
-_None yet. This face is 🔴, and its first item is the ruling that would produce one._
+A stage declares what its second run does, in one field, `on_rerun:`, whose only currently legal value is `diff-and-ask`. The absence of that field is what produced eight scattered patches in seven files, so the field is the ruling and the behaviour is the easy half.
+
+A re-run does two things, and both are binding.
+
+- 🔒 PROTECTED · a re-run may not rewrite these at all
+  Any `> <ACTOR>:` comment lane, `state:`, `## Where we are`, a ticked box in `## Items to Finish`, and a GATE row in `## Log`. The GATE row is the one thing on the page that cannot be re-derived from disk if it is overwritten.
+- 🔁 EVERYTHING ELSE · diff and ask
+  Compute what would change, show it, then ask keep or change or reframe. Never overwrite silently.
+
+Protection keys to the LANE SHAPE, `> <ACTOR>:`, and never to one actor id. This is the operative half, because both previous attempts failed on exactly that point: they guarded `> USER:`, and every human comment line on the paper says `> JL:`. Matching the shape closes the gap without editing a single human comment line, which is the one edit the board's own law forbids.
+
+A local re-run rule that survives this ruling will contradict it later, so it is removed rather than left. The hand-drawn `<!-- Agents never overwrite below this line -->` is superseded rather than implemented: protection now names constructs that are already on the page, so no marker has to survive template compilation for the rule to hold.
 
 ## Discussion
 > CC 260726: I would rule Ⓒ, with Ⓑ as its behaviour. Protected regions is the only option that scales to eleven display pages and forty section pages, because it puts the rule on the PAGE, where a human can see it, rather than in eight worker contracts where only the worker sees it. Ⓐ is safe and would stop the venue-change cascade from ever running unattended, which is most of the value of the lifecycle. Ⓓ doubles the page count.
@@ -226,4 +257,6 @@ _None yet. This face is 🔴, and its first item is the ruling that would produc
 
 260727 · Re-measured every claim against disk, and the count was wrong in both directions. Two rules were missing: `stages/5-section-edit/stage.md:267` tells a backfill to preserve every `> USER:` comment exactly where it was, and `2-phase/REF/prose-quality.md:34` forbids compressing, translating or replacing one. Those two ARE the protection this face has been asking for, and the second is required reading for every REVISE worker, so "none of them is where the phase workers actually write" was false. What is actually broken is narrower and worse: both rules name `> USER:`, all 45 human comment lines across 7 of the 40 MISQ S pages read `> JL:`, `> USER:` appears on none of them, and `2-phase/USAGE.md:53` makes the mismatch legal by calling `> JL:` a tolerated alias. Second correction: the 2026-06-22 feedback note does not exist anywhere in the tree, and its rule WAS promoted, into `ref/09-stage-illuminate.md:25`, so "never promoted to a contract or a worker" was false too. Third: the hand-drawn guard is in all 95 venue templates as well as 1 of 8 stage templates, and `create-page.py :: template_divisions()` compiles all 96 copies out, which is why `## My Notes & Feedback` sits on 0 of the 40 live S pages and in 5 archived flat files. Four cited line numbers had drifted (template 89 to 92, gate 19 to 21, section-edit 270 to 272, and the missing note). Verified unchanged: no re-run field in `stages/CONTRACT.md`, the Gate Ledger's move onto each S page's `## Log`, and `STATUS.md`'s retirement with `DRIFT` replaced by `STALE`. Also verified that half the MISQ seed defect is now answered: `CONTRACT.md:170` dissolves the frontier half, and only the gate-actor half is still live.
 
+260727 pm · RULED, on JL's "just do as what you want first" after asking for the explanation. Ⓒ protected regions with Ⓑ diff-and-ask for everything outside them, declared as `on_rerun:` in all eight `stage.md` contracts and specified once in `stages/CONTRACT.md`. The recommendation had stood in Discussion since 260726 and the two rejections still hold: Ⓐ would stop the venue-change cascade from running unattended, which is most of the value of the lifecycle, and Ⓓ doubles the page count. One thing changed from that recommendation: it wanted the declaration ON the page, and the page-marker version already exists in 96 files and reaches 0 pages, so the declaration went into the field instead and the PROTECTION was keyed to constructs the page already carries. That gets Ⓒ's benefit, a rule about what the page holds rather than about which worker is running, without depending on a marker that template compilation drops. The token split was closed by matching the lane shape rather than by rewriting 47 human comment lines, which would have fixed one law by breaking a stricter one.
+260727 pm · JL asked for a fuller explanation of this face, so every load-bearing count was re-verified a second time the same day, and two had already moved. The `> JL:` lines went 45 to 47 and the pages carrying them 7 to 8, so the thing the rule cannot see is growing faster than the inventory describing it. And rule ⑦ moved from `stage.md:267` to `:301`, the fifth line-number drift recorded here. That second one is an argument about the ANSWER, not only the bookkeeping: an inventory keyed to file-and-line cannot stay true, so whatever is ruled must not be a sixth line-keyed rule in a seventh file. It supports Ⓒ, which puts the declaration on the page. Verified unchanged: `> USER:` on 0 of the 40 live S pages, `prose-quality.md:34` word for word, the guard in 96 template files and on 0 live pages, and `stages/CONTRACT.md` still carrying no re-run field (its one hit at :170 is prose about the frontier, not a field).
 260727 · Items rebuilt as a queue. Deleted "Decide whether a re-run may change `state:`": it is folded into "Name what an S page protects beyond comments", which names `state:` outright, and `ref/08-stage-gate.md:26` already rules that a human may reopen an agent-approved gate and that reopening resets the ledger row, so what was left of it was the central ruling's option Ⓐ under another name. Two items added that name something already on disk: the token repair, and one assertion that every green page carries a human GATE row, which `haipipe-paper-enter/SKILL.md:259` already declares as the STALE condition and nothing checks.

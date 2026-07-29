@@ -3,9 +3,9 @@ name: haipipe-paper-draft-display
 description: "DRAFT-phase display auditor (internal). Walks a stage doc or section for claims that need visual support, maps each need to an existing displays/ unit where one fits, and files a DR row in the display stage's request file for each one that does not. Never creates a display, never plots, never links a unit that does not exist yet. Users invoke stage skills (narrative, section-edit...), not this skill directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-07-26"
-  summary: "DRAFT-phase display auditor: decide which claims need visual support, map each to an existing unit, and file a DR row in the display stage's inbox for each missing one. The paper layer plans, it does not plot. History: ./CHANGELOG.md."
+  version: "0.2.2"
+  last_updated: "2026-07-27"
+  summary: "DRAFT-phase display auditor: map visual needs to existing units or DR rows, including the task-holder intake source required for numeric displays. The paper layer plans, it does not plot. History: ./CHANGELOG.md."
 ---
 
 haipipe-paper-draft-display
@@ -67,15 +67,21 @@ The DR row, appended to `0-lifecycle/3-display/_DISPLAY_REQUEST.md`:
 - from: 4-main/S-Main-5-measurement.md · P4 · 2026-07-10
 - claim: <the exact claim the display must support>
 - form: figure | table | diagram | illustration   (suggestion; the display stage decides)
-- evidence: <source hint: tasks/ path · metrics.json · a landed ### a-executor>
+- bank deliverable: <the task-produced aggregate or factual source needed>
+- intake source: <task holder · run · canonical source_data.csv, or "concept: narrative context">
+- consumer deliverable: <what the reader must see, including required rows/columns or visual takeaway>
 - unit: --                                        (display stage fills: displays/displayNN-slug/)
 ```
 
 Status flow, and ONLY the display stage advances it:
 
 ```
-requested → accepted → done (unit: <path>)      or      declined (<reason>)
+requested → accepted → intake-ready → done (unit: <path>)      or      declined (<reason>)
 ```
+
+`intake-ready` means a display unit now has an `intake/manifest.yaml` that points to the exact
+holder, run, canonical artifact, and approved snapshot the renderer will read.
+`accepted` without an intake is a plan, not permission to render a numeric visual.
 
 `form:` is a suggestion. The display stage owns the choice of figure vs table vs diagram, because it owns the venue's display budget and the gallery's shape.
 
@@ -98,6 +104,7 @@ Done criteria
 - [ ] Every claim needing visual support maps to a unit path or a DR id
 - [ ] Every missing unit has a DR row in the `3-display` inbox
 - [ ] Every DR row names the exact claim it must support
+- [ ] Every numeric DR names its proposed task holder, run, and canonical aggregate for intake
 - [ ] No `\ref` written for a unit that does not exist
 - [ ] No plot created, no display content edited
 

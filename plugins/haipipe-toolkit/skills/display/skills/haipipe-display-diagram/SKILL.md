@@ -4,9 +4,9 @@ description: "Generate deterministic publication-quality architecture, workflow,
 argument-hint: "[description-of-diagram]"
 allowed-tools: Bash(*), Read, Write, Edit
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-06-22"
-  summary: "Deterministic vector-diagram renderer of the display family (JSON/FigureSpec -> editable SVG)."
+  version: "0.2.0"
+  last_updated: "2026-07-27"
+  summary: "Deterministic vector-diagram renderer that binds FigureSpec facts to a Display Intake."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -16,10 +16,16 @@ Generate publication-quality **architecture diagrams**, **workflow pipelines**, 
 
 ## Output: write into a display unit
 
-The diagram goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
+The diagram goes into a `displays/displayNN-<slug>/` unit per the shared contract:
 `../../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
-rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSpec).
+rasterize/convert for LaTeX); rebuild spec -> `recipe/<name>.json` (the FigureSpec).
+
+For a new unit, read `intake/manifest.yaml` before drafting the FigureSpec.
+The manifest provides the approved narrative context and any real numeric facts that appear in a
+study-flow or schematic.
+Do not invent counts, percentages, or estimates.
+Legacy `source/` units remain valid only through the compatibility path in the shared contract.
 
 ## When to Use This Skill
 
@@ -61,7 +67,7 @@ python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" schema
 
 ### Step 1: Understand the Diagram Goal
 
-From `$ARGUMENTS` (description or path to `PAPER_PLAN.md` / `NARRATIVE_REPORT.md`), identify:
+From the display brief and its Intake context, identify:
 - **Purpose**: architecture, workflow, pipeline, audit cascade, topology?
 - **Main entities**: what are the boxes?
 - **Relationships**: how do they connect?
@@ -116,14 +122,14 @@ Start from a template based on the diagram type:
 ### Step 3: Render and Validate
 
 ```bash
-# Validate first (spec lives in the unit's source/)
-python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate 0-displays/displayNN-slug/source/spec.json
+# Validate first (the FigureSpec lives in the unit's recipe/)
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate displays/displayNN-slug/recipe/spec.json
 
 # Render to SVG (into the unit's assets/)
-python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render 0-displays/displayNN-slug/source/spec.json --output 0-displays/displayNN-slug/assets/figure.svg
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render displays/displayNN-slug/recipe/spec.json --output displays/displayNN-slug/assets/figure.svg
 
 # Convert to PDF for LaTeX inclusion
-rsvg-convert -f pdf 0-displays/displayNN-slug/assets/figure.svg -o 0-displays/displayNN-slug/assets/figure.pdf
+rsvg-convert -f pdf displays/displayNN-slug/assets/figure.svg -o displays/displayNN-slug/assets/figure.pdf
 ```
 
 If validation fails, inspect the error (missing field, duplicate ID, overlap warning, invalid hex color) and fix the JSON.
@@ -222,9 +228,8 @@ Three-stage horizontal cascade with inputs feeding in from top, outputs exiting 
 ## Output Contract
 
 Write into the display unit per the shared contract
-(`../../ref/display-unit-output-contract.md`): the editable SVG ->
-`assets/figure.svg`, the `rsvg-convert` PDF -> `assets/figure.pdf`, and the source
-FigureSpec JSON -> `source/<name>.json` for reproducibility.
+(`../../ref/display-unit-output-contract.md`): Intake context -> FigureSpec in `recipe/` ->
+editable SVG in `assets/figure.svg` -> optional PDF in `assets/figure.pdf`.
 
 ## Integration with Other Skills
 

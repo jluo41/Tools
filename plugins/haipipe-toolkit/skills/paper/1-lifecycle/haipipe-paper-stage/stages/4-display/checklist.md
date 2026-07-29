@@ -26,9 +26,10 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 
 ## Per display unit (`displays/displayNN-<slug>/`)
 - [ ] `README.md` present and status-mirrored from the md map.
-- [ ] `float.tex` present and `\input`-able from the paper root (paths are `displays/...`-relative); no pasted numbers (data displays RENDERED from task-produced evidence; concept figures via diagram (vector) or illustration (raster)).
+- [ ] `float.tex` present and `\input`-able from the paper root (paths are `displays/...`-relative); its caption, label, and placement exactly match the unit page's Paper-owned `### Wrapper`; no pasted numbers (data displays RENDERED from task-produced evidence; concept figures via diagram (vector) or illustration (raster)).
 - [ ] `preview.tex` + compiled `preview.pdf` current.
-- [ ] `candidates/` resolved (empty or archived to `versions/` after the pick); winning asset in `assets/`; rebuild spec in `source/` pointing at the producing task output.
+- [ ] Numeric unit has `intake/manifest.yaml`: task holder, run, canonical aggregate, matching snapshot hash, and permitted use are present; the summary CSV is in `intake/inputs/`.
+- [ ] `candidates/` resolved (empty or archived to `versions/` after the pick); winning asset in `assets/`; rebuild recipe in `recipe/` reads the declared intake snapshot.
 
 ## Vector renders (display-diagram)
 - [ ] Research-model / framework figures use ELBOW (`"ortho": true`) connectors, not curves (the MISQ/ISR house style).

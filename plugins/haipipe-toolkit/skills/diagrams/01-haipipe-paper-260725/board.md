@@ -89,23 +89,29 @@ QB · a STAGE: hand it a page, and a predefined flow runs over it
     how many pages exist already live, and `venue_aligned:` went to QA6,
     which owns the stage set.
 
-QC · the SENTENCE           what the reader READS          →  sections/
-   QC0 the sentence unit ──┬──→ QC1 citation           the .bib, human-only
-                           ├──→ QC2 value              bound to the producing run
-                           ├──→ QC3 Display · table    display id, source_data.csv
-                           └──→ QC4 Display · figure   display id, candidates
-   ROWS ▲ what hangs on a sentence  ·  COLUMNS ▼ where it is delivered
+QC · the SENTENCE, WITH ITS EVIDENCE CARD    what the reader READS   →  sections/
+   QC0 the sentence unit ──┬──→ QC1 citation           card prints the reference
+                           ├──→ QC2 value              card prints the producing run
+                           ├──→ QC3 Display · table    card prints the compiled float
+                           └──→ QC4 Display · figure   card prints assets + candidates
+   ROWS ▲ what a MARKER resolves to · COLUMNS ▼ where the sentence is delivered
                            ┌──→ QC5 as LaTeX           sections/ appendices/ \input
                            └──→ QC6 as Word            no .bib, no \input, no comment
-   all four resolve `QA8@boardform`'s one blocked item: inline chips, `dialect: paper`
+   all four resolve `QA8@boardform`'s one blocked item, and it is now built:
+   the inline MARKER and the EVIDENCE CARD it opens, under `dialect: paper`
 
-QD · the DISPLAY            what the reader LOOKS AT       →  displays/
-   QD1 ownership → QD2 render contract ──┬──→ QD3 renderer taxonomy
-                                         ├──→ QD4 format adapters → QD7
-                                         └──→ QD5 who may commission one
-   QD6 provenance ①run →②data →③code →④asset →⑤float →⑥sentence   joins QD to QC
-   QD7 one Content, several projections: LaTeX · Word · HTML   (was QB3d)
-   QC3/QC4 CITE a display; QD1-QD5 MAKE one. Different jobs, different owners.
+QD · the DISPLAY, as THIS PAPER'S CONSUMER of it   what the reader LOOKS AT  →  displays/
+   the four things `/haipipe-display`'s spine leaves with the consumer
+   ONE OBJECT, FOUR ANGLES, in the order the work happens
+   QD1 The Display as a folder            what is inside a unit, and where it lives
+   QD2 A display someone asked for        who may commission, and what it costs
+   QD3 A display with a caption and a label   what the paper WRITES on it
+   QD4 A display placed in a section      where the float lands, and whether the
+                                          build reaches it at all
+   QC cites a display · QD commissions and gates one · /haipipe-display MAKES it.
+   Cut 8 faces → 4 on 260726: the other seven asked LAYER questions that
+   `01-haipipe-display-260727` now owns, four of them still 🟡 here while
+   already ✅ there. None carried a Law, so nothing graduated was lost.
 
 QE · shipping the skill     the contract form and the acceptance test
    QE1 contract form → QE2 fresh-agent acceptance
@@ -167,13 +173,25 @@ QB3b-probe.md
 QB3c-revise.md
 QB3d-check.md
 
-### QC · The sentence: what hangs on it, and where it is delivered
-The first of the two things a reader actually meets, and the home of `sections/`. The Board
-ships the mechanism at `QA8@boardform`: one sentence per source line, a `>` lane bound by
-adjacency, a badge, a drawer, a write-back endpoint. What it cannot decide is what a citation, a
-value or a Display MEANS, and it says so: its one unbuilt item, inline chips, is blocked on a
-paper-side ruling. These pages are that ruling, split by TYPE, because the four look symmetric and
-are not. A citation ends in a `.bib` entry only a human may write. A value binds to a run, not a
+### QC · The sentence, with its evidence card
+The first of the two things a reader actually meets, and the home of `sections/`. A sentence here
+is never a bare assertion: whatever it leans on is attached to it, and clicking that attachment
+opens an EVIDENCE CARD showing the thing itself, resolved at build time. A citation's card prints
+the reference as the manuscript will set it; a number's card prints the run that produced it; a
+Display's card prints the compiled float. That is what this group is for, and it is why the group
+is named for the card rather than for the question it used to ask.
+
+Two words, and both were already the family's own (JL 260727, replacing `chip`, which came from UI
+component libraries and named the box rather than the thing). A MARKER is what the author types
+and is countable, so it is what a report counts: `\citep{key}`, a number, `\ref{tab:x}`. EVIDENCE
+is what a marker resolves against and what its card shows, and it is a mass noun, so it is what a
+sentence HAS. The renderer already carried the split: `.chip` is the marker, `.chipcard` is the
+card.
+
+The Board ships the mechanism at `QA8@boardform`: one sentence per source line, a `>` lane bound
+by adjacency, a badge, a drawer, a write-back endpoint. What it cannot decide is what a citation,
+a value or a Display MEANS, and it says so. These pages are that ruling, split by TYPE, because
+the four look symmetric and are not. A citation ends in a `.bib` entry only a human may write. A value binds to a run, not a
 file. A table is checkable on sight; a figure is not, and it has candidates.
 The group is a MATRIX (JL 260726). QC1-QC4 are ROWS, what hangs on a sentence. QC5 and QC6 are
 COLUMNS, where it is delivered. Every cell differs, which is why one shared "projections" face was
@@ -200,28 +218,53 @@ QC3-sentence-display-table.md
 QC4-sentence-display-figure.md
 QC5-sentence-to-latex.md
 QC6-sentence-to-word.md
-### QD · The Display, and who may render it
-The second thing a reader meets, and the home of `displays/`. Separate from QC because citing a
-display and MAKING one are different jobs: `QC3` and `QC4` ask what a sentence points at and what
-state that pointer is in, while these ask who owns the rendering. Paper owns the visual argument;
-Display owns reusable rendering; Task owns computed evidence; Deliver owns target-format
-embedding; low-level drawing engines remain utilities.
-QD1-display-ownership.md
-QD2-render-contract.md
-QD3-renderer-taxonomy.md
-QD4-format-adapters.md
-QD5-who-may-render.md
-QD6-provenance-chain.md
-QD7-one-content-many-formats.md
-### Q-Skill · Keeping the skills true to this board
-A ruling that stays on a board binds nothing, because no runtime reads a design board. This group
-owns the seam between the two: when a ruling becomes shipped text, when a version and a CHANGELOG
-entry are owed, and where a reader looks to see which of the 35 skills are current. It exists
-because on 2026-07-26 the two halves disagreed three times in one day, in three different
-directions, and nothing detected any of them. Whether a shipped skill then WORKS is `QE2`, not here.
-QS1-graduation.md
-QS2-versioning.md
-QS3-status.md
+### QD · The Display, as this paper's consumer of it
+The second thing a reader meets, and the home of `displays/`. This group used to try to rule the
+whole display layer. It no longer does, because `/haipipe-display` got its own board on 2026-07-27
+and its spine draws the line for us: it "lets a CONSUMER own the visual argument, caption,
+placement, and human gate." Those four are what is left here, and no other layer can answer any
+of them.
+
+What went, and why. Seven faces were archived on 2026-07-27: ownership, render contract, renderer
+taxonomy, format adapters, provenance chain, projections, and Intake. Every one asked a LAYER
+question that `01-haipipe-display-260727` now rules, two of them under the same page name, and
+four were still 🟡 here while already ✅ there. Not one carried a `## Law`, so the whole group had
+graduated nothing in the time it existed, which is the clearest evidence it was the wrong owner.
+
+The four faces are ONE OBJECT seen four ways, in the order the work happens, which is how `QC`
+reads and why it reads well: someone asks for a display, a folder comes back, the paper writes a
+caption and a label on it, and it is placed in a section. Each face is a plain noun phrase with
+one variable, so the whole group is legible in a glance without opening a page. Separate from QC because citing a display and
+commissioning one are different jobs: `QC3` and `QC4` ask what a sentence points at and what state
+that pointer is in.
+QD1-the-display-folder.md
+QD2-a-display-someone-asked-for.md
+QD3-a-display-with-a-caption.md
+QD4-a-display-placed-in-a-section.md
+### Q-Skill · Paper skill pages
+This group makes the shipped Paper control path readable without turning the Board into a copied
+skill directory. `QS4` selects the first cohort; each named `Q-Skill-…` page carries one skill's
+managed source instructions plus an authored account of its decisions, boundaries, and acceptance
+test. Whether a shipped skill then WORKS is `QE2`, not here.
+
+Three governance faces retired here on 260727 (JL): graduation, versioning, and per-skill status.
+They asked how a Board ruling becomes shipped text, when a version and CHANGELOG entry are owed,
+and where "is this skill current" lives. All three are in `_archive/`, so the argument stays
+readable and nothing is lost; none is a page anyone has to keep current. The group is now one thing
+rather than two: a readable account of the skills that ship, and no meta-layer about the act of
+shipping them.
+
+One settled rule lived only on the versioning face and is kept here so it survives the retirement,
+because that page recorded it as existing in no document: **one version tag per body of work,
+written at the END, never per pass** (JL, overriding a skill-diagnose procedure that bumped per
+phase).
+QS4-paper-skill-map.md
+Q-Skill-haipipe-paper.md
+Q-Skill-haipipe-paper-lifecycle.md
+Q-Skill-haipipe-paper-stage.md
+Q-Skill-haipipe-paper-draft.md
+Q-Skill-haipipe-paper-probe.md
+Q-Skill-haipipe-paper-revise.md
 
 ### QE · Shipping the skill
 Hand it over so a fresh agent can run a stage without us. Last, because it is the test of
@@ -240,9 +283,17 @@ haipipe-probe/     ../../probe/haipipe-probe/
 haipipe-board/     ../../board/haipipe-board/
 dialect_paper.py   ../../board/haipipe-board/src/dialect_paper.py
 haipipe-paper-probe          ../../paper/2-phase/1-probe/haipipe-paper-probe/
+haipipe-paper                ../../paper/haipipe-paper/
+haipipe-paper-lifecycle      ../../paper/1-lifecycle/haipipe-paper-lifecycle/
+haipipe-paper-stage          ../../paper/1-lifecycle/haipipe-paper-stage/
+haipipe-paper-draft          ../../paper/2-phase/0-draft/haipipe-paper-draft/
+haipipe-paper-revise         ../../paper/2-phase/2-revise/haipipe-paper-revise/
 haipipe-paper-revise-place   ../../paper/2-phase/2-revise/haipipe-paper-revise-place/
 haipipe-paper-revise-results ../../paper/2-phase/2-revise/haipipe-paper-revise-results/
 haipipe-paper-revise-content ../../paper/2-phase/2-revise/haipipe-paper-revise-content/
+haipipe-paper-revise-humanizer ../../paper/2-phase/2-revise/haipipe-paper-revise-humanizer/
+haipipe-paper-check          ../../paper/2-phase/3-check/haipipe-paper-check/
+haipipe-paper-check-evidence ../../paper/2-phase/3-check/haipipe-paper-check-evidence/
 5-section-edit/    ../../paper/1-lifecycle/haipipe-paper-stage/stages/5-section-edit/
 4-display/         ../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/
 boardform-board/   ../01-boardform-260722/
@@ -257,3 +308,26 @@ paper-folder/      ../../paper/3-deliver/1-build/haipipe-paper-folder/
 display/           ../../display/
 paper-display/     ../../paper/1-lifecycle/4-display/
 0-lifecycle/       ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
+display-board/     ../01-haipipe-display-260727/
+QA1@display        ../01-haipipe-display-260727/QA-where-display-lives/QA1-display-map.md
+QA3@display        ../01-haipipe-display-260727/QA-where-display-lives/QA3-unit-page-and-unit-folder.md
+QB1@display        ../01-haipipe-display-260727/QB-one-display-unit/QB1-unit-contract.md
+QB2@display        ../01-haipipe-display-260727/QB-one-display-unit/QB2-display-intake.md
+QB3@display        ../01-haipipe-display-260727/QB-one-display-unit/QB3-recipe-and-render.md
+QB4@display        ../01-haipipe-display-260727/QB-one-display-unit/QB4-candidates-and-promotion.md
+QB5@display        ../01-haipipe-display-260727/QB-one-display-unit/QB5-wrapper-and-placement.md
+QC1@display        ../01-haipipe-display-260727/QC-renderers-and-projections/QC1-renderer-taxonomy.md
+QC3@display        ../01-haipipe-display-260727/QC-renderers-and-projections/QC3-many-consumers.md
+QD1@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD1-task-to-intake.md
+QD2@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD2-paper-display-bridge.md
+QD3@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD3-sentence-and-projection.md
+# The seven QD faces archived 260727. Declared so the ids still RESOLVE: most of the
+# remaining mentions are in `## Log` lines, which are history and are not reworded.
+QD1-display-ownership       _archive/QD1-display-ownership.md
+QD2-render-contract         _archive/QD2-render-contract.md
+QD3-renderer-taxonomy       _archive/QD3-renderer-taxonomy.md
+QD4-format-adapters         _archive/QD4-format-adapters.md
+QD6                         _archive/QD6-provenance-chain.md
+QD7                         _archive/QD7-one-content-many-formats.md
+QD8                         _archive/QD8-display-intake.md
+

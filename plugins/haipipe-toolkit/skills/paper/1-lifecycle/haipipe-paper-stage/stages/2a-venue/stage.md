@@ -34,6 +34,10 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
                            # no gate. Raise it per invocation with `probe --depth N`.
 runs: once
 needs_paper: false        # a bare free-text topic/abstract is a valid input; no folder needed
+on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
+                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # `## Log`. Everything else: compute the change, SHOW it, ask.
+                         # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_role: chooser       # NEITHER venue_free NOR venue_aligned: this is the stage that PICKS
                           # the venue, so the axis every other stage sits on is the thing this
                           # one produces. Declared rather than left blank, so a missing

@@ -26,9 +26,10 @@ requires: <upstream S ids, comma separated>
 style-from: S-Venue-0
 provides: <what a downstream section may rely on, one line>
 
-<!-- RULE: `state:` is one of the board's FOUR values and nothing else. 🔴 OPEN · 🟡 PARTIAL ·
-     ✅ SETTLED (its human gate passed) · ⏸️ ON HOLD. The detail ("candidate C rendered, awaiting
-     promotion") is a sentence in `## Where we are`, not a state. -->
+<!-- RULE: `state:` begins with one of the Board's FOUR values: 🔴 OPEN · 🟡 PARTIAL ·
+     ✅ SETTLED (its human gate passed) · ⏸️ ON HOLD. A short readable detail may follow the emoji
+     (for example, `🔴 rendered but REVISE-blocked`); the evidence and full explanation belong in
+     `## Where we are`, not in the state line. -->
 
 ## Question
 Does <this display> carry <claim CN> for the reader, and is it built from evidence rather than assertion?
@@ -45,7 +46,18 @@ Does <this display> carry <claim CN> for the reader, and is it built from eviden
 
 ## Content
 
-### What it shows
+<!-- BOARD VIEW: once `unit:` is present, the lifecycle Board injects the reader-facing review
+     sequence before this authored text: Current Float → Live display artifact → Display Versions
+     → Current display folder. Display Versions inventories saved versions, candidates, and
+     non-current assets without promoting any of them: only `float.tex` selects the current
+     artifact. The folder is always the real on-disk shape and labels a legacy `source/` layout
+     honestly; it does not claim a migration that has not happened.
+     These are renderer-injected Board subsections, NOT Markdown headings to copy into each
+     allocated page. Validate them in generated `board.html`. An unallocated page without a
+     `unit:` record writes its own five empty-state subsections instead. -->
+
+### Display explanation
+unit: displayNN-<slug>
 takeaway: <what the reader learns in five seconds, one sentence>
 serves: <§section> · claim <CN> · called by <the beat or sentence that cites it>
 kind: <figure | table | diagram | illustration>
@@ -53,6 +65,11 @@ status: <planned | data-ready | candidates | rendered | input-ready | inserted |
 
 <!-- RULE: `serves:` is load-bearing. Reading all the asset pages' `serves:` lines IS the
      claim-to-display map, which is why no separate map file exists. Keep it one line. -->
+
+<!-- RULE: `unit:` is the stable bridge from this Paper-owned page to the renderer-owned folder.
+     A paper Board renders the unit's current `preview.pdf` as the first subsection of `📚 Content`.
+     The preview is the compiled float the manuscript will print; if it is missing, the Board says
+     so visibly instead of making a reader infer the display from text. -->
 
 ### Provenance
 <!-- RULE: THE CHAIN IS THE POINT OF THIS PAGE. Six links, each a real path, so any number in
@@ -66,27 +83,41 @@ status: <planned | data-ready | candidates | rendered | input-ready | inserted |
          A planned display has ①-⑤ empty and that is honest; a rendered display with an empty
          ① means a number was typed by hand, which the output contract forbids. -->
 
-① run       <task folder that produced the numbers, or "concept (no data)">
-② data      displays/displayNN-<slug>/source/source_data.csv
-③ gen code  <see the two shapes below>
+① run       <task holder + run that produced the canonical aggregate, or "concept (no data)">
+② intake    displays/displayNN-<slug>/intake/manifest.yaml + inputs/source_data.csv
+③ recipe    <see the three shapes below>
 ④ result    displays/displayNN-<slug>/assets/<figure.pdf | table-body.tex>
 ⑤ float     displays/displayNN-<slug>/float.tex
 ⑥ reader    <S-Main-N> · §<X> P<n>
 
 rebuild: <the one command that regenerates ④, or why it cannot be run here>
 
-<!-- RULE: ③ HAS TWO SHAPES and picking the wrong one hides where the code lives.
-       FIGURE  the paper draws it, so ③ is `source/gen_<slug>.py` IN THIS UNIT,
+### Intake
+<!-- RULE: values live in Intake, not in recipe. `manifest.yaml` must name the exact task holder,
+     run, canonical artifact, snapshot hash, and what this display is allowed to use. A small
+     summary CSV is copied to intake/inputs/ so the render is portable. The task's output remains
+     the source of truth. Concept figures record their narrative context here and leave values out
+     unless they show real numeric facts. -->
+manifest: `displays/displayNN-<slug>/intake/manifest.yaml`
+values: <task holder · run · canonical source_data.csv, or "none: concept display">
+snapshot: <intake/inputs/source_data.csv and sha256, or "none">
+context: <narrative / table-description source, if used>
+
+<!-- RULE: ③ HAS THREE SHAPES and picking the wrong one hides where the work lives.
+       FIGURE  the paper draws it, so ③ is `recipe/gen_<slug>.py` IN THIS UNIT,
                reading the ② snapshot. ① and ③ are different places.
        TABLE   a task generates it and the paper COPIES the result, so ③ is a
-               POINTER to the task, written as `source/REBUILD.md`. ① and ③ are
+               POINTER to the task, written as `recipe/REBUILD.md`. ① and ③ are
                then the SAME task folder.
+       PPTX    a human edits the figure, so ③ is `recipe/<slug>.pptx` plus
+               `recipe/export.md`. It exports a PDF/SVG into `assets/`; `float.tex`
+               still references that export and `preview.pdf` remains the review view.
      Never copy a task's generation code into the unit. The pointer is the link;
      a copy is a second source that will drift from the first.
 
-     A unit that cannot be rebuilt here still needs `source/REBUILD.md`. Say why:
+     A unit that cannot be rebuilt here still needs `recipe/REBUILD.md`. Say why:
      the run is on a secure server, the report is dated, the data is PHI. "Cannot
-     rebuild" recorded with a reason is provenance; an empty source/ is a hole. -->
+     rebuild" recorded with a reason is provenance; an empty recipe/ is a hole. -->
 
 <!-- RULE: `⑥ reader` names the paragraph for a human. The BINDING is the
      `> Display:` lane under the citing sentence (QC0's adjacency rule), not a
@@ -100,6 +131,14 @@ rebuild: <the one command that regenerates ④, or why it cannot be run here>
 
 caption job: <what the caption must explain without overclaiming>
 
+### Wrapper
+<!-- RULE: this is the Paper-owned specification a renderer may serialize, never compose or
+     revise. It remains blank/pending while candidates are explored. Before finalization it must
+     contain the approved literal caption, stable label, and venue-compatible placement. -->
+caption: <approved literal caption, or "pending">
+label: <fig:slug | tab:slug, or "pending">
+placement: <t | b | htbp, or "pending">
+
 ### Fragility
 <!-- RULE: what makes this asset wrong rather than merely old, and what moves WITH it. A cohort
      re-run that changes this figure usually changes a table and a sentence too; name them, so a
@@ -107,13 +146,15 @@ caption job: <what the caption must explain without overclaiming>
 <one or two record lines>
 
 ## Items to Finish
-<!-- RULE: this is the page's queue and it is where a Q-Display question lives. A question this
-     asset cannot answer itself becomes a row here, recognizable as `Q-Display-<n>`, and the row
-     closes only when the answer landed AND was woven into the Spec or the caption.
-     Numbers come from the bank, never from the agent: a value the agent typed is a defect, not
-     a draft. Route it through PROBE. -->
-- [ ] 🔎 Q-Display-<n> · <what evidence this asset needs>
-      Which link of the chain it fills, and what breaks if the number differs.
+<!-- RULE: this is the page's Q-consumer adapter AND its known-work queue. Use a Q record only
+     for an unresolved semantic or evidence question. A known render/edit/promote step is a normal
+     work item. Numbers come from the bank, never from the agent: a value the agent typed is a
+     defect, not a draft. Route the uncertainty through PROBE. -->
+- [ ] 🔎 Q-Display<unit>-<n> · <question title>
+      **Description:** <what this asset needs to know>
+      **Reason:** <which Spec / Wrapper / caption / reader assertion depends on the answer, and what breaks>
+      **Probe:** not opened yet
+      **Answer:** <empty until PROBE or a documented human ruling>
 - [ ] 📈 <build, render, or promote step>
 - [ ] 🧠 Close this unit's gate
       JL confirms the unit is built, captioned, correctly labeled, and placed.
@@ -124,10 +165,14 @@ caption job: <what the caption must explain without overclaiming>
 ## Files
 <!-- RULE: name the ARTIFACTS, not the folder. "the unit folder" is not a way to reach anything.
      Cross-page dependencies come after the artifacts. -->
-- `displays/displayNN-<slug>/source/gen_<slug>.py`
-  Regenerates the asset from the snapshot beside it.
-- `displays/displayNN-<slug>/source/source_data.csv`
-  The snapshot this render read. Replaced, never edited.
+- `displays/displayNN-<slug>/intake/manifest.yaml`
+  Binds the task holder and canonical artifact to the approved snapshot this unit read.
+- `displays/displayNN-<slug>/intake/inputs/source_data.csv`
+  The small display-safe snapshot. Replaced through materialization, never hand-edited.
+- `displays/displayNN-<slug>/recipe/gen_<slug>.py`
+  Regenerates the asset from the intake snapshot.
+- `displays/displayNN-<slug>/recipe/<slug>.pptx` (optional)
+  Editable PowerPoint source. `recipe/export.md` records its export into `assets/`; it is never the float itself.
 - `displays/displayNN-<slug>/assets/<asset>`
   The live asset. `float.tex` is the only thing that references it.
 - `displays/displayNN-<slug>/float.tex`

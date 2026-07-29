@@ -64,7 +64,7 @@ Apply the four workers to the source `.md`, leave `%% {CC-*}:` why-comments for 
 Use this mode only after an explicit author request for reviewable alternatives. Read `haipipe-paper-revise-humanizer/ref/venue-sciwrite.md` before proposing any change.
 
 1. Keep the source sentence, its citations, values, display lanes, and user comments byte-intact.
-2. Put one complete proposed sentence in an adjacent `> Note:` lane. Mark removed text as `~~removed~~` and inserted or replacement text as `*inserted*`.
+2. Put one complete proposed sentence in an adjacent `> Note:` lane. Mark removed text as `~~removed~~` and inserted or replacement text as `**inserted**`.
 3. Append `· <verified model label> · YYYY-MM-DD`; never invent a model name or version.
 4. Make only minimum, meaning-preserving changes. Do not add or remove a claim, qualifier, causal strength, number, citation, display reference, or defined term.
 5. Place the Note after any existing adjacent `> Citation:`, `> Value:`, or `> Display:` lanes so the entire apparatus folds under the same sentence.

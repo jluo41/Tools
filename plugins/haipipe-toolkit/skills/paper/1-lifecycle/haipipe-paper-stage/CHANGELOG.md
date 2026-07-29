@@ -1,6 +1,58 @@
 haipipe-paper-stage — Changelog
 ================================
 
+## [0.8.8] — 2026-07-27 — Display review blocks are a Board projection
+
+- The Display template now says plainly that Current Float, live artifact, Display Versions,
+  current folder, and explanation are injected in generated `board.html` for allocated units.
+  They are not headings an author copies into every source page.
+- An unallocated Display request has no `unit:` record and therefore writes the same five
+  empty-state subsections itself. This makes both the source and validation surface unambiguous.
+
+## [0.8.7] — 2026-07-27 — Display questions, work, and editable sources are distinct
+
+- Display's Board-native `## Items to Finish` now makes the Q-consumer distinction explicit:
+  `Q-Display<unit>-<n>` is an unresolved, stake-bearing question with Description, Reason, Probe,
+  and Answer; a known edit/render/promote action remains an ordinary work item. Per-unit ids avoid
+  collisions between independently gated display pages.
+- A PPTX is an optional editable source in `recipe/`, with `export.md` recording its export into a
+  PDF/SVG asset. The unit still compiles the asset through `float.tex` into `preview.pdf`; this is
+  the one reviewable paper artifact. Legacy PPTX files remain historical editable sources until a
+  deliberate migration.
+- The state template now matches the Board contract: its first emoji carries the machine state and
+  a short readable detail may follow.
+
+## [0.8.6] — 2026-07-27 — section-edit's closed_when matches QC0's S4
+
+- `closed_when` said the agent places the real thing "retiring the placeholder and its bracket
+  together", which is right for a citation and wrong for a value. Split: a CITATION retires
+  both, a VALUE retires only the placeholder and gains a `> Value:` lane.
+- `prose_rule` now names the FINISHED form, not only the two unfinished ones, and a new
+  `done_criteria` line fails a placed number carrying neither bracket nor lane — the state that
+  looks finished and reports nothing.
+
+## [0.8.5] — 2026-07-27 — section-edit's Q-consumer id carries its unit
+
+- **`q_id_pattern` is now `Q-Sec<unit><Slug>-<n>`, not `Q-Section-<n>` (JL ruling).** This
+  stage declares `runs: per-unit`, so the unit IS the stage instance and its token must say
+  which unit: `S-Main-0-abstract` -> `Q-Sec0Abstract-<n>`, `S-Main-6-results` ->
+  `Q-Sec6Results-<n>`, `S-Appendix-A-prompts` -> `Q-SecAPrompts-<n>`. Both halves are read
+  off the S page filename, so an id cannot drift from the page that owns it.
+- No change to `/haipipe-probe`: `Q-<Stage>-<n>` was always the contract, and it already
+  states that consumer ids never collide. section-edit was the one stage breaking it.
+- Why it is not cosmetic: the resolver takes the FURTHEST-ALONG match among entries claiming
+  an id, so a shared id let a DEFERRED question inherit an ANSWERED one's state. On the MISQ
+  paper `Q-Section-1` named three different questions on three pages, and nine chips read
+  `ok`/`ready` against pages whose own records read DEFERRED or no-live-probe.
+- `template.md` and `TEMPLATES.md` updated; `TEMPLATES.md`'s "section-edit id scoping" open
+  question is closed.
+
+## [0.8.4] — 2026-07-27 — Display Intake and wrapper handoff
+
+- The Display-stage template now makes the Paper-owned `### Wrapper` explicit: literal caption, stable label, and placement.
+- A renderer may serialize only those already-approved fields; it cannot invent or rewrite paper-facing semantics.
+- Numeric units bind a small provenance-traceable Intake snapshot before rendering, while legacy units remain unmigrated unless deliberately converted.
+
 ## [0.8.3] — 2026-07-26 — Q-consumer gets a Board-native home
 
 - `create-page.py` now treats `Q-consumer` as a logical stage division and

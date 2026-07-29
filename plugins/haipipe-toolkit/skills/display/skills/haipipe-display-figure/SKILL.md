@@ -4,9 +4,9 @@ description: "Generate publication-quality data plots from experiment results (l
 argument-hint: "[figure-plan-or-data-path]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-06-22"
-  summary: "Generate publication-quality data plots from experiment results (the plot renderer of the display family)."
+  version: "0.2.1"
+  last_updated: "2026-07-27"
+  summary: "Generate publication-quality data plots from a provenance-bound Display Intake."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -20,10 +20,15 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 
 ## Output: write into a display unit
 
-The plot goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
+The plot goes into a `displays/displayNN-<slug>/` unit per the shared contract:
 `../../ref/display-unit-output-contract.md`.
-THIS renderer's row: asset -> `assets/figure.pdf`; rebuild spec -> `source/gen_*.py`
-(+ `source/paper_plot_style.py`).
+THIS renderer's row: asset -> `assets/figure.pdf`; rebuild spec -> `recipe/gen_*.py`
+(+ `recipe/paper_plot_style.py`).
+
+For a new unit, read `intake/manifest.yaml` before doing anything else.
+The plot script reads only the manifest's approved `intake/inputs/` snapshot.
+It never searches a task folder, re-derives values, or chooses rows from an arbitrary result file.
+Legacy `source/` units remain valid only through the compatibility path in the shared contract.
 
 ## Scope: What This Skill Can and Cannot Do
 
@@ -50,35 +55,28 @@ The skill will detect manually-made figures as "existing figures" and preserve t
 - **COLOR_PALETTE = `tab10`** — Default matplotlib color cycle.
   Options: `tab10`, `Set2`, `colorblind` (deuteranopia-safe)
 - **FONT_SIZE = 10** — Base font size (matches typical conference body text)
-- **FIG_DIR** — for a paper, the display unit `0-displays/displayNN-slug/` (plot -> `assets/figure.pdf`, scripts -> `source/`).
+- **FIG_DIR** — for a paper, the display unit `displays/displayNN-slug/` (plot -> `assets/figure.pdf`, scripts -> `recipe/`).
   Flat `figures/` only with no paper.
 - **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for figure quality review.
 
 ## Inputs
 
-1. **PAPER_PLAN.md** — figure plan table (figure-inventory planning now lives in the display stage: `/haipipe-paper-stage display`, see its `figure-logic.md`; lifecycle spine: narrative -> display -> section-edit)
-2. **Experiment data** — JSON files, CSV files, or screen logs in `figures/` or project root
-3. **Existing figures** — any manually created figures to preserve
+1. **Display contract** — the unit's `README.md` and the paper-stage brief.
+2. **Display Intake** — `intake/manifest.yaml` and its approved CSV/JSON snapshot.
+3. **Existing candidate** — only when the caller asked to refine that named candidate.
 
-If no PAPER_PLAN.md exists, scan for data files and ask the user which figures to generate.
+If no display unit or verified Intake exists, stop and ask the caller to create one.
 
 ## Workflow
 
-### Step 1: Read Figure Plan
+### Step 1: Read the Unit Brief and Intake
 
-Parse the Figure Plan table from PAPER_PLAN.md:
+Read the unit `README.md` for the claim, audience, caption intent, and target section.
+Then read `intake/manifest.yaml` and verify the declared snapshot hash before plotting.
+The Display stage, not this renderer, already decided the figure plan and form.
 
-```markdown
-| ID | Type | Description | Data Source | Priority |
-|----|------|-------------|-------------|----------|
-| Fig 1 | Architecture | ... | manual | HIGH |
-| Fig 2 | Line plot | ... | figures/exp.json | HIGH |
-```
-
-Identify:
-- Which figures can be auto-generated from data (this skill)
-- Which need manual creation (architecture diagrams, etc.)
-- Which rows are tables -> route those to `haipipe-display-table`, not here
+If the manifest has no `role: values` source, stop and route a concept visual to the diagram or
+illustration renderer instead.
 
 ### Step 2: Set Up Plotting Environment
 
@@ -134,7 +132,7 @@ Use this decision tree for data-driven figures (inspired by Imbad0202/academic-r
 
 ### Step 4: Generate Each Figure
 
-For each figure in the plan, create a standalone Python script:
+For the current display unit, create a standalone Python script in `recipe/`:
 
 **Line plots** (training curves, scaling):
 ```python
@@ -142,7 +140,7 @@ For each figure in the plan, create a standalone Python script:
 from paper_plot_style import *
 import json
 
-with open('figures/exp_results.json') as f:
+with open('intake/inputs/exp_results.json') as f:
     data = json.load(f)
 
 fig, ax = plt.subplots(1, 1, figsize=(5, 3.5))
@@ -156,13 +154,15 @@ save_fig(fig, 'fig2_training_curves')
 
 **Bar charts** (comparison, ablation):
 ```python
+from paper_plot_style import *
+import pandas as pd
+
+data = pd.read_csv('intake/inputs/comparison.csv')
 fig, ax = plt.subplots(1, 1, figsize=(5, 3))
-methods = ['Baseline', 'Method A', 'Method B', 'Ours']
-values = [82.3, 85.1, 86.7, 89.2]
-bars = ax.bar(methods, values, color=[COLORS[i] for i in range(len(methods))])
+bars = ax.bar(data['method'], data['value'], color=[COLORS[i] for i in range(len(data))])
 ax.set_ylabel('Accuracy (%)')
 # Add value labels on bars
-for bar, val in zip(bars, values):
+for bar, val in zip(bars, data['value']):
     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.3,
             f'{val:.1f}', ha='center', va='bottom', fontsize=FONT_SIZE-1)
 save_fig(fig, 'fig3_comparison')
@@ -171,11 +171,8 @@ save_fig(fig, 'fig3_comparison')
 **Comparison / coefficient tables** (LaTeX): out of scope — use `haipipe-display-table`, which owns booktabs rules, significance stars, SE rows, panels, and table notes.
 Do not emit `.tex` tables from this skill.
 
-**Architecture/pipeline diagrams** (MANUAL — outside this skill's scope):
-- These require manual creation using draw.io, Figma, Keynote, or TikZ
-- This skill can generate a rough TikZ skeleton as a starting point, but **do not expect publication-quality results**
-- If the figure already exists in `figures/`, preserve it and generate only the LaTeX `\includegraphics` snippet
-- Flag as `[MANUAL]` in the figure plan and `latex_includes.tex`
+**Architecture/pipeline diagrams** are outside this skill's scope.
+Route them to `haipipe-display-diagram` or `haipipe-display-illustration` through the Display stage.
 
 ### Step 5: Run All Scripts
 
@@ -188,21 +185,14 @@ done
 
 Verify all output files exist and are non-empty.
 
-### Step 6: Generate LaTeX Include Snippets
+### Step 6: Hand Back to the Unit Wrapper
 
-For each figure, output the LaTeX code to include it:
+The renderer writes the asset and recipe only. `float.tex` is caller-owned: after the Paper
+adapter supplies an approved caption, label, and placement, a renderer may refresh just its asset
+reference under the shared contract. It never invents or changes those semantic fields.
+Do not create a parallel `latex_includes.tex` file or write an ad hoc figure block in a section.
 
-```latex
-% === Fig 2: Training Curves ===
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.48\textwidth]{figures/fig2_training_curves.pdf}
-    \caption{Training curves comparing factorized and CRF-LR denoising.}
-    \label{fig:training_curves}
-\end{figure}
-```
-
-Save all snippets to `figures/latex_includes.tex` for easy copy-paste into the paper.
+The Paper adapter places the accepted unit through its existing `float.tex`.
 
 ### Step 7: Figure Quality Review with REVIEWER_MODEL
 
@@ -243,8 +233,9 @@ Before finishing, verify each figure (from pedrohcgs/claude-code-my-workflow):
 
 ## Output
 
-The display unit layout (asset -> `assets/figure.pdf`, rebuild spec -> `source/gen_figNN_*.py`
-+ `source/paper_plot_style.py`) and the no-paper flat fallback are the shared contract:
+The display unit layout (approved values -> `intake/inputs/`, asset -> `assets/figure.pdf`,
+rebuild recipe -> `recipe/gen_figNN_*.py` + `recipe/paper_plot_style.py`) and the no-paper flat
+fallback are the shared contract:
 `../../ref/display-unit-output-contract.md`.
 
 ## Figure Type Reference

@@ -43,7 +43,7 @@ In explicit original-preserving review mode:
 
 ```markdown
 Original sentence remains unchanged.
-> Note: Complete candidate with ~~removed text~~ and *inserted text*. · <verified model label> · YYYY-MM-DD
+> Note: Complete candidate with ~~removed text~~ and **inserted text**. · <verified model label> · YYYY-MM-DD
 ```
 
 Write the whole candidate sentence, not an isolated replacement fragment. Use the smallest viable edit. Place the Note in the source `.md` beneath its existing evidence lanes, so the Board folds it under the original sentence. Never copy the Note into TeX or call it an applied revision.

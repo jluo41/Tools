@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one folder tree, and one markdown page per ruling (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
 metadata:
-  version: "0.41.2"
-  last_updated: "2026-07-26"
-  summary: "skillpage.py turns a skill folder into a Q page: a derived header it owns, SKILL.md and CHANGELOG.md embedded by reference, and authored sections it never touches."
+  version: "0.45.0"
+  last_updated: "2026-07-28"
+  summary: "A unit id may carry a VARIANT tail, S-Display-4al2 beside S-Display-4a, so a display that is the same job under a different specification inherits its parent letter and renames nothing."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

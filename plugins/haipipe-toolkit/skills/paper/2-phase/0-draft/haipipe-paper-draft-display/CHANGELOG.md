@@ -3,6 +3,12 @@ haipipe-paper-draft-display — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.2] — 2026-07-27 — Display Intake handoff
+
+- Extended each new DR row with `bank deliverable`, `intake source`, and `consumer deliverable`.
+- Added `intake-ready` between accepted and done: a numeric visual cannot render until its unit
+  has a manifest that names task holder, run, canonical aggregate, and approved snapshot.
+
 ## [0.2.1] — 2026-07-26 — Board-family path
 
 - Routed DR rows to the live `0-lifecycle/3-display/_DISPLAY_REQUEST.md` inbox

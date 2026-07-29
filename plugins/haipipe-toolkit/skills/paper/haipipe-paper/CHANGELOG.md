@@ -3,6 +3,11 @@ haipipe-paper — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.4.5] — 2026-07-27 — Display Intake routing
+
+- Separates a missing display-ready aggregate (task-for-display) from a paper-facing render (Paper Display → Intake → renderer).
+- Removes the stale direct re-render-to-task route, so an existing verified aggregate is never mistaken for a paper asset.
+
 ## [0.4.4] — 2026-07-26 — one evidence dispatch topology
 
 - Synchronized the active Paper probe reference and behavioral preference with

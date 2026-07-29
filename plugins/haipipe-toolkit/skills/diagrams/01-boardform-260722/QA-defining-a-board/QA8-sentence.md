@@ -22,6 +22,7 @@ JL asked for the sentence to be clickable with the hidden things beneath it (260
 ### Lane grammar
 A `>` line directly under a sentence (blank lines tolerated between them) attaches to that sentence.
 Typed lanes name the attachment: `> Citation:` 📚 · `> Value:` 🔢 · `> Display:` 🖼 · `> Check:` ⚠️ · `> Q-consumer:` 🔎 · `> Link:` 🔗 · `> Source:` 📄 · `> Note:` 📝.
+For sentence-revision `> Note:` lanes, write deletions as `~~removed~~` and additions as `**inserted**`; the Board renders them as a deletion line and bold text rather than showing the delimiters.
 `> JL:` / `> CC:` review threads join the same drawer with their normal comment styling.
 A `>` run with no sentence above it (a thread that opens a section) renders exactly as before, and the supporting folds (Discussion, Law, Lesson, Glossary, Log, Why here) never fold apparatus.
 
@@ -48,7 +49,8 @@ The typed lanes are JL's extension of that same convention, proposed in the MISQ
       Pure CSS, both themes, shipped 260725 on JL's ask.
 - [x] ➕ Click-to-add writes into the markdown
       Shipped 260725: `POST /_board/sentence` in `serve.py` finds the exact sentence line (markdown-stripped match), appends `> Lane: text` at the end of its apparatus run, and rebuilds; a miss returns a visible error and writes nothing.
-      On the page, double-clicking a bare sentence opens the lane + text form beneath it, and every open drawer ends with an "➕ add to this sentence" row.
+      On the page, double-clicking ANY sentence opens the lane + text form, and every open drawer also ends with an "➕ add to this sentence" row.
+      Amended 260727: this used to read "a bare sentence", and the drawer's row was the only path for a sentence that already had apparatus. That row is reachable only once the drawer is OPEN, so on an evidenced sentence the gesture people had learned did nothing, silently. Both shapes now answer double-click. WHERE the form goes still differs: `mk` inserts `afterend`, so a drawer must insert at the end of its BODY — inserting after the summary's own `p` puts the form inside `<summary>`, where every click toggles the drawer.
       Smoke-tested over HTTP: the Note line in QA4's second demo drawer was added through the endpoint.
 - [ ] 🧠 JL accepts the interaction on the lab board
       Eyeball QA4: the badge shape, the drawer depth, which lanes exist, and whether attachment across blank lines feels right.
@@ -107,3 +109,4 @@ browser rule: the built-in browser styling that keeps a closed popover hidden.
 260725 · form trigger moved to double-click (single click freed, JL); hover ⧉ copy button ships the clean sentence text
 260725 · click-to-add shipped: /_board/sentence endpoint + page form + drawer ➕ row; hover tint; smoke test wrote the Note line in QA4's demo drawer over HTTP
 260725 · opened after the same question landed in both sessions; v1 adjacency fold + typed lanes shipped on the lab board, MISQ rollout and chips deferred
+260727 · JL, on a sentence that had just gained a `> Value:` lane: "when I double click the sentence, I can enter the comments, but now it is gone, why?" The apparatus form, not the pinned comment. Cause was this face's own two-path design meeting the paper's evidence card: gaining a lane moves a sentence from a bare `<p>` into `<details><summary>`, and `board.js` excluded `summary` from the double-click guard because drawers have their own ➕ row. 116 of the MISQ board's sentences are already drawers and the count grows with every evidenced sentence, so the exclusion was retired rather than documented. First attempt inserted the form after the summary's `<p>`, which lands it INSIDE the summary where clicks toggle the drawer; corrected to the drawer body, matching what the ➕ row path already did.

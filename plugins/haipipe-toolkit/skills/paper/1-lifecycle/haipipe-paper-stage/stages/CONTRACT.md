@@ -31,6 +31,9 @@ any of them is incomplete.
                  probe_depth    the ceiling PROBE may spend on, on the bank's ladder (0..3)
                  runs           `once` for a single-artifact stage, `per-unit` otherwise
                  needs_paper    whether a paper root is required to run at all
+                 on_rerun       what a SECOND run does to a page a human has edited.
+                                Default and only currently legal value: `diff-and-ask`.
+                                See "The second run" below. QB2c.
 
  PRODUCT         artifact       the S face this stage writes. See the resolution rule below.
                  template       the scaffold DRAFT fills
@@ -61,6 +64,49 @@ It is never emitted as a second `## Q-consumer` content block.
 `upstream` and `downstream` are craft orientation, not a dependency graph. The authoritative
 dependency declaration is the S page's own `requires:` (QF2), because that one carries the
 upstream page's live gate state and cannot go stale.
+
+## The second run
+
+Every stage is run more than once. A venue change re-runs pitch, a returned probe answer re-runs
+revise, a reviewer round reopens whole families. So `on_rerun:` answers the question that matters
+most about a stage, which is not what its first run produces but what its second run does to a page
+a human has already read, argued with, and commented on.
+
+Ruled 2026-07-27 (QB2c). Before this field existed, the behaviour had nowhere to be declared, so it
+was patched into eight separate places across seven files, in five shapes, and each patch was
+invisible to the next author. Those eight are superseded by this section. **A local re-run rule that
+survives it will contradict it later, so remove it rather than leave it.**
+
+**Two things a re-run does. Both are binding.**
+
+```
+ ① PROTECTED — a re-run may not rewrite these AT ALL
+      > <ACTOR>:                any comment lane, whoever wrote it
+      state:                    a value a human set at a gate
+      ## Where we are           written after that gate, about that gate
+      - [x] a ticked box        in ## Items to Finish
+      a GATE row in ## Log      the one thing on the page that CANNOT be
+                                re-derived from disk if it is overwritten
+
+ ② EVERYTHING ELSE — diff and ask, never silently overwrite
+      compute what would change, SHOW it, then ask keep / change / reframe.
+      This was already the written rule in `ref/09-stage-illuminate.md:25`
+      and had never been built.
+```
+
+⚖️ **The protection is keyed to the LANE SHAPE, `> <ACTOR>:`, and never to one actor id.** This is
+the operative half of the ruling, because the previous attempts failed on exactly this point. Two
+rules already protected `> USER:`, the canonical actor id here; every human comment line on the MISQ
+paper reads `> JL:`, an alias `2-phase/USAGE.md:53` tolerates when reading. Measured 2026-07-27: 47
+such lines across 8 of 40 S pages, and `> USER:` on none of them. So the rule that ran most often
+guarded a string that was not there. Matching the shape closes that gap without editing a single
+human comment line, which is the one edit `haipipe-board`'s own law forbids.
+
+The hand-drawn `<!-- Agents never overwrite below this line -->` in `5-section-edit/template.md` and
+its 95 venue copies is superseded, not implemented: `create-page.py :: template_divisions()` emits
+only `###` division titles and drops HTML comments, so the guard sat in 96 files and reached 0 of
+the 40 live pages. Protection now keys to constructs that are actually on the page, so no marker has
+to survive compilation for it to hold.
 
 ## How `artifact:` resolves
 

@@ -3,6 +3,14 @@ haipipe-display-figure — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.1] — 2026-07-27 — Caller-owned wrapper semantics
+
+- Makes the Paper-owned caption, label, and placement boundary explicit; the plot renderer only emits the asset/recipe and may refresh an already-approved asset reference.
+
+## [0.2.0] — 2026-07-27 — Display Intake
+
+- Requires a verified Intake manifest and approved snapshot before plotting.
+- Separates values in `intake/inputs/` from scripts in `recipe/`, and removes ad hoc section include snippets.
 
 ## [0.1.2] — 2026-07-24 · moved to display/
 

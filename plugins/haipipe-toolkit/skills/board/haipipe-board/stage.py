@@ -228,9 +228,21 @@ def resolve_filename(family, unit, slug):
     family = family.title()
     if family not in FAMILIES:
         raise SystemExit(f"family must be one of: {', '.join(FAMILIES)}")
-    unit = str(unit).upper()
-    if not re.fullmatch(r"\d+|[A-Z]", unit):
-        raise SystemExit("unit must be a number or one uppercase letter")
+    unit = str(unit)
+    if re.fullmatch(r"[A-Za-z]", unit):
+        unit = unit.upper()          # an appendix letter: S-Appendix-C
+    elif not re.fullmatch(r"\d+|\d+[a-z][a-z0-9]*", unit):
+        # A BLOCK + MEMBER id is the Display family's grammar (JL 260727): the number
+        # is the narrative block a unit serves and the lowercase letter is its position
+        # inside that block, so `4a` is the first results display. An optional tail after
+        # the letter marks a VARIANT of that member, same claim and same job under a
+        # different specification, which inherits its parent's letter so that inserting
+        # one costs no rename: `4al2` is `4a` estimated on the binary trait_l2 exposure.
+        # Case is preserved here rather than upper-cased, because these ids are written
+        # lowercase on disk and the board's own parser reads them either way.
+        raise SystemExit(
+            "unit must be a number (S-Main-6), one letter (S-Appendix-C), "
+            "a block+member id (S-Display-4a), or a variant of one (S-Display-4al2)")
     slug = re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
     if not slug:
         raise SystemExit("slug must contain at least one letter or number")

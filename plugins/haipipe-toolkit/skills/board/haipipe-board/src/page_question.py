@@ -154,21 +154,223 @@ def face_name(q):
                   .replace("·", " ")).strip()
 
 
-def render_content(sections, q=None):
+def render_content(sections, q=None, leading=""):
     """Render a page's remaining named Content subsections.
 
     On S pages the heading NAMES the stage ("Content · Main 7 Results") instead of
     counting subsections (JL 260725): an S page's Content is the stage's own
     substance, so the label should say which substance, not how many boxes.
     Q pages keep the count, where it is a scanning aid rather than an identity."""
-    if not sections:
+    if not sections and not leading:
         return ""
-    inner = render_subsections(sections)
+    inner = leading + render_subsections(sections)
     name = face_name(q) if q else ""
     n = len(sections)
     lab = (f"📚 Content · {esc(name)}" if name
            else f"📚 Content · {n} section" + ("s" if n != 1 else ""))
     return sect(lab, inner, cls="content")
+
+
+def _display_live_artifact(unit):
+    """Show the exact object that the current float references.
+
+    preview.pdf is the reader's manuscript-level inspection surface.  This
+    second row makes legacy or blocked units honest by showing the actual PDF,
+    image, or table body behind that wrapper rather than describing it only.
+    """
+    path = unit.float_target
+    if path is None:
+        return ('<details class="csec display-artifact missing" open>'
+                '<summary>📄 Live display artifact</summary><div class="cbody">'
+                '<p><code>float.tex</code> has no resolvable asset target yet.</p>'
+                '</div></details>')
+    href = _bd._rel(path)
+    if not href:
+        return ""
+    try:
+        name = path.relative_to(unit.path).as_posix()
+    except ValueError:
+        name = path.name
+    lower = path.name.lower()
+    if lower.endswith(".pdf"):
+        visual = (f'<object class="figpdf" data="{esc(href)}" type="application/pdf">'
+                  f'<a class="fp" href="{esc(href)}">open {esc(name)}</a></object>')
+        label = "📄 Live display PDF"
+    elif lower.endswith((".png", ".jpg", ".jpeg", ".svg", ".webp", ".gif")):
+        visual = f'<img class="fig" src="{esc(href)}" alt="{esc(name)}" loading="lazy">'
+        label = "🖼 Live display asset"
+    else:
+        visual = (f'<p>The Current Float above is assembled from '
+                  f'<a class="fp" href="{esc(href)}"><code>{esc(name)}</code></a>.'
+                  f'</p>')
+        label = "📋 Live display artifact"
+    return (f'<details class="csec display-artifact" open><summary>{label}</summary>'
+            f'<div class="cbody">{visual}</div></details>')
+
+
+def _display_versions(unit):
+    """List the current artifact and every stored alternative without promoting one.
+
+    ``float.tex`` is the one authority for *current*.  Files in ``versions/``,
+    ``candidates/``, and a non-current ``assets/`` are useful to inspect, but
+    their directory alone does not establish chronology, approval, or
+    reproducibility.  This is especially important for legacy units whose
+    history predates a version manifest.
+    """
+    def rel(path):
+        try:
+            return path.relative_to(unit.path).as_posix()
+        except ValueError:
+            return path.name
+
+    def link(path):
+        href = _bd._rel(path)
+        name = rel(path)
+        return (f'<a class="fp" href="{esc(href)}"><code>{esc(name)}</code></a>'
+                if href else f'<code>{esc(name)}</code>')
+
+    target = unit.float_target
+    sections = []
+    if target is None:
+        sections.append('<p><b>Current printed artifact:</b> '
+                        '<code>float.tex</code> has no resolvable target.</p>')
+    else:
+        sections.append(f'<p><b>Current printed artifact:</b> {link(target)} '
+                        '(<code>float.tex</code> target).</p>')
+
+    groups = (
+        ("Saved versions", unit.path / "versions",
+         "stored history; not necessarily approved or chronological"),
+        ("Candidates", unit.path / "candidates",
+         "not printed or promoted"),
+        ("Other assets", unit.path / "assets",
+         "not the artifact currently targeted by the float"),
+    )
+    listed = False
+    for label, folder, note in groups:
+        paths = [p for p in sorted(folder.iterdir())
+                 if p.is_file() and p.name != ".gitkeep"] if folder.is_dir() else []
+        if target is not None:
+            paths = [p for p in paths if p.resolve() != target.resolve()]
+        if not paths:
+            continue
+        listed = True
+        items = "".join(f'<li>{link(path)}</li>' for path in paths)
+        sections.append(f'<p><b>{esc(label)}:</b> {esc(note)}.</p>'
+                        f'<ul class="display-version-list">{items}</ul>')
+    if not listed:
+        sections.append('<p>No saved alternatives or unpromoted candidates are present.</p>')
+    sections.append('<p class="display-version-posture">Only the current row is selected by '
+                    '<code>float.tex</code>. The remaining rows are an on-disk inventory; '
+                    'their status and provenance require an explicit manifest or stage record.</p>')
+    return ('<details class="csec display-versions" open><summary>🗂 Display Versions</summary>'
+            f'<div class="cbody">{"".join(sections)}</div></details>')
+
+
+def _display_folder(unit):
+    """Render the actual unit layout, including its migration posture."""
+    icon = {"intake": "📥", "recipe": "🧰", "assets": "🖼", "candidates": "🧪",
+            "versions": "🗂", "source": "🕰"}
+    note = {"intake": "approved snapshot", "recipe": "rebuild source", "assets": "promoted asset",
+            "candidates": "unpromoted renders", "versions": "history", "source": "legacy mixed source"}
+    target = "(none yet)"
+    if unit.float_target is not None:
+        try:
+            target = unit.float_target.relative_to(unit.path).as_posix()
+        except ValueError:
+            target = unit.float_target.name
+    lines = [f"📁 {unit.id}/", "├── 📄 README.md", f"├── 📄 float.tex  ──► {target}",
+             "├── 🖼 preview.pdf  ← Current Float"]
+    present = [name for name in ("intake", "recipe", "assets", "candidates", "versions", "source")
+               if (unit.path / name).is_dir()]
+    for i, name in enumerate(present):
+        branch = "└──" if i == len(present) - 1 else "├──"
+        files = [p.name for p in sorted((unit.path / name).iterdir())
+                 if p.is_file() and p.name != ".gitkeep"]
+        shown = ", ".join(files[:3]) or "(empty)"
+        if len(files) > 3:
+            shown += f", +{len(files) - 3} more"
+        lines.append(f"{branch} {icon[name]} {name}/  ← {note[name]}: {shown}")
+    legacy = (unit.path / "source").is_dir() and not (unit.path / "recipe").is_dir()
+    posture = ("Legacy layout: do not rename or promote files until the unit has a deliberate "
+               "provenance-safe migration into intake/ and recipe/." if legacy else
+               "Target layout present. Verify the live asset, intake, and recipe before closing the gate.")
+    tree = "\n".join(lines)
+    tree_html = body("```text\n" + tree + "\n```", fold_code=False)
+    return ('<details class="csec display-folder" open><summary>📁 Current display folder</summary>'
+            f'<div class="cbody">{tree_html}'
+            f'<p class="display-folder-posture">{esc(posture)}</p></div></details>')
+
+
+def render_display_preview(q):
+    """Render standard reader-facing Display content before authored explanation.
+
+    Every resolved asset page begins with the printable Current Float, then the
+    live artifact, an inventory of versions, and the actual folder tree.
+    Authored Content follows with the display explanation.  This keeps the
+    review surface uniform without pretending that a legacy folder has already
+    reached the target layout or that a saved file has been promoted.
+    """
+    paper = _bd.PAPER
+    if q.get("family") != "display" or paper is None:
+        return ""
+    unit = paper.unit_for_sdisplay(sec(q["sec"], "Content"))
+    if unit is None:
+        # S-Display-0 is a set-level design page, not an asset page. It has no
+        # unit and therefore no single preview subsection.
+        return ""
+
+    path = unit.preview
+    label = "CURRENT FLOAT · preview.pdf"
+    stale = bool(unit.preview_stale)
+    kind = "pdf"
+    if path is None:
+        pdfs = [name for name in unit.assets if name.lower().endswith(".pdf")]
+        images = [name for name in unit.assets
+                  if name.lower().endswith((".png", ".jpg", ".jpeg", ".svg", ".webp", ".gif"))]
+        if pdfs:
+            path = unit.path / "assets" / pdfs[0]
+            label = f"LIVE ASSET · {pdfs[0]} · wrapper preview missing"
+        elif images:
+            path = unit.path / "assets" / images[0]
+            label = f"LIVE ASSET · {images[0]} · wrapper preview missing"
+            kind = "img"
+
+    if path is None:
+        preview = (
+            '<details class="csec display-preview missing" open>'
+            '<summary>🖼 Current Float</summary><div class="cbody">'
+            '<p>No printable preview exists yet. Build the unit\'s '
+            '<code>preview.pdf</code> before treating the surrounding page text '
+            'as a display review.</p></div></details>'
+        )
+        return (preview + _display_live_artifact(unit) + _display_versions(unit)
+                + _display_folder(unit))
+
+    href = _bd._rel(path)
+    if not href:
+        return ""
+    warning = ' <span class="display-preview-stale">⚠️ older than the asset</span>' if stale else ""
+    source_links = []
+    for role, pptx in unit.pptx:
+        pptx_href = _bd._rel(pptx)
+        if pptx_href:
+            source_links.append(
+                f'<a class="fp" href="{esc(pptx_href)}" '
+                f'title="{esc(pptx.name)}">PPTX {esc(role)}</a>')
+    head = (f'<div class="display-preview-head"><a class="fp" href="{esc(href)}">open PDF</a>'
+            + "".join(source_links) + warning + '</div>')
+    if kind == "img":
+        visual = (f'<img src="{esc(href)}" alt="{esc(label)}" loading="lazy">')
+    else:
+        visual = (f'<object data="{esc(href)}" type="application/pdf">'
+                  f'<a class="fp" href="{esc(href)}">open {esc(label)}</a>'
+                  '</object>')
+    preview = (f'<details class="csec display-preview" open>'
+               f'<summary>🖼 {esc(label)}</summary><div class="cbody">{head}{visual}</div>'
+               '</details>')
+    return (preview + _display_live_artifact(unit) + _display_versions(unit)
+            + _display_folder(unit))
 
 
 def render_contract(sections):
@@ -283,7 +485,9 @@ def render_question(q, prv, nxt):
     fls = sect("📁 Files", flb, cls="fls")
     dia_txt = sec(q["sec"], "Diagram")
     dia = render_diagram(dia_txt) if dia_txt else ""
-    content = render_content(content_sections, q if is_stage else None)
+    display_preview = render_display_preview(q)
+    content = render_content(content_sections, q if is_stage else None,
+                             leading=display_preview)
 
     def _norm(s):
         # 剥掉标签、把连续空白压成一个 —— 拿来判「这句到底在不在页面上」

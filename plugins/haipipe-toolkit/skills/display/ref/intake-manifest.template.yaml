@@ -1,0 +1,42 @@
+# Display Intake Manifest — copy to <unit>/intake/manifest.yaml.
+# Paths are project-root-relative unless location is secure-server.
+schema: haipipe-display-intake/v1
+
+display:
+  id: displayNN-slug
+  kind: figure # figure | table | diagram | illustration
+  requested_by: 0-lifecycle/3-display/S-Display-N-slug.md
+
+sources:
+  - id: values-main
+    role: values # values | narrative-context | table-description | visual-reference
+    purpose: "Rows and estimates rendered in the main panel."
+    origin:
+      type: task-output # task-output | case-output | discovery-output | paper-context | external
+      location: local # local | secure-server | external
+      holder: tasks/CNN_display/<NN>_summary_export
+      run: results/<run-id>
+      artifact: tasks/CNN_display/<NN>_summary_export/results/<run-id>/source_data.csv
+      provenance: tasks/CNN_display/<NN>_summary_export/results/<run-id>/provenance.json
+      sha256: "<canonical-artifact-sha256>"
+    snapshot:
+      path: inputs/source_data.csv
+      sha256: "<snapshot-sha256>"
+      materialized_at: "YYYY-MM-DDTHH:MM:SSZ"
+      materialized_by: "GPT-5.6 Terra"
+
+  # Concept displays omit values-main. They still declare what the renderer may use.
+  # - id: narrative-context
+  #   role: narrative-context
+  #   purpose: "Explains the reader takeaway without supplying numeric facts."
+  #   origin:
+  #     type: paper-context
+  #     location: local
+  #     holder: 0-lifecycle/2-venue/S-Venue-2-narrative.md
+  #     artifact: 0-lifecycle/2-venue/S-Venue-2-narrative.md
+  #     sha256: "<context-sha256>"
+  #   snapshot:
+  #     path: narrative-context.md
+  #     sha256: "<snapshot-sha256>"
+  #     materialized_at: "YYYY-MM-DDTHH:MM:SSZ"
+  #     materialized_by: "GPT-5.6 Terra"

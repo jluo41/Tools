@@ -51,6 +51,24 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 - [x] Decide how boards are discovered
       Scan for `<unit>/diagram/<NN>-<topic>/board.md` via `os.walk` with a prune list (`.git`, `node_modules`, `_WorkSpace`, the data stores…) and a depth cap of 9.
       Verified fast on `Physician-SPACE` (finds 2 boards, no cache needed yet).
+- [ ] 🔴 Discovery must find boards that do not live under a `diagram/` folder
+      The rule ticked above scans only for a parent folder literally named `diagram`, but the
+      skill's own grammar says an existing tree can BE a board and then "the tree is called
+      whatever it is called", with the paper lifecycle folder as the named example. So
+      `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`
+      holds 60 pages and a `board.md` and is invisible to `_find_boards()`.
+      This is the board JL asked to host on 260727, so the gap is blocking, not theoretical.
+      Closes when discovery finds any pruned folder containing `board.md`, and this board appears.
+- [ ] 🗺 Decide whether a mount can be NARROWER than a SPACE root
+      JL 260727: run the service in Docker with only the board folder mounted, so that what can be
+      read and written is enforced by the kernel rather than by path vetting.
+      The complication is the 260724 ruling in the Log below: page serving was deliberately widened
+      to the whole space root so a question's `## Files` links could open. A single-folder mount
+      reverses that and 404s them.
+      The reconciliation is a SKELETON mount: several volumes at their true relative depths, the
+      board folder `rw` and the drill-through subtrees `ro`, so every `../` link that was allowed
+      still resolves and everything else is absent from the filesystem.
+      Closes when a mount shape is chosen and a board is served from it with its links working.
 - [ ] Decide what each row of the board list shows
       v1 shipped: title · spine · ✅🟡🔴⏸ counts · question count · open-comment count · path · last modified.
       Whether that is the RIGHT set is JL's read; leave open until it has been used.
@@ -73,6 +91,22 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
   Create-a-board-from-the-web; the board-list row design has not been judged by a reader; a real second SPACE.
 - The registry was copied as planned
   `_spaces()` in `boards_api.py` is `console_api.py`'s `_datasets()` with `dataset` renamed to `space`, nothing invented.
+- What the mount already gives, read on 260727 while answering `QE1`
+  The service is already containerized and already mounts rather than bakes: `haichat-board/Dockerfile`
+  is `python:3.11-slim` with `fastapi` + `uvicorn` and copies only the two `.py` files, and
+  `HAIChat-SPACE/docker-compose.yml` carries a `haichat-board` service on 8094 whose single volume is
+  `${BOARD_SPACE_HOST:-./haichat-board/space}:/space` with `INLAB_SPACE_ROOT=/space`.
+  Two properties matter for a narrow mount. `BOARD_SKILL_DIR` overrides skill discovery, so
+  `build.py` and `serve.py` can be mounted from somewhere other than inside the space, which is what
+  makes it possible not to mount the repo at all. And `serve.py`'s module-level imports are stdlib
+  plus its own `src.common`, with `claude_agent_sdk` imported lazily inside the chat turn, so the
+  slim image can import the md-writers without the SDK installed.
+- Writes are already confined to a board folder in code
+  `_target()` accepts a write only when the resolved path stays under the space root, sits in a
+  directory that actually contains `board.md`, and has a filename matching the skill's `QNAME`.
+  So "only things inside that board folder change" is already true; a narrow mount makes the same
+  guarantee a second time at the kernel, which is the reason to want it rather than a reason to
+  trust the code less.
 
 ## Files
 - `boards_api.py`
@@ -93,6 +127,13 @@ SPACE: JL's term for the root of one research repo, e.g. `Physician-SPACE`, `Wel
 One SPACE holds several boards.
 
 ## Log
+260727 · JL proposed running the service in Docker with only the board folder mounted, so writes are
+       kernel-confined. Read the shipped container and found the mount side already built (compose
+       service on 8094, `BOARD_SPACE_HOST:/space`, `BOARD_SKILL_DIR` escape hatch, slim image can
+       import the md-writers because the SDK import is lazy) and writes already vetted by `_target()`.
+       Two items added: discovery misses any board outside a `diagram/` folder, which hides the paper
+       lifecycle board JL wants to host; and the narrow mount needs to be a skeleton so the 260724
+       `## Files` widening below is not reversed.
 260724 1440 · Page serving widened to ANY existing file under the space root, read-only (JL: "how could I open cms_production.do?"): `## Files` links now open through the console; source-ish suffixes (.do/.R/.sql/…) display as text instead of downloading (both here and serve.py); the third discovered board (Project-Personality-OpioidRx/01-cmsdata) verified the click end to end. `boards_api.py` rehomed to the sibling `haichat-board/` service (8094), inlab imports it; see QE3
 260724 1324 · v1 shipped and verified (JL's "go ahead… as we discussed"): `boards_api.py` + Boards view in `haichat-inlab` (branch `feat/haichat-board`, commit 27e3ed6): SPACE registry, discovery, board list, embedded page, comment/discuss/resolve write-backs relayed to the skill's own writers. 🔴 → 🟡; still open: create-from-web, row-design judgment, a real second SPACE
 260724 1242 · Opened: JL asked for "haichat-board mounts a SPACE, and inside it you create a new board or open an existing one". Split out as the layer above a board; where the code runs belongs to QE3
