@@ -41,7 +41,7 @@ This is the threshold for "can the board serve as a collaboration dashboard": on
            "md changed → tell the browser" — a much smaller ask.
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD6
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD6
 
 ## Items to Finish
 - [x] Pick a mechanism (manual / poll / SSE / WS)

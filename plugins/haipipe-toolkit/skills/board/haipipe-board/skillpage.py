@@ -18,7 +18,7 @@ THE SPLIT, which is the whole ruling (QC5 §1-§2):
                                          the two ![[embeds]]
 
     AUTHORED, and this script never      ## Question · ## Items to Finish ·
-    touches it                           ## Where we are · ## Comments · ## Log
+    touches it                           ## Where we are · ## Log
 
 `state:` is NOT derived (QC5 §3). A version cannot say whether a skill is
 stable, in flux, or abandoned: 0.1.0 may be finished and 0.9.4 may be mid

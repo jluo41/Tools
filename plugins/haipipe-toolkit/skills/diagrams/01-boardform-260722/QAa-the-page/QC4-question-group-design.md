@@ -12,7 +12,7 @@ How should Board `open` and `add` turn a topic into a reviewable proposal of pag
 - ✅ Covered here
   The procedure for proposing page scope, page names, group membership, group names, and the evidence used to judge that proposal.
 - ↪ Covered elsewhere
-  File membership and numbering are `QA1`; the Q/S source shape is `QA2`; index rendering and structure controls are `QC2`; prose inside an accepted page is checked by `QA9`.
+  File membership and numbering are `QA1`; the Q/S source shape is `QAa0` (the template moved there when QA2 merged, 260729); index rendering and structure controls are `QA10`; prose inside an accepted page is checked by `QA9`.
 
 ## Diagram
 
@@ -64,7 +64,7 @@ An `open` proposal shows the whole candidate board. An `add` proposal shows the 
 The settled procedure will be recorded as `ref/proposal-rules.md` and invoked by the `open` and `add` sections of `SKILL.md`. This QC4 page records the design discussion and evidence until those rules are settled.
 
 ### 3 · What exists today
-The `open` action asks for a list of pages and requires user approval, but it gives the agent no method for producing that list. `q-template.md` says a page title is a short phrase and its lead is an actual question. `writing-rules.md` requires a self-contained question and a short heading. `board-form.md` defines ids, slugs, and the `## Pages` grammar. `QC2` defines how accepted groups and rows appear on the index. `serve.py` can add a group or question from a title, but it does not judge the title or group.
+The `open` action asks for a list of pages and requires user approval, but it gives the agent no method for producing that list. `q-template.md` says a page title is a short phrase and its lead is an actual question. `writing-rules.md` requires a self-contained question and a short heading. `board-form.md` defines ids, slugs, and the `## Pages` grammar. `QA10` defines how accepted groups and rows appear on the index. `serve.py` can add a group or question from a title, but it does not judge the title or group.
 
 ### 4 · What is missing
 A page proposal needs a test for whether each page owns one independently closable decision or stage, whether two pages overlap, whether an item in the requirements inventory has no page, and whether the title distinguishes the page without repeating the full question. A group proposal needs an enduring responsibility: a shared function, output, stakeholder, or lifecycle segment that applies to every member and distinguishes those pages from pages outside the group. It must not merely cluster similar words.

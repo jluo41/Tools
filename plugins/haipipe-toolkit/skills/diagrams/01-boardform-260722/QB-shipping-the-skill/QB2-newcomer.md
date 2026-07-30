@@ -35,7 +35,7 @@ Downstream, this is the only acceptance gate that can be **re-run**, since every
        └─ mismatch  → fix SKILL.md, run again  ⟲
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB2
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QB2
 
 ## Items to Finish
 - [x] Start an agent with no memory of this conversation; give it only SKILL.md + ref/ and one real topic

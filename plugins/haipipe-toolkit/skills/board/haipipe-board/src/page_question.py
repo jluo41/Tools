@@ -4,8 +4,7 @@ this file owns the q-template anatomy on stage."""
 import re
 
 from . import body as _bd
-from .body import (body, flat_rows, inline, mark_span, note_body,
-                   parse_comments, render_comments, sort_log)
+from .body import body, flat_rows, inline, note_body, render_apparatus, sort_log
 from .common import esc, sec, stinfo
 
 STAGE_LABELS = {
@@ -104,6 +103,51 @@ def render_diagram(txt):
             '<summary class="ch"><span class="chl">🖼 Diagram</span></summary>'
             f'<div class="dia">{"".join(parts)}</div>'
             '</details>')
+
+
+def render_structure(d, content_sections):
+    """The generated `Structure` row that OPENS the drawer (JL 260729: "the
+    Structure subsection just above Boundary"): what this page is built of.
+    Computed from the parsed page rather than authored, so the map can never
+    go stale — the same bargain as split_diagram: the source gains nothing.
+    Only sections that exist get a row."""
+    def row(label, value):
+        return (f'<div class="pmr"><span class="pml">{label}</span>'
+                f'<span class="pmv">{value}</span></div>')
+    rows = [row("🧭 Opening", "the lead, and this drawer")]
+    dia = sec(d, "Diagram").strip()
+    if dia:
+        fig, canvas = split_diagram(dia)
+        nfig = fig.count("```") // 2
+        v = f"{nfig} figure{'s' if nfig != 1 else ''}" if nfig else "no figure"
+        v += " · canvas" if canvas.strip() else " · no canvas"
+        rows.append(row("🖼 Diagram", v))
+    divs = [h for h, _ in content_sections if h]
+    if divs or sec(d, "Content").strip():
+        v = (f"{len(divs)} division{'s' if len(divs) != 1 else ''}" if divs
+             else "one flat body")
+        rows.append(row("📚 Content", v))
+        shown = divs[:7]
+        for h in shown:
+            rows.append(f'<div class="pmd">{inline(h)}</div>')
+        if len(divs) > len(shown):
+            rows.append(f'<div class="pmd">… +{len(divs) - len(shown)} more</div>')
+    itxt = sec(d, "Items to Finish")
+    done = len(re.findall(r"(?m)^\s*[-*] \[[xX]\]", itxt))
+    todo = len(re.findall(r"(?m)^\s*[-*] \[ \]", itxt))
+    if done or todo:
+        rows.append(row("🎯 Items to Finish", f"{done} done · {todo} open"))
+    w = sec(d, "Where we are").strip()
+    if w:
+        dated = len(re.findall(r"(?m)^- ?\d{6}", w))
+        rows.append(row("📍 Where we are",
+                        f"{dated} dated entr{'ies' if dated != 1 else 'y'}"
+                        if dated else "the present state"))
+    nfiles = len(re.findall(r"(?m)^- ", sec(d, "Files")))
+    if nfiles:
+        rows.append(row("📎 Files", f"{nfiles} file{'s' if nfiles != 1 else ''}"))
+    return ('<div class="fh">Structure</div>'
+            f'<div class="pmap">{"".join(rows)}</div>')
 
 
 def parse_content_sections(txt):
@@ -412,21 +456,21 @@ def render_question(q, prv, nxt):
     # 的要点里，光读第一节就 orient。老板子里还写着这段的，收进底部折叠区，内容不丢。
     why = sec(q["sec"], "Why here")
     disc = sec(q["sec"], "Discussion").strip()
-    cms = parse_comments(sec(q["sec"], "Comments"))
-
-    # 先高亮，再渲染评论 —— 这样每条评论知道自己有没有锚上，
-    # 锚不上的当场标出来（原文改过之后引文就对不上了，不能让它悄悄失效）。
     # ## Question 是「一段话 + 几个要点」（JL 260723 改版）：走 body() 才吃得下要点。
     # 第一段是大字领句（CSS 挑 p:first-of-type），要点跟在下面 —— 光这一节就该让
     # 零背景的人明白：在问什么、为什么难、不定会怎样（原 Why here 的活并进来了）。
     # ## Question（JL 260724）：领句本身可点，点这一整行才铺开隐藏块。
-    # 隐藏块只带 Boundary；Question 的解释落到随后可见的 Content 里，让页面真正按
-    # Opening -> Content -> Items -> Where 阅读。
+    # 隐藏块带 Boundary 和 Why this matters（JL 260729：Q/S 一致，解释段跟着领句走；
+    # 之前 Q 的解释段落在 Content 首节）。页面仍按 Opening -> Content -> Items -> Where 阅读。
     # 问句里的 **粗体** 要正常内联流动 —— 所以文字包进一个 .qt span，别让 flex 拆散它。
     # Boundary 收进【同一个】折叠块，不再单占一节；里头用扁平行，不套第二层折叠。
     q_md = sec(q["sec"], "Question").strip()
     _parts = re.split(r"\n\s*\n", q_md, maxsplit=1)
-    qlead = inline(_parts[0].replace("\n", " ").strip())
+    lead_lines = _parts[0].splitlines()
+    qlead = inline(" ".join(x.strip() for x in lead_lines if not x.lstrip().startswith(">")))
+    lead_app, lead_heads, lead_show = render_apparatus(
+        [x for x in lead_lines if x.lstrip().startswith(">")]
+    )
     qrest = _parts[1].strip() if len(_parts) > 1 else ""
     content_sections = parse_content_sections(sec(q["sec"], "Content"))
     contract_md = re.sub(r"<!--.*?-->", "", sec(q["sec"], "Stage Contract"), flags=re.S)
@@ -440,17 +484,20 @@ def render_question(q, prv, nxt):
                 del content_sections[i]
                 break
     opening_sections = []
-    if is_stage:
-        if qrest:
-            opening_sections.append(("Why this matters", qrest))
-        if stage_record:
-            opening_sections.append(("Stage Record", stage_record))
-    elif qrest:
-        content_sections.insert(0, ("Why this matters", qrest))
+    # Why this matters lives in Opening for BOTH kinds (JL 260729: it explains
+    # the lead, so it belongs behind the lead). Until then Q carried it as
+    # Content's first subsection; Content now holds only what the author wrote.
+    if qrest:
+        opening_sections.append(("Why this matters", qrest))
+    if is_stage and stage_record:
+        opening_sections.append(("Stage Record", stage_record))
     # Stage Contract joins Opening's collapsed rows (JL 260725: "within the
     # Opening, not a separate section"), after Why this matters / Stage Record.
     btxt = sec(q["sec"], "Boundary").strip()
-    inner = ""
+    # Structure 打头（JL 260729：「just above Boundary」）：页面自己的地图，
+    # build 时从解析好的页面算出来，不是手写的，所以永远不会过期。
+    inner = (f'<div class="sapp">{lead_app}</div>' if lead_app else "")
+    inner += render_structure(q["sec"], content_sections)
     if btxt:
         inner += f'<div class="fh">Boundary</div>{flat_rows(btxt)}'
     # 抽屉里全是平的：Boundary 一直就是这样，Why this matters / Stage Record /
@@ -468,10 +515,11 @@ def render_question(q, prv, nxt):
     # 所以 `.q p` 的 serif 和 `.ask>p:first-of-type` 的字号都照旧命中（JL 260725：
     # 「I want the original font size and font type」—— 把 class 挪到 summary 上就丢了这两条）。
     lead_p = (f'<p class="qlead"><span class="qt">{qlead}</span>'
-              f'<span class="cv"></span></p>')
+              + (f'<span class="sbadge">⚑ {lead_heads}</span>' if lead_heads else "")
+              + '<span class="cv"></span></p>')
     opening_head = '<div class="ch opening-head"><span class="chl">🧭 Opening</span></div>'
     qblock = (
-        f'<details class="it row qd"><summary>{lead_p}</summary>'
+        f'<details class="it row qd{" open" if lead_show else ""}"><summary>{lead_p}</summary>'
         f'<div class="bd qbd">{inner}</div></details>'
         if inner else
         f'<p class="qlead"><span class="qt">{qlead}</span></p>'
@@ -489,53 +537,6 @@ def render_question(q, prv, nxt):
     content = render_content(content_sections, q if is_stage else None,
                              leading=display_preview)
 
-    def _norm(s):
-        # 剥掉标签、把连续空白压成一个 —— 拿来判「这句到底在不在页面上」
-        return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", s)).strip()
-
-    # 卡片上所有可见文字的「纯文本」快照，用来判 lost（不含标签、空白已归一）
-    # Stage Contract 的文字已经嵌在 ask 里，扫 ask 就覆盖它。
-    card_plain = _norm(
-        ask + " " + bnd + " " + content + " " + fs + " " + fls + " " + dia
-    )
-
-    def hl(quote, solved):
-        # 锚点为什么老丢，两个原因都堵上（JL 260723 问）：
-        #   ① 扫描范围太窄：以前只扫 ask+fs，选中「## Diagram」里的字就被冤枉。→ 现在也扫 dia。
-        #   ② 引文横跨行内标记：`代码`→<code>、**粗**→<b>。用 mark_span 跨标签描黄，
-        #      不再是 naive 的 e in html（那个一遇标签就贴不到原文）。
-        #   兜底：连跨标签都找不到（空白差异等），退一步用纯文本判「在不在」——
-        #        在就不算 lost（只是这一条没描黄）。
-        nonlocal ask, bnd, content, fs, fls, dia
-        e = esc(quote)
-        kls = ' class="solved"' if solved else ''
-        for name in ("ask", "bnd", "content", "fs", "fls", "dia"):
-            cur = {"ask": ask, "bnd": bnd, "content": content,
-                   "fs": fs, "fls": fls, "dia": dia}[name]
-            new, ok = mark_span(cur, e, kls)
-            if ok:
-                if name == "ask":
-                    ask = new
-                elif name == "bnd":
-                    bnd = new
-                elif name == "fs":
-                    fs = new
-                elif name == "fls":
-                    fls = new
-                elif name == "dia":
-                    dia = new
-                else:
-                    content = new
-                return True
-        nq = _norm(e)
-        return bool(nq) and nq in card_plain
-
-    for c in cms:
-        c["lost"] = not hl(c["quote"], c["done"])
-    for x in re.findall(r"^>+\s*[A-Z]{1,4}\d{0,4}\s*[「\"]([^」\"]+)[」\"]\s*[:：]",
-                        disc, re.M):
-        hl(x, False)
-
     ndisc = len(re.findall(r"^>+\s*[A-Z]{1,4}\d{0,4}\s*[「\"：:]", disc, re.M))
     # 讨论里加个「整段写想法」的框（要 serve.py 跑着）：写完 → 追加进 ## Discussion。
     # 不钉在某句话上，就是自由讨论；serve.py 没跑时按钮会提示改走手写（JL 260723）。
@@ -549,17 +550,6 @@ def render_question(q, prv, nxt):
                  f'<code>## Discussion</code> in {q["file"]}: '
                  f'<code>&gt; JL: …</code></p>')
                 + dadd)
-    nopen = sum(1 for c in cms if not c["done"])
-    nlost = sum(1 for c in cms if c["lost"])
-    if cms:
-        # cm_lab, NOT lab: the old single-function render() reused `lab` here and
-        # clobbered the state label, so any question WITH comments wore the
-        # comments count in its state pill. Caught by QB5's byte-identical gate.
-        cm_lab = f"💬 Comments ({nopen} open / {len(cms)})"
-        if nlost:
-            cm_lab += f" · {nlost} unanchored"    # 引文不在正文里；不喊「丢了」（分不清是聊天话还是真被改）
-        folds += det(cm_lab, f'<div class="cms" data-cfile="{esc(q.get("file",""))}">'
-                     + render_comments(cms) + '</div>', open_=nopen > 0)
     # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
     folds += det("💡 Why here", body(why, apparatus=False))
     folds += det("⚖️ Law", body(sec(q["sec"], "Law"), apparatus=False))
@@ -581,7 +571,6 @@ def render_question(q, prv, nxt):
             f'{esc(STAGE_LABELS.get(q.get("family"), "STAGE"))}</span>'
             if q.get("kind") == "stage" else ""
         )
-        + (f'<span class="obadge">💬 {nopen}</span>' if nopen else "")
         # 文件名做成链接：点它直接看这一题的原始 markdown（serve.py 把它当纯文本发）
         + f'<a class="src" href="{esc(q.get("file",""))}" target="_blank"'
         f' title="Open this question\'s raw markdown">📄 {esc(q.get("file",""))}</a>'

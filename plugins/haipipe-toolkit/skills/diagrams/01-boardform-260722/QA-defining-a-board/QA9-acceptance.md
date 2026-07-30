@@ -18,7 +18,7 @@ The instruments must stay distinct, but they answer to one planned trigger becau
 
 ## Boundary
 - ✅ Covered here: the mechanical checker, the fresh reviewer, their four failure classes, their shared trigger, and the report produced when either instrument is red.
-- ↪ Covered elsewhere: `QA2` owns template content, `QA4` owns page layout, and `QB2` owns first-time handover from `SKILL.md`.
+- ↪ Covered elsewhere: `QAa0` owns the page layout and, since the QA2 merge (260729), the source template; each QAa face owns its section in both projections; `QB2` owns first-time handover from `SKILL.md`.
 
 ## Diagram
 
@@ -72,7 +72,7 @@ The instruments must stay distinct, but they answer to one planned trigger becau
     catches none of the four classes: too much unwritten context is already loaded
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA9
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QA9
 
 ## Content
 ### The two instruments answer different questions
@@ -107,6 +107,8 @@ It grades each page clear, half, or unreadable, where half means the reader can 
 The prompt and the rules it enforces live in `ref/writing-rules.md`, so the check and its standard are one document rather than a habit.
 
 ## Items to Finish
+- [ ] 🔎 `check.py` verifies a 🧩 Skills landed row
+      A row claiming `ref/board-form.md §1 · landed` is checkable by grep, so rot becomes a warning instead of a silent lie; owned with `QAa5`.
 - [x] 📏 The rules for plain language are written down
       `ref/writing-rules.md` holds them, and `SKILL.md` excerpts the three deadliest with a pointer to the rest.
       No invented terms, stale sentences purged when the board changes, and a fresh-agent cold read after every revision.
@@ -175,6 +177,10 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       A blocking gate is honest but stops work when the check itself is wrong, and a reporting gate is cheap but is only as good as whoever reads it.
       The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
       This is a decision about how we work rather than about the code, so it is JL's, and until it is made both checks report.
+
+- [ ] 🔎 A 🧩 Skills row that claims "landed" is verifiable by the checker
+      `QAa5`'s convention (260729): a face's Where we are may carry a 🧩 Skills item whose rows name the skill file or section the face governs, each with a landed / NOT landed verdict.
+      A landed claim is greppable, so `check.py` can warn when the named section no longer exists or the claim rots; until it does, the convention has no mechanical half.
 
 ## Where we are
 Both instruments now exist and have a registered runner.

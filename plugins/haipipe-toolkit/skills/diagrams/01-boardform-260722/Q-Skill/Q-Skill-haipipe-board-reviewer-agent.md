@@ -59,7 +59,7 @@ Read these canonical sources before reviewing:
       Do not:
       - Edit, create, move, archive, or delete any file.
       - Run `build.py`, `watch.py`, `serve.py`, `stage.py`, or `xcal.py`; they write.
-      - Resolve comments, tick boxes, change state, or decide a ruling.
+      - Resolve comments, tick boxes, change state, or decide a decision.
       - Praise, summarize, or redesign the Board when reporting a defect.
       - Infer project facts that are not present in the files supplied.
       The writer owns every repair and may ask for another fresh review afterward.

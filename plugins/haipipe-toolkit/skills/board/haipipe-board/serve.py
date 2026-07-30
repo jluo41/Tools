@@ -12,7 +12,9 @@ So the write moves to the side that actually has the files. This server already
 serves the page; now it also takes two small POSTs and edits the markdown, then
 regenerates board.html so a plain reload shows the rendered comment.
 
-    POST /_board/comment   {path, who, quote, text}   -> append under ## Comments
+    POST /_board/comment   {path, file, who, sentence, text} -> append directly under sentence
+    POST /_board/edit-sentence {path, file, sentence, replacement, who}
+                                                      -> replace one sentence + append its diff
     POST /_board/resolve   {path, quote, done}        -> flip - [ ] <-> - [x]
     POST /_board/chat      {path, file, message, model, effort}
                                                       -> one turn with claude_agent_sdk
@@ -46,10 +48,12 @@ Deliberately narrow, because this is a write endpoint:
     devices; 0.0.0.0 hands it to the whole local network.
   · the target must sit inside --root, in a folder containing board.md
     · the filename must match Q*.md or S*.md
-  · the only edits possible are "append a comment block" and "flip one checkbox"
+  · writes are limited to sentence-adjacent comments, one-sentence edits, and
+    the pre-existing narrowly scoped page actions below
 """
 import argparse
 import atexit
+import difflib
 import hashlib
 import itertools
 import base64
@@ -173,13 +177,11 @@ def board_prime_context(board, root):
         st = re.search(r"^state:\s*(\S+)", t, re.M)
         st = st.group(1) if st else "🔴"
         ft = re.search(r"^#\s+(.*)$", t, re.M)
-        cm = re.search(r"^## Comments\s*\n(.*?)(?=\n## |\Z)", t, re.S | re.M)
-        nopen = len(re.findall(r"^\s*-\s*\[ \]", cm.group(1), re.M)) if cm else 0
         nall += 1
         ndone += st.startswith("✅")
-        rows.append("      · {} {} — {}{}".format(
+        rows.append("      · {} {} — {}".format(
             page_id_of(p.stem), st, (ft.group(1).strip() if ft else p.name),
-            f"  ({nopen} open comment{'s' if nopen > 1 else ''})" if nopen else ""))
+        ))
     lines = [
         "You are opened on the WHOLE BOARD of a haipipe board — its index page, "
         "not any single question. Orientation:",
@@ -222,7 +224,7 @@ def status_strip_context(board, focus, root):
 
 
 def prime_context(f, board, root):
-    """开场定位：告诉会话它在哪块板、哪一题、这题问什么、还有几条评论没解决。
+    """开场定位：告诉会话它在哪块板、哪一题、这题问什么、还有哪些未完成事项。
     终端用 --append-system-prompt 灌进去，抽屉拼进 system_prompt —— 一打开就知道自己在干嘛。
     file=board.md（QD5 整板会话）走整板那份定位，抽屉和终端共用这一个开关。"""
     if Path(f).name == "board.md":
@@ -242,14 +244,7 @@ def prime_context(f, board, root):
     title = tm.group(1).strip() if tm else ""
     qm = re.search(r"^## Question\s*\n(.*?)(?=\n## |\Z)", txt, re.S | re.M)
     qtext = " ".join(qm.group(1).split()) if qm else ""
-    # Count the two kinds of open box SEPARATELY (QA8a, 260726). This was one
-    # number over the whole file, announced as "unresolved comments", so a page
-    # with one comment and one open item was reported as two comments. Measured
-    # cost: a cold agent noticed the discrepancy, could not resolve it, and
-    # invented an explanation for it, which is worse than saying nothing.
-    cm = re.search(r"^## (?:Comments|评论)\s*$(.*?)(?=^## |\Z)", txt, re.S | re.M)
-    ncom = len(re.findall(r"^-\s*\[ \]\s", cm.group(1), re.M)) if cm else 0
-    nitem = len(re.findall(r"^-\s*\[ \]\s", txt, re.M)) - ncom
+    nitem = len(re.findall(r"^-\s*\[ \]\s", txt, re.M))
     btitle, bname = "", Path(board).name
     bmd = Path(board) / "board.md"
     if bmd.exists():
@@ -264,10 +259,8 @@ def prime_context(f, board, root):
     ]
     if qtext:
         lines.append(f"  · What it asks: {qtext[:280]}")
-    if ncom:
-        lines.append(f"  · {ncom} unresolved comment(s) in its ## Comments: read them before acting.")
     if nitem:
-        lines.append(f"  · {nitem} unticked item(s) in its ## Items to Finish: that is the open work, not comments.")
+        lines.append(f"  · {nitem} unticked item(s) in its ## Items to Finish.")
     lines.append("Read that file for the full picture. You already know which page and board "
                  "this is; wait for the user's instruction.")
     lines.extend(status_strip_context(board, qid, root))
@@ -303,15 +296,12 @@ holds `board.md` (board-level title/spine/pages) and one `QX-<slug>.md` per
 question, each with fixed sections:
 ## Question / ## Boundary / ## Diagram / ## Content / ## Items to Finish /
 ## Where we are / ## Files / ## Law / ## Lesson / ## Glossary /
-## Discussion / ## Comments / ## Log
+## Discussion / ## Log
 (Old boards may still say `## Done when` for Items to Finish and `## Now` for
 Where we are; both are accepted. `## Why here` is retired.)
 
-Two different things can be attached to a page, and they live in different
-places:
-  · a COMMENT is pinned to a quoted sentence and sits in `## Comments`.
-  · a LANE is a `>` line written DIRECTLY UNDER a sentence in the body, bound
-    to it by adjacency alone, and typed by its first word:
+Sentence-local review is a `>` line written DIRECTLY UNDER a sentence in the
+body, bound to it by adjacency alone, and typed by its first word:
         The coefficient is 0.42 in the pooled model.
         > Check: 0.42 is from the robust-SE run, not the clustered one
         > JL: please fix this before the next draft
@@ -326,9 +316,8 @@ Scope, and it is hard:
     not board.md, not another question, not build.py.
   · Every change you make, add one line at the TOP of that file's ## Log:
     `YYMMDD HHMM · what changed` (newest first).
-  · Unresolved comments live in ## Comments as `- [ ] WHO 「quote」 · time`.
-    When you have addressed one, flip it to `- [x]` and reply under it with
-    `>> CC<MMDD>: what you did`.
+  · Preserve direct `> WHO:` comments and `> ✎` edit records; add new review
+    feedback directly beneath the sentence it concerns.
 
 Write the way the board is written: short topic line, then an indented
 explanation. Plain language. No invented jargon. Answer in English by default;
@@ -346,8 +335,8 @@ the TOP of its `## Log`: `YYMMDD HHMM · what changed`.
 
 Each `QX-<slug>.md` has fixed sections: ## Question / ## Diagram / ## Done when /
 ## Now / ## Why here / ## Law / ## Lesson / ## Glossary / ## Discussion /
-## Comments / ## Log. Unresolved comments are `- [ ] WHO 「quote」 · time`; when
-you address one, flip it to `- [x]` and reply under it with `>> CC<MMDD>: ...`.
+## Log. Preserve direct `> WHO:` comments and `> ✎` edit records beneath the
+sentence they concern.
 
 Write the way the board is written: short topic line, then an indented
 explanation. Plain language, no invented jargon. Answer in English by default;
@@ -371,9 +360,8 @@ Scope, and it is hard:
     question belongs to that question's own chat.
   · Every page you change, add one line at the TOP of its ## Log:
     `YYMMDD HHMM · what changed` (newest first).
-  · Unresolved comments live in ## Comments as `- [ ] WHO 「quote」 · time`.
-    When you have addressed one, flip it to `- [x]` and reply under it with
-    `>> CC<MMDD>: what you did`.
+  · Preserve direct `> WHO:` comments and `> ✎` edit records beneath the
+    sentence they concern.
 
 Write the way the board is written: short topic line, then an indented
 explanation. Plain language. No invented jargon. Answer in English by default;
@@ -390,9 +378,8 @@ The board folder given below holds `board.md` (title · `spine:` · `close:` ·
 per page. Board-level work is yours: which page to act on next, the Pages section,
 cross-question edits. Never hand-edit board.html — it is generated. Whatever
 page you change, add one line at the TOP of its `## Log`:
-`YYMMDD HHMM · what changed`. Unresolved comments are
-`- [ ] WHO 「quote」 · time`; when you address one, flip it to `- [x]` and reply
-under it with `>> CC<MMDD>: ...`.
+`YYMMDD HHMM · what changed`. Preserve direct `> WHO:` comments and `> ✎`
+edit records beneath the sentence they concern.
 
 Write the way the board is written: short topic line, then an indented
 explanation. Plain language, no invented jargon. Answer in English by default;
@@ -1356,46 +1343,111 @@ class Handler(SimpleHTTPRequestHandler):
                 {"warn": "this Diagram has no ascii figure; the canvas is the half that "
                          "disappears when it cannot load"}), None
 
-    def add_comment(self, f, p):
-        who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
-        quote = " ".join((p.get("quote") or "").split())
-        text = (p.get("text") or "").strip()
-        when = p.get("when") or ""
-        if not quote or not text:
-            return None, "引文或正文是空的"
-        body = "\n".join("      " + x for x in text.split("\n"))
-        block = f"- [ ] {who} “{quote}”" + (f" · {when}" if when else "") + f"\n{body}\n"
-        t = f.read_text(encoding="utf-8")
-        # 找 ## Comments / ## Log 时跳过 ``` 代码围栏 —— 否则会写进
-        # 「md 段落→页面位置」这类示例里的 ## Comments（真踩过，QA4 260723）。
-        lines = t.split("\n")
-        fence = False
-        ci = li = None
+    @staticmethod
+    def _plain_sentence(s):
+        """The browser sends visible sentence text; source may have light md."""
+        s = re.sub(r"`([^`]+)`", r"\1", s)
+        s = re.sub(r"\*\*((?:(?!\*\*).)+)\*\*", r"\1", s)
+        s = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", s)
+        return " ".join(s.split())
+
+    @classmethod
+    def _sentence_line(cls, lines, sentence):
+        """Find one editable source sentence, never guessing across duplicates."""
+        wanted = cls._plain_sentence(sentence)
+        hits, fence = [], False
         for i, ln in enumerate(lines):
             if ln.lstrip().startswith("```"):
                 fence = not fence
                 continue
-            if fence:
+            s = ln.strip()
+            if fence or not s or s.startswith(("#", ">", "|")) or re.match(r"^[-*]\s", s):
                 continue
-            if ci is None and re.match(r"^## Comments\b", ln):
-                ci = i
-            if li is None and re.match(r"^## Log\b", ln):
-                li = i
-        if ci is not None:
-            lines.insert(ci + 1, block.rstrip("\n"))
-            t = "\n".join(lines)
-        elif li is not None:
-            lines.insert(li, "## Comments\n" + block.rstrip("\n") + "\n")
-            t = "\n".join(lines)
-        else:
-            t = t.rstrip("\n") + "\n\n## Comments\n" + block
-        f.write_text(t, encoding="utf-8")
-        return block, None
+            if cls._plain_sentence(s) == wanted:
+                hits.append(i)
+        if not hits:
+            return None, "这句话在源文件里没找到（可能已被改动）—— 没写入"
+        if len(hits) > 1:
+            return None, "这句话在本页出现不止一次—— 为避免改错，没有写入"
+        return hits[0], None
+
+    @staticmethod
+    def _apparatus_end(lines, sentence_line):
+        """All adjacent `>` rows belong to the sentence immediately above."""
+        j = sentence_line + 1
+        while j < len(lines):
+            if lines[j].lstrip().startswith(">"):
+                j += 1
+                continue
+            if (not lines[j].strip() and j + 1 < len(lines)
+                    and lines[j + 1].lstrip().startswith(">")):
+                j += 1
+                continue
+            break
+        return j
+
+    @staticmethod
+    def _change_diff(before, after):
+        """Whole post-edit sentence, with only changed word runs marked."""
+        old, new = before.split(), after.split()
+        out = []
+        for op, a0, a1, b0, b1 in difflib.SequenceMatcher(a=old, b=new).get_opcodes():
+            if op == "equal":
+                out.append(" ".join(new[b0:b1]))
+            elif op == "delete":
+                out.append("~" + " ".join(old[a0:a1]) + "~")
+            elif op == "insert":
+                out.append("*" + " ".join(new[b0:b1]) + "*")
+            else:
+                out.append("~" + " ".join(old[a0:a1]) + "~")
+                out.append("*" + " ".join(new[b0:b1]) + "*")
+        return " ".join(x for x in out if x)
+
+    def add_comment(self, f, p):
+        who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
+        sentence = " ".join((p.get("sentence") or "").split())
+        text = (p.get("text") or "").strip()
+        when = p.get("when") or ""
+        if not sentence or not text:
+            return None, "句子或评论是空的"
+        lines = f.read_text(encoding="utf-8").split("\n")
+        hit, err = self._sentence_line(lines, sentence)
+        if err:
+            return None, err
+        entry = f"> {who}: {text}" + (f" · {when}" if when else "")
+        lines.insert(self._apparatus_end(lines, hit), entry)
+        f.write_text("\n".join(lines), encoding="utf-8")
+        return {"sentence": sentence}, None
+
+    def edit_sentence(self, f, p):
+        who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
+        before = " ".join((p.get("sentence") or "").split())
+        after = " ".join((p.get("replacement") or "").split())
+        when = p.get("when") or ""
+        if not before or not after:
+            return None, "原句或修改后的句子是空的"
+        if before == after:
+            return None, "句子没有变化—— 没写入"
+        lines = f.read_text(encoding="utf-8").split("\n")
+        hit, err = self._sentence_line(lines, before)
+        if err:
+            return None, err
+        source_before = lines[hit].strip()
+        # Replacing a markdown-decorated sentence from a browser's textContent
+        # would silently erase its links/code/bold.  v1 is intentionally exact.
+        if source_before != before:
+            return None, "这句话带有 Markdown 格式；为避免丢格式，请先在源文件编辑"
+        lines[hit] = after
+        diff = self._change_diff(before, after)
+        entry = f"> ✎ {diff} · {who}" + (f" · {when}" if when else "")
+        lines.insert(self._apparatus_end(lines, hit), entry)
+        f.write_text("\n".join(lines), encoding="utf-8")
+        return {"before": before, "after": after, "diff": diff}, None
 
     def add_discuss(self, f, p):
         """往 ## Discussion 末尾追加一条自由想法（一整段 → 一条 > WHO: …）。
         跟 add_comment 一样跳 ``` 围栏找真的段；没有 ## Discussion 就在
-        ## Comments / ## Log 前新建。不钉在某句话上 —— 就是自由讨论。"""
+        ## Log 前新建。不钉在某句话上 —— 就是自由讨论。"""
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
         text = " ".join((p.get("text") or "").split())
         if not text:
@@ -1404,7 +1456,7 @@ class Handler(SimpleHTTPRequestHandler):
         t = f.read_text(encoding="utf-8")
         lines = t.split("\n")
         fence = False
-        di = ci = li = None
+        di = li = None
         for i, ln in enumerate(lines):
             if ln.lstrip().startswith("```"):
                 fence = not fence
@@ -1413,8 +1465,6 @@ class Handler(SimpleHTTPRequestHandler):
                 continue
             if di is None and re.match(r"^## Discussion\b", ln):
                 di = i
-            if ci is None and re.match(r"^## Comments\b", ln):
-                ci = i
             if li is None and re.match(r"^## Log\b", ln):
                 li = i
         if di is not None:                      # 追加到 ## Discussion 段末尾
@@ -1426,9 +1476,8 @@ class Handler(SimpleHTTPRequestHandler):
             lines.insert(j, line)
             t = "\n".join(lines)
         else:                                   # 没有就新建一段
-            anchor = ci if ci is not None else li
-            if anchor is not None:
-                lines.insert(anchor, "## Discussion\n" + line + "\n")
+            if li is not None:
+                lines.insert(li, "## Discussion\n" + line + "\n")
                 t = "\n".join(lines)
             else:
                 t = t.rstrip("\n") + "\n\n## Discussion\n" + line + "\n"
@@ -2335,6 +2384,7 @@ class Handler(SimpleHTTPRequestHandler):
                 ev.set()
             return self.reply(200, {"ok": True, "stopping": bool(ev)})
         ACTS = {"/_board/comment": self.add_comment,
+                "/_board/edit-sentence": self.edit_sentence,
                 "/_board/resolve": self.resolve,
                 "/_board/discuss": self.add_discuss,
                 "/_board/sentence": self.add_sentence,

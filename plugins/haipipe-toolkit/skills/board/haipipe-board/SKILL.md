@@ -1,18 +1,18 @@
 ---
 name: haipipe-board
 description: >-
-  Open and run a BOARD: one topic, one folder tree, and one markdown page per ruling (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
+  Open and run a BOARD: one topic, one folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
 metadata:
-  version: "0.45.0"
-  last_updated: "2026-07-28"
-  summary: "A unit id may carry a VARIANT tail, S-Display-4al2 beside S-Display-4a, so a display that is the same job under a different specification inherits its parent letter and renames nothing."
+  version: "0.49.0"
+  last_updated: "2026-07-29"
+  summary: "Content-aware C/H/P/S focus addresses replace page-global Pn.Sn; H is terminal and P.S is its sibling (JL 260729)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-board — 一个话题，一叠问题，一页看板
 
-**一块板 = 一个文件夹。** 里面一个 ruling/stage 一个 `.md` page，外加一页谁都打得开的
-`board.html`。Q 是 ruling，S 是 lifecycle stage；两者共用一套版式，不共用关闭语义。
+**一块板 = 一个文件夹。** 里面一个 decision/stage 一个 `.md` page，外加一页谁都打得开的
+`board.html`。Q 是 decision，S 是 lifecycle stage（JL 260729：不再叫 ruling）；两者共用一套版式，不共用关闭语义。
 
 它取代了 `/haipipe-session`（那个是只有干活的人自己看的工作日志）。
 
@@ -72,7 +72,7 @@ metadata:
   不是 Work 的一个普通 item。这是 ownership/navigation order，不自动等于执行顺序；
   真实依赖写在 `## Pipeline`，例如 Narrative 后进入 Display，再分给 Main/Appendix。family 里的每个
   S page 是一个具体、可 CHECK 的 page；
-  拦住它的 Q ruling 紧跟在该 S 后面。Seed 通常含 `S Seed` 和 `S Literature`；Main
+  拦住它的 Q decision 紧跟在该 S 后面。Seed 通常含 `S Seed` 和 `S Literature`；Main
   用数字 section；Appendix 用 `0, A, B...`；Submission 至少覆盖 reconcile、compile、
   review、submit。Submission 四页每一轮复用；外审意见让受影响的 Work/Display/Main/Appendix
   page reopen，再走同一组 reconcile → compile → review → submit，不为每轮复制一套页面。
@@ -140,7 +140,7 @@ the attachment on line 1; queue and focus use their short ids.
 
 The Board files remain the durable record. Do **not** create a shared
 `STATUS.md`: concurrent sessions would overwrite one another and stale live
-state would look authoritative. When discussion changes a ruling, item,
+state would look authoritative. When discussion changes a decision, item,
 comment, or log, still run the normal `sync` action in the same round; the
 closing block does not replace write-back.
 
@@ -180,7 +180,7 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
 ### open — 开一块**新**板
 
 1. 问清三件事：**这块板要解决什么**（→ `spine`）、**什么时候算完**（→ `close`）、
-   **有哪几个 page**（几个 Q ruling；有 lifecycle 的话，还有几个 S stage）。
+   **有哪几个 page**（几个 Q decision；有 lifecycle 的话，还有几个 S stage）。
    这份 page 列表要用户点头才往下走 —— 这是唯一必须停下来问的地方。
 2. 选位置并建文件夹：task/project/paper 用
    `<所属单位>/diagram/<NN>-<主题>-<YYMMDD>/`；plugin skill-design Board 用
@@ -188,7 +188,7 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
    不同 topic 都可从 `01` 开始。
 3. 写 `board.md`：标题、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Pages`（三个都写上）。
 4. 每个 page 都复制同一份 `ref/q-template.md`，改名决定它是哪种：
-   ruling → `Q<组字母><序号>-<slug>.md`；paper lifecycle page →
+   decision → `Q<组字母><序号>-<slug>.md`；paper lifecycle page →
    `S-<Family>-<unit>-<slug>.md`，其中 Family 是 `Seed|Work|Venue|Display|Main|Appendix|Submission`
    （例如 `S-Seed-1-literature.md`、`S-Main-3-theory.md`、`S-Appendix-A-prompts.md`）。
    普通旧板的 `S0-<slug>.md` 继续兼容。
@@ -278,7 +278,7 @@ SVG 编成浏览器 favicon，所以 `board.html` 仍然是一份离线可用的
 
 **一块板只有一个 `fig/board.excalidraw`，每个 page 在里面占一个 frame。**
 绝不拆成一题一个文件：只有同一张画布才说得清 page 之间的**关系**，
-而那正是画图唯一比 ASCII 强的地方（`QA4a`）。
+而那正是画图唯一比 ASCII 强的地方（`QAa2`，原 QA4a）。
 
 ```bash
 docker run --rm -d -p 5610:80 excalidraw/excalidraw     # 编辑器，跑一次就行
@@ -317,20 +317,36 @@ Excalidraw 自己是把 base64 塞在文档里的 —— 一张截图就是几 M
 frame 空着的话，读的人分不清是「还没画」还是「功能坏了」（JL 260726 就是这么撞上的）。
 种子是**单向**的：md 永远是唯一来源，画布里改了不会回流。
 
-重跑是安全的，这也是它敢做成脚本的原因：id 稳定（`frame-QA4a`），
+重跑是安全的，这也是它敢做成脚本的原因：id 稳定（`frame-QAa2`），
 人挪过的 frame 保住位置，人画的东西原样带走，**页面已经退休的 frame 会被删掉**。
 `--fresh` 是唯一会毁东西的模式（重排全部、丢掉手画内容），所以它永远不是默认。
 
-### comment — 评论（要 serve.py 跑着）
+### comment / edit — 句子上的评论和编辑（要 serve.py 跑着）
 
-- **页面上**：选中一句话 → 冒出「💬 Comment」→ 写评论 → 按 **Save**，
-  `serve.py` 在**文件所在这台机器上**直接写进那题的 `## Comments`，顺手重新生成 html。
-  **不存在「还没同步的评论」** —— md 永远是最新那份。署名下拉可现加新用户（任意 1–4 位大写缩写）。
-  （serve.py 没跑时才退回浏览器兜底：面板的 Sync to md / Copy 手动送回。）
-- **md 里**：`## Discussion` 写随手讨论（`> JL: …`），`## Comments` 写钉在某句话上的条目
-  （`- [ ] JL 「原句」 · 260723 1100`，解决了改 `[x]`）。
+- **评论**：hover 一句 → 点右侧 `＋`，或者选中句内文字 → 点「💬 Comment」→ 写评论 → **Save**。`serve.py`
+  把它直接写在**那一句的正下方**：`> JL: comment · 260729 1502`，然后重建 html。
+  没有底部评论箱，也不需要在不同句子的评论里找上下文。`## Discussion` 仍只写不钉句子的随手讨论。
+- **编辑**：double-click 一句 → 改字 → Save。正文变成最终句子；它下面自动新增一条完整
+  sentence diff：`> ✎ Whole sentence with ~removed~ *added* words. · JL · 260729 1502`。
+  `~…~` 是删掉的词，`*…*` 是新加的词。每次编辑一行，不另建 History。触屏设备也可从
+  句子的 `⋯` 菜单进入 Edit；单击正文不占用，仍可正常选字和复制。
+- **Content 地址**：只给 `## Content` 编址。每个 `###` division 是 `Cn`；它里面的 `####`
+  heading 是终止节点 `Cn.Hn`，正文 paragraph 是它的 sibling，sentence 地址是 `Cn.Pn.S1`。
+  所以 `QAb3.C1.H1` 和 `QAb3.C1.P1.S1` 都合法，`QAb3.C1.H1.P1.S1` 永远不合法。
+  当前一条 source line 就是一句，因此每个 P 只有 `S1`；保留 S 层是为了将来一段多句。
+- **句子操作条**：pointer 设备 hover/focus 一句 → 右侧淡入 `Cn.Pn.S1 ＋ 💬`；`＋` 在句下
+  打开 Comment，`💬` 打开 Chat。touch 设备只常驻一个低调的 `⋯`，展开后显示完整地址和
+  Comment / Chat / Edit，避免三个小按钮一直压住正文。
+- **句子 chat**：点击 `💬` 复用这道 Q 已有的 chat session，在抽屉顶部显示可关闭的
+  Sentence Focus（完整地址、Content/Heading 显示名、句子、相邻 apparatus），并把光标放入输入框；**点击本身不调用
+  模型**。用户发出下一条消息时，才把焦点内容随消息交给 agent。焦点卡的 `×` 或输入框里的
+  `Esc` 只清除句子焦点，不关闭 Q chat。
+  地址在每次 render / live refresh 时生成，只是本次页面的 focus address，不写进 Markdown，
+  也不承诺插入 Content division、Heading 或 Paragraph 后永不变号。
+- 新写入需要 serve.py，因为它必须在服务器的 Markdown 里找到那个句子；服务不在时，页面只保留
+  pending line / 可复制 patch，不会创建页底评论区。
 
-被评论的原句会在正文里高亮；原文改动后引文对不上，那条会标 **⚠ anchor lost** —— 不会悄悄失效。
+旧式页底评论队列已废弃，不再读取、显示或迁移。
 
 ### sync — 干完活，同一轮里回写这一题
 
@@ -341,7 +357,7 @@ frame 空着的话，读的人分不清是「还没画」还是「功能坏了�
 聊天里的一句话开始的，从头到尾没提过题号。所以顺序是：**先认领是哪一题，再干活，
 干完在同一轮回写**；一件活如果哪一题都不归，那它本身就是一道该开的新题。
 
-真实事故（JL 260726）：QA4a 的整条本地 excalidraw 路线当天建完并跑起来了，`QA4a` 却还写着
+真实事故（JL 260726）：QA4a（今 `QAa2`）的整条本地 excalidraw 路线当天建完并跑起来了，`QA4a` 却还写着
 `state: 🔴 OPEN` 和「Nothing is built and nothing is decided」。活是对的，回写没做，
 于是板上写的和机器上跑的是两件事 —— 这正是「过期的漂亮东西」。
 `check.py` 的 `open-with-done-items` / `partial-with-nothing-open` 就是抓这个的，
@@ -357,7 +373,7 @@ frame 空着的话，读的人分不清是「还没画」还是「功能坏了�
 | `## Items to Finish` | 达到的条打勾。**没验过的不许打勾。** |
 | `## Log` | 可选的一行历史：`YYMMDD HHMM · 改了什么`；没有历史需求就不建 |
 | `state:` | 全部打勾 → 以 ✅ 开头；有进展 → 以 🟡 开头；明确不做 → 以 ⏸️ 开头；标准标签分别是 SETTLED / PARTIAL / ON HOLD，可在后面追加人读说明 |
-| `## Comments` | 这轮解决掉的评论，勾成 `[x]` |
+| 句子下的 `> WHO:` / `> ✎` 行 | 这轮新增、回复或确认的句子评论和编辑记录 |
 
 然后 `python3 <skill>/build.py <板文件夹>`（或让 `watch.py` 自动跑；调法见上面 build 段）。
 
@@ -407,15 +423,14 @@ method: 一句话说怎么做
 ## Lesson       这题踩过的坑        │
 ## Glossary     这一页的生词        ├ 选填 · 折叠，不上台面
 ## Discussion   随手讨论            │  用不上就删整段
-## Comments     钉在某句话上的评论   │
 ## Log          260723 1030 · 改了什么 ┘
 ```
 
 **台面上的层次顺序是定死的**，Q 和 S 一样：
 `Opening → Diagram → Content → Items to Finish → Where we are`（Files 跟在状态后面）。
 Opening 放 Question 的第一段问句和 optional Boundary；optional Diagram 是独立一节，
-默认折叠，点节名才展开。Q page 的 Question 解释段自动成为 Content 的第一个
-“Why this matters” subsection（默认展开）。S page 的 Opening 里还有 “Why this matters”、
+默认折叠，点节名才展开。Question 的解释段自动成为 Opening 抽屉里的 “Why this matters”，
+Q 和 S 一致（JL 260729；此前 Q 放在 Content 首节）。S page 的 Opening 里还有
 optional 的 `### Stage Record`、以及整个 `## Stage Contract` —— **这几行全部默认折叠**
 （JL 260725：台面上只留那句问句），所以 Stage Contract 不再单独占一节。S 的其余
 Content 仍在 `📚 Content`，节标题显示 stage 名（`📚 Content · Main 7 §6 Results`）而不是数
@@ -429,7 +444,7 @@ contract 归 `## Stage Contract`（写在 managed 标记之后，sync 不会动�
 
 **一套版式，两种工作流：**
 
-- `Q*.md` = ruling。checkbox 全闭合后才可 `✅ SETTLED`。
+- `Q*.md` = decision。checkbox 全闭合后才可 `✅ SETTLED`。
 - `S*.md` = lifecycle stage。`## Content` 是 stage substance（S 必填）；former Q-consumer questions
   become recognizable `Q-Stage-n` checklist records inside `## Items to Finish`; stage closes only
   at its human gate —— 也就是 S 的 `✅` 表示 gate 过了，首页按 family 据此计数。
@@ -446,7 +461,8 @@ contract 归 `## Stage Contract`（写在 managed 标记之后，sync 不会动�
 正文里长内容一律写成 **`- 小标题` + 缩进两格的解释**，不要一段接一段的散句；
 整行加粗 `**…**` 是**组标题**（领着一串 item）。
 
-**`## Content` 里只有两级，深浅靠编号不靠标题级数**（JL 260725）：`###` 是一块能单独折的
+**每一页的 `## Content` 结构自定**（JL 260729）：division 的名字、编号和多少全由这一页自己的
+主题决定，`§` 编号的手稿形只是默认样，不是强制；机械约束只有两条不变——`###` 是一块能单独折的
 division，`####` 是它里面的一个段落、永远是这一级。页面只折一层，再深一级就把整节压成
 一个盒子。一块 division 只在自己确实有内容时才写：flat 的节写一个 `### §1 Introduction`
 领着段落，有 subsection 的节直接从 `### §6.1` 开始。好处是不读正文也能校验：带点的 `###`
@@ -472,7 +488,7 @@ division，`####` 是它里面的一个段落、永远是这一级。页面只�
 
 - 手改 `board.html`
 - 给板重新起日期
-- 删掉 `> JL:` 开头的行（解决了就在 `## Comments` 里勾 `[x]`）
+- 删掉句子下的 `> JL:` 或 `> ✎` 行（它们是该句的评论／编辑记录）
 - 让页面依赖 JS 才能读 —— 脚本只能做增强。
   **不变量：删掉页面里所有 `<script>`，每一题和全部正文仍然在。** `build.py` 每次生成都断言这一条。
 
@@ -494,7 +510,7 @@ division，`####` 是它里面的一个段落、永远是这一级。页面只�
 - 没定的题（🟡/🔴）**不进** manual —— 免得把「随手定的」写成铁律。
   （真踩过：`QD1` 的权限规则我一开始随手写死「只能改这一个文件」，后来被 JL 推翻成「跟 CLI 一样」。）
 - 所以 SKILL.md 永远 = **已定规矩之和**，不多不少。改它之前，先看那题 `✅` 了没。
-- 现在已毕业的：`QA2`（Q/S 共用源模板 → `ref/q-template.md`）· `QA4`（Q/S 共用 page 版式 → `ref/board-form.md §8`，显示规格不塞进这里）· `QA6`（评论落盘）· `QC1`（板放哪）· `QC3`（Q 可住进自己的文件夹）· `QB5`（Python 按页拆进 `src/`）。
+- 现在已毕业的：`QAa0`（Q/S 共用源模板 → `ref/q-template.md`，原 QA2 260729 并入；原 QA4：Q/S 共用 page 版式 → `ref/board-form.md §8`，显示规格不塞进这里）· `QA6`（评论落盘）· `QA1`（板放哪，原 QC1 260729 并入）· `QC3`（Q 可住进自己的文件夹）· `QB5`（Python 按页拆进 `src/`）。
   现场层的 chat/terminal（`QD1`/`QD2`/`QD3`）还 🟡，上面只放了指针，没写成规矩。嵌入语法（原 `QF1`）已定进 `ref/board-form.md §5`；QF1 这个 page 本身 260725 退役，见板上 QF 组的说明。
 
 ## 📚 ref/
@@ -502,7 +518,7 @@ division，`####` 是它里面的一个段落、永远是这一级。页面只�
 | 文件 | 看它做什么 |
 |---|---|
 | `ref/q-template.md` | Q/S 共用 page 模板（历史文件名保留，避免旧链接失效） |
-| `ref/board-form.md` | 完整规格：文件夹、编号、段落↔页面对应、语法表、Comments 格式、`## Links` |
+| `ref/board-form.md` | 完整规格：文件夹、编号、段落↔页面对应、语法表、`## Links` |
 | `ref/writing-rules.md` | 怎么写才是人话 + 零背景审查的提示词和收敛判据 |
 | `ref/board-example.md` | 一块两题的最小示例 |
 | `stage.py` | 显式创建/同步 S page 的 inherited requirements 与 writing style |
@@ -514,4 +530,4 @@ division，`####` 是它里面的一个段落、永远是这一级。页面只�
 独立 judge：`../agents/haipipe-board-reviewer-agent.md`。它没有写工具；作者修复后再启动一个新 reviewer。
 
 活的例子：`Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/` —— 这个 skill 自己的板（平铺形）。
-嵌套形（Q rulings + S stages）的活例子：`examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`。
+嵌套形（Q decisions + S stages）的活例子：`examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`。

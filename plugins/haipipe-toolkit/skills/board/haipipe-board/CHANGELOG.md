@@ -5,6 +5,52 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.49.0 - 2026-07-29
+
+- Content-aware addresses replace page-global `Pn.Sn`. Only `## Content` is indexed:
+  `###` divisions receive `Cn`, terminal `####` headings receive `Cn.Hn`, and prose receives
+  sibling `Cn.Pn.S1` leaves.
+- `H` never parents prose. `QAb3.C1.H1` and `QAb3.C1.P1.S1` are valid;
+  `QAb3.C1.H1.P1.S1` is invalid. Generated C/H chips make that hierarchy visible.
+- Sentence Focus shows the Content and nearest Heading display names while keeping Heading out
+  of the sentence address. The focus packet carries that display path with the existing sentence
+  and apparatus context.
+
+## 0.48.0 - 2026-07-29
+
+- Pointer devices now expose one quiet sentence action rail: `Pn.Sn ＋ 💬`. Comment opens
+  directly beneath the sentence, Chat establishes sentence focus, and double-click remains Edit.
+- Sentence Chat now renders a clearable focus card in the existing Q drawer. Opening it spends no
+  model turn; the next user message carries the address, sentence, and directly attached apparatus.
+- Touch devices collapse the sentence actions into `⋯`, whose menu shows the full address and
+  Comment / Chat / Edit. `Esc` closes the active sentence operation without taking over normal
+  single-click text selection.
+
+## 0.47.0 - 2026-07-29
+
+- Sentence-specific chat now reuses the existing Q session. Eligible prose receives a
+  render-local `Pn.Sn` address; hover/focus exposes the address and a compact chat button.
+- Clicking the button opens that Q's drawer and sends an explicit focus packet containing the
+  full page-qualified address, sentence text, and directly adjacent apparatus. No sentence
+  sessions and no sentence ids are written to Markdown.
+- The legacy page-bottom comment queue was removed. Human comments and tracked edits live
+  directly beneath their sentence as `> WHO:` and `> ✎` rows.
+
+## 0.46.0 - 2026-07-29
+
+- Why this matters renders inside Opening's drawer for Q pages too, unifying Q with S (JL 260729,
+  decided on the design board's QAa1): `src/page_question.py` drops the Q branch that inserted it
+  as Content's first subsection; `check.py`'s template coverage asserts the drawer row instead;
+  `ref/board-form.md`, `ref/q-template.md` and SKILL.md say the new placement.
+- Content is per-page flexible (JL 260729, decided on QAa3): the `§`-numbered manuscript shape is
+  the default, not a mandate; the only fixed mechanics remain the one fold level (`###` division,
+  `####` paragraph). Rule text only; the renderer already accepted any division set.
+- Vocabulary: a Q page settles a "decision", not a "ruling" (JL 260729), across SKILL.md,
+  ref/board-form.md, ref/q-template.md and the reviewer agent.
+- Pointer maintenance after the design board's 260729 restructure (QA4->QAa0, QA4a->QAa2,
+  QA8->QAb1, QA8a->QAb3, QC1 merged into QA1, QA2 merged into the QAa faces): the graduated list
+  and the excalidraw section's live ids follow the new names.
+
 ## [0.45.0] - 2026-07-28 - a variant tail is part of the unit's identity
 
 - **`S-Display-<n><letter><tail>` now resolves**, e.g. `S-Display-4al2` and `S-Display-4al5`, the same claim under two specifications. Three places stopped at the letter and each failed differently: the chip pattern rendered NO card for either; `_short()` returned `S-Display-4a` for both so `by_short` kept whichever sorted first; and the face-id derivation gave both the anchor `S-Display-4A`, which exists on neither page, so both cards silently lost their owning-page link.

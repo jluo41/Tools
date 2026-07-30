@@ -8,7 +8,7 @@ session: d2199106-8b6a-499d-8c24-9db3658486b5
 You open a board and have not clicked into any question yet: what you see is the front-page list.
 What should it look like so that a person knows **within three seconds which question to act on**?
 
-It is hard because the single-question page (`QA4`) is settled, but nobody has owned the front page, and it must hold everything at once: all questions, all groups, every state and completion.
+It is hard because the single-question page (`QAa0`, the former QA4) is settled, but nobody has owned the front page, and it must hold everything at once: all questions, all groups, every state and completion.
 One notch more information and it becomes a wall nobody can enter.
 It matters because a board is for the second person: if the front page does not show "which question is stuck, which one is mine to move", the board is only usable by whoever wrote it.
 Downstream it drives group ordering, state display, completion coloring, and default sort, all in `build.py`'s index-rendering pass, coupled to `board.md`'s `## Pages`.
@@ -17,9 +17,9 @@ Downstream it drives group ordering, state display, completion coloring, and def
 - ✅ Covered here
   **The front-page list**: group headers, what each row shows, the visuals of state and completion, sort rules, and how "see at a glance what to act on" is achieved.
 - ↪ Covered elsewhere
-  The **single-question page** after the click: that is `QA4`.
+  The **single-question page** after the click: that is `QAa0` and the QAa faces.
   Nor whether each question's **prose is well written**: that is `QA9`.
-  Nor which folder the board lives in: that is `QC1`.
+  Nor which folder the board lives in: that is `QA1` (which absorbed QC1 on 260729).
 
 ## Diagram
 
@@ -33,8 +33,8 @@ top of board.html (no question opened yet)
 │ ▸ Pin down the thing itself; nothing …       │  ← group intro: one sentence,
 │   (click ▸ → expands: what / why this group) │    click to expand the why
 │  ✅ QA1  Board folder shape        🔧 CC      │  ← what does each row show?
-│  🟡 QA4  Single Question Webpage…  🔧 CC  7/9 │     how is completion colored?
-│  🔴 QA4  group-title icons        🗄 🔧 CC  0/4 │     hover 🗄 = archive (2-click)
+│  🟡 QAa0 Page overall: shared layout  🔧 CC  7/9 │     how is completion colored?
+│  🔴 QAa3 group-title icons        🗄 🔧 CC  0/4 │     hover 🗄 = archive (2-click)
 │  …                                            │
 │  [＋ Group]                                   │
 ├──────────────────────────────────────────────┤
@@ -118,7 +118,7 @@ The strip's outer bar is every board and the inner bar is this one, so a day ans
 
 ### After a page opens
 QC2 stops at the index.
-QA4 owns the opened Q/S webpage and now defines its own numbered Content sections: Opening, Diagram, Content, Items to Finish, Where we are, Files, and Supporting folds.
+QAa0 owns the opened Q/S webpage's order, and since 260729 each section has its own QAa face: Opening (QAa1), Diagram (QAa2), Content (QAa3), Items to Finish (QAa4), Where we are (QAa5), and the folds (QAa6).
 The two specifications use the same principle without mixing their responsibilities.
 
 ## Items to Finish
@@ -132,7 +132,7 @@ The two specifications use the same principle without mixing their responsibilit
       Verified 260724: full add→archive round trip leaves board.md byte-identical, refusal paths clean over HTTP on 5599 and through the console on 8093.
 - [x] 📚 Every index component explains its purpose
       Content now describes the eventual reader outcome for board orientation, overall progress, groups, page rows, ordering, structure controls, and board chat.
-      The opened-page section meanings stay in QA4 so QC2 remains an index specification.
+      The opened-page section meanings stay with the QAa faces so QC2 remains an index specification.
 - [ ] Settle the questions the front page must answer
       At least three: what is this board doing · how far along is it · **which question do I act on now**.
       The third is the hardest and the one that matters.
@@ -148,7 +148,7 @@ The two specifications use the same principle without mixing their responsibilit
 - [ ] Settle how completion coloring reads
       Today white→green by tick ratio. ⏸️ ON HOLD also renders full, easily misread as "done".
 - [ ] A zero-background person points at the right question within three seconds
-      Same acceptance as `QA4`: a fresh agent sees only the front page, is asked "which question to act on", and must answer correctly.
+      Same acceptance as `QAa0`: a fresh agent sees only the front page, is asked "which question to act on", and must answer correctly.
 
 **📊 Activity (absorbed from QD8, 260726)**
 
@@ -196,7 +196,7 @@ The two specifications use the same principle without mixing their responsibilit
 
 - 260725 JL · 📚 Index anatomy made explicit
   JL asked for Content to explain what each webpage section is for.
-  QC2 now defines its own seven index components and points to QA4 for the opened Q/S page, keeping the ownership boundary visible.
+  QC2 now defines its own seven index components and points to QAa0 for the opened Q/S page, keeping the ownership boundary visible.
 
 - 260725 CC · 🤖 A chatbot on the index (JL's ask)
   The bottom-right button now shows on the index too, labeled "🤖 Board chat".

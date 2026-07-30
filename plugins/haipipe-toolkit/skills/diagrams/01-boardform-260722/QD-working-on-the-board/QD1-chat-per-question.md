@@ -41,7 +41,7 @@ It is also the shared foundation of `QD2` (drawer) and `QD3` (terminal): change 
   and the session boundary already coincide.
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD1
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD1
 
 ## Items to Finish
 - [x] Spell out what board level and question level each own
@@ -141,14 +141,6 @@ Board level runs the whole board (opening questions, editing the generator, cros
 > JL: our current claude session is the "session for top", right? Then how do we open a terminal for each question?
 > JL: could we make a new Q for chat, one for terminal version, and then other one for the claude_agent_sdk version.
 >> CC0723: split. This question keeps only the three unanswered framework items (levels and boundaries); the SDK version goes to QD2, the terminal version to QD3.
-
-## Comments
-- [x] JL “open claude in the SPACE dir, not in the board; same to QD1 and QD2” · 260723 1430
-      >> CC0723: made board-level LAW: the claude inside drawer and terminal opens at the SPACE root (reading horizon = the whole repo,
-      write permissions stay narrow). QD2/QD3 updated together. Side effect: changing cwd reset the sessions; every question restarted under root, see Lesson.
-- [x] JL “QD1 A chat session per question How do you want to update this as well?” · 260723 1655
-      >> CC0723: the three framework questions had in fact been answered along the way: permissions ruled by JL as "like the CLI", conversations stay in the jsonl,
-      the levels written into Law. All ticked; only "two agents, one file" remains, the sole reason this stays 🟡.
 
 ## Log
 260724 1242 · Translated to English (JL 260724: everything on the board in English)

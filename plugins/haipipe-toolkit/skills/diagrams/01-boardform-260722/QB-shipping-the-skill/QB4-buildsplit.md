@@ -16,7 +16,7 @@ Downstream it decides where the skill's files live, how consumers import them, a
 - ✅ Covered here
   **How build.py's code is organized and where it lives**: split or not, into what, and skill vs. haichat-board.
 - ↪ Covered elsewhere
-  What the page looks like (`QA4`), what the grammar is (`QA2`/`ref/board-form.md`), or where the SPACE layer runs (`QE3`, settled).
+  What the page looks like (`QAa0`), what the grammar is (`QAa0`/`ref/board-form.md`), or where the SPACE layer runs (`QE3`, settled).
 
 ## Diagram
 
@@ -36,7 +36,7 @@ should it move to haichat-board?  NO —
   there and offline builds + serve.py + other SPACEs all lose their parser.
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB4
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QB4
 
 ## Items to Finish
 - [x] JL confirms the home

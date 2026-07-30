@@ -1,4 +1,4 @@
-# Sentence apparatus: click a sentence, see its evidence
+# The evidence card: click a sentence, see its apparatus
 state: 🟡 PARTIAL
 owner: JL
 method: fold typed `>` lanes and threads under the sentence they follow; resolve inline-marker chips through the paper dialect
@@ -12,11 +12,11 @@ JL asked for the sentence to be clickable with the hidden things beneath it (260
 
 ## Boundary
 - ✅ Covered here: apparatus-lane adjacency, the ⚑ badge, drawer rendering, and the mechanism that hosts resolved inline-marker chips.
-- ↪ Covered elsewhere: `QC0@paper` through `QC4@paper` rule the paper marker meanings, `QA4` owns page order, and `QA6` owns comment pinning.
+- ↪ Covered elsewhere: `QC0@paper` through `QC4@paper` rule the paper marker meanings, `QAa0` owns page order, `QA6` owns comment pinning, `QAb0` is the family's front door, `QAb2` owns editing the sentence itself, and `QAb3` owns what an agent is handed.
 
 ## Diagram
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA8
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAb1
 
 ## Content
 ### Lane grammar
@@ -42,8 +42,8 @@ The typed lanes are JL's extension of that same convention, proposed in the MISQ
 - [x] ⚑ Adjacency fold shipped
       A plain sentence followed by `>` lines renders as a native `<details>`: the sentence plus a ⚑N badge on stage, the apparatus in a drawer beneath.
       Implemented in `src/body.py` (`render_apparatus` + the `last_p` attachment walk); the zero-script invariant holds because the fold is native HTML.
-- [x] 🎬 Self-demonstrating example on QA4
-      QA4's Content carries a "Sentence apparatus" subsection written in the grammar it documents, so the lab page demonstrates the interaction on itself.
+- [x] 🎬 Self-demonstrating example on the page-grammar face
+      A "Sentence apparatus" subsection written in the grammar it documents lives with the Content grammar (on `QAa3` since 260729; it was QA4 §3 when built), so the lab board demonstrates the interaction on itself.
 - [x] 🖱 Hover tint shipped
       The sentence under the cursor tints slightly (accent at 8%), so you can see which sentence a click or a selection will target.
       Pure CSS, both themes, shipped 260725 on JL's ask.
@@ -53,7 +53,7 @@ The typed lanes are JL's extension of that same convention, proposed in the MISQ
       Amended 260727: this used to read "a bare sentence", and the drawer's row was the only path for a sentence that already had apparatus. That row is reachable only once the drawer is OPEN, so on an evidenced sentence the gesture people had learned did nothing, silently. Both shapes now answer double-click. WHERE the form goes still differs: `mk` inserts `afterend`, so a drawer must insert at the end of its BODY — inserting after the summary's own `p` puts the form inside `<summary>`, where every click toggles the drawer.
       Smoke-tested over HTTP: the Note line in QA4's second demo drawer was added through the endpoint.
 - [ ] 🧠 JL accepts the interaction on the lab board
-      Eyeball QA4: the badge shape, the drawer depth, which lanes exist, and whether attachment across blank lines feels right.
+      Eyeball the demo on `QAa3`: the badge shape, the drawer depth, which lanes exist, and whether attachment across blank lines feels right.
       This visual gate is still required before the interaction is settled, although a separate JL request already authorized the MISQ rollout.
 - [x] 📄 Rolled to the MISQ paper board
       Done 260725 by the MISQ-Paper-Board session, on JL's ask there ("how do you make it to be like each sentence to have the same line").
@@ -89,9 +89,9 @@ The only open gate is JL's visual and interaction acceptance on the lab Board be
   The ➕ control that calls it: the lane dropdown, the input, and the `.saddrow` row inside an open drawer.
 - `assets/board.css`
   The `.sent` summary row, ⚑ badge, drawer, lane styles, and the hover tint.
-- `QA4-pagelayout.md`
-  The self-demonstrating "Sentence apparatus" subsection.
-- `QA8a-sentence-chat.md`
+- `../QAa-the-page/QAa3-content.md`
+  The self-demonstrating "Sentence apparatus" subsection (moved there with the Content grammar, 260729).
+- `QAb3-agent-visibility.md`
   Whether anything attached this way reaches the chat opened on the same page.
 
 ## Glossary
@@ -105,6 +105,7 @@ popover: a native browser panel that opens over the page when its marker is acti
 browser rule: the built-in browser styling that keeps a closed popover hidden.
 
 ## Log
+260729 · Renamed QA8 -> QAb1 when the QAb sentence group was carved (JL); the overview half became `QAb0` and the demo's home is `QAa3`. Older lines below cite QA4/QA8; they are history
 260725 · copy moved from per-sentence hover to section headings (JL): ⧉ on every section header copies the whole section as plain text, folded parts included
 260725 · form trigger moved to double-click (single click freed, JL); hover ⧉ copy button ships the clean sentence text
 260725 · click-to-add shipped: /_board/sentence endpoint + page form + drawer ➕ row; hover tint; smoke test wrote the Note line in QA4's demo drawer over HTTP

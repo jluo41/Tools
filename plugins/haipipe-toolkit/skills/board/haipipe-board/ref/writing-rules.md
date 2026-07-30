@@ -50,8 +50,8 @@ These are not style preferences. `build.py` renders each section a specific way,
   A reader should not have to open another question to follow this one. To reference another question, name its id and say what it covers.
 - **`## Topic` answers "what is this project"**
   The harshest first cold-read note: "it explains the format of a recipe but never says what the dish is." Identify JL, CC, and the colleagues involved, then state what real problem is being solved.
-- **Never delete someone's comment**
-  Lines starting `> JL:` are only added to. When resolved, tick `[x]` in `## Comments`, do not erase.
+- **Keep sentence review where it belongs**
+  Sentence-local `> WHO:` and `> ✎` lines are the durable review trail; do not erase them.
 - **Clear out stale text**
   When the board changes, old descriptions elsewhere become wrong. Real case: QA4 said "side by side" long after the layout had been stacked. A zero-background reader catches these self-contradictions on the first pass.
 

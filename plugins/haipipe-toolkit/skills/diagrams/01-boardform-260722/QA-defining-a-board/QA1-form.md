@@ -1,71 +1,190 @@
 # How to design the haipipe-board folder structure?
-state: ✅ SETTLED
+state: 🟡 PARTIAL · the map is written and unapproved; the folder-internal decision below stays settled
 owner: JL
-method: one md file per question; membership by path, not by registration; and the folder a page sits in IS its group
+method: two folders, what lives inside each, what may cross between them, and what we may write into a board that is neither
 session: c8603c47-0cd5-4a52-b708-37c617e82dd8
 
 ## Question
-A board is a folder, so which files must it contain, and how are they arranged inside it?
-One md file per question, membership decided by path rather than by a list, and, once a board grows past a screenful, one folder per Q group.
-The arrangement half was reopened on 260726: 35 files at the top level of this board is a wall, and the group is already the unit everything else navigates by.
+Where does a new rule, file, page or drawing belong? Two folders exist. One ships and binds every agent on every board, and one argues and binds nothing until a decision graduates out of it. Put something in the wrong one and it either binds nothing, because no runtime reads a face, or it becomes wrong for every board there will ever be.
 
-The two attachment models differ a lot: with registration, forgetting to register means losing the question; with path-based membership, dropping a file in counts automatically, but then nobody controls order and grouping.
-That was settled in 260722 and it is exactly what makes the arrangement question cheap to answer now, because a page's folder was never load-bearing for membership.
-What is not yet settled is whether group folders are the default, and how they coexist with the other reason a page moves into a folder, which is `QC3`: a page living beside the thing it discusses.
+The word "board" names five different things at once, and nothing in the vocabulary separates them. There is the skill set that ships (`skills/board/`). There is the skill you invoke (`haipipe-board`). There is one topic's folder (`01-boardform-260722/`). There is the source file that orders its pages (`board.md`). And there is the generated page you look at (`board.html`). "Page" names three things the same way: a Q or S markdown file, one section of the rendered html, and the whole html document. "Section" names two: a `##` heading inside a page, and a group on the index.
+
+The failures are not symmetric. A rule written onto a face binds nothing, because no runtime reads a face. Working state written into `SKILL.md` becomes wrong for every other board. A design argument that a script starts depending on means the skill can no longer ship without its own history. And a fix written into a board this family merely renders is a write nobody authorized, which is the one failure the other three cannot warn you about, because it looks like helpfulness.
+
+One of these happened on 260729, in the session that opened this map. Three dead references on two other projects' boards, a `pages-ghost` row and two `dead-link` rows, were repaired rather than reported. The repair looked mechanical and was not: choosing `S-Display-4al5` over the missing `S-Display-4a` is a decision about that paper's display registry, and that registry belongs to the paper.
+
+This is the first face on the board because every later ownership question assumes it is answered. `QC4` can only propose a topic's pages and groups once it is settled which folder they land in. `QA9` can only say what is checked after a change once it is settled whose change it was. A reader who cannot place a thing cannot decide anything about it.
 
 ## Boundary
 - ✅ Covered here
-  **What is in the folder, how a Q attaches, and how the files are arranged**: required files, membership by path vs by list, what happens when registration is missed, and whether a Q group becomes a subfolder.
+  **The two folders, what lives inside each, and what may cross**: what ships versus what is argued, the three legal crossings, the one forbidden direction, and what standing this family has when it writes into a board it renders but does not own. Also, still: what files a board folder must contain and how they are arranged inside it, and, absorbed from QC1 on 260729, where a board folder lives and what it is named.
 - ↪ Covered elsewhere
-  What a Q file looks like **inside**: that is `QA2` (the template).
-  **Where in the repo** the board folder lives and what it is named: `QC1`.
+  What the words **mean**, one entry per concept: `QA1a`.
+  This board's own structure, group by group: `QA0`.
   A page living inside the folder it is **about**, and the recursive discovery that permits it: `QC3`.
-  How the index **orders and displays** groups: `QC2`. How groups are **proposed** in the first place: `QC4`.
+  What a page looks like **inside**: `QAa0` and the QAa faces, one per section, each owning both the source you write and the render you read (`QA2` merged into them 260729).
+  How the index **orders and displays** groups, and how the surface looks: `QA10` (which absorbed QC2 on 260729). How groups are **proposed**: `QC4`.
 
 ## Diagram
 
 ```
-BEFORE  (flat, every board until 260726)   AFTER  (ruled the DEFAULT, JL 260726)
-NN-topic-YYMMDD/                    NN-topic-YYMMDD/
-├── board.md                        ├── board.md              ← UNCHANGED, bare filenames
-├── QA1-xxx.md  ┐                   ├── QA-defining-a-board/  ← letter AND name
-├── QA2-xxx.md  ├─ one file         │   ├── QA1-xxx.md
-├── QB1-xxx.md  ┘  per question     │   └── QA2-xxx.md
-├── board.html   ← generated        ├── QB-shipping-the-skill/
-└── fig/                            │   └── QB1-xxx.md
-                                    ├── board.html            ← stays at the ROOT
-                                    └── fig/
+   ── two folders, and that is the whole map ───────────────────────
 
-  NOT `QA/`: that is the id written twice. The group's SUBJECT is the half a
-  reader cannot recover from the filenames inside the folder, so it is the half
-  the folder name has to carry.
+   ┌── ① THE SKILL SET ─────────────── skills/board/ ──────────────┐
+   │                                    WHAT SHIPS · binds at runtime│
+   │   haipipe-board/       the skill you invoke        v0.46.0      │
+   │     SKILL.md           the operating manual, kept shortest      │
+   │     ref/               4 specs: board-form · q-template         │
+   │                        · writing-rules · board-example          │
+   │     10 scripts         build · check · serve · watch · status   │
+   │                        stage · skillpage · regroup · xcal · refs│
+   │     src/  9 modules    the parser, split by page topic (QB5)    │
+   │     assets/            css · js · board-mark.svg      (QB4)     │
+   │     vendor/xterm       the terminal's front end       (QD3)     │
+   │     2 test files       activity · status                        │
+   │   agents/              the judge, and it has NO write tools     │
+   │     haipipe-board-reviewer-agent.md                v1.0.0       │
+   │                                                                 │
+   │   TWO units ship today. JL proposed five on 260729: page and    │
+   │   sentence as specs, routing and digest as verbs.  see QB7.     │
+   └────────────────────────────────────────────────────────────────┘
+                    ▲                          │
+             ⒜ graduates                ⒝ renders · ⒞ judges
+              a ✅ face's Law                     │
+                    │                            ▼
+   ┌── ② THE BOARD FOLDER ── skills/diagrams/01-boardform-260722/ ──┐
+   │                                    WHAT IS ARGUED · ← you are here│
+   │   board.md             spine · close · Topic · Pipeline         │
+   │                        · Pages · Links                          │
+   │   QA-…/ … QE-…/        38 faces in 6 group folders              │
+   │                        8 ✅ · 27 🟡 · 3 🔴                       │
+   │   Q-Skill/             2 roster rows, generated by skillpage.py │
+   │   board.html           generated. NEVER hand-edited.            │
+   │   board.excalidraw     ONE scene, one frame per page, at the    │
+   │                        ROOT as a first-class citizen (JL 260729)│
+   │   fig/                 images only, 7 of them                   │
+   │   _archive/            4 retired faces, moved and never deleted │
+   │   binds NOTHING. delete it and every script in ① still runs.    │
+   └────────────────────────────────────────────────────────────────┘
 
-who is on the board   →  by path: every Q*.md at ANY depth; drop a file in and it counts
-order and grouping    →  by board.md's ## Pages: file names only, titles never copied
-missed registration   →  still displayed (grouped under ⚠️) + a one-line CLI warning
-moving a page         →  a pure `mv`. board.md does not mention folders, so nothing to edit
-
-── the two reasons a page sits in a folder, and they are one rule ──
-  GROUP folder    the folder is the Q group          a flat design board
-  SUBJECT folder  the folder is what the page is     a board sitting on an
-                  about (QC3)                        existing tree
-  a page lives in ONE place, so a board picks one. on a paper's 0-lifecycle
-  they COINCIDE: 1-work/ 5-appendix/ 6-submission/ are the subject folder AND
-  the S family, so that board has had group folders since 260724 without
-  anyone deciding to give it any. it ALREADY satisfies the ruling and is left
-  alone: its numbers carry lifecycle order, which letters cannot.
-
-── what the move costs, measured on 154 pages across 7 boards ──
-  ## Pages   bare filenames        →  untouched, 0 edits
-  ## Links   REAL relative paths   →  17 cross-board links broke, all repaired
-  board.html at the board root     →  untouched
-  rendering  data-file · data-f · data-board only
+   and what ① PRODUCES is neither of them: 10 boards · 259 pages,
+   each owned by its own unit. see Content §4.
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA1
+```
+   ── the three crossings, and the one that must never exist ───────
+
+   ⒜  ② ──graduates──▶ ①
+        a face reaches ✅ and its ## Law is COPIED into the skill:
+        an operating rule into SKILL.md, a display or grammar spec
+        into ref/ (QB1's Law: SKILL.md stays shortest).
+        until it lands there it binds nothing, however settled the
+        face looks.
+
+   ⒝  ① ──renders──▶ ②
+        build.py reads ②'s markdown and writes ONLY its board.html.
+        it renders ② exactly the way it renders the other nine
+        boards; ② gets no privileges for being the designer.
+
+   ⒞  ① ──judges──▶ ②
+        agents/ runs check.py, cold-reads against ref/writing-rules.md,
+        and reports pass · revise · blocked. it never edits.
+
+   ── ✗ FORBIDDEN ──────────────────────────────────────────────────
+        ① ──▶ ②     no script may require an open face.
+                    delete ② and every script in ① still runs.
+                    a design record is never a runtime dependency.
+```
+
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QA1
 
 ## Content
-### 1 · Grouping into folders costs nothing, and that is a consequence of the 260722 ruling
+### 1 · Two folders, and what a write to each one MEANS
+#### They are separated by consequence, not by distance on disk
+(both sit under `Tools/plugins/haipipe-toolkit/skills/`, two directories apart)
+A write to `①` changes what every future agent does, on every board, forever.
+A write to `②` changes an argument, and binds nothing until it graduates.
+Those are two different acts, and on disk they are both just markdown in the same plugin, which is exactly why the two folders have to be named rather than pointed at.
+
+#### `①` is one folder even though it holds a skill and an agent
+(`skills/paper/` is numbered as one entry on `QA1@paper` while holding 35 skills)
+The unit of numbering is a shipped set, not a directory, so `skills/board/` is one entry.
+An earlier draft numbered `agents/` separately, on the argument that a cited authority belongs on the map.
+That argument fails here: the agent's board IS this board, its roster row sits in the `Q-Skill` group, so it was never off the map.
+
+#### `②` holds two things that are not faces, and both are generated
+`board.html` is written by `build.py` and must never be hand-edited, because markdown is the only source.
+`board.excalidraw` is the one thing in this folder whose content does not come from markdown: the ASCII in a face's `## Diagram` seeds a frame one way, and anything drawn on the canvas never flows back.
+It sits at the board ROOT beside `board.md` and `board.html`, as a first-class citizen rather than one of the figures (JL 260729); `fig/` holds images only.
+`_archive/` holds four retired faces today, `QA2`, `QC1`, `QC2` and `QD5`, moved rather than deleted so the arguments stay readable, and each reachable through a `## Links` row.
+
+### 2 · Where a board folder lives, and what it is named (absorbed from QC1, 260729)
+#### Two explicit locations, dated on opening, never renamed
+(task / project / paper: `<owning unit>/diagram/<NN>-<topic>-<YYMMDD>/` · plugin skill design: `<plugin>/skills/diagrams/<NN>-<topic>-<YYMMDD>/`)
+A board serves all kinds of owners, so there is no single "all boards go here" place; what is single is the rule.
+The number orders boards within one topic series, a new topic starts at `01`, and the date is fixed the day the board opens.
+What turns on it is everything that points at a board: the relative paths in `## Links`, and whether a dozen boards spread across owners can be found at all.
+
+#### A board is a working artifact, a skill is a deliverable package
+(the rule that JL settled on 260722 and sharpened on 260726, and the reason `①` and `②` are separate folders at all)
+This board used to sit inside `haipipe-board/diagram/`, which effectively shipped a daily-changing work log inside the skill.
+On 260726 JL moved every plugin design board into the shared `skills/diagrams/` and promoted the delivery package to the first-class `skills/board/`; the two moves are the same decision applied to both halves.
+Moving a board breaks every relative path in `## Links`, because they are declared against its location; the 260726 move re-resolved 21 declared paths the same day.
+
+### 3 · Two kinds of board on one tool, and they are opposites
+`②` and a paper's `0-lifecycle/` use the same tool, the same page layout and the same four `state:` values, which makes them look like one thing. They are not.
+
+A design board is a RECORD. Its decisions are supposed to leave: `✅` means the `## Law` is copied into `①`, and from then on the skill binds, not the board. Delete `②` and every script still runs.
+
+A paper's board is a CONTROL PLANE. Nothing leaves it. A gated S page keeps its Content, because that Content IS the paper. Delete it and the paper loses its frontier, its queue and its state.
+
+Same glyph, opposite meaning: `✅` on `②` is a decision made, `✅` on a paper's board is a human gate passed. That is why Q and S share one layout and do not share one closing rule, and it is the single most confusable thing in this family.
+
+### 4 · What `①` writes into a board that is neither `①` nor `②`
+#### Ten boards exist and nine of them are not ours
+(259 pages, counted with the parser on 260729: 5 boards under `<plugin>/skills/diagrams/`, 4 under `<unit>/diagram/`, 1 on a paper's `0-lifecycle/`)
+`build.py` writes `board.html` into a project's folder. `serve.py` writes a comment into a paper's markdown. `regroup.py` moved 154 pages across 7 boards belonging to 4 different projects.
+This family crosses into somebody else's tree on nearly every invocation, so what it may do there is a decision, not an afterthought.
+
+#### Mechanical writes are always allowed, because they carry no judgement
+(generate `board.html` · write back a keystroke the human just made · sync a managed span · `git mv` a page the tool is moving)
+Each is regenerable from the markdown, or is a transcription of something a human just did.
+None of them decides anything about that board's topic, which is the property that makes them safe.
+
+#### Editorial writes are never ours, however small they look
+(what a face says · a tick · a `state:` · which topic exists at all)
+`SKILL.md` already says a tick means the thing was verified, and this family cannot verify another unit's work.
+A `state:` flip is the same act as closing a question, which belongs to that board's owner.
+
+#### The hard case is a checker error, and the test is who broke it
+(`regroup.py` broke 17 cross-board `## Links` on 260726 and repaired all 17 the same round)
+Broke it ourselves: repair, in the same round, and say so. That is settled precedent and it is recorded in the Log below.
+Merely found it: report to the owner and stop. Repointing a row means choosing what the row should name, and that choice is about the topic.
+The two cases look identical in the diff and are opposite in standing, so the diff is not the test.
+
+#### 260729 CC took the wrong branch, and this division exists because of it
+Three dead references on the MISQ paper board and the phyprofile board were repaired rather than reported.
+Nothing this family runs had broken them: the MISQ rows had rotted when a display unit was split into two variants, and the phyprofile row pointed into a task folder that had gained a subfolder.
+The correct output was a report to each owner, and the repair is queued for revert in `## Items to Finish`.
+
+### 5 · Placing something new
+```
+ a question still open                 →  a face on ②
+ a decision made                       →  ②'s ## Law, then graduate into ①
+ an operating rule an agent follows     →  ① SKILL.md
+ a display or grammar spec              →  ① ref/board-form.md, never SKILL.md
+ a mechanical check                     →  ① check.py
+ a python module                        →  ① src/, split by page topic (QB5)
+ CSS or JS                              →  ① assets/ (QB4)
+ an independent review                  →  ① agents/, which never writes
+ a drawing                              →  that board's own board.excalidraw, at its root
+ a retired face                         →  that board's own _archive/, never deleted
+ a face about someone else's topic       →  their board, never here
+ a defect FOUND in a board we render     →  report to its owner
+ a defect our own tool BROKE             →  repair it, same round, and say so
+```
+
+### 6 · Grouping into folders costs nothing, and that is a consequence of the 260722 decision
 #### Membership was never about where the file sits, so moving it changes nothing
 (`q_files()` is `rglob("Q*.md")`, skipping segments that start with `_` or `.`, and `fig/`)
 `QC3` made discovery recursive in 260724 for a different reason, so the capacity to group by folder has been shipped for two days without being named.
@@ -86,7 +205,7 @@ Both produced 20 pages and the same checker result.
 The rendered HTML differs on **zero** lines except the path attributes that must change: `data-file` on each page section, `data-f` on each index row, and `data-board`.
 Those are the write-back paths, and carrying the folder in them is what `QC3` already ships and smoke-tested at depth 2.
 
-### 2 · The one thing that broke, and how it was fixed
+### 7 · The one thing that broke, and how it was fixed
 #### `＋Q` used to write to the board root, so a new page landed outside its group
 (fixed 260726 in `serve.py`'s `structure_op`, which had hardcoded `f = board / fname`)
 `SKILL.md` documented this as a flat-board wart: create from the page, then move it yourself.
@@ -99,14 +218,14 @@ When they disagree, or the group has no pages yet, it falls back to the board ro
 Choosing "where does this group already live" over "a folder called `QA`" is the whole point: it is equally correct when the folder is the GROUP and when the folder is the SUBJECT (`QC3`), which are the two reasons a page sits in a folder and are one rule.
 A flat board is untouched by construction, since every sibling is already at the root, so the button follows a decision the board has made rather than making one for it.
 
-### 3 · Why the group letter stays in the filename
+### 8 · Why the group letter stays in the filename
 `QA/QA1-form.md` repeats `QA`, and stripping it to `QA/1-form.md` would break three things at once.
 `rglob("Q*.md")` would no longer match it.
 `## Pages` lists bare filenames, which would collide the moment two groups both had a `1-`.
 And the id would stop being greppable across the repo, which is how every cross-board reference on every board is written.
 The redundancy is the price of the id being the id.
 
-### 4 · Always, rather than past a threshold
+### 9 · Always, rather than past a threshold
 (JL 260726, choosing the uniform rule over the measured one)
 A size trigger was on the table and was rejected, and the reason is worth keeping: a threshold means a board silently reorganizes itself the day it crosses one, which is a structural change arriving without a decision.
 Uniform costs a small board one extra folder level and buys every board the same shape, so a reader who learns one board has learned all of them.
@@ -120,19 +239,19 @@ It also removes the question entirely from every future board, which is the real
       All written down.
 - [x] A blank board can be built by hand from this spec alone, without consulting an existing example
       `ref/board-example.md` is a minimal two-question skeleton; verified in practice: the two subjective-label boards plus this one; 3 boards use this shape.
-- [x] 🧹 Every board moved onto the ruling, and the links it broke were repaired
+- [x] 🧹 Every board moved onto the decision, and the links it broke were repaired
       `regroup.py` moved 154 pages across 7 boards on 260726, leaving 0 pages at any board root; every page count held and every board rebuilt.
       It broke 17 declared cross-board Links, which this page had predicted would not happen, and `check.py` caught all of them; they were repointed and every board is back to its previous error count.
       The 3 errors left on the phyprofile board predate the move and point at `_WorkSpace/` paths that only exist on the secure server.
-- [x] 📦 The ruling is a command, not a habit
+- [x] 📦 The decision is a command, not a habit
       `regroup.py <board> [--apply]` and `--all <root>`, dry-run by default, `git mv` when the file is tracked.
       A rule that needs a hand-written `mv` per board drifts the first time somebody is in a hurry, so the enforcement ships with the rule.
       The slug is capped at 30 characters on a word boundary, because `QB-a-task-folder-what-it-is-and-running-one/` wraps in every listing it appears in and the tail is where the least information is.
 - [x] 🗂 Group folders are proven to need no change anywhere else
       Measured 260726 on the 20-page probe board: all pages moved into `QA/ QB/ QC/ QD/`, `board.md` untouched, rebuild clean, and the rendered HTML identical apart from the three path attributes that must change.
       Filenames stay unique board-wide, so `## Pages` keeps listing bare names.
-- [x] 🧠 JL rules whether group folders are the default, opt-in, or size-triggered
-      Ruled 260726: **the default, on every board, from page one.** Not size-triggered, so no board ever reorganizes itself under its reader, and no one has to notice a threshold.
+- [x] 🧠 JL decides whether group folders are the default, opt-in, or size-triggered
+      Decided 260726: **the default, on every board, from page one.** Not size-triggered, so no board ever reorganizes itself under its reader, and no one has to notice a threshold.
       The folder is named `Q<letter>-<slug of the group title>`, not a bare `QA/`, on JL's follow-up: "I want the QA-xx with some names, not just QA".
       A bare `QA/` writes the id twice and drops the one half a reader cannot reconstruct from the filenames inside it, which is the group's actual subject.
       Written into `SKILL.md`'s shape section and `ref/board-form.md` §1, and this board moved onto it the same round.
@@ -144,11 +263,47 @@ It also removes the question entirely from every future board, which is the real
       `ref/board-form.md` §1 now names them: the folder is the GROUP on a flat design board that grew, and the folder is the SUBJECT on a board sitting on an existing tree.
       A page lives in one place so a board picks one, and on a paper's `0-lifecycle/` they coincide, which is why that board has had group folders since 260724 without anyone granting it any.
       The consequence is written down where it matters: the code recognizes no `QA/` naming convention, only where a group already lives, which is what makes one rule cover both reasons.
-(What a Q file looks like inside is QA2's business, not handled here.)
+- [x] 🗺 Name the two folders, with what lives inside each
+      Verified on disk 260729. `①` `skills/board/`: one skill v0.46.0 with SKILL.md, `ref/` 4 specs, 10 scripts plus 2 test files, `src/` 9 modules, `assets/` and `vendor/xterm`, plus `agents/` holding one reviewer v1.0.0 with no write tools.
+      `②` this board: `board.md`, 41 faces in 7 group folders, 2 generated roster rows, `board.html`, `fig/` and the archived faces.
+      They are separated by what a write MEANS, not by distance on disk, because both sit two directories apart under the same plugin.
+- [x] 🔀 State the three crossings and the one forbidden direction
+      Graduate, render, judge. And the one that must never exist: no script may require an open face, so deleting `②` leaves every script in `①` running.
+- [x] 📍 Where a board lives, absorbed from QC1 (settled by JL 260722, refined 260726)
+      Task, project, and paper boards under the owning unit's `diagram/`; plugin skill-design boards in the plugin's shared `skills/diagrams/`; `<NN>-<topic>-<YYMMDD>`, dated on opening, never renamed.
+      QC1 was ✅ SETTLED with 3/3 items, its Law long graduated into `SKILL.md`'s 🗂 Shape line 1 and `ref/board-form.md` §1; the page retired to `_archive/` and its history lives there.
+- [ ] 🧠 JL approves the two folders and the standing rule for writing into a board we render
+      §4 is the load-bearing half: mechanical writes always, editorial writes never, and for a checker error the test is who broke it.
+- [ ] ↩️ Revert the three out-of-band edits of 260729 and report them to their owners instead
+      Two rows on the MISQ paper board (`pages-ghost` plus a `dead-link` in `## Links`) and one on the phyprofile board (`dead-link` into a task folder).
+      Under §4 these were FOUND, not broken by anything here, so the correct output is a report.
+- [ ] 📐 `SKILL.md`'s 🗂 Shape section carries this map
+      A fresh agent must be able to place a new file in the right folder without reading this board.
+      Today the shape section describes one board folder's contents and says nothing about the `①`/`②` split or what may cross.
+- [ ] 🧪 Check for reverse dependencies
+      No script may require an open face, and no rendered board's state may be read off this board. This has never been checked.
+- [ ] 🔤 Retire the word "ruling" in favour of "decision"
+      JL 260729: "I think we use the decision for it." This face is converted; `SKILL.md` has 9, `ref/board-form.md` 2, the reviewer agent 2, `ref/q-template.md` 1, and page prose across the ten boards has 999.
+      Most of that 999 sits on boards this family renders and does not own, so under §4 it needs each owner told rather than a silent rewrite.
+(What a Q file looks like inside is the QAa group's business, and what the words mean is `QA1a`'s, so neither is handled here.)
 
 ## Where we are
-**The shape is settled and in use on every board; the arrangement inside the folder was reopened on 260726 and is not.**
+**The map is drafted and unapproved. The folder-internal decision underneath it stays settled and in use on every board.**
 
+- 🧩 Skills · what this face governs, and whether it has landed there yet
+  Full text of both units is on their roster pages, `Q-Skill-haipipe-board` and `Q-Skill-haipipe-board-reviewer-agent`; this item only says what has landed.
+  `SKILL.md` 🗂 Shape · **NOT landed.** It describes one board folder's contents and says nothing about the `①`/`②` split or the three crossings. This is the open `📐` item below.
+  `ref/board-form.md` §1 folder · §2 numbering · **landed 260726.** The group-folder decision and the two reasons a page sits in a folder, both stated as one rule.
+  `src/common.py` `q_files()` · **landed 260722.** Membership by path is the rule this face settled first, and it has not changed since.
+  `regroup.py` · **landed 260726.** The sweep that made the decision a command rather than a habit.
+  `check.py` · **nothing from this face yet.** The standing rule in §4 has no mechanical half, so nothing stops the next agent repeating 260729's mistake.
+  `agents/haipipe-board-reviewer-agent.md` · **reads, never writes.** It runs crossing ⒞ and this face defines what it checks placement against.
+- Two folders, drafted 260729
+  `①` `skills/board/` ships and binds at runtime; `②` this board argues and binds nothing until a decision graduates.
+  What separates them is what a write MEANS, not where the folder sits, because both are two directories apart inside the same plugin.
+- The standing rule is the load-bearing half, and it is new
+  Mechanical writes into a board we render are always allowed because they carry no judgement. Editorial writes are never ours. For a checker error the test is who broke it: repair what our own tool broke, report what we merely found.
+  This is the only part of the page that would have changed behavior on the day it was written.
 - Who is on the board, by path
   Every `Q*.md` under the board folder, at any depth since `QC3`, is one of the board's questions.
   Opening a new question is dropping in one file, changing nothing else.
@@ -156,69 +311,63 @@ It also removes the question entirely from every future board, which is the real
   File names and group headings only; titles and body text are never copied, and no path is ever written.
 - Missed registration is only ugly, never lossy (both failure modes tested)
   A file missing from the Pages still appears, under the ⚠️ group, plus a one-line CLI warning; a Pages line pointing at a non-existent file is also just a warning.
-- Group folders work, `＋Q` follows them, and nobody has decided to use them
-  Measured on a 20-page board with zero edits outside the `mv` itself.
-  `＋Q` now writes into wherever the group already lives, so the last mechanical objection is gone; what is left is the ruling.
-- 260726 CC · 🪄 The button follows the group, by asking rather than by convention
-  `＋Q` used to hardcode the board root. It now looks at where that group's existing pages live and writes there, falling back to the root when they disagree or the group is empty.
-  Choosing "where does this group live" over "a folder called QA" is what makes it one rule for both reasons a page sits in a folder: it is equally right for a group folder and for a `QC3` subject folder such as a paper's `0-lifecycle/4-display/`.
-  Flat boards are untouched by construction, because on a flat board every sibling is already at the root, so this follows a decision the board made instead of making one for it.
-  Verified on three fixtures: flat writes to the root, grouped writes into `QA/`, an empty group falls back, and `## Pages` keeps bare filenames throughout.
+  Measured again 260729 across all ten boards: one live instance of each, both on boards this family does not own.
+- Group folders are the default and `＋Q` follows them
+  Decided 260726, swept the same round: 154 pages across 7 boards, 0 left at any root.
+- 260729 CC · The map cost this face its ✅, and the reason is worth keeping
+  The question owned which files are in a board folder and how they are arranged, and never which of the two folders a thing belongs to at all. Three edits into other projects' boards the same day are what made the gap concrete.
 - One small thing still open from 260722
-  Whether `fig/` is mandatory for every board; it is empty here and every board carries one.
+  Whether `fig/` is mandatory for every board; it holds `board.excalidraw` plus 7 images here and every board carries one.
   The other half of that item, whether filenames are English or Chinese, was settled by JL on 260724: English.
 
 ## Files
+- `SKILL.md`
+  The "🗂 Shape" section, which is where this face graduates and which does not yet carry the two folders.
+- `ref/board-form.md`
+  §1 folder · §2 numbering. The full spec for the folder half of this question lives there.
 - `src/common.py`
   `q_files()` is the membership rule: `rglob("Q*.md")`, skipping `_`, `.` and `fig/` segments.
+  `ALIAS` is the section registry, which is why a section name the parser does not know renders nowhere.
 - `serve.py`
-  `structure_op`, whose `f = board / fname` is why `＋Q` lands at the root.
-- `ref/board-form.md`
-  §1 folder · §2 numbering. The full spec for this question lives there.
-- `SKILL.md`
-  The "🗂 Shape" section.
+  `structure_op`, the write-back path for every keystroke a human contributes from the page.
+- `regroup.py`
+  The 260726 sweep, and the precedent for repairing what our own tool broke.
+- `check.py`
+  What turns a defect on a board we render into a report: `pages-ghost`, `dead-link`, `dead-href`.
+
+## Law
+Two folders. `skills/board/` ships and binds at runtime; this board argues and binds nothing. They are separated by what a write to them means, not by where they sit on disk.
+
+A decision graduates from this board into the skill before it binds: an operating rule into `SKILL.md`, a display or grammar spec into `ref/`. A decision that has not graduated is not a rule, however settled the face looks.
+
+No script may require an open face. A design record is never a runtime dependency: delete this board and every script still runs.
+
+This family writes into boards it does not own, and the write is bounded by standing. Mechanical writes are always allowed, because they carry no judgement: generating `board.html`, writing back a keystroke a human just made, syncing a managed span, moving a page the tool is moving. Editorial writes are never ours: what a face says, a tick, a `state:`, which topic exists. When a checker error appears in a board we render, the test is who broke it, and the diff is not the test: repair what our own tool broke in the same round and say so, report what we merely found and let its owner decide.
+
+A design board and a paper's board are opposites on the same tool. On a design board `✅` means a decision was made and its Law has left for the skill. On a paper's board `✅` means a human gate was passed and nothing leaves, because the Content is the paper.
 
 ## Glossary
 one file per question: borrowed from haipipe-probe, where under `1-probes/` every question is its own md file.
 The benefit: two people editing two questions never collide.
 group folder: a subfolder named for a Q group, holding that group's pages. Membership and ordering do not depend on it, so it is presentation of the source tree rather than structure.
+standing: whether this family is entitled to make a given write into a board it renders but does not own. Mechanical writes have it, editorial writes do not.
 
 ## Discussion
 > JL: how do you think we can group the Q markdown files into the Q groups? Like for QA, we will make them to be a folder, and QB, etc.
 >> CC0726: it already works, which was the surprising part. Restructured the 20-page probe board into `QA/ QB/ QC/ QD/` with `board.md` untouched: same 20 pages, identical rendering, only the write-back paths change. What is missing is a decision that it is the default, and the `＋Q` button following it.
-
-## Comments
-- [x] XZ “The attachment works in two layers, proven out with both failure modes tested” · 260723 2023
-      this Now section. is not easier to read.
-      >> CC0723: rewrote `## Now` in the "short heading + indented explanation" item form (the form QA4 settled); deleted the folder diagram that duplicated `## Diagram` and the long loose paragraphs.
-- [x] JL “📍 Now” · 260723 1240
-      I want to make each section name to be more salient, and also make it can be callapsed.
-      >> CC0723: QA4 landed this in build.py after this comment (260723 1400–1720): section headings at 18px with an underline and an expand-all on the right; item explanations collapse into `<details>`, closed by default, opened by clicking the name. This round rewrote QA1's Now into item form so the collapsing actually applies.
-- [x] JL “260722” · 260723 1240
-      also add the time as well.
-      >> CC0723: `## Log` lines all carry HHMM now (format in effect since 260723 0919). The original sentence was edited, so this one shows as anchor lost.
-- [x] JL “260722 opened. The original question mixed two things: which files are in the folder + which sections are in a file 260722 split: sections go to QA2, this question keeps only the folder 260722 attachment settled as two layers (path for membership / Pages for order), both failure modes tested 260722 renumbered Q1 → QA1; title compressed from 28 to 9 characters 260722 finish line rewritten as a checklist; diagram added” · 260723 1240
-      For here, also add the time, not only the date. 
-      
-      and the newest things to the top.
-      >> CC0723: both are in effect: every Log line is `YYMMDD HHMM ·`, newest at the top.
-- [x] JL “📜 Log (5) 260722 opened. The original question mixed two things: which files are in the folder + which sections are in a file 260722 split: sections go to QA2, this question keeps only the folder 260722 attachment settled as two layers (path for membership / Pages for order), both failure modes tested 260722 renumbered Q1 → QA1; title compressed from 28 to 9 characters 260722 finish line rewritten as a checklist; diagram added” · 260723 1240
-      for the logs, I want it to add the date and time as well.
-      >> CC0723: same as above, in effect.
-- [x] JL “QA1” · 260723 1240
-      I want all the section name to be more salient.
-      >> CC0723: same as the “📍 Now” one: QA4's enlarged, underlined section headings cover every section of every question.
-- [x] JL “Board folder shape” · 260723 1240
-      maybe make it a bit longer, make it more like a question, like
-      
-      How to design the haipipe-board folder structure.
-      >> CC0723: title changed to `How to design the haipipe-board folder structure?`, using this comment's own words.
+> JL: I think we need to update the QA1, to rethink about the structure, what folders are used here. what are the concepts we used. Could you check `QA1@paper`. we might want to follow this structure.
+>> CC0729: followed that face's content rather than its grid, after two wrong drafts. The first copied its four-pair table and listed `fig/` and `_archive/` as peers of the boards containing them. The second replaced folders with four invented categories, which needed a Glossary entry to be readable at all, and that was the tell.
+> JL: I think the 1 2 3 4 should be the folders, not the ideas. Don't need to mention the things outside. I think we just have two large folder, (1) the skill set and (2) the board folder. Just this two, and then the content will try to explain things here.
+>> CC0729: taken, and it is smaller than what it replaced. Two numbered folders, three crossings, one forbidden direction; everything else moved into Content, where the boards this family renders are described in §4 rather than numbered, because they are what `①` produces and not part of the map.
 
 ## Log
-260726 2340 · Swept every board onto the ruling with a new `regroup.py` (dry-run by default, `git mv`, slug capped at 30 chars): 154 pages moved across 7 boards, 0 left at any root, all page counts held. It broke 17 declared cross-board `## Links`, which §1 had claimed could not happen; `check.py` caught every one, they were repointed, and the correction is now written into §1, `SKILL.md` and `board-form.md` §1. The paper `0-lifecycle/` is exempt and says why: it already satisfies the ruling and its numbers carry lifecycle order
-260726 2320 · JL ruled: group folders are the DEFAULT on every board from page one, named `Q<letter>-<group slug>` and not a bare `QA/` ("I want the QA-xx with some names"). Written into SKILL.md and board-form.md §1; this board moved onto it (30 pages into 5 named folders, board.md untouched, rebuild identical apart from the write-back path attributes); `＋Q` follows an existing group's folder and a new group's first page opens a named one. All 14 items ticked → ✅ SETTLED
-260726 2300 · Two of three open items closed: `＋Q` writes into the group's own folder (rule = where that group already lives, never a `QA/` naming convention, so one rule covers both the group folder and the QC3 subject folder), and `ref/board-form.md` §1 now states those two reasons as one. Only JL's default-vs-opt-in ruling is left
-260726 1930 · Reopened from ✅ to 🟡: the question owned WHICH files are in the folder and never HOW they are arranged. Group folders (QA/ QB/ …) measured on the 20-page probe board: zero edits outside the mv, identical rendering, only the write-back path attributes change. Three items added: JL's ruling on default-vs-opt-in, ＋Q creating inside its group, and stating the group folder and the QC3 subject folder as one rule
+260729 · QC1 (Where a board lives) merged in on JL's call: its two-location rule and working-artifact-vs-deliverable rationale became §2, its item joined the list ticked, and the page retired to `_archive/`. Content divisions after §1 renumbered up by one; the two earlier 260729 lines below say §3/§5 about this page and now mean §4/§6
+260729 · Cut from four invented categories to TWO FOLDERS on JL's call: `①` `skills/board/` ships, `②` this board argues, and the numbers name real paths rather than ideas. Three crossings kept (graduate, render, judge) and one forbidden direction (no script may require an open face). Everything else moved into Content: what lives inside each folder, the two-kinds-of-board opposition, and §4, the boards this family renders and does not own, which are described rather than numbered because they are what `①` produces. The coined word "band" is gone with its Glossary entry, which is what gave the previous draft away
+260729 · Reopened from ✅ to 🟡 and widened into the family map, following `QA1@paper`'s content. The question had owned which files are in a board folder and how they are arranged, and never which folder a thing belongs to. The load-bearing new half is the standing rule: mechanical writes into a board we render always, editorial writes never, and for a checker error the test is who broke it. That division exists because three dead references on the MISQ and phyprofile boards were repaired rather than reported the same day, which is the FOUND case, not the BROKE case; the revert is queued as an item. The word "ruling" is replaced by "decision" throughout on JL's call, and the rest of the sweep is queued. Content divisions renumbered, the new ones first, so the earlier §1 is now §6; the 260726 2340 line below said "§1" about this page and means §6
+260726 2340 · Swept every board onto the decision with a new `regroup.py` (dry-run by default, `git mv`, slug capped at 30 chars): 154 pages moved across 7 boards, 0 left at any root, all page counts held. It broke 17 declared cross-board `## Links`, which §6 had claimed could not happen; `check.py` caught every one, they were repointed, and the correction is now written into §6, `SKILL.md` and `board-form.md` §1. The paper `0-lifecycle/` is exempt and says why: it already satisfies the decision and its numbers carry lifecycle order
+260726 2320 · JL decided: group folders are the DEFAULT on every board from page one, named `Q<letter>-<group slug>` and not a bare `QA/` ("I want the QA-xx with some names"). Written into SKILL.md and board-form.md §1; this board moved onto it (30 pages into 5 named folders, board.md untouched, rebuild identical apart from the write-back path attributes); `＋Q` follows an existing group's folder and a new group's first page opens a named one. All 14 items ticked → ✅ SETTLED
+260726 2300 · Two of three open items closed: `＋Q` writes into the group's own folder (rule = where that group already lives, never a `QA/` naming convention, so one rule covers both the group folder and the QC3 subject folder), and `ref/board-form.md` §1 now states those two reasons as one. Only JL's default-vs-opt-in call is left
+260726 1930 · Reopened from ✅ to 🟡: the question owned WHICH files are in the folder and never HOW they are arranged. Group folders (QA/ QB/ …) measured on the 20-page probe board: zero edits outside the mv, identical rendering, only the write-back path attributes change. Three items added: JL's call on default-vs-opt-in, ＋Q creating inside its group, and stating the group folder and the QC3 subject folder as one rule
 260724 1242 · Translated to English (JL 260724: everything on the board in English, no Chinese)
 260723 · Rewritten to the new structure: Question expanded into "one paragraph + bullets", added `## Boundary` (drawing the line against QA2 / QC1) and `## Files`; the retired `## Why here` merged into Question
 260723 2036 · Cleared all 7 comments: title turned into a question (JL's own words); `## Now` rewritten in item form, duplicate diagram removed (XZ); the two "salient + collapsible section names" ones covered by QA4's shipped layout; the three "Log with time + newest first" ones were already in effect, ticked

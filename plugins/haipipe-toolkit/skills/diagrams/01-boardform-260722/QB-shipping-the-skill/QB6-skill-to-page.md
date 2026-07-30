@@ -21,8 +21,8 @@ One page per skill turns that dashboard into a ranking of which skills are chang
 - ✅ Covered here
   **Turning a folder outside the board into a Q page**: what the generator derives, what it embeds, what it must never overwrite, when it re-runs, and how a stale generated page is detected.
 - ↪ Covered elsewhere
-  What a Q source file contains and which sections are recognized: `QA2`.
-  How that page renders once it exists: `QA4`.
+  What a Q source file contains and which sections are recognized: `QAa0` and the QAa faces (QA2 merged into them 260729).
+  How that page renders once it exists: `QAa0`.
   The `![[path]]` embed grammar itself: `ref/board-form.md` §5.
   How groups are proposed and named: `QC4`. Where the pages sit on disk: `QA1`.
   Whether the board should host skills at all, rather than how: that is this page's Question, and it is JL's.

@@ -3,8 +3,8 @@
    this script only ADDS "select -> comment -> highlight right away".
    Strip this script block and the board still reads fine (just no commenting).
 
-   Comments live in localStorage until you press "Sync to md", which writes
-   them into each Q file's ## Discussion as:   > JL 「quoted sentence」: text
+   Comments go straight to the server, which writes each one beneath its
+   selected sentence in the source Markdown.
    ───────────────────────────────────────────────────────────── */
 (function () {
   var KEY = 'board-comments:' + location.pathname;
@@ -145,6 +145,16 @@
     setTimeout(function () { el.style.background = ''; }, 1300);
   }
 
+  function containingSentence(r) {
+    function paragraph(n) {
+      n = n && (n.nodeType === 1 ? n : n.parentElement);
+      return n && n.closest && n.closest('p');
+    }
+    var a = paragraph(r.startContainer), b = paragraph(r.endContainer);
+    if (!a || a !== b || a.closest('.folds,.sapp,.cmb,.cmt,.change')) return '';
+    return a.textContent.replace(/\s+/g, ' ').trim();
+  }
+
   /* ── select -> floating button ───────────────────────────── */
   document.addEventListener('mouseup', function (ev) {
     if (box.contains(ev.target) || panel.contains(ev.target) || ev.target === btn) return;
@@ -157,9 +167,11 @@
       var q = node.closest && node.closest('section.q');
       if (!q) { btn.style.display = 'none'; return; }
       var live = s.getRangeAt(0);
+      var sentence = containingSentence(live);
+      if (!sentence) { btn.style.display = 'none'; return; }
       var r = live.getBoundingClientRect();
       pend = { id: q.id, file: q.getAttribute('data-file') || '',
-               quote: txt, range: live.cloneRange() };
+               quote: txt, sentence: sentence, range: live.cloneRange() };
       btn.style.left = (r.left + window.scrollX) + 'px';
       btn.style.top = (r.bottom + window.scrollY + 7) + 'px';
       btn.style.display = 'block';
@@ -205,7 +217,8 @@
     if (who === '__new') who = users[0];
     localStorage.setItem(WK, who);
     var live = pend.range;
-    db.push({ id: pend.id, file: pend.file, quote: pend.quote, who: who, text: v });
+    db.push({ id: pend.id, file: pend.file, quote: pend.quote, sentence: pend.sentence,
+              who: who, text: v });
     var idx = db.length - 1;
     box.style.display = 'none';
     /* wrap the live range FIRST — guaranteed exact, no text search involved */
@@ -234,10 +247,10 @@
     return String(d.getFullYear()).slice(2) + z(d.getMonth() + 1) + z(d.getDate()) +
            ' ' + z(d.getHours()) + z(d.getMinutes());
   }
-  /* md 里一条评论长这样，[ ] 未解决 / [x] 已解决 */
+  /* One sentence-local comment; this is also the manual fallback patch. */
   function line(c) {
-    return '- [ ] ' + c.who + ' 「' + c.quote.replace(/\s+/g, ' ').trim() +
-           '」 · ' + (c.when || stamp()) + '\n      ' + c.text.replace(/\n/g, '\n      ');
+    return c.sentence + '\n> ' + c.who + ': ' + c.text.replace(/\n/g, ' ') +
+           ' · ' + (c.when || stamp());
   }
   function patch() {
     var by = {};
@@ -257,31 +270,23 @@
     panel.innerHTML =
       '<div class="hd"><b>Pending comments</b><span style="flex:1"></span>' +
       '<button class="ok sy">Write now</button>' +
-      '<button class="cf">Connect folder</button>' +
       '<button class="cp">Copy</button></div>' +
       (db.length ? db.map(function (c, i) {
         return '<div class="it" data-row="' + i + '"><div class="q">' + c.id +
           (c.lost ? ' <span style="color:var(--mut)">· unanchored</span> ' : ' ') +
-          '“' + esc(c.quote.slice(0, 40)) + '”</div><b>' + c.who + '</b> ' +
+          '“' + esc(c.sentence.slice(0, 40)) + '”</div><b>' + c.who + '</b> ' +
           esc(c.text) + ' <button data-i="' + i +
           '" class="rm" style="padding:2px 8px">del</button></div>';
       }).join('') : '<div class="it mut">Nothing yet. Select a sentence in the text.</div>') +
-      '<div class="hint">Comments are written to the <code>.md</code> the moment you save — ' +
-      'once you have connected this board’s folder. Anything listed above has NOT been ' +
-      'written yet. ' +
-      'each comment into its Q file under <code>## Comments</code> as ' +
-      '<code>- [ ] WHO 「quote」 · time</code> — flip it to <code>[x]</code> when solved. ' +
+      '<div class="hint">Comments are written to the <code>.md</code> by the Board server. ' +
+      'Anything listed above has NOT been written yet; use Copy to retain a patch. ' +
+      'each comment directly below its selected sentence as ' +
+      '<code>&gt; WHO: comment · time</code>. ' +
       'Re-run <code>python3 build.py</code> afterwards.</div>';
     panel.querySelectorAll('.rm').forEach(function (b) {
       b.onclick = function () { db.splice(+b.getAttribute('data-i'), 1); save(); };
     });
     panel.querySelector('.sy').onclick = sync;
-    panel.querySelector('.cf').onclick = async function () {
-      dirH = null; await putDir(undefined);
-      var d = await ensureDir(true);
-      say(d ? 'Folder connected — comments now save straight to the .md' : 'Not connected');
-      if (d) drain(false);
-    };
     panel.querySelector('.cp').onclick = function () {
       navigator.clipboard.writeText(patch()).then(function () { say('Patch copied'); });
     };
@@ -309,19 +314,12 @@
   async function srvComment(c) {
     try {
       var j = await post('/_board/comment',
-        { file: c.file, who: c.who, quote: c.quote, text: c.text, when: c.when || stamp() });
+        { file: c.file, who: c.who, sentence: c.sentence, text: c.text,
+          when: c.when || stamp() });
       if (!j) return null;
       return j.ok ? true : j.err;
     } catch (e) { srvOK = false; return null; }
   }
-  async function srvResolve(file, quote, done) {
-    try {
-      var j = await post('/_board/resolve', { file: file, quote: quote, done: done });
-      if (!j) return null;
-      return j.ok ? true : j.err;
-    } catch (e) { srvOK = false; return null; }
-  }
-
   /* ── 兜底：浏览器自己写文件（只在服务器不支持时才用到）
      文件夹句柄记在 IndexedDB 里，授权一次，之后每次保存直接写盘 ──
      浏览器规定：第一次挑文件夹必须由用户点击触发，无法自动。
@@ -372,13 +370,6 @@
     await w.write(next); await w.close();
     return true;
   }
-  function insertComments(txt, add) {
-    if (/^## Comments[^\n]*$/m.test(txt))
-      return txt.replace(/^## Comments[^\n]*\n/m, function (mm) { return mm + add + '\n'; });
-    if (/\n## Log\b/.test(txt))
-      return txt.replace(/\n## Log\b/, '\n## Comments\n' + add + '\n\n## Log');
-    return txt.replace(/\s*$/, '') + '\n\n## Comments\n' + add + '\n';
-  }
   /* 把已经写盘的从待办里剔掉；写不进去的留着，面板里还看得见 */
   async function drain(ask) {
     if (!db.length) return 0;
@@ -398,44 +389,9 @@
         if (srvOK) return n;
       }
     }
-    var dir = await ensureDir(ask);
-    if (!dir) return 0;
-    var by = {}, done = 0;
-    db.forEach(function (c) { (by[c.file] = by[c.file] || []).push(c); });
-    for (var f in by) {
-      var add = by[f].map(line).join('\n');
-      try {
-        await edit(dir, f, function (txt) { return insertComments(txt, add); });
-        by[f].forEach(function (c) { c.written = 1; });
-        done += by[f].length;
-      } catch (e) { console.log('[board] ' + f + ': ' + e.message); }
-    }
-    db = db.filter(function (c) { return !c.written; });
-    localStorage.setItem(KEY, JSON.stringify(db));
-    paint();
-    return done;
+    return 0;
   }
 
-  /* ── 页面上直接把一条评论标成已解决 / 重新打开 ───────────── */
-  function esc4re(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  async function toggle(file, quote, to) {
-    if (srvOK !== false) {
-      var r = await srvResolve(file, quote, to);
-      if (r === true) return true;
-      if (typeof r === 'string') { say(r); return false; }
-    }
-    var dir = await ensureDir(true);
-    if (!dir) { say('No folder access — press Connect folder in the panel'); return false; }
-    var re = new RegExp('^(-\\s*\\[)[ xX](\\]\\s*[A-Z]{1,4}\\d{0,4}\\s*[「"]' +
-                        esc4re(quote) + ')', 'm');
-    var hit = false;
-    await edit(dir, file, function (txt) {
-      if (!re.test(txt)) return txt;
-      hit = true;
-      return txt.replace(re, '$1' + (to ? 'x' : ' ') + '$2');
-    });
-    return hit;
-  }
   // 讨论框：整段写想法 → POST /_board/discuss → 追加进 ## Discussion → 刷新（JL 260723）
   function wireDadd() {
     var last = localStorage.getItem(WK) || users[0];
@@ -563,34 +519,6 @@
     });
   }
 
-  function wireResolve() {
-    document.querySelectorAll('.cms').forEach(function (box) {
-      var file = box.getAttribute('data-cfile');
-      box.querySelectorAll('.cm').forEach(function (row) {
-        if (row.querySelector('.cres')) return;
-        var b = document.createElement('button');
-        b.className = 'cres';
-        var setLbl = function () {
-          b.textContent = row.classList.contains('done') ? 'reopen' : 'mark solved';
-        };
-        setLbl();
-        b.onclick = async function () {
-          var to = !row.classList.contains('done');
-          b.disabled = true;
-          var ok = await toggle(file, row.getAttribute('data-quote'), to);
-          b.disabled = false;
-          if (!ok) { say('Could not find that line in ' + file); return; }
-          row.classList.toggle('done', to);
-          var s = row.querySelector('.cs:last-of-type');
-          if (s) s.textContent = to ? 'solved' : 'open';
-          var bx = row.querySelector('.bx'); if (bx) bx.textContent = to ? '☑' : '☐';
-          setLbl();
-          say('Written to ' + file + (srvOK ? ' — reload to refresh' : ' — rebuild to refresh'));
-        };
-        row.querySelector('.cmh').appendChild(b);
-      });
-    });
-  }
 
   /* ── 手动兜底：面板上的按钮 ───────────────────────────── */
   async function sync() {
@@ -616,6 +544,10 @@
     '<div class="hd"><span class="qid"></span><span class="ti"></span>' +
     '<button class="term" type="button" aria-label="Open terminal" title="Open this question in a real terminal (same session)">&gt;_</button>' +
     '<button class="x" type="button" aria-label="Close chat" title="Close chat">×</button></div>' +
+    '<div class="sfocus" hidden><div class="sfrow"><span class="sflabel">FOCUS</span>' +
+    '<code class="sfref"></code><button class="sfclear" type="button" aria-label="Clear sentence focus" title="Clear sentence focus">×</button></div>' +
+    '<div class="sfpath"></div><div class="sfquote"></div>' +
+    '<details class="sfattached"><summary></summary><pre></pre></details></div>' +
     '<div class="bd"></div><div class="tm"></div>' +
     '<div class="acts"></div>' +
     '<div class="tip"></div>' +
@@ -634,8 +566,54 @@
     '<button class="send">➤</button></div>';
   document.body.appendChild(chat);
   var cq = null;                                    // 当前挂在哪一题
+  var sentenceFocus = null;
   var MK = 'board-chat-model', EK = 'board-chat-effort', SK = 'board-chat-scope';
   var CHATK = function (id) { return 'board-chat:' + location.pathname + ':' + id; };
+
+  function clearSentenceFocus() {
+    sentenceFocus = null;
+    var box = chat.querySelector('.sfocus');
+    box.hidden = true;
+    box.querySelector('.sfref').textContent = '';
+    box.querySelector('.sfpath').textContent = '';
+    box.querySelector('.sfquote').textContent = '';
+    box.querySelector('.sfattached pre').textContent = '';
+    box.querySelector('.sfattached').hidden = true;
+    chat.querySelector('textarea').placeholder = cq && cq.board
+      ? 'Ask about this board — e.g. what should we act on next?'
+      : 'Ask about this question…';
+  }
+  function setSentenceFocus(ref, sentence, attached, contentPath) {
+    sentenceFocus = { ref: ref, sentence: sentence, attached: attached || '',
+                      contentPath: contentPath || '' };
+    var box = chat.querySelector('.sfocus');
+    box.hidden = false;
+    box.querySelector('.sfref').textContent = ref;
+    box.querySelector('.sfpath').textContent = contentPath || '';
+    box.querySelector('.sfpath').hidden = !contentPath;
+    box.querySelector('.sfquote').textContent = sentence;
+    var details = box.querySelector('.sfattached');
+    var rows = (attached || '').split(/\n+/).filter(function (x) { return x.trim(); });
+    details.hidden = !rows.length;
+    details.open = false;
+    details.querySelector('summary').textContent =
+      'Attached · ' + rows.length;
+    details.querySelector('pre').textContent = attached || '';
+    chat.querySelector('textarea').placeholder = 'Ask about this sentence…';
+  }
+  function focusedMessage(message) {
+    if (!sentenceFocus) return message;
+    return 'Focus this turn on sentence ' + sentenceFocus.ref + '.\n\n' +
+      (sentenceFocus.contentPath
+        ? 'Content location:\n' + sentenceFocus.contentPath + '\n\n' : '') +
+      'Sentence:\n' + sentenceFocus.sentence +
+      (sentenceFocus.attached
+        ? '\n\nAttached directly beneath it:\n' + sentenceFocus.attached : '') +
+      '\n\nUser message:\n' + message +
+      '\n\nDiscuss this sentence specifically. Read the rest of the page when needed, ' +
+      'but keep this sentence as the explicit focus.';
+  }
+  chat.querySelector('.sfclear').onclick = clearSentenceFocus;
 
   function chatLoad(id) {
     try { return JSON.parse(localStorage.getItem(CHATK(id)) || '[]'); } catch (e) { return []; }
@@ -754,30 +732,6 @@
     box.querySelector('.a').onclick = function () { send(true, true); };
     box.querySelector('.n').onclick = function () { send(false, false); };
   }
-  var FIXALL =
-    'Work through every unresolved comment in this question\'s ## Comments ' +
-    '(the ones starting with `- [ ]`). For each one:\n' +
-    '1. Edit this question\'s body the way the comment asks;\n' +
-    '2. Flip that line to `- [x]` and reply on an indented line below it with ' +
-    '`>> CC<MMDD>: what you did`;\n' +
-    '3. Add one line at the TOP of ## Log: `YYMMDD HHMM · what changed`.\n' +
-    'If you cannot do one, or disagree, do NOT flip it to [x] — write why underneath.\n' +
-    'End with a short summary of what you changed.';
-
-  /* BOARDFIX = FIXALL 的整板版（QD5）：不是这一题的评论，是每个 page 的。 */
-  var BOARDFIX =
-    'You are on the WHOLE board. Work through every unresolved comment (`- [ ]`) ' +
-    'in the ## Comments of EVERY page file on this board. For each one:\n' +
-    '1. Edit that page\'s body the way the comment asks;\n' +
-    '2. Flip that line to `- [x]` and reply on an indented line below it with ' +
-    '`>> CC<MMDD>: what you did`;\n' +
-    '3. Add one line at the TOP of that page\'s ## Log: `YYMMDD HHMM · what changed`.\n' +
-    'If you cannot do one, or disagree, do NOT flip it to [x] — write why underneath.\n' +
-    'End with a short per-file summary of what you changed.';
-
-  function openCount(sec) {
-    return sec.querySelectorAll('.cm:not(.done)').length;
-  }
   function chatActs(sec) {
     var isBoard = (sec === 'board');
     var box = chat.querySelector('.acts');
@@ -788,14 +742,11 @@
       b.textContent = label; b.onclick = fn;
       box.appendChild(b);
     };
-    var n = isBoard ? document.querySelectorAll('.cm:not(.done)').length : openCount(sec);
-    if (n) add('🔧 Handle ' + n + ' open comment' + (n > 1 ? 's' : '') + (isBoard ? ' (whole board)' : ''),
-               function () { chatSend(isBoard ? BOARDFIX : FIXALL); }, true);
     if (isBoard) {
       add('🧭 Which question should I act on?', function () {
         chatSend('Answer only, do not edit any file: which page on this board should ' +
-                 'be acted on next, and why? Consider state, unchecked items and open ' +
-                 'comments. Give 1-3 candidates, one line each: id · reason.');
+                 'be acted on next, and why? Consider state and unchecked items. ' +
+                 'Give 1-3 candidates, one line each: id · reason.');
       });
     } else {
       add('📝 What is this question missing?', function () {
@@ -811,6 +762,7 @@
     /* sec 是某一题的 <section>，或字符串 'board'（QD5）：整板会话，挂在 board.md 上。
        服务器端认 file=board.md，规则和开场定位换成整板那份；session 记在 board.md 头部。 */
     var isBoard = (sec === 'board');
+    clearSentenceFocus();
     if (isBoard) {
       var h1 = document.querySelector('.h1');
       cq = { id: 'BOARD', file: 'board.md',
@@ -869,29 +821,6 @@
     termView(false); disposeTerm();
     chat.classList.add('on'); document.body.classList.add('chaton');
 
-    /* 第一步：先把浏览器里还没写盘的评论同步过去 —— 不然 chat 读不到它们。
-       整板会话看得见每个 page，所以把所有还没写盘的都同步，不只这一个文件的。 */
-    var mine = isBoard ? db.length
-                       : db.filter(function (c) { return c.file === cq.file; }).length;
-    if (mine) {
-      bubble('sys', 'Writing ' + mine + ' new comment' + (mine > 1 ? 's' : '') + ' into ' +
-                    (isBoard ? 'their files' : cq.file) + '…');
-      var n = await drain(true);
-      bubble('sys', n ? ('Synced ' + n + '. You can now have it work through the comments.')
-                      : 'Sync failed — the comments are still pending.');
-      if (n) chat.querySelector('.acts').firstChild &&
-             chat.querySelector('.acts').replaceChildren();
-      if (n) {
-        var b = document.createElement('button');
-        b.className = 'act pri'; b.textContent = '🔧 Handle the ' + n + ' just-synced comment' + (n > 1 ? 's' : '');
-        b.onclick = function () { chatSend(isBoard ? BOARDFIX : FIXALL); };
-        chat.querySelector('.acts').appendChild(b);
-        var r = document.createElement('button');
-        r.className = 'act'; r.textContent = '↻ Refresh';
-        r.onclick = function () { (window.__boardRefresh || function () { location.reload(); })(); };
-        chat.querySelector('.acts').appendChild(r);
-      }
-    }
     chat.querySelector('textarea').focus();
   }
   chat.querySelector('.x').onclick = function () {
@@ -949,7 +878,8 @@
       var r = await fetch('/_board/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         signal: ctrl.signal,
-        body: JSON.stringify({ path: location.pathname, file: cq.file, message: msg,
+        body: JSON.stringify({ path: location.pathname, file: cq.file,
+          message: focusedMessage(msg),
           stream: true,
           model: chat.querySelector('.mdl').value,
           effort: chat.querySelector('.eff').value,
@@ -1037,9 +967,13 @@
     }
     inflight = null; chatBusy(false); ta.focus();
   }
-  chat.querySelector('.send').onclick = chatSend;
+  chat.querySelector('.send').onclick = function () { chatSend(); };
   chat.querySelector('textarea').addEventListener('keydown', function (ev) {
     if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); chatSend(); }
+    if (ev.key === 'Escape' && sentenceFocus) {
+      ev.preventDefault();
+      clearSentenceFocus();
+    }
   });
 
   /* ── ⌨ 真终端：同一个 session 换个窗口 ────────────────────────
@@ -1050,7 +984,7 @@
   function termView(on) {
     termOn = on;
     chat.querySelector('.tm').style.display = on ? 'block' : 'none';
-    ['.bd', '.acts', '.cfg', '.sid', '.ft', '.tip'].forEach(function (s) {
+    ['.sfocus', '.bd', '.acts', '.cfg', '.sid', '.ft', '.tip'].forEach(function (s) {
       var e = chat.querySelector(s); if (e) e.style.display = on ? 'none' : '';
     });
     var b = chat.querySelector('.term');
@@ -1446,9 +1380,23 @@
   fabLbl();
   document.body.appendChild(fab);
 
-  function rewire() { marks(); paint(); wireResolve(); wireDadd(); wireQBtns(); wireStruct(); wireXcal(); }
+  /* Sentence chat reuses this question's existing session. The click establishes
+     a visible focus card but does not spend a model turn. The next user message
+     is augmented with the address, sentence, and direct apparatus at send time. */
+  window.__boardSentenceChat = async function (sec, ref, sentence, attached, contentPath) {
+    if (!sec || !sec.classList.contains('q')) return;
+    await chatOpen(sec);
+    if (location.hash !== '#' + sec.id) location.hash = sec.id;
+    setSentenceFocus(ref, sentence, attached, contentPath);
+    chat.querySelector('textarea').focus();
+  };
+
+  function rewire() {
+    marks(); paint(); wireDadd(); wireQBtns(); wireStruct(); wireXcal();
+    if (window.__boardWireSentenceChats) window.__boardWireSentenceChats();
+  }
   window.__boardRewire = rewire;
-  marks(); paint(); wireResolve(); wireDadd(); wireXcal();
+  marks(); paint(); wireDadd(); wireXcal();
 })();
 
 /* ── live refresh (QD6, JL 260724) ─────────────────────────────────────────
@@ -1538,6 +1486,11 @@ document.addEventListener('click', function (ev) {
   var LANES = ['JL', 'CC', 'Note', 'Check', 'Citation', 'Value', 'Display',
                'Q-consumer', 'Link', 'Source'];
   var cur = null;
+  function stamp() {
+    var d = new Date(), z = function (n) { return (n < 10 ? '0' : '') + n; };
+    return String(d.getFullYear()).slice(2) + z(d.getMonth() + 1) + z(d.getDate()) +
+           ' ' + z(d.getHours()) + z(d.getMinutes());
+  }
   function close() { if (cur) { cur.remove(); cur = null; } }
   function mk(afterEl, sentP, file) {
     close();
@@ -1578,6 +1531,74 @@ document.addEventListener('click', function (ev) {
     cur = d;
     inp.focus();
   }
+  function edit(afterEl, sentP, file) {
+    close();
+    var before = sentP.textContent.replace(/\s+/g, ' ').trim();
+    var d = document.createElement('div');
+    d.className = 'sedit';
+    var inp = document.createElement('textarea'); inp.value = before;
+    inp.setAttribute('aria-label', 'Edit this sentence');
+    var who = document.createElement('input'); who.maxLength = 4;
+    who.value = (localStorage.getItem('board-user-last') || 'JL').toUpperCase();
+    who.setAttribute('aria-label', 'Your initials');
+    var ok = document.createElement('button'); ok.type = 'button'; ok.textContent = 'Save';
+    var x = document.createElement('button'); x.type = 'button'; x.textContent = 'Cancel';
+    var err = document.createElement('span'); err.className = 'serr';
+    d.append(inp, who, ok, x, err);
+    x.onclick = close;
+    function save() {
+      var replacement = inp.value.replace(/\s+/g, ' ').trim();
+      var actor = who.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4) || 'JL';
+      if (!replacement || replacement === before) { inp.focus(); return; }
+      err.textContent = '…';
+      fetch('/_board/edit-sentence', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, file: file, sentence: before,
+          replacement: replacement, who: actor, when: stamp() })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        if (!j.ok) { err.textContent = '⚠ ' + (j.err || 'failed'); return; }
+        localStorage.setItem('board-user-last', actor);
+        location.reload();
+      }).catch(function () { err.textContent = '⚠ serve.py not running?'; });
+    }
+    ok.onclick = save;
+    inp.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') save();
+      if (e.key === 'Escape') close();
+    });
+    afterEl.insertAdjacentElement('afterend', d);
+    cur = d; inp.focus(); inp.select();
+  }
+  function openSentenceComment(p, afterEl) {
+    var q = p && p.closest('section.slide.q');
+    if (!q) return;
+    var det = p.closest('details.sent');
+    if (det) {
+      det.open = true;
+      var target = det.querySelector('summary p');
+      var sapp = Array.from(det.children).find(function (x) {
+        return x.classList && x.classList.contains('sapp');
+      });
+      mk(det.querySelector('.saddrow') || sapp || p, target, q.dataset.file);
+      return;
+    }
+    mk(afterEl || p, p, q.dataset.file);
+  }
+  function openSentenceEdit(p, afterEl) {
+    var q = p && p.closest('section.slide.q');
+    if (!q) return;
+    var det = p.closest('details.sent');
+    if (det) {
+      det.open = true;
+      var sapp = Array.from(det.children).find(function (x) {
+        return x.classList && x.classList.contains('sapp');
+      });
+      edit(det.querySelector('.saddrow') || sapp || p, det.querySelector('summary p'),
+           q.dataset.file);
+      return;
+    }
+    edit(afterEl || p, p, q.dataset.file);
+  }
   document.addEventListener('click', function (e) {
     if (e.target.closest('.sadd')) return;
     var row = e.target.closest('.saddrow');
@@ -1587,8 +1608,8 @@ document.addEventListener('click', function (ev) {
       if (det && qr) mk(row, det.querySelector('summary p'), qr.dataset.file);
     }
   });
-  // DOUBLE-click opens the ➕ form (JL 260725: single click stays free for
-  // reading and selecting; the incidental word-selection is cleared first).
+  // DOUBLE-click edits the sentence.  Adding a lane remains available from the
+  // explicit ➕ row, so editing never competes with attaching evidence.
   document.addEventListener('dblclick', function (e) {
     if (e.target.closest('.sadd')) return;
     var p = e.target.closest('p');
@@ -1603,9 +1624,9 @@ document.addEventListener('click', function (ev) {
     // resolves to the inner `p`, the `.sbadge` has no `p` ancestor so `!p` catches
     // it, and a marker is a `<button>`.
     if (!p || e.target.closest('a,code,button,select,input,textarea,mark')) return;
-    var q = p.closest('section.slide.q');
-    if (!q) return;
+    if (!p.closest('section.slide.q')) return;
     if (p.closest('.folds,.sapp,.bd,.cmt,.cmb,.qh,.dadd,.spine')) return;
+    e.preventDefault();
     if (window.getSelection) window.getSelection().removeAllRanges();
     // WHERE the form goes differs by shape, and getting this wrong is silent.
     // `mk` does `afterEl.insertAdjacentElement('afterend', …)`, so passing the
@@ -1613,15 +1634,7 @@ document.addEventListener('click', function (ev) {
     // click toggles the drawer and the inputs cannot be used. A drawer therefore
     // takes the same two arguments the ➕ row path uses: insert at the END OF THE
     // DRAWER BODY, while still naming the summary's sentence as the target line.
-    var det = p.closest('details.sent');
-    if (det) {
-      det.open = true;                       // two clicks toggled it net-zero
-      var sapp = det.querySelector('.sapp');
-      mk(det.querySelector('.saddrow') || sapp || p, det.querySelector('summary p'),
-         q.dataset.file);
-      return;
-    }
-    mk(p, p, q.dataset.file);
+    openSentenceEdit(p, p);
   });
   // ⧉ copy a WHOLE SECTION (JL 260725: section-level, not per-sentence):
   // every section heading carries a copy button; it copies the section's full
@@ -1662,6 +1675,250 @@ document.addEventListener('click', function (ev) {
     r.className = 'saddrow';
     r.textContent = '➕ add to this sentence';
     ap.appendChild(r);
+  });
+
+  /* Automatic Content addresses + sentence-specific chat.
+
+     Only ## Content participates. C is a ### division. H is a terminal,
+     addressable #### heading and never parents P/S in the address grammar.
+     Paragraphs are siblings of headings inside C; each source-line paragraph
+     currently carries one sentence, so its leaf is Pn.S1.
+
+       QAb3.C1.H1       heading itself
+       QAb3.C1.P2.S1    sentence in the second paragraph of C1
+
+     These are render-local focus addresses, not durable Markdown identity. */
+  function sentenceText(p) {
+    var c = p.cloneNode(true);
+    c.querySelectorAll('.sbadge,.cv,.schatbar,button,input,select,textarea')
+      .forEach(function (x) { x.remove(); });
+    return c.textContent.replace(/\s+/g, ' ').trim();
+  }
+  function apparatusText(p) {
+    var box = null;
+    var sent = p.closest('details.sent');
+    if (sent) {
+      box = Array.from(sent.children).find(function (x) {
+        return x.classList && x.classList.contains('sapp');
+      });
+    } else {
+      var opening = p.closest('details.qd');
+      var body = opening && Array.from(opening.children).find(function (x) {
+        return x.classList && x.classList.contains('qbd');
+      });
+      if (body) {
+        box = Array.from(body.children).find(function (x) {
+          return x.classList && x.classList.contains('sapp');
+        });
+      }
+    }
+    if (!box) return '';
+    var c = box.cloneNode(true);
+    c.querySelectorAll('.saddrow,.schatbar,button,input,select,textarea')
+      .forEach(function (x) { x.remove(); });
+    return c.innerText.replace(/\n{3,}/g, '\n\n').trim();
+  }
+  function directChild(parent, cls) {
+    return Array.from(parent.children).find(function (x) {
+      return x.classList && x.classList.contains(cls);
+    }) || null;
+  }
+  function cleanLabel(el) {
+    if (!el) return '';
+    var c = el.cloneNode(true);
+    c.querySelectorAll('.caddr,.haddr,.schatbar,button').forEach(function (x) {
+      x.remove();
+    });
+    return c.textContent.replace(/\s+/g, ' ').trim();
+  }
+  function eligibleContentSentence(p, cbody) {
+    if (p.closest('.cbody') !== cbody) return false;
+    if (p.closest('.folds,.sapp,.cmt,.change,.lane,.lane-cont,.qh,.dadd,' +
+                  '.sadd,.sedit,.spine,.nav,.gi,.idx')) return false;
+    return !!sentenceText(p);
+  }
+  function wireSentenceChats() {
+    document.querySelectorAll('.schatbar').forEach(function (x) { x.remove(); });
+    document.querySelectorAll('.caddr,.haddr').forEach(function (x) { x.remove(); });
+    document.querySelectorAll('p.sentence-target').forEach(function (p) {
+      p.classList.remove('sentence-target');
+      delete p.dataset.sentenceId;
+      delete p.dataset.sentenceRef;
+    });
+    document.querySelectorAll('.csec[data-content-id]').forEach(function (c) {
+      delete c.dataset.contentId;
+      delete c.dataset.contentRef;
+    });
+    document.querySelectorAll('.ph[data-heading-id]').forEach(function (h) {
+      h.classList.remove('heading-target');
+      delete h.dataset.headingId;
+      delete h.dataset.headingRef;
+    });
+    document.querySelectorAll('section.slide.q').forEach(function (sec) {
+      var content = sec.querySelector('details.sect.content');
+      if (!content) return;
+      var divisions = Array.from(content.children).filter(function (x) {
+        return x.matches && x.matches('details.csec');
+      });
+      divisions.forEach(function (csec, ci) {
+        var contentId = 'C' + (ci + 1);
+        var contentRef = sec.id + '.' + contentId;
+        var summary = csec.querySelector(':scope > summary');
+        var contentTitle = cleanLabel(summary);
+        csec.dataset.contentId = contentId;
+        csec.dataset.contentRef = contentRef;
+        if (summary) {
+          var caddr = document.createElement('span');
+          caddr.className = 'caddr';
+          caddr.textContent = contentId;
+          caddr.title = 'Generated Content address: ' + contentRef;
+          summary.prepend(caddr);
+        }
+        var cbody = directChild(csec, 'cbody');
+        if (!cbody) return;
+        var nextH = 0, nextP = 0, headingPath = '';
+        cbody.querySelectorAll('.ph,p').forEach(function (node) {
+          if (node.closest('.cbody') !== cbody) return;
+          if (node.classList.contains('ph')) {
+            nextH += 1;
+            var headingId = 'H' + nextH;
+            var headingRef = contentRef + '.' + headingId;
+            var headingTitle = cleanLabel(node);
+            node.classList.add('heading-target');
+            node.dataset.headingId = headingId;
+            node.dataset.headingRef = headingRef;
+            var haddr = document.createElement('span');
+            haddr.className = 'haddr';
+            haddr.textContent = headingId;
+            haddr.title = 'Generated Heading address: ' + headingRef;
+            node.prepend(haddr);
+            headingPath = headingId + (headingTitle ? ' · ' + headingTitle : '');
+            return;
+          }
+          var p = node;
+          if (!eligibleContentSentence(p, cbody)) return;
+          nextP += 1;
+          var shortId = contentId + '.P' + nextP + '.S1';
+          var fullId = sec.id + '.' + shortId;
+          var contentPath = contentId + (contentTitle ? ' · ' + contentTitle : '') +
+            (headingPath ? '\n' + headingPath : '');
+        p.classList.add('sentence-target');
+        p.dataset.sentenceId = shortId;
+        p.dataset.sentenceRef = fullId;
+
+        var bar = document.createElement('span');
+        bar.className = 'schatbar';
+        bar.dataset.sentenceRef = fullId;
+        var id = document.createElement('span');
+        id.className = 'sidchip';
+        id.textContent = shortId;
+        id.title = 'Generated sentence address: ' + fullId;
+        var comment = document.createElement('button');
+        comment.type = 'button';
+        comment.className = 'scomment';
+        comment.textContent = '＋';
+        comment.title = 'Comment on ' + fullId;
+        comment.setAttribute('aria-label', 'Comment on sentence ' + fullId);
+        comment.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openSentenceComment(p, bar);
+        });
+        var chatButton = document.createElement('button');
+        chatButton.type = 'button';
+        chatButton.className = 'schat';
+        chatButton.textContent = '💬';
+        chatButton.title = 'Chat about ' + fullId;
+        chatButton.setAttribute('aria-label', 'Chat about sentence ' + fullId);
+        chatButton.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var text = sentenceText(p);
+          if (window.__boardSentenceChat) {
+              window.__boardSentenceChat(
+                sec, fullId, text, apparatusText(p), contentPath
+              );
+          }
+        });
+        var more = document.createElement('button');
+        more.type = 'button';
+        more.className = 'smore';
+        more.textContent = '⋯';
+        more.title = 'Actions for ' + fullId;
+        more.setAttribute('aria-label', 'Actions for sentence ' + fullId);
+        more.setAttribute('aria-expanded', 'false');
+        var menu = document.createElement('div');
+        menu.className = 'smenu';
+        var menuRef = document.createElement('div');
+        menuRef.className = 'smenu-ref';
+        menuRef.textContent = fullId;
+        function menuAction(label, cls, fn) {
+          var action = document.createElement('button');
+          action.type = 'button';
+          action.className = cls;
+          action.textContent = label;
+          action.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            bar.classList.remove('menu-open');
+            more.setAttribute('aria-expanded', 'false');
+            fn();
+          });
+          menu.appendChild(action);
+        }
+        menu.appendChild(menuRef);
+        menuAction('＋ Comment', 'sm-comment', function () {
+          openSentenceComment(p, bar);
+        });
+        menuAction('💬 Chat', 'sm-chat', function () {
+          if (window.__boardSentenceChat) {
+              window.__boardSentenceChat(
+                sec, fullId, sentenceText(p), apparatusText(p), contentPath
+              );
+          }
+        });
+        menuAction('✎ Edit', 'sm-edit', function () {
+          openSentenceEdit(p, bar);
+        });
+        more.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var open = !bar.classList.contains('menu-open');
+          document.querySelectorAll('.schatbar.menu-open').forEach(function (x) {
+            x.classList.remove('menu-open');
+            var old = x.querySelector('.smore');
+            if (old) old.setAttribute('aria-expanded', 'false');
+          });
+          bar.classList.toggle('menu-open', open);
+          more.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        bar.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+        bar.append(id, comment, chatButton, more, menu);
+        p.insertAdjacentElement('afterend', bar);
+      });
+      });
+    });
+  }
+  window.__boardWireSentenceChats = wireSentenceChats;
+  wireSentenceChats();
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.schatbar.menu-open').forEach(function (bar) {
+      bar.classList.remove('menu-open');
+      var more = bar.querySelector('.smore');
+      if (more) more.setAttribute('aria-expanded', 'false');
+    });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    close();
+    document.querySelectorAll('.schatbar.menu-open').forEach(function (bar) {
+      bar.classList.remove('menu-open');
+      var more = bar.querySelector('.smore');
+      if (more) more.setAttribute('aria-expanded', 'false');
+    });
   });
 })();
 

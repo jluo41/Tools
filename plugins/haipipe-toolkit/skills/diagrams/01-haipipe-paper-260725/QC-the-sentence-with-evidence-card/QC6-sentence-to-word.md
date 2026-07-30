@@ -12,7 +12,7 @@ The reason to have this column at all is that a coauthor who is not a LaTeX user
 - ✅ Covered here
   What a citation, a value, a table, a figure, a heading, a lane and a why-comment become in a `.docx`; what tool performs it; and the ruling on an edit that comes back in the output.
 - ↪ Covered elsewhere
-  The LaTeX column is `QC5`. Which file is the paper is `QB2d`. The general one-source-many-projections model is `QD7` and the adapter contract is `QD4`. What each thing that hangs on a sentence MEANS is `QC1` to `QC4`.
+  The LaTeX column is `QC5`. Which file is the paper is `QB2d`. The general one-source-many-projections model is `QD7` and the archived adapter contract is `QD4-format-adapters`. What each thing that hangs on a sentence MEANS is `QC1` to `QC4`.
 
 ## Diagram
 ```
