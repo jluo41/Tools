@@ -78,6 +78,38 @@ class StatusStripTest(unittest.TestCase):
         self.assertIn("⬜ ready · discussion", strip)
         self.assertIn("→ continue discussion on QA", strip)
 
+    def test_machine_local_env_file_sets_reader_facing_url(self):
+        temp, root, board = self.fixture()
+        self.addCleanup(temp.cleanup)
+        (root / "env.sh").write_text(
+            "export OTHER_SECRET=not-read\n"
+            "export HAIPIPE_BOARD_URL=http://100.64.1.2:5599\n",
+            encoding="utf-8",
+        )
+        strip = STATUS.render(board, focus="QB1", root=root)
+        self.assertIn(
+            "(http://100.64.1.2:5599/diagram/01-test-260726/"
+            "board.html#QB1)",
+            strip,
+        )
+
+    def test_explicit_url_overrides_machine_local_env_file(self):
+        temp, root, board = self.fixture()
+        self.addCleanup(temp.cleanup)
+        (root / "env.sh").write_text(
+            "HAIPIPE_BOARD_URL='http://100.64.1.2:5599'\n",
+            encoding="utf-8",
+        )
+        strip = STATUS.render(
+            board, focus="QB1", root=root,
+            base_url="https://boards.example.test/",
+        )
+        self.assertIn(
+            "(https://boards.example.test/diagram/01-test-260726/"
+            "board.html#QB1)",
+            strip,
+        )
+
     def test_unowned_sourcing_is_blocked(self):
         temp, root, board = self.fixture()
         self.addCleanup(temp.cleanup)

@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
 metadata:
-  version: "0.49.0"
+  version: "0.50.0"
   last_updated: "2026-07-29"
-  summary: "Content-aware C/H/P/S focus addresses replace page-global Pn.Sn; H is terminal and P.S is its sibling (JL 260729)."
+  summary: "Reader-facing Board links honor the machine-local HAIPIPE_BOARD_URL without requiring env.sh to be sourced (JL 260729)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -162,9 +162,11 @@ closing block does not replace write-back.
 
 ```bash
 BD=<板文件夹相对仓库根的路径>          # 例：Tools/plugins/.../diagram/01-boardform-260722
+BOARD_BASE_URL="${HAIPIPE_BOARD_URL:-$(sed -n 's/^[[:space:]]*export[[:space:]]*HAIPIPE_BOARD_URL=//p' env.sh | tail -1)}"
+BOARD_BASE_URL="${BOARD_BASE_URL:-http://127.0.0.1:5599}"
 S=$(ls -t "$TMPDIR"/vscode-ipc-*.sock 2>/dev/null | head -1)
 B=$(ls -t ~/.vscode-server/cli/servers/*/server/bin/helpers/browser.sh 2>/dev/null | head -1)
-VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
+VSCODE_IPC_HOOK_CLI="$S" "$B" "$BOARD_BASE_URL/$BD/board.html#top"
 ```
 
 3. 顺手报一句板的状态：几题、几条未解决评论、卡在哪。
@@ -172,8 +174,13 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
 ⚠️ **为什么不能用 `open board.html` 或 `file://`**：Remote-SSH 的机器上 ——
 **浏览器在用户的笔记本上，文件在服务器上**。`open` 只会在服务器桌面上打开，用户什么都看不到；
 `file://` 指的是用户本机的盘，那儿没有这些文件。必须走上面那条 IPC，把 URL 交给用户那侧的 VS Code。
-**本地机器**（不是 Remote-SSH：那两个 glob 找不到东西）就直接 `open "http://127.0.0.1:5599/<板>/board.html"` ——
+**本地机器**（不是 Remote-SSH：那两个 glob 找不到东西）就直接
+`open "$BOARD_BASE_URL/<板>/board.html"` ——
 走 http（评论层才活），照样不碰 `file://`。
+
+`BOARD_BASE_URL` 和每次回复末尾的 `status.py` 使用同一个 reader-facing setting：
+当前环境的 `HAIPIPE_BOARD_URL` 优先，其次只读取仓库根 `env.sh` 中这一项，最后才回退到
+`http://127.0.0.1:5599`。不要为了某一台机器把 Tailscale IP 写进共享的 skill source。
 
 需要 `serve.py` 在 5599 上跑着（没跑就先起，见 serve 段）。`#top` 回目录、`#QA6` 直接跳某一题、`#all` 展开全部。
 
@@ -267,6 +274,10 @@ SVG 编成浏览器 favicon，所以 `board.html` 仍然是一份离线可用的
 ```bash
 .venv/bin/python <skill>/serve.py --root <仓库根> --port 5599
 ```
+
+`HAIPIPE_BOARD_URL` 只决定交给读者的 domain；listener 仍由 `--host` 单独控制。
+如果 reader URL 是 Tailscale IP，启动时必须显式传同一个 `--host <tailscale-ip>`。
+Board 没有认证，且 `/_term/` 是真实 shell，所以共享 source 的 listener 默认仍是 loopback。
 
 跑起来之后，板不只是能读，还能：**评论直接落盘**（下一节就靠它）、在某一题上**开 chat 或 terminal 当场干活**、给某一题的 🖼 Diagram **贴一张 excalidraw 画布**（写进 md 的就是作者手写的那一行；`QD7` 还在定型）。
 ⚖️ 一题一 session · 一 session 一窗口 · N 题 N 终端 —— 详见板的 `QD1` 的 `## Law`。

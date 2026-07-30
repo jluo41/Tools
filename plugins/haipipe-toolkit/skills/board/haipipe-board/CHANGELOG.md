@@ -5,6 +5,18 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.50.0 - 2026-07-29
+
+- Reader-facing Board links now honor the machine-local `HAIPIPE_BOARD_URL` even when the
+  calling shell did not source `env.sh`. `status.py` reads only that one assignment from the
+  served root; an explicit `--base-url` and the live environment still take precedence.
+- The documented view command uses the same setting instead of hardcoding loopback. Shared
+  source retains `http://127.0.0.1:5599` only as the safe fallback, so this machine can hand
+  readers its Tailscale URL without committing its personal IP as every clone's default.
+- Reader URL and listener bind remain intentionally separate: `HAIPIPE_BOARD_URL` chooses the
+  link, while `serve.py --host` chooses who can reach the unauthenticated write and terminal
+  endpoints.
+
 ## 0.49.0 - 2026-07-29
 
 - Content-aware addresses replace page-global `Pn.Sn`. Only `## Content` is indexed:
