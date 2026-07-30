@@ -25,6 +25,36 @@ from src.parse import parse_dir  # noqa: E402
 MODES = ("discussion", "sourcing", "implementation", "review", "status")
 STATUSES = ("ready", "working", "blocked", "done")
 MARKERS = {"ready": "⬜", "working": "🔥", "blocked": "⛔", "done": "✅"}
+LOOPBACK_URL = "http://127.0.0.1:5599"
+
+
+def configured_base_url(root, explicit=None):
+    """Resolve the reader-facing URL without executing the repo's env.sh.
+
+    A CLI value wins, then the live environment, then the one machine-local
+    HAIPIPE_BOARD_URL assignment in <served-root>/env.sh. Shared clones retain
+    the loopback fallback without inheriting another machine's tailnet address.
+    """
+    if explicit:
+        return explicit.rstrip("/")
+    value = os.environ.get("HAIPIPE_BOARD_URL", "").strip()
+    if value:
+        return value.rstrip("/")
+
+    env_file = Path(root).resolve() / "env.sh"
+    try:
+        lines = env_file.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeError):
+        lines = []
+    for line in lines:
+        match = re.match(
+            r"^\s*(?:export\s+)?HAIPIPE_BOARD_URL\s*=\s*"
+            r"([\"']?)(https?://[^\"'\s#]+)\1\s*(?:#.*)?$",
+            line,
+        )
+        if match:
+            return match.group(2).rstrip("/")
+    return LOOPBACK_URL
 
 
 def group_code(group):
@@ -97,9 +127,7 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
            queue="", root=None, base_url=None):
     board = Path(board).resolve()
     root = Path(root or Path.cwd()).resolve()
-    base_url = base_url or os.environ.get(
-        "HAIPIPE_BOARD_URL", "http://127.0.0.1:5599"
-    )
+    base_url = configured_base_url(root, base_url)
     meta, pages, _warnings = parse_dir(board)
     groups = list(dict.fromkeys(
         [page.get("group", "") for page in pages if page.get("group")]
@@ -185,7 +213,11 @@ def main(argv=None):
     )
     parser.add_argument(
         "--base-url",
-        default=os.environ.get("HAIPIPE_BOARD_URL", "http://127.0.0.1:5599"),
+        default=None,
+        help=(
+            "reader-facing origin; defaults to HAIPIPE_BOARD_URL from the "
+            "environment or <root>/env.sh, then loopback"
+        ),
     )
     args = parser.parse_args(argv)
     board = Path(args.board)

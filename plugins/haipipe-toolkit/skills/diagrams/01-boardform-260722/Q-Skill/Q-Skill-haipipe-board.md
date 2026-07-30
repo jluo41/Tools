@@ -1,4 +1,4 @@
-# haipipe-board · v0.46.0
+# haipipe-board · v0.50.0
 state: 🟡 in flux
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -10,18 +10,18 @@ Write here what this skill is for in one paragraph a stranger could follow, why 
 The generated sections answer what it IS; only this one can answer whether it is any good.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 66c08bdc1b1e640c board/haipipe-board -->
+<!-- haipipe:skill:tree:start 79cb0122506c74fa board/haipipe-board -->
 
 ```
 haipipe-board/
   assets/
     board-mark.svg            44 ln
-    board.css               1049 ln  palette + type follow html-ppt's academic-report; layout is body.single
-    board.js                1903 ln  Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
+    board.css               1113 ln  palette + type follow html-ppt's academic-report; layout is body.single
+    board.js                2238 ln  Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
     xcal-boot.js             264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
   ref/
     board-example.md         111 ln  最小示例 —— 一块两题的板
-    board-form.md            376 ln  Board form — 完整规格
+    board-form.md            387 ln  Board form — 完整规格
     q-template.md            276 ln  Short title (a phrase, not a sentence)
     writing-rules.md          80 ln  Writing rules — how to write so it reads like human language
   src/
@@ -30,7 +30,7 @@ haipipe-board/
     common.py                109 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
     dialect_paper.py        1004 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
     page_board.py            238 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
-    page_question.py         576 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
+    page_question.py         582 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
     page_stage.py            262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
     parse.py                 328 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
     stage_contract.py         98 ln  Managed requirements and writing-style contracts for S pages.
@@ -40,18 +40,19 @@ haipipe-board/
       xterm.css              285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
       xterm.min.js             2 ln
   build.py                   127 ln  board folder -> board.html (static content; scripts are optional enhancement).
-  CHANGELOG.md              1170 ln  haipipe-board — Changelog
+  CHANGELOG.md              1213 ln  haipipe-board — Changelog
   check.py                   519 ln  check.py — the structural half of QA9, run against one board.
   refs.py                     73 ln  Render a paper's real bibliography, once, into a cache the board can read.
   regroup.py                 142 ln  Move a board's root pages into one named folder per Q group (QA1, JL 260726).
   serve.py                  2478 ln  Serve boards AND accept comment writes — from the machine the files live on.
-  SKILL.md                   519 ln  /haipipe-board — 一个话题，一叠问题，一页看板
+  SKILL.md                   544 ln  /haipipe-board — 一个话题，一叠问题，一页看板
   skillpage.py               728 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
   stage.py                   378 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
-  status.py                  208 ln  Render the three-line closing block for one Board-attached session.
+  status.py                  240 ln  Render the three-line closing block for one Board-attached session.
   test_activity.py           176 ln  Focused regression tests for QD8 board activity timing.
+  test_sentence_chat.py       80 ln  Contract checks for render-local sentence addressing and focused Q chat.
   test_sentence_editing.py    85 ln  Regression tests for sentence-local comments and tracked edits.
-  test_status.py             118 ln
+  test_status.py             150 ln
   watch.py                    55 ln  Watch a board folder and rebuild board.html whenever a .md changes.
   xcal.py                    324 ln  board.md + the pages' ASCII figures -> ONE `fig/board.excalidraw` (QA4a).
 ```
@@ -101,13 +102,13 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 66c08bdc1b1e640c board/haipipe-board -->
+<!-- haipipe:skill:body:start 79cb0122506c74fa board/haipipe-board -->
 
-**haipipe-board** · `0.46.0` · last shipped 2026-07-29
+**haipipe-board** · `0.50.0` · last shipped 2026-07-29
 
 - folder   `board/haipipe-board/`
 - tools    not declared
-- summary  Why this matters renders in Opening for Q and S alike; each page shapes its own Content; a Q page is a decision, not a ruling (JL 260729).
+- summary  Reader-facing Board links honor the machine-local HAIPIPE_BOARD_URL without requiring env.sh to be sourced (JL 260729).
 
 ### SKILL.md
 
@@ -243,16 +244,22 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       2. **推到用户的 VS Code 浏览器**（下面那段是唯一真正有效的方式，见 ⚠️）：
       ```bash
       BD=<板文件夹相对仓库根的路径>          # 例：Tools/plugins/.../diagram/01-boardform-260722
+      BOARD_BASE_URL="${HAIPIPE_BOARD_URL:-$(sed -n 's/^[[:space:]]*export[[:space:]]*HAIPIPE_BOARD_URL=//p' env.sh | tail -1)}"
+      BOARD_BASE_URL="${BOARD_BASE_URL:-http://127.0.0.1:5599}"
       S=$(ls -t "$TMPDIR"/vscode-ipc-*.sock 2>/dev/null | head -1)
       B=$(ls -t ~/.vscode-server/cli/servers/*/server/bin/helpers/browser.sh 2>/dev/null | head -1)
-      VSCODE_IPC_HOOK_CLI="$S" "$B" "http://127.0.0.1:5599/$BD/board.html#top"
+      VSCODE_IPC_HOOK_CLI="$S" "$B" "$BOARD_BASE_URL/$BD/board.html#top"
       ```
       3. 顺手报一句板的状态：几题、几条未解决评论、卡在哪。
       ⚠️ **为什么不能用 `open board.html` 或 `file://`**：Remote-SSH 的机器上 ——
       **浏览器在用户的笔记本上，文件在服务器上**。`open` 只会在服务器桌面上打开，用户什么都看不到；
       `file://` 指的是用户本机的盘，那儿没有这些文件。必须走上面那条 IPC，把 URL 交给用户那侧的 VS Code。
-      **本地机器**（不是 Remote-SSH：那两个 glob 找不到东西）就直接 `open "http://127.0.0.1:5599/<板>/board.html"` ——
+      **本地机器**（不是 Remote-SSH：那两个 glob 找不到东西）就直接
+      `open "$BOARD_BASE_URL/<板>/board.html"` ——
       走 http（评论层才活），照样不碰 `file://`。
+      `BOARD_BASE_URL` 和每次回复末尾的 `status.py` 使用同一个 reader-facing setting：
+      当前环境的 `HAIPIPE_BOARD_URL` 优先，其次只读取仓库根 `env.sh` 中这一项，最后才回退到
+      `http://127.0.0.1:5599`。不要为了某一台机器把 Tailscale IP 写进共享的 skill source。
       需要 `serve.py` 在 5599 上跑着（没跑就先起，见 serve 段）。`#top` 回目录、`#QA6` 直接跳某一题、`#all` 展开全部。
 
 - 3.2 · open — 开一块**新**板
@@ -333,6 +340,9 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       ```bash
       .venv/bin/python <skill>/serve.py --root <仓库根> --port 5599
       ```
+      `HAIPIPE_BOARD_URL` 只决定交给读者的 domain；listener 仍由 `--host` 单独控制。
+      如果 reader URL 是 Tailscale IP，启动时必须显式传同一个 `--host <tailscale-ip>`。
+      Board 没有认证，且 `/_term/` 是真实 shell，所以共享 source 的 listener 默认仍是 loopback。
       跑起来之后，板不只是能读，还能：**评论直接落盘**（下一节就靠它）、在某一题上**开 chat 或 terminal 当场干活**、给某一题的 🖼 Diagram **贴一张 excalidraw 画布**（写进 md 的就是作者手写的那一行；`QD7` 还在定型）。
       ⚖️ 一题一 session · 一 session 一窗口 · N 题 N 终端 —— 详见板的 `QD1` 的 `## Law`。
       > chat（受限抽屉，`QD2`）和 terminal（真 CLI，`QD3`）这套**还在 QD 组定型中**。
@@ -376,12 +386,25 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       `--fresh` 是唯一会毁东西的模式（重排全部、丢掉手画内容），所以它永远不是默认。
 
 - 3.8 · comment / edit — 句子上的评论和编辑（要 serve.py 跑着）
-      - **评论**：选中一句所在的文字 → 冒出「💬 Comment」→ 写评论 → **Save**。`serve.py`
+      - **评论**：hover 一句 → 点右侧 `＋`，或者选中句内文字 → 点「💬 Comment」→ 写评论 → **Save**。`serve.py`
         把它直接写在**那一句的正下方**：`> JL: comment · 260729 1502`，然后重建 html。
         没有底部评论箱，也不需要在不同句子的评论里找上下文。`## Discussion` 仍只写不钉句子的随手讨论。
       - **编辑**：double-click 一句 → 改字 → Save。正文变成最终句子；它下面自动新增一条完整
         sentence diff：`> ✎ Whole sentence with ~removed~ *added* words. · JL · 260729 1502`。
-        `~…~` 是删掉的词，`*…*` 是新加的词。每次编辑一行，不另建 History。
+        `~…~` 是删掉的词，`*…*` 是新加的词。每次编辑一行，不另建 History。触屏设备也可从
+        句子的 `⋯` 菜单进入 Edit；单击正文不占用，仍可正常选字和复制。
+      - **Content 地址**：只给 `## Content` 编址。每个 `###` division 是 `Cn`；它里面的 `####`
+        heading 是终止节点 `Cn.Hn`，正文 paragraph 是它的 sibling，sentence 地址是 `Cn.Pn.S1`。
+        所以 `QAb3.C1.H1` 和 `QAb3.C1.P1.S1` 都合法，`QAb3.C1.H1.P1.S1` 永远不合法。
+        当前一条 source line 就是一句，因此每个 P 只有 `S1`；保留 S 层是为了将来一段多句。
+      - **句子操作条**：pointer 设备 hover/focus 一句 → 右侧淡入 `Cn.Pn.S1 ＋ 💬`；`＋` 在句下
+        打开 Comment，`💬` 打开 Chat。touch 设备只常驻一个低调的 `⋯`，展开后显示完整地址和
+        Comment / Chat / Edit，避免三个小按钮一直压住正文。
+      - **句子 chat**：点击 `💬` 复用这道 Q 已有的 chat session，在抽屉顶部显示可关闭的
+        Sentence Focus（完整地址、Content/Heading 显示名、句子、相邻 apparatus），并把光标放入输入框；**点击本身不调用 模型**。用户发出下一条消息时，才把焦点内容随消息交给 agent。焦点卡的 `×` 或输入框里的
+        `Esc` 只清除句子焦点，不关闭 Q chat。
+        地址在每次 render / live refresh 时生成，只是本次页面的 focus address，不写进 Markdown，
+        也不承诺插入 Content division、Heading 或 Paragraph 后永不变号。
       - 新写入需要 serve.py，因为它必须在服务器的 Markdown 里找到那个句子；服务不在时，页面只保留
         pending line / 可复制 patch，不会创建页底评论区。
       旧式页底评论队列已废弃，不再读取、显示或迁移。
@@ -541,17 +564,17 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       嵌套形（Q decisions + S stages）的活例子：`examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`。
 ### The other files
 
-33 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
+34 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
 
 ```
 assets/board-mark.svg               44 ln
-assets/board.css                  1049 ln  palette + type follow html-ppt's academic-report; layout is body.single
-assets/board.js                   1903 ln  Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
+assets/board.css                  1113 ln  palette + type follow html-ppt's academic-report; layout is body.single
+assets/board.js                   2238 ln  Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
 assets/xcal-boot.js                264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
 build.py                           127 ln  board folder -> board.html (static content; scripts are optional enhancement).
 check.py                           519 ln  check.py — the structural half of QA9, run against one board.
 ref/board-example.md               111 ln  最小示例 —— 一块两题的板
-ref/board-form.md                  376 ln  Board form — 完整规格
+ref/board-form.md                  387 ln  Board form — 完整规格
 ref/q-template.md                  276 ln  Short title (a phrase, not a sentence)
 ref/writing-rules.md                80 ln  Writing rules — how to write so it reads like human language
 refs.py                             73 ln  Render a paper's real bibliography, once, into a cache the board can read.
@@ -563,15 +586,16 @@ src/body.py                        951 ln  The board's body grammar -> html (ref
 src/common.py                      109 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
 src/dialect_paper.py              1004 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
 src/page_board.py                  238 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
-src/page_question.py               576 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
+src/page_question.py               582 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
 src/page_stage.py                  262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
 src/parse.py                       328 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
 src/stage_contract.py               98 ln  Managed requirements and writing-style contracts for S pages.
 stage.py                           378 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
-status.py                          208 ln  Render the three-line closing block for one Board-attached session.
+status.py                          240 ln  Render the three-line closing block for one Board-attached session.
 test_activity.py                   176 ln  Focused regression tests for QD8 board activity timing.
+test_sentence_chat.py               80 ln  Contract checks for render-local sentence addressing and focused Q chat.
 test_sentence_editing.py            85 ln  Regression tests for sentence-local comments and tracked edits.
-test_status.py                     118 ln
+test_status.py                     150 ln
 vendor/xterm/addon-unicode11.js      2 ln
 vendor/xterm/xterm.css             285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
 vendor/xterm/xterm.min.js            2 ln
@@ -592,10 +616,45 @@ Page generated 260726 2325. Nothing ruled yet.
 260727 0115 · renamed `QB6-board-skill.md` -> `Q-Skill-haipipe-board.md` and moved into the new `Q-Skill/` group; the version now rides the `state:` line as readable detail, never the filename
 260726 2325 · page generated from `board/haipipe-board/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 66c08bdc1b1e640c board/haipipe-board -->
+<!-- haipipe:skill:log:start 79cb0122506c74fa board/haipipe-board -->
 
-Converted from the skill's own `CHANGELOG.md`: 77 releases.
+Converted from the skill's own `CHANGELOG.md`: 81 releases.
 
+260729 · `0.50.0`
+      - Reader-facing Board links now honor the machine-local `HAIPIPE_BOARD_URL` even when the
+        calling shell did not source `env.sh`. `status.py` reads only that one assignment from the
+        served root; an explicit `--base-url` and the live environment still take precedence.
+      - The documented view command uses the same setting instead of hardcoding loopback. Shared
+        source retains `http://127.0.0.1:5599` only as the safe fallback, so this machine can hand
+        readers its Tailscale URL without committing its personal IP as every clone's default.
+      - Reader URL and listener bind remain intentionally separate: `HAIPIPE_BOARD_URL` chooses the
+        link, while `serve.py --host` chooses who can reach the unauthenticated write and terminal
+        endpoints.
+260729 · `0.49.0`
+      - Content-aware addresses replace page-global `Pn.Sn`. Only `## Content` is indexed:
+        `###` divisions receive `Cn`, terminal `####` headings receive `Cn.Hn`, and prose receives
+        sibling `Cn.Pn.S1` leaves.
+      - `H` never parents prose. `QAb3.C1.H1` and `QAb3.C1.P1.S1` are valid;
+        `QAb3.C1.H1.P1.S1` is invalid. Generated C/H chips make that hierarchy visible.
+      - Sentence Focus shows the Content and nearest Heading display names while keeping Heading out
+        of the sentence address. The focus packet carries that display path with the existing sentence
+        and apparatus context.
+260729 · `0.48.0`
+      - Pointer devices now expose one quiet sentence action rail: `Pn.Sn ＋ 💬`. Comment opens
+        directly beneath the sentence, Chat establishes sentence focus, and double-click remains Edit.
+      - Sentence Chat now renders a clearable focus card in the existing Q drawer. Opening it spends no
+        model turn; the next user message carries the address, sentence, and directly attached apparatus.
+      - Touch devices collapse the sentence actions into `⋯`, whose menu shows the full address and
+        Comment / Chat / Edit. `Esc` closes the active sentence operation without taking over normal
+        single-click text selection.
+260729 · `0.47.0`
+      - Sentence-specific chat now reuses the existing Q session. Eligible prose receives a
+        render-local `Pn.Sn` address; hover/focus exposes the address and a compact chat button.
+      - Clicking the button opens that Q's drawer and sends an explicit focus packet containing the
+        full page-qualified address, sentence text, and directly adjacent apparatus. No sentence
+        sessions and no sentence ids are written to Markdown.
+      - The legacy page-bottom comment queue was removed. Human comments and tracked edits live
+        directly beneath their sentence as `> WHO:` and `> ✎` rows.
 260729 · `0.46.0`
       - Why this matters renders inside Opening's drawer for Q pages too, unifying Q with S (JL 260729,
         decided on the design board's QAa1): `src/page_question.py` drops the Q branch that inserted it

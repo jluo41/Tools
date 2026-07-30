@@ -44,7 +44,7 @@ The choice also reaches downstream into whether auth is needed, how comments att
       So the route is technically available for reading and dead for drilling through.
       This line still closes on JL choosing it, not on the verification.
 - [ ] Name the public address, because the tailnet IP cannot be one
-      A domain pointed at `100.121.165.84` resolves for the owner's tailnet devices only, so a
+      A domain pointed at `<tailscale-ip>` resolves for the owner's tailnet devices only, so a
       DNS A record is not a deployment; a tunnel is. This line closes when the chosen route
       names the actual vehicle.
 - [ ] Bound what the published origin can read
@@ -105,8 +105,8 @@ The choice also reaches downstream into whether auth is needed, how comments att
   `sections/`, `appendices/`, `tasks/*/QA/`, and `discoveries/*/QA/`. Exporting the one file
   publishes every ruling and every stage page and 404s every citation of the evidence behind them.
 - The named IP is a tailnet address, not a host (260727)
-  `100.121.165.84` is this machine's Tailscale address; `tailscale status` lists the laptop at
-  `100.107.69.71` and one node belonging to a different account, `shiray0707@`. Addresses in
+  `<tailscale-ip>` is this machine's Tailscale address; `tailscale status` lists another device at
+  `<another-tailnet-ip>` and one node belonging to `<another-tailnet-account>`. Addresses in
   `100.64.0.0/10` are private to the tailnet, so pointing a public name at it produces a name that
   resolves nowhere for a reader who is not already on the tailnet, and Cloudflare cannot proxy to
   it either. A public name therefore needs a tunnel out of this machine, not a DNS record into it.
@@ -180,7 +180,7 @@ The choice also reaches downstream into whether auth is needed, how comments att
   The static-export deliverable itself; `fig/` and `## Links` relative paths must be verified together.
 
 ## Discussion
-> JL: How do you think I can host in the 100.121.165.84 with the domain of paper.jjluo.com/paperxxx/ should I can share it with ours with a password. How do you think?
+> JL: How do you think I can host on <tailscale-ip> with the domain of paper.jjluo.com/paperxxx/ should I can share it with ours with a password. How do you think?
 >> CC0727: measured the three things the question turns on before answering. The named IP is a
 >> tailnet address, so it cannot be the target of a public name; the static half of a real board
 >> was verified portable in the body and dead in its outward links; and the repo holds PHI and
@@ -204,6 +204,7 @@ The choice also reaches downstream into whether auth is needed, how comments att
 >> auth and the tunnel stay here.
 
 ## Log
+260729 · Redacted machine and account-specific tailnet identifiers from tracked Board history; only generic placeholders remain in source
 260727 · JL redirected the vehicle to Docker + `haichat-board`. Read the service: the container, the
        mounted-not-baked SPACE, the `BOARD_SKILL_DIR` escape hatch, and `_target()`'s board-folder
        write vetting all already exist, and `INLAB_BOARD_LIVE: "{}"` already ships tier A by making
@@ -216,7 +217,7 @@ The choice also reaches downstream into whether auth is needed, how comments att
        client-chosen `bypass` scope; ttyd's WebSocket tunnels rather than failing closed) and added
        six items covering the gate, the pinned scope, the tier, the tunnel, and the short path.
 260727 · JL asked how to host a board at `paper.jjluo.com/<paper>/` behind a shared password.
-       Verified: `100.121.165.84` is a tailnet address and cannot back a public name; `board.html`
+       Verified: `<tailscale-ip>` is a tailnet address and cannot back a public name; `board.html`
        is portable in body but has 1019 dead outward links once exported; `jjluo.com` is on
        Cloudflare and `cloudflared` is installed; PHI and secrets make the served root the real
        control. Three items added, state moved to 🟡. Route still unruled.
