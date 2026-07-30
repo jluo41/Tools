@@ -39,7 +39,7 @@ It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 
    one socket file per question (no "which port / will they run out"). ttyd -b mounts a subpath; serve.py forwards verbatim (WS included).
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD3
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD3
 
 ## Items to Finish
 - [x] A ⌨ entry on every Q card
@@ -197,50 +197,6 @@ Fine to use as a standalone tool; constraints bite when you copy it into somethi
 > JL: and I want each question page to have a terminal that is its own.
 > JL: I don't know whether the myrlin package could help you, github.com/therealarthur/myrlin-workbook
 >> CC0723: read its source: the discovery path matches ours exactly. But it is a whole application, too heavy; ended with ttyd + serve.py's own proxy embedded instead.
-
-## Comments
-- [x] JL “❓ Question: besides the restricted drawer, can every Q also have its own real terminal, the full Claude Code, nothing missing?” · 260723 2038
-      We need to change this to English as well, must to make this can be well written and easier to follow, and also list several bullets.
-      >> CC0724: done in this round: the whole board (this file included) is now English, and the Question section carries the standard three bullets (why hard / what breaks / what it affects).
-- [x] JL “two implementations of the same need as QD2, with exactly opposite trade-offs:” · 260723 1511
-      we already changed that, look at QD2, it now matches QD3.
-      >> CC0724: right: same resolution as the 1420/1358/1354 copies of this comment: the old "opposite trade-offs / QD2 restricted" wording was rewritten (see the Question's third bullet, the split is a difference of form, not of safety). This stray open copy is closed with them.
-- [x] JL “when we open the terminal/chatbot, give some prompt so they know which question and board they're working on” · 260723 1500
-      >> CC0723: done. Opening injects an orientation block via `--append-system-prompt` (the drawer builds it into system_prompt):
-      board + question id + title + what it asks + open comment count + file path. Costs no turn, runs nothing.
-      Verified: fresh terminal/drawer, no context, asked "which question am I on", answered QB3 / QB2.
-- [x] JL “I want to make the chat or claude opened in the SPACE dir, not in the board” · 260723 1430
-      >> CC0723: changed. `ttyd` and the drawer's `claude` both open at the SPACE root (`cwd = whole repo`);
-      verified `pwd` in the terminal = SPACE root and all skills visible. Cost: old board-folder sessions stayed put,
-      every question restarted under root (jsonl migration tried, resume refused, see Lesson). QD1/QD2 updated together.
-- [x] JL “two implementations of the same need as QD2, with exactly opposite trade-offs:” · 260723 1420
-      we already changed that, look at QD2, it now matches QD3.
-      >> CC0723: yes, read QD2; it now has the three permission tiers, default "full·ask" = can do anything like the CLI,
-      no longer "restricted only". Rewrote the framing: the two questions differ in form, not in safety:
-      QD2 is an SDK chat box with an adjustable gate, QD3 is the gateless real CLI.
-- [x] JL “two implementations of the same need as QD2, with exactly opposite trade-offs:” · 260723 1358
-      we already changed that, look at QD2, it now matches QD3.
-      >> CC0723: same as above; the framing is rewritten. The stale "opposite trade-offs / QD2 restricted" wording is gone, replaced by the difference-of-form framing.
-- [x] JL “the security boundary written down” · 260723 1355
-      what does that mean?
-      >> CC0723: "written down" = who may connect, what they may touch, how auth works, fixed in black and white, not left vague in anyone's head.
-      That Done-when line is now titled "the security boundary written down in black and white" with an explanation line.
-      Only "auth" remains: ttyd itself does no auth; whoever reaches 5599 can use it; exposure requires auth first.
-- [x] JL “two implementations of the same need as QD2, with exactly opposite trade-offs: QD2 restricted, safe, one editable file; this one unrestricted, can do anything, no guardrails.” · 260723 1354
-      we already changed that, look at QD2, it now matches QD3.
-      >> CC0723: same as above. QD2's default "full·ask" edits any relevant file too, no longer one-file-only;
-      the framing is rewritten to the new facts (a difference of form, not of restriction).
-- [x] JL “Wait, here each terminal is one port? for the QD3? will that be too hard to manage?” · 260723 1640
-      >> CC0723: port count was never the problem (a board runs a handful of concurrent terminals); lifecycle was.
-      Switched to unix sockets (no port pool) + global keys (no cross-board collisions) + startup sweeps + killall. All verified.
-- [x] JL “suppose in the future we have several boards open at the same time, how do we handle that?” · 260723 1640
-      >> CC0723: at the server layer one serve.py has always served the whole repo (3 boards verified coexisting).
-      Terminal identity became the hash of the Q file's absolute path, globally unique; each board's QD3 is naturally distinct.
-- [x] JL “127.0.0.1 refused to connect. I have this.” · 260723 1550
-      >> CC0723: an unforwarded port (same family as the earlier 3000 case). Everything now rides the forwarded 5599 proxy,
-      ttyd mounts a subpath via -b, WebSocket forwarded too. Verified GET 200, WS 101.
-- [x] JL “in the questions, I cannot open two claude terminal version at the same time?” · 260723 1600
-      >> CC0723: you can; the UI blocked it, not the LAW. Different questions are different sessions; open more board tabs. (The ↗ pop-out button was later removed per JL.)
 
 ## Log
 260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)

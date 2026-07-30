@@ -15,7 +15,7 @@ It writes the result as explicit `###` headings so the page remains understandab
 
 ## Boundary
 - ✅ Covered here: the inside of one Q or S source file, including required and optional sections and the shape of `ref/q-template.md`.
-- ↪ Covered elsewhere: `QA1` owns folder membership, `QA4` owns the rendered hierarchy, and `QA9` owns readability and post-change checks.
+- ↪ Covered elsewhere: `QA1` owns folder membership, `QAa0` owns the rendered hierarchy (its sections are the QAa faces since 260729), and `QA9` owns readability and post-change checks.
 
 ## Diagram
 
@@ -125,6 +125,9 @@ Law, Lesson, Glossary, Discussion, Comments, and Log are optional source section
 Retired `## Why here` remains parse-compatible for old boards but must not be added to new files; its job now belongs to the Question rationale.
 
 ## Items to Finish
+- [ ] 🧩 The template's guide text learns the 260729 additions
+      The 🧩 Skills item shape inside Where we are (owned with `QAa5`), and the QA0 board-map page every board opens with (owned with `QA0`).
+      A template change is a graduation, so it follows JL's confirmation of the QAa carve, never precedes it.
 - [x] 📄 A shared blank template under `ref/` that can be copied as-is
       `ref/q-template.md` can seed either `Q<group><number>-<slug>.md` or `S-<Family>-<unit>-<slug>.md`.
       It carries all 14 recognized `##` sections, and its usage comment is dropped at build time rather than leaking into the page.

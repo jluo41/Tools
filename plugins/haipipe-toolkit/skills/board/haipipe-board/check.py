@@ -463,7 +463,7 @@ def check_template(rep, quiet):
         q_html = page_slice("QT1")
         s_html = page_slice("S-Main-1")
         mode_checks = [
-            ("Q rationale in Content", q_html, r"<summary>Why this matters</summary>"),
+            ("Q rationale in Opening", q_html, r'<div class="fh">Why this matters</div>'),
             ("Q has no Stage Contract drawer", q_html, r"^(?![\s\S]*<div class=\"fh\">Stage Contract</div>)[\s\S]*$"),
             ("Q Content heading counts sections", q_html, r"📚 Content · \d+ sections?"),
             ("S rationale in Opening", s_html, r'<div class="fh">Why this matters</div>'),

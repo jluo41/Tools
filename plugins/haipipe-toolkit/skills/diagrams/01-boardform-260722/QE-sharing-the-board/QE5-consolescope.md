@@ -36,7 +36,7 @@ Downstream it touches the SPA's top-level routes (`/individual` · `/group` toda
                                  patient · cohort · workroom     overkill today
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE5
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE5
 
 ## Items to Finish
 - [x] JL picks ① / ② / ③
@@ -46,7 +46,7 @@ Downstream it touches the SPA's top-level routes (`/individual` · `/group` toda
       Done 260724: `/boards` is a third top-level page (`main.tsx` routes on the pathname, `BoardsPage` = trio toggle + full-page BoardsView, no patient chrome); `main.py` serves `/boards` for refreshes; `boards` removed from `ConsoleView`/`VIEW_META`/the Action rails; the console topbar's scope toggle gained the third button `🧭 Boards`.
       SPA rebuilt; `/boards` answers 200.
 - [ ] The zero-background test
-      Same bar as `QC2`: a fresh reader lands on the console and finds "where the boards live" within three seconds, and nothing implies a board belongs to a patient.
+      Same bar as `QA10`: a fresh reader lands on the console and finds "where the boards live" within three seconds, and nothing implies a board belongs to a patient.
 
 ## Where we are
 **② is implemented: `/boards` is the third top-level entry (260724). Only the zero-background test remains.**

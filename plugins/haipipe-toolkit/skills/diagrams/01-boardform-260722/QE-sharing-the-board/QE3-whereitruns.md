@@ -49,7 +49,7 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
     body text is still there).
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE3
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE3
 
 ## Items to Finish
 - [x] Decide: does `build.py` producing a static page stay an invariant?

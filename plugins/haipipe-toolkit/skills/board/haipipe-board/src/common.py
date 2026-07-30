@@ -18,7 +18,7 @@ ALIAS = {"Question": ["Opening", "问题"], "Boundary": ["边界"], "Diagram": [
          "Done when": ["完成线", "Items to Finish"],
          "Now": ["现在什么样", "Where we are"],
          "Why here": ["为什么在这块板"],
-         "Glossary": ["名词"], "Discussion": ["讨论"], "Comments": ["评论"],
+         "Glossary": ["名词"], "Discussion": ["讨论"],
          "Law": ["规矩"], "Lesson": ["教训"], "Log": ["日志"],
          "Topic": ["主题"], "Pipeline": ["流水线"],
          "Pages": ["页面目录", "Roster", "清单"], "Links": ["链接"]}

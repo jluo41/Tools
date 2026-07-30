@@ -37,7 +37,7 @@ It and `QD3` are two forms of one need with entirely different trade-offs, so ea
                                                   ▼  reload the page to see it
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD2
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD2
 
 ## Items to Finish
 - [x] Starts a session, reads board files, answers correctly
@@ -188,29 +188,6 @@ Every tool use asks it for allow/deny first. effort: how much thinking the model
 >> CC0724: the console split changes nothing about which to use, both still run on the workstation serve.py; the console only pipes. Choose by job: drawer (SDK) for gated, comment-driven edits in the page; terminal for long tasks, skills, anything CLI-shaped. The plugin's backend is the claude binary itself over the stream-JSON protocol, which is what the drawer already drives, so "duplicating it" = the shell: diff-at-the-gate (shipped today, ①) and one persistent process per session (④, next). Anatomy written into Where we are.
 > JL: for QD2, the chat interface is not clean. The header shows a heavy blue bar, muted id pill, oversized title, and uneven terminal/close controls. (260725)
 >> CC0725: simplified it into a neutral utility bar. The id is quiet metadata, the full title uses available width with ellipsis, and `>_` plus `×` are matching compact controls with accessible labels.
-
-## Comments
-- [x] JL “open the terminal/chatbot with a prompt so they know which question and board” · 260723 1500
-      >> CC0723: the drawer's system_prompt now carries `prime_context` (board/question id/title/open comments/file).
-      Verified: asked with no context, it answers QB2. The terminal side uses --append-system-prompt with the same block, see QD3.
-- [x] JL “I want to make the chat opened in the SPACE dir, not in the board (same to QD1/QD2)” · 260723 1430
-      >> CC0723: the drawer's `cwd` moved from the board folder to the SPACE root, matching QD3; sessions read the whole repo now.
-      The restricted tier still edits only this question's files; full tiers open up. Old sessions stayed in the old folder; every question restarted under root (see QD3's Lesson).
-- [x] JL “maybe we have the robot icon for the chatbox?” · 260723 1345
-      >> CC0723: switched to 🤖. Also untangled a confusion: the corner used to show two 💬 (💬 Chat before the 🤖, plus 💬 Comment above),
-      indistinguishable. Now 🤖 = talk to the AI, 💬 = humans writing comments.
-- [x] JL “could you put it in the right bottom conner?” · 260723 1330
-      >> CC0723: first misread: moved the whole drawer to the corner. JL clarified: the drawer stays a full right-side panel like haichat-inlab;
-      what goes to the bottom-right is **the "💬 Chat" opener icon** (previously buried in each card's header row).
-      Fixed: drawer restored to the full right side; a floating bottom-right 💬 Chat appears in focus mode and opens that question's drawer.
-- [x] JL “may only edit this question's md. How, and at what cost?” · 260723 1305
-      it should not be only the md; other closely related files should be editable too.
-      keep it consistent with claude code cli as much as possible.
-      >> CC0723: done. Permissions became three tiers, default "full·ask" = same as the CLI: all tools + all skills,
-      can edit any relevant file, prompts you before touching anything else (no longer locked to one file). "Restricted" stays as the cheap option,
-      "full·auto" = bypassPermissions. Verified the full tier calls skills (~150 visible).
-- [x] JL “Starts a session, reads board files, answers correctly” · 260723 1240
-      but one question: is this output actually streaming out? It doesn't feel like it.
 
 ## Log
 260725 · Chat header cleaned: neutral utility bar, quiet page id, full CSS-ellipsized title, consistent 32px controls, and stable `>_` terminal mark replacing the tiny keyboard emoji

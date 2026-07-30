@@ -40,7 +40,7 @@ user types  /haipipe-board
         ref/board-example.md  a minimal two-question example
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB1
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QB1
 
 ## Items to Finish
 - [x] SKILL.md written

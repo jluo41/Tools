@@ -501,79 +501,6 @@ def inline(s):
     return cite_chips(s)
 
 
-CM_HEAD = re.compile(
-    r"^-\s*\[([ xX])\]\s*([A-Z]{1,4}\d{0,4})\s*[「\"“]([^」\"”]+)[」\"”]"
-    r"\s*(?:·\s*(\d{6}(?:\s+\d{3,4})?))?\s*[:：]?\s*(.*)$")
-
-
-def parse_comments(txt):
-    """## Comments -> [{done, who, quote, when, body[]}]
-
-        - [ ] JL 「被选中的原句」 · 260723 1005
-              评论正文，可以好几行
-              >> CC0723: 回复接在下面
-        - [x] ZW 「另一句」: 一行写完也行     ← [x] = 已解决
-
-    勾选框就是状态：[ ] 没解决 / [x] 已解决。复用已有的语法，不另发明。
-    """
-    out = []
-    for ln in (txt or "").split("\n"):
-        m = CM_HEAD.match(ln.strip()) if ln.strip().startswith("-") else None
-        if m:
-            out.append({"done": m.group(1).lower() == "x", "who": m.group(2),
-                        "quote": m.group(3), "when": m.group(4) or "",
-                        "body": [m.group(5).strip()] if m.group(5).strip() else []})
-        elif out and ln.strip():
-            out[-1]["body"].append(ln.strip())
-    return out
-
-
-def render_comments(items):
-    if not items:
-        return ""
-    rows = []
-    for c in items:
-        cls = "cm done" if c["done"] else "cm"
-        when = ""
-        if c["when"]:
-            d = c["when"][:6]
-            when = f'<span class="cw">{d[:2]}-{d[2:4]}-{d[4:]}'
-            if len(c["when"]) > 6:
-                hm = c["when"][6:].strip().zfill(4)
-                when += f' {hm[:2]}:{hm[2:]}'
-            when += "</span>"
-        reps, main = [], []
-        for b in c["body"]:
-            (reps if b.startswith(">") else main).append(b)
-        # A comment is a person talking ABOUT the prose, so no chips (see note()).
-        body = "".join(f"<p>{note(x)}</p>" for x in main)
-        body += "".join(
-            f'<div class="cmt {who_class(re.match(chr(62)+"*.?([A-Z]{1,4})", x).group(1))}">'
-            f'{note(x.lstrip(chr(62)).strip())}</div>'
-            if re.match(r">+\s*([A-Z]{1,4})", x) else f"<p>{note(x)}</p>"
-            for x in reps)
-        # 已解决的评论：正文折叠起来，台面上只留一行标题（JL 260723：solved 该 collapse，别铺开全文）。
-        # 没解决的：正文照常展开，等着你处理。
-        if c["done"] and body.strip():
-            body_html = (f'<details class="cmb-fold"><summary>reply</summary>'
-                         f'<div class="cmb">{body}</div></details>')
-        else:
-            body_html = f'<div class="cmb">{body}</div>' if body.strip() else ""
-        rows.append(
-            f'<div class="{cls}" data-quote="{esc(c["quote"])}"'
-            f' data-done="{"1" if c["done"] else ""}"><div class="cmh">'
-            f'<span class="bx">{"☑" if c["done"] else "☐"}</span>'
-            f'<b class="{who_class(c["who"])}">{esc(c["who"])}</b>'
-            f'<span class="cq">“{note(c["quote"])}”</span>{when}'
-            + (f'<span class="cs unpin" title="The quoted sentence is not in this '
-               'question\'s body — it may have been said in chat, or the original may have '
-               'been edited since. No history is kept, so we only say it is not in the body.">'
-               '· unanchored</span>' if c.get("lost") else "")
-            + f'<span class="cs">{"solved" if c["done"] else "open"}</span></div>'
-            f'{body_html}</div>')
-    return "\n".join(rows)
-
-
 # The leading `- ` is optional and must be: nearly every Log line on every board
 # is written as a bullet (`- 260726 · …`), and without it those lines matched
 # nothing. They were neither sorted nor counted, so a page could show four
@@ -691,11 +618,34 @@ LANE_ICON = {"citation": "📚", "value": "🔢", "display": "🖼", "check": "�
              "q-consumer": "🔎", "link": "🔗", "source": "📄", "note": "📝"}
 
 
+def render_change(text):
+    """One edit record's whole-sentence diff.
+
+    The source deliberately stays tiny and readable: ``~removed~`` and
+    ``*added*`` are the only two marks the editor writes.  They are not normal
+    emphasis here; they are a sentence-local change record, so render them as
+    deletion/addition rather than leaking the punctuation onto the page.
+    """
+    out = esc(text)
+    out = re.sub(r"~([^~]+)~", r'<del class="chg-old">\1</del>', out)
+    return re.sub(r"\*([^*]+)\*", r'<ins class="chg-new">\1</ins>', out)
+
+
 def render_apparatus(lines):
     """一句话的随行装置（QA8，JL 260725）：typed `> Kind:` 行 + `> WHO:` 讨论，
     折叠在它们讨论的那一句下面。返回 (html, 头行数)。"""
-    rows, heads, in_note = [], 0, False
+    rows, heads, in_note, show = [], 0, False, False
     for ln in lines:
+        m = re.match(r"^>+\s*✎\s*(.*?)\s*·\s*([A-Z]{1,4})\s*·\s*"
+                     r"(\d{6}(?:\s+\d{3,4})?)\s*$", ln)
+        if m:
+            rows.append(f'<div class="change"><b>✎</b> {render_change(m.group(1))}'
+                        f'<span class="cw"> · {esc(m.group(2))} · {esc(m.group(3))}'
+                        '</span></div>')
+            heads += 1
+            in_note = True
+            show = True
+            continue
         m = LANE.match(ln)
         if m:
             kind = m.group(1).lower()
@@ -711,6 +661,7 @@ def render_apparatus(lines):
                         f'<span class="qt">「{note(m.group(3))}」</span> {note(m.group(4))}</div>')
             heads += 1
             in_note = True            # a person talking: chips OFF
+            show = True
             continue
         m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*(\[[^\]]+\])?\s*[:：]\s*(.*)$", ln)
         if m:
@@ -718,11 +669,12 @@ def render_apparatus(lines):
                         f'{note(m.group(4))}</div>')
             heads += 1
             in_note = True
+            show = True
             continue
         # a continuation line inherits the mode of the lane it continues
         render = note if in_note else inline
         rows.append(f'<div class="lane-cont">{render(ln.lstrip(">").strip())}</div>')
-    return "".join(rows), heads
+    return "".join(rows), heads, show
 
 
 DIAGRAM_MAX_LINES = 40   # a fence this long or shorter, in one of these
@@ -992,8 +944,8 @@ def body(txt, fold_code=True, apparatus=True):
     flush()
     # 把收集到的装置行折进各自的句子（native <details>，零脚本不变量成立）
     for idx, lines in appar.items():
-        inner, heads = render_apparatus(lines)
-        out[idx] = ('<details class="sent"><summary>' + out[idx]
+        inner, heads, show = render_apparatus(lines)
+        out[idx] = ('<details class="sent"' + (' open' if show else '') + '><summary>' + out[idx]
                     + f'<span class="sbadge">⚑ {heads}</span></summary>'
                     f'<div class="sapp">{inner}</div></details>')
     return "\n".join(out)

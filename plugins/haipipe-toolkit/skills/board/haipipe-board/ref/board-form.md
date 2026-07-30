@@ -99,7 +99,7 @@ QC1                QC 组
 Paper lifecycle 的 S page 用完整 family 名：`S-<Family>-<unit>-<slug>.md`。Family 固定为
 `Seed`、`Work`、`Venue`、`Display`、`Main`、`Appendix`、`Submission`；unit 可用数字，也可在
 Appendix 使用字母。例：`S-Seed-1-literature.md`、`S-Main-4-theory.md`、
-`S-Appendix-B-validation.md`。Q 是 ruling；S 是 lifecycle page。两者共用段落 grammar，
+`S-Appendix-B-validation.md`。Q 是 decision；S 是 lifecycle page。两者共用段落 grammar，
 首页分别统计 `questions settled` 和每个 S family 的 gate progress。旧板的 `S0` / `SM0`
 / `SA0` 命名继续可读，但新 paper board 不再生成这些缩写。
 
@@ -132,7 +132,7 @@ Seed 里 `S Seed → S Literature`；Main 里 narrative control 后接每个 man
 Appendix 里 control 后接 A/B/C；Submission 里 reconcile → compile → review → submit。
 收到 external review 后，reopen 受影响的 Work/Display/Main/Appendix pages，再复用同一组
 Submission pages 记录下一轮，不复制 `S-Submission-R2-*` 页面。
-某个 S 的 Q ruling 紧跟在它后面。标题开头仍放一个唯一 Q family（如 `QD`、`QBa`），
+某个 S 的 Q decision 紧跟在它后面。标题开头仍放一个唯一 Q family（如 `QD`、`QBa`），
 让页面的 ＋Q / archive controls 有稳定 writer key。漏登记的照样显示，归 ⚠️ 组。
 
 ## 3. board.md
@@ -223,7 +223,6 @@ provides:       → contract  本页给下游的短交付说明（S only）
 ## Files           → .fls       这题牵动哪些文件，蓝边（路径自动变可点链接）
 ## Why here        → .folds     折叠（已退役，见下）
 ## Discussion      → .folds    折叠
-## Comments     → .folds    折叠，有未解决的会默认展开
 ## Law          → .folds    折叠 · 这题拍定的规矩
 ## Lesson       → .folds    折叠 · 这题踩过的坑
 ## Glossary     → .folds    折叠
@@ -234,7 +233,7 @@ provides:       → contract  本页给下游的短交付说明（S only）
 `## Items to Finish`、`## Where we are`。S 另外必填 `## Stage Contract` 和
 `## Content`；Q 删除 Stage Contract、可省 Content。
 `## Boundary` 和 `## Files` 选填但**强烈建议写**；其余（`method:`、`## Diagram` 和所有折叠段）**选填**，用不上就整段删掉。
-折叠段在页面上的顺序由 `build.py` 固定（Why here · Discussion · Comments · Law · Lesson · Glossary · Log），跟文件里写的顺序无关。
+折叠段在页面上的顺序由 `build.py` 固定（Why here · Discussion · Law · Lesson · Glossary · Log），跟文件里写的顺序无关。
 
 **台面上的顺序是定死的**：
 Q 是 `Opening → Diagram → Content → Items to Finish → Where we are`；
@@ -248,7 +247,7 @@ subsections 留在 Content。Q 的显式 Content 可省。
 零背景的人先撞上一堵实现细节，还没搞懂目标就淹了。
 
 **`## Why here` 已退役。** 它的活（为什么难 / 不定会怎样）并进 `## Question` 的解释段，
-并渲染成 “Why this matters”：Q 放在 Content 首节（默认展开），S 放在 Opening 且**默认折叠**
+并渲染成 “Why this matters”：Q 和 S 都放在 Opening 的抽屉里，**默认折叠**（JL 260729；此前 Q 放 Content 首节）
 （JL 260725：Opening 里除了问句本身，其余每一行都收起来）。老板子里的旧段仍收进底部折叠区。
 
 **老段名一律还认**，老板子不用改就能重新生成：`## Opening` 也可代替 `## Question`，
@@ -317,36 +316,30 @@ haipipe-board/      ../../haipipe-board/
 | `- [ ]` / `- [x]` + 缩进解释 | 勾选清单，栏头自动数出 `3/5`；S 的 Q-consumer 也用这一行形 |
 | ` ``` ` 围栏 | 原样输出的 `<pre>`（ascii 图、代码、目录树）。**两棵树别并排画**：列的边界是空白，一复制就没了，右边那列会读成左边的分支 —— 板本来就是拿去贴进聊天和邮件的。要对比就竖着叠，一次一棵完整的树 |
 | item 解释行里**缩进的** ` ``` ` 围栏 | 收进**这个 item 的折叠区**（不 flush 成兄弟块）：dedent 后原样 `<pre>`，位置随你放（摘要后、正文段之间都行）。顶格的围栏照旧是兄弟块（JL 260724，QC10 CABG 板首用） |
-| 单独一行 `![[路径]]` / `![[路径#某节]]` / `![[路径#某节\|source]]` | **嵌入**（QF1）：把另一份文件（整份或某一节）按引用嵌进这一题，生成时现读。路径相对板根，找不到再逐级向上找（≤8 级）；只吃 `.md`/`.txt`；`#某节` 认 `##` 标题**和** setext（下划线）标题；嵌不到 / 找不到那节 → 就地一块红色警告，绝不悄悄空掉；嵌进来的内容里再写 `![[…]]` 不展开（防环）。钉在嵌入文字上的评论仍写进**这一题**的 `## Comments`，重建时在新渲染的嵌入块里重新锚定 —— 源文件删了那句话才会显示 unanchored。`\|source` 结尾 = 同一份文件**照原字节**摊成 `<pre>`（不渲染、不上 chip），给「先给源码、再给渲染结果」这种页面用：两块都是同一份文件在生成时读两次，所以不可能对不上。别的 mode 一律就地红字报错 |
+| 单独一行 `![[路径]]` / `![[路径#某节]]` / `![[路径#某节\|source]]` | **嵌入**（QF1）：把另一份文件（整份或某一节）按引用嵌进这一题，生成时现读。路径相对板根，找不到再逐级向上找（≤8 级）；只吃 `.md`/`.txt`；`#某节` 认 `##` 标题**和** setext（下划线）标题；嵌不到 / 找不到那节 → 就地一块红色警告，绝不悄悄空掉；嵌进来的内容里再写 `![[…]]` 不展开（防环）。句下评论只写入承载该页的 Markdown；嵌入源本身不被改动。`\|source` 结尾 = 同一份文件**照原字节**摊成 `<pre>`（不渲染、不上 chip），给「先给源码、再给渲染结果」这种页面用：两块都是同一份文件在生成时读两次，所以不可能对不上。别的 mode 一律就地红字报错 |
 | 单独一行一个 excalidraw 分享链接 | 嵌成可交互画布（iframe）+ 一条「↗ 在 Excalidraw 打开」兜底链接 |
 | 裸 `https://…` | 自动变成可点链接（不会把已在 `href=` 里的再套一层） |
 | `` `code` `` `**粗**` `![](fig/x.png)` / `![](fig/x.pdf)` | 行内代码 / 加粗 / 图片 / 可读 PDF（含打开链接兜底） |
-| `> JL: 文字` | 讨论行，按署名分颜色 |
+| `> JL: 文字 · 260729 1502` | **句子评论**：紧贴在上一句下面，按署名分颜色；没有前一句时才是普通讨论行 |
+| `> ✎ 整句含 ~删除词~ *新增词* · JL · 260729 1502` | **编辑记录**：上一句已更新为最终文字；这一行重复整句，只标出删／增词 |
 | `>> CC0723: 文字` | 回复 |
 | `> JL 「原句」: 文字` | 讨论行 + 把「原句」在正文里高亮 |
 | `260723 1030 · 文字` | Log 一行，时间可省 |
 
 署名认任意 1–4 位大写字母（`JL` `ZW` `CC0723`）。`JL/CC` 有固定颜色；每位同事用自己的缩写，按名字自动分配颜色。
 
-## 6. Comments 段
+页面生成后，只给 `## Content` 内部建立 render-local 结构地址。每个 `###` division 是
+`Cn`；其中每个 `####` heading 是一个终止节点 `Cn.Hn`；正文 paragraph 与 H 同级，
+sentence leaf 是 `Cn.Pn.S1`。因此 `QAb3.C1.H1` 与 `QAb3.C1.P1.S1` 合法，
+`QAb3.C1.H1.P1.S1` 不合法。当前一条 source line 就是一句，所以每个 P 只有 `S1`。
 
-```markdown
-## Comments
-- [ ] JL 「被选中的原句」 · 260723 1100
-      评论正文，缩进两格，可多行。
-      > CC0723: 回复也写在缩进里
-- [x] ZW 「另一句」 · 260723 1130
-      已解决的，勾上。
-```
+pointer 设备 hover/focus 一个 Content sentence 时显示 `Cn.Pn.S1 ＋ 💬`：`＋` 在句下开
+Comment，`💬` 在这道 Q 已有的 chat session 顶部建立可关闭的 Sentence Focus，并显示
+Content 与最近 Heading 的名字。建立焦点不调用模型；下一条用户消息才携带位置、地址、该句和
+它直接相邻的 apparatus。touch 设备把 Comment / Chat / Edit 收进低调的 `⋯`。这些地址不写回
+Markdown；插入、移动 Content 节点后允许重新编号，因此是当前 render 的 focus address，不是永久 id。
 
-- `[ ]` 未解决 → 引文在正文里**黄底高亮**，折叠块默认**展开**。
-- `[x]` 已解决 → 整条变灰、引文划掉，高亮也变淡。
-- 引文在正文里找不到（原文被改过）→ 那一条标 **⚠ anchor lost**，折叠块标题也会写出来。**不会悄悄失效。**
-- 折叠块标题：`💬 Comments (2 open / 5) · ⚠ 1 anchor lost`
-
-这一段通常不用手写 —— 页面上选中文字加评论，再点 Sync to md 就会写进来。
-
-## 7. 生成
+## 6. 生成
 
 `build.py` / `watch.py` 都在 skill 目录里（不在板文件夹）。带路径调，别 `cd` 进板文件夹跑 `build.py .`：
 
@@ -381,12 +374,12 @@ mark 的几何只在 SVG 维护；`assets/board.css` 的八个 `--board-mark-*` 
   只有 2 个有图标，这就是 JL 说的不一致，JL 260725）→
   `🖼 Diagram`（optional，只有节名上台面，内容默认折叠；点开先看见 ▧ ASCII，
   ✏️ Excalidraw 还要再点一下，JL 260726）→
-  `📚 Content`（Q 先放 Why this matters；S 只放 Stage Record 以外的显式 subsections）→
+  `📚 Content`（只放作者显式写的 subsections；Q 的解释段 260729 起也进 Opening）→
   `🎯 Items to Finish` → `📍 Where we are` → `📁 Files`。
 - **三级层级**：节标题（🧭/📚/🎯/📍，底下一条线）＞ **组标题**（整行加粗 → 🔹 默认，开头写 emoji 就用那个，领着一串 item）＞ item 的名字（`▸`）。
 - **默认收起**（点名字 / 按节标题右边的 `expand all` 才现）：整个 `## Diagram`、item 的解释（收进 native `<details>`）、正文里的代码块（收成一行 `</> code · N 行`）。
   Diagram 里还有一层排序：点开这一节 ▧ ASCII 就在，✏️ Excalidraw 仍收着 —— 收着的 `<details>` 不 display，里面 `loading="lazy"` 的 iframe 就不会加载，一块板 28 张画布不再开屏就启 28 个。
-- **沉到底部折叠区**：Why here · Discussion · Comments · Law · Lesson · Glossary · Log。
+- **沉到底部折叠区**：Why here · Discussion · Law · Lesson · Glossary · Log。
 - 一屏第一眼 = 一列干净的节名和 item 名；Diagram 自己点开，`expand all` 一键把其他节的 item / 代码铺开（纯增强，脚本剥掉后每条仍能单独点开）。
 
 **别的定死的**：现在 vs 算做完**上下叠**不左右分栏（长短不齐时并排会空半边）；长题**滚动**不截断不拆屏；**不锁 16:9** 随窗口高走（锁画幅归投屏 deck）；大标题 id 后面留一个**真空格**，复制才不会粘成 `QA4Single…`。

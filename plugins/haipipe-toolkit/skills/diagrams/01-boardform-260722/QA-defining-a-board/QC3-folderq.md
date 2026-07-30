@@ -1,4 +1,4 @@
-# Folder questions: a Q inside its home folder
+# Page folder management: a page inside its home folder
 state: ✅ SETTLED
 owner: CC
 method: recursive discovery in build.py + path vetting in serve.py; ruled by JL 260724, shipped same day
@@ -15,11 +15,11 @@ Flat-only discovery made that impossible: `build.py` only globbed the board's to
 - ✅ Covered here
   Where a page file may physically live: recursive discovery under the board folder, which path segments are excluded, and how comment write-back stays safe once a path rather than a bare filename is in play.
 - ↪ Covered elsewhere
-  Where the board folder itself belongs and what it is named is `QC1`; how the index orders and groups the pages it finds is `QC2`; showing a folder's own documents without a page wrapper was `QF2`, retired 260726: embed them into a real page with `![[path]]` instead (`ref/board-form.md` §5).
+  Where the board folder itself belongs and what it is named is `QA1` (which absorbed QC1 on 260729); how the index orders and groups the pages it finds is `QA10` (which absorbed QC2 on 260729); showing a folder's own documents without a page wrapper was `QF2`, retired 260726: embed them into a real page with `![[path]]` instead (`ref/board-form.md` §5).
 
 ## Diagram
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QC3
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC3
 
 ## Items to Finish
 - [x] 🔍 Recursive discovery shipped
@@ -54,5 +54,6 @@ Flat boards are untouched; nested pages work end to end including comment write-
 - New questions born from the page are still created flat at the board root.
 
 ## Log
+260729 · Retitled to "Page folder management: a page inside its home folder" on JL's call. The id stays QC3, because the skill's SKILL.md and `ref/board-form.md` both cite it and so do two other faces; only the title changed. The index pointer in `## Boundary` moved from QC2 to QA10, which absorbed it the same day
 260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260724 · settled and shipped; first consumer is the MISQ paper's 0-lifecycle board

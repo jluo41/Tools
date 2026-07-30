@@ -18,7 +18,7 @@ style-from: S-Venue-1, STYLE.md
 provides: one compact phrase naming the downstream handoff
 -->
 
-<!-- How to use: copy this file, rename to Q<group letter><number>-<slug>.md for a ruling
+<!-- How to use: copy this file, rename to Q<group letter><number>-<slug>.md for a decision
      or S-<Family>-<unit>-<slug>.md for a paper lifecycle page, replace each
      guide sentence with real content. "required / optional" at the start of each section is
      for you:
@@ -61,13 +61,13 @@ required · One lead sentence, then one plain paragraph. **Reading this section 
 zero-background person should understand what the question is.**
 
 The lead renders in `🧭 Opening` with Boundary. On Q pages, the paragraph below it renders as
-Content's first `Why this matters` subsection. On S pages, that paragraph renders inside Opening.
+the `Why this matters` row inside Opening's drawer, on Q and S alike (JL 260729).
 
 The lead sentence is the actual question, written as a question, in plain words. It stays in
 Opening and is clickable.
 
 Then one flowing paragraph: why the question is hard, what breaks while it stays open, and what
-it affects downstream. build.py labels it "Why this matters": under Content for Q, inside Opening
+it affects downstream. build.py labels it "Why this matters", inside Opening for Q and S alike
 for S. Write it as prose, not as `- Why it is hard / - What breaks` bullets.
 
 ## Boundary
@@ -172,8 +172,10 @@ stage prose under these headings rather than copying it into a second backing do
 ### First content subsection
 The actual content goes here, one sentence per line.
 
-A sentence can carry apparatus: `>` lines written directly beneath it fold under that sentence, which shows a ⚑ badge until it is clicked.
+A sentence can carry apparatus: `>` lines written directly beneath it fold under that sentence, which shows a ⚑ badge until it is clicked. Human comments and edit records open by default so they remain visibly attached to their sentence.
 > Note: this row is attached to the sentence above it, by adjacency alone.
+> JL: a sentence-local comment · 260729 1502
+> ✎ The whole sentence with ~removed~ *added* words. · JL · 260729 1503
 > Citation: typed lanes name the attachment, one of Citation, Value, Display, Check, Q-consumer, Link, Source, Note; `> JL:` and `> CC:` threads join the same drawer.
 
 **A lane is one source line, however long.** A wrapped continuation line becomes its own sentence
@@ -267,12 +269,6 @@ optional · folded · Loose discussion, one line each. The "➕ Add to discussio
 writes here.
 > JL: discussion goes here.
 >> CC0724: reply with two angle brackets and a date.
-
-## Comments
-optional · folded · Comments pinned to a sentence in the body; that sentence is highlighted on
-the page. Usually written by the page's "💬 Comment" button, not by hand. Delete if unused.
-- [ ] JL 「an exact sentence from the body」 · 260724 1100
-      The comment, indented two spaces. Tick `[x]` when resolved; the page strikes it through.
 
 ## Log
 optional (most questions have one) · folded · What changed on this question, one line each,

@@ -1,7 +1,7 @@
-# Shared Q/S Page Layout
-state: 🟡 PARTIAL
+# Page overall: the shared Q/S layout
+state: 🟡 PARTIAL · the order and identity are settled; the carve into seven faces awaits JL
 owner: CC
-method: one page grammar; compose S Content from stage, venue, and upstream contracts
+method: one page grammar, one fixed on-stage order; each section's own rules live on its QAa face
 session: cd5e7f5f-15c7-49ba-a97f-bdf90ef3f534
 ## Question
 When one Q ruling or S lifecycle stage is opened and it alone fills the screen, how should that shared page be arranged so that someone with **no background at all** can read top to bottom once and know: what is being asked, what the substantive content is, what counts as done, and where things stand now?
@@ -18,8 +18,11 @@ Those sources compose one explicit page; they are not competing templates and ar
 
 ## Boundary
 - ✅ Covered here
-  `board.html`'s **single-page focus mode** for Q and S: shared section order, Content placement, what is on stage / what folds, and the type hierarchy.
+  `board.html`'s **single-page focus mode** for Q and S: the fixed on-stage order, what is on stage / what folds, one layout serving two workflows, the group-title marker, and the Board identity mark.
+  The source template `ref/q-template.md` and the whole-file authoring contract are also here.
 - ↪ Covered elsewhere
+  Each section's own rules live on its face: Opening `QAa1` · Diagram `QAa2` · Content `QAa3` · Items to Finish `QAa4` · Where we are `QAa5` · the folds `QAa6`.
+  The sentence and everything attached to it: the `QAb` group.
   Projection (one file, two modes: scroll to read / one screen per page) is settled in `ref/board-form.md` §8, not here.
   Whether each page's **prose is well written**, and what checks that the page still renders this layout, is `QA9`.
   Q and S workflow contracts belong to their owning skills.
@@ -39,7 +42,7 @@ intent first, status second.
   the question lead ⌄ the actual prompt, always on stage, and it is the door:
                      click it and everything that explains it opens beneath
        Boundary      covered here / covered elsewhere
-       Why it matters Q: under Content · S: in here
+       Why it matters in here, Q and S alike (JL 260729)
        Stage Record  S only · optional · in here when supplied
        Stage Contract S only · Required Inputs · Writing Style · Venue
        (FLAT: one click shows all of it, no ▸ inside, and no icons on these
@@ -47,7 +50,7 @@ intent first, status second.
   ▸ 🖼 Diagram       its own section; nothing shows until clicked
        ▾ ▧ ASCII        opens with the section: the figure you almost always want
        ▸ ✏️ Excalidraw   one more click; shut, its lazy iframe never loads
-  📚 Content         Q: Why first · S: explicit composed blueprint
+  📚 Content         only what the author wrote; shape is the page's own
        Stage template    base subsections · artifacts · gate
        Venue template    reader · section · length · style constraints
        Previous stages   accepted inputs · unresolved requirements
@@ -60,170 +63,92 @@ intent first, status second.
 
   ─── below the fold, never on stage ───
   ▸ Law   ▸ Lesson   ▸ Why here   ▸ Log
-  ← QA2        ☰ Index        QA6 →         — pinned to the bottom
+  ← QAa1       ☰ Index        QAa3 →        — pinned to the bottom
 
   unframed = no border · no rounded corners · no card background
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QA4
+```
+copy ref/q-template.md                     source → the rendered page
+┌──────────────────────────────────────────────────────────────────┐
+│ # title · state · owner              required → headline/header  │
+│ method                               optional → header            │
+├──────────────────────────────────────────────────────────────────┤
+│ ## Question  lead                    required → 🧭 Opening        │
+│                rationale                      Q: 📚 Why first     │
+│                                               S: Opening Why     │
+│ ## Boundary                           advised → inside Opening    │
+│ requires · style-from · provides       S only → 📋 contract       │
+│ ## Stage Contract                      S only → inside Opening,   │
+│   managed block + authored (venue contract lives here)  collapsed │
+│        every Opening row starts SHUT: lead question only on stage │
+│ ## Diagram                           optional → collapsed peer    │
+│   ascii fence(s)                              → ▧ ASCII, open     │
+│   bare excalidraw URL on its own line         → ✏️ Excalidraw, shut│
+│ ## Content                       Q optional/S required → 📚       │
+│        S: the stage's real product only, heading NAMES the stage  │
+│   stage template                   → base subsection blueprint    │
+│   venue template                   → reader/section/style overlay │
+│   previous contracts               → accepted/open requirements  │
+│   ### Stage Record           S optional → Opening, collapsed     │
+│   ### other subsection                         Content, collapsed │
+│   > Citation: / > Value: / …       → folded under their sentence  │
+│ ## Items to Finish                   required → 🎯 auto-counted   │
+│ ## Where we are                      required → 📍 present state  │
+│ ## Files                              advised → 📎 action map     │
+├──────────────────────────────────────────────────────────────────┤
+│ Law · Lesson · Glossary · Discussion · Comments · Log            │
+│                                  optional → supporting folds      │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa0
 
 ## Content
-### 1 · Opening — orient the reader
-Opening answers "What am I looking at, and why should I care?" before asking the reader to absorb detail.
-The 🧭 Opening heading never folds and the question lead never folds: both are always on stage, and the lead is the door (JL 260725).
-Clicking the lead opens everything that explains it: Boundary, and on an S page also Why this matters, an optional Stage Record, and the Stage Contract; on a Q page, Why this matters starts Content instead.
-The fold belongs on the sentence rather than on the section name, because a collapsed row reading only "🧭 Opening" announces nothing: a reader cannot tell that the ruling's scope is inside it, which is the fold-works-and-is-invisible failure the 260724 item Law already forbids.
-A long question sentence with a caret beside it does announce itself, and it is the thing a reader wants explained, so the sentence is the honest handle.
-Behind that one click everything is flat (JL 260725: "I don't want to have >"): Boundary always rendered as a plain heading plus its rows, and Why this matters, Stage Record, and the Stage Contract's Required Inputs, Writing Style, and venue section now render the same way instead of each sitting behind its own ▸.
-The version that kept them as nested disclosures read as though the material were missing, because opening the lead revealed a list of shut doors rather than the orientation itself; one door is a disclosure, two doors in a row is a search.
-Those seven headings also carry no icons (JL 260725): two of them had one and five did not, and a list where some entries are decorated reads as though the decorated ones were a different kind of thing.
-Plain words are the consistent choice here because the drawer is one flat list of orientation, not a set of sections a reader navigates between.
-The drawer is typeset as Content, not as chrome (JL 260725): its headings take Content's subsection size and weight with a rule between blocks, and its prose takes Content's size, colour, and leading.
-It had been set in small accent-blue capitals over 12.5px muted grey, which is the page's metadata voice, and that voice was telling the reader this material was incidental when the venue contract and the required inputs are among the most consequential things on an S page.
-The lead question is bold, which is what separates it from that prose: it is the one sentence always on stage and the handle for the drawer, so it should not read as the first line of what it opens.
-A reader should be able to state the page's purpose and scope after reading Opening alone.
+### 1 · The base page and its Content variants
+One frame, many kinds: the base page belongs to this skill (the metadata head, the fixed on-stage order, the folds, the sentence grammar, the renderer), and a page KIND redefines only what `## Content` holds and how it is composed.
+JL stated the rule in chat on 260729: the kinds today are Question and Stage, Display and Task are the candidates, Skills is already a third, and "the only thing changed is the content structure, other things won't change".
+A variant ships in the skill set that owns its domain, not here: `haipipe-paper-stage` already does exactly this for S pages, since its stage templates are what `stage.py new` composes into Content, and a future `haipipe-paper-display` or a task variant extends the same way, a new blueprint under the same frame.
 
-#### Boundary
-Boundary says both what this page decides and where adjacent concerns belong.
-Its `↪ Covered elsewhere` half must name the owning Q or S, because an exclusion without a destination leaves the reader stranded.
+#### The kinds, counted against the code
+- Question, the base kind
+  Content optional and free-shaped since 260729 (`QAa3` §3); nothing composes it, the author does.
+- Stage, the first variant, and it already lives in another family
+  Content required, composed at creation by `stage.py new` from the stage template, the venue overlay, and previous Stage Contracts; the templates live under `paper/1-lifecycle/haipipe-paper-stage`, so the extension pattern JL names has already shipped once.
+- The Skill roster, a generated variant
+  `skillpage.py` derives Content from the unit's own definition file inside a managed span and its Log from the CHANGELOG; the frame is untouched, which is why it needed no renderer work.
+- Display, a candidate, not yet a kind
+  Today `S-Display-*` on the MISQ lifecycle board is a naming family of ordinary S pages; it becomes a kind the day a display blueprint ships as its own door, and `paper/1-lifecycle/4-display/ref/` is where that material sits.
+- Task, a candidate
+  A task folder's plan, build, execute, report contract is a ready-made blueprint; nothing exists yet.
 
-#### Stage Contract (S only)
-Stage Contract is part of Opening: one collapsed disclosure after Why this matters and Stage Record, never its own page section (JL 260725).
-It tells the reader which upstream outputs this stage requires and which writing contract governs it before showing the stage's own substance.
-The managed block is generated from explicit `requires` and `style-from` metadata; it links and summarizes acceptance conditions without copying upstream Content.
+#### What a variant may declare, and what it may never touch
+A variant declares three things: its Content blueprint and who composes it at creation, the typed records it contributes INTO frame sections (S puts a Stage Contract row in Opening and Q-consumer records in Items to Finish), and its closure semantics (Q settles, S gates).
+It may never add, remove, or reorder sections, change the folds, change the sentence grammar, or touch the render machinery.
+The mechanical proof that the base stays ignorant of its variants already exists one layer down: `src/dialect_paper.py` opens with "THIS MODULE IS DELETABLE", and `build.py` asserts that every board not declaring `dialect: paper` renders byte-identical with it gone.
+One reconciliation is JL's to confirm: his sentence says only Content changes, and the S kind visibly reaches Opening and Items to Finish today; this face reads those as the variant's Content contract SHOWING in other sections, provenance in Opening and acceptance in Items, contributions into the frame rather than changes of it.
 
-### 2 · Diagram — reveal the shape
-Diagram gives one visual account of the flow, comparison, before/after, or option set.
-Its heading remains visible, but the figure starts hidden so a large drawing does not dominate the page before it is wanted.
-Keep it only when opening it replaces or clarifies prose; decoration does not earn a section.
+### 2 · The source template and the whole-file contract
+`ref/q-template.md` is the deliverable: adding a page of either kind means copying it, and it carries all 14 recognized `##` sections with one guide line each.
+The metadata block above the sections is required for identity: title, state, and owner become the index row and page header; method is optional.
+The first emoji on the `state:` line is the machine status and must be one of ✅, 🟡, 🔴, or ⏸️; readable detail may follow it, so `✅ PINNED · MISQ 2026` remains the same machine state as `✅ SETTLED`.
+S additionally declares explicit `requires`, `style-from`, and `provides`; dependency is never inferred from Pages order.
+The eight source-to-render mappings live in the second Diagram fence above.
 
-#### The section holds two subsections, and they are not equals
-(JL 260726: ▧ ASCII opens with the section, ✏️ Excalidraw takes one more click)
-Opening 🖼 Diagram shows the ASCII figure immediately, because that is the thing a reader came for and the thing that survives leaving the page.
-The Excalidraw canvas sits behind its own shut row, because it is heavy, it is a place to draw together rather than a thing to read, and it is not what most readers want.
-A shut `<details>` never displays its contents, so the canvas's `loading="lazy"` iframe does not load until somebody asks for it, and a board carrying twenty-eight canvases stopped booting twenty-eight of them on open.
-The ranking is the whole point: the two are not peers, so giving them equal weight would have been the wrong drawing of the same content.
-The SOURCE keeps one plain `## Diagram`, and the split is a render decision.
-Not one of the thirty pages had to be rewritten, and a page that later gains a canvas splits itself, which is the same bargain the board already makes with `![[...]]` and the bare URL line: the markdown stays something a person types and the renderer does the arranging.
-The canvas row is emitted even when no canvas exists, reading "No canvas attached yet", because it is where the 🖌 attach button lives and an affordance with no home cannot be found.
+#### The Files source
+List only the sources, outputs, and implementation files needed to continue, with one line explaining each role.
+Mark generated files explicitly so the reader does not hand-edit the wrong layer.
 
-#### The ASCII figure is what the section owes
-(the part that must be there, because it is the part that survives leaving the page)
-An ASCII figure has to survive being copied, because copying a page into chat or an email is a thing the board exists for.
-Two trees drawn side by side do not: the column boundary is whitespace, it vanishes on paste, and the right column's rows land inside the left column's branches, so the figure asserts a structure that does not exist.
-Stack them instead, one complete tree at a time; columns are safe only for short parallel lists where a wrong reading is obvious at a glance.
+#### The whole-file source laws
+Section names must be kept verbatim: `build.py` takes the whole string after `## ` as the key, so `## Question (required)` silently yields nothing; required/optional markers go into the first body line, never the heading.
+Requiredness is workflow-aware: both kinds require title, `state`, `owner`, `## Question`, `## Items to Finish`, `## Where we are`; `## Stage Contract` and `## Content` are required for S; Q deletes Stage Contract and may omit Content; `## Boundary` and `## Files` are strongly advised.
+Renaming a section must go through `ALIAS`, fold order is fixed by `build.py`, and Log is reverse-chronological.
 
-#### An excalidraw is optional, and empty is the default
-(nothing to write until a figure is worth drawing on together; then it is one line)
-A Diagram section with only an ASCII figure is complete, and most pages should stay that way.
-When a figure is worth drawing on together, put an Excalidraw share URL on a line of its own inside `## Diagram`, below the ASCII, with nothing else on that line.
-`https://app.excalidraw.com/s/1JWkKv8oMIX/4SD9kLApiQC` is the shape of it, and this page's own Diagram carries one as the worked example.
-A line matching `excalidraw.com/…` and nothing else becomes a `div.xcal`: a lazily loaded iframe of the excalidraw at 440px, growing to 520px when the page is opened alone, with an `↗ Open in Excalidraw` link directly underneath.
-Anything else on the line, a caption or a bullet marker, leaves it as ordinary prose with a plain link, so the rule is one URL, one line, no decoration.
-The embed is possible only because excalidraw.com sends no `X-Frame-Options` or `frame-ancestors`, which was measured rather than assumed, and which is a property of somebody else's server that can change without warning.
-That is exactly why the link underneath is not redundant: offline, behind a blocking proxy, or after Excalidraw changes its headers, the excalidraw is an empty box and the link is the only thing that still reaches the drawing.
-The ASCII figure stays for the same reason and is never replaced by the excalidraw: it is the version that survives a paste into chat, a printed page, and a reader with no network.
-So the excalidraw is where colleagues move boxes and argue about the shape, while the ASCII is what the board still says when the excalidraw is gone.
-
-### 3 · Content — establish the substance
-Content carries the material the page exists to establish after orientation.
-It is required on S and optional on Q.
-Each direct `###` heading becomes one named, collapsible subsection so readers can see the argument's parts before choosing which details to open.
-On Q, Why this matters appears first; on S, an optional Stage Record moves to Opening when supplied and the remaining stage substance stays here.
-
-#### Content holds the real thing only (S)
-An S page's Content is the stage's own product and nothing else (JL 260725).
-For a manuscript section page that means the section itself: its parts, its paragraphs, its prose, so a reader who opens Content reads the Results section rather than a folder of working material about it.
-Three kinds of material that accumulate around a stage belong outside Content: the inherited venue or writing contract goes to Stage Contract inside Opening, settled flags and corrections go to Where we are because they report what is now true, and anything still owed goes to Items to Finish.
-The heading names the stage for exactly this reason, reading `📚 Content · Main 7 §6 Results` rather than a subsection count: a count invites the page to accumulate boxes, while a name asks whether what follows really is the Results section.
-That label is derived from the page title, so a page whose artifact carries its own number states both: the board index number and the artifact number are usually offset, and a title like `S Main 7 · §6 Results` stops them competing on the same screen instead of leaving the reader to work out which `7` is meant.
-
-#### Heading levels inside Content
-Two levels, and the depth is carried by the numbering rather than by the heading level (JL 260725).
-Every division that holds content of its own is a direct `###`, so it folds independently; everything one step inside it is `####`, always.
-On a manuscript section page that reads: each subsection is `### §6.1 Main Results` and each paragraph is `#### P1. …`, while a section with no subsections carries one division for itself, `### §1 Introduction`, with its paragraphs directly under it as `#### P1. …`.
-The board folds exactly one level, so a page that nested subsections under a section-level `###` would collapse a whole ten-paragraph section into a single box and lose per-subsection folding; numbering the headings keeps the hierarchy legible without asking the renderer for a second fold level.
-A section-level heading appears only when it holds prose of its own, which for a flat section is its paragraphs: a page never emits a division that would open onto nothing.
-The rule is checkable, which is its point: the subsection count is the number of `###` headings whose number contains a dot, so a page can be compared against the venue blueprint's declared subsection count without reading a word of the prose.
-
-#### A paragraph heading is not a group title
-`####` renders as its own level: no icon, one size below a group title, its own spacing (JL 260725).
-Before that it was flattened to `**bold**` on the way in, and a full-line bold is the group-title construct, so every paragraph arrived on the page wearing 🔹 and claiming to lead a run of items.
-Deleting the icon would have hidden the mistake rather than fixed it, because the page was not over-decorating a paragraph: it was calling the paragraph something it is not.
-The two levels now say different things and 🔹 means only what it always meant, a sentence that leads the items beneath it, which is why a real group title such as `🔹Settled Flags` still carries it.
-A full-line `(…)` written directly under a paragraph heading is that paragraph's job, and it stays on stage in grey italic: it is the scan hook that lets a reader see what each paragraph does without reading the prose, so hiding it behind a click would cost a click per paragraph to recover the thing it exists for.
-Only the line immediately after the heading is read that way, and the venue template caps it at roughly 80 to 120 characters, because a job line long enough to be mistaken for prose has stopped being a scan hook.
-
-#### Content blueprint sources
-An S page's Content is composed once, when `stage.py new` creates the page, from four layers:
-
-1. The shared board shell fixes the visible page order but does not invent disciplinary content.
-2. The stage template supplies the base subsection jobs, required artifacts, and gate conditions.
-3. The venue template overlays reader expectations, section conventions, length, terminology, claim boundaries, and writing style.
-   It may refine the stage blueprint but cannot erase a stage-required artifact or gate.
-4. Previous Stage Contracts supply accepted inputs and visibly unresolved requirements.
-   They are linked and summarized, never copied whole into the new page.
-
-Resolution order is fixed: stage first, venue second, previous contracts third; the shell fixes layout only and never competes on content.
-The creator materializes the result as explicit direct `###` headings with guide text in the new Markdown, and from then on the page owns those headings.
-No later pass takes them back: `build.py` is render-only and never regenerates the blueprint, and `stage.py sync` refreshes only the managed Stage Contract block, never authored Content.
-A stage or venue template edit after creation surfaces as an explicit staleness warning (the stored `contract-source-hash` no longer matches); a human decides what to adopt, and nothing rewrites silently.
-Stage Contract remains a separate provenance and dependency layer, not a second copy of Content.
-
-#### Sentence apparatus
-A sentence can carry hidden apparatus: `>` lines written directly beneath it fold under the sentence, which shows a ⚑ badge until clicked.
-> Note: this row is the demonstration; it was hidden until you clicked the sentence above.
-> Link: `QA8-sentence.md` holds the ruling; inline-marker chips are its open item.
-
-Typed lanes name what each attachment is, and review threads join the same drawer.
-> Citation: a `\cite{TOADD}` placeholder resolves here once its key lands in the paper's .bib.
-> Value: a `{VAL:? …}` placeholder surfaces here with the number it owes.
-> Display: a DR id points at the `0-displays/` asset the sentence relies on.
-> Q-consumer: a `[Q-Section-n]` bracket binds the sentence to its probe record.
-> CC: threads like this one hide with the evidence they discuss.
-> Note: this line was added FROM THE PAGE via the new POST /_board/sentence endpoint (smoke test, 260725).
-
-A `>` run that opens a section with no sentence above it renders exactly as before, and the supporting folds never fold apparatus.
-
-### 4 · Items to Finish — define the gap
-Items to Finish is the testable definition of done, not a loose task list.
-Every checkbox must describe a condition that another person can judge true or false, and the heading reports the completed count automatically.
-On S, each Q-consumer remains one complete record and closes only after its answer is interpreted and integrated into Content.
-
-### 5 · Where we are — report the present
-Where we are states what is true now: counts, versions, decisions reached, and work still open.
-It deliberately follows Items to Finish so readers learn the target before seeing implementation detail.
-It summarizes progress without repeating the full evidence already held in Content or the checklist.
-
-### 6 · Files — point to the work
+### 3 · Files: point to the work
 Files names the small set of sources, generated outputs, and implementation files needed to continue the work, with one sentence explaining why each matters.
 It is an action map rather than an exhaustive change list, and generated files must be labeled so nobody edits the wrong layer.
 
-### 7 · Supporting folds — preserve history without blocking the read
-Law, Lesson, Glossary, Discussion, Comments, and Log sit below the main reading path and begin folded.
-They preserve rules, failures, vocabulary, deliberation, pinned remarks, and change history for readers who need them, while Opening through Files remains a clean first pass.
-Retired Why here content is still parsed here for compatibility, but new rationale belongs in Question.
-
-### 8 · The group-title marker, and who fills it
-A whole-line `**bold**` is a GROUP TITLE: it renders as `div.gt > span.gi`, and the span carries an emoji.
-Write one at the head of the bold text and it is used; write none and the renderer supplies the default 🔹, because `build.py` has no brain and must never guess (`GT_ICON` in `src/body.py`).
-That is the whole hand-written mechanism and it has worked since 260723.
-
-#### P1. A group title has to actually lead a group
-(the rule that was ruled and never enforced, and the number that shows it)
-A group title is a line that leads a run of items. A paragraph is never written in bold, which is `§3`'s rule, and a `####` heading is what a paragraph gets instead.
-Counted 260726: this board carries 36 whole-line `**bold**` lines, and 20 of them are followed by prose rather than by a run of items.
-Each of those 20 renders as a decorated 🔹 sitting in front of a paragraph, which is the exact confusion `§3` was written to remove, one level up.
-`check.py` now reports them as `bold-not-a-group-title`; the paper board, written after the ruling, scores zero.
-
-#### P2. Automatic assignment is a live-layer job, and it is blocked on P1
-(absorbed from QD4 on 260726)
-`build.py` is a static generator with no network and no model, so automating the choice there would mean keyword guessing against free-form sentences.
-`serve.py` already holds an OAuth login and the SDK, so an endpoint there could read a page, find the group titles with no emoji, and fill them, exactly as the ➕ affordances already write single lines into the markdown.
-It is blocked on `P1` rather than on effort: assigning icons to a set that is 55% mislabelled would decorate the mistakes instead of revealing them.
-Of the 36 lines today, 5 carry a hand-written icon and 11 are genuine group titles still on the default, so the population that actually wants filling is 11, not 36.
-
-### 9 · The Board identity mark is one shared asset
+### 4 · The Board identity mark
 The Board mark is separate from the group-title emoji problem above.
 It identifies the Board itself rather than classifying a content group, so it does not wait for the 20 mislabelled bold lines to be repaired.
 JL chose the four-page mark on 260726: four overlapping rounded pages make the Board, and a transparent speech-shaped aperture makes discussion part of the same silhouette.
@@ -278,7 +203,7 @@ That split keeps palette changes exact and reversible without letting different 
 - [x] 🧭 Opening sits above Content
       Opening is the first visible section and contains the actual question lead plus optional Boundary.
       The compass marks orientation rather than implying that every page is an unanswered question.
-      On Q, the rest of Question becomes Content's first "Why this matters" subsection.
+      On Q, the rest of Question became Content's first "Why this matters" subsection; superseded 260729, when it joined Opening's drawer on Q too.
       Older files keep `## Question`; `## Opening` is also accepted as its alias.
 - [x] 🗂 Stage orientation moves into Opening
       On S, "Why this matters" sits inside Opening and starts collapsed like every other row there (JL 260725; it was initially open until that ruling).
@@ -300,9 +225,6 @@ That split keeps palette changes exact and reversible without letting different 
       The test is that the three are told apart on the page without reading them, which is what failed before: paragraphs were flattened to bold, bold is the group-title construct, and 113 paragraphs across the MISQ board were therefore announcing themselves as sentences that lead a run of items.
       Verified on that board after the change: 113 paragraph headings, 82 job lines, and 31 group titles, with 🔹 left only on the 31.
       The depth is carried by the numbering rather than by a third heading level, so per-division folding survives on the longest pages.
-- [ ] 🧬 S Content can be instantiated from stage and venue templates
-      The creation path must resolve the stage template as the base blueprint, overlay the venue's section and writing constraints, add previous-stage requirements, and write the resulting direct `###` headings into the new Markdown.
-      The composition rule is now specified here and mirrored in QA2; `stage.py new` still needs the template-resolution input and materializer.
 - [x] 🔎 Q-consumer moved into Items to Finish
       A stage consumer is a recognizable checklist record retaining its Q id, Description, Reason, Probe, and Answer.
       Its box closes only after the answer landed, was interpreted, and was woven into Content; deferred closes only after a forward pointer is recorded.
@@ -315,33 +237,31 @@ That split keeps palette changes exact and reversible without letting different 
       Content now names the intended reader outcome for Opening, Diagram, Content, Items to Finish, Where we are, Files, and the supporting folds.
       These meanings were moved out of Law because they describe how to read the page, not a hidden implementation constraint.
 
+
+- [ ] 🧩 `ref/q-template.md` learns the 260729 additions
+      The 🧩 Skills item shape inside Where we are (`QAa5`) and the QA0 board-map guide block (`QA0`); this face owns the template since QA2 merged into the QAa group.
+- [ ] 🧠 JL confirms the carve: seven faces own the sections, this face owns the order
+      Carved 260729 on JL's design (QAa group, one face per page section): Opening `QAa1` · Diagram `QAa2` (absorbing the former QA4a) · Content `QAa3` · Items to Finish `QAa4` · Where we are `QAa5` · folds `QAa6`, with the source template `QA2` moving into the group.
+      Six open items moved to `QAa3` with the grammar they block on; every ticked item above stays here, because the history happened on this page.
+- [ ] 🧬 JL confirms the base/variant model (§1)
+      The page is a base owned by this skill; a kind redefines only Content and ships under its consumer family, `haipipe-paper-stage` today, `haipipe-paper-display` and a task variant as candidates.
+      The one point to rule: whether S's Stage Contract row in Opening and its Q-consumer records in Items to Finish count as the variant's Content contract showing elsewhere, which is §1's reading, or as frame exceptions to pull back.
 - [x] 🪪 The Board has one shared identity mark
       JL selected the overlapping four-page mark on 260726.
       It now lives as one transparent SVG in the skill, renders beside every generated title, and supplies the browser favicon without adding an external file dependency.
       Original plus three exact-geometry palette studies are recorded under `fig/`; changing the shipped palette touches CSS tokens, not the SVG geometry.
-- [ ] 🧹 The 20 bold lines that are not group titles are fixed first
-      Counted 260726: of 36 whole-line `**bold**` lines, 20 are followed by prose rather than by a run of items, so they render as a 🔹 group title in front of a paragraph.
-      `§3` already forbids this and nothing enforced it; `check.py` now reports each one as `bold-not-a-group-title`.
-      This blocks the icon work below: assigning icons to a set that is 55% mislabelled would decorate the mistakes rather than reveal them.
-- [ ] 🔀 How icon assignment triggers   (from QD4)
-      A button (one click, cheap, controllable, reversible) against auto-on-save (spends money on every save and edits the markdown while you type).
-      Every write affordance built since QD4 opened is button-triggered, so this may close by precedent rather than by argument; see Discussion.
-- [ ] 🤖 Model and overwrite policy   (from QD4)
-      Which model picks the emoji, and the rule that only group titles WITHOUT an emoji are filled, never overwriting what an author wrote.
-      Picking an emoji is a small job, so a small model should do it.
-- [ ] 📄 Scope   (from QD4)
-      One page at a time, or the whole board in a pass.
-- [ ] 🔨 Built and verified   (from QD4)
-      A `serve.py` endpoint plus a page button; assigned emoji are visible in the markdown, editable by hand, and revertible.
 
 ## Where we are
-Partial.
+**Carved 260729 into the QAa group: this face keeps the fixed order, the two-workflow rule, and the Board mark; each section's own rules now live on its face.**
 The shared Q/S reading path and inherited Stage Contract are implemented.
 The shared Board identity mark is also implemented: one SVG source, one inlined header instance, one data favicon, and CSS-owned palette tokens.
 Four palette studies preserve the same geometry so JL can change color without reopening the mark itself.
-The next piece is creation-time Content composition: stage template as the base blueprint, venue template as the reader/section/style overlay, and previous contracts as accepted and unresolved inputs.
-That rule is specified here and in QA2, but `stage.py new` does not yet materialize template- derived `###` headings.
+The open work moved with its sections: creation-time Content composition and the group-title cleanup and icon items are `QAa3`'s now.
 
+- 260729 JL · 🧬 The page became a base with Content variants
+  JL named the model in chat: Page is the base, Question, Stage, Task, Display, and Skills are variants, only the Content structure changes, and other skill sets extend it, `haipipe-paper-stage` or `haipipe-paper-display`.
+  §1 records it against the code: two kinds and one generated variant already render through one frame, the stage blueprint already ships from the paper family, and the deletable paper dialect is the standing proof that the base never learns a variant.
+  The five sibling QAa faces are marked frame the same round, so each section now says whether a kind may touch it.
 - 260726 JL · 🪪 The Board gained its own mark
   JL chose the interlocking four-page concept and asked for it in generated `board.html` and in the `haipipe-board` skill.
   The production version is a hand-authored transparent SVG rather than the 1254px raster: `src/page_board.py` inlines it beside the title and reuses it as a data favicon, while `assets/board.css` owns the palette.
@@ -494,7 +414,7 @@ That rule is specified here and in QA2, but `stage.py new` does not yet material
 - Opening always precedes Content
   The page must orient a zero-background reader before presenting substantive material.
   Opening carries the actual question lead and its scope.
-  S also carries Why this matters, an optional Stage Record, and the Stage Contract there, all collapsed; Q carries Why this matters under Content.
+  Why this matters sits in Opening's drawer on Q and S alike (JL 260729; until then Q carried it under Content); S adds an optional Stage Record and the Stage Contract, all collapsed.
   An optional collapsed Diagram row separates Opening from the remaining Content.
 - The lead question is the door, and Opening itself never folds (JL 260725)
   The 🧭 Opening heading and the lead sentence are always on stage; clicking the sentence opens Boundary and, on S, Why this matters, Stage Record, and Stage Contract.
@@ -532,7 +452,7 @@ That rule is specified here and in QA2, but `stage.py new` does not yet material
   Render never regenerates them, sync touches only the managed Stage Contract block, and a stage or venue template edit after creation surfaces as a staleness warning instead of a silent rewrite.
 - `## Question` is one question lead + one rationale paragraph
   The lead is the actual prompt in Opening.
-  The paragraph carries why it is hard, what breaks if left open, and what it affects; it renders as "Why this matters" inside Opening for S and as Content's first subsection for Q.
+  The paragraph carries why it is hard, what breaks if left open, and what it affects; it renders as "Why this matters" inside Opening on Q and S alike (JL 260729).
 - Every item explanation is a paragraph, not a clause (JL 260724)
   The `- short heading` + indented explanation pattern applies to list and checklist items, and the explanation is a real paragraph: what it means, what happened, what we understand so far, and why it ended up this way.
   Question itself uses the lead-plus-rationale shape above, not item bullets.
@@ -549,7 +469,7 @@ That rule is specified here and in QA2, but `stage.py new` does not yet material
   Pure CSS (`:target` + `:has()`).
 - What is on stage, what folds
   On stage: title; compass Opening with the question lead; the Diagram, Content, Items to Finish, Where we are, and Files headings.
-  Behind the lead question's single click, shown flat: Boundary, S Why this matters, the optional S Stage Record, and the S Stage Contract with its Required Inputs, Writing Style, and venue section.
+  Behind the lead question's single click, shown flat and in this order: Boundary, Why this matters (Q and S alike, JL 260729), the optional S Stage Record, and the S Stage Contract with its Required Inputs, Writing Style, and venue section.
   Collapsed by default elsewhere: the entire Diagram body, item explanations, and code blocks (folded to one line `</> code · N lines`).
   Inside Diagram there is one more ranking: opening the section shows ▧ ASCII and leaves ✏️ Excalidraw shut.
   Sunk into the bottom fold: Why here · Discussion · Comments · Law · Lesson · Glossary · Log.
@@ -567,7 +487,16 @@ That rule is specified here and in QA2, but `stage.py new` does not yet material
 - Renaming sections must go through ALIAS; old boards must never break
   One slot, many names; old boards regenerate without a single edit.
 
+- One face, both projections (JL 260729)
+  The page markdown and the rendered page are one thing seen twice, so each QAa face owns its section in BOTH: what an author writes and what the reader sees.
+  A render decision and its authoring contract change in the same edit, on the same face, and `ref/q-template.md` follows in that same change.
+  This replaces the retired two-face sync law ("QA2 changes with QA4"), whose only job was keeping apart what belongs together.
+
 ## Lesson
+- In the usage comment of the template, never start a line with `state:` / `owner:` / `method:`
+  The meta parser swallows any line whose first word is one of these; the first draft corrupted the status exactly this way; writing `· state …` dodges it.
+- Stale self-contradictions in the template must be purged
+  The template still said "newest Log lines at the bottom" long after reverse order was settled, exactly the kind of stale sentence a zero-background reader spots first.
 - "Settled" can be overturned by one sentence
   This question was closed ✅ on 260723 with every finish line ticked, and was knocked back to 🟡 the same day by a single remark from JL: a zero-background reader could hardly understand the page.
   Nothing about the work was wrong; the checklist was.
@@ -614,21 +543,12 @@ job line: the full-line `(…)` directly under a paragraph heading, saying what 
 > JL: Content should explain what every section in the Q webpage is eventually for: 1 Opening, 2 Diagram, and so on.
 >> CC0725: moved the section meanings out of Law and into seven numbered Content subsections. The visible reading path is explained first; the lower historical sections are grouped as Supporting folds.
 
-## Comments
-- [x] JL “all four undecided items are settled, closing this question” · 260723 1524
-      this sentence is a group title (item group name) and should look different from the items below it.
-      >> CC0723: added the group-title level: a full-line bold `**…**` renders as its own layer with 🔹, one size above items, between the section heading and the items.
-- [x] JL “open a Q” · 260723 1217
-      could the Question section carry its label explicitly? The `.ask` line used to show only a bare `❓`.
-      >> CC0723: added the small “❓ Question” label. Superseded 260725 first by peer-level Opening, then by the current “🧭 Opening” heading.
-- [x] JL “Now and Done when stack vertically” · 260723 1010
-      this section's layout could be better. Bullet-point style: one topic, then the explanation under it.
-      >> CC0723: added the item syntax: write `- short heading` in md, indent two spaces below for the explanation.
-- [x] JL “the skeleton a Q generates on the page” · 260723 1030
-      could the slide's html template be written into this question?
-      >> CC0723: the HTML skeleton + mapping table were added earlier; after the 260723 redesign the skeleton went stale and was removed: the mapping lives in `ref/board-form.md §4`, no second copy maintained here.
-
 ## Log
+260729 · The base/variant model added as Content §1 (JL, in chat): the page is a base and a page kind is a Content variant shipping under its consumer family; the kinds counted against the code, the variant contract stated, the five sibling faces marked frame, and the Stage Contract / Q-consumer reconciliation left as JL's open item
+260729 · Content cleaned on JL's ask ("I don't want the carved-to sections, keep the headings simple"): the seven carved-to stubs deleted, since Boundary already names each face, and the four real sections renumbered §1-§4 with plain headings
+260729 · Why this matters unified into Opening for Q (JL, decided on QAa1); Content became per-page flexible (decided on QAa3); this face's Diagram and Law updated to match
+260729 · QA2 (the source template face) merged into the QAa faces on JL's call: the source and the render are one subject per face, so each face gained a "The source" division, and this face took the whole-file contract, the template items, the source->render mapping table, and the Q_STUB item. The two-face sync law retired with it; QA2's file is archived with its history
+260729 · Renamed QA4 -> QAa0 and carved into the QAa group on JL's design (one face per page section): §1 Opening -> `QAa1`, §2 Diagram -> `QAa2` (which also absorbed QA4a), §3 Content + §8 group-title marker -> `QAa3`, §4 -> `QAa4`, §5 -> `QAa5` (plus the new 🧩 Skills subsection convention), §7 -> `QAa6`. Six open items moved to `QAa3`; all ticked items and the full history stay here. The word "ruling" gives way to "decision" board-wide (JL 260729). Earlier Log lines below cite the old id and the old § numbers; they are history and were not rewritten
 260726 2230 · `🖼 Diagram` split into `▧ ASCII` (open) + `✏️ Excalidraw` (shut) per JL: `split_diagram` + `render_diagram` in `src/page_question.py`, `.dsub` styling in `assets/board.css`, and `wireXcal` retargeted at `.dsub-x > .dsubb` so the 🖌 attach button lives in the canvas row; source markdown unchanged, so 30 sections re-rendered with 0 checker errors and 28 lazy iframes stopped loading on open; QA2 and `ref/q-template.md` updated in the same pass
 260726 · QD4 merged in (JL): `§8` added with the marker, the 36/5/11/20 count and the blocked automation; QD4's four items absorbed plus a new cleanup item that blocks them; 17/18 -> 17/23, which is the honest number now that the icon question sits with the grammar it depends on
 260726 · `§2 Diagram` split into two paragraphs (JL: how do we add the excalidraw link and embed it?): the ASCII figure the section owes, and the optional excalidraw whose default is empty; the excalidraw paragraph now carries the one-URL-alone-on-a-line rule from `src/body.py`, the 440px / 520px render, the `↗ Open in Excalidraw` fallback, and the reason the fallback and the ASCII both stay

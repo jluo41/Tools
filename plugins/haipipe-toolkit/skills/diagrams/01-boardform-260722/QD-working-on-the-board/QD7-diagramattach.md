@@ -7,7 +7,7 @@ method: one button in 🖼 Diagram that writes the same line an author would typ
 ## Question
 When an ASCII figure is not enough and the shape is worth drawing on together, how does the drawing get attached to a page without leaving the page to hand-edit the markdown?
 
-The board already accepts an excalidraw: a share URL alone on a line inside `## Diagram` renders as an interactive excalidraw with a fallback link, and `QA4 §2` rules how that behaves and why the ASCII figure and the plain link both stay.
+The board already accepts an excalidraw: a share URL alone on a line inside `## Diagram` renders as an interactive excalidraw with a fallback link, and `QAa2 §0` rules how that behaves and why the ASCII figure and the plain link both stay.
 What was missing is the way in.
 Attaching a drawing meant opening the page's `.md`, finding the Diagram section, and knowing that the URL has to sit on a line by itself, which is three pieces of knowledge that a reader looking at the rendered page does not have and should not need.
 That gap matters more here than for prose, because a drawing is the thing people reach for in the middle of a discussion, and a mechanism that requires leaving the discussion to use a text editor gets used once and then abandoned.
@@ -18,7 +18,7 @@ Diagram was the one section that could only be read.
 - ✅ Covered here
   **Getting an excalidraw onto a page from the page**: the control, where the URL lands in the source, what happens when the section is missing, and what the endpoint refuses.
 - ↪ Covered elsewhere
-  How the excalidraw renders, why the ASCII figure stays, and why the fallback link is not redundant: that is `QA4 §2`.
+  How the excalidraw renders, why the ASCII figure stays, and why the fallback link is not redundant: that is `QAa2 §0`.
   The embed syntax itself, as a line of board grammar: `ref/board-form.md §5`.
   Whether the body prose is editable in the page, and what two people editing at once does: that is `QE4`.
   The chat drawer and the terminal: `QD2` and `QD3`.
@@ -40,7 +40,7 @@ Diagram was the one section that could only be read.
   the md is still the only source; the page just types the line for you
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QD7
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD7
 
 ## Content
 ### 1 · The write path
@@ -71,8 +71,8 @@ It does not append at the end, which would produce a section that renders in the
 #### The refusals are the part worth trusting
 (a write endpoint is judged by what it declines to write)
 A URL that is not `excalidraw.com` or `app.excalidraw.com` is refused outright and nothing is written.
-The scan for `## Diagram` skips fenced code blocks, because `QA4` carries example markdown inside fences and a naive search writes into the example: that exact trap was hit by the comment layer on 260723 and is now avoided by construction.
-Creating a section that holds only an excalidraw succeeds but returns a warning, since `QA4 §2` rules that the ASCII figure is the half that survives being copied, and a silent success would let the page teach the opposite.
+The scan for `## Diagram` skips fenced code blocks, because `QAa0` and `QAa3` carry example markdown inside fences and a naive search writes into the example: that exact trap was hit by the comment layer on 260723 and is now avoided by construction.
+Creating a section that holds only an excalidraw succeeds but returns a warning, since `QAa2 §0` rules that the ASCII figure is the half that survives being copied, and a silent success would let the page teach the opposite.
 
 ### 3 · What is deliberately not built
 Removing an excalidraw from the page is not possible; that still means editing the md.
@@ -121,7 +121,7 @@ The code is uncommitted in the `Tools` submodule, alongside the `--host` flag fr
 
 - 260726 CC · 🖌 The Diagram section became writable from the page
   Diagram was the last body section that could only be read, while comments, discussion, sentence apparatus, checkboxes, and structure all wrote back.
-  JL asked for the button after the `QA4 §2` rewrite documented the syntax: knowing the line to type is not the same as being able to add the drawing.
+  JL asked for the button after the Diagram-source rewrite (now `QAa2 §0`) documented the syntax: knowing the line to type is not the same as being able to add the drawing.
   The endpoint is 60 lines in `serve.py`, the control is 50 in `board.js`, and the generator was not touched, so a board built by an older copy of the skill still renders every excalidraw.
 
 ## Files

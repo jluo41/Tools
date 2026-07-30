@@ -136,9 +136,12 @@ Eight folders in four pairs, and the shape underneath them: `①` writes the pap
 channel out of it. `③` is the human channel, the only way eyes and a click reach the work. `⑤` is
 the evidence channel, the only door a number or a citation enters by. Both are shared skills whose
 models this family depends on and does not own, and the paper skill says exactly that about both.
+`QA0` owns the Board-level regrouping blueprint because that future index must preserve the same
+ownership boundaries that `QA1` through `QA9` define.
 Read the group in four beats: the map, what we own, the two channels, what they produce, and how
 the human channel attaches. `④` and `⑥` get no face on purpose: they are the design records of
 skills we do not own, named on `QA1` and explained by `QA3`'s Law.
+QA0-the-board-map.md
 QA1-eight-folders.md
 QA2-the-skill-set.md
 QA3-the-skill-board.md
@@ -302,8 +305,8 @@ QB1@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB1-the-orde
 QB3@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB3-match.md
 QC1@probe          ../01-probe-qa-260726/QC-the-contract/QC1-qa-state-line.md
 QB6@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB6-interpret.md
-QA8@boardform      ../01-boardform-260722/QA-defining-a-board/QA8-sentence.md
-QA8a@boardform     ../01-boardform-260722/QA-defining-a-board/QA8a-sentence-chat.md
+QA8@boardform      ../01-boardform-260722/QAb-the-sentence/QAb1-evidence-card.md
+QA8a@boardform     ../01-boardform-260722/QAb-the-sentence/QAb3-agent-visibility.md
 paper-folder/      ../../paper/3-deliver/1-build/haipipe-paper-folder/
 display/           ../../display/
 paper-display/     ../../paper/1-lifecycle/4-display/
@@ -330,4 +333,3 @@ QD4-format-adapters         _archive/QD4-format-adapters.md
 QD6                         _archive/QD6-provenance-chain.md
 QD7                         _archive/QD7-one-content-many-formats.md
 QD8                         _archive/QD8-display-intake.md
-

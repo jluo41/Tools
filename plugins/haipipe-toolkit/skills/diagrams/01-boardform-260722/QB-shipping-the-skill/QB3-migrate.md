@@ -15,7 +15,7 @@ It also tests one thing directly, whether the generator is truly backward-compat
 - ✅ Covered here
   **What happens to the legacy boards**: which ones migrate, how far, or regenerate in place.
 - ↪ Covered elsewhere
-  The new format itself: that is `QA1`/`QA2`/`QA4`.
+  The new format itself: that is `QA1`/`QAa0`.
   This question owns only the existing stock.
 
 ## Diagram
@@ -30,7 +30,7 @@ It also tests one thing directly, whether the generator is truly backward-compat
   board.md/html/bak · deck.html · render.py  ─►  deleted
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB3
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QB3
 
 ## Items to Finish
 - [x] `02-method-260722/` converted to the QA1 format: split into one file per question (13 `QX-slug.md`), Chinese section names → English, `[Q1]` → `QA1`, Diagram/Log added

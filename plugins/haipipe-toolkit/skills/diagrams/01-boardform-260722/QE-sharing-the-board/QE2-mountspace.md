@@ -19,7 +19,7 @@ Downstream it decides what the board list page looks like (the same visual probl
   **The layer above a board**: how a SPACE is mounted, how many at once, how the boards in a SPACE are discovered, what the board list page shows, whether a new board can be created from the page.
 - ↪ Covered elsewhere
   Whether the board is served locally or from a server, and whether it needs a login: that is `QE1`.
-  Nor the index page **inside** one board: that is `QC2`.
+  Nor the index page **inside** one board: that is `QA10`.
   Nor which process the code runs in: that is `QE3`.
 
 ## Diagram
@@ -42,7 +42,7 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 (os.walk + prune list + depth cap — no cache needed yet)
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE2
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE2
 
 ## Items to Finish
 - [x] Decide how many SPACEs one service mounts

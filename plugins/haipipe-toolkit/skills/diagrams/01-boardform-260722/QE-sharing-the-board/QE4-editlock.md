@@ -43,7 +43,7 @@ concurrency: three steps, do not skip one
                                               it needs a sync service in between
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QE4
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE4
 
 ## Items to Finish
 - [ ] Decide which sections are editable from the page

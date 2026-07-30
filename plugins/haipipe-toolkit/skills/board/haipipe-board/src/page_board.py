@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 from . import body as bd
-from .body import body, inline, parse_comments
+from .body import body, inline
 from .common import esc, sec, stinfo
 from .page_question import render_question
 from .page_stage import render_doc_slide
@@ -34,9 +34,6 @@ def render(meta, qs):
 
     def st(q):
         return stinfo(q["state"])
-
-    open_cm = {q["id"]: sum(1 for c in parse_comments(sec(q["sec"], "Comments"))
-                            if not c["done"]) for q in qs}
 
     def frac_done(q):
         """完成度 0..1：Done when 勾了几条。✅ 一律满格，⏸️ 当作定了也满格。"""
@@ -102,7 +99,6 @@ def render(meta, qs):
             f'<a class="ir {st(q)[1]}" href="#{q["id"]}"{fill}{df} title="{pct}% done">'
             f'<span class="s">{st(q)[0]}</span><span class="i">{q["id"]}</span>'
             f'<span class="t">{inline(q["title"])}</span>'
-            + (f'<span class="obadge">💬 {open_cm[q["id"]]}</span>' if open_cm[q["id"]] else "")
             + f'<span class="w">{"🧠 JL" if q["owner"]=="JL" else ("🔧 "+q["owner"] if q["owner"] else "")}</span></a>')
     idx = "\n".join(rows)
 
@@ -226,7 +222,6 @@ def to_json(meta, qs, warn):
     derived numbers the index shows, so JSON and HTML cannot disagree."""
     def q_json(q):
         boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", sec(q["sec"], "Done when"), re.M)
-        cms = parse_comments(sec(q["sec"], "Comments"))
         tok, cls, lab = stinfo(q["state"])
         return dict(id=q["id"], title=q["title"], group=q["group"], file=q["file"],
                     state=q["state"], state_token=tok, state_label=lab,
@@ -238,8 +233,6 @@ def to_json(meta, qs, warn):
                     contract_source_hash=q.get("contract_source_hash", ""),
                     files=q.get("files", []),
                     done=sum(1 for b in boxes if b.lower() == "x"), total=len(boxes),
-                    comments_open=sum(1 for c in cms if not c["done"]),
-                    comments_total=len(cms),
                     sections={k: v for k, v in q["sec"].items()})
     return json.dumps({"meta": meta, "questions": [q_json(q) for q in qs],
                        "warnings": warn}, ensure_ascii=False, indent=1)

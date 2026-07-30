@@ -1,4 +1,4 @@
-# haipipe-board · v0.41.2
+# haipipe-board · v0.46.0
 state: 🟡 in flux
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -10,49 +10,50 @@ Write here what this skill is for in one paragraph a stranger could follow, why 
 The generated sections answer what it IS; only this one can answer whether it is any good.
 
 ## Diagram
-<!-- haipipe:skill:tree:start cf2ea15a60aca0aa board/haipipe-board -->
+<!-- haipipe:skill:tree:start 66c08bdc1b1e640c board/haipipe-board -->
 
 ```
 haipipe-board/
   assets/
-    board-mark.svg          44 ln
-    board.css             1041 ln  palette + type follow html-ppt's academic-report; layout is body.single
-    board.js              1945 ln  Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
-    xcal-boot.js           264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
+    board-mark.svg            44 ln
+    board.css               1049 ln  palette + type follow html-ppt's academic-report; layout is body.single
+    board.js                1903 ln  Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
+    xcal-boot.js             264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
   ref/
-    board-example.md       115 ln  最小示例 —— 一块两题的板
-    board-form.md          394 ln  Board form — 完整规格
-    q-template.md          275 ln  Short title (a phrase, not a sentence)
-    writing-rules.md        80 ln  Writing rules — how to write so it reads like human language
+    board-example.md         111 ln  最小示例 —— 一块两题的板
+    board-form.md            376 ln  Board form — 完整规格
+    q-template.md            276 ln  Short title (a phrase, not a sentence)
+    writing-rules.md          80 ln  Writing rules — how to write so it reads like human language
   src/
-    __init__.py              3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
-    body.py                969 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
-    common.py              109 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
-    dialect_paper.py       743 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
-    page_board.py          245 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
-    page_question.py       389 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
-    page_stage.py          262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
-    parse.py               311 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
-    stage_contract.py       98 ln  Managed requirements and writing-style contracts for S pages.
+    __init__.py                3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
+    body.py                  951 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
+    common.py                109 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
+    dialect_paper.py        1004 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
+    page_board.py            238 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
+    page_question.py         576 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
+    page_stage.py            262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
+    parse.py                 328 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
+    stage_contract.py         98 ln  Managed requirements and writing-style contracts for S pages.
   vendor/
     xterm/
-      addon-unicode11.js     2 ln
-      xterm.css            285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
-      xterm.min.js           2 ln
-  build.py                 127 ln  board folder -> board.html (static content; scripts are optional enhancement).
-  CHANGELOG.md            1048 ln  haipipe-board — Changelog
-  check.py                 519 ln  check.py — the structural half of QA9, run against one board.
-  refs.py                   73 ln  Render a paper's real bibliography, once, into a cache the board can read.
-  regroup.py               142 ln  Move a board's root pages into one named folder per Q group (QA1, JL 260726).
-  serve.py                2428 ln  Serve boards AND accept comment writes — from the machine the files live on.
-  SKILL.md                 517 ln  /haipipe-board — 一个话题，一叠问题，一页看板
-  skillpage.py             728 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
-  stage.py                 366 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
-  status.py                208 ln  Render the three-line closing block for one Board-attached session.
-  test_activity.py         176 ln  Focused regression tests for QD8 board activity timing.
-  test_status.py           118 ln
-  watch.py                  55 ln  Watch a board folder and rebuild board.html whenever a .md changes.
-  xcal.py                  317 ln  board.md + the pages' ASCII figures -> ONE `fig/board.excalidraw` (QA4a).
+      addon-unicode11.js       2 ln
+      xterm.css              285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
+      xterm.min.js             2 ln
+  build.py                   127 ln  board folder -> board.html (static content; scripts are optional enhancement).
+  CHANGELOG.md              1170 ln  haipipe-board — Changelog
+  check.py                   519 ln  check.py — the structural half of QA9, run against one board.
+  refs.py                     73 ln  Render a paper's real bibliography, once, into a cache the board can read.
+  regroup.py                 142 ln  Move a board's root pages into one named folder per Q group (QA1, JL 260726).
+  serve.py                  2478 ln  Serve boards AND accept comment writes — from the machine the files live on.
+  SKILL.md                   519 ln  /haipipe-board — 一个话题，一叠问题，一页看板
+  skillpage.py               728 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
+  stage.py                   378 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
+  status.py                  208 ln  Render the three-line closing block for one Board-attached session.
+  test_activity.py           176 ln  Focused regression tests for QD8 board activity timing.
+  test_sentence_editing.py    85 ln  Regression tests for sentence-local comments and tracked edits.
+  test_status.py             118 ln
+  watch.py                    55 ln  Watch a board folder and rebuild board.html whenever a .md changes.
+  xcal.py                    324 ln  board.md + the pages' ASCII figures -> ONE `fig/board.excalidraw` (QA4a).
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -100,21 +101,21 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
 ```
 
 ## Content
-<!-- haipipe:skill:body:start cf2ea15a60aca0aa board/haipipe-board -->
+<!-- haipipe:skill:body:start 66c08bdc1b1e640c board/haipipe-board -->
 
-**haipipe-board** · `0.41.2` · last shipped 2026-07-26
+**haipipe-board** · `0.46.0` · last shipped 2026-07-29
 
 - folder   `board/haipipe-board/`
 - tools    not declared
-- summary  skillpage.py turns a skill folder into a Q page: a derived header it owns, SKILL.md and CHANGELOG.md embedded by reference, and authored sections it never touches.
+- summary  Why this matters renders in Opening for Q and S alike; each page shapes its own Content; a Q page is a decision, not a ruling (JL 260729).
 
 ### SKILL.md
 
 
 
 
-**一块板 = 一个文件夹。** 里面一个 ruling/stage 一个 `.md` page，外加一页谁都打得开的
-`board.html`。Q 是 ruling，S 是 lifecycle stage；两者共用一套版式，不共用关闭语义。
+**一块板 = 一个文件夹。** 里面一个 decision/stage 一个 `.md` page，外加一页谁都打得开的
+`board.html`。Q 是 decision，S 是 lifecycle stage（JL 260729：不再叫 ruling）；两者共用一套版式，不共用关闭语义。
 
 它取代了 `/haipipe-session`（那个是只有干活的人自己看的工作日志）。
 
@@ -172,7 +173,7 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
         不是 Work 的一个普通 item。这是 ownership/navigation order，不自动等于执行顺序；
         真实依赖写在 `## Pipeline`，例如 Narrative 后进入 Display，再分给 Main/Appendix。family 里的每个
         S page 是一个具体、可 CHECK 的 page；
-        拦住它的 Q ruling 紧跟在该 S 后面。Seed 通常含 `S Seed` 和 `S Literature`；Main
+        拦住它的 Q decision 紧跟在该 S 后面。Seed 通常含 `S Seed` 和 `S Literature`；Main
         用数字 section；Appendix 用 `0, A, B...`；Submission 至少覆盖 reconcile、compile、
         review、submit。Submission 四页每一轮复用；外审意见让受影响的 Work/Display/Main/Appendix
         page reopen，再走同一组 reconcile → compile → review → submit，不为每轮复制一套页面。
@@ -225,7 +226,7 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       the attachment on line 1; queue and focus use their short ids.
       The Board files remain the durable record. Do **not** create a shared
       `STATUS.md`: concurrent sessions would overwrite one another and stale live
-      state would look authoritative. When discussion changes a ruling, item,
+      state would look authoritative. When discussion changes a decision, item,
       comment, or log, still run the normal `sync` action in the same round; the
       closing block does not replace write-back.
 
@@ -256,7 +257,7 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
 
 - 3.2 · open — 开一块**新**板
       1. 问清三件事：**这块板要解决什么**（→ `spine`）、**什么时候算完**（→ `close`）、
-         **有哪几个 page**（几个 Q ruling；有 lifecycle 的话，还有几个 S stage）。
+         **有哪几个 page**（几个 Q decision；有 lifecycle 的话，还有几个 S stage）。
          这份 page 列表要用户点头才往下走 —— 这是唯一必须停下来问的地方。
       2. 选位置并建文件夹：task/project/paper 用
          `<所属单位>/diagram/<NN>-<主题>-<YYMMDD>/`；plugin skill-design Board 用
@@ -264,7 +265,7 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
          不同 topic 都可从 `01` 开始。
       3. 写 `board.md`：标题、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Pages`（三个都写上）。
       4. 每个 page 都复制同一份 `ref/q-template.md`，改名决定它是哪种：
-         ruling → `Q<组字母><序号>-<slug>.md`；paper lifecycle page →
+         decision → `Q<组字母><序号>-<slug>.md`；paper lifecycle page →
          `S-<Family>-<unit>-<slug>.md`，其中 Family 是 `Seed|Work|Venue|Display|Main|Appendix|Submission`
          （例如 `S-Seed-1-literature.md`、`S-Main-3-theory.md`、`S-Appendix-A-prompts.md`）。
          普通旧板的 `S0-<slug>.md` 继续兼容。
@@ -340,7 +341,7 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
 - 3.7 · excalidraw — 一块板一个 scene，一题一个 frame
       **一块板只有一个 `fig/board.excalidraw`，每个 page 在里面占一个 frame。**
       绝不拆成一题一个文件：只有同一张画布才说得清 page 之间的**关系**，
-      而那正是画图唯一比 ASCII 强的地方（`QA4a`）。
+      而那正是画图唯一比 ASCII 强的地方（`QAa2`，原 QA4a）。
       ```bash
       docker run --rm -d -p 5610:80 excalidraw/excalidraw     # 编辑器，跑一次就行
       python3 <skill>/xcal.py <board 文件夹>                   # 按 board.md 重建 scene
@@ -370,25 +371,27 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       每个 frame 会**用那题 `## Diagram` 里第一段 ``` ASCII 图当种子**填进去 ——
       frame 空着的话，读的人分不清是「还没画」还是「功能坏了」（JL 260726 就是这么撞上的）。
       种子是**单向**的：md 永远是唯一来源，画布里改了不会回流。
-      重跑是安全的，这也是它敢做成脚本的原因：id 稳定（`frame-QA4a`），
+      重跑是安全的，这也是它敢做成脚本的原因：id 稳定（`frame-QAa2`），
       人挪过的 frame 保住位置，人画的东西原样带走，**页面已经退休的 frame 会被删掉**。
       `--fresh` 是唯一会毁东西的模式（重排全部、丢掉手画内容），所以它永远不是默认。
 
-- 3.8 · comment — 评论（要 serve.py 跑着）
-      - **页面上**：选中一句话 → 冒出「💬 Comment」→ 写评论 → 按 **Save**，
-        `serve.py` 在**文件所在这台机器上**直接写进那题的 `## Comments`，顺手重新生成 html。
-        **不存在「还没同步的评论」** —— md 永远是最新那份。署名下拉可现加新用户（任意 1–4 位大写缩写）。
-        （serve.py 没跑时才退回浏览器兜底：面板的 Sync to md / Copy 手动送回。）
-      - **md 里**：`## Discussion` 写随手讨论（`> JL: …`），`## Comments` 写钉在某句话上的条目
-        （`- [ ] JL 「原句」 · 260723 1100`，解决了改 `[x]`）。
-      被评论的原句会在正文里高亮；原文改动后引文对不上，那条会标 **⚠ anchor lost** —— 不会悄悄失效。
+- 3.8 · comment / edit — 句子上的评论和编辑（要 serve.py 跑着）
+      - **评论**：选中一句所在的文字 → 冒出「💬 Comment」→ 写评论 → **Save**。`serve.py`
+        把它直接写在**那一句的正下方**：`> JL: comment · 260729 1502`，然后重建 html。
+        没有底部评论箱，也不需要在不同句子的评论里找上下文。`## Discussion` 仍只写不钉句子的随手讨论。
+      - **编辑**：double-click 一句 → 改字 → Save。正文变成最终句子；它下面自动新增一条完整
+        sentence diff：`> ✎ Whole sentence with ~removed~ *added* words. · JL · 260729 1502`。
+        `~…~` 是删掉的词，`*…*` 是新加的词。每次编辑一行，不另建 History。
+      - 新写入需要 serve.py，因为它必须在服务器的 Markdown 里找到那个句子；服务不在时，页面只保留
+        pending line / 可复制 patch，不会创建页底评论区。
+      旧式页底评论队列已废弃，不再读取、显示或迁移。
 
 - 3.9 · sync — 干完活，同一轮里回写这一题
       **板和产物必须联动，否则板就是一份过期的漂亮东西。**
       ⚠️ **触发条件是「这一轮做了实质的活」，不是「这一轮打开了某个 page」。**
       一整段 /haipipe-board 会话里做的每件实质工作，都归属于某一个 page —— 哪怕这活是从
       聊天里的一句话开始的，从头到尾没提过题号。所以顺序是：**先认领是哪一题，再干活， 干完在同一轮回写**；一件活如果哪一题都不归，那它本身就是一道该开的新题。
-      真实事故（JL 260726）：QA4a 的整条本地 excalidraw 路线当天建完并跑起来了，`QA4a` 却还写着
+      真实事故（JL 260726）：QA4a（今 `QAa2`）的整条本地 excalidraw 路线当天建完并跑起来了，`QA4a` 却还写着
       `state: 🔴 OPEN` 和「Nothing is built and nothing is decided」。活是对的，回写没做，
       于是板上写的和机器上跑的是两件事 —— 这正是「过期的漂亮东西」。
       `check.py` 的 `open-with-done-items` / `partial-with-nothing-open` 就是抓这个的，
@@ -401,7 +404,7 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       | `## Items to Finish` | 达到的条打勾。**没验过的不许打勾。** |
       | `## Log` | 可选的一行历史：`YYMMDD HHMM · 改了什么`；没有历史需求就不建 |
       | `state:` | 全部打勾 → 以 ✅ 开头；有进展 → 以 🟡 开头；明确不做 → 以 ⏸️ 开头；标准标签分别是 SETTLED / PARTIAL / ON HOLD，可在后面追加人读说明 |
-      | `## Comments` | 这轮解决掉的评论，勾成 `[x]` |
+      | 句子下的 `> WHO:` / `> ✎` 行 | 这轮新增、回复或确认的句子评论和编辑记录 |
       然后 `python3 <skill>/build.py <板文件夹>`（或让 `watch.py` 自动跑；调法见上面 build 段）。
       **还要清掉被这轮推翻的旧说法。** 板改了，别处正文里的旧描述立刻变成自相矛盾 ——
       真实例子：版式早改成上下叠了，正文还写着「左右并排」；评论层已经引了 JS，另一题还写着「坚持零脚本」。
@@ -444,14 +447,13 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       ## Lesson       这题踩过的坑        │
       ## Glossary     这一页的生词        ├ 选填 · 折叠，不上台面
       ## Discussion   随手讨论            │  用不上就删整段
-      ## Comments     钉在某句话上的评论   │
       ## Log          260723 1030 · 改了什么 ┘
       ```
       **台面上的层次顺序是定死的**，Q 和 S 一样：
       `Opening → Diagram → Content → Items to Finish → Where we are`（Files 跟在状态后面）。
       Opening 放 Question 的第一段问句和 optional Boundary；optional Diagram 是独立一节，
-      默认折叠，点节名才展开。Q page 的 Question 解释段自动成为 Content 的第一个
-      “Why this matters” subsection（默认展开）。S page 的 Opening 里还有 “Why this matters”、
+      默认折叠，点节名才展开。Question 的解释段自动成为 Opening 抽屉里的 “Why this matters”，
+      Q 和 S 一致（JL 260729；此前 Q 放在 Content 首节）。S page 的 Opening 里还有
       optional 的 `### Stage Record`、以及整个 `## Stage Contract` —— **这几行全部默认折叠**
       （JL 260725：台面上只留那句问句），所以 Stage Contract 不再单独占一节。S 的其余
       Content 仍在 `📚 Content`，节标题显示 stage 名（`📚 Content · Main 7 §6 Results`）而不是数
@@ -463,7 +465,7 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       `## Where we are`，还欠的归 `## Items to Finish`。旧板仍可写 `## Question`，也认
       `## Opening` 这个别名。
       **一套版式，两种工作流：**
-      - `Q*.md` = ruling。checkbox 全闭合后才可 `✅ SETTLED`。
+      - `Q*.md` = decision。checkbox 全闭合后才可 `✅ SETTLED`。
       - `S*.md` = lifecycle stage。`## Content` 是 stage substance（S 必填）；former Q-consumer questions
         become recognizable `Q-Stage-n` checklist records inside `## Items to Finish`; stage closes only
         at its human gate —— 也就是 S 的 `✅` 表示 gate 过了，首页按 family 据此计数。
@@ -478,7 +480,8 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       - `## Where we are` summarizes the actual stage state. It does not copy every consumer answer.
       正文里长内容一律写成 **`- 小标题` + 缩进两格的解释**，不要一段接一段的散句；
       整行加粗 `**…**` 是**组标题**（领着一串 item）。
-      **`## Content` 里只有两级，深浅靠编号不靠标题级数**（JL 260725）：`###` 是一块能单独折的
+      **每一页的 `## Content` 结构自定**（JL 260729）：division 的名字、编号和多少全由这一页自己的
+      主题决定，`§` 编号的手稿形只是默认样，不是强制；机械约束只有两条不变——`###` 是一块能单独折的
       division，`####` 是它里面的一个段落、永远是这一级。页面只折一层，再深一级就把整节压成
       一个盒子。一块 division 只在自己确实有内容时才写：flat 的节写一个 `### §1 Introduction`
       领着段落，有 subsection 的节直接从 `### §6.1` 开始。好处是不读正文也能校验：带点的 `###`
@@ -500,7 +503,7 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
 - 6 · 🚫 不许做的
       - 手改 `board.html`
       - 给板重新起日期
-      - 删掉 `> JL:` 开头的行（解决了就在 `## Comments` 里勾 `[x]`）
+      - 删掉句子下的 `> JL:` 或 `> ✎` 行（它们是该句的评论／编辑记录）
       - 让页面依赖 JS 才能读 —— 脚本只能做增强。
         **不变量：删掉页面里所有 `<script>`，每一题和全部正文仍然在。** `build.py` 每次生成都断言这一条。
 
@@ -518,14 +521,14 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       - 没定的题（🟡/🔴）**不进** manual —— 免得把「随手定的」写成铁律。
         （真踩过：`QD1` 的权限规则我一开始随手写死「只能改这一个文件」，后来被 JL 推翻成「跟 CLI 一样」。）
       - 所以 SKILL.md 永远 = **已定规矩之和**，不多不少。改它之前，先看那题 `✅` 了没。
-      - 现在已毕业的：`QA2`（Q/S 共用源模板 → `ref/q-template.md`）· `QA4`（Q/S 共用 page 版式 → `ref/board-form.md §8`，显示规格不塞进这里）· `QA6`（评论落盘）· `QC1`（板放哪）· `QC3`（Q 可住进自己的文件夹）· `QB5`（Python 按页拆进 `src/`）。
+      - 现在已毕业的：`QAa0`（Q/S 共用源模板 → `ref/q-template.md`，原 QA2 260729 并入；原 QA4：Q/S 共用 page 版式 → `ref/board-form.md §8`，显示规格不塞进这里）· `QA6`（评论落盘）· `QA1`（板放哪，原 QC1 260729 并入）· `QC3`（Q 可住进自己的文件夹）· `QB5`（Python 按页拆进 `src/`）。
         现场层的 chat/terminal（`QD1`/`QD2`/`QD3`）还 🟡，上面只放了指针，没写成规矩。嵌入语法（原 `QF1`）已定进 `ref/board-form.md §5`；QF1 这个 page 本身 260725 退役，见板上 QF 组的说明。
 
 - 8 · 📚 ref/
       | 文件 | 看它做什么 |
       |---|---|
       | `ref/q-template.md` | Q/S 共用 page 模板（历史文件名保留，避免旧链接失效） |
-      | `ref/board-form.md` | 完整规格：文件夹、编号、段落↔页面对应、语法表、Comments 格式、`## Links` |
+      | `ref/board-form.md` | 完整规格：文件夹、编号、段落↔页面对应、语法表、`## Links` |
       | `ref/writing-rules.md` | 怎么写才是人话 + 零背景审查的提示词和收敛判据 |
       | `ref/board-example.md` | 一块两题的最小示例 |
       | `stage.py` | 显式创建/同步 S page 的 inherited requirements 与 writing style |
@@ -535,44 +538,45 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       | `assets/board-mark.svg` | Board 的共享 SVG 标记；生成时内联进标题并复用为 favicon |
       独立 judge：`../agents/haipipe-board-reviewer-agent.md`。它没有写工具；作者修复后再启动一个新 reviewer。
       活的例子：`Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/` —— 这个 skill 自己的板（平铺形）。
-      嵌套形（Q rulings + S stages）的活例子：`examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`。
+      嵌套形（Q decisions + S stages）的活例子：`examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`。
 ### The other files
 
-32 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
+33 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
 
 ```
 assets/board-mark.svg               44 ln
-assets/board.css                  1041 ln  palette + type follow html-ppt's academic-report; layout is body.single
-assets/board.js                   1945 ln  Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
+assets/board.css                  1049 ln  palette + type follow html-ppt's academic-report; layout is body.single
+assets/board.js                   1903 ln  Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
 assets/xcal-boot.js                264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
 build.py                           127 ln  board folder -> board.html (static content; scripts are optional enhancement).
 check.py                           519 ln  check.py — the structural half of QA9, run against one board.
-ref/board-example.md               115 ln  最小示例 —— 一块两题的板
-ref/board-form.md                  394 ln  Board form — 完整规格
-ref/q-template.md                  275 ln  Short title (a phrase, not a sentence)
+ref/board-example.md               111 ln  最小示例 —— 一块两题的板
+ref/board-form.md                  376 ln  Board form — 完整规格
+ref/q-template.md                  276 ln  Short title (a phrase, not a sentence)
 ref/writing-rules.md                80 ln  Writing rules — how to write so it reads like human language
 refs.py                             73 ln  Render a paper's real bibliography, once, into a cache the board can read.
 regroup.py                         142 ln  Move a board's root pages into one named folder per Q group (QA1, JL 260726).
-serve.py                          2428 ln  Serve boards AND accept comment writes — from the machine the files live on.
+serve.py                          2478 ln  Serve boards AND accept comment writes — from the machine the files live on.
 skillpage.py                       728 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
 src/__init__.py                      3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
-src/body.py                        969 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
+src/body.py                        951 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
 src/common.py                      109 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
-src/dialect_paper.py               743 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
-src/page_board.py                  245 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
-src/page_question.py               389 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
+src/dialect_paper.py              1004 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
+src/page_board.py                  238 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
+src/page_question.py               576 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
 src/page_stage.py                  262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
-src/parse.py                       311 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
+src/parse.py                       328 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
 src/stage_contract.py               98 ln  Managed requirements and writing-style contracts for S pages.
-stage.py                           366 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
+stage.py                           378 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
 status.py                          208 ln  Render the three-line closing block for one Board-attached session.
 test_activity.py                   176 ln  Focused regression tests for QD8 board activity timing.
+test_sentence_editing.py            85 ln  Regression tests for sentence-local comments and tracked edits.
 test_status.py                     118 ln
 vendor/xterm/addon-unicode11.js      2 ln
 vendor/xterm/xterm.css             285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
 vendor/xterm/xterm.min.js            2 ln
 watch.py                            55 ln  Watch a board folder and rebuild board.html whenever a .md changes.
-xcal.py                            317 ln  board.md + the pages' ASCII figures -> ONE `fig/board.excalidraw` (QA4a).
+xcal.py                            324 ln  board.md + the pages' ASCII figures -> ONE `fig/board.excalidraw` (QA4a).
 ```
 
 <!-- haipipe:skill:body:end -->
@@ -588,10 +592,106 @@ Page generated 260726 2325. Nothing ruled yet.
 260727 0115 · renamed `QB6-board-skill.md` -> `Q-Skill-haipipe-board.md` and moved into the new `Q-Skill/` group; the version now rides the `state:` line as readable detail, never the filename
 260726 2325 · page generated from `board/haipipe-board/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start cf2ea15a60aca0aa board/haipipe-board -->
+<!-- haipipe:skill:log:start 66c08bdc1b1e640c board/haipipe-board -->
 
-Converted from the skill's own `CHANGELOG.md`: 64 releases.
+Converted from the skill's own `CHANGELOG.md`: 77 releases.
 
+260729 · `0.46.0`
+      - Why this matters renders inside Opening's drawer for Q pages too, unifying Q with S (JL 260729,
+        decided on the design board's QAa1): `src/page_question.py` drops the Q branch that inserted it
+        as Content's first subsection; `check.py`'s template coverage asserts the drawer row instead;
+        `ref/board-form.md`, `ref/q-template.md` and SKILL.md say the new placement.
+      - Content is per-page flexible (JL 260729, decided on QAa3): the `§`-numbered manuscript shape is
+        the default, not a mandate; the only fixed mechanics remain the one fold level (`###` division,
+        `####` paragraph). Rule text only; the renderer already accepted any division set.
+      - Vocabulary: a Q page settles a "decision", not a "ruling" (JL 260729), across SKILL.md,
+        ref/board-form.md, ref/q-template.md and the reviewer agent.
+      - Pointer maintenance after the design board's 260729 restructure (QA4->QAa0, QA4a->QAa2,
+        QA8->QAb1, QA8a->QAb3, QC1 merged into QA1, QA2 merged into the QAa faces): the graduated list
+        and the excalidraw section's live ids follow the new names.
+260728 · `0.45.0` · a variant tail is part of the unit's identity
+      - **`S-Display-<n><letter><tail>` now resolves**, e.g. `S-Display-4al2` and `S-Display-4al5`, the same claim under two specifications. Three places stopped at the letter and each failed differently: the chip pattern rendered NO card for either; `_short()` returned `S-Display-4a` for both so `by_short` kept whichever sorted first; and the face-id derivation gave both the anchor `S-Display-4A`, which exists on neither page, so both cards silently lost their owning-page link.
+      - All three now carry the tail. The legacy `display<NN><a>` form is untouched, and `S-Display-Dash` (a page, not a unit) and `S-Display-4A` (the uppercase page anchor) still do not chip, so the two identities never compete for one string.
+260728 · `0.44.0` · a member may have variants, and both the parser and the minter had to learn it
+      - **`src/parse.py`, the unit pattern.** A page id was `\d+[a-z]?`, a number plus at most one letter, so `S-Display-4al2-main-regression.md` matched NOTHING. The failure mode was the bad one: the file parsed as no page at all, `board.md` reported "listed in Pages but no such file exists", and the page was invisible rather than rejected with a reason. The alternation now leads with `\d+[a-z][a-z0-9]+`, so a VARIANT id parses and `4a` still parses exactly as before.
+      - **`stage.py`, `resolve_filename`.** It accepted only a number or one uppercase letter, so the minter could not create `4a` either, and every block-plus-member page in the MISQ paper had been made by hand while this function's own docstring called it "the one place an S page's filename is composed". Widened to the same grammar, preserving case for a lowercase member id and still upper-casing a single appendix letter.
+      - **What a variant MEANS, so the tail does not become a free-for-all:** the same claim and the same job under a different specification of the exposure or method, INHERITING its parent's letter. That inheritance is the point. Letters are reading order, so a unit reading right after `4a` would otherwise have to become `4b` and shift `4b` and `4c` down, and the MISQ board measured that cascade twice on 2026-07-27 at roughly 750 rewritten lines across 105 files.
+      - **`4a-l2` is not available, on a mechanical ground.** The page-id regex stops at the first hyphen, so a hyphenated tail parses as `S-Display-4A` and collides with its own parent. The tail runs on: `4al2`.
+      - **Verified on the MISQ board:** 42 pages, the new page ordered between `S-Display-4A` and `S-Display-4B`, 0 stale-contract warnings, every other page id unchanged, and `build-displays.py` shipping 11 units.
+260728 · `0.44.0` · measure the master the paper SHIPS
+      - **A paper may have two tex trees, and 0.43.0 measured the wrong one.** On the MISQ board `3-dist/tex/paper.tex` is the live deliverable, generated one-way from the S-Main pages by `md2tex.py`, while a root master over hand-written `sections/` still builds beside it. `_input_closure()` globbed the ROOT for `\begin{document}`, so it saw only the legacy tree and reported `??` for nine displays that were in the shipped PDF all along. It now prefers `3-dist/tex/paper.tex` when present.
+      - **An `\input` resolves against the file's own directory OR the paper root.** `md2tex.py` compiles with `TEXINPUTS=".:<paper root>:"`, which is how `\input{S-Main-3-theory}` and `\input{displays/S-Display-1a-hero-concept/float}` both work from inside `3-dist/tex/`. A walker trying only one base silently loses half the tree.
+      - **Net effect on that board:** one `\ref` chip still reports `??`, `fig:llm-measurement`, whose unit is deliberately folded. Verified by regenerating: `paper.pdf` at 47 pages, nine unit labels in `paper.aux`, zero undefined references.
+      - **The lesson worth keeping:** "a label exists on disk" (0.42.0), "a label reaches the master" (0.43.0), and "which master" (this one) are three different questions, and only the third makes the second mean anything.
+260728 · `0.43.0` · a label on disk is not a label in the document
+      - **`Registry._input_closure()`.** The label index spans every `.tex` on purpose, so a section-local label still resolves. The cost was that "a `\label` exists somewhere" was reported as "this pointer works", and those are different questions: a float that no reachable section `\input`s declares its label in a file LaTeX never opens, so the `\ref` compiles to `??` while the chip painted green. `ref()` now resolves the master's real `\input`/`\include` closure once and downgrades any label declared outside it.
+      - **Measured on the MISQ board before the fix:** `tab:descriptives` read `ok` EIGHT times on one page and printed `??`; `tab:main_results` read `ok` while its only declaration sat in a retired `displays/_old/` file reached solely by an orphan section. After: all 22 display chips on that page match ground truth.
+      - **It downgrades the `\ref` CHIP, never the unit CARD.** A card answers "is this display built and agreed", which stays true of an unwired float; a `\ref` chip IS the claim that the pointer resolves. This is `_gate`'s worst-state-wins applied to a second thing disk cannot see, and it deliberately stops short of the cards for the same reason `[AMBER]` does not downgrade one: ambering the whole set would stop the distinction informing.
+      - **No master, no judgement.** `_prints()` returns True when no `\begin{document}` file is found, so a board whose paper-root has no master is not painted amber wholesale.
+260727 · `0.42.0` · a display unit is named for the page that owns it
+      - **The unit-to-page join is a LOOKUP, not a guess.** `_sdisplay_read` used to derive an S-Display page name from the unit folder with `display0*(\d+)([a-z]?)` and rglob a stem. When either side was renamed the derivation still produced a face id, found no file, and returned an EMPTY state line, so the AGREED downgrade never fired and a `[RED]` blocked unit painted green on the board. Where a unit folder shares its name with its page, the page is now read directly. The derived branch is kept, and labelled as the fragile one, so a paper that has not migrated still builds.
+      - **Two layouts, detected not configured.** `Registry` prefers `0-lifecycle/3-display/workspace/S-Display-*/` when it exists and falls back to `displays/display*/`. The board always reads the SOURCE tree, because `candidates/`, `versions/` and `preview.png` exist only there and a card without them cannot be judged.
+      - **Both trees are excluded from the cite scan.** Under the workspace layout `displays/` holds a GENERATED copy of every float, so indexing it would declare each `\label{}` twice and report a collision against itself. `disp_parts` replaces the single `disp_rel in p.parts` test at both sites.
+      - **`_short()` replaces `id.split("-", 1)[0]`.** That split was correct only while every id began with `display`; on `S-Display-4a-main-regression` the first hyphen belongs to the prefix, so every unit would have keyed on `S` and the whole set would have collapsed onto whichever sorted first.
+      - **ALWAYS A CARD (JL 2026-07-27).** A unit name in prose renders as the evidence card, never as a bare page link: the card already carries the owning page's anchor and its state line, so it is a strict superset of the link. MARKER group 6 now accepts `S-Display-<n><letter>[-slug]` alongside the legacy form. The page ANCHOR keeps the uppercase short id (`S-Display-4A`), which the new alternative does not match, so the two identities never compete for one string. `S-Display-Dash`, a page and not a unit, does not match either.
+260727 · `0.41.9` · a Display exposes its alternatives without selecting one
+      - Every allocated paper Display now places `Display Versions` between the live artifact and the real folder tree. It lists the current `float.tex` target, every stored version, unpromoted candidate, and non-current asset as directly openable files.
+      - The projection does not manufacture version chronology or approval from filenames: only `float.tex` identifies the printed artifact. The explanatory posture states that provenance and supersession require a manifest or stage record.
+      - Display identities may now use an intentional alphabetic paired suffix such as `display01a` / `display01b`; marker resolution and the S-Display bridge preserve that suffix without changing LaTeX's figure counter.
+260727 · `0.41.8` · every Display page reviews the same three concrete things
+      - A resolved paper Display page now begins its Content with the compiled Current Float, the exact live artifact referenced by `float.tex`, and an ASCII view of the unit directory as it exists on disk.
+      - The folder view marks a `source/`-only unit as legacy rather than implying that `intake/` and `recipe/` already exist. A new-style unit reports the target layout. This makes staged migration visible without moving assets or inventing provenance.
+260727 · `0.41.7` · an authored PDF can be inspected beside the compiled float
+      - Standard Markdown image syntax now recognizes a local `.pdf` target. `![](path.pdf)` renders a native PDF object with an `open PDF` fallback, rather than an invalid `<img>`.
+      - A Display page can therefore show the generated `preview.pdf` Current Float first and, when comparison matters, show the underlying live display PDF in the next Content subsection. The two files have different review jobs and no longer have to compete for one preview slot.
+260727 · `0.41.6` · a live refresh no longer throws you back to the index
+      - **The live refresh silently un-routed the page.** `tick()` swaps `div.wrap` wholesale, and the
+        page router is pure CSS (`body:has(.q:target) .q:target{display:block}`). `:target` binds to an
+        ELEMENT, not to an id: replacing the wrap destroys the section the hash pointed at, the fresh
+        one carries the same id, and the browser never re-resolves the fragment. Nothing matches, so
+        `body:not(:has(.q:target)) .q{display:none}` hid every page and the index came back — with the
+        hash still in the URL, which is why it read as "the refresh threw me out" rather than as a bug.
+      - Fixed by re-navigating to the hash after the swap. Only a real navigation re-resolves `:target`;
+        `history.replaceState` does not.
+      - Reproduced and the repair verified in headless Chrome, on a minimal page with the same three
+        CSS rules: before swap `stage=true index=false`; after swap `stage=false index=true` with the
+        hash still present; after repair `stage=true index=false`.
+      - Found by JL: "after the refresh, I was went to the index page, not the Stage page."
+260727 · `0.41.5` · a sentence with evidence answers the same gesture
+      - **`summary` removed from the dblclick guard, and the form now lands in the drawer body.**
+        `QA8@boardform` rules that double-click opens the add-form on a BARE sentence while a drawer
+        gets its own `➕ add to this sentence` row, and that row is real — `board.js` appends one to
+        every `.sapp` at load. But it is reachable only once the drawer is already OPEN, so on a
+        sentence carrying evidence the gesture people actually learned did nothing, silently. 116 of
+        the MISQ board's sentences are already drawers, and that number only grows as the evidence
+        card becomes the default phase output, so both shapes now answer double-click.
+      - **The placement is the subtle half.** `mk` does `afterEl.insertAdjacentElement('afterend', …)`,
+        so reusing the bare-sentence call on a drawer would insert the form INSIDE `<summary>`, where
+        every click toggles the drawer and the inputs cannot be used. A drawer now passes the same two
+        arguments the `➕` row path passes — insert at the end of the drawer body, while naming the
+        summary's sentence as the target line — and opens the drawer first, since the two clicks
+        toggled it net-zero.
+      - The remaining guard clauses still cover what `summary` stood in for: the sentence text resolves
+        to the inner `p`, the `.sbadge` has no `p` ancestor so `!p` catches it, and a marker is a
+        `<button>`.
+      - Found by JL double-clicking a sentence that had just gained a `> Value:` lane.
+260727 · `0.41.4` · paper Display pages expose the editable source without replacing the float
+      - A per-asset `S-Display` page keeps the standard Q-template order and places its compiled
+        `preview.pdf` as the first `📚 Content` subsection. It resolves the unit from the page's explicit
+        `Registry id:` or `unit:` record, not from a fragile `1a` / `01` title conversion.
+      - The same subsection now links any PowerPoint source beside `open PDF`. A new source belongs in
+        `recipe/`; legacy PPTX files in `source/`, `candidates/`, or `versions/` stay discoverable with
+        an honest role label. PPTX is editable work material; `preview.pdf` is still the printable
+        float, caption, label, and placement that a reviewer inspects.
+260727 · `0.41.3` · the id regex accepts a per-unit stage token
+      - **A Q-consumer id may carry digits in its stage token.** `Q-[A-Za-z]+-\d+` rejected
+        `Q-Sec6Results-3`, so a paper whose per-unit stage names its unit in the id (JL's
+        2026-07-27 ruling) had every bracket silently un-chipped: no error, no warning, just
+        grey prose where a chip belonged. Widened to `[A-Za-z0-9]+` at all six sites —
+        `dialect_paper.py` `QID` and its `\cite{TOADD}`-bracket lookahead, `body.py`'s
+        `MARKER` alternation (3) and `QBRACKET`.
+      - Verified on the MISQ paper: 10 of 10 bracket chips on `S-Main-6` still resolve `qref
+        ok` after both sides of every binding were renamed.
 260727 · `0.41.2` · folds that stay shut, and two renderer defects
       - **An item body may contain no blank line.** `body.py` calls `flush()` on a
         blank line and `flush()` closes the open item, so a converted section ended at

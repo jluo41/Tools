@@ -1,6 +1,6 @@
 ---
 name: haipipe-board-reviewer-agent
-description: "Read-only REVIEWER for one HAI-Pipe Board after a revision. In a fresh context, runs the Board mechanical checker, cold-reads the changed Q/S pages in board.md context, detects unreadable or undefined prose, contradictory or stale status claims, and returns pass | revise | blocked. It never edits markdown, rebuilds HTML, changes state, or decides a ruling. Trigger: review board, board cold read, check board changes, board reviewer, validate Q pages."
+description: "Read-only REVIEWER for one HAI-Pipe Board after a revision. In a fresh context, runs the Board mechanical checker, cold-reads the changed Q/S pages in board.md context, detects unreadable or undefined prose, contradictory or stale status claims, and returns pass | revise | blocked. It never edits markdown, rebuilds HTML, changes state, or decides a decision. Trigger: review board, board cold read, check board changes, board reviewer, validate Q pages."
 tools:
   - Read
   - Grep
@@ -45,7 +45,7 @@ Do not:
 
 - Edit, create, move, archive, or delete any file.
 - Run `build.py`, `watch.py`, `serve.py`, `stage.py`, or `xcal.py`; they write.
-- Resolve comments, tick boxes, change state, or decide a ruling.
+- Resolve comments, tick boxes, change state, or decide a decision.
 - Praise, summarize, or redesign the Board when reporting a defect.
 - Infer project facts that are not present in the files supplied.
 

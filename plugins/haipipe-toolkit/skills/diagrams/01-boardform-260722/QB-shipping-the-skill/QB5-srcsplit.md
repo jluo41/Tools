@@ -15,11 +15,11 @@ JL named the organizing principle: modules named for what they render (`page_que
 - ✅ Covered here
   How the generator's Python is divided into `src/` modules, what each one is named for, and the byte-identical gate that proved the move changed no output.
 - ↪ Covered elsewhere
-  Moving CSS and JS out to `assets/` is `QB4`; what those modules actually render is `QA4`'s page layout; the live server's own behavior belongs to the `QD` group.
+  Moving CSS and JS out to `assets/` is `QB4`; what those modules actually render is `QAa0`'s page layout; the live server's own behavior belongs to the `QD` group.
 
 ## Diagram
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/fig/board.excalidraw&frame=QB5
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QB5
 
 ## Items to Finish
 - [x] 📦 Six modules under src/
