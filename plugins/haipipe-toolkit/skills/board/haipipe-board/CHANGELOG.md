@@ -5,6 +5,20 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.51.0 - 2026-07-29
+
+- Opening's drawer now opens with a generated `Structure` row (JL: "the Structure subsection
+  just above Boundary"): `render_structure` in `src/page_question.py` maps the page from its
+  parsed sections — one row per section that exists, Content division names under their count,
+  item/entry/file tallies — so the map is render-only and can never go stale. `.pmap` styling
+  in `assets/board.css`; drawer order is now Structure → Boundary → Why this matters → S rows.
+- Specs updated in the same change (one face, both projections): `ref/q-template.md`,
+  `ref/board-form.md` §8 (also repairing the stale "Q rationale becomes Content's first
+  subsection" sentence), and SKILL.md's page section.
+- Design faces: QAa1 §7 owns the Structure decision; QAa0's diagram and Law carry the new
+  drawer order; QAa0 §1 records the base/variant model (a page kind redefines only Content and
+  ships under its consumer family); the five sibling QAa faces are marked frame.
+
 ## 0.50.0 - 2026-07-29
 
 - Reader-facing Board links now honor the machine-local `HAIPIPE_BOARD_URL` even when the

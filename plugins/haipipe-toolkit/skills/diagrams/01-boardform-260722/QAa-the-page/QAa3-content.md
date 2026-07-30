@@ -152,6 +152,9 @@ These are creation inputs, not three live backing documents.
       A `serve.py` endpoint plus a page button; assigned emoji are visible in the markdown, editable by hand, and revertible.
 - [x] 📐 Content is flexible per page, and the auto first subsection is gone
       JL 260729: each page shapes its own Content; the two fold-level constraints stay; the Q rationale renders in Opening (`QAa1`), so Content is exactly what the author wrote.
+- [ ] 🖼 JL's canvas ask: could each Content division carry its own ascii diagram?
+      Written by JL on the board canvas (QA0 frame, 260729): "for each content subsection, could we also have a diagram ascii for it?"
+      Today a division's figure is just a fence inside the division; the fork is whether the grammar names a per-division diagram slot that the renderer ranks the way the page's ▧ ASCII is ranked.
 - [ ] 🧠 JL confirms this face owns the Content grammar
       Carved 260729 from QA4 §3 and §8 with the text verbatim; the history stays on `QAa0`.
 
@@ -169,6 +172,7 @@ The grammar is settled and live on every board; what is open moved here with its
   The graduated spec of the grammar.
 
 ## Log
+260729 · JL's canvas note on the QA0 frame recorded as an open item here: per-division ascii diagrams, a fork on this grammar
 260729 · §3 tied to the base/variant model on QAa0: a page kind fixes Content's default blueprint through its owning skill; headings simplified and the provenance parentheticals dropped on JL's ask
 260729 · Flexibility decided (JL: "each page can have its own content structure"): the manuscript shape becomes the default rather than the mandate, embeds can source content from a page's own folder, and the auto Why-this-matters subsection left for Opening
 260729 · Opened by carving QA4 §3 (Content) and §8 (group-title marker) out to their own face, text verbatim, together with the six open items that block on this grammar

@@ -41,12 +41,13 @@ intent first, status second.
   🧭 Opening         a plain heading, never a fold: it is always there
   the question lead ⌄ the actual prompt, always on stage, and it is the door:
                      click it and everything that explains it opens beneath
+       Structure     the page's own map, generated at build (JL 260729)
        Boundary      covered here / covered elsewhere
        Why it matters in here, Q and S alike (JL 260729)
        Stage Record  S only · optional · in here when supplied
        Stage Contract S only · Required Inputs · Writing Style · Venue
        (FLAT: one click shows all of it, no ▸ inside, and no icons on these
-        headings either — they are plain words so the seven read as one list)
+        headings either — they are plain words so the rows read as one list)
   ▸ 🖼 Diagram       its own section; nothing shows until clicked
        ▾ ▧ ASCII        opens with the section: the figure you almost always want
        ▸ ✏️ Excalidraw   one more click; shut, its lazy iframe never loads
@@ -469,7 +470,7 @@ The open work moved with its sections: creation-time Content composition and the
   Pure CSS (`:target` + `:has()`).
 - What is on stage, what folds
   On stage: title; compass Opening with the question lead; the Diagram, Content, Items to Finish, Where we are, and Files headings.
-  Behind the lead question's single click, shown flat and in this order: Boundary, Why this matters (Q and S alike, JL 260729), the optional S Stage Record, and the S Stage Contract with its Required Inputs, Writing Style, and venue section.
+  Behind the lead question's single click, shown flat and in this order: the generated Structure map (JL 260729), Boundary, Why this matters (Q and S alike, JL 260729), the optional S Stage Record, and the S Stage Contract with its Required Inputs, Writing Style, and venue section.
   Collapsed by default elsewhere: the entire Diagram body, item explanations, and code blocks (folded to one line `</> code · N lines`).
   Inside Diagram there is one more ranking: opening the section shows ▧ ASCII and leaves ✏️ Excalidraw shut.
   Sunk into the bottom fold: Why here · Discussion · Comments · Law · Lesson · Glossary · Log.
@@ -544,6 +545,7 @@ job line: the full-line `(…)` directly under a paragraph heading, saying what 
 >> CC0725: moved the section meanings out of Law and into seven numbered Content subsections. The visible reading path is explained first; the lower historical sections are grouped as Supporting folds.
 
 ## Log
+260729 · Structure row added to the Opening drawer (decided on QAa1): the diagram and the on-stage Law here updated to match
 260729 · The base/variant model added as Content §1 (JL, in chat): the page is a base and a page kind is a Content variant shipping under its consumer family; the kinds counted against the code, the variant contract stated, the five sibling faces marked frame, and the Stage Contract / Q-consumer reconciliation left as JL's open item
 260729 · Content cleaned on JL's ask ("I don't want the carved-to sections, keep the headings simple"): the seven carved-to stubs deleted, since Boundary already names each face, and the four real sections renumbered §1-§4 with plain headings
 260729 · Why this matters unified into Opening for Q (JL, decided on QAa1); Content became per-page flexible (decided on QAa3); this face's Diagram and Law updated to match

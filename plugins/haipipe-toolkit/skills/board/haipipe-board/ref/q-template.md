@@ -41,7 +41,9 @@ provides: one compact phrase naming the downstream handoff
      heading line, and state: takes one status only.
      The visible hierarchy is fixed, and it is the SAME for both kinds:
        Opening -> Diagram -> Content -> Items to Finish -> Where we are -> Files.
-     Opening groups the Question lead + optional Boundary. On an S page it also carries "Why this
+     Opening groups the Question lead + optional Boundary, and its drawer opens with a generated
+     `Structure` map of the page (JL 260729): one row per section that exists, computed at build,
+     nothing to author. On an S page it also carries "Why this
      matters", an optional `### Stage Record`, and the whole Stage Contract, and EVERY one of
      those rows starts collapsed (JL 260725), so the lead question is the only thing on stage and
      each layer of orientation is one click away. Stage Contract is therefore not a section of its

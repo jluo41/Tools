@@ -239,8 +239,10 @@ provides:       → contract  本页给下游的短交付说明（S only）
 Q 是 `Opening → Diagram → Content → Items to Finish → Where we are`；
 S 相同：Stage Contract 折叠在 Opening 里，不再单独占一节（JL 260725）
 （Files 跟在状态后面）。
-Opening 是 Question lead + optional Boundary；optional Diagram 是独立一节，默认折叠，
-点节名才展开。Q 的 Question 解释段自动成为 Content 首节。S 的解释段放进 Opening；
+Opening 是 Question lead + optional Boundary；抽屉第一行是 build 生成的 Structure 页面
+地图（JL 260729，纯渲染、无源可写）；optional Diagram 是独立一节，默认折叠，
+点节名才展开。Q/S 的 Question 解释段都进 Opening 抽屉的 Why this matters 行（JL 260729，
+此前 Q 的解释段自动成为 Content 首节）。
 S 的显式 Content 里若有直接 `### Stage Record`，也提进 Opening、默认折叠，其余
 subsections 留在 Content。Q 的显式 Content 可省。
 先给意图（在问什么、边界、什么算完），再给状态（现在到哪）。改版前是 Now 在 Done when 上面 ——

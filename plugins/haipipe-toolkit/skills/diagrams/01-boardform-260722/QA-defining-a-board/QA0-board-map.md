@@ -2,6 +2,7 @@
 state: 🟡 PARTIAL · the convention is JL's (260729); its graduation into the skill is open
 owner: JL
 method: one face that says what this board's groups and folders are, so a newcomer places anything in one read
+session: 7be32761-541c-4629-82f4-5c17a8b4aeab
 
 ## Question
 What is on this board, group by group, and where does each kind of thing live?
