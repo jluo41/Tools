@@ -1,4 +1,4 @@
-# haipipe-board · v0.50.0
+# haipipe-board · v0.51.0
 state: 🟡 in flux
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -10,7 +10,7 @@ Write here what this skill is for in one paragraph a stranger could follow, why 
 The generated sections answer what it IS; only this one can answer whether it is any good.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 79cb0122506c74fa board/haipipe-board -->
+<!-- haipipe:skill:tree:start d551d6c8ba2a8eed board/haipipe-board -->
 
 ```
 haipipe-board/
@@ -21,8 +21,8 @@ haipipe-board/
     xcal-boot.js             264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
   ref/
     board-example.md         111 ln  最小示例 —— 一块两题的板
-    board-form.md            387 ln  Board form — 完整规格
-    q-template.md            276 ln  Short title (a phrase, not a sentence)
+    board-form.md            389 ln  Board form — 完整规格
+    q-template.md            278 ln  Short title (a phrase, not a sentence)
     writing-rules.md          80 ln  Writing rules — how to write so it reads like human language
   src/
     __init__.py                3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
@@ -40,12 +40,12 @@ haipipe-board/
       xterm.css              285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
       xterm.min.js             2 ln
   build.py                   127 ln  board folder -> board.html (static content; scripts are optional enhancement).
-  CHANGELOG.md              1213 ln  haipipe-board — Changelog
+  CHANGELOG.md              1227 ln  haipipe-board — Changelog
   check.py                   519 ln  check.py — the structural half of QA9, run against one board.
   refs.py                     73 ln  Render a paper's real bibliography, once, into a cache the board can read.
   regroup.py                 142 ln  Move a board's root pages into one named folder per Q group (QA1, JL 260726).
   serve.py                  2478 ln  Serve boards AND accept comment writes — from the machine the files live on.
-  SKILL.md                   544 ln  /haipipe-board — 一个话题，一叠问题，一页看板
+  SKILL.md                   546 ln  /haipipe-board — 一个话题，一叠问题，一页看板
   skillpage.py               728 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
   stage.py                   378 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
   status.py                  240 ln  Render the three-line closing block for one Board-attached session.
@@ -102,9 +102,9 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 79cb0122506c74fa board/haipipe-board -->
+<!-- haipipe:skill:body:start d551d6c8ba2a8eed board/haipipe-board -->
 
-**haipipe-board** · `0.50.0` · last shipped 2026-07-29
+**haipipe-board** · `0.51.0` · last shipped 2026-07-29
 
 - folder   `board/haipipe-board/`
 - tools    not declared
@@ -474,7 +474,9 @@ WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
       ```
       **台面上的层次顺序是定死的**，Q 和 S 一样：
       `Opening → Diagram → Content → Items to Finish → Where we are`（Files 跟在状态后面）。
-      Opening 放 Question 的第一段问句和 optional Boundary；optional Diagram 是独立一节，
+      Opening 放 Question 的第一段问句和 optional Boundary；抽屉第一行是 build 生成的
+      `Structure` 页面地图（JL 260729：「just above Boundary」，纯渲染、无源可写，永不过期）；
+      optional Diagram 是独立一节，
       默认折叠，点节名才展开。Question 的解释段自动成为 Opening 抽屉里的 “Why this matters”，
       Q 和 S 一致（JL 260729；此前 Q 放在 Content 首节）。S page 的 Opening 里还有
       optional 的 `### Stage Record`、以及整个 `## Stage Contract` —— **这几行全部默认折叠**
@@ -574,8 +576,8 @@ assets/xcal-boot.js                264 ln  Injected by serve.py into the proxied
 build.py                           127 ln  board folder -> board.html (static content; scripts are optional enhancement).
 check.py                           519 ln  check.py — the structural half of QA9, run against one board.
 ref/board-example.md               111 ln  最小示例 —— 一块两题的板
-ref/board-form.md                  387 ln  Board form — 完整规格
-ref/q-template.md                  276 ln  Short title (a phrase, not a sentence)
+ref/board-form.md                  389 ln  Board form — 完整规格
+ref/q-template.md                  278 ln  Short title (a phrase, not a sentence)
 ref/writing-rules.md                80 ln  Writing rules — how to write so it reads like human language
 refs.py                             73 ln  Render a paper's real bibliography, once, into a cache the board can read.
 regroup.py                         142 ln  Move a board's root pages into one named folder per Q group (QA1, JL 260726).
@@ -616,10 +618,22 @@ Page generated 260726 2325. Nothing ruled yet.
 260727 0115 · renamed `QB6-board-skill.md` -> `Q-Skill-haipipe-board.md` and moved into the new `Q-Skill/` group; the version now rides the `state:` line as readable detail, never the filename
 260726 2325 · page generated from `board/haipipe-board/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 79cb0122506c74fa board/haipipe-board -->
+<!-- haipipe:skill:log:start d551d6c8ba2a8eed board/haipipe-board -->
 
-Converted from the skill's own `CHANGELOG.md`: 81 releases.
+Converted from the skill's own `CHANGELOG.md`: 82 releases.
 
+260729 · `0.51.0`
+      - Opening's drawer now opens with a generated `Structure` row (JL: "the Structure subsection
+        just above Boundary"): `render_structure` in `src/page_question.py` maps the page from its
+        parsed sections — one row per section that exists, Content division names under their count,
+        item/entry/file tallies — so the map is render-only and can never go stale. `.pmap` styling
+        in `assets/board.css`; drawer order is now Structure → Boundary → Why this matters → S rows.
+      - Specs updated in the same change (one face, both projections): `ref/q-template.md`,
+        `ref/board-form.md` §8 (also repairing the stale "Q rationale becomes Content's first
+        subsection" sentence), and SKILL.md's page section.
+      - Design faces: QAa1 §7 owns the Structure decision; QAa0's diagram and Law carry the new
+        drawer order; QAa0 §1 records the base/variant model (a page kind redefines only Content and
+        ships under its consumer family); the five sibling QAa faces are marked frame.
 260729 · `0.50.0`
       - Reader-facing Board links now honor the machine-local `HAIPIPE_BOARD_URL` even when the
         calling shell did not source `env.sh`. `status.py` reads only that one assignment from the

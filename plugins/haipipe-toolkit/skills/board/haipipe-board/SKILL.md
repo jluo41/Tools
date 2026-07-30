@@ -3,7 +3,7 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
 metadata:
-  version: "0.50.0"
+  version: "0.51.0"
   last_updated: "2026-07-29"
   summary: "Reader-facing Board links honor the machine-local HAIPIPE_BOARD_URL without requiring env.sh to be sourced (JL 260729)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -439,7 +439,9 @@ method: 一句话说怎么做
 
 **台面上的层次顺序是定死的**，Q 和 S 一样：
 `Opening → Diagram → Content → Items to Finish → Where we are`（Files 跟在状态后面）。
-Opening 放 Question 的第一段问句和 optional Boundary；optional Diagram 是独立一节，
+Opening 放 Question 的第一段问句和 optional Boundary；抽屉第一行是 build 生成的
+`Structure` 页面地图（JL 260729：「just above Boundary」，纯渲染、无源可写，永不过期）；
+optional Diagram 是独立一节，
 默认折叠，点节名才展开。Question 的解释段自动成为 Opening 抽屉里的 “Why this matters”，
 Q 和 S 一致（JL 260729；此前 Q 放在 Content 首节）。S page 的 Opening 里还有
 optional 的 `### Stage Record`、以及整个 `## Stage Contract` —— **这几行全部默认折叠**
