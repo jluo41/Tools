@@ -20,7 +20,7 @@ Five seams exist: who may write which section, which of two dependency declarati
 ```
  FIVE SEAMS IN ONE MARKDOWN FILE, EACH RULED FOR A DIFFERENT REASON
 
- ┌ S-Main-7-results.md ─────────────────────────────────────────┐
+ ┌ S-Main-6-results.md ─────────────────────────────────────────┐
  │ # title / state: / owner:              ◄ ③ BOARD  furniture  │ ① who writes
  │ <!-- haipipe:contract:start -->                              │   which region
  │   inherited requirements + GATE STATES  ◄ ③ GENERATED,       │
@@ -44,11 +44,10 @@ Five seams exist: who may write which section, which of two dependency declarati
                            "it exists AND has not passed"
 
  SEAM 3 · WHERE PAPER STATE LIVES
-    ✗ STATUS.md current_layer   hand-written, disagreed with its own
-                                gate ledger for MONTHS
+    ✗ STATUS.md                 retired; it duplicated derived state
     ✅ the frontier is READ      the earliest page whose gate has not
                                 passed. Derived, so it cannot disagree
-                                with itself. STATUS.md now MIRRORS.
+                                with itself. No mirror is stored.
 
 ```
 
@@ -142,13 +141,13 @@ Settled and implemented. The two contracts that carried `inputs:` now use `read_
 `STATUS.md` disagreed with itself. Its restart note and its gate ledger pointed at different frontiers, and an embedded check block recorded that `current_layer` had been left untouched because the contradiction needed a human ruling. A whole board face existed for months to resolve which of two fields in one file was true.
 
 #### The ruling that replaced it
-The frontier is READ, not stored: it is the earliest page in the pipeline whose gate has not passed, and every page carries its own `state:`. `STATUS.md` mirrors the board rather than deciding it. A hand-written pointer to the current stage is exactly what started disagreeing with the gate record, so it stopped being written.
+The frontier is READ, not stored: it is the earliest page in the pipeline whose gate has not passed, and every page carries its own `state:`. `STATUS.md` was retired rather than retained as a mirror. A hand-written pointer to the current stage is exactly what started disagreeing with the gate record, so no replacement pointer is written.
 
 #### What is unsettled
-That ruling was made on one paper. The skill still describes `STATUS.md` as the machine state each stage updates, so a stage worker following its contract would keep writing a field that no longer decides anything. Either the skill adopts the ruling, or the paper is out of step with its own skill.
+Nothing at this seam. The paper skills adopted the ruling: folder creation does not create `STATUS.md`, conform flags it if present, and gate history lives in each owning S page's `## Log`.
 
 #### Where that seam stood
-Ruled on one paper, unadopted by the skill. The two are currently in a state where following the contract would undo the ruling.
+Settled and implemented. Paper state is derived from S pages and disk; there is no separate status mirror.
 
 ### Who creates a page?
 #### The two creators
@@ -234,11 +233,11 @@ One consequence, stated rather than discovered later: the delete-test needs a bo
 - [x] 🧪 Verify no stage reads a path that does not exist
       Whichever survives, this check should pass and today does not.
 - [x] 🧭 The frontier is derived, on the consuming paper
-      Read off the pipeline from the pages' own `state:` lines; `STATUS.md` mirrors.
-- [ ] 🧠 Rule whether this generalizes
-      Adopt it in the skill, or state that the MISQ paper is an exception and say what makes it one.
-- [ ] 📐 Say what `STATUS.md` is still FOR
-      Maturity, round state and the human gate ledger may still belong to it. Frontier does not. Draw that line rather than leaving the file half-authoritative.
+      Read off the pipeline from the pages' own `state:` lines; no status mirror is stored.
+- [x] 🧠 Generalize the ruling
+      The paper skills derive state from S pages and disk; the MISQ paper is not an exception.
+- [x] 📐 Retire `STATUS.md`
+      Gate history lives in each owning S page's `## Log`; maturity and round state are likewise read from their owning pages.
 - [x] 🧠 Rule the creator
       One entry point. The other becomes a consumer of what it produced.
 - [x] 📐 Rule where the four-layer composition runs
@@ -272,7 +271,7 @@ Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Ever
   The only writer of the managed block.
 - `stages/5-section-edit/stage.md`
   Four of five inputs archived.
-- `0-lifecycle/5-section-edit/6-results/S-Main-7-results.md`
+- `0-lifecycle/4-main/S-Main-6-results.md`
   The same dependencies, generated, with gate states.
 - `PHILOSOPHY.md`
   The frontier and maturity axes.

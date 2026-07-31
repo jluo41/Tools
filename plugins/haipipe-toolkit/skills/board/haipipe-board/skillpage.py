@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """One skill folder -> one Q page on a board (QC5, opened by JL 260726).
 
-    python3 skillpage.py new  <board> <skill-dir> [--group Q-Skill]
+    python3 skillpage.py new  <board> <skill-dir> --group QC   # -> Skill-<n>-<slug>.md
     python3 skillpage.py sync <board> <page-id>          # refresh the managed block
     python3 skillpage.py sync <board> --all
     python3 skillpage.py check <board>                   # report staleness, never write
@@ -17,7 +17,7 @@ THE SPLIT, which is the whole ruling (QC5 §1-§2):
     (inside the managed markers)         summary · allowed-tools · path ·
                                          the two ![[embeds]]
 
-    AUTHORED, and this script never      ## Question · ## Items to Finish ·
+    AUTHORED, and this script never      ## Opening · ## Items to Finish ·
     touches it                           ## Where we are · ## Log
 
 `state:` is NOT derived (QC5 §3). A version cannot say whether a skill is
@@ -39,7 +39,10 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from src.common import q_files  # noqa: E402
+# page_files, not the Q-only glob (JL 260731): a skill page is now
+# `Skill-<unit>-<slug>.md`, which starts with S. page_files carries both eras,
+# so older boards with Q-Skill-* pages keep syncing.
+from src.common import page_files  # noqa: E402
 
 # Three managed spans, because the derived material belongs in three different
 # sections and one block cannot straddle them (JL 260726: the tree goes in
@@ -500,11 +503,12 @@ state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
-## Question
-{name} is a shipped skill: what does it still owe, and is it healthy?
+## Opening
+{name} is a shipped unit: what does it still owe, and is it healthy?
 
-Write here what this skill is for in one paragraph a stranger could follow, why it exists as its own skill rather than as part of its neighbour, and what would have to be true for it to be considered finished.
+Write here what this unit is for in one paragraph a stranger could follow, why it exists on its own rather than as part of its neighbour, and what would have to be true for it to be considered finished.
 The generated sections answer what it IS; only this one can answer whether it is any good.
+`Opening` is the lead section's ONE name on every page kind (JL 260731: "just one single Opening"); `Question` survives only as a legacy alias for pages written before the rename.
 
 ## Diagram
 {tree}
@@ -534,8 +538,15 @@ Page generated {stamp}. Nothing ruled yet.
 
 
 def find_page(board, page_id):
-    for p in q_files(board):
-        if p.name.split("-", 1)[0].casefold() == page_id.casefold():
+    for p in page_files(board):
+        stem = p.name[:-3]
+        if re.match(r"^Q-[A-Z]", stem):
+            pid = stem                        # a named family: the whole stem
+        elif (m := re.match(r"^((?:Skill|Agent)-\d+)-", stem)):
+            pid = m.group(1)                  # the skill/agent kind: `<Kind>-<unit>`
+        else:
+            pid = stem.split("-", 1)[0]
+        if pid.casefold() == page_id.casefold():
             return p
     return None
 
@@ -588,13 +599,13 @@ def group_home(board, group):
     end = next((j for j in range(i + 1, pend)
                 if lines[j].strip().startswith("### ")), pend)
     listed = {ln.strip() for ln in lines[i + 1:end] if ln.strip().endswith(".md")}
-    homes = {p.parent for p in q_files(board) if p.name in listed}
+    homes = {p.parent for p in page_files(board) if p.name in listed}
     slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:30].rstrip("-")
     default = key if re.match(r"^Q-[A-Z]", key) else f"{key}-{slug}"
     home = homes.pop() if len(homes) == 1 else board / default
     if re.match(r"^Q-[A-Z]", key):          # a named family takes no number
         return home, (key, None), lines, (i, end)
-    nums = [int(m.group(1)) for p in q_files(board)
+    nums = [int(m.group(1)) for p in page_files(board)
             if (m := re.match(rf"^{key}(\d+)", p.name))]
     return home, (key, max(nums, default=0) + 1), lines, (i, end)
 
@@ -610,11 +621,22 @@ def cmd_new(a):
     fm = frontmatter(defn)
     name = fm.get("name", skill_dir.stem)
     slug = a.slug or re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
-    # A NAMED group (`### Q-Skill · …`) gets NAMED pages (JL 260727): the id
-    # says which skill it is, never where it sits in a queue. A lettered group
-    # keeps the numbered form every ruling uses.
-    fname = (f"{nxt[0]}-{slug}.md" if nxt[1] is None
-             else f"{nxt[0]}{nxt[1]}-{slug}.md")
+    # A skill page is its OWN KIND, `Skill-<unit>-<slug>.md` (JL 260731: "remove
+    # Q, from Q-Skill to be Skill ... Like Skill will be a special Page"). The
+    # unit orders the roster, the slug says which skill it mirrors, and the id
+    # is `Skill-<unit>`. It takes this name in WHATEVER group lists it: the kind
+    # comes from what the page is, never from where it sits. (The 260727 named
+    # family `Q-Skill-<name>.md` still parses on older boards; this tool just
+    # stops minting it.)
+    # An AGENT mirrors a single .md definition and gets its own prefix
+    # (JL 260731: "we will call it Agent-1 ... Below the skill"): a skill is
+    # LOADED, an agent is DISPATCHED, and the roster label says which. unit()
+    # already discriminates: a folder is a skill, a lone file is an agent.
+    kind = "Skill" if unit(skill_dir)[2] is not None else "Agent"
+    used = [int(m.group(1)) for p in page_files(board)
+            if (m := re.match(rf"^{kind}-(\d+)-", p.name))]
+    start = 0 if kind == "Skill" else 1        # Agent numbering starts at 1 (JL)
+    fname = f"{kind}-{max(used, default=start - 1) + 1}-{slug}.md"
     dest = home / fname
     if dest.exists():
         return f"{rel(board, dest)} already exists"
@@ -639,7 +661,7 @@ def cmd_sync(a):
     board = Path(a.board).resolve()
     pages = []
     if a.all:
-        pages = [p for p in q_files(board) if has_block(p)]
+        pages = [p for p in page_files(board) if has_block(p)]
     else:
         p = find_page(board, a.page)
         if not p:
@@ -688,7 +710,7 @@ def cmd_sync(a):
 def cmd_check(a):
     board = Path(a.board).resolve()
     bad = 0
-    for page in q_files(board):
+    for page in page_files(board):
         if not has_block(page):
             continue
         text = page.read_text(encoding="utf-8")

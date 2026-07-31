@@ -1,5 +1,5 @@
 # ② The skill board: what is argued, and what leaves
-state: ✅ SETTLED · the Law-copy and the no-dependency proof are open in Items
+state: 🟡 PARTIAL · the Law-copy and the no-dependency proof are open in Items
 owner: JL
 method: keep the reasoning here, copy only the ruling out, and never let runtime depend on either
 

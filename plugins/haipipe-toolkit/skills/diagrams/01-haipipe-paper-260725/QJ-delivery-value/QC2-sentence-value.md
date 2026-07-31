@@ -1,5 +1,5 @@
 # A sentence with a value
-state: ✅ SETTLED
+state: 🟡 PARTIAL
 owner: JL
 method: never let a number into prose without the run that produced it
 
@@ -110,7 +110,7 @@ Building this slice turned up the thing that actually matters here. `[Q-Section-
 
 So the resolver was built once, on the bracket, and both `QC1` and `QC2` consume it. Three citation chips that yesterday could only say "owed" now say the answer landed.
 
-Two decorations are in live use for the q-consumer bullet (`* **Q-Section-2** — …` in `PP03`, `- Q-Section-1 (§7.2): …` in `PP04`), so the resolver reads the ID and ignores the bullet. Tightening that grammar is not worth a migration.
+Two decorations are in live use for the q-consumer bullet (`* **Q-Section-2**: …` in `PP03`, `- Q-Section-1 (§7.2): …` in `PP04`), so the resolver reads the ID and ignores the bullet. Tightening that grammar is not worth a migration.
 
 ### `answered` is checked, never believed
 A probe entry may carry `state: answered` while its `### a-executor` block is empty. From the prose side that reads as done and is not, so the chip verifies the block before it agrees. `read` is the honest name for that condition when the entry admits it: the bank answers, and nothing has been harvested into the entry yet.

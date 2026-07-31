@@ -1,5 +1,5 @@
 # A section, delivered as LaTeX
-state: 🔴 OPEN
+state: 🟡 PARTIAL
 owner: JL
 method: translate a whole SECTION, not a sentence, so heading order, float placement and numbering are in scope
 

@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a single self-contained HTML page you can read, project, share, and comment on inline. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "打开 BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing its URL to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening board.html directly, or using file://.
 metadata:
-  version: "0.51.0"
-  last_updated: "2026-07-29"
-  summary: "Reader-facing Board links honor the machine-local HAIPIPE_BOARD_URL without requiring env.sh to be sourced (JL 260729)."
+  version: "0.56.0"
+  last_updated: "2026-07-31"
+  summary: "Agent-<unit> is a page kind below the skills, and Opening is the lead section's one name on every page kind (JL 260731)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -21,12 +21,35 @@ metadata:
 - 打开就知道自己在干嘛 —— 靠 `spine`（主干）和 `## Topic`
 - 知道什么时候能结束 —— 靠 `close`（关板条件）和每题的 `## Items to Finish`
 
+## 👪 The family: one door, three specs, one verb (QC6 §8, shipped 260731)
+
+This skill is the DOOR: you invoke it to run a board.
+The rest of `skills/board/` is what other agents LOAD or CALL without opening the door, and this skill routes to them rather than restating them:
+
+```
+haipipe-board-index      the board + group altitude: propose a structure,
+                         materialize it, the per-group lane blocks (lanes.py)
+haipipe-board-page       SPEC · what a page IS: three kinds over one base,
+                         the seven sections, where a machine may write
+haipipe-board-sentence   SPEC · the atomic unit: lanes, evidence card,
+                         addresses, the archive-never-delete lifecycle
+haipipe-board-routing    VERB · one input → owning page → anchored write;
+                         proposes, never creates; never ticks
+haipipe-board-reviewer-agent   the read-only fresh-context reviewer
+```
+
+The specs cite this skill's `ref/` files as their authority and never fork them; the verbs load the specs.
+`haipipe-board-digest` (a transcript fanned out through routing) is named on the roster and not yet shipped.
+A page-kind VARIANT ships under its consumer family (`haipipe-paper-stage` is the first), never here.
+
 ## 🗂 形状
 
 ```
 <所属单位>/diagram/<NN>-<主题>-<YYMMDD>/       # task / project / paper
 <plugin>/skills/diagrams/<NN>-<主题>-<YYMMDD>/ # plugin skill-design Board
-  board.md                    标题 · spine · close · ## Topic · ## Pipeline · ## Pages
+  board.md                    标题 · spine · close · ## Topic · ## Pipeline
+                              · optional ## Board Map · ## Board Structure
+                              · ## Pages
   QA-<组名 slug>/             ← 一个 group 一个文件夹（默认，JL 260726）
     QA1-<slug>.md             一题一个文件
     QA2-<slug>.md
@@ -194,6 +217,16 @@ VSCODE_IPC_HOOK_CLI="$S" "$B" "$BOARD_BASE_URL/$BD/board.html#top"
    `<plugin>/skills/diagrams/<NN>-<主题>-<YYMMDD>/`。同一 topic series 的 NN 递增，
    不同 topic 都可从 `01` 开始。
 3. 写 `board.md`：标题、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Pages`（三个都写上）。
+   要给读者一张**能走的地图**，写 `## Board Map`：一个 ``` figure，画 group 之间怎么连、
+   真实存在的跨组 page edge。图里的 page id 和 group token 会渲染成链接（0.53.0），所以
+   ASCII 地图是唯一能点着走的地图，静态 host 上也画得出来，关掉脚本也在。它渲染在 index
+   最上面，是一个**可以关**的 disclosure；它优先于 `board-map:` 分享链接和本地
+   `board.excalidraw`（声明一个来源，别声明两个）。**别把 index 的名单再抄一遍** ——
+   下面那份名单已经列了每一页，地图要画的是**连接**。
+   如果这块板需要给零背景读者展示自身形状，再在 Pipeline 后写 `## Board Structure`：
+   它是 Board Index 上的 board-level block，不开成一个 Q page；里面分清 `Board-Folder`
+   （磁盘上的源与生成物）和 `Board-Webpage`（`Board-Webpage-Index` 与打开后的 page）。
+   老板子没有这段仍然照常生成。
 4. 每个 page 都复制同一份 `ref/q-template.md`，改名决定它是哪种：
    decision → `Q<组字母><序号>-<slug>.md`；paper lifecycle page →
    `S-<Family>-<unit>-<slug>.md`，其中 Family 是 `Seed|Work|Venue|Display|Main|Appendix|Submission`
@@ -422,7 +455,7 @@ state: 🔴 OPEN          首 token 是 ✅ / 🟡 / 🔴 / ⏸️；后面可�
 owner: CC               JL 显示 🧠 拍板，其他显示 🔧
 method: 一句话说怎么做
 
-## Question        第一段是真问句；后面一段解释为什么重要                     ┐ 🧭 Opening
+## Opening        第一段是真问句；后面一段解释为什么重要                     ┐ 🧭 Opening
 ## Boundary        这题管什么、更要紧的是不管什么（选填但强烈建议）          ┘
 ## Stage Contract  S 必填；上游 inputs + writing style，managed block          ┐
 ## Diagram         ascii 图（可省）；独立一节，默认折叠                       │
@@ -452,7 +485,7 @@ subsection；Q 的显式 Content 选填、标题仍显示数量。这个标题�
 都摆出来。
 **S 的 `## Content` 只放这个 stage 自己产出的东西**（JL 260725）：继承来的 venue/writing
 contract 归 `## Stage Contract`（写在 managed 标记之后，sync 不会动），已定的更正归
-`## Where we are`，还欠的归 `## Items to Finish`。旧板仍可写 `## Question`，也认
+`## Where we are`，还欠的归 `## Items to Finish`。旧板仍可写 `## Opening`，也认
 `## Opening` 这个别名。
 
 **一套版式，两种工作流：**
@@ -484,7 +517,7 @@ division，`####` 是它里面的一个段落、永远是这一级。页面只�
 加一题直接复制 `ref/q-template.md`（每段都标了必填/选填）；完整语法表见 `ref/board-form.md`。
 
 > 老段名一律还认：`## Done when`＝`## Items to Finish`、`## Now`＝`## Where we are`、中文名同理。
-> `## Why here` 已退役 —— 它的活并进 `## Question` 的解释段并渲染到 Content；
+> `## Why here` 已退役 —— 它的活并进 `## Opening` 的解释段并渲染到 Content；
 > 老板子里写着的旧段仍收进底部折叠区。
 
 ## ✍️ 写法（这条最容易被跳过）

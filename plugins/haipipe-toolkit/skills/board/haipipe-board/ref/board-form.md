@@ -7,7 +7,8 @@ SKILL.md 是最短的操作说明；这一份是查得到细节的地方。
 ```
 <所属单位>/diagram/<NN>-<主题>-<YYMMDD>/       # task / project / paper
 <plugin>/skills/diagrams/<NN>-<主题>-<YYMMDD>/ # plugin skill-design Board
-  board.md                  全局：标题 · spine · close · Topic · Pipeline · Pages
+  board.md                  全局：标题 · spine · close · Topic · Pipeline
+                            · optional Board Map · Board Structure · Pages
   QA-<组名 slug>/           一个 group 一个文件夹（默认，JL 260726）
     QA1-<slug>.md           一题一个文件
     QA2-<slug>.md
@@ -150,6 +151,25 @@ source: 可选，这块板的来源（会议记录路径之类）
 ## Pipeline
 这些 Q 之间是什么关系 —— 并列？流水线？分几组？
 
+## Board Map
+Optional, and it is the board's OWN MAP: how the groups connect, plus the cross-group page edges that really exist.
+Write it as one ``` figure.
+Every page id and group token inside a figure renders as a link (0.53.0), so an ASCII map is the only map a reader can travel on, it draws on a static host with no Excalidraw endpoint, and it survives with scripts off.
+
+It renders FIRST on the index, above Topic, as a disclosure you can shut: a map you cannot close pushes the index off the first screen.
+
+An ASCII `## Board Map` WINS over the `board-map:` share URL and over the local `board.excalidraw` scene.
+Declare one source, not two.
+A board with no `## Board Map` keeps the old iframe behaviour unchanged.
+
+Not a second registry of pages: the index below lists every page, so a map that repeats the roster says the same thing twice.
+Draw the CONNECTIONS.
+
+## Board Structure
+可选。需要向零背景读者展示这块板自身形状时写在这里，不另开一张 Q page。
+分成 Board-Folder（磁盘上的源与生成物）和 Board-Webpage
+（Board-Webpage-Index 与打开后的 Q/S page）；生成后显示在 Pipeline 与 Pages 之间。
+
 ## Pages
 ### QA · 组标题
 One sentence shown under the group header on the index (optional intro).
@@ -178,7 +198,9 @@ S-Seed-1-literature.md
 
 **Group intro (QC2, 260724)**: plain lines between a `### ` heading and that group's first `.md` line are the group's intro. Line 1 is always visible under the header on the index page; any further lines open on click (rendered as a native `<details>`, so the no-script invariant holds). Intro lines must not end in `.md`. The index page's ＋Q / ＋Group / 🗄 buttons write exactly this grammar through `POST /_board/structure` (`structure_op()` in serve.py, imported by the console): `add_question {group, title}` seeds a stub Q file and lists it under its group; `add_group {title, letter?, hook?, body?}` appends a `### QX · title` heading (letter auto-picked); `archive_question {q}` moves that file to `_archive/` inside the board folder (never deletes; since QC3 build.py DOES glob subfolders, so it is the `_` prefix that hides `_archive/` from discovery — archived files leave the page for that reason); `archive_group {group}` removes a group only when it lists no questions. Over HTTP the payload also carries `path` (the page's own location.pathname); called directly it is `structure_op(board_dir, payload)`, and importing serve.py is side-effect free (`serve_forever` sits behind `__main__`).
 
-**必填**：`# 标题`、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Pages` —— 这三段都要写，别省掉 `## Pipeline`。`source:`、`## Links` 选填。
+**必填**：`# 标题`、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Pages` —— 这三段都要写，别省掉 `## Pipeline`。
+`## Board Structure`、`source:`、`## Links` 选填。Board Structure 是 Board Index 上的
+board-level block，不计入 Q page，不进 settled 数，也不占一个 page id。
 
 ## 4. Q/S Page
 
@@ -193,7 +215,7 @@ requires:       → contract  显式上游 S ids / paths，comma-separated（S o
 style-from:     → contract  显式 writing-contract sources（S only）
 provides:       → contract  本页给下游的短交付说明（S only）
 
-## Question        → .opening .ask + kind 路由  第一段问句在 Opening；解释段见下
+## Opening        → .opening .ask + kind 路由  第一段问句在 Opening；解释段见下
 ## Boundary        → .opening .qbd  这题管什么 / 不管什么，收进 Opening
 ## Stage Contract  → Opening 内 .csec.contract 折叠行  S 的 inherited inputs + writing style（JL 260725：收进 Opening，不单独占节）
 ## Diagram         → .diagram-section > .dia  独立一节，默认折叠
@@ -229,7 +251,7 @@ provides:       → contract  本页给下游的短交付说明（S only）
 ## Log          → .folds    折叠
 ```
 
-**两种 page 都必填**：`# 标题`、`state:`、`owner:`、`## Question`、
+**两种 page 都必填**：`# 标题`、`state:`、`owner:`、`## Opening`、
 `## Items to Finish`、`## Where we are`。S 另外必填 `## Stage Contract` 和
 `## Content`；Q 删除 Stage Contract、可省 Content。
 `## Boundary` 和 `## Files` 选填但**强烈建议写**；其余（`method:`、`## Diagram` 和所有折叠段）**选填**，用不上就整段删掉。
@@ -248,11 +270,11 @@ subsections 留在 Content。Q 的显式 Content 可省。
 先给意图（在问什么、边界、什么算完），再给状态（现在到哪）。改版前是 Now 在 Done when 上面 ——
 零背景的人先撞上一堵实现细节，还没搞懂目标就淹了。
 
-**`## Why here` 已退役。** 它的活（为什么难 / 不定会怎样）并进 `## Question` 的解释段，
+**`## Why here` 已退役。** 它的活（为什么难 / 不定会怎样）并进 `## Opening` 的解释段，
 并渲染成 “Why this matters”：Q 和 S 都放在 Opening 的抽屉里，**默认折叠**（JL 260729；此前 Q 放 Content 首节）
 （JL 260725：Opening 里除了问句本身，其余每一行都收起来）。老板子里的旧段仍收进底部折叠区。
 
-**老段名一律还认**，老板子不用改就能重新生成：`## Opening` 也可代替 `## Question`，
+**老段名一律还认**，老板子不用改就能重新生成：`## Opening` 也可代替 `## Opening`，
 中文名（`## 问题` `## 现在什么样` …）、
 以及改版前的 `## Done when`（＝`## Items to Finish`）和 `## Now`（＝`## Where we are`）。
 

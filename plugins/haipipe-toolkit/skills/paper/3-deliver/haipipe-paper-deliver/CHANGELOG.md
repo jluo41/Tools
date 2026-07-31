@@ -3,6 +3,11 @@ haipipe-paper-deliver — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.1.3] — 2026-07-30
+
+- Added `project` to the Build leaf routing.
+- Kept projection generation distinct from explicit, gated promotion.
+
 ## [0.1.2] — 2026-07-26
 
 - Made `folder` an internal scaffold leaf: direct folder-creation requests route

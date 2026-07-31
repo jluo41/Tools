@@ -108,8 +108,8 @@ Moving it would break a path two families bind to, force a cross-stage topic int
       EXPIRY: if `/haipipe-application` ever stops binding `1-probes/`, the shared-contract half of this ruling dies and only the weaker page-versus-file argument remains. Re-open it then rather than treating this as permanent (JL 260726).
       Topic-scoped, ungated, and shared with `/haipipe-application`; the inverse of the round case on all three counts.
 - [x] 🔑 A per-unit stage's consumer id carries the unit (JL 260727)
-      `/haipipe-probe` already states the invariant — a Q-consumer id is CONSUMER-LOCAL and
-      "the ids never collide across consumers" — and section-edit was breaking it, because it
+      `/haipipe-probe` already states the invariant: a Q-consumer id is CONSUMER-LOCAL and
+      "the ids never collide across consumers"; section-edit was breaking it, because it
       `runs: per-unit` while spelling one shared `Q-Section-<n>` for all nine units. So this is
       not a new rule; it is the repair of one already written down. The token is
       `Q-Sec<unit><Slug>-<n>`, both halves read off the S page filename
@@ -154,12 +154,9 @@ A question crosses the wall as a STRING with its stake stripped, and the answer 
 
 The probe layer is therefore VISIBLE from the board without living in it: an S page's Q-consumer names its questions, and the sentence chips resolve their states. That is the outcome moving it would have been trying to buy.
 
-A Q-consumer id is CONSUMER-LOCAL and MUST NOT collide across consumers, so a stage that
-`runs: per-unit` names its unit in its own token: `Q-Sec<unit><Slug>-<n>`, both halves read off
-the S page filename. `/haipipe-probe`'s `Q-<Stage>-<n>` is unchanged; the per-unit stage is what
-`<Stage>` resolves to. This is not a cosmetic id rule, because the resolver takes the
-FURTHEST-ALONG match among the entries claiming an id: a shared id lets a DEFERRED question
-inherit an ANSWERED one's state, which is a manufactured green on the exact chip a reader trusts.
+A Q-consumer id is CONSUMER-LOCAL and MUST NOT collide across consumers, so a stage that `runs: per-unit` names its unit in its own token: `Q-Sec<unit><Slug>-<n>`, both halves read off the S page filename.
+`/haipipe-probe`'s `Q-<Stage>-<n>` is unchanged; the per-unit stage is what `<Stage>` resolves to.
+This is not a cosmetic id rule, because the resolver takes the FURTHEST-ALONG match among the entries claiming an id: a shared id lets a DEFERRED question inherit an ANSWERED one's state, which is a manufactured green on the exact chip a reader trusts.
 
 This ruling carries an expiry test. If `/haipipe-application` stops binding `1-probes/`, re-open it.
 
@@ -175,7 +172,7 @@ This ruling carries an expiry test. If `/haipipe-application` stops binding `1-p
   hard-coded the old shape, and none of them fail loudly.
   Fixing that gate also closed `_TODO` E2: `stage_stem()` derived `section-edit` and grepped
   `q-section-edit`, which matched nothing, so section-edit had a permanent vacuous green. It
-  now maps to `Sec` and the gate asserts 12 probe entries and 16 stage pages — surfacing five
+  now maps to `Sec` and the gate asserts 12 probe entries and 16 stage pages, surfacing five
   PP03 entries whose QA files exist but were never harvested into `### a-executor`, and two
   PP05 answers that landed in the bank and were never read back. That work was always owed and
   nothing could see it.

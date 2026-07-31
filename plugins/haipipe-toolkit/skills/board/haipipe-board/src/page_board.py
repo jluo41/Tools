@@ -4,6 +4,7 @@ import base64
 import json
 import re
 from pathlib import Path
+from urllib.parse import quote
 
 from . import body as bd
 from .body import body, inline
@@ -12,10 +13,99 @@ from .page_question import render_question
 from .page_stage import render_doc_slide
 
 
+# The map answers BOTH halves of "where am I" (JL 260731: "did you say what
+# folders are used here? engine folder, output folder ... I think here we need
+# to mention this as well"). A reader who knows how the groups connect but not
+# which folder holds the engine still cannot act, so the heading names folders
+# first and pages second.
+MAP_HEAD = ('<div class="board-map-head">'
+            '<div><span class="board-map-kicker">BOARD MAP</span>'
+            '<h2 id="board-map-title">Folders, pages, and how they connect</h2></div>'
+            '<p>Which folder holds what, and which pages depend on which. '
+            'Arrows are authored; placement is not one.</p>'
+            '</div>')
+
+
+def board_map(meta):
+    """The Board-level relationship map, if this Board has one.
+
+    THREE sources, and an ASCII `## Board Map` beats both canvases (JL 260730:
+    "I think I might need the ASCII version"). The reason is reach: a fenced
+    figure draws on a static host with no Excalidraw endpoint and no share URL,
+    it survives with scripts off, and since 0.53.0 every page and group id
+    inside it is a real link, so the map is the only one you can travel on. An
+    iframe can do none of that.
+
+    It is also a DISCLOSURE rather than a fixed 62vh block, because a map you
+    cannot shut is a map that pushes the index off the first screen.
+
+    The scene, whichever source wins, is never a second registry of pages:
+    arrows are authored deliberately, and proximity or index order never imply
+    a dependency.
+    """
+    ascii_map = (meta.get("map") or "").strip()
+    if ascii_map:
+        return (
+            '<details class="board-map board-map-ascii" open>'
+            f'<summary>{MAP_HEAD}</summary>'
+            f'<div class="board-map-body">{body(ascii_map, fold_code=False)}</div>'
+            '</details>'
+        )
+
+    declared = (meta.get("board_map") or "").strip()
+    if declared.startswith(("https://", "http://")):
+        # A static host cannot proxy `/_excalidraw`. A Board may therefore
+        # declare the share URL of its relationship canvas explicitly; it is
+        # still only a view of the map, never a second page registry.
+        url = declared
+        return (
+            '<section class="board-map" aria-labelledby="board-map-title">'
+            + MAP_HEAD +
+            f'<iframe title="{esc(meta["title"])} Board Map" src="{esc(url)}" '
+            'referrerpolicy="no-referrer"></iframe>'
+            '<div class="board-map-foot"><span>Shared canvas · pan and zoom in the full view</span>'
+            f'<a class="fp" href="{esc(url)}" target="_blank" rel="noopener">↗ Open canvas</a>'
+            '</div></section>'
+        )
+
+    host = (meta.get("excalidraw") or "").strip().rstrip("/")
+    board_dir = Path(meta.get("dir") or "")
+    if not host or not board_dir.is_dir():
+        return ""
+    scene = board_dir / "board.excalidraw"
+    if not scene.is_file():
+        scene = board_dir / "fig" / "board.excalidraw"  # legacy Boards
+    if not scene.is_file():
+        return ""
+    root = next((p for p in (board_dir, *board_dir.parents)
+                 if (p / "pyproject.toml").is_file()), None)
+    if root is None:
+        return ""
+    try:
+        rel = scene.relative_to(root).as_posix()
+    except ValueError:
+        return ""
+    url = f"{host}/?board={quote(rel, safe='/')}"
+    edit = f"{url}&edit=1"
+    return (
+        '<section class="board-map" aria-labelledby="board-map-title">'
+        + MAP_HEAD +
+        f'<iframe title="{esc(meta["title"])} Board Map" src="{esc(url)}" '
+        'referrerpolicy="no-referrer"></iframe>'
+        '<div class="board-map-foot"><span>Read-only here · pan and zoom freely</span>'
+        f'<a class="fp" href="{esc(edit)}" target="_blank" rel="noopener">✏️ Edit map</a>'
+        f'<a class="fp" href="{esc(url)}" target="_blank" rel="noopener">↗ Full map</a>'
+        '</div></section>'
+    )
+
+
 def render(meta, qs):
     # Questions and S families share one page grammar, but their progress answers
     # different things: rulings settle; lifecycle pages pass human CHECK gates.
-    qonly = [q for q in qs if q.get("kind") not in ("doc", "stage")]
+    # A skill page is a synced MIRROR of a shipped unit, not a decision, so it
+    # never enters the settled count (JL 260731). That contradiction was the
+    # old `Q-Skill` name: it was counted as a question and declared not to be one.
+    qonly = [q for q in qs if q.get("kind") not in ("doc", "stage", "skill", "agent")]
     sonly = [q for q in qs if q.get("kind") == "stage"]
     done = sum(1 for q in qonly if q["state"].startswith("✅"))
     nq = len(qonly)
@@ -50,7 +140,12 @@ def render(meta, qs):
     for q in qs:
         if q.get("group") and q["group"] != cur:
             cur = q["group"]
-            rows.append(f'<div class="grp" data-g="{esc(cur)}">'
+            # A group is a place you can travel to (JL 260730): the canvas draws
+            # groups, so a group heading needs an anchor of its own. It is NOT a
+            # page — `#group-QA` scrolls the index, it does not open a card — so
+            # the id stays in its own namespace and never collides with a page.
+            rows.append(f'<div class="grp" id="group-{esc(bd.group_token(cur))}"'
+                        f' data-g="{esc(cur)}">'
                         f'<span class="gt">{inline(cur)}</span></div>')
             # Group intro (QC2): one sentence always visible; if more lines follow,
             # they open on click via a native <details>. No script involved, so the
@@ -64,7 +159,9 @@ def render(meta, qs):
                     s = x.strip()
                     if s.startswith("```"):
                         if inf:
-                            parts.append(f'<pre class="gidia">{esc(chr(10).join(fence))}</pre>')
+                            parts.append('<pre class="gidia">'
+                                         + bd.link_faces(esc(chr(10).join(fence)))
+                                         + '</pre>')
                             fence, inf = [], False
                         else:
                             if prose:
@@ -109,12 +206,24 @@ def render(meta, qs):
                      else render_question(q, prv, nxt))
 
     ctx = ""
+    # A board-level figure NEVER folds again (JL 260730). These three sections are
+    # already behind a <details class="ctx">, so letting a long fence fold itself
+    # into "</> code · N lines" in there is the double-fold the board's own Law
+    # forbids: a fold that works and cannot be seen. A board-level canvas is the
+    # content of its section, the same argument split_diagram makes for a page's
+    # figure, so it stays on stage at any length.
     if meta["theme"]:
         ctx += (f'<details class="ctx"><summary>🦴 Topic — what this board is about</summary>'
-                f'<div class="fb">{body(meta["theme"])}</div></details>')
+                f'<div class="fb">{body(meta["theme"], fold_code=False)}</div></details>')
     if meta["pipeline"]:
         ctx += (f'<details class="ctx"><summary>🔄 Pipeline — how these Qs are ordered</summary>'
-                f'<div class="fb">{body(meta["pipeline"])}</div></details>')
+                f'<div class="fb">{body(meta["pipeline"], fold_code=False)}</div></details>')
+    if meta.get("structure"):
+        ctx += (
+            '<details class="ctx board-structure">'
+            '<summary>🧭 Board-Structure — Board-Folder and Board-Webpage</summary>'
+            f'<div class="fb">{body(meta["structure"], fold_code=False)}</div></details>'
+        )
 
     stagebits = []
     for family, label in sfamilies:
@@ -126,7 +235,8 @@ def render(meta, qs):
     return TPL.format(title=esc(meta["title"]), spine=inline(meta["spine"]),
                       close=inline(meta["close"]), bar=bar, done=done, n=nq,
                       stagebar=stagebar,
-                      ctx=ctx, index=idx, cards="\n".join(cards), js=JS, css=CSS,
+                      board_map=board_map(meta), ctx=ctx, index=idx,
+                      cards="\n".join(cards), js=JS, css=CSS,
                       mark=MARK_SVG, favicon=MARK_FAVICON,
                       # chip panels last: they are top-layer, so DOM position
                       # is free, and out here they are never inside a <summary>
@@ -161,6 +271,8 @@ TPL = """<!DOCTYPE html>
 <h1 class="h1">{title}</h1></div>
 <div class="spine"><p><b>🦴 Spine</b> {spine}</p><p><b>🏁 Close when</b> {close}</p></div>
 <p class="bar">{bar}  {done}/{n} questions settled{stagebar}</p>
+
+{board_map}
 
 {ctx}
 

@@ -20,7 +20,7 @@ The approach is one page per independently gated unit, with state read off the p
 
 ## Diagram
 ```
-   ⑧ PAPER BOARD    Paper-X/0-lifecycle/          39 S faces on the MISQ paper
+   ⑧ PAPER BOARD    Paper-X/0-lifecycle/          explicit execution pipeline
 
    S-Seed 0,1        why this paper can exist, and where it sits
         ↓
@@ -44,12 +44,15 @@ The approach is one page per independently gated unit, with state read off the p
                        Main or Appendix pages, and the round page records
                        what came back and what was done about it.
 
+   ── this is EXECUTION, not the Delivery index order ─────────────
+      Delivery reads Opening → Work; this graph keeps the lifecycle's
+      explicit dependencies. Board adjacency never creates an edge.
+
    ── the frontier is READ, never stored ──────────────────────────
       the earliest page above whose gate has not passed, taken from
       the pages' own state: lines. A hand-written "current stage"
       pointer was tried and began disagreeing with the gate record,
-      which is why STATUS.md now mirrors this board instead of
-      deciding it.
+      so no second pointer or STATUS.md exists.
 
    ── nothing graduates ───────────────────────────────────────────
       ② a ruling closes and its Law LEAVES for the skill
@@ -79,13 +82,13 @@ The reason is not tidiness. That folder duplicated four mechanisms this board al
 
 One page per round, not four. `S-Submission 0..3` stay as the four stable verbs, reconcile, compile, review and submit; the round page is where that round's actual history lives and where its gate is. The alternative, four pages per round, was considered and rejected: it would have dissolved `S-Submission` and cost four pages per round for a distinction, "round 2's compile gates separately from round 1's", that nobody has needed.
 
-The received artifacts follow the page (JL 260726). Reviewer letters, decision letters and the submitted PDF sit beside `S-Round-<n>-<vYYMMDD>.md` in `0-lifecycle/7-round/`, and `1-rounds/` is retired as a top-level container entirely. One round, one place. This is the opposite of the Display split, where the page lives in `0-lifecycle/4-display/` and its assets in `0-displays/`, and the difference is deliberate: a display asset is consumed by the manuscript and needs a stable path of its own, while a reviewer letter is read only from its round.
+The received artifacts follow the page (JL 260726). Reviewer letters, decision letters and the submitted PDF sit beside `S-Round-<n>-<vYYMMDD>.md` in `0-lifecycle/7-round/`, and `1-rounds/` is retired as a top-level container entirely. One round, one place. This differs from Display: its S pages and rebuild workspace live under `0-lifecycle/3-display/`, while only the journal-facing `float.tex` and selected `assets/` project to unnumbered `displays/<unit>/`.
 
 ### `state:` here means the gate
 On a paper board `✅` means a human passed the gate, not that a question was answered. This is the single most important difference from `QA3`, where the same glyph means a ruling was made. Only a human may pass a CHECK gate; an unattended worker may prepare it and may not write the approval.
 
 ### The frontier is derived
-The frontier is the earliest page in pipeline order whose gate has not passed, read from the pages' own `state:` lines. No face holds it, because a hand-written pointer to the current stage is exactly what started disagreeing with the gate record. `STATUS.md` mirrors this board and does not decide it.
+The frontier is the earliest page in explicit pipeline order whose gate has not passed, read from the pages' own `state:` lines. No face or sidecar holds it, because a hand-written pointer to the current stage is exactly what started disagreeing with the gate record. `STATUS.md` is retired.
 
 ### Nothing graduates
 A design board empties as its rulings leave. A paper board never empties. When an S page passes its gate it keeps everything: the Content is the paper, the gate record is the provenance, and the queue is the history of how it got there.
@@ -102,7 +105,7 @@ Delete `②` and the skill still runs. Delete `⑧` and the paper loses its fron
                             Paper owns the Content jobs.
 
  ⑧ ──▶ ⑦  the paper         OUT, by generation only. An S page's ## Content IS
-                            the section; 0-sections/*.tex is produced FROM it.
+                            the section; sections/*.tex is produced FROM it.
                             One direction, always: md to tex, never back.
 
  ⑧ ──▶ the wall             OUT, through the page. A Q-consumer block on an S
@@ -121,7 +124,7 @@ Every edge here runs through a page. That is the whole design: there is no path 
 - [x] 🏛 One S page per independently gated unit
       Display and Section have many pages because their units gate separately; single-artifact stages have one.
 - [x] 🧭 The frontier is derived, not stored
-      Read off the pipeline from the pages' own `state:` lines; `STATUS.md` mirrors.
+      Read off the explicit pipeline from the pages' own `state:` lines; no `STATUS.md` or other current-stage pointer exists.
 - [x] 🚦 `✅` on a paper board means a human gate passed
       Not that a question was answered. Only a human may write it.
 - [x] 🔁 Rounds live on the board, one page per round
@@ -153,7 +156,7 @@ Reopened to 🟡 on 260726 (JL).
 ## Files
 - `0-lifecycle/board.md`
   A live paper board's index, carrying the derived-frontier ruling in its Topic.
-- `0-lifecycle/S-Venue-3-decisions.md`
+- `0-lifecycle/2-venue/S-Venue-3-decisions.md`
   The register that holds rulings outliving the stage that raised them.
 - `haipipe-board/SKILL.md`
   The S-family grammar this board follows.
@@ -163,7 +166,7 @@ A paper board is a control plane, not a record. Each S face is one independently
 
 `✅` means a human passed the gate. Only a human may write it.
 
-The frontier is READ, as the earliest page whose gate has not passed, and is never stored in a second place. Any file that names a current stage mirrors the board and does not decide it.
+The frontier is READ, as the earliest page in the explicit dependency graph whose gate has not passed, and is never stored in a second place. The Delivery index is a reading order, not an implicit execution graph.
 
 Nothing graduates out of a paper board. Where a design board empties as its rulings leave, a gated S page keeps everything it has.
 

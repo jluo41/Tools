@@ -35,7 +35,7 @@ provides: one compact phrase naming the downstream handoff
          page's human gate passed (the index counts it under its named family).
        - owner is who is responsible; JL shows 🧠 (decides) on the page, others show 🔧.
      Section names (Question / Boundary / Items to Finish, etc.) must be kept verbatim.
-     `## Opening` is accepted as an alias for `## Question`, but the template keeps Question
+     `## Opening` is accepted as an alias for `## Opening`, but the template keeps Question
      because the lead sentence must still be an actual question.
      build.py fetches content by these exact names, so any mark goes in the body, never in the
      heading line, and state: takes one status only.
@@ -58,7 +58,7 @@ provides: one compact phrase naming the downstream handoff
      One sentence per source line: the page gives every prose line its own row, so a hard wrap in
      the middle of a sentence becomes a broken line the reader sees. Let the browser wrap. -->
 
-## Question
+## Opening
 required · One lead sentence, then one plain paragraph. **Reading this section alone, a
 zero-background person should understand what the question is.**
 

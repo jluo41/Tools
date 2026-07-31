@@ -1,5 +1,5 @@
 # A sentence with a Display · figure
-state: ✅ SETTLED
+state: 🟡 PARTIAL
 owner: JL
 method: the same stable id as a table, plus the two things a figure has and a table does not
 

@@ -4,7 +4,7 @@ owner: JL
 method: one responsibility per layer, one direction of control, progressive disclosure inside each skill
 
 ## Question
-What is in the reusable skill package, what runs at each stage, and what does it put into the other folders? This is the one folder written once and used by every paper: 35 skills and 7,406 lines, each of them a promise that some stage worker will follow. The work here is ownership, not layout.
+What is in the reusable skill package, what runs at each stage, and what does it put into the other folders? This is the one folder written once and used by every paper: the 35-skill baseline plus the new `haipipe-paper-project` runtime, each of them a promise that some stage worker will follow. The work here is ownership, not layout.
 
 This is one of three folders written once and used by every paper, `③` being the other. Everything in it is a promise: a contract a stage worker will follow, a script that will run, a template that will be filled. Nothing in it is about any particular paper, and the moment something here mentions one, it has stopped being reusable.
 
@@ -147,13 +147,13 @@ CHECK    haipipe-paper-check          HUMAN GATE. Only a person may pass it.
  seed           D P R C       S-Seed-0-seed.md                   —
  resource       D P R C       S-Work-0-resources.md              —
  claims         D P R C       S-Work-1-claims.md                 —
- venue          D P   C       S-Venue-0-venue.md                 STATUS.md `venue:`
+ venue          D P   C       S-Venue-0-venue.md                 venue pin on that S page
                 no REVISE     (a contract, not prose, so there
                               is nothing to polish)
  pitch          D P R C       S-Venue-1-pitch.md                 —
  narrative      D P R C       S-Venue-2-narrative.md             —
- display        D P R C       per-unit, blocked on QB2b           4-display.tex
-                              (11 S-Display pages on MISQ)       displays/…/
+ display        D P R C       S-Display-<id>-<slug>.md            displays/<unit>/
+                              (authority + rebuild workspace)     float.tex + selected assets
  section-edit   D P R C       S-Main-n · S-Appendix-x            sections/*.tex
                 PER UNIT      one page per section
 ```
@@ -172,8 +172,8 @@ Metadata selects the skill. `SKILL.md` explains the core loop and names exactly 
 
 Design Boards, changelogs, feedback archives, migration narratives and status reports do not belong in the live invocation path. If history must be retained, keep it outside the callable skill folder. The evidence that this is not theoretical: `haipipe-paper/SKILL.md` is 556 lines and owns routing, closing UI, comment history, evidence routing and delivery needs at once; `haipipe-display-poster/SKILL.md` is 854.
 
-### The roster: 35 skills, with versions
-Measured 2026-07-26. `ver` is the skill's own `metadata.version`; `lines` is its `SKILL.md`, which is what every invocation of it pays for.
+### The roster: 36 skills, with versions
+The 35-skill baseline was measured 2026-07-26; `haipipe-paper-project` was added 2026-07-30. `ver` is the skill's own `metadata.version`; `lines` is its `SKILL.md`, which is what every invocation of it pays for.
 ```
  layer            skill                             ver     updated     lines
  ──────────────   ───────────────────────────────   ─────   ──────────  ─────
@@ -197,6 +197,7 @@ Measured 2026-07-26. `ver` is the skill's own `metadata.version`; `lines` is its
                   haipipe-paper-proof-checker       0.1.2   2026-07-19    369
  3-deliver/build  haipipe-paper-conform             0.1.1   2026-07-19     81
                   haipipe-paper-folder              0.4.0   2026-07-14    131
+                  haipipe-paper-project             0.1.3   2026-07-30     94
                   haipipe-paper-restructure         0.1.1   2026-06-04    110
                   haipipe-paper-scaffold            0.1.1   2026-06-04    120
  3-deliver/audit  haipipe-paper-claim-audit         0.1.1   2026-05-31    230
@@ -213,7 +214,7 @@ Measured 2026-07-26. `ver` is the skill's own `metadata.version`; `lines` is its
  5-present        paper-poster                      0.2.0   2026-07-24    134
                   paper-slides                      0.2.0   2026-07-24    136
  ──────────────   ───────────────────────────────   ─────   ──────────  ─────
-                  35 skills                                            7,406
+                  36 skills                                            7,500
 ```
 
 Four things this roster says that no prose on this page did.
@@ -262,7 +263,7 @@ This is the `② ──graduates──▶ ①` edge, made addressable. Every gro
                                stages/5-section-edit/template.md
                                haipipe-board/src/body.py (the chips)
  QD   the display              display/ (the reusable family)             🟡
-                               1-lifecycle/4-display/ref/
+                               0-lifecycle/3-display/
                                3-deliver/ renderers
  QE   shipping                 stages/index.yml . stages/CONTRACT.md      🟡
 ```
@@ -317,7 +318,7 @@ Three things fall out of reading it as a column.
 - [ ] 🔗 Carry the cross-package rulings
       QA4, QA8, QA9, QC and QD each rule a file in `haipipe-board/` or `display/`, outside this folder. Nothing checks that a Law reached both halves.
 - [x] 📋 List the roster with versions
-      35 skills, their versions, dates and SKILL.md sizes, measured 260726.
+      The 35-skill baseline plus `haipipe-paper-project`, with versions, dates and SKILL.md sizes.
 - [ ] 🧠 Rule which rebuttal skill is the entry
       `4-respond/` carries three: `haipipe-paper-rebuttal`, `paper-rebuttal`, `rebuttal-response`. Nothing says which one a session calls, and two predate the third.
 - [ ] 🏷 Make the naming uniform

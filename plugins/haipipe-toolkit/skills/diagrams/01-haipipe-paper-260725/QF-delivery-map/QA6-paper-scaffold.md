@@ -1,12 +1,12 @@
 # ⑦ The paper folder: what exists on disk
 state: 🟡 PARTIAL
 owner: JL
-method: test the proposed submission-cut and three-role projection model against the accepted 0/1/2 copy-only rule
+method: test the accepted submission-cut and three-role projection model against the copy-only packaging rule
 
 ## Question
 What is in one paper's folder, and how can a reader tell at a glance which parts are the manuscript and which are the machinery that produced it? A mature paper accumulates a board, a probe pool, generated LaTeX, display units, build scripts, archives and a compiled PDF, all in one directory. Without a rule that directory becomes a place where you check three things before daring to delete anything.
 
-The proposed replacement rule treats the prefix as a packaging boundary rather than a taste: numbered paths stay out of the journal submission cut, while the unnumbered tree must still compile and submit by itself.
+The accepted replacement rule treats the prefix as a packaging boundary rather than a taste: numbered paths stay out of the journal submission cut, while the unnumbered tree must still compile and submit by itself.
 The old `rm -rf 0-* 1-* 2-*` wording described running that test on a copy; it never meant that `0-lifecycle/`, which holds the authoritative S pages, was safe to erase from the working repository.
 The live paper now also has `3-dist/`, so the fixed claim that there are three numbered folders and only three is reopened here.
 
@@ -20,16 +20,17 @@ The second rule is that nothing exists before it is needed. A new paper gets a c
 
 ## Diagram
 ```
-   A PAPER FOLDER.   PROPOSED GENERALIZATION OF THE 0/1/2 COPY TEST
+   A PAPER FOLDER.   ACCEPTED GENERALIZATION OF THE 0/1/2 COPY TEST
                      ● = exists on day 0   ○ = absent until allocated
 
    Paper-X/
    │
-   ├─ ✂️ NUMBERED · PROPOSED: excluded from submission cut ─────────────┐
+   ├─ ✂️ NUMBERED · EXCLUDED FROM THE SUBMISSION CUT ───────────────────┐
    │                                                                    │
    ● │  0-lifecycle/     ⑧ THE BOARD, and nothing but the board        │
    │ ● │    board.md · board.html                                       │
    │ ● │    0-seed/   ○ 1-work/   ○ 2-venue/    ○ 3-display/           │
+   │   │    historical folder numbering; Delivery reads Venue before Work│
    │ ○ │    4-main/   ○ 5-appendix/ ○ 6-submission/ ○ 7-round/         │
    │ ○ │    _archive/                                                   │
    │ │                                                                  │
@@ -39,46 +40,44 @@ The second rule is that nothing exists before it is needed. A new paper gets a c
    ○ │  2-src/           how the deliverable is BUILT, not what it is   │
    │   │    compile.sh · compile.ps1 · config.yaml · setup.sh           │
    │ │                                                                  │
-   🟡│  3-dist/          proposed fourth: review/handoff projections     │
+   ● │  3-dist/          accepted fourth: review/handoff projections     │
    │   │    tex/         candidate LaTeX + proof PDF, never the source  │
    │   │    word/        coauthor copies; edits return to the S page    │
    │   └────────────────────────────────────────────────────────────────┘
    │
-   └─ 📦 UNNUMBERED · PROPOSED JOURNAL SUBMISSION PROJECTION ───────────┐
+   └─ 📦 UNNUMBERED · JOURNAL SUBMISSION PROJECTION ────────────────────┐
                                                                        │
      ○   <paper>.tex        the driver: \\input each section            │
      ○   <paper>.bib        HUMAN-ONLY. An agent greps; never writes.   │
      ○   <paper>.pdf        the compiled artifact                       │
      ○   sections/          GENERATED from ⑧'s 4-main pages. ONE WAY.   │
      ○   appendices/        GENERATED from ⑧'s 5-appendix pages         │
-     ○   displays/          one folder per unit. THE ONLY home of an    │
-     │                      asset. There is NO top-level figures/.      │
+     ○   displays/          one submission folder per Display unit:    │
+     │                      float.tex + selected assets only            │
      ○   <venue>.cls · <venue>.bst      the venue shell                 │
                                                                        │
      └─────────────────────────────────────────────────────────────────┘
 
-   ── proposed generalized packaging test ───────────────────────────
+   ── generalized packaging test ────────────────────────────────────
       on a copy: remove [0-9]-*  and the paper still compiles/submits
       this is a SUBMISSION-CUT test, not permission to erase sources
 ```
 
 ```
-   ── INSIDE ONE DISPLAY UNIT.  the delete test, one level down ─────
+   ── ONE DISPLAY UNIT ACROSS THE SUBMISSION CUT ────────────────────
 
-      displays/displayNN-<slug>/
-        📦 float.tex      the \caption + \label the section \inputs
-        📦 assets/        the promoted render: figure.pdf | table-body.tex
-        ─────────────────────────────────────────────────────────────
-        ✂️ README.md      what this display argues, and for which claim
-        ✂️ preview.tex    a one-page standalone, to look at it alone
-        ✂️ preview.pdf    the build product of that
-        ✂️ source/        REBUILD.md, the script, the query
-        ✂️ candidates/    renders we did not pick
-        ✂️ versions/      renders we picked before
+      0-lifecycle/3-display/
+        🧠 S-Display-<id>-<slug>.md   authority and gate
+        🛠 workspace/                 rebuild code, previews, candidates
 
-      2 of 8 ship. The unit is the ONE place the numbered/unnumbered
-      split does not reach, because a unit is a folder, not a prefix.
-      → the ruling that closes this is in Discussion, not yet made.
+      displays/S-Display-<id>-<slug>/
+        📦 float.tex                  caption + label the section inputs
+        📦 assets/                    selected figure or table body only
+
+      The same unit id binds the two sides. Working material stays in
+      the numbered authority/workspace; only the selected submission
+      slice crosses into unnumbered displays/. The prefix test therefore
+      applies without making displays/ a special straddling exception.
 
    ── ⚠️ why figures/ was WRONG, and is now gone ────────────────────
       It came from the npjDM2025 layout, which predates display units.
@@ -105,10 +104,10 @@ The second rule is that nothing exists before it is needed. A new paper gets a c
         S-*.md          haipipe-paper-stage           ✅  0.7.0  8 contracts
       1-probes/         haipipe-paper-probe       ⑤   ✅  0.7.0
       2-src/            haipipe-paper-compile         ✅  0.2.0
-      3-dist/tex/       md2tex.py                    🟡 candidate only
+      3-dist/tex/       haipipe-paper-project        ✅ isolated candidate
       3-dist/word/      md2docx.py                   ✅ handoff export
-      sections/         md2tex.py promotion          🔴 not implemented
-      appendices/       md2tex.py promotion           "
+      sections/         haipipe-paper-project        ✅ explicit PROMOTE only
+      appendices/       haipipe-paper-project         "
       displays/         haipipe-paper-stage           (the Display stage)
         assets/         a task or discovery run       ➖  across the wall
                         haipipe-paper-draft-display   ✅  0.2.0  finds only
@@ -176,15 +175,15 @@ The second rule is that nothing exists before it is needed. A new paper gets a c
 
 ## Content
 ### Four numbered work areas, with different reasons
-The proposed four-area model is: `0-lifecycle/` is the authoritative Board and S-page source, `1-probes/` binds evidence, `2-src/` carries build recipes, and `3-dist/` carries derived review and handoff projections.
-Under the proposal, they share one packaging property rather than one durability property: none belongs in the journal submission cut.
+The accepted four-area model is: `0-lifecycle/` is the authoritative Board and S-page source, `1-probes/` binds evidence, `2-src/` carries build recipes, and `3-dist/` carries derived review and handoff projections.
+They share one packaging property rather than one durability property: none belongs in the journal submission cut.
 
 That distinction repairs a hidden contradiction in the old phrase "number by deletability".
 The unnumbered `sections/` tree is generated and may be rebuilt, while the numbered `0-lifecycle/` tree contains the source whose loss would destroy the reviewed paper record.
-If accepted, the prefix answers "does this ship to the journal?", not "may I erase this from the working repository?"
+The prefix answers "does this ship to the journal?", not "may I erase this from the working repository?"
 
-### Proposed source, candidate, and submission roles
-Under the proposal, the S page is the source authority for prose, evidence bindings, and the human gate.
+### Source, candidate, and submission roles
+The S page is the source authority for prose, evidence bindings, and the human gate.
 `3-dist/tex/` is the candidate projection: a safe place to generate and inspect LaTeX without overwriting the file currently used for submission.
 The unnumbered `sections/`, `appendices/`, `displays/`, root driver, bibliography, venue files, and PDF form the submission projection that the journal receives.
 
@@ -192,7 +191,7 @@ Neither LaTeX tree may become an authoring source.
 A coauthor change from Word or LaTeX is backported into the S page, reviewed there, and regenerated forward.
 
 ```text
-PROPOSED FLOW
+ACCEPTED FLOW
 S page ## Content                         SOURCE AUTHORITY
        │
        ├── generate ──▶ 3-dist/tex/       CANDIDATE PROJECTION
@@ -213,12 +212,12 @@ S page ## Content                         SOURCE AUTHORITY
                              edits return to the S page, never sideways
 ```
 
-Promotion is the missing operation in the proposed model.
-It would replace a named submission target only after the candidate passes its structural, evidence, compile, and human-diff gates.
+Promotion is implemented as a separate, explicit operation.
+It replaces a named submission target only after the candidate passes its structural, evidence, and compile gates and the human supplies the literal `PROMOTE` token, actor, and reason.
 It is not a second authoring direction.
 
 ### The manifest is wiring, not status
-The proposed manifest lives at `2-src/projection.yaml`.
+The manifest lives at `2-src/projection.yaml`.
 It records projection units: the S-page Content that supplies prose, the S page whose human gate permits delivery, the submission entrypoint, and the ordered files that unit writes.
 It does not record whether a gate passed, what was last promoted, or which PDF is current; those are run receipts and page history, not build configuration.
 
@@ -288,33 +287,29 @@ unreachable:
 | G0 · Coverage | Target-root recursion is acyclic; every reachable target has one unit; `entry` and wrapper order are explicit; every other target-root `.tex` has a disposition | Escaping or duplicate path, missing owner, undeclared reachable file, unresolved wrapper input, unlisted orphan |
 | G1 · Source | Every selector is unique and non-empty; the named gate page's `state:` begins `✅`; no selected source carries an unresolved evidence marker | Open gate page, missing source region, `{VAL:?}`, `\cite{TOADD}`, or broken citation/display/value binding |
 | G2 · Candidate | Generation writes only to `3-dist/tex/<run_id>/` and produces exactly the normalized target set | Any write into the submission tree, unexpected output, nondeterministic rerun, or changed selected-Content/manifest/dependency digest |
-| G3 · Evidence | Candidate citation keys, display labels, and resolved value bindings match the S page and do not silently drop bindings still present in the prior target | Comparing counts alone; any target-only binding must first be backported or deliberately removed on the S page |
+| G3 · Evidence | Runtime 0.1.3 extracts citation keys and `[Q-…]` markers from filtered pre-render manuscript prose, then independently requires them in the candidate | A projected citation/question marker disappears; Display/value/prior-target binding parity remains a named extension |
 | G4 · Compile | Copy the complete hashed dependency set into an isolated build root and compile the candidate master with the same shell and input order | Any fallback through `TEXINPUTS` to live `sections/`, `appendices/`, `displays/`, bibliography, class, style, or image; missing dependency; undefined citation/reference; a PDF existing by itself |
-| G5 · Human promotion | The reviewer sees every target diff and evidence delta, approves an immutable check receipt, and a second promotion receipt proves the reviewed bytes became the submission bytes | Stale receipt, changed target/dependency, partial approval, post-target digest unlike candidate digest, or orphan deletion |
+| G5 · Human promotion | The runtime re-runs G0-G4 on the immutable candidate, verifies the submission snapshot, and requires literal `PROMOTE`, actor, and reason; a promotion receipt proves which bytes moved | Changed candidate/dependency/target, absent human fields, failed G4, partial replacement, or rollback failure |
 
 Promotion is transactional rather than a direct overwrite.
 The checked files are staged together, the pre-check target hashes are verified again, and any failed replacement rolls the set back.
 `run_id` is the SHA-256 of the canonical manifest, selected Content, and dependency-set digests; the separate candidate digest is computed after generation over normalized output paths and bytes.
 
-The proposed runtime owner is a new callable `haipipe-paper-project` skill at `3-deliver/1-build/haipipe-paper-project/`, with `project.py generate`, `check`, and `promote`.
-It calls the QC5 LaTeX adapter, the existing conform checks, and the compile skill; no such skill or executable exists yet.
-`md2tex.py` remains a candidate adapter and never receives a submission-write flag.
+The runtime owner is the callable `haipipe-paper-project` 0.1.3 skill at `3-deliver/1-build/haipipe-paper-project/`, with `project.py validate`, `generate`, `check`, and `promote`.
+Its renderer follows the QC5 boundary; `md2tex.py` remains a separate adapter and never receives a submission-write flag.
 
-Check and promotion receipts are separate append-only JSON records under `2-src/projection-receipts/`.
-Both use SHA-256 over canonical paper-relative paths plus file bytes:
+Generate, check, blocked-check, and promotion receipts are append-only JSON records under `2-src/projection-receipts/`.
+They use SHA-256 over canonical paper-relative paths plus file bytes:
 
-- **Check receipt**
-  Records `receipt_id`, manifest digest, exact selected-Content digest, gate page ids and states, dependency-closure digest, pre-target digest, candidate digest, normalized target list, timestamp, and reviewer.
+- **Generate/check receipt**
+  Records the manifest digest, exact selected-region hashes, dependency-closure digest, candidate id, units, gate results, and timestamp. A blocked G4 check records its blocker rather than masquerading as a pass.
 - **Promotion receipt**
-  References the check receipt and, before any write, recomputes the manifest digest, selected-Content digest, every gate page's first-token `✅`, dependency-closure digest, pre-target digest, and approved candidate digest.
-  Any mismatch refuses promotion.
-  After the transaction it records the actual post-target digest, approver, timestamp, and success or rollback.
+  Re-runs the check rather than trusting a mutable pointer. Before any write it recomputes manifest, selected source, gate state, dependency closure, candidate identity, and the pre-target snapshot. After the transaction it records the actual before/after hashes, actor, reason, backup path, and gates.
 - **Hash scope**
   The source digest covers only the exact selected Content regions, not page frontmatter or `## Log`, so appending a receipt pointer does not invalidate the reviewed source.
   The post-target digest must equal the candidate digest over the same normalized target paths.
 - **Page history**
-  Each affected S page receives `[PROMOTE] check=<id> promote=<id> pre=<digest> post=<digest> approver=<who>` in `## Log`; the full records remain in `2-src/projection-receipts/`.
-  Neither the manifest nor a shared status file stores a mutable "current" pointer.
+  Receipts remain external to S-page prose. Neither the manifest nor a shared status file stores a mutable "current" pointer.
 
 ### What the MISQ manifest would expose immediately
 The root master reaches 9 section entrypoints, exactly the manuscript sources `S-Main-0` through `S-Main-8`; `S-Main-Dash` is control and must be explicitly excluded.
@@ -329,21 +324,19 @@ Its divisions still do not contain every prompt/table leaf verbatim, which means
 G1 therefore fails on both the open unit gates and incomplete leaf-source coverage.
 
 ### Why the current candidate cannot be promoted yet
-The current `md2tex.py` correctly defaults to `3-dist/tex/`, but its declared `--into-sections` option is unused and should be removed rather than turned into a direct-overwrite shortcut.
-It writes S-page filenames such as `S-Main-5-empirical.tex`, while the submission tree uses venue-facing entrypoint names.
-It does not read a manifest, distinguish delivery pages from control pages, compute the master's reachable target set, or produce a promotion receipt.
-The generated candidate PDF is 47 pages while the current submission PDF is 46 pages, which proves that a successful compile is not parity.
+The receipted Main-1 candidate is deterministic and passes G0-G3, but G4 refuses it because the baseline master actively inputs a missing Display float.
+`haipipe-paper-project` therefore cannot reach G5, even if a human supplied the promotion token.
 
-Generation and promotion should remain separate commands.
-`md2tex.py` owns the QC5 conversion into a candidate; the proposed `haipipe-paper-project` runtime consumes the manifest and passed receipt.
-No `--into-sections` generation mode is needed.
+Generation and promotion remain separate commands.
+No `--into-sections` generation shortcut is needed.
 
 ### One family, one folder
 Inside `0-lifecycle/`, the folder name IS the S family name: SEVEN families, and eight folders. The mismatch is deliberate and is not yet resolved. `Round` was ruled a family on 260726 and the board tooling never learned it: `FAMILIES` in `haipipe-board/stage.py:25` is seven names, `resolve_filename("Round", …)` raises, and the live paper's `7-round/` holds only `_archive/` with zero `S-Round` pages. So the eighth folder exists and its family does not. Before 260726 the folders carried the old STAGE order and the two disagreed badly. `Work` was split across `1a-resource/` and `1b-claims/`, `Venue` across three, and `5-section-edit/` held Main, Appendix and Submission at once while Submission was also split with `6-submission/`. Nine folders, eight families, and not one clean mapping.
 
 A reader can now place a page from its name alone: `S-Main-6-results.md` is in `4-main/`, and nothing else could be.
 
-The eight families are not the eight stages, and the folders are named for the families. Which stage fills which folder, and what each one asks:
+The eight families are not the eight stages, and the folders are named for the families. The following is the physical stage/family map, not the accepted Delivery reading order. Delivery places Venue inside Opening before Work; historical stage ids and folder numbers are not renamed by that regrouping.
+Which stage fills which folder, and what each one asks:
 ```
  STAGE            asks                                     ──▶ FAMILY      FOLDER
  0-seed           why might this paper exist?                  Seed 0      0-seed/
@@ -433,33 +426,33 @@ Almost nothing here is authored in place. The prose arrives from `⑧`, the numb
 ## Items to Finish
 - [ ] 🗃 `.board-refs.bbl` is machinery sitting in the unnumbered half
       `refs.py` writes it into the paper root: the rendered bibliography a citation chip's panel prints, 62 KB on MISQ.
-      A journal does not receive it, so the proposed submission-cut rule places it behind a numbered path, probably under `2-src/`.
+      A journal does not receive it, so the accepted submission-cut rule places it behind a numbered path, probably under `2-src/`.
       Dot-prefixed so face discovery skips it, and it should be in the paper's `.gitignore` either way.
       Filed rather than moved because changing its home means changing `refs.py` and a real paper folder.
 - [x] 🌱 Choose a minimal scaffold
       A new paper receives no speculative LaTeX, no section stubs, and no page for a unit nobody has asked for.
 - [x] 🧭 Make the scaffold Board-first
       `0-lifecycle/board.md` and one Seed page make a new paper runnable immediately.
-- [ ] 🔢 Rule the prefix as a submission-cut boundary and admit or reject `3-dist/`
-      The proposal is that every numbered path stays out of the journal package, while the unnumbered tree compiles and submits alone.
+- [x] 🔢 Rule the prefix as a submission-cut boundary and admit `3-dist/`
+      Every numbered path stays out of the journal package, while the unnumbered tree compiles and submits alone.
       This replaces "safe to delete" with "excluded from the submission cut", because `0-lifecycle/` is numbered and authoritative while `sections/` is unnumbered and generated.
-      The live `3-dist/` satisfies the proposed rule, but the fourth numbered folder is not settled until JL accepts this replacement.
+      The live `3-dist/` is the accepted fourth numbered work area and holds format candidates/handoffs.
 - [x] 🧾 Design the projection manifest contract
-      Proposed at `2-src/projection.yaml`: target and dependency roots, source selector, separate gate page, entrypoint, ordered wrapper inputs, outputs, excluded pages, and explicit orphan disposition.
+      Implemented at `2-src/projection.yaml`: target and dependency roots, source selector, separate gate page, entrypoint, ordered wrapper inputs, outputs, excluded pages, and explicit orphan disposition.
       Only the recursive `sections/` and `appendices/` target closure is page-owned; Display and venue dependencies retain their own owners and enter the compile hash set.
-- [ ] 🗺 Populate and validate the MISQ manifest
+- [x] 🗺 Populate and validate the MISQ manifest
       Map 9 Main entrypoints and 11 reachable Appendix files, exclude `S-Main-Dash`, and assign `retain`, `backport`, or `retire` to the 5 section plus 3 appendix orphans without acting on them.
       `S-Appendix-0` supplies centralized A through F source divisions; the six unit pages supply the human gates.
-      All six gates are open, and some prompt/table leaf bytes still lack an exact source selector.
+      G0 passes: 20 projected outputs plus 8 explicit unreachable targets. All six Appendix sources remain OPEN, so G1 still refuses them.
 - [x] 🚦 Design the candidate-to-submission gate sequence
       G0 coverage, G1 source, G2 isolated candidate, G3 evidence non-regression, G4 compile, and G5 human transactional promotion.
       G4 hashes and copies external dependencies so candidate compile cannot fall back to the live paper root; page-count difference is review evidence rather than a mechanical veto.
-- [ ] 🔧 Separate generation from promotion
-      Remove the unused `--into-sections` flag from `md2tex.py`.
-      Candidate generation stays in QC5; create the proposed `haipipe-paper-project` runtime with separate generate, check, and promote actions and two append-only receipts.
-- [ ] 🧪 Exercise the one gated Main page without promoting it
-      Generate, check, compile, and render the full target diff for `S-Main-1-introduction.md`, the only current Main page whose state begins `✅`.
-      Stop before submission replacement; the first run tests the contract, not the manuscript.
+- [x] 🔧 Separate generation from promotion
+      `haipipe-paper-project` now exposes separate validate, generate, check, and promote actions.
+      Generation writes only an isolated content-addressed candidate; promotion requires the literal human token `PROMOTE`, actor, reason, unchanged pre-target hashes, backup, and rollback.
+- [ ] 🧪 Complete the one gated Main-page trial without promoting it
+      `S-Main-1-introduction.md` passes G0-G3 as an exact candidate.
+      G4 is baseline-blocked by one active missing Display input that the candidate did not introduce; G5 was not run.
 - [x] 🗂 One family, one folder
       Seven S families with a folder each, plus `7-round/` whose family is declared and unimplemented; 40 pages migrated on the MISQ paper with none lost.
 - [ ] 🔧 Make `Round` a family, or rule that it is not one
@@ -473,8 +466,8 @@ Almost nothing here is authored in place. The prose arrives from `⑧`, the numb
 - [ ] 🧠 Rule whether a retarget reopens the claims stage
       It should not, by this design. Say so explicitly, because the temptation at a new venue is to re-cut the claims to fit.
 
-- [ ] ✂️ Rule where a display unit's working half lives
-      2 of a unit's 8 members ship: `float.tex` and `assets/`. `README.md`, `preview.tex`, `preview.pdf`, `source/`, `candidates/` and `versions/` never do, so `displays/` fails the delete test as it stands. See Discussion.
+- [x] ✂️ Split a display unit at the submission boundary
+      The S page and rebuild workspace live under `0-lifecycle/3-display/`; only `float.tex` and the selected `assets/` project to unnumbered `displays/<unit>/`. One unit id binds both halves.
 - [x] 🛠 Teach the four BUILD skills this layout
       Done 260726. `conform` 0.2.0 was rewritten around the delete test as an executable check (block J) plus board purity (block D); at the pre-migration baseline it failed the MISQ paper with 56 findings. `folder` 0.5.0 scaffolds Board-first with one runnable Seed page and creates no `STATUS.md`. `scaffold` 0.2.0 reframed as the manuscript upgrade, with its six templates rewritten, not just its prose. `restructure` 0.2.0 migrates INTO the new shape and gained the delete test as a third non-negotiable gate.
 - [x] 🧹 Align the remaining skills with this layout
@@ -488,39 +481,20 @@ Almost nothing here is authored in place. The prose arrives from `⑧`, the numb
       A fresh agent should open its Board and work Seed without adding or guessing another control file.
 
 ## Where we are
-The 260726 layout was implemented on the MISQ paper, but the later arrival of `3-dist/` reopens its fixed count and exposes that "numbered means deletable" conflated packaging with authority.
-The paper now has four numbered work areas: `0-lifecycle/`, `1-probes/`, `2-src/`, and `3-dist/`.
-The proposed replacement is a submission-cut rule: numbered paths do not ship to the journal, while the unnumbered projection must compile and submit alone.
+JL accepted the submission-cut and three-role model and authorized implementation.
+The paper has four numbered non-submission work areas: `0-lifecycle/`, `1-probes/`, `2-src/`, and `3-dist/`.
+S pages are source authority, `3-dist/` holds isolated candidates/handoffs, and the unnumbered tree is the journal submission projection.
 
-The rule also gained a machine check on 260726. The four `1-build/` skills were rewritten, and `haipipe-paper-conform` 0.2.0 turned the delete test from a convention into block J: it resolves every `\input`, `\includegraphics` and `\bibliography` target a master reaches and asserts none sits behind a number. At the pre-migration baseline, the MISQ paper exited 1 with 56 findings, 18 of them delete-test failures including the driver `.tex` and the `.bib`. The current result is recorded below.
+`haipipe-paper-project` 0.1.3 implements validate, generate, check, and explicit promotion.
+The MISQ manifest passes G0 with 20 outputs and 8 explicit unreachable targets.
+Main-1 is the only GATED Main unit and its surviving candidate is byte-exact against the selected Content, so G1-G3 pass.
+G4 is correctly blocked by one baseline input missing after the Display regroup:
+`displays/S-Display-4a-main-regression/float.tex`.
+The candidate did not introduce it. A second stale `table-gradient-results` input is commented TeX and is correctly ignored by the runtime.
+G5 was deliberately not run, and no submission target was overwritten.
 
-The rest of the family has now been told too. Twelve skills were aligned on 260726, ordered by binding rather than by mention count: the eight stage contracts first, then the console, the router, and the tail. With them went the two things a `SKILL.md`-only count had missed: `2-phase/REF/paper-folder-anatomy.md`, the shared spec every build skill cites, whose prefix table asserted the opposite rule and is the reason the family drifted at all; and 90 venue templates carrying one identical stale line.
-
-The paper was migrated on 260726 before `3-dist/` existed.
-That migration unnumbered the driver, bibliography, PDF, `sections/`, `appendices/`, and `displays/`; moved build recipes into `2-src/`; archived the obsolete loose assets; and placed lifecycle history on its owning S pages.
-The later exporters added `3-dist/tex/` and `3-dist/word/` without revisiting this page, which is why the on-disk tree and the three-folder Law diverged.
-
-`STATUS.md` closed on the way, which is why that ruling is now `[x]`. The Gate Ledger was the only blocker and it landed exactly where this page proposed: seed and the seed re-run on `S-Seed-0`, pitch on `S-Venue-1`, claims on `S-Work-1`, narrative on `S-Venue-2`, display on `S-Display-0`, and the three rows belonging to no single page on `S-Venue-3` alongside the Restart Note and the display-directory note. The 2026-07-20 `> CHECK` block travelled with them, intact, annotated as dissolved rather than answered: both horns of its question were about which stored frontier to trust, and there is no longer one.
-
-The current conform run reports 47 findings: 34 errors and 13 warnings, with block J green and zero delete-test failures.
-Four errors belong to board purity and five to broken display targets; the other section, display, and formatting findings are owned outside this prefix decision.
-This page does not freeze their finer breakdown because the checker output is the current source of truth.
-
-The proposed model removes the false `sections/` versus `3-dist/tex/` authority choice.
-Under it, the S page is the source authority, `3-dist/tex/` is a candidate projection, and the unnumbered tree is the submission projection.
-JL confirmed that this is the Paper skill Board and asked for the design to continue.
-That instruction produced a concrete manifest schema and six refusal gates; it did not authorize a submission-tree overwrite.
-
-The live master-reachable set is now measured rather than inferred from folder counts: 9 section entrypoints and 11 appendix files.
-Five section files and three appendix files are unreachable orphans.
-`S-Appendix-0` centralizes the A through F source divisions while the six unit pages own the human gates and list their target files.
-All six unit gates are open, and the centralized source still lacks exact selectors for some prompt/table leaves, so the proposed G1 gate would stop every Appendix promotion today.
-
-The model remains proposed until JL accepts its prefix and three-role rulings.
-Implementation remains blocked behind that acceptance, creation of the proposed runtime, a populated MISQ manifest, and one candidate-only trial.
-
-The display unit's working half remains a separate open split.
-Because `displays/` is inside the unnumbered submission tree, its six non-shipping members still travel with the two files the journal needs.
+Disposable runtime tests pass deterministic reuse, path-escape refusal, no submission write during generation/check, literal-token refusal, backup, and rollback.
+The display unit's working/shipping split is now explicit. The remaining trial gap is owned by the one active stale Display input.
 
 ## Files
 - `3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh`
@@ -534,26 +508,27 @@ Because `displays/` is inside the unnumbered submission tree, its six non-shippi
 - `README.md`
   The family map, which still describes the older complete-folder shape.
 - `3-deliver/4-ship/haipipe-paper-to-word/md2tex.py`
-  Generates the current candidate projection in `3-dist/tex/`; declares but does not implement `--into-sections`, which this design proposes removing.
-- `QC-the-sentence-with-evidence-card/QC5-sentence-to-latex.md`
+  The QC5 format adapter; it is not allowed to perform implicit submission promotion.
+- `QO-delivery-build/QC5-sentence-to-latex.md`
   Owns conversion semantics and evidence extraction; QA6 owns only where candidates land and how they may be promoted.
 - `2-src/projection.yaml`
-  Proposed manifest location; the file does not exist yet.
+  Live MISQ wiring manifest; G0 validated.
 - `2-src/projection-receipts/`
-  Proposed append-only check and promotion receipt location; the directory does not exist yet.
+  Live append-only generation/check receipt location. No promotion receipt exists.
 - `3-deliver/1-build/haipipe-paper-project/`
-  Proposed runtime owner for generate, check, and promote; no skill or executable exists yet.
+  Runtime owner for validate, generate, check, and explicit transactional promote.
 - `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/`
   The measured tree: four numbered work areas, 9 reachable section entrypoints, 11 reachable appendix files, 8 unreachable `.tex` files, and PDFs of 47 and 46 pages.
 
 ## Law
-The 260726 packaging test remains the last accepted rule: on a copy, removing `0-*`, `1-*`, and `2-*` must leave a paper that compiles and submits.
-That copy-only test is not permission to erase the working repository.
+The prefix is a submission-cut boundary: on a copy, remove all numbered work areas and the unnumbered paper must still compile and submit.
+That copy-only packaging test is never permission to erase the working repository.
 
-The later `3-dist/` addition makes the old "three and only three" count stale.
-Until JL rules the replacement in Items, neither the proposed submission-cut interpretation nor the proposed three-role projection model is Law, and no candidate may be promoted into `sections/` or `appendices/`.
+There are four current numbered work areas: authoritative lifecycle pages, probe bindings, build recipes, and derived format candidates/handoffs.
+The S page is source authority; `3-dist/` is candidate/handoff projection; the unnumbered tree is submission projection.
+Generation and promotion are separate, and no candidate may be promoted until G0-G4 pass and a human explicitly authorizes G5.
 
-`displays/` is the ONLY home of an asset, one folder per unit. There is no top-level `figures/` and no `Figure/` or `Table/` bucket: a display is a unit, and its render lives inside it.
+`0-lifecycle/3-display/` owns Display pages and rebuild work. Unnumbered `displays/` is the submission projection: one folder per unit containing only `float.tex` and selected `assets/`. There is no active top-level `figures/` or flat `Figure/`/`Table/` bucket.
 
 Inside `0-lifecycle/`, one family one folder, and the folder holds S pages and its own index and nothing else.
 
@@ -563,7 +538,9 @@ Every stage declares exactly one of venue-free or venue-aligned, decided by whet
 
 ## Discussion
 > JL 260729: confirmed that this work is on the Paper skill Board and asked CC to continue the design.
-> CC: treated that as authorization to design the manifest and gates, not as permission to promote files or as a final acceptance receipt for the proposed prefix and three-role model.
+> CC: at that point treated it as authorization to design the manifest and
+> gates, not as permission to promote files. JL subsequently accepted the
+> prefix and three-role model and authorized the candidate-only implementation.
 
 > CC 260729: `sections/` and `3-dist/tex/` should not compete for source authority.
 > The S page is the only authored and gated source; `3-dist/tex/` is a candidate projection; the unnumbered LaTeX tree is the journal submission projection.
@@ -573,8 +550,8 @@ Every stage declares exactly one of venue-free or venue-aligned, decided by whet
 > JL 260726: things like 0, 1, 2 are the things we can delete when we want to submit.
 > CC: adopted as the delete test, and it is checkable rather than a convention.
 
-> CC 260726: one case does not fit and I have not resolved it. A display UNIT holds both halves, and the split is 2 of 8: `float.tex` and `assets/` ship; `README.md`, `preview.tex`, `preview.pdf`, `source/`, `candidates/` and `versions/` never do. Today they sit in one folder, so the delete test cannot be run on `displays/` without losing what a journal needs.
-> Three ways out, none ruled: put the working six under `displays/<unit>/_work/`; or move them to `2-src/displays/<unit>/`; or accept the straddle and state that `displays/` is the one folder the test does not apply to. The first keeps a unit together and is what I would try first.
+> CC 260726 historical note: the Display unit still straddled the submission cut at that date, so three placements remained under consideration.
+> Resolution 260729: the S page and rebuild workspace moved to `0-lifecycle/3-display/`; only `float.tex` and selected `assets/` project to `displays/<unit>/`. The shared unit id preserves identity across the cut.
 
 > JL 260726: we might not need STATUS.md and not need the status strip any more.
 > CC: I agree on the file, and the case is stronger than a preference. Three arguments, in order of weight.
@@ -585,6 +562,8 @@ Every stage declares exactly one of venue-free or venue-aligned, decided by whet
 > On the strip I would separate two things. Deleting the stored `current_layer` it was designed to read: yes, and it already does not read it. Deleting the strip itself: that is a different question about how a reply closes, not about this folder, and it belongs on `QA7` or `QA2` rather than here.
 
 ## Log
+260730 · JL accepted implementation. Created `haipipe-paper-project` and the MISQ manifest. Main-1 passes G0-G3 in an isolated candidate; runtime 0.1.2 corrected the commented-input false positive, and 0.1.3 made G3 independent of the renderer by extracting evidence from filtered pre-render prose. One active G4 blocker remains. G5 not run and submission untouched.
+
 260729 2132 · Closed the final two cold-read precision gaps. Promotion now recomputes manifest, selected Content, every gate state, dependencies, pre-target bytes, and approved candidate bytes before writing, so a changed source or gate makes the check receipt stale rather than merely a changed target. QC5's introduction citation count was corrected from a raw-Content 29 to 16 prose calls; the larger count included apparatus and one unresolved marker.
 
 260729 2124 · Fresh review refined the executable contract. Target ownership now stops at the recursive `sections/` and `appendices/` closure; Display and venue files remain external owners inside a hashed compile-dependency set. Projection units now separate source page from gate page, which corrected Appendix ownership: `S-Appendix-0` centralizes the prose while A through F are open unit gates. Added normalized-path and cycle refusal, ordered wrapper inputs, explicit orphan dispositions, isolated compile with no live-root fallback, separate check and promotion receipts with exact hash scopes, and proposed `haipipe-paper-project` as the callable runtime. QC5's restored citations and archived Display buckets were also synchronized. No runtime or paper artifact was created.

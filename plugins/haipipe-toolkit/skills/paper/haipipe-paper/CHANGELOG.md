@@ -3,6 +3,11 @@ haipipe-paper — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.4.6] — 2026-07-30 — explicit projection routing
+
+- Added `project` and `projection` to delivery routing so gated S-page content
+  reaches `haipipe-paper-project` rather than an implicit submission overwrite.
+
 ## [0.4.5] — 2026-07-27 — Display Intake routing
 
 - Separates a missing display-ready aggregate (task-for-display) from a paper-facing render (Paper Display → Intake → renderer).

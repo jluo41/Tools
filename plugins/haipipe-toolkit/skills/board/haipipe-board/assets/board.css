@@ -124,6 +124,35 @@ p.sentence-target:hover+.schatbar,summary:hover>.schatbar,
  border-radius:var(--radius-surface);padding:14px 17px;margin:0 0 14px}
 .spine p{margin:5px 0}
 .bar{font:13px ui-monospace,Menlo,monospace;color:var(--mut);margin:0 0 22px}
+/* Board Map is the whole-board canvas, not a second source of structure.
+   Every frame is one page; arrows are authored relationships only. Keeping the
+   map at the top means the index can answer "how do these pages connect?"
+   before the reader begins scanning rows. */
+.board-map{margin:0 0 20px;border:1px solid var(--line);border-radius:var(--radius-surface);
+ background:var(--card);overflow:hidden}
+.board-map-head{display:flex;align-items:baseline;justify-content:space-between;gap:18px;
+ padding:14px 16px 11px;border-bottom:1px solid var(--line)}
+.board-map-kicker{display:block;font:10.5px ui-monospace,Menlo,monospace;letter-spacing:.12em;color:var(--accent)}
+.board-map h2{font-size:19px;line-height:1.25;letter-spacing:-.01em;margin:2px 0 0}
+.board-map-head p{max-width:25rem;margin:0;color:var(--mut);font-size:12.5px;line-height:1.45;text-align:right}
+.board-map iframe{display:block;width:100%;height:min(62vh,560px);border:0;background:var(--pre)}
+/* the ASCII map is a DISCLOSURE (JL 260730): the whole head is the handle, so
+   the caret sits on the kicker line and the map shuts without a second control.
+   The figure keeps pre.asc's own padding, so no rule here touches alignment. */
+details.board-map-ascii>summary{cursor:pointer;list-style:none}
+details.board-map-ascii>summary::-webkit-details-marker{display:none}
+details.board-map-ascii>summary .board-map-head{border-bottom:0}
+details.board-map-ascii[open]>summary .board-map-head{border-bottom:1px solid var(--line)}
+details.board-map-ascii>summary .board-map-kicker::after{content:" ▸"}
+details.board-map-ascii[open]>summary .board-map-kicker::after{content:" ▾"}
+details.board-map-ascii>summary:hover .board-map-kicker{text-decoration:underline}
+.board-map-body{padding:2px 16px 14px;overflow-x:auto}
+.board-map-body pre.asc{margin:0;padding:11px 0;background:none;border:0}
+.board-map-foot{display:flex;align-items:center;gap:12px;padding:8px 16px;
+ border-top:1px solid var(--line);font-size:12px;color:var(--mut)}
+.board-map-foot .fp{color:var(--accent);text-decoration:none}
+.board-map-foot .fp:first-of-type{margin-left:auto}
+.board-map-foot .fp:hover{text-decoration:underline}
 /* sits AFTER the page cards (JL 260726): the board's content leads, the
    measurement of that content closes. Top margin separates it from the
    last card; the foot paragraph follows. */
@@ -208,6 +237,7 @@ body:has(#all:target) h3.sec .hint{visibility:hidden}
 .nav{display:none}
 body:has(.q:target) .idx,
 body:has(.q:target) .bar,
+body:has(.q:target) .board-map,
 body:has(.q:target) .activity,
 body:has(.q:target) h3.sec{display:none}
 body:has(.q:target) .foot,
@@ -702,6 +732,13 @@ mark{background:transparent;box-shadow:inset 0 0 0 1000px rgba(255,214,0,.34);co
 /* an ascii diagram inside Content: it IS the content, not a code listing.
    Same reading comfort as the .dia signature diagram, without the fold chrome. */
 pre.asc{margin:10px 0;padding:13px 15px;line-height:1.55;overflow-x:auto}
+/* a page or group id inside a figure is a place you can go (JL 260730). The
+   underline is dotted and the weight never changes: a monospace figure loses
+   its alignment the moment a token is allowed to grow. */
+pre .fl{color:var(--accent);text-decoration:none;
+ border-bottom:1px dotted color-mix(in oklab,var(--accent) 55%,transparent)}
+pre .fl:hover{border-bottom-style:solid;background:color-mix(in oklab,var(--accent) 12%,transparent)}
+pre .fl:visited{color:var(--accent)}
 
 .q:target .dia{margin:0 0 24px}
 .q:target .dia pre{font-size:13px;line-height:1.6}
@@ -782,6 +819,11 @@ body:has(.q:target) .q:target{border:none;border-radius:0;background:none;
 .q:target .folds{margin-top:auto;padding-top:18px}
 @media(max-width:600px){
  body{overflow-x:hidden}
+ .board-map-head{display:block;padding:13px 13px 10px}
+ .board-map-head p{max-width:none;margin-top:7px;text-align:left}
+ .board-map iframe{height:48vh;min-height:290px}
+ .board-map-foot{gap:9px;padding:8px 13px;flex-wrap:wrap}
+ .board-map-foot .fp:first-of-type{margin-left:0}
  .activity{padding:14px 12px}
  .act-head{flex-wrap:wrap;gap:7px}
  .act-status{white-space:normal}

@@ -1,5 +1,5 @@
 # haipipe-paper-lifecycle · v0.5.5
-state: ✅ SETTLED · account written; the acceptance test is open in Items
+state: 🟡 PARTIAL · account written; the acceptance test is open in Items
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
@@ -8,6 +8,7 @@ How does the paper lifecycle keep the Markdown state a writer changes, the first
 
 This page is about the structural router and its seam with `haipipe-board`.
 It is not a second account of a stage's research content or the Board renderer itself.
+Its Seed → Work → Venue sequence below is the Engine's explicit execution pipeline. The Delivery index reads Opening (including Venue) → Work; that reader-facing grouping does not silently reorder stage dependencies.
 
 ## Diagram
 <!-- haipipe:skill:tree:start 5883bf6a7b5edf8d paper/1-lifecycle/haipipe-paper-lifecycle -->

@@ -57,9 +57,15 @@ def parse_board(board):
                 session=f("session"),   # 整板会话的 id（QD5）——serve.py 记在 board.md 头部
                 excalidraw=f("excalidraw"),  # the board's own Excalidraw host, e.g.
                                             # http://127.0.0.1:5610 (self-hosted, QA4a)
+                board_map=f("board-map"),  # optional shared map URL for a static reader
                 dialect=f("dialect"),       # opt-in: `paper` resolves \citep{} at build time
                 paper_root=f("paper-root"),  # where that paper's .bib / displays / 1-probes are
-                theme=sec(bs, "Topic"), pipeline=sec(bs, "Pipeline"), dir="")
+                theme=sec(bs, "Topic"), pipeline=sec(bs, "Pipeline"),
+                structure=sec(bs, "Board Structure"),
+                # `## Board Map` is the ASCII map (JL 260730): the map a static
+                # host can always draw, and the one whose ids travel. It wins
+                # over the `board-map:` canvas URL when both are present.
+                map=sec(bs, "Board Map"), dir="")
 
 
 def parse_doc(d, paths):
@@ -199,6 +205,18 @@ def parse_dir(d):
         # says which skill it is, which is the only thing a reader wants from
         # the id, and it stays greppable across the repo.
         named_qm = re.match(r"Q-([A-Z][A-Za-z]*)-(.+)$", p.stem)
+        # A SKILL page is its own kind (JL 260731: "could we just remove Q, from
+        # Q-Skill to be Skill ... Like Skill will be a special Page"). It is not a
+        # decision, so the `Q` prefix was a lie: a roster row mirrors a shipped
+        # unit and closes when that unit ships, never by a checkbox reaching zero.
+        # The grammar is the S grammar minus the family, `Skill-<unit>-<slug>`, so
+        # the unit orders the roster and the slug still says which skill it is.
+        skill_m = re.match(r"Skill-(\d+)-(.+)$", p.stem)
+        # An AGENT is not a skill (JL 260731: "we will call it Agent-1 ...
+        # Below the skill"): a skill is LOADED into a context, an agent is
+        # DISPATCHED into a fresh one. Same grammar, own prefix, sorts after
+        # the Skill rows so the roster reads kind by kind.
+        agent_m = re.match(r"Agent-(\d+)-(.+)$", p.stem)
         full_sm = re.match(
             # The unit is a NUMBER (a manuscript section), a single CAPITAL
             # (an appendix), or a CAPITALISED WORD. The third is for a page that
@@ -223,8 +241,20 @@ def parse_dir(d):
         )
         legacy_sm = re.match(r"(SM|SA|S)(\d+[a-z]?)", p.stem, re.I)
         sm = full_sm or legacy_sm
-        if qm or sm or named_qm:
-            if named_qm and not qm:
+        if qm or sm or named_qm or skill_m or agent_m:
+            if skill_m:
+                family = "skill"
+                page_id = f"Skill-{skill_m.group(1)}"
+                # after every lettered group, before the older Q-<Family> rows
+                key = (0, "\ufffe", int(skill_m.group(1)), "")
+                kind = "skill"
+            elif agent_m:
+                family = "agent"
+                page_id = f"Agent-{agent_m.group(1)}"
+                # "\ufffe0" sorts after every Skill row and before "\uffff"
+                key = (0, "\ufffe0", int(agent_m.group(1)), "")
+                kind = "agent"
+            elif named_qm and not qm:
                 family = named_qm.group(1).lower()
                 page_id = f"Q-{named_qm.group(1)}-{named_qm.group(2)}"
                 # after every lettered group, in name order

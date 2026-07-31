@@ -1,5 +1,5 @@
 # What shapes the page: a skeleton to fill, or a spec to parse?
-state: 🔴 OPEN
+state: 🟡 PARTIAL
 owner: JL
 method: rule whether a template is a skeleton to copy or a spec to parse, then make it one of them
 

@@ -1,5 +1,5 @@
 # Eight folders in four pairs, and the two channels out
-state: ✅ SETTLED
+state: 🟡 PARTIAL
 owner: JL
 method: every THING has a board; name all six, allow four crossings, and treat the banks as a wall rather than a room
 
