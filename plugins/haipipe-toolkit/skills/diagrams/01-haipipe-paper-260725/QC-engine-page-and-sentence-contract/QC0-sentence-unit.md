@@ -1,5 +1,5 @@
 # The sentence as a content unit
-state: ✅ SETTLED
+state: 🟡 PARTIAL
 owner: JL
 method: keep one sentence per source line while making its paragraph role and sibling relation explicit
 
@@ -150,7 +150,7 @@ S6  The association concentrates in the cohorts where the physician has
     > Display: display02 · target=S-Display-2 · kind=figure · state=candidate-C · promoted=no
 ```
 
-**What the reader gets.**
+### What the reader gets
 
 The accommodation hypothesis predicts that perceived-agreeable physicians prescribe more opioids. Their interpersonal orientation leads them to accommodate patient preferences, particularly when clinical guidelines leave discretion \citep{graziano1996perceiving}.
 
@@ -353,7 +353,7 @@ The ten values a marker's state can take, each in the words the build itself put
 ## Discussion
 > JL 260726: for the values, displays, figures, I cannot click them to show the results as well.
 > CC: Real, and the cause was not what I first said. `.fig` in `board.css` was written for markdown images, and it also matched every figure PANEL, because a figure panel's class list is `chipcard disp fig <state>`. Its `display:block` beat the UA rule that hides a closed popover, so five full-width panels rendered permanently in normal flow, invisible against the background, lying across the page and swallowing every click in the band they covered. Fixed by scoping that rule to `img.fig`, plus an explicit `.chipcard:not(:popover-open){display:none}` so no future class collision can resurrect a ghost.
-> CC: The first diagnosis was wrong and the way it was wrong is worth keeping. I blamed `<summary>` for consuming the click and added a script handler to force the panel open. The A/B killed it: with the handler chips inside a summary opened, and with the handler removed they opened too. The instrument was the problem — `element.click()` skips hit-testing, so it reported success on chips a real mouse could never reach. Asking `document.elementFromPoint` what is actually on top at each chip's own centre found 11 of 11 unreachable and named the covering element in one line. The handler was reverted; the chip needs no script at all.
+> CC: The first diagnosis was wrong and the way it was wrong is worth keeping. I blamed `<summary>` for consuming the click and added a script handler to force the panel open. The A/B killed it: with the handler chips inside a summary opened, and with the handler removed they opened too. The instrument was the problem: `element.click()` skips hit-testing, so it reported success on chips a real mouse could never reach. Asking `document.elementFromPoint` what is actually on top at each chip's own centre found 11 of 11 unreachable and named the covering element in one line. The handler was reverted; the chip needs no script at all.
 > CC: Verified in headless Chrome 150, the same major version as the browser this is read in: on `QC0`, 11 of 11 chips reachable by a real mouse, 11 of 11 opening, 11 of 11 panels landing inside the viewport, zero ghost panels. On the MISQ board's first slide, 25 of 25 on all four counts.
 
 ## Log

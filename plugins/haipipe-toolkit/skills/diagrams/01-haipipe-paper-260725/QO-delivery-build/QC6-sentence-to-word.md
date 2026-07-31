@@ -1,5 +1,5 @@
 # A section, delivered as Word
-state: ✅ SETTLED · exporter ships as haipipe-paper-to-word 0.1.0; the coauthor test is open in Items
+state: 🟡 PARTIAL · exporter ships as haipipe-paper-to-word 0.1.0; the coauthor test is open in Items
 owner: JL
 method: carry the apparatus in ANCHORED WORD COMMENTS, and let the comment author field separate machine provenance from a coauthor's markup
 

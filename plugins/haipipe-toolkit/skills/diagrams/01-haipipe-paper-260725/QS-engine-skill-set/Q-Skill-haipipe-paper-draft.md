@@ -1,5 +1,5 @@
 # haipipe-paper-draft · v0.6.2
-state: ✅ SETTLED · account written; the acceptance test is open in Items
+state: 🟡 PARTIAL · account written; the acceptance test is open in Items
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 

@@ -1,11 +1,11 @@
 ---
 name: haipipe-paper-deliver
-description: "Orchestrator for the paper delivery group (3-deliver) — everything downstream of the written argument. Routes the four verb-intent sub-groups to their leaf skills: build (structure the folder), audit (read-only findings), polish (mutate the draft), ship (produce & move the artifact). The artifact-side mirror of haipipe-paper-lifecycle (which owns the argument). Routing only; each leaf owns its own workflow. Trigger: build, scaffold, restructure, conform, audit, review, claim-audit, reviewer, optimizer, submission preflight, polish, consistency, format, typeset, ship, compile, diffpdf, overleaf, deliver, /haipipe-paper-deliver."
+description: "Orchestrator for the paper delivery group (3-deliver) — everything downstream of the written argument. Routes build (including manifest-driven S-page projection), audit, polish, and ship intents to leaf skills. The artifact-side mirror of haipipe-paper-lifecycle. Routing only; each leaf owns its workflow. Trigger: build, project, projection, generate candidate, scaffold, restructure, conform, audit, review, claim-audit, reviewer, optimizer, submission preflight, polish, consistency, format, typeset, ship, compile, diffpdf, overleaf, deliver, /haipipe-paper-deliver."
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-26"
-  summary: "Router for 3-deliver, the artifact side of the paper. Four sub-groups by verb-intent: 1-build (scaffold/restructure/conform/folder — structure, zero prose), 2-audit (claim-audit/reviewer/optimizer — read-only findings), 3-polish (polish: consistency→format→typeset — mutate the draft), 4-ship (compile/diffpdf/to-overleaf — produce & move). Also THE home of the Lifecycle TeX Quality Standard (directly compilable targets, real prose, sentence tags on prose-owning files, compile-after-every-mutation). Mirror of haipipe-paper-lifecycle; the top router delegates delivery intents here. History: ./CHANGELOG.md."
+  version: "0.1.3"
+  last_updated: "2026-07-30"
+  summary: "Router for 3-deliver, the artifact side of the paper. Four sub-groups by verb-intent: 1-build (scaffold/restructure/conform/folder/project), 2-audit, 3-polish, and 4-ship. Project is the gated S-page-to-candidate projection boundary and never implies promotion. Also THE home of the Lifecycle TeX Quality Standard. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -28,6 +28,7 @@ The four sub-groups (by verb-intent)
    restructure     non-conforming paper → gold layout, prose byte-identical
    conform         conformance audit, report-only
    folder          internal scaffold leaf; direct creation requests route through confirm-gated haipipe-paper-enter
+   project         gated S-page source → isolated 3-dist/tex candidate; explicit promotion only
 
 2-audit/    read-only, produce findings (no mutation)
    claim-audit         every number/claim traces to raw results
@@ -50,11 +51,11 @@ Group verb (no leaf) opens that sub-group's chooser; a leaf verb dispatches stra
 
 ```
 /haipipe-paper-deliver                                 -> dashboard (the four groups + their leaves)
-/haipipe-paper-deliver build [<leaf>] <args>           -> 1-build/*   (leaf: scaffold | restructure | conform; folder routes through enter)
+/haipipe-paper-deliver build [<leaf>] <args>           -> 1-build/*   (leaf: scaffold | restructure | conform | project; folder routes through enter)
 /haipipe-paper-deliver audit [<leaf>] <args>           -> 2-audit/*   (leaf: claim-audit | reviewer | optimizer)
 /haipipe-paper-deliver polish <args>                   -> 3-polish/haipipe-paper-polish (consistency → format → typeset)
 /haipipe-paper-deliver ship [<leaf>] <args>            -> 4-ship/*    (leaf: compile | diffpdf | to-overleaf)
-/haipipe-paper-deliver scaffold|restructure|conform <args>              -> the named 1-build leaf
+/haipipe-paper-deliver scaffold|restructure|conform|project <args>      -> the named 1-build leaf
 /haipipe-paper-deliver folder <args>                                    -> haipipe-paper-enter (confirm-gated creation)
 /haipipe-paper-deliver claim-audit|reviewer|optimizer <args>          -> the named 2-audit leaf
 /haipipe-paper-deliver polish <args>                                 -> haipipe-paper-polish
@@ -81,7 +82,7 @@ Resolution order (first match wins):
 Invariants (state them, do not re-implement — the leaves enforce them)
 ----------------------------------------------------------------------
 
-- `1-build/` changes **no prose** (scaffold writes no sentences; restructure gates on prose + compile parity; conform writes nothing).
+- `1-build/` changes **no prose** (scaffold writes no sentences; restructure gates on prose + compile parity; conform writes nothing; project renders only already-gated S-page prose and keeps generation separate from promotion).
 - `2-audit/` is **read-only** — it reports, never edits.
 - `3-polish/` is where the draft is mutated; `4-ship/` produces and moves artifacts.
 - Prose itself is written upstream, in `1-lifecycle/5-section-edit` (DRAFT/REVISE) — never here.

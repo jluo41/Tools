@@ -1,5 +1,10 @@
 # CHANGELOG — haipipe-paper-to-word
 
+## 0.5.1 — 2026-07-30 — Board path regroup
+
+- Updated the QC6 design-page pointer after the Paper Board regrouped it under
+  Delivery: Build. Export behavior is unchanged.
+
 ## 0.5.0 — 2026-07-28 — the caption, the cross-reference and the table are the unit's, not ours
 
 Everything here is one defect class: this projection was COMPOSING what the

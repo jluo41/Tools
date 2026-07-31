@@ -464,7 +464,7 @@ def render_question(q, prv, nxt):
     # 之前 Q 的解释段落在 Content 首节）。页面仍按 Opening -> Content -> Items -> Where 阅读。
     # 问句里的 **粗体** 要正常内联流动 —— 所以文字包进一个 .qt span，别让 flex 拆散它。
     # Boundary 收进【同一个】折叠块，不再单占一节；里头用扁平行，不套第二层折叠。
-    q_md = sec(q["sec"], "Question").strip()
+    q_md = sec(q["sec"], "Opening").strip()
     _parts = re.split(r"\n\s*\n", q_md, maxsplit=1)
     lead_lines = _parts[0].splitlines()
     qlead = inline(" ".join(x.strip() for x in lead_lines if not x.lstrip().startswith(">")))
@@ -569,7 +569,11 @@ def render_question(q, prv, nxt):
         + (
             f'<span class="kind">'
             f'{esc(STAGE_LABELS.get(q.get("family"), "STAGE"))}</span>'
-            if q.get("kind") == "stage" else ""
+            if q.get("kind") == "stage" else
+            # the skill kind wears its own badge (JL 260731): a roster row is a
+            # synced mirror, and the head should say so before the prose does
+            ('<span class="kind">SKILL</span>' if q.get("kind") == "skill" else
+             ('<span class="kind">AGENT</span>' if q.get("kind") == "agent" else ""))
         )
         # 文件名做成链接：点它直接看这一题的原始 markdown（serve.py 把它当纯文本发）
         + f'<a class="src" href="{esc(q.get("file",""))}" target="_blank"'

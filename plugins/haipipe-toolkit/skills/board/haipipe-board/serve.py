@@ -242,7 +242,7 @@ def prime_context(f, board, root):
     qid = m.group(1) if m else Path(f).stem
     tm = re.search(r"^#\s+(.*)$", txt, re.M)
     title = tm.group(1).strip() if tm else ""
-    qm = re.search(r"^## Question\s*\n(.*?)(?=\n## |\Z)", txt, re.S | re.M)
+    qm = re.search(r"^## (?:Opening|Question)\s*\n(.*?)(?=\n## |\Z)", txt, re.S | re.M)
     qtext = " ".join(qm.group(1).split()) if qm else ""
     nitem = len(re.findall(r"^-\s*\[ \]\s", txt, re.M))
     btitle, bname = "", Path(board).name
@@ -294,7 +294,7 @@ the question touches — not just the board folder. The one question you belong 
 is the file given below (a path relative to the repo root). That board folder
 holds `board.md` (board-level title/spine/pages) and one `QX-<slug>.md` per
 question, each with fixed sections:
-## Question / ## Boundary / ## Diagram / ## Content / ## Items to Finish /
+## Opening / ## Boundary / ## Diagram / ## Content / ## Items to Finish /
 ## Where we are / ## Files / ## Law / ## Lesson / ## Glossary /
 ## Discussion / ## Log
 (Old boards may still say `## Done when` for Items to Finish and `## Now` for
@@ -333,7 +333,7 @@ repo root). This session belongs to that question: prefer to keep your board
 edits inside its `QX-<slug>.md`, and whatever you change there, add one line at
 the TOP of its `## Log`: `YYMMDD HHMM · what changed`.
 
-Each `QX-<slug>.md` has fixed sections: ## Question / ## Diagram / ## Done when /
+Each `QX-<slug>.md` has fixed sections: ## Opening / ## Diagram / ## Done when /
 ## Now / ## Why here / ## Law / ## Lesson / ## Glossary / ## Discussion /
 ## Log. Preserve direct `> WHO:` comments and `> ✎` edit records beneath the
 sentence they concern.
@@ -426,7 +426,7 @@ Q_STUB = """# {title}
 state: 🔴 OPEN
 owner: JL
 
-## Question
+## Opening
 {title}: restate this as one plain question a zero-background reader understands.
 
 Then one paragraph on why it is hard, what breaks while it stays open, and what

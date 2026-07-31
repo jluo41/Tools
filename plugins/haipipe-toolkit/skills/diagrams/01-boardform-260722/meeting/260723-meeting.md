@@ -1110,7 +1110,7 @@ source: echo-meeting
 >
 > **🛠️ S2：** 这块儿就像"论坛"——大 topic 是论坛主题，QA/QB/QC 是分板块。而且这个板子可以直接连上 Claude Code 在里面干活。
 >
-> **🛠️ S2：** 用法举例：假设 QA1 打开了，你在页面上加 comments，然后跟它说 "check this / read my comments"，它应该能读出来。要更新 layout 就直接说，比如 "QA4 = update the single question web page layout"。
+> **🛠️ S2：** 用法举例：假设 QB1 打开了，你在页面上加 comments，然后跟它说 "check this / read my comments"，它应该能读出来。要更新 layout 就直接说，比如 "QA4 = update the single question web page layout"。
 >
 > **🧑‍🎓 S5：** 嗯，我感觉 Claude 做文字叙述性的东西还是没有那么精准。
 >
@@ -1214,7 +1214,7 @@ source: echo-meeting
 >
 > **🧑‍🎓 S5：** 删除算下一步，我觉得没必要现在做。
 >
-> **🧑‍💻 S3：** 你能不能 po 一下你的新 skill 或者在你任务上试一试？比如 scaling law 现在做到哪、QA1 / QA introduction / QA reference 是什么，一块 board 上一看就清楚，可以看到哪做哪没做。
+> **🧑‍💻 S3：** 你能不能 po 一下你的新 skill 或者在你任务上试一试？比如 scaling law 现在做到哪、QB1 / QA introduction / QA reference 是什么，一块 board 上一看就清楚，可以看到哪做哪没做。
 
 ### 10 · 🔄 HTML 只是本地文件 & Diagram 归属 `[66:50–72:00]`
 > 💡 **Gist:** 📁 它就是一个本地文件，靠 git sync；每个 report / task 有自己的 diagram，不冲突。
@@ -1355,7 +1355,7 @@ source: echo-meeting
 😣 痛点                        💡 新 Skill: Board 操作台
 +------------------------+     +--------------------------------+
 | 🌀 topic 飘走          |     | 📋 一个 Board = 一个大话题     |
-| 🧠 context 只留 session|     |  ├─ ❓ QA1  ❓ QA2  ❓ QA3 ... |
+| 🧠 context 只留 session|     |  ├─ ❓ QB1  ❓ QA2  ❓ QA3 ... |
 | 🤝 交接难 / 讲不清      | ──▶ |  └─ 每 Q = 一页交互式 slide    |
 | 🗒️ 开会开完啥也没留    |     |     🔹 question(短段+bullet)   |
 | 🔀 大任务拆不干净       |     |     🔹 downwind(完成条件)      |

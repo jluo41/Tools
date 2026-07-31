@@ -11,7 +11,10 @@ STN = {k.replace("️", ""): v for k, v in ST.items()}
 # 段落名用英文（两边都认：新板写英文，老板写中文照样能读）
 # 一个槽位可以有多个段名：规范名 -> [别名…]。中文老名字一直认（老板子不用改就能重新生成），
 # 260723 改版又加了两个新名：Done when -> 「Items to Finish」、Now -> 「Where we are」。
-ALIAS = {"Question": ["Opening", "问题"], "Boundary": ["边界"], "Diagram": ["图"],
+# "Opening" is the CANON for the lead section (JL 260731: "just one single
+# Opening, Remove all the Question things from the skills"). Every existing
+# page written as `## Question` keeps parsing through the alias, forever.
+ALIAS = {"Opening": ["Question", "问题"], "Boundary": ["边界"], "Diagram": ["图"],
          "Stage Contract": ["Inherited Requirements", "阶段契约"],
          "Content": ["内容"],
          "Files": ["文件"],
@@ -57,7 +60,10 @@ def esc(s):
 
 QNAME = re.compile(r"^Q[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 SNAME = re.compile(r"^S[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
-PAGENAME = re.compile(r"^[QS][A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
+# `Agent-<unit>-<slug>` is a page kind beside `Skill-<unit>` (JL 260731: "we
+# will call it Agent-1 ... Below the skill"): a skill is LOADED, an agent is
+# DISPATCHED, and the roster label should say which one a unit is.
+PAGENAME = re.compile(r"^(?:[QS][A-Za-z0-9]*|Agent-\d+)[-_A-Za-z0-9]*\.md$")
 
 
 def _vet_path(name, pattern):
@@ -99,8 +105,8 @@ def q_files(d):
 
 
 def page_files(d):
-    """Q and S pages at any depth, with the same exclusions as q_files()."""
-    for prefix in ("Q", "S"):
+    """Q, S, Skill and Agent pages at any depth, same exclusions as q_files()."""
+    for prefix in ("Q", "S", "Agent"):
         for p in sorted(d.rglob(f"{prefix}*.md")):
             if any(s.startswith(("_", ".")) or s == "fig"
                    for s in p.relative_to(d).parts[:-1]):

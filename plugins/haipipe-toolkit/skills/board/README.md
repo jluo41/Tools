@@ -7,7 +7,17 @@ reviewable set of question pages or lifecycle stages.
 
 - `haipipe-board/` is the callable skill and owns the Board format, actions,
   renderer, local service, write-back, checks, and the reply-ending session
-  status strip.
+  status strip. It is the family's one DOOR.
+- `haipipe-board-index/` owns the board + group altitude: proposing a board's
+  structure before any file exists, and the per-group lane blocks (`lanes.py`).
+- `haipipe-board-page/` is a loadable SPEC: what a page is, its three kinds over
+  one base, the seven sections, and where a machine may write into one.
+- `haipipe-board-sentence/` is a loadable SPEC: the atomic unit, the `>` lanes,
+  the evidence card, and the archive-never-delete record lifecycle.
+- `haipipe-board-routing/` is a VERB: one input, find the owning page and
+  section, append an anchored write; it proposes rather than creates, and it
+  never ticks a box. (`haipipe-board-digest`, the transcript-scale fan-out, is
+  named on the roster and not yet shipped.)
 - `agents/haipipe-board-reviewer-agent.md` is the read-only, fresh-context
   reviewer. It checks structure, readability, and stale claims; it never repairs
   the Board it judges.
@@ -23,6 +33,10 @@ board/
 │   ├── README.md
 │   ├── CHANGELOG.md
 │   └── haipipe-board-reviewer-agent.md
+├── haipipe-board-index/
+├── haipipe-board-page/
+├── haipipe-board-sentence/
+├── haipipe-board-routing/
 └── haipipe-board/
     ├── SKILL.md
     ├── CHANGELOG.md

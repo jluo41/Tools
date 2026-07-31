@@ -51,13 +51,13 @@ LIVE_ROUTE_PREFIXES = ("/_board/", "/_excalidraw")
 
 # Sections a page cannot be complete without. Aliases are accepted because old
 # boards still use them and ALIAS is the renderer's own table.
-REQUIRED = ["Question", "Done when", "Now"]
+REQUIRED = ["Opening", "Done when", "Now"]
 
 # QA9's construct table: source form -> the class the renderer must produce.
 # Kept in this order so the report reads like the table on that page.
 CONSTRUCTS = [
-    ("lead is the door",     "details.it.row.qd",  r'<details class="it row qd"', r"^## Question\s*$"),
-    ("Opening never folds",  "div.ch.opening-head", r'class="ch opening-head"',   r"^## Question\s*$"),
+    ("lead is the door",     "details.it.row.qd",  r'<details class="it row qd"', r"^## (?:Opening|Question)\s*$"),
+    ("Opening never folds",  "div.ch.opening-head", r'class="ch opening-head"',   r"^## (?:Opening|Question)\s*$"),
     ("drawer is flat",       "div.fh",             r'<div class="fh"',            r"^## (?:Boundary|Stage Contract)\s*$"),
     ("division",             "details.csec",       r'<details class="csec"',      r"^### "),
     ("paragraph heading",    "div.ph",             r'<div class="ph"',            r"^#### "),
@@ -178,7 +178,7 @@ def check_board(d, rep):
                     f"no `{key}:` line; the board cannot say what it is for or when it ends")
 
     pages = {p.name: p for p in page_files(d)}
-    listed = re.findall(r"^([QS][^\s/]*\.md)\s*$", text, re.M)
+    listed = re.findall(r"^((?:[QS]|Agent-)[^\s/]*\.md)\s*$", text, re.M)
     for name in listed:
         if name not in pages:
             rep.add(ERROR, "pages-ghost", f"board.md -> {name}",
@@ -215,7 +215,9 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
         if not has_section(text, canon):
             shown = " / ".join(alias_names(canon))
             rep.add(ERROR, "missing-section", name, f"no `## {shown}` section")
-    if name.startswith("S"):
+    # `Skill-<unit>-<slug>` is the SKILL page kind (JL 260731), not a stage: it
+    # mirrors a shipped unit and has no gate, so the stage sections are not owed.
+    if name.startswith("S") and not name.startswith("Skill-"):
         for canon in ("Stage Contract", "Content"):
             if not has_section(text, canon):
                 shown = " / ".join(alias_names(canon))

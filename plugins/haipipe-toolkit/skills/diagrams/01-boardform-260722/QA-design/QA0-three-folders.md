@@ -1,0 +1,213 @@
+# Three folders: the skill family, its board, and what it renders
+state: 🟡 PARTIAL
+owner: JL
+method: name the family folder, the board folder, and the rendered output; nest every subskill inside the family; then allow only the movements that keep the board deletable
+
+## Question
+Where does a new rule, file, or page belong?
+Three folders exist, and they are three KINDS of truth: `①` what SHIPS, `②` what is ARGUED, `③` what is RENDERED.
+Put something in the wrong one and it either binds nothing, because no runtime reads it, or it becomes wrong for every other board.
+
+A subskill is not a fourth kind.
+`haipipe-board`, `haipipe-board-index` and the reviewer agent all live inside `①` because they all ship, they all version, and they are all deletable from one another.
+Numbering them separately says they are peers of the board folder, which is the one thing they are not.
+
+The word "board" names four different things at once.
+There is a reusable family that ships.
+There is a design board that argues about that family.
+There is the generated `board.html` a reader opens.
+And there are the consumer boards the family renders for papers, tasks, and other skills.
+Each holds a different kind of truth and each has a different lifetime, but all four get called "the board" in conversation, so nothing stops a file from landing in the wrong one.
+
+The failures are not symmetric.
+A rule written into this design board binds nothing, because no runtime reads a Q page.
+Design history written into a `SKILL.md` makes the shipped family unshippable without its own past.
+A consumer board that keeps its own copy of the board form drifts from it silently, because nothing compares the two.
+And anything hand-written into `board.html` is destroyed by the next build without a warning.
+
+This is the first face in QA because every later ownership question assumes it is answered.
+`QC1` can only say where a board folder lives once it is settled which tree the folder is in.
+`QC4` can only place a page inside its home folder once it is settled which folders exist.
+`QC6` can only decide what the family ships once it is settled which folder is shippable at all.
+A reader who cannot place a thing cannot rule on it.
+
+## Boundary
+- ✅ Covered here
+  The three folders, which kind of truth each holds, why a subskill nests inside `①`, the movements allowed between them, and the two forbidden ones.
+- ↪ Covered elsewhere
+  Where a board folder lives and what it is named is `QC1`; a page living inside its home folder is `QC4`; the words this family uses are `QB1`; how a topic becomes pages and groups is `QA2`; which units the family ships is `QC6` and the `Q-Skill` roster.
+
+## Diagram
+```
+   ── three folders, three kinds of truth ──────────────────────────
+
+   ⚙️ ①  SHIPS         a reusable procedure, read by a runtime
+   🗂 ②  IS ARGUED     the rulings that produced it, read by people
+   📤 ③  IS RENDERED   generated output, read by anyone, owned by no one
+
+   ── ① the family ─────────────────────────────────────────────────
+
+  ⚙️ ① skills/board/                          ONE folder, the family
+       ├── haipipe-board/                     the DOOR and the ENGINE
+       │     SKILL.md          what an agent is told
+       │     src/              parse · body · page_board · page_question
+       │     assets/           board.css · board.js  (inlined at build)
+       │     ref/              board-form.md · q-template.md
+       │     build.py check.py serve.py watch.py
+       │     xcal.py regroup.py skillpage.py stage.py status.py
+       ├── haipipe-board-index/               board + group altitude
+       │     SKILL.md · src/lanes.py
+       ├── haipipe-board-page/                SPEC · what a page is
+       ├── haipipe-board-sentence/            SPEC · the atomic unit
+       ├── haipipe-board-routing/             VERB · anchored write-back
+       ├── agents/                            the reviewer
+       │     haipipe-board-reviewer-agent.md
+       ├── DESIGN.md  README.md  CHANGELOG.md
+       └── every unit versions on its own clock
+
+   ── ② its board ──────────────────────────────────────────────────
+
+  🗂 ② skills/diagrams/01-boardform-260722/    THIS board  ← you are here
+       board.md            the manifest: Topic · Pipeline · Board Map
+                           · Board Structure · Pages · Links
+       QA-design/ QB-delivery/ QC-engine/
+       QD-working/ QE-sharing/ QF-execute/     one folder per group
+       board.excalidraw    the one scene, page frames + authored arrows
+       fig/                image assets
+       _archive/           retired pages, never deleted
+       board.html          📤 GENERATED. never hand-edited
+
+   ── ③ what ① renders ─────────────────────────────────────────────
+
+  📤 ③ every other board folder ① is pointed at
+       ⓐ skills/diagrams/01-*/            4 sibling design boards
+            haipipe-paper · haipipe-task · haipipe-display · probe-qa
+       ⓑ <paper>/0-lifecycle/             a board that IS a tree
+            the folder is both the subject folder and the S family
+       ⓒ <unit>/diagram/<NN>-<topic>-<YYMMDD>/   a task or project board
+
+       ② is one of these too. It is numbered apart because it is the
+       only one whose CONTENT this family owns.
+```
+
+```
+   ── the movements that are allowed ───────────────────────────────
+
+   ⒜  ② ──graduates──▶ ①
+        a page reaches ✅ and its Law is COPIED into whichever unit of
+        ① owns it. The page stays; the skill gains the rule.    → QC1
+
+   ⒝  ① ──renders──▶ ② ③
+        build.py reads a board folder and writes its board.html.
+        The engine never reads a board's MEANING, only its form.
+
+   ⒞  ① ──writes back──▶ ② ③
+        serve.py turns a click into a line of markdown in a page.
+        A comment, an item, an archive move: always the .md, never the .html.
+
+   ⒟  inside ①, the units stay separable
+        haipipe-board-index reads board.md and each page's `# ` line and
+        never imports haipipe-board/src/, so the two ship on their own
+        clocks. That is what makes them subskills and not one skill.
+
+   ── the movements that are forbidden ─────────────────────────────
+
+   ✗  ① ──▶ ②          the family depending on the board that designs it
+   ✗  anything ──▶ board.html    it is output; the next build erases you
+
+   delete ② and every skill in ① still runs. That is the test.
+```
+
+## Content
+### The three kinds, and why the distinction pays
+```
+kind          lifetime                    breaks how
+────────────────────────────────────────────────────────────────────
+⚙️ ① ships    as long as anyone uses it   a design argument leaks in,
+                                          and the skill cannot ship
+                                          without its own history
+🗂 ② argued   until the board closes      a runtime starts reading it,
+                                          and an open question becomes
+                                          a dependency
+📤 ③ rendered until the next build        someone hand-edits it, and the
+                                          edit vanishes silently
+```
+
+### A subskill is a unit inside ①, never a folder beside it
+`skills/board/` is one folder on disk and one family in the roster, so it is one number.
+Inside it, a unit earns its own directory when it has its own trigger, its own contract, and its own version, which is exactly the test that admitted `haipipe-board-index` on 260730 and still refuses `haipipe-skill`.
+Numbering a subskill beside `②` would claim it is a peer of the board folder, when it is a peer of the engine.
+
+The separability rule is what keeps this honest.
+`haipipe-board-index` never imports `haipipe-board/src/`; it reads `board.md` and each page's `# ` line, which is a surface both units can hold still.
+If that import ever appears, the two are one skill wearing two folders.
+
+### One folder per group, inside the board folder
+Since 260726 every board keeps one folder per page group, named `Q<letter>-<slug of the group title>`.
+The bare `Q<letter>/` form is rejected because it writes the id a second time, and the id is already the prefix of every filename inside; the group's SUBJECT is the half a reader cannot recover from those filenames.
+After the 260730 restructure and the 260731 QD split this board has six: `QA-design/`, `QB-delivery/`, `QC-engine/`, `QD-working/`, `QE-sharing/`, `QF-execute/`.
+
+Membership is by PATH, never by registration.
+`## Pages` lists bare filenames and sets order and grouping only, so moving a page between folders is a pure `git mv` and `board.md` needs no edit beyond its listing.
+
+### What is deletable from what
+Every unit inside `①` is deletable from every other unit inside `①`.
+`②` is deletable from all of them: it argues the family and ships nothing.
+That is the test this face exists to protect, and it is the reason a runtime may never read a Q page.
+
+## Items to Finish
+- [ ] 🗂 Confirm the three folders and the nesting
+      JL confirms that `①` is the family folder, `②` is this board folder, `③` is everything `①` renders, and that subskills are units inside `①`.
+      Three units joined `①` on 260731: the page and sentence SPECS and the routing VERB, per QC6 §8.
+- [ ] 🔒 Confirm the two forbidden movements
+      Settle that no runtime may read a Q page, and that nothing may be hand-written into a generated `board.html`.
+- [ ] 🧾 Decide whether `_feedback/` belongs to any of the three
+      `skills/diagrams/_feedback/` exists and is named nowhere above. Decide whether it belongs to this family, to the skill-diagnose family, or nowhere.
+- [ ] 🧪 Give the deletability test a checker
+      `check.py` can prove the ⒜ direction, that a page's Law reached its skill. Nothing yet proves the ✗ direction, that no shipped file cites a Q page.
+
+## Where we are
+The three folders are named and the movements are drawn, but nothing has been confirmed by JL and no checker enforces either forbidden direction.
+
+- 260731 JL · 🗂 Three folders, not seven, with subskills nested
+  JL: "I want 1 or 2 to be large folder like skill/board ... board folder, is the (2) ... subskills are the subskills in (1)".
+  The first draft numbered `haipipe-board`, `haipipe-board-index` and `agents/` as `①②③`, which read as though a subskill were a peer of the board folder.
+  `skills/board/` is one folder on disk and one family in the roster, so it is one number, and a subskill is a unit inside it.
+  That collapses seven numbers to three and makes the pair exact: `①` what ships, `②` what argues it, `③` what it renders.
+- 260731 JL · 🗂 The board asked for its own folder map
+  JL: "I think we should have a QA0 to show what folders are related here. Like folder (1) folder (2)", pointing at the paper family's `QA1-eight-folders` as the shape to learn from.
+  That page numbers its folders, pairs each THING with the board that argues it, and then lists the crossings that are allowed and the ones that are forbidden.
+  The same request also broadened the Board Map on the index, which now opens with a folder lane before the group graph, so a reader meets the folders before the connections.
+
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] 🗂 Ratify the three-folder model as drawn
+      `①` `skills/board/` ships with every subskill nested inside, `②` this board folder argues it, `③` is everything `①` renders.
+      → CC's proposal: yes as drawn; two boards already run on it, and `QC1`, `QC4`, and `QC6` all assume it.
+- [ ] 🔒 Ratify the two forbidden movements
+      No runtime may read a Q page, and nothing may be hand-written into a generated `board.html`.
+      → CC's proposal: yes; the whole test is one line: delete `②` and every skill in `①` still runs.
+- [ ] 🧾 Rule where `skills/diagrams/_feedback/` belongs
+      Options on one line: A it joins `②` as the boards' lesson inbox · B it is `①`'s inbox, since every card's `lands_in:` names a shipped file · C it stays outside the map.
+      → CC's proposal: B; a card graduates into `①` exactly like a page's Law, movement ⒜, so this page should name it as an inbox, not a fourth kind.
+- [ ] 🧪 Commission the ✗-direction checker, or defer it
+      Nothing yet proves that no shipped file cites a Q page.
+      → CC's proposal: defer until the two ratifications above are ticked; a checker can only enforce a rule that has been ruled.
+
+## Files
+- `../../board/haipipe-board/SKILL.md`
+  The engine's own contract.
+  Its shape section states the folder layout this face argues.
+- `../../board/haipipe-board/ref/board-form.md`
+  §1 owns the folder rules in full, including the one-folder-per-group ruling and the `regroup.py` migration.
+- `../../board/haipipe-board-index/SKILL.md`
+  The first subskill, and the statement that it never imports the engine's `src/`.
+- `../../board/agents/haipipe-board-reviewer-agent.md`
+  The second subskill, an agent rather than a skill.
+- `board.md`
+  This board's own manifest, whose `## Board Map` carries the short form of the folder lane.
+
+## Log
+260731 · Collapsed to three folders with subskills nested inside the family, at JL's direction
+260731 · Opened from JL's request for a QA0 folder map, modelled on the paper family's QA1-eight-folders

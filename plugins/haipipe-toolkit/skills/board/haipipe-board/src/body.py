@@ -4,6 +4,7 @@ BASE (the board folder) is set by the entry point; LINKS is filled by
 parse.parse_board from board.md's ## Links. Both live here because inline()
 is where paths become hrefs."""
 import re
+from functools import lru_cache
 
 from .common import esc, who_class
 from .page_stage import EMBED, embed_block
@@ -138,6 +139,94 @@ CHIP_N = 0
 # Face ids on THIS board, set once per build. Lets a chip link to a sibling
 # page only when that page actually exists here.
 FACE_IDS = set()
+# Group tokens on THIS board ("QA", "QAa", "Q-Skill"), same lifecycle. A group is
+# not a page, so it anchors at `#group-<token>` on the index instead.
+GROUP_IDS = set()
+
+
+def group_token(heading):
+    """"QA · Defining a board" -> "QA": the group's travelling name.
+
+    Every group heading on every board is `<token> · <words>`; the fallback to
+    the first whitespace token keeps a heading that forgot the separator from
+    anchoring at the whole sentence."""
+    head = heading.split("·", 1)[0].strip()
+    return head.split()[0] if head.split() else heading.strip()
+
+
+@lru_cache(maxsize=8)
+def _face_pat(faces, groups, aliases=frozenset()):
+    """One alternation over every id this board can travel to, LONGEST FIRST.
+
+    Longest-first is what keeps `QAa0` from being read as the group `QAa`, and
+    `QA6` from being read as `QA`. The set itself is the pattern, so an id shaped
+    unlike the others (`Q-Skill-haipipe-board`) needs no special case."""
+    toks = sorted(faces | groups | aliases, key=len, reverse=True)
+    if not toks:
+        return None
+    return re.compile(r"(?<![\w#/.-])(" + "|".join(re.escape(t) for t in toks)
+                      + r")(?![\w-])")
+
+
+def link_faces(code):
+    """Page and group ids inside an ASCII figure become links (JL 260730).
+
+    A canvas is only a map if you can travel on it. The wrap happens AFTER
+    esc() and adds no characters to the line, so every column stays where its
+    author put it; the anchor is a plain fragment, so it travels with scripts
+    off, on a static host, exactly like an index row.
+
+    FACE_IDS / GROUP_IDS are the authority: a token that is not a page or group
+    on THIS board stays plain text. A retired or renamed id therefore shows up
+    as dead text in the figure rather than as a link that goes nowhere, which
+    makes the canvas check itself on every build.
+    """
+    alias = _alias_ids()
+    pat = _face_pat(frozenset(FACE_IDS), frozenset(GROUP_IDS), frozenset(alias))
+    if pat is None:
+        return code
+
+    def one(m):
+        t = m.group(1)
+        if t in FACE_IDS:
+            href = f"#{t}"
+        elif t in GROUP_IDS:
+            href = f"#group-{t}"
+        else:
+            href = f"#{alias[t]}"
+        return f'<a class="fl" href="{href}">{t}</a>'
+
+    return pat.sub(one, code)
+
+
+def _alias_ids():
+    """A declared Link whose target is a page on THIS board -> {old id: new id}.
+
+    Renaming 36 pages to match their groups (JL 260731) left every older id
+    stranded in the figures that cite it: `QAa5` was suddenly not a page, so it
+    rendered as dead text even though `## Links` still knew exactly where it went.
+    An alias is a real address, so it travels like one. The id shown stays the
+    OLD one, because that is what the figure's author wrote and what a reader is
+    looking for; only the destination is current.
+    """
+    out = {}
+    for old, target in LINKS.items():
+        stem = target.rsplit("/", 1)[-1]
+        if not stem.endswith(".md"):
+            continue
+        stem = stem[:-3]
+        if re.match(r"^Q-[A-Z]", stem):
+            pid = stem
+        elif stem.startswith(("Skill-", "Agent-")):
+            # the skill and agent page kinds: the id is `<Kind>-<unit>`,
+            # never the whole stem
+            m = re.match(r"^((?:Skill|Agent)-\d+)", stem)
+            pid = m.group(1) if m else stem
+        else:
+            pid = stem.split("-", 1)[0]
+        if pid in FACE_IDS and old not in FACE_IDS and old not in GROUP_IDS:
+            out[old] = pid
+    return out
 
 
 def _rel(p):
@@ -734,7 +823,8 @@ def body(txt, fold_code=True, apparatus=True):
             parts, lead = [], True
             for x in det:
                 if isinstance(x, tuple):   # ("pre", lines): 折叠区里的 ascii 图
-                    parts.append(f'<pre class="ip">{esc(chr(10).join(x[1]))}</pre>')
+                    parts.append('<pre class="ip">'
+                                 f'{link_faces(esc(chr(10).join(x[1])))}</pre>')
                 elif lead:
                     parts.append(f'<p class="ld">{inline(x)}</p>')
                     lead = False
@@ -784,6 +874,11 @@ def body(txt, fold_code=True, apparatus=True):
                 flang = ln.lstrip()[3:].strip()
             else:
                 code = esc(chr(10).join(fence))
+                # Only a FIGURE gets travelling ids. A language-tagged code
+                # fence is quoted source, where `QA1` is a string in someone
+                # else's program, not a place on this board.
+                if flang.lower() in DIAGRAM_LANGS:
+                    code = link_faces(code)
                 # An UNTAGGED short fence is an ascii diagram, not code: it is the
                 # picture the sentence above is making, and hiding it behind
                 # "</> code · 4 lines" costs a click to see the thing you came for

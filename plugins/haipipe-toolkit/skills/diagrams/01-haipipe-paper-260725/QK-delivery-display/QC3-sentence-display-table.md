@@ -1,5 +1,5 @@
 # A sentence with a Display · table
-state: ✅ SETTLED
+state: 🟡 PARTIAL
 owner: JL
 method: the sentence points at a stable display id; the numbers stay in the task layer that computed them
 

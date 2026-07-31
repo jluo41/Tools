@@ -42,8 +42,9 @@ The approach is a stable key in the prose, provenance in the lane beneath it, an
  ④ the board resolves and shows state             `dialect_paper.py`  (build time)
 ```
 
-Steps ① to ③ are the paper skill's. Step ④ is the board's, and it only WATCHES: it
-never writes a marker, a probe entry, or a `.bib` line. That split is `QA8`.
+Steps ① to ③ are the paper skill's.
+Step ④ is the board's, and it only WATCHES: it never writes a marker, a probe entry, or a `.bib` line.
+That split is `QA8`.
 
 [2/2] WHAT THE READER GETS, AND WHERE THE SOURCE ACTUALLY IS
 

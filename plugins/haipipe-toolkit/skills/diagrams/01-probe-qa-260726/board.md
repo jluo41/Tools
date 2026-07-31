@@ -108,7 +108,7 @@ haipipe-task/       ../../task/haipipe-task/
 haipipe-discovery/  ../../discovery/haipipe-discovery/
 paper-board/        ../01-haipipe-paper-260725/
 boardform-board/    ../01-boardform-260722/
-QA1@paper           ../01-haipipe-paper-260725/QA-where-things-live/QA1-eight-folders.md
-QA5@paper           ../01-haipipe-paper-260725/QA-where-things-live/QA5-the-probe-layer.md
-QB9@paper           ../01-haipipe-paper-260725/QB-a-stage-a-page-and-a-flow/QB3b-probe.md
-QC1@paper           ../01-haipipe-paper-260725/QC-the-sentence-with-evidence-card/QC1-sentence-citation.md
+QA1@paper           ../01-haipipe-paper-260725/QA-engine-map-and-boundaries/QA1-eight-folders.md
+QA5@paper           ../01-haipipe-paper-260725/QA-engine-map-and-boundaries/QA5-the-probe-layer.md
+QB9@paper           ../01-haipipe-paper-260725/QB-engine-stage-contract/QB3b-probe.md
+QC1@paper           ../01-haipipe-paper-260725/QI-delivery-literature/QC1-sentence-citation.md

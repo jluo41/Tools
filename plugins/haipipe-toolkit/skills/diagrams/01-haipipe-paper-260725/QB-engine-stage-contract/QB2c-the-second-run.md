@@ -1,5 +1,5 @@
 # On the second run, what happens to a page a human has edited?
-state: ✅ SETTLED · Ⓒ+Ⓑ, declared as `on_rerun:` in all 8 contracts; the checker is open in Items
+state: 🟡 PARTIAL · Ⓒ+Ⓑ, declared as `on_rerun:` in all 8 contracts; the checker is open in Items
 owner: JL
 method: find the one rule that already exists in eight versions, pick it, and put it where the writer is
 

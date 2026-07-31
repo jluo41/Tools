@@ -100,6 +100,7 @@ if __name__ == "__main__":
             print("        dialect: paper")
             print("        paper-root: ..        # where the .bib, displays/ and 1-probes/ live")
     boardbody.FACE_IDS = {q["id"] for q in qs}
+    boardbody.GROUP_IDS = {boardbody.group_token(q["group"]) for q in qs if q.get("group")}
     if as_json:
         print(to_json(meta, qs, warn))
         sys.exit(0)

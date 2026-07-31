@@ -5,6 +5,121 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.56.0 - 2026-07-31
+
+- **`Agent-<unit>-<slug>` is a page kind below the skills** (JL 260731: "Should we separate the Agent from Skill? ... we will call it Agent-1 ... Below the skill").
+  The reasoning is the morning's Q-Skill lesson applied once more: the label must say what the thing IS, and a skill is LOADED into a context while an agent is DISPATCHED into a fresh one.
+  The reviewer is now `Agent-1`; it wears an AGENT badge, stays out of the settled count, sorts after the Skill rows, and `Skill-2` plus the old named id remain declared Links.
+  `skillpage.py` discriminates by what it mirrors (a folder is a skill, a lone .md is an agent), mints `Agent-<n>` starting at 1, and `page_files`, `PAGENAME`, and the checker's listing scan all accept the prefix.
+- **`Opening` is the ONE name of the lead section, on every page kind** (JL 260731: "just one single Opening, Remove all the Question things from the skills").
+  The canon flipped in the renderer's own alias table, so every page ever written as `## Question` parses forever; the checker's required list, its construct probes, serve.py's ＋ button skeleton and rule strings, `ref/q-template.md`, and every reference doc now say `Opening`.
+  A skill page is consistent with every page AT THE SECTION LEVEL and flexible below it: `### SKILL.md` is one Content subsection, which the managed body span already produced.
+- The boardform restructure had silently broken three of the paper board's cross-board Links (the failure mode `ref/board-form.md` §1 documents); they are repointed and that board is back to 0 errors, 0 warnings.
+
+## 0.55.0 - 2026-07-31
+
+- **The family ships QC6 §8's shape: one door, three specs, one verb** (JL 260731:
+  "make the haipipe-board thinner, and have other skills ... please creating them now").
+  `haipipe-board-page` and `haipipe-board-sentence` are loadable SPECS, cut contract-first from the QB4* and QB5* faces: what a page and a sentence ARE, for a consumer with no board open.
+  `haipipe-board-routing` is the unit VERB: one input, the owning page and section found through `## Pages` only, one anchored write, ending LANDED, PROPOSED, or REPORTED.
+  Both write laws ride along with their provenance: propose a tick, never tick (QC6 §10), and mechanical-always, editorial-never on another family's board (QB1 §4).
+- No code moved: the specs cite `ref/q-template.md` and `ref/board-form.md` §5 as their authority and must never fork them.
+  The named next step is making `serve.py`'s two hand-rolled rule strings consumers of the specs, which kills the copy that already rotted once.
+  `haipipe-board-digest` stays on the roster unshipped; a page-kind variant still ships under its consumer family.
+- SKILL.md gains the family block so the door routes to the units, and the family README lists all six.
+
+## 0.54.0 - 2026-07-31
+
+- **Every page id now matches its group letter** (JL 260731: "I think you also need to align the Q name to the Q group as well").
+  36 of 43 pages on `01-boardform-260722` were renamed: `QA1a → QA1`, `QAa5 → QB9`, `QB5 → QC3`, `QE1 → QD7`, `QA9 → QE1`, and so on.
+  The rename is two-phase, because the map collides with itself: `QC3-folderq.md` must become `QB3-*` while `QB5-srcsplit.md` becomes `QC3-*`, so every file parks at a `__tmp__` name first and nothing ever lands on an occupied one.
+  A NAMED family keeps its name: `Q-Skill-haipipe-board` is identified by which skill it mirrors, never by a position in a queue.
+- **An alias travels like a real address.** The rename stranded every older id in the figures that cite it: `QAa5` was suddenly not a page, so it rendered as dead text even though `## Links` knew exactly where it went.
+  `link_faces` now also links a declared Link whose target is a page on this board, showing the OLD id (what the author wrote, and what a reader is looking for) and pointing at the CURRENT page.
+  45 such alias links now travel on this board, and no citation anywhere in the repo had to be rewritten, so a changelog entry that says `QB5` still means what it meant on the day it was written.
+- **`## Board Map` opens with a folder lane** (JL 260731: "did you say what folders are used here? engine folder, output folder ... I think here we need to mention this as well").
+  A reader who knows how the groups connect but not which folder holds the engine still cannot act, so the map now has three lanes: the folders this board works with, how its five groups connect, then the cross-group page edges.
+  The section heading moved from `Pages and their relationships` to `Folders, pages, and how they connect`.
+- `QA0 · Three folders: the skill family, its board, and what it renders` is the new first face, modelled on the paper family's `QA1-eight-folders`.
+  A first draft numbered `haipipe-board`, `haipipe-board-index` and `agents/` as three peers, and JL corrected it: "I want 1 or 2 to be large folder like skill/board ... board folder, is the (2) ... subskills are the subskills in (1)".
+  `skills/board/` is ONE folder on disk and one family in the roster, so it is one number, and a subskill is a unit inside it, a peer of the engine rather than of the board.
+  That collapses seven numbers to three and makes the pair exact: `①` what ships, `②` what argues it, `③` what it renders.
+  Its test is one line: delete `②` and every skill in `①` still runs.
+- **A parent page carries its faces as sub-letters** (JL 260731: "could we have page QB5 to QB11 to QB4a to QB4b ... and QB12 to be QB5, and then we have QB5a, QB5b").
+  QB4 is the page and QB4a-QB4g its seven section faces; QB5 is the sentence and QB5a-QB5e what attaches to it.
+  The id grammar already allowed the trailing letter and sorts it after its parent, so this cost no parser change: 13 renames, two-phase, every old id kept as a declared Link.
+- **The skill roster is its own page KIND** (JL 260731: "remove Q, from Q-Skill to be Skill ... Like Skill will be a special Page. Like Skill-0-xxx, Skill-1-xxx").
+  `Skill-<unit>-<slug>.md` parses with id `Skill-<unit>`; it renders with a SKILL badge, leaves the settled count (`page_board.py` excludes the kind), and is exempt from the S-page stage sections in `check.py`.
+  The old name was a standing contradiction: a `Q-Skill` row was counted as a question and declared not to be one.
+  `skillpage.py` mints the new form, discovers pages through `page_files` so both eras sync, and `find_page` answers to `Skill-<unit>`.
+  The named-family form `Q-Skill-<name>` still parses everywhere, so no other board moved.
+- **QD split into QDa · Working and QDb · Sharing** (JL 260731: "should we separate the Working and Sharing ... You can have QDa and QDb").
+  The 260730 merge had been mine, made to free the QE letter for Execute; JL's subgroup letters keep the letter free AND the two responsibilities separate, which is strictly better.
+  QDa1-QDa6 working, QDb1-QDb6 sharing; 261 tokens repointed in one pass; every QD1-QD12 id stays a declared Link.
+- **`QDa7 · Board-level agent` returned from the archive** (JL 260731: "QD5-boardagent.md should be in the Working").
+  Archived 260725, its subject (one session whose scope is the whole board: adding pages, regrouping, batch rewrites) is working-layer machinery, the same serve.py session/HOLD stock as QDa1-QDa3.
+  Its ids were repointed on restore and its five pre-rule em-dashes fixed; it returns 🔴 OPEN, and its collision with QDa1's one-session-per-question LAW is still the item that matters most.
+- **The subgroup letters flattened the same day: QD · Working, QE · Sharing, QF · Execute** (JL 260731: "could we update it to QDa QDb QE to QD QE QF?").
+  The QDa/QDb split had overloaded the lowercase-letter device: `QDa` was a group while `QB4a` is a face of page QB4.
+  Flat letters restore one meaning per device, and Sharing returns to its ORIGINAL ids, `QE1-hosting` through `QE6-bindaddress`, which erases that token's era ambiguity outright.
+  Execute now sits at QF, diverging from the paper board's QE; group letters were never aligned across boards, so nothing depends on the match.
+  15 renames, 301 tokens repointed in one pass, QDa*/QDb* kept as declared Links, and two citations of the RETIRED QF2 ruling de-linked because that id now belongs to Execute's newcomer page.
+- **A sequential rename map is a corruption engine, and it ran twice today.**
+  Applying `QA1→QB1` then `QB1→QC1` as ordered replacements dragged tokens two steps, so board.md prose said `QC1 owns the words` where QA1 was meant; the same pass also rewrote `QA1@paper`, which names a page on ANOTHER board.
+  The repair: rewrite as ONE regex alternation with a dict lookup, never in sequence; treat `@board` suffixed tokens as untouchable; and rewrite the affected prose sections wholesale where the claim itself had gone stale.
+  286 prose tokens across 35 pages were then repointed the same one-pass way, because 17 short ids were RE-USED by the alignment and an alias cannot help a token that now names a different live page.
+- Prose reflowed to ONE SENTENCE PER LINE across every file touched today (JL 260731: "why it is one sentence multiple line, instead of one sentence one line?").
+  The rule is the board's own, stated at `check.py:255` and repeated in `ref/q-template.md:175`, and hard-wrapping violated it invisibly: `check.py:271` exempts lines starting with `-` or two spaces, which is exactly the shape of a dated entry.
+  It was not cosmetic. A group intro joins its source lines with `<br>` and ctx prose emits one `<p>` per line, so a wrapped sentence rendered as `groups in the<br>first place.` on the live index.
+
+## 0.53.0 - 2026-07-30
+
+- **A figure is now a map you can travel on** (JL 260730: "make the ASCII canvas clickable").
+  `link_faces` in `src/body.py` wraps every page and group id inside an ASCII figure as a link: fenced figures, indented-fence figures inside a bullet, and the group-intro figure on the index.
+  The wrap happens AFTER `esc()` and adds no characters to the line, so monospace alignment is untouched; the href is a plain fragment, so travel works with scripts off and on a static host, exactly like an index row. 122 links across 25 of 61 figures on the boardform board, 262 on the paper board.
+- `FACE_IDS` / `GROUP_IDS` are the authority, and `_face_pat` orders the alternation LONGEST FIRST, which is what keeps `QAa0` from being read as the group `QAa`, `QA6` from being read as `QA`, and `Q-Skill-haipipe-board-reviewer-agent` from being cut down to `Q-Skill-haipipe-board`.
+  A token that is not a page or group on THIS board stays plain text, so a retired or renamed id reads as dead text in the figure and the canvas checks itself on every build.
+- A group heading now carries `id="group-<token>"` (`bd.group_token`: `QA · Defining a board` → `QA`).
+  A group is not a page: `#group-QA` scrolls the index, it does not open a card, and nothing about the settled count changes.
+- Topic, Pipeline and Board Structure render with `fold_code=False`.
+  They already sit behind a `<details class="ctx">`, so a long fence folding itself into `</> code · N lines` in there was the double fold the board's own Law forbids: a fold that works and cannot be seen.
+  A board-level canvas is the content of its section, so it stays on stage at any length.
+- **The two canvas altitudes** (JL 260730, correcting a first attempt that put the whole 41-page roster on the index): a page is a WORKING RECORD, not an undecided question, and the board level does not need the roster twice, because the index already lists every page below.
+  So the board-level figure now shows what the index cannot, which is how the groups CONNECT (main line QA → QAa → QAb, QB shipping, QD/QE as parallel layers, Q-Skill declared) plus the handful of real cross-group page edges.
+  Each GROUP intro then carries its own `⚙️ engine · 📋 pages · 📂 folder` lane block, one row per page: which engine file governs it, and which folder artifact it produces. 7 group figures, 41 links in them; the board canvas is 15.
+- That per-group map needs no engine work: a group intro has accepted a ``` figure since QC2 (JL 260724) and `parse_dir` already collects it verbatim, so the lanes are board CONTENT.
+  `?` in an engine cell means the mapping is not verified yet, which is the honest state and doubles as QAa7's to-do list.
+- **This board's own groups restructured to the three-layer model** (JL 260730, after the same split was field-tested on the paper family's Skill-Board): seven groups became five.
+  `QA · Design` what the Board system is · `QB · Delivery` what a reader gets, Board → Group → Page → Section → Sentence · `QC · Engine` how it is made and shipped · `QE · Execute` what actually ran, with evidence and a reopen path · `QD · Working and sharing` the live layer, absorbing the former QE Sharing.
+  Execute is the layer that keeps "skill written, delivery defined" from passing as done.
+- Every one of the 42 page ids survived, so no citation anywhere in the repo broke: QA1 now sits in Delivery, QB1 in Engine, QE1 in Working.
+  A page's LETTER is the group it was OPENED under, never where it is listed now, and after two restructures most pages wear a letter older than their group.
+  Five group folders replace seven (`QA-design/ QB-delivery/ QC-engine/ QD-working-and-sharing/ QE-execute/`), moved with `git mv`, and every `oldfolder/page.md` citation inside the board was rewritten.
+- The Board-Structure canvas now draws those five groups and their edges, and every id in it travels, so the index's own map is the first thing that proves `link_faces` works.
+- **`## Board Map` is a board.md section, and ASCII wins** (JL 260730: "what is the section for board map?
+  I think I might need the ASCII version ... and make it collapsable").
+  It holds one ``` figure and beats BOTH canvas sources, because a figure draws on a static host with no Excalidraw endpoint and no share URL, survives with scripts off, and has links in it, so it is the only map a reader can travel on.
+  `board_map()` therefore takes three sources in priority order: `## Board Map` → `board-map:` share URL → the local `board.excalidraw` scene through the declared Excalidraw host.
+  A board with no `## Board Map` renders exactly as before.
+- It renders as `<details class="board-map board-map-ascii" open>` rather than a fixed 62vh block: a map you cannot shut pushes the index off the first screen.
+  The whole map head is the handle and the caret rides the `BOARD MAP` kicker, so no second control appears.
+  The figure keeps `pre.asc`'s own padding, so no new rule can disturb its alignment.
+- On this board the map moved out of `## Board Structure` into its own `## Board Map`, and the now-dead `board-map:` URL was deleted, which closes the two-sources-of-truth hole the static-host workaround had opened.
+  The shared canvas survives as a link inside the section.
+  `## Board Structure` keeps the source-to-webpage line and its prose.
+
+## 0.52.0 - 2026-07-30
+
+- A Board may now carry `## Board Structure` in `board.md`. It renders as a native
+  disclosure after Pipeline on the Board-Webpage-Index, remains readable without JavaScript,
+  and does not become a Q/S page or enter the settled count.
+- The design vocabulary separates `Board-Folder` from `Board-Webpage`, and the latter into
+  `Board-Webpage-Index` and an opened `Board-Webpage-Page`. The former QA0 map page on the
+  design Board was archived and its external Excalidraw map entry preserved in Board-Structure.
+- The former QA10 page is now QA2b, `Board-Webpage Design`; legacy `QA10` remains a declared
+  link alias. Parsing and rendering remain backward-compatible for Boards without the optional
+  section.
+
 ## 0.51.0 - 2026-07-29
 
 - Opening's drawer now opens with a generated `Structure` row (JL: "the Structure subsection

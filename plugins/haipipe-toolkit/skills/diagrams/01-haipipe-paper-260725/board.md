@@ -1,169 +1,177 @@
-# /haipipe-paper: pinning down what a paper lifecycle is, so it can be run
+# /haipipe-paper: Delivery → Engine → Execute
 
-spine: A paper is a delivery contract, not a writing folder. Pin down where truth lives, how a stage page runs, what its Content and sentences mean, how evidence and Displays enter, how outputs render, and when work may close, so a fresh agent can take one paper from seed to submission from the Board.
-dialect: paper        # so the QC faces can SHOW their rules, not only state them
-paper-root: _fixture  # a tiny synthetic paper; see _fixture/README.md
-close: Every Q here is RULED (✅) or PARKED (⏸️), with the decision recorded on its own page, and `PHILOSOPHY.md` and the stage contracts say what those rulings say. Implementation does not gate this board: a ruled question whose code is unwritten closes here and stays open in its page's Items to Finish.
+spine: A paper is a delivery system. First name the reader-facing delivery and its authority; then trace the skill-first Engine route that may produce it; then inspect a bounded Execute run that proves or blocks that route.
+dialect: paper
+paper-root: _fixture
+close: Every Delivery group has a named artifact, authority, Engine route, and Execute evidence or an explicit open gap; every design question is ruled or deliberately parked; fresh-agent evidence validates completed skill work.
 
 ## Topic
-`/haipipe-paper` takes one paper from "why might this exist" to a submitted manuscript. Its unit
-is the STAGE: eight of them, each answering exactly one question, each running the same four
-phases, each closing at a human gate.
+This Board has three reading jobs.
 
-What makes the design hard is that a paper is the downstream consumer of two other layers. It may
-not run code and may not read the literature itself; it asks, and the task and discovery layers
-answer. So half of this skill's design is about a boundary it must not cross, and the other half
-is about the shape of the thing it writes.
+**DELIVERY** says what one paper must give its reader or collaborator. It owns the desired artifact,
+the canonical content, and the human completion decision. Its accepted reading order is:
 
-The Board is the durable control plane for that work. Sessions are replaceable workers, stage
-pages carry their own queues and handoffs, sentence attachments resolve to inspectable evidence,
-and generic Display renderers sit outside Paper while Paper retains the meaning of every Display.
+```text
+Opening → Work → Literature → Value → Display → Main → Appendix → Present → Build → Round
+   │         │
+   Venue     └─ grows discovery + task banks
+```
 
-This board is where those choices are recorded and argued. Settled questions graduate into
-`PHILOSOPHY.md` and the per-stage contracts; unsettled ones stay here so nobody mistakes a
-convenient improvisation for a rule.
+Venue is inside Opening. Build also owns diffusion/distribution. Present includes slides and
+posters. Response is named Round, one batch per round.
 
-Words this board leans on. A STAGE is one lifecycle step with one question and one artifact. DPRC
-is its four phases: DRAFT, PROBE, REVISE, CHECK. A GATE is a human yes that closes a stage. The
-BANK is the task and discovery layers, which answer questions the paper cannot answer itself. A
-PROBE ENTRY binds one paper question by path to one bank answer. VENUE-FREE means a stage survives
-retargeting to another journal; VENUE-ALIGNED means it is rewritten.
+**ENGINE** says how reusable, callable skills serve those deliveries. Its target contract is
+skill-first: each skill page will list the Delivery content it serves, the authorities it reads, the
+narrow places it may write, the handoff it produces, and what it refuses to own. Until those
+backlinks are added, `QS0` is the explicit forward crosswalk and the missing reciprocals remain open.
 
-`state:` on this board is about the DECISION and nothing else (JL 2026-07-26). The four values
-are the board's usual ones and they read: ✅ the question is ruled, 🟡 the direction is ruled but
-a named sub-ruling is still open, 🔴 nothing is decided yet, ⏸️ deliberately not deciding. Whether
-the code exists is a different fact and it lives in each page's `## Items to Finish`, which is
-the page's queue. The two were previously merged, so a page sat 🟡 because an implementation was
-missing rather than because anything was undecided, and the close condition could never be
-reached. Reading the 33 pages' own `## Where we are` lines against that split moved 17 of them
-from 🟡 to ✅ without a single ruling being made: they had already been decided and were being
-reported as open.
+**EXECUTE** records an actual bounded run of one Delivery through one Engine route. A test, gate,
+compile, receipt, or fresh-agent observation is evidence inside Execute. Execute never becomes a
+second authoring tree and never promotes a candidate without the existing human authorization.
 
-Cast: JL decides. CC is Claude Code, doing the work.
+Delivery order is a reader-facing concern order, not a replacement for the Engine's dependency
+graph. A stage may revisit an earlier Delivery concern; execution order remains declared by stage
+contracts rather than inferred from adjacent groups.
+
+`state:` on this design Board records whether a decision is ruled, partial, open, or parked.
+Implementation status belongs in each page's Items and Where-we-are sections.
 
 ## Pipeline
+```text
+DELIVERY · what one paper must give readers and collaborators
+│
+├─ QF  Delivery map and submission-cut law
+├─ QG  Opening = Seed + Venue + Pitch + Narrative
+├─ QH  Work = resources + claims + probes that grow both banks
+├─ QI  Literature
+├─ QJ  Value
+├─ QK  Display
+├─ QL  Main
+├─ QM  Appendix
+├─ QN  Present = slides + poster
+├─ QO  Build = projection + diffusion/distribution + compile + promotion
+└─ QP  Round = review/rebuttal/revision/resubmission batches
+
+ENGINE · skill-first routes that serve Delivery
+│
+├─ QS  Delivery × Skill map and callable-skill pages
+├─ QA  Ownership and Paper–Board–Probe boundaries
+├─ QB  Stage and page execution contracts
+└─ QC  Sentence and evidence contracts
+
+EXECUTE · actual bounded runs and their evidence
+│
+└─ QE  Execution map, contract checks, fresh-agent runs, and reopen evidence
 ```
-QA · where things LIVE      ① writes the paper and owns NEITHER channel out of it
-   QA1 the map: eight folders in four pairs, two channels out
-        │
-        ├─ what we own
-        │    QA2 ① the skill set       what ships
-        │    QA3 ② its design board    what is argued, and what LEAVES
-        │
-        ├─ the two channels               both are shared skills we do NOT own
-        │    QA4 ③ the HUMAN channel     /haipipe-board
-        │    QA5 ⑤ the EVIDENCE channel  /haipipe-probe
-        │
-        ├─ what they produce
-        │    QA6 ⑦ the paper           what exists on disk   ← QB2d QA8
-        │    QA7 ⑧ its board           what is worked, and why NOTHING leaves
-        │              QA3 and QA7 are written as opposites on purpose
-        │
-        └─ how the HUMAN channel attaches
-             QA8 the ①/③ seam · who owns which REGION of a shared page
-             QA9 the ①/③ seam · how work is DRIVEN from a page
 
-   ④ and ⑥ get no face: they are the design records of skills we do not own.
+## Board Structure
+The index is deliberately Delivery-first. Existing Q ids remain historical addresses; their order
+does not declare lifecycle dependencies or move paper authority.
 
-QB · a STAGE: hand it a page, and a predefined flow runs over it
-   🎛 THE STAGE        what the skill reads to know what to do
-        QB1  the contract    24 fields · 7 blocks · 3 readers · this map
+The target Delivery overview contract is:
 
-   📄 THE PAGE         the thing you hand it
-        QB2  one markdown file · four regions · four owners
-              QB2a  what SHAPES it     a skeleton to fill, or a spec to parse
-              QB2b  what it is CALLED  identity ▸ filename, and how many
-              QB2c  a SECOND run       a page you have already edited
-              QB2d  what comes OUT     md ▸ tex, one way, never back
-
-   🔁 THE FLOW         the predefined thing that modifies it
-        QB3  the phase list · always ends `check` · may one be skipped
-              QB3a  DRAFT    what it adds, and what it refuses to write
-              QB3b  PROBE    what it may do alone
-              QB3c  REVISE   changing a sentence already read
-              QB3d  CHECK    who says done, and on what evidence
-    restructured 260726 on JL's model: a skill, a page, a flow. Four faces
-    that read as interchangeable became QB2a-d, because each describes the
-    same object from a different angle. The old "how a stage varies" face
-    dissolved: `runs:` joined QB2b, where the identity fields that decide
-    how many pages exist already live, and `venue_aligned:` went to QA6,
-    which owns the stage set.
-
-QC · the SENTENCE, WITH ITS EVIDENCE CARD    what the reader READS   →  sections/
-   QC0 the sentence unit ──┬──→ QC1 citation           card prints the reference
-                           ├──→ QC2 value              card prints the producing run
-                           ├──→ QC3 Display · table    card prints the compiled float
-                           └──→ QC4 Display · figure   card prints assets + candidates
-   ROWS ▲ what a MARKER resolves to · COLUMNS ▼ where the sentence is delivered
-                           ┌──→ QC5 as LaTeX           sections/ appendices/ \input
-                           └──→ QC6 as Word            no .bib, no \input, no comment
-   all four resolve `QA8@boardform`'s one blocked item, and it is now built:
-   the inline MARKER and the EVIDENCE CARD it opens, under `dialect: paper`
-
-QD · the DISPLAY, as THIS PAPER'S CONSUMER of it   what the reader LOOKS AT  →  displays/
-   the four things `/haipipe-display`'s spine leaves with the consumer
-   ONE OBJECT, FOUR ANGLES, in the order the work happens
-   QD1 The Display as a folder            what is inside a unit, and where it lives
-   QD2 A display someone asked for        who may commission, and what it costs
-   QD3 A display with a caption and a label   what the paper WRITES on it
-   QD4 A display placed in a section      where the float lands, and whether the
-                                          build reaches it at all
-   QC cites a display · QD commissions and gates one · /haipipe-display MAKES it.
-   Cut 8 faces → 4 on 260726: the other seven asked LAYER questions that
-   `01-haipipe-display-260727` now owns, four of them still 🟡 here while
-   already ✅ there. None carried a Law, so nothing graduated was lost.
-
-QE · shipping the skill     the contract form and the acceptance test
-   QE1 contract form → QE2 fresh-agent acceptance
+```text
+Reader result · Artifact · Authority · Completion gate · Consumes
+Engine route · Execute evidence · Open gaps
 ```
-Five letters, and three of them are folders. QB is `0-lifecycle/`, the machinery that produces
-things. QC is `sections/` and QD is `displays/`, both UNNUMBERED per QA6, which are the only two
-reader of the finished paper actually meets: sentences, and the displays they point at. QA is the
-coordinate system that has to be settled before any of it is placed, and QE is whether a stranger
-can run the result.
 
-That cut replaced nine invented-in-order letters (260726). The letter now names the parent, so a
-`QB` number says on sight that the question is a sub-question of the stage, which the old `QD2`
-said nothing about. QB carries eleven faces, which is honest: the machinery IS most of this skill.
+The target Engine skill-card contract is:
 
-Within a letter the order is the order the work happens in, not the order the questions were
-asked. QB runs author time then run time, and inside run time it follows the router: resolve the
-contract, make the page, walk the phases. So a number is a position in a procedure, and a face
-that cannot be placed in that procedure is a face that belongs to a different letter.
+```text
+Trigger · Serves · Reads · May write · Produces · Hands off · Refuses · Execute evidence
+```
+
+The target Execute-record contract is:
+
+```text
+Delivery target · Engine route · Fixture · Observable gate · Non-write boundary
+Receipt or observation · Failure → owning page to reopen
+```
+
+The current Delivery overview pages retain their existing seven-field wording while the crosswalk
+is filled in. No page may claim the new contract is complete before its Engine route and Execute
+evidence are actually linked.
+
 ## Pages
-### QA · Where things live
-Eight folders in four pairs, and the shape underneath them: `①` writes the paper and owns NEITHER
-channel out of it. `③` is the human channel, the only way eyes and a click reach the work. `⑤` is
-the evidence channel, the only door a number or a citation enters by. Both are shared skills whose
-models this family depends on and does not own, and the paper skill says exactly that about both.
-`QA0` owns the Board-level regrouping blueprint because that future index must preserve the same
-ownership boundaries that `QA1` through `QA9` define.
-Read the group in four beats: the map, what we own, the two channels, what they produce, and how
-the human channel attaches. `④` and `⑥` get no face on purpose: they are the design records of
-skills we do not own, named on `QA1` and explained by `QA3`'s Law.
+### QF · Delivery map
+The paper-folder law, source/candidate/submission roles, and the map into every Delivery group.
+QA6-paper-scaffold.md
+
+### QG · Delivery: Opening
+Opening includes Venue: Seed → Venue → Pitch → Narrative.
+QG0-delivery-opening.md
+
+### QH · Delivery: Work
+After Opening, Work grows the discovery and task banks through explicit probes.
+QH0-delivery-work.md
+
+### QI · Delivery: Literature
+Verified literature becomes sentence citations and format-specific references.
+QI0-delivery-literature.md
+QC1-sentence-citation.md
+
+### QJ · Delivery: Value
+Task-produced quantitative evidence remains bound to its producing run.
+QJ0-delivery-value.md
+QC2-sentence-value.md
+
+### QK · Delivery: Display
+Paper owns visual argument, caption, placement, and gate; `/haipipe-display` makes the render.
+QK0-delivery-display.md
+QC3-sentence-display-table.md
+QC4-sentence-display-figure.md
+QD1-the-display-folder.md
+QD2-a-display-someone-asked-for.md
+QD3-a-display-with-a-caption.md
+QD4-a-display-placed-in-a-section.md
+
+### QL · Delivery: Main
+Authoritative Main S pages project into the journal's main manuscript.
+QL0-delivery-main.md
+
+### QM · Delivery: Appendix
+Appendix source regions, gates, wrappers, and leaves remain explicit.
+QM0-delivery-appendix.md
+
+### QN · Delivery: Present
+Present contains slides and posters as audience-facing projections.
+QN0-delivery-present.md
+
+### QO · Delivery: Build
+Build includes diffusion/distribution: manifest wiring, candidates, handoffs, and explicit promotion. Concrete runs and their receipts are indexed under Execute.
+QO0-delivery-build.md
+QC5-sentence-to-latex.md
+QC6-sentence-to-word.md
+
+### QP · Delivery: Round
+One external-feedback batch is one Round: review, rebuttal, revision, and resubmission.
+QP0-delivery-round.md
+
+### QS · Engine: skill-first routes
+Each skill page states which Delivery content it serves. The existing six pages are the initial authoring/control cohort; delivery and project pages are added only after their independent contracts are audited.
+QS0-delivery-engine-map.md
+QS4-paper-skill-map.md
+Q-Skill-haipipe-paper.md
+Q-Skill-haipipe-paper-lifecycle.md
+Q-Skill-haipipe-paper-stage.md
+Q-Skill-haipipe-paper-draft.md
+Q-Skill-haipipe-paper-probe.md
+Q-Skill-haipipe-paper-revise.md
+
+### QA · Engine foundations: ownership and boundaries
+Where Paper, Board, Probe, and their records live; which layer owns each crossing.
 QA0-the-board-map.md
 QA1-eight-folders.md
 QA2-the-skill-set.md
 QA3-the-skill-board.md
 QA4-the-board-tool.md
 QA5-the-probe-layer.md
-QA6-paper-scaffold.md
 QA7-the-paper-board.md
 QA8-owning-the-shared-page.md
 QA9-driving-work-from-a-page.md
 
-### QB · A stage: a page in, a predefined flow over it
-The lifecycle itself, read the way you actually use it: you hand the skill a stage page and it
-modifies that page in a fixed order. So the group is three things. `QB1` is what the skill READS to
-know what to do, the contract, whose twenty-four fields have exactly three readers and only two of
-them are programs. `QB2` is the PAGE you hand it, one markdown file with four owners that never
-collide, and its four sub-faces ask what shapes it, what it is called, what a second run does to it,
-and what is generated out of it. `QB3` is the FLOW, the declared phase list, and its four sub-faces
-are DRAFT, PROBE, REVISE and CHECK.
-
-WHICH stages this skill has and what each one asks is `QA6`, not here. Restructured on 260726: the
-flat eleven read as interchangeable in the middle, so the two clusters became lettered, and the
-"how a stage varies" face dissolved into `QB2b` and `QA6`.
+### QB · Engine foundations: stage and page contracts
+What one stage declares, receives, runs, and provides.
 QB1-what-a-stage-declares.md
 QB2-the-page.md
 QB2a-its-template.md
@@ -176,102 +184,13 @@ QB3b-probe.md
 QB3c-revise.md
 QB3d-check.md
 
-### QC · The sentence, with its evidence card
-The first of the two things a reader actually meets, and the home of `sections/`. A sentence here
-is never a bare assertion: whatever it leans on is attached to it, and clicking that attachment
-opens an EVIDENCE CARD showing the thing itself, resolved at build time. A citation's card prints
-the reference as the manuscript will set it; a number's card prints the run that produced it; a
-Display's card prints the compiled float. That is what this group is for, and it is why the group
-is named for the card rather than for the question it used to ask.
-
-Two words, and both were already the family's own (JL 260727, replacing `chip`, which came from UI
-component libraries and named the box rather than the thing). A MARKER is what the author types
-and is countable, so it is what a report counts: `\citep{key}`, a number, `\ref{tab:x}`. EVIDENCE
-is what a marker resolves against and what its card shows, and it is a mass noun, so it is what a
-sentence HAS. The renderer already carried the split: `.chip` is the marker, `.chipcard` is the
-card.
-
-The Board ships the mechanism at `QA8@boardform`: one sentence per source line, a `>` lane bound
-by adjacency, a badge, a drawer, a write-back endpoint. What it cannot decide is what a citation,
-a value or a Display MEANS, and it says so. These pages are that ruling, split by TYPE, because
-the four look symmetric and are not. A citation ends in a `.bib` entry only a human may write. A value binds to a run, not a
-file. A table is checkable on sight; a figure is not, and it has candidates.
-The group is a MATRIX (JL 260726). QC1-QC4 are ROWS, what hangs on a sentence. QC5 and QC6 are
-COLUMNS, where it is delivered. Every cell differs, which is why one shared "projections" face was
-always going to be too thin to say anything.
-```
-                 │ QC5 ──▶ LaTeX          │ QC6 ──▶ Word
- ────────────────┼────────────────────────┼─────────────────────────
- QC1 citation    │ \citep{key} + .bib     │ ⚠️ no .bib. a field, or
-                 │ + .bst does the rest   │    baked text to maintain
- QC2 value       │ the number, inline     │ the number, inline  ✅ same
- QC3 table       │ \input{displays/<u>/   │ ⚠️ must EMBED the rendered
-                 │ float.tex} + \ref      │    table. No \input exists.
- QC4 figure      │ \includegraphics in    │ ⚠️ must EMBED the image, and
-                 │ the unit's float       │    invent its own numbering
- ────────────────┼────────────────────────┼─────────────────────────
- ### §6.1        │ \subsection            │ a Heading style
- > lanes         │ DROPPED                │ DROPPED             ✅ same
- %% {CC-*}:      │ survives as a comment  │ 🔴 NOWHERE TO PUT IT
-```
+### QC · Engine foundations: sentence and evidence contracts
+The sentence is the smallest authored manuscript unit; its evidence is attached and inspectable.
 QC0-sentence-unit.md
-QC1-sentence-citation.md
-QC2-sentence-value.md
-QC3-sentence-display-table.md
-QC4-sentence-display-figure.md
-QC5-sentence-to-latex.md
-QC6-sentence-to-word.md
-### QD · The Display, as this paper's consumer of it
-The second thing a reader meets, and the home of `displays/`. This group used to try to rule the
-whole display layer. It no longer does, because `/haipipe-display` got its own board on 2026-07-27
-and its spine draws the line for us: it "lets a CONSUMER own the visual argument, caption,
-placement, and human gate." Those four are what is left here, and no other layer can answer any
-of them.
 
-What went, and why. Seven faces were archived on 2026-07-27: ownership, render contract, renderer
-taxonomy, format adapters, provenance chain, projections, and Intake. Every one asked a LAYER
-question that `01-haipipe-display-260727` now rules, two of them under the same page name, and
-four were still 🟡 here while already ✅ there. Not one carried a `## Law`, so the whole group had
-graduated nothing in the time it existed, which is the clearest evidence it was the wrong owner.
-
-The four faces are ONE OBJECT seen four ways, in the order the work happens, which is how `QC`
-reads and why it reads well: someone asks for a display, a folder comes back, the paper writes a
-caption and a label on it, and it is placed in a section. Each face is a plain noun phrase with
-one variable, so the whole group is legible in a glance without opening a page. Separate from QC because citing a display and
-commissioning one are different jobs: `QC3` and `QC4` ask what a sentence points at and what state
-that pointer is in.
-QD1-the-display-folder.md
-QD2-a-display-someone-asked-for.md
-QD3-a-display-with-a-caption.md
-QD4-a-display-placed-in-a-section.md
-### Q-Skill · Paper skill pages
-This group makes the shipped Paper control path readable without turning the Board into a copied
-skill directory. `QS4` selects the first cohort; each named `Q-Skill-…` page carries one skill's
-managed source instructions plus an authored account of its decisions, boundaries, and acceptance
-test. Whether a shipped skill then WORKS is `QE2`, not here.
-
-Three governance faces retired here on 260727 (JL): graduation, versioning, and per-skill status.
-They asked how a Board ruling becomes shipped text, when a version and CHANGELOG entry are owed,
-and where "is this skill current" lives. All three are in `_archive/`, so the argument stays
-readable and nothing is lost; none is a page anyone has to keep current. The group is now one thing
-rather than two: a readable account of the skills that ship, and no meta-layer about the act of
-shipping them.
-
-One settled rule lived only on the versioning face and is kept here so it survives the retirement,
-because that page recorded it as existing in no document: **one version tag per body of work,
-written at the END, never per pass** (JL, overriding a skill-diagnose procedure that bumped per
-phase).
-QS4-paper-skill-map.md
-Q-Skill-haipipe-paper.md
-Q-Skill-haipipe-paper-lifecycle.md
-Q-Skill-haipipe-paper-stage.md
-Q-Skill-haipipe-paper-draft.md
-Q-Skill-haipipe-paper-probe.md
-Q-Skill-haipipe-paper-revise.md
-
-### QE · Shipping the skill
-Hand it over so a fresh agent can run a stage without us. Last, because it is the test of
-everything above it.
+### QE · Execute: bounded runs and evidence
+Execute turns one Delivery target through one Engine route on a named fixture or paper. Tests, gates, receipts, and fresh-agent observations are evidence within that run.
+QE0-execution-map.md
 QE1-contract-form.md
 QE2-fresh-agent.md
 
@@ -297,21 +216,21 @@ haipipe-paper-revise-content ../../paper/2-phase/2-revise/haipipe-paper-revise-c
 haipipe-paper-revise-humanizer ../../paper/2-phase/2-revise/haipipe-paper-revise-humanizer/
 haipipe-paper-check          ../../paper/2-phase/3-check/haipipe-paper-check/
 haipipe-paper-check-evidence ../../paper/2-phase/3-check/haipipe-paper-check-evidence/
+haipipe-paper-project        ../../paper/3-deliver/1-build/haipipe-paper-project/
+paper-folder/      ../../paper/3-deliver/1-build/haipipe-paper-folder/
+paper-conform/     ../../paper/3-deliver/1-build/haipipe-paper-conform/
+paper-compile/     ../../paper/3-deliver/4-ship/haipipe-paper-compile/
 5-section-edit/    ../../paper/1-lifecycle/haipipe-paper-stage/stages/5-section-edit/
 4-display/         ../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/
 boardform-board/   ../01-boardform-260722/
 probe-board/       ../01-probe-qa-260726/
+display-board/     ../01-haipipe-display-260727/
 QB1@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB1-the-order.md
 QB3@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB3-match.md
 QC1@probe          ../01-probe-qa-260726/QC-the-contract/QC1-qa-state-line.md
 QB6@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB6-interpret.md
-QA8@boardform      ../01-boardform-260722/QAb-the-sentence/QAb1-evidence-card.md
-QA8a@boardform     ../01-boardform-260722/QAb-the-sentence/QAb3-agent-visibility.md
-paper-folder/      ../../paper/3-deliver/1-build/haipipe-paper-folder/
-display/           ../../display/
-paper-display/     ../../paper/1-lifecycle/4-display/
-0-lifecycle/       ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
-display-board/     ../01-haipipe-display-260727/
+QA8@boardform      ../01-boardform-260722/QB-delivery/QB5a-evidence-card.md
+QA8a@boardform     ../01-boardform-260722/QB-delivery/QB5d-agent-visibility.md
 QA1@display        ../01-haipipe-display-260727/QA-where-display-lives/QA1-display-map.md
 QA3@display        ../01-haipipe-display-260727/QA-where-display-lives/QA3-unit-page-and-unit-folder.md
 QB1@display        ../01-haipipe-display-260727/QB-one-display-unit/QB1-unit-contract.md
@@ -324,8 +243,10 @@ QC3@display        ../01-haipipe-display-260727/QC-renderers-and-projections/QC3
 QD1@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD1-task-to-intake.md
 QD2@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD2-paper-display-bridge.md
 QD3@display        ../01-haipipe-display-260727/QD-bridges-to-other-layers/QD3-sentence-and-projection.md
-# The seven QD faces archived 260727. Declared so the ids still RESOLVE: most of the
-# remaining mentions are in `## Log` lines, which are history and are not reworded.
+QC1@boardform      ../01-boardform-260722/_archive/QC1-where.md
+QA2@boardform      ../01-boardform-260722/_archive/QA2-qtemplate.md
+QE4                ../01-boardform-260722/QE-sharing/QE4-editlock.md
+QX5                _fixture/1-probes/PP03_results-values/QX5_binary-exposure-flags.md
 QD1-display-ownership       _archive/QD1-display-ownership.md
 QD2-render-contract         _archive/QD2-render-contract.md
 QD3-renderer-taxonomy       _archive/QD3-renderer-taxonomy.md

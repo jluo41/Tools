@@ -3,9 +3,9 @@ name: haipipe-paper
 description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through PROBE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.4.5"
-  last_updated: "2026-07-27"
-  summary: "Front door for the Board-first paper lifecycle. Each stage runs the phases and gates declared by its stage.md; current stages use one CHECK gate, and Venue intentionally omits REVISE. History: ./CHANGELOG.md."
+  version: "0.4.6"
+  last_updated: "2026-07-30"
+  summary: "Front door for the Board-first paper lifecycle. Each stage runs its declared phases/gates; delivery routing now includes the explicit project/projection leaf for isolated S-page candidates. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -62,7 +62,7 @@ display | figures | figures-tables           -> haipipe-paper-stage display     
 section-edit | section | sec | §N            -> haipipe-paper-stage section-edit (per-section prose work)
 table | figure | plot | diagram |
   illustration | figure1 | framework         -> haipipe-paper-stage display first (allocate/bind the unit); then commission the matching Display renderer
-build | scaffold | restructure | conform | folder |
+build | scaffold | restructure | conform | folder | project | projection |
   audit | review | claim-audit | reviewer | optimizer |
   polish | consistency | format | typeset |
   compile | diffpdf | overleaf | ship | deliver  -> haipipe-paper-deliver (artifact side; forwards the leaf verb to 1-build/2-audit/3-polish/4-ship; polish runs consistency→format→typeset; also "make submission-ready", "conformance", "produce the PDF")
