@@ -28,6 +28,16 @@ MARKERS = {"ready": "⬜", "working": "🔥", "blocked": "⛔", "done": "✅"}
 LOOPBACK_URL = "http://127.0.0.1:5599"
 
 
+def short_board_name(name):
+    """A compact, human label for the clickable line: drop a leading "NN-"
+    ordinal and a trailing "-YYMMDD" date so "01-boardform-260722" reads as
+    "boardform". The long served path stays behind the link, not on screen.
+    Falls back to the raw name if stripping would empty it."""
+    trimmed = re.sub(r"^\d+[-_]", "", name)
+    trimmed = re.sub(r"[-_]\d{6}$", "", trimmed)
+    return trimmed or name
+
+
 def configured_base_url(root, explicit=None):
     """Resolve the reader-facing URL without executing the repo's env.sh.
 
@@ -198,7 +208,7 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
         next_action = f"continue {mode} on {location}"
 
     marker = MARKERS[status]
-    attachment = f"{board.name} · {location}"
+    attachment = f"{short_board_name(board.name)} · {location}"
     first = f"🧭 [{attachment}]({url})" if url else f"🧭 {attachment}"
     return "\n".join([
         first + "  ",

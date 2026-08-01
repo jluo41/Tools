@@ -61,7 +61,7 @@ class StatusStripTest(unittest.TestCase):
         self.assertTrue(lines[0].endswith("  "))
         self.assertTrue(lines[1].endswith("  "))
         self.assertIn(
-            "🧭 [01-test-260726 · QB/QB1]"
+            "🧭 [test · QB/QB1]"
             "(http://127.0.0.1:5599/diagram/01-test-260726/board.html#QB1)",
             strip,
         )
@@ -74,7 +74,7 @@ class StatusStripTest(unittest.TestCase):
         temp, root, board = self.fixture()
         self.addCleanup(temp.cleanup)
         strip = STATUS.render(board, focus="group:QA", mode="discussion", root=root)
-        self.assertIn("🧭 [01-test-260726 · QA]", strip)
+        self.assertIn("🧭 [test · QA]", strip)
         self.assertIn("⬜ ready · discussion", strip)
         self.assertIn("→ continue discussion on QA", strip)
 
@@ -125,7 +125,7 @@ class StatusStripTest(unittest.TestCase):
         strip = STATUS.render(
             board, focus="QB1", mode="sourcing", status="working", root=root
         )
-        self.assertIn("🧭 [01-test-260726 · QB/QB1]", strip)
+        self.assertIn("🧭 [test · QB/QB1]", strip)
         self.assertIn("🔥 working · sourcing", strip)
 
     def test_page_launcher_injects_same_closing_block_contract(self):

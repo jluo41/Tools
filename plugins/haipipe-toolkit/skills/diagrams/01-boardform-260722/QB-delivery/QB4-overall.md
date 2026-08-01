@@ -22,10 +22,10 @@ Those sources compose one explicit page; they are not competing templates and ar
   `board.html`'s **single-page focus mode** for Q and S: the fixed on-stage order, what is on stage / what folds, one layout serving two workflows, the group-title marker, and the Board identity mark.
   The source template `ref/q-template.md` and the whole-file authoring contract are also here.
 - ↪ Covered elsewhere
-  Each section's own rules live on its face: Opening `QAa1` · Diagram `QAa2` · Content `QAa3` · Items to Finish `QAa4` · Where we are `QAa5` · the folds `QAa6` · Files `QAa7`.
+  Each section's own rules live on its face: Opening `QB4a` · Diagram `QB4b` · Content `QB4c` · Items to Finish `QB4d` · Where we are `QB4e` · the folds `QB4g` · Files `QB4f`.
   The sentence and everything attached to it: the `QAb` group.
   Projection (one file, two modes: scroll to read / one screen per page) is settled in `ref/board-form.md` §8, not here.
-  Whether each page's **prose is well written**, and what checks that the page still renders this layout, is `QA9`.
+  Whether each page's **prose is well written**, and what checks that the page still renders this layout, is `QF1`.
   Q and S workflow contracts belong to their owning skills.
 
 ## Diagram
@@ -67,12 +67,12 @@ intent first, status second.
        context names, e.g. "Contracts" · "Renderer" · "Generated views"
 
   every section/subsection heading:
-       QAa0 / Where we are / Current family     [⧉ Copy] [🤖 Chat]
+       QB4 / Where we are / Current family     [⧉ Copy] [🤖 Chat]
        generated from the current render; the heading path is sent with Chat
 
   ─── below the fold, never on stage ───
   ▸ Law   ▸ Lesson   ▸ Why here   ▸ Log
-  ← QAa1       ☰ Index        QAa3 →        — pinned to the bottom
+  ← QB4a       ☰ Index        QB4c →        — pinned to the bottom
 
   unframed = no border · no rounded corners · no card background
 ```
@@ -114,6 +114,27 @@ copy ref/q-template.md                     source → the rendered page
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa0
 
 ## Content
+### 0 · The page protocol: what each section conveys
+```
+📋 one page, read top to bottom once · each section answers ONE question
+──────────────────────────────────────────────────────────────────────
+🧭 QB4a Opening · what is this page, and why should I care?
+🖼 QB4b Diagram · can I see the whole subject at once, before reading?
+📚 QB4c Content · what does this page actually establish?
+🎯 QB4d Items to Finish · what, testably, separates now from done?
+📍 QB4e Where we are · what is true now, and what waits on a human?
+📎 QB4f Files · which few files do I open to continue this work?
+🗃 QB4g the folds · what was ruled, learned, and changed, if I need it?
+──────────────────────────────────────────────────────────────────────
+the order IS the protocol: intent, then substance, then status
+each face opens with the same five rows · conveys · holds · source ·
+rules · omit · to update a section: read its face, follow its rows
+```
+A page is a fixed conversation with a zero-background reader: each section exists to answer exactly one question that reader brings, in the order they need the answers.
+That is why the order never moves: intent (Opening, Diagram) before substance (Content) before status (Items to Finish, Where we are) before continuation (Files), with memory (the folds) below the read.
+Each section's face, `QB4a` to `QB4g`, opens with the same five protocol rows (what it conveys, what it holds, how the source is written, the binding rules, when it may be omitted), so updating a section means reading its face first and following those rows.
+A sentence that answers another section's question is the defect this protocol catches, and the protocol names its home: substance found in Opening moves to Content, contract material found in Content moves to Stage Contract, settled flags move to Where we are, open work moves to Items to Finish.
+
 ### 1 · The base page and its Content variants
 One frame, many kinds: the base page belongs to this skill (the metadata head, the fixed on-stage order, the folds, the sentence grammar, the renderer), and a page KIND redefines only what `## Content` holds and how it is composed.
 JL stated the rule in chat on 260729: the kinds today are Question and Stage, Display and Task are the candidates, Skills is already a third, and "the only thing changed is the content structure, other things won't change".
@@ -121,7 +142,7 @@ A variant ships in the skill set that owns its domain, not here: `haipipe-paper-
 
 #### The kinds, counted against the code
 - Question, the base kind
-  Content optional and free-shaped since 260729 (`QAa3` §3); nothing composes it, the author does.
+  Content optional and free-shaped since 260729 (`QB4c` §3); nothing composes it, the author does.
 - Stage, the first variant, and it already lives in another family
   Content required, composed at creation by `stage.py new` from the stage template, the venue overlay, and previous Stage Contracts; the templates live under `paper/1-lifecycle/haipipe-paper-stage`, so the extension pattern JL names has already shipped once.
 - The Skill roster, a generated variant
@@ -175,7 +196,7 @@ Names such as Decisions, Build, Current decision, Previous decisions, Sources, a
 The displayed heading must use the page's own language, such as `Which subskills still need JL?`, `Current family`, or `Board renderer`.
 Empty subsections do not render, so a small page stays small.
 
-Every rendered `##` section and `###` subsection heading also exposes one generated human-readable path, for example `QB7 / Where we are / Current family`.
+Every rendered `##` section and `###` subsection heading also exposes one generated human-readable path, for example `QC1b / Where we are / Current family`.
 The path can be copied or passed directly to the existing page Chat as a heading-focus packet.
 It is generated from the current render rather than written back as durable Markdown identity; the source file and heading names travel with it so Claude Code can locate the exact material.
 Content keeps its finer `C.H` and `C.P.S` addressing for paragraph and sentence work.
@@ -184,9 +205,9 @@ Content keeps its finer `C.H` and `C.P.S` addressing for paragraph and sentence 
 ### Context-named subsections and the template
 - [ ] 🧭 Every section can expose context-named subsections and a copyable Chat path
       Keep the fixed page frame, let the owning page name only the subsection groups it actually needs, and give every `##` / `###` heading a generated breadcrumb with Copy and Chat actions.
-      `QAa4`, `QAa5`, `QAa7`, and `QAb3` own the finish, state, file, and focus contracts.
+      `QB4d`, `QB4e`, `QB4f`, and `QB5d` own the finish, state, file, and focus contracts.
 - [ ] 🧩 `ref/q-template.md` learns the remaining 260729 addition
-      The 🧩 Skills item shape inside Where we are (`QAa5`); this face owns the template since QA2 merged into the QAa group.
+      The 🧩 Skills item shape inside Where we are (`QB4e`); this face owns the template since QA2 merged into the QAa group.
       The former QA0 board-map guide is no longer a page-template concern: JL moved it to `board.md ## Board Structure` on 260730, where it renders on the Board-Webpage-Index without consuming a Q page.
 
 ### The focus-mode look and reading order
@@ -273,8 +294,8 @@ Content keeps its finer `C.H` and `C.P.S` addressing for paragraph and sentence 
 
 ### Rulings awaiting JL
 - [ ] 🧠 JL confirms the carve: one face owns each section, this face owns the order
-      Carved 260729 and extended 260730: Opening `QAa1` · Diagram `QAa2` (absorbing the former QA4a) · Content `QAa3` · Items to Finish `QAa4` · Where we are `QAa5` · folds `QAa6` · Files `QAa7`, with the source template `QA2` moving into the group.
-      Six open items moved to `QAa3` with the grammar they block on; every ticked item above stays here, because the history happened on this page.
+      Carved 260729 and extended 260730: Opening `QB4a` · Diagram `QB4b` (absorbing the former QA4a) · Content `QB4c` · Items to Finish `QB4d` · Where we are `QB4e` · folds `QB4g` · Files `QB4f`, with the source template `QA2` moving into the group.
+      Six open items moved to `QB4c` with the grammar they block on; every ticked item above stays here, because the history happened on this page.
 - [ ] 🧬 JL confirms the base/variant model (§1)
       The page is a base owned by this skill; a kind redefines only Content and ships under its consumer family, `haipipe-paper-stage` today, `haipipe-paper-display` and a task variant as candidates.
       The one point to rule: whether S's Stage Contract row in Opening and its Q-consumer records in Items to Finish count as the variant's Content contract showing elsewhere, which is §1's reading, or as frame exceptions to pull back.
@@ -290,7 +311,12 @@ Carved 260729 into the QAa group: this face keeps the fixed order, the two-workf
 The shared Q/S reading path and inherited Stage Contract are implemented.
 The shared Board identity mark is also implemented: one SVG source, one inlined header instance, one data favicon, and CSS-owned palette tokens.
 Four palette studies preserve the same geometry so JL can change color without reopening the mark itself.
-The open work moved with its sections: creation-time Content composition and the group-title cleanup and icon items are `QAa3`'s now.
+The open work moved with its sections: creation-time Content composition and the group-title cleanup and icon items are `QB4c`'s now.
+
+- 260801 CC · 📜 The seven section faces open with their protocol
+  JL asked what each page section is FOR, so that updating one has rules to follow: the faces must "define and explain what this section wants to convey", and then the rule can generate a new page.
+  Each face's first division is now `What <Section> conveys`, opening with the same five rows: the reader question it answers, what it holds, how the source is written, the binding rules, and when it may be omitted.
+  §0 here is the master view, the QB group intro in `board.md` draws the same ladder, and the group page now renders an intro's figure as a figure instead of flattening it to prose (`page_board.py`, 0.92.0).
 
 - 260730 JL · 🧭 The fixed sections gained optional internal structure
   The frame remains `Opening → Diagram → Content → Items to Finish → Where we are → Files`, but each section may expose non-empty subsections owned by its QAa face.
@@ -312,7 +338,7 @@ The open work moved with its sections: creation-time Content composition and the
 - 260726 JL · 🎨 QD4 merged in, and the count stopped flattering itself
   JL: "I think we can merge this one to QA4 ... I think most content in the QA4 is already done".
   Both halves of that are right, and they pull against each other. This page was 17/18 before the merge and is 17/23 after it, because the icon question was parked on another page while the grammar it depends on lived here.
-  That is the same shape as the QA6 and QA7 merge earlier the same day: a split let one page look finished while the thing it defined had an unfinished half somewhere else.
+  That is the same shape as the QB5b and QA7 merge earlier the same day: a split let one page look finished while the thing it defined had an unfinished half somewhere else.
   What moved: the group-title marker, the 36/5/11/20 count, and QD4's four forks. What stayed behind: nothing, QD4 is deleted.
   One tension worth recording rather than hiding: the eventual endpoint is live-layer work and the QD group owns the live layer. It sits here because the icon is a layout marker and its blocking prerequisite is this page's own `§3` rule, so the ruling and the thing it rules are together.
 
@@ -343,7 +369,7 @@ The open work moved with its sections: creation-time Content composition and the
 
 - 260725 JL · 📚 Section purposes moved into Content
   JL asked for each Q-webpage section to explain what it is ultimately for.
-  QA4 now exposes seven numbered Content subsections, which the page counts as eight because the automatic Why this matters joins them; the S-only Stage Contract is explained inside Opening's subsection, matching where it renders (JL 260725).
+  QB4 now exposes seven numbered Content subsections, which the page counts as eight because the automatic Why this matters joins them; the S-only Stage Contract is explained inside Opening's subsection, matching where it renders (JL 260725).
 
 - 260725 JL · 🧭 Stage orientation moved into Opening
   JL asked to place S0's Why this matters and Stage Record in Opening and replace its question mark.
@@ -383,7 +409,7 @@ The open work moved with its sections: creation-time Content composition and the
   The renames were a separate, smaller fix: the old names were compact but had to be learned, and the new ones say what the section holds.
 - 260723 CC · 🚧 Boundary added, and Why here retired
   A new `## Boundary` section states what a question covers and what is covered elsewhere, while `## Why here` was absorbed into the Question rationale and now renders under Content.
-  Boundary was added because readers kept judging a question against expectations carried over from a neighbouring one, for example asking why QA4 says nothing about writing quality when that is QA5's subject.
+  Boundary was added because readers kept judging a question against expectations carried over from a neighbouring one, for example asking why QB4 says nothing about writing quality when that is QA5's subject.
   Naming the question that does cover the excluded part turned out to matter more than stating what this one covers.
   `Why here` went away in the same pass so that the opening section could orient a reader without help from anything below it.
 - 260723 CC · 🔗 ALIAS so old boards keep working
@@ -413,6 +439,11 @@ The open work moved with its sections: creation-time Content composition and the
       Carved 260729 and extended 260730 into the QAa group; a tick here also closes the same row in Items to Finish.
 - [ ] 🧬 Confirm the base/variant model
       The options §1 records: S's Stage Contract row in Opening and its Q-consumer records in Items to Finish are the variant's Content contract showing in other sections, which is §1's reading and the recommendation, or they are frame exceptions to pull back.
+- [ ] 📜 Graduate the five-row section protocol to the template and the page skill
+      Each face's first division now opens with the same five rows: conveys · holds · source · rules · omit (§0 is the master view).
+      A · copy the five rows into `ref/q-template.md`'s guide text and `haipipe-board-page`, so a writer follows them without opening the faces.
+      B · leave them on the faces only, and require a writer to read the owning face first.
+      → CC recommends A, because a rule not written where the writer writes does not exist, which is this board's own 260731 lesson on QB4a.
 
 ## Files
 ### Engines
@@ -534,14 +565,14 @@ The open work moved with its sections: creation-time Content composition and the
 - Long questions scroll: never truncate, never split; no 16:9 lock, follow window height
   Locking the aspect ratio would be projection's business; projection is settled (one file, two modes) in `ref/board-form.md` §8.
 - A real space after the id in the headline
-  So copying the headline yields `QA4 Single…`, not `QA4Single…`.
+  So copying the headline yields `QB4 Single…`, not `QA4Single…`.
 - Renaming sections must go through ALIAS; old boards must never break
   One slot, many names; old boards regenerate without a single edit.
 
 - One face, both projections (JL 260729)
   The page markdown and the rendered page are one thing seen twice, so each QAa face owns its section in BOTH: what an author writes and what the reader sees.
   A render decision and its authoring contract change in the same edit, on the same face, and `ref/q-template.md` follows in that same change.
-  This replaces the retired two-face sync law ("QA2 changes with QA4"), whose only job was keeping apart what belongs together.
+  This replaces the retired two-face sync law ("QA2 changes with QB4"), whose only job was keeping apart what belongs together.
 
 ## Lesson
 - In the usage comment of the template, never start a line with `state:` / `owner:` / `method:`
@@ -595,6 +626,7 @@ job line: the full-line `(…)` directly under a paragraph heading, saying what 
 >> CC0725: moved the section meanings out of Law and into seven numbered Content subsections. The visible reading path is explained first; the lower historical sections are grouped as Supporting folds.
 
 ## Log
+260801 · §0 added on JL's ask (each section must say what it conveys): the page protocol division, one reader question per section and the shared five rows (conveys · holds · source · rules · omit); the QB group intro in board.md redrawn as the same ladder, and page_board.py stops flattening a group intro's fence on the group page (0.92.0)
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260730 · Corrected subsection design: Items to Finish, Where we are, and Files use context-specific headings; generic category names are examples, not reserved page grammar; Files gains its own QAa7 face
 260730 · Page design extended: optional per-section subsections, typed finish categories, decision records in Where we are, and copyable section/subsection Chat paths

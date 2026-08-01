@@ -283,12 +283,40 @@ def _gt_link(group, group_href):
     return f'<a href="{h}">{inline(group)}</a>' if h else inline(group)
 
 
+def _gi_body(gi):
+    """The group intro's expandable body, shared by the index listing and the
+    group's own page: prose lines join with <br> (keeping the author's line
+    breaks), and a ``` fence becomes a <pre class="gidia"> ascii figure."""
+    parts, prose, fence, inf = [], [], [], False
+    for x in gi[1:]:
+        s = x.strip()
+        if s.startswith("```"):
+            if inf:
+                parts.append('<pre class="gidia">'
+                             + bd.link_faces(esc(chr(10).join(fence)))
+                             + '</pre>')
+                fence, inf = [], False
+            else:
+                if prose:
+                    parts.append("<br>".join(inline(p) for p in prose)); prose = []
+                inf = True
+            continue
+        if inf:
+            fence.append(x)          # 原样，保对齐
+        elif s:
+            prose.append(s)
+    if prose:
+        parts.append("<br>".join(inline(p) for p in prose))
+    return "".join(parts)
+
+
 def index_rows(meta, qs, href_for=None, group_href=None):
     """The index listing: group headings, group intros (prose AND their ascii
     figures), and one row per page.
 
-    ONE implementation, two packagings. Hand-rewriting this for the board/ tree
-    dropped every `.gi` / `.gib` / `.gidia` block, so the group intros and the
+    ONE implementation reused by the generated Index, group pages, sidebar,
+    and the legacy single-Markdown renderer. Hand-rewriting this for the board/
+    tree dropped every `.gi` / `.gib` / `.gidia` block, so the group intros and the
     lane figures vanished and their ascii stopped being ascii (JL 260731, the
     third time this file's own "never two implementations" law bit its author).
     `href_for` maps a page to its link and `group_href` a group token to its
@@ -326,27 +354,7 @@ def index_rows(meta, qs, href_for=None, group_href=None):
             if gi:
                 summary = inline(gi[0].strip())
                 # 展开的 body：散文按行 <br> 接（保作者断行），碰到 ``` 就当 ascii 图铺成 <pre>。
-                parts, prose, fence, inf = [], [], [], False
-                for x in gi[1:]:
-                    s = x.strip()
-                    if s.startswith("```"):
-                        if inf:
-                            parts.append('<pre class="gidia">'
-                                         + bd.link_faces(esc(chr(10).join(fence)))
-                                         + '</pre>')
-                            fence, inf = [], False
-                        else:
-                            if prose:
-                                parts.append("<br>".join(inline(p) for p in prose)); prose = []
-                            inf = True
-                        continue
-                    if inf:
-                        fence.append(x)          # 原样，保对齐
-                    elif s:
-                        prose.append(s)
-                if prose:
-                    parts.append("<br>".join(inline(p) for p in prose))
-                gib = "".join(parts)
+                gib = _gi_body(gi)
                 if gib:
                     rows.append(f'<details class="gi"><summary>{summary}</summary>'
                                 f'<div class="gib">{gib}</div></details>')
@@ -374,7 +382,7 @@ def index_rows(meta, qs, href_for=None, group_href=None):
 
 def sidebar_rows(qs, href_for=None, group_href=None):
     """The rail's rows: group links, page links, and each page's section
-    outline. ONE implementation, two packagings (JL 260731)."""
+    outline. ONE implementation for the canonical site and legacy renderer."""
     href_for = href_for or (lambda q: "#" + q["id"])
     group_href = group_href or (lambda tok: "#group-" + tok)
 
@@ -525,9 +533,10 @@ def render(meta, qs):
 
 
 # ── page assets (QB4, JL 260724: build.py was one 2,500-line file) ─────────
-# The page's JS and CSS live in assets/ as REAL .js/.css files — editable,
-# lintable, node --check-able. build.py INLINES them at build time, so the
-# output stays ONE self-contained board.html and the offline invariant holds.
+# The page's JS and CSS live in assets/ as REAL .js/.css files: editable,
+# lintable, and node-checkable. A Board folder build assembles each family once
+# into board/_assets/, and every generated page links that shared copy. The
+# legacy single-Markdown build still inlines them into its one output file.
 HERE = Path(__file__).resolve().parent.parent
 # Assembled from assets/js/** and assets/css/** in sorted path order; see
 # src/assets.py for why the parts exist and why the order is load-bearing.
@@ -648,9 +657,9 @@ def to_json(meta, qs, warn):
 # so a reader downloads ~34 KB instead of the whole board, a page has a real
 # URL, and a write to page C rewrites page C's file alone.
 #
-# Same parser, same renderers: this is a second PACKAGING of `render()`'s
-# parts, never a second implementation. `board.html` keeps being emitted so
-# the one-file artifact (QE3's Law) survives; the tree is the working surface.
+# Same parser, same renderers: the tree reuses `render()`'s parts rather than
+# maintaining a second implementation. For a Board folder this is now the only
+# generated packaging. A single Markdown target may still render one file.
 TREE_TPL = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -659,7 +668,7 @@ TREE_TPL = """<!DOCTYPE html>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
 <link rel="stylesheet" href="{root}_assets/board.css?v={assets_stamp}">
 </head><body class="single split" data-board="{boarddir}" data-board-root="{root}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
-<nav class="sitebar"><a href="{root}index.html">🗂 Index</a>{crumb}</nav>
+<nav class="sitebar"><a href="/boards">🏠 Boards</a><a href="{root}index.html">🗂 Index</a>{crumb}</nav>
 {body}
 </div>{popcards}
 <script src="{root}_assets/board.js?v={assets_stamp}"></script></body></html>
@@ -697,6 +706,34 @@ def tree_relink(html, hrefs):
     return re.sub(r'href="(#[^"]+)"', sub, html)
 
 
+# Links and media emitted by page renderers are authored relative to the Board
+# source folder. A generated group page sits one directory below that folder,
+# and a generated question page sits two directories below it. Re-root every
+# local URL-bearing attribute together: fixing href alone leaves evidence-card
+# images and PDF objects visibly broken even when their text links work.
+_TREE_SOURCE_URL = re.compile(
+    r'(?P<attr>href|src|data)="(?!https?:|mailto:|data:|#|/)(?P<url>[^"]+)"')
+
+
+def tree_reroot(html, up):
+    """Move Board-root-relative href/src/data URLs under a split page."""
+    def fix(m):
+        url = m.group("url")
+        bare = url.split("#", 1)[0].split("?", 1)[0]
+        # Authored documentation commonly names the generated output itself as
+        # `board/index.html` or `board/_assets/...`. Those paths are relative to
+        # the Board source folder, just like `_fixture/...`, even though they
+        # happen to end in generated filenames.
+        if bare.startswith("board/"):
+            return f'{m.group("attr")}="{up}{url}"'
+        if bare.endswith(".html"):      # a generated page link is already sited
+            return m.group(0)
+        if "_assets/" in bare:          # TREE_TPL owns shared asset paths
+            return m.group(0)
+        return f'{m.group("attr")}="{up}{url}"'
+    return _TREE_SOURCE_URL.sub(fix, html)
+
+
 def tree_sidebar(meta, qs, root):
     """The left rail for the tree.
 
@@ -723,7 +760,7 @@ def tree_row(q, href):
     The classes are load-bearing: `.ir` with `.s/.i/.t/.w` is what board.css
     styles. A first pass here invented `.row/.st/.qid/.qt`, so not one rule
     applied and the index rendered as a wall of inline links (JL 260731, with
-    a screenshot). Only the href differs between the two packagings.
+    a screenshot). Only the href differs between its consumers.
     """
     if q.get("kind") == "doc":
         return (f'<a class="ir doc" href="{href}">'
@@ -773,34 +810,15 @@ def render_tree(meta, qs, out_dir, only=None):
     for q in qs:
         groups.setdefault(q.get("group") or "", []).append(q)
 
-    # Links to the board's own SOURCE files (`QD-working/QD2-chat-sdk.md`,
-    # `board.md`, `fig/x.pdf`) are written relative to the BOARD FOLDER, which
-    # is where the retired monolith sat. A split page lives one or two levels
-    # below that, so every one of them 404s as written; verified against the
-    # live server 260731, and the reason "open the source" was dead on the
-    # split site. Page-to-page links (.html) already carry their own prefix.
-    # `../../../../../../env.sh` counts too: an escape out of the repo is still
-    # written from the board folder, so it needs the same two extra hops.
-    _SRC_HREF = re.compile(r'href="(?!https?:|mailto:|data:|#|/)([^"]+)"')
-
-    def reroot(html, up):
-        def fix(m):
-            href = m.group(1)
-            bare = href.split("#", 1)[0].split("?", 1)[0]
-            if bare.endswith(".html"):      # a page link, already sited
-                return m.group(0)
-            if "_assets/" in bare:          # the shell owns the asset paths
-                return m.group(0)
-            return f'href="{up}{href}"'
-        return _SRC_HREF.sub(fix, html)
-
     def shell(title, body, root, crumb="", sidebar=""):
         # `root` is already the hop from this file up to board/, and the board
         # FOLDER is one further up.
-        body = reroot(body, root + "../")
+        up = root + "../"
+        body = tree_reroot(body, up)
+        popcards = tree_reroot("\n".join(bd.CARDS), up)
         return TREE_TPL.format(
             title=esc(title), body=body, root=root, crumb=crumb,
-            sidebar=sidebar, popcards="\n".join(bd.CARDS),
+            sidebar=sidebar, popcards=popcards,
             assets_stamp=ASSETS_STAMP, favicon=MARK_FAVICON,
             boarddir=esc(meta.get("dir", "")), bsession=esc(meta.get("session", "")))
 
@@ -815,6 +833,13 @@ def render_tree(meta, qs, out_dir, only=None):
         prv, nxt = (qs[i - 1] if i else None), (qs[i + 1] if i + 1 < n else None)
         card = (render_doc_slide(q, prv, nxt) if q.get("kind") == "doc"
                 else render_question(q, prv, nxt))
+        # The shared page renderer emits fragment navigation because that is
+        # correct for a single Markdown target. In the canonical Board tree,
+        # prev/next and the links labelled Index must be real files so the page
+        # also navigates with JavaScript disabled.
+        page_hrefs = {key: "../" + value for key, value in tree_href_map(qs).items()}
+        page_hrefs["#top"] = "../index.html"
+        card = tree_relink(card, page_hrefs)
         gtok = bd.group_token(q.get("group") or "") or "_ungrouped"
         gdir = out_dir / gtok
         gdir.mkdir(exist_ok=True)
@@ -846,8 +871,11 @@ def render_tree(meta, qs, out_dir, only=None):
         # never rendered here; line 1 is the purpose, the rest is the why.
         gi = (meta.get("groups") or {}).get(g) or []
         purpose = f'<p class="gpurpose">{inline(gi[0].strip())}</p>' if gi else ""
-        rest = "".join(f"<p>{inline(x.strip())}</p>"
-                       for x in gi[1:] if x.strip() and not x.strip().startswith("```"))
+        # Same body the index shows: prose joined with <br>, any ``` fence as a
+        # <pre class="gidia"> figure. This path used to flatten the fence into
+        # <p> rows, which is how a group intro's ladder arrived as mangled
+        # prose inside "why this group exists" (JL 260801).
+        rest = _gi_body(gi)
         why = (f'<details class="gwhy"><summary>why this group exists</summary>'
                f'<div class="gwhy-b">{rest}</div></details>') if rest else ""
         done = sum(1 for m in members
@@ -858,6 +886,9 @@ def render_tree(meta, qs, out_dir, only=None):
                 + f'<p class="bar">{len(members)} pages · '
                   f'{done}/{len(counted)} settled</p>'
                 + f'<div class="idx">{"".join(rows)}</div>')
+        # Group prose may contain authored Q/S references; in a split group
+        # page those are file links, not fragments into a monolith.
+        body = tree_relink(body, tree_href_map(qs))
         crumb = f' <span class="sb-sep">›</span> <b>{esc(gtok)}</b>'
         f = out_dir / f"{gtok}.html"
         f.write_text(scrub_cjk_comments(shell(g, body, "", crumb,
@@ -887,6 +918,9 @@ def render_tree(meta, qs, out_dir, only=None):
             + f'<h3 class="sec" id="qlist">ALL PAGES</h3>'
             + f'<div class="idx">{"".join(rows)}</div>'
             + ACTIVITY_HTML)
+    # `index_rows()` also renders each group's authored intro and ASCII map, so
+    # relink the complete body rather than only the three Board-level panels.
+    body = tree_relink(body, hrefs)
     f = out_dir / "index.html"
     f.write_text(scrub_cjk_comments(shell(meta["title"], body, "", "",
                                      tree_sidebar(meta, qs, ""))),

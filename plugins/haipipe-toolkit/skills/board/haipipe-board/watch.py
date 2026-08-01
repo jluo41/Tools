@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Watch a board folder and rebuild board.html whenever a .md changes.
+"""Watch a Board source folder and rebuild its generated board/ site.
 
     python3 watch.py <board-dir>
 
 Why this exists: the browser's "Sync to md" button writes your comments straight
-into the Q files, but it cannot run Python — so board.html stays stale until
+into the Q files, but it cannot run Python, so board/ stays stale until
 someone rebuilds. Run this once in a terminal and that gap closes: press Sync,
 refresh the page, your comment is rendered. No Claude Code in the loop.
 
@@ -33,12 +33,10 @@ def build(d, only=None):
     `only` names the .md files that actually changed. When the board/ tree
     exists, that lets the rebuild rewrite JUST those pages instead of all of
     them, which is JL's 260731 rule: changing one page must not disturb a
-    reader sitting on another (QC9). board.html is whole-board by construction,
-    so it is still rewritten; the tree is where the granularity pays.
+    reader sitting on another (QC9).
     """
     cmd = [sys.executable, str(HERE / "build.py"), str(d)]
     if (d / "board").is_dir():
-        cmd.append("--split")
         if only:
             cmd += ["--only", ",".join(sorted(only))]
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -49,7 +47,7 @@ if __name__ == "__main__":
     d = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
     if not d.is_dir():
         sys.exit(f"不是文件夹：{d}")
-    print(f"👀 盯着 {d}  —— 改任何 .md 都会自动重新生成 board.html（Ctrl-C 停）",
+    print(f"👀 盯着 {d}  —— 改任何 .md 都会自动重新生成 board/（Ctrl-C 停）",
           flush=True)
     build(d)
     prev = stamp(d)

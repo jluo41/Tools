@@ -1,5 +1,5 @@
 # Page Items to Finish: the testable gap
-state: 🟡 PARTIAL · rules settled on QAa0, carved 260729; face awaits JL
+state: 🟡 PARTIAL · rules settled on QB4, carved 260729; face awaits JL
 owner: CC
 method: every checkbox is a condition another person can judge; a tick means verified
 
@@ -29,17 +29,30 @@ example for a skill-family design page
 ├── 🧪 Prove routing on real questions                  2/2
 └── ⏳ Waiting on the Page contract                     0/2
 
-QAa4 / Items to Finish / Choose the skill family  [⧉ Copy] [🤖 Chat]
+QB4d / Items to Finish / Choose the skill family  [⧉ Copy] [🤖 Chat]
 ```
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa4
 
 ## Content
-### 1 · Items to Finish: define the gap
+### 1 · What Items to Finish conveys
+```
+🎯 Items to Finish · answers: what, testably, separates now from done?
+──────────────────────────────────────────────────────────────
+conveys   the definition of done, as conditions a second person can judge
+holds     - [ ] boxes, auto-counted in the heading · optional ### topic
+          groups, each badged with its own done/total
+source    one judgeable condition per box, grouped under contextual names,
+          never generic ones · S: each Q-consumer stays one full record
+rules     a tick means VERIFIED, never merely attempted · a Q-consumer
+          closes only after its answer is interpreted and woven into
+          Content · never invent a row to fill a group
+omit      never · without a testable gap the page cannot say what done is
+```
 Items to Finish is the testable definition of done, not a loose task list.
 Every checkbox must describe a condition that another person can judge true or false, and the heading reports the completed count automatically.
 On S, each Q-consumer remains one complete record and closes only after its answer is interpreted and integrated into Content.
-Under the base/variant model on `QAa0`, this section is frame: a page kind may contribute a record shape into the list, which is what the S Q-consumer record is, and the checkbox semantics, the auto count, and the verified-tick rule hold for every kind.
+Under the base/variant model on `QB4`, this section is frame: a page kind may contribute a record shape into the list, which is what the S Q-consumer record is, and the checkbox semantics, the auto count, and the verified-tick rule hold for every kind.
 
 ### 2 · Context-named subsections
 Items may be grouped under non-empty `###` headings so unlike gaps do not look interchangeable.
@@ -64,13 +77,13 @@ On S, each former Q-consumer stays together as one recognizable record and close
 - [ ] 🧮 Render subsection counts without changing the overall count
       PROPOSED: shipped 260731 (`render_items()` in `page_question.py`): optional `###` headings group the boxes, each visible group badges its own `done/total`, empty groups are omitted, and this very list is the worked example.
 - [ ] 🧭 Give each subsection a copyable Chat path
-      Reuse the heading-focus contract on `QAb3`; copying or chatting from a contextual heading must identify this page, section, subsection, and source file.
+      Reuse the heading-focus contract on `QB5d`; copying or chatting from a contextual heading must identify this page, section, subsection, and source file.
 
 ### The ruling half
 - [ ] 🏷 Settle the contextual naming rule
       A subsection must summarize the actual gap shared by its items; generic words such as Decisions or Build are examples, not required headings.
 - [ ] 🧠 JL confirms this face owns Items to Finish
-      Carved 260729 from QA4 §4 with the text verbatim; the history stays on `QAa0`.
+      Carved 260729 from QB4 §4 with the text verbatim; the history stays on `QB4`.
 
 ## Where we are
 The base checkbox semantics and overall auto count ship.
@@ -88,7 +101,7 @@ This page's own list is regrouped as the worked example; heading-level Chat focu
 - [ ] 🧮 Tick the shipped group counts
       PROPOSED: the renderer half landed 260731 (`render_items()`, the rail rows, and this page's own grouped list); a tick closes the matching Items row.
 - [ ] 🧠 Confirm this face owns Items to Finish
-      Carved 260729 from QA4 §4 verbatim; a tick here also closes the same row in Items to Finish.
+      Carved 260729 from QB4 §4 verbatim; a tick here also closes the same row in Items to Finish.
 
 ## Files
 - `src/page_question.py`
@@ -101,6 +114,7 @@ This page's own list is regrouped as the worked example; heading-level Chat focu
 > CC: Shipped 260731: `###` topic groups inside Items render with per-group `done/total` counts (`render_items()`), the sidebar outline lists them, and this page's own list is regrouped as the worked example.
 
 ## Log
+260801 · §1 renamed "What Items to Finish conveys" and opened with the five-row protocol face diagram (conveys · holds · source · rules · omit) on JL's ask; master view on QB4 §0
 260731 · The counts half shipped on JL's discussion ask: render_items() groups boxes under ### topic headings with per-group done/total, empty groups omitted; this page's Items regrouped as the worked example (0.70.0)
 260730 · Corrected categories into contextual headings: Decisions, Build, Verify, and Dependencies remain examples only; each page names the real gap shared by its items
 260730 · Designed typed Items to Finish subsections: Decisions, Build, Verify, and Dependencies, each with its own count and copyable Chat path

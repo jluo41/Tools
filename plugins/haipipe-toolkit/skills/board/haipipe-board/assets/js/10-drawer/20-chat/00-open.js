@@ -21,7 +21,8 @@
     '<div class="utility-body"><div class="acts"></div>' +
     '<div class="settings"><div class="tip"></div>' +
     '<div class="cfg">' +
-    '<select class="mdl"><option value="opus">Opus 4.8</option>' +
+    '<select class="mdl"><option value="opus">Opus 5</option>' +
+    '<option value="opus48">Opus 4.8</option>' +
     '<option value="sonnet">Sonnet 5</option><option value="haiku">Haiku 4.5</option></select>' +
     '<select class="eff"><option>low</option><option>medium</option>' +
     '<option selected>high</option><option>xhigh</option><option>max</option></select>' +

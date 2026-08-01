@@ -133,12 +133,8 @@ class BaseMixin:
         return f, board
 
     def rebuild(self, board):
-        # --split whenever the board/ tree already exists (QC9, JL 260731).
-        # Without this a write updates board.html and leaves the tree stale,
-        # which is the one way the two packagings can disagree.
+        # A Board-folder build always updates the canonical board/ tree.
         cmd = [sys.executable, str(HERE / "build.py"), str(board)]
-        if (Path(board) / "board").is_dir():
-            cmd.append("--split")
         r = subprocess.run(cmd, capture_output=True, text=True)
         return (r.stdout or r.stderr).strip()
 

@@ -34,9 +34,9 @@ def _slugify(t):
     return "-".join(s.split("-")[:5])[:48] or "question"
 
 
-# The skeleton the ＋ button writes. It follows QA2, which rules that Question,
-# Items to Finish and Where we are are required, that Boundary and Files are
-# "optional but strongly advised", and that everything else is optional.
+# The skeleton the ＋ button writes. Opening, Items to Finish, and Where we are
+# are required; Files is optional but strongly advised; everything else is
+# optional. There is no separate Boundary section: Opening states the scope.
 #
 # Advised sections are written OUT, so declining one is a deletion rather than an
 # omission. Optional ones are listed in a comment instead: an author cannot choose
@@ -50,16 +50,8 @@ owner: JL
 ## Opening
 {title}: restate this as one plain question a zero-background reader understands.
 
-Then one paragraph on why it is hard, what breaks while it stays open, and what
-it affects downstream. This file is a stub from the index page's ＋ button;
+Then one paragraph on what this page covers, why it is hard, what breaks while it stays open, and which neighbouring page owns anything excluded. This file is a stub from the index page's ＋ button;
 writing standard: ref/writing-rules.md (English only, no em-dashes).
-
-## Boundary
-- ✅ Covered here
-  What this page decides.
-- ↪ Covered elsewhere
-  What it does not, and the id of the page that does. An exclusion with no
-  destination leaves the reader stranded.
 
 <!-- Optional sections, in the order they render. Uncomment the ones this page
      earns and delete this comment; empty beats wrong, so leave out what you
@@ -270,5 +262,4 @@ def structure_op(board, p):
         return {"group": heading}, None
 
     return None, f"unknown op: {op or '(empty)'}"
-
 

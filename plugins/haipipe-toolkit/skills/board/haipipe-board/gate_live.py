@@ -6,7 +6,7 @@ The live layer's output is HTTP, so this one drives a real server against a
 THROWAWAY copy of a board and records two things per run:
 
   · every response (status + normalized body) for a fixed script of requests
-  · the bytes of every .md and board.html in the fixture afterwards
+  · the bytes of every .md and generated board/ page in the fixture afterwards
 
 Run it before the refactor (`--save before.json`), then after (`--save after.json
 --diff before.json`). A clean diff means the move was mechanical.
@@ -70,7 +70,7 @@ def call(base, path, payload=None):
     except Exception as e:                       # connection refused, timeout
         return {"code": -1, "err": type(e).__name__ + ": " + str(e)[:120]}
     txt = body.decode("utf-8", "replace")
-    # board.html is huge and regenerated; hash it rather than store it
+    # Generated pages are large and regenerated; hash them rather than store them.
     if path.endswith(".html"):
         return {"code": code, "len": len(body),
                 "sha": hashlib.sha256(norm(txt).encode()).hexdigest()}
@@ -82,7 +82,7 @@ def script(base, page, board_url):
     out = {}
     S = "The three folders are named and the movements are drawn, but nothing has been confirmed by JL and no checker enforces either forbidden direction."
 
-    out["GET board.html"] = call(base, board_url)
+    out["GET board index"] = call(base, board_url)
     out["GET asset xterm.css"] = call(base, "/_board/asset/xterm.css")
     out["GET asset missing"] = call(base, "/_board/asset/nope.js")
     out["POST terms"] = call(base, "/_board/terms", {})
@@ -122,7 +122,7 @@ def script(base, page, board_url):
     out["POST bad file"] = call(base, "/_board/comment",
                                 {"path": board_url, "file": "../../etc/passwd",
                                  "sentence": "x", "text": "y"})
-    out["GET board.html after"] = call(base, board_url)
+    out["GET board index after"] = call(base, board_url)
     return out
 
 
@@ -162,7 +162,7 @@ def run(save, diff_against):
          "--port", str(port), "--host", "127.0.0.1"],
         stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     base = f"http://127.0.0.1:{port}"
-    board_url = "/01-boardform-260722/board.html"
+    board_url = "/01-boardform-260722/board/index.html"
     try:
         for _ in range(80):                      # wait for listen
             try:

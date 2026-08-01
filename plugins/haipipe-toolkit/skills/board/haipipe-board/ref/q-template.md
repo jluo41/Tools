@@ -51,8 +51,8 @@ provides: one compact phrase naming the downstream handoff
      those rows starts collapsed (JL 260725), so the lead question is the only thing on stage and
      each layer of orientation is one click away. Stage Contract is therefore not a section of its
      own on the page. Optional Diagram is its own collapsed section and opens only when its heading
-     is clicked. On Q pages, the remaining Opening paragraph becomes Content's first "Why this
-     matters" subsection, which does start open. Explicit Content is optional for Q and required
+     is clicked. On Q and S pages, the remaining Opening paragraph becomes the collapsed "Why this
+     matters" row in the Opening drawer. Explicit Content is optional for Q and required
      for S. When creating S Content, use the stage template as the base blueprint, overlay the venue
      template's reader/section/style constraints, then add accepted and unresolved requirements
      from previous Stage Contracts. Materialize the result as explicit direct `###` headings.
@@ -110,7 +110,7 @@ State the compact, observable output this stage hands downstream. Keep it short 
 dependent page to inherit without copying this page's Content.
 
 ## Diagram
-optional · One ascii figure showing the shape or flow of the question, right below Boundary.
+optional · One ascii figure showing the shape or flow of the question, right below Opening.
 If you cannot draw it, delete the whole section: empty beats wrong.
 
 It renders as its own `🖼 Diagram` section, collapsed by default. The heading remains visible;
@@ -124,6 +124,14 @@ Opening the section shows `▧ ASCII` and leaves `✏️ Excalidraw` shut, one m
 **Write one `## Diagram`, never `###` subheadings for the two halves:** the split is computed from
 the rule above (a bare excalidraw URL alone on a line is the canvas, everything else is the figure),
 and a `###` in here is not a recognized construct, so it would land as prose inside the figure.
+
+```text
+source question ──▶ decision or stage ──▶ observable handoff
+```
+
+https://app.excalidraw.com/s/replace-this-share-link
+
+Replace both examples with this page's real figure and share link, or delete the share-link line when no canvas exists.
 
 ## Content
 S required · Q optional. The page's substantive material after orientation. Delete this explicit
@@ -171,6 +179,10 @@ stage prose under these headings rather than copying it into a second backing do
 
 ### First content subsection
 The actual content goes here, one sentence per line.
+
+**Example group title**
+- First related fact; replace this example with real content.
+- Second related fact; delete the whole group when it adds no scanning value.
 
 A sentence can carry apparatus: `>` lines written directly beneath it fold under that sentence, which shows a ⚑ badge until it is clicked. Human comments and edit records open by default so they remain visibly attached to their sentence.
 > Note: this row is attached to the sentence above it, by adjacency alone.

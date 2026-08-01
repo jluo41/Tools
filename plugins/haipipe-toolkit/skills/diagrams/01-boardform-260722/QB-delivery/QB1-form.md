@@ -36,7 +36,7 @@ This is the first face on the board because every later ownership question assum
   │   ├── 📖 SKILL.md                   the operating manual, kept shortest
   │   ├── 📐 ref/            4 specs     board-form · q-template · writing-rules · board-example
   │   ├── ⚙️  10 scripts                build · check · serve · watch · status · stage · skillpage · regroup · xcal · refs
-  │   ├── 🧩 src/           9 modules    the parser, split by page topic  (QC3)
+  │   ├── 🧩 src/           9 modules    the parser, split by page topic  (QC2b)
   │   ├── 🎨 assets/                    css · js · board-mark.svg          (QC2)
   │   ├── 🖥️  vendor/xterm              the terminal's front end           (QD3)
   │   └── 🧪 2 test files               activity · status
@@ -182,7 +182,7 @@ The correct output was a report to each owner, and the repair is queued for reve
  an operating rule an agent follows     →  ① SKILL.md
  a display or grammar spec              →  ① ref/board-form.md, never SKILL.md
  a mechanical check                     →  ① check.py
- a python module                        →  ① src/, split by page topic (QC3)
+ a python module                        →  ① src/, split by page topic (QC2b)
  CSS or JS                              →  ① assets/ (QC2)
  an independent review                  →  ① agents/, which never writes
  a drawing                              →  that board's own board.excalidraw, at its root

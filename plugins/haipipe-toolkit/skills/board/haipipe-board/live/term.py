@@ -380,6 +380,25 @@ class TermMixin:
         HOLD[str(f)] = (who, None)
         return None
 
+    def term_probe(self, f):
+        """POST /_board/term-probe {path, file} -> is THIS target's PTY still there?
+
+        The client used to answer this itself by matching `/_board/terms`
+        basenames, which is wrong for a group or board terminal: those register
+        under a FOLDER (`QD-working`) while the drawer's `cq.file` is
+        `board.md`, so the names never matched and a reload silently decided no
+        terminal existed (JL 260801, reported twice). `term_key` is the only
+        thing that knows the real identity, so ask it here.
+
+        A PARKED terminal counts as there: parking is what a reload does, and
+        the whole point is to come back to it.
+        """
+        t = TERMS.get(term_key(f))
+        if not t or not self.alive(t["pid"]):
+            return {"live": False}, None
+        return {"live": True, "parked": bool(t.get("parked")),
+                "key": term_key(f)}, None
+
     def park(self, f):
         """宽限停靠：进程和 pump 不动，收掉 WS 窗口、放 HOLD、记 deadline。
         宽限内 POST /_board/term 秒接同一个进程；过了 deadline 清扫线程真杀。"""

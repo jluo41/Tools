@@ -7,6 +7,12 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.2.0 - 2026-08-01
+
+- Aligns the Index contract with the canonical generated `board/` site rather than the retired `board.html` packaging.
+- Replaces the stale B0-B9 monolith anatomy with the generated Index that actually ships: Heading, Spine, Board Map, optional Related Folders, Section Matrix, All Pages, and Activity.
+- Makes Topic, Pipeline, and Board Structure explicitly source-only documentation. Board Structure now records Board-Folder versus the Index, group, and page routes under Board-Webpage.
+
 ## 0.1.0 - 2026-07-30
 
 - First cut, extracted from `haipipe-board` at JL's request ("did you build the haipipe-board-index? please do it now").

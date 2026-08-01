@@ -149,6 +149,8 @@
       ? 'This chat sees the GROUP ' + cq.group + ' — its pages, their states, and how they fit.'
       : 'This chat is attached to ' + cq.file);
     log.forEach(function (m) { bubble(m.k, m.t); });
+    /* the local paint above is instant; the server holds the truth */
+    syncFromServer(isGroup ? 'G:' + cq.id : cq.id);
     chat.querySelector('.tip').textContent = isBoard ? 'board.md · whole-board session'
       : isGroup ? cq.group + ' · group session' : cq.file;
     /* 这一题的 Claude Code session id —— 抽屉和终端用的是同一个。
@@ -160,10 +162,11 @@
     var sidbox = chat.querySelector('.sid');
     /* session 归档在 cwd（= serve.py 的 --root，现在是 SPACE 根）下的 project 目录，
        所以要 cd 到 root，不是板文件夹 —— cd 错了 --resume 就找不到这个 session。
-       root 精确算法：serve.py 在 <root> + location.pathname 处提供文件，
-       所以 root = 板文件夹绝对路径 减去 URL 里的那段目录。不靠 .git/pyproject 猜。 */
+       root 精确算法：serve.py 在 <root> + Board public path 处提供文件，
+       所以 root = 板文件夹绝对路径 减去 URL 里的 Board 目录。不靠 .git/pyproject 猜，
+       也不把 split page 的 board/<GROUP>/ 误当成 Board 目录。 */
     var board = document.body.getAttribute('data-board') || '.';
-    var urlDir = location.pathname.replace(/\/[^\/]*$/, '');   // 去掉 board.html
+    var urlDir = boardDirPath();
     var root = board;
     if (urlDir && board.slice(-urlDir.length) === urlDir) {
       root = board.slice(0, board.length - urlDir.length) || '/';

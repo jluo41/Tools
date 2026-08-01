@@ -15,6 +15,14 @@ function boardPath() {
   return (i === -1 ? p.replace(/\/[^/]*$/, '') : p.slice(0, i)) + '/board.md';
 }
 
+/* Public path of the editable Board folder, independent of whether the open
+   document is the Index, a group, or a focused page. Consumers that need a
+   repo-relative path must use this instead of taking location.pathname's
+   immediate parent, which is `board/<GROUP>/` on a split page. */
+function boardDirPath() {
+  return boardPath().replace(/\/board\.md$/, '');
+}
+
 /* ─────────────────────────────────────────────────────────────
    Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
    this script only ADDS "select -> comment -> highlight right away".
@@ -23,6 +31,7 @@ function boardPath() {
    Comments go straight to the server, which writes each one beneath its
    selected sentence in the source Markdown.
    ───────────────────────────────────────────────────────────── */
+
 (function () {
   var KEY = 'board-comments:' + location.pathname;
   var UK = 'board-users', WK = 'board-user-last';
@@ -649,7 +658,8 @@ function boardPath() {
     '<div class="utility-body"><div class="acts"></div>' +
     '<div class="settings"><div class="tip"></div>' +
     '<div class="cfg">' +
-    '<select class="mdl"><option value="opus">Opus 4.8</option>' +
+    '<select class="mdl"><option value="opus">Opus 5</option>' +
+    '<option value="opus48">Opus 4.8</option>' +
     '<option value="sonnet">Sonnet 5</option><option value="haiku">Haiku 4.5</option></select>' +
     '<select class="eff"><option>low</option><option>medium</option>' +
     '<option selected>high</option><option>xhigh</option><option>max</option></select>' +
@@ -707,6 +717,99 @@ function boardPath() {
     chat.querySelector('.spick summary').textContent =
       '🗂 Session: ' + cur + (n > 1 ? ' · ' + n + ' on record' : '') + ' ▾';
   }
+
+  /* Paint from the browser, then correct from the SERVER (JL 260801: "when it
+     is reloaded the chat box UI is just gone... should I make chat detached
+     from the page html?").
+
+     The session is ALREADY detached: it lives on the SessionHost and on disk as
+     a .jsonl, and a turn started before a reload finishes there whether or not
+     a browser is watching (measured 260801: the answer landed while the tab was
+     reloading). What was NOT detached is what the drawer RENDERS, because it
+     replayed a log kept per page in this browser. So a reload showed a
+     transcript that was merely the last thing this tab happened to save.
+
+     Fix the render, not the architecture: keep the instant local paint so the
+     drawer never flashes empty, then ask the server for the session's real
+     transcript and adopt it when it knows more. A reload now costs the live
+     trace of an in-flight turn and nothing else.  */
+  async function syncFromServer(logKey) {
+    if (!cq || !cq.file) return;
+    try {
+      var r = await fetch('/_board/sessions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file,
+                               group: (cq && cq.group) || undefined }) });
+      var j = await r.json();
+      if (!j || j.ok === false) return;
+      var cur = ((j.sessions) || []).filter(function (s) { return s.current && s.landed; })[0];
+      if (!cur) return;
+      var r2 = await fetch('/_board/session-log', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file,
+                               group: (cq && cq.group) || undefined, id: cur.id }) });
+      var j2 = await r2.json();
+      if (!j2 || j2.ok === false) return;
+      var srv = j2.log || [];
+      var local = chatLoad(logKey);
+      /* only adopt when the server genuinely knows more, so a page whose local
+         log is ahead (a turn this tab just rendered) is never rolled back */
+      if (srv.length <= local.length) return;
+      var bd = chat.querySelector('.bd');
+      if (bd.querySelector('.trace') || document.body.classList.contains('chatbusy')) return;
+      bd.innerHTML = '';
+      if (j2.clipped) bubble('sys', 'Showing the last ' + srv.length + ' of ' + j2.total + ' messages.');
+      srv.forEach(function (m) { bubble(m.k, m.t); });
+      chatSave(logKey, srv);
+      bd.scrollTop = 1e9;
+    } catch (e) { /* offline or an old server: the local paint still stands */ }
+  }
+
+  /* Replace the drawer's body with a session's REAL transcript, read from its
+     .jsonl by the server (POST /_board/session-log). Read-only: this does not
+     touch the page's own saved log, so switching back to the current session
+     shows that one again, unchanged. */
+  async function replaySession(sid, landed) {
+    var bd = chat.querySelector('.bd');
+    if (!landed) {
+      bubble('sys', 'Nothing was ever said in that session, so there is no history to show.');
+      return;
+    }
+    var note = bubble('sys', 'Loading that session\u2019s history\u2026');
+    try {
+      var r = await fetch('/_board/session-log', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        /* `path` is not optional: the server locates the board folder from the
+           browser pathname, and without it every call answers "outside --root".
+           Leaving it out is why this looked like an empty session. */
+        body: JSON.stringify({ path: boardPath(), file: cq && cq.file,
+                               group: (cq && cq.group) || undefined, id: sid })
+      });
+      var j = await r.json();
+      if (note && note.parentNode) note.parentNode.removeChild(note);
+      if (!j || j.ok === false) {
+        bubble('sys', '\u26a0 could not read that session: ' + ((j && j.err) || 'unknown'));
+        return;
+      }
+      var log = j.log || [];
+      if (!log.length) {
+        bubble('sys', 'That session has no readable messages yet.');
+        return;
+      }
+      bd.innerHTML = '';
+      if (j.clipped) {
+        bubble('sys', 'Showing the last ' + log.length + ' of ' + j.total
+                    + ' messages in this session.');
+      }
+      log.forEach(function (m) { bubble(m.k, m.t); });
+      bubble('sys', '\u2191 history of the picked session \u00b7 your next message resumes it');
+      bd.scrollTop = 1e9;
+    } catch (e) {
+      if (note && note.parentNode) note.parentNode.removeChild(note);
+      bubble('sys', '\u26a0 could not load that session\u2019s history: ' + e.message);
+    }
+  }
+
   var sessName = '';   // 「＋ 新开一段」时给它起的名字（QD1 260731：Qxxx-干嘛用的）
   function renderSessions(j) {
     var sp = chat.querySelector('.spick'), sl = chat.querySelector('.spl');
@@ -736,6 +839,12 @@ function boardPath() {
            paintSessSummary(rows);
            bubble('sys', r.current ? 'Back on the current session.'
              : 'Picked ' + (r.name || r.id.slice(0, 8) + '…') + ' — the next message (or ⌨) resumes it and makes it current.');
+           /* Show what you are resuming (JL 260801: "I cannot see previous chat
+              history"). The drawer's own log is per PAGE and kept in this
+              browser, so it is the wrong transcript for a session picked here
+              and empty for one started in a terminal or on another machine.
+              The session's .jsonl on disk is the only honest source. */
+           replaySession(r.id, r.landed);
          });
       // ✎ 改名：行内输入，写进登记表，不打断挑选
       var e = document.createElement('button');
@@ -1240,6 +1349,8 @@ function boardPath() {
       ? 'This chat sees the GROUP ' + cq.group + ' — its pages, their states, and how they fit.'
       : 'This chat is attached to ' + cq.file);
     log.forEach(function (m) { bubble(m.k, m.t); });
+    /* the local paint above is instant; the server holds the truth */
+    syncFromServer(isGroup ? 'G:' + cq.id : cq.id);
     chat.querySelector('.tip').textContent = isBoard ? 'board.md · whole-board session'
       : isGroup ? cq.group + ' · group session' : cq.file;
     /* 这一题的 Claude Code session id —— 抽屉和终端用的是同一个。
@@ -1251,10 +1362,11 @@ function boardPath() {
     var sidbox = chat.querySelector('.sid');
     /* session 归档在 cwd（= serve.py 的 --root，现在是 SPACE 根）下的 project 目录，
        所以要 cd 到 root，不是板文件夹 —— cd 错了 --resume 就找不到这个 session。
-       root 精确算法：serve.py 在 <root> + location.pathname 处提供文件，
-       所以 root = 板文件夹绝对路径 减去 URL 里的那段目录。不靠 .git/pyproject 猜。 */
+       root 精确算法：serve.py 在 <root> + Board public path 处提供文件，
+       所以 root = 板文件夹绝对路径 减去 URL 里的 Board 目录。不靠 .git/pyproject 猜，
+       也不把 split page 的 board/<GROUP>/ 误当成 Board 目录。 */
     var board = document.body.getAttribute('data-board') || '.';
-    var urlDir = location.pathname.replace(/\/[^\/]*$/, '');   // 去掉 board.html
+    var urlDir = boardDirPath();
     var root = board;
     if (urlDir && board.slice(-urlDir.length) === urlDir) {
       root = board.slice(0, board.length - urlDir.length) || '/';
@@ -1288,7 +1400,7 @@ function boardPath() {
   chat.querySelector('.x').onclick = function () {
     chat.classList.remove('on'); document.body.classList.remove('chaton'); };
 
-  /* 模型 / effort / 权限档 记在本机；默认 Opus 4.8 · high · 完整·问我 */
+  /* 模型 / effort / 权限档 记在本机；default Opus 5 · high · full·ask */
   (function () {
     var m = chat.querySelector('.mdl'), e = chat.querySelector('.eff'),
         s = chat.querySelector('.scope');
@@ -1311,7 +1423,7 @@ function boardPath() {
   wireImagePaste(chat.querySelector('textarea'),
     function () { return cq && cq.file; },
     function (rel) {
-      var dir = location.pathname.replace(/\/[^\/]*$/, '').replace(/^\//, '');
+      var dir = boardDirPath().replace(/^\//, '');
       return '![image](' + (dir ? dir + '/' : '') + rel + ')';
     });
 
@@ -1583,8 +1695,13 @@ function boardPath() {
          it is finished along with how much it is spent") */
       var took = (Date.now() - turnT0) / 1000;
       var fin = new Date();
-      var stamp = String(fin.getHours()).padStart(2, '0') + ':'
-                + String(fin.getMinutes()).padStart(2, '0');
+      /* JL 260801: the date too, not only the time. A turn that finished
+         at 00:43 is ambiguous the moment the reader comes back tomorrow,
+         and this board's own date form is YYMMDD. */
+      var z = function (n) { return String(n).padStart(2, '0'); };
+      var stamp = String(fin.getFullYear()).slice(2) + z(fin.getMonth() + 1)
+                + z(fin.getDate()) + ' '
+                + z(fin.getHours()) + ':' + z(fin.getMinutes());
       var tookTxt = took < 60 ? took.toFixed(1) + 's'
                   : Math.floor(took / 60) + 'm' + String(Math.round(took % 60)).padStart(2, '0') + 's';
       /* The concluding segment IS the answer, so it must not appear twice: pull
@@ -1870,7 +1987,7 @@ function boardPath() {
           { file: cq.file, name: (blob && blob.name) || 'paste', data: fr.result });
       } catch (err) { j = null; }
       if (j && j.ok && termWS && termWS.readyState === 1) {
-        var dir = location.pathname.replace(/\/[^\/]*$/, '').replace(/^\//, '');
+        var dir = boardDirPath().replace(/^\//, '');
         termWS.send('0' + (dir ? dir + '/' : '') + j.rel);
       } else {
         say((j && j.err) || 'image upload failed (is serve.py running?)');
@@ -1926,6 +2043,28 @@ function boardPath() {
   chat.querySelector('.term').addEventListener('mouseenter', function () {
     loadXterm().catch(function () {});
   });
+  /* The PTY is a real process on the server and a page reload PARKS it rather
+     than killing it, so coming back to a page whose terminal is still running
+     and being shown the chat box is the view lying about the state (JL 260801:
+     "when I come back it became the GUI again, in truth the TUI is running").
+     The reload-restore block at the end of board.js needs to see and redo this,
+     and it lives outside this closure. */
+  window.__boardTermOn = function () { return !!termOn; };
+  window.__boardTermReopen = async function () {
+    if (!cq || termOn) return false;
+    /* only reattach to a terminal that is genuinely still there; starting a new
+       one on a reload would spawn a process nobody asked for */
+    try {
+      var r = await fetch('/_board/term-probe', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file,
+                               group: (cq && cq.group) || undefined }) });
+      var j = await r.json();
+      if (!j || !j.live) return false;
+    } catch (e) { return false; }
+    return await termOpen(true);
+  };
+
   chat.querySelector('.term').onclick = async function () {
     if (!cq) return;
     if (termOn) {                                  // 切回抽屉 = 交回 session
@@ -3156,7 +3295,7 @@ document.addEventListener('click', function (ev) {
      through Claude Code, and the timer only ever watched a tab. */
   function sampleData() {
     var title = (document.querySelector('.h1') || {}).textContent || 'This board';
-    var path = location.pathname.replace(/\/board\.html$/, '').replace(/^\//, '');
+    var path = boardDirPath().replace(/^\//, '');
     var vals = [0,0,0,4,11,0,7,22,9,0,14,31,18,26];
     var days = [], now = new Date();
     vals.forEach(function (v, i) {
@@ -3277,6 +3416,7 @@ document.addEventListener('click', function (ev) {
   begin();
   setInterval(pulse, PULSE);
 })();
+
 
 /* ── Pages sidebar: toggle, per-board persistence, active row (JL 260731) ── */
 (function () {
@@ -3540,6 +3680,7 @@ document.addEventListener('click', function (ev) {
       localStorage.setItem(DK, JSON.stringify(open));
       sessionStorage.setItem(CK, JSON.stringify({
         on: !!(window.__boardDrawerOpen && window.__boardDrawerOpen()),
+        term: !!(window.__boardTermOn && window.__boardTermOn()),
         y: Math.round(window.scrollY)
       }));
     } catch (e) {}
@@ -3565,12 +3706,41 @@ document.addEventListener('click', function (ev) {
     /* Reopening replays this page's saved log, so the conversation comes back
        even though the live trace of the interrupted turn cannot. */
     if (st.on && window.__boardDrawerReopen) {
-      try { window.__boardDrawerReopen(); } catch (e) {}
+      try {
+        var opened = window.__boardDrawerReopen();
+        /* A parked PTY is still running, so a drawer that comes back showing the
+           chat box is showing the wrong half of QD1's one-session-per-page Law.
+           Reattach to the terminal if one is genuinely still alive; the check
+           lives in __boardTermReopen so a reload never SPAWNS one. */
+        if (st.term && window.__boardTermReopen) {
+          Promise.resolve(opened).then(function () {
+            try { window.__boardTermReopen(); } catch (e) {}
+          });
+        }
+      } catch (e) {}
     }
   }
 
   window.addEventListener('pagehide', save);      // fires on reload AND on close
   window.addEventListener('beforeunload', save);
+  /* Saving ONLY at unload leaves one gap that reads as the feature not working
+     at all (JL 260801, twice): a tab running JS from before this block existed
+     never wrote anything, so the FIRST refresh after it opened the drawer has
+     nothing to restore from, and only the second one works. Some mobile
+     browsers also drop `beforeunload` entirely. So record the drawer the moment
+     it opens or closes: one class flip on #chat, watched directly, no coupling
+     to the chat code. */
+  var chatEl = document.getElementById('chat');
+  if (window.MutationObserver) {
+    var watch = new MutationObserver(save);
+    if (chatEl) watch.observe(chatEl, { attributes: true, attributeFilter: ['class'] });
+    /* <body> too, and not as belt-and-braces: opening the terminal toggles
+       `termon` on BODY and touches nothing on #chat, so watching only the
+       drawer meant the terminal view was never recorded when it opened, and
+       the flag existed only if `pagehide` happened to run (JL 260801: "still
+       the same problem, when I refresh it switches from terminal to GUI"). */
+    watch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  }
   window.addEventListener('board:updated', restoreSections);
   restoreSections();
   restoreDrawer();

@@ -92,7 +92,7 @@ def main():
     if tree_js and tree_js.exists():
         check("tree _assets/board.js is current",
               tree_js.read_text(encoding="utf-8") == src_js,
-              "rebuild with --split if FAIL")
+              "rebuild the Board if FAIL")
     else:
         check("tree _assets/board.js exists", False, str(tree_js))
 

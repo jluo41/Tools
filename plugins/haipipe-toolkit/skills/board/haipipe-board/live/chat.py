@@ -271,7 +271,8 @@ def tool_output_preview(content):
 # 板上能选的模型。默认最好的那个 —— 这里是给人改文档用的，
 # 省那点钱不如把话说对（JL, 260723）。
 MODELS = {
-    "opus":   "claude-opus-4-8",
+    "opus":   "claude-opus-5",
+    "opus48": "claude-opus-4-8",
     "sonnet": "claude-sonnet-5",
     "haiku":  "claude-haiku-4-5-20251001",
 }
@@ -290,7 +291,7 @@ the question touches — not just the board folder. The one question you belong 
 is the file given below (a path relative to the repo root). That board folder
 holds `board.md` (board-level title/spine/pages) and one `QX-<slug>.md` per
 question, each with fixed sections:
-## Opening / ## Boundary / ## Diagram / ## Content / ## Items to Finish /
+## Opening / ## Diagram / ## Content / ## Items to Finish /
 ## Where we are / ## Files / ## Law / ## Lesson / ## Glossary /
 ## Discussion / ## Log
 (Old boards may still say `## Done when` for Items to Finish and `## Now` for
@@ -350,7 +351,7 @@ or `SN-<slug>.md` per page.
 Scope, and it is hard:
   · You may READ anywhere in the repo.
   · You may EDIT ONLY markdown files INSIDE the board folder (board.md and the
-    page files). Nothing outside it, and never board.html — it is generated.
+    page files). Nothing outside it, and never board/ because it is generated.
   · Board-level work is yours: which page to act on next, ## Pages order,
     grouping and group intros, cross-question consistency. Deep work inside one
     question belongs to that question's own chat.
@@ -372,7 +373,7 @@ skills, and may reach any file the board is about.
 The board folder given below holds `board.md` (title · `spine:` · `close:` ·
 ## Topic / ## Pipeline / ## Pages) and one `QX-<slug>.md` or `SN-<slug>.md`
 per page. Board-level work is yours: which page to act on next, the Pages section,
-cross-question edits. Never hand-edit board.html — it is generated. Whatever
+cross-question edits. Never hand-edit board/ because it is generated. Whatever
 page you change, add one line at the TOP of its `## Log`:
 `YYMMDD HHMM · what changed`. Preserve direct `> WHO:` comments and `> ✎`
 edit records beneath the sentence they concern.
@@ -1021,6 +1022,74 @@ class ChatMixin:
         except Exception:
             pass
         return ""
+
+    def session_log(self, f, p):
+        """POST /_board/session-log {file, id} -> that session's transcript.
+
+        JL 260801: "when I load the previous session I only see the priming
+        line, I cannot see previous chat history." The drawer replays a log it
+        keeps in localStorage PER PAGE, so picking a different session showed
+        the page's log rather than the session's, and a session started in a
+        terminal or on another machine had no log in this browser at all.
+
+        The .jsonl on disk is the only honest source, so read it: user text and
+        assistant text, in order, skipping the machinery a reader never typed
+        (tool calls, tool results, injected reminder blocks, and the priming
+        message the board itself sends).
+        """
+        sid = (p.get("id") or "").strip()
+        if not sid or sid == "new":
+            return {"ok": True, "log": []}
+        jp = self._jsonl_path(sid)
+        if not jp.exists():
+            return {"ok": True, "log": [], "hollow": True}
+
+        def text_of(msg):
+            c = (msg or {}).get("content")
+            if isinstance(c, str):
+                return c
+            if isinstance(c, list):
+                return "\n".join(b.get("text", "") for b in c
+                                 if isinstance(b, dict) and b.get("type") == "text")
+            return ""
+
+        out, seen_first_user = [], False
+        try:
+            with open(jp, encoding="utf-8", errors="ignore") as fh:
+                for ln in fh:
+                    try:
+                        o = json.loads(ln)
+                    except Exception:
+                        continue
+                    kind = o.get("type")
+                    if kind not in ("user", "assistant"):
+                        continue
+                    txt = text_of(o.get("message")).strip()
+                    if not txt:
+                        continue
+                    if kind == "user":
+                        # a reminder block, or a tool result echoed back as user
+                        if txt.startswith("<") or txt.startswith("[Request interrupted"):
+                            continue
+                        # the board primes every session with its own opening
+                        # message; replaying it would put words in JL's mouth
+                        if not seen_first_user and (
+                                "You are attached to" in txt
+                                or "This chat sees" in txt
+                                or txt.startswith("Board:")):
+                            seen_first_user = True
+                            continue
+                        seen_first_user = True
+                        out.append({"k": "you", "t": txt})
+                    else:
+                        out.append({"k": "ai", "t": txt})
+        except Exception as e:
+            return {"ok": False, "err": str(e)}
+        # a very long session would blow up the drawer; keep the tail, which is
+        # what "continue where I left off" actually means
+        MAX = 120
+        clipped = len(out) > MAX
+        return {"ok": True, "log": out[-MAX:], "clipped": clipped, "total": len(out)}
 
     def sessions_list(self, f, p):
         """POST /_board/sessions {file} → 这一题的会话清单：current 在第一行，

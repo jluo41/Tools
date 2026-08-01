@@ -26,17 +26,12 @@ class BoardStructureTest(unittest.TestCase):
             "## Pages\n"
         )
 
-    def test_structure_renders_after_pipeline_before_pages(self):
+    def test_structure_stays_in_board_source(self):
         meta = parse_board(self.board_source())
         html = render(meta, [])
-        topic = html.index("Topic — what this board is about")
-        pipeline = html.index("Pipeline — how these Qs are ordered")
-        structure = html.index("Board-Structure — Board-Folder and Board-Webpage")
-        pages = html.index('id="qlist"')
-        self.assertLess(topic, pipeline)
-        self.assertLess(pipeline, structure)
-        self.assertLess(structure, pages)
-        self.assertIn("Board-Webpage-Index", html)
+        self.assertIn("Board-Webpage-Index", meta["structure"])
+        self.assertNotIn("Board-Structure — Board-Folder and Board-Webpage", html)
+        self.assertNotIn("Board-Webpage-Index", html)
 
     def test_structure_is_optional_for_existing_boards(self):
         meta = parse_board(self.board_source(structure=False))

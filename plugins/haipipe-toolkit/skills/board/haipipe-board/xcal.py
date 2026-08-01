@@ -93,7 +93,7 @@ def figure_of(page):
 def build(folder, root, fresh=False):
     meta, pages, _ = parse_dir(folder)
     pages = [p for p in pages if p.get("file")]
-    # The scene sits at the board ROOT, beside board.md and board.html, because
+    # The scene sits at the Board root, beside board.md and generated board/, because
     # it is a first-class citizen of the board rather than one of its figures
     # (JL 260729). Boards opened before that keep theirs under fig/, so an
     # existing fig/ scene is used where it lies: migrating it is that board

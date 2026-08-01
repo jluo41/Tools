@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-"""board folder -> board.html (static content; scripts are optional enhancement).
+"""Board source folder -> generated board/ site.
 
 haipipe-board v0.1.0 — v0-series: never goes to 1.0.0 without JL saying so.
 
     python3 build.py [board-dir | board.md]
 
-House form (one page, one file):
+House form (Markdown source, generated webpage tree):
     <board-dir>/
       board.md        # title / spine: / close: / source: / ## 主题 / ## 流水线
       Q1-<slug>.md    # title / state: / owner: / method: / ## 问题 ...
       S-Seed-0-<slug>.md  # optional named lifecycle page; same grammar + ## Content
       Q2-<slug>.md
-      board.html      <- generated
+      board/
+        index.html
+        QA.html
+        QA/QA1-<slug>.html
+        _assets/board.css
+        _assets/board.js
 Legacy single-file boards ([BOARD]/[Qn] blocks in one board.md) still build.
 Q and S pages may sit in subfolders of the board.
 
@@ -62,9 +67,8 @@ if __name__ == "__main__":
         del sys.argv[i:i + 2]
     args = [a for a in sys.argv[1:] if a not in ("--json", "--split")]
     as_json = "--json" in sys.argv[1:]
-    # QC9 (JL 260731): also emit the board/ tree, one file per page and per
-    # group. board.html keeps being written, so the one-file artifact stays.
-    as_split = "--split" in sys.argv[1:]
+    # `--split` is accepted as a compatibility no-op for old watch/live callers.
+    # A Board folder always emits the canonical board/ tree now.
     sys.argv = [sys.argv[0]] + args
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
     boardbody.BASE = (target if target.is_dir() else target.parent).resolve()

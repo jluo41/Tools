@@ -1,16 +1,16 @@
-# SDK version: the chat box
+# SDK chat version: the chat box
 state: 🟡 PARTIAL
 owner: CC
 method: claude_agent_sdk + serve.py's /_board/chat; three selectable permission tiers (restricted / full·ask / full·auto)
 session: ccda0c28-ef7e-47e0-a7e1-c13abc4f4cea
-## Question
-Open a conversation right inside the page: it reads this question's content and open comments, and edits this question's md.
-How much permission should it get?
+## Opening
+The SDK chat version is a chat box this board REBUILDS, so everything the CLI shows for free is something this page has to earn.
+What must it show, and what must survive, before it is as usable as the thing it imitates?
 
-Too little permission and it cannot work; too much and a browser tab can edit the whole repo at will.
-JL's direction is "same as the CLI": ask when asking is due, instead of a hard-coded whitelist.
-The drawer is the most-used entry, lighter than opening a terminal, so without settled tiers either you dare not use it or you dare not hand it to anyone.
-It and `QD3` are two forms of one need with entirely different trade-offs, so each must be settled on its own, neither bent to fit the other.
+Permission was the original question here and it is answered: three selectable tiers ship, and the top one is the CLI's own.
+What replaced it is harder to see and was found only by using the board: a turn that renders perfectly can still be attached to the wrong page, lose its transcript to a reload, or report a server refusal as an empty answer.
+So the open work is no longer what the drawer is ALLOWED to do; it is whether a reader can trust what the drawer SHOWS.
+It and `QD3` are two forms of one need and the split is no longer safe versus unsafe: it is a difference of form, so each is settled on its own and neither is bent to fit the other.
 
 
 ## Boundary
@@ -19,6 +19,7 @@ It and `QD3` are two forms of one need with entirely different trade-offs, so ea
 - ↪ Covered elsewhere
   The rules themselves (levels, boundaries): that is `QD1`.
   Nor the real terminal: that is `QD3`.
+  Whether a reader can TRUST what the drawer shows, tested along BINDING · TURN · CONTINUITY · HANDOVER · INTERRUPTION: that is `QF4`.
 
 ## Diagram
 
@@ -42,6 +43,13 @@ It and `QD3` are two forms of one need with entirely different trade-offs, so ea
 
 ## Content
 ### 1 · What the extension's backend actually is (read from v2.1.220, 260731)
+```
+🧩 the extension is a HOST, not an agent
+   ┌──────────────┐  📦 bundles   ┌──────────────┐  🚀 spawns  ┌──────────────┐
+   │ 🖼️ webview UI │ ────────────▶ │ 🤖 Agent SDK │ ──────────▶ │ ⌨️ claude CLI │
+   └──────────────┘               └──────────────┘             └──────────────┘
+   ❌ no new agent   ❌ no new protocol   ✅ only a shell around an engine we run
+```
 The extension does not implement an agent, and it does not implement a protocol either.
 It BUNDLES the TypeScript Agent SDK and drives it, which `extension.js` gives away verbatim in its option names: `pathToClaudeCodeExecutable`, `canUseTool`, `includePartialMessages`, `settingSources`, `permissionPromptToolName`, `forkSession`, `sessionMirror`.
 Those are the same option names our Python `claude_agent_sdk` exposes, because it is the same SDK in two languages.
@@ -64,6 +72,14 @@ The spawn line is fixed and short, then one flag per set option:
 Everything else is mechanical translation, the same table our options would produce: `--model`, `--effort`, `--thinking adaptive|disabled`, `--max-turns`, `--max-budget-usd`, `--setting-sources=…`, `--allowedTools`, `--disallowedTools`, `--permission-mode`, `--mcp-config`, `--resume=<sid>`, `--session-id=<sid>`, `--fork-session`, `--include-partial-messages`.
 
 ### 2 · The protocol on that pipe
+```
+📡 ONE pipe, four kinds of newline JSON
+   🗨️ assistant + deltas      ──▶  ✅ the half the drawer already renders
+   🚦 control_request         ◄──  the CLI ASKING: a permission prompt
+   ✔️ control_response        ──▶  our allow/deny, matched by request_id
+   🛑 control_cancel_request  ◄──  plus 💓 keep_alive · 🪞 transcript_mirror
+   🔑 setting can_use_tool is what switches the control half ON
+```
 One pipe carries four kinds of traffic, all newline JSON.
 Assistant output and partial deltas come up as ordinary messages; that is the half our drawer already renders.
 The other three are the half we do not use yet: `control_request` (the CLI asking, which is how a permission prompt arrives), `control_response` (our answer, matched by `request_id`), and `control_cancel_request`.
@@ -71,6 +87,17 @@ The other three are the half we do not use yet: `control_request` (the CLI askin
 Setting `canUseTool` is what turns the channel on: the SDK appends `--permission-prompt-tool stdio`, and every gate decision then travels as a control message rather than a side channel.
 
 ### 3 · The one difference that matters, named exactly
+```
+🧩 extension   ▶ ONE process, MANY turns   ⚡ instant follow-up
+   turn1 ─┐
+   turn2 ─┼──▶ 🤖 one live claude ──▶ 💬
+   turn3 ─┘
+
+🖥️ serve.py    ▶ one process PER TURN     🐢 8.1s first token · 💸 ~$0.9
+   turn1 ──▶ 🤖 boot 🔥 ~150 skills ──▶ 💬 ──▶ 💀 dropped
+   turn2 ──▶ 🤖 boot 🔥 ~150 skills ──▶ 💬 ──▶ 💀 dropped
+                    ⬆ the WHOLE gap: we drop the client every POST
+```
 The extension's read loop runs ONCE for the life of a session and pushes each new user turn into the live process with `inputStream.enqueue(...)`.
 That is what `--input-format stream-json` buys: stdin is a STREAM of turns, not a single prompt, so one process serves the whole conversation.
 Our `ClaudeSDKClient` has the identical capability, and its own docstring names our exact use case ("Building chat interfaces or conversational UIs", "Multi-turn conversations with context").
@@ -82,6 +109,17 @@ The SDK forbids using one client across async runtime contexts ("you must comple
 So holding the client means one long-lived event-loop thread owning every live client, with queues in and out; the HTTP handler stops owning the loop and becomes a producer and consumer of it.
 
 ### 4 · What "exactly the same as the extension" costs, in milestones
+```
+🔌 M1 the session host  ── unlocks everything below ──┐
+   one daemon thread · one loop · SESSIONS[question]  │
+                                                      ├─▶ 🎛 M2 streaming verbs
+                                                      │      interrupt · set_model
+                                                      │      set_permission_mode
+                                                      │      get_context_usage
+                                                      ├─▶ ⏪ M3 rewind_files()
+                                                      └─▶ 🖱 M4 @-mentions · plan mode
+   ⚠️ M4 is OURS to build; M2 and M3 are option flips once M1 lands
+```
 - M1 · the session host
   A daemon thread runs one asyncio loop for the process's life; `SESSIONS[question] -> {client, inbox, outbox}`.
   `chat()` stops calling `anyio.run`; it submits the message to the loop, then drains that session's outbox into the existing NDJSON stream, so the browser side changes not at all.
@@ -97,6 +135,13 @@ So holding the client means one long-lived event-loop thread owning every live c
   Plan mode is `--permission-mode plan`, which M2's `set_permission_mode()` already reaches.
 
 ### 5 · Could we just use `extension.js`, and should we go JS? (JL asked 260731)
+```
+🐍 "the JS version" is THREE things, with three answers
+   ❌ extension.js    require("vscode") throughout · cannot even LOAD outside the IDE
+   🟰 the npm SDK     the SAME SDK in another language · 0 capability gained
+   ✅ stay Python     47 options already cover every flag the extension emits
+   🎯 the slowness is the DROPPED CLIENT, not the language
+```
 Three different things get called "the JS version", and they have three different answers.
 
 - `extension.js` itself: NO, and not for taste reasons.
@@ -133,25 +178,32 @@ Going JS therefore means porting an Excalidraw round-trip, a SQLite database, a 
 The decisive point: the slowness is not Python against JS, it is that we drop the client every POST, so a language switch alone would fix nothing while holding the client fixes everything.
 
 ### 6 · The goal, stated properly: migrate the plugin ONTO the board (JL 260731)
+```
+   🧩 VS Code plugin                       🗒️ this board
+   ───────────────────────────────────     ───────────────────────────────────
+   🖼️ webview/index.js   the chat UI  ─▶   board.html's drawer
+   🖥️ extension.js       the host     ─▶   serve.py
+   🔌 vscode.postMessage the wire     ─▶   POST /_board/chat + NDJSON
+   🤖 bundled Agent SDK  the engine   ─▶   claude_agent_sdk  (same SDK)
+   ⌨️ the claude binary               ─▶   the same binary, from PATH
+   🌉 IDE bridge (WebSocket)          ─▶   ❓ nothing yet, and this is the interesting one
+```
 The frame is not "make the drawer more like the plugin".
 It is that the board becomes the plugin, and the mapping is one to one at every layer.
-
-```
-   VS Code plugin                          this board
-   ───────────────────────────────────     ───────────────────────────────────
-   webview/index.js      the chat UI  ─▶   board.html's drawer
-   extension.js          the host     ─▶   serve.py
-   vscode.postMessage    the wire     ─▶   POST /_board/chat + NDJSON
-   bundled Agent SDK     the engine   ─▶   claude_agent_sdk  (same SDK)
-   the claude binary                  ─▶   the same binary, from PATH
-   IDE bridge (WebSocket)             ─▶   nothing yet, and this is the interesting one
-```
 
 The IDE bridge exists so the session can reach EDITOR surfaces: a diff in a real tab, the current selection, the language server's diagnostics.
 On this board the editor IS the board page, so the equivalent already half exists and has different names: the sentence address is the selection, `QB5`'s lanes are the annotations, and `check.py`'s output is the diagnostics.
 That is the one place where migrating means translating rather than copying, and it is where the board can end up better than the plugin rather than merely equal to it.
 
 ### 7 · What stays VS Code only, and does not matter
+```
+🌉 the IDE bridge is the ONE piece we cannot copy
+   it exists to reach EDITOR surfaces:  📑 a diff in a real tab
+                                        🖱️ the current selection
+                                        🩺 the language server's diagnostics
+   ✅ EXACT at the engine + protocol layer
+   ✳️ deliberately DIFFERENT at the surface layer  ← the alignment line we hold
+```
 The IDE bridge is the one piece we cannot copy, because it exists to put things in EDITOR surfaces: a diff in a real editor tab, the current text selection, the language server's diagnostics.
 The drawer answers the same need in its own surface and already ships the important half, the diff preview at the permission gate.
 So "exactly the same" is exact at the engine and protocol layer, and deliberately different at the surface layer, which is the alignment line this page already holds.
@@ -208,15 +260,25 @@ So "exactly the same" is exact at the engine and protocol layer, and deliberatel
       The terminal control uses stable `>_` text instead of a tiny platform-dependent keyboard emoji; both controls have hover, keyboard-focus, tooltip, and accessible labels.
 
 ### 🧩 Match the VS Code extension
-- [ ] Align the drawer with the Claude Code VS Code extension (JL 260724: "I want to duplicate it")
-      Same engine underneath already (see Where we are, the extension's backend IS the local claude runtime this drawer drives).
-      Progress: ① diff preview inside the permission prompt, BUILT 260724: the ask event now carries `detail` (Edit: old/new; Write: current-file vs proposed; MultiEdit: per-edit pairs; Bash: the command), and the drawer renders − red / + green blocks above Allow/Deny.
-      Emitted JS node-checked; a live gate-pop is still owed (the full-tier E2E boots ~150 skills and outran the test window; the turn was stopped cleanly and board.md verified untouched). ② @-file mentions (type `@` to pull a repo file into context): open, and ours to build (Content §4 M4); ③ plan mode toggle (read-only planning turn before edits): open, and it is `--permission-mode plan` reached through M2's `set_permission_mode()`; ④ persistent process per session: open, and now specified as Content §4 M1, the session-host thread; the 260731 teardown proved this is the ONLY engine-layer gap and named its blocker (a client cannot cross async runtime contexts, and serve.py runs a fresh `anyio.run` per POST); ⑤ checkpoints/rewind: UNPARKED 260731, it is `rewind_files()` (M3), and it stopped fighting the LAW when JL amended `QD1` to many sessions per question.
-- [ ] Long tasks
-      Today one HTTP request waits start to finish.
-      A ten-minute job will hit the timeout.
-      (Note: NOT the same root as the old "writes hang" issue; that one was diagnosed and fixed, see Lesson.)
-- [ ] Section and subsection focus packets
+The target is JL 260724, "I want to duplicate it"; the engine underneath is already the same local claude runtime, so each row below is ONE affordance a reader can judge on its own.
+- [ ] ① The permission prompt shows the proposed edit as a diff
+      BUILT 260724: the ask event carries `detail` (Edit: old/new; Write: current-file vs proposed; MultiEdit: per-edit pairs; Bash: the command), and the drawer renders − red / + green blocks above Allow/Deny; the emitted JS is node-checked.
+      Not ticked because the live gate-pop is still owed: the full-tier E2E boots ~150 skills and outran the test window, the turn was stopped cleanly, and board.md was verified untouched.
+- [ ] ② Typing `@` pulls a repo file into the message
+      Ours to build, not the SDK's: a picker over the repo plus the chosen path injected into the outgoing message (Content §4 M4).
+- [ ] ③ A plan-mode toggle runs a read-only planning turn before any edit
+      It is `--permission-mode plan`, reached through M2's `set_permission_mode()`, so it lands free once M1 does.
+- [ ] ④ One `claude` process serves every turn of a session
+      Specified as Content §4 M1, the session-host thread; the 260731 teardown proved this is the ONLY engine-layer gap and named its blocker: a client cannot cross async runtime contexts, and serve.py runs a fresh `anyio.run` per POST.
+- [ ] ⑤ A turn can be rewound to an earlier checkpoint
+      UNPARKED 260731: it is `rewind_files()` (M3), and it stopped fighting the LAW when JL amended `QD1` to many sessions per question.
+      It needs `enable_file_checkpointing=True` plus `replay-user-messages`, both option flips.
+
+### 🔭 Owed beyond the extension
+- [ ] A ten-minute turn completes without hitting the HTTP timeout
+      Today one HTTP request waits start to finish, so a long job dies on the timeout.
+      (NOT the same root as the old "writes hang" issue; that one was diagnosed and fixed, see Lesson.)
+- [ ] The drawer accepts and sends a heading-focus packet
       Accept the generated heading path from `QAb3`, display it in the existing Focus card, and send page id, section/subsection names, source file, and visible block with the next user message.
 
 ## Where we are
@@ -296,17 +358,29 @@ The `🤖 Chat` you click on the page is this.
       adopt affordances, never a second engine: everything stays `serve.py` + `claude_agent_sdk`; the drawer copies the extension's UX where it makes the gate more informed (diff preview first).
       Holding the process ourselves does not cross that line: it is the same binary and the same protocol the SDK already drives, with the subprocess kept instead of dropped.
 
+- 260801 CC · 🔌 The drawer became a VIEW of the session rather than its owner
+  JL: "when it is reloaded the chat box UI is just gone... should I make chat detached from page html?"
+  Measured first: a turn started before a reload finishes on the SessionHost and lands in the .jsonl whether or not a browser is watching, so the session was already detached and only the RENDER was not.
+  The drawer replayed a log kept per page in localStorage, which is why a reload showed whatever this tab last saved instead of the conversation.
+  It now paints from localStorage instantly, then adopts the server's transcript when the server knows more; verified by reloading mid-turn and watching the rebuilt drawer recover an answer it never saw stream.
+  A reload now costs the live trace of an in-flight turn and nothing else.
+
+- 260801 JL · 🎛 Opus 5 is the default, and a finished turn carries its date
+  `MODELS["opus"]` is `claude-opus-5` and the picker leads with it; `opus48` stays selectable because a resumed session was created under its own model.
+  The meta line reads `finished 260801 00:48` rather than `finished 00:48`, since a bare time is ambiguous the next morning.
+
+- 260801 JL · 🕘 Picking a session shows that session's real history
+  New `POST /_board/session-log` reads the session's `.jsonl` and returns user and assistant text in order, skipping tool traffic, reminder blocks and the board's own priming message, keeping the last 120.
+  Before this, picking a session showed only the priming line, because the drawer had no transcript for a session it did not create in this browser.
+
+- 260801 JL · 🏷 Renamed and re-cut around what is still open
+  JL: "We can call it SDK chat version, and TUI chat version" and "could you rethink about the Q in QD?"
+  The Opening asked how much permission the drawer should get, which shipped as three selectable tiers; it now asks whether a reader can trust what the drawer shows, which is where every 260731 failure lived.
+  `QF4` is the face that tests this one, and it names BINDING, TURN, CONTINUITY, HANDOVER and INTERRUPTION as the axes.
+
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
-- [x] 🔌 Approve the session host, M1 (JL 260731: "make the chatbot sdk version exactly the same to the vscode claude code plugin version")
-      BUILT and measured 260731 on JL's go-ahead; the numbers and the correction they force are in Where we are.
-      The teardown says exactly-the-same is reachable, because the extension runs the SAME SDK we already run; the only engine-layer gap is that it holds the client and we drop it every POST (Content §3).
-      M1 is one daemon thread owning a long-lived event loop plus a per-question client registry, with the browser protocol unchanged.
-      A · M1 is built now, one daemon thread owning a long-lived event loop; streaming-mode verbs (`interrupt`, `set_model`, `set_permission_mode`, `get_context_usage`, `rewind_files`) become reachable immediately.
-      B · the boot is shrunk by warming a pool and caching the registry; streaming-mode verbs still cannot be reached because the client continues to be dropped after each turn.
-      C · the current per-POST architecture stays; it continues to suffer from slow first token and high full-tier cost.
-      → CC's proposal: A; B treats the symptom and still cannot reach `interrupt`, `set_model`, `set_permission_mode`, `get_context_usage`, or `rewind_files`, which are streaming-mode only.
 - [ ] 🐍 Rule the language, before M1 is written (JL 260731: "can I change it to the js version, using the extension.js?")
       `extension.js` itself cannot be reused at all (it loads `require("vscode")`), so the real question is Python SDK against the npm TypeScript SDK, and Content §5 checked parity rather than assuming it: 47 Python options cover every flag the extension emits, plus `extra_args`.
       A · stay Python inside serve.py; the slowness root (dropped client, not language) gets fixed by M1 in the same codebase.
@@ -329,6 +403,14 @@ These are the calls only JL can make; CC ticks nothing here.
       B · plan mode is built next; it adds another UI feature but does not fix the boot cost that is the real pain point.
       C · neither @-mentions nor plan mode are built this round; the effort goes to fixing the engine (M1) because the boot cost is what you actually feel.
       → CC's proposal: C; both are chrome on a harness whose boot cost is the thing you actually feel.
+
+### Decisions taken
+- 260731 JL · 🔌 The session host, M1, is approved and built
+      JL: "make the chatbot sdk version exactly the same to the vscode claude code plugin version".
+      The teardown said exactly-the-same is reachable because the extension runs the SAME SDK we already run; the only engine-layer gap was that it holds the client and we drop it every POST (Content §3).
+      Chosen A: one daemon thread owning a long-lived event loop plus a per-question client registry, with the browser protocol unchanged.
+      B (warm a pool, cache the registry) was rejected because it treats the symptom and still cannot reach `interrupt`, `set_model`, `set_permission_mode`, `get_context_usage`, or `rewind_files`, which are streaming-mode only; C was to leave it as it was.
+      BUILT and measured the same day; the numbers and the correction they force are in the records above.
 
 ## Files
 ### The host
@@ -379,6 +461,8 @@ Every tool use asks it for allow/deny first. effort: how much thinking the model
 >> CC0725: simplified it into a neutral utility bar. The id is quiet metadata, the full title uses available width with ellipsis, and `>_` plus `×` are matching compact controls with accessible labels.
 
 ## Log
+260801 · Face diagrams added on JL's ask, closing the QB4c §1 gap the quality check named: all 7 Content divisions now open with a fenced ascii figure as their FIRST line (verified 7/7); §1-§5 and §7 are new high-level figures drawn with /diagram-ascii, and §6's existing plugin→board mapping was MOVED up to the heading and given emoji rather than duplicated; no prose changed
+260801 · Quality-check fixes applied: the ticked 🔌 M1 row left Decision Now for a new `### Decisions taken` record (QB4e §2 says a made decision moves out, and the section's own "CC ticks nothing here" line contradicted it); the ①-⑤ mega-checkbox split into five judgeable rows plus a new `### 🔭 Owed beyond the extension` group (QB4d §1: a box must be judgeable true or false); Boundary now redirects the trust axes to `QF4`. STILL OPEN for JL: Content §1-§7 answers the retired permission/engine question, not the trust question the 260801 Opening now asks, and no Content division opens with its face diagram (QB4c §1)
 260731 1934 · "💬 answers a turn" became a STANDING check (`checks/run.py`, 0.89.0, home on `QC8`): smoke asks the live server's own interpreter for the SDK through `GET /_board/health` (the 3.9 restart trap: pages 200 while every chat turn dies), and the full tier runs one real scoped SDK turn (CHATOK) on a throwaway fixture
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 1705 · Regrouped ## Items to Finish into four context-named ### subsections per QB4d-items.md's deliver requirement (renderer auto-counts each group): 🚀 runs·resumes·cost · 🚦 permission gate · 💬 usable surface · 🧩 match the extension; every checkbox and its detail lines kept verbatim, only reordered under headings (asked as "QB4c", but QB4c is the Content face; QB4d owns Items)

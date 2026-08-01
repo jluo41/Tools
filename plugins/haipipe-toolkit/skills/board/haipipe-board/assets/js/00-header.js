@@ -15,6 +15,14 @@ function boardPath() {
   return (i === -1 ? p.replace(/\/[^/]*$/, '') : p.slice(0, i)) + '/board.md';
 }
 
+/* Public path of the editable Board folder, independent of whether the open
+   document is the Index, a group, or a focused page. Consumers that need a
+   repo-relative path must use this instead of taking location.pathname's
+   immediate parent, which is `board/<GROUP>/` on a split page. */
+function boardDirPath() {
+  return boardPath().replace(/\/board\.md$/, '');
+}
+
 /* ─────────────────────────────────────────────────────────────
    Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
    this script only ADDS "select -> comment -> highlight right away".
