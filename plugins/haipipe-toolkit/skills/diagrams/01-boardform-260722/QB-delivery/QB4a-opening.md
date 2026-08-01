@@ -8,6 +8,7 @@ What belongs in a page's head and Opening, what stays on stage, and what one cli
 The head is three lines (`state:` · `owner:` · `method:`) plus the title; Opening is the question lead, always on stage, with Boundary and the S-only orientation folded behind it.
 The rules were settled on the former QA4 and moved here verbatim, so this face owns them going forward: any new decision about the head, the lead, the drawer, or Boundary lands here, not on `QAa0`.
 
+
 ## Boundary
 - ✅ Covered here
   The three head fields, the title, the question lead as the door, the flat drawer behind it (Boundary · Why this matters · Stage Record · Stage Contract), and their typography.
@@ -84,7 +85,19 @@ Shipped in `render_structure` (`src/page_question.py`) with the `.pmap` styling 
       Carved 260729 from QA4 §1 with the text verbatim; the history and its ticked items stay on `QAa0`.
 
 ## Where we are
+
+- 260731 JL · 🚧 Boundary is optional, and the ruling had never landed anywhere
+  JL: "I remember I said I do not want Boundary; can you add a place for not having one."
+  CC searched every page before acting and could not find such a ruling: `## Boundary` was ADDED by CC on 260723, and the only JL ruling touching it is 260724's `✅ Covered here` / `↪ Covered elsewhere` pair, which is about its INTERNAL shape.
+  So either the ask was made and never written down, or it was folded into the 260729 "keep the headings simple" pass; both readings say the same thing about this family, which is that a ruling not written into a page does not exist.
+  Recorded now and made real in the two places that bind: `ref/q-template.md` says OPTIONAL and genuinely so, telling an author to delete the section when the Opening already makes the scope obvious, and `haipipe-board-page` carries the same sentence for any agent that loads the spec instead of the template.
+  Nothing was stripped from existing pages: a Boundary that earns its place still reads well, and mass-deleting 54 of them would be exactly the blind sweep this board keeps warning about.
+
 The rules are settled and shipped (see `QAa0`'s history); this face was carved 260729 and owns any future Opening decision.
+
+### Decision Now
+- [ ] 🧠 Confirm this face owns Opening
+      Carved 260729 from QA4 §1 with the text verbatim; a tick here also closes the same row in Items to Finish.
 
 ## Files
 - `src/page_question.py`
@@ -95,6 +108,7 @@ The rules are settled and shipped (see `QAa0`'s history); this face was carved 2
   The guide text a new page copies for its head and `## Question`.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Structure shipped as the drawer's first row (JL: "the Structure subsection just above Boundary"): render_structure in page_question.py plus .pmap in board.css; §7 rewritten from the earlier last-row sketch
 260729 · Opening writing rule added on JL's ask: no attribution parentheticals in Opening sentences, dates live in the Log; the QAa faces' Question and Boundary prose swept clean the same round
 260729 · §7 added (JL in chat: Opening should also show an ascii of this page's structure): designed as a generated Page map drawer row, a projection of the parsed page, never authored; build is an open item

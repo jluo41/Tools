@@ -11,6 +11,7 @@ The Board already has one chat session per page. A sentence therefore needs a fo
 Every rendered `##` section and `###` subsection now also needs a human-readable generated path.
 Inside Content, the existing fine address remains: `C` is a Content division, `H` is a terminal Heading node, and prose uses sibling `P.S` leaves.
 
+
 ## Boundary
 - ✅ Covered here
   Generated section/subsection paths, automatic Content sentence addresses, Copy and Chat actions, and the context handed to the existing page chat.
@@ -94,25 +95,35 @@ On a pointer device, the compact `C1.P1.S1`, `＋`, and `💬` rail appears when
 On touch devices, one muted `⋯` opens a menu containing the full address plus Comment, Chat, and Edit.
 
 ## Items to Finish
-- [ ] Generate paths for every rendered `##` section
-- [ ] Generate paths for every rendered `###` subsection
-- [ ] Copy page id, breadcrumb, and Markdown source path from a heading
-- [ ] Open the existing page Chat with a section/subsection focus packet
-- [ ] Recompute heading paths after live Board refresh
+### The section and subsection breadcrumb half
+- [x] Generate paths for every rendered `##` section
+      `QB4e / Where we are`, built from the heading's own label with its emoji, its `1/7` count, and its `· 6 sections` suffix stripped, because an address is spoken and pasted.
+- [x] Generate paths for every rendered `###` subsection
+      `QB4e / Where we are / Decision Now`, for a `div.sh` outside Content and for a `details.csec` division inside it.
+- [x] Copy page id, breadcrumb, and Markdown source path from a heading
+      Clicking the chip copies `QB4e / Where we are / Decision Now · QB-delivery/QB4e-where-we-are.md`; a subsection also gains its own `⧉`, which copies that subsection's text the way `##` headings already do.
+- [x] Open the existing page Chat with a section/subsection focus packet
+      `🤖` calls `window.__boardHeadingChat`, which reuses this page's session and fills the same Focus card with the breadcrumb and the source path.
+- [x] Recompute heading paths after live Board refresh
+      `wireHeadingPaths` runs inside `__boardWireSentenceChats`, the hook the rewire already calls, so a live swap regenerates both address families together.
+
+### The Content address grammar
 - [x] Restrict structural addresses to `## Content`
 - [x] Generate `Cn.Pn.S1` automatically for eligible Content sentences
 - [x] Generate terminal `Cn.Hn` addresses for `####` headings
 - [x] Keep `H` and `P` as siblings; never emit `H.P.S`
+- [x] Recompute addresses after live Board refresh
+- [x] Pass fresh-context acceptance for the Content-aware grammar
+
+### The sentence rail and chat focus
 - [x] Show Content and Heading names in Sentence Focus without changing its address
 - [x] Show a compact sentence address and chat button on hover/focus
 - [x] Reuse the existing Q chat session
 - [x] Send the address, sentence text, and direct apparatus as the chat focus
-- [x] Recompute addresses after live Board refresh
 - [x] Add the desktop `Cn.Pn.S1 ＋ 💬` action rail
 - [x] Open Comment directly beneath the sentence
 - [x] Show a clearable Sentence Focus card without spending a model turn
 - [x] Collapse Comment, Chat, and Edit into `⋯` on touch
-- [x] Pass fresh-context acceptance for the Content-aware grammar
 
 ## Where we are
 The existing client indexes Content successfully: each `.csec` receives `Cn`; each `.ph` receives terminal `Cn.Hn`; and each eligible prose line receives sibling `Cn.Pn.S1`.
@@ -121,12 +132,35 @@ Fresh-context Chrome acceptance proved that non-Content prose has no address, He
 Across the 40-page Board, three rewires preserved 106 C refs, 73 H refs, and 978 sentence refs without duplicates or any `H.P.S` address.
 
 Reopened 260730 because the page design now requires coarser focus above Content: every section and subsection heading must expose a copyable breadcrumb and be able to focus the same page Chat.
-The sentence implementation remains accepted; heading focus is designed here and not implemented.
+Heading focus was designed here on 260730 and built on 260731, so every item on this face is now ticked.
+
+- 260731 CC · 🧭 Heading focus is built, and it reuses every contract the sentence rail already had
+  Every rendered `##` section and `###` subsection heading now carries a rail at its END, invisible until that heading is hovered: the generated breadcrumb, `⧉` for a subsection's text, and `🤖` for chat.
+  `QB4e` yields 17 of them, from `QB4e / Opening` down to `QB4e / Where we are / Decision Now`.
+  Two decisions inside it are worth stating because they were not obvious.
+  The rail collapses to zero WIDTH rather than to `opacity:0`, which the `C1` chips use, because a breadcrumb is long enough to reflow the heading it decorates if it keeps its box while invisible.
+  And `⧉` on a `##` heading keeps copying the section's TEXT, JL's 260725 ruling, so copying the ADDRESS moved onto the chip itself; the two copies are next to each other and say which is which on hover.
+  Driven in Chrome rather than read: the chip put `QB4e / Where we are / Decision Now · QB-delivery/QB4e-where-we-are.md` on the clipboard, `⧉` put that subsection's text there, and `🤖` opened this page's own session with the Focus card showing the breadcrumb and the source path.
+
+### Decision Now
+- [ ] 🧠 Flip this face to ✅ SETTLED
+      All 19 items are ticked and both halves are live, but the state line is JL's to move, so it still reads 🟡 PARTIAL.
+- [ ] 🧭 Rule the two ⧉ buttons
+      A `##` heading copies its section's text with `⧉` while its chip copies the address; a `###` heading now has both too.
+      A · keep both, as built: text and address are genuinely different things to want, and each says which it is on hover.
+      B · make `⧉` copy the address everywhere and drop text copying, which is what this face's `#### Heading actions` paragraph literally says today.
+      → CC recommends A, because the 260725 text copy is the one people actually use to paste a section into a chat, and B would delete it to satisfy a sentence written before it existed.
+
+- 260731 JL · 👁 The `Cn`/`Hn` chips left the front of the heading
+  A leading chip fused with authored numbering: `C1` before `1 · Content: establish the substance` read as "C11 · Content".
+  JL: "make the C1 to be the end of the sentence, and only shown when we hover it, just like the sentence".
+  Shipped the same round (haipipe-board 0.58.0): `board.js` appends `.caddr`/`.haddr` at the end of the summary or heading, and `board.css` holds them at opacity 0 until the heading is hovered, the sentence rail's contract.
+  On touch there is no hover, so chips stay hidden there exactly as the sentence chip does.
 
 ## Files
-- `haipipe-board/assets/board.js`
+- `haipipe-board/assets/js/40-sentence.js`
   Generates addresses, adds the sentence controls, gathers direct apparatus, and bridges into the existing Q chat.
-- `haipipe-board/assets/board.css`
+- `haipipe-board/assets/css/`
   Provides the quiet hover/focus layout.
 - `haipipe-board/SKILL.md`
   States the sentence-chat behavior and the fact that addresses are render-local.
@@ -135,6 +169,9 @@ The sentence implementation remains accepted; heading focus is designed here and
 All location Chat actions reuse the page's existing session. Fine structural addresses remain Content-only: `C` owns sibling terminal `H` nodes and prose `P.S` leaves, so `C1.H1` and `C1.P1.S1` are valid while `C1.H1.P1.S1` is not. Every page section and subsection may also expose a coarser human-readable breadcrumb with its source path. Both forms are generated UI metadata, not durable Markdown identity.
 
 ## Log
+260731 2015 · Heading focus BUILT: every `##` and `###` heading gains a hover-revealed rail (breadcrumb chip that copies address + source path, `⧉` for a subsection's text, `🤖` for page chat); `__boardHeadingChat` + a `kind` on the focus packet; recomputed by the existing rewire hook. All 5 remaining items ticked; the state line waits on JL
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · Address chips moved to the END of their heading and became hover-reveal, on JL's "C11" read; shipped in board.js/board.css, haipipe-board 0.58.0
 260730 · Reopened for section/subsection focus: every heading gains a generated breadcrumb plus Copy and Chat actions while the accepted Content sentence grammar remains unchanged
 260729 · Fresh Chrome acceptance passed on pointer and touch: 106 C, 73 H, 978 C.P.S refs, deterministic across three rewires; exact focus path and apparatus Send packet verified.
 260729 · Replaced page-global `Pn.Sn` with Content-aware `Cn.Hn` and `Cn.Pn.S1`; JL ruled that `H` terminates and never contains `P.S`.

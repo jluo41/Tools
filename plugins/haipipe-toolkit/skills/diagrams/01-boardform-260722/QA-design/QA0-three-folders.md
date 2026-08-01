@@ -31,6 +31,7 @@ This is the first face in QA because every later ownership question assumes it i
 `QC6` can only decide what the family ships once it is settled which folder is shippable at all.
 A reader who cannot place a thing cannot rule on it.
 
+
 ## Boundary
 - ✅ Covered here
   The three folders, which kind of truth each holds, why a subskill nests inside `①`, the movements allowed between them, and the two forbidden ones.
@@ -88,6 +89,10 @@ A reader who cannot place a thing cannot rule on it.
 
        ② is one of these too. It is numbered apart because it is the
        only one whose CONTENT this family owns.
+
+       ONE server serves this whole column. Its --root is the SPACE, not
+       a board, so every board under the root is live at once and none of
+       them owns the process.  → the scope section below, and QE6
 ```
 
 ```
@@ -150,12 +155,26 @@ After the 260730 restructure and the 260731 QD split this board has six: `QA-des
 Membership is by PATH, never by registration.
 `## Pages` lists bare filenames and sets order and grouping only, so moving a page between folders is a pure `git mv` and `board.md` needs no edit beyond its listing.
 
+### The live layer's scope is the SPACE, one server for every board under it
+A board folder is the unit of CONTENT, and it is not the unit of SERVING.
+One `serve.py` runs per repo root and serves every board beneath it, so `--root` is the served tree rather than a board, and `target()` refuses any path that escapes it.
+Both pieces of local state live at the root rather than in a board: the activity database and the session sidecar are both `<root>/.haipipe-board/`.
+A terminal is keyed by the sha1 of its page's absolute path, precisely so that two different boards' `QD3` can never collide, and `/_board/terms` therefore lists what is running across all of them at once.
+
+Neither of the two obvious alternatives is what runs.
+It is not one server per board, which is why opening a second board costs nothing and why no board owns the process.
+It is not one server for several SPACEs either, because a second SPACE would need a second port, and only 5599 is forwarded, which is `QE6`'s decision rather than this face's.
+
+The consequence that bites is in the other direction, and `QF1` owns it.
+Anything shared, meaning the inlined assets and the engine itself, changes every board under the root at once, so a change checked against one board has not been checked.
+
 ### What is deletable from what
 Every unit inside `①` is deletable from every other unit inside `①`.
 `②` is deletable from all of them: it argues the family and ships nothing.
 That is the test this face exists to protect, and it is the reason a runtime may never read a Q page.
 
 ## Items to Finish
+### Rulings awaiting JL
 - [ ] 🗂 Confirm the three folders and the nesting
       JL confirms that `①` is the family folder, `②` is this board folder, `③` is everything `①` renders, and that subskills are units inside `①`.
       Three units joined `①` on 260731: the page and sentence SPECS and the routing VERB, per QC6 §8.
@@ -163,12 +182,22 @@ That is the test this face exists to protect, and it is the reason a runtime may
       Settle that no runtime may read a Q page, and that nothing may be hand-written into a generated `board.html`.
 - [ ] 🧾 Decide whether `_feedback/` belongs to any of the three
       `skills/diagrams/_feedback/` exists and is named nowhere above. Decide whether it belongs to this family, to the skill-diagnose family, or nowhere.
+
+### The checker half
 - [ ] 🧪 Give the deletability test a checker
       `check.py` can prove the ⒜ direction, that a page's Law reached its skill. Nothing yet proves the ✗ direction, that no shipped file cites a Q page.
+
+### The RELATED FOLDERS fold's data (QB2 ruled B, 260731)
+- [x] 🗂 Supply the related-folder list and what each folder may open — done, board.md `## Related Folders` (0.87.0)
+      QB2's RELATED FOLDERS Index fold reads its list from the `## Related Folders` section of board.md, which this face governs: `①` the shipping family `skills/board/haipipe-board/` and `②` this board folder.
+      For the B (clickable) depth the section also names which files each folder opens (for example `①`'s `SKILL.md`); `related_folders()` embeds ONLY those named `.md`/`.txt` files at build and refuses any path outside the repo root, so the fold can never show a file this face did not list.
 
 ## Where we are
 The three folders are named and the movements are drawn, but nothing has been confirmed by JL and no checker enforces either forbidden direction.
 
+- 260731 JL · 🗂 This folder map became the RELATED FOLDERS fold's data source
+  JL ruled B for QB2's new Index fold ("do the B level"): it opens the folders this board touches, and clicking a folder reveals a file's content.
+  This face owns the list of related folders and which files each may open; `QB2` owns the fold render in `src/page_board.py`. Shipped 0.87.0 as a build-time embed (each named file inlined at build, not fetched live), so a live `serve.py` endpoint on `QC8` is deferred to when a folder is too big to inline.
 - 260731 JL · 🗂 Three folders, not seven, with subskills nested
   JL: "I want 1 or 2 to be large folder like skill/board ... board folder, is the (2) ... subskills are the subskills in (1)".
   The first draft numbered `haipipe-board`, `haipipe-board-index` and `agents/` as `①②③`, which read as though a subskill were a peer of the board folder.
@@ -189,13 +218,16 @@ These are the calls only JL can make; CC ticks nothing here.
       No runtime may read a Q page, and nothing may be hand-written into a generated `board.html`.
       → CC's proposal: yes; the whole test is one line: delete `②` and every skill in `①` still runs.
 - [ ] 🧾 Rule where `skills/diagrams/_feedback/` belongs
-      Options on one line: A it joins `②` as the boards' lesson inbox · B it is `①`'s inbox, since every card's `lands_in:` names a shipped file · C it stays outside the map.
+      A · it joins `②` as the boards' lesson inbox, which makes it argued material that ships nothing.
+      B · it is `①`'s inbox, since every card's `lands_in:` names a shipped file, which makes a card graduate exactly as a page's Law does.
+      C · it stays outside the map, which leaves a real folder that this face cannot place.
       → CC's proposal: B; a card graduates into `①` exactly like a page's Law, movement ⒜, so this page should name it as an inbox, not a fourth kind.
 - [ ] 🧪 Commission the ✗-direction checker, or defer it
       Nothing yet proves that no shipped file cites a Q page.
       → CC's proposal: defer until the two ratifications above are ticked; a checker can only enforce a rule that has been ruled.
 
 ## Files
+### The family folder that ships
 - `../../board/haipipe-board/SKILL.md`
   The engine's own contract.
   Its shape section states the folder layout this face argues.
@@ -205,9 +237,14 @@ These are the calls only JL can make; CC ticks nothing here.
   The first subskill, and the statement that it never imports the engine's `src/`.
 - `../../board/agents/haipipe-board-reviewer-agent.md`
   The second subskill, an agent rather than a skill.
+
+### This board folder
 - `board.md`
   This board's own manifest, whose `## Board Map` carries the short form of the folder lane.
 
 ## Log
+260731 · Data source shipped for the RELATED FOLDERS fold (haipipe-board 0.87.0): board.md's `## Related Folders` names the folders (① engine, ② this board) and the files each opens; `related_folders()` embeds only those `.md`/`.txt` at build; QC8's live endpoint deferred for oversized folders
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · JL settled the live layer's scope: SPACE-level, one server per repo root over every board under it, verified against the code; the checking consequence went to QF1 and the second-port question stays with QE6
 260731 · Collapsed to three folders with subskills nested inside the family, at JL's direction
 260731 · Opened from JL's request for a QA0 folder map, modelled on the paper family's QA1-eight-folders

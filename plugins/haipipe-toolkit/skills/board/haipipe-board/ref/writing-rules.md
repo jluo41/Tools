@@ -1,4 +1,4 @@
-# Writing rules — how to write so it reads like human language
+# Writing rules: how to write so it reads like human language
 
 JL's words: **"If it is not easy to read, writing that much is rubbish."**
 A board's entire value is that a second person can read it. Unreadable means unwritten. This rule sits above structure and layout.
@@ -12,7 +12,7 @@ These are not style preferences. `build.py` renders each section a specific way,
 - `## Opening` = one lead sentence, then one plain paragraph
   The first paragraph is the actual question, written as a question, and stays in Opening. Write the remainder as **one flowing paragraph** covering why the question is hard, what breaks while it stays open, and what it affects downstream. build.py labels it "Why this matters": a collapsed row inside Opening for S (every Opening row starts shut, JL 260725), or Content's first initially open subsection for Q. Do NOT use the old three-bullet form.
 - `## Boundary` = `✅ Covered here` / `↪ Covered elsewhere`
-  Two `- ` lines. The second must name the question that does cover the excluded part (for example "projection is QA3"), because a bare exclusion reads as a refusal. Use `↪`, not `❌`. Boundary folds into the same hidden block as the Question and renders as flat rows, so keep each explanation to one line.
+  Two `- ` lines. The second must name the question that does cover the excluded part (for example "projection is QA3"), because a bare exclusion reads as a refusal. Use `↪`, not `❌`. Boundary folds into the same hidden block as the Opening and renders as flat rows, so keep each explanation to one line.
 - `## Diagram` = one optional visual section, collapsed by default
   Use an ASCII figure, an Excalidraw share URL on its own line, or both. The page renders a peer-level `🖼 Diagram` row after Opening; the visual remains hidden until that row is clicked. Insert the Excalidraw URL whenever the figure is worth drawing on together: it becomes a live excalidraw plus a plain link, so a colleague can move boxes in the drawing instead of describing the edit in prose. Delete the whole section when the figure adds no information. Opening the row shows `▧ ASCII` and leaves `✏️ Excalidraw` shut one click further (JL 260726); write ONE `## Diagram` and let the renderer split it, because a hand-written `### ASCII` heading in here is not a recognized construct.
 - S `## Content` = the stage's real product, and nothing else (JL 260725)

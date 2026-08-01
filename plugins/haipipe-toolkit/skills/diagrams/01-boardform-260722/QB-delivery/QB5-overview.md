@@ -8,6 +8,7 @@ What is a sentence on a board page, and what can attach to it?
 One sentence per source line (0.19.0) made the sentence the board's atomic row: the thing you click, comment on, attach evidence to, and hand to an agent.
 This face is the sentence family's front door; the machinery lives on its sibling faces.
 
+
 ## Boundary
 - ✅ Covered here
   The sentence as a unit, and the map of what attaches to it.
@@ -70,6 +71,10 @@ Lifecycle (`QAb4`) rules how Sentence details are filtered, resolved, cleaned up
 ## Where we are
 The unit is settled and live on every board; QAb0 now opens with one self-demonstrating sentence before it explains the family assembled from the former QA8 family plus QA6.
 
+### Decision Now
+- [ ] 🧠 JL confirms the family map
+      Opened 260729 when the QAb group was carved; a tick here also closes the same row in Items to Finish.
+
 ## Files
 - `src/body.py`
   One sentence per source line, and the adjacency walk.
@@ -77,6 +82,8 @@ The unit is settled and live on every board; QAb0 now opens with one self-demons
   The family.
 
 ## Log
+260731 1905 · Sentence-tail ⚑N badge no longer strands on its own line: renderer now glues it to the last word inside the `<p>` (`.snw` nowrap wrapper in body.py + board.css), so it sits at the sentence end and wraps together with the last word when space is tight
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Added §1 Demonstration so one sentence exposes Evidence, Comment, Chat, Edit, address, and the QAb4 lifecycle boundary before the reader enters the detailed family map
 260729 · Added QAb4 as the independent Sentence details lifecycle face for filters, statuses, cleanup, archive, restore, and purge
 260729 · Opened as the sentence family's front door when QAb was carved (JL: QAb0 overview, QAb1 evidence card, QAb2 editing)

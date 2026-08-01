@@ -9,6 +9,7 @@ JL opened the fork on 260729 with `haipipe-board-page` and `haipipe-board-senten
 On 260730 he added `haipipe-board-index`: the first interaction proposes the Board structure for approval, then the accepted Board relationship canvas sits at the top.
 Five proposed subskills around one orchestrator is why the fork gets a face instead of a chat answer.
 
+
 ## Boundary
 - ✅ Covered here
   The shipping decision: which units exist, what each owns, and what the split costs.
@@ -175,25 +176,41 @@ Until that consumer exists, splitting it would add a door without adding a workf
 `QA2` owns the proposal reviewed before the Index writes the structure, while `QA2b` and `QAa2` own the rendered top view and relationship canvas.
 
 ## Items to Finish
+### The survey behind the roster
 - [x] 🗺 The candidate roster is surveyed, with the test applied to each seam
       260729: every seam in `skills/board/` was walked. Stage argues for a clean script and already ships as a door under `paper/`, live and canvas are runtime, the checker and status and regroup are verbs of the manual.
 - [x] 🔢 What the family ships today is counted, not estimated
       260729: two units, `haipipe-board` v0.46.0 and `haipipe-board-reviewer-agent` v1.0.0, against 144 skills and 9 agents in the plugin. The form also ships from two places outside this family, `haipipe-paper-stage` and the two `serve.py` rule strings.
+
+### Rulings awaiting JL
 - [ ] 🧠 JL rules the roster: one orchestrator plus five subskills, and their shipping order
+- [ ] 🧠 JL says whether "don't need to have the review agent" retired the unit or only that run (§11)
+
+### Contracts for the units that ship
 - [ ] 🗂 Define `haipipe-board-index` against one realistic opening conversation
       The input is a raw topic; the output is one reviewable proposal containing Spine, Close, Groups, Pages, relationships, SkillSet, and the top-canvas sketch. No files are written before approval.
 - [ ] 🧩 Settle the support-record syntax
       Decide how a Page or subsection says `supported by haipipe-board-sentence · Evidence Card` without duplicating the Board-level SkillSet.
 - [ ] 📐 For each unit that ships: what it owns, what stays in `ref/`, and which Law graduates into it
+
+### Routing and digest before they are built
 - [ ] ⚖️ Routing and digest get a write protocol before either is built
       What may be written (Log and Where we are), what may only be proposed (ticks, `state:`), and how a write anchors to a section so it cannot splice a sentence. §9 and §10 hold the draft.
 - [ ] 🔗 The page resolution routing depends on is stated
       An id no longer predicts a folder, so the resolver reads `board.md` `## Pages`. This has to be true of `check.py` too before routing leans on it.
+
+### The serve.py de-duplication
 - [ ] 🧹 `serve.py`'s two rule strings stop being copies
       `CHAT_RULES` and `BOARD_CHAT_RULES` read `ref/` instead of restating it. This is worth doing whether or not the page door ships.
-- [ ] 🧠 JL says whether "don't need to have the review agent" retired the unit or only that run (§11)
 
 ## Where we are
+- 260731 JL · 🤖 The agents became a pair, and the roster gained its first parallel unit
+  JL: "we should have a new agent named haipipe-board-creator-agent, it can be called to write the pages markdown in parallels, instead of haipipe-board to write each of them one by one".
+  `Agent-2` is the producer half of the creator and reviewer pair `Agent-1` started, which is the same split the task and discovery families in this toolkit already run.
+  It is the first unit in this family whose contract is about CONCURRENCY rather than about content, so its boundary is drawn by a different test than §7's: not "does it have its own trigger and version", but "does it touch a file another writer also touches".
+  One page's `.md` fails that test and fans out; `board.md`, the lane block, the rebuild, and the checker pass it and stay with the caller, which is why the agent has no Bash tool.
+  Unshipped, and the reason this row is not a completion: the CALLER's half does not exist, so `haipipe-board`'s `open` and `add` still write pages one by one and nothing turns an approved proposal table into N assignment packets.
+
 - 260731 JL · 🚪 The roster shipped its specs and its first verb
   JL ordered the creation directly ("make the haipipe-board thinner, and have other skills, like haipipe-board-page, haipipe-board-sentences, haipipe-board-routing, please creating them now").
   §8's shape is now real on disk: `haipipe-board-page` and `haipipe-board-sentence` as contract-first SPECS citing `ref/` as their authority, `haipipe-board-routing` as the unit VERB carrying §9's anchored-write rule and §10's tick and cross-board laws.
@@ -205,17 +222,33 @@ Evidence Card remains a Sentence capability, while the Board/Page support record
 Nothing is built and the expanded roster is not yet ruled.
 CC's first reading on 260729 was defer page and sentence, on the grounds that no consumer needed them with no board open. JL's routing and digest are that consumer, so the reading is withdrawn and §7 records why it was wrong.
 
+### Decision Now
+- [ ] 🧠 Tick the roster ruling
+      PROPOSED: the Items row "JL rules the roster" is answered by conduct, since JL ordered index on 260730 and page, sentence, routing on 260731; digest stays named and unshipped. Confirm and the row ticks.
+- [ ] 🤖 Close §11 on the reviewer agent
+      PROPOSED: the 260731 Agent-1 ruling keeps the unit (a skill is loaded, an agent is dispatched), so "stop it" on 260729 meant that run only. Confirm and the §11 row ticks.
+- [ ] 🧭 Rule where a group-altitude input lands
+      Routing 0.1.0 resolves only pages, so a finding about a whole group (the QB status readout, 260731) has no landing rule. Recommended: the group's intro prose in `board.md` `## Pages`, written at the section boundary; the alternative is decomposing every group finding onto member pages.
+- [ ] 🚪 Rule where routing's own design questions live
+      Recommended: this face stays the owner until digest is built; the alternative is opening a routing Q page in QC now.
+
 ## Files
+### Where the form ships from today
 - `ref/q-template.md` · `ref/board-form.md`
   Where the contracts ship today.
+- `serve.py`
+  Lines 297 and 357, the two hand rolled copies of the page and board rules.
+
+### The standing rules this fork tests
 - `QB1-skillmd.md`
   The specs-to-ref Law this fork tests.
 - `QA1-form.md`
   §4, the standing rule that decides what routing and digest may write on a board that is not ours.
-- `serve.py`
-  Lines 297 and 357, the two hand rolled copies of the page and board rules.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · Decision Now adopted (JL: proposals leave chat and land under the owning page's Where we are); first rows here carry the two pending roster ticks, routing's group-altitude gap, and the home of routing's design questions
+260731 · Agent-2, the page creator, joined as the producer half of the pair; the family's first unit scoped by concurrency rather than by content, and the caller's fan-out half is still owed
 260731 · The reviewer separated from the skills as Agent-1, its own page kind below the Skill rows; a skill is loaded, an agent is dispatched
 260731 · haipipe-board-page, haipipe-board-sentence, haipipe-board-routing created contract-first and registered (Skill-3/4/5, SKILL.md family block, family README); digest and the serve.py de-dup remain
 260730 · Added haipipe-board-index and the three-layer model: Index proposes and materializes the approved Board structure and top canvas; Page owns sections; Sentence owns Evidence Card and other sentence records; Routing and Digest consume those contracts

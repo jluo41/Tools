@@ -11,6 +11,7 @@ That unlocks the case which forced the question: a paper's own `0-lifecycle/` be
 The first consumer forced the question: JL wanted the MISQ paper's `0-lifecycle/` itself to be a board, with each stage folder acting as a question's home (the way `5-section-edit/` keeps one folder per unit).
 Flat-only discovery made that impossible: `build.py` only globbed the board's top level, and `serve.py` resolved comment write-backs as `board / filename`.
 
+
 ## Boundary
 - ✅ Covered here
   Where a page file may physically live: recursive discovery under the board folder, which path segments are excluded, and how comment write-back stays safe once a path rather than a bare filename is in play.

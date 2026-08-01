@@ -105,6 +105,83 @@ def render_diagram(txt):
             '</details>')
 
 
+def structure_rows(d, content_sections):
+    """The DATA half of the page's Structure map: (key, label, value, subs)
+    per section that exists, where key is the stable machine name the sidebar
+    outline's JS resolves to a DOM selector, and subs is Content's division
+    titles. Shared by the Opening drawer and the sidebar outline (QB2a,
+    JL 260731), so the two views can never disagree."""
+    rows = [("opening", "🧭 Opening", "the lead, and this drawer", [])]
+    dia = sec(d, "Diagram").strip()
+    if dia:
+        fig, canvas = split_diagram(dia)
+        nfig = fig.count("```") // 2
+        v = f"{nfig} figure{'s' if nfig != 1 else ''}" if nfig else "no figure"
+        v += " · canvas" if canvas.strip() else " · no canvas"
+        rows.append(("diagram", "🖼 Diagram", v, []))
+    divs = [(h, h) for h, _ in content_sections if h]
+    if divs or sec(d, "Content").strip():
+        v = (f"{len(divs)} division{'s' if len(divs) != 1 else ''}" if divs
+             else "one flat body")
+        rows.append(("content", "📚 Content", v, divs))
+    itxt = sec(d, "Items to Finish")
+    done = len(re.findall(r"(?m)^\s*[-*] \[[xX]\]", itxt))
+    todo = len(re.findall(r"(?m)^\s*[-*] \[ \]", itxt))
+    if done or todo:
+        isubs = []
+        for h, b in parse_content_sections(itxt):
+            if not h:
+                continue
+            bx = re.findall(r"^\s*[-*]\s*\[([ xX])\]", b, re.M)
+            dn = sum(1 for x in bx if x.lower() == "x")
+            isubs.append((f"{h} · {dn}/{len(bx)}" if bx else h, h))
+        rows.append(("items", "🎯 Items to Finish",
+                     f"{done} done · {todo} open", isubs))
+    w = sec(d, "Where we are").strip()
+    if w:
+        dated = len(re.findall(r"(?m)^- ?\d{6}", w))
+        # Its ### subsections are jump targets too (JL 260731: "unfold the
+        # Decision Now in the sidebar"); a Decision Now row carries how many
+        # ticks it still owes.
+        wsubs = []
+        for h, b in parse_content_sections(w):
+            if not h:
+                continue
+            owed = len(re.findall(r"(?m)^\s*[-*] \[ \]", b))
+            wsubs.append((f"{h} · {owed} to tick" if owed else h, h))
+        rows.append(("now", "📍 Where we are",
+                     f"{dated} dated entr{'ies' if dated != 1 else 'y'}"
+                     if dated else "the present state", wsubs))
+    ftxt = sec(d, "Files")
+    nfiles = len(re.findall(r"(?m)^- ", ftxt))
+    if nfiles:
+        fsubs = [(h, h) for h, _ in parse_content_sections(ftxt) if h]
+        rows.append(("files", "📎 Files",
+                     f"{nfiles} file{'s' if nfiles != 1 else ''}", fsubs))
+    return rows
+
+
+def render_items(goal):
+    """Items to Finish with optional ### topic groups (QB4d, JL 260731: "each
+    aim subsection should be categorized into different subsection topics").
+    Each group heading carries its own done/total count; the section heading
+    keeps the overall count; an empty group is omitted rather than rendered
+    as a zero-row box."""
+    parts = []
+    for title, b in parse_content_sections(goal):
+        if not title:
+            if b.strip():
+                parts.append(body(b))
+            continue
+        if not b.strip():
+            continue
+        bx = re.findall(r"^\s*[-*]\s*\[([ xX])\]", b, re.M)
+        cnt = (f'<span class="shc">{sum(1 for x in bx if x.lower() == "x")}'
+               f'/{len(bx)}</span>' if bx else "")
+        parts.append(f'<div class="sh">{inline(title)}{cnt}</div>{body(b)}')
+    return "".join(parts)
+
+
 def render_structure(d, content_sections):
     """The generated `Structure` row that OPENS the drawer (JL 260729: "the
     Structure subsection just above Boundary"): what this page is built of.
@@ -114,38 +191,14 @@ def render_structure(d, content_sections):
     def row(label, value):
         return (f'<div class="pmr"><span class="pml">{label}</span>'
                 f'<span class="pmv">{value}</span></div>')
-    rows = [row("🧭 Opening", "the lead, and this drawer")]
-    dia = sec(d, "Diagram").strip()
-    if dia:
-        fig, canvas = split_diagram(dia)
-        nfig = fig.count("```") // 2
-        v = f"{nfig} figure{'s' if nfig != 1 else ''}" if nfig else "no figure"
-        v += " · canvas" if canvas.strip() else " · no canvas"
-        rows.append(row("🖼 Diagram", v))
-    divs = [h for h, _ in content_sections if h]
-    if divs or sec(d, "Content").strip():
-        v = (f"{len(divs)} division{'s' if len(divs) != 1 else ''}" if divs
-             else "one flat body")
-        rows.append(row("📚 Content", v))
-        shown = divs[:7]
-        for h in shown:
-            rows.append(f'<div class="pmd">{inline(h)}</div>')
-        if len(divs) > len(shown):
-            rows.append(f'<div class="pmd">… +{len(divs) - len(shown)} more</div>')
-    itxt = sec(d, "Items to Finish")
-    done = len(re.findall(r"(?m)^\s*[-*] \[[xX]\]", itxt))
-    todo = len(re.findall(r"(?m)^\s*[-*] \[ \]", itxt))
-    if done or todo:
-        rows.append(row("🎯 Items to Finish", f"{done} done · {todo} open"))
-    w = sec(d, "Where we are").strip()
-    if w:
-        dated = len(re.findall(r"(?m)^- ?\d{6}", w))
-        rows.append(row("📍 Where we are",
-                        f"{dated} dated entr{'ies' if dated != 1 else 'y'}"
-                        if dated else "the present state"))
-    nfiles = len(re.findall(r"(?m)^- ", sec(d, "Files")))
-    if nfiles:
-        rows.append(row("📎 Files", f"{nfiles} file{'s' if nfiles != 1 else ''}"))
+    rows = []
+    for _, label, value, subs in structure_rows(d, content_sections):
+        rows.append(row(label, value))
+        shown = subs[:7]
+        for disp, _t in shown:
+            rows.append(f'<div class="pmd">{inline(disp)}</div>')
+        if len(subs) > len(shown):
+            rows.append(f'<div class="pmd">… +{len(subs) - len(shown)} more</div>')
     return ('<div class="fh">Structure</div>'
             f'<div class="pmap">{"".join(rows)}</div>')
 
@@ -447,7 +500,7 @@ def render_question(q, prv, nxt):
            if boxes else "")
     fs = ""
     if now or goal:
-        nb, gb = body(now), body(goal)
+        nb, gb = body(now), render_items(goal)
         fs += ('<div class="cmp">'
                + sect(f"🎯 Items to Finish{cnt}", gb, cls="col goal")
                + sect("📍 Where we are", nb, cls="col now")
@@ -466,7 +519,13 @@ def render_question(q, prv, nxt):
     # Boundary 收进【同一个】折叠块，不再单占一节；里头用扁平行，不套第二层折叠。
     q_md = sec(q["sec"], "Opening").strip()
     _parts = re.split(r"\n\s*\n", q_md, maxsplit=1)
-    lead_lines = _parts[0].splitlines()
+    # A `<!-- haipipe:… -->` marker is addressed to a script, never to a reader.
+    # body() already drops them at render, but the LEAD is composed here and
+    # skipped that filter, so a generated page whose Opening opens with a
+    # managed span printed the marker as its own lead sentence (found on the
+    # first Meeting page, QC10).
+    lead_lines = [x for x in _parts[0].splitlines()
+                  if not (x.lstrip().startswith("<!--") and "haipipe:" in x)]
     qlead = inline(" ".join(x.strip() for x in lead_lines if not x.lstrip().startswith(">")))
     lead_app, lead_heads, lead_show = render_apparatus(
         [x for x in lead_lines if x.lstrip().startswith(">")]
@@ -493,9 +552,12 @@ def render_question(q, prv, nxt):
         opening_sections.append(("Stage Record", stage_record))
     # Stage Contract joins Opening's collapsed rows (JL 260725: "within the
     # Opening, not a separate section"), after Why this matters / Stage Record.
+    # Boundary was retired on JL's ruling (260731, said twice): a page's scope is
+    # the Opening's job. Old boards that still carry the section keep rendering
+    # it, because deleting someone else's text on read would be a silent loss.
     btxt = sec(q["sec"], "Boundary").strip()
-    # Structure 打头（JL 260729：「just above Boundary」）：页面自己的地图，
-    # build 时从解析好的页面算出来，不是手写的，所以永远不会过期。
+    # Structure leads the drawer (JL 260729): the page's own map, computed at
+    # build from the parsed page, so it can never go stale.
     inner = (f'<div class="sapp">{lead_app}</div>' if lead_app else "")
     inner += render_structure(q["sec"], content_sections)
     if btxt:

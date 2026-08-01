@@ -8,6 +8,7 @@ How should Board `open` and `add` turn a topic into a reviewable proposal of pag
 
 `open` creates a board; `add` extends an existing board with a page or group. The current rules define the file grammar, short-title form, numbering, slug, group storage, and index display, but they never explain how to discover the right pages or decide why several pages belong together. Without that method, an agent can produce overlapping questions, vague names, and arbitrary groups that render correctly but do not help anyone steer the work. This question owns the proposal the user reviews before those actions write files.
 
+
 ## Boundary
 - ✅ Covered here
   The procedure for proposing page scope, page names, group membership, group names, and the evidence used to judge that proposal.
@@ -81,6 +82,7 @@ If page scope, coverage, or separation fails, revise the decomposition. If the p
 - **Review:** no files are created until the user accepts or revises the proposal table.
 
 ## Items to Finish
+### The proposal method's tests
 - [ ] 🧭 Settle how candidate pages are derived
       Define how the approved requirements inventory becomes candidate decision pages or ordered lifecycle-stage pages.
 - [ ] ✂️ Settle the page-scope test
@@ -89,6 +91,8 @@ If page scope, coverage, or separation fails, revise the decomposition. If the p
       Define measurable title checks for length, concreteness, uniqueness, and stability as the work evolves.
 - [ ] 🗂️ Settle the group proposal test
       Define when a new group is earned, whether a one-page group is ever valid, how its title and responsibility sentence are written, and which weak groupings are rejected.
+
+### The deliverable and its trial
 - [ ] 📋 Settle the proposal shown for approval
       Decide whether the table above is sufficient for both `open` and `add`, then place the final format in the Board reference file.
 - [ ] 🧪 Test the method on real boards
@@ -122,12 +126,27 @@ These are the calls only JL can make; CC ticks nothing here.
       Design → Delivery → Engine as the core, with Working · Sharing · Execute as the standing tail.
       → CC's proposal: yes; it has now been field-tested twice, on the paper family's Skill-Board and on this board itself.
 - [ ] ✍️ Decide when `ref/proposal-rules.md` gets drafted
-      Options on one line: A draft it now from §4 and §5 · B keep designing on this page until the tests in Items are settled.
+      A · draft it now from §4 and §5, which gives a fresh agent something to be handed and exposes what §4 still leaves undefined.
+      B · keep designing on this page until the tests in Items are settled, which delays the fixture test that needs the file.
       → CC's proposal: A; the fixture test in Items needs a rules file a fresh agent can be handed, and drafting it will expose exactly what §4 still leaves undefined.
+- [ ] 🧱 Approve or reject the two remaining proposed pages on the live read/write architecture
+      JL 260731 asked what the best method is for interacting with markdown as the backend, and which Q pages should exist for it; three decisions were homeless.
+      `QC7`, the write path's addressing contract, was approved the same day ("this is a very good question, please go ahead") and is open, so this row now covers only the other two.
+      Still proposed: `QC9` the unit of change (one comment regenerates all 49 pages and re-ships 1.6MB), and `QD9` what the page shows before the server answers (nothing today, which is the "slow" feeling).
+      The unit-of-change page was proposed as `QC8` earlier the same day and is renumbered `QC9` here, because a concurrent session opened `QC8` for the live-layer split while this row was pending.
+      Not proposed as new pages, because they already have owners: the Node and stack fork is `QE3`, settled; poll against SSE is `QD4`'s own Boundary and would reopen there; concurrent writers are `QE4`.
+      → CC's proposal: approve both, and take `QC9` first, since the 1.6MB refetch is the measured cost and `QC7` §4's ladder does not depend on it.
 
 ## Files
+### Engines
 - `../../board/haipipe-board/SKILL.md`
   The `open` action requires page-list approval but does not explain how the list is proposed.
+- `../../board/haipipe-board/serve.py`
+  `_slugify`, `Q_STUB`, and `structure_op` materialize a supplied title without judging it.
+- `../../board/haipipe-board/check.py`
+  A future structural check could detect duplicate or weak page and group proposals after the human rule is settled.
+
+### Input files
 - `../../board/haipipe-board/ref/q-template.md`
   Defines the title as a short phrase and the lead as the full question.
 - `../../board/haipipe-board/ref/writing-rules.md`
@@ -136,15 +155,15 @@ These are the calls only JL can make; CC ticks nothing here.
   Defines ids, slugs, groups, and `## Pages` after the proposal has already been accepted.
 - `QB2-board-webpage-design.md`
   Owns how groups and page rows render and how they are edited, not how they are conceived.
-- `../../board/haipipe-board/serve.py`
-  `_slugify`, `Q_STUB`, and `structure_op` materialize a supplied title without judging it.
-- `../../board/haipipe-board/check.py`
-  A future structural check could detect duplicate or weak page and group proposals after the human rule is settled.
 
 ## Discussion
 > JL: The current question names, page names, and especially proposed page groups are not consistently good. We need a dedicated question for how the Board should propose reasonable pages and groups.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · The unit-of-change proposal renumbered QC8 to QC9 after a concurrent session opened QC8 for the live-layer split: a live id beats a proposed one
+260731 · QC7 approved by JL and opened the same round; QC8 and QD9 still awaiting a ruling
+260731 · Three pages proposed on the live read/write architecture (QC7 write path, QC8 unit of change, QD9 optimistic echo), awaiting JL; the stack half was already settled on QE3
 260731 · Groups settled at six after the QD split (QD Working · QE Sharing · QF Execute); stale pointers moved to live ids
 260730 · The board's seven groups were restructured into the Design → Delivery → Engine three-layer model with Execute and Working; every page kept its id
 260726 · Opened from JL's request to design a better question, page-name, and page-group proposal method

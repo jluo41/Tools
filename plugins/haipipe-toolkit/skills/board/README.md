@@ -18,6 +18,10 @@ reviewable set of question pages or lifecycle stages.
   section, append an anchored write; it proposes rather than creates, and it
   never ticks a box. (`haipipe-board-digest`, the transcript-scale fan-out, is
   named on the roster and not yet shipped.)
+- `agents/haipipe-board-creator-agent.md` writes exactly ONE page in a fresh
+  context, from an assignment packet rather than from the board, so N of them
+  run at once instead of one context writing every page in turn. It holds no
+  shared state: no `board.md`, no rebuild, no sibling page.
 - `agents/haipipe-board-reviewer-agent.md` is the read-only, fresh-context
   reviewer. It checks structure, readability, and stale claims; it never repairs
   the Board it judges.
@@ -32,6 +36,7 @@ board/
 ├── agents/
 │   ├── README.md
 │   ├── CHANGELOG.md
+│   ├── haipipe-board-creator-agent.md
 │   └── haipipe-board-reviewer-agent.md
 ├── haipipe-board-index/
 ├── haipipe-board-page/

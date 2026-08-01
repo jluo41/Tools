@@ -34,21 +34,24 @@ provides: one compact phrase naming the downstream handoff
          kind starts `🔴 OPEN`. What ✅ means differs: on Q every checkbox is closed, on S that
          page's human gate passed (the index counts it under its named family).
        - owner is who is responsible; JL shows 🧠 (decides) on the page, others show 🔧.
-     Section names (Question / Boundary / Items to Finish, etc.) must be kept verbatim.
-     `## Opening` is accepted as an alias for `## Opening`, but the template keeps Question
-     because the lead sentence must still be an actual question.
+     Section names (Opening / Content / Items to Finish, etc.) must be kept verbatim.
+     `## Question` is still accepted as a legacy alias for `## Opening`, but the template
+     keeps Opening because that is the canon; the lead sentence is still an actual question.
      build.py fetches content by these exact names, so any mark goes in the body, never in the
      heading line, and state: takes one status only.
      The visible hierarchy is fixed, and it is the SAME for both kinds:
        Opening -> Diagram -> Content -> Items to Finish -> Where we are -> Files.
-     Opening groups the Question lead + optional Boundary, and its drawer opens with a generated
+     There is NO Boundary section (JL 260731, said twice): what a page covers is the
+     Opening's job, and a Boundary that restates it is noise. Point at a neighbouring
+     page from the prose that needs it instead.
+     Opening carries the lead question, and its drawer opens with a generated
      `Structure` map of the page (JL 260729): one row per section that exists, computed at build,
      nothing to author. On an S page it also carries "Why this
      matters", an optional `### Stage Record`, and the whole Stage Contract, and EVERY one of
      those rows starts collapsed (JL 260725), so the lead question is the only thing on stage and
      each layer of orientation is one click away. Stage Contract is therefore not a section of its
      own on the page. Optional Diagram is its own collapsed section and opens only when its heading
-     is clicked. On Q pages, the remaining Question paragraph becomes Content's first "Why this
+     is clicked. On Q pages, the remaining Opening paragraph becomes Content's first "Why this
      matters" subsection, which does start open. Explicit Content is optional for Q and required
      for S. When creating S Content, use the stage template as the base blueprint, overlay the venue
      template's reader/section/style constraints, then add accepted and unresolved requirements
@@ -62,7 +65,7 @@ provides: one compact phrase naming the downstream handoff
 required · One lead sentence, then one plain paragraph. **Reading this section alone, a
 zero-background person should understand what the question is.**
 
-The lead renders in `🧭 Opening` with Boundary. On Q pages, the paragraph below it renders as
+The lead renders in `🧭 Opening`. On Q pages, the paragraph below it renders as
 the `Why this matters` row inside Opening's drawer, on Q and S alike (JL 260729).
 
 The lead sentence is the actual question, written as a question, in plain words. It stays in
@@ -72,16 +75,6 @@ Then one flowing paragraph: why the question is hard, what breaks while it stays
 it affects downstream. build.py labels it "Why this matters", inside Opening for Q and S alike
 for S. Write it as prose, not as `- Why it is hard / - What breaks` bullets.
 
-## Boundary
-optional (strongly recommended) · What this question covers and, more importantly, what it does
-not. Folds into the same block as the Question, so keep each line short.
-
-- ✅ Covered here
-  One or two lines drawing the scope.
-- ↪ Covered elsewhere
-  One or two lines, and **name the question that does cover it** (for example "projection is
-  QA3"). A bare exclusion reads as a refusal; this line's job is to redirect the reader. Use
-  `↪`, not `❌` (JL 260724).
 
 ## Stage Contract
 S required · Q delete this whole section. This section carries the explicit upstream acceptance
@@ -154,6 +147,11 @@ against `§6.1`. Write a division only when it holds something, so a flat sectio
 page opens a box onto nothing. This makes the shape checkable without reading the prose: the
 subsection count is the number of `###` headings whose number contains a dot.
 
+Each division opens with its FACE DIAGRAM (JL 260731): the first fenced ascii figure directly
+after the `###` heading, a short high-level sketch of the division's concept or content. Position
+alone marks it, no new syntax; page and group ids inside it render as links. The worked example
+is the design board's QB4c, whose four divisions each open with theirs.
+
 A `####` heading carries no icon. 🔹 belongs to a group title, which is a full-line `**bold**` that
 genuinely leads a run of items, so never write a paragraph in bold. An optional full-line `(…)`
 directly under a `####` heading is that paragraph's job: it renders in grey italic, stays on stage
@@ -212,6 +210,10 @@ emoji icon (build.py never guesses one). The first indented line is a one-senten
 lines after it are the long explanation, written as a real paragraph (what it means, what
 happened, why). Only the heading shows on stage; length is free in the fold.
 
+Optional `###` topic headings group the boxes (JL 260731): each visible group renders with its
+own `done/total` count, empty groups are omitted, and the overall count on the section heading
+is unchanged. Name each group after this page's actual work, never a generic category.
+
 - [ ] 🎯 First finish line
       One sentence saying exactly what this means and how it is judged met.
       The long explanation: the reasoning and history behind this line, as a paragraph.
@@ -241,6 +243,23 @@ items, each prefixed `YYMMDD WHO ·`; build.py strips that into a muted right-al
 date and person never sit in the title text. Order by date. On S pages, summarize the stage; do
 not repeat every consumer answer from Items to Finish.
 
+If the page holds decisions only a person can make, add one `### Decision Now` subsection here
+(JL 260731): one `- [ ]` row per pending decision, stating the ask, the options, and the
+recommendation. The machine writes the rows and may mark one `PROPOSED:`; only the human ticks.
+An answered row moves into the dated record above, so the subsection empties out over time.
+
+Each option takes ITS OWN LINE and says what choosing it commits you to (JL 260731). Options
+crammed together on one line name the choices and explain none, so the reader has to work out
+the consequences before deciding. The recommendation is its own line, naming the letter:
+
+```markdown
+- [ ] 🗣 The ask, stated as one question
+      One or two lines of context: what is true today, and what it costs.
+      A · the first option, and what choosing it commits you to.
+      B · the second option, and what it commits you to.
+      → CC recommends B, because <the reason it beats A>.
+```
+
 - 260723 CC · 🔀 What changed on this date
       One sentence naming the change.
       The paragraph: what it was before, why it changed, what it cost.
@@ -253,6 +272,21 @@ backticks; those declared in `board.md`'s `## Links` become clickable.
   Its role in this question, and where you start when this question changes.
 - `path/to/generated-thing`
   If it is generated, say "do not hand-edit".
+
+Optional `###` groups when the list has several coherent parts. One shared taxonomy is the
+STANDARD shape and a page reusing it verbatim owes no justification (JL 260731, `QB4f`):
+`Engines` (what RUNS this page's subject; you open one to change behavior), `Input files`
+(what the work READS: specs, templates, source pages, evidence), `Output files` (what the
+work WRITES: generated, opened to check and never to edit). It is the same Input, Process,
+Output shape the toolkit's units run on, and Engines comes first because Files is ordered by
+what a reader opens first, not by how the data flows.
+
+Which group a file goes in is decided by what YOU do to it, not by what it is: edit it to
+change behavior -> Engines; read it, or an engine reads it -> Input files; a build wrote it
+-> Output files. So a governing spec that never executes is an Input, and a script whose
+rules are code is an Engine. Rename a group only when the trio would misdescribe the work
+(`QA2b` uses Board source / Index renderer / Generated view); stay flat under about three
+rows; omit an empty group and never invent a row to fill one.
 
 ## Law
 optional · folded · Rules this question has settled and will follow from now on, one per line.

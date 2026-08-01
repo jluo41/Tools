@@ -1,4 +1,4 @@
-# haipipe-board-reviewer-agent · v1.0.0
+# haipipe-board-reviewer-agent · v0.1.0
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -10,7 +10,7 @@ Write here what this skill is for in one paragraph a stranger could follow, why 
 The generated sections answer what it IS; only this one can answer whether it is any good.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 75e28a289cfda5c2 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:tree:start 4d60c5441556c700 board/agents/haipipe-board-reviewer-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
@@ -22,9 +22,9 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 75e28a289cfda5c2 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:body:start 4d60c5441556c700 board/agents/haipipe-board-reviewer-agent.md -->
 
-**haipipe-board-reviewer-agent** · `1.0.0` · last shipped 2026-07-26
+**haipipe-board-reviewer-agent** · `0.1.0` · last shipped 2026-07-26
 
 - folder   `board/agents/haipipe-board-reviewer-agent.md/`
 - tools    not declared
@@ -127,11 +127,26 @@ Page generated 260727 0017. Nothing ruled yet.
 ## Log
 260727 0017 · page generated from `board/agents/haipipe-board-reviewer-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 75e28a289cfda5c2 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:log:start 4d60c5441556c700 board/agents/haipipe-board-reviewer-agent.md -->
 
-Converted from the skill's own `CHANGELOG.md`: 1 releases.
+Converted from the skill's own `CHANGELOG.md`: 2 releases.
 
-260726 · `1.0.0` · haipipe-board-reviewer-agent
+260731 · `0.1.0` · haipipe-board-creator-agent
+      - Added the family's second agent, and the producer half of the creator and
+        reviewer pair the rest of this toolkit already uses.
+      - Scoped it to exactly ONE page per invocation, so the caller fans out N of
+        them in parallel instead of `haipipe-board` writing pages one by one
+        (JL 260731).
+      - Made the parallel safety structural rather than advisory: no Bash tool, so it
+        cannot run `build.py`; `board.md` is off limits, so the one file every writer
+        would collide on stays the caller's; and no sibling page may be read, so two
+        agents cannot start duplicating each other's judgment.
+      - Gave it the `siblings` field in its assignment packet, which is what lets a
+        page write an honest `## Boundary` without reading the board, and what stops
+        two pages claiming the same decision.
+      - Left every shared write with the caller: registering in `board.md`, the lane
+        block, one rebuild, one check, and dispatching the reviewer.
+260726 · `0.1.0` · haipipe-board-reviewer-agent
       - Added the Board family's first agent.
       - Made the role read-only: it runs the mechanical checker, cold-reads prose,
         checks for stale claims, and returns findings without editing the Board.

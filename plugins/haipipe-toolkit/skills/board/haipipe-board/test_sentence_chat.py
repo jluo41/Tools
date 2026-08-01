@@ -10,8 +10,8 @@ HERE = Path(__file__).resolve().parent
 class SentenceChatContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.js = (HERE / "assets" / "board.js").read_text(encoding="utf-8")
-        cls.css = (HERE / "assets" / "board.css").read_text(encoding="utf-8")
+        from src import assets as _a
+        cls.js, cls.css = _a.js(), _a.css()
 
     def test_reuses_existing_question_chat(self):
         self.assertIn("window.__boardSentenceChat", self.js)

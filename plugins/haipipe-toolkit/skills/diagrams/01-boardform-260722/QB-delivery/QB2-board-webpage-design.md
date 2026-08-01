@@ -14,6 +14,7 @@ It matters because a Board is for the second person: if the Index does not show 
 The visual half is the same question asked about pixels. An external taste skill can expose defaults an AI repeats without noticing, but the default taste skill targets landing pages and portfolios rather than dense control planes, and applied literally its layout variance, motion and imagery would make this board less useful. The narrow version is what this face owns: which bias-correction rules improve a research work surface, which must be rejected, and what evidence is required before a visual preference becomes board law.
 Downstream it drives group ordering, state display, completion coloring and default sort, all in `build.py`'s index-rendering pass, coupled to `board.md`'s `## Pages`, and the shared palette, typography and density in `assets/board.css`.
 
+
 ## Boundary
 - ✅ Covered here
   **The Board-Webpage-Index**: Board-level Topic, Pipeline, Board-Structure, group headers, what each row shows, the visuals of state and completion, sort rules, the structure controls, the Board chat entry, the ACTIVITY block, and how "see at a glance what to act on" is achieved.
@@ -97,8 +98,8 @@ and QA9 checks           why it does not fit
 ## Content
 ### 1 · Board-Webpage-Index and Board-Webpage-Page
 The Board-Webpage is one generated `board.html` with two reader views.
-The Board-Webpage-Index is `#top`: it gives the Board name, Spine, Close condition, progress, its Board Map canvas,
-Topic, Pipeline, Board-Structure, grouped page rows, and Activity before showing any individual page.
+The Board-Webpage-Index is `#top`: it gives the Board name, Spine, Close condition, progress, its Board Map, the Section Matrix, grouped page rows, and Activity before showing any individual page.
+Topic, Pipeline, and Board-Structure left the rendered Index on 260731 (JL: "I want to just remove this"); their `board.md` sections remain source-only documentation, because the spine, the Board Map, and the matrix already orient a reader.
 A Board-Webpage-Page is a focused `#<page-id>` view inside the same document.
 This face owns the Index and shared visual language; the QAa faces own the opened Page's sections.
 
@@ -256,7 +257,14 @@ The Index uses its local `board.excalidraw` scene by default when served through
 
 This first surface deliberately does not infer arrows from `## Pages` or `## Pipeline`, and it does not make a frame click open a page. Both would require a settled relationship grammar and interaction contract rather than a visual guess.
 
+### 16 · Related Folders, open a related folder from the Index
+A third Index fold, peer to the Board Map and the Section Matrix, lists the folders this board TOUCHES rather than the pages it contains, so a reader can see the engine that ships the board and what a board folder itself looks like without leaving the Index.
+It surfaces `QA0`'s three-folder argument as a working panel: the skill family that renders the board (`skills/board/haipipe-board/`, with `SKILL.md src/ assets/ ref/`), this board's own folder (`01-boardform-260722/`, with `board.md`, its group folders, `board.excalidraw`, `fig/`, and the generated `board.html`), and the sibling boards the same engine renders.
+Two depths are possible and unruled: a static folder tree that only shows structure, or a browser whose folders open to reveal a file's content such as `SKILL.md`. The Decision Now row settles which.
+The panel is authored, not inferred: which folders count as related and what each contains comes from `QA0` and `board.md`'s `## Links`, never from guessing.
+
 ## Items to Finish
+### The Index's components, from group intros to the Board Map
 - [x] 📖 Each group introduces itself on the index
       A short sentence always visible under the group header; clicking it expands the "what this group is for and why it is here" body.
       Grammar (260724): in `## Pages`, plain lines between a `### ` heading and its first `.md` line are the intro; line 1 is the sentence, the rest is the expandable body.
@@ -271,6 +279,10 @@ This first surface deliberately does not infer arrows from `## Pages` or `## Pip
 - [x] 🗺 The Index opens with the Board Map canvas
       The top view embeds the Board's declared canvas below progress and above the textual index. Each box is one Q/S page. A live Board server uses the local `board.excalidraw` scene; this static Tailscale Board uses its declared shared Excalidraw canvas.
       This is intentionally not an automatically inferred dependency graph: arrows are authored, labelled relationships, while proximity and `## Pages` order carry no relationship meaning.
+- [x] 🗂 A RELATED FOLDERS fold, peer to the Board Map and Section Matrix — shipped 0.87.0
+      Opens the folders this board touches, not the pages it contains: the shipping engine `skills/board/haipipe-board/` and this board's own folder shape, sourced from `QA0` and the new `## Related Folders` grammar in `board.md`.
+      Shipped as a build-time embed (`related_folders()` in `src/page_board.py`), so clicking a folder then a file reads it inline with scripts stripped and on a static host; renders in both `board.html` and the `board/` tree; two folders, four files embedded on this board.
+### The Index's reading design: order, rows, coloring, the three-second answer
 - [ ] 🔗 Settle the Board Map's arrow vocabulary and page-opening interaction
       Decide the small stable set of relationship labels (for example `defines`, `governs`, `requires`, `ships`) and whether a frame should open its Q/S webpage. Until that is settled, the map remains a readable relationship surface and the text index remains the action navigator.
 - [ ] Settle the questions the front page must answer
@@ -290,8 +302,7 @@ This first surface deliberately does not infer arrows from `## Pages` or `## Pip
 - [ ] A zero-background person points at the right question within three seconds
       Same acceptance as `QAa0`: a fresh agent sees only the front page, is asked "which question to act on", and must answer correctly.
 
-**📊 Activity (absorbed from QE2, 260726)**
-
+### 📊 Activity (absorbed from QE2, 260726)
 - [x] 📅 The strip answers WHEN, the tree answers WHERE
       Fourteen days across the top, then Board → Group → Page beneath, which are two different questions and therefore two blocks rather than one clever chart.
 - [x] 🧮 The unit is an update, counted from `## Log`
@@ -307,8 +318,7 @@ This first surface deliberately does not infer arrows from `## Pages` or `## Pip
       Three ways out: delete the recorder and its schema, keep it silently for a later "who is looking at this board right now", or keep it and show it as a secondary readout.
       Recommend deleting: a measurement nobody reads is a maintenance cost that looks like a feature, and the six regression tests now protect a number the page does not print.
 
-**🎨 Visual design (the former QA10 half)**
-
+### 🎨 Visual design (the former QA10 half)
 - [ ] 🎛 Set the board design read and dials
       JL accepts or revises the proposed `3 to 4 / 1 to 2 / 7 to 8` starting point.
 - [ ] 📋 Freeze the borrow and reject lists
@@ -327,6 +337,35 @@ This first surface deliberately does not infer arrows from `## Pages` or `## Pip
 ## Where we are
 **The Board-Webpage-Index is now a place you can WORK and understand, not only view: its Content subsections explain what every component is eventually for; the Board Map canvas now appears before the page rows to make page relationships visible; paper lifecycles use seven readable S-family groups; the structure itself is editable from the page; and the Index carries its own chat. Board-Structure now appears after Pipeline rather than consuming a Q webpage. The reading design questions (arrow vocabulary, sort, coloring, the three-second test) stay open, and so does the visual baseline audit.**
 
+- 260731 CC · 🗂 RELATED FOLDERS shipped (0.87.0, depth B)
+  A third Index fold, peer to the Board Map and Section Matrix, opens the folders this board touches (the shipping engine, and the board folder itself); clicking a folder then a file reads it inline.
+  Built as a build-time EMBED rather than JL's literal "serve.py serves content live", because a live fetch breaks the script-stripped/static-host Law (QE3): `related_folders()` reads each listed file at build, refuses paths outside the repo root, inlines only `.md`/`.txt` under 120 KB, and shows every failure as a visible box. Renders in both `board.html` and the `board/` tree; the rail gained a 🗂 Related Folders row. Verified: order Board Map → Related Folders → Section Matrix, four files embedded, zero failures, body survives JS stripping. QC8's live endpoint is deferred for oversized folders.
+
+- 260731 JL · 🗂 RELATED FOLDERS depth ruled: B, the clickable browser
+  JL: "do the B level." The fold opens to a real file's content on click (for example `SKILL.md`), not just a static tree.
+
+- 260731 JL · 🗂 A RELATED FOLDERS fold requested for the Index
+  JL, with a screenshot of the Board Map and Section Matrix folds: add a third fold, "related folders", that opens the folders this board touches so a reader can "看到 skill board 的那个东西，也可以看到这个 board folder 该长什么样子" (see the shipping skill, and what a board folder itself looks like).
+  Recorded as Content §16, an Items row, and a Decision Now depth ruling: a fold peer to the Board Map and Section Matrix, sourced from `QA0`'s three folders and `## Links`. The depth (static tree vs clickable browser) is unruled; the render lives in `src/page_board.py`, so wiring it needs an engine change beyond a board-folder-only edit.
+
+- 260731 JL · 🧹 Topic, Pipeline, and Board-Structure left the Index
+  JL, quoting the three disclosure headings: "I want to just remove this."
+  The renderer no longer emits the three `ctx` disclosures; `board.md` keeps `## Topic`, `## Pipeline`, and `## Board Structure` as source-only documentation, and nothing else read them.
+  The Index now reads spine → Board Map → Section Matrix → ALL PAGES → Activity, and the rail's Index outline lists exactly those components.
+- 260731 JL · 📇 The Index row unfolds in the rail
+  JL: "for the left panel headings, what should be the index's section content? Please add them as well."
+  The `🗂 Index` row now carries the same chevron and outline as a page row: 🗺 Board Map, 🩺 Section Matrix (with its page × column count), 📄 All Pages (with the page count), 📈 Activity, each present only when the board has it, each scrolling the Index to that component.
+  It unfolds by default when the board opens, since the Index is the open "page" at load.
+- 260731 JL · 🩺 The Index gained the SECTION MATRIX
+  JL: "We want to have a dashboard to show the status of the board. Each row is a page, each column is a subsection. the cell might be some status."
+  Shipped in haipipe-board 0.75.0 as a shut-by-default disclosure between the Board Map and ALL PAGES: one row per page, one column per section, every cell computed at build from the same parses the pages render from, so the matrix is derived and can never disagree with a page.
+  The cell vocabulary: 🧭 present, 🖼 figure and canvas counts, 📚 `n÷·m🖼` divisions and how many open with their face diagram (the QB4c retrofit watched from one column), 🎯 `done/total`, 📍 `DN·k` owed Decision Now ticks or `e` dated entries, 📎 files and groups, 🗄 Log lines.
+  A cell is a link: click it and the page opens scrolled to that section; amber marks incomplete, accent marks waiting-on-JL, muted marks absent.
+- 260731 JL · 📑 The webpage gained a hideable pages sidebar
+  JL: "I also think to added the sidebar so I can choose the pages more easier ... like the side bar, and then index, QA, QA1, QA2, etc ... and that sidebar can be hidden as well."
+  Shipped in haipipe-board 0.61.0: a fixed left rail listing Index, then every group with its pages (state emoji, id, title), rendered server-side from the same listing as the index rows so it needs no script to exist.
+  It lives outside `.wrap`, so the `:target` show/hide rules never touch it and it stays up in both the Index view and an open page; a group link re-targets `#group-…`, which also brings the Index back on stage.
+  The ☰ toggle hides or shows it, the choice persists per board in localStorage, and with no saved choice it defaults open on wide screens and hidden on narrow ones; a jump on a narrow screen closes the overlay without persisting.
 - 260730 JL · 🅰 The Board Map became ASCII, and a disclosure
   JL: "what is the section for board map?
   I think I might need the ASCII version.
@@ -407,19 +446,91 @@ This first surface deliberately does not infer arrows from `## Pages` or `## Pip
   ⏸️ ON HOLD renders as full green like ✅, reads as "done"; with many questions it is one long strip with no visible priority; group order is entirely hand-maintained in the Pages.
   No external skill has been installed and no dependency has been added.
 
+- 260731 JL · 🎨 The Board Map header now matches the Section Matrix header
+  JL: "could you make this cleaner? this is so ugly", then "make these two styles consistent", with a screenshot of the two sitting one above the other and looking nothing alike.
+  The map's header was a two-column flex with a large title on the left and its blurb stranded right-aligned on the right, wrapping onto two lines; the matrix's was one compact line.
+  The map now uses the matrix's shape exactly: one line, one triangle, same padding, weight and size, with the blurb dropped from the header because the body already opens with the same sentence.
+  Two triangles were being drawn, and finding the second one took the browser rather than the source.
+  The first was the `<summary>` disclosure marker, which `list-style:none` does NOT remove because a summary is `display:list-item` and Chrome draws it through `::marker`; only leaving list-item behind kills it.
+  The second was a real `::before`, and the rule meant to suppress it had the SAME specificity as the generic `details[open]>summary::before` further down the file, so the generic one won on order alone.
+  Both are now beaten explicitly, and the triangle that remains is one inline arrow on the header itself.
+
+- 260731 JL · 🔁 The tree index was a THIRD reimplementation, and JL caught it by comparing
+  JL: "the ASCII here has not become real ASCII", and "compare your configuration with the original .md one, there are big differences, look carefully."
+  He was right on both counts and the cause was one thing: the tree's index and rail had been hand-written instead of reusing the builders `render()` already had.
+  What that silently dropped: every `.gi` group-intro block, every `.gib` body, and all six `.gidia` figures, which are the per-group lane diagrams, so the ASCII was not rendering as ASCII because it was not being rendered at all.
+  The rail lost its per-page section outline the same way, 54 `.sb-out` blocks and 298 `.sb-s` rows.
+  Fixed structurally rather than patched: the index loop became `index_rows()` and the rail loop became `sidebar_rows()`, each taking an href function, and both packagings now call the same one.
+  A class-by-class diff of the two indexes is the check: the only remaining differences are the progress bar and the ALL PAGES hint, both deliberate, and one rail row, because the tree's Index is its own document rather than a fragment.
+  Third time this family's "one grammar, never two implementations" law has caught its author in one day, which is itself the argument for the law.
+
+- 260731 JL · 🗂 A group is the one altitude with no template, and now it has half of one
+  JL: "index has a template, page has a template, should the page GROUP have a template too? Opening a group shows only a list; can it also say what this group is for?"
+  He is right, and this board states the gap against itself: the QB group intro declares the ladder Board to Group to Page to Section to Sentence, then lists faces for Board, Page and Sentence only.
+  What a group owns today is thin and scattered: an intro in `board.md` under its `### ` heading, an anchor, a lane block, and since 0.77.0 a chat session. None of that is a template and none of it has state.
+  Shipped now, from data that already existed: the group page renders its intro as a PURPOSE line, the remaining intro lines as a "why this group exists" drawer, and the group's own settled count. The intro was in `board.md` all along and the group page simply never read it.
+  Not shipped, because it needs a source file and a parser slot rather than a render change: a group with its own `## Items to Finish`, its own `### Decision Now`, and a `state:` that can close.
+
+### Decision Now
+- [ ] 🗂 Rule whether a group gets a SOURCE FILE, and therefore a real template
+      The group page now shows purpose, why, progress and members, all derived from `board.md`. That is the ceiling of what derivation can give: a group still cannot hold a decision, an open item, or a state of its own.
+      A · a group gets its own markdown file with the page sections that make sense at group altitude (Opening, Items to Finish, Where we are with Decision Now), rendered as the group page, with the member list appended by the generator.
+      B · the group stays derived, and anything a group needs to decide is written on whichever member page is closest.
+      C · extend the `board.md` intro grammar instead, so a group can carry more without a new file.
+      → CC recommends A, because a group is already the unit you click, a session attaches to, and a lane block describes, and the only thing it cannot do is close. Note what it costs: `src/parse.py`'s Q pattern requires a number, so `QA-index.md` is discovered and then fails to parse; the existing named-Q form `Q-<Name>-<slug>` already parses and is the cheapest slot.
+      Also worth ruling in the same breath: if a group can close, does the board's settled count start counting groups, or stay pages only.
+- [ ] 🗂 Rule whether a page group gets a PAGE of its own
+      JL 260731: "for the Q group, we might have a QXX-index.md as well, but this is for the whole group, not the single page, and we can click the Group and open that page if we want."
+      The gap is real and this board demonstrates it: the QB group intro declares the ladder Board to Group to Page to Section to Sentence, and then lists faces for Board, Page, and Sentence only, because the GROUP rung has no face.
+      A group today owns four things and none of them is a page: an intro (plain lines under its `### ` heading), an anchor `#group-<token>`, a lane block, and since 0.77.0 a chat session.
+      What it lacks is exactly the three affordances that retired the `doc:` line in 260726: no `state:`, no item counts, and no place for a comment to land.
+      A · a real page per group, so a group closes, carries its own Items and Decision Now, and takes comments like any page.
+      B · keep the intro and grow it, adding the missing affordances to the group heading itself without minting a page.
+      C · leave it as is, and let group-level decisions live on whichever member page is closest.
+      → CC recommends A, because a group is already the unit a reader clicks, a session attaches to, and a lane block describes, and everything on that list except closing is already built.
+      One technical note that decides the naming, not the ruling: `src/parse.py`'s Q pattern requires a number, so `QA-index.md` is DISCOVERED by `page_files()` and then fails to parse into a group and id, landing in the ⚠️ group. A group page therefore needs a parser slot, not just a filename convention. The tidiest fit is the existing named-Q form `Q-<Name>-<slug>`, which already parses today.
+- [ ] 🌐 Rule whether board.html stays one file
+      JL 260731: "for the board.html, all the things are in the same .html, will that be ok? Could we make it like each page, we have each html? will that be much quicker and smoother?"
+      Measured on this board: 2.02 MB total, of which shared JS and CSS are 0.20 MB (10%) and page content is 1.78 MB across 53 pages, so one page averages 34 KB and a reader downloads roughly nine times what the page they opened actually needs. The MISQ lifecycle board is 3.12 MB. A full rebuild is 0.38s, so the build is not the cost; the browser parsing 2 to 3 MB on every load and on every live swap is.
+      A · one HTML file per page plus an index, which is what the question proposes.
+      B · keep one file as the shareable artifact, and give the LIVE server a per-page fragment path so an update ships one page instead of the whole board.
+      C · leave it, and accept the parse cost.
+      → CC recommends B, and against A on its own merits rather than only on the law: page SWITCHING today is a pure CSS `:target` change with no network at all, so splitting into files would make the instant thing slower (a round trip plus a full document load plus re-running the scripts) to speed up the once-per-session thing, and it would destroy the chat drawer and terminal on every navigation, which is the entire point of `QD4`'s swap.
+      B is also the only option that keeps `QE3`'s Law intact, that the static half stays one self-contained file a colleague can be handed and a projector can open offline.
+      This is the page I proposed as `QC9` (the unit of change) and it is still unruled on `QA2`; JL asking it independently is the argument for opening it.
+- [ ] 🩺 Confirm the SECTION MATRIX columns and cell vocabulary
+      PROPOSED: seven columns (🧭 🖼 📚 🎯 📍 📎 🗄) with the cell codes recorded in the 260731 matrix entry above; a column can be changed or dropped without touching any page, since every cell is derived.
+- [ ] 📌 Rule the matrix's default posture
+      Recommended: shut by default, since the Index already opens with the bar and the Board Map and the matrix is a diagnostic view; the alternative is open by default so status is the first thing a reader sees.
+- [ ] 🧠 Rule what happens to the timing recorder
+      Three ways out: delete the recorder and its schema, keep it silently for a later "who is looking at this board right now", or keep it and show it as a secondary readout; the recommendation on the Items row is deleting.
+      A tick here also closes the same row in Items to Finish.
+- [ ] 🎛 Set the board design read and dials
+      PROPOSED in Content §9: `3 to 4 / 1 to 2 / 7 to 8` for variance, motion, and density, to accept or revise.
+      A tick here also closes the same row in Items to Finish.
+- [ ] 🖼 Rule how far an ascii figure is allowed to stop looking like a terminal
+      JL 260731, of `QB4f`'s head figure: "very hard to read ... could you make it more modern?"
+      Half of it was a defect and is fixed board-wide: emoji are not monospace, so figures arrived bent; `body.pad_emoji` plus `pre .eu` now pin each emoji to `2ch`. The rest is taste, and taste on this surface is this face's call under the audit-first protocol in §9.
+      A · leave `pre.asc` as it is. One flat grey code surface, 12.5px, no hierarchy. Cheapest, and it keeps a figure looking exactly like the text an author typed.
+      B · give `pre.asc` typographic hierarchy only. The first line reads as a title, `═══` and `───` runs render as real hairlines, and the block gets a card surface instead of the code grey; still one `<pre>`, still copy-safe, one CSS rule and one build-time pass.
+      C · render figures as real HTML. Cards or a grid, genuinely modern, and it costs the thing every figure rule on this board is built on: a drawing that survives being pasted into chat or mail (`QB4b` §0), plus a new authoring syntax on 53 pages.
+      → CC recommends B, because it is the only option that answers "more modern" without spending the copy-survives property, and it is reversible in one rule.
+- [x] 🗂 Rule the RELATED FOLDERS fold's depth — JL ruled B (260731)
+      JL 260731 asked for a third Index fold, beside the Board Map and Section Matrix, that opens the folders this board touches: the shipping skill engine and "what a board folder should look like", sourced from `QA0`'s three folders.
+      A · static folder tree only. Each related folder shows its structure as a rendered tree; authorable in `board.md` today, smallest engine change.
+      B · a clickable browser. Each folder opens to reveal a file's content (for example `SKILL.md`); needs `src/page_board.py` to render the fold and `serve.py` to serve the content live.
+      C · record the design only for now, ship neither depth until ruled.
+      → JL ruled **B** (260731): the clickable browser. SHIPPED 0.87.0 as a build-time EMBED, not a live fetch: `related_folders()` in `src/page_board.py` reads each named file at build and inlines it, so the fold opens script-stripped and on a static host (QE3's Law). `QB2` owns the fold + render, `QA0` owns which folders are related and which files each opens. A live `serve.py` endpoint (`QC8`) is deferred, needed only for folders too big to inline (>120 KB).
+
 ## Files
+### Engines
 - `src/page_board.py`
   Builds the Board Map panel from a declared `board-map:` share URL when one exists; otherwise it uses the local scene through the Board server's Excalidraw proxy. The explicit URL supports static Tailscale hosting without changing the Board's page registry.
 - `assets/board.css`
   Holds the responsive Board Map surface. The iframe stays on `#top` only; a focused Q/S page hides it with the rest of the index.
-- `board.excalidraw`
-  The one canonical scene: its generated frames are pages, while authors draw and label the relationships between them. It is not a separate page registry.
 - `build.py`
   The index-rendering pass (`rows` / `frac_done` / the `.ir` CSS family), now also the Pages-intro parse (`gintro`) and the `details.gi` render.
   Changing the index half of this question starts here.
-- `board.md`
-  `## Pages` decides grouping, order, AND each group's intro (plain lines under the `### ` heading; line 1 = the visible sentence).
-  If sorting ever becomes automatic, this section's role must be redefined too.
 - `serve.py`
   `structure_op()`: the one writer for add_group / add_question / archive_question / archive_group; `POST /_board/structure`.
   The console imports it, never reimplements.
@@ -431,10 +542,18 @@ This first surface deliberately does not infer arrows from `## Pages` or `## Pip
   The update counter. `log_counts` reads only `## Log`, caches on file mtime, and `activity_stats` joins it to `## Pages` for group ownership.
 - `src/page_board.py`
   The static ACTIVITY shell, emitted after the page cards. Runtime data stays an enhancement: with no server the section reads as a sentence and the board is still complete.
+### Input files
+- `board.excalidraw`
+  The one canonical scene: its generated frames are pages, while authors draw and label the relationships between them. It is not a separate page registry.
+- `board.md`
+  `## Pages` decides grouping, order, AND each group's intro (plain lines under the `### ` heading; line 1 = the visible sentence).
+  If sorting ever becomes automatic, this section's role must be redefined too.
+### The span recorder, written and unread
 - `test_activity.py`
   Regression tests for the span recorder, which nothing displays any more (see the open item).
 - `.haipipe-board/activity.sqlite3`
   Local runtime spans, gitignored. Written, and currently unread.
+### Graduation target and neighbouring faces
 - `ref/board-form.md`
   Settled display rules graduate here only after the pilot and a human decision.
 - `../QB-delivery/QB4-overall.md`
@@ -461,8 +580,20 @@ This first surface deliberately does not infer arrows from `## Pages` or `## Pip
 >> CC0726: Add the Q first and make the trial bounded. The external default is a marketing-page skill, so the board should borrow its audit discipline rather than its visual defaults.
 > JL: You should merge QC2 to QA10? about the Index-UI-Design? (260729)
 >> CC0729: merged, and it closes the QC dissolution that started the same day. What the front page must SHOW and how the surface must LOOK were being decided on two faces that each needed the other's answer; the three-second test is a visual claim and the visual dials only matter because a dense index has to be scannable.
+> JL: 🦴 Topic — what this board is about 🔄 Pipeline — how these Qs are ordered 🧭 Board-Structure — Board-Folder and Board-Webpage I want to remove them,just keep the Map is ok.
 
 ## Log
+260731 1945 · RELATED FOLDERS shipped as haipipe-board 0.87.0: build-time-embed fold (related_folders() in src/page_board.py + `## Related Folders` grammar in parse.py + board.md + board.css), rendering in board.html and the board/ tree; 2 folders / 4 files embedded, order Board Map → Related Folders → Section Matrix verified, body survives JS strip; QC8 live endpoint deferred. Also fixed the Board Map header typo "placement is not one." → "placement is not."
+260731 1930 · RELATED FOLDERS depth ruled B (clickable browser) on JL's "do the B level"; split across QB2 (fold + page_board.py render), QA0 (folder list + contents), QC8 (serve.py content endpoint)
+260731 1905 · RELATED FOLDERS Index fold requested (JL): a third fold beside the Board Map and Section Matrix, opening the folders this board touches (the shipping engine + what a board folder looks like), sourced from QA0 + ## Links; recorded as Content §16, an Items row, and a Decision Now depth ruling (static tree vs clickable browser). Renderer is src/page_board.py, so wiring needs an engine change
+260731 · index_rows() and sidebar_rows() extracted so the tree and the single file share one implementation; restored the 6 group-intro ascii figures and the rail's 54 section outlines the hand-written version had dropped (haipipe-board 0.84.0)
+260731 · Board Map header restyled to match the Section Matrix (one line, one triangle); two stray disclosure triangles removed, one a list-item marker and one a specificity tie (haipipe-board 0.82.0)
+260731 · Two JL questions opened as Decision Now rows: a page of its own for each group (the QB ladder's Group rung has no face), and whether board.html stays one file (2.02 MB, 10% shared, 34 KB per page, 0.38s build)
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · Topic, Pipeline, and Board-Structure removed from the rendered Index on JL's ruling; board.md keeps the sections as source-only documentation (0.78.0)
+260731 · The Index row unfolds in the rail on JL's ask: Board Map, Section Matrix, All Pages, Activity, present-only, each scrolling the Index to its component (0.78.0)
+260731 · Shipped the SECTION MATRIX on JL's dashboard ask: one row per page, one column per section, cells computed at build and linking into their section; columns and default posture wait in Decision Now (0.75.0)
+260731 · Shipped the hideable pages sidebar (Index → group → page) on JL's ask; server-rendered rail, ☰ toggle, per-board persistence, active-row highlight
 260730 · Board Map became an ASCII `## Board Map` figure rendered as a shuttable disclosure, winning over both canvas sources
 260730 · Rewrote `board.md ## Board Structure` around the reader's three views: Board-Folder is the source, Board-Webpage-Index is the orientation view with the Board Map, and Board-Webpage-Page is the focused Q/S view; the map is inside the Index, not a third peer object
 260730 · Added the Board Map to the Board-Webpage-Index: the top view now embeds the declared shared Excalidraw canvas below progress for static Tailscale readers; arrows stay authored rather than inferred from page order

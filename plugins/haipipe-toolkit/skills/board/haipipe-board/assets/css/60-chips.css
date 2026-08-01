@@ -1,0 +1,201 @@
+/* ── chips: an inline marker that knows its own state (QC1, 260726) ──────────
+   Resolved at BUILD time by src/dialect_paper.py, so the `title=` tooltip is a
+   native browser hover and survives every script block being stripped. JS may later
+   upgrade it to a rich card; it may never be the only copy. */
+/* NO GLYPHS, AND THE FILL CARRIES THE FADE (JL 260726: "remove the icons, just
+   keep different colors"; then "only the box fill color to be of opacity, how
+   about you make the font color to be 100% solid").
+
+   Every chip used to carry a kind emoji in ::before and a state glyph in
+   ::after, so QC0's eleven-chip paragraph carried twenty-two decorations before
+   a word of prose. Both are gone. The state is now said by COLOUR alone, and
+   the weight is taken out of the BOX rather than out of the text:
+
+       fill     6%   a tint, not a highlighter
+       border  14%   enough to find the edge, not enough to draw the eye
+       text   100%   solid. It is the sentence, and it stays readable.
+
+   The first attempt faded the whole chip with `opacity`, which dimmed the text
+   too. Wrong axis: the text is the content and the box is the decoration, so
+   only the box gives ground. Hover deepens the fill instead of the text. */
+.chip.ok{background:color-mix(in srgb,var(--ok,#2e7d32) 6%,transparent);
+  color:var(--ok,#2e7d32);border-color:color-mix(in srgb,var(--ok,#2e7d32) 14%,transparent)}
+.chip.owed{background:color-mix(in srgb,var(--warn,#b26a00) 6%,transparent);
+  color:var(--warn,#b26a00);border-color:color-mix(in srgb,var(--warn,#b26a00) 15%,transparent)}
+.chip.ready{background:color-mix(in srgb,var(--acc,#1565c0) 6%,transparent);
+  color:var(--acc,#1565c0);border-color:color-mix(in srgb,var(--acc,#1565c0) 17%,transparent)}
+.chip.parked{background:color-mix(in srgb,var(--mut,#6b7280) 6%,transparent);
+  color:var(--mut,#6b7280);border-color:color-mix(in srgb,var(--mut,#6b7280) 14%,transparent)}
+/* broken and unowned keep a heavier box on purpose: a defect that sinks into
+   the prose is a defect nobody acts on, which is the opposite of the point. */
+.chip.broken,.chip.unowned{background:color-mix(in srgb,var(--bad,#c62828) 11%,transparent);
+  color:var(--bad,#c62828);border-color:color-mix(in srgb,var(--bad,#c62828) 45%,transparent);
+  font-weight:700}
+/* Hover deepens the BOX and never touches the text. */
+.chip:hover,.chip:focus-visible{max-width:none;
+  background-color:color-mix(in srgb,currentColor 15%,transparent);
+  border-color:color-mix(in srgb,currentColor 40%,transparent)}
+@media (prefers-color-scheme:dark){
+  .chip.ok{color:#7fd18a}.chip.owed{color:#e0a34d}.chip.broken,.chip.unowned{color:#ef7d78}
+  .chip.ready{color:#78b6f0}.chip.parked{color:#9aa3af}
+}
+
+/* ── the chip's panel: click a chip, the record opens beside it ──────────────
+   Native HTML popover, no script. The panel is REAL body text (not a title=
+   attribute), so it is counted by the build's survive-with-JS-stripped check,
+   is Ctrl-F findable, and prints. `title=` stays on the chip underneath as the
+   floor for anything that does not support popover. */
+/* The CLAMP belongs on the base rule, not only on the anchored variants. A
+   figure panel carries two images; unclamped it grows past the viewport, spills
+   over the page and reads as a broken overlay (JL 260726, screenshot). The
+   anchored variants below tighten it further; nothing may leave it off. */
+.chipcard{margin:auto;max-width:min(38em,calc(100vw - 2rem));padding:13px 16px;
+  max-height:min(72vh,40em);overflow:auto;overscroll-behavior:contain;
+  border:1px solid var(--line);
+  border-left-width:4px;border-radius:var(--radius-surface);background:var(--card);
+  color:var(--fg);font:14.5px/1.62 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  box-shadow:0 10px 34px rgba(0,0,0,.20)}
+/* And a closed panel STAYS closed, whatever else matches it. The collision
+   above cost a day; this makes the next one impossible rather than subtle,
+   since (0,2,0) outranks any single class a chip kind or state can add. */
+@supports selector(:popover-open){
+  .chipcard:not(:popover-open){display:none}
+}
+.chipcard::backdrop{background:rgba(0,0,0,.10)}
+.chipcard.ok{border-left-color:var(--done)}
+.chipcard.ready{border-left-color:var(--accent)}
+.chipcard.owed{border-left-color:var(--wip)}
+.chipcard.parked{border-left-color:var(--hold)}
+.chipcard.broken,.chipcard.unowned{border-left-color:var(--todo)}
+.cch{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;
+  padding-bottom:8px;margin-bottom:9px;border-bottom:1px solid var(--line)}
+.cch b{font:600 14px var(--mono,ui-monospace,Menlo,monospace);word-break:break-all}
+.cck{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);
+  letter-spacing:.05em;text-transform:uppercase}
+.ccb p{margin:0 0 7px}.ccb p:last-child{margin-bottom:0}
+.ccb p:first-child{font-weight:600}
+/* Anchored BESIDE the chip that was clicked, where the browser supports it;
+   centred on screen where it does not, which is still perfectly readable.
+
+   Two traps live here, and the first version hit both.
+   ① The popover UA stylesheet is `position:fixed; inset:0; margin:auto`.
+      Setting margin:0 without releasing `inset:0` pins the panel to the
+      TOP-LEFT CORNER. `inset:auto` is what hands positioning to the anchor.
+   ② position-area takes one axis vocabulary at a time. `bottom span-inline-end`
+      mixes physical with logical, so the whole declaration is dropped and the
+      panel keeps whatever the previous rule left it. Stay logical throughout.
+   The @supports test is `anchor-name`, the actual feature, not one spelling of
+   one of its properties: Chrome 125-128 shipped this as `inset-area`, and both
+   spellings are emitted because an unknown declaration is ignored on its own. */
+/* Test the property that actually POSITIONS, not the one that names the anchor.
+   The first version tested `anchor-name` and then relied on `position-area`. A
+   browser with anchor-name but without position-area passed the test, took
+   `inset:auto`, and had nothing left to place the panel with, so it landed
+   wherever its static position fell: off-screen. Each override below is guarded
+   by the exact property it uses, and the unguarded base stays centred. */
+@supports (position-area:block-end){
+  .chipcard{position:fixed;inset:auto;margin:0;
+    position-area:block-end span-inline-end;
+    position-try-fallbacks:flip-block,flip-inline;
+    max-height:min(60vh,34em);overflow:auto;
+    max-width:min(38em,calc(100vw - 2rem))}
+}
+@supports (inset-area:block-end) and (not (position-area:block-end)){
+  .chipcard{position:fixed;inset:auto;margin:0;
+    inset-area:block-end span-inline-end;
+    position-try-options:flip-block,flip-inline;
+    max-height:min(60vh,34em);overflow:auto;
+    max-width:min(38em,calc(100vw - 2rem))}
+}
+/* the panel's source block: definition first, then the source itself */
+.ccl{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:10px;
+  padding-top:9px;border-top:1px solid var(--line)}
+.ccl a,.ccl span{font:12.5px ui-monospace,Menlo,monospace;text-decoration:none;
+  color:var(--accent);border:1px solid var(--line);border-radius:var(--radius-control);
+  padding:2px 8px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.ccl a:hover{border-color:var(--accent);background:var(--pre)}
+.ccl .cctgt{color:var(--mut)}
+/* the owning S-Display page: the authority the README is not */
+.ccl a.sdl{border-color:color-mix(in srgb,var(--accent) 45%,transparent);
+  color:var(--accent)}
+.ccraw{margin:9px 0 0;padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
+  font:12px/1.55 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-word;
+  max-height:16em;overflow:auto;color:var(--fg)}
+.ccsug{margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+.ccsug div{font:12.5px/1.7 ui-monospace,Menlo,monospace;color:var(--mut)}
+.ccsug b{color:var(--done);font-weight:600}
+/* display chips: a table and a figure are two faces (QC3 / QC4), so the icon
+   says which one the sentence is pointing at before you read the state. */
+/* the panel's PREVIEW: a figure shows its picture, a table shows its rows.
+   The caption is not decoration. QC4's law: a card that shows one image while
+   another is what the manuscript compiles is worse than a card showing none,
+   so LIVE and CANDIDATE are stated on every single one. */
+.ccprev{margin:11px 0 0;padding:0}
+.ccprev figcaption{font:11px ui-monospace,Menlo,monospace;color:var(--mut);
+  letter-spacing:.05em;margin-bottom:5px}
+.ccprev img{display:block;max-width:100%;max-height:12em;width:auto;height:auto;
+  border:1px solid var(--line);border-radius:var(--radius-control);
+  background:#fff;padding:5px}
+.ccprev .ccraw{margin:0;max-height:14em}
+/* the compiled float. Taller than an image preview because it carries the
+   caption and the notes too, and those are the half a reader checks. */
+.ccpdf{display:block;width:100%;height:24em;border:1px solid var(--line);
+  border-radius:var(--radius-control);background:var(--pre)}
+/* the rendered reference: hanging indent, the way a bibliography reads */
+.ccref{font:14px/1.6 Charter,"Bitstream Charter",Georgia,Cambria,serif;
+  padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
+  text-indent:-1.4em;padding-left:calc(11px + 1.4em)}
+/* ── the NUMBER is the claim; the bracket is the bookkeeping (JL 260726) ─────
+   Before this, [Q-Sec6Results-2] was the loud thing in a sentence and the figure it
+   owed was plain grey text. Backwards: a reader checks the number. So a number
+   chip is the prominent one and .qref is demoted to a quiet trailing marker. */
+.chip.num{font:600 .95em/1.4 var(--mono,ui-monospace,Menlo,monospace);
+  padding:1px .4em;border-radius:3px}
+.chip.num::before{content:none}
+.chip.num.ok{background:color-mix(in srgb,var(--done) 8%,transparent);
+  border-color:color-mix(in srgb,var(--done) 21%,transparent)}
+/* unver = not checkable, NOT wrong. A derived percentage or a chosen threshold
+   will never appear in a run. Quiet, dotted, no alarm colour. */
+.chip.num.unver{background:transparent;color:var(--mut);
+  border:0;border-bottom:1.5px dotted var(--mut);border-radius:0}
+/* amb = it rounds to two DIFFERENT recorded figures. The number may be right
+   and its provenance is not determinable, which is worth a real warning. */
+.chip.num.amb{background:color-mix(in srgb,var(--wip) 8%,transparent);
+  color:var(--wip);border-color:var(--wip);font-weight:700}
+.chipcard.amb{border-left-color:var(--wip)}
+.chipcard.unver{border-left-color:var(--mut)}
+/* the bracket, demoted: still clickable, no longer the thing you look at */
+.chip.qref{font-size:.72em;padding:0 .3em;opacity:.62;background:transparent;
+  border-color:color-mix(in srgb,var(--mut) 15%,transparent);color:var(--mut)}
+.chip.qref:hover{opacity:1}
+.chip.qref.unowned{opacity:1;color:var(--todo);border-color:var(--todo)}
+
+/* A figure in the body: an excalidraw drawing, a screenshot, anything ![](…) */
+/* SCOPED TO THE IMAGE (JL 260726). Unscoped, `.fig` also matched every chip
+   PANEL, because a figure panel's class list is `chipcard disp fig <state>`.
+   Its `display:block` beat the UA's `[popover]:not(:popover-open){display:none}`,
+   so every figure panel rendered permanently, in normal flow, full width, on
+   top of the page. They were invisible against the background and swallowed
+   every click in the band they covered: measured on QC0, 11 of 11 chips were
+   unreachable by a real mouse while all 11 responded to element.click().
+   That is the whole of "I cannot click the values, displays, figures". */
+img.fig{max-width:100%;height:auto;display:block;margin:12px 0;
+ border:1px solid var(--line);border-radius:var(--radius-surface);background:var(--card)}
+/* Markdown `![](path.pdf)` is a readable source artifact, not a failed image.
+   Scoped to object so it never repeats the historic `.fig`/chip collision. */
+object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12px 0;
+ border:1px solid var(--line);border-radius:var(--radius-surface);background:#fff}
+.xadd-row .xnew{border-style:dashed;color:var(--accent);border-color:var(--accent)}
+/* 🗑 removal (QD7, JL 260726) reads as the destructive one without shouting */
+.xadd-row .xrm{color:var(--mut)}
+.xadd-row .xrm:hover{color:var(--bad,#c0392b);border-color:currentColor}
+/* the bare control on a page that has no ## Diagram at all: it stands where the
+   section would render, so its own spacing has to substitute for the section's */
+.xadd.xadd-bare{margin:0 0 16px}
+.xadd-row .xnew:disabled{opacity:.5;cursor:default}
+
+/* [hidden] is display:none in the UA sheet, and .xadd-row's display:flex
+   outranks it, so the paste row was never hidden however often JS set it. */
+.xadd-row[hidden]{display:none}
+.xcal .xurl{display:block;margin-top:4px;font-size:11.5px;color:var(--mut);
+ word-break:break-all;user-select:all}

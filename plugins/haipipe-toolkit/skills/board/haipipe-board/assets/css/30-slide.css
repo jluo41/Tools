@@ -1,0 +1,189 @@
+/* ── 聚焦 = 一张幻灯片，不是一个卡片 ─────────────────────────
+   照 html-ppt：内容直接铺在页面上，没有边框、圆角、卡片底色把它围住。
+   头部压成一条跑马条，剩下的高度全给这一题。 */
+body:has(.q:target) .wrap,
+body.split .wrap{max-width:1000px;padding:20px 26px 40px}
+body:has(.q:target) .board-heading,
+body.split .board-heading{gap:8px;margin:0 0 7px}
+body:has(.q:target) .board-mark,
+body.split .board-mark{flex-basis:24px;width:24px;height:24px}
+body:has(.q:target) .h1,
+body.split .h1{font-size:14px;color:var(--mut);font-weight:600;margin:0}
+body:has(.q:target) .spine,
+body.split .spine{border:none;background:none;border-radius:0;
+ border-left:2px solid var(--accent);padding:0 0 0 11px;margin:0 0 9px}
+body:has(.q:target) .spine p,
+body.split .spine p{font-size:12.5px;margin:2px 0;color:var(--mut)}
+body:has(.q:target) details.ctx,
+body.split details.ctx{border:none;background:none;padding:0;margin:3px 0}
+body:has(.q:target) details.ctx>summary,
+body.split details.ctx>summary{font-size:12.5px;color:var(--mut)}
+
+body:has(.q:target) .q:target,
+body.split .q{border:none;border-radius:0;background:none;
+ padding:0;margin:26px 0 0;min-height:calc(100vh - 230px);
+ scroll-margin-top:280px;display:flex;flex-direction:column}
+.q:target .src,
+body.split .q .src,
+.q:target .top,
+body.split .q .top{display:none}
+.q:target .qh,
+body.split .q .qh{margin-bottom:10px}
+.q:target .h2,
+body.split .q .h2{font-size:38px;line-height:1.24;letter-spacing:-.01em;margin:0 0 18px}
+.q:target .ask,
+body.split .q .ask{border-left:none;padding-left:0;margin:0 0 24px}
+.q:target .ask p,
+body.split .q .ask p{font-size:16px;line-height:1.75}
+.q:target .ask>p:first-of-type,
+body.split .q .ask>p:first-of-type{font-size:21px;line-height:1.5;color:var(--fg);margin:0 0 13px}
+.q:target .opening,
+body.split .q .opening{margin:0 0 24px}
+.q:target .opening>.ask,
+body.split .q .opening>.ask{margin-bottom:0}
+.q:target .display-preview object,
+body.split .q .display-preview object{height:clamp(30rem,70vh,58rem)}
+.q:target .diagram-section,
+body.split .q .diagram-section{border-left:2px solid var(--mut);padding:0 0 0 15px;
+ margin:0 0 22px;background:none}
+.q:target .diagram-section>summary.ch,
+body.split .q .diagram-section>summary.ch{font-size:18px;color:var(--fg)}
+.q:target .diagram-section>.dia,
+body.split .q .diagram-section>.dia{margin:0}
+/* Boundary / Files 聚焦时也去框，只留一道边，跟 Items/Where 一个排法 */
+.q:target .bnd,
+body.split .q .bnd{border:none;border-radius:0;background:none;padding:0 0 0 15px;
+ border-left:2px solid var(--mut);margin:0 0 22px}
+.q:target .bnd p,
+body.split .q .bnd p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .fls,
+body.split .q .fls{border:none;border-radius:0;background:none;padding:0 0 0 15px;
+ border-left:2px solid var(--accent);margin:0 0 22px}
+.q:target .fls p,
+body.split .q .fls p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .cmp,
+body.split .q .cmp{gap:22px;margin:0 0 22px}
+.q:target .content,
+body.split .q .content{border-left:2px solid var(--accent);padding:0 0 0 15px;
+ margin:0 0 22px;background:none}
+.q:target .content .ch,
+body.split .q .content .ch{font-size:18px;color:var(--fg);margin-bottom:10px}
+.q:target .csec>summary,
+body.split .q .csec>summary{font-size:17px;padding:8px 0}
+.q:target .cbody,
+body.split .q .cbody{padding:8px 0 14px 17px}
+.q:target .cbody p,
+body.split .q .cbody p{font-size:15px;line-height:1.75}
+.q:target .col,
+body.split .q .col{border:none;border-radius:0;background:none;padding:0 0 0 15px}
+.q:target .col.now,
+body.split .q .col.now{border-left:2px solid var(--wip)}
+.q:target .col.goal,
+body.split .q .col.goal{border-left:2px solid var(--done)}
+.q:target .ch,
+body.split .q .ch{font-size:18px;color:var(--fg);margin-bottom:14px;padding-bottom:7px;
+ letter-spacing:-.01em}
+.q:target .ch .cnt,
+body.split .q .ch .cnt{font-size:13px}
+.q:target .col p,
+body.split .q .col p{font-size:16px;line-height:1.75}
+/* 「为什么在这块板」在幻灯片上也排成一栏，跟上面两栏同一个样式（.ch 标题 + 线） */
+.q:target .f,
+body.split .q .f{display:block;margin:0;border-left:2px solid var(--line);padding-left:15px}
+.q:target .f p,
+body.split .q .f p,
+.q:target .fbd p,
+body.split .q .fbd p{font-size:16px;line-height:1.75;margin:0 0 6px}
+.q:target .folds,
+body.split .q .folds{margin-top:auto;padding-top:18px}
+@media(max-width:600px){
+ body{overflow-x:hidden}
+ .board-map-head{display:block;padding:13px 13px 10px}
+ .board-map-head p{max-width:none;margin-top:7px;text-align:left}
+ .board-map iframe{height:48vh;min-height:290px}
+ .board-map-foot{gap:9px;padding:8px 13px;flex-wrap:wrap}
+ .board-map-foot .fp:first-of-type{margin-left:0}
+ .activity{padding:14px 12px}
+ .act-head{flex-wrap:wrap;gap:7px}
+ .act-status{white-space:normal}
+ .act-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .act-days{gap:2px}
+ .act-legend{white-space:normal;text-align:right}
+ .act-row{grid-template-columns:minmax(110px,1fr) minmax(80px,.8fr) 52px;gap:6px}
+body:has(.q:target) .wrap,
+body.split .wrap{width:100%;max-width:none;padding:16px 16px 32px}
+body:has(.q:target) .spine,
+body.split .spine{overflow-wrap:anywhere}
+body:has(.q:target) .q:target,
+body.split .q{min-width:0;margin-top:20px}
+.q:target .qh,
+body.split .q .qh,
+.q:target .qh>*,
+body.split .q .qh>*{min-width:0;max-width:100%}
+.q:target .qh .mut,
+body.split .q .qh .mut{overflow-wrap:anywhere}
+.q:target .h2,
+body.split .q .h2{font-size:30px;line-height:1.2;letter-spacing:0;overflow-wrap:anywhere}
+.q:target .hid,
+body.split .q .hid{display:block;margin:0 0 5px;vertical-align:0}
+.q:target .ask>p:first-of-type,
+body.split .q .ask>p:first-of-type,
+.q:target .qlead .qt,
+body.split .q .qlead .qt{font-size:19px;line-height:1.48}
+.q:target .display-preview object,
+body.split .q .display-preview object{height:52vh}
+ .q:target details,.q:target summary,.q:target .content,.q:target .cmp,
+.q:target .col,
+body.split .q .col,
+.q:target .csec,
+body.split .q .csec,
+.q:target .cbody,
+body.split .q .cbody{min-width:0;max-width:100%}
+.q:target .content,
+body.split .q .content,
+.q:target .col,
+body.split .q .col,
+.q:target .bnd,
+body.split .q .bnd,
+.q:target .fls,
+body.split .q .fls{padding-left:10px}
+.q:target .cbody,
+body.split .q .cbody{padding-left:8px}
+.q:target p,
+body.split .q p,
+.q:target li,
+body.split .q li,
+.q:target code,
+body.split .q code{overflow-wrap:anywhere}
+}
+.folds{margin-top:16px;border-top:1px dashed var(--line);padding-top:8px}
+.fold{margin:3px 0}
+.fold>summary{cursor:pointer;color:var(--mut);font-size:14px;list-style:none;padding:4px 0}
+.fold[open]>summary{color:var(--fg)}
+.fb{padding:5px 0 8px 16px;font-size:14.5px}
+/* 讨论框：整段写想法，追加进 ## Discussion（JL 260723） */
+.dadd{margin-top:11px;border-top:1px dashed var(--line);padding-top:10px}
+.dadd textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:var(--radius-control);
+ padding:8px 10px;font:14px inherit;line-height:1.6;background:var(--bg);color:var(--fg);resize:vertical}
+.dadd .row{display:flex;gap:8px;align-items:center;margin-top:7px}
+.dadd select{border:1px solid var(--line);border-radius:var(--radius-control);padding:4px 9px;font:13px inherit;
+ background:var(--bg);color:var(--fg)}
+.dadd .dsave{margin-left:auto;border:1px solid var(--accent);background:var(--accent);color:#fff;
+ border-radius:var(--radius-control);padding:6px 14px;font:13px inherit;font-weight:600;cursor:pointer}
+.dadd .dsave:hover{filter:brightness(1.07)}
+.dadd .dsave:disabled{opacity:.6;cursor:default}
+.cmt{border-left:3px solid var(--mut);padding:3px 0 3px 10px;margin:5px 0}
+.cmt b{font-size:11px;letter-spacing:.4px;margin-right:5px}
+.cmt .qt{background:rgba(217,164,6,.18);border-bottom:1px solid rgba(217,164,6,.55);
+ padding:0 2px;border-radius:var(--radius-inline)}
+.cmt.jl{border-color:var(--accent)}.cmt.jl b{color:var(--accent)}
+.mut{color:var(--mut)}
+a.fp{text-decoration:none;border-bottom:1px dashed var(--accent)}
+a.fp code{color:var(--accent);cursor:pointer}
+a.fp:hover code{background:var(--accent);color:var(--bg)}
+code{background:var(--pre);padding:1px 5px;border-radius:var(--radius-inline);font:13px ui-monospace,Menlo,monospace}
+pre{background:var(--pre);border:1px solid var(--line);border-radius:var(--radius-control);padding:11px 13px;
+ margin:8px 0;overflow-x:auto;font:12.5px/1.6 ui-monospace,Menlo,monospace;white-space:pre}
+img{max-width:100%;border:1px solid var(--line);border-radius:var(--radius-control)}
+.foot{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);
+ color:var(--mut);font-size:12.5px}

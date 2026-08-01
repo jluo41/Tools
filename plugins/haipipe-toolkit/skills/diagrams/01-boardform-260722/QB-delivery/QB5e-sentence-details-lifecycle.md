@@ -8,6 +8,7 @@ How should the information attached to one sentence be viewed, resolved, cleaned
 Clicking a sentence can reveal comments, evidence, and editing history, but those records do not share one lifecycle.
 The panel needs a human name, compact filters, explicit states, and cleanup rules that never mistake old for resolved or active evidence for disposable history.
 
+
 ## Boundary
 - ✅ Covered here
   The Sentence details panel, its Overview and typed filters, record states, retention limits, archive, restore, and permanent deletion.
@@ -78,22 +79,27 @@ Archive and restore therefore cannot use `QAb4.C1.P1.S1` as durable identity.
 The remaining identity decision is whether an attached sentence receives a hidden stable key or whether archive is intentionally page-level and cannot restore to a sentence after its wording changes.
 
 ## Items to Finish
+### The panel's name and three families
 - [x] 🧭 Open one independent lifecycle Q
       `QAb4` owns filtering, record state, cleanup, archive, restore, and purge.
 - [x] 🏷 Name the surface
       The user-facing name is Sentence details; apparatus is the technical record layer.
 - [x] 🧱 Separate the three lifecycle families
       Comments, Evidence, and Changes have distinct membership and cannot share one retention rule.
+
+### Rulings awaiting JL
 - [ ] 🧠 JL accepts the default Overview and sticky filter behavior
       Overview shows counts plus at most one representative row from each family.
+- [ ] 🔑 Decide durable sentence identity
+      Choose a hidden stable sentence key or accept page-level archive with limited restoration.
+
+### The states, filters, and cleanup machinery
 - [ ] ✅ Define and render explicit record states
       Comments need open and resolved; Evidence needs current, superseded, rejected, and broken.
 - [ ] 🎛 Implement filters, counts, and bounded panel height
       The reader can isolate one family without expanding every record beneath the sentence.
 - [ ] 🧹 Implement previewed archive-first cleanup
       Keep active records, retain the configured recent history, preview every move, and support restore.
-- [ ] 🔑 Decide durable sentence identity
-      Choose a hidden stable sentence key or accept page-level archive with limited restoration.
 - [ ] 🧪 Pass fresh-context lifecycle acceptance
       A new agent must discover the rules, preserve active records, archive only eligible records, and stop before purge.
 
@@ -101,13 +107,22 @@ The remaining identity decision is whether an attached sentence receives a hidde
 `QAb4` now exists as the independent Sentence details lifecycle decision.
 The name, three record families, and archive-first safety boundary are recorded, but no filter, state marker, archive store, restore path, stable key, or purge action has been implemented.
 
+### Decision Now
+- [ ] 🧠 JL accepts the default Overview and sticky filter behavior
+      Overview shows counts plus at most one representative row from each family; a tick here also closes the same row in Items to Finish.
+- [ ] 🔑 Decide durable sentence identity
+      The options this page records: a hidden stable sentence key, or page-level archive that cannot restore to a sentence after its wording changes; a tick here also closes the same row in Items to Finish.
+
 ## Files
-- `haipipe-board/assets/board.js`
-  Future filter state, cleanup preview, archive and restore interactions.
-- `haipipe-board/assets/board.css`
-  Future Overview tabs, bounded details panel, state and archived-count styling.
+### What renders Sentence details today
 - `haipipe-board/src/body.py`
   Current apparatus classification and Sentence details rendering.
+
+### The future lifecycle write and view paths
+- `haipipe-board/assets/js/40-sentence.js`
+  Future filter state, cleanup preview, archive and restore interactions.
+- `haipipe-board/assets/css/`
+  Future Overview tabs, bounded details panel, state and archived-count styling.
 - `haipipe-board/serve.py`
   Future resolve, supersede, archive, restore, and purge write paths.
 
@@ -118,4 +133,5 @@ archive: recoverable Board-internal storage removed from the live sentence view.
 purge: explicit permanent deletion of records that are already archived.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Opened by JL as an independent Q for the sentence panel's filters, statuses, cleanup, archive, restore, and retention lifecycle.

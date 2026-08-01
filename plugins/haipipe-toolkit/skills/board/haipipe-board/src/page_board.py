@@ -1,6 +1,7 @@
 """The cover + index + whole-page assembly (QB5: render(), asset inlining,
 CJK scrub, JSON emission — moved verbatim from build.py)."""
 import base64
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -9,7 +10,7 @@ from urllib.parse import quote
 from . import body as bd
 from .body import body, inline
 from .common import esc, sec, stinfo
-from .page_question import render_question
+from .page_question import parse_content_sections, render_question, structure_rows
 from .page_stage import render_doc_slide
 
 
@@ -22,7 +23,7 @@ MAP_HEAD = ('<div class="board-map-head">'
             '<div><span class="board-map-kicker">BOARD MAP</span>'
             '<h2 id="board-map-title">Folders, pages, and how they connect</h2></div>'
             '<p>Which folder holds what, and which pages depend on which. '
-            'Arrows are authored; placement is not one.</p>'
+            'Arrows are authored; placement is not.</p>'
             '</div>')
 
 
@@ -99,6 +100,322 @@ def board_map(meta):
     )
 
 
+RELATED_MAX = 120_000  # a single embedded file cap; a larger file shows a note
+
+
+def related_folders(meta):
+    """The RELATED FOLDERS fold (QB2, JL 260731: "add ... related folders ... I
+    can click open this folder, and see ... the skill ... and what this board
+    folder should look like"). QA0 owns which folders are related and which of
+    their files a reader may open; this only renders them.
+
+    Depth is B, the clickable browser (JL "do the B level"), done at BUILD by
+    EMBEDDING each named file, not by a live serve.py fetch: a build-time embed
+    keeps the fold working with scripts stripped and on a static host, which is
+    QE3's Law and the same reason `## Board Map` is ASCII rather than an iframe.
+    QC8 may later add a live endpoint for folders too big to inline.
+
+    The `## Related Folders` grammar in board.md:
+        intro line(s)
+        @ <folder path, board-relative> | <label>
+        - <file path, inside that folder>
+        @ <next folder> | <label>
+    A path is resolved under the board dir and must stay inside the repo root;
+    only `.md`/`.txt` inline; every failure is a visible box, never empty.
+    """
+    text = (meta.get("related") or "").strip()
+    if not text:
+        return ""
+    board_dir = Path(meta.get("dir") or "")
+    root = next((p for p in (board_dir, *board_dir.parents)
+                 if (p / "pyproject.toml").is_file()), None)
+
+    intro, folders, cur = [], [], None
+    for ln in text.split("\n"):
+        s = ln.strip()
+        if s.startswith("@ "):
+            path, _, label = s[2:].partition("|")
+            cur = {"path": path.strip(), "label": label.strip() or path.strip(), "files": []}
+            folders.append(cur)
+        elif s.startswith("- ") and cur is not None:
+            cur["files"].append(s[2:].strip())
+        elif s and cur is None:
+            intro.append(s)
+
+    def read_file(base, rel):
+        if not rel.lower().endswith((".md", ".txt")):
+            return f'<div class="rf-miss">⛔ <code>{esc(rel)}</code> — only .md/.txt inline</div>'
+        try:
+            fp = (base / rel).resolve()
+        except OSError:
+            return f'<div class="rf-miss">⛔ <code>{esc(rel)}</code> — bad path</div>'
+        if root is not None and root not in (fp, *fp.parents):
+            return f'<div class="rf-miss">⛔ <code>{esc(rel)}</code> — outside the repo root</div>'
+        if not fp.is_file():
+            return f'<div class="rf-miss">⛔ <code>{esc(rel)}</code> — not found</div>'
+        raw = fp.read_text(encoding="utf-8", errors="replace")
+        if len(raw) > RELATED_MAX:
+            return (f'<div class="rf-miss">📄 <code>{esc(rel)}</code> — {len(raw) // 1000} KB, '
+                    'too large to inline; open it in the repo</div>')
+        return f'<div class="rf-content">{body(raw)}</div>'
+
+    blocks = []
+    for fo in folders:
+        try:
+            base = (board_dir / fo["path"]).resolve()
+        except OSError:
+            base = None
+        if base is None or not base.is_dir():
+            listing = f'<div class="rf-miss">⛔ <code>{esc(fo["path"])}</code> — folder not found</div>'
+            shown = fo["path"]
+        else:
+            items = []
+            for rel in fo["files"]:
+                items.append(f'<details class="rf-file"><summary>📄 <code>{esc(rel)}</code></summary>'
+                             f'{read_file(base, rel)}</details>')
+            listing = "".join(items) or '<div class="rf-miss">no files listed</div>'
+            try:
+                shown = base.relative_to(root).as_posix() if root else fo["path"]
+            except ValueError:
+                shown = fo["path"]
+        blocks.append(
+            f'<details class="rf-folder"><summary>{inline(fo["label"])} '
+            f'<code class="rf-path">{esc(shown)}</code></summary>'
+            f'<div class="rf-files">{listing}</div></details>')
+
+    intro_html = f'<p class="rf-intro">{inline(" ".join(intro))}</p>' if intro else ""
+    return ('<details class="board-status related-folders">'
+            '<summary>RELATED FOLDERS · open a folder, read a file inside it</summary>'
+            f'{intro_html}{"".join(blocks)}</details>')
+
+
+def board_status(qs):
+    """The SECTION MATRIX (QB2, JL 260731: "a dashboard to show the status of
+    the board. Each row is a page, each column is a subsection").
+
+    One row per page, one column per section, every cell computed at build
+    from the same parses the pages themselves render from, so the matrix is
+    derived and can never disagree with a page. Cells link: click one and the
+    page opens at that section (board.js). The 📚 cell reports face-diagram
+    coverage (divisions · with-diagram), which is how the QB4c retrofit is
+    watched."""
+    body_rows, cur = [], None
+    for q in qs:
+        if q.get("kind") == "doc":
+            continue
+        if q.get("group") and q["group"] != cur:
+            cur = q["group"]
+            body_rows.append(f'<tr class="bsg"><td colspan="8">{inline(cur)}</td></tr>')
+        d = q["sec"]
+        tok, _, _ = stinfo(q["state"])
+        pid = q["id"]
+
+        def cell(key, state, txt):
+            return (f'<td class="bs-{state}">'
+                    f'<a href="#{pid}" data-k="{key}">{txt}</a></td>')
+
+        cells = []
+        cells.append(cell("opening", "ok" if sec(d, "Opening").strip() else "no",
+                          "✓" if sec(d, "Opening").strip() else "—"))
+        dia = sec(d, "Diagram")
+        nfig = dia.count("```") // 2
+        has_canvas = "/_excalidraw/" in dia
+        dtxt = (f"▧{nfig}" if nfig else "") + ("✏️" if has_canvas else "")
+        cells.append(cell("diagram", "ok" if dtxt else "no", dtxt or "—"))
+        divs = [(h, b) for h, b in parse_content_sections(sec(d, "Content")) if h]
+        faced = sum(1 for _h, b in divs if b.lstrip().startswith("```"))
+        if divs:
+            cells.append(cell("content", "ok" if faced == len(divs) else "warn",
+                              f"{len(divs)}÷·{faced}🖼"))
+        elif sec(d, "Content").strip():
+            cells.append(cell("content", "ok", "flat"))
+        else:
+            cells.append(cell("content", "no", "—"))
+        itxt = sec(d, "Items to Finish")
+        dn_i = len(re.findall(r"(?m)^\s*[-*] \[[xX]\]", itxt))
+        td_i = dn_i + len(re.findall(r"(?m)^\s*[-*] \[ \]", itxt))
+        if td_i:
+            cells.append(cell("items", "ok" if dn_i == td_i else "warn",
+                              f"{dn_i}/{td_i}"))
+        else:
+            cells.append(cell("items", "no", "—"))
+        w = sec(d, "Where we are")
+        owed = sum(len(re.findall(r"(?m)^\s*[-*] \[ \]", b))
+                   for h, b in parse_content_sections(w)
+                   if h and "Decision Now" in h)
+        if owed:
+            cells.append(cell("now", "dn", f"DN·{owed}"))
+        elif w.strip():
+            dated = len(re.findall(r"(?m)^- ?\d{6}", w))
+            cells.append(cell("now", "ok", f"e{dated}" if dated else "✓"))
+        else:
+            cells.append(cell("now", "no", "—"))
+        ftxt = sec(d, "Files")
+        nf = len(re.findall(r"(?m)^- ", ftxt))
+        ngrp = len([h for h, _ in parse_content_sections(ftxt) if h])
+        ft = (f"{nf}·{ngrp}g" if ngrp else str(nf)) if nf else "—"
+        cells.append(cell("files", "ok" if nf else "no", ft))
+        nlog = len(re.findall(r"(?m)^\d{6}", sec(d, "Log")))
+        cells.append(cell("folds", "ok" if nlog else "no",
+                          f"L{nlog}" if nlog else "—"))
+
+        body_rows.append(
+            f'<tr><th class="bsp"><a href="#{pid}">{tok} {esc(pid)}</a></th>'
+            + "".join(cells) + "</tr>")
+
+    head = ("<tr><th>page</th><th>🧭</th><th>🖼</th><th>📚</th>"
+            "<th>🎯</th><th>📍</th><th>📎</th><th>🗄</th></tr>")
+    legend = ('📚 <code>n÷·m🖼</code> divisions · with face diagram &nbsp;·&nbsp; '
+              '🎯 <code>done/total</code> &nbsp;·&nbsp; '
+              '📍 <code>DN·k</code> Decision Now ticks owed, <code>e</code> dated entries '
+              '&nbsp;·&nbsp; 📎 <code>n·gg</code> files · groups &nbsp;·&nbsp; '
+              '🗄 <code>Ln</code> Log lines &nbsp;·&nbsp; a cell opens its section')
+    return ('<details class="board-status">'
+            '<summary>SECTION MATRIX · every page × every section, computed at build</summary>'
+            f'<div class="bstat-scroll"><table class="bstat"><thead>{head}</thead>'
+            f'<tbody>{"".join(body_rows)}</tbody></table></div>'
+            f'<p class="bstat-legend">{legend}</p></details>')
+
+
+def _gt_link(group, group_href):
+    """A group heading links to its own page when the packaging has one."""
+    h = group_href(bd.group_token(group))
+    return f'<a href="{h}">{inline(group)}</a>' if h else inline(group)
+
+
+def index_rows(meta, qs, href_for=None, group_href=None):
+    """The index listing: group headings, group intros (prose AND their ascii
+    figures), and one row per page.
+
+    ONE implementation, two packagings. Hand-rewriting this for the board/ tree
+    dropped every `.gi` / `.gib` / `.gidia` block, so the group intros and the
+    lane figures vanished and their ascii stopped being ascii (JL 260731, the
+    third time this file's own "never two implementations" law bit its author).
+    `href_for` maps a page to its link and `group_href` a group token to its
+    own; the single file passes fragments, the tree passes paths.
+    """
+    href_for = href_for or (lambda q: "#" + q["id"])
+    group_href = group_href or (lambda tok: None)
+
+    def st(q):
+        return stinfo(q["state"])
+
+    def frac_done(q):
+        boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]",
+                           q.get("sec", {}).get("Items to Finish", ""), re.M)
+        if not boxes:
+            return 0.0
+        return sum(1 for b in boxes if b.lower() == "x") / len(boxes)
+
+    ginfo = meta.get("groups") or {}
+    rows, cur = [], None
+    for q in qs:
+        if q.get("group") and q["group"] != cur:
+            cur = q["group"]
+            # A group is a place you can travel to (JL 260730): the canvas draws
+            # groups, so a group heading needs an anchor of its own. It is NOT a
+            # page — `#group-QA` scrolls the index, it does not open a card — so
+            # the id stays in its own namespace and never collides with a page.
+            rows.append(f'<div class="grp" id="group-{esc(bd.group_token(cur))}"'
+                        f' data-g="{esc(cur)}">'
+                        f'<span class="gt">{_gt_link(cur, group_href)}</span></div>')
+            # Group intro (QC2): one sentence always visible; if more lines follow,
+            # they open on click via a native <details>. No script involved, so the
+            # strip-scripts invariant is untouched.
+            gi = ginfo.get(cur)
+            if gi:
+                summary = inline(gi[0].strip())
+                # 展开的 body：散文按行 <br> 接（保作者断行），碰到 ``` 就当 ascii 图铺成 <pre>。
+                parts, prose, fence, inf = [], [], [], False
+                for x in gi[1:]:
+                    s = x.strip()
+                    if s.startswith("```"):
+                        if inf:
+                            parts.append('<pre class="gidia">'
+                                         + bd.link_faces(esc(chr(10).join(fence)))
+                                         + '</pre>')
+                            fence, inf = [], False
+                        else:
+                            if prose:
+                                parts.append("<br>".join(inline(p) for p in prose)); prose = []
+                            inf = True
+                        continue
+                    if inf:
+                        fence.append(x)          # 原样，保对齐
+                    elif s:
+                        prose.append(s)
+                if prose:
+                    parts.append("<br>".join(inline(p) for p in prose))
+                gib = "".join(parts)
+                if gib:
+                    rows.append(f'<details class="gi"><summary>{summary}</summary>'
+                                f'<div class="gib">{gib}</div></details>')
+                else:
+                    rows.append(f'<div class="gi one">{summary}</div>')
+        if q.get("kind") == "doc":
+            rows.append(
+                f'<a class="ir doc" href="{href_for(q)}">'
+                f'<span class="s">📄</span><span class="i">{esc(q["id"])}</span>'
+                f'<span class="t">{inline(q["title"])}</span>'
+                f'<span class="w"></span></a>')
+            continue
+        # 完成度上色：一条没做 = 白，越接近做完越绿（绿色叠加的透明度 = 完成比例）
+        fr = frac_done(q)
+        pct = round(fr * 100)
+        fill = (f' style="--fill:{fr:.3f}"') if fr > 0 else ""
+        df = f' data-f="{esc(q["file"])}"' if q.get("file") else ""
+        rows.append(
+            f'<a class="ir {st(q)[1]}" href="{href_for(q)}"{fill}{df} title="{pct}% done">'
+            f'<span class="s">{st(q)[0]}</span><span class="i">{q["id"]}</span>'
+            f'<span class="t">{inline(q["title"])}</span>'
+            + f'<span class="w">{"🧠 JL" if q["owner"]=="JL" else ("🔧 "+q["owner"] if q["owner"] else "")}</span></a>')
+    return rows
+
+
+def sidebar_rows(qs, href_for=None, group_href=None):
+    """The rail's rows: group links, page links, and each page's section
+    outline. ONE implementation, two packagings (JL 260731)."""
+    href_for = href_for or (lambda q: "#" + q["id"])
+    group_href = group_href or (lambda tok: "#group-" + tok)
+
+    def st(q):
+        return stinfo(q["state"])
+
+    sb, sbcur = [], None
+    for q in qs:
+        if q.get("group") and q["group"] != sbcur:
+            sbcur = q["group"]
+            sb.append(f'<a class="sb-g" href="{group_href(bd.group_token(sbcur))}">'
+                      f'{inline(sbcur)}</a>')
+        chev = ('' if q.get("kind") == "doc"
+                else '<span class="sb-x" title="sections">▸</span>')
+        sb.append(f'<a class="sb-p" href="{href_for(q)}">'
+                  f'<span class="s">{"📄" if q.get("kind") == "doc" else st(q)[0]}</span>'
+                  f'<span class="i">{esc(q["id"])}</span>'
+                  f'<span class="t">{inline(q["title"])}</span>{chev}</a>')
+        # The per-page outline (QB2a, JL 260731): the Structure rows again,
+        # so the rail and the Opening drawer can never disagree. Hidden until
+        # this page is the open one — only ONE page's sections show at a time.
+        if q.get("kind") != "doc":
+            out = []
+            for key, label, val, subs in structure_rows(
+                    q["sec"], parse_content_sections(sec(q["sec"], "Content"))):
+                out.append(f'<a class="sb-s" data-k="{key}" href="{href_for(q)}">'
+                           f'<span class="t">{esc(label)}</span>'
+                           f'<span class="m">{esc(val)}</span></a>')
+                for j, (disp, t) in enumerate(subs):
+                    # Content divisions are found by ORDER (data-div, the same
+                    # Cn order the chat addresses use); other subsections by
+                    # their heading text (data-t → the rendered .sh).
+                    how = (f'data-div="{j}"' if key == "content"
+                           else f'data-t="{esc(t)}"')
+                    out.append(f'<a class="sb-ss" data-k="{key}" {how} '
+                               f'href="{href_for(q)}">{inline(disp)}</a>')
+            sb.append(f'<div class="sb-out" data-out="{esc(q["id"])}">'
+                      + "".join(out) + '</div>')
+    return sb
+
+
 def render(meta, qs):
     # Questions and S families share one page grammar, but their progress answers
     # different things: rulings settle; lifecycle pages pass human CHECK gates.
@@ -135,69 +452,42 @@ def render(meta, qs):
             return 0.0
         return sum(1 for b in boxes if b.lower() == "x") / len(boxes)
 
-    ginfo = meta.get("groups") or {}
-    rows, cur = [], None
-    for q in qs:
-        if q.get("group") and q["group"] != cur:
-            cur = q["group"]
-            # A group is a place you can travel to (JL 260730): the canvas draws
-            # groups, so a group heading needs an anchor of its own. It is NOT a
-            # page — `#group-QA` scrolls the index, it does not open a card — so
-            # the id stays in its own namespace and never collides with a page.
-            rows.append(f'<div class="grp" id="group-{esc(bd.group_token(cur))}"'
-                        f' data-g="{esc(cur)}">'
-                        f'<span class="gt">{inline(cur)}</span></div>')
-            # Group intro (QC2): one sentence always visible; if more lines follow,
-            # they open on click via a native <details>. No script involved, so the
-            # strip-scripts invariant is untouched.
-            gi = ginfo.get(cur)
-            if gi:
-                summary = inline(gi[0].strip())
-                # 展开的 body：散文按行 <br> 接（保作者断行），碰到 ``` 就当 ascii 图铺成 <pre>。
-                parts, prose, fence, inf = [], [], [], False
-                for x in gi[1:]:
-                    s = x.strip()
-                    if s.startswith("```"):
-                        if inf:
-                            parts.append('<pre class="gidia">'
-                                         + bd.link_faces(esc(chr(10).join(fence)))
-                                         + '</pre>')
-                            fence, inf = [], False
-                        else:
-                            if prose:
-                                parts.append("<br>".join(inline(p) for p in prose)); prose = []
-                            inf = True
-                        continue
-                    if inf:
-                        fence.append(x)          # 原样，保对齐
-                    elif s:
-                        prose.append(s)
-                if prose:
-                    parts.append("<br>".join(inline(p) for p in prose))
-                gib = "".join(parts)
-                if gib:
-                    rows.append(f'<details class="gi"><summary>{summary}</summary>'
-                                f'<div class="gib">{gib}</div></details>')
-                else:
-                    rows.append(f'<div class="gi one">{summary}</div>')
-        if q.get("kind") == "doc":
-            rows.append(
-                f'<a class="ir doc" href="#{q["id"]}">'
-                f'<span class="s">📄</span><span class="i">{esc(q["id"])}</span>'
-                f'<span class="t">{inline(q["title"])}</span>'
-                f'<span class="w"></span></a>')
-            continue
-        # 完成度上色：一条没做 = 白，越接近做完越绿（绿色叠加的透明度 = 完成比例）
-        fr = frac_done(q)
-        pct = round(fr * 100)
-        fill = (f' style="--fill:{fr:.3f}"') if fr > 0 else ""
-        df = f' data-f="{esc(q["file"])}"' if q.get("file") else ""
-        rows.append(
-            f'<a class="ir {st(q)[1]}" href="#{q["id"]}"{fill}{df} title="{pct}% done">'
-            f'<span class="s">{st(q)[0]}</span><span class="i">{q["id"]}</span>'
-            f'<span class="t">{inline(q["title"])}</span>'
-            + f'<span class="w">{"🧠 JL" if q["owner"]=="JL" else ("🔧 "+q["owner"] if q["owner"] else "")}</span></a>')
+    rows = index_rows(meta, qs)
     idx = "\n".join(rows)
+
+    # Pages sidebar (JL 260731): the .idx listing compressed to a fixed rail,
+    # Index → group → page, so a reader can jump from anywhere. It lives
+    # OUTSIDE .wrap, so the :target show/hide rules never touch it; a group
+    # link re-targets #group-… which also brings the index back on stage.
+    sb = sidebar_rows(qs)
+    # The Index row unfolds too (QB2a, JL 260731: "what should be the index's
+    # section content? Please add them as well"): its rows are the Index's own
+    # components in on-page order, each present only when the board has it.
+    bmap = board_map(meta)
+    rf = related_folders(meta)
+    ix = []
+
+    def ixrow(key, label, mtxt=""):
+        m = f'<span class="m">{esc(mtxt)}</span>' if mtxt else ""
+        ix.append(f'<a class="sb-s" data-k="{key}" href="#top">'
+                  f'<span class="t">{label}</span>{m}</a>')
+
+    if bmap:
+        ixrow("map", "🗺 Board Map")
+    if rf:
+        ixrow("related", "🗂 Related Folders")
+    ixrow("status", "🩺 Section Matrix",
+          f"{len([q for q in qs if q.get('kind') != 'doc'])} × 7")
+    ixrow("pages", "📄 All Pages", str(n))
+    ixrow("activity", "📈 Activity")
+
+    sidebar = ('<button type="button" id="sbtoggle" class="sbtoggle" '
+               'aria-label="Toggle the pages sidebar">☰</button>'
+               '<div class="sbrz" title="Drag to resize"></div><nav class="sidebar" id="sidebar" aria-label="Pages">'
+               '<a class="sb-top" href="#top">🗂 Index'
+               '<span class="sb-x" title="sections">▸</span></a>'
+               f'<div class="sb-out" data-out="top">{"".join(ix)}</div>'
+               + "".join(sb) + '</nav>')
 
     cards = []
     for i, q in enumerate(qs):
@@ -205,25 +495,10 @@ def render(meta, qs):
         cards.append(render_doc_slide(q, prv, nxt) if q.get("kind") == "doc"
                      else render_question(q, prv, nxt))
 
-    ctx = ""
-    # A board-level figure NEVER folds again (JL 260730). These three sections are
-    # already behind a <details class="ctx">, so letting a long fence fold itself
-    # into "</> code · N lines" in there is the double-fold the board's own Law
-    # forbids: a fold that works and cannot be seen. A board-level canvas is the
-    # content of its section, the same argument split_diagram makes for a page's
-    # figure, so it stays on stage at any length.
-    if meta["theme"]:
-        ctx += (f'<details class="ctx"><summary>🦴 Topic — what this board is about</summary>'
-                f'<div class="fb">{body(meta["theme"], fold_code=False)}</div></details>')
-    if meta["pipeline"]:
-        ctx += (f'<details class="ctx"><summary>🔄 Pipeline — how these Qs are ordered</summary>'
-                f'<div class="fb">{body(meta["pipeline"], fold_code=False)}</div></details>')
-    if meta.get("structure"):
-        ctx += (
-            '<details class="ctx board-structure">'
-            '<summary>🧭 Board-Structure — Board-Folder and Board-Webpage</summary>'
-            f'<div class="fb">{body(meta["structure"], fold_code=False)}</div></details>'
-        )
+    # The three ctx disclosures (🦴 Topic · 🔄 Pipeline · 🧭 Board-Structure)
+    # left the Index on JL's 260731 ruling ("I want to just remove this"): the
+    # spine, the Board Map, and the SECTION MATRIX already orient a reader, and
+    # board.md keeps the sections as source-only documentation. QB2 records it.
 
     stagebits = []
     for family, label in sfamilies:
@@ -235,8 +510,12 @@ def render(meta, qs):
     return TPL.format(title=esc(meta["title"]), spine=inline(meta["spine"]),
                       close=inline(meta["close"]), bar=bar, done=done, n=nq,
                       stagebar=stagebar,
-                      board_map=board_map(meta), ctx=ctx, index=idx,
+                      board_map=bmap, related=rf, board_status=board_status(qs),
+                      activity=ACTIVITY_HTML,
+                      index=idx,
+                      sidebar=sidebar,
                       cards="\n".join(cards), js=JS, css=CSS,
+                      assets_stamp=ASSETS_STAMP,
                       mark=MARK_SVG, favicon=MARK_FAVICON,
                       # chip panels last: they are top-layer, so DOM position
                       # is free, and out here they are never inside a <summary>
@@ -250,22 +529,41 @@ def render(meta, qs):
 # lintable, node --check-able. build.py INLINES them at build time, so the
 # output stays ONE self-contained board.html and the offline invariant holds.
 HERE = Path(__file__).resolve().parent.parent
-JS = ("\n<script>\n"
-      + (HERE / "assets" / "board.js").read_text(encoding="utf-8").rstrip("\n")
-      + "\n</script>\n")
-CSS = (HERE / "assets" / "board.css").read_text(encoding="utf-8").rstrip("\n")
+# Assembled from assets/js/** and assets/css/** in sorted path order; see
+# src/assets.py for why the parts exist and why the order is load-bearing.
+from . import assets as _assets            # noqa: E402
+_JS_PROBLEMS = _assets.verify()
+if _JS_PROBLEMS:
+    raise RuntimeError("browser assets are broken:\n  " + "\n  ".join(_JS_PROBLEMS))
+JS = "\n<script>\n" + _assets.js().rstrip("\n") + "\n</script>\n"
+CSS = _assets.css().rstrip("\n")
+# The live refresh swaps div.wrap and NEVER re-runs scripts, so a long-lived tab
+# keeps the JS/CSS it was opened with. This stamp lets tick() detect that the
+# assets changed under it and do the one full reload that heals a stale tab
+# (JL 260731: dead ➕ buttons after a day of shipping under an open tab).
+ASSETS_STAMP = hashlib.md5((JS + CSS).encode("utf-8")).hexdigest()[:12]
 MARK_SVG = (HERE / "assets" / "board-mark.svg").read_text(encoding="utf-8").strip()
 MARK_FAVICON = ("data:image/svg+xml;base64,"
                 + base64.b64encode(MARK_SVG.encode("utf-8")).decode("ascii"))
 
+ACTIVITY_HTML = """<section class="activity" id="activity" aria-labelledby="activity-title">
+<div class="act-head">
+  <div><span class="act-kicker">ACTIVITY</span><h2 id="activity-title">When, then where</h2></div>
+  <span class="act-status" id="activity-status">waiting for the board server</span>
+</div>
+<p class="act-note">One update is one dated line in one page's <code>## Log</code>. The count is read from the Markdown itself, so it sees every change any tool made, not only the ones a browser watched.</p>
+<div id="activity-body"><p class="act-empty">Open this board through <code>serve.py</code> to count updates. The dashboard is an enhancement; the board remains complete without it.</p></div>
+</section>"""
+
 TPL = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="board-assets" content="{assets_stamp}">
 <title>{title}</title>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
 <style>
 {css}
-</style></head><body class="single" data-board="{boarddir}"><div class="wrap" id="top" data-bsession="{bsession}">
+</style></head><body class="single" data-board="{boarddir}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
 
 <div class="board-heading"><span class="board-mark" aria-hidden="true">{mark}</span>
 <h1 class="h1">{title}</h1></div>
@@ -274,7 +572,9 @@ TPL = """<!DOCTYPE html>
 
 {board_map}
 
-{ctx}
+{related}
+
+{board_status}
 
 <h3 class="sec" id="qlist">ALL PAGES<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>
 <div class="idx">{index}</div>
@@ -282,14 +582,7 @@ TPL = """<!DOCTYPE html>
 <span id="all"></span>
 {cards}
 
-<section class="activity" id="activity" aria-labelledby="activity-title">
-<div class="act-head">
-  <div><span class="act-kicker">ACTIVITY</span><h2 id="activity-title">When, then where</h2></div>
-  <span class="act-status" id="activity-status">waiting for the board server</span>
-</div>
-<p class="act-note">One update is one dated line in one page's <code>## Log</code>. The count is read from the Markdown itself, so it sees every change any tool made, not only the ones a browser watched.</p>
-<div id="activity-body"><p class="act-empty">Open this board through <code>serve.py</code> to count updates. The dashboard is an enhancement; the board remains complete without it.</p></div>
-</section>
+{activity}
 
 <p class="foot">Content comes from <code>board.md</code> (board-level), <code>QX-xxx.md</code>
 (one per ruling), and named lifecycle pages such as <code>S-Seed-0-xxx.md</code>,
@@ -348,3 +641,275 @@ def to_json(meta, qs, warn):
                     sections={k: v for k, v in q["sec"].items()})
     return json.dumps({"meta": meta, "questions": [q_json(q) for q in qs],
                        "warnings": warn}, ensure_ascii=False, indent=1)
+
+
+# ── the board/ tree (QC9, JL 260731) ──────────────────────────────────────
+# One file per page and one per group, sharing ONE copy of the css and js,
+# so a reader downloads ~34 KB instead of the whole board, a page has a real
+# URL, and a write to page C rewrites page C's file alone.
+#
+# Same parser, same renderers: this is a second PACKAGING of `render()`'s
+# parts, never a second implementation. `board.html` keeps being emitted so
+# the one-file artifact (QE3's Law) survives; the tree is the working surface.
+TREE_TPL = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="board-assets" content="{assets_stamp}">
+<title>{title}</title>
+<link rel="icon" type="image/svg+xml" href="{favicon}">
+<link rel="stylesheet" href="{root}_assets/board.css?v={assets_stamp}">
+</head><body class="single split" data-board="{boarddir}" data-board-root="{root}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
+<nav class="sitebar"><a href="{root}index.html">🗂 Index</a>{crumb}</nav>
+{body}
+</div>{popcards}
+<script src="{root}_assets/board.js?v={assets_stamp}"></script></body></html>
+"""
+
+
+
+
+
+def tree_href_map(qs):
+    """`#QA1` -> `QA/QA1-slug.html`, and `#group-QA` -> `QA.html`.
+
+    The Board Map, the Section Matrix and the Activity panel are all REUSED
+    from `render()` rather than rewritten (the index-rows lesson, JL 260731),
+    but every link they emit is a fragment into a one-document board. In the
+    tree those fragments point at nothing, so their hrefs are rewritten here
+    and nowhere else.
+    """
+    m = {}
+    for q in qs:
+        gt = bd.group_token(q.get("group") or "") or "_ungrouped"
+        m["#" + q["id"]] = f'{gt}/{tree_page_name(q)}'
+    for q in qs:
+        g = q.get("group")
+        if g:
+            tok = bd.group_token(g)
+            m["#group-" + tok] = f"{tok}.html"
+    return m
+
+
+def tree_relink(html, hrefs):
+    """Rewrite every `href="#id"` the reused generators emitted."""
+    def sub(mo):
+        return 'href="' + hrefs.get(mo.group(1), mo.group(1)) + '"'
+    return re.sub(r'href="(#[^"]+)"', sub, html)
+
+
+def tree_sidebar(meta, qs, root):
+    """The left rail for the tree.
+
+    Reuses `sidebar_rows()`, the SAME builder the single file uses, so the rail
+    keeps its per-page section outline (`.sb-out` / `.sb-s` / `.sb-ss`). A first
+    version hand-rolled a flat list and silently dropped that outline, which is
+    the third time this file's own law caught its author (JL 260731).
+    """
+    def _href(q):
+        gt = bd.group_token(q.get("group") or "") or "_ungrouped"
+        return f"{root}{gt}/{tree_page_name(q)}"
+    return ('<button type="button" id="sbtoggle" class="sbtoggle" '
+            'aria-label="pages">☰</button>'
+            '<div class="sbrz" title="Drag to resize"></div><nav class="sidebar" id="sidebar" aria-label="Pages">'
+            f'<a class="sb-top" href="{root}index.html">🗂 Index</a>'
+            + "".join(sidebar_rows(qs, href_for=_href,
+                                   group_href=lambda tok: f"{root}{tok}.html"))
+            + '</nav>')
+
+
+def tree_row(q, href):
+    """One index row, in the SAME markup `render()` emits.
+
+    The classes are load-bearing: `.ir` with `.s/.i/.t/.w` is what board.css
+    styles. A first pass here invented `.row/.st/.qid/.qt`, so not one rule
+    applied and the index rendered as a wall of inline links (JL 260731, with
+    a screenshot). Only the href differs between the two packagings.
+    """
+    if q.get("kind") == "doc":
+        return (f'<a class="ir doc" href="{href}">'
+                f'<span class="s">📄</span><span class="i">{esc(q["id"])}</span>'
+                f'<span class="t">{inline(q["title"])}</span>'
+                f'<span class="w"></span></a>')
+    fr = frac_done_of(q)
+    fill = (f' style="--fill:{fr:.3f}"') if fr > 0 else ""
+    df = f' data-f="{esc(q["file"])}"' if q.get("file") else ""
+    owner = ("🧠 JL" if q["owner"] == "JL"
+             else ("🔧 " + q["owner"] if q.get("owner") else ""))
+    return (f'<a class="ir {stinfo(q["state"])[1]}" href="{href}"{fill}{df}'
+            f' title="{round(fr * 100)}% done">'
+            f'<span class="s">{stinfo(q["state"])[0]}</span>'
+            f'<span class="i">{esc(q["id"])}</span>'
+            f'<span class="t">{inline(q["title"])}</span>'
+            f'<span class="w">{owner}</span></a>')
+
+
+def frac_done_of(q):
+    """The same completion fraction render() colours its rows with."""
+    boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", q.get("sec", {}).get("Items to Finish", ""), re.M)
+    if not boxes:
+        boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", "\n".join(q.get("sec", {}).values()), re.M)
+    return (sum(1 for b in boxes if b.lower() == "x") / len(boxes)) if boxes else 0.0
+
+
+def tree_page_name(q):
+    """One page, one file: the id is the filename, so a URL is guessable."""
+    stem = Path(q.get("file") or q["id"]).stem
+    return f"{stem}.html"
+
+
+def render_tree(meta, qs, out_dir, only=None):
+    """Write the board/ tree. Returns the list of files written."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    assets = out_dir / "_assets"
+    assets.mkdir(exist_ok=True)
+    # One file each, assembled from the parts (src/assets.py). The split site
+    # links these rather than inlining, so the browser caches one copy for all
+    # 61 pages and the ?v= stamp is what makes a ship land.
+    (assets / "board.css").write_text(CSS, encoding="utf-8")   # CSS is rstripped
+    (assets / "board.js").write_text(_assets.js(), encoding="utf-8")
+
+    written = []
+    groups = {}
+    for q in qs:
+        groups.setdefault(q.get("group") or "", []).append(q)
+
+    # Links to the board's own SOURCE files (`QD-working/QD2-chat-sdk.md`,
+    # `board.md`, `fig/x.pdf`) are written relative to the BOARD FOLDER, which
+    # is where the retired monolith sat. A split page lives one or two levels
+    # below that, so every one of them 404s as written; verified against the
+    # live server 260731, and the reason "open the source" was dead on the
+    # split site. Page-to-page links (.html) already carry their own prefix.
+    # `../../../../../../env.sh` counts too: an escape out of the repo is still
+    # written from the board folder, so it needs the same two extra hops.
+    _SRC_HREF = re.compile(r'href="(?!https?:|mailto:|data:|#|/)([^"]+)"')
+
+    def reroot(html, up):
+        def fix(m):
+            href = m.group(1)
+            bare = href.split("#", 1)[0].split("?", 1)[0]
+            if bare.endswith(".html"):      # a page link, already sited
+                return m.group(0)
+            if "_assets/" in bare:          # the shell owns the asset paths
+                return m.group(0)
+            return f'href="{up}{href}"'
+        return _SRC_HREF.sub(fix, html)
+
+    def shell(title, body, root, crumb="", sidebar=""):
+        # `root` is already the hop from this file up to board/, and the board
+        # FOLDER is one further up.
+        body = reroot(body, root + "../")
+        return TREE_TPL.format(
+            title=esc(title), body=body, root=root, crumb=crumb,
+            sidebar=sidebar, popcards="\n".join(bd.CARDS),
+            assets_stamp=ASSETS_STAMP, favicon=MARK_FAVICON,
+            boarddir=esc(meta.get("dir", "")), bsession=esc(meta.get("session", "")))
+
+    # one file per page, inside its group's folder.
+    # `only` limits the rewrite to the pages whose .md actually changed, so a
+    # write to one page leaves every other page's FILE untouched and a reader
+    # sitting on one of them is never disturbed (QC9, JL 260731).
+    n = len(qs)
+    for i, q in enumerate(qs):
+        if only and Path(q.get("file") or "").name not in only:
+            continue
+        prv, nxt = (qs[i - 1] if i else None), (qs[i + 1] if i + 1 < n else None)
+        card = (render_doc_slide(q, prv, nxt) if q.get("kind") == "doc"
+                else render_question(q, prv, nxt))
+        gtok = bd.group_token(q.get("group") or "") or "_ungrouped"
+        gdir = out_dir / gtok
+        gdir.mkdir(exist_ok=True)
+        f = gdir / tree_page_name(q)
+        crumb = (f' <span class="sb-sep">›</span> '
+                 f'<a href="../{gtok}.html">{esc(gtok)}</a>'
+                 f' <span class="sb-sep">›</span> <b>{esc(q["id"])}</b>')
+        f.write_text(scrub_cjk_comments(shell(q["title"], card, "../", crumb,
+                                      tree_sidebar(meta, qs, "../"))),
+                     encoding="utf-8")
+        written.append(f)
+
+    # one file per group: the group's own page (JL 260731).
+    # Under `only`, a group is rewritten just when one of ITS pages changed;
+    # the index always is, because it lists every page's state.
+    for g, members in groups.items():
+        if not g:
+            continue
+        if only and not any(Path(m.get("file") or "").name in only for m in members):
+            continue
+        gtok = bd.group_token(g)
+        rows = []
+        for q in members:
+            gt = bd.group_token(q.get("group") or "") or "_ungrouped"
+            rows.append(tree_row(q, f'{gt}/{tree_page_name(q)}'))
+        # A group page is not a bare list (JL 260731: "can we give the group
+        # some things too, like what the purpose of this group is"). The intro
+        # already lives in board.md under the `### ` heading and was simply
+        # never rendered here; line 1 is the purpose, the rest is the why.
+        gi = (meta.get("groups") or {}).get(g) or []
+        purpose = f'<p class="gpurpose">{inline(gi[0].strip())}</p>' if gi else ""
+        rest = "".join(f"<p>{inline(x.strip())}</p>"
+                       for x in gi[1:] if x.strip() and not x.strip().startswith("```"))
+        why = (f'<details class="gwhy"><summary>why this group exists</summary>'
+               f'<div class="gwhy-b">{rest}</div></details>') if rest else ""
+        done = sum(1 for m in members
+                   if m["state"].startswith("✅") and m.get("kind") not in ("skill", "agent"))
+        counted = [m for m in members if m.get("kind") not in ("skill", "agent")]
+        body = (f'<div class="board-heading"><h1 class="h1">{esc(g)}</h1></div>'
+                + purpose + why
+                + f'<p class="bar">{len(members)} pages · '
+                  f'{done}/{len(counted)} settled</p>'
+                + f'<div class="idx">{"".join(rows)}</div>')
+        crumb = f' <span class="sb-sep">›</span> <b>{esc(gtok)}</b>'
+        f = out_dir / f"{gtok}.html"
+        f.write_text(scrub_cjk_comments(shell(g, body, "", crumb,
+                                      tree_sidebar(meta, qs, ""))), encoding="utf-8")
+        written.append(f)
+
+    # the index: the same rows the single file uses, pointed at the tree
+    # The SAME listing the single file builds, including every group intro and
+    # its ascii figure, with the links pointed at the tree (JL 260731).
+    def _href(q):
+        gt = bd.group_token(q.get("group") or "") or "_ungrouped"
+        return f"{gt}/{tree_page_name(q)}"
+    rows = index_rows(meta, qs, href_for=_href,
+                      group_href=lambda tok: f"{tok}.html")
+    # JL 260731 ruled exactly three board-level components onto this index:
+    # the Board Map, the Section Matrix, and the Activity panel. All three are
+    # the SAME generators render() uses, with their fragment links rewritten.
+    hrefs = tree_href_map(qs)
+    body = (f'<div class="board-heading">'
+            f'<span class="board-mark" aria-hidden="true">{MARK_SVG}</span>'
+            f'<h1 class="h1">{esc(meta["title"])}</h1></div>'
+            f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
+            f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
+            + tree_relink(board_map(meta), hrefs)
+            + tree_relink(related_folders(meta), hrefs)
+            + tree_relink(board_status(qs), hrefs)
+            + f'<h3 class="sec" id="qlist">ALL PAGES</h3>'
+            + f'<div class="idx">{"".join(rows)}</div>'
+            + ACTIVITY_HTML)
+    f = out_dir / "index.html"
+    f.write_text(scrub_cjk_comments(shell(meta["title"], body, "", "",
+                                     tree_sidebar(meta, qs, ""))),
+                 encoding="utf-8")
+    written.append(f)
+
+    # Prune orphans. Deleting or renaming a page's .md used to leave its .html
+    # in the tree forever: still linkable, still looking real, describing a page
+    # that no longer exists (JL 260731, found by deleting one and rebuilding).
+    # The expected set is computed from EVERY page, not from `written`, so this
+    # is correct under --only too.
+    expected = {out_dir / "index.html"}
+    for q in qs:
+        gt = bd.group_token(q.get("group") or "") or "_ungrouped"
+        expected.add(out_dir / gt / tree_page_name(q))
+    for g in groups:
+        if g:
+            expected.add(out_dir / f"{bd.group_token(g)}.html")
+    for stale in sorted(out_dir.rglob("*.html")):
+        if stale not in expected:
+            stale.unlink()
+            print(f"   🗑 pruned orphan {stale.relative_to(out_dir)}")
+    for d in sorted(out_dir.iterdir()):
+        if d.is_dir() and d.name != "_assets" and not any(d.iterdir()):
+            d.rmdir()
+    return written

@@ -9,7 +9,7 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "1.0.0"
+  version: "0.1.0"
   last_updated: "2026-07-26"
   summary: "The Board family's independent judge: mechanical check plus zero-background prose and staleness review, with no write tools."
   changelog: "./CHANGELOG.md"

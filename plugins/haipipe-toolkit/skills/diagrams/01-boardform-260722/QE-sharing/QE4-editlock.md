@@ -13,6 +13,7 @@ The hard part is that markdown is the single source of truth, the board's founda
 Leave it and the board stays at "readable and commentable" and never becomes a workbench, so JL's "we can work hard to solve the problem" cannot happen.
 Downstream it decides which editor to use, whether to bring in Yjs, whether `HOLD` grows from "one session per question" to "one editor per question", and how in-page edits get recorded in `## Log`.
 
+
 ## Boundary
 - ✅ Covered here
   **Editing body text from the page**: which sections are editable, which editor, what happens when two people edit at once, and how an edit gets written into `## Log`.
@@ -46,17 +47,20 @@ concurrency: three steps, do not skip one
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE4
 
 ## Items to Finish
+### The editor half
 - [ ] Decide which sections are editable from the page
       All of it?
       Or start with just `## Where we are` body text, ticking `## Items to Finish`, and the `state:` line: smallest change, most of the value.
-- [ ] Decide how far to take concurrency
-      ① per-file lock / ② optimistic / ③ CRDT.
-      My recommendation is ① first, and not to discuss ③ until two people really do edit one question at the same time.
 - [ ] Decide on the editor
       A plain `<textarea>` over the markdown source (zero dependencies, most honest), or TipTap / Milkdown (WYSIWYG, but the board's section grammar has to be taught to it).
 - [ ] An in-page edit writes its own `## Log` line
       `## Log` is hand-written today.
       If the page can change body text without leaving a trace, the board starts lying.
+
+### Two people at once
+- [ ] Decide how far to take concurrency
+      ① per-file lock / ② optimistic / ③ CRDT.
+      My recommendation is ① first, and not to discuss ③ until two people really do edit one question at the same time.
 - [ ] Actually have two people edit one question and verify nothing is lost
       That is the acceptance test.
       Not "a lock was added", but someone really collided and saw the warning.
@@ -77,6 +81,15 @@ concurrency: three steps, do not skip one
   For several people editing the same markdown, the industry answer is a CRDT (Yjs) with a ProseMirror-family editor (TipTap / Milkdown).
   It is the one mature component worth importing out of `QE3`, but only once "two people typing at once" is actually needed.
 
+### Decision Now
+- [ ] ✂️ Pick which sections the page may edit first
+      All of it, or the minimal set this page calls smallest change with most of the value: `## Where we are` body text, ticking `## Items to Finish`, and the `state:` line.
+      A tick here also closes the same row in Items to Finish.
+- [ ] 🔒 Pick how far to take concurrency
+      The fork is ① per-file lock, ② optimistic, ③ CRDT (Yjs); the recommendation on this page is ① first, with ③ not discussed until two people really do edit one question at the same time.
+- [ ] ✏️ Pick the editor
+      A plain `<textarea>` over the markdown source, which this page calls zero dependencies and most honest, or TipTap / Milkdown with the board's section grammar taught to it.
+
 ## Files
 - `serve.py`
   `add_comment` / `add_discuss` / `resolve` are the working template for writing back to markdown; `HOLD` / `hold` / `release` are the half-built lock.
@@ -93,4 +106,5 @@ Yjs is the common implementation. per-file lock: only one person may write a giv
 `HOLD` in `serve.py` is exactly this.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260724 1242 · Opened: JL wants to "really work on a question page: edit, comment, discuss, log the changes". The three comment actions are already done in QA6; this question owns **editing body text** and the concurrency that comes with it

@@ -11,6 +11,7 @@ The difficult part is persistence without duplication.
 A session needs live status, but writing one shared `STATUS.md` would let simultaneous page sessions overwrite each other and would become stale as soon as a conversation moved.
 The durable facts already live in `board.md` and the Q/S pages; only the live mode and next action belong to the reply.
 
+
 ## Boundary
 - ✅ Covered here
   The reply-ending status strip, attachment resolution, queue derivation, focus and mode vocabulary, and the deterministic renderer that keeps every agent's shape consistent.
@@ -63,14 +64,19 @@ A second fresh agent read only the skill, Board, and QD6, invoked `status.py` ra
 All five items are complete and the ruling is settled.
 
 ## Files
+### Engines
 - `status.py`
   Deterministic renderer for the reply-ending strip.
 - `SKILL.md`
   Single source of truth for when the strip is required and how attachment is resolved.
 - `serve.py`
   Injects Board and page attachment when a drawer or terminal session opens.
+
+### Input files
 - `board.md`
   Owns the page-to-group mapping from which queue is derived.
+
+### The precedent
 - `haipipe-paper/SKILL.md`
   The precedent: Paper's Closing Block makes live session state visible at the end of every reply.
 
@@ -89,6 +95,7 @@ No shared status file is written: durable decisions, comments, and logs continue
 > JL: The first status strip is too long; make it concise, preferably only a few lines.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260726 · Fresh-context acceptance invoked status.py and received exactly three lines
 260726 · Compressed the ten-line fenced strip to three Markdown lines after JL's direct-use feedback
 260726 · Fresh-context agent derived QD/QD6 correctly, placed the strip last, and closed the final acceptance item

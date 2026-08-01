@@ -16,6 +16,7 @@ The second cold read also found one incomprehensible page and five half-understo
 JL's rule sits above all four: if it is not easy to read, writing that much is rubbish, and unreadable equals unwritten.
 The instruments must stay distinct, but they answer to one planned trigger because the recurring defect is that review is not dispatched reliably after a change.
 
+
 ## Boundary
 - ✅ Covered here: the mechanical checker, the fresh reviewer, their four failure classes, their shared trigger, and the report produced when either instrument is red.
 - ↪ Covered elsewhere: `QAa0` owns the page layout and, since the QA2 merge (260729), the source template; each QAa face owns its section in both projections; `QF2` owns first-time handover from `SKILL.md`.
@@ -100,6 +101,19 @@ It is also the cheapest possible fixed test input because the file already exist
   The documentation names a construct that the template never demonstrates, so a new page inherits no example of it and the check has nothing to assert.
   The fix belongs in `ref/q-template.md`, and this half is the reason to run against the template at all, since a renderer-only test would pass while the hole stayed open.
 
+### "After every change" is scoped to the SPACE, not to the board you edited
+The live layer runs one server per repo root and serves every board beneath it, which `QA0` argues in full.
+That makes the blast radius of a change asymmetric, and this face is where the asymmetry has to be paid.
+A change to one board's `.md` touches one board, so checking that board is enough.
+A change to anything shared, meaning the inlined `assets/`, the `src/` renderer, or the engine's scripts, silently changes every board under the root, so checking only the board in front of you proves nothing about the other five.
+
+260731 is the worked example.
+An assets stamp was added to `page_board.py` for one board's problem, and it altered the `<head>` of every board the family renders, so all five sibling design boards plus the paper's `0-lifecycle` had to be rebuilt and re-checked before the change could be called done.
+The same day, a restructure of this board broke three of the paper board's cross-board `## Links`, which no check of this board could ever have caught.
+
+The rule that follows is short: a shared change is checked across the root, and a board-local change is checked on its board.
+A checker that only ever runs where the edit happened will keep reporting green while boards it never opened go red.
+
 ### The zero-background reader, and why it cannot be simulated
 The reviewer is a separately started agent that sees only the markdown files it is handed, not the conversation that produced them.
 Its brief is fixed and narrow, and it is told not to praise or summarize: name the unreadable sentence and quote it, list the undefined word and say where it first appears, state the missing premise.
@@ -107,16 +121,7 @@ It grades each page clear, half, or unreadable, where half means the reader can 
 The prompt and the rules it enforces live in `ref/writing-rules.md`, so the check and its standard are one document rather than a habit.
 
 ## Items to Finish
-- [ ] 🔎 `check.py` verifies a 🧩 Skills landed row
-      A row claiming `ref/board-form.md §1 · landed` is checkable by grep, so rot becomes a warning instead of a silent lie; owned with `QAa5`.
-- [x] 📏 The rules for plain language are written down
-      `ref/writing-rules.md` holds them, and `SKILL.md` excerpts the three deadliest with a pointer to the rest.
-      No invented terms, stale sentences purged when the board changes, and a fresh-agent cold read after every revision.
-      This was ticked on 260723 under QA5 and is inherited unchanged.
-- [x] 📄 The cold read has a report format that produces usable findings
-      It has run twice and both times returned findings that were acted on rather than argued with.
-      The format is fixed: unreadable sentences quoted, undefined words listed with the file they first appear in, missing premises named, then a grade per page.
-      The evidence that the format works is that its output changed the board: `## Topic` and `## Pipeline` exist because the first run said the files explain a recipe's format without ever saying what the dish is.
+### The template fixture
 - [x] 🧪 The shared template exercises both Q and S renderer modes
       Copying `ref/q-template.md` twice and renaming the copies must be enough to exercise one Q render path and one S render path before the author replaces the guide prose.
       The two paths have broken independently, so checking one proves little about the other: Stage Contract exists only on S, Why this matters moves between Opening and Content depending on the kind, and the Content heading names the stage on S while counting subsections on Q.
@@ -132,6 +137,13 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       This is the half that improves the template over time, and it is the half a renderer-only test would miss entirely.
       Ticked 260726, and it earned itself on the first run by making template holes measurable instead of assumed complete.
       The source-aware check now reports renderer drift as ERROR only when the source exercises a construct, and reports a missing source example as GAP.
+- [ ] 🧰 The template demonstrates every structural-table construct
+      The source-aware check currently reports two explicit fixture gaps: a group title and an Excalidraw canvas.
+      These remain open rather than being hidden by an output-only regex; the Excalidraw example needs a portable placeholder that cannot point a copied page at the wrong Board.
+
+### The mechanical checker
+- [ ] 🔎 `check.py` verifies a 🧩 Skills landed row
+      A row claiming `ref/board-form.md §1 · landed` is checkable by grep, so rot becomes a warning instead of a silent lie; owned with `QAa5`.
 - [x] 🥀 A page that stopped describing its own work is reported
       An additional failure turned up on 260726: a page can render perfectly and read well while saying something that is no longer true.
       `QA4a` carried `state: 🔴 OPEN` and "nothing is built and nothing is decided" on the day its whole route was built, wired into 28 pages, and running, because the session did the work from chat and never went back to the page that owned it.
@@ -145,13 +157,6 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
 - [ ] 🎯 An interaction check that a static reader cannot fake
       `check_css` catches this one collision class. It does not catch an element covered by anything else, an off-screen panel, or a control whose click does nothing. The missing instrument is a headless browser that checks which element lies at each control's centre and then confirms that the opened panel stays inside the viewport. An ad hoc standard-library-only driver using Chrome DevTools Protocol (CDP) found the 260726 bug, but it was not kept.
       Whether that belongs in `check.py` at all is the open question: it needs a browser, so it breaks this page's "standard library, runs anywhere" property. A separate opt-in script is the likelier answer.
-- [ ] 🧰 The template demonstrates every structural-table construct
-      The source-aware check currently reports two explicit fixture gaps: a group title and an Excalidraw canvas.
-      These remain open rather than being hidden by an output-only regex; the Excalidraw example needs a portable placeholder that cannot point a copied page at the wrong Board.
-- [x] 🥀 Staleness is caught in the PROSE, not only in the state line
-      The mechanical check would have missed `QA4a` entirely if the state had been flipped and the paragraph left alone, which is the more likely half of this failure.
-      `haipipe-board-reviewer-agent` now compares each scoped page's state, finish list, current-status prose, links, and directly cited artifacts; it reports stale or contradictory claims and says `not verifiable` when evidence is unavailable.
-      Ticked 260726 with the standing reviewer implementation; the mechanical state-line checks remain a cheaper backstop.
 - [ ] 🏷 A retired id can be told apart from a live one
       Every `unresolved-id` warning on the first run was a deliberate historical mention: `QCb1`-`QCb4` in QA8 recording what the ids used to be, and the former QF group's QF2 in QB3 naming a retired ruling.
       A live reference and a historical one are typographically identical today, so no check can separate them and neither can a reader.
@@ -161,6 +166,23 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       This Board uses it, while the paper family's design Board opts its Q pages out because their `state:` is about the decision and implementation lives in the item list.
       `check.py` currently detects that Q-board variant by pattern-matching the sentence the design Board happens to use to say so, which works and is fragile.
       This closes when a board can state its own variant in `board.md` rather than having it guessed from prose.
+- [ ] 🔎 A 🧩 Skills row that claims "landed" is verifiable by the checker
+      `QAa5`'s convention (260729): a face's Where we are may carry a 🧩 Skills item whose rows name the skill file or section the face governs, each with a landed / NOT landed verdict.
+      A landed claim is greppable, so `check.py` can warn when the named section no longer exists or the claim rots; until it does, the convention has no mechanical half.
+
+### The fresh reviewer and the cold read
+- [x] 📏 The rules for plain language are written down
+      `ref/writing-rules.md` holds them, and `SKILL.md` excerpts the three deadliest with a pointer to the rest.
+      No invented terms, stale sentences purged when the board changes, and a fresh-agent cold read after every revision.
+      This was ticked on 260723 under QA5 and is inherited unchanged.
+- [x] 📄 The cold read has a report format that produces usable findings
+      It has run twice and both times returned findings that were acted on rather than argued with.
+      The format is fixed: unreadable sentences quoted, undefined words listed with the file they first appear in, missing premises named, then a grade per page.
+      The evidence that the format works is that its output changed the board: `## Topic` and `## Pipeline` exist because the first run said the files explain a recipe's format without ever saying what the dish is.
+- [x] 🥀 Staleness is caught in the PROSE, not only in the state line
+      The mechanical check would have missed `QA4a` entirely if the state had been flipped and the paragraph left alone, which is the more likely half of this failure.
+      `haipipe-board-reviewer-agent` now compares each scoped page's state, finish list, current-status prose, links, and directly cited artifacts; it reports stale or contradictory claims and says `not verifiable` when evidence is unavailable.
+      Ticked 260726 with the standing reviewer implementation; the mechanical state-line checks remain a cheaper backstop.
 - [x] 🤖 A registered standing reviewer, no longer an ad hoc prompt
       `haipipe-board-reviewer-agent` now packages the read-only review: it reads the Board rules, runs `check.py --strict`, cold-reads the changed pages using `ref/writing-rules.md`, checks visible state/status contradictions, and returns `pass | revise | blocked`.
       It has no write or edit tools. The original session remains the writer and must repair every finding, preserving builder ≠ judge.
@@ -169,6 +191,8 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       `ref/writing-rules.md` defines the current pass condition: no page is unreadable, and every reason for a `half` grade is either fixed or recorded as a known gap.
       What remains unquantified is when a growing set of known gaps is acceptable, and which count or severity should block the revision.
       Inherited open from QA5.
+
+### The shared trigger and the red-result ruling
 - [ ] 🔁 One trigger runs both checks after a change, and the result is reported
       An edit to `src/`, to `assets/board.css`, or to any page's prose should be followed by the checks, with the result stated rather than assumed.
       This single item is why the two questions merged: it was open on both, worded almost identically, and it is the only reason either check keeps failing to happen.
@@ -178,15 +202,25 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
       This is a decision about how we work rather than about the code, so it is JL's, and until it is made both checks report.
 
-- [ ] 🔎 A 🧩 Skills row that claims "landed" is verifiable by the checker
-      `QAa5`'s convention (260729): a face's Where we are may carry a 🧩 Skills item whose rows name the skill file or section the face governs, each with a landed / NOT landed verdict.
-      A landed claim is greppable, so `check.py` can warn when the named section no longer exists or the claim rots; until it does, the convention has no mechanical half.
+## Where we are
+
+- 260801 JL · 🔬 A THIRD instrument exists, and this face's two were green through every failure it catches
+  `QF3` opened on 260801 after a browser run passed 36 of 36 assertions.
+  What it changes here is the claim this face makes: the two instruments named above are a mechanical checker and a zero-background reader, and BOTH of them read text.
+  Six failures shipped on 260731 with this face's checker green and a reader who would have found nothing: the index rendering as inline links because invented class names matched no CSS, the left rail missing from a template, six ASCII figures never emitted, every write from a tree page failing silently, a CSS fix that never reached the page for want of cache-busting, and a stray triangle that survived two fixes on a specificity tie.
+  Every one lived in what the BROWSER did with text that was itself correct, which is the boundary between this face and `QF3`.
+  The shared trigger argument in §"Why they share a trigger anyway" now covers three instruments rather than two.
 
 ## Where we are
 Both instruments now exist and have a registered runner.
 `check.py` is the mechanical instrument; `haipipe-board-reviewer-agent` is the read-only fresh-context runner that combines its report with the prose and staleness review.
 The checker now reads the same state contract as the renderer: the first emoji is the four-value machine status, optional text is human detail, and live `/_board/` plus `/_excalidraw` routes are not mistaken for missing files.
 Seven decisions or implementations remain open: the two template examples, a full browser interaction check, a retired-id convention, Board-level rule opt-outs, a quantified policy for known cold-read gaps, automatic dispatch after changes, and whether a red result blocks the revision.
+
+- 260731 JL · 🌐 The trigger's scope is the SPACE, because the server's is
+  JL settled that the live layer is SPACE-level: one server per repo root serving every board under it, with `--root` as the served tree, `.haipipe-board/` at the root, and terminal keys hashed from the absolute page path so two boards' `QD3` cannot collide.
+  The consequence lands here rather than on `QA0`, which owns the scope itself: a change to anything shared changes every board at once, so "after every change" means across the root for a shared change and on one board for a local one.
+  Two failures the same day are the evidence, a `<head>` change that touched six boards and a restructure that broke three cross-board Links on a board nobody had opened.
 
 - 260726 CC · 🔩 The checker follows the live renderer contract
   Real paper pages use state detail such as `✅ PINNED · MISQ 2026`, and generated Excalidraw links are server routes rather than disk files.
@@ -226,13 +260,32 @@ Seven decisions or implementations remain open: the two template examples, a ful
   It found two things on its first outing that a person had missed for a day, and two of its own rules were wrong in ways only a real run exposes: it counted `<details>` inside CSS comments, and it applied this Board's settled-items rule to a Board that had ruled otherwise.
   Both are fixed, and both are the argument for running the checker rather than describing it.
 
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] 🧠 Rule whether a red result blocks a change or only reports it
+      The page already states the fork: a blocking gate is honest but stops work when the check itself is wrong, and a reporting gate is cheap but is only as good as whoever reads it.
+      The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
+      A tick here also closes the same row in Items to Finish.
+
 ## Files
+### The two instruments
+- `check.py`
+  The mechanical half. Four families, the 15-construct table, and the gap report. Read-only.
+- `haipipe-board-reviewer-agent.md`
+  The standing zero-background runner for the mechanical, prose, and visible-staleness review. It returns findings and never edits.
+
+### The standards and fixed inputs they read
 - `ref/writing-rules.md`
   The prose check's deliverable and its standard: the hard writing rules, the zero-background review prompt, and the convergence criterion.
 - `ref/q-template.md`
   The structural check's fixed test input and subject: the file copied for every new page, and the one whose promises the check verifies.
 - `ref/board-form.md`
   The syntax table the structural assertions should be derived from, section 5 for the body grammar and section 4 for the section mapping.
+- `SKILL.md`
+  Its writing section excerpts the three deadliest rules and points at `ref/writing-rules.md`.
+
+### The renderer under test
 - `src/page_question.py`
   The page renderer, which owns the Opening drawer, the Content subsections, and the Stage Contract.
 - `src/body.py`
@@ -241,13 +294,6 @@ Seven decisions or implementations remain open: the two template examples, a ful
   Where a construct's meaning can change without any Python changing, which is how ordinary drawer prose ended up styled like small metadata labels.
 - `build.py`
   The generator. Its built-in assertion checks that the body survives with every script stripped; `check.py` and the fresh reviewer are separate checks.
-- `SKILL.md`
-  Its writing section excerpts the three deadliest rules and points at `ref/writing-rules.md`.
-
-- `check.py`
-  The mechanical half. Four families, the 15-construct table, and the gap report. Read-only.
-- `haipipe-board-reviewer-agent.md`
-  The standing zero-background runner for the mechanical, prose, and visible-staleness review. It returns findings and never edits.
 
 ## Glossary
 zero-background reader: someone who has never touched this project, played by a freshly started agent because it genuinely does not know, while the author knows too much unwritten context to test anything themselves.
@@ -263,6 +309,9 @@ Opening: the always-visible opening section that states a page's question and sc
 > JL: Board should be a first-class family, and it should have a reviewer agent.
 
 ## Log
+260801 · QF3 opened as the third instrument: a browser run, because this face's two instruments both read text and six 260731 failures lived in what the browser did with it
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · The trigger's scope written down: a shared change is checked across the root, a board-local change on its board, because one server serves every board under the SPACE (QA0)
 260726 · fixed a Q/S boundary exposed by the real Paper lifecycle Board: checkbox/state staleness is now tested only on Q rulings; an S page's emoji is an independent human gate, so a gated stage may retain follow-up boxes without a false Q warning
 260726 · aligned the checker claim with its real boundary: canonical required Board/Q/S structure is now enforced, the shared-template item names renderer-mode coverage rather than completed-source validity, and the 15-row table is explicitly manual
 260726 · strengthened the template fixture after a fresh reviewer found output-only claims: source-vs-render drift is now distinguished, Q/S-specific placements are asserted, the Diagram matches the 15 checks, and two actual template gaps remain explicit

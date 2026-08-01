@@ -115,12 +115,28 @@ def resolve_focus(value, pages, groups):
 
 
 def board_url(board, root, base_url, anchor):
+    """The link a human clicks. Prefers QC9's split site when the board has one,
+    because that is what JL reads now; the one-file board.html stays as the
+    fallback for boards that have not been split yet (JL 260731: board.html is
+    on its way out, so nothing new should send anyone to it)."""
     try:
         relative = board.resolve().relative_to(root.resolve())
     except ValueError:
         return None
     path = urllib.parse.quote(relative.as_posix(), safe="/")
-    return f"{base_url.rstrip('/')}/{path}/board.html#{anchor}"
+    base = f"{base_url.rstrip('/')}/{path}"
+    site = board / "board"
+    if site.is_dir() and (site / "index.html").exists():
+        # anchor is a page id (QD2), a group code (QD), or an index anchor
+        if anchor and anchor not in ("top", "qlist", "all"):
+            for html in sorted(site.glob("*/*.html")):
+                if html.stem.split("-")[0] == anchor:
+                    return f"{base}/board/{html.parent.name}/{html.name}"
+            grp = site / f"{anchor}.html"
+            if grp.exists():
+                return f"{base}/board/{anchor}.html"
+        return f"{base}/board/index.html"
+    return f"{base}/{'board.html'}#{anchor}"
 
 
 def render(board, focus="board", mode="status", status="ready", next_action="",

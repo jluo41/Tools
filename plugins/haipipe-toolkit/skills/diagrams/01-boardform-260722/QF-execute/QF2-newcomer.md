@@ -12,6 +12,7 @@ It is hard because the author's head holds a pile of things that never made it i
 Leaving it unproven is not an option here: the repo's `CLAUDE.md` hard-codes the rule that any skill change must be validated by a fresh agent before it counts as done, so unvalidated equals unfinished.
 Downstream, this is the only acceptance gate that can be **re-run**, since every structural change (like the 260723 redesign) voids the previous acceptance and forces a re-run.
 
+
 ## Boundary
 - ✅ Covered here
   **How acceptance is run**: what the fresh agent is given, what it must do, what counts as passing, how often to re-run.

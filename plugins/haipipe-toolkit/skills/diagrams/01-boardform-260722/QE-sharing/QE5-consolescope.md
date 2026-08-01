@@ -14,6 +14,7 @@ It is hard because the console's whole rail is scope-filtered (DATA/INSIGHT/ACTI
 Left alone, v1 keeps Boards inside both scopes' Action group, which is findable but implies boards are patient-or-cohort work, so the first colleague who opens `/individual` → Boards and sees skill-design boards will be confused exactly the way `QA9`'s cold read warns about.
 Downstream it touches the SPA's top-level routes (`/individual` · `/group` today, registered in `main.py` so refreshes work), the rail contents per scope, and where the SPACE picker lives (`QE2`'s layer).
 
+
 ## Boundary
 - ✅ Covered here
   **Where Boards sits in the console's information architecture**: inside the scopes, a third top-level entry, or a space-level shell above the scopes.
@@ -73,5 +74,6 @@ Downstream it touches the SPA's top-level routes (`/individual` · `/group` toda
 >> CC0724: agreed: a board's subject is the workroom, not a patient or a cohort, so parking it inside the scopes was a v1 convenience, not a position. My recommendation is your instinct exactly (option ②): individual / group / boards as three top-level entries. ③ (pick the SPACE first, then scope) is the fuller shape but only earns its keep once a second real SPACE is mounted; ② grows into it without rework. Your call; the fork is laid out in the Diagram.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260724 1410 · ② implemented (JL approved the plan): /boards top-level page, trio toggle everywhere, Boards out of the scope rails; SPA rebuilt, route serves. 🔴 → 🟡; zero-background test remains
 260724 1350 · Opened: JL flagged that boards are neither individual- nor group-level and proposed a top-level /board entry; three options laid out, CC recommends ② (third top-level entry), decision is JL's

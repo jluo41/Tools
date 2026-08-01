@@ -27,9 +27,21 @@ def stamp(d):
                        for s in p.relative_to(d).parts[:-1])}
 
 
-def build(d):
-    r = subprocess.run([sys.executable, str(HERE / "build.py"), str(d)],
-                       capture_output=True, text=True)
+def build(d, only=None):
+    """Rebuild the board.
+
+    `only` names the .md files that actually changed. When the board/ tree
+    exists, that lets the rebuild rewrite JUST those pages instead of all of
+    them, which is JL's 260731 rule: changing one page must not disturb a
+    reader sitting on another (QC9). board.html is whole-board by construction,
+    so it is still rewritten; the tree is where the granularity pays.
+    """
+    cmd = [sys.executable, str(HERE / "build.py"), str(d)]
+    if (d / "board").is_dir():
+        cmd.append("--split")
+        if only:
+            cmd += ["--only", ",".join(sorted(only))]
+    r = subprocess.run(cmd, capture_output=True, text=True)
     print((r.stdout or r.stderr).strip(), flush=True)
 
 
@@ -46,10 +58,11 @@ if __name__ == "__main__":
             time.sleep(1)
             cur = stamp(d)
             if cur != prev:
-                changed = [p.name for p in cur
-                           if p not in prev or prev[p] != cur[p]]
-                print(f"\n📝 {', '.join(changed) or '有文件被删'}", flush=True)
-                build(d)
+                changed_paths = [p for p in cur
+                                 if p not in prev or prev[p] != cur[p]]
+                changed = [p.name for p in changed_paths]
+                print(f"\n📝 {', '.join(changed) or 'a file was deleted'}", flush=True)
+                build(d, only=changed)
                 prev = cur
     except KeyboardInterrupt:
         print("\n停了。")

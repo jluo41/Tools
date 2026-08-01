@@ -3,7 +3,7 @@
 state: 🟡 PARTIAL
 owner: CC
 method: one button in 🖼 Diagram that writes the same line an author would type
-
+session: 5f9062c2-86e1-43fd-9a59-58732339e903
 ## Question
 When an ASCII figure is not enough and the shape is worth drawing on together, how does the drawing get attached to a page without leaving the page to hand-edit the markdown?
 
@@ -13,6 +13,7 @@ Attaching a drawing meant opening the page's `.md`, finding the Diagram section,
 That gap matters more here than for prose, because a drawing is the thing people reach for in the middle of a discussion, and a mechanism that requires leaving the discussion to use a text editor gets used once and then abandoned.
 Every other write on this board already comes back to the page: comments, discussion, sentence apparatus, checkbox state, structure.
 Diagram was the one section that could only be read.
+
 
 ## Boundary
 - ✅ Covered here
@@ -81,6 +82,7 @@ Nothing records who attached a drawing, unlike comments and discussion, which ca
 Two people attaching at once is unhandled, the same gap `QE4` owns for body text.
 
 ## Items to Finish
+### 🖌 The write path
 - [x] 🖌 An excalidraw can be attached from the page
       The control exists in 🖼 Diagram, posts to `/_board/diagram`, and the excalidraw is on the page after the live refresh.
       Verified 260726 on a throwaway board: a URL added to a page that already had an ASCII figure landed on its own line below the fence, with a blank line before it, exactly as an author would have written it.
@@ -89,6 +91,12 @@ Two people attaching at once is unhandled, the same gap `QE4` owns for body text
 - [x] 🛡 The endpoint refuses what it should
       A non-Excalidraw URL was rejected with nothing written, and the section scan skips fenced examples.
       The missing-section case created `## Diagram` immediately before `## Content` and returned the warning about the absent ASCII figure.
+- [x] ✍️ An attached drawing records who attached it: ruled NO (260726)
+      The rule this page is built on is that what lands in the markdown is what an author would have typed, and a signature is a thing no author types beside a URL.
+      Adding one would invent syntax that only the button knows how to produce, which is exactly the property that lets a hand-written page and a button-written page be the same file.
+      Attribution is not lost: the boards are in git, so `git log -S<url>` names who added a drawing and when, with no new format to maintain.
+
+### 🔁 Reversible and reachable everywhere
 - [x] 🗑 An excalidraw can be removed from the page
       `🗑 Remove` appears in the control whenever the page already has a canvas, and posts `{remove: true}` to the same endpoint.
       It deletes the URL line and the blank line above it, and touches nothing else: the ascii figure, the heading, and the section all stay, because removing a drawing and removing a section are different acts with different blast radii.
@@ -97,10 +105,8 @@ Two people attaching at once is unhandled, the same gap `QE4` owns for body text
       `wireXcal` now walks PAGES rather than Diagram sections, so a page without one gets a `🖼 Add a Diagram` control placed where the section would render, between Opening and Content.
       That is the same fixed position the endpoint already inserted `## Diagram` at, so the button and the writer agree about the layout instead of each having an opinion.
       The endpoint never needed changing: it has created the missing section since the day it shipped, and only the way in was absent.
-- [x] ✍️ An attached drawing records who attached it — ruled NO (260726)
-      The rule this page is built on is that what lands in the markdown is what an author would have typed, and a signature is a thing no author types beside a URL.
-      Adding one would invent syntax that only the button knows how to produce, which is exactly the property that lets a hand-written page and a button-written page be the same file.
-      Attribution is not lost: the boards are in git, so `git log -S<url>` names who added a drawing and when, with no new format to maintain.
+
+### 🧪 The cold read
 - [ ] 🧪 A fresh agent finds and uses the control without being told
       The button is discoverable only if a reader opens the Diagram section, which is collapsed by default.
       This closes when a cold read confirms it, or reports that it does not.
@@ -125,12 +131,15 @@ The code is uncommitted in the `Tools` submodule, alongside the `--host` flag fr
   The endpoint is 60 lines in `serve.py`, the control is 50 in `board.js`, and the generator was not touched, so a board built by an older copy of the skill still renders every excalidraw.
 
 ## Files
+### The write half
 - `serve.py`
   `add_diagram` and the `/_board/diagram` route. All the refusals and the placement rules live here.
-- `haipipe-board/assets/board.js`
+- `haipipe-board/assets/js/10-drawer/20-chat.js`
   `wireXcal`, called from `rewire()` so the control survives a live refresh.
-- `haipipe-board/assets/board.css`
+- `haipipe-board/assets/css/`
   `.xadd` and its row. Dashed outline, so it reads as an affordance rather than as content.
+
+### The renderer half
 - `src/body.py`
   The renderer that turns the written line into an excalidraw plus its fallback link. Not modified by this question.
 
@@ -143,5 +152,6 @@ affordance: a control the page offers, added by script, that writes into the mar
 >> CC0726: built as a button inside 🖼 Diagram. The line it writes is the same line a hand-edit would produce, so nothing about the format depends on the button existing.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260726 2300 · 🗑 removal + 🕳 an entry point on every page (JL asked for QD5): `add_diagram` takes `{remove:true}` and deletes the URL line plus its blank line, refusing when there is nothing to remove or no section; `wireXcal` walks pages instead of sections and drops a `🖼 Add a Diagram` control between Opening and Content when there is no section; the signature item ruled NO because a signature is syntax no author types; fixed `face.dataset.file`, an undefined variable that made `✨ Create one for me` report the wrong error since it shipped; add/replace/remove round trip verified byte-identical
 260726 1210 · opened and built: `/_board/diagram` endpoint, `wireXcal` control, `.xadd` styles; four cases verified on a throwaway board; removal, signature, and the no-section case left open

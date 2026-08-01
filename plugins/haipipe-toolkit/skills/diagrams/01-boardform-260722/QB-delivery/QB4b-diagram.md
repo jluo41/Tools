@@ -3,6 +3,7 @@
 state: 🟡 PARTIAL
 owner: JL
 method: settle what can be generated before deciding what to pay for; the hosted half turned out to be a container we run ourselves
+session: d446a3be-4cd7-40c2-a680-0c76a82e394b
 
 ## Question
 Can a board own ONE excalidraw, carrying a frame per page, with each page's Diagram opening at its own frame?
@@ -13,6 +14,7 @@ Before this, an excalidraw was pasted per page, one at a time, by a human who dr
 That works and it loses the thing a board most wants from a drawing, which is the relationships BETWEEN pages: the Pipeline ASCII in `board.md` is exactly that attempt, made in a medium that cannot show a link.
 One excalidraw with a frame per page puts every page on one surface, so moving a box is a statement about the board rather than about one question.
 The thing that would have made this fragile is identity, since a hosted deep link is `…/s/<scene>/<key>?element=<id>` and a re-share kills all 28 at once; owning the file removes that failure entirely, which is most of why the local route won.
+
 
 ## Boundary
 - ✅ Covered here
@@ -316,6 +318,19 @@ Declaring the scene once in `## Links` and composing the anchor at build time me
 Storing the whole URL per page is the version that breaks all at once, and this board has now watched that exact failure three times in one afternoon.
 
 ## Items to Finish
+### The route ruling, and the road not taken
+- [x] 🔎 Find out whether a public Excalidraw API exists at all
+      It does. Excalidraw+ documents a bearer-key API with scene create and full content replace, checked 260726.
+      This page said the opposite for its first hour, on the strength of a Playwright script in this repo.
+- [x] 🧠 JL ruled the route: our own Excalidraw, run locally
+      JL asked to try the localhost version first on 260726, then used it and asked for it on every page, which is the ruling in practice.
+      It takes the fourth route rather than any of the three this page opened with: the file is the truth, the editor is the open-source app in a container, and the per-frame anchor is computed by `serve.py` instead of bought.
+      No key, no subscription, no vendored bundle, and no SVG exporter.
+- [ ] 💳 Whether the Plus route stays open at all
+      It is documented on this page and costs a subscription plus a public-beta dependency, and nothing on the local route needs it.
+      This closes when JL either parks it explicitly or names what would make it worth buying.
+
+### The generated scene, and what a regen must keep
 - [x] 📍 The scene's home is decided: the board root, not `fig/`
       JL 260729: "we will put the excalidraw at the root, as the 1st level citizen."
       `xcal.py` writes `<board>/board.excalidraw` and falls back to an existing `fig/board.excalidraw` where a board already keeps one, so the two other boards holding a scene keep working and neither forks in two.
@@ -324,16 +339,6 @@ Storing the whole URL per page is the version that breaks all at once, and this 
       The 260729 regen produced 40 frames and reported 21 overlapping pairs: kept human positions collided with widths recomputed for the restructured pages.
       `--fresh` fixes the layout and drops the 2 elements a human owns, so it was not run.
       This closes when those 2 elements are identified and preserved, or JL says they are expendable.
-- [ ] 🗂 The two boards still keeping a scene under `fig/` are told, not moved
-      `01-haipipe-paper-260725` and the MISQ paper's `0-lifecycle/` each hold a `fig/board.excalidraw`.
-      Under `QB1` §4 moving another board's file is that owner's decision, so this closes with a report to each, not a `git mv`.
-- [x] 🔎 Find out whether a public Excalidraw API exists at all
-      It does. Excalidraw+ documents a bearer-key API with scene create and full content replace, checked 260726.
-      This page said the opposite for its first hour, on the strength of a Playwright script in this repo.
-- [x] 🧠 JL ruled the route: our own Excalidraw, run locally
-      JL asked to try the localhost version first on 260726, then used it and asked for it on every page, which is the ruling in practice.
-      It takes the fourth route rather than any of the three this page opened with: the file is the truth, the editor is the open-source app in a container, and the per-frame anchor is computed by `serve.py` instead of bought.
-      No key, no subscription, no vendored bundle, and no SVG exporter.
 - [x] 🖼 A board-shaped scene is generated, one frame per page
       `xcal.py` builds `board.excalidraw` from `board.md`: frames named for the pages, one row per `## Pages` group with the group's name above it, each frame sized to the figure it holds.
       It is its own script rather than part of `build.py` because `build.py` runs on every file save and a scene regen must not.
@@ -344,10 +349,12 @@ Storing the whole URL per page is the version that breaks all at once, and this 
 - [x] 🌱 A frame opens onto something rather than onto a blank box
       Each frame carries its page's `## Diagram` ASCII figure as a monospace text element, seeded one way from the markdown.
       25 of 28 pages have a figure to seed; the other three get a grey placeholder saying so.
-- [ ] 🔗 The URL is composed rather than stored, or the storing is made cheap
-      Today the whole URL sits on each page and `xcal.py --wire` rewrites all 28 in one command, which answers the RISK (a change is one command) without answering the QUESTION (the page still stores something it did not decide).
-      `board.md` declares the host once, on its `excalidraw:` line, so only the path and the frame name are duplicated.
-      This closes when either the anchor is composed at build time from the host plus the page id, or JL rules that a rewritable duplicate is the right trade.
+- [ ] 🌱 A regen does not quietly revert what someone drew over a seed
+      The seeded ASCII text is a generated element, so `xcal.py` rewrites it; editing that text in Excalidraw and then regenerating loses the edit.
+      Drawings around it are safe (unprefixed ids are kept) and this only touches the seed itself.
+      This closes when the seed is either locked in the editor or the rule is written where someone about to edit it will read it.
+
+### Drawing in the browser, and the write-back
 - [x] 🔁 A drawing made in the browser returns to `board.excalidraw`
       `serve.py` injects `assets/xcal-boot.js` into the app it proxies; the script seeds the editor from the file and POSTs changes to `/_board/excalidraw-save`, which merges that frame's slice.
       Verified server-side on 260726 by drawing into QC4 over HTTP: the element landed, it was adopted by the frame, all 27 other frames stayed byte-identical, and both an unknown frame name and a path outside `--root` were refused.
@@ -371,16 +378,20 @@ Storing the whole URL per page is the version that breaks all at once, and this 
       The tab now compares CONTENT rather than raw JSON, and `xcal.py` keeps an element the browser has enriched rather than writing its plainer version back.
       Without the second half the two would have dirtied the file in turn forever, each undoing the other.
       Measured, not assumed: opening the editor twice in a row leaves the file byte-identical the second time, and two `xcal.py` runs in a row do too.
-- [ ] 🌱 A regen does not quietly revert what someone drew over a seed
-      The seeded ASCII text is a generated element, so `xcal.py` rewrites it; editing that text in Excalidraw and then regenerating loses the edit.
-      Drawings around it are safe (unprefixed ids are kept) and this only touches the seed itself.
-      This closes when the seed is either locked in the editor or the rule is written where someone about to edit it will read it.
+
+### Identity, links, and copies that leave the repo
+- [ ] 🗂 The two boards still keeping a scene under `fig/` are told, not moved
+      `01-haipipe-paper-260725` and the MISQ paper's `0-lifecycle/` each hold a `fig/board.excalidraw`.
+      Under `QB1` §4 moving another board's file is that owner's decision, so this closes with a report to each, not a `git mv`.
+- [ ] 🔗 The URL is composed rather than stored, or the storing is made cheap
+      Today the whole URL sits on each page and `xcal.py --wire` rewrites all 28 in one command, which answers the RISK (a change is one command) without answering the QUESTION (the page still stores something it did not decide).
+      `board.md` declares the host once, on its `excalidraw:` line, so only the path and the frame name are duplicated.
+      This closes when either the anchor is composed at build time from the host plus the page id, or JL rules that a rewritable duplicate is the right trade.
 - [ ] 📄 A copied `board.html` still shows something where the excalidraw is
       The iframe needs `serve.py` and the container, so a page mailed to someone renders an empty box in place of the drawing.
       The ASCII figure in `## Diagram` is the standing answer (§0), and the seed means the same figure is now in both places, so this may close by rule rather than by code.
-- [ ] 💳 Whether the Plus route stays open at all
-      It is documented on this page and costs a subscription plus a public-beta dependency, and nothing on the local route needs it.
-      This closes when JL either parks it explicitly or names what would make it worth buying.
+
+### The proof of use
 - [ ] 🧪 One real board is drawn this way and read by someone else
       An excalidraw nobody opens is a prettier version of the problem.
       Nothing has been drawn yet: all 89 elements in the scene are generated.
@@ -418,17 +429,30 @@ What is left is smaller: a regen still overwrites the seeded ASCII text, and an 
   JL then asked whether the VS Code and Obsidian plugins mean we could host it ourselves, which is the second real route and needs no key at all.
   So the page changed from "is this possible" to "which of three routes", and `QE6` still owns where the credential would live if the paid one is chosen.
 
+### Decision Now
+- [ ] 🧭 Say whether the 2 human-drawn elements are expendable
+      The options the Items row records: identify and preserve the 2 elements a human owns before a relayout, or rule them expendable so `--fresh` can fix the 21 overlapping pairs.
+- [ ] 🔗 Rule the URL trade: composed at build, or stored and rewritable
+      The options the Items row records: compose the anchor at build time from the host plus the page id, or accept the stored duplicate because `xcal.py --wire` rewrites all 28 in one command.
+- [ ] 💳 Park the Plus route or name what would make it worth buying
+      The options the Items row records: park it explicitly, or name what would make it worth buying; nothing on the local route needs it.
+
 ## Files
+### Engines
 - `../../board/haipipe-board/assets/xcal-boot.js`
   Injected into the proxied editor. Owns the storage: seeds it from the file, writes it back, and keeps an embed from persisting anything.
 - `../../board/haipipe-board/xcal.py`
   Builds the scene and wires the pages. Everything this page settled is implemented here; start here.
 - `../../board/haipipe-board/serve.py`
   Holds `serve_frame()` (the `?frame=` projection), `save_excalidraw()` (the merge back), and `proxy_excalidraw()` (the container behind the one forwarded port, and the script injection).
+
+### The scene and its declaration
 - `board.excalidraw`
   The scene itself, one file, at the board root since 260729. 40 frames, of which 2 elements are a human's and the rest are generated.
 - `board.md`
   Declares the editor host once, on its `excalidraw:` line.
+
+### Prior art to read first
 - `../../0_utils/diagram-ascii-canvas/bin/txt_to_canvas_lib.py`
   Already wrote `.excalidraw` JSON with frames before any of this. Read it before writing a second emitter.
 - `../../0_utils/diagram-ascii-canvas/bin/share-via-excalidraw.py`
@@ -455,6 +479,7 @@ When a script edits a section, rebuilding the section from its parts is safe in 
 >> CC0726: two causes, and only the second was ours. The dialog's confirm is called "Replace my content", and the frame behind it held nothing, because 28 named empty frames was the whole scene. Frames are seeded from the pages' ASCII figures as of this entry.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Marked frame under the base/variant model on QAa0; §0's heading simplified and the provenance parentheticals dropped from headings on JL's ask (the Log already records the merges)
 260729 · Renamed QA4a -> QAa2 when the QAa page group was carved (JL), and the `## Diagram` section's own render rules moved in from the page-layout face as §0, so the section and its canvas are one subject. Older lines cite QA4/QA4a; they are history
 260726 · DRIVEN BY A REAL BROWSER (JL: "will it work?"): headless Chrome over the DevTools protocol, which found two things no amount of reading would have. First, the boot script was injected BEFORE the variable it reads, so the app never started at all behind a correct-looking badge. Second, merely opening the editor rewrote the file, because Excalidraw renormalises everything it loads

@@ -65,7 +65,11 @@ def parse_board(board):
                 # `## Board Map` is the ASCII map (JL 260730): the map a static
                 # host can always draw, and the one whose ids travel. It wins
                 # over the `board-map:` canvas URL when both are present.
-                map=sec(bs, "Board Map"), dir="")
+                map=sec(bs, "Board Map"),
+                # `## Related Folders` (QB2/QA0, JL 260731): the folders this
+                # board touches, embedded file-by-file into the RELATED FOLDERS
+                # index fold at build time.
+                related=sec(bs, "Related Folders"), dir="")
 
 
 def parse_doc(d, paths):
@@ -217,6 +221,12 @@ def parse_dir(d):
         # DISPATCHED into a fresh one. Same grammar, own prefix, sorts after
         # the Skill rows so the roster reads kind by kind.
         agent_m = re.match(r"Agent-(\d+)-(.+)$", p.stem)
+        # A MEETING is neither (QC10, JL 260731): a skill is LOADED, an agent is
+        # DISPATCHED, a meeting HAPPENED. Same grammar again, its own prefix,
+        # and it sorts last so the roster reads kind by kind. It closes when its
+        # decisions have been routed onto the pages that own them, never by a
+        # checkbox count, which is why it stays outside the settled-question sum.
+        meeting_m = re.match(r"Meeting-(\d+)-(.+)$", p.stem)
         full_sm = re.match(
             # The unit is a NUMBER (a manuscript section), a single CAPITAL
             # (an appendix), or a CAPITALISED WORD. The third is for a page that
@@ -241,8 +251,14 @@ def parse_dir(d):
         )
         legacy_sm = re.match(r"(SM|SA|S)(\d+[a-z]?)", p.stem, re.I)
         sm = full_sm or legacy_sm
-        if qm or sm or named_qm or skill_m or agent_m:
-            if skill_m:
+        if qm or sm or named_qm or skill_m or agent_m or meeting_m:
+            if meeting_m:
+                family = "meeting"
+                page_id = f"Meeting-{meeting_m.group(1)}"
+                # sorts after every Skill and Agent row
+                key = (0, "\ufffe1", int(meeting_m.group(1)), "")
+                kind = "meeting"
+            elif skill_m:
                 family = "skill"
                 page_id = f"Skill-{skill_m.group(1)}"
                 # after every lettered group, before the older Q-<Family> rows

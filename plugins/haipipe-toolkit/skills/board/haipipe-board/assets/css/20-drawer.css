@@ -1,0 +1,312 @@
+/* ── 每题一个对话窗（QD1）──────────────────────────────────── */
+.chatbtn{margin-left:6px;border:1px solid var(--line);background:var(--bg);color:var(--mut);
+ border-radius:var(--radius-control);padding:2px 10px;font:11.5px inherit;cursor:pointer}
+.chatbtn:hover{border-color:var(--accent);color:var(--accent)}
+/* 右侧整条抽屉（照 haichat-inlab 的 drawer）：占满高度，页面往左让位。
+   打开它的图标是右下角那个悬浮的 💬 Chat（#chatfab）。 */
+/* 宽度走 --chatw 一个变量（JL 260731 拖宽）：左缘 .rz 把手拖动改它，本机记住 */
+#chat{position:fixed;top:0;right:0;bottom:0;z-index:60;width:min(var(--chatw,440px),92vw);
+ display:none;flex-direction:column;background:var(--card);
+ border-left:1px solid var(--line);box-shadow:-12px 0 34px rgba(0,0,0,.20)}
+#chat.on{display:flex}
+body.chaton{padding-right:min(var(--chatw,440px),92vw)}
+@media(max-width:820px){body.chaton{padding-right:0}}
+#chat .rz{position:absolute;left:-3px;top:0;bottom:0;width:7px;cursor:col-resize;
+ z-index:5;touch-action:none}
+#chat .rz:hover,#chat .rz:active{background:var(--accent);opacity:.35}
+/* session 拣选器（QD1 Law 260731）：current + 历史 + 新开一段 */
+#chat .spick{flex:0 0 auto;border-bottom:1px solid var(--line);background:var(--card);font-size:12px}
+#chat .spick summary{padding:6px 14px;cursor:pointer;color:var(--mut);list-style:none;user-select:none}
+#chat .spick summary:hover{color:var(--accent)}
+#chat .spick .spl{max-height:190px;overflow-y:auto;padding-bottom:4px}
+#chat .spick .sprow{display:flex;gap:8px;padding:5px 14px;cursor:pointer;align-items:baseline}
+#chat .spick .sprow:hover{background:var(--bg)}
+#chat .spick .sprow.cur{box-shadow:inset 3px 0 0 var(--accent)}
+#chat .spick .sprow.dim{opacity:.55}
+#chat .spick .sprow.new{color:var(--accent);font-weight:600}
+#chat .spick .sprow .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#chat .spick .sprow .meta{flex:0 0 auto;color:var(--mut);font:11px ui-monospace,Menlo,monospace}
+#chat .spick .sprow.named .t{font-weight:600;font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+#chat .spick .sprn{flex:0 0 auto;border:none;background:transparent;color:var(--mut);
+ cursor:pointer;font-size:11px;padding:0 2px;opacity:0}
+#chat .spick .sprow:hover .sprn{opacity:.8}
+#chat .spick .sprn:hover{color:var(--accent)}
+#chat .spick .spin{flex:1;min-width:0;border:1px solid var(--accent);border-radius:4px;
+ background:var(--bg);color:var(--fg);font-size:12px;padding:2px 6px;outline:none}
+
+/* 打开聊天框的悬浮图标：右下角。看某一题时开那一题的抽屉（JL 260723）；
+   在目录页也在 —— 那里开的是整板会话（QD5，JL 260725）。抽屉开着就藏。 */
+#chatfab{position:fixed;right:20px;bottom:20px;z-index:55;display:none;
+ align-items:center;gap:7px;background:var(--accent);color:#fff;border:none;
+ border-radius:var(--radius-pill);padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;
+ box-shadow:0 6px 20px rgba(0,0,0,.28)}
+#chatfab:hover{filter:brightness(1.06)}
+body:not(.chaton) #chatfab{display:inline-flex}
+/* 聚焦看一题时，卡片头里那个小 💬 Chat 让位给悬浮图标；平铺/展开视图里还留着 */
+body:has(.q:target) .chatbtn,
+body.split .chatbtn{display:none}
+#chat .hd{background:var(--card);color:var(--fg);padding:11px 12px 11px 14px;
+ display:flex;gap:10px;align-items:center;min-height:56px;border-bottom:1px solid var(--line);
+ font-size:14px;font-weight:600;flex:0 0 auto}
+#chat .hd .qid{flex:0 0 auto;color:var(--mut);padding:0;
+ font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.06em}
+#chat .hd .ti{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+ font-size:14px;font-weight:650;color:var(--fg)}
+#chat .hd button{flex:0 0 32px;width:32px;height:32px;border:1px solid var(--line);
+ border-radius:var(--radius-control);background:transparent;color:var(--mut);cursor:pointer;line-height:1}
+#chat .hd button:hover{background:var(--bg);border-color:var(--accent);color:var(--accent)}
+#chat .hd .term{margin-left:2px;font:600 12px ui-monospace,Menlo,monospace}
+#chat .tm{display:none;flex:1 1 auto;min-height:0;width:100%;background:#0b0d12;
+ padding:6px 8px;overflow:hidden}
+#chat .tm .xterm{height:100%}
+#chat .tm .xterm-viewport{overflow-y:auto}
+#chat .hd .x{font-size:20px;font-weight:400}
+#chat .sfocus{flex:0 0 auto;margin:10px 12px 0;padding:10px 11px;
+ border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));
+ border-left:3px solid var(--accent);border-radius:var(--radius-surface);
+ background:color-mix(in srgb,var(--accent) 5%,var(--bg))}
+#chat .sfocus[hidden]{display:none}
+#chat .sfrow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+#chat .sflabel{color:var(--accent);font:700 10px ui-monospace,Menlo,monospace;
+ letter-spacing:.08em}
+#chat .sfref{flex:1;color:var(--mut);font-size:11px}
+#chat .sfpath{margin:-2px 0 7px;color:var(--mut);white-space:pre-line;
+ font:11px/1.45 ui-monospace,Menlo,monospace}
+#chat .sfpath[hidden]{display:none}
+#chat .sfclear{width:24px;height:24px;padding:0;border:0;background:transparent;
+ color:var(--mut);border-radius:var(--radius-control);cursor:pointer;font-size:17px}
+#chat .sfclear:hover,#chat .sfclear:focus-visible{background:var(--pre);color:var(--accent);
+ outline:none}
+#chat .sfquote{font-size:13px;line-height:1.5;color:var(--fg);
+ display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#chat .sfattached{margin-top:7px;color:var(--mut);font-size:11.5px}
+#chat .sfattached>summary{cursor:pointer;list-style:none}
+#chat .sfattached>summary::-webkit-details-marker{display:none}
+#chat .sfattached>summary:before{content:"▸ "}
+#chat .sfattached[open]>summary:before{content:"▾ "}
+#chat .sfattached pre{max-height:130px;overflow:auto;margin:6px 0 0;padding:7px 8px;
+ white-space:pre-wrap;background:var(--pre);border-radius:var(--radius-control);
+ color:var(--mut);font:11px/1.45 ui-monospace,Menlo,monospace}
+#chat .bd{padding:14px;flex:1 1 auto;min-height:0;overflow-y:auto;
+ display:flex;flex-direction:column;gap:9px;background:var(--bg)}
+#chat .m{max-width:90%;padding:9px 13px;border-radius:var(--radius-surface);font-size:14px;line-height:1.6;
+ white-space:pre-wrap;word-break:break-word}
+#chat .m.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:var(--radius-inline)}
+#chat .m.cc{align-self:flex-start;background:var(--pre);color:var(--fg);
+ border:1px solid var(--line);border-bottom-left-radius:var(--radius-inline)}
+#chat .m.sys{align-self:center;background:none;color:var(--mut);font-size:12px;padding:2px}
+/* 思考过程折叠块 */
+#chat .tk{align-self:flex-start;max-width:92%;border:1px dashed var(--line);
+ border-radius:var(--radius-surface);background:var(--bg);padding:4px 11px;margin:1px 0}
+#chat .tk>summary{cursor:pointer;color:var(--mut);font-size:12.5px;list-style:none;padding:3px 0}
+#chat .tk>summary::-webkit-details-marker{display:none}
+#chat .tk>summary::before{content:"▸ ";color:var(--mut)}
+#chat .tk[open]>summary::before{content:"▾ "}
+#chat .tk .tk-body{white-space:pre-wrap;word-break:break-word;color:var(--mut);
+ font-size:12.5px;line-height:1.6;padding:4px 0 6px;max-height:280px;overflow-y:auto}
+/* 权限提示，跟 CLI 那个弹窗一个意思 */
+#chat .ask{align-self:stretch;border:1px solid var(--wip);border-radius:var(--radius-surface);
+ padding:10px 12px;background:var(--bg)}
+#chat .ask .q{font-size:13px;font-weight:600;color:var(--wip);margin-bottom:6px}
+#chat .ask .w{font:12px ui-monospace,Menlo,monospace;color:var(--fg);
+ background:var(--pre);border-radius:var(--radius-control);padding:7px 9px;margin-bottom:9px;
+ overflow-x:auto;white-space:pre}
+#chat .ask .b{display:flex;gap:7px;align-items:center}
+#chat .askd{max-height:230px;overflow:auto;margin:0 0 9px}
+#chat .askd pre{margin:0 0 4px;padding:6px 9px;border-radius:var(--radius-control);font-size:11.5px;
+ line-height:1.45;white-space:pre-wrap;word-break:break-word;
+ font-family:ui-monospace,Menlo,monospace}
+#chat .askd pre.del{background:rgba(214,102,102,.12);color:#b3564e;
+ border-left:3px solid #d66}
+#chat .askd pre.add{background:rgba(74,165,90,.12);color:#3c7d4c;
+ border-left:3px solid #4a5}
+#chat .askd pre.cmd{background:var(--pre);color:var(--fg);
+ border-left:3px solid var(--wip)}
+.lrf{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+ background:var(--accent);color:#fff;padding:7px 14px;border-radius:var(--radius-pill);
+ font-size:13px;z-index:99;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#chat .ask button{border:1px solid var(--line);background:var(--card);color:var(--fg);
+ border-radius:var(--radius-control);padding:5px 11px;font:12.5px inherit;cursor:pointer}
+#chat .ask button.ok{background:var(--done);border-color:var(--done);color:#fff}
+#chat .ask button.n{color:var(--todo);border-color:var(--todo)}
+/* 回复里的 markdown */
+#chat .m.md{white-space:normal}
+#chat .m.md p{margin:0 0 7px}
+#chat .m.md p:last-child{margin-bottom:0}
+#chat .m.md .mh{font-weight:700;margin:9px 0 5px}
+#chat .m.md ul,#chat .m.md ol{margin:4px 0 7px;padding-left:20px}
+#chat .m.md li{margin:2px 0}
+#chat .m.md li.cont{list-style:none;color:var(--mut);margin-left:-6px}
+#chat .m.md pre{margin:6px 0;padding:9px 11px;font-size:12px;line-height:1.5;
+ background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-control);overflow-x:auto}
+#chat .m.md code{font-size:12.5px}
+#chat .ft{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);
+ align-items:flex-end;flex:0 0 auto}
+#chat textarea{flex:1;border:1px solid var(--line);border-radius:var(--radius-surface);padding:8px 11px;
+ font:14px inherit;background:var(--bg);color:var(--fg);resize:none;max-height:110px}
+#chat .send{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-surface);
+ width:38px;height:36px;cursor:pointer;font-size:15px}
+#chat .send:disabled{opacity:.45;cursor:default}
+#chat .send.stop{background:var(--todo)}
+#chat .tip{padding:0 13px 9px;font-size:11.5px;color:var(--mut)}
+#chat .cfg{display:flex;gap:7px;align-items:center;padding:0 13px 8px;flex:0 0 auto}
+#chat .cfg select{border:1px solid var(--line);border-radius:var(--radius-control);padding:4px 7px;
+ background:var(--bg);color:var(--fg);font:12px inherit}
+#chat .cfg .cost{margin-left:auto;font:11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+#chat .sid{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:0 13px 8px;
+ font-size:11.5px;color:var(--mut);flex:0 0 auto}
+#chat .sid code{font-size:11px}
+#chat .acts{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 4px;flex:0 0 auto}
+#chat .act{border:1px solid var(--line);background:var(--bg);color:var(--fg);
+ border-radius:var(--radius-pill);padding:5px 12px;font:12.5px inherit;cursor:pointer}
+#chat .act:hover{border-color:var(--accent)}
+#chat .act.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+#chat .utility{flex:0 0 auto;border-top:1px solid var(--line);background:var(--card)}
+#chat .utility-tabs{display:flex;gap:6px;padding:6px 13px}
+#chat .utoggle,#chat .stoggle{border:1px solid var(--line);background:var(--bg);color:var(--mut);
+ border-radius:var(--radius-pill);padding:5px 10px;font:600 12px inherit;cursor:pointer}
+#chat .utoggle.active,#chat .stoggle.active{border-color:var(--accent);background:var(--accent);color:#fff}
+#chat .utility-body{display:none}
+#chat .utility.open .utility-body{display:block;border-top:1px solid var(--line);padding-top:3px}
+#chat .utility.show-actions .settings,#chat .utility.show-settings .acts{display:none}
+
+/* Phone is a different surface, not a narrow desktop rail.  A nearly-full
+   drawer left a distracting sliver of the page beside it and hid the close /
+   permission controls behind iOS's chrome.  Make chat a compact full-screen
+   task on a small viewport; the underlying page is still one tap away via ×. */
+@media(max-width:820px){
+ #chat{inset:0;width:100vw;width:100dvw;height:100vh;height:100dvh;border-left:0;box-shadow:none}
+ #chat .rz{display:none}
+ #chat .hd{min-height:46px;padding:max(8px,env(safe-area-inset-top)) 10px 8px;gap:8px}
+ #chat .hd .ti{font-size:13px}
+ #chat .hd button{width:30px;height:30px;flex-basis:30px}
+ #chat .spick summary{padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #chat .spick .spl{max-height:34dvh}
+ #chat .spick .sprow{padding:6px 10px}
+ #chat .sfocus{margin:7px 10px 0;padding:7px 9px}
+ #chat .sfrow{margin-bottom:4px}
+ #chat .sfquote{-webkit-line-clamp:2;font-size:12.5px}
+ #chat .bd{padding:10px;gap:7px}
+ #chat .m{max-width:96%;padding:8px 10px;font-size:15px;line-height:1.48}
+ #chat .m.sys{max-width:100%;font-size:11px;line-height:1.4;text-align:center}
+ #chat .tk{max-width:100%;padding:3px 8px}
+ #chat .tk .tk-body{max-height:180px;font-size:12px}
+ #chat .ask{padding:9px}
+ #chat .ask .q{margin-bottom:4px}
+ #chat .ask .w{margin-bottom:7px;padding:5px 7px;font-size:11px}
+ #chat .askd{max-height:150px;margin-bottom:7px}
+ #chat .askd pre{font-size:10.5px;padding:5px 7px}
+ #chat .ask .b{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ #chat .ask button{min-height:36px;padding:5px 4px;font-size:11.5px;line-height:1.2;white-space:normal}
+ #chat .ft{gap:7px;padding:8px max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+ #chat textarea{padding:8px 10px;font-size:16px;line-height:1.35;max-height:90px}
+ #chat .send{width:40px;height:40px;flex:0 0 40px}
+ #chat .cfg{padding:0 10px 6px;gap:4px;flex-wrap:wrap}
+ #chat .cfg select{min-width:0;flex:1 1 29%;padding:5px 4px;font-size:11px}
+ #chat .cfg .cost{flex:1 0 100%;margin-left:0;font-size:10.5px}
+ #chat .sid{padding:0 10px 6px;font-size:10.5px}
+ #chat .acts{padding:7px 10px 2px;gap:5px}
+ #chat .act{padding:5px 9px;font-size:11.5px}
+ #chat .utility-tabs{padding:5px 10px;gap:5px}
+ #chat .utoggle,#chat .stoggle{flex:1;min-height:32px;padding:5px 8px;font-size:11.5px}
+ #chat .utoggle:active,#chat .stoggle:active{filter:brightness(.96)}
+ /* The session history is part of Options on a phone. It stays in its
+    desktop location in the DOM, but is only exposed together with the
+    other advanced controls so it cannot steal a row from every turn. */
+ #chat:not(.utility-open) .spick{display:none!important}
+ #chatfab{right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));padding:10px 14px}
+}
+
+b.jl{color:var(--accent)}b.cc{color:var(--mut)}
+b.u0{color:#8b5cf6}b.u1{color:#0891b2}b.u2{color:#c2410c}b.u3{color:#be185d}
+
+/* 行内评论：被引用的原句 + 评论里的引文 */
+/* Highlights are painted with inset box-shadow, NOT background-color (JL 260725):
+   Word imports background-color on copy-paste, so marked sentences pasted with a
+   pale yellow fill. box-shadow renders identically on the page and copies clean. */
+mark{background:transparent;box-shadow:inset 0 0 0 1000px rgba(255,214,0,.34);color:inherit;padding:0 2px;border-radius:var(--radius-inline)}
+@media(prefers-color-scheme:dark){mark{box-shadow:inset 0 0 0 1000px rgba(255,214,0,.22)}}
+.qt{color:var(--mut);font-size:.92em;margin-right:5px}
+/* 评论工具条（只有开了 JS 才会出现；关掉 JS 页面一切照旧） */
+#cbtn{position:absolute;z-index:40;display:none;background:var(--accent);color:#fff;
+ border:none;border-radius:var(--radius-control);padding:6px 12px;font-size:13px;cursor:pointer;
+ box-shadow:0 3px 10px rgba(0,0,0,.22)}
+#cbox{position:absolute;z-index:41;display:none;width:330px;background:var(--card);
+ border:1px solid var(--line);border-radius:var(--radius-surface);padding:13px;
+ box-shadow:0 8px 26px rgba(0,0,0,.24)}
+#cbox .qq{font-size:12.5px;color:var(--mut);border-left:3px solid var(--accent);
+ padding-left:9px;margin-bottom:9px;max-height:66px;overflow:auto}
+#cbox textarea{width:100%;min-height:66px;border:1px solid var(--line);border-radius:var(--radius-control);
+ padding:8px;font:14px inherit;background:var(--bg);color:var(--fg);resize:vertical}
+#cbox .row{display:flex;gap:8px;align-items:center;margin-top:9px}
+#cbox select{border:1px solid var(--line);border-radius:var(--radius-control);padding:5px 8px;
+ background:var(--bg);color:var(--fg);font:13px inherit}
+#cbox button,#cpanel button{border:1px solid var(--line);border-radius:var(--radius-control);padding:6px 12px;
+ background:var(--bg);color:var(--fg);font:13px inherit;cursor:pointer}
+#cbox .ok,#cpanel .ok{background:var(--accent);color:#fff;border-color:var(--accent)}
+#cdock{position:fixed;right:18px;bottom:74px;z-index:42;display:none;
+ background:var(--accent);color:#fff;border:none;border-radius:var(--radius-pill);
+ padding:10px 17px;font-size:13.5px;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.26)}
+#cpanel{position:fixed;right:18px;bottom:122px;z-index:42;display:none;width:390px;
+ max-height:64vh;overflow:auto;background:var(--card);border:1px solid var(--line);
+ border-radius:var(--radius-surface);padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#cpanel .it{border-top:1px solid var(--line);padding:9px 0;font-size:13.5px}
+#cpanel .it .q{color:var(--mut);font-size:12px}
+#cpanel .hd{display:flex;gap:8px;margin-bottom:4px}
+#cpanel .hint{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.6}
+.cnt{float:right;font-weight:400;font:12px ui-monospace,Menlo,monospace}
+
+/* 大标题前面挂编号：QA2 一个 Q 文件的模板 */
+.hid{color:var(--accent);font:.62em ui-monospace,Menlo,monospace;
+ vertical-align:.22em;margin-right:11px;letter-spacing:.03em}
+
+/* ## 日志 —— 这一题一路改过什么 */
+.lg{display:flex;gap:11px;align-items:baseline;margin:4px 0}
+.lg .d{flex:0 0 96px;white-space:nowrap;font:11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+
+/* ## 图 —— 这一题想干嘛，一张 ascii 图先说清楚 */
+.dia{margin:0 0 18px}
+.dia pre{margin:0;padding:15px 17px;line-height:1.55}
+/* an ascii diagram inside Content: it IS the content, not a code listing.
+   Same reading comfort as the .dia signature diagram, without the fold chrome. */
+pre.asc{margin:10px 0;padding:13px 15px;line-height:1.55;overflow-x:auto}
+/* an emoji is not monospace, so a figure authored in a terminal (where every
+   emoji is exactly TWO cells) arrives bent (JL 260731: "very hard to read.
+   Why?"). Each one is wrapped at build (body.pad_emoji) and pinned to 2ch
+   here, which is the width its author drew against. The .md is untouched, so
+   the figure still survives being copied out, which is QB4b §0's rule. */
+pre .eu{display:inline-block;width:2ch;text-align:center;
+ font-size:.92em;line-height:1;vertical-align:-.06em;overflow:hidden}
+/* a page or group id inside a figure is a place you can go (JL 260730). The
+   underline is dotted and the weight never changes: a monospace figure loses
+   its alignment the moment a token is allowed to grow. */
+pre .fl{color:var(--accent);text-decoration:none;
+ border-bottom:1px dotted color-mix(in oklab,var(--accent) 55%,transparent)}
+pre .fl:hover{border-bottom-style:solid;background:color-mix(in oklab,var(--accent) 12%,transparent)}
+pre .fl:visited{color:var(--accent)}
+
+.q:target .dia,
+body.split .q .dia{margin:0 0 24px}
+.q:target .dia pre,
+body.split .q .dia pre{font-size:13px;line-height:1.6}
+.col.now{border-left:3px solid var(--wip)}
+.col.goal{border-left:3px solid var(--done)}
+/* 节标题：左标签 + 底下一条线 + 右边 expand-all（JL 260723） */
+.ch{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--mut);
+ margin:0 0 9px;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:5px}
+/* A whole section folds from its own heading (JL 260725), like Diagram already did.
+   Native <details>, so the text stays in the DOM and Ctrl-F still finds it. */
+details.sect>summary.ch{cursor:pointer;list-style:none}
+details.sect>summary.ch:hover{color:var(--fg)}
+details.sect:not([open])>summary.ch{margin-bottom:0}
+.ch .chl{flex:1;min-width:0}
+.ch .cnt{color:var(--mut);font-weight:600}
+/* expand / collapse all：把这一节所有 item 一起开合。纯增强——脚本剥掉后
+   每个 item 仍能单独点开（native <details>），全文一直在 DOM 里。 */
+.secall{flex:0 0 auto;border:1px solid var(--line);background:var(--bg);color:var(--mut);
+ border-radius:var(--radius-control);padding:1px 9px;font:11px inherit;font-weight:500;cursor:pointer;letter-spacing:0}
+.secall:hover{border-color:var(--accent);color:var(--accent)}
+.q:target .secall,
+body.split .q .secall{font-size:12px;padding:2px 11px}
+.col p{margin:0 0 6px;font-size:15px}
+.col pre{font-size:11.5px}

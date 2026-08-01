@@ -8,6 +8,7 @@ What do the family's words mean, one entry each, so no page has to re-explain th
 "Board" names five things, "page" three, "section" two, and until 260729 nothing separated them; this face is the one place the vocabulary is pinned.
 Every entry is a word the skill or a face already uses; anything coined here would violate the writing rule it exists to serve.
 
+
 ## Boundary
 - ✅ Covered here
   The family vocabulary, one entry per concept, with where each word is defined.

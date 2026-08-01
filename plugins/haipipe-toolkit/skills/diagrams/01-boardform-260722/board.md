@@ -81,6 +81,15 @@ Every id here is a link: a group token opens the index at that group, a page id 
 
 [↗ the same map as a shared Excalidraw canvas](https://app.excalidraw.com/s/1JWkKv8oMIX/8OmxTBT2e1m?element=_Q20Q1taxY2jiainH_Y57)
 
+## Related Folders
+The folders this board touches: the engine that renders it, and what a board folder itself looks like. Click a folder, then a file, to read it right here. QB2 owns the fold, QA0 owns this list.
+@ ../../board/haipipe-board | ⚙️ haipipe-board · the engine that ships
+- SKILL.md
+- ref/board-form.md
+@ . | 🗂 01-boardform-260722 · what a board folder looks like
+- board.md
+- QA-design/QA0-three-folders.md
+
 ## Board Structure
 This Board has one source `Board-Folder` and one generated `Board-Webpage`.
 The map is part of the Board-Webpage-Index, not a third peer object, not another Q page, and not part of the settled-question count.
@@ -110,7 +119,7 @@ Opening a Q or S row changes the same `board.html` document to `#<page-id>`, one
 ## Pages
 ### QA · Design
 What the Board system IS, before any piece of it is built.
-QA1 owns the words the family uses; QA2 owns how a topic becomes pages and groups in the first place.
+QA1 owns the words the family uses; QA2 owns how a topic becomes pages and groups in the first place; QA3 owns when an agent may hand a round back.
 Still unwritten: the board types page (Skill-Board · Paper-Board · Task-Board), born when its content exists, not before.
 
 ```text
@@ -119,13 +128,15 @@ Still unwritten: the board types page (Skill-Board · Paper-Board · Task-Board)
 ref/board-form.md §1       ◀── QA0  the folders and their kinds   ──▶  every folder above
 ref/board-form.md          ◀── QA1  the words this family uses    ──▶  the shared vocabulary
 ?                          ◀── QA2  page and group proposals      ──▶  a new page + group folder
+build.py check.py          ◀── QA3  the round's closing gate      ──▶  every reply to JL
 ```
 QA0-three-folders.md
 QA1-concepts.md
 QA2-question-group-design.md
+QA3-the-round.md
 ### QB · Delivery
 What a reader gets, altitude by altitude: Board → Group → Page → Section → Sentence.
-Board: QB1 the folder, QB2 the webpage and its Index, QB3 a page's home folder.
+Board: QB1 the folder, QB2 the webpage and its Index (QB2a its pages sidebar), QB3 a page's home folder.
 Page: QB4 the shared Q/S base, with one face per section: QB4a Opening, QB4b Diagram, QB4c Content, QB4d Items to Finish, QB4e Where we are, QB4f Files, QB4g the folds.
 Sentence: QB5 the atomic unit, with QB5a the evidence card, QB5b comments, QB5c editing, QB5d chat, QB5e the details lifecycle.
 
@@ -134,6 +145,7 @@ Sentence: QB5 the atomic unit, with QB5a the evidence card, QB5b comments, QB5c 
 ─────────────────────────      ─────────────────────────────────    ────────────────────────
 src/parse.py               ◀── QB1   the folder structure          ──▶  board.md · group folders/
 src/page_board.py          ◀── QB2   Board-Webpage Design          ──▶  board.html  #top
+page_board.py sidebar      ◀── QB2a  the pages sidebar             ──▶  the fixed left rail
 assets/board.css
 src/parse.py page_files    ◀── QB3   page folder management        ──▶  <page>/ home folder
 src/page_question.py       ◀── QB4   the shared Q/S layout         ──▶  every Q*.md and S*.md
@@ -154,6 +166,7 @@ serve.py                   ◀── QB5e  details lifecycle             ──�
 ```
 QB1-form.md
 QB2-board-webpage-design.md
+QB2a-sidebar.md
 QB3-folderq.md
 QB4-overall.md
 QB4a-opening.md
@@ -171,10 +184,10 @@ QB5d-agent-visibility.md
 QB5e-sentence-details-lifecycle.md
 ### QC · Engine
 How the delivery is produced and shipped.
-QC1 what SKILL.md must say; QC2 and QC3 the code's shape (assets out of build.py, then the src/ split); QC4 migrating the older boards; QC5 how a skill folder becomes a synced page; QC6 the sub-skill roster.
+QC1 what SKILL.md must say; QC2 and QC3 the code's shape (assets out of build.py, then the src/ split); QC4 migrating the older boards; QC5 how a skill folder becomes a synced page; QC6 the sub-skill roster; QC7 the write path's addressing contract; QC9 the whole round trip, md to html and back; QC8 splitting the live layer the way QC3 split the render layer; QC10 how a meeting note enters a board, as an artifact and as routed consequences.
 One synced Skill page per shipped unit.
 The family took QC6 §8's shape on 260731: one door (Skill-0 haipipe-board), the board+group altitude (Skill-1 index), two loadable SPECS (Skill-3 page, Skill-4 sentence), and the write-back VERB (Skill-5 routing); digest is named on the roster and unshipped.
-An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer.
+An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer and Agent-2 the page creator, one page each so N run at once.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record            📂 FOLDER
@@ -185,12 +198,16 @@ src/*.py                   ◀── QC3      the src/ split                ─�
 build.py                   ◀── QC4      migrate the old boards        ──▶  the two older boards
 skillpage.py               ◀── QC5      skill folder -> skill page    ──▶  Skill-*.md
 ?                          ◀── QC6      sub-skills roster             ──▶  the family's units
+serve.py _sentence_line    ◀── QC7      the write path's anchor       ──▶  one line in one .md
+serve.py  src/common.py    ◀── QC8      splitting the live layer      ──▶  live/ modules + thin CLI
+build.py + live/write.py   ◀── QC9      the whole round trip          ──▶  _site/ tree + the .md
 skillpage.py sync          ◀── Skill-0  haipipe-board · the engine    ──▶  SKILL.md snapshot
 skillpage.py sync          ◀── Skill-1  haipipe-board-index           ──▶  its SKILL.md snapshot
 skillpage.py sync          ◀── Skill-3  the page SPEC                 ──▶  its SKILL.md snapshot
 skillpage.py sync          ◀── Skill-4  the sentence SPEC             ──▶  its SKILL.md snapshot
 skillpage.py sync          ◀── Skill-5  the routing VERB              ──▶  its SKILL.md snapshot
 skillpage.py sync          ◀── Agent-1  the fresh-context reviewer    ──▶  its definition .md
+skillpage.py sync          ◀── Agent-2  the page creator, N at once   ──▶  one Q*.md per agent
 ```
 QC1-skillmd.md
 QC2-buildsplit.md
@@ -198,26 +215,32 @@ QC3-srcsplit.md
 QC4-migrate.md
 QC5-skill-to-page.md
 QC6-subskills.md
+QC7-writepath.md
+QC8-livesplit.md
+QC9-roundtrip.md
+QC10-meetingnote.md
 Skill-0-haipipe-board.md
 Skill-1-haipipe-board-index.md
 Skill-3-haipipe-board-page.md
 Skill-4-haipipe-board-sentence.md
 Skill-5-haipipe-board-routing.md
 Agent-1-haipipe-board-reviewer-agent.md
+Agent-2-haipipe-board-creator-agent.md
+Meeting-1-260723-boardform-demo.md
 ### QD · Working
 How people and agents work on a live board.
-QD1 a session per question, QD2 the chat box, QD3 the real CLI, QD4 live updates, QD5 attaching a drawing, QD6 the status strip, and QD7 the board-level agent (restored from the archive 260731: board-wide work such as adding pages and regrouping is working-layer work).
+QD1 a session per question, QD2 the chat box, QD3 the real CLI (raw pane + the smooth pane, QD3m merged in 260801), QD4 live updates, QD5 attaching a drawing, QD6 the status strip, and QD7 the board-level agent (restored from the archive 260731: board-wide work such as adding pages and regrouping is working-layer work).
 
 ```text
-⚙️ ENGINE                      📋 PAGES · the working record        📂 FOLDER
-─────────────────────────      ────────────────────────────────    ────────────────────────
-serve.py                   ◀── QD1  a session per question        ──▶  session: in board.md
-assets/board.js #chat      ◀── QD2  SDK · the chat box            ──▶  live replies
-serve.py                   ◀── QD3  terminal · the real CLI       ──▶  a real CLI session
-watch.py                   ◀── QD4  live page updates             ──▶  rebuilt board.html
-xcal.py  serve.py          ◀── QD5  attach a drawing              ──▶  fig/ · board.excalidraw
-serve.py                   ◀── QD6  board attachment in replies   ──▶  every reply's footer
-serve.py sessions          ◀── QD7  the board-level agent         ──▶  a whole-board session
+⚙️ ENGINE                      📋 PAGES · the working record         📂 FOLDER
+─────────────────────────      ─────────────────────────────────    ────────────────────────
+serve.py                   ◀── QD1   a session per question        ──▶  session: in board.md
+assets/board.js #chat      ◀── QD2   SDK · the chat box            ──▶  live replies
+serve.py                   ◀── QD3   terminal · raw + smooth panes ──▶  a real CLI session
+watch.py                   ◀── QD4   live page updates             ──▶  rebuilt board.html
+xcal.py  serve.py          ◀── QD5   attach a drawing              ──▶  fig/ · board.excalidraw
+serve.py                   ◀── QD6   board attachment in replies   ──▶  every reply's footer
+serve.py sessions          ◀── QD7   the board-level agent         ──▶  a whole-board session
 ```
 QD1-chat-per-question.md
 QD2-chat-sdk.md
@@ -247,7 +270,7 @@ QE5-consolescope.md
 QE6-bindaddress.md
 ### QF · Execute
 What actually RAN, with evidence and a reopen path: the layer that keeps "skill written, delivery defined" from passing as done.
-QF1 is the checker that runs after every change; QF2 is the fresh-agent acceptance run.
+QF1 is the checker that runs after every change; QF2 is the fresh-agent acceptance run; QF3 drives the built page in a real browser; QF4 drives the chat inside it.
 An execute record names its route, its result, and what it refused to touch.
 
 ```text
@@ -258,7 +281,10 @@ check.py                   ◀── QF1  checking after every change   ──�
 ```
 QF1-acceptance.md
 QF2-newcomer.md
+QF3-browser-run.md
+QF4-talk-run.md
 ## Links
+QD3m                QD-working/_archive/QD3m-smooth-terminal.md
 QDa1                QD-working/QD1-chat-per-question.md
 QDa2                QD-working/QD2-chat-sdk.md
 QDa3                QD-working/QD3-chat-terminal.md
@@ -338,10 +364,10 @@ src/body.py         ../../board/haipipe-board/src/body.py
 src/page_board.py   ../../board/haipipe-board/src/page_board.py
 src/page_question.py ../../board/haipipe-board/src/page_question.py
 assets/board-mark.svg ../../board/haipipe-board/assets/board-mark.svg
-assets/board.css    ../../board/haipipe-board/assets/board.css
-assets/board.js     ../../board/haipipe-board/assets/board.js
+assets/css/        ../../board/haipipe-board/assets/css/
+assets/js/         ../../board/haipipe-board/assets/js/
 fig/board-mark-palettes.svg fig/board-mark-palettes.svg
-haipipe-board/assets/board.js ../../board/haipipe-board/assets/board.js
+haipipe-board/assets/js/ ../../board/haipipe-board/assets/js/
 haipipe-paper-stage/ ../../paper/1-lifecycle/haipipe-paper-stage/
 0-lifecycle/        ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
 02-method-260722/   ../../../../subjective-label/diagram/02-method-260722/
