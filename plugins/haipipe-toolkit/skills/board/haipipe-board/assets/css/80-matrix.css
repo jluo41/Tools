@@ -1,0 +1,117 @@
+/* ── SECTION MATRIX (QB2, JL 260731): page × section, computed at build ── */
+.board-status{margin:14px 0;border:1px solid var(--line);
+ border-radius:var(--radius-surface);background:var(--card)}
+.board-status>summary{cursor:pointer;padding:10px 14px;font-weight:650;
+ list-style:none;font-size:13px;letter-spacing:.02em}
+.board-status>summary::-webkit-details-marker{display:none}
+.board-status>summary::before{content:"▸";display:inline-block;width:16px;
+ color:var(--accent)}
+.board-status[open]>summary::before{content:"▾"}
+.bstat-scroll{overflow-x:auto;padding:0 10px 6px}
+table.bstat{border-collapse:collapse;font:12px ui-monospace,Menlo,monospace;
+ min-width:620px}
+.bstat th,.bstat td{padding:2.5px 9px;text-align:left;white-space:nowrap}
+.bstat thead th{color:var(--mut);font-weight:600;
+ border-bottom:1px solid var(--line)}
+.bstat th.bsp{font-weight:650}
+.bstat a{text-decoration:none;color:inherit}
+.bstat tbody tr:hover{background:var(--pre)}
+.bstat tr.bsg td{padding-top:10px;color:var(--accent);font-weight:650;
+ font-size:11.5px}
+.bstat td.bs-no{color:var(--mut);opacity:.5}
+.bstat td.bs-warn a{color:#c08a00}
+.bstat td.bs-dn a{color:var(--accent);font-weight:700}
+.bstat-legend{padding:0 14px 10px;margin:0;color:var(--mut);font-size:11.5px}
+
+/* Pipe tables inside a reply (JL 260731: "the readme is not well rendered").
+   Scrolls inside its own box so a wide table never widens the drawer. */
+#chat .bd .md table.mdt{border-collapse:collapse;margin:8px 0;font-size:12px;
+ display:block;overflow-x:auto;max-width:100%}
+#chat .bd .md table.mdt th,#chat .bd .md table.mdt td{
+ border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}
+#chat .bd .md table.mdt th{background:var(--bg);font-weight:650;white-space:nowrap}
+#chat .bd .md table.mdt code{font-size:11px}
+
+/* A FINISHED trace: kept, labelled, closed, and obviously re-openable, so the
+   thinking and the tool calls survive the turn instead of dimming into a sliver. */
+#chat .bd .traced{margin:6px 0;border:1px solid var(--line);
+ border-radius:var(--radius-surface);background:var(--bg);font-size:11.5px}
+#chat .bd .traced>summary{padding:5px 10px;cursor:pointer;list-style:none;
+ display:flex;gap:8px;align-items:baseline;color:var(--mut)}
+#chat .bd .traced>summary::-webkit-details-marker{display:none}
+#chat .bd .traced>summary::before{content:"▸";flex:0 0 auto}
+#chat .bd .traced[open]>summary::before{content:"▾"}
+#chat .bd .traced>summary:hover{color:var(--accent)}
+#chat .bd .traced .tsum{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#chat .bd .traced .tmeta{flex:0 0 auto;font:10px ui-monospace,Menlo,monospace;opacity:.85}
+#chat .bd .tracebody{max-height:300px;overflow-y:auto;border-top:1px solid var(--line);
+ padding:4px 0}
+#chat .bd .tracebody .tr{display:flex;gap:7px;padding:3px 10px;align-items:baseline}
+#chat .bd .tracebody .tr .i{flex:0 0 auto;opacity:.75}
+#chat .bd .tracebody .tr .x{flex:1;min-width:0;white-space:pre-wrap;word-break:break-word;color:var(--mut)}
+#chat .bd .tracebody .tool,#chat .bd .tracebody .tk{margin:4px 8px;font-size:11px}
+
+/* The next-turn trace is the only thing visible while an answer is in flight.
+   On a phone it must read as an active status, never as an unexplained blank
+   rule between the user's bubble and the composer. */
+@media(max-width:820px){
+ #chat .bd .trace{min-height:38px;border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+  background:color-mix(in srgb,var(--accent) 4%,var(--bg))}
+ #chat .bd .trace .busy{min-height:30px;padding:6px 9px;font-size:12px;align-items:center}
+}
+
+/* A message typed while a turn is still running: shown in place, visibly not
+   sent yet, and it goes out the moment the turn ends (JL 260731). */
+#chat .bd .m.you.queued{opacity:.55;border:1px dashed var(--line)}
+#chat .bd .m.you.queued::after{content:" ⏳ queued";font-size:10px;opacity:.9}
+
+/* the escape hatch on a wedged turn: hand me the evidence in one click */
+#chat .bd .busy .diag{margin-left:8px;font-size:10px;padding:2px 7px;border-radius:var(--radius-pill);
+ border:1px solid var(--line);background:var(--card);color:var(--mut);cursor:pointer}
+#chat .bd .busy .diag:hover{border-color:var(--accent);color:var(--accent)}
+
+
+/* A line that just landed from the box below it (QC9, JL 260731): a brief
+   tint so the eye finds it, then it settles into an ordinary row. The page
+   never jumps, so this highlight is the only signal that anything happened. */
+.cmt.just-landed{animation:landed 1.2s ease-out}
+@keyframes landed{
+  from{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+  to{background:transparent}}
+
+
+/* A group page's own head (QC9/QB2, JL 260731): the purpose reads first, the
+   longer why is one click behind it, exactly like the group intro on the index. */
+.gpurpose{margin:2px 0 8px;font-size:15px;line-height:1.5;color:var(--fg)}
+.gwhy{margin:0 0 10px}
+.gwhy>summary{cursor:pointer;display:block;list-style:none;font-size:12.5px;
+ color:var(--mut)}
+.gwhy>summary::before{content:"▸ ";color:var(--accent)}
+.gwhy[open]>summary::before{content:"▾ "}
+.gwhy-b{padding:6px 0 0;color:var(--mut);font-size:13.5px;line-height:1.55}
+.gwhy-b p{margin:0 0 6px}
+
+
+/* The rail's drag handle. FIXED rather than absolute inside the rail: the rail
+   is `overflow-y:auto`, which clips anything on its edge, so an absolute handle
+   was invisible to the pointer (elementFromPoint returned BODY). */
+.sbrz{position:fixed;left:calc(var(--sbw,238px) - 3px);top:0;bottom:0;width:7px;
+ cursor:col-resize;background:transparent;z-index:31}
+.sbrz:hover,.sbrz:active{background:var(--accent);opacity:.35}
+.sidebar[hidden]~.sbrz,body:not(.sbon) .sbrz{pointer-events:auto}
+
+/* RELATED FOLDERS fold (QB2/QA0 · JL 260731 "do the B level"): the outer
+   disclosure reuses .board-status; only the nested folder→file browser is
+   styled here. Build-time embed, so it opens with scripts stripped. */
+.related-folders .rf-intro{margin:8px 14px;color:var(--mut);font-size:12.5px}
+.related-folders .rf-folder{margin:8px 14px;border:1px solid var(--line);border-radius:var(--radius-control);background:var(--card)}
+.related-folders .rf-folder>summary{cursor:pointer;padding:8px 12px;font-weight:600;font-size:13px;list-style:none}
+.related-folders .rf-folder>summary::-webkit-details-marker{display:none}
+.related-folders .rf-folder>summary::before{content:"▸";display:inline-block;width:16px;color:var(--mut)}
+.related-folders .rf-folder[open]>summary::before{content:"▾"}
+.related-folders .rf-path{font-size:11.5px;color:var(--mut);font-weight:400}
+.related-folders .rf-files{padding:2px 12px 10px}
+.related-folders .rf-file{margin:6px 0;border-left:2px solid var(--line);padding-left:10px}
+.related-folders .rf-file>summary{cursor:pointer;font-size:12px;color:var(--accent)}
+.related-folders .rf-content{max-height:440px;overflow:auto;margin:6px 0 2px;padding:8px 12px;background:var(--pre);border-radius:var(--radius-inline);font-size:12.5px}
+.related-folders .rf-miss{color:#b00020;font-size:12px;padding:6px 0}

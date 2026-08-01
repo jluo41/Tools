@@ -14,6 +14,7 @@ It is not technically hard; the unclear part is how many at once.
 Leave it and boards can only ever be opened by someone passing you a URL, which is where half of QE1's "the second person cannot open it" really lives: not that they cannot open it, but that they do not know what is there to open.
 Downstream it decides what the board list page looks like (the same visual problem as QC2's index design, one level up), whether a new board can be created from the web, and what the URLs look like.
 
+
 ## Boundary
 - ✅ Covered here
   **The layer above a board**: how a SPACE is mounted, how many at once, how the boards in a SPACE are discovered, what the board list page shows, whether a new board can be created from the page.
@@ -45,9 +46,25 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE2
 
 ## Items to Finish
+### The mount: how many SPACEs, and how narrow
 - [x] Decide how many SPACEs one service mounts
       One service mounts N (the `console_api.py` registry pattern, as planned): `INLAB_SPACES` (json) > `INLAB_SPACE_STORE` (parent dir) > `INLAB_SPACE_ROOT` (single) > walking up from the service collecting `*-SPACE` dirs.
       Shipped in `boards_api.py`.
+- [ ] 🗺 Decide whether a mount can be NARROWER than a SPACE root
+      JL 260727: run the service in Docker with only the board folder mounted, so that what can be
+      read and written is enforced by the kernel rather than by path vetting.
+      The complication is the 260724 ruling in the Log below: page serving was deliberately widened
+      to the whole space root so a question's `## Files` links could open. A single-folder mount
+      reverses that and 404s them.
+      The reconciliation is a SKELETON mount: several volumes at their true relative depths, the
+      board folder `rw` and the drill-through subtrees `ro`, so every `../` link that was allowed
+      still resolves and everything else is absent from the filesystem.
+      Closes when a mount shape is chosen and a board is served from it with its links working.
+- [ ] Actually mount two SPACEs and open a board in each
+      The mechanism ran 260724: `Physician-SPACE` (2 boards) + a scratch space mounted together, both listed, both pages served, a comment written into the scratch one.
+      But the second space was a throwaway: the honest tick waits for a real second research SPACE (WellDoc-SPACE).
+
+### Board discovery inside a SPACE
 - [x] Decide how boards are discovered
       Scan for `<unit>/diagram/<NN>-<topic>/board.md` via `os.walk` with a prune list (`.git`, `node_modules`, `_WorkSpace`, the data stores…) and a depth cap of 9.
       Verified fast on `Physician-SPACE` (finds 2 boards, no cache needed yet).
@@ -59,25 +76,14 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
       holds 60 pages and a `board.md` and is invisible to `_find_boards()`.
       This is the board JL asked to host on 260727, so the gap is blocking, not theoretical.
       Closes when discovery finds any pruned folder containing `board.md`, and this board appears.
-- [ ] 🗺 Decide whether a mount can be NARROWER than a SPACE root
-      JL 260727: run the service in Docker with only the board folder mounted, so that what can be
-      read and written is enforced by the kernel rather than by path vetting.
-      The complication is the 260724 ruling in the Log below: page serving was deliberately widened
-      to the whole space root so a question's `## Files` links could open. A single-folder mount
-      reverses that and 404s them.
-      The reconciliation is a SKELETON mount: several volumes at their true relative depths, the
-      board folder `rw` and the drill-through subtrees `ro`, so every `../` link that was allowed
-      still resolves and everything else is absent from the filesystem.
-      Closes when a mount shape is chosen and a board is served from it with its links working.
+
+### The Boards page surface
 - [ ] Decide what each row of the board list shows
       v1 shipped: title · spine · ✅🟡🔴⏸ counts · question count · open-comment count · path · last modified.
       Whether that is the RIGHT set is JL's read; leave open until it has been used.
 - [ ] Decide whether a new board can be opened from the web
       Not built.
       Today `open` remains a skill action from the CLI.
-- [ ] Actually mount two SPACEs and open a board in each
-      The mechanism ran 260724: `Physician-SPACE` (2 boards) + a scratch space mounted together, both listed, both pages served, a comment written into the scratch one.
-      But the second space was a throwaway: the honest tick waits for a real second research SPACE (WellDoc-SPACE).
 
 ## Where we are
 **v1 shipped in `haichat-inlab` (`boards_api.py` + the Boards view), verified end to end on 260724.**
@@ -108,17 +114,27 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
   guarantee a second time at the kernel, which is the reason to want it rather than a reason to
   trust the code less.
 
+### Decision Now
+- [ ] 🗺 Choose the mount shape for the Docker service
+      A single board-folder mount reverses the 260724 page-serving widening and 404s a question's `## Files` drill-through links; a SKELETON mount (the board folder `rw`, the drill-through subtrees `ro` at their true relative depths) keeps every allowed `../` link resolving.
+      The reconciliation this page records is the skeleton mount; a tick here also closes the 🗺 row in Items to Finish.
+
 ## Files
+### The shipped service
 - `boards_api.py`
   The shipped layer: `_spaces()` registry, `_find_boards()` discovery, board rows, page serving, write-back relay.
   Lives in the sibling project `haichat-board/` since 260724 (JL: "a separate project"); `haichat-inlab` imports it from there.
   Branch `feat/haichat-board`.
 - `web/`
   `src/components/BoardsView.tsx` + the `boards` entries in `src/views.ts` / `src/types.ts` / `src/Console.tsx`.
+
+### Imported from the skill
 - `build.py`
   `parse_dir()` / `to_json()`: the board list's numbers come from here, no second parser (imported by `boards_api.py`).
 - `serve.py`
   The md-writers `boards_api.py` imports (`add_comment` / `add_discuss` / `resolve`), and still the whole live layer on the workstation.
+
+### The pattern it copied
 - `console_api.py`
   The registry pattern this copied (`_datasets()` / `_default_dataset()` / `_scope()`).
 
@@ -127,6 +143,7 @@ SPACE: JL's term for the root of one research repo, e.g. `Physician-SPACE`, `Wel
 One SPACE holds several boards.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260727 · JL proposed running the service in Docker with only the board folder mounted, so writes are
        kernel-confined. Read the shipped container and found the mount side already built (compose
        service on 8094, `BOARD_SPACE_HOST:/space`, `BOARD_SKILL_DIR` escape hatch, slim image can

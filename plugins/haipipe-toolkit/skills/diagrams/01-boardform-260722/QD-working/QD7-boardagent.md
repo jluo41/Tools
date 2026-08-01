@@ -13,6 +13,7 @@ Chat and terminal are both pinned to **one question** today (`QD1`/`QD2`/`QD3`).
 - What it affects downstream
   serve.py's session / HOLD machinery, where the entry point sits on the page, and how much power it gets (may it delete questions? edit a question someone is editing?).
 
+
 ## Boundary
 - ✅ Covered here
   The agent whose **scope is the whole board**: adding Qs, editing the Roster, regrouping, cross-question batch rewrites; its entry point, session rules, permission boundary.
@@ -54,6 +55,25 @@ today (QD1/2/3)                      what this question adds
 - Parts that already exist and can be reused
   serve.py's OAuth + SDK + HOLD machinery, `/_board/term`'s ttyd reverse proxy, `/_board/chat`'s streaming and permission callback: the board-level route does not start from zero.
 
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] ⚖️ Rule how a board-level session meshes with `QD1`'s LAW
+      With a board-level session open, can a single question's chat or terminal still open, and who yields?
+      A tick here also closes the same row in Items to Finish.
+- [ ] 🔑 Rule the board session's scope and permissions
+      May it create questions, delete questions, or edit a question currently open in someone's session?
+      A tick here also closes the same row in Items to Finish.
+- [ ] 🚪 Rule the entry point
+      A · a button on the front page opens the board-level agent; the entry point is built on the page itself, overlapping with QB2's front-page design, requiring coordination with that question.
+      B · the board-level agent is CLI-only; users must open the terminal manually to run board-wide work, no page button is added.
+      A tick here also closes the same row in Items to Finish.
+- [ ] 🧰 Rule which stack the board-level route takes
+      A · Claude Code (claude_agent_sdk) is the stack; the board-level route reuses QD2's drawer infrastructure, OAuth, and HOLD machinery for the board scope.
+      B · Codex is the stack; the board-level route uses a different agent infrastructure than the existing question-level routes.
+      C · both stacks are used; claude_agent_sdk for SDK drawer (QD2-style) and the real CLI for terminal (QD3-style) are both available for board-level work.
+      A tick here also closes the same row in Items to Finish.
+
 ## Files
 - `serve.py`
   Sessions / HOLD / chat / terminal all live here. The board-level route either reuses or extends this machinery.
@@ -63,6 +83,7 @@ today (QD1/2/3)                      what this question adds
   What a board-level agent mostly edits is its `## Roster`.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · Restored from _archive into QDa · Working (JL: board-agent work is working-layer work); ids repointed to the QDa naming
 260725 1036 · Archived from the index page (moved to _archive/)
 260724 1242 · Translated to English (JL 260724: everything on the board in English)

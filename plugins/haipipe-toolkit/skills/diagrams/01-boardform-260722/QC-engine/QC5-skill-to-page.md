@@ -17,6 +17,7 @@ Copy too little and the page is a bookmark: nothing to rank, nothing to comment 
 It matters now because the ACTIVITY dashboard counts one update per dated `## Log` line per page.
 One page per skill turns that dashboard into a ranking of which skills are changing, which is a question nobody can answer today without reading 141 changelogs.
 
+
 ## Boundary
 - ✅ Covered here
   **Turning a folder outside the board into a Q page**: what the generator derives, what it embeds, what it must never overwrite, when it re-runs, and how a stale generated page is detected.
@@ -105,7 +106,7 @@ The board has exactly one folding level inside Content, so two nested folds were
 Verified on both pages: 19 collapsible sections on the skill, 4 on the agent, and zero non-folding paragraph headings left.
 
 #### A blank line closes an item, so an item body may not contain one
-(the bug JL caught twice: `1 · 🗂 形状` folded down to its opening figure and dumped the rest of the section onto the page)
+(the bug JL caught twice: `1 · 🗂 Shape`, whose heading was still Chinese at the time, folded down to its opening figure and dumped the rest of the section onto the page)
 `body.py` calls `flush()` on a blank line, and `flush()` CLOSES the open item.
 `SKILL.md` is written one sentence per line with blank lines between blocks, so the first blank line inside a converted section ended the fold and everything after it rendered as literal `- ` and `**bold**` text at 6-space indent.
 A first fix guarded only the line immediately after the item head, which is why the symptom moved rather than went away: the fold now opened, and closed again at the next blank line.
@@ -184,9 +185,18 @@ The ACTIVITY dashboard counts one update per dated `## Log` line per page, so a 
 Today that question needs 141 changelogs read by hand; after this it is one strip and one ranked tree on an index.
 
 ## Items to Finish
+### Rulings awaiting JL
 - [ ] 🧠 JL rules whether the board hosts skills at all
       A board's pages have always been questions somebody owns, and a skill page is a different kind of thing: a roster row.
       This closes either way, including "no, a roster is not a board".
+- [ ] 🗂 The grouping is decided before 35 files land in one folder
+      A single flat group would mean 35 pages in one folder, which is the wall `QB1` just removed.
+      The skill tree already has groups (`0-enter`, `1-lifecycle`, `2-phase`, `3-deliver`, …), so the likely answer is one board group per skill sub-family.
+- [ ] 🎯 Scope: this family only, or every skill in the plugin
+      Settled for THIS board on 260727: `Q-Skill` covers `skills/board/` and nothing else, because a roster that reaches past its board's subject makes the board a directory of the whole plugin.
+      Still open: whether each other family gets the same group on its own design board (paper 35, task 44, application 23, discovery 15), or one roster board carries all 141.
+
+### The generator, built and proven
 - [x] 🏷 The generated pages get their own named family and group
       Ruled 260727: a skill page is `Q-Skill-<skill-name>.md` in a `Q-Skill/` group, not a numbered id.
       A numbered id says a skill page is the first of a queue; `Q-Skill-haipipe-board` says which skill it is, which is the only thing a reader wants from the id, and it stays greppable across the repo.
@@ -202,12 +212,8 @@ Today that question needs 141 changelogs read by hand; after this it is one stri
       Never touched: Question, Items to Finish, Where we are, Comments, Log.
       Proven rather than asserted: two sentinel lines were written into the authored sections, the skill's version was bumped so sync had real work, and both sentinels survived while the version changed.
       The marker only counts at the start of a line, because this very page quotes it in prose and a substring test reported the ruling page as a broken skill page.
-- [ ] 🗂 The grouping is decided before 35 files land in one folder
-      A single flat group would mean 35 pages in one folder, which is the wall `QB1` just removed.
-      The skill tree already has groups (`0-enter`, `1-lifecycle`, `2-phase`, `3-deliver`, …), so the likely answer is one board group per skill sub-family.
-- [ ] 🎯 Scope: this family only, or every skill in the plugin
-      Settled for THIS board on 260727: `Q-Skill` covers `skills/board/` and nothing else, because a roster that reaches past its board's subject makes the board a directory of the whole plugin.
-      Still open: whether each other family gets the same group on its own design board (paper 35, task 44, application 23, discovery 15), or one roster board carries all 141.
+
+### The fresh-reader test
 - [ ] 🧪 One generated page is read by someone who did not generate it
       They must be able to say what the skill does, what version it is, and what it still owes, without opening the skill folder.
 
@@ -234,11 +240,27 @@ Four items remain and the first is still the one that decides the rest: whether 
   The question arrived because the dashboard now ranks pages by updates, and JL asked what it would take to rank SKILLS the same way.
   That order matters: the roster is wanted for an answer it enables, not because 141 folders felt untidy, which is the difference between a page that gets read and one that gets generated and abandoned.
 
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] 🧠 Rule whether the board hosts skills at all
+      The page records that this closes either way, including "no, a roster is not a board".
+      A tick here also closes the same row in Items to Finish.
+- [ ] 🗂 Decide the grouping before 35 files land in one folder
+      The page's stated likely answer is one board group per skill sub-family, mirroring the skill tree's own groups.
+      A tick here also closes the same row in Items to Finish.
+- [ ] 🎯 Settle the scope beyond this board
+      The options the page records: each other family gets the same group on its own design board (paper 35, task 44, application 23, discovery 15), or one roster board carries all 141.
+      A tick here also closes the same row in Items to Finish.
+
 ## Files
+### The precedent to mirror
 - `stage.py`
   The precedent: `new` / `sync` / `check`, `replace_managed`, and the source-hash staleness report. Read this before writing anything.
 - `src/stage_contract.py`
   `managed_span` and `replace_managed`, the 98 lines that make "never touch what a human wrote" true rather than intended.
+
+### Input files
 - `ref/board-form.md`
   §5 for the `![[path]]` embed grammar this depends on; §4 for which sections are recognized.
 - `Tools/plugins/haipipe-toolkit/skills/`
@@ -247,3 +269,6 @@ Four items remain and the first is still the one that decides the rest: whether 
 ## Glossary
 managed block: a span between `<!-- haipipe:...:start -->` and `:end` that a generator owns; everything outside it belongs to whoever typed it.
 roster page: a page whose subject exists independently of the board, unlike a ruling, which exists only as the question it asks.
+
+## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

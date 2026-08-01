@@ -13,11 +13,13 @@ The hard part is that the terminal must run on the machine the files are on and 
 The drawer is ultimately a re-built chat box, so any job needing commands or skills gets stuck; without a real terminal the board can only do "edit some text" work.
 It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 can now open up fully too) and becomes a **difference of form**: the drawer is a rebuilt chat box, the terminal is the CLI verbatim.
 
+
 ## Boundary
 - ✅ Covered here
   **The real-terminal form**: how it starts, how it passes through one port, how multiple boards and questions avoid collisions, how processes get reaped.
+  Since 260801 also **the smooth pane**: rendering this same session as web chat beside the raw TTY (absorbed from `QD3m`, whose full myrlin analysis is archived at `_archive/QD3m-smooth-terminal.md`).
 - ↪ Covered elsewhere
-  The rules themselves: that is `QD1`; nor the web drawer: that is `QD2`.
+  The rules themselves: that is `QD1`; nor the web drawer: that is `QD2` — and the session host the smooth pane rides on is `QD2` M1.
 
 ## Diagram
 
@@ -42,16 +44,21 @@ It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD3
 
 ## Items to Finish
+### ⌨ The entry and its session
 - [x] A ⌨ entry on every Q card
       A ⌨ in the drawer header; switching turns the whole drawer into this question's real terminal.
 - [x] Clicking it enters **this question's own** session
       With a session: `--resume`; without: serve.py generates a uuid, writes it back to the header, `--session-id` uses it.
       Never an empty terminal, never a second stray session.
+
+### 🧭 The route, proven live
 - [x] Route chosen
       **Neither myrlin nor hand-rolled node-pty: ttyd + serve.py reverse proxy.** Reasons in Where we are.
 - [x] End-to-end verified it actually works
       WebSocket connected through the 5599 proxy; on screen was this question's real session (a0c6698a, prior history intact); sent "reply only BOARDLIVE" and got the reply on the spot.
       Not "should work", tested.
+
+### 🔌 Many terminals through one port
 - [x] Multiple questions open simultaneously
       Open more board tabs (one question per tab); no separate "pop out" button needed.
       Two ttyds verified coexisting.
@@ -65,6 +72,16 @@ It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 
       `boards_api.py` relays `POST /_board/term|release` and, the real pipe, `WS /_term/{key}/ws` (message-level, 'tty' subprotocol preserved) plus `GET /_board/asset/*` for the vendored xterm.js.
       Verified end to end through port 8093: term started (reused QD3's own session id), ttyd's stream arrived (the first frames carried the title op and the `claude --append-system-prompt` orientation line), release cleaned up.
       Chain: browser xterm ⇄ console ⇄ serve.py ⇄ ttyd ⇄ claude.
+
+### 🪄 The smooth pane (absorbed from QD3m, 260801)
+- [ ] Render the session as web chat beside the raw pane
+      Plan of record (QD3m's Decision Now proposals adopted under JL's 260731 no-decisions rule; say the word to reverse any): route **D** — serve.py holds the stream-json process (`QD2` M1's session host) and this pane renders its events, no file to tail, no boot cost per message; the raw TTY stays permanently one toggle away (standing **A**), because permission dialogs and pickers exist only on the PTY screen.
+      The two location rulings were decided by shipping (sidecar registry · fig/); the picker's whole-repo expander is parked until asked for.
+      Blocked on `QD2` M1 landing in `live/chat.py`; the full route analysis is in the archive.
+- [ ] The fallback seam
+      Detect the waiting-on-TUI moment, surface the ⌨ toggle, take the screen back after — the seam, not the rendering, is the real work.
+
+### 🚧 Smoothness and the security line
 - [ ] Make it smooth (JL 260724): ①–④ built, ⑤⑥ open, live drop-test still owed
       ① auto-reconnect with backoff, BUILT: the WS rebuilds on drops (1s→2s→…→15s, 6 tries), the terminal object survives so scrollback stays; the post-auth resize makes claude repaint.
       Not yet exercised against a real mid-session drop. ② keepalive, BUILT: a same-size resize op every 30s keeps idle relays/proxies from reaping the pipe. ③ fit on drawer resize, BUILT: ResizeObserver on the terminal host, debounced 150ms → fit → resize op. ④ pre-warm on hover, BUILT (assets only): pointer on ⌨ pulls the 480KB xterm.js early, so the click is instant.
@@ -79,6 +96,16 @@ It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 
 
 ## Where we are
 Built, and it lives in the page. ⌨ in the drawer header enters the terminal; clicking again (💬) hands the session back.
+
+- 260801 JL+CC · 📦 QD3m folded back into this page; one terminal page again
+  JL: "the QD3 and QD3m, should we just keep one of them?" — yes, this one. QD3m's engine half (§8 own-PTY) had already shipped INTO this page as 0.64.0, its picker and paste items were built and ticked, and its still-open smooth view rides `QD2` M1's session host, so a separate page held only a decision list. The open work moved up into the 🪄 smooth-pane items with CC's proposals adopted as plan of record (route D · toggle standing A), the file is archived at `_archive/QD3m-smooth-terminal.md` with the full myrlin analysis intact, and `checks/pty_e2e.py`'s default target repointed here.
+- 260731 JL · 🔩 The engine under this page changed: serve.py now owns the PTY, ttyd is the fallback
+  JL approved `QD3m` §8 and 0.64.0 shipped it: `spawn_pty` + a reader thread + a ring buffer replace the ttyd process; `/_term/<key>/ws` is terminated by serve.py itself, still speaking ttyd's wire protocol, so everything this page verified (5599-only, keys, HOLD, reaping, self-heal respawn) carries over unchanged.
+  What this page gains for free: reconnects replay the last 256KB instantly instead of waiting for a repaint, the UTF-8 tail guard removes one smear cause at the source, and pasting a screenshot over the ⌨ pane now works.
+  ttyd remains reachable via `serve.py --ttyd` until JL's click-through; after that the brew dependency can go.
+- 260731 JL · 🪄 The smoothness question moved up a level, to its own face
+  JL steered back here asking how to make the terminal as smooth as myrlin, and the honest answer is that a TUI can only be polished, not made smooth: myrlin's smoothness comes from rendering the session's jsonl instead of a screen.
+  That form question is now `QD3m`; this page keeps the PTY plumbing and its own raw-TTY polish items ⑤⑥.
 
 - The terminal is drawn inside the drawer with xterm.js, no more iframe (JL: closer to myrlin / A)
       xterm.js runs directly in the drawer (vendored, served by serve.py from /_board/asset/); it connects to ttyd's WebSocket itself, speaking ttyd's subprotocol (one auth message, one resize, input '0'+data, output frames lead with '0').
@@ -135,7 +162,12 @@ Built, and it lives in the page. ⌨ in the drawer header enters the terminal; c
   The page-side entry that switches into the terminal.
 
 ## Lesson
-**A released terminal looks like a network failure to the page.**
+#### An exception after `termView(true)` IS a black pane, and the wire being perfect proves nothing about the front end.
+JL's 260731 black screen survived four wire-level ALL-PASS batteries because the defect lived entirely in the browser: `loadAddon(Unicode11Addon)` throws `You must set the allowProposedApi option to true` in the vendored xterm, `termOpen`'s catch turns the throw into a 3-second toast, and the pane the user stares at stays black with no banner and no console error.
+It took clicking the real gesture in a real Chrome over CDP to reproduce it, and three instruments to corner it: netlog proved the script downloaded fully, tag listeners proved both assets fired `load`, and only a MutationObserver on the toast caught the swallowed message.
+Two rules follow: `allowProposedApi: true` stays in the Terminal constructor as long as the unicode11 addon is loaded, and a terminal-path failure must never end in a toast alone: the pane itself must show the error, because the toast dies in 3 seconds and the pane is where the eyes are.
+
+#### A released terminal looks like a network failure to the page.
 CC released QD3's ttyd from the CLI while JL had that very terminal open in the drawer; the page saw only a dead WebSocket and knocked six times; reconnect cannot revive a terminal that no longer exists.
 JL's screenshot caught it, banners interleaved with claude's half-repainted screen:
 
@@ -144,25 +176,25 @@ JL's screenshot caught it, banners interleaved with claude's half-repainted scre
 Since 0.9.2 the third knock stops knocking and re-asks serve.py for a FRESH terminal (`--resume` restores the session), so a release under your feet costs a two-second restart, not a dead pane.
 The mangled columns had a second cause: fitTerm used guessed glyph metrics (8.4px/17px); it now reads xterm's real rendered cell size and refits 350ms after connect, so the pty and the pane agree on the width claude repaints into.
 
-**Wiring the pipe is not the whole terminal: both ends must agree on how wide a character is.**
+#### Wiring the pipe is not the whole terminal: both ends must agree on how wide a character is.
 Three width opinions meet in one pane: the app's (claude counts 🟡✅💬 as 2 cells, modern wcwidth), the terminal's (the vendored xterm shipped only Unicode 6 tables, which say 1), and the font's (Menlo has no CJK glyphs, and the fallback glyph is wider and taller than the measured ASCII cell).
 Any disagreement drifts the cursor or bleeds the rows, and a TUI that repaints in place turns the drift into interleaved double-frames, the QD3 smear (fig/image.png).
 Emoji-dense content (state pills, 💬 markers) guarantees the trigger on this very board.
 All three are now pinned explicitly: addon-unicode11 (`activeVersion '11'`), a CJK-aware font stack, and lineHeight 1.2. None of them is left assumed.
 
-**A hollow session (id recorded, never chatted) makes --resume exit instantly; the terminal dies on open.**
+#### A hollow session (id recorded, never chatted) makes --resume exit instantly; the terminal dies on open.
 `claude --session-id <uuid>` starts a session, but if only the UI booted and no message was ever sent, no jsonl lands on disk.
 Next open reads that id from the header → `claude --resume <id>` → "No conversation found" → claude exits at once → ttyd drops the connection → the terminal blacks out right after ttyd's handshake bytes.
 Presented as "365 bytes then disconnect".
 Fix: before opening, check **whether that conversation's jsonl exists on disk**: resume only if it does; otherwise (hollow or brand-new) use `--session-id`.
 Same rule on the drawer side: check the jsonl before resuming.
 
-**A stuck HOLD makes "won't open" look like a bug when it is an unreleased lock.**
+#### A stuck HOLD makes "won't open" look like a bug when it is an unreleased lock.
 A drawer or terminal that never finished holds the question's HOLD, and every later open gets blocked with "session is held by …".
 While debugging xterm, one stale drawer-HOLD blocked every terminal open, so the browser's mountTerm never received a key; looked like xterm was broken; it was an uncleared HOLD.
 Fallback: `/_board/killall` clears all HOLDs + terminals; the real fix is a reliable release in every path's finally.
 
-**Sessions follow the cwd; changing cwd swaps the session set; migrating jsonl does not work.**
+#### Sessions follow the cwd; changing cwd swaps the session set; migrating jsonl does not work.
 Directory names under `~/.claude/projects/` are the cwd with slashes turned to dashes: one cwd, one project.
 After moving cwd from the board folder to the SPACE root:
   · old board-folder sessions stayed in their old project dir, and `claude --resume <old sid>` from root cannot find them.
@@ -170,16 +202,16 @@ After moving cwd from the board folder to the SPACE root:
 So this time: cleared each question's old `session:` line and restarted each under root (`--session-id`).
 The old sessions are not deleted, still in the board folder's project dir; to view one, `cd` into that folder and `claude --resume`. **Lesson**: cwd is a session's home, not a tweakable parameter; changing it = this question starts over.
 
-**Set the id yourself on first open; never let it self-generate.**
+#### Set the id yourself on first open; never let it self-generate.
 A bare `claude` invents its own new session id, which we cannot capture → one question accumulates several sessions.
 With `--session-id <uuid>`: we generate first, write it back to the header first, then let the terminal use it.
 That is how one-question-one-session holds.
 
-**Only 5599 is forwarded, so the terminal must be proxied, WebSocket included.**
+#### Only 5599 is forwarded, so the terminal must be proxied, WebSocket included.
 Forwarding one more port per question is unrealistic. ttyd's `-b <base>` makes it live under a subpath, and serve.py must handle `Upgrade: websocket` besides plain HTTP (all terminal I/O rides the WS); only a correctly forwarded handshake yields a character stream.
 
-**Look for an existing wheel first, but "existing" is not "the one to use".**
-myrlin-workbook's discovery path matched our storage location byte for byte; for a moment it looked plug-in ready.
+#### Look for an existing wheel first, but "existing" is not "the one to use".
+The myrlin-workbook discovery path matched our storage location byte for byte; for a moment it looked plug-in ready.
 But it is a whole application; we needed "a terminal embedded in a board".
 The smaller ttyd + our own proxy won.
 Searching for wheels is right; choosing one is about how big "the piece you need" is, not how much the wheel can do.
@@ -199,6 +231,16 @@ Fine to use as a standalone tool; constraints bite when you copy it into somethi
 >> CC0723: read its source: the discovery path matches ours exactly. But it is a whole application, too heavy; ended with ttyd + serve.py's own proxy embedded instead.
 
 ## Log
+260801 0020 · QD3m merged in on JL's ask: smooth-pane items absorbed (route D adopted per the no-decisions rule), the file archived under `_archive/`, board.md's lane and map updated, pty_e2e default target repointed (0.91.1)
+260731 1934 · ⌨'s hard items became STANDING checks (`checks/run.py --full`, 0.89.0, home on `QC8`): the own-PTY engine and ⑤ park/reattach are re-proven on every run — a real CLI turn through the PTY (pty_e2e ①–⑦), park-not-held on tree navigation (termnav T9c/T9d `reused:true`), paste on a tree URL — all on a throwaway fixture, never a real page
+260731 1905 · ⌨ follows the tree router (0.86.0): `follow()`'s split-page/group branches had no terminal hand-over, so tree navigation switched the drawer label while the OLD page's claude kept the screen and its PTY stayed unparked; both branches now park-rebind-reopen like the hash branch, and all three `termRelease` sites pass the group (a group PTY was parking the wrong scope). Found by reading SDK-Talk's navtest coverage on JL's ask — their suite never opens ⌨ — and proven with `termnav.mjs` (same CDP harness): 12/12, parked-not-held shown by `reused:true` reopens, paste re-proven on a tree URL
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · Shift+Enter fixed (0.73.1): xterm sends backslash+CR (claude's continuation); ESC+CR tested first and it SUBMITS, so the pick is empirical, bytes through the WS
+260731 · Item ⑤ grace release BUILT (0.71.0): park on beacon/toggle, 600s grace, same-pid reattach with ring replay, drawer evicts parked (one-jsonl law); verified live
+260731 · Env-marker lesson: serve.py restarted from a Claude session passed CLAUDE_CODE_CHILD_SESSION down, and every board terminal silently stopped saving its transcript; serve.py and spawn_pty now scrub the session markers
+260731 · The black screen's real root cause found by clicking a real Chrome (0.69.0): allowProposedApi missing → loadAddon throw → toast-swallowed; one line fixes it; Lesson written
+260731 · The PTY engine swapped under this page (QD3m §8, 0.64.0): serve.py owns it, ttyd → --ttyd fallback; ring replay + tail guard + ⌨ image paste arrive free
+260731 · The myrlin-smoothness question split out as QD3m (render the jsonl, not the screen); this page keeps the PTY plumbing and items ⑤⑥
 260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260725 1105 · The terminal also opens on the index's chatbot (JL's ask on QC2, details on QD2): ⌨ in the board drawer posts /_board/term with file=board.md; verified live: ttyd up at /_term/117a3466ca18/, HTTP 200 through the proxy, SAME session id as the drawer (two front ends, one session holds), released clean
 260724 1925 · Width accounting aligned (JL's fig/image.png smear): vendored addon-unicode11 (emoji 1→2 cells, matches claude's wcwidth; offline-verified provider v11) + CJK font fallbacks + lineHeight 1.2 in the drawer's xterm; serve.py asset whitelist + soft-fail load; Lesson added

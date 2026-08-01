@@ -1,4 +1,4 @@
-board — Agent Roster
+board: Agent Roster
 ====================
 
 The Board family owns one live agent:

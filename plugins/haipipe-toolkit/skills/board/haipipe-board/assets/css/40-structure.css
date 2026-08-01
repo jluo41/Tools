@@ -1,0 +1,37 @@
+/* ── group intro (QC2, JL 260724): one quiet sentence under each group header;
+   when more lines exist in the Pages it becomes a native <details> that
+   expands to say what the group is for and why it is here. No script. ── */
+.grp{display:flex;align-items:baseline;gap:8px}
+.grp .gt{flex:1}
+details.gi,.gi.one{margin:-2px 0 10px 2px;font-size:12.8px;color:var(--mut);line-height:1.55}
+details.gi summary{cursor:pointer;list-style:none;user-select:none}
+details.gi summary::-webkit-details-marker{display:none}
+details.gi summary::before{content:'▸';display:inline-block;margin-right:6px;font-size:10px;
+ transition:transform .15s;color:var(--accent)}
+details.gi[open] summary::before{transform:rotate(90deg)}
+details.gi summary:hover{color:var(--fg)}
+.gib{margin:5px 0 2px 15px;max-width:78ch;border-left:2px solid var(--line);padding-left:10px}
+/* 组介绍里的小 ascii 图（JL 260724）：展开后一眼看清这组题怎么串起来。窄、灰底、可横滚 */
+.gib .gidia{font:11.5px/1.5 ui-monospace,Menlo,monospace;color:var(--fg);
+ background:var(--pre);border-radius:var(--radius-control);padding:9px 12px;margin:9px 0 3px;
+ overflow-x:auto;white-space:pre;max-width:100%}
+
+/* ── index structure controls (QC2): ＋ Q / ＋ Group / archive. Writers only;
+   they appear on hover so the reading surface stays quiet. ── */
+.gadd,.garch,.gnew,.gchat{border:1px solid var(--line);background:none;color:var(--mut);
+ border-radius:var(--radius-control);font-size:11.5px;font-family:inherit;padding:2px 8px;cursor:pointer;
+ opacity:0;transition:opacity .15s}
+.grp:hover .gadd,.grp:hover .garch{opacity:.85}
+.gadd:hover,.garch:hover,.gnew:hover,.gchat:hover{color:var(--fg);border-color:var(--accent);opacity:1}
+.gnew{display:block;margin:16px 0 4px 2px;opacity:.6}
+.qarch{font-size:12px;color:var(--mut);opacity:0;cursor:pointer;border-radius:var(--radius-control);
+ padding:0 5px;transition:opacity .15s}
+.ir:hover .qarch{opacity:.75}
+.qarch:hover{opacity:1;color:var(--fg)}
+.garch.arm,.qarch.arm{color:#fff;background:var(--todo);border-color:var(--todo);opacity:1}
+.gform{display:inline-flex;gap:6px;align-items:center;margin-left:8px}
+.gform input{font-size:12.5px;font-family:inherit;border:1px solid var(--line);
+ border-radius:var(--radius-control);background:var(--card);color:var(--fg);padding:3px 8px;min-width:180px}
+.gform .go{border:1px solid var(--accent);background:var(--accent);color:#fff;
+ border-radius:var(--radius-control);font-size:11.5px;padding:3px 9px;cursor:pointer}
+.gform .cx2{border:none;background:none;color:var(--mut);font-size:14px;cursor:pointer}

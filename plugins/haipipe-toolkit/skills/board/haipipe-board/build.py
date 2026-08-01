@@ -36,7 +36,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from src import body as boardbody              # noqa: E402
 from src.parse import parse_dir, parse_file    # noqa: E402
-from src.page_board import render, scrub_cjk_comments, to_json  # noqa: E402
+from src.page_board import render, render_tree, scrub_cjk_comments, to_json  # noqa: E402
 
 # Marker SYNTAX a dialect would resolve. Used only to warn when a board writes
 # markers and declares no dialect; matching this is not knowing what a paper is.
@@ -55,8 +55,16 @@ def _meant_markers(text):
     return len(MARKERISH.findall(_INLINE.sub("", _FENCE.sub("", text))))
 
 if __name__ == "__main__":
-    args = [a for a in sys.argv[1:] if a != "--json"]
+    only = None
+    if "--only" in sys.argv[1:]:
+        i = sys.argv.index("--only")
+        only = {s.strip() for s in sys.argv[i + 1].split(",") if s.strip()}
+        del sys.argv[i:i + 2]
+    args = [a for a in sys.argv[1:] if a not in ("--json", "--split")]
     as_json = "--json" in sys.argv[1:]
+    # QC9 (JL 260731): also emit the board/ tree, one file per page and per
+    # group. board.html keeps being written, so the one-file artifact stays.
+    as_split = "--split" in sys.argv[1:]
     sys.argv = [sys.argv[0]] + args
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
     boardbody.BASE = (target if target.is_dir() else target.parent).resolve()
@@ -104,16 +112,40 @@ if __name__ == "__main__":
     if as_json:
         print(to_json(meta, qs, warn))
         sys.exit(0)
-    out.write_text(scrub_cjk_comments(render(meta, qs)), encoding="utf-8")
-    txt = out.read_text(encoding="utf-8")
-    # 真正要保的性质不是「没有 script」，而是「关掉 script 页面照样完整」。
-    # 评论层是纯增强，所以改成直接验这一条：剥掉所有 <script> 之后，
-    # 每个 page 仍在，正文仍在。
-    bare = re.sub(r"<script.*?</script>", "", txt, flags=re.S)
-    assert bare.count('class="slide q') == len(qs), "a page went missing after stripping JS"
-    plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", bare.split("<body", 1)[1])).strip()
-    assert len(plain) > 1200, f"only {len(plain)} chars of body left after stripping JS"
-    print(f"✅ {out} · {len(qs)} pages · {len(plain)} chars of body survive with JS stripped · {txt.count(chr(60)+'script')} script block(s)")
+    # QC9 · the monolith is RETIRED (260731, JL: "we will remove the
+    # board.html"). A board FOLDER now builds only the split site: one file per
+    # page, one per group, plus the index. Keeping both meant a second artifact
+    # every reader had to be told to ignore, and a stale copy of it outranking
+    # the real site in bookmarks. A single .md target still renders one file,
+    # which is what `parse_file` above is for.
+    if target.is_dir():
+        files = render_tree(meta, qs, target / "board", only=only)
+        print(f"✅ {target}/board · {len(files)} files "
+              f"(one per page, one per group, plus index)")
+        if out.exists():
+            out.unlink()
+            print(f"🧹 removed the retired monolith {out.name}")
+        # The property worth protecting was never "no script", it is "the page
+        # is complete with scripts off". Assert it on the split pages now, since
+        # that is what ships. Sample the largest page: if JS-stripped content
+        # survives there, the shared template is sound.
+        pages = sorted((target / "board").glob("*/*.html"), key=lambda p: p.stat().st_size)
+        if pages:
+            txt = pages[-1].read_text(encoding="utf-8")
+            bare = re.sub(r"<script.*?</script>", "", txt, flags=re.S)
+            body = bare.split("<body", 1)[-1]
+            plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body)).strip()
+            assert len(plain) > 1200, (
+                f"{pages[-1].name}: only {len(plain)} chars of body left after stripping JS")
+            print(f"✅ {len(qs)} pages · largest keeps {len(plain)} chars with JS stripped")
+    else:
+        out.write_text(scrub_cjk_comments(render(meta, qs)), encoding="utf-8")
+        txt = out.read_text(encoding="utf-8")
+        bare = re.sub(r"<script.*?</script>", "", txt, flags=re.S)
+        assert bare.count('class="slide q') == len(qs), "a page went missing after stripping JS"
+        plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", bare.split("<body", 1)[1])).strip()
+        assert len(plain) > 1200, f"only {len(plain)} chars of body left after stripping JS"
+        print(f"✅ {out} · {len(qs)} pages · {len(plain)} chars of body survive with JS stripped")
     for w in warn:
         print(f"⚠️  {w}")
     # A chip can only appear where the board RENDERS text. The manuscript's own

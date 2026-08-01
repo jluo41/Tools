@@ -178,7 +178,7 @@ def check_board(d, rep):
                     f"no `{key}:` line; the board cannot say what it is for or when it ends")
 
     pages = {p.name: p for p in page_files(d)}
-    listed = re.findall(r"^((?:[QS]|Agent-)[^\s/]*\.md)\s*$", text, re.M)
+    listed = re.findall(r"^((?:[QS]|Agent-|Meeting-)[^\s/]*\.md)\s*$", text, re.M)
     for name in listed:
         if name not in pages:
             rep.add(ERROR, "pages-ghost", f"board.md -> {name}",
@@ -248,10 +248,17 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
             rep.add(WARN, "unresolved-id", f"{name}:{lineno}",
                     f"`{tok}` is neither a page on this board nor a declared Link")
 
+    # English-only and the em-dash ban are rules about the prose THIS TEAM
+    # writes. A `Meeting-<n>` page is a mirror of a meeting that happened, in
+    # whatever language it happened in, and "fixing" its wording would falsify
+    # the record (QC10). Its managed spans are already skipped by strip_fences;
+    # this exempts the two seeded lists as well, which are the meeting's own
+    # action items and open questions and are equally quotations.
+    quoted = bool(re.match(r"^Meeting-\d+-", Path(name).name))
     for lineno, ln in strip_fences(text, prose_only=True):
-        if "—" in ln:
+        if "—" in ln and not quoted:
             rep.add(WARN, "em-dash", f"{name}:{lineno}", "em-dash in prose (JL 260724)")
-        if re.search(r"[一-鿿]", ln):
+        if re.search(r"[一-鿿]", ln) and not quoted:
             rep.add(WARN, "cjk", f"{name}:{lineno}", "CJK in a board that is English-only (JL 260724)")
 
     # One sentence per line: the page gives every prose line its own row, so a
@@ -331,42 +338,65 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
 
 
 def check_page(d, rep):
-    html = d / "board.html"
-    if not html.exists():
-        rep.add(ERROR, "no-html", "board.html", "not built yet; run build.py")
+    """The built site: local hrefs resolve, tags balance, ids are unique.
+
+    Checks the split site (QC9). The monolithic board.html was retired 260731,
+    so every page is now its own file and each one is checked on its own terms:
+    a broken link on QD2 used to be one finding among thousands in a 1.1MB
+    document, and is now named by the file it is in.
+    """
+    site = d / "board"
+    if not (site / "index.html").exists():
+        rep.add(ERROR, "no-html", "board/index.html", "not built yet; run build.py")
         return
-    t = html.read_text(encoding="utf-8")
+    pages = sorted(site.glob("*.html")) + sorted(site.glob("*/*.html"))
 
-    bare = re.sub(r"<script.*?</script>", "", t, flags=re.S)
-    body = bare.split("<body", 1)[-1]
-    plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body)).strip()
-    if len(plain) < 1200:
-        rep.add(ERROR, "zero-script", "board.html",
-                f"only {len(plain)} chars survive with scripts stripped; the page depends on JS")
+    for html in pages:
+        name = html.relative_to(site).as_posix()
+        t = html.read_text(encoding="utf-8")
+        bare = re.sub(r"<script.*?</script>", "", t, flags=re.S)
+        body = bare.split("<body", 1)[-1]
 
-    for href in sorted(set(re.findall(r'href="([^"#][^"]*)"', t))):
-        if href.startswith(("http://", "https://", "mailto:", "data:")):
-            continue
-        if href.startswith(LIVE_ROUTE_PREFIXES):
-            continue
-        if not (d / href).exists():
-            rep.add(ERROR, "dead-href", f"board.html -> {href}", "rendered link does not resolve")
+        # Scripts-off completeness, on the page files only: a group file and the
+        # index are navigation, so they are legitimately short.
+        if html.parent != site:
+            plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body)).strip()
+            if len(plain) < 400:
+                rep.add(ERROR, "zero-script", name,
+                        f"only {len(plain)} chars survive with scripts stripped; "
+                        "the page depends on JS")
 
-    ids = re.findall(r'id="([^"]+)"', t)
-    for i in sorted({x for x in ids if ids.count(x) > 1}):
-        rep.add(ERROR, "duplicate-html-id", f"board.html #{i}", f"id appears {ids.count(i)} times")
+        # `bare`, not `t`: an href inside JavaScript is a string in a program,
+        # not a rendered link. Reading the script block made board.js's own
+        # anchor builder look like a dead link (260731).
+        for href in sorted(set(re.findall(r'href="([^"#][^"]*)"', bare))):
+            if href.startswith(("http://", "https://", "mailto:", "data:")):
+                continue
+            if href.startswith(LIVE_ROUTE_PREFIXES):
+                continue
+            href = href.split("?", 1)[0]        # assets carry a ?v= cache-bust
+            if not href:
+                continue
+            if not (html.parent / href).exists():
+                rep.add(ERROR, "dead-href", f"{name} -> {href}",
+                        "rendered link does not resolve")
 
-    # Tag balance, counted outside <script> AND <style>. Both quote markup in
-    # their comments: board.css explains the apparatus with the words "native
-    # <details>", and counting that reported three unclosed tags on a page whose
-    # markup was fine.
-    markup = re.sub(r"<style.*?</style>", "", bare, flags=re.S)
-    for tag in ("details", "section", "div"):
-        o = len(re.findall(rf"<{tag}[\s>]", markup))
-        c = len(re.findall(rf"</{tag}>", markup))
-        if o != c:
-            rep.add(ERROR, "unbalanced-tag", "board.html",
-                    f"<{tag}> opened {o} times, closed {c}")
+        ids = re.findall(r'id="([^"]+)"', t)
+        for i in sorted({x for x in ids if ids.count(x) > 1}):
+            rep.add(ERROR, "duplicate-html-id", f"{name} #{i}",
+                    f"id appears {ids.count(i)} times")
+
+        # Tag balance, counted outside <script> AND <style>. Both quote markup
+        # in their comments: board.css explains the apparatus with the words
+        # "native <details>", and counting that reported three unclosed tags on
+        # a page whose markup was fine.
+        markup = re.sub(r"<style.*?</style>", "", bare, flags=re.S)
+        for tag in ("details", "section", "div"):
+            o = len(re.findall(rf"<{tag}[\s>]", markup))
+            c = len(re.findall(rf"</{tag}>", markup))
+            if o != c:
+                rep.add(ERROR, "unbalanced-tag", name,
+                        f"<{tag}> opened {o} times, closed {c}")
 
 
 # Every class token a chip PANEL carries. A panel's class list is
@@ -391,10 +421,8 @@ def check_css(rep):
     correct, the prose is correct, and the interaction is dead. Neither of QA9's
     other two instruments can see it, which is why it gets its own.
     """
-    css = HERE / "assets" / "board.css"
-    if not css.exists():
-        return
-    for m in BARE_CLASS.finditer(css.read_text(encoding="utf-8")):
+    from src import assets as _a
+    for m in BARE_CLASS.finditer(_a.css()):
         for sel in m.group(1).split(","):
             tok = sel.strip().lstrip(".")
             if tok in PANEL_TOKENS:
@@ -434,7 +462,12 @@ def check_template(rep, quiet):
             rep.add(ERROR, "template-build-failed", "ref/q-template.md",
                     (r.stderr or r.stdout).strip().split("\n")[-1][:200])
             return
-        html = (d / "board.html").read_text(encoding="utf-8")
+        # One document per page since the monolith was retired (260731). The
+        # construct assertions below only ask "does this markup appear
+        # somewhere", so concatenating the page files is the same question, and
+        # page_slice still finds its own section boundaries inside the join.
+        html = "\n".join(p.read_text(encoding="utf-8")
+                         for p in sorted((d / "board").glob("*/*.html")))
 
         for label, cls, pattern, source_pattern in CONSTRUCTS:
             source_has = bool(re.search(source_pattern, src, re.M))

@@ -16,6 +16,7 @@ If it is not easy to read, writing that much is rubbish.
 For an S page, layout alone is not enough: its Content blueprint should be created from the owning stage template, refined by the venue template, and constrained by accepted outputs and open requirements inherited from previous stages.
 Those sources compose one explicit page; they are not competing templates and are not re-read on every render.
 
+
 ## Boundary
 - ✅ Covered here
   `board.html`'s **single-page focus mode** for Q and S: the fixed on-stage order, what is on stage / what folds, one layout serving two workflows, the group-title marker, and the Board identity mark.
@@ -180,9 +181,15 @@ It is generated from the current render rather than written back as durable Mark
 Content keeps its finer `C.H` and `C.P.S` addressing for paragraph and sentence work.
 
 ## Items to Finish
+### Context-named subsections and the template
 - [ ] 🧭 Every section can expose context-named subsections and a copyable Chat path
       Keep the fixed page frame, let the owning page name only the subsection groups it actually needs, and give every `##` / `###` heading a generated breadcrumb with Copy and Chat actions.
       `QAa4`, `QAa5`, `QAa7`, and `QAb3` own the finish, state, file, and focus contracts.
+- [ ] 🧩 `ref/q-template.md` learns the remaining 260729 addition
+      The 🧩 Skills item shape inside Where we are (`QAa5`); this face owns the template since QA2 merged into the QAa group.
+      The former QA0 board-map guide is no longer a page-template concern: JL moved it to `board.md ## Board Structure` on 260730, where it renders on the Board-Webpage-Index without consuming a Q page.
+
+### The focus-mode look and reading order
 - [x] 🖼 Unframed
       A question opened on its own carries no border, no rounded corners, and no card background, so the content sits directly on the page.
       This began as JL's complaint on 260722 that the page felt boxed in compared with the slides `/html-ppt` produces.
@@ -220,6 +227,8 @@ Content keeps its finer `C.H` and `C.P.S` addressing for paragraph and sentence 
       All 18 questions then on the board were converted, not just this one.
       Each got an actual question lead plus a rationale paragraph, `## Boundary`, and `## Files`.
       The renderer now places that rationale under Content rather than keeping it in Opening.
+
+### One renderer serves Q and S
 - [x] 🧩 One renderer accepts Q and S
       `Q*.md` and `S*.md` are recursively discovered, parsed into the same page data, rendered by the same page function, and accepted by comment/chat write-back.
       S pages carry a visible STAGE badge; question settlement and stage gates are counted separately so a gated lifecycle cannot inflate the ruling bar.
@@ -251,6 +260,8 @@ Content keeps its finer `C.H` and `C.P.S` addressing for paragraph and sentence 
 - [x] 🔎 Q-consumer moved into Items to Finish
       A stage consumer is a recognizable checklist record retaining its Q id, Description, Reason, Probe, and Answer.
       Its box closes only after the answer landed, was interpreted, and was woven into Content; deferred closes only after a forward pointer is recorded.
+
+### The zero-background read
 - [x] 🧪 A zero-background reader understands one page in one pass
       Hand one Q page and one S page to a fresh agent with no prior context and have it retell what is being asked, what Content establishes, what counts as done, and where things stand.
       Passed 260725 after three fresh-context reads.
@@ -260,23 +271,22 @@ Content keeps its finer `C.H` and `C.P.S` addressing for paragraph and sentence 
       Content now names the intended reader outcome for Opening, Diagram, Content, Items to Finish, Where we are, Files, and the supporting folds.
       These meanings were moved out of Law because they describe how to read the page, not a hidden implementation constraint.
 
-
-- [ ] 🧩 `ref/q-template.md` learns the remaining 260729 addition
-      The 🧩 Skills item shape inside Where we are (`QAa5`); this face owns the template since QA2 merged into the QAa group.
-      The former QA0 board-map guide is no longer a page-template concern: JL moved it to `board.md ## Board Structure` on 260730, where it renders on the Board-Webpage-Index without consuming a Q page.
+### Rulings awaiting JL
 - [ ] 🧠 JL confirms the carve: one face owns each section, this face owns the order
       Carved 260729 and extended 260730: Opening `QAa1` · Diagram `QAa2` (absorbing the former QA4a) · Content `QAa3` · Items to Finish `QAa4` · Where we are `QAa5` · folds `QAa6` · Files `QAa7`, with the source template `QA2` moving into the group.
       Six open items moved to `QAa3` with the grammar they block on; every ticked item above stays here, because the history happened on this page.
 - [ ] 🧬 JL confirms the base/variant model (§1)
       The page is a base owned by this skill; a kind redefines only Content and ships under its consumer family, `haipipe-paper-stage` today, `haipipe-paper-display` and a task variant as candidates.
       The one point to rule: whether S's Stage Contract row in Opening and its Q-consumer records in Items to Finish count as the variant's Content contract showing elsewhere, which is §1's reading, or as frame exceptions to pull back.
+
+### The Board identity mark
 - [x] 🪪 The Board has one shared identity mark
       JL selected the overlapping four-page mark on 260726.
       It now lives as one transparent SVG in the skill, renders beside every generated title, and supplies the browser favicon without adding an external file dependency.
       Original plus three exact-geometry palette studies are recorded under `fig/`; changing the shipped palette touches CSS tokens, not the SVG geometry.
 
 ## Where we are
-**Carved 260729 into the QAa group: this face keeps the fixed order, the two-workflow rule, and the Board mark; each section's own rules now live on its face.**
+Carved 260729 into the QAa group: this face keeps the fixed order, the two-workflow rule, and the Board mark, while each section's own rules now live on its face.
 The shared Q/S reading path and inherited Stage Contract are implemented.
 The shared Board identity mark is also implemented: one SVG source, one inlined header instance, one data favicon, and CSS-owned palette tokens.
 Four palette studies preserve the same geometry so JL can change color without reopening the mark itself.
@@ -398,7 +408,14 @@ The open work moved with its sections: creation-time Content composition and the
   Fresh agents recovered what is asked, what Content establishes, every finish condition, current state, and the distinct Q/S closure semantics.
   The Opening revision was cold-read twice: the first read found this stale historical status sentence; after correction, the second clean-context read returned PASS.
 
+### Decision Now
+- [ ] 🧠 Confirm the carve: one face owns each section, this face owns the order
+      Carved 260729 and extended 260730 into the QAa group; a tick here also closes the same row in Items to Finish.
+- [ ] 🧬 Confirm the base/variant model
+      The options §1 records: S's Stage Contract row in Opening and its Q-consumer records in Items to Finish are the variant's Content contract showing in other sections, which is §1's reading and the recommendation, or they are frame exceptions to pull back.
+
 ## Files
+### Engines
 - `build.py`
   The generator entry.
   Q/S discovery and parsing live under `src/`; output remains self-contained.
@@ -410,12 +427,18 @@ The open work moved with its sections: creation-time Content composition and the
   The shared renderer, including S Stage Contract before Diagram and Content.
 - `src/page_board.py`
   Separate question-settlement and stage-gate summaries, plus Board-mark and favicon inlining.
-- `assets/board-mark.svg`
-  The one hand-authored source for the Board identity mark.
 - `assets/board.css`
   The Board-mark palette tokens and its index/focused sizes, alongside the rest of the shared page styling.
+- `stage.py`
+  Explicit writer for managed S requirements and writing-style contracts.
+
+### The Board mark sources
+- `assets/board-mark.svg`
+  The one hand-authored source for the Board identity mark.
 - `fig/board-mark-palettes.svg`
   The four exact-geometry palette studies; the PNG beside it is the rendered review sheet.
+
+### Contracts
 - `ref/q-template.md`
   The file copied for every new question.
   Its section order and guide sentences must match this question, or new questions drift back.
@@ -424,8 +447,8 @@ The open work moved with its sections: creation-time Content composition and the
   The earlier attempt to keep an HTML skeleton here went stale and was removed, and that trap is what the split avoids.
 - `SKILL.md`
   The shared-page rules and the distinct Q/S workflow semantics.
-- `stage.py`
-  Explicit writer for managed S requirements and writing-style contracts.
+
+### The consumer board and the generated view
 - `0-lifecycle/`
   Complete consumer: 14 Q rulings + 28 S lifecycle pages on one board.
 - `board.html`
@@ -572,6 +595,7 @@ job line: the full-line `(…)` directly under a paragraph heading, saying what 
 >> CC0725: moved the section meanings out of Law and into seven numbered Content subsections. The visible reading path is explained first; the lower historical sections are grouped as Supporting folds.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260730 · Corrected subsection design: Items to Finish, Where we are, and Files use context-specific headings; generic category names are examples, not reserved page grammar; Files gains its own QAa7 face
 260730 · Page design extended: optional per-section subsections, typed finish categories, decision records in Where we are, and copyable section/subsection Chat paths
 260729 · Structure row added to the Opening drawer (decided on QAa1): the diagram and the on-stage Law here updated to match

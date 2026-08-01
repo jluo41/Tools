@@ -1,0 +1,337 @@
+/* ── 单题聚焦：纯 CSS，零脚本 ────────────────────────────────
+   URL 命中某个 #Qn 时（点目录一行就会），把目录、进度条和其他题全收起来，
+   屏幕上只剩这一题。点「☰ 全部」回到 #top，:target 落空，一切复原。
+   :has() 是纯选择器，不需要 JS。 */
+.nav{display:none}
+body:has(.q:target) .idx,
+body:has(.q:target) .bar,
+body:has(.q:target) .board-map,
+body:has(.q:target) .board-status,
+body:has(.q:target) .activity,
+body:has(.q:target) h3.sec,
+body.split h3.sec{display:none}
+body:has(.q:target) .foot,
+body:has(.q:target) .q,
+
+/* 必须比上面那条更特指，否则被选中的那题会连自己一起藏掉 */
+body:has(.q:target) .q:target,
+body.split .q{display:block;margin-top:6px}
+.q:target .nav,
+body.split .q .nav{display:flex;gap:10px;align-items:center;margin-top:20px;
+ padding-top:13px;border-top:1px solid var(--line)}
+.nav a{color:var(--accent);text-decoration:none;font-size:14px;
+ border:1px solid var(--line);border-radius:var(--radius-control);padding:6px 13px}
+.nav a:hover{border-color:var(--accent)}
+.nav .all{margin:0 auto;color:var(--mut)}
+.q:target .top,
+body.split .q .top{display:none}
+/* No coloured stripe on the left (JL 260726). The row already opens with the
+   state emoji, so the 4px bar restated it in a second language, and eight of
+   them stacked down the index read as a chart rather than as a list. The
+   completion wash below is different information and stays. */
+.ir{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;
+ border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;
+ text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden;--fill:0}
+/* 完成度上色：白底 → 绿。绿色叠加层的透明度 = 完成比例（--fill 0..1）。
+   从左往右填，像进度条，但很淡，不抢正文。 */
+.ir::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(90deg,
+   rgba(21,128,61,calc(var(--fill) * .30)),
+   rgba(21,128,61,calc(var(--fill) * .30)) calc(var(--fill) * 100%),
+   transparent calc(var(--fill) * 100%))}
+.ir > *{position:relative;z-index:1}
+.ir:hover{border-color:var(--accent)}
+h3.sec .hint a{color:var(--accent);text-decoration:none}
+/* 索引里的分组标题：放大 + 底下一条线，跟 Q 页里的节标题（.ch）同一套语言（JL 260723） */
+.grp{font-size:16px;font-weight:700;color:var(--fg);letter-spacing:-.01em;
+ margin:26px 0 9px;padding:0 0 6px 2px;border-bottom:1px solid var(--line)}
+.grp:first-of-type{margin-top:8px}
+.src{font:11.5px ui-monospace,Menlo,monospace;color:var(--mut);opacity:.7;text-decoration:none}
+a.src:hover{opacity:1;color:var(--accent);text-decoration:underline}
+.ir .i{font:12px ui-monospace,Menlo,monospace;color:var(--mut);min-width:24px}
+.ir .t{flex:1} .ir .w{font-size:12.5px;color:var(--mut)}
+.slide.q{border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:var(--radius-surface);
+ background:var(--card);padding:20px 22px;margin:18px 0;scroll-margin-top:16px}
+.slide.q.todo{border-left-color:var(--todo)}.slide.q.wip{border-left-color:var(--wip)}
+.slide.q.done{border-left-color:var(--done)}.slide.q.hold{border-left-color:var(--hold)}
+.qh{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12.5px;margin-bottom:4px}
+.qid{font:13px ui-monospace,Menlo,monospace;color:var(--mut)}
+.pill{padding:2px 10px;border-radius:var(--radius-pill);border:1px solid var(--mut);color:var(--mut)}
+.pill.todo{border-color:var(--todo);color:var(--todo)}
+.pill.wip{border-color:var(--wip);color:var(--wip)}
+.pill.done{border-color:var(--done);color:var(--done)}
+.pill.hold{border-color:var(--hold);color:var(--hold)}
+.kind{font:10.5px ui-monospace,Menlo,monospace;color:var(--accent);
+ letter-spacing:.08em;border:1px solid var(--line);border-radius:var(--radius-inline);padding:1px 6px}
+.top{margin-left:auto;color:var(--mut);text-decoration:none;font-size:12px}
+.top:hover{color:var(--accent)}
+.h2{font-size:22px;line-height:1.4;margin:4px 0 14px;font-weight:700}
+/* ## Question 现在是「一段话 + 几个要点」：.ask 只是容器，
+   第一段当大字领句，要点跟在下面按正常字号（JL 260723 改版） */
+.ask{padding-left:13px;border-left:3px solid var(--accent);margin:0 0 18px}
+.ask p{margin:0 0 6px}
+.ask>p:first-of-type{font-size:18px;line-height:1.55;margin:0 0 9px}
+.opening{margin:0 0 18px}
+.opening>.ask{margin-bottom:0}
+.opening-head{color:var(--fg)}
+/* A paper Display page keeps the standard Q-template hierarchy. Its compiled
+   float is the first subsection inside Content, not a bespoke page-level panel. */
+.display-preview .cbody{padding-top:7px}
+.display-preview-head{display:flex;justify-content:flex-end;align-items:center;gap:9px;min-height:18px;margin:0 0 8px;font:11px ui-monospace,Menlo,monospace;letter-spacing:.05em;color:var(--mut)}
+.display-preview-stale{color:var(--todo);letter-spacing:0}
+.display-preview object{display:block;width:100%;height:clamp(26rem,64vh,52rem);border:1px solid var(--line);border-radius:var(--radius-control);background:#fff}
+.display-preview img{display:block;max-width:100%;max-height:52rem;margin:auto;border:1px solid var(--line);border-radius:var(--radius-control);background:#fff}
+.display-preview.missing p{margin:0;color:var(--mut)}
+/* 🧭 Opening 这一行【不折】，永远在台面上（JL 260725：no > in the Opening）。
+   那道门挂在【领句】上（还是原来那个 details.it.row.qd，排版一个字没动）：领句一直
+   看得见，点它才展开。抽屉里的东西【一律是平的】—— Boundary 一直如此，Why this
+   matters / Stage Record / Stage Contract 现在跟它一致，不再各自关在一层 ▸ 后面。 */
+.qbd .cbody.flat{padding:5px 0 10px 17px}
+.qbd .cbody.flat p{color:var(--fg);line-height:1.65;margin:0 0 8px}
+.q:target .qbd .cbody.flat,
+body.split .q .qbd .cbody.flat{padding:8px 0 14px 17px}
+.q:target .qbd .cbody.flat p,
+body.split .q .qbd .cbody.flat p{font-size:15px;line-height:1.75}
+.diagram-section{border-left:3px solid var(--mut);padding:12px 15px;margin:16px 0;
+ background:var(--bg)}
+.diagram-section>summary.ch{cursor:pointer;list-style:none;color:var(--fg);margin-bottom:0}
+.diagram-section[open]>summary.ch{margin-bottom:9px}
+.diagram-section>.dia{margin:0}
+/* 🖼 Diagram 里的两小节（QA4, JL 260726）：▧ ASCII 默认展开，✏️ Excalidraw 要点。
+   把手做得比节标题小一号 —— 它是这一节内部的分栏，不是又一个节。 */
+.dsub{margin:0}
+.dsub+.dsub{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.dsubh{cursor:pointer;list-style:none;font:11px ui-monospace,Menlo,monospace;
+ letter-spacing:.09em;color:var(--mut);padding:2px 0;user-select:none}
+.dsubh::-webkit-details-marker{display:none}
+.dsubh::before{content:"▸ ";display:inline-block;width:.9em}
+.dsub[open]>.dsubh{color:var(--fg);margin-bottom:7px}
+.dsub[open]>.dsubh::before{content:"▾ "}
+.dsubh:hover{color:var(--fg)}
+.dsubb{margin:0}
+.dsub-empty{font-size:12.5px;color:var(--mut);margin:0}
+/* 🚧 Boundary：这题管什么 / 不管什么。中性灰边，跟黄(现在)绿(目标)区分开 */
+.bnd{border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:var(--radius-surface);
+ padding:12px 15px;background:var(--bg);margin:0 0 16px}
+/* 嵌进来的 excalidraw 画布：一行只放一个分享链接就会变成这个 */
+.xcal{margin:12px 0}
+.xcal iframe{width:100%;height:440px;border:1px solid var(--line);border-radius:var(--radius-surface);
+ background:var(--card);display:block}
+.xcal .xopen{display:inline-block;margin-top:6px;font-size:12.5px}
+/* ➕ 自己贴一张画布进来（QD7）：脚本加的，删了脚本图和链接照旧在 */
+.xadd{margin:10px 0 2px}
+.xadd-open{background:none;border:1px dashed var(--line);color:var(--mut);cursor:pointer;
+ border-radius:var(--radius-surface);padding:4px 9px;font:inherit;font-size:12.5px}
+.xadd-open:hover{color:var(--fg);border-color:var(--mut)}
+.xadd-row{display:flex;gap:6px;align-items:center;margin-top:7px;flex-wrap:wrap}
+.xadd-row input{flex:1 1 320px;min-width:0;font:inherit;font-size:12.5px;padding:4px 7px;
+ border:1px solid var(--line);border-radius:var(--radius-surface);background:var(--bg);color:var(--fg)}
+.xadd-row button{font:inherit;font-size:12.5px;padding:4px 9px;cursor:pointer;
+ border:1px solid var(--line);border-radius:var(--radius-surface);background:var(--card);color:var(--fg)}
+.xerr{font-size:12px;color:var(--mut)}
+.q:target .xcal iframe,
+body.split .q .xcal iframe{height:520px}
+/* 📁 Files：这题牵动哪些文件。蓝边（跟 Question 一个色系＝「指向真东西」） */
+.fls{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius-surface);
+ padding:12px 15px;background:var(--bg);margin:16px 0 0}
+.fls code{font-size:12.5px}
+/* A Files row is a path plus one line, so the 11px item rhythm leaves it looking
+   spaced out (JL 260725). Tighten rows here only; sections with real paragraph
+   explanations keep the roomier spacing. */
+.fls .blt{margin:0}
+.fls details.it.row>summary{padding:1px 8px;line-height:1.45}
+.fls .blt .bd{margin-top:1px;margin-bottom:5px}
+.fls .blt .bd p{margin:0 0 2px;line-height:1.45}
+/* Question 段的小标签：跟 📍 Now / 🎯 Done when 一样显示段名，不只剩一个 ❓（JL 260723） */
+.ql{display:block;font-size:12px;font-weight:600;color:var(--accent);
+ letter-spacing:.02em;margin:0 0 5px}
+.q:target .ql,
+body.split .q .ql{font-size:13px;margin:0 0 8px}
+.f{margin:16px 0}
+.f p,.fbd p{margin:0 0 4px}
+
+/* 现在 vs 算做完：上下叠，不左右分栏 —— 两边长短不一时并排会空掉半边 */
+.cmp{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}
+.col{border:1px solid var(--line);border-radius:var(--radius-surface);padding:12px 15px;background:var(--bg)}
+.content{border-left:3px solid var(--accent);padding:12px 15px;margin:16px 0;
+ background:var(--bg)}
+.csec{border-bottom:1px solid var(--line);padding:5px 0}
+.csec:last-child{border-bottom:none}
+.csec>summary{cursor:pointer;list-style:none;font-size:15px;font-weight:650;padding:5px 0}
+.csec>summary::-webkit-details-marker{display:none}
+.csec>summary::before{content:"▸";display:inline-block;width:17px;color:var(--accent)}
+.csec[open]>summary::before{content:"▾"}
+/* Generated address chips sit at the END of their heading and occupy no
+   attention until hover, the same contract as the sentence rail (JL 260731:
+   a leading chip fused with authored numbering, "C1" + "1 ·" read as C11). */
+.caddr,.haddr{display:inline-block;margin-left:7px;padding:1px 5px;
+ border:1px solid var(--line);border-radius:var(--radius-pill);background:var(--card);
+ color:var(--mut);font:600 10px ui-monospace,Menlo,monospace;
+ letter-spacing:.02em;vertical-align:.12em;
+ opacity:0;transition:opacity .12s ease}
+.csec>summary:hover .caddr,.ph:hover .haddr{opacity:1}
+.caddr{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.cbody{padding:5px 0 10px 17px}
+.cbody.prelude{padding-left:0}
+.cbody p{margin:0 0 8px;line-height:1.65}
+
+/* 勾选清单：md 里写 - [ ] / - [x] */
+.ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65}
+.ck .ct{font-weight:600}
+.ck.on .ct{font-weight:600;opacity:.85}
+.ck .bd{padding-left:0;margin-top:2px}
+.ck .bx{flex:0 0 auto;color:var(--mut);font-size:15px;line-height:1.6}
+.ck.on{color:var(--mut)}
+.ck.on .bx{color:var(--done)}
+
+.cmt.cc{border-color:var(--mut)}
+.cmt.u0{border-color:#8b5cf6}.cmt.u0 b{color:#8b5cf6}
+.cmt.u1{border-color:#0891b2}.cmt.u1 b{color:#0891b2}
+.cmt.u2{border-color:#c2410c}.cmt.u2 b{color:#c2410c}
+.cmt.u3{border-color:#be185d}.cmt.u3 b{color:#be185d}
+mark.pend{background:transparent;box-shadow:inset 0 0 0 1000px rgba(255,214,0,.30);outline:1px dashed rgba(180,83,9,.5)}
+.cmk{cursor:pointer;font-size:.78em;vertical-align:super;margin-left:2px;opacity:.85}
+.cmk:hover{opacity:1}
+#cdock.has{background:var(--wip)}
+#ctoast{position:fixed;left:50%;transform:translateX(-50%);bottom:26px;z-index:44;
+ display:none;background:var(--fg);color:var(--bg);padding:9px 17px;border-radius:var(--radius-surface);
+ font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#cbox .nu{width:100%;margin-top:7px;border:1px solid var(--line);border-radius:var(--radius-control);
+ padding:6px 8px;font:13px inherit;background:var(--bg);color:var(--fg);display:none}
+
+/* 组标题（整行加粗）：领着下面一串 item 的一句话。🔹 图标 + 略大 + 上间距，
+   夹在节标题(.ch, 带下划线) 和 item 名字(.bt, ▸) 中间一层（JL 260723）。 */
+.gt{display:flex;align-items:baseline;gap:7px;font-weight:700;font-size:14.5px;
+ color:var(--fg);margin:16px 0 7px;letter-spacing:-.01em}
+.gt .gi{font-size:.9em;flex:0 0 auto}
+.gt:first-child{margin-top:2px}       /* 紧跟节标题的第一句，不留大空档 */
+.q:target .gt,
+body.split .q .gt{font-size:16.5px;margin:22px 0 9px}
+/* #### 段落标题：自己的层级，没有组标题的 🔹（JL 260725） */
+.ph{font-weight:650;font-size:14px;color:var(--fg);margin:18px 0 4px;letter-spacing:-.01em}
+.ph:first-child{margin-top:2px}
+.q:target .ph,
+body.split .q .ph{font-size:15.5px;margin:22px 0 5px}
+/* 段落标题紧跟的 (…)：这一段要干的活，灰斜体，跟正文分开 */
+.pj{font-style:italic;color:var(--mut);font-size:13.5px;margin:0 0 9px;line-height:1.55}
+.q:target .pj,
+body.split .q .pj{font-size:14.5px}
+/* 聚焦模式下 `.q:target .gt/.ph` 的优先级压过 `:first-child`，于是紧跟节标题的
+   第一个标题又拿回了 22px 上边距 —— 节名和第一段之间裂开一道大缝，而且只在
+   第一个元素是标题时才裂（是 <p> 就不裂），所以看起来忽宽忽窄（JL 260725）。 */
+.q:target .gt:first-child,
+.q:target .ph:first-child,
+body.split .q .ph:first-child{margin-top:4px}
+
+/* 要点式：一个小标题 + 下面的解释（JL 260723）。解释收进 <details>，想看再点开 */
+.blt{margin:11px 0}
+.blt .bt{font-weight:600;position:relative;padding-left:15px}
+.blt .bt:before{content:"▸";position:absolute;left:0;color:var(--accent);transition:transform .12s}
+.blt summary.bt{list-style:none;cursor:pointer}
+.blt summary.bt::-webkit-details-marker{display:none}
+.blt summary.bt:hover{color:var(--accent)}
+.blt details.it[open]>summary.bt:before{content:"▾"}
+.blt .bt.nod:before{opacity:.45}          /* 没有解释：▸ 淡一点，示意点不开 */
+/* item = 名字 + 一句话(.ld) + 长解释(.bd)，「click the row」（JL 260724）。
+   有长解释时，「名字 + 一句话」整块就是 <summary>，点这一整行就展开；名字行最右
+   一个淡 caret(.cv) 示意可点，展开后翻转。别的按钮一概不加 —— 就是要干净。
+   纯 CSS，零脚本：脚本剥掉后 <details> 照样点得开，正文一直在 DOM 里。 */
+/* 名字行：一整行 flex —— 标题占左，灰印(.stmp) + caret(.cv) 钉右。 */
+.bt.nof,.ck .ct.nof{padding-left:0;display:flex;align-items:baseline;gap:9px}
+.bt.nof:before,.ck .ct.nof:before{content:none}
+.bt.nof .ttl,.ck .ct.nof .ttl{flex:1 1 auto;min-width:0}
+/* item 标题图标：标题开头写个 emoji 就当图标（JL 260724） */
+.ti{flex:0 0 auto;font-size:1.05em;line-height:1}
+/* 灰印：日期 + 人，淡、小，不抢标题（JL 260724：date/person 不进标题文字） */
+.stmp{flex:0 0 auto;display:inline-flex;align-items:baseline;gap:6px;
+ font-size:11px;font-weight:500;letter-spacing:.02em;white-space:nowrap}
+.stmp .sd{color:var(--mut)}
+.stmp .sw{font-weight:700}
+.stmp .sw.jl{color:var(--jl,#b5761f)}.stmp .sw.cc{color:var(--cc,#3c7d4c)}
+/* 展开后（藏起来的内容）字号比标题小一档，深浅分摘要/正文（JL 260724 要更小） */
+.bd .ld{color:var(--fg);font-weight:500;font-size:12.5px;line-height:1.55;margin:0 0 5px}
+.q:target .bd .ld,
+body.split .q .bd .ld{font-size:13.5px;line-height:1.65}
+/* item 折叠区里的 ascii 图（JL 260724 QC10）：比正文再小一档，宽了自己横滚 */
+.bd pre.ip{font-size:11.5px;line-height:1.5;margin:6px 0;padding:9px 11px}
+.q:target .bd pre.ip,
+body.split .q .bd pre.ip{font-size:12.5px}
+/* 整行可点 */
+details.it.row{margin:0}
+details.it.row>summary{list-style:none;cursor:pointer;display:block;
+ margin:0 -8px;padding:3px 8px;border-radius:var(--radius-control);transition:background .12s}
+details.it.row>summary::-webkit-details-marker{display:none}
+details.it.row>summary::before{content:none}
+details.it.row>summary:hover{background:var(--pre)}
+details.it.row>summary:hover .ttl{color:var(--accent)}
+/* caret：名字行最右，淡；展开翻转 */
+.cv{flex:0 0 auto;color:var(--mut);opacity:.45;font-size:12px;
+ transition:transform .15s,opacity .12s}
+.cv::after{content:"⌄"}
+details.it.row>summary:hover .cv{opacity:.8}
+details.it.row[open]>summary .cv{transform:rotate(180deg);opacity:.7}
+.blt .bd{padding-left:0;margin-top:4px}
+.blt .bd p{margin:0 0 5px;color:var(--mut);font-size:12.5px;line-height:1.55}
+.q:target .blt,
+body.split .q .blt{margin:15px 0}
+.q:target .blt .bd p,
+body.split .q .blt .bd p{font-size:13.5px;line-height:1.65}
+
+/* ## Question 领句可点，点开一个带小标题的隐藏块（JL 260724）。
+   领句用 flex 只为把 caret 钉右：文字全包在 .qt 里当【一个】flex 子项，
+   这样 **粗体** 照常内联流动，不会被 flex 拆成一列一列（之前的 bug）。 */
+.qlead{margin:0;display:flex;align-items:flex-start;gap:10px}
+/* 领句加粗（JL 260725）：它是这一页唯一永远在台面上的句子，也是那道门的把手，
+   跟抽屉里按 Content 排版的正文得一眼分得开。 */
+.qlead .qt{flex:1 1 auto;min-width:0;font-size:18px;line-height:1.55;color:var(--fg);
+ font-weight:700}
+.qlead .cv{flex:0 0 auto;margin-top:7px}
+.q:target .qlead .qt,
+body.split .q .qlead .qt{font-size:21px;line-height:1.5}
+details.it.row.qd{margin:0 0 6px}
+details.it.row.qd>summary{padding:5px 8px}
+/* 隐藏块：小标题(.fh) 分段，正文比标题小一档 */
+.qbd{padding-left:0;margin-top:6px}
+/* 抽屉里的东西按【Content 的排版】走（JL 260725）：小标题跟 Content 的 subsection
+   同字号同粗细、底下同样一条分隔线，正文也是正文字号和正文颜色。之前那套小号蓝色
+   全大写 + 12.5px 灰正文是「页面边角料」的口气，可这里全是给人读的内容。 */
+.qbd .fh{font-size:15px;font-weight:650;color:var(--fg);letter-spacing:-.01em;
+ margin:0;padding:5px 0;border-top:1px solid var(--line)}
+.qbd .fh:first-child{border-top:none}
+.q:target .qbd .fh,
+body.split .q .qbd .fh{font-size:17px;padding:8px 0}
+/* Structure（JL 260729）：抽屉第一行，页面自己的地图。build 时从解析好的页面
+   算出来，不是手写的，永远不过期；哪节存在哪节才有一行。 */
+.qbd .pmap{margin:2px 0 10px;font-size:13.5px;line-height:1.6}
+.qbd .pmap .pmr{display:flex;gap:14px}
+.qbd .pmap .pml{flex:0 0 160px;color:var(--fg);white-space:nowrap}
+.qbd .pmap .pmv{color:var(--mut)}
+.qbd .pmap .pmd{padding-left:174px;color:var(--mut)}
+.q:target .qbd .pmap,
+body.split .q .qbd .pmap{font-size:14.5px}
+.qbd>p,.qbd .brow{color:var(--fg);margin:0 0 8px;line-height:1.65}
+.qbd .brow{padding-left:17px}
+.qbd .brow b{color:var(--fg);font-weight:650}
+.q:target .qbd>p,
+body.split .q .qbd>p,
+.q:target .qbd .brow,
+body.split .q .qbd .brow{font-size:15px;line-height:1.75}
+
+/* 代码块也默认收起（JL 260723）：合着时只是一行 “</> code · N 行”，点开才铺代码。
+   带 .it → 跟节标题的 expand-all 一起开合。脚本剥掉后照样点得开，代码一直在 DOM。 */
+details.codef{margin:10px 0}
+details.codef>summary{list-style:none;cursor:pointer;padding:2px 0;
+ font:12px ui-monospace,Menlo,monospace;color:var(--mut)}
+details.codef>summary::-webkit-details-marker{display:none}
+details.codef>summary:before{content:"▸ ";color:var(--accent)}
+details.codef[open]>summary:before{content:"▾ "}
+details.codef>summary:hover{color:var(--accent)}
+details.codef>pre{margin:7px 0 0}
+
+/* 勾选清单里的 item：名字被 ☑/☐ 领着，caret 放在行尾示意可展开 */
+.ck .itw{flex:1;min-width:0}
+.ck summary.ct{list-style:none;cursor:pointer;position:relative;padding-right:16px}
+.ck summary.ct::-webkit-details-marker{display:none}
+.ck summary.ct:after{content:"▸";position:absolute;right:0;top:0;color:var(--accent);font-size:.82em}
+.ck details.it[open]>summary.ct:after{content:"▾"}
+.ck summary.ct:hover{color:var(--accent)}

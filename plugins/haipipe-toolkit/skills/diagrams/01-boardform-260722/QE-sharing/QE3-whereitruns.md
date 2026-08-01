@@ -13,6 +13,7 @@ The board has two halves with opposite requirements: the static half (`build.py`
 Leave it undecided and both `QE2` (the SPACE layer) and `QE4` (in-page editing) are stuck: they need to know which codebase they are written in before anyone can start, so until this is settled those two can only be speculated about.
 Downstream it settles which of the two repos the code lives in, whether to branch, the fate of `build.py`'s ~490-line parser, and whether the board can be embedded in a HAI-Chat thread.
 
+
 ## Boundary
 - ✅ Covered here
   **Which process and which repo the board's code runs in**: stay in `serve.py`, or move into `haichat-inlab` as a fifth router; whether the front end should reuse the `haichat-inlab/web/` React SPA; whether `build.py` producing a static page remains an invariant.
@@ -52,6 +53,7 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE3
 
 ## Items to Finish
+### The rulings JL approved on 260724
 - [x] Decide: does `build.py` producing a static page stay an invariant?
       **Kept** (JL 260724, approving the discussed plan: "as we discussed, don't stop to ask me").
       `build.py` stays alive and gained `--json`: two render paths, one grammar.
@@ -61,13 +63,15 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
       Chat/terminal (`QD2`/`QD3`) stay on the workstation's `serve.py`; the console answers them 501.
 - [x] Decide whether to branch, and in which repo
       **`feat/haichat-board` in `HAIChat-SPACE`** (created, first commit 27e3ed6); **no branch in `Tools`**: its two changes (`--json`, English chrome) are small and additive, and a Tools branch only adds submodule-ref churn in `Physician-SPACE`.
+
+### build.py --json, shipped and cross-checked
 - [x] Ship `build.py --json`
       Shipped (skill v0.7.0): meta + per-question `{state, owner, done/total, comments_open/total, sections}` from the same parse the HTML uses.
 - [x] Verify once: for the same board, the API's JSON and the static HTML agree
       Verified 260724 on this board: 22 question ids match the HTML sections exactly; comment counts match (`QB1 0 open / 7`); the console's `/api/board/q` returns byte-identical JSON because it calls the same `to_json`.
 
 ## Where we are
-**Settled 260724: JL approved the discussed plan ("you just go ahead… as we discussed"); v1 is built, verified, and committed on `feat/haichat-board`.**
+Settled 260724: JL approved the discussed plan ("you just go ahead… as we discussed"), and v1 is built, verified, and committed on `feat/haichat-board`.
 
 **🐍 This half today (`serve.py`, Tools repo)**
 
@@ -99,6 +103,7 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
   There is exactly one mature component worth bringing in, and it belongs to `QE4`: Yjs, for when two people edit the same question at once.
 
 ## Files
+### The skill half (Tools repo)
 - `serve.py`
   Candidate ① itself.
   976 lines; routing in `do_GET` / `do_POST`, write paths in `add_comment` / `add_discuss` / `resolve`, live layer in `chat` / `terminal`.
@@ -108,6 +113,8 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 - `SKILL.md`
   Holds the hard invariant (strip every `<script>` and the body is still there), which `build.py` asserts on every build.
   Dropping the static half means editing this first.
+
+### The haichat-inlab half (HAIChat-SPACE repo)
 - `main.py`
   Candidate ②'s mount point, currently holding four routers.
 - `console_api.py`
@@ -144,6 +151,7 @@ router: a FastAPI `APIRouter`, a group of endpoints under a shared prefix.
 >> CC0724: Only partly. Of the five steps, the first two (`build.py --json`, the SPACE index on `serve.py`) stay in `Tools`; the last three (`boards_api.py`, the `web/` view, in-page editing) go to `HAIChat-SPACE`. On branching: yes for `HAIChat-SPACE` (`feat/haichat-board`, a multi-day feature in a repo whose `haichat-inlab` service others run), no for `Tools` (both changes are small and additive, and branching there only adds submodule-ref churn in `Physician-SPACE`).
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260724 1440 · JL: a separate project for haichat-board, merged back later → `boards_api.py` moved to the sibling `haichat-board/` (standalone on 8094: server-rendered index, Dockerfile, compose entry); inlab imports the same router from there. Law amended; still ✅, the decision deepened, nothing reversed
 260724 1324 · SETTLED. JL approved the discussed plan ("go ahead… as we discussed, don't stop to ask me"): static invariant KEPT (`build.py --json` shipped, skill v0.7.0); hybrid layer split (grammar+writers in the skill, SPACE/discovery/serving in `haichat-inlab`'s new `boards_api.py`, chat/terminal workstation-only via 501); branch `feat/haichat-board` created in HAIChat-SPACE (commit 27e3ed6), no branch in Tools. JSON≡HTML verified on this board (22 ids, comment counts). `## Law` written
 260724 1242 · Opened: JL asked "should we use a mature stack like nodejs / should we branch". Split "where it runs + does the static invariant survive" into its own question; the SPACE layer is QE2 and in-page editing is QE4

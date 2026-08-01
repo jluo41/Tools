@@ -12,6 +12,7 @@ The hard part is that the board is really two halves: the static half (`board.ht
 Right now the only options are screenshots or crowding around one machine, which makes a lie of the board's claim to be "for discussing with colleagues": the second person literally cannot open it.
 The choice also reaches downstream into whether auth is needed, how comments attribute to people, and whether outsiders may write to disk; the moment remote writes are allowed, `serve.py`'s narrow interface ("only under `--root`, only two kinds of edits") must be re-audited.
 
+
 ## Boundary
 - ✅ Covered here
   **How the board is reached**: local / LAN / server, who can see it, login or not, static export vs. full function.
@@ -33,6 +34,7 @@ The choice also reaches downstream into whether auth is needed, how comments att
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE1
 
 ## Items to Finish
+### Rulings awaiting JL
 - [ ] Sort out "who needs to see it, and which half"
       A read-only glance (②) or commenting and working together (③).
       Different answers, completely different builds.
@@ -43,10 +45,16 @@ The choice also reaches downstream into whether auth is needed, how comments att
       outward `## Links` do NOT (1019 `../` hrefs into `sections/`, `tasks/`, `discoveries/`).
       So the route is technically available for reading and dead for drilling through.
       This line still closes on JL choosing it, not on the verification.
-- [ ] Name the public address, because the tailnet IP cannot be one
-      A domain pointed at `<tailscale-ip>` resolves for the owner's tailnet devices only, so a
-      DNS A record is not a deployment; a tunnel is. This line closes when the chosen route
-      names the actual vehicle.
+- [ ] 🪜 the shared deployment has an explicit tier, and JL has picked one
+      Tier A is board editing only: every comment, discussion, resolve, structure and excalidraw
+      write stays live, while `/_term/` and `/_board/chat` are off, so the board behaves exactly
+      like localhost for everyone who is not the owner. Tier B adds the shell and the chat, which
+      is a remote shell and the owner's Claude login behind a shared password.
+      Closes when JL names the tier the shared URL runs at.
+- [ ] Settle the bar for the full-function route
+      A server deployment needs auth (who may write) and an audit of `serve.py`'s write endpoints under a public network.
+
+### Hardening before the origin goes public
 - [ ] Bound what the published origin can read
       The repo holds CMS PHI (`_WorkSpace/1-CMS-Store`, `2-Data-Store`) and secrets (`env.sh`),
       so a file server rooted at the repo is excluded no matter what auth sits in front of it.
@@ -62,20 +70,20 @@ The choice also reaches downstream into whether auth is needed, how comments att
       callback entirely. Moot while `INLAB_BOARD_LIVE` is empty and the endpoint 501s; it becomes
       required the moment tier B is chosen. Closes when the ceiling is set by the server, or when
       tier A is ruled permanent and this line points at that ruling.
-- [ ] 🪜 the shared deployment has an explicit tier, and JL has picked one
-      Tier A is board editing only: every comment, discussion, resolve, structure and excalidraw
-      write stays live, while `/_term/` and `/_board/chat` are off, so the board behaves exactly
-      like localhost for everyone who is not the owner. Tier B adds the shell and the chat, which
-      is a remote shell and the owner's Claude login behind a shared password.
-      Closes when JL names the tier the shared URL runs at.
+
+### The public name and the short path
+- [ ] Name the public address, because the tailnet IP cannot be one
+      A domain pointed at `<tailscale-ip>` resolves for the owner's tailnet devices only, so a
+      DNS A record is not a deployment; a tunnel is. This line closes when the chosen route
+      names the actual vehicle.
 - [ ] 🌐 the public name exists and carries WebSockets
       A `cloudflared` tunnel with a `paper` CNAME on `jjluo.com`, verified by loading a board AND
       opening a terminal or a comment write through it, not by the HTML alone.
 - [ ] 🔗 a short per-paper path exists
       JL asked for `paper.jjluo.com/<paper>/`, while `serve.py` is rooted at the repo and so serves
       the full repo-relative path. Closes when an alias maps one short segment to one board folder.
-- [ ] Settle the bar for the full-function route
-      A server deployment needs auth (who may write) and an audit of `serve.py`'s write endpoints under a public network.
+
+### A real second reader
 - [ ] Decide how comments attribute to people
       Today the signature is browser-side initials of your choosing (any 1–4 uppercase letters).
       Real multi-user needs more than that.
@@ -173,6 +181,13 @@ The choice also reaches downstream into whether auth is needed, how comments att
   and archives files, so one shared password in front of it is one shared password in front of
   remote code execution.
 
+### Decision Now
+- [ ] 🪜 Name the tier the shared URL runs at
+      Tier A is board editing only, with `/_term/` and `/_board/chat` answering 501, and it is the posture the shipped container already runs; tier B adds the shell and the chat, which run on the host and which Docker does not contain.
+      The container reading above argues for tier A; a tick here also closes the 🪜 row in Items to Finish.
+- [ ] ✍️ Decide how comments attribute to people
+      Today the signature is browser-side initials of the writer's choosing, and the page records no candidate scheme yet, so a tick here also closes the same row in Items to Finish.
+
 ## Files
 - `serve.py`
   Bind address, port, write endpoints, and (future) auth all live here.
@@ -204,6 +219,7 @@ The choice also reaches downstream into whether auth is needed, how comments att
 >> auth and the tunnel stay here.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Redacted machine and account-specific tailnet identifiers from tracked Board history; only generic placeholders remain in source
 260727 · JL redirected the vehicle to Docker + `haichat-board`. Read the service: the container, the
        mounted-not-baked SPACE, the `BOARD_SKILL_DIR` escape hatch, and `_target()`'s board-folder

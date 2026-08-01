@@ -12,6 +12,7 @@ It is hard because the length is real, but the cure must not break two Laws: the
 Leave it and the cost stays: editing 800 lines of JS inside a Python string means no syntax highlighting, no linting, and node --check only AFTER a build, and the QD3 smoothness work paid that tax already.
 Downstream it decides where the skill's files live, how consumers import them, and whether an offline `python3 build.py <dir>` keeps working in any SPACE with zero extra steps.
 
+
 ## Boundary
 - ✅ Covered here
   **How build.py's code is organized and where it lives**: split or not, into what, and skill vs. haichat-board.
@@ -39,8 +40,11 @@ should it move to haichat-board?  NO —
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC2
 
 ## Items to Finish
+### Where build.py lives
 - [x] JL confirms the home
       Asked three times, answered three times, and executed on JL's "go ahead and continue": **build.py stays in the skill** (`Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/build.py`), `QE3`'s one-grammar Law; `haichat-board/` imports it.
+
+### Cutting the assets out
 - [x] Split the assets out
       Done 260724: `assets/board.js` (1,173 lines, real JS) + `assets/board.css` (465 lines, real CSS, format-escaping undoubled); build.py reads and inlines both: **2,488 → 850 lines**.
       Output stays one self-contained board.html; the strip-scripts assertion still runs.
@@ -91,6 +95,7 @@ should it move to haichat-board?  NO —
   It caught two bugs on its first outing.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260725 1145 · QB alignment pass: recorded that QC3's src/ split superseded the 850-line figure (build.py now 69 lines); "(to be created)" dropped from Files
 260724 1510 · Executed on JL's "go ahead and continue": assets split done (2,488 → 850 lines), node --check on the real asset, frozen-board byte proof PASSED after catching two wrapper-newline slips → ✅ SETTLED, Law written
 260724 1455 · Opened on JL's question; recommendation written (split into skill-local assets/, keep the home in the skill), execution parked until the concurrent-session churn quiets

@@ -7,6 +7,7 @@ method: double-click one plain source sentence; replace it and append one whole-
 Can the sentence's own text be edited from the page, and what does that do to the markdown?
 Yes: double-click opens an inline editor for exactly one plain source sentence. Save replaces that line and writes one `> ✎` record directly beneath it: the full post-edit sentence, with `~removed~` and `*added*` words marked, then the editor's initials and time.
 
+
 ## Boundary
 - ✅ Covered here
   Whether and how one sentence's text is changed from the page, and what happens to its adjacent apparatus and edit record.

@@ -1,116 +1,115 @@
-# Board form — 完整规格
+# Board form: full specification
 
-SKILL.md 是最短的操作说明；这一份是查得到细节的地方。
+SKILL.md is the shortest operating instructions; this file is where you look up the details.
 
-## 1. 文件夹
+## 1. Folders
 
 ```
-<所属单位>/diagram/<NN>-<主题>-<YYMMDD>/       # task / project / paper
-<plugin>/skills/diagrams/<NN>-<主题>-<YYMMDD>/ # plugin skill-design Board
-  board.md                  全局：标题 · spine · close · Topic · Pipeline
+<owner-unit>/diagram/<NN>-<topic>-<YYMMDD>/       # task / project / paper
+<plugin>/skills/diagrams/<NN>-<topic>-<YYMMDD>/   # plugin skill-design Board
+  board.md                  global: title · spine · close · Topic · Pipeline
                             · optional Board Map · Board Structure · Pages
-  QA-<组名 slug>/           一个 group 一个文件夹（默认，JL 260726）
-    QA1-<slug>.md           一题一个文件
+  QA-<group-title-slug>/    one folder per group (default, JL 260726)
+    QA1-<slug>.md           one file per question
     QA2-<slug>.md
-  QB-<组名 slug>/
+  QB-<group-title-slug>/
     QB1-<slug>.md
-    S-Seed-0-<slug>.md      named lifecycle page（有 lifecycle 才写）
-  board.html                生成的，别手改
-  fig/                      截图
+    S-Seed-0-<slug>.md      named lifecycle page (write only when a lifecycle exists)
+  board.html                generated, do not hand-edit
+  fig/                      screenshots
 ```
 
-- **所属单位** = 这块板服务于谁。task、project、paper 的板默认在自己的 `diagram/`；
-  plugin 内用来设计 skill 的板集中在该 plugin 的 `skills/diagrams/`。板是工作产物，
-  skill 是交付包，两者不混在一个文件夹里。
-- **NN** 给同一 topic series 排序，而不是给整个 collection 排唯一号。一个新 topic 从
-  `01` 开始；同一 topic 的后续板才用 `02`。因此共享 `skills/diagrams/` 里可以同时有多个
-  不同 topic 的 `01-*`。
-- **YYMMDD** 是**开板那天**，之后永不改。
+- **owner-unit** = who this board serves.
+  Boards for a task, project, or paper default to their own `diagram/`; boards inside a plugin used to design a skill collect under that plugin's `skills/diagrams/`.
+  A board is a work artifact, a skill is a delivery package, and the two never share one folder.
+- **NN** orders boards within the same topic series; it does not assign a unique number across the whole collection.
+  A new topic starts at `01`; only later boards on the same topic use `02`.
+  So a shared `skills/diagrams/` can hold several different topics' `01-*` at once.
+- **YYMMDD** is **the day the board was opened**, and it never changes afterward.
 
-**文件夹题（QC3，JL 260724）**：Q 文件也可以住进它讲的那个文件夹 —— 板于是能直接
-盖在一棵已有的树上（第一个消费者：一篇 paper 的 `0-lifecycle/`）：
+**The folder question (QC3, JL 260724)**: a Q file can also live inside the very folder it discusses, so a board can sit directly on top of an existing tree (the first consumer: a paper's `0-lifecycle/`):
 
 ```
-0-lifecycle/                    ← 整个文件夹就是板
+0-lifecycle/                    ← the whole folder IS the board
   board.md
-  QA1-frontier.md               顶层的题照旧
-  0-seed/S-Seed-0-seed.md       lifecycle page 住在自己的 folder
-  4-display/QD2-d01-….md        住在自己家里的题
-  5-section-edit/6-results/QE5-….md      深度不限
+  QA1-frontier.md               top-level questions as usual
+  0-seed/S-Seed-0-seed.md       lifecycle page lives in its own folder
+  4-display/QD2-d01-….md        a question living in its own home
+  5-section-edit/6-results/QE5-….md      any depth
   board.html
 ```
 
-- 发现规则：板文件夹整棵树里所有 `Q*.md` / `S*.md`；路径里带 `_`/`.` 开头的段（`_archive/`、
-  `_preview/`…）和 `fig/` 的不算。
-- Pages 仍只写**文件名**；全板文件名唯一 —— 重名会在命令行警告并只认先到的那个。
-- 页面回写（评论、归档）带的是**相对板根的路径**；归档时嵌套的题拍平进板根的 `_archive/`。
-- 从页面新加的题**跟着它那一组走**（QA1，JL 260726）：`＋Q` 看这一组现有的 page 都住在哪儿，
-  一致就写进那个文件夹；这一组还没有 page，就按 `### Q<字母> · <标题>` 现开一个
-  `Q<字母>-<slug>/`；只有这一组自己散在两处时才退回板根（宁可留个疤，不瞎猜）。
-- Q 文件里写路径**仍然相对板根**（跟平铺时一模一样），不随题住到哪而变。
+- Discovery rule: every `Q*.md` / `S*.md` / `Agent-<n>-*.md` anywhere in the board folder's whole tree, plus `Skill-<n>-*.md`; segments of the path starting with `_`/`.` (`_archive/`, `_preview/`, ...) and `fig/` do not count.
+  The four prefixes are what `page_files()` in `src/common.py` actually globs, filtered by `PAGENAME`; the Skill and Agent kinds were added JL 260731 and neither is counted toward settled.
+- Pages still lists only **filenames**; filenames are unique across the whole board, a duplicate warns on the command line and only the first one found is honored.
+- Page write-back (comments, archiving) carries **a path relative to the board root**; archiving flattens a nested question into the board root's `_archive/`.
+- A question newly added from a page **follows its own group** (QA1, JL 260726): `＋Q` looks at where that group's existing pages already live, and if they agree, writes into that folder.
+  When the group has no page yet, it opens a new `Q<letter>-<slug>/` on the spot from `### Q<letter> · <title>`.
+  Only when the group itself is already scattered across two places does it fall back to the board root (better to leave a scar than to guess blind).
+- A Q file's own path references **stay relative to the board root** (exactly as in a flat layout), regardless of where the question itself lives.
 
-**一个 page 住进文件夹只有两个理由，而它们是同一条规矩**（QA1 + QC3，JL 260726）：
-
-```
-GROUP folder     文件夹就是这个 Q group        一块长大了的 flat design board
-SUBJECT folder   文件夹就是这一题讲的东西      一块盖在已有树上的 board
-```
-
-一个 page 只能住一个地方，所以一块板挑一个。**在 paper 的 `0-lifecycle/` 上两者重合** ——
-`1-work/`、`5-appendix/`、`6-submission/` 既是 subject folder 又是 S family，所以那种板
-从 260724 起就一直有 group folder，没人特意给过它。
-
-正因为重合，代码里不认「叫 QA 的文件夹」这种约定，只认**这一组现在住在哪儿**：同一条规则
-两种理由都对。membership 从 260722 起就只看路径不看注册，`## Pages` 只写裸文件名，所以搬一个
-page 是一次纯 `mv`，board.md 一个字都不用改。
-
-**JL 260726 拍板：group folder 是默认的，从第一页起，每块板都用。** 文件夹叫
-`Q<组字母>-<组标题的 slug>`（`QA-defining-a-board/`、`QD-working-on-the-board/`），
-**不许只叫 `QA/`** —— 那是把 id 抄了两遍，而组标题才是读者从文件名里读不出来的那一半。
-
-板根只留 `board.md`、`board.html`、`fig/`。`## Pages` 一个字不改，仍旧只写裸文件名。
-页面上的 ＋Q 写进这一组已经住的文件夹；一个还没有 page 的新 group，由它第一页按
-`### Q<字母> · <标题>` 现开一个带名字的文件夹。搬整块板用
-`python3 <skill>/regroup.py <板> --apply`（不带 `--apply` 就是 dry run，`--all <root>` 扫全仓）。
-
-**已经分好文件夹的板，别按这条改名。** paper 的 `0-lifecycle/` 就是：`0-seed/`、`1-work/`、
-`3-display/` 既是 subject folder 又是 S family，一个 group 一个文件夹这条它早就满足了，
-而且编号还多带了 lifecycle 顺序 —— 字母带不了这个。要满足的是这条规矩，不是长得像 design board。
-`regroup.py` 因此只动板根上的 page，一个 page 都不在板根的板它直接跳过。
-
-**⚠️ `## Links` 要跟着改，`## Pages` 不用。** 260726 实测：搬完 154 个 page 之后
-17 条 declared Link 断了，全是跨板指到别人家某一页的那种（`../01-haipipe-paper-260725/QC0-….md`）。
-Pages 写裸文件名所以不受影响，Links 写的是真路径 —— 这两段的区别正好在这时候才显出来。
-checker 会把它们报成 `dead-link` / `dead-href`，所以搬完必须 `check.py` 跑一遍。
-
-## 2. 编号与 Kind
-
-文件名前缀就是这一题的编号：`Q` + 组字母 + 组内序号。
+**A page moves into a folder for only two reasons, and they are the same rule** (QA1 + QC3, JL 260726):
 
 ```
-QA1  QA2  QA3      QA 组
-QB1  QB2           QB 组
-QC1                QC 组
+GROUP folder     the folder IS this Q group                  a flat design board that grew up
+SUBJECT folder   the folder IS what this question discusses  a board sitting on an existing tree
 ```
 
-排序按（字母，数字）。不分组就直接 `Q1 Q2 Q3`。加一组＝换个字母。
-组内**下一号**（页面 ＋Q 用的规则）＝ 盘上全树 + Pages 里该组的最大号 + 1（QC3 之后全树数，别只看板根）。
-`-<slug>` 只是给人认文件的短英文小写（`access`、`scheduling`），解析不看它，跟 `board-example.md` 一致。新开的 Q 一律 `state: 🔴 OPEN`。
+A page can live in only one place, so a board picks one.
+**The two coincide on a paper's `0-lifecycle/`**: `1-work/`, `5-appendix/`, `6-submission/` are each both a subject folder and an S family, so that kind of board has had a group folder ever since 260724, without anyone deliberately giving it one.
 
-Paper lifecycle 的 S page 用完整 family 名：`S-<Family>-<unit>-<slug>.md`。Family 固定为
-`Seed`、`Work`、`Venue`、`Display`、`Main`、`Appendix`、`Submission`；unit 可用数字，也可在
-Appendix 使用字母。例：`S-Seed-1-literature.md`、`S-Main-4-theory.md`、
-`S-Appendix-B-validation.md`。Q 是 decision；S 是 lifecycle page。两者共用段落 grammar，
-首页分别统计 `questions settled` 和每个 S family 的 gate progress。旧板的 `S0` / `SM0`
-/ `SA0` 命名继续可读，但新 paper board 不再生成这些缩写。
+Precisely because they coincide, the code recognizes no convention like "a folder named QA"; it recognizes only **where this group currently lives**: the same rule holds for both reasons.
+Membership has been path-based, not registration-based, since 260722, and `## Pages` lists only bare filenames, so moving a page is a pure `mv` and board.md does not need a single character changed.
 
-**S 的 `state:` 与 Q 使用同一套四个机器状态**，机器只读第一个 emoji：`🔴` 没开始 · `🟡` 在做 · `✅` = **这个 stage 的 human gate 过了**（首页对应 family 的 `N/M` 数的就是 S page 里的 ✅）· `⏸️` 明确搁置。
-emoji 后可追加人读说明，例如 `✅ SETTLED`、`✅ PINNED · MISQ 2026`、`🟡 rendered · awaiting gate`；后缀不是第五个状态，也不得改变首个 emoji 的含义。
-新开的 S 跟新开的 Q 一样，一律 `🔴 OPEN`。区别只在**凭什么翻到 ✅**：Q 要 checkbox 全闭合，S 要它自己的 human gate 过了。
+**JL ruled on 260726: the group folder is the default, from the very first page, on every board.**
+The folder is named `Q<group-letter>-<group-title-slug>` (`QA-defining-a-board/`, `QD-working-on-the-board/`); **it must never be just `QA/`**, because that copies the id twice, and the group title is the half a reader cannot recover from the filename.
 
-**S page 在 `## Pages` 里跟 Q 文件一个写法**：一行一个裸文件名
-（`S-Main-2-introduction.md`），放在哪个 `### ` 组下面就归哪组。普通 board 的组标题
-是自由文本；**paper lifecycle board 默认按 named family 分组**：
+Only `board.md`, `board.html`, and `fig/` stay at the board root.
+`## Pages` does not change a single character; it still lists only bare filenames.
+A page's ＋Q writes into the folder its group already lives in; a new group with no page yet opens a named folder on the spot, from its first page's `### Q<letter> · <title>`.
+To move a whole board, use `python3 <skill>/regroup.py <board-dir> --apply` (omit `--apply` for a dry run, `--all <root>` scans the whole repo).
+
+**Do not rename a board that is already split into folders under this rule.**
+A paper's `0-lifecycle/` is exactly that case: `0-seed/`, `1-work/`, `3-display/` are each both a subject folder and an S family, so it already satisfies the one-folder-per-group rule, and its numbering additionally carries the lifecycle order, which letters cannot carry.
+What must be satisfied is this rule, not a resemblance to a design board.
+`regroup.py` therefore only touches pages sitting at the board root, and it skips outright a board with no page at its root.
+
+**⚠️ `## Links` must be updated along with a move; `## Pages` does not need to be.**
+Measured on 260726: after moving 154 pages, 17 declared Links broke, all of the cross-board kind, pointing at some page in another board's home (`../01-haipipe-paper-260725/QC0-….md`).
+Pages lists bare filenames so it is unaffected; Links holds real paths, and it is exactly this moment that exposes the difference between the two sections.
+The checker reports these as `dead-link` / `dead-href`, so `check.py` must run once after every move.
+
+## 2. Numbering and kind
+
+The filename prefix IS this question's id: `Q` + group letter + sequence number within the group.
+
+```
+QA1  QA2  QA3      group QA
+QB1  QB2           group QB
+QC1                group QC
+```
+
+Sort order is (letter, number).
+With no grouping, it is simply `Q1 Q2 Q3`.
+Adding a group means taking the next letter.
+The **next number** within a group (the rule ＋Q on a page uses) = the maximum number of that group found across the whole tree on disk and in that group's entries under Pages, plus 1 (count the whole tree post-QC3, not just the board root).
+`-<slug>` is only a short lowercase English tag for humans to recognize the file (`access`, `scheduling`); the parser ignores it, consistent with `board-example.md`.
+A newly opened Q is always `state: 🔴 OPEN`.
+
+A paper lifecycle's S page uses the full family name: `S-<Family>-<unit>-<slug>.md`.
+Family is fixed to `Seed`, `Work`, `Venue`, `Display`, `Main`, `Appendix`, `Submission`; unit can be a number, or, in Appendix, a letter.
+Examples: `S-Seed-1-literature.md`, `S-Main-4-theory.md`, `S-Appendix-B-validation.md`.
+Q is a decision; S is a lifecycle page.
+The two share the same section grammar, and the index page separately tallies `questions settled` and each S family's gate progress.
+Old boards' `S0` / `SM0` / `SA0` naming still parses, but a new paper board no longer generates these abbreviations.
+
+**S's `state:` uses the same set of four machine states as Q**, and the machine reads only the first emoji: `🔴` not started · `🟡` in progress · `✅` = **this stage's human gate has passed** (the `N/M` count the index shows for a family is exactly the ✅ count across that family's S pages) · `⏸️` explicitly on hold.
+A human-readable note can follow the emoji, for example `✅ SETTLED`, `✅ PINNED · MISQ 2026`, `🟡 rendered · awaiting gate`; the suffix is not a fifth state, and it must not change what the first emoji means.
+A newly opened S, like a newly opened Q, is always `🔴 OPEN`.
+The only difference is **what earns the flip to ✅**: a Q needs every checkbox closed, an S needs its own human gate to have passed.
+
+**An S page in `## Pages` follows the same convention as a Q file**: one bare filename per line (`S-Main-2-introduction.md`), grouped under whichever `### ` heading it sits below.
+An ordinary board's group title is free text; **a paper lifecycle board groups by named family by default**:
 
 ```markdown
 ### QB · Work Group
@@ -124,32 +123,29 @@ QD1-figure-order.md
 QD2-table-scope.md
 ```
 
-七个 group 的索引顺序固定为 `Seed → Work → Venue → Display → Main → Appendix → Submission`，
-但这是稳定的 ownership/navigation order，不是执行器自动推导的线性流程。真实 stage
-edges 必须写在 `## Pipeline`；一个 flow 可以在 Narrative 后进入 Display，再分给
-Main 和 Appendix。Display 独立成组，因为它拥有 claim-to-display map、approved assets、
-captions、statistical labels 和 placement，不是 Work 的普通 item。
-Seed 里 `S Seed → S Literature`；Main 里 narrative control 后接每个 manuscript section；
-Appendix 里 control 后接 A/B/C；Submission 里 reconcile → compile → review → submit。
-收到 external review 后，reopen 受影响的 Work/Display/Main/Appendix pages，再复用同一组
-Submission pages 记录下一轮，不复制 `S-Submission-R2-*` 页面。
-某个 S 的 Q decision 紧跟在它后面。标题开头仍放一个唯一 Q family（如 `QD`、`QBa`），
-让页面的 ＋Q / archive controls 有稳定 writer key。漏登记的照样显示，归 ⚠️ 组。
+The seven groups' index order is fixed as `Seed → Work → Venue → Display → Main → Appendix → Submission`, but this is a stable ownership/navigation order, not a linear flow the executor derives automatically.
+The real stage edges must be written in `## Pipeline`; one flow can enter Display after Narrative and then split into Main and Appendix.
+Display is its own group because it owns the claim-to-display map, approved assets, captions, statistical labels, and placement; it is not an ordinary Work item.
+In Seed, `S Seed → S Literature`; in Main, narrative control is followed by each manuscript section; in Appendix, control is followed by A/B/C; in Submission, reconcile → compile → review → submit.
+After external review arrives, reopen the affected Work/Display/Main/Appendix pages and reuse that same set of Submission pages to record the next round; do not duplicate `S-Submission-R2-*` pages.
+A given S's Q decision sits right after it.
+The title still opens with one unique Q family (such as `QD`, `QBa`), so the page's ＋Q / archive controls have a stable writer key.
+An unregistered one still displays, filed under the ⚠️ group.
 
 ## 3. board.md
 
 ```markdown
-# 板的标题 —— 一句话说清这块板在干嘛
-spine: 主干。这块板在解决什么，一句话。没解决之前，题目不许漂移。
-close: 关板条件。什么时候这块板可以关掉。
-source: 可选，这块板的来源（会议记录路径之类）
+# Board title: one sentence stating what this board is for
+spine: The spine. What this board is solving, in one sentence. The topic must not drift until it is solved.
+close: The close condition. When this board can be closed.
+source: optional, where this board comes from (a meeting-notes path or similar)
 
 ## Topic
-给一个完全没背景的人读的：这是什么项目、谁是谁、在解决什么。
-零背景审查最常挂的就是这一段缺失。
+Written for someone with zero background: what project this is, who is who, what is being solved.
+A zero-background review most often stalls on this section being missing.
 
 ## Pipeline
-这些 Q 之间是什么关系 —— 并列？流水线？分几组？
+What relationship holds among these Qs: parallel? a pipeline? how many groups?
 
 ## Board Map
 Optional, and it is the board's OWN MAP: how the groups connect, plus the cross-group page edges that really exist.
@@ -166,126 +162,121 @@ Not a second registry of pages: the index below lists every page, so a map that 
 Draw the CONNECTIONS.
 
 ## Board Structure
-可选。需要向零背景读者展示这块板自身形状时写在这里，不另开一张 Q page。
-分成 Board-Folder（磁盘上的源与生成物）和 Board-Webpage
-（Board-Webpage-Index 与打开后的 Q/S page）；生成后显示在 Pipeline 与 Pages 之间。
+Optional. Write here whenever the board needs to show a zero-background reader its own shape, instead of opening a separate Q page for it.
+It splits into Board-Folder (the on-disk source and generated output) and Board-Webpage (the Board-Webpage-Index and the Q/S page once opened); once generated it renders between Pipeline and Pages.
 
 ## Pages
-### QA · 组标题
+### QA · group title
 One sentence shown under the group header on the index (optional intro).
 More plain lines: the click-to-expand body, what this group is for and why.
 QA1-form.md
 QA2-qtemplate.md
-### QB · 另一组
+### QB · another group
 QB1-skillmd.md
 ### QB · Seed Group
-S page 跟 Q 一样只写裸文件名。
+An S page lists only a bare filename, same as Q.
 S-Seed-0-seed.md
 S-Seed-1-literature.md
 ```
 
-**Pages 只管排序和分组**，标题正文一概不抄（抄了就会不同步）。
+**Pages only handles ordering and grouping**; it never copies a title or body text, because a copy would go out of sync.
 
-**`doc:` 行（原 QF2，JL 260724；**260726 退役**，别再用）**：要展示别处的文件，改用 §5 的
-`![[路径]]` 嵌进一个真正的 page —— 同样零拷贝，但页面有 state、有清单计数、有评论落点。
-下面这段只为老板子留着，parser 仍认它（今天全 SPACE 无人使用）：`doc: notes/readme.md` ——
-把列出的源文件**直接**渲染成一页（id = 第一份文件**所在文件夹**名，顶层文件才取文件名主干 ——
-这样 `2b-pitch/PITCH_LOG.md` 的页叫 `2b-pitch`，两个 `README.md` 也不会撞；标题取第一份文件
-自己的 `#`/setext 标题，没有就用 id）。
-没有 Q 文件包着，所以也没有 state、没有清单计数、没有评论落点；doc 页是「看」，不是「题」，
-不进 settled 计数和进度条。只保留它兼容旧板；lifecycle stage 要参与 checklist、gate 和评论，
-就写成 S page。
+**The `doc:` line (formerly QF2, JL 260724; **retired 260726**, do not use it again)**: to display a file that lives elsewhere, use §5's `![[path]]` to embed it into a real page instead, which is equally zero-copy but the page then gets a state, a checklist count, and a place for comments.
+The paragraph below is kept only for old boards, and the parser still recognizes it (no one in the whole SPACE uses it today): `doc: notes/readme.md` renders the listed source files **directly** as one page (id = the **folder** the first file sits in; a top-level file uses its filename stem instead, so `2b-pitch/PITCH_LOG.md`'s page is called `2b-pitch`, and two `README.md` files never collide; the title takes the first file's own `#`/setext heading, or the id if there is none).
+There is no Q file wrapping it, so there is also no state, no checklist count, and no place for comments; a doc page is something to **look at**, not a **question**, and it does not count toward the settled tally or progress bar.
+It is kept only for backward compatibility with old boards; a lifecycle stage that needs to take part in a checklist, a gate, and comments must be written as an S page instead.
 
-**Group intro (QC2, 260724)**: plain lines between a `### ` heading and that group's first `.md` line are the group's intro. Line 1 is always visible under the header on the index page; any further lines open on click (rendered as a native `<details>`, so the no-script invariant holds). Intro lines must not end in `.md`. The index page's ＋Q / ＋Group / 🗄 buttons write exactly this grammar through `POST /_board/structure` (`structure_op()` in serve.py, imported by the console): `add_question {group, title}` seeds a stub Q file and lists it under its group; `add_group {title, letter?, hook?, body?}` appends a `### QX · title` heading (letter auto-picked); `archive_question {q}` moves that file to `_archive/` inside the board folder (never deletes; since QC3 build.py DOES glob subfolders, so it is the `_` prefix that hides `_archive/` from discovery — archived files leave the page for that reason); `archive_group {group}` removes a group only when it lists no questions. Over HTTP the payload also carries `path` (the page's own location.pathname); called directly it is `structure_op(board_dir, payload)`, and importing serve.py is side-effect free (`serve_forever` sits behind `__main__`).
+**Group intro (QC2, 260724)**: plain lines between a `### ` heading and that group's first `.md` line are the group's intro.
+Line 1 is always visible under the header on the index page; any further lines open on click (rendered as a native `<details>`, so the no-script invariant holds).
+Intro lines must not end in `.md`.
+The index page's ＋Q / ＋Group / 🗄 buttons write exactly this grammar through `POST /_board/structure` (`structure_op()` in serve.py, imported by the console): `add_question {group, title}` seeds a stub Q file and lists it under its group; `add_group {title, letter?, hook?, body?}` appends a `### QX · title` heading (letter auto-picked); `archive_question {q}` moves that file to `_archive/` inside the board folder (never deletes; since QC3 build.py DOES glob subfolders, so it is the `_` prefix that hides `_archive/` from discovery, and archived files leave the page for that reason); `archive_group {group}` removes a group only when it lists no questions.
+Over HTTP the payload also carries `path` (the page's own location.pathname); called directly it is `structure_op(board_dir, payload)`, and importing serve.py is side-effect free (`serve_forever` sits behind `__main__`).
 
-**必填**：`# 标题`、`spine:`、`close:`、`## Topic`、`## Pipeline`、`## Pages` —— 这三段都要写，别省掉 `## Pipeline`。
-`## Board Structure`、`source:`、`## Links` 选填。Board Structure 是 Board Index 上的
-board-level block，不计入 Q page，不进 settled 数，也不占一个 page id。
+**Required**: `# title`, `spine:`, `close:`, `## Topic`, `## Pipeline`, `## Pages`.
+All three of these sections must be written, so do not omit `## Pipeline`.
+`## Board Structure`, `source:`, `## Links` are optional.
+Board Structure is a board-level block on the Board Index; it does not count toward a Q page, does not enter the settled count, and does not occupy a page id.
 
-## 4. Q/S Page
+## 4. Q/S page
 
-段落名与页面位置一一对应：
+Section names correspond one-to-one with where they render on the page:
 
 ```
-# 短标题        → .h2       聚焦时 38px，前面挂编号
-state:          → .pill     首 token 为 ✅ / 🟡 / 🔴 / ⏸️；后面可追加人读说明
-owner:          → 状态条    JL 显示 🧠 拍板，其他显示 🔧
-method:         → 状态条    一句话说怎么做
-requires:       → contract  显式上游 S ids / paths，comma-separated（S only）
-style-from:     → contract  显式 writing-contract sources（S only）
-provides:       → contract  本页给下游的短交付说明（S only）
+# short title   → .h2         38px when focused, with the id hung in front
+state:          → .pill       first token is ✅ / 🟡 / 🔴 / ⏸️; a human-readable note can follow
+owner:          → status bar  JL shows 🧠 ruled, others show 🔧
+method:         → status bar  one sentence on how it is done
+requires:       → contract    explicit upstream S ids / paths, comma-separated (S only)
+style-from:     → contract    explicit writing-contract sources (S only)
+provides:       → contract    a short delivery note this page gives downstream (S only)
 
-## Opening        → .opening .ask + kind 路由  第一段问句在 Opening；解释段见下
-## Boundary        → .opening .qbd  这题管什么 / 不管什么，收进 Opening
-## Stage Contract  → Opening 内 .csec.contract 折叠行  S 的 inherited inputs + writing style（JL 260725：收进 Opening，不单独占节）
-## Diagram         → .diagram-section > .dia  独立一节，默认折叠
-                     里面再分两小节（JL 260726）：`details.dsub.dsub-a`（▧ ASCII，`open`）
-                     和 `details.dsub.dsub-x`（✏️ Excalidraw，收着）。**源里只写一个
-                     `## Diagram`**，切分是 `page_question.split_diagram()` 按「整行只有一个
-                     excalidraw URL」这条规则算出来的，fence 里的 URL 不算。没画布时
-                     canvas 那节仍然渲染（写「No canvas attached yet」），因为 🖌 挂画布
-                     的按钮要住在那儿。
-## Content         → .content / .opening-context  S 必填、Q 选填；见下
-                     S 只放这个 stage 自己产出的东西（JL 260725）：venue/writing contract 归
-                     `## Stage Contract`，已定的更正归 `## Where we are`，还欠的归
-                     `## Items to Finish`。节标题在 S 上显示 stage 名（`📚 Content · Main 7
-                     §6 Results`，从 `# 短标题` 推出来，所以 artifact 自己的编号跟板上的
-                     index 对不上时，标题写成 `S Main 7 · §6 Results` 把两个号都摆出来），
-                     不再数 subsection；Q 仍显示数量。
-                     里面**只有两级**（JL 260725）：`###` = 自己有内容、能单独折的一块
-                     （division），`####` = 它里面的一个段落，永远是 `####`。深浅靠编号
-                     （`§6` vs `§6.1`）而不是靠标题级数 —— 页面只折一层，再多一级就把
-                     整节压成一个盒子、丢掉逐 division 折叠。一块 division 只在自己确实
-                     有内容时才写出来：flat 的节写一个 `### §1 Introduction` 领着它的段落，
-                     有 subsection 的节直接从 `### §6.1` 开始，绝不开一个点开是空的盒子。
-                     好处是可校验：带点的 `###` 个数就是 subsection 数，不读正文就能跟
-                     venue blueprint 对。
-## Items to Finish → .col.goal  绿色边，栏头自动数出 5/6
-## Where we are    → .col.now   黄色边
-## Files           → .fls       这题牵动哪些文件，蓝边（路径自动变可点链接）
-## Why here        → .folds     折叠（已退役，见下）
-## Discussion      → .folds    折叠
-## Law          → .folds    折叠 · 这题拍定的规矩
-## Lesson       → .folds    折叠 · 这题踩过的坑
-## Glossary     → .folds    折叠
-## Log          → .folds    折叠
+## Opening         → .opening .ask + kind routing  the first question sentence lives in Opening; the explanatory paragraph is described below
+## Boundary        → .opening .qbd  what this question covers / does not cover, folded into Opening
+## Stage Contract  → a collapsed row .csec.contract inside Opening  S's inherited inputs + writing style (JL 260725: folded into Opening, no longer its own section)
+## Diagram         → .diagram-section > .dia  its own section, collapsed by default
+                     splits into two sub-sections inside (JL 260726): `details.dsub.dsub-a` (▧ ASCII, `open`)
+                     and `details.dsub.dsub-x` (✏️ Excalidraw, shut). **The source writes only one
+                     `## Diagram`**; the split is computed by `page_question.split_diagram()` under the rule
+                     "a whole line holding exactly one excalidraw URL"; a URL inside a fence does not count.
+                     When there is no canvas, that section still renders (writing "No canvas attached yet"),
+                     because the 🖌 attach-canvas button has to live somewhere.
+## Content         → .content / .opening-context  required on S, optional on Q; see below
+                     S carries only what this stage itself produces (JL 260725): the venue/writing contract
+                     belongs in `## Stage Contract`, settled corrections belong in `## Where we are`, and
+                     what is still owed belongs in `## Items to Finish`. On S the section title displays the
+                     stage's name (`📚 Content · Main 7 §6 Results`, derived from `# short title`, so when
+                     the artifact's own numbering does not line up with the board index, title the page
+                     `S Main 7 · §6 Results` to state both numbers at once), and it no longer counts
+                     subsections; Q still shows a count.
+                     Inside it there are **only two levels** (JL 260725): `###` = a block that has its own
+                     content and can fold on its own (a division), `####` = one paragraph inside it, always
+                     at this level. Depth is carried by numbering (`§6` vs `§6.1`), not by heading level: the
+                     page folds only one layer deep, and one more level would compress the whole section into
+                     a single box and lose per-division folding. A division is written out only when it
+                     genuinely has content: a flat section writes one `### §1 Introduction` leading its
+                     paragraphs, and a section with subsections starts directly at `### §6.1`, never opening a
+                     box that is empty on click. The payoff is that it is checkable: the count of dotted `###`
+                     headings IS the subsection count, checkable against the venue blueprint without reading
+                     the prose.
+## Items to Finish → .col.goal   green border, the column header auto-counts out `5/6`
+## Where we are    → .col.now    yellow border
+## Files           → .fls        which files this question touches, blue border (paths auto-become clickable links)
+## Why here        → .folds      collapsed (retired, see below)
+## Discussion      → .folds      collapsed
+## Law             → .folds      collapsed · the rules this question settled
+## Lesson          → .folds      collapsed · the pitfalls this question hit
+## Glossary        → .folds      collapsed
+## Log             → .folds      collapsed
 ```
 
-**两种 page 都必填**：`# 标题`、`state:`、`owner:`、`## Opening`、
-`## Items to Finish`、`## Where we are`。S 另外必填 `## Stage Contract` 和
-`## Content`；Q 删除 Stage Contract、可省 Content。
-`## Boundary` 和 `## Files` 选填但**强烈建议写**；其余（`method:`、`## Diagram` 和所有折叠段）**选填**，用不上就整段删掉。
-折叠段在页面上的顺序由 `build.py` 固定（Why here · Discussion · Law · Lesson · Glossary · Log），跟文件里写的顺序无关。
+**Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Items to Finish`, `## Where we are`.
+S additionally requires `## Stage Contract` and `## Content`; Q deletes Stage Contract and may omit Content.
+`## Boundary` and `## Files` are optional but **strongly recommended**; everything else (`method:`, `## Diagram`, and all the folded sections) is **optional**, so delete the whole section when it is not used.
+The order of the folded sections on the page is fixed by `build.py` (Why here · Discussion · Law · Lesson · Glossary · Log), independent of the order they were written in the file.
 
-**台面上的顺序是定死的**：
-Q 是 `Opening → Diagram → Content → Items to Finish → Where we are`；
-S 相同：Stage Contract 折叠在 Opening 里，不再单独占一节（JL 260725）
-（Files 跟在状态后面）。
-Opening 是 Question lead + optional Boundary；抽屉第一行是 build 生成的 Structure 页面
-地图（JL 260729，纯渲染、无源可写）；optional Diagram 是独立一节，默认折叠，
-点节名才展开。Q/S 的 Question 解释段都进 Opening 抽屉的 Why this matters 行（JL 260729，
-此前 Q 的解释段自动成为 Content 首节）。
-S 的显式 Content 里若有直接 `### Stage Record`，也提进 Opening、默认折叠，其余
-subsections 留在 Content。Q 的显式 Content 可省。
-先给意图（在问什么、边界、什么算完），再给状态（现在到哪）。改版前是 Now 在 Done when 上面 ——
-零背景的人先撞上一堵实现细节，还没搞懂目标就淹了。
+**The on-stage order is fixed**:
+Q is `Opening → Diagram → Content → Items to Finish → Where we are`;
+S is the same: Stage Contract is folded inside Opening and no longer occupies its own section (JL 260725)
+(Files follows after the state).
+Opening is the question lead plus an optional Boundary; the first row of the drawer is the build-generated Structure map of the page (JL 260729, pure rendering, nothing to author); the optional Diagram is its own section, collapsed by default, and expands only when the section name is clicked.
+The Opening explanatory paragraph of both Q and S goes into the Why this matters row of that page's own drawer (JL 260729; before that, a Q's explanatory paragraph automatically became Content's first subsection).
+If an S page's explicit Content holds a direct `### Stage Record`, that is lifted into Opening too and collapsed by default, while the remaining subsections stay in Content.
+A Q's explicit Content can be omitted.
+Intent comes first (what is being asked, the boundary, what counts as done), then the state (where things stand now).
+Before the redesign, Now sat above Done when, so a zero-background reader hit a wall of implementation detail and drowned before understanding the goal.
 
-**`## Why here` 已退役。** 它的活（为什么难 / 不定会怎样）并进 `## Opening` 的解释段，
-并渲染成 “Why this matters”：Q 和 S 都放在 Opening 的抽屉里，**默认折叠**（JL 260729；此前 Q 放 Content 首节）
-（JL 260725：Opening 里除了问句本身，其余每一行都收起来）。老板子里的旧段仍收进底部折叠区。
+**`## Why here` is retired.**
+Its job (why this is hard, what happens if it stays unsettled) is merged into `## Opening`'s explanatory paragraph and rendered as "Why this matters": both Q and S put it in Opening's drawer, **collapsed by default** (JL 260729; before that Q put it in Content's first subsection) (JL 260725: inside Opening, every row other than the question sentence itself is shut).
+The old section on an old board is still collected into the folded area at the bottom.
 
-**老段名一律还认**，老板子不用改就能重新生成：`## Opening` 也可代替 `## Opening`，
-中文名（`## 问题` `## 现在什么样` …）、
-以及改版前的 `## Done when`（＝`## Items to Finish`）和 `## Now`（＝`## Where we are`）。
+**Every old section name is still recognized**, so an old board can be regenerated without being edited: `## Question` can also stand in for `## Opening` (`## Opening` is the canon, `## Question` the legacy alias, JL 260731), as can the Chinese names (`## 问题` `## 现在什么样` …) and the pre-rename `## Done when` (= `## Items to Finish`) and `## Now` (= `## Where we are`).
 
-**S page 的 Q-consumer 规则**：不另开顶层 `## Q-consumer`。每个 consumer 是
-`## Items to Finish` 里的 checklist item，标题保留 `Q-<Stage>-<n>`，折叠详情保留
-Description / Reason / Probe / Answer。只有 Answer 已落地、已解释、已织回 Content 才勾
-`[x]`；deferred 只有写下 forward pointer 才能闭合。`## Where we are` 只总结 stage，
-不复述每个 consumer answer。
+**The Q-consumer rule on an S page**: do not open a top-level `## Q-consumer`.
+Each consumer is a checklist item inside `## Items to Finish`, its heading keeps `Q-<Stage>-<n>`, and its folded detail keeps Description / Reason / Probe / Answer.
+Tick `[x]` only once the Answer has landed, been explained, and been woven back into Content; a deferred one closes only when a forward pointer has been written down.
+`## Where we are` only summarizes the stage; it does not restate each consumer answer.
 
-**S page 的 Stage Contract 规则**：依赖只读顶层 metadata，不从 Pages 顺序或 filename
-数字猜：
+**The Stage Contract rule on an S page**: dependencies are read from the top-level metadata only, never guessed from Pages order or from a number in a filename:
 
 ```markdown
 requires: S-Work-1, S-Main-0, S-Display-0
@@ -295,23 +286,23 @@ provides: reader-facing results section
 ## Stage Contract
 <!-- haipipe:contract:start sha256=... -->
 ### Required Inputs
-...上游 `### Provides` 的短摘要、路径和 gate state...
+...a short summary of the upstream `### Provides`, its path, and its gate state...
 ### Writing Style
-...writing source 的短 contract...
+...the short contract of the writing source...
 <!-- haipipe:contract:end -->
 
 ### Provides
-本页作者拥有的下游交付说明；sync 不覆盖。
+The downstream delivery note this page's author owns; sync does not overwrite it.
 ```
 
-`python3 stage.py new` 建页面，`stage.py sync` 只更新 marker 之间，`stage.py sync --all`
-按显式 dependency graph 的 topological order 刷新（不看 Pages 顺序），`stage.py check`
-检查 source hash。`build.py` 也把 missing/stale contract 放进 warnings，但永远不修改
-Markdown。上游全文保持在上游；contract 只带 acceptance conditions、writing rules 和链接。
+`python3 stage.py new` creates the page, `stage.py sync` updates only what sits between the markers, `stage.py sync --all` refreshes in the topological order of the explicit dependency graph (it does not look at Pages order), and `stage.py check` verifies the source hash.
+`build.py` also puts a missing or stale contract into its warnings, but it never modifies the Markdown.
+The upstream full text stays upstream; the contract carries only acceptance conditions, writing rules, and links.
 
-## 4b. `## Links` —— 板和产物的连线
+## 4b. `## Links`: the wire between the board and its artifacts
 
-板讨论的东西通常不在板的文件夹里。在 `board.md` 里声明：
+What a board discusses usually does not live in the board's folder.
+Declare it in `board.md`:
 
 ```markdown
 ## Links
@@ -320,92 +311,90 @@ ref/q-template.md   ../../haipipe-board/ref/q-template.md
 haipipe-board/      ../../haipipe-board/
 ```
 
-左边是正文里反引号的写法，右边是相对 `board.html` 的路径。
-之后所有 `` `SKILL.md` `` 都变成可点链接。
+The left side is how it is written in backticks in the body; the right side is the path relative to `board.html`.
+After that, every `` `SKILL.md` `` becomes a clickable link.
 
-- 没声明的路径也会自动试一次：从板的文件夹逐级往上找同名路径，找到且**真实存在**才链。
-  找不到就还是普通 `<code>`，不会变死链。
-- 声明过的**不做存在性检查** —— 写错就是死链，自己负责。
-- 也支持普通 markdown 链接 `[写法](路径)`。
+- An undeclared path is still tried once automatically: it walks up level by level from the board's folder looking for the same path, and links it only when it is found and **really exists**.
+  When nothing is found it stays a plain `<code>` and never turns into a dead link.
+- A declared path is **not existence-checked**: write it wrong and it is a dead link, on you.
+- Ordinary markdown links `[text](path)` are supported too.
 
-## 5. 正文语法
+## 5. Body syntax
 
-| 写法 | 效果 |
+| Written form | Effect |
 |---|---|
-| `### 标题`（`## Content` 里顶格） | **division**：能单独折的一块内容。深浅靠编号（`§6` vs `§6.1`）不靠标题级数；只在自己确实有内容时才写（见 §4） |
-| `#### 标题` | **段落标题**（`.ph`）：一个 division 里的一个段落，永远这一级。**没有图标**，比组标题小一号 —— 以前被压成 `**…**`，于是套上组标题的 🔹，把「一个段落」说成「领着一串 item 的一句话」（JL 260725） |
-| 紧跟 `####` 的整行 `(…)` | 这一段**要干的活**（`.pj`）：灰斜体，留在台面上当扫读钩子，不折起来（折起来就扫不了）。只认紧跟标题的那一行，长度按 venue template 大约 80–120 字符 |
-| `**整行加粗**`（单独一行） | 组标题：略大，领着下面一串 item。开头写个 emoji（`**🎨 版式落地**`）就用它当记号；不写用默认 🔹。**只有真的领着一串 item 才用它** —— 一个段落用 `####` |
-| `- 小标题` + 缩进两格的解释行 | 要点块：▸ 加粗小标题 + 灰色解释 |
-| `- [ ]` / `- [x]` + 缩进解释 | 勾选清单，栏头自动数出 `3/5`；S 的 Q-consumer 也用这一行形 |
-| ` ``` ` 围栏 | 原样输出的 `<pre>`（ascii 图、代码、目录树）。**两棵树别并排画**：列的边界是空白，一复制就没了，右边那列会读成左边的分支 —— 板本来就是拿去贴进聊天和邮件的。要对比就竖着叠，一次一棵完整的树 |
-| item 解释行里**缩进的** ` ``` ` 围栏 | 收进**这个 item 的折叠区**（不 flush 成兄弟块）：dedent 后原样 `<pre>`，位置随你放（摘要后、正文段之间都行）。顶格的围栏照旧是兄弟块（JL 260724，QC10 CABG 板首用） |
-| 单独一行 `![[路径]]` / `![[路径#某节]]` / `![[路径#某节\|source]]` | **嵌入**（QF1）：把另一份文件（整份或某一节）按引用嵌进这一题，生成时现读。路径相对板根，找不到再逐级向上找（≤8 级）；只吃 `.md`/`.txt`；`#某节` 认 `##` 标题**和** setext（下划线）标题；嵌不到 / 找不到那节 → 就地一块红色警告，绝不悄悄空掉；嵌进来的内容里再写 `![[…]]` 不展开（防环）。句下评论只写入承载该页的 Markdown；嵌入源本身不被改动。`\|source` 结尾 = 同一份文件**照原字节**摊成 `<pre>`（不渲染、不上 chip），给「先给源码、再给渲染结果」这种页面用：两块都是同一份文件在生成时读两次，所以不可能对不上。别的 mode 一律就地红字报错 |
-| 单独一行一个 excalidraw 分享链接 | 嵌成可交互画布（iframe）+ 一条「↗ 在 Excalidraw 打开」兜底链接 |
-| 裸 `https://…` | 自动变成可点链接（不会把已在 `href=` 里的再套一层） |
-| `` `code` `` `**粗**` `![](fig/x.png)` / `![](fig/x.pdf)` | 行内代码 / 加粗 / 图片 / 可读 PDF（含打开链接兜底） |
-| `> JL: 文字 · 260729 1502` | **句子评论**：紧贴在上一句下面，按署名分颜色；没有前一句时才是普通讨论行 |
-| `> ✎ 整句含 ~删除词~ *新增词* · JL · 260729 1502` | **编辑记录**：上一句已更新为最终文字；这一行重复整句，只标出删／增词 |
-| `>> CC0723: 文字` | 回复 |
-| `> JL 「原句」: 文字` | 讨论行 + 把「原句」在正文里高亮 |
-| `260723 1030 · 文字` | Log 一行，时间可省 |
+| `### heading` (at the top level inside `## Content`) | **division**: a block of content that can fold on its own. Depth is carried by numbering (`§6` vs `§6.1`), not by heading level; write one only when it genuinely has content (see §4) |
+| `#### heading` | **paragraph heading** (`.ph`): one paragraph inside a division, always at this level. It carries **no icon** and is one size smaller than a group title; it used to be flattened into `**…**`, which put the group title's 🔹 on it and made "one paragraph" claim to be "a sentence leading a run of items" (JL 260725) |
+| a whole-line `(…)` directly after a `####` | **the job** this paragraph does (`.pj`): grey italic, left on stage as a scan hook, never folded (folded, it cannot be scanned). Only the line immediately after the heading is read this way, and per the venue template its length is about 80 to 120 characters |
+| `**a whole bold line**` (alone on a line) | group title: slightly larger, leading a run of items below it. Start it with an emoji (`**🎨 Layout landed**`) and that emoji is used as its mark; without one the default 🔹 is used. **Use it only when it really does lead a run of items**; a single paragraph takes `####` |
+| `- heading` plus an explanation line indented two spaces | item block: a ▸ bold heading plus a grey explanation |
+| `- [ ]` / `- [x]` plus an indented explanation | a checklist, the column header auto-counting out `3/5`; an S page's Q-consumer uses this same line form |
+| a ` ``` ` fence | verbatim `<pre>` output (ascii figures, code, folder trees). **Never draw two trees side by side**: the column boundary is whitespace, it disappears the moment anyone copies it, and the right column then reads as branches of the left one; a board exists to be pasted into chat and email. To compare, stack them vertically, one complete tree at a time |
+| an **indented** ` ``` ` fence inside an item's explanation lines | goes into **that item's folded area** (it is not flushed out as a sibling block): dedented, then verbatim `<pre>`, and it can go wherever you put it (after the summary, between body paragraphs). A top-level fence is a sibling block as before (JL 260724, first used on the QC10 CABG board) |
+| a line holding only `![[path]]` / `![[path#Section]]` / `![[path#Section\|source]]` | **embed** (QF1): pulls another file (whole, or one section) into this question by reference, read live at generation time. The path is relative to the board root, and when not found it is searched upward level by level (up to 8 levels); only `.md`/`.txt` are accepted; `#Section` recognizes a `##` heading **and** a setext (underlined) heading; a file that cannot be embedded, or a section that cannot be found, produces a red warning in place and never silently goes blank; an `![[…]]` written inside embedded content is not expanded (loop guard). A sentence comment is written only into the Markdown of the page carrying it; the embed source itself is not modified. A trailing `\|source` = the same file spread into a `<pre>` **byte for byte** (not rendered, no chip), for the kind of page that gives the source first and the rendered result after: both blocks are the same file read twice at generation time, so they cannot disagree. Any other mode is an in-place red error |
+| an excalidraw share link alone on a line | embedded as an interactive canvas (iframe) plus a fallback "↗ open in Excalidraw" link |
+| a bare `https://…` | becomes a clickable link automatically (a URL already inside an `href=` is not wrapped a second time) |
+| `` `code` `` `**bold**`, plus the image form `!` `[` `]` `(fig/NAME.png)` and the same with `.pdf` | inline code / bold / image / readable PDF (with a fallback open link). The image form is spelled out here rather than written literally: the renderer resolves image syntax before inline code, so a literal example embeds a real (and dead) file. |
+| `> JL: text · 260729 1502` | **sentence comment**: sits tight under the sentence above it, colored by signature; only when there is no preceding sentence is it an ordinary discussion line |
+| `> ✎ The whole sentence with ~removed~ *added* words · JL · 260729 1502` | **edit record**: the sentence above has already been updated to its final text; this line repeats the whole sentence and marks only the removed and added words |
+| `>> CC0723: text` | a reply |
+| `> JL 「the quoted sentence」: text` | a discussion line, plus the sentence inside 「」 is highlighted in the body |
+| `260723 1030 · text` | one Log line; the time can be omitted |
 
-署名认任意 1–4 位大写字母（`JL` `ZW` `CC0723`）。`JL/CC` 有固定颜色；每位同事用自己的缩写，按名字自动分配颜色。
+A signature is any 1 to 4 uppercase letters (`JL` `ZW` `CC0723`).
+`JL`/`CC` have fixed colors; every colleague uses their own initials and is assigned a color automatically from the name.
 
-页面生成后，只给 `## Content` 内部建立 render-local 结构地址。每个 `###` division 是
-`Cn`；其中每个 `####` heading 是一个终止节点 `Cn.Hn`；正文 paragraph 与 H 同级，
-sentence leaf 是 `Cn.Pn.S1`。因此 `QAb3.C1.H1` 与 `QAb3.C1.P1.S1` 合法，
-`QAb3.C1.H1.P1.S1` 不合法。当前一条 source line 就是一句，所以每个 P 只有 `S1`。
+Once the page is generated, render-local structure addresses are established inside `## Content` only.
+Each `###` division is `Cn`; each `####` heading inside it is a terminal node `Cn.Hn`; a body paragraph sits at the same level as an H, and the sentence leaf is `Cn.Pn.S1`.
+Therefore `QAb3.C1.H1` and `QAb3.C1.P1.S1` are legal, and `QAb3.C1.H1.P1.S1` is not.
+One source line is currently one sentence, so every P has only `S1`.
 
-pointer 设备 hover/focus 一个 Content sentence 时显示 `Cn.Pn.S1 ＋ 💬`：`＋` 在句下开
-Comment，`💬` 在这道 Q 已有的 chat session 顶部建立可关闭的 Sentence Focus，并显示
-Content 与最近 Heading 的名字。建立焦点不调用模型；下一条用户消息才携带位置、地址、该句和
-它直接相邻的 apparatus。touch 设备把 Comment / Chat / Edit 收进低调的 `⋯`。这些地址不写回
-Markdown；插入、移动 Content 节点后允许重新编号，因此是当前 render 的 focus address，不是永久 id。
+When a pointer device hovers or focuses a Content sentence, it shows `Cn.Pn.S1 ＋ 💬`: `＋` opens a Comment under the sentence, and `💬` establishes a closable Sentence Focus at the top of the chat session this Q already has, showing the name of the Content division and of the nearest Heading.
+Establishing the focus calls no model; only the next user message carries the position, the address, that sentence, and the apparatus directly adjacent to it.
+A touch device collects Comment / Chat / Edit into an unobtrusive `⋯`.
+These addresses are never written back into the Markdown; renumbering is allowed after Content nodes are inserted or moved, so they are focus addresses of the current render, not permanent ids.
 
-## 6. 生成
+## 6. Generating
 
-`build.py` / `watch.py` 都在 skill 目录里（不在板文件夹）。带路径调，别 `cd` 进板文件夹跑 `build.py .`：
+`build.py` / `watch.py` both live in the skill folder, not in the board folder.
+Call them with a path; do not `cd` into the board folder and run `build.py .`:
 
 ```bash
-python3 <skill>/build.py <board 文件夹>     # 生成一次（<skill> = .../board/haipipe-board）
-python3 <skill>/watch.py <board 文件夹>     # 盯着，改任何 .md 自动重新生成
+python3 <skill>/build.py <board-dir>     # generate once (<skill> = .../board/haipipe-board)
+python3 <skill>/watch.py <board-dir>     # watch it: any .md change regenerates automatically
 ```
 
-**别手改 `board.html`** —— 下一次生成就覆盖了。md 是唯一来源。
+**Do not hand-edit `board.html`**: the next generation overwrites it.
+The md is the only source.
 
-## 8. 页面
+## 8. The page
 
-一个文件两种模式，没有第二份 deck：
+One file, two modes, and there is no second deck:
 
-- **平铺**（默认）：主干 + Q settled / S gated 两个进度信号 + 索引 + 所有 pages，滚着读。
-- **聚焦**：点索引任意一行，`:target` + `:has()` 纯 CSS 把其余全收起来，屏上只剩那一题；
-  去掉边框圆角底色，标题 38px，底部 `← 上一题 · ☰ 全部 · 下一题 →`。投屏用这个。
+- **Flat** (the default): the spine, the two progress signals (Q settled and S gated), the index, and every page, read by scrolling.
+- **Focused**: click any row of the index and pure CSS (`:target` + `:has()`) shuts everything else, leaving only that one question on screen; border, rounded corners, and background fill are dropped, the title is 38px, and the foot carries `← previous · ☰ all · next →`. Use this for projection.
 
-**Board identity mark（QA4，JL 260726）**：页面标题以共享的
-`assets/board-mark.svg` 开头。它是四张相互覆盖的 page，中央切出一个 speech-shaped
-aperture；这个 cutout 是透明的，所以亮/暗底都能用。`build.py` 把 SVG 直接内联到标题，
-并把同一 source 编成 `<link rel="icon">`，因此 `board.html` 不增加外部依赖。
-mark 的几何只在 SVG 维护；`assets/board.css` 的八个 `--board-mark-*` tokens 控制四个
-面的渐变配色。平铺模式显示 42px，聚焦模式压到 24px，标题仍是主要信息。
+**Board identity mark (QA4, JL 260726)**: the page title opens with the shared `assets/board-mark.svg`.
+It is four pages overlapping each other, with a speech-shaped aperture cut out of the center; that cutout is transparent, so it works on a light or a dark background.
+`build.py` inlines the SVG straight into the title and encodes the same source into a `<link rel="icon">`, so `board.html` adds no external dependency.
+The geometry of the mark is maintained in the SVG only; the eight `--board-mark-*` tokens in `assets/board.css` control the gradient colors of the four faces.
+Flat mode shows it at 42px and focused mode presses it down to 24px, so the title remains the primary information.
 
-**聚焦时什么上台面、什么收起来**（QA4 定的）：
+**What goes on stage and what is shut when focused** (settled by QA4):
 
-- **上台面**（从上到下）：标题 → `🧭 Opening`（这一行不折，永远在）→ 领句（永远在，
-  【可点】：点开它，抽屉里 Boundary、以及 S 的 Why this matters / Stage Record /
-  Stage Contract（Required Inputs · Writing Style · venue）全是【平的】，一次全看见，
-  里头不再套第二层 ▸。抽屉里的小标题一律是【光秃秃的词，不挂图标】—— 之前 7 个里
-  只有 2 个有图标，这就是 JL 说的不一致，JL 260725）→
-  `🖼 Diagram`（optional，只有节名上台面，内容默认折叠；点开先看见 ▧ ASCII，
-  ✏️ Excalidraw 还要再点一下，JL 260726）→
-  `📚 Content`（只放作者显式写的 subsections；Q 的解释段 260729 起也进 Opening）→
-  `🎯 Items to Finish` → `📍 Where we are` → `📁 Files`。
-- **三级层级**：节标题（🧭/📚/🎯/📍，底下一条线）＞ **组标题**（整行加粗 → 🔹 默认，开头写 emoji 就用那个，领着一串 item）＞ item 的名字（`▸`）。
-- **默认收起**（点名字 / 按节标题右边的 `expand all` 才现）：整个 `## Diagram`、item 的解释（收进 native `<details>`）、正文里的代码块（收成一行 `</> code · N 行`）。
-  Diagram 里还有一层排序：点开这一节 ▧ ASCII 就在，✏️ Excalidraw 仍收着 —— 收着的 `<details>` 不 display，里面 `loading="lazy"` 的 iframe 就不会加载，一块板 28 张画布不再开屏就启 28 个。
-- **沉到底部折叠区**：Why here · Discussion · Law · Lesson · Glossary · Log。
-- 一屏第一眼 = 一列干净的节名和 item 名；Diagram 自己点开，`expand all` 一键把其他节的 item / 代码铺开（纯增强，脚本剥掉后每条仍能单独点开）。
+- **On stage** (top to bottom): the title → `🧭 Opening` (this row does not fold, it is always there) → the lead sentence (always there, and **clickable**: open it, and in the drawer, Boundary, plus S's Why this matters / Stage Record / Stage Contract (Required Inputs · Writing Style · venue), are all **flat**, seen in one go, with no second ▸ level nested inside.
+  Every subheading in the drawer is **a bare word carrying no icon**: previously only 2 of 7 had an icon, and that is the inconsistency JL named, JL 260725) →
+  `🖼 Diagram` (optional; only the section name is on stage, the content is collapsed by default; open it and ▧ ASCII is seen first, while ✏️ Excalidraw takes one more click, JL 260726) →
+  `📚 Content` (only the subsections the author wrote explicitly; since 260729 a Q's explanatory paragraph also goes into Opening) →
+  `🎯 Items to Finish` → `📍 Where we are` → `📁 Files`.
+- **Three levels of hierarchy**: section heading (🧭/📚/🎯/📍, with a rule under it) > **group title** (a whole bold line → 🔹 by default, or the emoji it starts with, leading a run of items) > the item's name (`▸`).
+- **Shut by default** (revealed by clicking the name, or the `expand all` to the right of the section heading): the whole `## Diagram`, an item's explanation (collected into a native `<details>`), and a code block in the body (collapsed into one line, `</> code · N lines`).
+  Diagram carries one more layer of ordering: open the section and ▧ ASCII is there while ✏️ Excalidraw is still shut, because a shut `<details>` is not displayed, so a `loading="lazy"` iframe inside it does not load, and a board with 28 canvases no longer starts 28 of them at load time.
+- **Sunk into the folded area at the bottom**: Why here · Discussion · Law · Lesson · Glossary · Log.
+- The first look at a screen = one clean column of section names and item names; Diagram is opened by hand, and `expand all` spreads out the items / code of the other sections in one click (pure enhancement: with the scripts stripped, every row still opens on its own).
 
-**别的定死的**：现在 vs 算做完**上下叠**不左右分栏（长短不齐时并排会空半边）；长题**滚动**不截断不拆屏；**不锁 16:9** 随窗口高走（锁画幅归投屏 deck）；大标题 id 后面留一个**真空格**，复制才不会粘成 `QA4Single…`。
+**Other things that are fixed**: Where we are against Items to Finish are **stacked vertically**, not split into left and right columns (side by side, unequal lengths leave half a column empty); a long question **scrolls**, and is never truncated or split across screens; **no 16:9 lock**, the height follows the window (locking the aspect ratio belongs to a projection deck); a **real space** is left after the id in the big title, so copying it does not glue it into `QA4Single…`.
 
-**不变量：把页面里所有 `<script>` 删掉，每一题和全部正文仍然在。** `build.py` 每次生成都断言这一条。脚本只能做增强（现在只有评论层），不能是内容的来源。
+**Invariant: delete every `<script>` in the page, and every question and all of the body text is still there.**
+`build.py` asserts this on every generation.
+A script can only enhance (currently just the comment layer); it can never be the source of content.

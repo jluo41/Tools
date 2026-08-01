@@ -13,6 +13,7 @@ Keep it on loopback and anyone working over SSH sees nothing at all until they h
 Open it wider and every device that can reach the new address can run commands as the owner, on a codebase that ships to other people who will not read the flag before using it.
 The reader-facing URL now lives in `env.sh`, but the listener still receives a separate flag, so the two settings do not yet share one home and a personal address must never become the shared-source default.
 
+
 ## Boundary
 - ✅ Covered here
   **Which address `serve.py` listens on**, what the shipped default is for someone who clones `Tools`, and where a per-machine override lives.
@@ -70,27 +71,37 @@ A colleague opening the same board needs a URL that resolves for them, and today
 That is the same wall `QE1` describes from the hosting side, and this question is the local half of it: what the single machine's socket does, before any decision about a real server.
 
 ## Items to Finish
+### The committed --host flag
 - [x] 🔧 `serve.py` takes an explicit host and still defaults to loopback
       A `--host` flag exists, defaults to `127.0.0.1`, and the startup banner prints a warning line whenever the bind is not loopback.
       Verified on 260726 by starting the server on a tailnet address, confirming the warning and the listening socket, then restarting on the default and confirming loopback again.
       The flag is committed in `Tools`; the personal tailnet address is supplied only at launch and is not part of the shared source.
+- [x] 📌 the `--host` flag is committed in `Tools`
+      The flag was committed in revision `9eb8ea8e`, so a submodule update cannot remove it.
+      Current unrelated working-tree edits to `serve.py` do not own or gate the committed flag.
+
+### The shipped default and the /_term/ gate
 - [ ] 🧠 JL rules what the shipped default is, and whether a non-loopback bind is offered at all
       The ruling has to name the default that other people get when they clone `Tools`, and say whether widening it is supported or merely possible.
       JL's leaning on 260726 was to stay local; this line closes when that is a decision rather than a leaning.
+- [ ] 🔐 the unauthenticated terminal endpoint is either gated or named as the reason the default stays local
+      Right now `/_term/` is the strongest argument against ever widening the bind, and nothing in the skill says so.
+      This line closes when either a gate exists or the reasoning is written where someone about to widen the bind will read it.
+
+### One home for the address setting
 - [ ] 🗂 the override has exactly one home
       Either the flag alone, or the flag plus an `env.sh` variable that `serve.py` reads, but not two half-implemented paths.
       JL chose `env.sh` on 260729 as this machine's home for the reader-facing URL, represented here as `HAIPIPE_BOARD_URL=http://<tailscale-ip>:5599`.
       The line remains open because `serve.py` still receives its bind through `--host`, so one setting does not yet control both the listener and the emitted URL.
       This line closes when the chosen home is implemented and the other is documented as not supported.
-- [ ] 🔐 the unauthenticated terminal endpoint is either gated or named as the reason the default stays local
-      Right now `/_term/` is the strongest argument against ever widening the bind, and nothing in the skill says so.
-      This line closes when either a gate exists or the reasoning is written where someone about to widen the bind will read it.
 - [x] 📖 the skill stops claiming `127.0.0.1` unconditionally
       `SKILL.md` now distinguishes the reader-facing domain from the listener bind.
       Its view command reads `HAIPIPE_BOARD_URL` and retains loopback only as the safe shared-source fallback.
 - [x] 🔀 the two places that emit a URL read the same setting
       `status.py` and `SKILL.md`'s view step now both prefer `HAIPIPE_BOARD_URL`, then the machine-local assignment in the repository's gitignored `env.sh`, then loopback.
       The personal Tailscale IP is therefore handed to this machine's reader without becoming every clone's default.
+
+### Proving a second reader is reached
 - [ ] 🧭 the skill's view step stops guessing local against remote from the presence of a socket
       The current test is whether a VS Code IPC socket and a `browser.sh` exist, and on this machine both do while the reader is still on another machine.
       The check that actually decides it is whether a request lands in the server log, and this line closes when the view step verifies reach that way instead of guessing.
@@ -98,9 +109,6 @@ That is the same wall `QE1` describes from the hosting side, and this question i
 - [ ] 🤝 a second person can open a board without editing anyone's configuration
       This is the acceptance test for the whole question, and it is currently failed by every option that preserves the loopback model.
       It may well be answered by `QE1` instead, in which case this line closes by pointing there.
-- [x] 📌 the `--host` flag is committed in `Tools`
-      The flag was committed in revision `9eb8ea8e`, so a submodule update cannot remove it.
-      Current unrelated working-tree edits to `serve.py` do not own or gate the committed flag.
 
 ## Where we are
 The committed flag exists and works, its shared-source default is unchanged, and this machine keeps its reader-facing tailnet URL in the gitignored `env.sh`.
@@ -132,11 +140,22 @@ The shared-source default and the single-setting implementation remain open beca
 - 260726 JL · 🧭 Leaning is to stay local
       JL raised two objections that shaped this question: other people use this board, and the code is shared, so a personal address must not become part of either.
 
+### Decision Now
+- [ ] 🧠 Confirm the shipped default for the bind address
+      When someone clones `Tools`, should `serve.py` listen on `127.0.0.1` (loopback only), or offer a wider address?
+      JL's leaning on 260726 was loopback; a tick here closes the same row in Items to Finish.
+- [ ] 🗂 Decide the single home for the address setting
+      Either `--host` flag alone, or the flag plus an `env.sh` variable that `serve.py` reads; not both half-implemented.
+      JL chose `env.sh` on 260729 for the reader-facing URL; a tick closes the same row in Items to Finish.
+
 ## Files
+### The running server and documentation
 - `serve.py`
   Holds the bind, the `--host` flag, and the docstring that states the security model. Start here when this question changes.
 - `SKILL.md`
   Uses the same machine-local reader URL for browser pushes and documents loopback only as the safe fallback.
+
+### Machine-local settings
 - `status.py`
   Resolves an explicit URL, the live environment, or the one `HAIPIPE_BOARD_URL` assignment in root `env.sh`, in that order.
 - `env.sh`
@@ -163,6 +182,7 @@ tailnet: the private mesh network Tailscale gives one owner's devices, addressed
 >> CC0726: put the server back on loopback the same turn. The flag stays in place and defaults to loopback, so nothing changes for anyone who clones Tools, and this question now owns the ruling rather than the running server.
 
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Redacted the machine-specific Tailscale IP from tracked Board history; the real reader URL remains only in gitignored env.sh
 260729 · Reader-facing domain now resolves to this machine's Tailscale IP without requiring `source env.sh`: status.py reads only HAIPIPE_BOARD_URL from root env.sh, and the skill's browser-push command consumes the same setting; loopback remains the shared fallback
 260729 · JL chose the tailnet URL for this machine. Added `HAIPIPE_BOARD_URL=http://<tailscale-ip>:5599` to the gitignored `env.sh`; the live server was already listening there, so user-facing Board links can stop using localhost without putting a personal address in shared source.

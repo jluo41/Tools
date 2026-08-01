@@ -1,30 +1,30 @@
-# 最小示例 —— 一块两题的板
+# Minimal example: a board with two questions
 
-真实的板见 `skills/diagrams/01-boardform-260722/`（这个 skill 自己的板，10 题）。
-这里只给一份能照抄的最小骨架。
+For a real board see `skills/diagrams/01-boardform-260722/`, this skill's own board, with 10 questions.
+What follows is only the minimal skeleton you can copy.
 
-文件夹：`examples/ProjX-Demo/diagram/01-cohort-260801/`
+Folder: `examples/ProjX-Demo/diagram/01-cohort-260801/`
 
 ---
 
 ## `board.md`
 
 ````markdown
-# 入组标准 —— 定死谁进队列、谁不进
-spine: 把「哪些病人算进这项研究」变成一份能照着筛的规则，每条都说得出为什么。
-close: 下面每个 Q 都到 ✅ 或 ⏸️。全部落定，入组标准就能写进论文的 Methods。
-source: collaborations/Event-Cohort/meetings/2026-08-01 入组讨论.md
+# Cohort entry criteria: settle who enters the cohort and who does not
+spine: turn "which patients count for this study" into a rule set someone can screen with, every line of it with a stated reason.
+close: every Q below has reached ✅ or ⏸️, at which point the entry criteria can be written into the paper's Methods.
+source: collaborations/Event-Cohort/meetings/2026-08-01 cohort discussion.md
 
 ## Topic
-我们手上有一份 2015–2020 的医保理赔数据，想研究某类用药行为。
-第一步是决定哪些人进入分析队列 —— 这一步定错，后面所有结果都不作数。
-人物：JL = 项目负责人，拍板。其他同事用自己的姓名缩写认领工作。
+We hold a 2015 to 2020 insurance claims dataset and want to study one class of prescribing behavior.
+The first step is deciding who enters the analysis cohort: get this step wrong and every later result is void.
+People: JL = project lead, decides. Other colleagues claim work under their own initials.
 
 ## Pipeline
-两题有先后：先定「按什么条件筛」（QA1），再定「筛出来之后怎么验」（QA2）。
+The two questions are ordered: first settle what we screen on (QA1), then settle how to validate what came out of the screen (QA2).
 
 ## Pages
-### QA · 先把标准定下来
+### QA · Settle the criteria first
 QA1-criteria.md
 QA2-validate.md
 ````
@@ -34,50 +34,51 @@ QA2-validate.md
 ## `QA1-criteria.md`
 
 ````markdown
-# 入组的四个条件
+# The four entry conditions
 state: 🟡 PARTIAL
 owner: ZW
-method: 逐条列出来，每条给一个能跑的判定
+method: list them one at a time, each with a check that can actually run
 
 ## Opening
-一个病人满足什么条件，才算进入这项研究的分析队列？
+What must a patient satisfy to enter this study's analysis cohort?
 
-入组标准一旦定错，后面所有结果都不作数，而且返工代价最大。这一题不定，QA2 的验证也没有稳定的队列可验。
+Wrong entry criteria void every later result, and this is the most expensive thing in the project to rework.
+While it stays open, QA2 has no stable cohort to validate.
 
 ## Diagram
 ```
-全部理赔记录  1,240,000 人
-      │  ① 年龄 ≥ 18
-      ▼   980,000
-      │  ② 观察期内连续参保 ≥ 12 个月
-      ▼   410,000
-      │  ③ 至少一次目标用药
-      ▼    38,000
-      │  ④ 排除已有禁忌症
-      ▼    31,500   ← 分析队列
+all claims records  1,240,000 people
+      │  ① age ≥ 18
+      ▼      980,000
+      │  ② ≥ 12 months of continuous enrollment in the observation window
+      ▼      410,000
+      │  ③ at least one target prescription
+      ▼       38,000
+      │  ④ drop anyone with a pre-existing contraindication
+      ▼       31,500   ← analysis cohort
 ```
 
 ## Items to Finish
-- [x] 四个条件都写成能跑的判定
-      每条都能翻译成一句 SQL 或一段代码，不是「大致上」。
-- [ ] 每条给出人数
-      筛完剩多少，逐层报出来，见上面那张图。
-- [ ] 每条说得出为什么
-      审稿人会问的就是这个。
+- [x] all four conditions written as checks that run
+      Each one translates into a single SQL statement or a short block of code, not into "roughly".
+- [ ] a head count for each condition
+      Report how many people survive each screen, layer by layer, as in the figure above.
+- [ ] a stated reason for each condition
+      This is exactly what a reviewer will ask about.
 
 ## Where we are
-四个条件已经写下来，人数也跑出来了（31,500）。
-条件 ④「已有禁忌症」的编码清单还没定 —— 现在用的是一份从别处抄来的列表，没人核过。
+The four conditions are written down and the head counts have been run (31,500).
+The code list for condition ④ (pre-existing contraindication) is still unsettled: what we run today is a list copied from elsewhere that nobody has checked.
 
 ## Glossary
-观察期：数据里能看到这个人记录的时间窗口。窗口太短的人，用药史看不全，不能算数。
+observation window: the stretch of time in which the data can see this person's records, so anyone whose window is too short has an incomplete prescription history and cannot be counted.
 
 ## Discussion
-> JL: 条件 ② 的 12 个月是怎么来的？
+> JL: where does the 12 months in condition ② come from?
 
 ## Log
-260801 1400 · 开题，四个条件先写下来
-260801 1415 · 逐层人数跑出来了
+260801 1400 · question opened, four conditions written down first
+260801 1415 · layer-by-layer head counts run
 ````
 
 ---
@@ -85,27 +86,29 @@ method: 逐条列出来，每条给一个能跑的判定
 ## `QA2-validate.md`
 
 ````markdown
-# 筛完之后怎么验
+# Validating the screened cohort
 state: 🔴 OPEN
 owner: ZW
-method: 跟一份公开的队列比人口学分布
+method: compare the demographic distribution against a published cohort
 
 ## Opening
-按 QA1 那四个条件筛出来的 31,500 人，怎么知道筛对了？
+QA1's four conditions leave 31,500 people, so how do we know the screen was right?
 
-只报一个人数没有可信度，审稿人一定会追问这批人是否真的满足入组规则。QA1 的条件 ④ 没有定下来之前，任何验证结果也都不稳定。
+A head count on its own carries no credibility, and a reviewer will press on whether these people really satisfy the entry rules.
+Until QA1's condition ④ is settled, any validation result is unstable too.
 
 ## Items to Finish
-- [ ] 人口学分布跟一份公开队列对得上
-      年龄、性别、地域三个维度，差得太远就说明筛错了。
-- [ ] 抽 50 个人手工核对
-      逐个看原始记录，确认确实该进。
+- [ ] demographics line up with a published cohort
+      Age, sex, and region are the three dimensions; a large gap on any of them means the screen is wrong.
+- [ ] 50 people checked by hand
+      Read the raw records one at a time and confirm each of those people belongs in the cohort.
 
 ## Where we are
-一步都没做。等 QA1 的条件 ④ 定下来才有意义。
+Not a single step has been done.
+It becomes meaningful only once QA1's condition ④ is settled.
 
 ## Discussion
 
 ## Log
-260801 1430 · 开题
+260801 1430 · question opened
 ````

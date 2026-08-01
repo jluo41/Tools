@@ -63,7 +63,11 @@ SNAME = re.compile(r"^S[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 # `Agent-<unit>-<slug>` is a page kind beside `Skill-<unit>` (JL 260731: "we
 # will call it Agent-1 ... Below the skill"): a skill is LOADED, an agent is
 # DISPATCHED, and the roster label should say which one a unit is.
-PAGENAME = re.compile(r"^(?:[QS][A-Za-z0-9]*|Agent-\d+)[-_A-Za-z0-9]*\.md$")
+# `Meeting-<unit>-<slug>` is the third kind beside them (QC10, JL 260731): not
+# a decision and not a shipped unit, but the artifact a meeting leaves behind,
+# mirrored from an `echo-meeting` vault note by `meetingpage.py`.
+PAGENAME = re.compile(
+    r"^(?:[QS][A-Za-z0-9]*|Agent-\d+|Meeting-\d+)[-_A-Za-z0-9]*\.md$")
 
 
 def _vet_path(name, pattern):
@@ -105,8 +109,8 @@ def q_files(d):
 
 
 def page_files(d):
-    """Q, S, Skill and Agent pages at any depth, same exclusions as q_files()."""
-    for prefix in ("Q", "S", "Agent"):
+    """Q, S, Skill, Agent and Meeting pages at any depth, same exclusions."""
+    for prefix in ("Q", "S", "Agent", "Meeting"):
         for p in sorted(d.rglob(f"{prefix}*.md")):
             if any(s.startswith(("_", ".")) or s == "fig"
                    for s in p.relative_to(d).parts[:-1]):

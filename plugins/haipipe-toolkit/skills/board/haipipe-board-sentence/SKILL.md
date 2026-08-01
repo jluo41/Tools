@@ -54,7 +54,7 @@ Lane rules a machine must hold:
 
 ```
 · a lane is APPENDED, never edited in place; the record is the point
-· never delete a > USER: line (standing ruling, JL 260722)
+· never delete a signed `> WHO:` or `> ✎` line (ref/writing-rules.md: they are the durable review trail)
 · a reply nests one level under what it answers, dated
 · a lane without a signature is not a lane, it is unclaimed prose
 ```

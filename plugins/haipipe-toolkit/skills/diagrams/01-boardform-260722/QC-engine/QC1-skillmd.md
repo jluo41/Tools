@@ -12,6 +12,7 @@ It is hard because SKILL.md enters the context on every invocation, so shorter i
 Leave it unwritten and the whole workflow lives only in this conversation: a different agent walking in sees a `build.py` and a few boards, cannot guess the moves, and what was built here would be gone next time.
 It reaches downstream because SKILL.md is the skill's entry point and the only export channel for "rules the board has settled" (the graduation mechanism).
 
+
 ## Boundary
 - ✅ Covered here
   **What goes into SKILL.md**: which actions, how long, what belongs in the body vs. in `ref/`, and how it stays in sync with the board (graduation).
@@ -43,6 +44,7 @@ user types  /haipipe-board
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC1
 
 ## Items to Finish
+### The manual's operating answers
 - [x] SKILL.md written
       Shape · actions (view/open/add/build/sync/link/close + serve/comment) · the sections of one Q/S page · writing rules · prohibitions · ref/ index.
 - [x] Answers "how to open a new board"
@@ -51,6 +53,8 @@ user types  /haipipe-board
       Copy `ref/q-template.md` → rename → into the Pages → regenerate.
 - [x] Answers "when does a board close"
       Every question at ✅ or ⏸️; `close:` is the closing condition and must be verifiable.
+
+### Staying in sync with the board
 - [x] Settles how SKILL.md stays in sync with the board
       The **graduation mechanism** (see ## Law): when a Q reaches ✅, its `## Law` is copied into SKILL.md; unsettled ones never enter.
       Written into SKILL.md as the "board ↔ SKILL.md" section.
@@ -58,6 +62,8 @@ user types  /haipipe-board
 - [ ] The live layer (serve/chat/terminal) written as rules
       SKILL.md currently holds only pointers (provisional, aimed at the QD group), because QD1/QD2/QD3 are still 🟡.
       When they reach ✅, graduate them in one by one.
+
+### Proven on fresh-agent cold reads
 - [x] A fresh agent can open a decent board from it alone
       QF2 ran (260723, GPU-cluster topic): a fresh agent, given only SKILL.md + ref/, opened a valid 5-question board on the first try, verdict YES.
       The single real gap it exposed (how to invoke build.py) is fixed into SKILL.md.
@@ -71,6 +77,13 @@ user types  /haipipe-board
 
 ## Where we are
 **Written, validated by QF2, and kept current through the 0.15.x series; the live layer stays pointer-only until the QD group settles.**
+
+- 260731 JL · 🔍 Three fresh reviewers audited the family's contracts: 55 findings
+  JL asked whether the Skill pages are up to date and dispatched the review as a fan-out, which is the first real use of the parallel pattern `Agent-2` was built for.
+  Three agents took the two SPECs, the routing and index units, and this door skill; they returned 20, 16, and 19 actionable findings, and every one carried file-and-line evidence on both sides.
+  All seven mirror pages were already in sync, so nothing was stale in the SENSE the generator can detect; what the reviewers found is drift the generator cannot see, between a contract's words and the code it claims to describe.
+  Fixed the same round, each verified against source before the edit: the frontmatter version said 0.73.1 while its own CHANGELOG documented 0.78.0 and its summary was already 0.78.0's text, so the board displayed the wrong version; a blind Question to Opening replacement on 260731 had turned three alias declarations into the tautology "Opening is an alias for Opening" in `SKILL.md`, `ref/board-form.md`, and `ref/q-template.md`, which destroyed the only statement that old pages still parse; ten further `Question` residues were repointed individually across four files; two SPECs carried a version number inside body prose that had already rotted two releases behind their own frontmatter; `haipipe-board-page` cited §8 for a mapping that lives in §4; and the sentence spec cited `> USER:`, which is the paper family's lane id and appears nowhere in this family's authority.
+  Still open, and too large for one round: the door never mentions the `live/` package at all, so four of its five live-layer citations point at `serve.py` where the code no longer is; three sections describe Index elements that 0.78.0 removed; `Skill-<n>` and `Agent-<n>` are missing from its page-kind list while line 45 actively denies that such kinds ship here; and the `page` SPEC still says three page kinds when the code has four.
 
 - `SKILL.md`, ~280 lines as of 260725
   Operations only: the shape (Q + S pages, group intros, embeds), nine actions (view / open / add / build / sync / link / close offline, serve / comment live), the sections of one Q/S page, three writing rules, four prohibitions, the graduation mechanism, a ref/ index.
@@ -91,6 +104,32 @@ user types  /haipipe-board
 
 Still open: the live layer (serve/chat/terminal) graduates in only when the QD questions settle.
 
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+Two of the three below were ruled by JL on 260731, and their ticked rows stay here, attributed, until the work they authorize has fully landed.
+
+- [x] 🗣 Rule the language of the family's own contracts
+      DECIDED 260731 by JL: option A, and applied to ALL of them, not only the door ("yes, do it. Apply to all").
+      `haipipe-board/SKILL.md` was 342 of 581 lines Chinese (59%) while all five sibling units and both agents were 0%, and the split was chronological rather than principled: the newest sections were wholly English and everything older was Chinese, two of them mixing mid-bullet.
+      What made it cost something: 32 normative rules existed ONLY in Chinese, three of them load-bearing, being the skill's one mandatory stop-and-ask gate before scaffolding a board, the whole write-back obligation ("done means written back"), and the rule keeping a listener that carries a real shell on loopback.
+      The family's own evidence decided it: `ref/writing-rules.md` and `src/page_board.py`'s `scrub_cjk_comments()` both already cited a JL 260724 English-only ruling, so the door contradicted the rule it shipped.
+      Scope of "all": `SKILL.md`, `ref/board-form.md` (65% Chinese), and `ref/board-example.md` (41%); source-code comments are OUT of scope, because `scrub_cjk_comments()` already rules that the source keeps its comments for developers while the OUTPUT stays English.
+      The 51 em-dashes in the door were all Chinese doubled dashes, correct punctuation there, so each became different punctuation in the English text rather than surviving as a house-rule break.
+      LANDED 260731, all three files: `SKILL.md` 596 lines and 0 Chinese in its body, `ref/board-form.md` 399 lines and 29 sections intact, `ref/board-example.md` 114 lines, and all three are 0 em-dash and 0 hard-wrapped.
+      Two categories of Chinese are deliberately KEPT, because they are data the machine matches on rather than prose a reader follows: the two legacy Chinese section aliases still listed inside backticks in `board-form.md` §4, which `ALIAS` still resolves, and the trigger phrases in the door's frontmatter description, which are how a Chinese-speaking user reaches the skill at all.
+      A translating agent had removed the trigger phrases; that is a functional regression rather than a style fix, so they were restored on the same precedent as the alias tokens.
+      The board felt it immediately: warnings fell from 34 to 13, because the Skill mirror pages stopped carrying Chinese into an English-only board.
+- [ ] 📏 Rule whether the board's prose rules bind `SKILL.md` at all
+      They do not today: `check.py` scans `page_files()`, so no checker has ever read a single `SKILL.md`, and the one-sentence-per-line, English-only, and no-em-dash rules are board-page rules only.
+      Measured: the four SPECs and verbs are already clean at 0 wrapped lines; `haipipe-board/SKILL.md` has 20 and the two agent files have 8 and 3.
+      A · extend `check.py` to the family's own `SKILL.md` and `ref/` files, so the rules bind the contracts the same way they bind a page.
+      B · keep the rules board-only and treat a skill file as prose whose author decides, which is the status quo.
+      C · rule them in but enforce by review rather than by checker, so a reviewer catches what no script looks for.
+      → CC recommends A for one sentence per line and no em-dash, because both are cheap to check and every recently written unit already passes; the language half of this is now settled by the row above.
+- [x] 🧾 Rule what the door owes now that it is 581 lines
+      DECIDED 260731 by JL: option B, move the stale halves into the SPECs that now own them and let the door shrink.
+      This page's Law already said "SKILL.md stays minimal, operations only", and the reviewers found the door promising three things it cannot execute: the creator-agent fan-out (unshipped by its own CHANGELOG), authoring a `Skill-<n>` or `Agent-<n>` page (the kinds live in `skillpage.py` and are named nowhere in the door), and writing a `### Decision Now` row (required by the page SPEC and absent here).
+      The family was split precisely so the door could stop restating what the SPECs own, and three of those four areas already have a better home.
 
 ## Files
 - `SKILL.md`
@@ -118,6 +157,9 @@ When the user types `/haipipe-board`, this is what gets read in. graduation: onc
 ## Discussion
 
 ## Log
+260731 · JL ruled the language row A and applied it to ALL the family's Chinese files, plus the door row B (shrink by moving stale halves into the SPECs); ref/board-example.md converted, SKILL.md and ref/board-form.md dispatched as a fan-out
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · Fan-out audit of all seven family contracts (3 fresh reviewers, 55 findings): fixed the wrong frontmatter version, three alias tautologies from the Question-to-Opening replacement, ten Question residues, two rotted in-body versions, one wrong section citation, one imported paper lane id; three Decision Now rows opened on language, rule scope, and what the door still owes
 260725 1215 · S pages written into the manual's authoring side after QF2's re-run found four gaps (open steps 1/4 · close + Page state values · board-form §2/§3 Pages and state mapping · q-template probe pointer · the python3-vs-venv split); 0.16.0
 260725 1140 · Stale numbers purged in the QB alignment pass (JL's go): "128 lines / five actions / CHANGELOG up to 0.2.0" replaced with the 0.15.x reality (~280 lines, nine actions, Q/S page wording); ref/ descriptions updated, board-example.md's pre-merge shape noted
 260724 1242 · Translated to English (JL 260724: everything on the board in English); purged the stale "written but not yet verified" lead: QF2 passed on 260723

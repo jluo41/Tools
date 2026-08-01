@@ -2,12 +2,14 @@
 state: 🟡 PARTIAL · the 🧩 Skills subsection is new and has one worked example
 owner: JL
 method: the honest present, numbers included; the 🧩 Skills item says what this face governs and whether it landed
+session: 69ade9c1-7d32-481e-baf2-3f8a84dbc37e
 
 ## Question
 What does `## Where we are` report, how does it preserve previous and current decisions, and how does Claude Code expose the next decision it needs from a person?
 The section states what is true now: counts, versions, the pending decision request, the active decision, superseded decisions, and work still open.
 A face may also carry a `🧩 Skills` item here, listing each skill file or section this face governs with a landed / NOT landed verdict per row, so graduation stops being un-checkable.
 The first worked example is `QB1`'s.
+
 
 ## Boundary
 - ✅ Covered here
@@ -23,12 +25,12 @@ example for QB7, a skill-family design page
 
 📍 Where we are
 ├── Family today               what is objectively true now
-├── Roster awaiting JL         exact ask · options · recommendation
+├── Decision Now               exact ask · options · recommendation (reserved name)
 ├── Current family proposal    the rule currently governing the work
 ├── Earlier roster proposals   dated · superseded by → current proposal
 └── Skills affected            governed skill text · landed / NOT landed
 
-QB7 / Where we are / Roster awaiting JL    [⧉ Copy] [🤖 Chat]
+QB7 / Where we are / Decision Now    [⧉ Copy] [🤖 Chat]
 ```
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa5
@@ -44,7 +46,22 @@ Under the base/variant model on `QAa0`, this section is frame: it reports the pr
 When Claude Code cannot continue responsibly without a human choice, it writes the exact decision request here rather than leaving it only in chat history.
 The record states the question, viable options, the recommended option with its reason, and what work is waiting.
 It is optional and disappears after the decision is made; the answer moves into Current decision.
-`Decision needed` is the role, not the required heading text; on QB7 the visible name can be `Roster awaiting JL`.
+`Decision needed` began as a role with a contextual heading; on 260731 JL reserved one name for it: the subsection is `### Decision Now`, listing the decisions CC proposed and JL must make, one checkbox row each.
+The contextual-name freedom stays for the current-decision and previous-decision roles.
+
+One option per line, each explained (JL 260731): the options never sit together on one line.
+Each option gets its own indented line, opening with its letter, and each line says what choosing it actually means, not just what it is called.
+A reader deciding has to compare consequences, and a row like `A x · B y · C z` forces them to reconstruct the consequences from three labels.
+The recommendation follows the options as its own line, naming the letter and the reason it wins.
+
+```markdown
+- [ ] 🗣 The ask, stated as one question
+      One or two lines of context: what is true today, and what it costs.
+      A · the first option, and what choosing it commits you to.
+      B · the second option, and what it commits you to.
+      C · the third option, and what it commits you to.
+      → CC recommends B, because <the reason it beats A and C>.
+```
 
 ### 3 · Current decision
 This subsection contains the active decision or decisions governing the page now.
@@ -67,29 +84,61 @@ It lives inside Where we are rather than as its own section because graduation s
 ### 6 · The source: the present state
 Write one concise current-state paragraph followed by dated change items when useful.
 Use optional `###` groups only when they contain records, and name them from the page context.
-Decision needed, Current decision, Previous decisions, and Skills describe record roles rather than reserved headings.
+`Decision Now` is the one reserved heading (JL 260731); Current decision, Previous decisions, and Skills stay record roles with contextual names, and decided decisions may group under context-named `###` topics.
 Report what is true now with numbers where numbers exist; do not restate the full checklist or every S-consumer answer.
 
 ## Items to Finish
+### Grammar and specification
 - [ ] 🧠 Define the decision-record source grammar
       Set the minimum fields for the decision-needed, active-decision, and superseded-decision roles without reserving their visible subsection names.
+- [ ] 📐 The row shape is written into `ref/q-template.md`'s guide text
+      One optional item in Where we are, so new pages learn it exists; owned jointly with `QAa0`, which owns the template since the QA2 merge (260729).
+
+### Implementation and access
 - [ ] 🤖 Make Claude Code read and write the decision subsections
       Before asking, check Current decision; when blocked on a new choice, write Decision needed; after the answer, move it to Current decision and preserve any superseded choice under Previous decisions.
 - [ ] 🧭 Give each state subsection a copyable Chat path
       Reuse `QAb3`'s heading-focus packet so the drawer receives page, section, subsection, source path, and visible text.
-- [x] 🧩 First worked example is live
-      `QB1`'s Where we are opens with a 🧩 Skills item: 7 rows, 3 landed with dates, 2 NOT landed, 2 descriptive; roster links resolve in the built html (verified 260729).
-- [ ] 📐 The row shape is written into `ref/q-template.md`'s guide text
-      One optional item in Where we are, so new pages learn it exists; owned jointly with `QAa0`, which owns the template since the QA2 merge (260729).
 - [ ] 🔎 `check.py` can verify a landed row
       A row claiming `ref/board-form.md §1 · landed` is checkable by grep; a checker rule turns rot into a warning. Owned jointly with `QA9`.
+
+### Worked example and ownership
+- [x] 🧩 First worked example is live
+      `QB1`'s Where we are opens with a 🧩 Skills item: 7 rows, 3 landed with dates, 2 NOT landed, 2 descriptive; roster links resolve in the built html (verified 260729).
 - [ ] 🧠 JL confirms this face owns Where we are
       Carved 260729 from QA4 §5, text verbatim, plus the new 🧩 Skills convention.
 
 ## Where we are
 The base present-state section is settled; the 🧩 Skills convention has one live example (`QB1`).
-The 260730 design adds decision-needed, active-decision, and superseded-decision records under context-named optional subsections so human choices remain visible outside transient chat history.
-Their source grammar, Claude Code write-back, and copyable heading focus remain open.
+The decision records now group under `###` topics, and this section is its own worked example: pending under Decision Now, decided under Decisions taken.
+The source grammar, the Claude Code write-back loop, and copyable heading focus remain open.
+
+- 260731 CC · 🧹 Decision Now reached every page that owed a decision
+  The same board-wide sweep JL ordered from the matrix put `### Decision Now` on 33 of 51 pages, carrying 82 ticks that wait on JL.
+  A page gets one only when it already recorded a pending human decision, so the other 18 stay without, and nothing was invented to fill a subsection.
+  The option-per-line grammar in §2 landed mid-sweep, so 16 rows written before it were rewritten afterwards: one lettered option per line, each stating what choosing it commits you to.
+
+### Decision Now
+- [ ] 🧠 Confirm this face owns Where we are
+      Carved 260729 from QA4 §5 verbatim plus the 🧩 Skills convention; a tick here also closes the same row in Items to Finish.
+- [ ] 📐 Rule the Decision Now rollout
+      Every page could carry the subsection, or only the pages that currently owe JL something.
+      A · only a page holding a pending decision carries it, and the subsection empties out when its rows are answered, which is §2's lifecycle.
+      B · every page carries it as a standing subsection, empty when nothing is pending.
+      → CC recommends A, because an empty subsection on 53 pages trains a reader to skip the heading, and then a real row goes unread.
+
+### Decisions taken
+- 260731 JL · 📐 One option per line, each explained
+  JL: "I want the decision A, B, C, to be in a new line and explain each options, not all the options in one line".
+  The compact form was `Options on one line: A x · B y · C z`, which named three options and explained none, so a reader had to reconstruct the consequences from the labels before they could choose.
+  Each option now takes its own indented line opening with its letter, states what choosing it commits you to, and the recommendation follows as its own line naming the letter and why it beats the others.
+  §2 carries the grammar and a copyable skeleton; this page's own rollout row above is the worked example.
+  The rule graduates into `haipipe-board-page`, which owns the reserved-subsection contract, and into `ref/q-template.md`, which is what an author copies.
+- 260731 JL · 🚪 `Decision Now` is the reserved heading for pending human decisions
+  Pending decisions go under `### Decision Now` inside Where we are, on the owning page, never only in chat ("don't make the decision here ... Always go to the corresponding Q's Where we are's subsection of Decision Now").
+  The ruling landed the same day in the page spec, the routing verb, and the template's guide text.
+- 260730 JL · 🧭 Decision records live inside Where we are
+  Decision-needed, active-decision, and superseded-decision records sit under optional subsections, so human choices remain visible outside transient chat history.
 
 ## Files
 - `QB-delivery/QB1-form.md`
@@ -99,7 +148,17 @@ Their source grammar, Claude Code write-back, and copyable heading focus remain 
 - `check.py`
   Where the landed-row verification would live.
 
+## Discussion
+> JL: "Where we are" section should also have the subsection as well, like the Decisions Now (What decision need to do now, written by the Claude Code), and other decisions already made and categoried into different subsection topic.
+> JL: "Where we are" section should also have the subsection as well, like the Decisions Now (What decision need to do now, written by the Claude Code), and other decisions already made and categoried into different subsection topic.
+> CC: Both halves are live 260731: `### Decision Now` holds what CC proposes and JL must decide, and decided decisions group under context-named topics; this page's own `### Decisions taken` is the worked example, and §6 records the grammar.
+
 ## Log
+260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · Decision Now rows changed shape on JL's ask: one option per line with its consequence, recommendation on its own line; §2 gained the grammar and skeleton, and the rule graduates to haipipe-board-page + ref/q-template.md
+260731 · This section became its own worked example on JL's discussion ask: pending under ### Decision Now, decided under ### Decisions taken; §6 updated for the reserved name (0.70.0)
+260731 · `### Decision Now` now renders as a real subsection heading (`.sh` in body.py, was literal "### …" prose) and is a jump row with an owed-tick count in the sidebar outline (QB2a, 0.67.0)
+260731 · JL reserved the `Decision Now` heading for the decision-needed role and ruled proposals land there, not in chat; the page spec, the routing verb, and the template guide carry it the same day
 260730 · Corrected state subsections to contextual display names: Decision needed, Current decision, Previous decisions, and Skills are record roles and examples, not reserved headings
 260730 · Designed decision-aware state: Claude Code writes an exact Decision needed record, accepted answers become Current decision, and superseded choices remain under Previous decisions
 260729 · Marked frame under the base/variant model on QAa0; the provenance parenthetical dropped from §3 on JL's ask

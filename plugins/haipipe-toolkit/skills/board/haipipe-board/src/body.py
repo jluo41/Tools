@@ -769,6 +769,52 @@ def render_apparatus(lines):
 DIAGRAM_MAX_LINES = 40   # a fence this long or shorter, in one of these
 DIAGRAM_LANGS = {"", "text", "txt", "plain", "ascii", "diagram"}   # ...shows on stage
 
+# ── an emoji in a figure is NOT monospace, and that is why figures looked
+#    ragged (JL 260731, of QB4f's head figure: "it is very hard to read. Why?").
+#    A figure is authored in a terminal, where every emoji occupies exactly TWO
+#    cells, and the author aligns the columns against that. The browser breaks
+#    the contract: `pre` asks for ui-monospace, the emoji falls back to the
+#    system colour-emoji font, and each one lands at its own ~1.4-1.6ch. So a
+#    column that is straight in the .md arrives bent on the page, differently
+#    per emoji, and the reader blames the drawing.
+#    The fix restores the terminal's contract at render: each emoji cluster is
+#    wrapped and pinned to exactly 2ch. The SOURCE is untouched, so the figure
+#    still survives being copied into chat or a mail, which is QB4b §0's rule.
+#    Matched set = Emoji_Presentation=Yes (renders as emoji with no help), or
+#    any character wearing U+FE0F (which is what asks for emoji presentation),
+#    plus skin tones and ZWJ joins. A bare ▶ or → is deliberately NOT matched:
+#    it has text presentation and already measures one cell.
+_EMOJI_DEF = (
+    "[\U0001F000-\U0001FAFF]"
+    "|[⌚⌛⏩-⏬⏰⏳◽◾☔☕"
+    "♈-♓♿⚓⚡⚪⚫⚽⚾⛄⛅"
+    "⛎⛔⛪⛲⛳⛵⛺⛽✅✊✋"
+    "✨❌❎❓-❕❗➕-➗➰➿"
+    "⬛⬜⭐⭕]"
+)
+_EMOJI_TEXT = "[©®‼⁉™ℹ↔-↪⏏" \
+              "⏭-⏯⏱⏲⏸-⏺Ⓜ▪-◼" \
+              "☀-☄☎☑☘☝☠☢☣☦" \
+              "☪☮☯☸-☺♀♂♟♠♣" \
+              "♥♦♨♻♾⚒⚔-⚗⚙" \
+              "⚛⚜⚠⚧⚰⚱⛈⛏⛑⛓" \
+              "⛩⛰⛱⛴⛷-⛹✂✈✉" \
+              "✌✍✏✒✔✖✝✡✳✴" \
+              "❄❇❣❤➡⤴⤵⬅-⬇" \
+              "〰〽㊗㊙]️"
+_EMOJI_ONE = f"(?:(?:{_EMOJI_DEF})️?|(?:{_EMOJI_TEXT}))[\U0001F3FB-\U0001F3FF]?"
+EMOJI = re.compile(f"(?:{_EMOJI_ONE})(?:‍(?:{_EMOJI_ONE}))*")
+
+
+def pad_emoji(html):
+    """Pin every emoji in a FIGURE to two monospace cells.
+
+    Applied only to ascii figures, never to a language-tagged code listing,
+    where an emoji inside a string is somebody else's source and must arrive
+    byte-shaped. Runs on already-escaped html; the pattern matches only emoji
+    codepoints, so it can never touch a tag or an entity."""
+    return EMOJI.sub(lambda m: f'<span class="eu">{m.group(0)}</span>', html)
+
 
 def body(txt, fold_code=True, apparatus=True):
     """paragraphs + ``` blocks + comment lanes + topic/explanation bullets -> html
@@ -824,7 +870,7 @@ def body(txt, fold_code=True, apparatus=True):
             for x in det:
                 if isinstance(x, tuple):   # ("pre", lines): 折叠区里的 ascii 图
                     parts.append('<pre class="ip">'
-                                 f'{link_faces(esc(chr(10).join(x[1])))}</pre>')
+                                 f'{pad_emoji(link_faces(esc(chr(10).join(x[1]))))}</pre>')
                 elif lead:
                     parts.append(f'<p class="ld">{inline(x)}</p>')
                     lead = False
@@ -878,7 +924,7 @@ def body(txt, fold_code=True, apparatus=True):
                 # fence is quoted source, where `QA1` is a string in someone
                 # else's program, not a place on this board.
                 if flang.lower() in DIAGRAM_LANGS:
-                    code = link_faces(code)
+                    code = pad_emoji(link_faces(code))
                 # An UNTAGGED short fence is an ascii diagram, not code: it is the
                 # picture the sentence above is making, and hiding it behind
                 # "</> code · 4 lines" costs a click to see the thing you came for
@@ -989,6 +1035,16 @@ def body(txt, fold_code=True, apparatus=True):
                        f'<code class="xurl">{u}</code></div>')
             last_p = None
             continue
+        # ### inside a NON-Content section = a subsection heading (`### Decision
+        # Now` in Where we are is the canonical case, JL 260731). Content never
+        # reaches here at this level: its ### lines were split into divisions
+        # before body() ran. Without this rule the line rendered as literal
+        # "### …" prose. `.sh` is also the anchor the sidebar outline scrolls to.
+        m = re.match(r"^###\s+(.+?)\s*$", ln)
+        if m:
+            out.append(f'<div class="sh">{inline(m.group(1))}</div>')
+            last_p = None
+            continue
         # #### = 段落标题（一节里的一个 ¶）。以前被压成 **…**，于是套上了组标题的
         # 🔹，把「一个段落」说成了「领一串 item 的一句话」（JL 260725）。现在它是
         # 自己的层级：没有图标，比组标题小，紧跟其后的整行括号是这一段的活儿。
@@ -1040,7 +1096,26 @@ def body(txt, fold_code=True, apparatus=True):
     # 把收集到的装置行折进各自的句子（native <details>，零脚本不变量成立）
     for idx, lines in appar.items():
         inner, heads, show = render_apparatus(lines)
-        out[idx] = ('<details class="sent"' + (' open' if show else '') + '><summary>' + out[idx]
-                    + f'<span class="sbadge">⚑ {heads}</span></summary>'
+        # 句尾挂 ⚑N：徽标塞进一个 0 宽的行内块（.sbz），断行时当它不存在，
+        # 因此永远不可能被推到下一行（JL 260731 两次：先是徽标单独落一行，
+        # 后是「词 + 徽标」整团落一行，同样扎眼）。它挂在句末最后一个字符右侧，
+        # 该行已满时越界画进右侧留白，读起来仍然是句尾。
+        summary = _hang_badge(out[idx], f'<span class="sbadge">⚑ {heads}</span>')
+        out[idx] = ('<details class="sent"' + (' open' if show else '') + '><summary>' + summary
+                    + '</summary>'
                     f'<div class="sapp">{inner}</div></details>')
     return "\n".join(out)
+
+
+def _hang_badge(p_html, badge):
+    """把 ⚑ 徽标挂在句尾，且不占任何排版宽度，因此绝不可能自己另起一行。
+
+    徽标裹进 `.sbz`（inline-block，width:0，overflow 可见）：浏览器断行时按
+    「徽标不存在」来算，句子怎么排都和没有徽标时一样；徽标从最后一个字符右侧
+    画出去，行尾没地方时越界到右侧留白里。紧贴最后一个字符插入（前面不留空白）
+    是关键 —— 有空白就有断行机会，徽标就又可能被推到下一行。
+    """
+    hung = f'<span class="sbz">{badge}</span>'
+    if p_html.startswith("<p>") and p_html.endswith("</p>"):
+        return "<p>" + p_html[3:-4].rstrip() + hung + "</p>"
+    return p_html.rstrip() + hung

@@ -1,4 +1,4 @@
-# haipipe-board-routing · v0.1.0
+# haipipe-board-routing · v0.3.0
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -10,12 +10,12 @@ Write here what this skill is for in one paragraph a stranger could follow, why 
 The generated sections answer what it IS; only this one can answer whether it is any good.
 
 ## Diagram
-<!-- haipipe:skill:tree:start afe80030f1303737 board/haipipe-board-routing -->
+<!-- haipipe:skill:tree:start 556b67e8391bbf56 board/haipipe-board-routing -->
 
 ```
 haipipe-board-routing/
-  CHANGELOG.md          25 ln  haipipe-board-routing · Changelog
-  SKILL.md              86 ln  /haipipe-board-routing · one input, one owning page, one anchored write
+  CHANGELOG.md          50 ln  haipipe-board-routing · Changelog
+  SKILL.md              95 ln  /haipipe-board-routing · one input, one owning page, one anchored write
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -28,13 +28,13 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start afe80030f1303737 board/haipipe-board-routing -->
+<!-- haipipe:skill:body:start 556b67e8391bbf56 board/haipipe-board-routing -->
 
-**haipipe-board-routing** · `0.1.0` · last shipped 2026-07-31
+**haipipe-board-routing** · `0.3.0` · last shipped 2026-07-31
 
 - folder   `board/haipipe-board-routing/`
 - tools    not declared
-- summary  First cut (QC6 §8: the unit VERB; digest is this verb fanned out): the five-step route, the two write laws, and the propose-not-create rule.
+- summary  The footer ends with a Next: line, the one action the user should take now (JL 260731).
 
 ### SKILL.md
 
@@ -62,7 +62,9 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       ```
       1  READ the input        what happened · what kind of record it deserves
                                (a Log line · a Where-we-are entry · a lane reply ·
-                                a Files row · a PROPOSED tick)
+                                a Files row · a Decision Now row); a derived view,
+                                aggregated from state the pages already hold,
+                                deserves NO write, because a copy drifts
 
       2  RESOLVE the board     the session's attached board, or the nearest board.md
                                above the working path; two plausible boards = ask,
@@ -85,7 +87,7 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       **The tick law (QC6 §10).**
       Routing reads claims; it cannot verify them.
       It may append Log lines and Where-we-are prose and may write `PROPOSED:` before a tick it believes is earned; it may not close a checkbox or change a `state:` line.
-      The human ticks.
+      Every proposal lands as a row under the owning page's `### Decision Now`, inside `## Where we are` (JL 260731: never make the decision in chat); the human ticks.
       **The cross-board law (QB1 §4).**
       Mechanical writes carry no judgement and are always allowed.
       Editorial writes are never ours on a board that is neither the skill set nor the board being worked: there, the output is a report addressed to that board's owner, not an edit.
@@ -96,9 +98,15 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       ```
       LANDED     the write is on the owning page, and the reply names it
       PROPOSED   no page owns this: routing drafts the page id, title, and group
-                 it would open, and waits; it never creates silently
+                 it would open, and waits; it never creates silently; the draft
+                 itself is a decision, so it goes to the nearest owning page's
+                 Decision Now rather than staying in chat
       REPORTED   the owner is another family's board: a report, not an edit
       ```
+      **The reply contract (JL 260731).**
+      Whatever the end state, the reply closes with the routing footer: one line per write, `page id · ## section`, so the human sees where every record landed without hunting.
+      Decisions are pointed at, never re-listed: the footer names the page and its Decision Now row count, and the rows themselves live only on the page.
+      The footer's last line is `Next: <the one action the user should take now>` (JL 260731: "add a new line like Next:xxxx suggest what user to do next"): one concrete, immediately doable step (open this page, tick these rows, hard-refresh and click this button), never a list and never CC's own next task.
 
 - 4 · 📂 Files
       ```
@@ -106,7 +114,7 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       ├── SKILL.md            this contract
       └── CHANGELOG.md        version history
       ```
-      Owns no scripts at 0.1.0: the verb is executed by the agent that loads this contract plus the two specs.
+      Owns no scripts: the verb is executed by the agent that loads this contract plus the two specs.
       The named next step: the write path itself moves behind `serve.py`'s anchored-append endpoint, so a routed write and a clicked comment share one code path.
 <!-- haipipe:skill:body:end -->
 
@@ -120,10 +128,31 @@ Page generated 260731 1117. Nothing ruled yet.
 ## Log
 260731 1117 · page generated from `board/haipipe-board-routing/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start afe80030f1303737 board/haipipe-board-routing -->
+<!-- haipipe:skill:log:start 556b67e8391bbf56 board/haipipe-board-routing -->
 
-Converted from the skill's own `CHANGELOG.md`: 1 releases.
+Converted from the skill's own `CHANGELOG.md`: 3 releases.
 
+260731 · `0.3.0`
+      - The footer ends with a `Next:` line. JL, reading a bare routing footer: "what
+        should I do? ... you can add a new line like Next:xxxx suggest what user to
+        do next." The reply contract now closes with one concrete, immediately
+        doable user action (open this page, tick these rows, hard-refresh and click
+        this button); one step, never a list, never CC's own next task. The footer
+        tells the human where records landed; the Next line tells them what to do
+        about it.
+260731 · `0.2.0`
+      - Proposals land in Decision Now: whatever routing wants the human to decide
+        (a PROPOSED tick, a drafted page, an open fork) is written as a row under the
+        owning page's `## Where we are` `### Decision Now`, never left in chat
+        (JL 260731: "don't make the decision here").
+      - The reply contract: every reply closes with the routing footer, one line per
+        write, `page id · ## section`, so the human sees where each record landed
+        (JL 260731: "show me which page, which section is updated after each response").
+        Decisions are pointed at, never re-listed in chat: page id + row count only.
+      - Step 1 gains the no-write verdict: a DERIVED view, aggregated from state the
+        pages already hold (a status readout, a progress table), deserves no write,
+        because a copy of the state mirror drifts. First applied to the QB group
+        readout the same day.
 260731 · `0.1.0`
       - First cut, created on JL's order, from QC6 §8's settled shape: routing is the unit
         VERB (one input, find its owning page, write it back) and digest, when it arrives,
