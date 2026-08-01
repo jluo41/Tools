@@ -159,7 +159,7 @@
      through Claude Code, and the timer only ever watched a tab. */
   function sampleData() {
     var title = (document.querySelector('.h1') || {}).textContent || 'This board';
-    var path = location.pathname.replace(/\/board\.html$/, '').replace(/^\//, '');
+    var path = boardDirPath().replace(/^\//, '');
     var vals = [0,0,0,4,11,0,7,22,9,0,14,31,18,26];
     var days = [], now = new Date();
     vals.forEach(function (v, i) {

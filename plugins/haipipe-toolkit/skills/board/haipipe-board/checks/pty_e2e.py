@@ -100,7 +100,7 @@ def drain_until(s, buf, needle, timeout):
 
 
 t0 = time.time()
-j = post("/_board/term", {"path": f"/{BOARD}/board.html", "file": FILE})
+j = post("/_board/term", {"path": f"/{BOARD}/board/index.html", "file": FILE})
 assert j["ok"], j
 key, sid = j["key"], j["session"]
 print(f"① term spawned · key={key} · session={sid[:8]}… · reused={j['reused']}")
@@ -144,7 +144,7 @@ assert b"PTYOK" in data, "replay does not contain the session's earlier output"
 print(f"⑥ second client got instant ring replay · {len(data)} bytes incl. PTYOK")
 s2.close()
 
-j = post("/_board/release", {"path": f"/{BOARD}/board.html", "file": FILE})
+j = post("/_board/release", {"path": f"/{BOARD}/board/index.html", "file": FILE})
 assert j["ok"] and j["closed"], j
 time.sleep(0.5)
 terms = post("/_board/terms", {})["terms"]

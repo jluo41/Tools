@@ -16,7 +16,7 @@ EXT = ("md", "py", "html", "css", "js", "json", "yaml", "yml", "sh", "txt", "ipy
 
 
 def resolve(token):
-    """`反引号里的路径` -> 相对 board.html 的 href，解析不到就返回 None。
+    """`反引号里的路径` -> 相对 Board source root 的 href，解析不到就返回 None。
 
     板上讨论的东西（SKILL.md、build.py、另一块板…）和板本身是分开放的，
     光写个路径读者点不动。这里做的事：从板的文件夹往上一路找，
@@ -230,7 +230,7 @@ def _alias_ids():
 
 
 def _rel(p):
-    """An absolute path -> an href relative to board.html."""
+    """An absolute path -> an href relative to the Board source root."""
     try:
         import os
         return os.path.relpath(p, BASE)

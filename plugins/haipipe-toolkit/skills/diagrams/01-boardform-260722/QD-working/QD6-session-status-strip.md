@@ -1,4 +1,4 @@
-# Showing the session's Board attachment in every reply
+# Status strip: which board and page this session is on
 state: ✅ SETTLED
 owner: CC
 method: copy Paper's mandatory Closing Block pattern, but derive Board, queue, and page ownership from Board files instead of maintaining a second status ledger
@@ -84,6 +84,7 @@ All five items are complete and the ruling is settled.
 Every user-visible reply from a Board-attached session ends with the complete three-line Markdown block emitted by `status.py`, with no prose after it.
 The page's `## Pages` group owns the queue; focus is board, group, or page; mode and next action describe only the live turn.
 Line 1 is the linked `Board · Queue/Focus`; line 2 is `status · mode`; line 3 is the next action.
+The linked label carries a SHORT board name (leading `NN-` ordinal and trailing `-YYMMDD` date stripped, so `01-boardform-260722` reads as `boardform`); the long served URL stays behind the link and never shows as text.
 The first two lines end with Markdown hard breaks so all three remain visibly separate without blank lines.
 Do not repeat labels, page title, source file, separators, or the visible raw URL.
 Launcher attachment wins, followed by an explicit request, the nearest `board.md`, and the attachment already established in the conversation.
@@ -95,6 +96,7 @@ No shared status file is written: durable decisions, comments, and logs continue
 > JL: The first status strip is too long; make it concise, preferably only a few lines.
 
 ## Log
+260801 · Title → "Status strip: which board and page this session is on" (JL: the old one was hard to read); status.py's clickable label now shows a short board name (ordinal + date stripped) so the long URL never appears as text (JL: "make the result clickable, not just the full url")
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260726 · Fresh-context acceptance invoked status.py and received exactly three lines
 260726 · Compressed the ten-line fenced strip to three Markdown lines after JL's direct-use feedback

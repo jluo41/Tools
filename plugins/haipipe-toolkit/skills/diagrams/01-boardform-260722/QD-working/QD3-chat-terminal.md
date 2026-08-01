@@ -1,17 +1,17 @@
-# Terminal version: the real CLI
+# TUI chat version: the real CLI
 state: 🟡 PARTIAL
 owner: JL
 method: ttyd spawns the process + serve.py reverse-proxies through 5599; claude opens at the SPACE root, one session per question
 session: d650c47e-0d7d-464d-8405-a98a545fe552
 
-## Question
-Besides the restricted drawer, can every Q also have **its own real terminal**, the full Claude Code with nothing missing?
-The working answer is one PTY per page, running where the files are and reaching the browser through the single port already forwarded.
-What turns on it is the ceiling of the live layer: the drawer is a rebuilt chat box, so anything needing a command or a skill stops there.
+## Opening
+The TUI chat version is the real Claude Code, verbatim, inside the page rather than imitated by it.
+What does the board still owe a process it does not render and cannot restyle?
 
-The hard part is that the terminal must run on the machine the files are on and squeeze through Remote-SSH's single forwarded port, and several boards and questions open at once must not fight over ports.
-The drawer is ultimately a re-built chat box, so any job needing commands or skills gets stuck; without a real terminal the board can only do "edit some text" work.
-It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 can now open up fully too) and becomes a **difference of form**: the drawer is a rebuilt chat box, the terminal is the CLI verbatim.
+The original question was whether this could exist at all, and it does: one PTY per page, running where the files are, reaching the browser through the single port already forwarded.
+What is open now is everything the board wraps around that process rather than inside it.
+It shares one session per page with `QD2`, which is `QD1`'s Law, and 260731 showed the seam is where this breaks: a TUI chat that died left a hold that refused the SDK chat, and the refusal reached the reader as an empty answer.
+The split with `QD2` is not safe versus unsafe, since the SDK chat version can open up fully too; it is a difference of FORM, and the SDK chat is a rebuilt chat box while the TUI chat is the CLI itself.
 
 
 ## Boundary
@@ -96,6 +96,35 @@ It also reframes the split with `QD2`, which stops being "safe vs. unsafe" (QD2 
 
 ## Where we are
 Built, and it lives in the page. ⌨ in the drawer header enters the terminal; clicking again (💬) hands the session back.
+
+- 260801 JL · ⌨ The same fix, done properly, after JL reported it still broken
+  The first attempt above was verified on ONE path and shipped as if it were general, which it was not.
+  Two defects survived it, and both were the client guessing at state the server owns.
+  The save hook watched `#chat`'s class list, but opening the terminal toggles `termon` on `<body>` and touches nothing on `#chat`, so opening the TUI never recorded itself and the flag existed only when `pagehide` happened to run.
+  The alive check matched basenames from `/_board/terms`, but a group or board terminal registers under a FOLDER such as `QD-working` while the drawer's `cq.file` is `board.md`, so at those two levels it always concluded no terminal existed.
+  Both are now answered by the server: `POST /_board/term-probe` resolves the target with the same `term_key` the registry uses, and a parked terminal counts as present because parking is precisely what a reload does.
+  Verified on all four paths this time: page, group, board, and a real browser refresh rather than a scripted `location.reload()`.
+
+- 260801 JL · ⌨ The view now survives a reload, because the process always did
+  JL: "when I use TUI and when I come back it became the GUI again, in truth the TUI is running, why it is not kept?"
+  The PTY was never the problem: a reload beacons `park:true`, which keeps the process and its pump alive and only drops the WebSocket, so the terminal was still there every time.
+  What was lost was the drawer's VIEW, which is rebuilt on every load and always rebuilt as the chat box, so the page asserted the SDK chat version while the TUI chat version was the one holding the session.
+  The drawer now records which half it was showing and, on reload, reattaches to a terminal that is genuinely still listed by `/_board/terms`; it never spawns one, so a reload cannot start a process nobody asked for.
+  Reproduced first and then verified: before the fix a reload came back with `termOn:false` and no xterm while the PTY was alive, after it the same reload comes back with the terminal mounted.
+  One trap worth recording: `/_board/terms` is a POST, and calling it as a GET returned 404 into a swallowed catch, which made the reattach silently decide no terminal existed.
+
+- 260801 JL · 🏷 Renamed and re-cut around what is still open
+  JL: "We can call it SDK chat version, and TUI chat version" and "could you rethink about the Q in QD?"
+  The Opening asked whether a real terminal per page could exist at all, which it does; it now asks what the board owes a process it wraps but does not render, which is the seam that failed on 260731.
+  Nothing in `QF4` tests this version yet, and that gap is the reason its state stays 🟡.
+
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] 🧭 Rule where board-level work lives, now that a chat can attach at three levels
+      `QD1` settled that a chat attaches to a board, a group, or a page, and board chat and group chat both ship.
+      `QD7` was opened when chat was pinned to one question and asks for a board-level agent, so part of its premise is now answered by `QD1`.
+      → CC's proposal: `QD1` keeps ATTACHMENT (what a chat is bound to and how many sessions it may hold) and `QD7` narrows to a DISPATCHED agent that runs without a reader watching, which no level of chat covers.
 
 - 260801 JL+CC · 📦 QD3m folded back into this page; one terminal page again
   JL: "the QD3 and QD3m, should we just keep one of them?" — yes, this one. QD3m's engine half (§8 own-PTY) had already shipped INTO this page as 0.64.0, its picker and paste items were built and ticked, and its still-open smooth view rides `QD2` M1's session host, so a separate page held only a decision list. The open work moved up into the 🪄 smooth-pane items with CC's proposals adopted as plan of record (route D · toggle standing A), the file is archived at `_archive/QD3m-smooth-terminal.md` with the full myrlin analysis intact, and `checks/pty_e2e.py`'s default target repointed here.

@@ -5,15 +5,15 @@ method: two heading levels, depth carried by numbering; the group-title marker a
 session: 55a58f3b-66e1-4e55-951b-1e515691e52b
 ## Question
 How is a page's `## Content` written and rendered: which heading levels exist, what a paragraph heading is, where an S page's blueprint comes from, and what a whole-line bold means?
-The grammar was settled on the former QA4 and moved here verbatim.
-The open work moved with it: creation-time blueprint composition, the 20 mislabelled bold lines, and QD4's four icon forks.
+The grammar was settled on `QB4` (the former QA4) and moved here verbatim.
+The open work moved with it: creation-time blueprint composition, the 20 mislabelled bold lines, and the four icon forks absorbed from the retired icon-automation page.
 
 
 ## Boundary
 - ✅ Covered here
   The two-level `###`/`####` grammar, the job line, the S blueprint sources (stage → venue → previous contracts), the group-title marker, and the sentence-apparatus demo.
 - ↪ Covered elsewhere
-  The fixed on-stage order: `QAa0`. What a sentence's apparatus IS: the `QAb` group.
+  The fixed on-stage order: `QB4`. What a sentence's apparatus IS: the `QAb` group.
   The source side is §4 below. How a topic becomes pages and groups in the first place: `QA2`.
 
 ## Diagram
@@ -50,15 +50,22 @@ The open work moved with it: creation-time blueprint composition, the 20 mislabe
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa3
 
 ## Content
-### 1 · Content: establish the substance
+### 1 · What Content conveys
 ```
-📚 ## Content · the page's substance, shown after orientation   (S: required, Q: optional)
-──────────────────────────────────────────────────────────────────────────────────────────
-  🗂 ### division : folds on its own; one part of the argument
-       ▧ face diagram : the first fenced block under the heading (this very block)
-       📄 #### P1 … : always one paragraph, never bold
-          (job line) : grey-italic scan hook, ≤120 chars, sits right below
-       ✏️ sentence : one per source line; may fold ⚑ apparatus beneath it
+📚 Content · answers: what does this page actually establish?
+──────────────────────────────────────────────────────────────
+conveys   the page's own product: the argument, the design, the section
+holds     🗂 ### divisions that fold on their own, each opening with its
+          face diagram (this very block) · 📄 #### paragraph headings
+          with a (job line) · ✏️ one sentence per source line, each able
+          to carry ⚑ apparatus
+source    author-owned ### headings · S: composed once at stage.py new,
+          stage template ▸ venue overlay ▸ previous contracts
+rules     only the real product, nothing that lives elsewhere: contracts
+          to Stage Contract, settled flags to Where we are, open work to
+          Items to Finish · a whole-line **bold** is a group title, never
+          a paragraph
+omit      Q may omit it · S never: the stage's product lives here
 ```
 Content carries the material the page exists to establish after orientation.
 It is required on S and optional on Q.
@@ -108,7 +115,7 @@ Stage Contract remains a separate provenance and dependency layer, not a second 
 #### Sentence apparatus
 A sentence can carry hidden apparatus: `>` lines written directly beneath it fold under the sentence, which shows a ⚑ badge until clicked.
 > Note: this row is the demonstration; it was hidden until you clicked the sentence above.
-> Link: `QAb1-evidence-card.md` holds the decision; inline-marker chips are its open item.
+> Link: `QB5a-evidence-card.md` holds the decision; inline-marker chips are its open item.
 
 Typed lanes name what each attachment is, and review threads join the same drawer.
 > Citation: a `\cite{TOADD}` placeholder resolves here once its key lands in the paper's .bib.
@@ -142,7 +149,7 @@ Each of those 20 renders as a decorated 🔹 sitting in front of a paragraph, wh
 `check.py` now reports them as `bold-not-a-group-title`; the paper board, written after the ruling, scores zero.
 
 #### P2. Automatic assignment is a live-layer job, and it is blocked on P1
-(absorbed from QD4 on 260726)
+(absorbed from the retired icon-automation page on 260726)
 `build.py` is a static generator with no network and no model, so automating the choice there would mean keyword guessing against free-form sentences.
 `serve.py` already holds an OAuth login and the SDK, so an endpoint there could read a page, find the group titles with no emoji, and fill them, exactly as the ➕ affordances already write single lines into the markdown.
 It is blocked on `P1` rather than on effort: assigning icons to a set that is 55% mislabelled would decorate the mistakes instead of revealing them.
@@ -162,8 +169,8 @@ one grammar, two axes : the base fixes the frame, the page KIND fills it
 Division names, numbering, and count are the page's own call (JL 260729): the `§`-numbered manuscript shape is the default for manuscript-like pages, never a mandate.
 Two mechanical constraints are all that remain fixed, because the renderer folds exactly one level: a direct `###` is a division that folds on its own, and `####` is always a paragraph heading inside one.
 A page may also source Content from files beside it, with `![[path]]` / `![[path#Section]]` embeds (`ref/board-form.md` §5), so a subject folder can carry the material and the face stays the argument.
-And since 260729 Content holds ONLY what the author wrote: the Question rationale no longer auto-joins as a first subsection, because it moved to Opening's drawer (`QAa1`).
-This flexibility is the variant axis of the base/variant model on `QAa0`: a page KIND fixes Content's default blueprint through its owning skill, so the manuscript shape is the Stage kind's default supplied by `haipipe-paper-stage`, and the base mandates only the two fold-level constraints above.
+And since 260729 Content holds ONLY what the author wrote: the Question rationale no longer auto-joins as a first subsection, because it moved to Opening's drawer (`QB4a`).
+This flexibility is the variant axis of the base/variant model on `QB4`: a page KIND fixes Content's default blueprint through its owning skill, so the manuscript shape is the Stage kind's default supplied by `haipipe-paper-stage`, and the base mandates only the two fold-level constraints above.
 
 ### 4 · The source: Q optional, S required
 ```
@@ -182,7 +189,7 @@ The rendered heading names the stage rather than counting subsections, so a name
 
 Write one sentence per source line, because the page gives each prose line its own row.
 A sentence may carry apparatus: `>` lines written directly beneath it fold under that sentence, with typed lanes naming the attachment (`> Citation:`, `> Value:`, `> Display:`, `> Check:`, `> Q-consumer:`, `> Link:`, `> Source:`, `> Note:`) and `> JL:` / `> CC:` threads joining the same drawer.
-Adjacency is the only binding, so a lane placed after a paragraph attaches to whatever line precedes it; the full grammar is `QAb1`.
+Adjacency is the only binding, so a lane placed after a paragraph attaches to whatever line precedes it; the full grammar is `QB5a`.
 
 For S creation, use this precedence:
 
@@ -206,20 +213,20 @@ These are creation inputs, not three live backing documents.
       Counted 260726: of 36 whole-line `**bold**` lines, 20 are followed by prose rather than by a run of items, so they render as a 🔹 group title in front of a paragraph.
       §1 already forbids this and nothing enforced it; `check.py` now reports each one as `bold-not-a-group-title`.
       This blocks the icon work below: assigning icons to a set that is 55% mislabelled would decorate the mistakes rather than reveal them.
-- [ ] 🔀 How icon assignment triggers   (from QD4)
+- [ ] 🔀 How icon assignment triggers   (from the retired icon page)
       A button (one click, cheap, controllable, reversible) against auto-on-save (spends money on every save and edits the markdown while you type).
-      Every write affordance built since QD4 opened is button-triggered, so this may close by precedent rather than by argument; see `QAa0`'s Discussion (the group-title icons thread).
-- [ ] 🤖 Model and overwrite policy   (from QD4)
+      Every write affordance built since the icon question opened is button-triggered, so this may close by precedent rather than by argument; see `QB4`'s Discussion (the group-title icons thread).
+- [ ] 🤖 Model and overwrite policy   (from the retired icon page)
       Which model picks the emoji, and the rule that only group titles WITHOUT an emoji are filled, never overwriting what an author wrote.
       Picking an emoji is a small job, so a small model should do it.
-- [ ] 📄 Scope   (from QD4)
+- [ ] 📄 Scope   (from the retired icon page)
       One page at a time, or the whole board in a pass.
-- [ ] 🔨 Built and verified   (from QD4)
+- [ ] 🔨 Built and verified   (from the retired icon page)
       A `serve.py` endpoint plus a page button; assigned emoji are visible in the markdown, editable by hand, and revertible.
 
 ### Content flexibility and display
 - [x] 📐 Content is flexible per page, and the auto first subsection is gone
-      JL 260729: each page shapes its own Content; the two fold-level constraints stay; the Q rationale renders in Opening (`QAa1`), so Content is exactly what the author wrote.
+      JL 260729: each page shapes its own Content; the two fold-level constraints stay; the Q rationale renders in Opening (`QB4a`), so Content is exactly what the author wrote.
 - [ ] 👁 The paragraph job line becomes a hover-reveal at the end of the heading   (JL 260731)
       Today the `(…)` job renders as a grey-italic line ON stage under the `####` heading (`.pj` in `src/body.py`, §1 "A paragraph heading is not a group title"); JL wants it tucked to the END of the heading and shown only on hover, the way a sentence carries its apparatus.
       This REFINES rather than breaks the 260725 on-stage ruling: that ruling rejected hiding the job behind a CLICK because the scan hook would then cost a click per paragraph to recover; HOVER costs no click, so the hook stays free and the grey line leaves the stage.
@@ -232,7 +239,7 @@ These are creation inputs, not three live backing documents.
 
 ### Face ownership
 - [ ] 🧠 JL confirms this face owns the Content grammar
-      Carved 260729 from QA4 §3 and §8 with the text verbatim; the history stays on `QAa0`.
+      Carved 260729 from QB4 §3 and §8 with the text verbatim; the history stays on `QB4`.
 
 ## Where we are
 The grammar is settled and live on every board; what is open moved here with its sections: `stage.py new` does not yet materialize template-derived `###` headings, 20 bold lines still render as false group titles, and the icon automation is blocked on that cleanup.
@@ -263,6 +270,7 @@ JL ruled the per-division face diagram on 260731 (the Discussion line below); th
 > CC: Shipped 260731 as the rule: §1 states it, the template guide teaches it, and this page's four divisions each open with their face diagram; the retrofit over existing boards and the renderer's pin-and-rank remain yours to rule on the Decision Now row.
 
 ## Log
+260801 · §1 renamed "What Content conveys" and its face diagram reshaped to the five-row protocol (conveys · holds · source · rules · omit) on JL's ask; the retired icon page's mentions reworded so the reused QD4 id stops mislinking; master view on QB4 §0
 260731 1615 · Fixed the render error: a literal triple-backtick sat INSIDE two fenced diagrams (top ## Diagram + §1), which closed the fence early; reworded to "fenced block". Also dropped em-dashes (JL rule) and made all four face diagrams alignment-robust (emoji at line-starts, inline separators, no fragile columns)
 260731 1520 · Redrew all four in-Content face diagrams to one house style (concept title → ─ rule → emoji-anchored rows → ──▶ arrows); replaced the mixed tree/bare-lines/dashed-table/pipeline idioms JL called ugly
 260731 1500 · Added the missing ## Diagram ASCII head (grammar / marker / source), matching QB4b and QB4d; the excalidraw frame link kept below it

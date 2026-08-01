@@ -3,9 +3,9 @@ name: haipipe-board-index
 description: >-
   The BOARD and GROUP altitude of a board: propose a board's structure with the human before any file exists, materialize it, and own the two canvases the index carries: the board-level map of how groups connect, and one engine·pages·folder lane block per group. Use when starting a new board from a topic, when adding or renaming a page group, when the index no longer explains the board, or when the user says board structure, board index, page group, group map, board canvas, lanes, regroup, or /haipipe-board-index. It does NOT render HTML: haipipe-board owns build, serve, page and sentence.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-07-30"
-  summary: "First cut: the two canvas altitudes (JL 260730), the B0-B9 index anatomy, and src/lanes.py round-tripping one lane block per group."
+  version: "0.2.0"
+  last_updated: "2026-08-01"
+  summary: "Align the Index contract with the canonical board/ site: source-only Topic/Pipeline/Board Structure, then Map, Related Folders, Section Matrix, page roster, and Activity."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,7 +19,7 @@ This skill decides **what that board is made of**: its groups, which pages sit i
 ```
 haipipe-board-index          haipipe-board
 ─────────────────────        ──────────────────────────────
-board.md's shape             build.py · board.html
+board.md's shape             build.py · board/ site
 groups + their order         page rendering · sentence
 how groups connect           serve · comments · chat
 the index's own sections     the checker
@@ -41,8 +41,8 @@ So the board-level canvas shows what the index cannot, and the roster lives one 
    ships, plus the handful of real cross-group page edges.
    One ``` figure, rendered as a shuttable disclosure at the very top
    of the index. NOT a second copy of the index.
-   `## Board Structure` is a different section: the source-to-webpage
-   shape, in prose, further down.
+   `## Board Structure` is different: source-only documentation of the
+   Board-Folder to Board-Webpage shape, not another rendered canvas.
 
 📋 GROUP level · in each ### group's intro, inside ## Pages
    one row per page:  ⚙️ engine  ◀──  📋 page  ──▶  📂 folder
@@ -53,30 +53,24 @@ A page is a **working record**, not merely an undecided question, so the middle 
 
 Both canvases are ASCII inside a fence, which means every id in them is a real link: `haipipe-board` 0.53.0 wraps any page or group id inside a figure as an anchor, alignment untouched, working with scripts off.
 
-## 🏷 What the index is made of
+## 🏷 What the generated Index is made of
 
-Nine sections, in render order.
-Five survive when a page is open, because they are the board's chrome; the rest are index-only.
+Seven sections, in render order.
+Topic, Pipeline, and Board Structure remain required or optional source documentation in `board.md`; since haipipe-board 0.78.0 they do not render on the Index.
 
 ```
-#   section            element             source in board.md    at #<page-id>
-────────────────────────────────────────────────────────────────────────────────
-B0  Heading            .board-heading      `# ` title            ✅ stays
-B1  Spine              .spine              spine: · close:       ✅ stays
-B2  Progress           p.bar               derived               ❌ hidden
-B3  Board Map          .board-map          ## Board Map (ASCII)  ❌ hidden
-                       details, shuttable   or board-map: · scene
-B4  Topic              details.ctx         ## Topic              ✅ stays
-B5  Pipeline           details.ctx         ## Pipeline           ✅ stays
-B6  Board-Structure    details.ctx         ## Board Structure    ✅ stays
-B7  All Pages          h3#qlist + .idx     ## Pages              ❌ hidden
-B8  Activity           section.activity    every page's ## Log   ❌ hidden
-B9  Foot               p.foot              generated             ❌ hidden
+#   section            element             source
+────────────────────────────────────────────────────────────────────────────
+B0  Heading            .board-heading      `# ` title
+B1  Spine              .spine              spine: · close:
+B2  Board Map          .board-map          optional ## Board Map
+B3  Related Folders    .related-folders    optional ## Related Folders
+B4  Section Matrix     .board-status       derived from every page
+B5  All Pages          h3#qlist + .idx     ## Pages
+B6  Activity           section.activity    every page's ## Log
 ```
 
-Hiding is one rule in `assets/board.css`: `body:has(.q:target)` hides `.idx .bar .board-map .activity h3.sec .foot`.
-Everything absent from that list stays, restyled small and muted.
-Change the list, not individual sections.
+Opening a page navigates to `board/<GROUP>/<page>.html`; the sidebar is the shared chrome that keeps the Index and sibling pages reachable.
 
 A group anchors at `#group-<token>` (`QA · Design` → `#group-QA`).
 A group is **not** a page: the anchor scrolls the index, it never opens a card, and it never enters the settled count.
@@ -102,7 +96,7 @@ The group letters chosen here are cited by every future page, so a rename later 
 
 ### `materialize` · after approval
 
-`board.md` (title · spine · close · `## Topic` · `## Pipeline` · `## Board Structure` · `## Pages`), one folder per group, one page file per listed page, then hand off to `haipipe-board` to build.
+`board.md` (title · spine · close · `## Topic` · `## Pipeline` · `## Pages`, plus `## Board Structure` when the Board must explain its source and webpage shape), one descriptive folder per group, one page file per listed page, then hand off to `haipipe-board` to build the generated `board/` site.
 
 ### `lanes` · refresh the per-group blocks
 
@@ -155,5 +149,5 @@ haipipe-board-index/
 ```
 
 Reads and writes `board.md` only.
-Never touches `board.html`, never touches a page file, never imports `haipipe-board/src/`.
+Never touches the generated `board/` site, never touches a page file, never imports `haipipe-board/src/`.
 A board's `## Pages` plus each page's `# ` line is the whole input, so the two skills ship on their own clocks.

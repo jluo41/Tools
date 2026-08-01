@@ -2,6 +2,7 @@
 state: 🟡 in flux
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
+session: e95d488f-0b05-4425-b8e0-6836fbfccc02
 
 ## Opening
 haipipe-board is a shipped skill: what does it still owe, and is it healthy?

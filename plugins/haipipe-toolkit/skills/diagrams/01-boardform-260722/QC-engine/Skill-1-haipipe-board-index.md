@@ -2,6 +2,7 @@
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
+session: dff70bd0-2dc2-425e-882b-bdcd25df0013
 
 ## Opening
 haipipe-board-index is a shipped skill: what does it still owe, and is it healthy?
@@ -182,9 +183,12 @@ src/lanes.py     253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane b
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
 ## Where we are
-Page generated 260730 1720. Nothing ruled yet.
+Page generated 260730 1720. Health still unruled, but the COPY is now verified: on 260801 all three managed spans were regenerated from `board/haipipe-board-index/` and compared byte for byte against what sits on this page, and all three were identical. A second pass confirmed the transform is lossless: every one of SKILL.md's 109 content lines reaches `## Content`, with only the frontmatter and the `# ` title dropped by design.
+
+Worth knowing before trusting a green `check`: `skillpage.py check` hashes the frontmatter's derived facts ONLY (`name` `version` `last_updated` `summary` `allowed-tools`), by `digest()`'s own docstring, "so prose edits never look like drift". A ✅ therefore means the metadata is current, NOT that the prose matches. Byte equality needs the regenerate-and-diff done above. That gap belongs to `skillpage.py`, which ships in `haipipe-board`, so it is [Skill-0-haipipe-board](QC-engine/Skill-0-haipipe-board.md)'s to carry, not this skill's.
 
 ## Log
+260801 0107 · verified the three managed spans against `board/haipipe-board-index/`: tree, body and log all regenerate byte-identical, no SKILL.md line missing. Noted that `check`'s hash covers frontmatter only.
 260730 1720 · page generated from `board/haipipe-board-index/` by `skillpage.py new`
 
 <!-- haipipe:skill:log:start fc83db2b18aea7b1 board/haipipe-board-index -->

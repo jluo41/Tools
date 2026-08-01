@@ -74,7 +74,7 @@ def full_tier():
         if len(keep) != len(lines):
             md.write_text("".join(keep), encoding="utf-8")
     print(f"fixture: {fx}", flush=True)
-    r = subprocess.run([sys.executable, str(SKILL / "build.py"), str(fx), "--split"],
+    r = subprocess.run([sys.executable, str(SKILL / "build.py"), str(fx)],
                        capture_output=True, text=True)
     if "✅" not in (r.stdout or ""):
         print("fixture build FAILED:\n" + (r.stdout + r.stderr)[-1500:])
@@ -116,7 +116,7 @@ def full_tier():
         print("\n── one SDK chat turn (💬 answers) " + "─" * 33, flush=True)
         try:
             j = post(base, "/_board/chat",
-                     {"path": board_url + "/board.html", "file": "board.md",
+                     {"path": board_url + "/board/index.html", "file": "board.md",
                       "message": "reply with exactly CHATOK and nothing else",
                       "scope": "scoped"})
             ok = "CHATOK" in (j.get("text") or "")
@@ -150,7 +150,7 @@ def full_tier():
             for t in post(base, "/_board/terms", {}).get("terms", []):
                 print(f"reaping leftover PTY {t.get('key')}")
                 post(base, "/_board/release",
-                     {"path": board_url + "/board.html", "file": t.get("file", "board.md")})
+                     {"path": board_url + "/board/index.html", "file": t.get("file", "board.md")})
         except Exception:
             pass
     finally:

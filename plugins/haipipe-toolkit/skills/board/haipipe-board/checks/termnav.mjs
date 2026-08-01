@@ -89,13 +89,13 @@ async function waitPaint(ms = 20000) {
 async function apiTerm(body) {
   const r = await fetch(`http://${HOSTPORT}/_board/term`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ path: BOARD + '/board.html', ...body }) });
+    body: JSON.stringify({ path: BOARD + '/board/index.html', ...body }) });
   return await r.json();
 }
 async function apiKill(body) {
   const r = await fetch(`http://${HOSTPORT}/_board/release`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ path: BOARD + '/board.html', ...body }) });
+    body: JSON.stringify({ path: BOARD + '/board/index.html', ...body }) });
   return await r.json();
 }
 

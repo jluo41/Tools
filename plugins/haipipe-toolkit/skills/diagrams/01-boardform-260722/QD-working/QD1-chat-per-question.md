@@ -218,7 +218,7 @@ Board level runs the whole board (opening questions, editing the generator, cros
 > JL: for example, after I comment, I open haichat and it reads my content, updates the markdown and html, and so on.
 > JL: our current claude session is the "session for top", right? Then how do we open a terminal for each question?
 > JL: could we make a new Q for chat, one for terminal version, and then other one for the claude_agent_sdk version.
->> CC0723: split. This question keeps only the three unanswered framework items (levels and boundaries); the SDK version goes to QD2, the terminal version to QD3.
+>> CC0723: split. This question keeps only the three unanswered framework items (levels and boundaries); the SDK chat version goes to QD2, the TUI chat version to QD3.
 
 ## Log
 260731 1905 · The one-live-window rule held only for chat on the tree: navigating with ⌨ on left the old scope's PTY live AND unparked while a new one opened (two windows, one of them invisible), and a group release parked the wrong scope. Fixed in `follow()` (0.86.0, recorded on `QD3`); the law itself needed no change — the code had simply stopped enforcing it on the split site

@@ -1,5 +1,5 @@
 # Page folds: the drawer below the read
-state: 🟡 PARTIAL · rules settled on QAa0, carved 260729; face awaits JL
+state: 🟡 PARTIAL · rules settled on QB4, carved 260729; face awaits JL
 owner: CC
 method: Law, Lesson, Glossary, Discussion, Comments, Log sit folded below the reading path
 
@@ -13,7 +13,7 @@ The renderer assembles this drawer from a fixed list (`page_question.py`), so a 
 - ✅ Covered here
   Which sections fold below the read, their order, and the rule that they never fold a sentence's apparatus.
 - ↪ Covered elsewhere
-  What a Comment IS and its lifecycle: `QA6`. The Log line format: `SKILL.md`'s sync table.
+  What a Comment IS and its lifecycle: `QB5b`. The Log line format: `SKILL.md`'s sync table.
   Retired section names (`Why here`) and aliases: `src/common.py`'s `ALIAS`.
 
 ## Diagram
@@ -21,7 +21,22 @@ The renderer assembles this drawer from a fixed list (`page_question.py`), so a 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa6
 
 ## Content
-### 1 · Supporting folds: preserve history without blocking the read
+### 1 · What the folds convey
+```
+🗃 the folds · answers: what was ruled, learned, and changed, if I need it?
+──────────────────────────────────────────────────────────────
+conveys   durable memory that must not tax the first read
+holds     Law, the binding rules · Lesson, what failure taught · Glossary,
+          the words · Discussion, the deliberation · Comments, pinned
+          remarks · Log, the reverse-chronological history
+source    each an optional ## section in the .md; the renderer assembles
+          the drawer from its own fixed list, in its own fixed order
+rules     always below the read, always starting folded · Log newest
+          first · a new fold section is a template decision on QB4, never
+          a page-local invention · a sentence's ⚑ apparatus folds under
+          its sentence, never down here
+omit      any may be absent · an empty fold never renders
+```
 Law, Lesson, Glossary, Discussion, Comments, and Log sit below the main reading path and begin folded.
 They preserve rules, failures, vocabulary, deliberation, pinned remarks, and change history for readers who need them, while Opening through Files remains a clean first pass.
 Retired Why here content is still parsed here for compatibility, but new rationale belongs in Question.
@@ -39,7 +54,7 @@ What still refuses is what cannot anchor: rendered comment rows, a sentence's ow
 
 ## Items to Finish
 - [ ] 🧠 JL confirms this face owns the folds
-      Carved 260729 from QA4 §7 with the text verbatim; the history stays on `QAa0`.
+      Carved 260729 from QB4 §7 with the text verbatim; the history stays on `QB4`.
 
 ## Where we are
 Settled and shipped; the fixed fold list in `page_question.py` is the enforcement, and its lack of a catch-all is deliberate.
@@ -56,7 +71,7 @@ Settled and shipped; the fixed fold list in `page_question.py` is the enforcemen
 
 ### Decision Now
 - [ ] 🧠 Confirm this face owns the folds
-      Carved 260729 from QA4 §7 with the text verbatim, and the fixed fold list in `page_question.py` has enforced it since.
+      Carved 260729 from QB4 §7 with the text verbatim, and the fixed fold list in `page_question.py` has enforced it since.
       A tick here also closes the same row in Items to Finish.
 
 ## Files
@@ -70,6 +85,7 @@ Settled and shipped; the fixed fold list in `page_question.py` is the enforcemen
 > CC: Yes, since 260731: select or double-click any fold prose sentence and it takes a comment like main prose; only rendered comment rows, apparatus, and Log rows still refuse, because `serve.py` will not anchor on them.
 
 ## Log
+260801 · §1 renamed "What the folds convey" and opened with the five-row protocol face diagram (conveys · holds · source · rules · omit) on JL's ask; master view on QB4 §0
 260731 · The discussion and comment boxes take pasted screenshots: fig/ upload via /_board/image (haipipe-board 0.60.0)
 260731 · Fold prose became commentable: the three `.folds` guards in board.js narrowed to what cannot anchor (haipipe-board 0.59.0)
 260729 · Marked frame under the base/variant model on QAa0: identical for every page kind

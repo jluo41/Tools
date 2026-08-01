@@ -12,7 +12,7 @@ details.gi[open] summary::before{transform:rotate(90deg)}
 details.gi summary:hover{color:var(--fg)}
 .gib{margin:5px 0 2px 15px;max-width:78ch;border-left:2px solid var(--line);padding-left:10px}
 /* 组介绍里的小 ascii 图（JL 260724）：展开后一眼看清这组题怎么串起来。窄、灰底、可横滚 */
-.gib .gidia{font:11.5px/1.5 ui-monospace,Menlo,monospace;color:var(--fg);
+.gib .gidia,.gwhy-b .gidia{font:11.5px/1.5 ui-monospace,Menlo,monospace;color:var(--fg);
  background:var(--pre);border-radius:var(--radius-control);padding:9px 12px;margin:9px 0 3px;
  overflow-x:auto;white-space:pre;max-width:100%}
 

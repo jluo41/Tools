@@ -1,4 +1,4 @@
-  /* 模型 / effort / 权限档 记在本机；默认 Opus 4.8 · high · 完整·问我 */
+  /* 模型 / effort / 权限档 记在本机；default Opus 5 · high · full·ask */
   (function () {
     var m = chat.querySelector('.mdl'), e = chat.querySelector('.eff'),
         s = chat.querySelector('.scope');
@@ -21,7 +21,7 @@
   wireImagePaste(chat.querySelector('textarea'),
     function () { return cq && cq.file; },
     function (rel) {
-      var dir = location.pathname.replace(/\/[^\/]*$/, '').replace(/^\//, '');
+      var dir = boardDirPath().replace(/^\//, '');
       return '![image](' + (dir ? dir + '/' : '') + rel + ')';
     });
 
@@ -293,8 +293,13 @@
          it is finished along with how much it is spent") */
       var took = (Date.now() - turnT0) / 1000;
       var fin = new Date();
-      var stamp = String(fin.getHours()).padStart(2, '0') + ':'
-                + String(fin.getMinutes()).padStart(2, '0');
+      /* JL 260801: the date too, not only the time. A turn that finished
+         at 00:43 is ambiguous the moment the reader comes back tomorrow,
+         and this board's own date form is YYMMDD. */
+      var z = function (n) { return String(n).padStart(2, '0'); };
+      var stamp = String(fin.getFullYear()).slice(2) + z(fin.getMonth() + 1)
+                + z(fin.getDate()) + ' '
+                + z(fin.getHours()) + ':' + z(fin.getMinutes());
       var tookTxt = took < 60 ? took.toFixed(1) + 's'
                   : Math.floor(took / 60) + 'm' + String(Math.round(took % 60)).padStart(2, '0') + 's';
       /* The concluding segment IS the answer, so it must not appear twice: pull

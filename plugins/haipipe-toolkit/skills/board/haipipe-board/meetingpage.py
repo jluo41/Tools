@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Turn an echo-meeting note into a board page of kind `Meeting-<n>`.
 
-    python3 meetingpage.py new  <board> <note.md> [--group QC] [--slug s]
+    python3 meetingpage.py new  <board> <note.md> [--group QG] [--slug s]
     python3 meetingpage.py sync <board> <page-id>
 
 QC10 rules this. A meeting produces two things and they go to two places: the
@@ -355,7 +355,7 @@ def main():
     n = sub.add_parser("new")
     n.add_argument("board")
     n.add_argument("note")
-    n.add_argument("--group", default="QC")
+    n.add_argument("--group", default="QG")   # the Meeting group, JL 260801
     n.add_argument("--slug", default="")
     n.add_argument("--stamp", default="")
     n.set_defaults(fn=cmd_new)

@@ -2,6 +2,7 @@
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
+session: 2dec022b-fc77-4efc-a03f-a589dc02583c
 
 ## Opening
 haipipe-board-reviewer-agent is a shipped skill: what does it still owe, and is it healthy?

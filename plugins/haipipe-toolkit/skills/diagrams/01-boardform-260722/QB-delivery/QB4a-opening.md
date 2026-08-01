@@ -1,28 +1,42 @@
 # Page Opening: the head and the door
-state: 🟡 PARTIAL · rules settled on QAa0, carved 260729; face awaits JL
+state: 🟡 PARTIAL · rules settled on QB4, carved 260729; face awaits JL
 owner: CC
 method: the lead is the door; everything behind it is one flat drawer
 
 ## Question
 What belongs in a page's head and Opening, what stays on stage, and what one click on the lead reveals?
 The head is three lines (`state:` · `owner:` · `method:`) plus the title; Opening is the question lead, always on stage, with Boundary and the S-only orientation folded behind it.
-The rules were settled on the former QA4 and moved here verbatim, so this face owns them going forward: any new decision about the head, the lead, the drawer, or Boundary lands here, not on `QAa0`.
+The rules were settled on `QB4` (the former QA4) and moved here verbatim, so this face owns them going forward: any new decision about the head, the lead, the drawer, or Boundary lands here, not on `QB4`.
 
 
 ## Boundary
 - ✅ Covered here
   The three head fields, the title, the question lead as the door, the flat drawer behind it (Boundary · Why this matters · Stage Record · Stage Contract), and their typography.
 - ↪ Covered elsewhere
-  The fixed on-stage order the Opening sits first in: `QAa0`.
+  The fixed on-stage order the Opening sits first in: `QB4`.
   The source side is §5 and §6 below.
-  The managed Stage Contract mechanics (`stage.py`, requires/style-from): `QAa0`'s Law and `ref/board-form.md`.
+  The managed Stage Contract mechanics (`stage.py`, requires/style-from): `QB4`'s Law and `ref/board-form.md`.
 
 ## Diagram
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa1
 
 ## Content
-### 1 · What Opening must do
+### 1 · What Opening conveys
+```
+🧭 Opening · answers: what is this page, and why should I care?
+──────────────────────────────────────────────────────────────
+conveys   identity and intent, before the page asks for any attention
+holds     the head: title + state · owner · method
+          the door: ONE bold question lead, always on stage
+          the flat drawer: Structure (generated) · Boundary ·
+          Why this matters · S only: Stage Record · Stage Contract
+source    ## Question = one question lead + one rationale paragraph
+          optional ## Boundary · S: stage.py writes the managed contract
+rules     the lead never folds · the drawer never nests, carries no icons
+          orientation only: substance is Content's, status is Where we are's
+omit      never · every page of every kind opens
+```
 Opening answers "What am I looking at, and why should I care?" before asking the reader to absorb detail.
 The 🧭 Opening heading never folds and the question lead never folds: both are always on stage, and the lead is the door (JL 260725).
 Clicking the lead opens everything that explains it, in a fixed order: the generated Structure map, Boundary, Why this matters directly below it (Q and S alike, JL 260729), and on an S page an optional Stage Record and the Stage Contract after them.
@@ -37,7 +51,7 @@ It had been set in small accent-blue capitals over 12.5px muted grey, which is t
 The lead question is bold, which is what separates it from that prose: it is the one sentence always on stage and the handle for the drawer, so it should not read as the first line of what it opens.
 Opening prose carries no attribution parentheticals (JL 260729, in chat): a "(JL 260729)" belongs in the Log, and the orientation sentences stay clean.
 A reader should be able to state the page's purpose and scope after reading Opening alone.
-Under the base/variant model on `QAa0`, Opening is frame: a page kind may contribute rows INTO the drawer, which is what Stage Record and Stage Contract are, and no kind may change the door, the flat drawer, or its typography.
+Under the base/variant model on `QB4`, Opening is frame: a page kind may contribute rows INTO the drawer, which is what Stage Record and Stage Contract are, and no kind may change the door, the flat drawer, or its typography.
 
 ### 2 · Boundary
 Boundary says both what this page decides and where adjacent concerns belong.
@@ -51,7 +65,7 @@ The managed block is generated from explicit `requires` and `style-from` metadat
 ### 4 · Why this matters sits in the drawer, below Boundary
 The rationale paragraph explains the lead, so it belongs behind the lead: clicking the question opens Boundary and Why this matters together, on Q exactly as on S (JL 260729).
 The drawer's order is fixed, and JL placed both rows in chat the same day: Structure just above Boundary, Why this matters "just below the Boundary", then the S-only Stage Record and Stage Contract, which is the sequence the renderer assembles.
-Until 260729 a Q page's rationale rendered as Content's first subsection instead; Content now holds only what the author explicitly wrote, which is `QAa3`'s flexibility decision seen from this side.
+Until 260729 a Q page's rationale rendered as Content's first subsection instead; Content now holds only what the author explicitly wrote, which is `QB4c`'s flexibility decision seen from this side.
 Implemented in `src/page_question.py` the same day; `check.py`'s template coverage asserts the drawer row, and `ref/board-form.md`, `ref/q-template.md`, and `SKILL.md` say the new placement.
 
 ### 5 · The source: Question plus optional Boundary
@@ -82,7 +96,7 @@ Shipped in `render_structure` (`src/page_question.py`) with the `.pmap` styling 
       JL asked 260729 and placed it above Boundary the same day; `render_structure` emits one row per existing section plus the Content division names, computed at build.
       Live on all 41 pages of this board with 0 checker errors, and render-only, so no page source changed.
 - [ ] 🧠 JL confirms this face owns Opening
-      Carved 260729 from QA4 §1 with the text verbatim; the history and its ticked items stay on `QAa0`.
+      Carved 260729 from QB4 §1 with the text verbatim; the history and its ticked items stay on `QB4`.
 
 ## Where we are
 
@@ -93,11 +107,11 @@ Shipped in `render_structure` (`src/page_question.py`) with the `.pmap` styling 
   Recorded now and made real in the two places that bind: `ref/q-template.md` says OPTIONAL and genuinely so, telling an author to delete the section when the Opening already makes the scope obvious, and `haipipe-board-page` carries the same sentence for any agent that loads the spec instead of the template.
   Nothing was stripped from existing pages: a Boundary that earns its place still reads well, and mass-deleting 54 of them would be exactly the blind sweep this board keeps warning about.
 
-The rules are settled and shipped (see `QAa0`'s history); this face was carved 260729 and owns any future Opening decision.
+The rules are settled and shipped (see `QB4`'s history); this face was carved 260729 and owns any future Opening decision.
 
 ### Decision Now
 - [ ] 🧠 Confirm this face owns Opening
-      Carved 260729 from QA4 §1 with the text verbatim; a tick here also closes the same row in Items to Finish.
+      Carved 260729 from QB4 §1 with the text verbatim; a tick here also closes the same row in Items to Finish.
 
 ## Files
 - `src/page_question.py`
@@ -108,6 +122,7 @@ The rules are settled and shipped (see `QAa0`'s history); this face was carved 2
   The guide text a new page copies for its head and `## Question`.
 
 ## Log
+260801 · §1 renamed "What Opening conveys" and opened with the five-row protocol face diagram (conveys · holds · source · rules · omit) on JL's ask; master view on QB4 §0
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Structure shipped as the drawer's first row (JL: "the Structure subsection just above Boundary"): render_structure in page_question.py plus .pmap in board.css; §7 rewritten from the earlier last-row sketch
 260729 · Opening writing rule added on JL's ask: no attribution parentheticals in Opening sentences, dates live in the Log; the QAa faces' Question and Boundary prose swept clean the same round

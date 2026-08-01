@@ -17,7 +17,7 @@ The trio is the same Input, Process, Output shape the toolkit's own basic unit u
 - ✅ Covered here
   The purpose of Files, when subsections are useful, contextual subsection names, generated-file warnings, and heading-level Copy and Chat paths.
 - ↪ Covered elsewhere
-  The fixed Page order is `QAa0`; the general subsection renderer and paragraph grammar are `QAa3`; generated heading paths and Chat focus are `QAb3`.
+  The fixed Page order is `QB4`; the general subsection renderer and paragraph grammar are `QB4c`; generated heading paths and Chat focus are `QB5d`.
 
 ## Diagram
 
@@ -45,12 +45,12 @@ The trio is the same Input, Process, Output shape the toolkit's own basic unit u
 
  WHAT STAYS FREE · rename a group when the trio genuinely misfits
  ───────────────────────────────────────────────────────────────────
-   QA2b:   Board source   ──▶   Index renderer   ──▶   Generated view
+   QB2:   Board source   ──▶   Index renderer   ──▶   Generated view
    that is the exception now, not the rule; an empty group is omitted
 ```
 
 ```
-example for QA2b, the Board-Webpage design page
+example for QB2, the Board-Webpage design page
 
 📎 Files
 ├── Board source
@@ -61,20 +61,26 @@ example for QA2b, the Board-Webpage design page
 └── Generated view
     └── board.html                generated · never hand-edit
 
-QA2b / Files / Index renderer                 [⧉ Copy] [🤖 Chat]
+QB2 / Files / Index renderer                 [⧉ Copy] [🤖 Chat]
 ```
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa7
 
 ## Content
-### 1 · Files is the continuation map
+### 1 · What Files conveys
 ```
-📎 Files · the few files someone opens to CONTINUE this page
+📎 Files · answers: which few files do I open to continue this work?
 ──────────────────────────────────────────────────────────────
-  earns a row    what the next person must open to carry it on
-  no row         a file the work merely touched along the way
-  each row       the path, then its role in one sentence
-  generated      say so in the row, so nobody edits that layer
+conveys   the action map: entry points, never an exhaustive change list
+holds     the standard trio: Engines, what runs the subject · Input files,
+          what the work reads · Output files, what a build writes
+source    one backticked path + its role in one sentence, per row ·
+          a generated file says so in its row: never hand-edit
+rules     place a file by what YOU do to it, not by what it is · rename a
+          group only when the trio truly misfits · omit an empty group ·
+          three rows or fewer stay flat
+omit      allowed but strongly advised against: a page with no Files
+          leaves the next person searching
 ```
 Files answers one question: which files does the next person open to continue THIS page?
 It is an action map, so a short list of real entry points beats an exhaustive record of everything the work touched.
@@ -112,7 +118,7 @@ Order is Engines first because Files is ordered by what a reader opens first, no
 
 #### Renaming a group is the exception, not the rule
 (the freedom that survives the ruling, narrowed to where it earns its keep)
-A Page whose work genuinely has different coherent parts still names its own, such as `Board source`, `Index renderer`, and `Generated view` on `QA2b`.
+A Page whose work genuinely has different coherent parts still names its own, such as `Board source`, `Index renderer`, and `Generated view` on `QB2`.
 The bar is now higher than it was: reach for a rename when the trio would misdescribe the work, not merely when a truer-sounding word exists.
 Omit an empty group rather than leaving a heading with nothing under it, and never invent a row to fill one.
 Stay flat with no headings at all when the list is short and coherent, because three or fewer rows about one subject read better as a plain list.
@@ -151,8 +157,8 @@ When two groups remain genuinely equal after the test, put the row where the rea
 ```
 Each optional `###` heading groups the file rows that follow it until the next `###`.
 It renders as a `.sh` subsection heading inside 📎 Files and appears in the rail's outline, so a reader can jump straight to one group.
-The heading receives a generated breadcrumb with Copy and Chat actions, whose path grammar is `QAb3`'s and is the open half of this Page.
-The Page-level `## Files` heading stays in the fixed frame whatever its internal organization is, so grouping is a Page's own call and never a change to the Page order (`QAa0`).
+The heading receives a generated breadcrumb with Copy and Chat actions, whose path grammar is `QB5d`'s and is the open half of this Page.
+The Page-level `## Files` heading stays in the fixed frame whatever its internal organization is, so grouping is a Page's own call and never a change to the Page order (`QB4`).
 One trap is real and has already cost a page: rows written under another section's subsection belong to that subsection, which is how `QE4`'s Files section rendered empty.
 
 ## Items to Finish
@@ -167,7 +173,7 @@ One trap is real and has already cost a page: rows written under another section
 
 ### Access and ownership
 - [ ] 🧭 Give each subsection a copyable Chat path
-      Reuse `QAb3` so the focus packet includes Page, Files, contextual subsection, source path, and visible rows.
+      Reuse `QB5d` so the focus packet includes Page, Files, contextual subsection, source path, and visible rows.
 - [ ] 🧠 JL confirms Files has its own QAa face
 
 ## Where we are
@@ -233,6 +239,7 @@ What is open moved with the ruling: the placement test in §3 is proposed and no
 > CC: Recorded as the 260731 ruling: the trio is the standard shape, renaming is the exception, and the live question became which group a file goes in. §2 and §3 carry it, and the placement test is on Decision Now.
 
 ## Log
+260801 · §1 renamed "What Files conveys" and its face diagram reshaped to the five-row protocol (conveys · holds · source · rules · omit) on JL's ask; master view on QB4 §0
 260731 · JL ruled one shared taxonomy: the trio is the STANDARD shape, renaming is the exception, and the live question became placement. Question, §2, §3 rewritten; the 🏷 contextual-naming item replaced by the 🧭 placement test; state 🔴 -> 🟡
 260731 · Figures rebuilt after JL called the head figure unreadable: root cause was the renderer (emoji are not monospace), fixed board-wide by body.pad_emoji + pre .eu; this page's figures redrawn with no markdown tokens and no emoji inside an aligning column
 260731 · Retrofitted to QB4c's face-diagram rule: every Content division opens with a face diagram (matrix 📚 3÷·0🖼 -> 4÷·4🖼)

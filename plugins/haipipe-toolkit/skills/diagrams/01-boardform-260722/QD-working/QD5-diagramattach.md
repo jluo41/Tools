@@ -81,6 +81,17 @@ A page with no Diagram section shows no button at all, because the section is on
 Nothing records who attached a drawing, unlike comments and discussion, which carry initials.
 Two people attaching at once is unhandled, the same gap `QE4` owns for body text.
 
+### 4 · The board-level agent (merged from QD7 · 260801)
+JL folded the board-level-agent question into this page on 260801.
+Nothing had shipped for it, so what moves here is the open question and its four unmade decisions; the full analysis stays readable at `QD-working/_archive/QD7-boardagent.md`.
+The question: chat and terminal are pinned to one question today (`QD1`/`QD2`/`QD3`), but board-wide work (adding a question, editing the Roster, regrouping, batch-rewriting every `## Question`) has no home, and widening a session's scope from one question to the whole board collides with `QD1`'s LAW (one session per question · one window per session).
+Four calls remain JL's:
+- ⚖️ how a board-level session meshes with `QD1`'s LAW: with a board session open, can a single question's chat or terminal still open, and who yields?
+- 🔑 the board session's scope and permissions: may it create questions, delete questions, or edit a question currently open in someone's session?
+- 🚪 the entry point: A a front-page button (overlaps `QB2`) · B CLI-only.
+- 🧰 the stack: A Claude SDK reusing `QD2`'s drawer + OAuth + HOLD · B Codex · C both.
+The machinery is not from zero: serve.py's OAuth + SDK + HOLD, `/_board/term`'s ttyd proxy, and `/_board/chat`'s streaming + permission callback are all reusable.
+
 ## Items to Finish
 ### 🖌 The write path
 - [x] 🖌 An excalidraw can be attached from the page
@@ -152,6 +163,7 @@ affordance: a control the page offers, added by script, that writes into the mar
 >> CC0726: built as a button inside 🖼 Diagram. The line it writes is the same line a hand-edit would produce, so nothing about the format depends on the button existing.
 
 ## Log
+260801 · QD7 (board-level agent) merged in per JL ("merge it to QD5"): its question + four open decisions added as Content §4, full page archived to _archive/QD7-boardagent.md
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260726 2300 · 🗑 removal + 🕳 an entry point on every page (JL asked for QD5): `add_diagram` takes `{remove:true}` and deletes the URL line plus its blank line, refusing when there is nothing to remove or no section; `wireXcal` walks pages instead of sections and drops a `🖼 Add a Diagram` control between Opening and Content when there is no section; the signature item ruled NO because a signature is syntax no author types; fixed `face.dataset.file`, an undefined variable that made `✨ Create one for me` report the wrong error since it shipped; add/replace/remove round trip verified byte-identical
 260726 1210 · opened and built: `/_board/diagram` endpoint, `wireXcal` control, `.xadd` styles; four cases verified on a throwaway board; removal, signature, and the no-section case left open

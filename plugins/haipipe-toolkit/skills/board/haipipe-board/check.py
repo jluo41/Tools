@@ -18,7 +18,8 @@ Three families:
   BOARD     board.md: Pages against disk, declared Links resolve, ids unique
   PAGE      each Q*/S* md: required sections, state value, references resolve,
             one sentence per line, no em-dash, English-only
-  PAGE      the built board.html: local hrefs resolve, tags balance, ids unique
+  SITE      the built board/ tree: local links and media resolve, tags balance,
+            ids unique
   TEMPLATE  render ref/q-template.md as a Q and as an S, then assert each
             construct QA9 names produced its class. A construct the template
             never exercises is reported as a GAP, not skipped (QA9's 🕳 item).
@@ -47,7 +48,10 @@ from src.common import ALIAS, STN, page_files  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 STATE_LABELS = {"✅": "SETTLED", "🟡": "PARTIAL", "🔴": "OPEN", "⏸": "ON HOLD"}
-LIVE_ROUTE_PREFIXES = ("/_board/", "/_excalidraw")
+# The generated Board site can link to live server routes. They do not resolve
+# as files beside an HTML page, so checker must recognize them rather than
+# calling the Board Home navigation a dead static href.
+LIVE_ROUTE_PREFIXES = ("/_board/", "/_excalidraw", "/boards")
 
 # Sections a page cannot be complete without. Aliases are accepted because old
 # boards still use them and ALIAS is the renderer's own table.
@@ -366,22 +370,29 @@ def check_page(d, rep):
                         f"only {len(plain)} chars survive with scripts stripped; "
                         "the page depends on JS")
 
-        # `bare`, not `t`: an href inside JavaScript is a string in a program,
-        # not a rendered link. Reading the script block made board.js's own
-        # anchor builder look like a dead link (260731).
-        for href in sorted(set(re.findall(r'href="([^"#][^"]*)"', bare))):
-            if href.startswith(("http://", "https://", "mailto:", "data:")):
+        # `bare`, not `t`: a URL inside JavaScript is a string in a program,
+        # not a rendered resource. Check href, img/iframe src, and object data
+        # together: the split-site reroot bug fixed href while leaving the
+        # evidence-card image and PDF visibly broken (260801).
+        resources = sorted(set(re.findall(
+            r'(href|src|data)="([^"#][^"]*)"', bare)))
+        for attr, href in resources:
+            if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", href):
                 continue
             if href.startswith(LIVE_ROUTE_PREFIXES):
                 continue
-            href = href.split("?", 1)[0]        # assets carry a ?v= cache-bust
+            href = href.split("#", 1)[0].split("?", 1)[0]
             if not href:
                 continue
             if not (html.parent / href).exists():
-                rep.add(ERROR, "dead-href", f"{name} -> {href}",
-                        "rendered link does not resolve")
+                rep.add(ERROR, f"dead-{attr}", f"{name} -> {href}",
+                        f"rendered {attr} does not resolve")
 
         ids = re.findall(r'id="([^"]+)"', t)
+        for fragment in sorted(set(re.findall(r'href="#([^"]+)"', bare))):
+            if fragment not in ids:
+                rep.add(ERROR, "dead-fragment", f"{name} -> #{fragment}",
+                        "rendered fragment does not exist in this file")
         for i in sorted({x for x in ids if ids.count(x) > 1}):
             rep.add(ERROR, "duplicate-html-id", f"{name} #{i}",
                     f"id appears {ids.count(i)} times")

@@ -214,7 +214,7 @@
           { file: cq.file, name: (blob && blob.name) || 'paste', data: fr.result });
       } catch (err) { j = null; }
       if (j && j.ok && termWS && termWS.readyState === 1) {
-        var dir = location.pathname.replace(/\/[^\/]*$/, '').replace(/^\//, '');
+        var dir = boardDirPath().replace(/^\//, '');
         termWS.send('0' + (dir ? dir + '/' : '') + j.rel);
       } else {
         say((j && j.err) || 'image upload failed (is serve.py running?)');
@@ -270,6 +270,28 @@
   chat.querySelector('.term').addEventListener('mouseenter', function () {
     loadXterm().catch(function () {});
   });
+  /* The PTY is a real process on the server and a page reload PARKS it rather
+     than killing it, so coming back to a page whose terminal is still running
+     and being shown the chat box is the view lying about the state (JL 260801:
+     "when I come back it became the GUI again, in truth the TUI is running").
+     The reload-restore block at the end of board.js needs to see and redo this,
+     and it lives outside this closure. */
+  window.__boardTermOn = function () { return !!termOn; };
+  window.__boardTermReopen = async function () {
+    if (!cq || termOn) return false;
+    /* only reattach to a terminal that is genuinely still there; starting a new
+       one on a reload would spawn a process nobody asked for */
+    try {
+      var r = await fetch('/_board/term-probe', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file,
+                               group: (cq && cq.group) || undefined }) });
+      var j = await r.json();
+      if (!j || !j.live) return false;
+    } catch (e) { return false; }
+    return await termOpen(true);
+  };
+
   chat.querySelector('.term').onclick = async function () {
     if (!cq) return;
     if (termOn) {                                  // 切回抽屉 = 交回 session

@@ -10,7 +10,7 @@ picker would show the laptop's disk, which has none of this.
 
 So the write moves to the side that actually has the files. This server already
 serves the page; now it also takes two small POSTs and edits the markdown, then
-regenerates board.html so a plain reload shows the rendered comment.
+regenerates board/ so a plain reload shows the rendered comment.
 
     POST /_board/comment   {path, file, who, sentence, text} -> append directly under sentence
     POST /_board/edit-sentence {path, file, sentence, replacement, who}
@@ -86,6 +86,7 @@ from src.common import QNAME, page_files, q_files, vet_pagepath, vet_qpath  # no
 # table.  Each area is a mixin; the class below is only their assembly order.
 from live.base import BaseMixin, HOLD, TERMS, RUNS, ASKS, ALWAYS, ASK_SEQ
 from live.activity import ActivityMixin
+from live.home import HomeMixin
 from live.write import WriteMixin
 from live.chat import ChatMixin
 from live import chat as live_chat
@@ -104,7 +105,7 @@ from live.chat import (prime_context, board_prime_context,              # noqa: 
                        BOARD_CHAT_RULES, BOARD_FULL_RULES, READONLY, WRITE_TOOLS)
 
 
-class Handler(BaseMixin, ActivityMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, SimpleHTTPRequestHandler):
+class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
     # 260726: "we have so many activities in the past few dates, and they are
@@ -158,6 +159,8 @@ class Handler(BaseMixin, ActivityMixin, WriteMixin, ChatMixin, TermMixin, XcalMi
                 self.wfile.write(body)
         return True
     def do_GET(self):
+        if self.is_home_request():
+            return self.serve_home()
         if self.path == "/_board/health":
             # checks/smoke.py 的探针：跑 chat 的是不是带 SDK 的解释器，只有
             # 进程自己答得出 —— ps 看到的是 venv 软链解析后的裸二进制，在外面
@@ -187,6 +190,8 @@ class Handler(BaseMixin, ActivityMixin, WriteMixin, ChatMixin, TermMixin, XcalMi
             return self.proxy_excalidraw()
         return SimpleHTTPRequestHandler.do_GET(self)
     def do_HEAD(self):
+        if self.is_home_request():
+            return self.serve_home()
         if self.path.startswith("/_term/"):
             if self._term_route():
                 return
@@ -282,6 +287,10 @@ class Handler(BaseMixin, ActivityMixin, WriteMixin, ChatMixin, TermMixin, XcalMi
                 return self.reply(500, {"ok": False, "err": f"{type(e).__name__}: {e}"})
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/term-probe":   # is this target's PTY still alive?
+            res, err = self.term_probe(f)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/term":
             res, err = self.terminal(f, p, board)
             return self.reply(200 if not err else 409,
@@ -290,6 +299,9 @@ class Handler(BaseMixin, ActivityMixin, WriteMixin, ChatMixin, TermMixin, XcalMi
             res, err = self.sessions_list(f, p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/session-log":    # that session's transcript (JL 260801)
+            res, err = self.session_log(f, p), None
+            return self.reply(200, res)
         if self.path == "/_board/session-name":   # 给 session 起名/改名（QD1 260731）
             res, err = self.name_session(f, p)
             return self.reply(200 if not err else 400,
@@ -424,4 +436,3 @@ if __name__ == "__main__":
         srv.serve_forever()
     except KeyboardInterrupt:
         kill_all_terms()
-

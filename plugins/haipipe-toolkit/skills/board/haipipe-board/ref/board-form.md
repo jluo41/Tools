@@ -15,7 +15,12 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
   QB-<group-title-slug>/
     QB1-<slug>.md
     S-Seed-0-<slug>.md      named lifecycle page (write only when a lifecycle exists)
-  board.html                generated, do not hand-edit
+  board/                    generated, do not hand-edit
+    index.html              Board-Webpage-Index
+    QA.html                 one page for the QA group
+    QA/QA1-<slug>.html      one page for each QA source page
+    _assets/board.css       one shared assembled stylesheet
+    _assets/board.js        one shared assembled script
   fig/                      screenshots
 ```
 
@@ -36,7 +41,9 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
   0-seed/S-Seed-0-seed.md       lifecycle page lives in its own folder
   4-display/QD2-d01-….md        a question living in its own home
   5-section-edit/6-results/QE5-….md      any depth
-  board.html
+  board/
+    index.html
+    QA/QA1-frontier.html
 ```
 
 - Discovery rule: every `Q*.md` / `S*.md` / `Agent-<n>-*.md` anywhere in the board folder's whole tree, plus `Skill-<n>-*.md`; segments of the path starting with `_`/`.` (`_archive/`, `_preview/`, ...) and `fig/` do not count.
@@ -64,7 +71,7 @@ Membership has been path-based, not registration-based, since 260722, and `## Pa
 **JL ruled on 260726: the group folder is the default, from the very first page, on every board.**
 The folder is named `Q<group-letter>-<group-title-slug>` (`QA-defining-a-board/`, `QD-working-on-the-board/`); **it must never be just `QA/`**, because that copies the id twice, and the group title is the half a reader cannot recover from the filename.
 
-Only `board.md`, `board.html`, and `fig/` stay at the board root.
+Only Board-level source and derived artifacts stay at the Board root: `board.md`, optional `board.excalidraw`, `fig/`, `_archive/`, and generated `board/`.
 `## Pages` does not change a single character; it still lists only bare filenames.
 A page's ＋Q writes into the folder its group already lives in; a new group with no page yet opens a named folder on the spot, from its first page's `### Q<letter> · <title>`.
 To move a whole board, use `python3 <skill>/regroup.py <board-dir> --apply` (omit `--apply` for a dry run, `--all <root>` scans the whole repo).
@@ -163,7 +170,10 @@ Draw the CONNECTIONS.
 
 ## Board Structure
 Optional. Write here whenever the board needs to show a zero-background reader its own shape, instead of opening a separate Q page for it.
-It splits into Board-Folder (the on-disk source and generated output) and Board-Webpage (the Board-Webpage-Index and the Q/S page once opened); once generated it renders between Pipeline and Pages.
+It must split `Board-Folder` from `Board-Webpage`.
+`Board-Folder` names the editable source (`board.md`, descriptive group folders, one Markdown file per page, `fig/`, `_archive/`) and the derived `board/` site.
+`Board-Webpage` names the three reader routes: `board/index.html`, `board/<GROUP>.html`, and `board/<GROUP>/<page>.html`, plus the shared `_assets/` they load.
+Since 0.78.0 this is source-only documentation in `board.md`; it does not render on the Index.
 
 ## Pages
 ### QA · group title
@@ -194,8 +204,8 @@ Over HTTP the payload also carries `path` (the page's own location.pathname); ca
 
 **Required**: `# title`, `spine:`, `close:`, `## Topic`, `## Pipeline`, `## Pages`.
 All three of these sections must be written, so do not omit `## Pipeline`.
-`## Board Structure`, `source:`, `## Links` are optional.
-Board Structure is a board-level block on the Board Index; it does not count toward a Q page, does not enter the settled count, and does not occupy a page id.
+`## Board Structure`, `source:`, `## Related Folders`, and `## Links` are optional.
+Board Structure is Board-level source documentation. It does not count toward a Q page, enter the settled count, occupy a page id, or render on the Index.
 
 ## 4. Q/S page
 
@@ -211,7 +221,6 @@ style-from:     → contract    explicit writing-contract sources (S only)
 provides:       → contract    a short delivery note this page gives downstream (S only)
 
 ## Opening         → .opening .ask + kind routing  the first question sentence lives in Opening; the explanatory paragraph is described below
-## Boundary        → .opening .qbd  what this question covers / does not cover, folded into Opening
 ## Stage Contract  → a collapsed row .csec.contract inside Opening  S's inherited inputs + writing style (JL 260725: folded into Opening, no longer its own section)
 ## Diagram         → .diagram-section > .dia  its own section, collapsed by default
                      splits into two sub-sections inside (JL 260726): `details.dsub.dsub-a` (▧ ASCII, `open`)
@@ -251,14 +260,15 @@ provides:       → contract    a short delivery note this page gives downstream
 
 **Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Items to Finish`, `## Where we are`.
 S additionally requires `## Stage Contract` and `## Content`; Q deletes Stage Contract and may omit Content.
-`## Boundary` and `## Files` are optional but **strongly recommended**; everything else (`method:`, `## Diagram`, and all the folded sections) is **optional**, so delete the whole section when it is not used.
+`## Files` is optional but **strongly recommended**; everything else (`method:`, `## Diagram`, and all the folded sections) is **optional**, so delete the whole section when it is not used.
+There is no `## Boundary` section. Opening itself states the scope, and a page points at the neighbouring page that owns excluded work.
 The order of the folded sections on the page is fixed by `build.py` (Why here · Discussion · Law · Lesson · Glossary · Log), independent of the order they were written in the file.
 
 **The on-stage order is fixed**:
 Q is `Opening → Diagram → Content → Items to Finish → Where we are`;
 S is the same: Stage Contract is folded inside Opening and no longer occupies its own section (JL 260725)
 (Files follows after the state).
-Opening is the question lead plus an optional Boundary; the first row of the drawer is the build-generated Structure map of the page (JL 260729, pure rendering, nothing to author); the optional Diagram is its own section, collapsed by default, and expands only when the section name is clicked.
+Opening is the question lead plus one paragraph stating scope and why it matters; the first row of the drawer is the build-generated Structure map of the page (JL 260729, pure rendering, nothing to author); the optional Diagram is its own section, collapsed by default, and expands only when the section name is clicked.
 The Opening explanatory paragraph of both Q and S goes into the Why this matters row of that page's own drawer (JL 260729; before that, a Q's explanatory paragraph automatically became Content's first subsection).
 If an S page's explicit Content holds a direct `### Stage Record`, that is lifted into Opening too and collapsed by default, while the remaining subsections stay in Content.
 A Q's explicit Content can be omitted.
@@ -311,7 +321,8 @@ ref/q-template.md   ../../haipipe-board/ref/q-template.md
 haipipe-board/      ../../haipipe-board/
 ```
 
-The left side is how it is written in backticks in the body; the right side is the path relative to `board.html`.
+The left side is how it is written in backticks in the body; the right side is the path relative to the Board source folder.
+The split renderer adds the required hop from each generated page back to that folder, so one declaration works from the Index, group pages, and page pages.
 After that, every `` `SKILL.md` `` becomes a clickable link.
 
 - An undeclared path is still tried once automatically: it walks up level by level from the board's folder looking for the same path, and links it only when it is found and **really exists**.
@@ -364,25 +375,28 @@ python3 <skill>/build.py <board-dir>     # generate once (<skill> = .../board/ha
 python3 <skill>/watch.py <board-dir>     # watch it: any .md change regenerates automatically
 ```
 
-**Do not hand-edit `board.html`**: the next generation overwrites it.
+**Do not hand-edit the generated `board/` tree**: the next generation overwrites it.
 The md is the only source.
 
-## 8. The page
+## 8. The generated Board-Webpage
 
-One file, two modes, and there is no second deck:
+One generated site has three URL kinds and no second deck:
 
-- **Flat** (the default): the spine, the two progress signals (Q settled and S gated), the index, and every page, read by scrolling.
-- **Focused**: click any row of the index and pure CSS (`:target` + `:has()`) shuts everything else, leaving only that one question on screen; border, rounded corners, and background fill are dropped, the title is 38px, and the foot carries `← previous · ☰ all · next →`. Use this for projection.
+- **Index**: `board/index.html` carries the spine, Board Map, Related Folders when declared, Section Matrix, page roster, and Activity.
+- **Group**: `board/<GROUP>.html` carries that group's purpose, expandable explanation, progress, and page rows.
+- **Page**: `board/<GROUP>/<page>.html` carries one permanently focused Q/S page, with the shared sidebar preserving navigation.
+
+Internal links are ordinary HTML links when scripts are off. With scripts on, the router swaps the requested page into the current document so the attached chat or terminal session survives navigation.
 
 **Board identity mark (QA4, JL 260726)**: the page title opens with the shared `assets/board-mark.svg`.
 It is four pages overlapping each other, with a speech-shaped aperture cut out of the center; that cutout is transparent, so it works on a light or a dark background.
-`build.py` inlines the SVG straight into the title and encodes the same source into a `<link rel="icon">`, so `board.html` adds no external dependency.
-The geometry of the mark is maintained in the SVG only; the eight `--board-mark-*` tokens in `assets/board.css` control the gradient colors of the four faces.
-Flat mode shows it at 42px and focused mode presses it down to 24px, so the title remains the primary information.
+`build.py` inlines the SVG straight into the title and encodes the same source into a `<link rel="icon">`, so the mark adds no external dependency.
+The geometry of the mark is maintained in the SVG only; the eight `--board-mark-*` tokens in `assets/css/00-base.css` control the gradient colors of the four faces.
+The Index shows it at 42px and a focused page presses it down to 24px, so the title remains the primary information.
 
 **What goes on stage and what is shut when focused** (settled by QA4):
 
-- **On stage** (top to bottom): the title → `🧭 Opening` (this row does not fold, it is always there) → the lead sentence (always there, and **clickable**: open it, and in the drawer, Boundary, plus S's Why this matters / Stage Record / Stage Contract (Required Inputs · Writing Style · venue), are all **flat**, seen in one go, with no second ▸ level nested inside.
+- **On stage** (top to bottom): the title → `🧭 Opening` (this row does not fold, it is always there) → the lead sentence (always there, and **clickable**: open it, and in the drawer, scope plus S's Why this matters / Stage Record / Stage Contract (Required Inputs · Writing Style · venue), are all **flat**, seen in one go, with no second ▸ level nested inside.
   Every subheading in the drawer is **a bare word carrying no icon**: previously only 2 of 7 had an icon, and that is the inconsistency JL named, JL 260725) →
   `🖼 Diagram` (optional; only the section name is on stage, the content is collapsed by default; open it and ▧ ASCII is seen first, while ✏️ Excalidraw takes one more click, JL 260726) →
   `📚 Content` (only the subsections the author wrote explicitly; since 260729 a Q's explanatory paragraph also goes into Opening) →

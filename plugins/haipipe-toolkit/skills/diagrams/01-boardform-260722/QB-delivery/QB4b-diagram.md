@@ -22,7 +22,7 @@ The thing that would have made this fragile is identity, since a hosted deep lin
 - ↪ Covered elsewhere
   Attaching a single excalidraw to one page by hand, from the page, is `QD5`.
   Where a secret would live if one were needed is `QE6`.
-  The fixed on-stage order the Diagram section sits in: `QAa0`.
+  The fixed on-stage order the Diagram section sits in: `QB4`.
 
 ## Diagram
 
@@ -31,7 +31,7 @@ The thing that would have made this fragile is identity, since a hosted deep lin
  ═══════════════════════════════════════════════════════════════════════
 
    board.md            ## Pages -> the groups, the order
-   QA4a-*.md  ×28      ## Diagram's first ``` block -> this frame's seed
+   QB4b-*.md  ×28      ## Diagram's first ``` block -> this frame's seed
         │
         │  xcal.py                 (re-runnable: stable ids, keeps a human's
         ▼                           drawing and position, drops dead frames)
@@ -41,7 +41,7 @@ The thing that would have made this fragile is identity, since a hosted deep lin
         ├──► ?board=<scene>              the whole board, every page side by
         │                                side. the only place the relations
         │                                BETWEEN pages can be said at all
-        └──► ?board=<scene>&frame=QA4a   one page's frame, computed per
+        └──► ?board=<scene>&frame=QB4b   one page's frame, computed per
                                          request by serve_frame(); an unknown
                                          name lists the real ones
 
@@ -94,7 +94,7 @@ The thing that would have made this fragile is identity, since a hosted deep lin
    truth       their scene; our file becomes a copy
    page shows  iframe + fallback link, which is what QD5 already renders
    deep link   ?element=<frameId>, and the ids are OURS because we PUT
-               the content, so a frame can simply be called QA4
+               the content, so a frame can simply be called QB4
    needs       Plus subscription · API key in env.sh (QE6) · network
    costs       paid tier, public beta, breaking changes expected
    survives    nothing offline. no network is an empty box
@@ -151,11 +151,24 @@ The thing that would have made this fragile is identity, since a hosted deep lin
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa2
 
 ## Content
-### §0 The Diagram section itself
+### §0 What Diagram conveys
+```
+🖼 Diagram · answers: can I see the whole subject at once, before reading?
+──────────────────────────────────────────────────────────────
+conveys   the subject's shape: flow, comparison, before/after, option set
+holds     ▧ ASCII figure, the required half, opens with the section
+          ✏️ Excalidraw canvas, optional, one more click, empty by default
+source    ONE ## Diagram: fenced ascii figure(s), then optionally one bare
+          canvas URL alone on its own line, nothing else on that line
+rules     the ascii must survive being copied out: no side-by-side trees,
+          nothing whose meaning lives in whitespace · the canvas never
+          replaces the figure, it is where colleagues draw together
+omit      when no drawing clarifies more than the prose: delete the section
+```
 Diagram gives one visual account of the flow, comparison, before/after, or option set.
 Its heading remains visible, but the figure starts hidden so a large drawing does not dominate the page before it is wanted.
 Keep it only when opening it replaces or clarifies prose; decoration does not earn a section.
-Under the base/variant model on `QAa0`, this section is frame: it renders identically for every page kind, and no variant may restructure it.
+Under the base/variant model on `QB4`, this section is frame: it renders identically for every page kind, and no variant may restructure it.
 
 #### The section holds two subsections, and they are not equals
 (JL 260726: ▧ ASCII opens with the section, ✏️ Excalidraw takes one more click)
@@ -184,11 +197,11 @@ The ASCII figure stays for the same reason and is never replaced by the excalidr
 
 #### The source stays ONE `## Diagram`
 Write one useful ASCII figure and, optionally, one Excalidraw share link under `## Diagram`.
-QA4 renders the section between Opening and Content with the body hidden until clicked.
+QB4 renders the section between Opening and Content with the body hidden until clicked.
 Delete the whole source section when the visual adds no understanding.
 
 Write ONE `## Diagram` section, not two.
-The renderer splits it into `▧ ASCII`, which opens with the section, and `✏️ Excalidraw`, which takes one more click (QA4 §2, JL 260726).
+The renderer splits it into `▧ ASCII`, which opens with the section, and `✏️ Excalidraw`, which takes one more click (QB4 §2, JL 260726).
 The rule that decides the halves is the one already governing the body: a bare Excalidraw URL alone on its own line is the canvas, and every other line is the figure.
 So do not add `### ASCII` or `### Excalidraw` headings here; a `###` inside `## Diagram` is not a recognized construct and would render as ordinary prose inside the figure half.
 Put the URL below the figure with nothing else on the line, exactly as before, and a URL written inside a fence stays in the figure where it was drawn.
@@ -198,7 +211,7 @@ Proved 260726. It removes the API key, the subscription, the vendored bundle and
 
 #### P0. One excalidraw for the board, one FRAME per page
 (JL 260726, and the single scene is the point rather than a packaging detail)
-`board.excalidraw` is one file holding one frame per page, named for the page: `QAa2`, `QD5`, `QAb1`.
+`board.excalidraw` is one file holding one frame per page, named for the page: `QB4b`, `QD5`, `QB5a`.
 It is never split into a file per page, because a single surface is the only thing that can say how the pages RELATE, which is the job `## Pipeline` does badly in ASCII and the only argument for drawing at all.
 Editing happens on the whole board; a page's Diagram opens at its own frame.
 
@@ -243,7 +256,7 @@ Three pages seed a grey placeholder instead, because they have no ASCII figure a
 
 #### P4. Regenerating is safe, which is what makes it usable
 (stable ids, kept positions, kept drawings, dropped ghosts)
-Every element `xcal.py` mints carries a prefixed id (`frame-QA4a`, `t-QA4a-fig`), so a regen renames nothing and no page's link dies.
+Every element `xcal.py` mints carries a prefixed id (`frame-QB4b`, `t-QB4b-fig`), so a regen renames nothing and no page's link dies.
 An element with any other id is a human's drawing and is carried through untouched, and a frame that already exists keeps the x/y a human moved it to.
 A frame whose page has been retired is dropped rather than kept, since a prefixed id that matches no page is a ghost and not a drawing; `--fresh` is the one destructive mode and is never the default.
 This is the acceptance bar this page set before anything was built, and it is the only reason the generator can be re-run at all.
@@ -281,13 +294,13 @@ Editing the whole board, with no `frame=`, replaces everything, because that edi
 #### P1. The scene is just JSON, and we own the ids
 (so a frame can be named for the page it belongs to, and stay named)
 `.excalidraw` is an open format, and `diagram-ascii-canvas/bin/txt_to_canvas_lib.py` already writes it with `frameId`, so a board-shaped excalidraw is a generator away rather than a product away.
-Element ids are strings we choose, which is the part that makes any of this automatable: a frame can carry the page id itself, so `?element=QA4` is predictable instead of discovered.
+Element ids are strings we choose, which is the part that makes any of this automatable: a frame can carry the page id itself, so `?element=QB4` is predictable instead of discovered.
 The board already holds everything the layout needs, because `## Pages` gives the groups and the order and `## Pipeline` gives the arrows.
 
 #### P2. What a generated excalidraw would be FOR
 (not prettier figures; the relationships a single page cannot hold)
 A per-page excalidraw can only ever say something about that page.
-One surface can say QA6 feeds QA8, that QD is the live layer, that QE6 is the local half of QE1, and it can say it by position and arrow rather than by prose.
+One surface can say QB5b feeds QB5a, that QD is the live layer, that QE6 is the local half of QE1, and it can say it by position and arrow rather than by prose.
 That is the job `## Pipeline` does badly today, in ASCII, and it is the only argument for this feature that a per-page excalidraw does not already satisfy.
 
 ### §3 The routes not taken
@@ -479,6 +492,7 @@ When a script edits a section, rebuilding the section from its parts is safe in 
 >> CC0726: two causes, and only the second was ours. The dialog's confirm is called "Replace my content", and the frame behind it held nothing, because 28 named empty frames was the whole scene. Frames are seeded from the pages' ASCII figures as of this entry.
 
 ## Log
+260801 · §0 renamed "What Diagram conveys" and opened with the five-row protocol face diagram (conveys · holds · source · rules · omit) on JL's ask; master view on QB4 §0
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Marked frame under the base/variant model on QAa0; §0's heading simplified and the provenance parentheticals dropped from headings on JL's ask (the Log already records the merges)
 260729 · Renamed QA4a -> QAa2 when the QAa page group was carved (JL), and the `## Diagram` section's own render rules moved in from the page-layout face as §0, so the section and its canvas are one subject. Older lines cite QA4/QA4a; they are history

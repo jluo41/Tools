@@ -47,7 +47,8 @@ class SentenceChatContractTest(unittest.TestCase):
             "var shortId = contentId + '.P' + nextP + '.S1'", self.js
         )
         self.assertIn("var fullId = sec.id + '.' + shortId", self.js)
-        self.assertIn("window.__boardWireSentenceChats = wireSentenceChats", self.js)
+        self.assertIn("window.__boardWireSentenceChats = function () {", self.js)
+        self.assertIn("    wireSentenceChats();", self.js)
         self.assertIn("if (window.__boardWireSentenceChats)", self.js)
 
     def test_heading_is_a_terminal_sibling_not_a_sentence_parent(self):

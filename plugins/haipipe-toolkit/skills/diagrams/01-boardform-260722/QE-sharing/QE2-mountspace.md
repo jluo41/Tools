@@ -68,6 +68,10 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 - [x] Decide how boards are discovered
       Scan for `<unit>/diagram/<NN>-<topic>/board.md` via `os.walk` with a prune list (`.git`, `node_modules`, `_WorkSpace`, the data stores…) and a depth cap of 9.
       Verified fast on `Physician-SPACE` (finds 2 boards, no cache needed yet).
+- [x] SPACE Board Home: discover → see → open (JL 260801)
+      The direct Board service now exposes the human-facing route `/boards`, not an internal `/_board/*` route. It scans every non-hidden, non-archived `board.md` below its mounted SPACE, groups cards as Task Board · Paper Board · Skill Board, then shows title · path · spine · settled-page progress and links to that Board's own `board/index.html`. Every Board top bar links back with `🏠 Boards`.
+      Task Board is the default. A board under `plugins/*/skills/diagrams/` is a Skill Board (even if its topic says paper); a paper lifecycle tree is a Paper Board. This is a location rule, not a registry.
+      `/_board/*` remains reserved for live implementation endpoints such as chat and health; the singular `board/` remains each Board's generated folder, so `/board` would be ambiguous.
 - [ ] 🔴 Discovery must find boards that do not live under a `diagram/` folder
       The rule ticked above scans only for a parent folder literally named `diagram`, but the
       skill's own grammar says an existing tree can BE a board and then "the tree is called
@@ -87,6 +91,9 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 
 ## Where we are
 **v1 shipped in `haichat-inlab` (`boards_api.py` + the Boards view), verified end to end on 260724.**
+
+- Direct Board service home, shipped 260801
+  One mounted SPACE now has a lightweight, read-only `/boards` entry page in `serve.py`: 10 current Board source folders are discovered by `live/home.py`, grouped into Task Boards (the default), Paper Boards (paper lifecycle trees), and Skill Boards (`plugins/*/skills/diagrams/`). Each card opens its own generated Board Index. This is not another Board and writes no registry or `board.md`; it is a fresh discovery view. It does not solve multi-SPACE mounting, which remains this page's open design work.
 
 - What runs now
   `GET /api/board/spaces` (mounted SPACEs + board counts) · `GET /api/board/boards?space=` (rows with progress) · `GET /api/board/q` (one board as JSON, same code path as `build.py --json`) · `GET /_board/page/{space}/{path}` (the real `board.html`, path-vetted) · `POST /_board/comment|discuss|resolve` (the page's own write-backs, relayed to the skill's `serve.py` functions, then rebuild).
@@ -129,6 +136,8 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
   `src/components/BoardsView.tsx` + the `boards` entries in `src/views.ts` / `src/types.ts` / `src/Console.tsx`.
 
 ### Imported from the skill
+- `live/home.py` · `serve.py` · `src/page_board.py`
+  The direct-service `/boards` route, its read-only discovery/rendering, and the return link present on every generated Board page.
 - `build.py`
   `parse_dir()` / `to_json()`: the board list's numbers come from here, no second parser (imported by `boards_api.py`).
 - `serve.py`
@@ -143,6 +152,8 @@ SPACE: JL's term for the root of one research repo, e.g. `Physician-SPACE`, `Wel
 One SPACE holds several boards.
 
 ## Log
+260801 · Added the Space Home taxonomy JL proposed: Task Board by default, then Paper Board, then Skill Board. Classification is inferred from the owning path, with Skill taking precedence over a topic word such as “paper”; `/boards` now shows grouped cards, and focused discovery/rendering tests cover all three kinds.
+260801 · JL ruled that the SPACE-level human route is `/boards`; `/_board/*` remains the private live-API namespace, while each Board keeps its own generated `board/` folder. Shipped `live/home.py` discovery + cards and the `🏠 Boards` return link on every generated Board page; local discovery/escaping/navigation tests passed.
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260727 · JL proposed running the service in Docker with only the board folder mounted, so writes are
        kernel-confined. Read the shipped container and found the mount side already built (compose

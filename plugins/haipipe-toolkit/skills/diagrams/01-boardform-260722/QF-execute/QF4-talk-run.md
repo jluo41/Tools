@@ -1,5 +1,5 @@
-# Driving the talk layer: the SDK drawer and the CLI terminal
-state: 🔴 OPEN · the SDK half has three suites and real numbers; the CLI half has none
+# Driving the talk layer: the SDK chat version and the TUI chat version
+state: 🔴 OPEN · the SDK chat version has three suites and real numbers; the TUI chat version has none
 owner: JL
 method: list the talk failures that shipped green through every existing instrument, then name the axes a run has to cover
 
@@ -33,7 +33,7 @@ which session got my message          ✗        ✗         ✗          ✅
 did a model actually answer           ✗        ✗         ✗          ✅
 does turn two remember turn one       ✗        ✗         ✗          ✅
 did a refusal look like an answer     ✗        ✗         ✗          ✅
-does the terminal share the session   ✗        ✗         ✗          ✅
+do both chat versions share a session ✗        ✗         ✗          ✅
 ```
 
 ### 3 · The five axes
@@ -50,8 +50,8 @@ does the terminal share the session   ✗        ✗         ✗          ✅
 - The session is REUSED rather than reconnected, which is a timing assertion and not a correctness one, because a reconnecting session still answers correctly.
 
 **HANDOVER**
-- The SDK drawer and the CLI terminal share one session per page without fighting over it, which is `QD1`'s Law.
-- A dead terminal must not leave a hold that refuses the drawer forever.
+- The SDK chat version and the TUI chat version share one session per page without fighting over it, which is `QD1`'s Law.
+- A dead TUI chat must not leave a hold that refuses the SDK chat forever.
 
 **INTERRUPTION**
 - Navigating, reloading, or shipping new assets during a live turn must not lose the turn or the transcript.
@@ -84,8 +84,8 @@ So the run pins its own tab and re-navigates if it drifts, it waits on condition
 ### Making the run exist as a thing
 - [ ] 🧰 Make it one command
       Three `.mjs` files in a scratchpad today, which means they protect only the rounds where someone remembers them; they should be files in the skill that take a board folder and exit non-zero.
-- [ ] ⌨ Cover the CLI half
-      Every assertion listed above drives the SDK drawer; the terminal has none, and HANDOVER is exactly the axis where the two meet.
+- [ ] ⌨ Cover the TUI chat version
+      Every assertion listed above drives the SDK chat version; the TUI chat version has none, and HANDOVER is exactly the axis where the two meet.
 - [ ] 🎛 Settle which model and tier the run uses
       Cheap tiers make the run affordable and expensive tiers are what JL actually uses; 260731 showed a bug that only appeared at JL's settings.
 
@@ -96,10 +96,11 @@ So the run pins its own tab and re-navigates if it drifts, it waits on condition
       Break the router listener on purpose and watch `navtest.mjs` go red, the same way `assets.py`'s `verify()` was proven.
 
 ## Where we are
-The SDK half has three suites and real numbers; the CLI half has nothing, and none of it is a command anyone can run without being told.
+The SDK chat version has three suites and real numbers; the TUI chat version has nothing, and none of it is a command anyone can run without being told.
 
 - 260801 CC · 🔬 Opened from a session that fixed four talk failures and built the suites while doing it
   JL: "I think I want to add something in QF about testing out code for the SDK-Talk and CLI-Talk."
+  JL named the two versions the same round: the SDK chat version (`QD2`) and the TUI chat version (`QD3`), which is the vocabulary this face uses throughout.
   Written from the runs rather than from a plan: every failure in §1 is one JL hit in the browser, and every suite in §4 was built to catch it afterwards.
   What justifies a fourth face rather than an item on `QF3` is that the instrument spends a model turn: `QF3` is free and fast and can run on every change, and this one costs money and minutes, so it cannot inherit the same trigger.
 
@@ -114,9 +115,9 @@ These are the calls only JL can make; CC ticks nothing here.
 
 ## Files
 - `../../board/haipipe-board/assets/js/10-drawer/20-chat/`
-  The SDK drawer, in six parts; BINDING and CONTINUITY live here.
+  The SDK chat version, in six parts; BINDING and CONTINUITY live here.
 - `../../board/haipipe-board/assets/js/10-drawer/30-terminal.js`
-  The CLI half, which no assertion currently touches.
+  The TUI chat version, which no assertion currently touches.
 - `../../board/haipipe-board/assets/js/10-drawer/40-follow.js`
   `follow()`, the function whose missing listener was failure one in §1.
 - `../../board/haipipe-board/live/chat.py`
@@ -128,9 +129,9 @@ These are the calls only JL can make; CC ticks nothing here.
 - `QF3-browser-run.md`
   The third instrument; this face is the fourth and shares its browser but not its trigger.
 - `QD2-chat-sdk.md`
-  The SDK drawer's own face.
+  The SDK chat version's own face.
 - `QD3-chat-terminal.md`
-  The CLI terminal's own face.
+  The TUI chat version's own face.
 
 ## Log
-260801 · Opened on JL's ask for a QF face covering SDK-Talk and CLI-Talk testing, written from the five talk failures found in the browser on 260731 and the three suites built to catch them
+260801 · Opened on JL's ask for a QF face covering the SDK chat version and the TUI chat version, written from the five talk failures found in the browser on 260731 and the three suites built to catch them
