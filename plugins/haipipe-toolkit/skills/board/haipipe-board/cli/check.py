@@ -280,9 +280,23 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     # and unterminated by design, and a first draft of this rule flagged three
     # lines on every page for it, which is how a checker teaches people to stop
     # reading its output.
-    prev_open, in_prose = False, False
+    # A `<!-- … -->` guide comment is instructions, not page prose, and its
+    # wrapping is deliberate. `ref/page-template.md` is largely one long
+    # comment, so counting it flagged twelve lines on every page copied from
+    # the template, which is the fastest way to teach someone to ignore a
+    # checker (JL 260802).
+    prev_open, in_prose, in_comment = False, False, False
     for lineno, ln in strip_fences(text, prose_only=True):
         s = ln.strip()
+        if "<!--" in s:
+            in_comment = "-->" not in s.split("<!--", 1)[1]
+            prev_open = False
+            continue
+        if in_comment:
+            if "-->" in s:
+                in_comment = False
+            prev_open = False
+            continue
         if s.startswith("## "):
             in_prose, prev_open = True, False
             continue
@@ -475,7 +489,11 @@ def check_file_paths(text, name, rep, board_dir=None):
                 continue
             if any((r / cand).exists() for r in roots):
                 continue
-            if "*" in cand:            # a glob row, e.g. assets/css/*.css
+            if "*" in cand or "<" in cand or ">" in cand:
+                # a glob (assets/css/*.css) or an angle-bracketed placeholder
+                # (<path/to/thing.py>) names a shape, not a file. The template
+                # is copied for every new page, so its example rows must not
+                # arrive pre-broken (JL 260802).
                 continue
             rep.add(WARN, "dead-file-path", f"{name} · Files",
                     f"`{cand}` does not resolve from the engine, the board, "

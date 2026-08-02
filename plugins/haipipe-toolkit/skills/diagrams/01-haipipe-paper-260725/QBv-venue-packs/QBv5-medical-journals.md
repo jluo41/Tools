@@ -1,6 +1,6 @@
 # Medical specialty journals: a pack defined by what it does NOT share with JAMA
 
-state: 🟡 PARTIAL · 1 outlet built · 29 exemplars · a plural pack name with a single journal in it
+state: 🟡 PARTIAL · 1 outlet built · 25 exemplars · a plural pack name with a single journal in it
 owner: JL
 method: state what Diabetes Care requires that the JAMA house style does not, and keep the pack's extension point visible so the plural name stays honest
 
@@ -56,7 +56,7 @@ How this page must be written. Read it before editing, and edit to it.
   📚 near-mandatory citation: ADA Standards of Care
   🔤 domain vocabulary: TIR · TBR · TAR · GMI · MARD · AGP
 
-  📊 29 exemplars · 6 sections · taste ✓ at outlet level
+  📊 25 exemplars · 6 sections · taste ✓ at outlet level
   🧩 the pack is PLURAL and holds ONE journal, on purpose
 ```
 

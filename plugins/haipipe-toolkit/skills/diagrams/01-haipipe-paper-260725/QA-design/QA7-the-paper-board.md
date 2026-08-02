@@ -1,175 +1,282 @@
-# ⑧ The paper board: what is worked, and why nothing leaves
-state: 🟡 PARTIAL
+# The paper board: a control plane nothing leaves
+
+state: 🟡 PARTIAL · the frontier and the gate meaning are ruled and measured; the Round family is not built and the rule reaches no worker
 owner: JL
 method: one S page per independently gated unit, state read off the pages, and no second pointer anywhere
 
 ## Opening
+
 What is on a paper's own board, and how is it not a design board?
-It uses the same tool, the same face grammar and the same four state values, which makes the two look identical. They are opposites: a design board empties as its rulings graduate out, and a paper board never empties, because its Content IS the paper.
+`Paper-X/0-lifecycle/` uses the same tool, the same page grammar and the same four `state:` values as this one, so the two look alike.
+They are opposites: a design board empties as its rulings leave, and this one never does, because a gated page's Content IS the paper.
+Confuse them and you wait for a passed section to empty into the manuscript.
+This page rules what it holds, how its state is derived, and why nothing leaves.
 
-`0-lifecycle/` uses the same tool, the same face grammar and the same four `state:` values as the board you are reading, which makes the two look like one kind of thing. They are opposites, and confusing them produces a specific error: applying the graduation rule and expecting a gated S page to empty into the manuscript. It does not. The page IS the manuscript.
+**Where this page sits**: `QA3` is the deliberate opposite of this page, and the two were written as a pair.
+`QA6` covers what else is in the paper folder, `QC3b` the grain that decides how many S pages a stage gets, and `QA8` who creates one.
 
+**Why a stale render became a defect**: since 260726 this board is the paper's FACE rather than a file you may optionally open.
+`/haipipe-paper enter` builds it and hands over its URL, so the human is looking at it before any work starts (`QA4`).
+That is why every stage run now ends by rebuilding: a board nobody chose to open could be stale, and a board that IS the entry point cannot be.
 
-Since 260726 this board is also the paper's FACE, not a file you may optionally open: `/haipipe-paper enter` builds it and hands over its URL, so the human is looking at `⑧` before any work starts (`QA4`). That raises the cost of a stale render from an inconvenience to a defect, and it is why every stage run now ends by rebuilding.
+## Writing Style
 
-The approach is one page per independently gated unit, with state read off the pages rather than stored anywhere else. What we want is a board whose frontier can always be derived and can therefore never disagree with itself, which is exactly what a hand-written pointer to the current stage failed to give us.
-Scope: This page covers What a paper board holds, how its state is derived, and why nothing graduates out of it. Neighbouring pages cover The design board is the opposite object and is `QA3`; what else is in the paper folder is `QA6`; the grain that decides how many S pages a stage gets is `QC3b`; who creates one is `QA8`.
+How this page must be written. Read it before editing, and edit to it.
+
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+
+**Say which board a sentence is about, every time**: this page and `QA3` describe two objects that share a tool, a grammar and a glyph set.
+An unqualified "the board" here is the defect the page exists to prevent.
+
+**A glyph's meaning is stated with its owner**: `✅` means a ruling on a design board and a passed human gate here.
+Never write the glyph without saying which one, because the two readings are what make a reader wait for the wrong thing.
+
+**Never introduce a second place that holds the frontier**: not a pointer file, not a status field, not a cached value in prose.
+The frontier is read, and every attempt to store it has ended by disagreeing with the pages.
 
 ## Diagram
+
+**The execution pipeline**: eight families, and the edges that are real.
+
+```text
+ S-Seed 0,1          why this paper can exist, and where it sits
+      ▼
+ S-Work 0,1          the resources and the defensible claims
+      ▼
+ S-Venue 0..3        outlet · pitch · narrative · the decision register
+      ▼
+ S-Display 1..N      one page per figure or table, each gating alone
+      ▼
+   ┌──┴──────────────────────┐
+   ▼                         ▼
+ S-Main 1..9           S-Appendix 0,A..F
+   └──────────┬──────────────┘
+              ▼
+ S-Submission 0..3    reconcile · compile · review · submit
+                      four VERBS, stable and reused every round
+      ▼
+ S-Round 1..N         ONE page per round, carrying that round's discussion,
+                      decisions, applied work and gate
+
+ 📖 this is EXECUTION order, not the Delivery reading order. Board adjacency
+    never creates an edge
+ 🔁 an external review REOPENS the affected Work, Display, Main or Appendix
+    page; the round page records what came back and what was done
 ```
-   ⑧ PAPER BOARD    Paper-X/0-lifecycle/          explicit execution pipeline
 
-   S-Seed 0,1        why this paper can exist, and where it sits
-        ↓
-   S-Work 0,1        the resources and the defensible claims
-        ↓
-   S-Venue 0..3      outlet · pitch · narrative · the decision register
-        ↓
-   S-Display 1..N    one page per figure or table, each gating alone
-        ↓
-     ┌──┴───────────────────────┐
-     ▼                          ▼
-   S-Main 1..9             S-Appendix 0,A..F
-     └──────────┬───────────────┘
-                ▼
-   S-Submission 0..3   reconcile · compile · review · submit
-                       the four VERBS, stable and reused every round
-        ↓
-   S-Round 1..N        ONE page per round (JL 260726), each carrying that
-                       round's discussion, decisions, applied work and gate.
-                       An external review REOPENS the affected Work, Display,
-                       Main or Appendix pages, and the round page records
-                       what came back and what was done about it.
+**The two boards, side by side**: one glyph, two meanings.
 
-   ── this is EXECUTION, not the Delivery index order ─────────────
-      Delivery reads Opening → Work; this graph keeps the lifecycle's
-      explicit dependencies. Board adjacency never creates an edge.
-
-   ── the frontier is READ, never stored ──────────────────────────
-      the earliest page above whose gate has not passed, taken from
-      the pages' own state: lines. A hand-written "current stage"
-      pointer was tried and began disagreeing with the gate record,
-      so no second pointer or STATUS.md exists.
-
-   ── nothing graduates ───────────────────────────────────────────
-      ② a ruling closes and its Law LEAVES for the skill
-      ⑧ a gate passes and the Content STAYS, because it is the paper
+```text
+                    📋 ② DESIGN BOARD           📄 ⑧ PAPER BOARD
+ ─────────────      ──────────────────────      ─────────────────────────
+ what a page holds  the argument                the thing the unit produces
+ ✅ means           a ruling was made           a human passed the gate
+ on ✅              the Law LEAVES for ①        the Content STAYS
+ delete it          every skill still runs      ⑦ loses frontier, queue,
+                                                state, and nothing true can
+                                                be said about the files
 ```
 
 ## Content
-### A control plane, not a record
-Each S face is one concrete, checkable unit of one paper's lifecycle. Its `## Content` is the thing that unit exists to produce: the seed, the claim ledger, the visual argument, the reader-facing section. Its `## Items to Finish` is that unit's queue. Its `state:` is where the unit actually is.
 
-Eight named families organize ownership: Seed, Work, Venue, Display, Main, Appendix, Submission, Round. Family order makes the index scannable; the pipeline records the real execution edges.
+### 1 · A control plane, not a record
 
-### The eighth family: Round
-(JL 260726)
+**One page per gated unit**: what an S page holds, and in which family.
 
-A submission round used to live in `⑦` as `1-rounds/vYYMMDD/{README,discussion,decisions,todo,applied}.md`. It moves here, as one S page per round, `0-lifecycle/7-round/S-Round-<n>-<vYYMMDD>.md`.
+```text
+ 📄 ONE S PAGE            = one independently gated unit
+    📚 Content            the thing that unit exists to produce
+    🎯 Aims               that unit's queue
+    🚦 state:             where the unit actually is
 
-The reason is not tidiness. That folder duplicated four mechanisms this board already owns, and one of them was actively dangerous.
+ 🗂 EIGHT FAMILIES   Seed · Work · Venue · Display · Main · Appendix
+                     · Submission · Round
+ 📇 family order makes the index scannable; the pipeline holds the real edges
+ 🚫 nothing here empties on ✅, because the Content IS the paper
 ```
- todo.md          QA9 already rules that ## Items to Finish IS the queue
- decisions.md     S-Venue-3 is already the decision register
- discussion.md    the board has ## Discussion and anchored comments
- applied.md       that is what a passed gate records
- latest.md        A STORED POINTER TO THE CURRENT ROUND
+
+📄 Establishes what one S page is, what `✅` means on it, and why a passed gate keeps everything.
+
+#### 1.1 · `state:` here means the gate, not the answer
+(the single most important difference from `QA3`, where the same glyph means a ruling)
+A human passes a CHECK gate; an unattended worker may prepare one and may never write the approval.
+That is why the two boards cannot share a reader's expectation even though they share the glyph.
+
+#### 1.2 · Nothing graduates, and that is the inverse of a design board
+(a design board empties as its rulings leave, and this one accumulates)
+When an S page passes its gate it keeps everything: the Content is the paper, the gate record is the provenance, and the queue is the history of how it got there.
+Delete `②` and the skill still runs. Delete this board and `⑦` becomes a folder of files nobody can say anything true about.
+
+#### 1.3 · One page per gated unit is ruled in general and unruled for Display
+(the claim the page rests on, with one family that does not follow it)
+Display has eleven S pages on the MISQ paper while its stage contract still says `runs: once`.
+The ruling that would reconcile them is `QC3b`'s open migration to per-unit, so the grain holds everywhere except the one family that most needs it.
+
+### 2 · The frontier is read, never stored
+
+**Derivation**: where the current stage comes from, and what happens when it is written down instead.
+
+```text
+ ✅ READ IT            the earliest page in explicit pipeline order whose
+                       gate has not passed, taken from the pages' own
+                       state: lines
+
+ ❌ STORE IT           tried twice, failed twice
+    STATUS.md          current_layer began disagreeing with the gate record
+    latest.md          a stored pointer to the current round, inside the
+                       1-rounds/ folder this board absorbed
+
+ 📏 MEASURED 260726: run against the MISQ paper's 40 S pages, every stage
+    predicate resolves and the frontier lands where it should
 ```
-`latest.md` is the disease this page's own Law names: the frontier is read, never stored. It would have begun disagreeing with the pages exactly the way `STATUS.md`'s `current_layer` did.
 
-One page per round, not four. `S-Submission 0..3` stay as the four stable verbs, reconcile, compile, review and submit; the round page is where that round's actual history lives and where its gate is. The alternative, four pages per round, was considered and rejected: it would have dissolved `S-Submission` and cost four pages per round for a distinction, "round 2's compile gates separately from round 1's", that nobody has needed.
+🧭 Establishes that the frontier is a derivation rather than a value, and records the two failed attempts to store it.
 
-The received artifacts follow the page (JL 260726). Reviewer letters, decision letters and the submitted PDF sit beside `S-Round-<n>-<vYYMMDD>.md` in `0-lifecycle/7-round/`, and `1-rounds/` is retired as a top-level container entirely. One round, one place. This differs from Display: its S pages and rebuild workspace live under `0-lifecycle/3-display/`, while only the journal-facing `float.tex` and selected `assets/` project to unnumbered `displays/<unit>/`.
+#### 2.1 · A stored pointer does not go wrong loudly
+(it agrees for a while, then disagrees, and nothing announces the moment)
+`STATUS.md`'s `current_layer` and `1-rounds/latest.md` are the same defect twice.
+Both were written to save a derivation that takes one pass over the pages, and both would report a stage the gates no longer support.
 
-### `state:` here means the gate
-On a paper board `✅` means a human passed the gate, not that a question was answered. This is the single most important difference from `QA3`, where the same glyph means a ruling was made. Only a human may pass a CHECK gate; an unattended worker may prepare it and may not write the approval.
+#### 2.2 · The derivation was a claim until it was run
+(260726 turned it into a measurement, and the run found one broken predicate)
+Every stage predicate resolves against the MISQ paper's 40 S faces, and the frontier lands on `S-Seed-0-seed.md` 🟡, awaiting human CHECK, which is correct.
+The one predicate that failed was a defect introduced the same morning: a `venue:` frontmatter key the board's grammar cannot parse, when the pin was already on the venue page's `state:` line.
 
-### The frontier is derived
-The frontier is the earliest page in explicit pipeline order whose gate has not passed, read from the pages' own `state:` lines. No face or sidecar holds it, because a hand-written pointer to the current stage is exactly what started disagreeing with the gate record. `STATUS.md` is retired.
+### 3 · Rounds are pages, and what that replaced
 
-### Nothing graduates
-A design board empties as its rulings leave. A paper board never empties. When an S page passes its gate it keeps everything: the Content is the paper, the gate record is the provenance, and the queue is the history of how it got there.
+**One page per round**: the four mechanisms the old folder duplicated.
 
-Delete `②` and the skill still runs. Delete `⑧` and the paper loses its frontier, its queue and its state, and the manuscript in `⑦` becomes a folder of files nobody can say anything true about.
+```text
+ 📁 1-rounds/vYYMMDD/          ━▶ what already owned it
+ ──────────────────────           ─────────────────────────────────────
+ todo.md                       ━▶ QA9: ## Aims IS the queue
+ decisions.md                  ━▶ S-Venue-3 is the decision register
+ discussion.md                 ━▶ ## Discussion and anchored comments
+ applied.md                    ━▶ that is what a passed gate records
+ latest.md                     ━▶ 🚨 A STORED FRONTIER POINTER
 
-### What crosses this folder's edge
+ ✅ one S-Round page per round, in 0-lifecycle/7-round/
+ 📎 reviewer letters, decision letters and the submitted PDF sit BESIDE it
+ 🚫 four pages per round was considered and rejected: it would dissolve
+    S-Submission for a distinction nobody has needed
 ```
- ① ──▶ ⑧  the skill set     IN. The stage runner reads one contract from ①,
-                            works one S page here, and dispatches a bounded
-                            worker that returns to this same page. Creating a
-                            page is create-page.py in ① calling haipipe-board's
-                            stage.py: Board owns the filename and face grammar,
-                            Paper owns the Content jobs.
 
- ⑧ ──▶ ⑦  the paper         OUT, by generation only. An S page's ## Content IS
-                            the section; sections/*.tex is produced FROM it.
-                            One direction, always: md to tex, never back.
+🔁 Establishes why a round became a page, and that the reason was duplication rather than tidiness.
 
- ⑧ ──▶ the wall             OUT, through the page. A Q-consumer block on an S
-                            page becomes an entry in ⑦'s 1-probes/, and the
-                            landed answer comes back to the sentence that owes
-                            it. The page is where a question is raised and
-                            where its answer is woven in.
+#### 3.1 · The dangerous file was `latest.md`, not the other four
+(it is the disease this page's own Law names)
+A stored pointer to the current round would have begun disagreeing with the pages exactly the way `STATUS.md` did.
+The other four were merely redundant; this one was the frontier written down in a second place.
 
- ⑧ ──▶ ②                    NOTHING. This board never writes to a design board,
-                            and a design board's rulings reach it only after
-                            they have graduated into ① and a worker follows them.
+#### 3.2 · The received artifacts follow the page
+(one round, one place)
+Reviewer letters, decision letters and the submitted PDF sit beside `S-Round-<n>-<vYYMMDD>.md`, and `1-rounds/` is retired as a top-level container.
+This differs from Display, whose S pages and rebuild workspace stay under `0-lifecycle/3-display/` while only the journal-facing `float.tex` and selected assets project out.
+
+### 4 · Every edge runs through a page
+
+**The boundary**: what may cross, and in which direction.
+
+```text
+ ① ━▶ ⑧  IN. The stage runner reads one contract from ①, works one S page
+          here, and dispatches a bounded worker that returns to this page.
+          create-page.py calls the board's stage.py: Board owns the filename
+          and page grammar, Paper owns the Content jobs
+ ⑧ ━▶ ⑦  OUT, by generation only. An S page's Content IS the section, and
+          sections/*.tex is produced FROM it. md to tex, never back
+ ⑧ ━▶ 🧱 OUT, through the page. A Q-consumer block becomes an entry in ⑦'s
+          1-probes/, and the landed answer returns to the sentence that owes it
+ ⑧ ━▶ ②  🚫 NOTHING. This board never writes to a design board
 ```
-Every edge here runs through a page. That is the whole design: there is no path by which work reaches the paper without a page recording that it happened, which is what makes the frontier readable and the history real.
+
+🔗 Establishes that no work reaches the paper without a page recording that it happened, which is what makes the frontier readable and the history real.
 
 ## Aims
-- [x] 🏛 One S page per independently gated unit
-      Display and Section have many pages because their units gate separately; single-artifact stages have one.
-- [x] 🧭 The frontier is derived, not stored
-      Read off the explicit pipeline from the pages' own `state:` lines; no `STATUS.md` or other current-stage pointer exists.
-- [x] 🚦 `✅` on a paper board means a human gate passed
-      Not that a question was answered. Only a human may write it.
-- [x] 🔁 Rounds live on the board, one page per round
-      `1-rounds/`'s record half duplicated the queue, the register, the discussion layer and a passed gate, and its `latest.md` was a stored frontier pointer. One S page per round, not four (JL 260726).
-- [ ] 🛠 Build the Round family
-      `0-lifecycle/7-round/`, the `S-Round` family in the Board's family list, and `haipipe-paper-round`'s rewrite: it still OWNS a five-file `1-rounds/` contract with a `latest.md`, so a worker following it today would recreate exactly what this ruling removed.
-- [ ] 📐 Say what stays in `⑦`
-      Reviewer letters, decision letters and the submitted PDF sit beside the round page in `0-lifecycle/7-round/`. `1-rounds/` is retired. `haipipe-paper-folder` no longer scaffolds it.
-- [ ] 📐 State the difference where a worker reads it
-      This page and `QA3` state it. A stage worker reads `stage.md`, which says nothing about which kind of board it is writing into.
-- [ ] 🧪 Cold-read one paper board
-      Give a fresh agent `0-lifecycle/` alone and check it can name the frontier and the next action without being told.
+
+### A1 · 📄 A control plane, not a record
+- A1.1 · One S page exists per independently gated unit.
+  **Done when:** every family's stage contract matches the number of pages it produces, including Display.
+- A1.2 · `✅` on this board means a human passed a gate, and only a human writes it.
+  **Done when:** no unattended worker can write a `✅` on an S page.
+- A1.3 · The record-versus-control-plane difference reaches the worker who needs it.
+  **Done when:** a stage worker reading `stage.md` learns which kind of board it is writing into, without reading a design board it is forbidden to read.
+
+### A2 · 🧭 The frontier is read, never stored
+- A2.1 · The frontier derives from the pages and exists nowhere else.
+  **Done when:** no file outside the pages records the current stage or the current round, and the derivation runs against a real paper.
+
+### A3 · 🔁 Rounds are pages, and what that replaced
+- A3.1 · One S page per round, with its received artifacts beside it.
+  **Done when:** `0-lifecycle/7-round/` exists, the `S-Round` family is in the board's family list, and `1-rounds/` is scaffolded by nothing.
+- A3.2 · No shipped skill still describes the layer this ruling removed.
+  **Done when:** `haipipe-paper-round` no longer owns a five-file `1-rounds/` contract with a `latest.md`.
+
+### P · 🏁 Page-level
+- P1 · A fresh reader can work a paper board without being taught it.
+  **Done when:** a cold agent given `0-lifecycle/` alone names the frontier and the next action correctly.
 
 ## States
-Ruled, live, and as of 260726 also EXERCISED. The MISQ paper carries 40 S faces across the eight families, and the derive-from-disk frontier was run end to end against them for the first time: every stage predicate resolves, and the frontier lands on `S-Seed-0-seed.md` 🟡 (REVISE complete, awaiting human CHECK), which is correct. The board itself builds all 40 pages; the only two `.md` files it excludes are `_`-prefixed non-S files, so nothing on that board is invisible.
 
-That run also found the one predicate that did NOT resolve, and it was a defect introduced the same day rather than an old one: the venue pin had been specified as a `venue:` frontmatter key the board's grammar cannot parse. Corrected to read the venue page's `state:` line, where the pin already was. See `QA4`.
+### A1 · 📄 A control plane, not a record
+- 🔨 A1.1 · Ruled in general and unruled for one family. Display carries eleven S pages on the MISQ paper while its contract still says `runs: once`; `QC3b`'s per-unit migration is the open ruling.
+- ✅ A1.2 · Ruled and in force. The CHECK gate is the one thing an unattended worker may prepare and may not write.
+- 🧠 A1.3 · Waiting, and the gap is structural. Both statements of the rule, this page and `QA3`, sit on a design board runtime is forbidden to read.
 
-This board is now also the paper's FACE rather than a file that may be opened: `/haipipe-paper enter` builds it and hands over its URL, which is why a stale render became a defect and every stage run ends by rebuilding.
+### A2 · 🧭 The frontier is read, never stored
+- ✅ A2.1 · Measured 260726 against the MISQ paper's 40 S faces: every predicate resolves and the frontier lands correctly. `STATUS.md` is retired and `latest.md` never shipped.
 
-The rule is not written anywhere a stage worker looks. Both statements of it, this page and `QA3`, sit on a design board that runtime is forbidden to read, which is the gap the open item names.
+### A3 · 🔁 Rounds are pages, and what that replaced
+- ⬜ A3.1 · Not built. The ruling landed on 260726 and `0-lifecycle/7-round/` plus the `S-Round` family entry are still owed.
+- ⬜ A3.2 · Not started. `haipipe-paper-round` still owns the superseded contract, so a worker following it today would recreate exactly what the ruling removed.
 
+### P · 🏁 Page-level
+- ⬜ P1 · Never run.
 
-One S page per independently gated unit is the claim this page rests on, and one of the eight families does not follow it. Display has eleven S pages on the MISQ paper while its stage contract still says `runs: once`, and the ruling that would reconcile them is `QC3b`'s open "Migrate display to per-unit". So the grain is ruled in general and unruled for Display specifically.
-
-The md-to-tex edge stated above has the same problem one level down: `QC3d`'s "Rule what sync reads" is open, so the direction is ruled and the mechanism is not.
-
-Reopened to 🟡 on 260726 (JL).
 ## Files
-- `0-lifecycle/board.md`
-  A live paper board's index, carrying the derived-frontier ruling in its Topic.
-- `0-lifecycle/2-venue/S-Venue-3-decisions.md`
-  The register that holds rulings outliving the stage that raised them.
-- `haipipe-board/SKILL.md`
-  The S-family grammar this board follows.
+
+### 📋 Contracts · what CARRIES a rule to other pages
+- `../../board/haipipe-board/SKILL.md`
+  The S-family grammar a paper board follows, owned by `③` and consulted here.
+- `../../paper/1-lifecycle/haipipe-paper-stage/`
+  The stage runner and its eight contracts, which is where `A1.3` must land for a worker to see it.
+
+### 🧪 Checks · what CATCHES a page breaking a rule
+- `../../board/haipipe-board/cli/check.py`
+  Reports page structure on any board. It cannot tell a control plane from a record, which is why `A1.3` is 🧠 rather than mechanical.
+
+### 📤 Output files · what a BUILD writes
+- `../board/QA/QA7-the-paper-board.html`
+  ⚠️ Generated by `cli/build.py`. Never hand-edit.
 
 ## Law
-A paper board is a control plane, not a record. Each S face is one independently gated unit; its Content is the thing that unit produces, and that Content is the paper.
+
+A paper board is a control plane, not a record. Each S page is one independently gated unit; its Content is the thing that unit produces, and that Content is the paper.
 
 `✅` means a human passed the gate. Only a human may write it.
 
-The frontier is READ, as the earliest page in the explicit dependency graph whose gate has not passed, and is never stored in a second place. The Delivery index is a reading order, not an implicit execution graph.
+The frontier is READ, as the earliest page in the explicit dependency graph whose gate has not passed, and is never stored in a second place. The Delivery index is a reading order and never an implicit execution graph.
 
 Nothing graduates out of a paper board. Where a design board empties as its rulings leave, a gated S page keeps everything it has.
 
-A round is a gated unit and therefore a page: one `S-Round` page per round, carrying that round's discussion, decisions, applied work and gate. `S-Submission`'s four verbs stay stable and are reused. No file outside this board records which round is current.
+A round is a gated unit and therefore a page: one `S-Round` page per round, carrying that round's discussion, decisions, applied work and gate. `S-Submission`'s four verbs stay stable and are reused every round. No file outside this board records which round is current.
+
+Every edge runs through a page. There is no path by which work reaches the paper without a page recording that it happened.
+
+## Lesson
+
+A stored derivation agrees for a while, which is why it survives review. `STATUS.md`'s `current_layer` and `1-rounds/latest.md` were the same defect twice, written to save a pass over the pages, and each would have reported a stage the gates no longer supported without announcing the moment it started lying.
+
+A rule stated only on a design board reaches nobody who runs. Both statements of the record-versus-control-plane difference sit where runtime is forbidden to read, so the worker most likely to confuse the two boards is the one who cannot see the rule.
+
+## Glossary
+
+- **Gated unit**: one part of a paper's lifecycle that a human accepts or rejects on its own, which is exactly what earns it a page.
+- **The frontier**: the earliest page in pipeline order whose gate has not passed, always derived and never stored.
 
 ## Log
+
+260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into four divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Two dead `## Files` paths repaired.
+
 260726 · The frontier stopped being a claim and became a measurement: run against the MISQ paper's 40 S pages, every predicate resolves and the frontier derives correctly. The one failure was a `venue:` frontmatter key ruled into existence the same morning that the board's grammar cannot parse; the pin was already on the venue page's `state:` line. Also on this day the board became the paper's face rather than an optional file, so a stale render is now a defect (`QA4`).
 
-260726 · Rounds moved inside the lifecycle (JL). `1-rounds/` is retired as a top-level container: the round page and its received artifacts both live in `0-lifecycle/7-round/`. One page per round, not four. `haipipe-paper-folder` now scaffolds three containers, not four; `haipipe-paper-round` still owns a superseded five-file contract and needs a rewrite.
+260726 · Rounds moved inside the lifecycle (JL). `1-rounds/` is retired as a top-level container: the round page and its received artifacts both live in `0-lifecycle/7-round/`. One page per round, not four. `haipipe-paper-folder` now scaffolds three containers rather than four; `haipipe-paper-round` still owns a superseded five-file contract and needs a rewrite.

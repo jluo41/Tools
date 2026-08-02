@@ -11,7 +11,12 @@ loop, not only about what it delivers.
 import threading
 import time
 
-import pytest
+import unittest
+
+try:
+    import pytest
+except ModuleNotFoundError:      # pytest is not a dependency of this engine
+    raise unittest.SkipTest("pytest not installed")
 
 from live import turnring
 

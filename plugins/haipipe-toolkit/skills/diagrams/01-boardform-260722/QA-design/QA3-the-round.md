@@ -4,12 +4,26 @@ owner: JL
 method: name the gate between finishing work and handing it back, make every condition machine-runnable, and cite the reply's shape where it already lives
 
 ## Opening
-What must be true before an agent can hand a Board work round back to the user?
+What must be true before an agent can tell you a round of Board work is done?
+A round is one turn: you ask, the agent works, and it hands the Board back to you.
+Today it hands back when the WORK is finished, which is not the same as the BOARD being ready for you to open.
+Those two came apart three times on 260731, and a person caught it each time.
+This page decides whether five conditions become a gate the agent must pass before it may say done.
 
-This page defines the gate between finishing the work and claiming that the Board is ready to check.
-The reply format already points to recorded work, but no rule yet guarantees that the source, generated page, and checker agree.
-Without that gate, done can still mean stale HTML, missing write-back, or a red check.
-A round is ready only when the work is recorded, rebuilt, checked, reachable, and reported with its evidence.
+**What "hand back" means**: The agent stops working and gives you the turn, usually with a sentence like "done, take a look".
+Nothing reads the Board afterwards to check that the sentence is true.
+
+**Why the work being right is not enough**: The work and the artifact you open are two different things.
+An agent can write every word correctly and still leave you a stale `board.html`, a `## Files` list pointing at a file that moved an hour ago, or a checker that is red.
+All three are real and all three happened on the same day; part 2 names them one by one.
+
+**The five conditions, in one word each**: Written back, rebuilt, checked, reachable, stated.
+Part 3 gives each one the command that answers it and the failure it prevents.
+Each is written so a script can answer it, because a condition a person has to judge is the condition that gets skipped at the end of a long round.
+
+**What this page owns, and what it does not**: The reply's footer and its closing strip are already settled and shipped, so this page does not restate them.
+`haipipe-board-routing` owns the write-back footer and `QD6` owns the three-line status strip.
+This page owns the gate that runs BEFORE the reply, and part 6 adds the newer half of the same problem, which is who controls the body of the reply in between.
 
 
 ## Diagram
@@ -61,22 +75,41 @@ The work was genuinely done and the board was genuinely not ready to be checked,
 Nothing re-read the page after the move, so a face that had just been written was already wrong.
 
 ### 3 · The gate, proposed
-Each condition is stated so a script can answer it, because a condition a human has to judge is a condition that gets skipped when the round is long.
+
+**The five conditions**: what each one asks, and the command that answers it.
 
 ```text
-   ①  WRITTEN BACK   every substantive change has a record on its owning page
-                     SKILL.md's sync verb already says this; the gate enforces it
-   ②  REBUILT        build.py ran and exited clean, so board.html matches the .md
-   ③  CHECKED        check.py reports 0 errors, and the warning count is not
-                     higher than it was when the round started
-   ④  REACHABLE      what the human will open can run what shipped
-                     QD4's assets stamp is the mechanism; this is the condition
-   ⑤  STATED         the reply carries routing's footer, plus ③'s numbers
+   condition          what it asserts                    what answers it
+   ────────────────────────────────────────────────────────────────────────
+   ①  WRITTEN BACK    every change has a record on       a person, today
+                      the page that owns it
+   ②  REBUILT         board.html came from the .md       cli/build.py
+                      as it stands now
+   ③  CHECKED         0 errors, warnings no higher       cli/check.py
+                      than at the round's start
+   ④  REACHABLE       the tab you open can run           the assets stamp
+                      what shipped
+   ⑤  STATED          the reply names which of ①-④       the routing footer
+                      ran, with ③'s numbers              + status.py
 ```
 
-Condition ③ is the one worth arguing about, and the warning count rather than its absence is deliberate.
-This board carries 24 standing warnings that predate the round, most of them whole-line bold that renders as a group title, so demanding zero would make the gate unpassable and therefore ignored.
-Demanding that the round did not ADD one is both achievable and exactly the test that caught the em-dash.
+They run in that order, and each one catches a different way a round can look finished without being finished.
+
+- ① WRITTEN BACK · the work left a trace where the next person will look
+  You asked, the agent did it, and the only record is the chat. Tomorrow the chat is gone and the page still says the old thing. The condition is that every substantive change has a line on its owning page: an Aim's State moved, a `## Log` line was added, a Content division was written. `SKILL.md`'s `sync` verb already asks for this, and the gate is what turns skipping it from a habit into a failure.
+- ② REBUILT · the html a reader opens came from the markdown as it stands now
+  The `.md` is the only source and `board/` is generated, so an edit is invisible on the page until `cli/build.py` runs. `watch.py` usually does it, but a dead watcher leaves a correct file and a wrong page, and nothing about the file says which one you have. The condition is that the build ran during this round and exited clean.
+- ③ CHECKED · the structural checker is not red, and this round did not make it redder
+  `cli/check.py` reads every page and reports errors and warnings: a dead path in `## Files`, a division with no figure, an em-dash in prose, a page whose `state:` contradicts its own Aims. The condition is 0 errors, plus a warning count no higher than the one at the start of the round.
+- ④ REACHABLE · the tab you will actually open can run what shipped
+  A browser keeps the old CSS and JS until something tells it not to. On 260731 a round announced that fold comments were live while the tab JL had open could not run the new JavaScript at all, and his answer was "still hard to add the discussions". The work was genuinely done and the board was genuinely not ready to check, which is the exact distinction this gate draws. The assets stamp is the mechanism and this is the condition.
+- ⑤ STATED · the reply says which of the four actually ran, with numbers
+  A reply saying "the checker is red and here is why" is worth more than a reply that says done and is wrong. The condition is that the reply carries `haipipe-board-routing`'s footer, one line per write, plus ③'s before and after counts, and that it never claims a condition the round did not run.
+
+Condition ③ is the one worth arguing about, and comparing the warning count rather than demanding its absence is deliberate.
+The board carries 281 standing warnings today, most of them from two conventions the checker gained after the rest of this face was written: 97 dead `## Files` paths and 94 divisions with no figure.
+Demanding zero would make the gate unpassable and therefore ignored, while demanding that the round did not ADD one is achievable and is exactly the test that caught the em-dash on `QD4`.
+Comparing whole-board counts has one weakness this session hit directly: a concurrent session editing the same board moves the number underneath you, so the delta is only trustworthy per page.
 
 ### 4 · What a machine cannot check, and who covers it
 A checker tests structure, and it cannot test whether the prose is right, whether the argument holds, or whether the page still says something true after the code moved underneath it.
@@ -187,18 +220,20 @@ These are the calls only JL can make; CC ticks nothing here.
 ### Engines
 - `../../board/haipipe-board-routing/SKILL.md`
   Owns the reply's footer and the point-do-not-re-list rule; the likely home for this gate once it is settled.
-- `../../board/haipipe-board/check.py`
+- `../../board/haipipe-board/cli/check.py`
   Condition ③'s instrument, and the source of the warning count the gate compares.
-- `../../board/haipipe-board/build.py`
+- `../../board/haipipe-board/cli/build.py`
   Condition ②'s instrument; its exit line is what proves `board.html` matches the pages.
 
 ### Neighbor faces this gate leans on
-- `QF1-acceptance.md`
+- `QF-execute/QF1-acceptance.md`
   The two instruments this gate makes mandatory, and the readability half a checker cannot cover.
-- `QD4-liveupdate.md`
+- `QD-working/_archive/QD4-liveupdate.md`
   Condition ④'s mechanism, and the 260731 incident that showed a finished round can still leave a board a human cannot check.
 
 ## Log
+260802 · Opening rewritten on JL's ask ("I need to understand QA3 first"): the visible paragraph was one bare question because the blank line sat after it, so all four explanation sentences rendered inside the drawer; More details is now labelled parts per QB4 §1
+260802 · §3 gained one record line per condition after JL asked what the five mean; the "24 standing warnings" claim was stale and is now 281 with its two dominant rules named; 4 dead `## Files` paths fixed (`build.py` and `check.py` moved into `cli/`, and two neighbour pages moved into group folders)
 260802 · §6 opened on JL's question about who controls a board-attached reply's shape; the body between the outcome and the footer turns out to be unowned, the precedence row is in Decision Now, and CC decided the rule's home itself since nothing stopped on it
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · Opened on JL's ask that agents "work and test themself, and reply when the board is ready for the user to check"; the reply's shape was already settled in haipipe-board-routing 0.2.0, so this face owns only the gate before it

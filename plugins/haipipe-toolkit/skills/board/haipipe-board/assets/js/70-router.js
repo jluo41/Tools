@@ -8,12 +8,17 @@
    With scripts off every link is still an ordinary href, so the tree stays
    fully navigable and the strip-scripts invariant holds. */
 (function () {
-  /* QD5: inside the operating shell the router has nothing left to do. A click
-     in the index pane carries target="page" and the browser loads the sibling
-     frame for free, which is exactly what the swap below exists to FAKE — and a
-     real navigation is now what we want, because the frame is the unit that
-     reloads. Leaving both on would swap div.wrap AND navigate. */
-  if (window.__boardPane) return;
+  /* QD5, corrected 260802. The first cut turned the router OFF in every pane,
+     reasoning that a frame is the unit that reloads. That made every click a
+     full DOCUMENT boot: fetch the page, parse 400 KB of html, and execute this
+     whole bundle again, where the one-document board had swapped one column and
+     kept everything else alive. JL felt it immediately ("really slow to click
+     and go to a new page"), and he was right: 42 ms against 49 ms on the machine
+     serving it, and far worse across a tailnet.
+
+     So the PAGE pane keeps the router and a click is a swap again. The index and
+     chat panes still return here: nothing in them should swap anything. */
+  if (window.__boardPane && window.__boardPane !== 'page') return;
   if (!document.body.classList.contains('split')) return;  // single-file mode
   var busy = false, pending = null;
 
@@ -39,13 +44,35 @@
          a rebuilt page is never served stale, but an unchanged one comes back as
          a 0-byte 304 instead of 136 KB (JL 260801: "why does it take a long time
          to navigate"). Correctness is unchanged; only the wire is. */
-      var r = await fetch(url, { cache: 'no-cache' });
+      /* A HUNG FETCH MUST NOT WEDGE THE ROUTER. `busy` guards against two
+         clicks racing, and its only release is this function finishing, so a
+         request that never settles left every later click queued forever and
+         the rail simply stopped working (measured 260802, after the swap was
+         put back in the page pane). Five seconds, then fall back to an ordinary
+         navigation, which is slower but always arrives. */
+      var ctl = new AbortController();
+      var bell = setTimeout(function () { ctl.abort(); }, 5000);
+      var r;
+      try { r = await fetch(url, { cache: 'no-cache', signal: ctl.signal }); }
+      finally { clearTimeout(bell); }
       var doc = new DOMParser().parseFromString(await r.text(), 'text/html');
       var nw = doc.querySelector('div.wrap'), old = document.querySelector('div.wrap');
       if (!nw || !old) { location.href = url; return; }
       old.replaceWith(nw);
       document.title = doc.title || document.title;
       if (push) history.pushState({ board: 1 }, '', url);
+      /* A SWAP LEAVES THE DOCUMENT'S OWN STAMP BEHIND. The pane's refresh poll
+         compares this document's `__paneStamp` against the server's ETag, and
+         after a swap that stamp still describes the page we just LEFT, so the
+         next tick would see a difference and reload the frame we were trying
+         not to reload. Rebase it from the response we just read. */
+      try {
+        var et = r.headers.get('etag');
+        if (et && window.__paneRebase) window.__paneRebase(et);
+      } catch (e) {}
+      /* and tell the shell, so the address bar and the strip follow a swap the
+         same way they follow a real navigation */
+      try { if (parent !== window && parent.__boardMirror) parent.__boardMirror(); } catch (e) {}
       window.scrollTo(0, 0);
       if (window.__boardRewire) window.__boardRewire();
       window.dispatchEvent(new CustomEvent('board:updated'));
@@ -66,6 +93,8 @@
   });
 
   window.addEventListener('popstate', function () { go(location.href, false); });
+  /* the index pane calls this instead of navigating this frame (QD5, 260802) */
+  window.__boardGo = go;
 })();
 
 /* Rail drag-to-resize (JL 260731: "can the left panel be dragged, it feels

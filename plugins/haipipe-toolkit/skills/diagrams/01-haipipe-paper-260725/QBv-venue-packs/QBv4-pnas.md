@@ -1,6 +1,6 @@
 # PNAS: six pages, one significance statement, and a section no other outlet has
 
-state: 🟡 PARTIAL · 1 outlet · 35 exemplars at family level · the significance statement has section norms and no page that owns it
+state: 🟡 PARTIAL · 1 outlet · 34 exemplars at family level · the significance statement has section norms and no page that owns it
 owner: JL
 method: state what PNAS rewards, record the Significance Statement as a structural requirement, and say why this pack keeps its taste and exemplars one level up from everyone else
 
@@ -58,7 +58,7 @@ How this page must be written. Read it before editing, and edit to it.
 
   🔀 SHAPE NOTE ── this pack keeps taste.md and examples/ at
      FAMILY level, because it has one outlet
-     ── 35 exemplars sit in playbook-pnas/examples/
+     ── 34 exemplars sit in playbook-pnas/examples/
      ── pnas/ itself holds only the 6 section folders
 ```
 
@@ -116,7 +116,7 @@ PNAS removes: fewer claims, fewer floats, and a Methods that moves toward the su
   ✅ pnas/  6 section folders · style.md + template.md each
      pnas-abstract · pnas-introduction · pnas-methods
      pnas-results · pnas-discussion · pnas-significance
-  ✅ 35 exemplars, at FAMILY level
+  ✅ 34 exemplars, at FAMILY level
   ✅ taste.md, at FAMILY level
 
   ⚠️ no outlet-level taste.md

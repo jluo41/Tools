@@ -13,6 +13,8 @@ from unittest import mock
 HERE = Path(__file__).resolve().parent.parent  # the engine dir
 sys.path.insert(0, str(HERE))
 
+sys.path.insert(0, str(HERE / "cli"))          # the CLI moved into cli/ (260801)
+
 import serve as board_serve  # noqa: E402
 
 

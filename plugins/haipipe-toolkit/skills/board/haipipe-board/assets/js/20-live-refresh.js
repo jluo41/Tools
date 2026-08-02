@@ -211,20 +211,49 @@
        frame sits stale forever believing it is current — narrow, but this board
        is rebuilt in bursts and it was hit (260802). The timestamp stays as the
        fallback for anything that does not send a tag. */
+    /* BACK OFF WHEN NOTHING IS HAPPENING. 800 ms was chosen while measuring on
+       localhost, where a HEAD is free. It is not free across a tailnet: two
+       panes asking every 800 ms is 2.5 requests a second forever, each costing
+       a round trip, and they compete with a CLICK for the six connections a
+       browser allows per origin. That is why navigating one page to the next
+       felt slower in the split than in the board it replaced (JL 260802), while
+       the same click measured 42 ms against 49 ms on the machine serving it.
+
+       So the interval grows while the answer keeps being "nothing changed", and
+       snaps back to fast the moment this tab is looked at again. Editing feels
+       instant because editing means the tab is focused; an idle pane in a tab
+       you are not using costs a request every five seconds instead of every
+       800 ms. */
     var tag = window.__paneStamp || '';
     var mine = Date.parse(document.lastModified);
-    setInterval(function () {
-      if (document.hidden) return;
+    /* the router swaps the content without a reload, so it hands us the stamp
+       of what it just put on screen */
+    window.__paneRebase = function (t) { if (t) { tag = t; wait = FAST; } };
+    var FAST = 800, SLOW = 5000, wait = FAST, timer = null;
+    function quick() { wait = FAST; if (timer) { clearTimeout(timer); arm(); } }
+    window.addEventListener('focus', quick);
+    window.addEventListener('pageshow', quick);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) quick();
+    });
+    function arm() { timer = setTimeout(ask, wait); }
+    function ask() {
+      if (document.hidden) { wait = SLOW; return arm(); }
       fetch(location.href, { method: 'HEAD', cache: 'no-store' })
         .then(function (h) {
           var t = h.headers.get('etag');
-          if (tag && t) { if (t !== tag) location.reload(); return; }
-          var lm = Date.parse(h.headers.get('last-modified') || '');
-          if (!lm || !mine) return;
-          if (lm !== mine) location.reload();   // nothing is remembered, so a
-        })                                      // dropped reload just retries
-        .catch(function () {});
-    }, 800);
+          if (tag && t) { if (t !== tag) return location.reload(); }
+          else {
+            var lm = Date.parse(h.headers.get('last-modified') || '');
+            if (lm && mine && lm !== mine) return location.reload();
+          }
+          /* nothing changed: ask a little less often, up to the ceiling */
+          wait = Math.min(SLOW, Math.round(wait * 1.6));
+          arm();
+        })
+        .catch(function () { wait = SLOW; arm(); });
+    }
+    arm();
     return;
   }
   setInterval(tick, 4000);
