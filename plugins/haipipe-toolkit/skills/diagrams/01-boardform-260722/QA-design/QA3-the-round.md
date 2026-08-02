@@ -1,5 +1,5 @@
 # The round: when an agent may reply, and what the reply says
-state: 🟡 PARTIAL · the gate is drawn and 5 rows wait on JL
+state: 🟡 PARTIAL · 5 of 6 Aims met; only P1, the fresh-agent test, is left
 owner: JL
 method: name the gate between finishing work and handing it back, make every condition machine-runnable, and rule who owns the reply's body once a board is attached
 
@@ -335,7 +335,8 @@ The five in one line each, so you can see what is waiting before reading any of 
    every row has a default, so silence resolves it rather than parking it
 ```
 
-- [ ] 🗣 Does a board attachment override the repo's reply format?
+- [x] 🗣 Does a board attachment override the repo's reply format?
+      ✅ `C` · the live mode decides. Ruled by JL 260802 ("take the defaults"), so the row closes on its own 🤖 default. Shipped into `haipipe-board`'s SKILL.md beside the closing block.
       📍 `Part` `### 6 · Who controls the reply's shape once a board is attached`
       🔔 `Why now` JL 260802: "some content we want to put them in the Page, and not the user read the claude code results in TUI". `CLAUDE.md` and `haipipe-board` both claim the reply and neither yields, so the same drawing gets made twice.
       ⭐ `C ·` the live mode decides: `discussion` keeps the repo default, and `implementation`, `review` and `sourcing` collapse to outcome plus footer plus strip. Mode is already a field `status.py` renders every round, so this costs no new machinery.
@@ -344,7 +345,8 @@ The five in one line each, so you can see what is waiting before reading any of 
       🛑 `Blocks` A6.1; the rule cannot ship until its condition is known.
       🤖 `If nobody answers` C takes effect.
 
-- [ ] 🗣 Do the five conditions become the gate?
+- [x] 🗣 Do the five conditions become the gate?
+      ✅ `A` · all five, as drawn. Ruled by JL 260802 ("take the defaults"), so the row closes on its own 🤖 default. Shipped into `haipipe-board-routing`'s SKILL.md and runnable as `cli/gate.py`.
       📍 `Part` `### 3 · The gate, proposed`
       🔔 `Why now` JL 260731 asked that agents "work and test themself, and reply when the board is ready for the user to check". Nothing has been written down since, so all five are a habit that happens to have held.
       ⭐ `A ·` ratify all five as drawn. Each is already run by hand today, so this makes an existing practice binding rather than inventing new work.
@@ -352,7 +354,8 @@ The five in one line each, so you can see what is waiting before reading any of 
       🛑 `Blocks` A3.1 and A3.3; neither the command nor its home can be built around a set that may still change.
       🤖 `If nobody answers` A takes effect.
 
-- [ ] 🗣 What does a rising warning count do to the handback?
+- [x] 🗣 What does a rising warning count do to the handback?
+      ✅ `A` · it blocks, for warnings THIS round introduced. Ruled by JL 260802 ("take the defaults"), so the row closes on its own 🤖 default. `cli/gate.py` compares PER PAGE, so a concurrent session cannot fail your round.
       📍 `Part` `### 3 · The gate, proposed`
       🔔 `Why now` The board carries 276 standing warnings, so "zero warnings" is unpassable and would be ignored; the delta is the only usable test, and §3.2.2 shows it is only trustworthy per page.
       ⭐ `A ·` it blocks the handback, for warnings THIS round introduced. The em-dash on `QD4` was caught by exactly this test; the standing warnings stay out of scope.
@@ -361,7 +364,8 @@ The five in one line each, so you can see what is waiting before reading any of 
       🛑 `Blocks` nothing; ③ runs either way.
       🤖 `If nobody answers` A takes effect, scoped to warnings the round introduced.
 
-- [ ] 🗣 Is the fresh-context reviewer part of every round?
+- [x] 🗣 Is the fresh-context reviewer part of every round?
+      ✅ `B` · only on rounds that changed prose. Ruled by JL 260802 ("take the defaults"), so the row closes on its own 🤖 default. Shipped in the same paragraph as the gate.
       📍 `Part` `### 4 · What a machine cannot check, and who covers it`
       🔔 `Why now` The gate's mechanical half is about to become binding and the readability half has no cadence at all, so it will default to never.
       ⭐ `B ·` it runs only on rounds that changed prose. A mechanics-only round has nothing for a reader to judge.
@@ -370,7 +374,8 @@ The five in one line each, so you can see what is waiting before reading any of 
       🛑 `Blocks` A4.1.
       🤖 `If nobody answers` B takes effect.
 
-- [ ] 🗣 Which skill does the gate graduate into?
+- [x] 🗣 Which skill does the gate graduate into?
+      ✅ `A` · `haipipe-board-routing`, so the gate and the footer stay one contract. Ruled by JL 260802 ("take the defaults"), so the row closes on its own 🤖 default.
       📍 `Part` `### 3 · The gate, proposed`
       🔔 `Why now` A rule that lives only on this page binds nothing, because no runtime reads a Q page. §6.2.2 already placed the reply's BODY rule in `haipipe-board`; this row is only about the gate, and the two may legitimately differ.
       ⭐ `A ·` `haipipe-board-routing`, which already owns the footer, so the gate and the footer stay two halves of one contract in one skill.
@@ -379,21 +384,23 @@ The five in one line each, so you can see what is waiting before reading any of 
       🤖 `If nobody answers` A takes effect.
 
 ### A3 · 🚦 The gate, proposed
-- ⬜ A3.1 · No single command exists. A round still runs `cli/build.py`, then `cli/check.py`, then compares the counts by hand.
-- ⬜ A3.2 · Nothing records the baseline. This round captured `304 warn` by hand before editing, and the number was already stale by the end of the round because other sessions were writing the same board.
-- 🧠 A3.3 · Waiting on the `🗣 Which skill does the gate graduate into?` row above.
+- ✅ A3.1 · `cli/gate.py` is the one command. `--start` records the round's baseline, a bare run rebuilds, checks, and prints pass or fail per condition with the delta. Driven 260802 on this board: clean round passes, and an em-dash added to this page on purpose flipped ③ to FAIL naming `QA3-the-round.md: 0 -> 1`, exit 1, back to 0 on revert.
+- ✅ A3.2 · The baseline is a file, keyed by board path under `$TMPDIR/haiboard-gate/`, holding ONE COUNT PER PAGE. Per page rather than per board is what survives concurrency: the total moved 304 to 276 during a round that touched one page. It lives with the live layer's other transient state rather than in the board folder, since a baseline is scratch and not a board record.
+- ✅ A3.3 · Shipped into `haipipe-board-routing`'s SKILL.md, the default of the row above, so the gate and the reply footer stay one contract in one skill.
 
 ### A4 · 🧠 What a machine cannot check, and who covers it
-- 🧠 A4.1 · Waiting on the `🗣 Is the fresh-context reviewer part of every round?` row above.
+- ✅ A4.1 · Ruled `B` and shipped in the same paragraph as the gate: a round that changed PROSE owes a cold read by `haipipe-board-reviewer-agent`, a round that changed only mechanics does not.
 
 ### A6 · 🎛 Who controls the reply's shape once a board is attached
-- 🧠 A6.1 · Waiting on the `🗣 Does a board attachment override the repo's reply format?` row above. §6 is written and CC has settled the home; what is unruled is whether the override is unconditional or decided by the live mode.
+- ✅ A6.1 · Ruled `C` and shipped into `haipipe-board`'s SKILL.md beside the closing block: `discussion` keeps the repo default, and `implementation`, `review` and `sourcing` collapse the reply to outcome, footer and strip.
 
 ### P · 🏁 Page-level validation
-- ⬜ P1 · Not run, and it cannot run before A3.3 ships, because there is no shipped rule to hand a fresh agent.
+- ⬜ P1 · Now RUNNABLE, and not run. A3.3 has shipped, so the rule a fresh agent would be given exists. The test needs a fresh-context agent, which this session was told not to dispatch, so it stays open rather than being claimed. It is the only thing between this page and ✅.
 
 ## Files
 ### ⚙️ Engines · what RUNS this subject
+- `../../board/haipipe-board/cli/gate.py`
+  The gate itself, shipped 260802. Runs ② and ③, prints ① and ④ as not tested, and compares warnings per page against a baseline under `$TMPDIR/haiboard-gate/`.
 - `../../board/haipipe-board/cli/build.py`
   Condition ②'s instrument; its exit line is what proves `board.html` matches the pages.
 - `../../board/haipipe-board/cli/check.py`
@@ -426,6 +433,7 @@ The five in one line each, so you can see what is waiting before reading any of 
   ⚠️ Generated by `cli/build.py`. Never hand-edit.
 
 ## Log
+260802 · JL said "take the defaults", so all 5 Decision Now rows closed on their own 🤖 defaults: C the mode decides the reply body, A all five conditions become the gate, A a warning the round introduced blocks the handback, B the cold read only when prose changed, A the gate ships into routing. Built `cli/gate.py`, shipped both rules into the two skills, and 5 of 6 Aims went ✅
 260802 · JL amended his own 260731 rule: the reply LISTS its Decision Now rows in brief instead of naming a count ("I think you can also briefly list the 5 decisions here as well"). §5.1 records the ruling and the line between listing and re-arguing; `Decision Now` gained a five-line figure so the page and the reply read from one source; `haipipe-board-routing` went 0.5.0 → 0.6.0
 260802 · Reformatted to QB4's grammar on JL's ask: figures and captions on all six parts, `**N.M ·**` groups and `#### N.M.K ·` paragraphs, `## Items to Finish` → `## Aims` with A3/A4/A6/P ids and `Done when`, `## Where we are` → `## States` with one row per Aim, the five Decision Now rows rewritten to QB4 §5.2 (📍 🔔 ⭐ 🛑 🤖), and `## Files` regrouped into the ⚙️ 📋 🧪 📥 📤 action menu
 260802 · Opening rewritten on JL's ask ("I need to understand QA3 first"): the visible paragraph was one bare question because the blank line sat after it, so all four explanation sentences rendered inside the drawer; More details is now labelled parts per QB4 §1

@@ -163,7 +163,7 @@ The audit also corrected an assumption: the session picker was believed hidden i
    ⌨ terminal      a grid of cells the CLI repaints
                    a heading is bold-ish text · a URL is bare characters
    ────────────────────────────────────────────────────────────────────
-   🎨 cheap        one surface · sidebar reclaimed · notice inside the pane
+   🎨 cheap        one surface · page list reclaimed · notice inside the pane
    🌏 elsewhere    CJK clipped at the right edge      ──▶ QD3's wcwidth
    🧱 structural   a URL that is not a link           ──▶ document renderer
 ```
@@ -236,7 +236,7 @@ These are the calls only JL can make; CC ticks nothing here.
 - [ ] 🗣 How far do we close the gap with the SDK drawer, on the DESKTOP?
       📍 `Part` 6, the two-surfaces comparison JL asked for
       🔔 `Why now` JL called the pane the worse of the two on 260801, and the cheap half and the structural half have different owners
-      ⭐ `A ·` fix the layout defects only: one surface, the sidebar reclaimed, notices positioned to the pane. Cheap, lands this week, and the pane still shows a screen, so headings stay bold-ish text and URLs stay characters. CC recommends A now and B next, because A is cheap and true under every future.
+      ⭐ `A ·` fix the layout defects only: one surface, the page list reclaimed, notices positioned to the pane. Cheap, lands this week, and the pane still shows a screen, so headings stay bold-ish text and URLs stay characters. CC recommends A now and B next, because A is cheap and true under every future.
       `B ·` fix the layout AND render the session as a document, the archived `QD3m` route owned as `QD3`'s 🪄 smooth pane: tail the session's jsonl and draw markdown bubbles, keeping the PTY as the engine and the raw TTY one toggle away. The only version that can actually match the drawer, and the larger build.
       `C ·` drop the terminal pane on the desktop and let the SDK drawer be the one chat surface, keeping the TUI for the phone or for a real CLI window.
       🛑 `Blocks` A6.1 through A6.4
@@ -269,7 +269,7 @@ These are the calls only JL can make; CC ticks nothing here.
 
 ### A6 · 🪟 The pane renders a screen; the drawer beside it renders a document
 - 🧠 A6.1 · Not started, and it waits on the 🎨 row only for sequencing: one surface is true under options A and B alike.
-- 🧠 A6.2 · Not started. The sidebar is a full-height white column for one id chip and a ＋, so the surface is L-shaped; same sequencing as A6.1.
+- 🧠 A6.2 · Not started. The page list is a full-height white column for one id chip and a ＋, so the surface is L-shaped; same sequencing as A6.1.
 - ⬜ A6.3 · Not started. `#ctoast` is `position:fixed` at `left:50%`, and every other in-pane affordance has the same bug latent.
 - 🧠 A6.4 · Waiting on the 🎨 row. This is the acceptance test for A6.1 through A6.3 and it is JL's own standard from 260801: render one identical answer in both panes and compare them side by side.
 

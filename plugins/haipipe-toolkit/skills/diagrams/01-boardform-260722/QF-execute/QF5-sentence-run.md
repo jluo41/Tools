@@ -30,7 +30,7 @@ Whether a checker run BLOCKS a change: `QF1`.
    ── one write, three components, no shared code ────────────────────
 
    ①  build.py            source line ──▶ rendered HTML
-                          Python · adds badges, chips, sidebars, marks
+                          Python · adds badges, chips, page lists, marks
                 │
    ②  __boardSentenceText HTML ──▶ the string the client posts
                           JavaScript · must undo everything ① added
@@ -265,7 +265,7 @@ A · CAN YOU SELECT IT AND GET A CONTROL
   A7  a selection spanning two sentences               -> must REFUSE
   A8  an item's indented explanation line
   A9  touch: the ⋯ menu reaches the same three actions
-  A10 keyboard focus alone reveals the sidebar
+  A10 keyboard focus alone reveals the page list
 
 B · DOES THE POSTED STRING EXIST IN THE MARKDOWN
   B1  every writable sentence resolves to exactly one source line, board-wide

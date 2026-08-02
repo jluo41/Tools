@@ -348,7 +348,7 @@ That single asymmetry is the mechanism under three of the five rows above, and i
   That is the same outcome one layer up, and a better one, because it removes the rebuild instead of recovering from it.
   What survives here is only the half `QD5` does not touch, which is that a replayed session still paints in a poorer format than a live one; that stays in §8's second row as its own item.
 - R3 · dock at every width — ↪ RETIRED 260801 to `QD5`, same reading
-  `shell.py`'s own stylesheet already does it: `@media(max-width:820px)` switches the grid to `grid-template-rows:1fr 5px 1fr` and hides only the sidebar, so page and chat are both visible on a phone.
+  `shell.py`'s own stylesheet already does it: `@media(max-width:820px)` switches the grid to `grid-template-rows:1fr 5px 1fr` and hides only the page list, so page and chat are both visible on a phone.
   The fork this page carried, overlay-with-a-way-back against collapse-to-a-tab, is answered by neither: the shell simply stacks them.
 
 So §9 is ONE build, not three, and the two that left were not descoped but already delivered next door.
@@ -417,7 +417,7 @@ The budget question is still real but smaller and differently shaped: the held c
 
 ### C8 · What a drawn interface has to be given
 - ✅ A8.1 · Fixed 260801 in two parts, because `overscroll-behavior` governs a scroller that has REACHED its edge and not one that never overflowed: `contain` on every inner scroller, plus a `wheel` handler that walks up from the pointer and keeps the event when nothing inside can take the delta. A nearly empty transcript was the case with nothing to scroll, which is why it seemed to heal after the first message (JL: "感觉还是背后的那个 page 页面在滑动").
-- 🔨 A8.2 · A labelled `⇤ Page` button ships and appears exactly at the width where the drawer stops docking. ↪ Answered inside `QD5`'s shell, whose `@media(max-width:820px)` stacks page over chat and hides only the sidebar; this row stays open only for a drawer on a page opened alone, which is the packaging `QB2` requires.
+- 🔨 A8.2 · A labelled `⇤ Page` button ships and appears exactly at the width where the drawer stops docking. ↪ Answered inside `QD5`'s shell, whose `@media(max-width:820px)` stacks page over chat and hides only the page list; this row stays open only for a drawer on a page opened alone, which is the packaging `QB2` requires.
 - ✅ A8.3 · Fixed 260801: when the same scope is already painted and no turn is running, the drawer is shown again rather than torn down and rebuilt from storage. `chatOpen` had re-parsed markdown for every bubble and then sometimes rebuilt a second time when the server answered, and the flash between the two is what read as janky (JL: "打开、关了、又打开，它就没有那么丝滑了").
 - 🔨 A8.4 · Half. `session_log` now carries each message's `timestamp` and every `tool_use`, one `replayRow()` draws bubbles, tool cards and dated turn separators, and the tail cap rose from 120 to 300. Still owed for parity: the gate diffs, the 💭 thinking block, and a load-earlier control instead of a hard cap.
 - 🧠 A8.5 · Blocked on a `QD1` ruling, not on this page. HOLD keys on the SCOPE path while the Law's stated reason is that "two front ends on the same jsonl still fork histories"; two named sessions are two different jsonls, so the key is stricter than the rule that justifies it.
