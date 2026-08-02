@@ -103,14 +103,14 @@ Settled 260724: JL approved the discussed plan ("you just go ahead… as we disc
 
 ## Files
 ### The skill half (Tools repo)
-- `serve.py`
+- `cli/serve.py`
   Candidate ① itself.
   976 lines; routing in `do_GET` / `do_POST`, write paths in `add_comment` / `add_discuss` / `resolve`, live layer in `chat` / `terminal`.
-- `build.py`
+- `cli/build.py`
   Parsing half `parse_dir` / `parse_file` / `parse_q` / `split_sections` / `parse_comments`; rendering half `render`.
   `--json` goes between the two.
 - `SKILL.md`
-  Holds the hard invariant (strip every `<script>` and the body is still there), which `build.py` asserts on every build.
+  Holds the hard invariant (strip every `<script>` and the body is still there), which `cli/build.py` asserts on every build.
   Dropping the static half means editing this first.
 
 ### The haichat-inlab half (HAIChat-SPACE repo)

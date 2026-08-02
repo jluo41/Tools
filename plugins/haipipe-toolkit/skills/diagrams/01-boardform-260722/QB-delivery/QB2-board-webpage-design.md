@@ -525,19 +525,19 @@ The panel is authored, not inferred: which folders count as related and what eac
 ### Engines
 - `src/page_board.py`
   Builds the Board Map panel from a declared `board-map:` share URL when one exists; otherwise it uses the local scene through the Board server's Excalidraw proxy. The explicit URL supports static Tailscale hosting without changing the Board's page registry.
-- `assets/board.css`
+- `assets/css/10-focus.css`
   Holds the responsive Board Map surface. The iframe stays on `#top` only; a focused Q/S page hides it with the rest of the index.
-- `build.py`
+- `cli/build.py`
   The index-rendering pass (`rows` / `frac_done` / the `.ir` CSS family), now also the Pages-intro parse (`gintro`) and the `details.gi` render.
   Changing the index half of this question starts here.
-- `serve.py`
+- `cli/serve.py`
   `structure_op()`: the one writer for add_group / add_question / archive_question / archive_group; `POST /_board/structure`.
   The console imports it, never reimplements.
-- `assets/board.js` + `assets/board.css`
+- `assets/js/00-header.js` + `assets/css/10-focus.css`
   The page-side controls (＋Q, ＋Group, 🗄 with two-click confirm, inline mini form) and the intro styling; wired into `__boardRewire` so they survive live swaps.
   Also the ACTIVITY render: `sampleData` / `rowHtml` / `render`, and the `.act-*` styles.
   `board.css` additionally holds the palette, typography, density, surfaces, interaction feedback, dark mode, and responsive rules that the visual half audits.
-- `serve.py` · `log_counts` / `log_boards` / `activity_stats`
+- `cli/serve.py` · `log_counts` / `log_boards` / `activity_stats`
   The update counter. `log_counts` reads only `## Log`, caches on file mtime, and `activity_stats` joins it to `## Pages` for group ownership.
 - `src/page_board.py`
   The static ACTIVITY shell, emitted after the page cards. Runtime data stays an enhancement: with no server the section reads as a sentence and the board is still complete.
@@ -548,7 +548,7 @@ The panel is authored, not inferred: which folders count as related and what eac
   `## Pages` decides grouping, order, AND each group's intro (plain lines under the `### ` heading; line 1 = the visible sentence).
   If sorting ever becomes automatic, this section's role must be redefined too.
 ### The span recorder, written and unread
-- `test_activity.py`
+- `tests/test_activity.py`
   Regression tests for the span recorder, which nothing displays any more (see the open item).
 - `.haipipe-board/activity.sqlite3`
   Local runtime spans, gitignored. Written, and currently unread.

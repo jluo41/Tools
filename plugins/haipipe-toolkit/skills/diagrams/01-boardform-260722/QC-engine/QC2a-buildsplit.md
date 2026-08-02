@@ -71,7 +71,7 @@ should it move to haichat-board?  NO —
   Same inputs, both code paths, no interference from concurrent editors.
 
 ## Files
-- `build.py`
+- `cli/build.py`
   The file being split; the parse half must keep its import surface (`parse_dir`, `to_json`, `sec`, `parse_comments`, `stinfo`); `boards_api.py` imports exactly these.
 - `assets/`
   `board.css` + `board.js`, inlined at build time; never served separately.

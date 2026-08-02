@@ -185,20 +185,6 @@ Until that consumer exists, splitting it would add a door without adding a workf
       260729: two units, `haipipe-board` v0.46.0 and `haipipe-board-reviewer-agent` v1.0.0, against 144 skills and 9 agents in the plugin. The form also ships from two places outside this family, `haipipe-paper-stage` and the two `serve.py` rule strings.
 
 ### Rulings awaiting JL
-- [ ] 🧠 JL rules how `haipipe-writing` joins the roster (260801, named 260802)
-      JL, after an evening of rewriting QB4 sentence by sentence: "I think we need to add it to the skills to make this work. Maybe we want to have haipipe-write, for this specific purpose."
-      The candidate is a WRITING verb, not another spec: take a division of authored prose and rewrite it so a reader whose English is weak can follow it, then record every edit as a word-level `✎ ~before~ *after* · WHO · YYMMDD HHMM` line under the sentence it changed.
-      It has a distinct consumer, which is §7's test: any page on any board with prose that reads like an AI wrote it, not just a Board page, and not only at authoring time.
-      What it would carry is already settled and written down on QB4: the weak-English readability axis in `### 9`, the plain-heading and short-sentence rules in `## Writing Style`, the ✅/❌ example-pair shape, and the `✎` change grammar `src/body.py` already renders.
-      Doing it by hand is what proved it is a skill: the same three mistakes recurred all evening, and each one is mechanical enough to be a rule the skill enforces rather than a thing a person remembers. Records were appended at the end of a block and silently attached to the wrong sentence; the diff was written whole-sentence, which shows nothing; and a heading named its mechanism instead of its consequence.
-      THE DESIGN QUESTION IT MUST ANSWER FIRST: how does a change record attach when ONE sentence becomes SIX?
-      The `✎` grammar assumes one record belongs to one sentence, and the main move in this kind of rewrite is splitting a long sentence into several short ones, so the sentence a record describes no longer exists as one thing.
-      Doing it by hand produced the same misplacement twice on 260801, because the record has no natural home: appended after the rewritten block it silently attaches to the LAST new sentence, which is the one it says nothing about.
-      A · anchor on the FIRST new sentence and diff against the whole block. This is what 260801 settled for, and it reads well, but the other five sentences carry no history and their `C.P.S` addresses have nothing attached.
-      B · one record on EVERY resulting sentence, each pointing back to the same source sentence. Complete, and noisy: six badges where one edit happened.
-      C · a block-level record that sits above the run rather than under a sentence. Honest about what actually changed, and it needs a render that does not exist yet, since the apparatus only ever hangs under a paragraph.
-      → CC recommends A now and C later, because A works with today's renderer and C is the only one that describes a split truthfully.
-      Open questions for JL: whether `haipipe-writing` stays its own unit or becomes a verb inside an existing one, whether it may write prose directly or must propose diffs for approval, and whether it belongs to this family at all given that its consumer is any prose, not any board.
 - [ ] 🧠 JL rules the roster: one orchestrator plus five subskills, and their shipping order
 - [ ] 🧠 JL says whether "don't need to have the review agent" retired the unit or only that run (§11)
 
@@ -220,6 +206,13 @@ Until that consumer exists, splitting it would add a door without adding a workf
       `CHAT_RULES` and `BOARD_CHAT_RULES` read `ref/` instead of restating it. This is worth doing whether or not the page door ships.
 
 ## Where we are
+- 260802 CC · ✍️ `haipipe-writing` ships, and it is its own unit
+  It exists on disk with three verbs, `score` ranks what is worth rewriting, `rewrite` changes prose and anchors a `✎` record per sentence, `check` audits the records, and two of the three are deterministic code rather than judgment.
+  Named `haipipe-writing` rather than `haipipe-write` because every family folder in the toolkit is a noun and the verbs are its sub-skills.
+  It stays its own unit rather than a verb inside the board family, because its consumer is ANY authored prose in the repo, a board page, a SKILL.md, a README, an application section, and folding it into the board family would have tied a general writing verb to one host.
+  What it enforces was already written on QB4 and needed no new contract: the weak-English axis in `### 9`, the plain-heading and short-sentence rules in `## Writing Style`, the ✅/❌ pair shape, and the `✎` grammar `src/body.py` renders.
+  The open half is the design question recorded below it: how a change record attaches when one sentence becomes six.
+
 - 260731 JL · 🤖 The agents became a pair, and the roster gained its first parallel unit
   JL: "we should have a new agent named haipipe-board-creator-agent, it can be called to write the pages markdown in parallels, instead of haipipe-board to write each of them one by one".
   `Agent-2` is the producer half of the creator and reviewer pair `Agent-1` started, which is the same split the task and discovery families in this toolkit already run.
@@ -252,7 +245,7 @@ CC's first reading on 260729 was defer page and sentence, on the grounds that no
 ### Where the form ships from today
 - `ref/page-template.md` · `ref/board-form.md`
   Where the contracts ship today.
-- `serve.py`
+- `cli/serve.py`
   Lines 297 and 357, the two hand rolled copies of the page and board rules.
 
 ### The standing rules this fork tests
@@ -262,6 +255,7 @@ CC's first reading on 260729 was defer page and sentence, on the grounds that no
   §4, the standing rule that decides what routing and digest may write on a board that is not ours.
 
 ## Log
+260802 1230 · The `haipipe-writing` roster row closed: the skill exists on disk with three verbs, so the question was answerable, and it stays its own unit because its consumer is any authored prose rather than any board. Recorded in Where we are and removed from Decision Now, per QB4 §5.2.7
 260802 0000 · The candidate gained the design question it has to answer before it can ship: how a change record attaches when one sentence becomes six. The `✎` grammar assumes one record per sentence, splitting is the main move in this kind of rewrite, and the same misplacement happened twice by hand on 260801 because a record appended after a rewritten block silently attaches to the last new sentence rather than the one it describes. Three options recorded with a recommendation
 260801 2340 · `haipipe-write` added to the roster as a candidate awaiting JL's ruling, after an evening spent hand-rewriting QB4's `### 1` for a weak English reader and recording each edit in the `✎` lane. The case for it is that the same three mistakes recurred all evening and every one is mechanical: a record appended at the end of a block attaches to the wrong sentence, a whole-sentence diff shows nothing, and a heading that names its mechanism reads as jargon. What it would enforce is already written on QB4 and needs no new contract
 260801 0130 · Reindexed QC6 -> QC1b under the new QC1 skill-family parent; QC1b-vs-Skill-* overlap flagged on QC1 (JL 260801)

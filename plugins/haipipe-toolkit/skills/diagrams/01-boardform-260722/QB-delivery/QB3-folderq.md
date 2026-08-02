@@ -39,11 +39,11 @@ Shipped 260724.
 Flat boards are untouched; nested pages work end to end including comment write-back (smoke-tested against `4-display/QD2-d01-iv-reporting.md`).
 
 ## Files
-- `build.py`
+- `cli/build.py`
   Thin entry; discovery lives in `src/common.py` + `src/parse.py`.
-- `serve.py`
+- `cli/serve.py`
   `target()` / `add_question` / `archive_question` accept board-relative paths.
-- `watch.py`
+- `cli/watch.py`
   Recursive stamp with the same exclusions.
 
 ## Law

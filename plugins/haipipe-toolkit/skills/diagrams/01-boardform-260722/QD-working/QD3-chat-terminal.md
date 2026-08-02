@@ -225,9 +225,9 @@ These are the calls only JL can make; CC ticks nothing here.
       To sweep everything at once: `/_board/killall` (or restart serve.py, startup clears leftovers).
 
 ## Files
-- `serve.py`
+- `cli/serve.py`
   `terminal()` / `proxy_term()` / `reap_stale_terms()`: ttyd + unix sockets + reverse proxy + process reaping.
-- `build.py`
+- `cli/build.py`
   The page-side entry that switches into the terminal.
 
 ## Lesson

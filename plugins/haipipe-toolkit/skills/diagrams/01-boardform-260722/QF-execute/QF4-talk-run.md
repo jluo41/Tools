@@ -125,13 +125,13 @@ These are the calls only JL can make; CC ticks nothing here.
   The session host, the hold, and the refusal that was rendered as an answer.
 - `../../board/haipipe-board/test_hold.py`
   The second-turn latency probe that exposed the reconnecting session.
-- `../../board/haipipe-board/gate_live.py`
+- `../../board/haipipe-board/cli/gate_live.py`
   The response-identical gate for the live layer, which this run does not replace.
-- `QF3-browser-run.md`
+- `QF-execute/QF3-browser-run.md`
   The third instrument; this face is the fourth and shares its browser but not its trigger.
-- `QD2-chat-sdk.md`
+- `QD-working/QD2-chat-sdk.md`
   The SDK chat version's own face.
-- `QD3-chat-terminal.md`
+- `QD-working/QD3-chat-terminal.md`
   The TUI chat version's own face.
 
 ## Log

@@ -296,7 +296,7 @@ Opened 260801 when JL asked for a thorough test series for the sentence family, 
   `window.__boardSentenceText`, the one reading of a sentence every writer uses.
 
 ### Input files
-- `QF3-browser-run.md`
+- `QF-execute/QF3-browser-run.md`
   The general browser run this one specialises; tier 4 belongs in its harness rather than a second one.
 - `../QB-delivery/QB5-overview.md`
   The family whose operations this run covers, and the map of which face owns each one.

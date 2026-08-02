@@ -49,7 +49,7 @@ The roster is ruled and four units ship; SKILL.md's cut line is still described 
 ## Files
 - `haipipe-board/SKILL.md`
   The door and the export channel.
-- `QC1a-skillmd.md` · `QC1b-subskills.md`
+- `QC-engine/QC1a-skillmd.md` · `QC-engine/QC1b-subskills.md`
   The family, one face each.
 
 ## Log

@@ -89,11 +89,11 @@ It is not yet a file, nothing dispatches it, and its dependencies are undeclared
   What justifies a third face rather than an item on `QF1` is that the instrument is different in kind: `QF1`'s two instruments both read text, one mechanically and one as a person, and every failure in §1 lived in what a browser did with that text afterwards.
 
 ## Files
-- `../../board/haipipe-board/check.py`
+- `../../board/haipipe-board/cli/check.py`
   The first instrument, and the one that was green through all six failures in §1.
-- `QF1-acceptance.md`
+- `QF-execute/QF1-acceptance.md`
   The two text instruments and their shared trigger; this face is the third and shares that trigger.
-- `QA3-the-round.md`
+- `QA-design/QA3-the-round.md`
   The gate whose "reachable" condition this run is the only honest test of.
 - `QC9-roundtrip.md`
   The loop that group ⑧ closes: markdown to html and back.

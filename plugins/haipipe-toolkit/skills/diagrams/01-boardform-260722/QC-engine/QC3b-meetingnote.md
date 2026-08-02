@@ -267,7 +267,7 @@ Opened 260731 when JL asked how meeting notes could go on the board, and the art
 ### Engines
 - `../../board/haipipe-board/src/common.py`
   `page_files()`, the name-prefix discovery rule that makes `meeting/` invisible; a Meeting kind is a change here and in the page renderer.
-- `../../board/haipipe-board/skillpage.py`
+- `../../board/haipipe-board/cli/skillpage.py`
   The existing folder-to-page generator with the managed/authored split a meeting page would copy.
 
 ### Input files

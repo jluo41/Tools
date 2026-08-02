@@ -129,8 +129,9 @@ Writing for the middle bar keeps both doors open; writing for the top bar closes
   💥 but a reader who lists jama-netopen/ concludes it has
      none, and the flagship's count of 23 is inflated by 3
 
-  ⚠️ and it has 6 sections where its siblings have 7
-     ── no jno-letter/, undeclared
+  ✅ and its 6 sections against its siblings' 7 IS declared
+     ── `stages/section-kinds.yml` gives flagship and im the
+        `letter` kind and withholds it here: deliberate
 ```
 
 ⚠️ Establishes a filing defect rather than a knowledge gap, which is a cheaper fix and a different one.
@@ -148,8 +149,8 @@ Writing for the middle bar keeps both doors open; writing for the top bar closes
 ### A3 · ⚠️ The misfiled exemplars
 - A3.1 · The three JNO exemplars move into `jama-netopen/examples/`, or the cross-pointing is declared as the pack's convention.
   **Done when:** listing an outlet folder gives that outlet's true exemplar count.
-- A3.2 · The missing `jno-letter/` is either added or declared absent on purpose.
-  **Done when:** the six-versus-seven difference is written down rather than discovered by listing.
+- A3.2 · The pack's folders and `section-kinds.yml`'s outlet map cannot drift apart.
+  **Done when:** a kind folder added to or removed from an outlet fails a check until the map agrees.
 
 ## States
 
@@ -161,7 +162,7 @@ Writing for the middle bar keeps both doors open; writing for the top bar closes
 
 ### A3 · ⚠️ The misfiled exemplars
 - ⬜ A3.1 · Not started. Three JNO papers sit under `jama-flagship/examples/`; `jno-taste.md` names them and points across.
-- ⬜ A3.2 · Not started. `jama-flagship` and `jama-im` both carry a letter section; `jama-netopen` does not.
+- ✅ A3.2 · Resolved on inspection, and replaced. The absence is declared in `section-kinds.yml`; what is unguarded is the two sources agreeing over time.
 
 ## Files
 
@@ -182,5 +183,6 @@ An exemplar is filed under the outlet it exemplifies, because a reader counts an
 
 ## Log
 
+260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page. That file already carries the glob rule for the section abbreviation, an outlet-to-kinds map measured on disk, the `theory-model` alias, and the blueprint-only declaration for grant and patent. Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
 260802 · Corrected on the same day it was opened: `jama-netopen` has three exemplars, filed under `jama-flagship/examples/` and named in its own `taste.md`. The defect is filing, not absence.
 260802 · Opened with the QBv group, from `playbook-jama-portfolio` at `Venue-Paper@fe25a88`.

@@ -122,11 +122,11 @@ The name, three record families, and archive-first safety boundary are recorded,
   Current apparatus classification and Sentence details rendering.
 
 ### The future lifecycle write and view paths
-- `haipipe-board/assets/js/40-sentence.js`
+- `haipipe-board/assets/js/40-sentence/00-apparatus.js`
   Future filter state, cleanup preview, archive and restore interactions.
 - `haipipe-board/assets/css/`
   Future Overview tabs, bounded details panel, state and archived-count styling.
-- `haipipe-board/serve.py`
+- `haipipe-board/cli/serve.py`
   Future resolve, supersede, archive, restore, and purge write paths.
 
 ## Glossary

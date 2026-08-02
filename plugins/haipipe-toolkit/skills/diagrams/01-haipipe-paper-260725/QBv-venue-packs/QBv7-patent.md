@@ -191,6 +191,12 @@ Filed at FAMILY level under `../../paper/venue/playbook-patent/examples/`, not u
 
 <!-- exemplars:end -->
 
+<!-- kinds:begin -->
+
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
+
+<!-- kinds:end -->
+
 ## Law
 
 In a filing the patent claim is the deliverable and the specification supports it, which inverts the role of every artifact the paper lifecycle produces.

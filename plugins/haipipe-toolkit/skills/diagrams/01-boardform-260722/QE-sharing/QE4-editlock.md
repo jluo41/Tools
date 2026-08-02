@@ -90,10 +90,10 @@ concurrency: three steps, do not skip one
       A plain `<textarea>` over the markdown source, which this page calls zero dependencies and most honest, or TipTap / Milkdown with the board's section grammar taught to it.
 
 ## Files
-- `serve.py`
+- `cli/serve.py`
   `add_comment` / `add_discuss` / `resolve` are the working template for writing back to markdown; `HOLD` / `hold` / `release` are the half-built lock.
   Body editing goes here.
-- `build.py`
+- `cli/build.py`
   `parse_q()` knows where each `##` section starts and ends: "edit only this section" should locate through it rather than a hand-rolled regex.
 - `ref/board-form.md`
   The section-grammar spec.

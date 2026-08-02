@@ -14,7 +14,7 @@ What changes is the tense. A journal desk asks what you found. A review panel as
 This page owns only what is true of `playbook-grant`.
 
 **Why this pack has no outlet tree**: agencies do not have sections in the way journals do; they have prescribed backbones that differ per agency.
-The pack encodes them as delta tables inside `README.md`, which the venue README calls an explicit exception, and which no reader outside the pack ever meets.
+The pack encodes them as delta tables inside `README.md`, and `stages/section-kinds.yml` declares this pack blueprint-only by design, which is where a stage reader meets the exception.
 
 **What the pack is missing that every journal pack has**: exemplars.
 Eight agencies, no funded proposals on disk, and no `style.md` extracted from anything.
@@ -142,8 +142,8 @@ A stage resolving `packs:` never opens that file, which is what `QBv0` A3.3 has 
   **Done when:** converting a claim ledger into aims names what each claim becomes, rather than reusing it.
 
 ### A2 · 📐 The agency delta is the pack's unit
-- A2.1 · The non-journal shape is declared where a reader meets it, not only inside the pack.
-  **Done when:** the venue stage's `packs:` note points here for grant and at `QBv7` for patent.
+- A2.1 · The blueprint-only declaration and this pack's own contents cannot disagree.
+  **Done when:** adding a per-section pack here fails until `section-kinds.yml` stops calling it blueprint-only.
 
 ### A3 · ⚠️ No exemplars, anywhere
 - A3.1 · At least one funded proposal per agency this repo actually targets lands in the pack.
@@ -155,7 +155,7 @@ A stage resolving `packs:` never opens that file, which is what `QBv0` A3.3 has 
 - ⬜ A1.1 · Not started. The stage maps exist; the claim-to-aim conversion is unwritten.
 
 ### A2 · 📐 The agency delta is the pack's unit
-- ⬜ A2.1 · Not started, and shared with `QBv7`. The exception is one sentence in `venue/README.md`.
+- ✅ A2.1 · Resolved on inspection, and replaced. `stages/section-kinds.yml` names grant and patent blueprint-only by design, in a file both venue and section-edit read.
 
 ### A3 · ⚠️ No exemplars, anywhere
 - ⬜ A3.1 · Not started. Zero exemplars against 21 to 29 for each populated journal outlet.
@@ -177,6 +177,12 @@ Filed at FAMILY level under `../../paper/venue/playbook-grant/examples/`, not un
 
 <!-- exemplars:end -->
 
+<!-- kinds:begin -->
+
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
+
+<!-- kinds:end -->
+
 ## Law
 
 A grant is a venue because it prescribes structure and publishes its acceptance test, and it is a stricter one than any journal on both counts.
@@ -190,4 +196,5 @@ A panel buys a plan, so every lifecycle artifact is re-aimed from what was found
 
 ## Log
 
+260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page. That file already carries the glob rule for the section abbreviation, an outlet-to-kinds map measured on disk, the `theory-model` alias, and the blueprint-only declaration for grant and patent. Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
 260802 · Opened with the QBv group, from `playbook-grant` at `Venue-Paper@fe25a88`.

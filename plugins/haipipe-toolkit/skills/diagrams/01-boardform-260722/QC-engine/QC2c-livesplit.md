@@ -151,15 +151,15 @@ These are the calls only JL can make; CC ticks nothing here.
 
 ## Files
 ### Engines
-- `../../board/haipipe-board/serve.py`
+- `../../board/haipipe-board/cli/serve.py`
   The file this page is about; 2938 lines, 20 routes, one handler class.
 - `../../board/haipipe-board/src/common.py`
   The shared floor both halves import, and the one file this split must not duplicate.
-- `../../board/haipipe-board/build.py`
+- `../../board/haipipe-board/cli/build.py`
   What a thin CLI looks like after the same treatment, 128 lines over `src/`.
 
 ### Related work
-- `QC2b-srcsplit.md`
+- `QC-engine/QC2b-srcsplit.md`
   The render-side split, its Law, and the sentence that deferred this one.
 
 ## Log

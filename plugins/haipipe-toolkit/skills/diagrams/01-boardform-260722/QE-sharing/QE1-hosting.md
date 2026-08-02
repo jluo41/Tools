@@ -189,7 +189,7 @@ It succeeds when a second reader can use the promised tier through a protected, 
       Today the signature is browser-side initials of the writer's choosing, and the page records no candidate scheme yet, so a tick here also closes the same row in Items to Finish.
 
 ## Files
-- `serve.py`
+- `cli/serve.py`
   Bind address, port, write endpoints, and (future) auth all live here.
 - `board.html`
   The static-export deliverable itself; `fig/` and `## Links` relative paths must be verified together.

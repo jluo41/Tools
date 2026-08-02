@@ -149,7 +149,7 @@ The shared-source default and the single-setting implementation remain open beca
 
 ## Files
 ### The running server and documentation
-- `serve.py`
+- `cli/serve.py`
   Holds the bind, the `--host` flag, and the docstring that states the security model. Start here when this question changes.
 - `SKILL.md`
   Uses the same machine-local reader URL for browser pushes and documents loopback only as the safe fallback.

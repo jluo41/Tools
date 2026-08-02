@@ -249,7 +249,7 @@ These are the calls only JL can make; CC ticks nothing here.
 
 ## Files
 ### The precedent to mirror
-- `stage.py`
+- `cli/stage.py`
   The precedent: `new` / `sync` / `check`, `replace_managed`, and the source-hash staleness report. Read this before writing anything.
 - `src/stage_contract.py`
   `managed_span` and `replace_managed`, the 98 lines that make "never touch what a human wrote" true rather than intended.

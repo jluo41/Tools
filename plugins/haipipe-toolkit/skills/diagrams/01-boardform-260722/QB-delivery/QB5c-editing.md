@@ -47,11 +47,11 @@ The old sentence is not stored a second time and there is no History section. Ev
 The single-sentence edit is implemented. It deliberately refuses a duplicate sentence (to avoid editing the wrong copy) and a sentence carrying Markdown decoration (to avoid silently deleting links, code, or bold). Concurrency remains open under `QE4`.
 
 ## Files
-- `serve.py`
+- `cli/serve.py`
   `/_board/edit-sentence`: exact source lookup, replacement, and diff-line write.
-- `assets/board.js` / `assets/board.css`
+- `assets/js/00-header.js` / `assets/css/10-focus.css`
   Double-click editor and the visible `~removed~` / `*added*` rendering.
-- `QE4-editlock.md`
+- `QE-sharing/QE4-editlock.md`
   The board-wide editing question this face is the sentence-scoped slice of.
 
 ## Log

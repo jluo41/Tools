@@ -449,15 +449,15 @@ The calls only JL can make. CC ticks nothing here, and every row names the Aim i
 
 ## Files
 ### The host
-- `serve.py`
+- `cli/serve.py`
   `chat()`: `ClaudeSDKClient` + the `can_use_tool` permission callback + NDJSON streaming, all here.
 
 ### The drawer surface
-- `build.py`
+- `cli/build.py`
   The generator embeds the drawer assets into each self-contained board page.
-- `assets/board.js`
+- `assets/js/00-header.js`
   Drawer markup and behavior, including title binding and terminal/chat mode switching.
-- `assets/board.css`
+- `assets/css/10-focus.css`
   Drawer layout and visual hierarchy, including the compact neutral header.
 
 ## Lesson

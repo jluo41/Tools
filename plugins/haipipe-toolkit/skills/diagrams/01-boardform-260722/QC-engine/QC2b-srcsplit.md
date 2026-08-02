@@ -48,11 +48,11 @@ It succeeds when the split is byte-identical and consumers stop carrying private
 Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py keeps the live layer and imports the shared helpers; the QD-group live layer was deliberately NOT refactored while it is still forming.
 
 ## Files
-- `build.py`
+- `cli/build.py`
   Entry only.
 - `src/`
   The six modules.
-- `serve.py`
+- `cli/serve.py`
   Imports `src/common.py`; its own split waits for the QD group to settle.
 
 ## Law

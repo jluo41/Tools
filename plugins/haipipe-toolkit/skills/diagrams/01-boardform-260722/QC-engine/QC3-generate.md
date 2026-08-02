@@ -46,9 +46,9 @@ Both page kinds generate and are live; what remains is routing a meeting note's 
 - [ ] 🧠 JL confirms the generator family reads as one topic now that QC3a and QC3b sit under QC3
 
 ## Files
-- `skillpage.py` · `meetingpage.py` · `stage.py`
+- `cli/skillpage.py` · `cli/meetingpage.py` · `cli/stage.py`
   The generators, and the model they mirror.
-- `QC3a-skill-to-page.md` · `QC3b-meetingnote.md`
+- `QC-engine/QC3a-skill-to-page.md` · `QC-engine/QC3b-meetingnote.md`
   The family, one source each.
 
 ## Log
