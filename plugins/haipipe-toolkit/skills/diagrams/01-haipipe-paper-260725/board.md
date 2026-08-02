@@ -186,23 +186,40 @@ QB13b-requested-display.md
 QB13c-display-caption.md
 
 ### QBv · Venue Packs
-What each venue KNOWS, one page per pack, read by Delivery but owned by none of it. `QB1` ruled on 260729 that the venue DECISION lives inside Opening and that ruling stands: this group is not an eleventh Delivery concern, it is the catalog Opening reads to make that decision and that four other concerns read afterwards.
+What each venue KNOWS, read in two passes: a numbered page per PACK, and a lettered page per OUTLET beneath it. `QB1` ruled on 260729 that the venue DECISION lives inside Opening and that ruling stands: this group is not an eleventh Delivery concern, it is the catalog Opening reads to make that decision and that four other concerns read afterwards.
 A pack cuts across Delivery, which is why it cannot be filed under any single concern. Every `playbook-*/README.md` carries four stage maps: rewards land on QB4 Value, display conventions on QB5 Display, the section arc on QB6 Main, and the language profile on QB11a. The packs live in their own repository and this plugin reads them and never writes them.
+A pack says why this GROUP of outlets; an outlet says what THIS DESK accepts. `QBv6` and `QBv7` carry no outlet pages because grant and patent have no outlet tree: agencies and jurisdictions are README delta tables, which is the pack shape exception `QBv0` A3.3 owns.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record          📂 FOLDER
 ─────────────────────────      ───────────────────────────────────    ────────────────────────
-2a-venue reads packs:       ◀── QBv0     what a pack owes            ──▶  paper/venue/
-QB1 owns the DECISION       ◀── QBv1–QBv5 the five journal packs     ──▶  playbook-*/<outlet>/
-QB4·QB5·QB6·QB11a read it   ◀── QBv6–QBv7 grant and patent, no       ──▶  README delta tables
-                                          outlet tree by design
+2a-venue reads packs:       ◀── QBv0        what a pack owes         ──▶  paper/venue/
+QB1 owns the DECISION       ◀── QBv1–QBv5   five journal packs       ──▶  playbook-*/
+QB4·QB5·QB6·QB11a read it   ◀── QBv1a–QBv5a 14 outlets, one desk     ──▶  playbook-*/<outlet>/
+                                            each: taste + sections
+                            ◀── QBv6–QBv7   grant and patent, no     ──▶  README delta tables
+                                            outlet tree by design
 ```
 QBv0-venue-pack-contract.md
 QBv1-utd-is.md
+QBv1a-misq.md
+QBv1b-isr.md
+QBv1c-ms-is.md
+QBv1d-ms-marketing.md
 QBv2-jama-portfolio.md
+QBv2a-jama-flagship.md
+QBv2b-jama-im.md
+QBv2c-jama-netopen.md
 QBv3-nature-portfolio.md
+QBv3a-npj-digital-medicine.md
+QBv3b-nature-medicine.md
+QBv3c-nature-communications.md
+QBv3d-nature-human-behaviour.md
+QBv3e-nmi.md
 QBv4-pnas.md
+QBv4a-pnas.md
 QBv5-medical-journals.md
+QBv5a-diabetes-care.md
 QBv6-grant.md
 QBv7-patent.md
 

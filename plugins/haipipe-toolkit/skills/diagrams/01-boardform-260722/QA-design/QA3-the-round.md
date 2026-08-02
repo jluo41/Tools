@@ -89,6 +89,54 @@ The reply states the outcome first, then the footer, and it never claims a condi
 A gate that failed is reported rather than hidden, because a reply saying "the checker is red and here is why" is worth more than a reply that says done and is wrong.
 The numbers belong in the reply because they are the evidence the human would otherwise have to reproduce.
 
+### 6 · Who controls the reply's shape once a board is attached
+
+**Two surfaces**: what each thing a round produces is worth on the page, and what is left for the reply.
+
+```text
+  ── one round, two surfaces, and what each one is for ───────────────
+
+   what the round produced        📋 THE PAGE              💬 THE REPLY
+   ──────────────────────────     ────────────────────     ─────────────────
+   a drawing of the design    ──▶ ## Diagram               a link to it
+   the argument, the options,
+     the tradeoff             ──▶ ## Content · one         one outcome line
+                                    division
+   what is true now           ──▶ ## States                the state, not rows
+   what only JL can rule      ──▶ ## States ›              the count and where
+                                    Decision Now
+   what changed this round    ──▶ ## Log                   one line per write
+   ────────────────────────────────────────────────────────────────────
+   the page is addressable, commentable, and still there tomorrow
+   the reply POINTS at it, and closes on status.py's three lines
+```
+
+The reply and the page are two places the same round can put the same thing, and only the page keeps it.
+
+Four contracts write on the same reply today, and only one of them can tell that a board is open.
+
+- `CLAUDE.md` at the SPACE root
+  The repo default for every session: emoji-headed sections, and any non-trivial design, tradeoff or flow leads with an ASCII diagram rather than prose. It is loaded whether or not a board exists, so it cannot stand down on its own.
+- `haipipe-board`'s SKILL.md, section `Session attachment and Closing Block`
+  Owns the last three lines that `status.py` renders, and the rule that no prose follows them.
+- `haipipe-board-routing` 0.2.0
+  Owns the write-back footer: one line per write as `page id · ## section`, decisions pointed at instead of re-listed, and a closing `Next:` line naming one action for the user.
+- this face, §5
+  Owns the order: outcome first, then the footer, and never a condition the round did not actually run.
+
+What none of them owns is the BODY between the outcome and the footer, and that is exactly where the two surfaces collide.
+The repo default asks for the diagram, the sections and the comparison in the reply; the board asks for those same things on a page, where they carry an address, a state, and a place for a comment to land.
+Written in both places they disagree within the hour, and the copy in the terminal is the one nobody can correct, comment on, or find again tomorrow.
+
+The proposal is a precedence rule rather than a fifth contract.
+Once a board is attached, `haipipe-board` overrides the repo default for as long as the attachment holds, and the reply collapses to outcome, routing footer, status strip.
+Anything that would be a section, a drawing, a comparison, or a list of rows becomes a page write first and a pointer second.
+A round that produced nothing a page could hold is a discussion round and keeps the repo default, because there is no page to point at and thinking out loud with JL is the one thing a terminal is genuinely better at.
+
+CC decided the home rather than asking, since nothing stops until it is answered: the body rule graduates into `haipipe-board`'s SKILL.md beside the closing block it precedes, not into `haipipe-board-routing`.
+Routing is a verb and is loaded only when a write is being routed, while a board-attached session that writes nothing still owes the shape; `haipipe-board` is the door and is loaded for the whole session.
+Routing keeps the write-lines footer, because those lines exist only when routing ran.
+
 ## Items to Finish
 ### The gate as one command
 - [ ] 🧰 Make the gate one command
@@ -101,14 +149,22 @@ The numbers belong in the reply because they are the evidence the human would ot
       A rule that lives only on this page binds nothing, since no runtime reads a Q page; it graduates into `haipipe-board-routing`, which already owns the reply, or into `haipipe-board`'s `SKILL.md`.
 - [ ] 🧪 Test the gate with a fresh agent
       `QF2`'s instrument applies directly: give an agent only the shipped rule, have it do a small board change, and see whether it runs the gate without being told.
+- [ ] 🎛 Ship the attached-session reply rule where every session sees it
+      §6's precedence rule binds nothing while it lives on this page; it graduates into `haipipe-board`'s SKILL.md, beside the closing block it precedes, so an attached session reads it before its first reply.
 
 ## Where we are
 The reply's shape is settled and shipped; the gate before it is not written anywhere and is currently a habit that happens to have held.
 Every condition proposed above is something this session already did by hand on 260731, which is the argument that they are achievable, and the three failures in §2 are the argument that doing them by hand is not enough.
+260802 corrected what "settled and shipped" covers: only the footer and the strip are shipped, and §6 shows the body between them is claimed by the repo default and by nobody who knows a board is attached.
 
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
+- [ ] 🎛 Rule whether a board attachment overrides the repo's reply format
+      A · `haipipe-board` wins for the whole attached session, so every reply is outcome plus footer plus strip, and every drawing, comparison or section goes on a page.
+      B · the two stack, so the reply keeps `CLAUDE.md`'s emoji sections and the board only adds its footer, which is today's behaviour and is what produced this question.
+      C · the live mode decides: `discussion` keeps the repo default, and `implementation`, `review` and `sourcing` collapse to the pointer form.
+      → CC's proposal: C. A silences the one thing a terminal is genuinely better at, which is working an idea out with JL before anything is written down; B is the status quo that puts the same drawing in a transcript and on no page. Mode is already a field `status.py` renders every round, so the switch needs no new machinery.
 - [ ] 🚦 Ratify the five conditions as the gate
       Written back, rebuilt, checked, reachable, stated, all of them before an agent may reply that a round is done.
       → CC's proposal: yes as drawn; each one is already run by hand today, so this makes an existing practice binding rather than inventing new work.
@@ -143,5 +199,6 @@ These are the calls only JL can make; CC ticks nothing here.
   Condition ④'s mechanism, and the 260731 incident that showed a finished round can still leave a board a human cannot check.
 
 ## Log
+260802 · §6 opened on JL's question about who controls a board-attached reply's shape; the body between the outcome and the footer turns out to be unowned, the precedence row is in Decision Now, and CC decided the rule's home itself since nothing stopped on it
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · Opened on JL's ask that agents "work and test themself, and reply when the board is ready for the user to check"; the reply's shape was already settled in haipipe-board-routing 0.2.0, so this face owns only the gate before it

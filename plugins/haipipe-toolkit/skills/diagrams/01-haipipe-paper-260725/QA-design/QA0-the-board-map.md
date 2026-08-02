@@ -110,7 +110,7 @@ Failure reopens the owning Delivery or Engine page.
  🏦 Work grows the banks by probe    📦 Build also owns diffusion/distribution
  🔁 Round is a BATCH, which is why it is not called Response
 
- ⚠️ this is the READING order. Engine dependencies and stage revisits are
+ 📖 this is the READING order. Engine dependencies and stage revisits are
     declared explicitly and never inferred from group adjacency
 ```
 
@@ -209,7 +209,7 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `../../board/haipipe-board/cli/check.py`
   Verifies the generated tree and the page rules. It reports structure and never judges whether a sentence is still true.
-  ⚠️ A bare group letter inside backticks makes the renderer build an anchor from already-rendered HTML, producing a dead `#group-<span class=` fragment. That is `③`'s machinery and not ours to patch, so pages avoid the trigger.
+  ⚠️ A fenced line whose first glyph is `⚠️` (U+26A0 U+FE0F) is read by the figure linker as a group token, and it builds the anchor out of already-rendered HTML: `#group-<span class=`. Measured 260802 across the whole board: 123 occurrences, 44 dead-fragment errors, and no other glyph triggers it. That is `③`'s machinery and not this board's to patch, so pages avoid the trigger by leading such a line with any other glyph.
 
 ### 📤 Output files · what a BUILD writes
 - `../board/index.html`
@@ -228,6 +228,8 @@ A failure reopens the owning Delivery or Engine page. A failed candidate never b
 Regrouping aligns every live page id with its current group and preserves every non-conflicting historical id as a declared alias.
 
 ## Lesson
+
+An emoji-dense figure is a rendering surface, not just text. The `QB4` contract asks for emoji-dense face figures, and exactly one glyph in common use, `⚠️`, is read by the figure linker as a group token when it opens a fenced line. Nothing warned; the page simply grew a dead link. The rule that follows is not about that glyph: a figure is rendered, so a new figure convention needs one build-and-check before it is applied to fifty pages.
 
 A page count written into Content outlives two regroupings. This page carried "53 Page routes" through the growth to 63, because a number stated as a design fact is never revisited, while the same number in States is expected to move.
 
