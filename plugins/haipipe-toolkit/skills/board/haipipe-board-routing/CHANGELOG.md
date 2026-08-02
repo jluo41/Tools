@@ -7,6 +7,18 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.4.1 - 2026-08-01
+
+- Routes current records into the canonical plural `## States` section while
+  retaining singular State as an individual record name.
+
+## 0.4.0 - 2026-08-01
+
+- Routes current facts into `## State` and may update an Aim status only from
+  inspected evidence, recording the transition reason in Log.
+- Keeps `### Decision Now` checkboxes and page-level human gates human-owned.
+- Replaced active `Where we are` instructions with the canonical State name.
+
 ## 0.3.0 - 2026-07-31
 
 - The footer ends with a `Next:` line. JL, reading a bare routing footer: "what

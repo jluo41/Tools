@@ -7,6 +7,13 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.2.1 - 2026-08-02
+
+- The boundary line sending one-page-section work elsewhere named `QAa` and said
+  it "will move to `haipipe-board-page`". That skill shipped, and the QAa face
+  group was folded into QB4 and archived on 260801, so the pointer named a page
+  that no longer exists and a move that already happened.
+
 ## 0.2.0 - 2026-08-01
 
 - Aligns the Index contract with the canonical generated `board/` site rather than the retired `board.html` packaging.

@@ -26,9 +26,9 @@ DESPITE duplicating their P8, because it carries evidence P8 could not have.
 | 1 | [make-the-decision-yourself](2026-07-28_make-the-decision-yourself.md) | preference | ref/writing-rules.md + the board skill's operating notes |
 | 2 | [the-page-is-the-record-not-the-chat](2026-07-28_the-page-is-the-record-not-the-chat.md) | preference | ref/writing-rules.md |
 | 3 | [repair-what-your-own-work-invalidated](2026-07-28_repair-what-your-own-work-invalidated.md) | defect | check.py (mechanical half) + ref/writing-rules.md |
-| 4 | [copy-the-sibling-pages-shape](2026-07-28_copy-the-sibling-pages-shape.md) | preference | ref/q-template.md |
+| 4 | [copy-the-sibling-pages-shape](2026-07-28_copy-the-sibling-pages-shape.md) | preference | ref/page-template.md |
 | 5 | [cross-check-another-agents-analysis](2026-07-28_cross-check-another-agents-analysis.md) | preference | ref/writing-rules.md |
-| 6 | [a-decision-row-is-not-an-argument](2026-07-28_a-decision-row-is-not-an-argument.md) | defect | ref/q-template.md + ref/writing-rules.md |
+| 6 | [a-decision-row-is-not-an-argument](2026-07-28_a-decision-row-is-not-an-argument.md) | defect | ref/page-template.md + ref/writing-rules.md |
 | 7 | [own-or-point-never-restate](2026-07-28_own-or-point-never-restate.md) | defect | check.py + ref/writing-rules.md |
 | 8 | [verify-in-a-generated-block-dont-assert-in-prose](2026-07-28_verify-in-a-generated-block-dont-assert-in-prose.md) | preference | check.py + build.py |
 | 9 | [checker-blind-spot-markdown-ref-vs-label](2026-07-28_checker-blind-spot-markdown-ref-vs-label.md) | defect | build.py |

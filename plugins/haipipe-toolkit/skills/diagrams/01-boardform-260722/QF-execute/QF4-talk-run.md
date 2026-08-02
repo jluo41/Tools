@@ -4,11 +4,12 @@ owner: JL
 method: list the talk failures that shipped green through every existing instrument, then name the axes a run has to cover
 
 ## Opening
-What has to be typed into a chat and answered before a talk change can be called done?
-`QF3` added a browser that loads the built page and clicks it, and 260731 showed that a whole class of failure passes even that: the page rendered perfectly, every widget was built, a write landed, and the chat in front of JL was answering for the wrong page.
+What must a real conversation prove before changes to the SDK chat or TUI chat can be called safe?
 
-This face owns the fourth instrument.
-It is not a better browser run: it is the same browser sending a real message to a real model and asking who received it, whether the answer came back, and whether the second turn still knows about the first.
+A page can render perfectly while sending a message to the wrong scope, losing the next turn, or hiding a refusal as an answer.
+Only a live message can test the session and handover behavior that appears after the interface works.
+The run must cover binding, turn completion, continuity, interruption, and movement between the two chat forms.
+It succeeds when the right session receives the message and remains truthful through the next action.
 
 ## Content
 ### 1 · Five failures that shipped green through the checker AND the browser run

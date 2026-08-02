@@ -170,7 +170,7 @@ The template guard is the sharpest instance, because it is the most widely writt
 ### The board has the rule this needs, and it is written in a different alphabet
 A `> JL:` line is never deleted. That is a standing law of the board (`board SKILL.md:475`, `ref/writing-rules.md:54`), it applies to every page regardless of who is writing, and it is the exact shape the stage path is missing. The stage path has already tried to import it twice, at `5-section-edit/stage.md:267` and `2-phase/REF/prose-quality.md:34`, and both times wrote `> USER:` instead, which is the canonical actor id for the paper phase layer (`2-phase/USAGE.md:53`). Forty-five human comment lines on the MISQ pages say `> JL:` and none says `> USER:`, so the imported rule guards a string that is not there. Whatever is ruled here has to close that gap first, because a protection scheme that cannot name what it protects is not a second scheme, it is a null one.
 
-## Items to Finish
+## Aims
 - [x] 🔍 Re-measure the scattered rules against disk
       Done 260727. Eight rules, not six: `stages/5-section-edit/stage.md:267` and `2-phase/REF/prose-quality.md:34` were missing from the inventory, and both are the human-comment protection this face was asking for. The 2026-06-22 feedback note no longer exists anywhere in the tree; its rule was promoted into `ref/09-stage-illuminate.md:25`. Four of the six cited line numbers had drifted.
 - [x] 🧠 Rule the second run, and where it is DECLARED
@@ -191,7 +191,7 @@ A `> JL:` line is never deleted. That is a standing law of the board (`board SKI
 - [ ] 🧪 Re-run one stage on the page with 19 comments
       `0-lifecycle/4-main/S-Main-2-introduction.md` carries 19 `> JL:` lines, the most on the paper. Re-run section-edit on it and read what survived. Nobody knows today, which is the finding.
 
-## Where we are
+## States
 Ruled and declared 260727. `on_rerun: diff-and-ask` is in all eight `stage.md` contracts, the rule is specified once in `stages/CONTRACT.md` under "The second run", and the two preservation rules now match the lane shape `> <ACTOR>:` instead of the one id that was never on a page.
 
 ```
@@ -204,7 +204,7 @@ Ruled and declared 260727. `on_rerun: diff-and-ask` is in all eight `stage.md` c
  1 construct named (the comment)     5 named, incl. the GATE row
 ```
 
-⚠️ Declared is not enforced, and that distinction is the whole remaining risk. Nothing yet computes a diff before writing, and nothing asserts that a run left the five protected constructs alone. Until that lands, this ruling is a rule an agent is asked to obey rather than a step something performs, which is the same shape `QB9a` names for its own missing generator. It is the open item above, and by this board's own close rule an unwritten checker does not hold the ruling open.
+⚠️ Declared is not enforced, and that distinction is the whole remaining risk. Nothing yet computes a diff before writing, and nothing asserts that a run left the five protected constructs alone. Until that lands, this ruling is a rule an agent is asked to obey rather than a step something performs, which is the same shape `QB11a` names for its own missing generator. It is the open item above, and by this board's own close rule an unwritten checker does not hold the ruling open.
 
 One re-run has already produced a real defect: a MISQ seed gate recorded as passed by an agent standing in for the human. The rule now forbids it, and nothing yet catches it. That half is `QC4d`'s, and the specific row is still an open item on `S-Seed-0-seed.md:157`.
 

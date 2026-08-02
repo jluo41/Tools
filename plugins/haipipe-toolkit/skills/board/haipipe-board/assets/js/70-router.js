@@ -8,6 +8,12 @@
    With scripts off every link is still an ordinary href, so the tree stays
    fully navigable and the strip-scripts invariant holds. */
 (function () {
+  /* QD5: inside the operating shell the router has nothing left to do. A click
+     in the index pane carries target="page" and the browser loads the sibling
+     frame for free, which is exactly what the swap below exists to FAKE — and a
+     real navigation is now what we want, because the frame is the unit that
+     reloads. Leaving both on would swap div.wrap AND navigate. */
+  if (window.__boardPane) return;
   if (!document.body.classList.contains('split')) return;  // single-file mode
   var busy = false, pending = null;
 
@@ -27,7 +33,13 @@
     if (busy) { pending = [url, push]; return; }
     busy = true;
     try {
-      var r = await fetch(url, { cache: 'no-store' });
+      /* `no-store` re-downloaded the whole page on every visit, and 82% of a
+         page's bytes are the rail, which this swap then throws away because the
+         rail lives outside div.wrap. `no-cache` still REVALIDATES every time, so
+         a rebuilt page is never served stale, but an unchanged one comes back as
+         a 0-byte 304 instead of 136 KB (JL 260801: "why does it take a long time
+         to navigate"). Correctness is unchanged; only the wire is. */
+      var r = await fetch(url, { cache: 'no-cache' });
       var doc = new DOMParser().parseFromString(await r.text(), 'text/html');
       var nw = doc.querySelector('div.wrap'), old = document.querySelector('div.wrap');
       if (!nw || !old) { location.href = url; return; }

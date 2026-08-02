@@ -25,7 +25,7 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
 runs: once
 needs_paper: true
 on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
-                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # lane, `state:`, `## States`, a settled State row, a GATE row in
                          # `## Log`. Everything else: compute the change, SHOW it, ask.
                          # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_aligned: true       # rewrite the display set when the paper retargets
@@ -119,12 +119,12 @@ formatting:
   title_rule: "====="
   section_rule: "-----"
   headings: "`###` per display inside its paper-section group and per Render-&-sweep item;
-             Q-consumer records are checklist items under `## Items to Finish`"
+             Q-consumer records are Aim records under `## Aims`"
   line_breaks: "one sentence per line (semantic line breaks)"
   no_pipe_tables: "BINDING (JL 2026-07-10). Every would-be table is record lines. Aligned plain text INSIDE a fenced ASCII sketch is fine — it sketches a LaTeX table, it is not doc structure."
   mirroring: "the md's group/subsection tree mirrors the generated gallery's \\section*/\\subsection* one-to-one; a display's paper section is stated ONCE, by its group header"
 
-q_id_pattern: "- [ ] 🔎 Q-Display<unit>-<n> · <title>"
+q_id_pattern: "- P<n> · Q-Display<unit>-<n> · <title>"
 q_anchor: "[Q-Display<unit>-<n>] cited inline in the display block whose evidence the question supplies"
 closed_when: "each Q-consumer Answer lands in the asset's Spec, Wrapper, caption, or cited reader sentence; REVISE then discharges the matching [Q-Display<unit>-<n>] bracket"
 
@@ -139,7 +139,7 @@ done_criteria:
   - "every display referenced in S-Venue-2-narrative.md; no _DISPLAY_REQUEST.md row left `requested`"
   - "Render & sweep items all terminal (Outcome filled, or struck by the user and logged); no `✋` item run while its gating thread was unruled"
   - "every display carries an independent interrogation verdict (keep-main | keep-supplement | fix | demote | cut)"
-  - "every unresolved semantic or evidence need is a complete Q-consumer record in Items to Finish; known build work remains a normal item"
+  - "every unresolved semantic or evidence need is a complete Q-consumer Aim in Aims; known build work remains an ordinary Aim"
   - "checklist.md walked and all items pass"
   - "check-probe-cards.sh <paper_root> --stage display exits 0"
 
@@ -171,17 +171,17 @@ DISPLAY       which beats must be SEEN rather than told, and can we show them?
 SECTION-EDIT  the prose around the display it is already handed.
 ```
 
-Items to Finish is the Q-consumer adapter
-------------------------------------------
+Aims is the Q-consumer adapter
+------------------------------
 
-On a Board-first Display page, `## Items to Finish` carries two deliberately different row types:
+On a Board-first Display page, `## Aims` carries two deliberately different Aim types:
 
 ```text
-🔎 Q-Display<unit>-<n>   an unresolved question with a stake — Description, Reason,
-                         Probe, and Answer; it closes only when the answer is woven into
-                         the display's Spec, Wrapper, caption, or citing sentence.
-🛠 / 📈 / 📤 work item    a known action — materialize intake, edit an approved source,
-                         render, inspect, promote, or update float.tex.
+P<n> · Q-Display<unit>-<n>   an unresolved question with a stake — Done when,
+                               Description, Reason, Probe, and Answer; it closes only when
+                               the answer is woven into the display or citing sentence.
+A1.<n> output Aim              a known outcome — materialized intake, approved source,
+                               rendered artifact, promotion, or updated float.tex.
 ```
 
 Do not disguise a known repair as a Q-consumer, and do not leave an uncertainty as an unlabeled

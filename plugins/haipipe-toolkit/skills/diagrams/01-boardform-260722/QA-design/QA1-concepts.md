@@ -3,10 +3,13 @@ state: 🟡 PARTIAL · collected 260729 · refreshed 260731; JL has not read it 
 owner: JL
 method: one entry per concept, each the source documents' own word; a coined word is a defect
 
-## Question
-What do the family's words mean, one entry each, so no page has to re-explain them?
-"Board" names five things, "page" three, "section" two, and until 260729 nothing separated them; this face is the one place the vocabulary is pinned.
-Every entry is a word the skill or a face already uses; anything coined here would violate the writing rule it exists to serve.
+## Opening
+What does each recurring Board term mean, and where is its authoritative definition?
+
+This page gives the family one shared vocabulary for Boards, pages, sections, states, and sentences.
+The hard part is that ordinary words such as Board and page refer to several different objects in this system.
+Unclear names make neighbouring pages re-explain the same concept and eventually disagree.
+It succeeds when a cold reader can follow any page without guessing which object a term names.
 
 
 ## Boundary

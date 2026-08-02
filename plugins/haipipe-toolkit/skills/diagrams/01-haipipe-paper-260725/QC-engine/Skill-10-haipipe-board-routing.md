@@ -117,11 +117,11 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       The named next step: the write path itself moves behind `serve.py`'s anchored-append endpoint, so a routed write and a clicked comment share one code path.
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
-## Where we are
+## States
 Mirrored into the Engine roster as the write-back mechanism shared by all lanes. Its role is intentionally mechanical: it keeps the Board current without becoming a Paper author or gatekeeper.
 
 ## Log

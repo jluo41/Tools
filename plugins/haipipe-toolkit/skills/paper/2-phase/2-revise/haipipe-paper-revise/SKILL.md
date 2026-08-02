@@ -44,7 +44,9 @@ Four workers, each with a different lens:
 ```
 haipipe-paper-revise-place                SUBSTITUTE landed answers into placeholders (runs FIRST)
 haipipe-paper-revise-content              WHAT sentences say (accuracy, completeness, claims)
+                                          weave method: writing/haipipe-writing/ref/weaving.md
 haipipe-paper-revise-humanizer            HOW sentences sound (de-AI audit, voice)
+                                          general tells: writing/haipipe-writing/ref/ai-tells.md
 haipipe-paper-revise-results              results-specific (figure narration, effect reporting)
 ```
 
@@ -61,10 +63,11 @@ Apply the four workers to the source `.md`, leave `%% {CC-*}:` why-comments for 
 
 ### Candidate-diff mode
 
-Use this mode only after an explicit author request for reviewable alternatives. Read `haipipe-paper-revise-humanizer/ref/venue-sciwrite.md` before proposing any change.
+Use this mode only after an explicit author request for reviewable alternatives. Read `haipipe-paper-revise-humanizer/ref/venue-sciwrite.md` before proposing any change, and `writing/haipipe-writing/ref/ai-tells.md` for the general catalogue (Layer 1 moved there on 260801).
 
 1. Keep the source sentence, its citations, values, display lanes, and user comments byte-intact.
 2. Put one complete proposed sentence in an adjacent `> Note:` lane. Mark removed text as `~~removed~~` and inserted or replacement text as `**inserted**`.
+   COMPUTE those marks, do not write them: `python3 <skills>/writing/haipipe-writing/cli/wdiff.py record --host paper --old "<source sentence>" --new "<proposal>" --when "<YYYY-MM-DD>"` (JL 260801, `--host` added 260802). `--host paper` emits this host's `~~removed~~` / `**inserted**` marks directly, so convert nothing by hand. Written by hand the diff comes out as a whole-sentence swap, which shows the reviewer nothing that SURVIVED, and that is the one thing a candidate lane exists to show.
 3. Append `· <verified model label> · YYYY-MM-DD`; never invent a model name or version.
 4. Make only minimum, meaning-preserving changes. Do not add or remove a claim, qualifier, causal strength, number, citation, display reference, or defined term.
 5. Place the Note after any existing adjacent `> Citation:`, `> Value:`, or `> Display:` lanes so the entire apparatus folds under the same sentence.

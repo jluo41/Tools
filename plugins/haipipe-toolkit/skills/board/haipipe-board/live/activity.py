@@ -166,7 +166,7 @@ class ActivityMixin:
 
         `## Log` is the board's own record of what changed and when, so it is
         already the honest answer to "was there work here". Nothing else is
-        read: `## Where we are` also carries dated lines, but those are status
+        read: legacy `## Where we are` also carries dated lines, but those are status
         prose rather than a change record, and counting both would count one
         change twice.
         """

@@ -1,3 +1,13 @@
+## 2026-08-01
+
+- Step 4c's placeholder audit is now RUN, not eyeballed:
+  `writing/haipipe-writing/cli/holes.py --dialect paper` (JL). It checks both
+  directions; the reverse one (a hole naming a question that does not exist)
+  is the one a human reader skips, because the hole looks owned.
+- The discipline behind the step moved to `writing/haipipe-writing/ref/holes.md`.
+  The notation, the `.bib` grep, the DR rows and the `1-probes/` boundary stayed:
+  none of them generalize.
+
 haipipe-paper-draft — Changelog
 ===============================
 

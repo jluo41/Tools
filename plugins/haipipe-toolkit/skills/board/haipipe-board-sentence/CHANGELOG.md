@@ -7,6 +7,17 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.1.1 - 2026-08-02
+
+- The lane figure taught `> JL: the human's lane`, which QB4 §3.3.3 retired on
+  260802: a person's remark is `> Comment WHO …`, the older form still renders,
+  and `check.py` warns on it inside Content. The figure now shows the three
+  kinds that hang under a sentence (comment, `✎` change record, typed lane).
+- The never-delete rule said `> WHO:`; it names the comment form instead.
+- `## Discussion` is called out as NOT affected: it keeps `> JL:` with nested
+  `>>` replies, which is a thread and a different grammar in a different
+  section.
+
 ## 0.1.0 - 2026-07-31
 
 - First cut, created on JL's order alongside `haipipe-board-page` and

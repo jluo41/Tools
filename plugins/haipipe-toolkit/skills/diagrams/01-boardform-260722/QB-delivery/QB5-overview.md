@@ -3,10 +3,13 @@ state: 🟡 PARTIAL · the unit is settled; the family map is new (260729)
 owner: JL
 method: one sentence per source line; everything that attaches to a sentence gets its own face
 
-## Question
-What is a sentence on a board page, and what can attach to it?
-One sentence per source line (0.19.0) made the sentence the board's atomic row: the thing you click, comment on, attach evidence to, and hand to an agent.
-This face is the sentence family's front door; the machinery lives on its sibling faces.
+## Opening
+What is the smallest writable unit on a Board page, and what may attach to it?
+
+This page defines one source sentence-line as the row that connects evidence, comments, edits, addresses, and Chat.
+The hard part is keeping every attached record with its sentence without adding stored identifiers or duplicating the source.
+If the unit is unclear, context drifts as prose is reviewed, changed, or handed to another person.
+The model succeeds when a sentence and everything attached to it travel together through reading, writing, and handoff.
 
 
 ## Boundary
@@ -69,6 +72,11 @@ Lifecycle (`QAb4`) rules how Sentence details are filtered, resolved, cleaned up
       Opened 260729 when the QAb group was carved; the unit itself was settled in 0.19.0.
 
 ## Where we are
+
+- 260801 JL · 🧪 The family's operations now have a run of their own
+  JL: "I feel the sentences part is almost crash", after three separate sentence defects reached him in a week.
+  `QF5` owns the answer: sixteen shapes a sentence can take, crossed with the six operations that read one, and five assertions per cell.
+  Its first tier is written and was red on its first run, which is the only evidence a test is worth keeping.
 The unit is settled and live on every board; QAb0 now opens with one self-demonstrating sentence before it explains the family assembled from the former QA8 family plus QA6.
 
 ### Decision Now
@@ -82,6 +90,7 @@ The unit is settled and live on every board; QAb0 now opens with one self-demons
   The family.
 
 ## Log
+260801 · `QF5` opened as the sentence family's test face: the shape matrix, the operation matrix, and the four tiers, with tier 1 running today
 260731 1905 · Sentence-tail ⚑N badge no longer strands on its own line: renderer now glues it to the last word inside the `<p>` (`.snw` nowrap wrapper in body.py + board.css), so it sits at the sentence end and wraps together with the last word when space is tight
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Added §1 Demonstration so one sentence exposes Evidence, Comment, Chat, Edit, address, and the QAb4 lifecycle boundary before the reader enters the detailed family map

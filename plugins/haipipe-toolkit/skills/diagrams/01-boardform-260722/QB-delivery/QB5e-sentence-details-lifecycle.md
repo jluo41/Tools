@@ -2,11 +2,14 @@
 state: 🟡 PARTIAL · independent Q opened; lifecycle rules and implementation remain
 owner: JL
 method: give the sentence panel typed views, explicit record states, and a previewed archive-first cleanup path
+session: 12fb5622-ff63-4e49-b5a3-9efbcb113613
+## Opening
+How should sentence details stay useful as comments, evidence, and changes accumulate over time?
 
-## Question
-How should the information attached to one sentence be viewed, resolved, cleaned up, archived, and restored without letting the page grow forever?
-Clicking a sentence can reveal comments, evidence, and editing history, but those records do not share one lifecycle.
-The panel needs a human name, compact filters, explicit states, and cleanup rules that never mistake old for resolved or active evidence for disposable history.
+This page defines typed views, record states, retention, and recoverable cleanup for everything attached to one sentence.
+The hard part is that comments, evidence, and edits do not share one lifecycle, so old does not mean resolved and current evidence is not disposable history.
+Without explicit distinctions, the panel either grows forever or deletes context that still matters.
+The lifecycle succeeds when active records stay protected, every cleanup is previewed, archives can be restored, and purge remains separate.
 
 
 ## Boundary

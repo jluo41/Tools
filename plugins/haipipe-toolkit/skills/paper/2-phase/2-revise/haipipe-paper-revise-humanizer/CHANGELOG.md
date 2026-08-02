@@ -1,3 +1,11 @@
+## 0.2.5 — 2026-08-01
+
+- Layer 1 of `ref/pattern-catalog.md` moved to
+  `skills/writing/haipipe-writing/ref/ai-tells.md` (JL). It is register-agnostic
+  and no paper owned it. Layers 2 to 6 stay: they are academic.
+- Candidate diffs are now COMPUTED by `haipipe-writing/cli/wdiff.py` instead of
+  written by hand. The notation still differs per host; the computation does not.
+
 haipipe-paper-revise-humanizer — Changelog
 ==========================================
 

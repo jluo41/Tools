@@ -27,7 +27,7 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
 runs: once
 needs_paper: true
 on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
-                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # lane, `state:`, `## States`, a settled State row, a GATE row in
                          # `## Log`. Everything else: compute the change, SHOW it, ask.
                          # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_aligned: true       # REWRITES when the venue changes (claims does not — it is venue-free)
@@ -55,7 +55,7 @@ venue_contract:           # read FIRST, before a word is drafted — see the cra
           /haipipe-paper-stage venue refresh', still use S-Venue-0-venue.md; never silently re-read packs"
   rewrite_when: "venue changes"
 
-sections:                 # logical order; Q-consumer adapts to Board Items to Finish
+sections:                 # logical order; Q-consumer adapts to Board Aims
   - Title
   - One-Minute Pitch
   - Hook
@@ -72,13 +72,13 @@ sections:                 # logical order; Q-consumer adapts to Board Items to F
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "direct `###` divisions under Board Content; Q-consumer records are checklist items
-             under `## Items to Finish`, never Content headings"
+  headings: "direct `###` divisions under Board Content; Q-consumer records are Aim records
+             under `## Aims`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
   records: "Primary Claim + RQ Framing uses record lines, never a pipe table"
   length: "readable in one minute; fits on one screen"
 
-q_id_pattern: "- [ ] 🔎 Q-Pitch-<n> · <title>"
+q_id_pattern: "- P<n> · Q-Pitch-<n> · <title>"
 q_anchor: "[Q-Pitch-<n>] cited inline wherever a point rests on the open check (usually Evidence)"
 closed_when: "PROBE writes the finding + [source: PP<nn>] into Answer; REVISE weaves it back in
               and discharges the [Q-Pitch-<n>] bracket"
@@ -99,7 +99,7 @@ done_criteria:
      the artifact it updates"
   - "readability.md passes — global language rules, per-section lead cues, reviewer checklist;
      reads aloud without stumbling"
-  - "Q-consumer present (`- [ ] 🔎 Q-Pitch-<n>` in Items to Finish), each record anchored to a draft assertion"
+  - "Q-consumer present (`- P<n> · Q-Pitch-<n>` in Aims), each record anchored to a draft assertion"
   - "the S page's ## Log records the current state; a SEMANTIC shift cites its source and archives the
      prior version to archive/vNN_<reason>.md"
   - "the paper-family probe-card checker, scoped `--stage pitch`, exits 0"

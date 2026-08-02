@@ -43,26 +43,15 @@ class WriteMixin:
         if not sent or not text:
             return None, "sentence or text is empty"
 
-        def plain(s):
-            s = re.sub(r"`([^`]+)`", r"\1", s)
-            s = re.sub(r"\*\*((?:(?!\*\*).)+)\*\*", r"\1", s)
-            s = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", s)
-            return " ".join(s.split())
-
+        # ONE matcher for every writer (QF5). This path used to carry its own
+        # copy of the scan, which silently differed in the case that matters:
+        # it took the FIRST of several identical lines instead of refusing, so
+        # adding a lane to a repeated sentence could write it under the wrong
+        # one. `_sentence_line` refuses, and now both paths refuse alike.
         lines = f.read_text(encoding="utf-8").split("\n")
-        fence, hit = False, None
-        for i, ln in enumerate(lines):
-            if ln.lstrip().startswith("```"):
-                fence = not fence
-                continue
-            s = ln.strip()
-            if fence or not s or s.startswith(("#", ">", "|")) or re.match(r"^[-*]\s", s):
-                continue
-            if plain(s) == sent:
-                hit = i
-                break
+        hit, err = self._sentence_line(lines, sent)
         if hit is None:
-            return None, "这句话在源文件里没找到（可能已被改动）—— 没写入"
+            return None, err
         j = hit + 1                      # append at the END of the existing apparatus run
         while j < len(lines):
             if lines[j].lstrip().startswith(">"):
@@ -74,16 +63,76 @@ class WriteMixin:
                 continue
             break
         lbl = lane if re.fullmatch(r"[A-Z]{1,4}", lane) else lane[0].upper() + lane[1:].lower()
-        lines.insert(j, f"> {lbl}: {text}")
+        rows = self._record_lines(f"> {lbl}: ", text)
+        if not rows:
+            return None, "内容是空的"
+        if rows == lines[j - len(rows):j]:
+            return None, "这条记录已经在这句话下面了—— 没重复写入"
+        lines[j:j] = rows
         f.write_text("\n".join(lines), encoding="utf-8")
         return None, None
+
+    # Everything the RENDERER consumes has to be undone here, or the posted
+    # string and the source line describe the same sentence and still differ.
+    # Two rules, and which one applies depends on what the browser ends up with:
+    #   KEEP the text  ->  the mark is decoration the reader still sees
+    #   DELETE it      ->  the renderer replaced it with a control whose label
+    #                      is not the source text, so the client posts nothing
+    #                      for it and the source must lose it too
+    _DIALECT = [
+        re.compile(r"\\cite[tp]?\*?\{[^}]*\}"),            # \citep{smith2024}
+        re.compile(r"\\(?:auto|C|c)?ref\{[^}]*\}"),         # \ref{tab:main}
+        re.compile(r"\{VAL:[^}]*\}"),                       # {VAL:? the number}
+        re.compile(r"\[Q-[A-Za-z0-9]+-\d+\]"),              # [Q-Sec6Results-4]
+        re.compile(r"\bS-Display-\d+[a-z]?(?:[a-z]\d+)?\b"),
+    ]
+
+    @staticmethod
+    def _record_lines(head, text, when=""):
+        """One record, however many lines the person typed.
+
+        A record is a `>` RUN, not a string: `> WHO: first` followed by bare
+        `>` continuation lines, which `render_apparatus` already folds into the
+        same lane (`body.py`'s `.lane-cont`). Writing the raw textarea value
+        instead put a string containing newlines into one list slot, and the
+        join then split it, so the second line of every multi-line comment
+        escaped the record and landed in the page as PROSE: it rendered as a
+        sentence, it became a new writable anchor, and it carried the timestamp
+        away from the comment it belonged to (JL 260801).
+
+        Collapsing the newlines instead, which the lane and discussion writers
+        did, is not corruption but it silently destroys the paragraphing of
+        anything anyone pastes. Continuations keep it.
+
+        A leading `>` in the typed text is removed: `>>` means a REPLY BY
+        SOMEONE ELSE in this grammar, and a paste must not be able to forge one.
+        """
+        raw = [ln.rstrip() for ln in (text or "").replace("\r\n", "\n").split("\n")]
+        out, blank = [], False
+        for ln in raw:
+            ln = re.sub(r"^\s*>+\s*", "", ln).strip()
+            if not ln:
+                blank = bool(out)          # one break, never a run of them
+                continue
+            if not out:
+                out.append(f"{head}{ln}" + (f" · {when}" if when else ""))
+            else:
+                if blank:
+                    out.append(">")
+                out.append(f"> {ln}")
+            blank = False
+        return out
 
     @staticmethod
     def _plain_sentence(s):
         """The browser sends visible sentence text; source may have light md."""
         s = re.sub(r"`([^`]+)`", r"\1", s)
         s = re.sub(r"\*\*((?:(?!\*\*).)+)\*\*", r"\1", s)
+        s = re.sub(r"~~((?:(?!~~).)+)~~", r"\1", s)          # <del>: text kept
+        s = re.sub(r"!\[([^\]]*)\]\([^)]*\)", "", s)        # <img>: no text at all
         s = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", s)
+        for pat in WriteMixin._DIALECT:                     # chips: <button>, deleted
+            s = pat.sub("", s)
         return " ".join(s.split())
 
     @classmethod
@@ -100,6 +149,13 @@ class WriteMixin:
                 continue
             if cls._plain_sentence(s) == wanted:
                 hits.append(i)
+        if hits and lines[hits[0]][:1].isspace():
+            # An indented line belongs to the `- [ ]` item above it. Every
+            # writer here works in whole lines, so a write would either strip
+            # the indent (severing the explanation from its item, the one
+            # SOURCE-CORRUPTING case in this file) or insert a `>` run at
+            # column 0 that the item cannot render. Refuse, and say why.
+            return None, "这行是某个 item 的说明行，改它会把它从 item 上扯下来—— 没写入"
         if not hits:
             return None, "这句话在源文件里没找到（可能已被改动）—— 没写入"
         if len(hits) > 1:
@@ -177,10 +233,17 @@ class WriteMixin:
         hit, err = self._sentence_line(lines, sentence)
         if err:
             return None, err
-        entry = f"> {who}: {text}" + (f" · {when}" if when else "")
-        lines.insert(self._apparatus_end(lines, hit), entry)
+        rows = self._record_lines(f"> {who}: ", text, when)
+        if not rows:
+            return None, "评论是空的"
+        at = self._apparatus_end(lines, hit)
+        if lines[hit + 1:at] and rows == lines[at - len(rows):at]:
+            # The identical record is already the last one on this sentence, so
+            # this is a double-click or a replayed POST, not a second thought.
+            return None, "这条记录已经在这句话下面了—— 没重复写入"
+        lines[at:at] = rows
         f.write_text("\n".join(lines), encoding="utf-8")
-        return {"sentence": sentence}, None
+        return {"sentence": sentence, "lines": len(rows)}, None
 
     def edit_sentence(self, f, p):
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
@@ -212,10 +275,11 @@ class WriteMixin:
         跟 add_comment 一样跳 ``` 围栏找真的段；没有 ## Discussion 就在
         ## Log 前新建。不钉在某句话上 —— 就是自由讨论。"""
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
-        text = " ".join((p.get("text") or "").split())
-        if not text:
+        # Same record grammar as a comment: a typed paragraph break survives as
+        # a continuation instead of being flattened into one long line.
+        rows = self._record_lines(f"> {who}: ", p.get("text") or "")
+        if not rows:
             return None, "想法是空的"
-        line = f"> {who}: {text}"
         t = f.read_text(encoding="utf-8")
         lines = t.split("\n")
         fence = False
@@ -236,14 +300,17 @@ class WriteMixin:
                 j += 1
             while j > di + 1 and not lines[j - 1].strip():   # 跳过段尾空行
                 j -= 1
-            lines.insert(j, line)
+            if rows == lines[j - len(rows):j]:
+                return None, "这条想法已经在 ## Discussion 末尾了—— 没重复写入"
+            lines[j:j] = rows
             t = "\n".join(lines)
         else:                                   # 没有就新建一段
+            block = "## Discussion\n" + "\n".join(rows) + "\n"
             if li is not None:
-                lines.insert(li, "## Discussion\n" + line + "\n")
+                lines.insert(li, block)
                 t = "\n".join(lines)
             else:
-                t = t.rstrip("\n") + "\n\n## Discussion\n" + line + "\n"
+                t = t.rstrip("\n") + "\n\n" + block
         f.write_text(t, encoding="utf-8")
         return "ok", None
 
@@ -253,7 +320,13 @@ class WriteMixin:
         t = f.read_text(encoding="utf-8")
         pat = re.compile(r"^(-\s*\[)[ xX](\]\s*[A-Z]{1,4}\d{0,4}\s*[「\"“]"
                          + esc4re(quote) + r")", re.M)
-        if not pat.search(t):
+        hits = pat.findall(t)
+        if not hits:
             return None, "在这个文件里找不到那条评论（引文对不上）"
+        if len(hits) > 1:
+            # Every other writer refuses an ambiguous match rather than take
+            # the first (`_sentence_line`); this one kept a `count=1` and
+            # silently flipped whichever row came first, answering ok.
+            return None, "这条引文在本页出现不止一次—— 为避免改错，没有写入"
         f.write_text(pat.sub(r"\g<1>" + to + r"\g<2>", t, count=1), encoding="utf-8")
         return "ok", None

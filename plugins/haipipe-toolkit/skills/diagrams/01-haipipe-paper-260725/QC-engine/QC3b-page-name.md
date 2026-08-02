@@ -206,7 +206,7 @@ Round is a different problem wearing the same coat. `QA6` records it as an eight
 ### The transitional case, and why it is declared
 Papers that predate the S-face restructure carry their stage file under the old name. Each repointed contract declares `artifact_fallback:` for as long as any live paper is in that state, and a run must say which of the two it used. A deliberate exception with an expiry, not a second naming rule.
 
-## Items to Finish
+## Aims
 - [x] 🧠 Rule the naming
       Family plus unit plus slug, with resolution in board tooling.
 - [x] 📐 Write the consequence down
@@ -236,7 +236,7 @@ Papers that predate the S-face restructure carry their stage file under the old 
 - [ ] 📐 Document the dynamic-family run
       `create-page.py:283-286` refuses a `board_family` containing " or " and a `board_unit` containing a space, demanding `--family` and `--unit` per run. Correct behaviour, stated in two error strings and nowhere else, and `5-section-edit` is the only stage it applies to.
 
-## Where we are
+## States
 Naming is implemented on both sides. `board_face` is gone from all eight contracts, `create-page.py` shells out to the Board primitive, and `resolve_filename()` is the single home of the pattern. The accepted cost is real and visible: reading a contract no longer tells you the filename, and nothing has gone wrong because of it.
 
 One thing did go wrong, and it was found on 260727 rather than ruled: six of the eight contracts carry `board_slug`. `5-section-edit` omits it correctly, because a per-unit stage's slug is a per-unit fact. `4-display` omits it while declaring `runs: once`, which `check-contracts.py:104` exists to catch and never reports, because `blocked_on:` short-circuits the branch three lines earlier. So the naming half is settled as a RULING and has one contract out of compliance with it.

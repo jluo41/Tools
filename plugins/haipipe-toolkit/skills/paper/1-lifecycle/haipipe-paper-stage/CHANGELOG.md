@@ -1,6 +1,24 @@
 haipipe-paper-stage — Changelog
 ================================
 
+## [0.9.1] — 2026-08-01 — Board section labels are paired plurals
+
+- Synchronizes stage status rows under canonical `## States`, paired with
+  `## Aims`; singular State remains the name of one record.
+- Migrates every active stage contract and Q-consumer template to canonical Aim
+  records (`P<n>`) with a Done-when condition, while retaining old headings as
+  read-only parser aliases.
+- Updates `create-page.py` to replace the canonical Board shell sections and
+  emit one matching State row for each generated Aim; `section-stats.py` now
+  stops Content at either canonical headings or legacy aliases.
+
+## [0.9.0] — 2026-08-01 — Stage work uses Aims and State
+
+- Replaced active `Items to Finish` and `Where we are` instructions with
+  Content-linked Aims and one factual State row per Aim.
+- Kept the page-level CHECK gate distinct from individual Aim status and added
+  Log synchronization for transitions.
+
 ## [0.8.8] — 2026-07-27 — Display review blocks are a Board projection
 
 - The Display template now says plainly that Current Float, live artifact, Display Versions,

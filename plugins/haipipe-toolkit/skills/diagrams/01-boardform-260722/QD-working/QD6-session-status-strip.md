@@ -2,14 +2,14 @@
 state: ✅ SETTLED
 owner: CC
 method: copy Paper's mandatory Closing Block pattern, but derive Board, queue, and page ownership from Board files instead of maintaining a second status ledger
-
+session: 7035d975-4bf2-4082-8f03-426099f07b6c
 ## Question
-How does an agent make its current Board attachment visible to everyone, rather than merely keeping that attachment somewhere in its own context?
-The answer should appear at the end of every reply and distinguish the Board, the queue that owns the work, the current focus, and the kind of work happening now.
+How can every reply show exactly which board scope and task the current session is working on?
 
-The difficult part is persistence without duplication.
-A session needs live status, but writing one shared `STATUS.md` would let simultaneous page sessions overwrite each other and would become stale as soon as a conversation moved.
-The durable facts already live in `board.md` and the Q/S pages; only the live mode and next action belong to the reply.
+A visible status strip lets a reader verify attachment without relying on hidden agent context.
+The hard part is keeping it current without creating another shared status file that concurrent sessions can overwrite.
+Board and page files already hold the durable facts, so only the live mode and next action belong in the reply.
+The design works when three short lines identify the scope, state, and next move every time.
 
 
 ## Boundary

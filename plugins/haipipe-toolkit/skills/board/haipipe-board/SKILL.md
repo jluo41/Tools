@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.93.0"
-  last_updated: "2026-08-01"
-  summary: "The board/ tree is the one canonical folder-build output; the contract, checker, source/media rerooting, and Paper Board structure now describe and verify the same Board-Folder to Board-Webpage shape (JL 260801)."
+  version: "0.101.0"
+  last_updated: "2026-08-02"
+  summary: "Stale-statement sweep against QB4's rewritten contract: Aim statuses ⬜ 🔨 🧠 ✅ ❄️, A<n> groups, > Comment WHO, the cli/ paths, numbered Content, everything shut, and Files as a menu of actions."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,12 +23,14 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
   That rested on `spine` (rendered on the Index) and `## Topic` in board.md.
   As of 0.78.0 `## Topic` is source-only and no longer rendered on the Index, so orientation on the rendered page now comes from the Index's Board Map and Section Matrix rows instead.
 - You know when you can stop.
-  That rests on `close` (the closing condition) and each page's `## Items to Finish`.
+  That rests on `close` (the closing condition) and each page's `## Aims` plus `## States`.
 
 ## 👪 The family: one door, three specs, one verb (QC6 §8, shipped 260731)
 
 This skill is the DOOR: you invoke it to run a board.
 The rest of `skills/board/` is what other agents LOAD or CALL without opening the door, and this skill routes to them rather than restating them:
+
+**The board's sub-skills**: which altitude each one works at.
 
 ```
 haipipe-board-index      the board + group altitude: propose a structure,
@@ -46,10 +48,23 @@ haipipe-board-reviewer-agent   AGENT · the read-only fresh-context reviewer
 
 The specs cite this skill's `ref/` files as their authority and never fork them; the verbs load the specs.
 `haipipe-board-digest` (a transcript fanned out through routing) is named on the roster and not yet shipped.
-The caller's fan-out onto `haipipe-board-creator-agent` is also not yet wired (CHANGELOG 0.76.0): the agent itself ships and writes one page in a fresh context, but `open` and `add` still write pages one by one, not in parallel through it.
-A page-kind VARIANT ships under its consumer family (`haipipe-paper-stage` is the first), never here, except for `Skill-<n>-<slug>` and `Agent-<n>-<slug>`, which DO ship here (`skillpage.py`, `src/parse.py`, `src/common.py`; the page-kind list is under the `open` verb below).
+For a batch of page creations or Opening revisions, the caller dispatches
+exactly one fresh `haipipe-board-creator-agent` per page. Waves are allowed when
+concurrency is limited, but one writer never owns two pages in the batch. The
+assignment packet carries page facts, paths, sources, and ownership context,
+not a copied prose checklist: every creator loads `haipipe-board-page` itself.
+An existing Opening uses the creator's `revise-opening` operation, which reads
+the target page completely and edits only that section. The caller alone owns
+shared writes, one rebuild, and one mechanical check after all pages land.
+Writer self-checks are local evidence, never approval. A fresh
+`haipipe-board-reviewer-agent` then judges each changed page and reads all
+changed Openings consecutively in Board order; interchangeable or form-letter
+prose fails even when every page is locally clear.
+A page-kind VARIANT ships under its consumer family (`haipipe-paper-stage` is the first), never here, except for `Skill-<n>-<slug>` and `Agent-<n>-<slug>`, which DO ship here (`cli/skillpage.py`, `src/parse.py`, `src/common.py`; the page-kind list is under the `open` verb below).
 
 ## 🗂 Shape
+
+**Where a board folder lives**: the two homes, by who owns the board.
 
 ```
 <owning-unit>/diagram/<NN>-<topic>-<YYMMDD>/       # task / project / paper
@@ -81,7 +96,7 @@ The descriptive source folder (`QA-<group-title-slug>/`) and the compact generat
   Writing only `QA/` just copies the id a second time; the half a reader cannot recognize is precisely the title half.
   Membership has looked only at the path, not at a registry, since 260722, so moving pages into folders is a plain `mv`: `## Pages` still writes bare filenames only, board.md needs not one word changed, and the render is identical except for the path attribute used for write-back (verified across 30 pages).
   The ＋Q on the page writes into the folder its group already lives in; a newly opened group gets a named folder opened by its first page.
-  To move a whole existing board: `python3 <skill>/regroup.py <board-folder> --apply` (omit `--apply` for a dry run).
+  To move a whole existing board: `python3 <skill>/cli/regroup.py <board-folder> --apply` (omit `--apply` for a dry run).
   **⚠️ Run `check.py` once after moving.**
   `## Pages` writing bare filenames is unaffected, but `## Links` writes real paths, and any that point across boards into someone else's page will break (moving 154 pages on 260726 broke 17 links; all were fixed).
   **Never re-fold a board that is already sorted into folders**, for example a paper's `0-lifecycle/`: `0-seed/ 1-work/ 3-display/` is already both a subject folder and an S family, so it already satisfies this rule, and the numbering additionally carries lifecycle order.
@@ -158,6 +173,8 @@ Sourcing never floats.
 
 Render the closing block immediately before replying:
 
+**The status call**: what to run to print a board's closing block.
+
 ```bash
 python3 <skill>/status.py <BOARD_FOLDER> \
   --focus <board|group:ID|PAGE_ID> \
@@ -167,6 +184,8 @@ python3 <skill>/status.py <BOARD_FOLDER> \
 ```
 
 Its complete shape is deliberately only three lines:
+
+**The closing block**: the three lines every reply ends on.
 
 ```markdown
 🧭 [BOARD · QUEUE/FOCUS](deep-link)
@@ -197,8 +216,10 @@ That is 11 verbs.
 When the user says "open `<board folder>`", do these three steps, and **do not just say "opened the Board"**:
 
 1. **Rebuild it first**, so the page is not the stale one:
-   `python3 <skill>/build.py <board folder>`
+   `python3 <skill>/cli/build.py <board folder>`
 2. **Push it to the user's VS Code browser** (the block below is the only thing that actually works, see ⚠️):
+
+**Resolving a board URL in a shell**: how the deep link is built.
 
 ```bash
 BD=<board folder path relative to the repo root>   # e.g. Tools/plugins/.../diagram/01-boardform-260722
@@ -236,7 +257,7 @@ This needs `serve.py` running on 5599 (start it first if it is not, see the serv
    If this board has to show its own shape to a zero-background reader, write `## Board Structure` after Pipeline.
    Since 0.78.0 it is board.md source-only documentation rather than a block on the rendered Board Index, and it is never opened as a Q page; inside it, keep `Board-Folder` (the source and the generated output on disk) separate from `Board-Webpage` (`Board-Webpage-Index` and the pages you reach after opening).
    An old board without this section still generates normally.
-4. Every page copies the same `ref/q-template.md`, and the rename decides which kind it is: a decision becomes `Q<group-letter><n>-<slug>.md`; a paper lifecycle page becomes `S-<Family>-<unit>-<slug>.md`, where Family is `Seed|Work|Venue|Display|Main|Appendix|Submission` (for example `S-Seed-1-literature.md`, `S-Main-3-theory.md`, `S-Appendix-A-prompts.md`).
+4. Every page copies the same `ref/page-template.md`, and the rename decides which kind it is: a decision becomes `Q<group-letter><n>-<slug>.md`; a paper lifecycle page becomes `S-<Family>-<unit>-<slug>.md`, where Family is `Seed|Work|Venue|Display|Main|Appendix|Submission` (for example `S-Seed-1-literature.md`, `S-Main-3-theory.md`, `S-Appendix-A-prompts.md`).
    A skill roster page becomes `Skill-<n>-<slug>.md` and an agent roster page becomes `Agent-<n>-<slug>.md`: the S grammar minus the family, where the number orders the roster and the slug says which unit the page mirrors (`src/parse.py`, JL 260731: a skill is LOADED into a context, an agent is DISPATCHED into a fresh one).
    The `S0-<slug>.md` of a plain old board stays compatible.
    `<slug>` uses short lowercase English (`access`, `scheduling`), matching `ref/board-example.md`.
@@ -247,25 +268,27 @@ This needs `serve.py` running on 5599 (start it first if it is not, see the serv
    Create it with `stage.py new`, or refresh the managed contract with `stage.py sync`; never hand-copy the upstream's full text.
    In Pages an S writes only its bare filename, exactly like a Q: the group title is free text, so opening a separate group for stages (`### S · this lifecycle`) or mixing them into a related group are both fine.
 5. Generate: `build.py` lives in the **skill folder**, not in the board folder, so pass its path.
-   `python3 <skill>/build.py <board folder>` (`<skill>` = `Tools/plugins/haipipe-toolkit/skills/board/haipipe-board`).
+   `python3 <skill>/cli/build.py <board folder>` (`<skill>` = `Tools/plugins/haipipe-toolkit/skills/board/haipipe-board`).
    **Do not `cd` into the board folder and run `python3 build.py .`**: build.py is not there.
    Generation writes only into `board/` and never touches your `.md` (md is the only source).
 6. **Push `board/index.html` to the user's VS Code browser as described in the view section**, and do not merely report a path.
 
 ### add · add a question
 
-Copy `ref/q-template.md` → new filename → write it into `board.md`'s `## Pages` → rebuild.
+Copy `ref/page-template.md` → new filename → write it into `board.md`'s `## Pages` → rebuild.
 Forgetting to write it into Pages does not lose it; it only lands in the ⚠️ group.
 A folder question (QC3): put the new file into the folder it is about; Pages still writes the filename only, and filenames must be unique across the whole board.
 The ＋Q on the page always generates the file at the **board root**: if it should live in a folder, move it there yourself (the Pages line needs no edit).
 
 ### stage · create or refresh a lifecycle page
 
-An S page's "what the previous stage requires" and its writing style may only come from an explicit reference, never from guessing at adjacency in Pages.
+An S page's "what the previous stage requires" and inherited writing rules may only come from an explicit reference, never from guessing at adjacency in Pages.
 `build.py` only ever reads Markdown; the thing that actually writes files is `stage.py`:
 
+**Creating a stage page**: the one command that writes a new S page.
+
 ```bash
-python3 <skill>/stage.py new <board-dir> \
+python3 <skill>/cli/stage.py new <board-dir> \
   --family Main --unit 7 --slug results --title "S Main 7 · Results" \
   --requires S-Work-1,S-Main-0,S-Display-0 \
   --style-from S-Venue-1 \
@@ -273,16 +296,16 @@ python3 <skill>/stage.py new <board-dir> \
   --directory 5-section-edit/6-results \
   --group "QE · Main Group"
 
-python3 <skill>/stage.py sync <board-dir> S-Main-7
-python3 <skill>/stage.py sync <board-dir> --all
-python3 <skill>/stage.py check <board-dir>
+python3 <skill>/cli/stage.py sync <board-dir> S-Main-7
+python3 <skill>/cli/stage.py sync <board-dir> --all
+python3 <skill>/cli/stage.py check <board-dir>
 ```
 
-`new` generates the S file, adds it to the named Pages group, and writes the managed `## Stage Contract`.
+`new` generates the S file, adds it to the named Pages group, writes the managed `## Stage Contract`, and materializes inherited prose rules in `## Writing Style`.
 `sync --all` runs a topological sync over the explicit `requires` / `style-from` dependency graph, not over the order of Pages.
-`sync` replaces only the block between `<!-- haipipe:contract:start -->` and `end`, and never touches Content, Items, Where we are, or the author's own `### Provides`.
+`sync` replaces only the marked `haipipe:contract` and `haipipe:style` blocks, and never touches Content, Aims, States, the author's own Writing Style prose, or `### Provides`.
 As soon as an upstream source file changes, build and check report `Stage Contract is stale`, and only an explicit sync clears it.
-An upstream should ideally write a short `### Provides` in its own Stage Contract, and a writing source a short `### Writing Style`.
+An upstream should ideally write a short `### Provides` in its own Stage Contract, and a writing source a short `## Writing Style`.
 Without those, the generated page keeps the source links and says plainly that a contract is still owed; it never copies a whole Content in order to guess the answer.
 
 ### build · generate
@@ -290,9 +313,11 @@ Without those, the generated page keeps the source links and says plainly that a
 `build.py` lives in the skill folder (not in the board folder).
 Call it with its path, and do not cd into the board folder to run `build.py .`:
 
+**Build once, or watch**: the two ways to regenerate the site.
+
 ```bash
-python3 <skill>/build.py <board folder>     # generate once (<skill> = .../board/haipipe-board)
-python3 <skill>/watch.py <board folder>     # watch it: regenerate automatically on any .md change
+python3 <skill>/cli/build.py <board folder>     # generate once (<skill> = .../board/haipipe-board)
+python3 <skill>/cli/watch.py <board folder>     # watch it: regenerate automatically on any .md change
 ```
 
 Generation uses the standard library only, so the system's own `python3` is enough (3.9 works too).
@@ -309,6 +334,8 @@ The default colors are the `--board-mark-*` tokens in `assets/css/00-base.css`, 
 ### the round trip and its unit
 
 Markdown is the only source. A direct file edit or a browser write follows the same loop:
+
+**The round trip**: how a reader's action gets back into the markdown.
 
 ```text
 board.md + page.md ──build.py──▶ board/ site ──reader action──▶ live/write.py
@@ -332,19 +359,22 @@ A browser write is complete only after the Markdown lands and the generated tree
 
 One server handles every board: it serves the repo root, not one board.
 
+**Serving a board**: the command that puts it on a URL.
+
 ```bash
-.venv/bin/python <skill>/serve.py --root <repo root> --port 5599
+.venv/bin/python <skill>/cli/serve.py --root <repo root> --port 5599
 ```
 
 `HAIPIPE_BOARD_URL` decides only the domain handed to the reader; the listener is still controlled separately by `--host`.
 If the reader URL is a Tailscale IP, you must pass the same `--host <tailscale-ip>` explicitly at startup.
 The Board has no authentication and `/_term/` is a real shell, so the listener in shared source stays on loopback by default.
 
-Once it is running, the board is not only readable: **comments land directly on disk** (the next section depends on it), you can **open a chat or a terminal on one question and work there**, and you can **attach an excalidraw canvas** to a question's 🖼 Diagram (what gets written into the md is the line the author typed by hand; `QD7` is still taking shape).
+Once it is running, the board is not only readable: **comments land directly on disk** (the next section depends on it), you can **open a chat or a terminal on one question and work there**, and you can **attach an excalidraw canvas** to a question's 🖼 Diagram (what gets written into the md is the line the author typed by hand; `QB8` is still taking shape).
 ⚖️ One question, one session · one session, one window · N questions, N terminals.
 The details are in the board's `QD1` `## Law`.
 
-> Chat (the restricted drawer, `QD2`) and terminal (a real CLI, `QD3`) are **still taking shape in the QD group**.
+> The SDK chat version (`QD2`) and the TUI chat version, a real CLI (`QD3`), are **still taking shape in the QD group**, and the terminal's form on a phone or a desktop is `QD4`.
+> They are not restricted versus unrestricted: `QD2` carries three permission tiers and defaults to the full one, so the split is a difference of FORM, a rebuilt chat box against the CLI itself.
 > Treat those questions as the authority on how they are used, and do not take them as fixed rules (see "the board ↔ SKILL.md" at the end).
 
 ### excalidraw · one scene per board, one frame per question
@@ -352,10 +382,12 @@ The details are in the board's `QD1` `## Law`.
 **One board has exactly one `fig/board.excalidraw`, and every page occupies one frame inside it.**
 Never split it into one file per question: only a single canvas can express the **relationships** between pages, and that is the one thing a drawing does better than ASCII (`QAa2`, formerly QA4a).
 
+**Self-hosting the canvas**: what to run when Excalidraw is local.
+
 ```bash
 docker run --rm -d -p 5610:80 excalidraw/excalidraw     # the editor, run it once
-python3 <skill>/xcal.py <board folder>                  # rebuild the scene from board.md
-python3 <skill>/xcal.py <board folder> --wire           # also write each frame's URL into that question's ## Diagram
+python3 <skill>/cli/xcal.py <board folder>                  # rebuild the scene from board.md
+python3 <skill>/cli/xcal.py <board folder> --wire           # also write each frame's URL into that question's ## Diagram
 ```
 
 `board.md` declares the editor address once: `excalidraw: http://127.0.0.1:5599/_excalidraw`.
@@ -421,7 +453,7 @@ A piece of work that belongs to no question at all is itself a new question that
 
 A real incident (JL 260726): the entire local excalidraw route of QA4a (today `QAa2`) was built and running that same day, while `QA4a` still said `state: 🔴 OPEN` and "Nothing is built and nothing is decided".
 The work was right and the write-back was not done, so what the board said and what the machine ran were two different things: exactly the "stale pretty thing".
-`check.py`'s `open-with-done-items` / `partial-with-nothing-open` are what catch this, but they can only see the state and the ticks and never the prose, so they are a backstop, not a substitute.
+`check.py`'s `open-with-met-aims` / `partial-with-nothing-open` are what catch this, but they can only see Aim State and never judge the prose, so they are a backstop, not a substitute.
 
 **"Done" means written back.**
 Reporting completion to JL without writing back is reporting something that does not exist on the board.
@@ -430,13 +462,13 @@ After finishing any substantive work under a page (a file written, an experiment
 
 | Write back where | What to write |
 |---|---|
-| `## Where we are` | The actual state right now. Numbers where numbers exist. |
-| `## Items to Finish` | Tick what was reached. **Never tick what was not verified.** |
-| `## Log` | An optional one-line history: `YYMMDD HHMM · what changed`; do not create it when there is no need for history |
-| `state:` | All ticked → starts with ✅; progress made → starts with 🟡; deliberately not doing it → starts with ⏸️; the standard labels are SETTLED / PARTIAL / ON HOLD, and a human-readable note may be appended after them |
-| the `> WHO:` / `> ✎` lines under a sentence | The sentence comments and edit records added, replied to, or confirmed this round |
+| `## Aims` | Durable target states, grouped under their owning Content division. Change these only when intent changes. |
+| `## States` | One factual current State row per Aim: ⬜ not started, 🔨 being worked on now, 🧠 waiting on a person or on something outside this page, ✅ met with the evidence named, or ❄️ on ice. The old `🟡` / `🟠` / `⏸️` still parse (`src/common.py`), but nothing new is written with them. |
+| `## Log` | One line for each state transition or material change: `YYMMDD HHMM · what changed`. |
+| `state:` | On a Q page, every Aim met or explicitly held → starts with ✅; on an S page, only its human gate may produce ✅. Progress made → starts with 🟡; deliberately parked → starts with ⏸️. The standard labels are SETTLED / PARTIAL / ON HOLD, and a human-readable note may be appended after them. |
+| the `> Comment WHO` / `> ✎` lines under a sentence | The sentence comments and edit records added, replied to, or confirmed this round |
 
-Then run `python3 <skill>/build.py <board folder>` (or let `watch.py` run it; the invocation is in the build section above).
+Then run `python3 <skill>/cli/build.py <board folder>` (or let `watch.py` run it; the invocation is in the build section above).
 
 **Also clear out the claims this round overturned.**
 When the board changes, an old description elsewhere in the prose becomes a self-contradiction immediately.
@@ -448,11 +480,13 @@ That is the first thing a zero-background reader picks out.
 What a board discusses (a SKILL.md, a script, another board) usually does not live in the board's folder.
 Add a `## Links` section in `board.md` declaring which real path each backticked form maps to:
 
+**A Links block**: how a board declares the paths its pages may cite.
+
 ```markdown
 ## Links
 SKILL.md            ../../haipipe-board/SKILL.md
-ref/q-template.md   ../../haipipe-board/ref/q-template.md
-build.py            ../../haipipe-board/build.py
+ref/page-template.md   ../../haipipe-board/ref/page-template.md
+build.py            ../../haipipe-board/cli/build.py
 ```
 
 After that, any `` `SKILL.md` `` in the prose becomes a clickable link, one step from the board to the real thing.
@@ -462,11 +496,13 @@ A declared path is never guessed at for existence: write it wrong and it is a de
 ### close · close the board
 
 A board closes only once every page's `state:` starts with ✅ or ⏸️ and `close:` is satisfied.
-Q and S use the same set of states, but the evidence for flipping to ✅ differs: a Q needs every checkbox closed, an S needs **its own human gate to pass** (⏸️ is instead an explicit hold).
+Q and S use the same set of states, but the evidence for flipping to ✅ differs: a Q needs every Aim met or explicitly held, while an S needs **its own human gate to pass** (⏸️ is instead an explicit hold).
 The index counts the ✅ among S pages separately per named family.
 The sentence in `close:` IS the closing condition, so write it so that it can be accepted, not as "close enough".
 
 ## 📐 One page
+
+**A page's metadata head**: the four top lines, and what each renders into.
 
 ```markdown
 # Short title (a phrase, not a sentence)
@@ -474,15 +510,15 @@ state: 🔴 OPEN     first token is ✅ / 🟡 / 🔴 / ⏸️; a readable note 
 owner: CC          JL renders as 🧠 (rules on it), anyone else renders as 🔧
 method: one line on how it gets done
 
-## Opening         first paragraph is a real question; the next states its scope  ┐ 🧭 Opening
-                   and why it matters                                              ┘
-## Stage Contract  required on S; upstream inputs + writing style, managed block  ┐
+## Opening         the lead question, then the visible paragraph, which ends      ┐ 🧭 Opening
+                   at the FIRST BLANK LINE; everything after it → More details    ┘
+## Stage Contract  required on S; upstream inputs + Venue, managed block          ┐
 ## Diagram         ascii figure (may be omitted); its own section, folded by      │
                    default                                                        │
 ## Content         required on S, optional on Q; `###` is a division that folds   │ fixed
                    on its own, `####` is one paragraph                            │
-## Items to Finish the checklist = what counts as done; the header counts 3/5     │
-## Where we are    the actual state right now, numbers where numbers exist        │
+## Aims             durable targets linked to Content; header derives met/total   │
+## States           one factual current State per Aim                             │
 ## Files           which files this question touches (optional, recommended)      ┘
 ## Law          the rules this question ruled  ┐
 ## Lesson       the traps this question hit    │
@@ -492,31 +528,32 @@ method: one line on how it gets done
 ```
 
 **The order of what stands on stage is fixed**, and it is the same for Q and S:
-`Opening → Diagram → Content → Items to Finish → Where we are` (Files follows the state sections).
-Opening carries the first question paragraph, its scope, and why it matters; the first line of its drawer is the `Structure` page map generated by build (pure rendering, no source to write into, never stale).
+`Opening → Diagram → Content → Aims → States` (Files follows the state sections).
+Opening carries the visible paragraph, which ends at the FIRST BLANK LINE of `## Opening`; its drawer begins with the rendered “More details” row, which is everything after that blank line (JL 260801, renamed from “Why this matters”).
 The optional Diagram is a section of its own, folded by default, and it expands only when the section name is clicked.
-Opening's explanation paragraph automatically becomes the "Why this matters" inside its drawer, identically for Q and S (JL 260729; before that a Q put it in the first section of Content).
-An S page's Opening also holds an optional `### Stage Record` and the whole `## Stage Contract`, and **all of those lines are folded by default** (JL 260725: only the question sentence stays on stage), so Stage Contract no longer occupies a section of its own.
+Everything after `## Opening`'s first blank line automatically becomes the "More details" row inside its drawer, identically for Q and S (JL 260729; the row was labelled "Why this matters" until JL renamed it on 260801, and before 260729 a Q put it in the first section of Content).
+An S page's Opening also holds the whole `## Stage Contract`, which is the stage's ONE contract section (JL 260801 retired `### Stage Record`; a legacy one still under Content is lifted into the contract as its opening lines), and **all of those lines are folded by default** (JL 260725: only the question sentence stays on stage), so Stage Contract no longer occupies a section of its own.
 The rest of an S's Content still lives in `📚 Content`, and the section title shows the stage name (`📚 Content · Main 7 §6 Results`) instead of counting subsections; a Q's explicit Content is optional and its title still shows the count.
 That title is derived from `# Short title`, so when the artifact's own numbering does not line up with the board's index, write the title as `S Main 7 · §6 Results`, putting both numbers on display.
-**An S's `## Content` holds only what this stage itself produces** (JL 260725): an inherited venue or writing contract belongs in `## Stage Contract` (written after the managed markers, where sync will not touch it), a correction already decided belongs in `## Where we are`, and whatever is still owed belongs in `## Items to Finish`.
+**An S's `## Content` holds only what this stage itself produces** (JL 260725): Required Inputs and Venue belong in `## Stage Contract`; prose rules belong in `## Writing Style`; a correction already decided belongs in `## States`; and the intended outcome belongs in `## Aims`.
 A new board writes `## Opening`; the `## Question` written by old boards stays a permanently recognized legacy alias.
 
 **One layout, two workflows:**
 
 - `Q*.md` = decision.
-  Only after every checkbox closes may it be `✅ SETTLED`.
+  Only after every Aim is met or explicitly held may it be `✅ SETTLED`.
 - `S*.md` = lifecycle stage.
-  `## Content` is the stage substance (required on S); former Q-consumer questions become recognizable `Q-Stage-n` checklist records inside `## Items to Finish`; stage closes only at its human gate, which is to say that an S's `✅` means the gate passed, and the index counts by family on that basis.
+  `## Content` is the stage substance (required on S); former Q-consumer questions become recognizable Aims inside `## Aims`; stage closes only at its human gate, which is to say that an S's `✅` means the gate passed, and the index counts by family on that basis.
 - An S's `## Stage Contract` is not part of Content.
-  It carries only the acceptance conditions of the explicit `requires` upstreams and the writing norms of `style-from`; `stage.py` writes the managed part and the author owns `### Provides`.
+  It carries the acceptance conditions of the explicit `requires` upstreams and the Venue references from `style-from`; `stage.py` writes the managed part and the author owns `### Provides`.
+  The prose rules resolved from `style-from` are materialized in the page's own `## Writing Style`, inside a separate managed block.
   The order of Pages is never dependency inference.
 - Both page kinds **share the same four machine states**, decided by the first emoji of `state:`: a new page is always 🔴, 🟡 is in progress, ⏸️ is an explicit hold, and the evidence for ✅ is whichever of the two rules above applies.
   A readable note may follow the emoji, for example `✅ SETTLED`, `✅ PINNED · MISQ 2026`, `🟡 rendered · awaiting gate`; these are not a fifth state.
   The first emoji may never be omitted or replaced, and the note after it may never change its meaning.
-- Q-consumer checkbox means the answer landed, was interpreted, and was woven into Content.
-  A deferred item closes only after its forward pointer is recorded.
-- `## Where we are` summarizes the actual stage state.
+- A Q-consumer Aim reaches ✅ only after the answer landed, was interpreted, and was woven into Content.
+  A deferred Aim closes only after its forward pointer is recorded.
+- `## States` summarizes the actual stage state through one current State per Aim.
   It does not copy every consumer answer.
 
 Long content in the prose is always written as **`- heading` plus a two-space-indented explanation**, never as one loose sentence after another.
@@ -529,9 +566,9 @@ A division is written only when it really has content of its own: a flat section
 The benefit is that you can verify it without reading the prose: the number of `###` headings carrying a dot is the number of subsections.
 `####` **carries no icon**: 🔹 belongs to group titles, so do not write `**…**` as a paragraph title.
 A whole line of `(…)` immediately after a `####` is that paragraph's job, kept on stage in grey italic as a scan hook.
-Add a question by copying `ref/q-template.md` (every section is marked required or optional); the full syntax table is in `ref/board-form.md`.
+Add a question by copying `ref/page-template.md` (every section is marked required or optional); the full syntax table is in `ref/board-form.md`.
 
-> Old section names are all still recognized: `## Done when` = `## Items to Finish`, `## Now` = `## Where we are`, and the Chinese names likewise.
+> Old section names are all still recognized: `## Done when` / `## Items to Finish` = `## Aims`; `## State` / `## Now` / `## Where we are` = `## States`; the Chinese names likewise.
 > `## Why here` is retired: its job merged into `## Opening`'s explanation paragraph and renders into Content.
 > An old section still written on an old board is still collected into the fold at the bottom.
 
@@ -545,12 +582,19 @@ See `ref/writing-rules.md`; the three deadliest:
 3. **After editing, cold-read it with a brand-new agent**: call `haipipe-board-reviewer-agent`.
    It runs `check.py` read-only, cold-reads against `ref/writing-rules.md`, and reports stale or contradictory statements, and it never edits on the author's behalf.
    Reading it yourself in the same conversation tests nothing, because you know far too much that was never written down.
+   When more than one Opening changed, the same fresh review also reads those
+   Openings consecutively in Board order and rejects repeated scaffolds or
+   subject-swappable prose.
+
+The page's `✅ Quality Check` is the quick iteration surface for the same contract.
+It reads `haipipe-board-page`, resolves base, variant, page-local, Stage Contract, division, and paragraph-job requirements, then returns one evidence-bearing verdict per review unit.
+It is read-only and never substitutes for the fresh reviewer at the final gate.
 
 ## 🚫 Never do this
 
 - Hand-edit anything under the generated `board/` tree
 - Give a board a new date
-- Delete a `> JL:` or `> ✎` line under a sentence (they are that sentence's comment and edit record)
+- Delete a `> Comment WHO` line (or a legacy `> JL:` one) or a `> ✎` line under a sentence (they are that sentence's comment and edit record)
 - Make a page depend on JS to be readable: scripts may only enhance it.
   **The invariant: delete every `<script>` in the page and every question and all of the prose is still there.**
   `build.py` asserts this on every build.
@@ -559,8 +603,10 @@ See `ref/writing-rules.md`; the three deadliest:
 
 This SKILL.md was not written out of thin air: it is **the crystallization of the settled questions** on a board (this skill's own `diagram/01-boardform-260722/`).
 
+**Skill and board side by side**: what each holds, and where they meet.
+
 ```
-   that board (each question: Opening/Now/Law/Lesson/Log)   SKILL.md
+   that board (each question: Opening/Aims/States/Law/Lesson/Log)  SKILL.md
    ┌─────────────────────────────────────────┐ a question ✅ ┌─────────────────────┐
    │ the full design record: why, how it got │ ──────────►   │ conclusions only,   │
    │ here, and what is still undecided       │               │ just follow them    │
@@ -575,7 +621,7 @@ Operating rules go into SKILL.md's prose, and **specifications** such as display
   (This really happened: `QD1`'s permission rule was first written off the cuff as "may only change this one file", and JL later overturned it into "the same as the CLI".)
 - So SKILL.md always equals **the sum of the settled rules**, no more and no less.
   Before changing it, check whether that question is `✅`.
-- Graduated so far: `QAa0` (Q and S share one source template → `ref/q-template.md`, formerly QA2, merged 260729; formerly QA4: Q and S share one page layout → `ref/board-form.md §8`, and display specifications are not stuffed in here) · `QA6` (comments land on disk) · `QA1` (where a board lives, formerly QC1, merged 260729) · `QC3` (a Q may live in its own folder) · `QB5` (the Python split per page into `src/`).
+- Graduated so far: `QAa0` (Q and S share one source template → `ref/page-template.md`, formerly QA2, merged 260729; formerly QA4: Q and S share one page layout → `ref/board-form.md §8`, and display specifications are not stuffed in here) · `QA6` (comments land on disk) · `QA1` (where a board lives, formerly QC1, merged 260729) · `QC3` (a Q may live in its own folder) · `QB5` (the Python split per page into `src/`).
 - The live layer's chat and terminal (`QD1`/`QD2`/`QD3`) are still 🟡, so only pointers to them are given above, never rules.
   The embed syntax (formerly `QF1`) is settled into `ref/board-form.md §5`; the QF1 page itself retired on 260725, see the note on the board's QF group.
 
@@ -583,7 +629,7 @@ Operating rules go into SKILL.md's prose, and **specifications** such as display
 
 | File | What you read it for |
 |---|---|
-| `ref/q-template.md` | The page template shared by Q and S (the historical filename is kept so old links do not break) |
+| `ref/page-template.md` | The one file every new page is copied from, whatever its kind (renamed from `ref/q-template.md` on 260801) |
 | `ref/board-form.md` | The full specification: folders, numbering, section ↔ page correspondence, the syntax table, `## Links` |
 | `ref/writing-rules.md` | How to write it in plain language, plus the zero-background review prompt and its convergence criteria |
 | `ref/board-example.md` | A minimal example board with two questions |
@@ -592,10 +638,11 @@ The scripts and packages in the skill root:
 
 | File | What it does |
 |---|---|
-| `build.py` | Read the Board Markdown and generate the canonical `board/` site; standard library only |
-| `watch.py` | Watch the board folder and re-run `build.py` on any `.md` change |
-| `check.py` | The structural self-check (the machine half of `QA9`): sections, state, references, the rendered html, template coverage |
-| `serve.py` | The live server, about 398 lines: argument parsing, the request router, and the shared setup; everything with a feature in it now lives in `live/` |
+| **`cli/`** | **Every runnable script lives here (JL 260801: a skill folder should not open onto a pile of `.py`).** The top level is now `SKILL.md`, `CHANGELOG.md`, `status.py`, and folders. Each script sets `HERE` to the ENGINE dir (`__file__.parent.parent`), so `HERE / "ref"` and `HERE / "cli" / "build.py"` still mean what they always did |
+| `cli/build.py` | Read the Board Markdown and generate the canonical `board/` site; standard library only |
+| `cli/watch.py` | Watch the board folder and re-run `build.py` on any `.md` change |
+| `cli/check.py` | The structural self-check (the machine half of `QA9`): sections, state, references, the rendered html, template coverage |
+| `cli/serve.py` | The live server, about 398 lines: argument parsing, the request router, and the shared setup; everything with a feature in it now lives in `live/` |
 | `live/base.py` | 154 lines: the shared request base the other live modules mix in |
 | `live/structure.py` | 274 lines: `structure_op`, behind `POST /_board/structure` (＋Q / ＋Group / 🗄) |
 | `live/write.py` | 259 lines: the sentence write path, the comment and edit writes under an anchor sentence |
@@ -604,17 +651,17 @@ The scripts and packages in the skill root:
 | `live/chat.py` | 1064 lines: the chat drawer, its sessions, and the `claude_agent_sdk` turn |
 | `live/term.py` | 670 lines: the `/_term/` PTY, parking, and reattachment |
 | `src/` | The build's code split by topic: `common · parse · body · page_board · page_question · page_stage · dialect_paper · stage_contract`; `build.py` and `serve.py` stay thin entries (QB5) |
-| `stage.py` | Explicitly create and sync an S page's inherited requirements and writing style |
-| `skillpage.py` | One skill folder → one `Skill-<n>-<slug>` page (`new` / `sync` / `check`); the same split as `stage.py`, the derived header only, never the authored sections |
-| `status.py` | Derive the visible session status strip at the end of every reply from Board, page group, and page; read-only, writes no state file |
-| `regroup.py` | Move a board's root pages into one named folder per group; a dry run without `--apply` |
-| `refs.py` | Render a paper's real bibliography once into a cache the board can read; it is a separate command because running BibTeX writes |
-| `xcal.py` | One `fig/board.excalidraw` per board, one frame per question; `--wire` writes each URL back into that question |
-| `gate_live.py` | The response-identical gate for a live-layer refactor: record every response and every file for one fixed request script before and after, then diff them; a clean diff means the move was mechanical |
+| `cli/stage.py` | Explicitly create and sync an S page's inherited requirements, Venue links, and page Writing Style inheritance |
+| `cli/skillpage.py` | One skill folder → one `Skill-<n>-<slug>` page (`new` / `sync` / `check`); the same split as `stage.py`, the derived header only, never the authored sections |
+| `status.py` | Derive the visible session status strip at the end of every reply from Board, page group, and page; read-only, writes no state file. **The one script still at the top level, deliberately**: the reply-footer automation invokes it by absolute path, so moving it into `cli/` would silently break every board attachment |
+| `cli/regroup.py` | Move a board's root pages into one named folder per group; a dry run without `--apply` |
+| `cli/refs.py` | Render a paper's real bibliography once into a cache the board can read; it is a separate command because running BibTeX writes |
+| `cli/xcal.py` | One `fig/board.excalidraw` per board, one frame per question; `--wire` writes each URL back into that question |
+| `cli/gate_live.py` | The response-identical gate for a live-layer refactor: record every response and every file for one fixed request script before and after, then diff them; a clean diff means the move was mechanical |
 | `assets/board-mark.svg` | The Board's shared SVG mark; inlined into the title at build time and reused as the favicon |
 | `assets/css/`, `assets/js/` | The page's real CSS and JS parts, assembled by `build.py` into `board/_assets/board.css` and `board/_assets/board.js` |
 | `assets/xcal-boot.js` | The script `live/xcal.py` injects into the proxied Excalidraw so that drawings save back to the repository |
-| `test_*.py` | The skill's own tests: activity, board structure, hold, sentence chat, sentence editing, status |
+| `tests/` | The skill's own tests, all 11 of them (`python3 -m pytest tests/`): activity, aims state, board structure, hold, home, quality check, sentence chat, sentence editing, stage style, status, tree reroot. Moved out of the top level 260801; `tests/conftest.py` puts the engine dir on `sys.path` |
 
 The independent judge: `../agents/haipipe-board-reviewer-agent.md`.
 It has no write tools; after the author has fixed things, start another new reviewer.

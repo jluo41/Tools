@@ -3,6 +3,52 @@ board agents: Changelog
 
 Agent-scoped history. Versions match the agent frontmatter.
 
+## [0.4.0] · 2026-08-01 · haipipe-board-reviewer-agent
+
+- Adds a Board-order batch voice gate after page-local review.
+- Detects repeated sentence stems, repeated rhetorical sequences, cosmetic
+  synonym swaps, and Openings that survive a sibling-subject substitution.
+- Allows a locally clear page to fail when the changed batch reads like a form
+  letter.
+
+## [0.3.0] · 2026-08-01 · haipipe-board-creator-agent
+
+- Adds explicit `create-page` and `revise-opening` operations while preserving
+  the one-agent, one-page write boundary.
+- Makes the creator load `haipipe-board-page` directly, read a revision target
+  completely, edit only Opening, and self-check without approving its own work.
+- Keeps prose requirements in the canonical skill and reference instead of
+  copying a sentence formula into each assignment packet.
+
+## [0.3.0] · 2026-08-01 · haipipe-board-reviewer-agent
+
+- Loads the canonical page evaluation contract and resolves base, variant,
+  page-local, Stage Contract, division, and paragraph-job requirements.
+- Returns one evidence-bearing `MEETS | NEEDS WORK | N/A | NOT VERIFIABLE`
+  verdict per present section and Content unit.
+- Reports requirement conflicts instead of silently choosing a source.
+
+## [0.2.1] · 2026-08-01 · haipipe-board-creator-agent
+
+- Writes the canonical plural section label `## States`; each row remains one
+  singular State record for one Aim.
+
+## [0.2.1] · 2026-08-01 · haipipe-board-reviewer-agent
+
+- Reviews `## Aims` against the canonical plural `## States` section.
+
+## [0.2.0] · 2026-08-01 · haipipe-board-creator-agent
+
+- Replaced the retired Boundary and Items-to-Finish writing contract with
+  Opening scope, Content-linked Aims, and one factual State row per Aim.
+- Reserved Decision Now and page-level gates for the human while allowing
+  evidence-backed Aim State updates.
+
+## [0.2.0] · 2026-08-01 · haipipe-board-reviewer-agent
+
+- Reviews the one-to-one Aim-to-State id map and distinguishes individual Aim
+  status from the page-level human gate.
+
 ## [0.1.0] · 2026-07-31 · haipipe-board-creator-agent
 
 - Added the family's second agent, and the producer half of the creator and
@@ -15,7 +61,7 @@ Agent-scoped history. Versions match the agent frontmatter.
   would collide on stays the caller's; and no sibling page may be read, so two
   agents cannot start duplicating each other's judgment.
 - Gave it the `siblings` field in its assignment packet, which is what lets a
-  page write an honest `## Boundary` without reading the board, and what stops
+  page write an honest Opening scope without reading the board, and what stops
   two pages claiming the same decision.
 - Left every shared write with the caller: registering in `board.md`, the lane
   block, one rebuild, one check, and dispatching the reviewer.
@@ -27,4 +73,3 @@ Agent-scoped history. Versions match the agent frontmatter.
   checks for stale claims, and returns findings without editing the Board.
 - Kept Board discovery, synchronization, repair, and rebuilding with the
   original session and `haipipe-board` skill.
-

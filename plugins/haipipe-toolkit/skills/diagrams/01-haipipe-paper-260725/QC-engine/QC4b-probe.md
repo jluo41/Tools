@@ -118,7 +118,7 @@ The rule is that all evidence work leaves through the probe worker. What makes i
 ### An answer is not interpreted until the sentence changes
 The loop's last step is the one done by hand and it is where the whole thing leaks. Marking a probe closed and leaving the placeholder standing produces a paper that is simultaneously answered and unanswered, and both records look correct in isolation. Thirteen values and three citations are in that state on the MISQ paper right now.
 
-## Items to Finish
+## Aims
 - [x] 📐 The ceiling exists per stage and defaults to 0
       Verified 260727: `probe_depth: 0` in all eight `stages/*/stage.md`, each quoting the dispatch rule beside it.
 - [x] 📐 One route for evidence work, with no label exception
@@ -143,7 +143,7 @@ The loop's last step is the one done by hand and it is where the whole thing lea
 - [ ] 🔧 Source the audit incident's numbers, or drop them
       `2-phase/1-probe/haipipe-paper-probe/CHANGELOG.md:367` records the incident and its fix verbatim, and nothing else does. The "18 redundant verifications" and "no landing path" appear nowhere on disk, and an unsourced count is the wrong kind of example on the face that argues for one door.
 
-## Where we are
+## States
 The ceiling is implemented and honoured; the two venue questions on the MISQ paper sit deferred at depth 0 exactly as designed, which is the ladder working rather than failing. Eleven values are parked, each naming the depth that would release it.
 
 The route rule holds now and has been broken once. The last step of the loop is done by hand and is where the leak is: sixteen items on MISQ are answered and still carry their placeholder.

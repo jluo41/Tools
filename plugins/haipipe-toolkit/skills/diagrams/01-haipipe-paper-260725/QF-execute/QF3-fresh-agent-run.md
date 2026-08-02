@@ -1,122 +1,195 @@
-# Can a fresh agent run a stage?
+# Can a fresh agent run a stage: the one test we are not allowed to grade ourselves
+
 state: 🔴 OPEN
 owner: JL
 method: hand a clean-context agent one stage and watch what it does, not what it produces
 
 ## Opening
-Can someone with no background read this skill and run one stage correctly, end to end? This is the acceptance test for everything else on this board. It has never been passed, and until it is, every other page here is a design rather than a result.
 
-This is the acceptance test for the whole design. Everything else on this board is an internal argument; this is the only question whose answer is not ours to decide, because the failure mode is invisible from the inside: we read every contract with the context already in our heads.
+Can someone with no background read this skill and run one stage correctly, end to end?
 
+A fresh agent is one with no memory of any design discussion. Behavioural evidence is what it DID: which entry it found, which path it followed, where it stopped. This is the only question on the board whose answer is not ours to decide, because we read every contract with the context already in our heads.
 
-The approach is to watch the process rather than grade the output: did it find the right entry, follow the intended path, stop at the right gate. What we want is the one thing no amount of design discussion can give us, which is evidence that the whole thing works for someone who was not in the room when it was decided.
-```
-   ── THREE LEVELS, not two.  only the third needs a stranger ─────
+**Where this page sits**: QF1 owns the execution record and names three evidence modes.
+This page owns the third of them, and it is the only mode the author is disqualified from producing.
+Whether any single contract is well written is a writing question and belongs elsewhere.
 
-   ① MECHANICAL          facts about files      the author MAY run
-        every path resolves · every contract parses · checker exits 0
+**Why the process and not the artifact**: a correct-looking artifact produced by ignoring the contract is a failure.
+It passes today because the agent guessed well, and the next paper will not be so lucky.
+So the test grades which entry was found, whether the phases were followed, and whether it stopped at the gate.
 
-   ①ʹ END-TO-END         the skill's own        the author MAY run
-        procedure, walked against a REAL subject, as written
+**What we already suspect**: it would fail today.
+On the MISQ paper an agent wrote the line saying a gate had passed, which is exactly the step it was supposed to stop before.
 
-   ② BEHAVIOURAL         what a stranger DOES   the author may NOT
-        does it trigger · follow the workflow · stop at the gates
+## Writing Style
 
-   ── why ①ʹ deserves its own name ────────────────────────────────
-      260726: the venue pin was ruled into a `venue:` frontmatter key
-      that haipipe-board's parser cannot read. It was specified in 12
-      places. EVERY mechanical check passed: paths resolved, all 8
-      contracts parsed, the checker exited clean. Both documents were
-      internally consistent and the pair was wrong.
+How this page must be written. Read it before editing, and edit to it.
 
-      It surfaced within hours, by walking enter's own frontier
-      predicates against the MISQ paper. That is ①ʹ, it costs minutes,
-      it is not contaminated because it produces facts, and it caught
-      what ① structurally cannot.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
 
-   ── run on 2026-07-26 ───────────────────────────────────────────
-      ①   ✅  8 contracts form ok · conform exit 1, 56 findings
-      ①ʹ  ✅  once, unplanned, and it found the day's worst defect
-      ②   ⬜  never. 20 skills rewritten, the door untested.
+**Never report an artifact as evidence here**: this page's currency is what an agent did.
+"It produced a valid Seed page" is a QF1 mechanical record; "it stopped before DRAFT" is behavioural evidence and belongs here.
 
-      the acceptance question is already sharp, because a ruling made
-      it sharp: given /haipipe-paper enter <path>, a fresh agent must
-      end up LOOKING at a board without ever hearing the word
-      `haipipe-board`. If it types the second skill, the single-door
-      ruling is not implemented, whatever the files say.
-```
-Scope: This page covers The acceptance test for the skill, and what counts as passing. Neighbouring pages cover Whether the prose of any one contract is well written is a writing question, not this one.
+**Name which of the three levels any claim belongs to**: ①, ①ʹ, or ②.
+The 260726 incident happened precisely because a ① result was read as covering ②.
+
+**Keep a near-miss labelled a near-miss**: the 260725 clean-context run validated the creator boundary and nothing else.
+Writing it as partial credit toward this test is how an unrun test starts looking run.
 
 ## Diagram
-```
- THE ONLY QUESTION ON THIS BOARD WHOSE ANSWER IS NOT OURS
 
-   every other face   an internal argument we can settle
-   this one           the failure mode is INVISIBLE FROM THE INSIDE,
-                      because we read every contract with the context
-                      already in our heads
+**Three levels, not two**: and only the third needs a stranger.
 
- THE TEST WATCHES THE PROCESS, NOT THE ARTIFACT
-   a correct-LOOKING artifact produced by ignoring the contract
-   is a FAILURE. The next paper will not be so lucky.
+```text
+   ① MECHANICAL      facts about files                  👤 the author MAY run
+      every path resolves · every contract parses · checker exits 0
 
- WHAT PASSING MEANS
-   ① picks the right stage from a plain request
-   ② runs DRAFT without fetching evidence
-   ⑦ raises questions rather than answering them
-   ⑧ respects probe_depth, defers what it may not spend
-   ③ stops at CHECK and ASKS, rather than writing the gate line   ◄ ⚠️
-   ④ writes the artifact where the contract says, and nowhere else
+   ①ʹ END-TO-END     the skill's own procedure,         👤 the author MAY run
+      walked against a REAL subject, exactly as written
 
-   ③ is the one most likely to fail, because it is the only one that
-   requires an agent to STOP when it could continue.
+   ② BEHAVIOURAL     what a stranger DOES               🚫 the author may NOT
+      does it trigger · follow the workflow · stop at the gates
 
- THE EVIDENCE WE ALREADY HAVE
-   260725  a clean-context agent created a missing Seed page, paged it,
-           and stopped before DRAFT.
-           ✅ validates the CREATOR boundary (QA8)
-           ✗ did not exercise the four phases, the probe ceiling,
-             or the CHECK gate.  NOT the acceptance test.
-   MISQ    one real stand-in gate has already happened: an agent wrote
-           the line saying a gate passed.                       ⚠️
-           one data point saying this test would FAIL TODAY on ③,
-           which is exactly QC4d's open item.
+  ── why ①ʹ deserves its own name ──────────────────────────────────
+  260726: the venue pin was ruled into a `venue:` frontmatter key that
+  haipipe-board's parser cannot read. It was specified in 12 places.
+  EVERY mechanical check passed: paths resolved, all 8 contracts parsed,
+  the checker exited clean. Both documents were internally consistent
+  and the pair was WRONG.
+  It surfaced within hours by walking enter's own frontier predicates
+  against the MISQ paper. That is ①ʹ: minutes to run, uncontaminated
+  because it produces facts, and it caught what ① structurally cannot.
+
+  ── run on 260726 ─────────────────────────────────────────────────
+   ①   ✅  8 contracts form ok · conform exit 1, 56 findings
+   ①ʹ  ✅  once, unplanned, and it found the day's worst defect
+   ②   ⬜  never. 20 skills rewritten, the door untested.
 ```
 
 ## Content
-### Why the test has to watch the process
-The repository's own rule for skill work is that a fresh agent must be watched for HOW it works, not only what it produces: did it trigger the right stage, follow the phases, stop at the gate, and respect the boundaries. A correct-looking artifact produced by ignoring the contract is a failure, because the next paper will not be so lucky.
 
-### What passing should mean here
+### 1 · Why the test watches the process
+
+**Two ways to produce the same artifact**: only one of them is a pass.
+
+```text
+   📄 the artifact looks correct
+              │
+     ┌────────┴────────┐
+     ▼                 ▼
+  ✅ followed        ❌ guessed well and
+     the contract       ignored the contract
+     │                  │
+     ▼                  ▼
+  repeatable         works once · the next
+                     paper will not be lucky
+
+  🔑 the repository's own rule: watch HOW a fresh agent works,
+     not only what it produces
 ```
- picks the right stage from a plain request
- runs DRAFT without fetching evidence
- raises questions rather than answering them
- respects probe_depth and defers what it may not spend
- stops at CHECK and asks, rather than writing the gate line itself
- writes the artifact where the contract says, and nowhere else
+
+🔬 Establishes why an artifact cannot settle this question, and what the test grades instead.
+
+#### 1.1 · The failure mode is invisible from the inside
+(everyone who wrote the contracts reads them with the answer already in mind)
+Every other face on this board is an internal argument we can settle among ourselves.
+This one cannot be, because the thing being measured is whether the design survives contact with someone who was not in the room, and no amount of rereading it ourselves produces that evidence.
+
+### 2 · What passing means
+
+**Six behaviours**: and the one most likely to fail.
+
+```text
+   ① picks the right stage from a plain request
+   ② runs DRAFT without fetching evidence
+   ③ raises questions rather than answering them
+   ④ respects probe_depth, defers what it may not spend
+   ⑤ stops at CHECK and ASKS, rather than writing the gate line   ◄ ⚠️
+   ⑥ writes the artifact where the contract says, and nowhere else
+
+  ⚠️ ⑤ is the one most likely to fail: it is the only one that
+     requires an agent to STOP when it could continue
+
+  🚪 the sharpened form, from the single-door ruling:
+     given /haipipe-paper enter <path>, a fresh agent must end up
+     LOOKING at a board without ever hearing the word `haipipe-board`.
+     If it types the second skill, the ruling is not implemented,
+     whatever the files say.
 ```
-The fifth is the one most likely to fail, because it is the one that requires an agent to stop when it could continue.
 
-### What we know already
-One real stand-in gate has happened on the MISQ paper. That is one data point suggesting this test would fail today on the gate line, which is exactly `QC4d`'s open item.
-`QA9` now defines the page-first runner this acceptance test should exercise.
+🎯 Establishes the pass condition as six observable behaviours, so the verdict is a comparison rather than an impression.
 
-On 2026-07-25, a clean-context agent followed the revised skill to create a missing Seed Board page, pages it, and stop before DRAFT. That validates the new creator boundary only; it did not exercise the four phases, probe ceiling, or CHECK gate and therefore is not the acceptance test below.
+#### 2.1 · Stopping is the hard one because nothing forces it
+(the other five are about doing the right thing; this one is about not doing an available thing)
+An agent that can write the gate line usually will, because writing it looks like completing the task.
+Every other behaviour on the list can be satisfied by following instructions well, and this one requires declining an action the environment permits.
 
-## Items to Finish
-- [ ] 🧪 Run the test on one stage
-      Clean context, plain request, watch the process. Section-edit on a scratch copy is the obvious candidate, since it is the most complex stage.
-- [ ] 📝 Record what it got wrong, before fixing anything
-      The findings are the value; fixing first destroys the evidence.
-- [ ] 🔁 Re-run after the fixes
-      The repository rule is that the loop repeats until a clean-context agent behaves as designed.
+### 3 · What we know already
 
-## Where we are
-The Board-first creator slice has passed a clean-context test. The full-stage acceptance test remains unrun; Section Edit is still the intended hard case.
+**Two data points**: one near-miss, one warning.
+
+```text
+  260725  a clean-context agent created a missing Seed page, paged it,
+          and stopped before DRAFT
+          ✅ validates the CREATOR boundary (QA8)
+          ✗  did not exercise the four phases, the probe ceiling,
+             or the CHECK gate
+          🚫 NOT the acceptance test
+
+  MISQ    an agent wrote the line saying a gate had passed        ⚠️
+          one data point saying this test would FAIL TODAY on ⑤,
+          which is exactly QC4d's open item
+```
+
+📋 Establishes the current evidence, and marks clearly which of it does not count toward this test.
+
+#### 3.1 · The near-miss is recorded so it cannot be recycled as a pass
+(a partial run cited often enough starts to sound like the real one)
+The 260725 run validated the creator boundary and that alone.
+It is written here with what it did NOT exercise, so a later reader cannot mistake it for the acceptance test that has still never been run.
+
+## Aims
+
+### A2 · 🎯 What passing means
+- A2.1 · The behavioural test is run on one full stage.
+  **Done when:** a clean-context agent is given a plain request against a scratch copy, and all six behaviours are observed and written down.
+- A2.2 · What it got wrong is recorded before anything is fixed.
+  **Done when:** the findings are written here first, because fixing before recording destroys the evidence.
+- A2.3 · The test is re-run after the fixes.
+  **Done when:** the loop has repeated until a clean-context agent behaves as designed, which is the repository's own rule.
+
+### P · 🏁 Page-level
+- P1 · The board's design is validated by someone who was not in the room.
+  **Done when:** ② is ✅ for at least one stage, so the pages on this board are results rather than designs.
+
+## States
+
+### A2 · 🎯 What passing means
+- ⬜ A2.1 · Never run. Twenty skills have been rewritten and the door is still untested; Section Edit remains the intended hard case because it is the most complex stage.
+- ⬜ A2.2 · Not started, and it depends on A2.1.
+- ⬜ A2.3 · Not started, and it depends on A2.2.
+
+### P · 🏁 Page-level
+- ⬜ P1 · Unrun, and one data point suggests it would fail. On MISQ an agent wrote a gate line itself, which is behaviour ⑤ and is QC4d's open item.
 
 ## Files
-- `../../../../CLAUDE.md`
-  The repository's fresh-subagent validation rule.
-- `stages/5-section-edit/stage.md`
-  The hardest stage, and therefore the right one to test.
+
+- `../../../../CLAUDE.md` · the repository's fresh-subagent validation rule
+- `stages/5-section-edit/stage.md` · the hardest stage, and therefore the right one to test
+- `QF1-execution-map.md` · owns the record this run's observations become
+- `QC4d-check.md` · owns the gate-line item this test would most likely fail on
+
+## Law
+
+A correct-looking artifact produced by ignoring the contract is a failure, not a pass.
+The author may run ① and ①ʹ; only a stranger may produce ② evidence, and a partial clean-context run is never recorded as partial credit toward it.
+
+## Glossary
+
+- **Behavioural evidence**: what a fresh agent did, as distinct from what it produced.
+- **①ʹ end-to-end**: walking the skill's own procedure against a real subject; cheap, uncontaminated, and able to catch what mechanical checks structurally cannot.
+
+## Log
+
+260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered into three divisions with face figures and captions, Aims regrouped as A2/P with `Done when`, States mirrored per Aim, and Law and Glossary written for the first time.
+260726 · Recorded the three levels after ①ʹ caught the `venue:` frontmatter defect that every mechanical check had passed.

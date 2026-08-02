@@ -170,11 +170,11 @@ src/lanes.py     253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane b
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
-## Where we are
+## States
 Mirrored into the Engine roster so the index contract is visible beside the Paper routes it organizes. The Paper Board uses its group/index mechanics without exporting Paper-specific section, paragraph, or sentence requirements back into the generic index skill.
 
 ## Log

@@ -4,13 +4,12 @@ owner: JL
 method: draw the whole loop in both directions first, then rule the unit of change, the output layout, and what refreshes when
 
 ## Opening
-How does one change travel from a markdown file to the page a person is looking at, and how does a change made on that page travel back into the markdown?
-Both halves exist and work today, and neither is described in one place: the forward path lives in `build.py`, the return path in `live/write.py`, and the delivery in `board.js`, so the loop can only be understood by reading three files and inferring the join.
-Nothing owns the loop itself, which is why questions about it keep landing on whichever face is nearest.
+How does a change travel from Markdown to the open page and safely return from the browser to Markdown?
 
-The loop has one property worth stating before anything else: markdown is the only source.
-Every other artifact is derived and disposable, so the html is never edited and never merged; it is rewritten.
-That single rule is what makes a round trip safe, because the return direction only ever has to produce markdown, never reconcile two versions of the truth.
+The forward build, browser delivery, and write-back path live in different parts of the engine.
+Without one contract, each feature can choose a different unit of change or treat generated HTML as a second source.
+The loop determines what rebuilds, what the browser replaces, and how an edit becomes durable.
+It succeeds when a returned edit updates one Markdown source, rebuilds its page, group, and Index, and swaps only the requested page.
 
 
 ## Diagram
@@ -108,6 +107,15 @@ A single Markdown target may still render one HTML file for compatibility; that 
 
 ## Where we are
 
+- 260801 JL · 🐢 Navigation was re-downloading a rail it throws away
+  JL: "why I feel it will have a long time to navigate to different pages?"
+  Measured rather than guessed, and the answer was not the renderer: the server answers in 8ms, wiring a swapped page costs 4ms, and the fetch itself was the whole cost.
+  Every page file carries the complete rail, 112 KB of it, and the router swaps only `div.wrap`, so on a median 136 KB page 82% of the bytes are discarded on arrival; across the tree that is 7.10 MB of 9.40 MB spent on 65 copies of one rail.
+  The fetch also asked for `cache: 'no-store'` and the server sent `Cache-Control: no-store`, so those bytes were re-downloaded on every single visit.
+  `no-store` was the wrong instrument for the guarantee it was written to protect (JL 260726, "why now I cannot open them"): the requirement is never serve a page from before the last build, and that is `no-cache`, which means REVALIDATE BEFORE USE rather than may-be-stale.
+  Both sides now say `no-cache`, and a revisit costs 0.3 KB instead of 119 KB, with the body still arriving from cache.
+  The staleness guarantee was tested directly rather than assumed: warm fetch 0.3 KB, then the file was edited on disk, and the very next fetch was a full 119 KB carrying the new bytes.
+
 - 260801 CC · 🧭 The contract and the canonical output agree
   `SKILL.md`, `ref/board-form.md`, `haipipe-board-index`, `build.py`, `watch.py`, `check.py`, and the design and Paper boards now describe the same Board-Folder to Board-Webpage tree.
   The Paper Board exposed the remaining runtime defect: evidence-card panels were outside the body reroot pass, so 749 source links plus their images and PDF objects broke on split pages.
@@ -147,6 +155,12 @@ The return path still has one implementation and one anchoring rule; the forward
 SSE remains open because the four-second notification poll is the only hop still larger than the changed page.
 
 ### Decision Now
+- [ ] 🪞 Rule what to do about the rail in every page file
+      112 KB of every page is the rail, the router discards it on arrival, and it is 76% of the whole tree on disk; revalidation now hides that cost on revisits but a FIRST visit still pays it.
+      A · leave it, now that a revisit costs 0.3 KB: the waste is only paid once per page per build, and the rail is what makes the tree navigable with scripts off.
+      B · serve a fragment when a server is present: the router asks for `div.wrap` only, the file on disk keeps its rail, and a static host is unaffected.
+      C · stop emitting the rail in page files and let the Index carry navigation: smallest files, but a page opened with scripts off can then only go back to the Index.
+      → CC recommends B, because it is the only one that makes a FIRST visit cheap without taking anything away from the no-JS reader; A is a fair answer if the tree is only ever read over localhost.
 These are the calls only JL can make; CC ticks nothing here.
 
 - [x] 🧭 Rule what the tree's index still owes
@@ -194,6 +208,7 @@ These are the calls only JL can make; CC ticks nothing here.
   How the browser learns and what it replaces, including the three symptoms this face's unit argument explains.
 
 ## Log
+260801 · Navigation cost measured and halved at the wire: `no-store` became `no-cache` on both the router's fetch and the server's header, so a revisited page costs 0.3 KB instead of 119 KB; staleness re-tested by editing a page on disk. The 112 KB rail duplicated into every page file is recorded as an open decision
 260801 0920 · Canonicalized the board/ tree across contract, engine, checker, and both design/Paper Board structure blocks; fixed href/src/data rerooting exposed by 749 Paper Board failures
 260801 0140 · Full renumber QC7 -> QC4 (JL forced 260801); write-path face QC7a -> QC4a
 260801 0130 · Reindexed QC9 -> QC7: the round trip becomes the parent, with the write path (old QC7) as its face QC7a (JL 260801)

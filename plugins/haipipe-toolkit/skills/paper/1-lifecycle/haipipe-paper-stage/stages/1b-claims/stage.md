@@ -27,7 +27,7 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
 runs: once
 needs_paper: true
 on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
-                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # lane, `state:`, `## States`, a settled State row, a GATE row in
                          # `## Log`. Everything else: compute the change, SHOW it, ask.
                          # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_free: true          # does not change when retargeting to another journal
@@ -47,10 +47,10 @@ commissions:              # claims RUNS THE EXPERIMENT — it hands units OUT to
   - haipipe-task-orchestrator-agent        # fit + eval; settles an INTERNAL experimental claim
   - haipipe-discovery-orchestrator-agent   # external cohorts/context/citations; never settles a claim alone
 
-sections:                 # logical order; Q-consumer adapts to Board Items to Finish
+sections:                 # logical order; Q-consumer adapts to Board Aims
   - Hypotheses            # venue-NEUTRAL; the H1 -> RQ1 reframing happens in PITCH, not here
   - Claims                # one C<n>: statement + status + `Evidence: [Q-Claim-<n> …]`
-  - Q-consumer            # one Board checklist record per question: Description / Reason / Probe / Answer
+  - Q-consumer            # one Board Aim record per question: Done when / Description / Reason / Probe / Answer
 
 status:                   # THIS STAGE IS THE ONLY HOME OF A CLAIM'S STATUS — per-claim,
                           # private to this paper, NEVER in a probe file. No `## Verdict` section.
@@ -63,11 +63,11 @@ status:                   # THIS STAGE IS THE ONLY HOME OF A CLAIM'S STATUS — 
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "direct `###` divisions under Board Content; Q-consumer records are checklist items
-             under `## Items to Finish`, never Content headings"
+  headings: "direct `###` divisions under Board Content; Q-consumer records are Aim records
+             under `## Aims`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
 
-q_id_pattern: "- [ ] 🔎 Q-Claim-<n> · <title> — the title NAMES the angle, e.g. `· main coefficient (fit)`"
+q_id_pattern: "- P<n> · Q-Claim-<n> · <title> — the title NAMES the angle, e.g. `· main coefficient (fit)`"
 q_anchor: "[Q-Claim-<n>] listed on the `Evidence:` line of EVERY claim it bears on, and set beside every owed value it will fill"
 closed_when: "REVISE feeds each landed Answer into the status of every claim it settles"
 

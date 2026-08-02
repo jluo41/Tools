@@ -4,13 +4,12 @@ owner: JL
 method: QC2b's Law verbatim, a mechanical move under a response-identical gate; mixins so no signature changes; the areas that stopped moving go first
 
 ## Opening
-serve.py is one 2938-line file doing seven unrelated jobs, so should the live layer split the way the render layer already did?
-The working answer is one process and one port with several modules under `live/`, assembled as mixins, moved area by area under a gate that proves the HTTP responses did not change.
-What turns on it is which areas have stopped moving: `QD2`'s chat is about to be rewritten as a session host, so splitting it first would do that work twice.
+How should the live server be split without creating multiple services or changing any request behavior?
 
-This is `QC2b`'s deferred half, not a new idea.
-That page's own Opening asks how the Python stays manageable "now that build.py and serve.py have both crossed 40KB", but only build.py was split, and its Where-we-are records the reason: "the QD-group live layer was deliberately NOT refactored while it is still forming."
-The question this page owns is whether it has stopped forming, and what the split looks like when it has.
+One file was serving chat, terminals, drawings, activity, structure, and writes through the same handler.
+The hard part is separating those jobs while they still share one root, one port, and one request context.
+That boundary determines whether live features can change independently without breaking the rest of the Board.
+It succeeds when focused modules assemble into the same server and a response gate proves the move.
 
 
 ## Diagram

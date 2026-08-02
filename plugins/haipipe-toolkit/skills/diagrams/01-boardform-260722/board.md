@@ -3,14 +3,14 @@
 spine: A board = one source folder. One Markdown file per page inside it, plus one generated board/ site with an Index, group pages, focused page files, and shared assets. Pin that shape down in SKILL.md so a fresh reader can open and run it without memory.
 close: Every Q on this board reaches ✅ or ⏸️. SKILL.md is written, and a fresh agent with no background can read only that and open a decent board, and then this skill is done.
 excalidraw: /_excalidraw
-session: 3e951d68-1c6d-4f22-af82-76dd70bb356d
+session: 26316704-a67d-4da6-9d94-bddd0edbccb9
 ## Topic
 What a board is for: a topic has several undecided questions; lay them out on one page anyone can open and comment on; settle them one by one, then close the board.
 Cast: JL = the one who decides. CC = Claude Code, who does the work. Colleagues = the people who review, discuss, or take responsibility for work on the board; each uses their own initials.
 What makes this board unusual: its subject IS the board itself, a board used to define boards.
 
 ## Pipeline
-Since 260731 every page id matches its group letter, and a parent page carries its faces as sub-letters: QB4 is the page, QB4a-QB4g its sections; QB5 the sentence, QB5a-QB5e what attaches to it.
+Since 260731 every page id matches its group letter, and a parent page may carry faces as sub-letters, which is how QB5 carries QB5a-QB5e for the sentence. QB4 no longer does: its seven section faces were folded into its own Content on 260801.
 Every earlier id stays resolvable as a declared Link, so a citation written under any older naming still lands on the right page.
 260731: ids aligned to groups (36 renames), and the Skill roster became its own page kind, `Skill-0` `Skill-1` `Skill-2`.
 260731: QD split back into QD · Working and QE · Sharing (briefly QDa/QDb the same day), the archived board-agent page returned as QD7, and Execute moved to QF: a lowercase letter now always means a page's face, never a group.
@@ -35,7 +35,7 @@ Every id here is a link: a group token opens the index at that group, a page id 
        └── agents/                  haipipe-board-reviewer-agent.md
 
   🗂 ② skills/diagrams/01-boardform-260722/    THIS board, what is ARGUED
-       board.md · 6 group folders · 42 pages · board.excalidraw · fig/ · _archive/
+       board.md · 6 group folders · 44 pages · board.excalidraw · fig/ · _archive/
        board/   📤 OUTPUT: Index · group pages · focused pages · shared assets
 
   📤 ③ every other board ① renders             what is RENDERED
@@ -54,15 +54,15 @@ Every id here is a link: a group token opens the index at that group, a page id 
   │ QA · Design  │──shapes──▶│ QB · Delivery        │◀─built──│ QC · Engine   │
   │ folders ·    │           │ Board → Group →      │   by    │ build · serve │
   │ concepts   3 │           │ Page → Section →     │         │ check · the   │
-  └──────────────┘           │ Sentence          17 │         │ skill set   9 │
+  └──────────────┘           │ Sentence          18 │         │ skill set   9 │
                              └──────────┬───────────┘         └───────┬───────┘
                                         │ operated live               │ every change
                                         ▼                             ▼ proves itself
   ┌──────────────────────┐ ┌──────────────────────┐  ┌───────────────┐
-  │ QD · Working         │ │ QE · Sharing         │  │ QF · Execute  │
+  │QD · Working with Chat│ │ QE · Sharing         │  │ QF · Execute  │
   │ session · chat ·     │ │ hosting · mounts ·   │  │ checker runs  │
-  │ attach drawing ·     │ │ locks · console ·    │  │ fresh agent 2 │
-  │ status strip       5 │ │ bind address       6 │  └───────────────┘
+  │ split panes ·        │ │ locks · console ·    │  │ fresh agent 2 │
+  │ status strip       6 │ │ bind address       6 │  └───────────────┘
   └──────────────────────┘ └──────────────────────┘
 
 ─────────  ③ cross-group page edges  ───────────────────────────────────────────────
@@ -70,10 +70,10 @@ Every id here is a link: a group token opens the index at that group, a page id 
   QA0   ──places───▶  every folder above, and what may move between them
   QB2   ──renders──▶  the Index you are reading right now
   QB4   ──defines──▶  the base every page kind varies from
-  QB4b   ──owns─────▶  board.excalidraw, one scene per board
+  QB4    ──owns─────▶  board.excalidraw, one scene per board
   QB3   ──places───▶  every page, inside its own home folder
   QC5   ──feeds────▶  Skill-0 · haipipe-board
-  QF1 + QF2 ─prove─▶  every change, before it ships
+  QF1 ──proves───▶  every page change · QF2 ──proves───▶ every skill revision
 
   every id above is a LINK · a plain token means no such page on this board
   a page's id now MATCHES its group; the old ids stay resolvable in `## Links`
@@ -82,13 +82,9 @@ Every id here is a link: a group token opens the index at that group, a page id 
 [↗ the same map as a shared Excalidraw canvas](https://app.excalidraw.com/s/1JWkKv8oMIX/8OmxTBT2e1m?element=_Q20Q1taxY2jiainH_Y57)
 
 ## Related Folders
-The folders this board touches: the engine that renders it, and what a board folder itself looks like. Click a folder, then a file, to read it right here. QB2 owns the fold, QA0 owns this list.
+The folders this board touches: the engine that renders it, and what a board folder itself looks like. Open a folder and navigate it, the way you would browse a directory. QB2 owns the fold, QA0 owns which roots are listed; everything below a root is what is actually on disk.
 @ ../../board/haipipe-board | ⚙️ haipipe-board · the engine that ships
-- SKILL.md
-- ref/board-form.md
 @ . | 🗂 01-boardform-260722 · what a board folder looks like
-- board.md
-- QA-design/QA0-three-folders.md
 
 ## Board Structure
 This Board has one source `Board-Folder` and one generated `Board-Webpage`.
@@ -119,7 +115,7 @@ Topic, Pipeline, and this Board Structure remain source-only documentation in `b
 **Board-Webpage-Page — work on one page**
 Opening a Q or S row goes to `board/<GROUP>/<page>.html`, one focused page with the shared sidebar.
 With scripts on the router swaps that page into the current document so chat and terminal attachment survive; with scripts off the same link navigates normally.
-`QB4a`-`QB4g` own that page's sections; `QB5`-`QB5e` own the sentence and its attached records.
+`QB4`'s Content specifies each page section; `QB5`-`QB5e` own the sentence and its attached records.
 
 ## Pages
 ### QA · Design
@@ -142,29 +138,31 @@ QA3-the-round.md
 ### QB · Delivery
 What a reader gets, altitude by altitude: Board → Group → Page → Section → Sentence.
 Board: QB1 the folder, QB2 the webpage and its Index (QB2a its pages sidebar), QB3 a page's home folder.
-Page: QB4 the shared Q/S base, with one face per section: QB4a Opening, QB4b Diagram, QB4c Content, QB4d Items to Finish, QB4e Where we are, QB4f Files, QB4g the folds.
+Page: QB4 the page template, whose Content specifies each section in turn, one division per section (the seven per-section faces were folded into it on 260801 and archived).
 Sentence: QB5 the atomic unit, with QB5a the evidence card, QB5b comments, QB5c editing, QB5d chat, QB5e the details lifecycle.
+Write affordance: QB8 attaches a drawing to the `## Diagram` section from the page, the write-half of QB4's Diagram section (moved from QD5, 260801).
 
 ```text
 one page = one reading protocol · each section answers ONE reader question
 ──────────────────────────────────────────────────────────────────────
-🧭 QB4a Opening · what is this page, and why should I care?
-🖼 QB4b Diagram · can I see the whole subject at once, before reading?
-📚 QB4c Content · what does this page actually establish?
-🎯 QB4d Items to Finish · what, testably, separates now from done?
-📍 QB4e Where we are · what is true now, and which decision waits on JL?
-📎 QB4f Files · which few files do I open to continue this work?
-🗃 QB4g the folds · what was ruled, learned, and changed, if I need it?
+🧭 Opening · what is this page, and why should I care?
+🖼 Diagram · can I see the whole subject at once, before reading?
+📚 Content · what does this page actually establish?
+🎯 Aims · which durable target states should this page establish?
+📍 States · what is true now for each Aim, and which decision waits on JL?
+📎 Files · which few files do I open to continue this work?
+🗃 the folds · what was ruled, learned, and changed, if I need it?
 ──────────────────────────────────────────────────────────────────────
 the order IS the protocol: intent, then substance, then status
-each face opens with the same five rows · conveys · holds · source ·
-rules · omit · to update a section: read its face, follow its rows
+all seven are specified in QB4's Content, one division each, and every
+division uses the same five rows · conveys · holds · source · rules · omit
 ──────────────────────────────────────────────────────────────────────
 around the page, the other altitudes this group owns
 🏛 QB1 the board folder · QB2 the webpage index · QB2a the sidebar rail
 📂 QB3 a page inside its own home folder · 📋 QB4 the shared Q/S frame
 ✏️ QB5 the sentence, one line one anchor · QB5a evidence card ·
 QB5b comments · QB5c editing · QB5d chat · QB5e details lifecycle
+🖌 QB8 attach a drawing to the ## Diagram section, from the page (was QD5)
 ──────────────────────────────────────────────────────────────────────
 the engine behind each row lives on that page's Files · code shape: QC2
 ```
@@ -173,19 +171,13 @@ QB2-board-webpage-design.md
 QB2a-sidebar.md
 QB3-folderq.md
 QB4-overall.md
-QB4a-opening.md
-QB4b-diagram.md
-QB4c-content.md
-QB4d-items.md
-QB4e-where-we-are.md
-QB4f-files.md
-QB4g-folds.md
 QB5-overview.md
 QB5a-evidence-card.md
 QB5b-comments.md
 QB5c-editing.md
 QB5d-agent-visibility.md
 QB5e-sentence-details-lifecycle.md
+QB8-diagramattach.md
 ### QC · Engine
 How the delivery is produced and shipped.
 QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
@@ -236,9 +228,15 @@ Skill-4-haipipe-board-sentence.md
 Skill-5-haipipe-board-routing.md
 Agent-1-haipipe-board-reviewer-agent.md
 Agent-2-haipipe-board-creator-agent.md
-### QD · Working
+### QD · Working with Chat
 How people and agents work on a live board.
-QD1 a session per question, QD2 the SDK chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD5 attaching a drawing (which now also carries the board-level-agent question, QD7 merged in 260801), and QD6 the status strip. QD4 (live pages) was archived 260801.
+QD1 a session per question, QD2 the SDK chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, and QD6 the status strip.
+Numbers in this lane are POSITIONS, and the lane is renumbered to close its gaps (JL 260801: "为啥不按序号来排?").
+The earlier rule was the opposite, that a number is a permanent address and a retired page leaves a hole, which is how six live pages came to be numbered up to QD14; the holes were doing more damage than the renumbering they were meant to prevent, because a reader cannot tell a gap from a missing page.
+Renumbered 260801: QD14 (the terminal's form) became QD4 so it sits beside the engine it designs, and QD13 (the split workspace) became QD5; QD1, QD2, QD3 and QD6 did not move.
+What the retired pages took with them is recorded here rather than in a gap: QD4 (live pages) was archived 260801 and its file keeps its own name, `_archive/QD4-liveupdate.md`; the drawing-attach page moved to QB as `QB8`; the board-level agent was archived once QD1 settled that a chat attaches at three levels; and the 260731 split into QE · Sharing carried off five more.
+QD4 is QD3's design half, split out on 260801 when the terminal proved hard to use on a phone: QD3 owns the engine and QD4 owns the FORM, meaning where typing happens, what the pane shows when 80 columns will not fit, and what the page owes a reader who switches away and comes back.
+QD5 asks whether the board should be operated as three side-by-side panes (index · page · chat) rather than as one html document that swaps its own middle; it measured the four causes of the unsmooth refresh, ruled the mechanism as three same-origin iframes in one shell page on 260801, and is the successor to the archived live-update page's in-place-swap approach.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record         📂 FOLDER
@@ -246,13 +244,15 @@ QD1 a session per question, QD2 the SDK chat version, QD3 the TUI chat version (
 serve.py                   ◀── QD1   a session per question        ──▶  session: in board.md
 assets/board.js #chat      ◀── QD2   SDK · the chat box            ──▶  live replies
 serve.py                   ◀── QD3   terminal · raw + smooth panes ──▶  a real CLI session
-xcal.py  serve.py          ◀── QD5   attach a drawing              ──▶  fig/ · board.excalidraw
+30-terminal.js             ◀── QD4   the terminal's FORM per device──▶  phone · desktop
+serve.py build.py          ◀── QD5   each pane refreshes on its own──▶  index · page · chat
 serve.py                   ◀── QD6   the reply status strip        ──▶  every reply's footer
 ```
 QD1-chat-per-question.md
 QD2-chat-sdk.md
 QD3-chat-terminal.md
-QD5-diagramattach.md
+QD4-terminal-design.md
+QD5-split-workspace.md
 QD6-session-status-strip.md
 ### QE · Sharing
 How a board is hosted, mounted, and opened by someone who is not its author.
@@ -275,19 +275,20 @@ QE5-consolescope.md
 QE6-bindaddress.md
 ### QF · Execute
 What actually RAN, with evidence and a reopen path: the layer that keeps "skill written, delivery defined" from passing as done.
-QF1 is the checker that runs after every change; QF2 is the fresh-agent acceptance run; QF3 drives the built page in a real browser; QF4 drives the chat inside it.
+QF1 is the per-change page gate: deterministic `check.py` plus the fresh page reviewer. QF2 is the separate fresh-agent usability acceptance for a revised skill; QF3 drives the built page in a real browser; QF4 drives the chat inside it. QF5 is the sentence run: every shape a sentence can take, crossed with every operation that writes one.
 An execute record names its route, its result, and what it refused to touch.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record        📂 FOLDER
 ─────────────────────────      ────────────────────────────────    ────────────────────────
-check.py                   ◀── QF1  checking after every change   ──▶  the 0-error report
-?                          ◀── QF2  fresh-agent acceptance        ──▶  the acceptance verdict
+check.py + page reviewer   ◀── QF1  page gate after every change  ──▶  mechanics + prose verdict
+fresh skill agent          ◀── QF2  revised-skill usability       ──▶  acceptance verdict
 ```
 QF1-acceptance.md
 QF2-newcomer.md
 QF3-browser-run.md
 QF4-talk-run.md
+QF5-sentence-run.md
 ### QG · Meeting
 What was said out loud, kept where it can be cited.
 One page per meeting, imported from an `echo-meeting` vault note by `meetingpage.py`: the summary is the reading path, the raw transcript is reference, and the decisions inside it are routed onto the pages that own them.
@@ -311,17 +312,19 @@ QDa1                QD-working/QD1-chat-per-question.md
 QDa2                QD-working/QD2-chat-sdk.md
 QDa3                QD-working/QD3-chat-terminal.md
 QDa4                QD-working/_archive/QD4-liveupdate.md
-QD4                 QD-working/_archive/QD4-liveupdate.md
-QDa5                QD-working/QD5-diagramattach.md
+QD4-liveupdate      QD-working/_archive/QD4-liveupdate.md
+QDa5                QB-delivery/QB8-diagramattach.md
+QD13                QD-working/QD5-split-workspace.md
+QD14                QD-working/QD4-terminal-design.md
 QDa6                QD-working/QD6-session-status-strip.md
 QDa7                QD-working/_archive/QD7-boardagent.md
+QD7                 QD-working/_archive/QD7-boardagent.md
 QDb1                QE-sharing/QE1-hosting.md
 QDb2                QE-sharing/QE2-mountspace.md
 QDb3                QE-sharing/QE3-whereitruns.md
 QDb4                QE-sharing/QE4-editlock.md
 QDb5                QE-sharing/QE5-consolescope.md
 QDb6                QE-sharing/QE6-bindaddress.md
-QD7                 QD-working/QD5-diagramattach.md
 QD8                 QE-sharing/QE2-mountspace.md
 QD9                 QE-sharing/QE3-whereitruns.md
 QD10                QE-sharing/QE4-editlock.md
@@ -336,13 +339,20 @@ Skill-2              QC-engine/Agent-1-haipipe-board-reviewer-agent.md
 QA1a                QA-design/QA1-concepts.md
 QA2b                QB-delivery/QB2-board-webpage-design.md
 QAa0                QB-delivery/QB4-overall.md
-QAa1                QB-delivery/QB4a-opening.md
-QAa2                QB-delivery/QB4b-diagram.md
-QAa3                QB-delivery/QB4c-content.md
-QAa4                QB-delivery/QB4d-items.md
-QAa5                QB-delivery/QB4e-where-we-are.md
-QAa7                QB-delivery/QB4f-files.md
-QAa6                QB-delivery/QB4g-folds.md
+QAa1                QB-delivery/_archive/QB4a-opening.md
+QAa2                QB-delivery/_archive/QB4b-diagram.md
+QAa3                QB-delivery/_archive/QB4c-content.md
+QAa4                QB-delivery/_archive/QB4d-items.md
+QAa5                QB-delivery/_archive/QB4e-where-we-are.md
+QAa7                QB-delivery/_archive/QB4f-files.md
+QAa6                QB-delivery/_archive/QB4g-folds.md
+QB4a                QB-delivery/_archive/QB4a-opening.md
+QB4b                QB-delivery/_archive/QB4b-diagram.md
+QB4c                QB-delivery/_archive/QB4c-content.md
+QB4d                QB-delivery/_archive/QB4d-items.md
+QB4e                QB-delivery/_archive/QB4e-where-we-are.md
+QB4f                QB-delivery/_archive/QB4f-files.md
+QB4g                QB-delivery/_archive/QB4g-folds.md
 QAb0                QB-delivery/QB5-overview.md
 QAb1                QB-delivery/QB5a-evidence-card.md
 QA6                 QB-delivery/QB5b-comments.md
@@ -352,19 +362,19 @@ QAb4                QB-delivery/QB5e-sentence-details-lifecycle.md
 QA9                 QF-execute/QF1-acceptance.md
 QA10                QB-delivery/QB2-board-webpage-design.md
 QA4                 QB-delivery/QB4-overall.md
-QA4a                QB-delivery/QB4b-diagram.md
+QA4a                QB-delivery/_archive/QB4b-diagram.md
 QA8                 QB-delivery/QB5a-evidence-card.md
 QA8a                QB-delivery/QB5d-agent-visibility.md
 SKILL.md            ../../board/haipipe-board/SKILL.md
-build.py            ../../board/haipipe-board/build.py
-check.py            ../../board/haipipe-board/check.py
+build.py            ../../board/haipipe-board/cli/build.py
+check.py            ../../board/haipipe-board/cli/check.py
 status.py           ../../board/haipipe-board/status.py
-watch.py            ../../board/haipipe-board/watch.py
-serve.py            ../../board/haipipe-board/serve.py
-stage.py            ../../board/haipipe-board/stage.py
+watch.py            ../../board/haipipe-board/cli/watch.py
+serve.py            ../../board/haipipe-board/cli/serve.py
+stage.py            ../../board/haipipe-board/cli/stage.py
 CHANGELOG.md        ../../board/haipipe-board/CHANGELOG.md
 ref/                ../../board/haipipe-board/ref/
-ref/q-template.md   ../../board/haipipe-board/ref/q-template.md
+ref/page-template.md   ../../board/haipipe-board/ref/page-template.md
 ref/board-form.md   ../../board/haipipe-board/ref/board-form.md
 ref/writing-rules.md ../../board/haipipe-board/ref/writing-rules.md
 ref/board-example.md ../../board/haipipe-board/ref/board-example.md
@@ -374,13 +384,13 @@ board-agents/       ../../board/agents/
 haipipe-board-reviewer-agent.md ../../board/agents/haipipe-board-reviewer-agent.md
 env.sh              ../../../../../../env.sh
 paper-board/        ../01-haipipe-paper-260725/
-QC0@paper           ../01-haipipe-paper-260725/QC-engine-page-and-sentence-contract/QC0-sentence-unit.md
-QC1@paper           ../01-haipipe-paper-260725/QI-delivery-literature/QC1-sentence-citation.md
-QC2@paper           ../01-haipipe-paper-260725/QJ-delivery-value/QC2-sentence-value.md
-QC3@paper           ../01-haipipe-paper-260725/QK-delivery-display/QC3-sentence-display-table.md
-QC4@paper           ../01-haipipe-paper-260725/QK-delivery-display/QC4-sentence-display-figure.md
-QA1@paper           ../01-haipipe-paper-260725/QA-engine-map-and-boundaries/QA1-eight-folders.md
-QA4@paper           ../01-haipipe-paper-260725/QA-engine-map-and-boundaries/QA4-the-board-tool.md
+QC0@paper           ../01-haipipe-paper-260725/QC-engine/QC5-sentence-evidence-contract.md
+QC1@paper           ../01-haipipe-paper-260725/QB-delivery/QB12a-sentence-citation.md
+QC2@paper           ../01-haipipe-paper-260725/QB-delivery/QB12b-sentence-value.md
+QC3@paper           ../01-haipipe-paper-260725/QB-delivery/QB12c-sentence-display-table.md
+QC4@paper           ../01-haipipe-paper-260725/QB-delivery/QB12d-sentence-display-figure.md
+QA1@paper           ../01-haipipe-paper-260725/QA-design/QA1-the-folder-map.md
+QA4@paper           ../01-haipipe-paper-260725/QA-design/QA4-the-board-tool.md
 src/dialect_paper.py ../../board/haipipe-board/src/dialect_paper.py
 src/common.py       ../../board/haipipe-board/src/common.py
 src/body.py         ../../board/haipipe-board/src/body.py

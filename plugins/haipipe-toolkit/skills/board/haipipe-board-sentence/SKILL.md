@@ -3,9 +3,9 @@ name: haipipe-board-sentence
 description: >-
   The SENTENCE contract of a board, as a loadable spec: the sentence as the board's atomic unit, its dotted address, the > comment lanes and who may write one, the evidence card, editing, per-location chat focus, and the lifecycle of attached records (archive, never delete). Load this when an agent must write ONE line that reads like the board without operating the whole board: a routed log line, a comment into a lane, a chat focus packet, or the paper family's evidence card. Trigger: sentence contract, comment lane, > lane, evidence card, sentence address, apparatus, /haipipe-board-sentence.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-07-31"
-  summary: "First cut, contract-first (QC6 §8: the second SPEC the routing and digest verbs LOAD): the atomic unit, the lanes, the card, and the record lifecycle. No code moved."
+  version: "0.1.1"
+  last_updated: "2026-08-02"
+  summary: "The lane figure and the lane rules teach `> Comment WHO`, the only comment form to write since 260802, and mark ## Discussion's thread grammar as unaffected."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -46,7 +46,9 @@ The address is how chat focuses one location, how a comment pins, and how an edi
 A `>` line under a sentence is a LANE: a signed, dated remark that belongs to the sentence above it.
 
 ```
-> JL: the human's lane · decisions and corrections live here
+> Comment JL …   the human's lane · decisions and corrections live here
+> ✎ ~old~ *new* · WHO · YYMMDD HHMM   the change record
+> Citation: · > Value: · > Display: …  the typed lanes, named by what they attach
 >> CC{MMDD}: the worker's dated reply lane, nested under what it answers
 ```
 
@@ -54,7 +56,10 @@ Lane rules a machine must hold:
 
 ```
 · a lane is APPENDED, never edited in place; the record is the point
-· never delete a signed `> WHO:` or `> ✎` line (ref/writing-rules.md: they are the durable review trail)
+· a person's remark is `> Comment WHO …`, the only form to write (JL 260802);
+  the older `> JL:` still renders and check.py warns on it inside Content
+· `## Discussion` is NOT affected: it keeps `> JL:` + `>> CC0726:`, a THREAD
+· never delete a signed comment or `> ✎` line (ref/writing-rules.md: they are the durable review trail)
 · a reply nests one level under what it answers, dated
 · a lane without a signature is not a lane, it is unclaimed prose
 ```

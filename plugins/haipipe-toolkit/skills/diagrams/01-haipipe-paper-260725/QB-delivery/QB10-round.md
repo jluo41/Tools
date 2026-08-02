@@ -25,11 +25,11 @@ submission → Round 1 → Round 2 → … → accepted/retired
 | Gate | A human verifies every response is applied or explicitly declined and the resubmission matches the round record. |
 | Open gaps | Board filename resolution still needs `Round` added as a first-class family. |
 
-## Items to Finish
+## Aims
 - [x] Rename the Delivery group from Response to Round.
 - [ ] Make `Round` resolvable in Board family tooling.
 
-## Where we are
+## States
 The concept and name are ruled; the Board family implementation remains open.
 
 ## Files

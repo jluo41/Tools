@@ -35,7 +35,7 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
 runs: once
 needs_paper: false        # a bare free-text topic/abstract is a valid input; no folder needed
 on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
-                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # lane, `state:`, `## States`, a settled State row, a GATE row in
                          # `## Log`. Everything else: compute the change, SHOW it, ask.
                          # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_role: chooser       # NEITHER venue_free NOR venue_aligned: this is the stage that PICKS
@@ -75,7 +75,7 @@ packs: ../../../../venue/  # the venue knowledge directory: playbook-*/README.md
 
 exit_when: "no clear fit; venue change re-runs pitch"
 
-sections:                  # logical order; Q-consumer adapts to Board Items to Finish
+sections:                  # logical order; Q-consumer adapts to Board Aims
   - Venue Decision         #   (a provenance header sits above them: pack @ commit, outlet dir)
   - Relevant Files
   - Section Styles         #   the RESOLVED per-kind pack paths (style + template) — see owns_resolution
@@ -101,12 +101,12 @@ kinds_file: ../section-kinds.yml
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "direct `###` divisions under Board Content; Q-consumer records are checklist items
-             under `## Items to Finish`, never Content headings"
+  headings: "direct `###` divisions under Board Content; Q-consumer records are Aim records
+             under `## Aims`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
   fit_record: "the Venue Decision's Fit is RECORD LINES, never a pipe table"
 
-q_id_pattern: "- [ ] 🔎 Q-Venue-<n> · <title>"
+q_id_pattern: "- P<n> · Q-Venue-<n> · <title>"
 q_anchor: "[Q-Venue-<n>] cited inline in the Venue Decision sentence it rests on"
 closed_when: "PROBE writes the finding + [source: PP<nn>] into the Answer field. That is where
               the loop closes for this stage — there is no REVISE to weave it back into prose,

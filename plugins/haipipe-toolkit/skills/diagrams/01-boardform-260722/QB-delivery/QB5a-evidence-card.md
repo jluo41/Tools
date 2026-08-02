@@ -3,12 +3,13 @@ state: 🟡 PARTIAL
 owner: JL
 method: fold typed `>` lanes and threads under the sentence they follow; resolve inline-marker chips through the paper dialect
 
-## Question
-When a sentence carries evidence (a citation, a number, a display, a probe binding, a review thread), how does the page show the sentence clean and reveal that apparatus only on click?
+## Opening
+How can a sentence keep its evidence close without letting that evidence overwhelm the prose?
 
-One sentence per source line (0.19.0) made the sentence the board's atomic row, and the paper dialect already writes evidence next to it: `> CHECK:` blocks and `> JL:` / `> CC:` threads sit directly under the sentence they discuss, while placeholders (`\cite{TOADD}`, `{VAL:? …}`, `[Q-Section-n]`) sit inside it.
-Until now the board rendered all of that as loose sibling paragraphs, so a reviewed sentence drowned in its own apparatus.
-JL asked for the sentence to be clickable with the hidden things beneath it (260725, asked in both working sessions); this page is the single ruling both sessions implement against, piloted on this board as the experiment lab before anything touches the MISQ paper board.
+This page defines an evidence card that folds citations, values, displays, and review threads under the sentence they support.
+The hard part is that those records have different forms but must share one visible attachment rule.
+Rendering them as loose paragraphs makes the sentence unreadable and leaves its evidence easy to misplace.
+The design succeeds when the sentence stays clean and one click reveals every adjacent record tied to the same source line.
 
 
 ## Boundary
@@ -23,6 +24,10 @@ JL asked for the sentence to be clickable with the hidden things beneath it (260
 ### Lane grammar
 A `>` line directly under a sentence (blank lines tolerated between them) attaches to that sentence.
 Typed lanes name the attachment: `> Citation:` 📚 · `> Value:` 🔢 · `> Display:` 🖼 · `> Check:` ⚠️ · `> Q-consumer:` 🔎 · `> Link:` 🔗 · `> Source:` 📄 · `> Note:` 📝.
+A person's comment is `> Comment JL …`, with the colon after the name optional (JL 260802): beside the typed lanes, a bare pair of initials said nothing about what the row was.
+The legacy `> JL: …` still renders so nothing already written breaks, and `check.py` warns on it inside Content.
+`## Discussion` is untouched and keeps `> JL:` with `>> CC{MMDD}:` replies, because that is a thread rather than a note on one sentence.
+An edit is `> ✎ ~old~ *new* · WHO · YYMMDD HHMM`, and the badge names which kind is underneath: `⚑` a typed lane, `💬` a person waiting, `✎` an edit, with a person waiting outranking a record.
 For sentence-revision `> Note:` lanes, write deletions as `~~removed~~` and additions as `**inserted**`; the Board renders them as a deletion line and bold text rather than showing the delimiters.
 `> JL:` / `> CC:` review threads join the same drawer with their normal comment styling.
 A `>` run with no sentence above it (a thread that opens a section) renders exactly as before, and the supporting folds (Discussion, Law, Lesson, Glossary, Log, Why here) never fold apparatus.
@@ -125,6 +130,7 @@ popover: a native browser panel that opens over the page when its marker is acti
 browser rule: the built-in browser styling that keeps a closed popover hidden.
 
 ## Log
+260802 0110 · The comment lane gained its canonical form, `> Comment JL …` (JL, on QB4 §3.3.3), with the bare-initial `> JL: …` kept as a rendering alias and warned by `check.py` inside Content. Nothing needed migrating: all 156 bare-initial rows on the boards live in `## Discussion`, which is a different grammar. The badge also now names the kind rather than only the count
 260731 2010 · ⚑ badge made zero-width (`.sbz`) with a 52px flag gutter on the sentence summary, so it never takes part in line breaking and never lands on a line of its own; verified over 111 window widths, 360px to 1800px
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Renamed QA8 -> QAb1 when the QAb sentence group was carved (JL); the overview half became `QAb0` and the demo's home is `QAa3`. Older lines below cite QA4/QA8; they are history

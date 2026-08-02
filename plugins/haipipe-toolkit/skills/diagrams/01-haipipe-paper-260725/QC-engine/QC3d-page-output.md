@@ -4,13 +4,14 @@ owner: JL
 method: one direction, no exceptions; then say what the rule means for the stages whose output is not prose
 
 ## Opening
-A stage produces a page on the board and, downstream, the manuscript carries LaTeX that says the same things. Which of those two is the paper? The answer has to be one of them, because the moment both are writable there are two manuscripts, only one of them is being reviewed, and the human editing either one cannot tell which they are looking at. That is the oldest failure in this system and it is not a subtle one: whichever copy somebody edits, the other is silently wrong from that instant.
+A stage produces a page on the board and, downstream, the manuscript carries LaTeX that says the same things. Which of those two is the paper?
+The answer has to be one of them, because the moment both are writable there are two manuscripts, only one of them is being reviewed, and the human editing either one cannot tell which they are looking at. That is the oldest failure in this system and it is not a subtle one: whichever copy somebody edits, the other is silently wrong from that instant.
 
 The rule is that the `.md` is the paper and the `.tex` is a build product, generated in one direction and never read back. Prose authored into a `.tex` sits outside the record a human reviews, so sync will either overwrite it or silently keep it, and both of those are defects. Section-edit's own contract already warns that a second backward fill would overwrite authored prose with a build product.
 
-What keeps it from being settled is no longer the mechanism. How a page becomes a `.tex`, what an extractor reads, and what happens when a coauthor edits the output are the sentence layer's questions, and they moved to `QB9a` and `QB9b` on 260726. What stays here is the part that is about a STAGE rather than about a section, and measuring it on 260727 moved both halves. The rule is declared on two stages, not one, under three different field names. And it is unstated for pitch and narrative, each of which has a standalone `.tex` sitting beside its S page on the MISQ paper that no field on either contract names. The sharper finding is that the rule is not merely unstated there: it is already broken in `appendices/`, where thirty-eight lines of authored prose live in a `.tex` that has no S page at all.
+What keeps it from being settled is no longer the mechanism. How a page becomes a `.tex`, what an extractor reads, and what happens when a coauthor edits the output are the sentence layer's questions, and they moved to `QB11a` and `QB11b` on 260726. What stays here is the part that is about a STAGE rather than about a section, and measuring it on 260727 moved both halves. The rule is declared on two stages, not one, under three different field names. And it is unstated for pitch and narrative, each of which has a standalone `.tex` sitting beside its S page on the MISQ paper that no field on either contract names. The sharper finding is that the rule is not merely unstated there: it is already broken in `appendices/`, where thirty-eight lines of authored prose live in a `.tex` that has no S page at all.
 
-Scope: This page covers What a stage authors, what is generated from it, the direction, and the stages whose output is not prose. Neighbouring pages cover What the page is called is `QC3b`; what a re-run does to it is `QC3c`; the sentence-level shape an extractor relies on is `QC5`; HOW a page becomes LaTeX is `QB9a` and how it becomes Word is `QB9b`.
+Scope: This page covers What a stage authors, what is generated from it, the direction, and the stages whose output is not prose. Neighbouring pages cover What the page is called is `QC3b`; what a re-run does to it is `QC3c`; the sentence-level shape an extractor relies on is `QC5`; HOW a page becomes LaTeX is `QB11a` and how it becomes Word is `QB11b`.
 
 ## Diagram
 ```
@@ -29,7 +30,7 @@ Scope: This page covers What a stage authors, what is generated from it, the dir
 
    ── what an extractor reads ───────────────────────────────────────
       ↪ NOT HERE. The `### §6.1` / `#### P1.` / `> lane` grammar and
-        what each becomes is `QC5` and `QB9a`. This face rules the
+        what each becomes is `QC5` and `QB11a`. This face rules the
         DIRECTION; the sentence layer rules the mechanism.
 
    ── the open edge: the stages whose product is not a section ──────
@@ -65,7 +66,7 @@ Scope: This page covers What a stage authors, what is generated from it, the dir
    ── the state it is in right now ──────────────────────────────────
       the rule       declared on two stages, with the reason
       the mechanism  ↪ NOT HERE. There is no generator, and what an
-                     extraction step would have to do is `QB9a`.
+                     extraction step would have to do is `QB11a`.
       ⚠️ so the direction is a DISCIPLINE, not a build step, and
          nothing on this face can be diffed. What CAN be checked here
          is not the content of a .tex but whether it has a source at
@@ -111,9 +112,9 @@ Scope: This page covers What a stage authors, what is generated from it, the dir
 ### Two copies is the failure, not the format
 Nothing here is against LaTeX. The rule is about how many places a sentence can be authored, and the answer has to be one. A `.tex` that is generated is a projection and is safe to delete and rebuild; a `.tex` that somebody typed into is a second manuscript wearing the same name.
 
-One consequence of that belongs here and the rest does not. What the direction requires of an extractor is that it be mechanical rather than interpretive, because an extractor that decides what a heading probably meant is writing prose nobody reviewed. What that extraction actually reads, drops and wires is `QB9a`'s to rule, and is not restated here.
+One consequence of that belongs here and the rest does not. What the direction requires of an extractor is that it be mechanical rather than interpretive, because an extractor that decides what a heading probably meant is writing prose nobody reviewed. What that extraction actually reads, drops and wires is `QB11a`'s to rule, and is not restated here.
 
-The coauthor who edits the `.tex` or the Word file and sends it back is `QB9b`'s ruling, for the reason `QB9b` gives: the edit is not hypothetical in the abstract, it is what happens when you hand somebody a Word file, so it settles where that file is made.
+The coauthor who edits the `.tex` or the Word file and sends it back is `QB11b`'s ruling, for the reason `QB11b` gives: the edit is not hypothetical in the abstract, it is what happens when you hand somebody a Word file, so it settles where that file is made.
 
 ### Where this rule stops being exact
 Section-edit produces prose and the rule fits it perfectly. Display fits it too, and says so on its own contract: `generated:` and `compiled:` name its `.tex` and its `.pdf`, and the comment beside them reads "rebuilt wholesale by sync; hand-editing is a defect". Its computed asset is a different question and it is `QD6`'s.
@@ -125,10 +126,10 @@ The two stages the rule does not reach are pitch and narrative. Each has produce
 
 That is the two-manuscript failure in its literal form: prose that exists only as a build product. It also settles the argument about whether this face's rule is theoretical. The rule is stated, the reason is stated, and the repository contains two counterexamples to it that nobody had looked for.
 
-## Items to Finish
-- [~] ↪ MOVED to `QB9a` · rule what sync reads · there is no generator · round-trip one section
-      Three items left this page 260726 when JL opened the delivery columns. They are extraction and generation questions, which is what `QB9a` owns; this face keeps the authority ruling, which is which of the two files is the paper.
-- [~] ↪ MOVED to `QB9b` · rule the external edit
+## Aims
+- [~] ↪ MOVED to `QB11a` · rule what sync reads · there is no generator · round-trip one section
+      Three items left this page 260726 when JL opened the delivery columns. They are extraction and generation questions, which is what `QB11a` owns; this face keeps the authority ruling, which is which of the two files is the paper.
+- [~] ↪ MOVED to `QB11b` · rule the external edit
       A coauthor edits the `.tex` or the Word file. The ruling belongs where the Word file is made, because that is the only reason the edit happens.
 - [x] 📐 One direction only, declared where a machine reads it
       `stages/5-section-edit/stage.md:53`: `output: sections/*.tex  # GENERATED from the .md by sync; NEVER hand-authored`. Measured 260727: the same law is also declared at `4-display/stage.md:36-37` as `generated:` and `compiled:`, so it is on two of the eight stages, not one.
@@ -141,8 +142,8 @@ That is the two-manuscript failure in its literal form: prose that exists only a
 - [ ] 📐 Declare the direction under ONE field name
       `output:` at `5-section-edit/stage.md:53`, `generated:` and `compiled:` at `4-display/stage.md:36-37`. One law, three names, listed in `stages/CONTRACT.md` as unrelated stage-specific fields. Pick one and record it there, or the next stage that generates something invents a fourth.
 
-## Where we are
-The rule holds and is stated with its reason, on two contracts under three field names. It is unexecuted, because nothing performs the step; that is `QB9a`'s to close and is not restated here.
+## States
+The rule holds and is stated with its reason, on two contracts under three field names. It is unexecuted, because nothing performs the step; that is `QB11a`'s to close and is not restated here.
 
 What changed on 260727 is that "respected in practice on the MISQ paper" turned out to be true of everything the master compiles and false of everything it does not. Fifteen wrappers pair to a page. Two `.tex` files do not, and one of them is thirty-eight lines of prose with no page anywhere. So this face's state is not "a rule awaiting a mechanism"; it is a rule with two known violations and no check that would have found them.
 
@@ -165,13 +166,13 @@ The `.md` is the paper. The `.tex` is a build product, generated from it in one 
 
 A delivered `.tex` with no S page behind it is not a build product, it is a second manuscript, whatever its filename says.
 
-Extraction is mechanical, not interpretive: an extractor that decides what a heading meant is a second author. That is a constraint the direction imposes on the extraction ruling; the ruling itself is `QB9a`'s.
+Extraction is mechanical, not interpretive: an extractor that decides what a heading meant is a second author. That is a constraint the direction imposes on the extraction ruling; the ruling itself is `QB11a`'s.
 
 ## Discussion
 > CC 260727: on the orphan, I recommend writing the S page rather than deleting the file, and the two files should not get the same answer. `D_extended_literature_review.tex` is thirty-eight lines of real review prose with its own citations; deleting it costs nothing today and costs a rewrite the first time a reviewer asks for an extended literature treatment. The cost of the page is also real and worth naming: an `S-Appendix-<letter>` page is a gate, and this paper already carries forty S pages of which sixteen report an unconfirmed or blocked gate, so adding one adds a thing to confirm. `B_robustness_tables.tex` is seven lines and one `\input`, duplicating a letter `B_validation_details.tex` already owns, so it is the cheap opposite case and should probably just go. If you want one answer for both, delete both and accept that the review text is gone.
 
 ## Log
-- 260726 · JL raised opening `QB9a`/`QB9b` for converting a stage page's Content into the sections, appendices, displays and a `paper-xxx.docx`. Routed here instead of opened: this face already owns the direction and the missing generator, `QD7` owns the several projections, `QB5f` owns the adapters, and `QA6` ⑦ owns where the generated files land on disk. Splitting the same open items across a third group would have made four faces answer one question. Nothing about the question is new; what is missing is that this face's items are still open.
+- 260726 · JL raised opening `QB11a`/`QB11b` for converting a stage page's Content into the sections, appendices, displays and a `paper-xxx.docx`. Routed here instead of opened: this face already owns the direction and the missing generator, `QD7` owns the several projections, `QB11c` owns the adapters, and `QA6` ⑦ owns where the generated files land on disk. Splitting the same open items across a third group would have made four faces answer one question. Nothing about the question is new; what is missing is that this face's items are still open.
 260726 · Carried from `_archive/QB9-artifact-and-tex.md` and retitled to the fork it actually turns on: what a stage AUTHORS versus what is merely generated. The format-projection half moved out to `QD7`, where Word and HTML already live.
 260726 · Aligned against `QA6`, which had moved well past this group. `output: sections/*.tex` in the section-edit contract IS this face's Law declared where a machine reads it, and it is the only `output:` in the eight. `sections/` is unnumbered under the delete test, so the generation direction and the delete test agree.
 

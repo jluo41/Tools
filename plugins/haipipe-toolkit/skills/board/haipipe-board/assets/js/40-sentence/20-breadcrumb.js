@@ -1,6 +1,6 @@
   /* ── Section and subsection breadcrumbs (QB5d) ────────────────────────────
      Above Content's fine `C.H.P.S` grammar sits a coarser address every reader
-     can say out loud: `QB4e / Where we are / Decision Now`. Every rendered `##`
+     can say out loud: `QB4 / State / Decision Now`. Every rendered `##`
      section and `###` subsection heading gets one, at the END of the heading
      and invisible until that heading is hovered — the contract the sentence
      rail and the C/H chips already follow.
@@ -61,18 +61,28 @@
     try { document.execCommand('copy'); } catch (e) {}
     ta.remove(); done();
   }
-  function headingRail(head, sec, path, file, blockEl, withCopy) {
+  /* The chip SHOWS the short id and COPIES the full address (JL 260801: "the
+     address here is too long ... maybe just C1 is ok, when I click C1, I can
+     copy the link"). Two different jobs were being served by one string: the
+     reader needs a token they can see at a glance and say out loud, and Claude
+     Code needs `QB4 / Content / 0 · The page protocol · <file>` to open the
+     right place. So the label shrinks and the clipboard payload does not.
+     A Content division already carries `C1` from the sentence grammar, so it
+     reuses that id rather than inventing a second one; everywhere else the
+     page id drops off the front, since the tab and the breadcrumb both
+     already say which page this is. */
+  function headingRail(head, sec, path, short, file, blockEl, withCopy) {
     if (head.querySelector(':scope > .hpath')) return;
     var rail = document.createElement('span');
     rail.className = 'hpath';
     var chip = document.createElement('button');
     chip.type = 'button';
     chip.className = 'hpid';
-    chip.textContent = path;
+    chip.textContent = short || path;
     chip.title = 'Copy this address' + (file ? '\n' + path + '\n' + file : '');
     chip.addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
-      copyInto(chip, path + (file ? ' · ' + file : ''), '✓ address copied');
+      copyInto(chip, path + (file ? ' · ' + file : ''), '✓ copied');
     });
     rail.appendChild(chip);
     if (withCopy) {                 // `##` headings already carry their own ⧉
@@ -101,6 +111,19 @@
     rail.appendChild(bot);
     head.appendChild(rail);
   }
+  function shortLabel(label) {
+    /* The chip is a HANDLE, not a caption (JL 260802: "we don't want this long
+       copy button, please make them the same to the Content"). A Content part
+       shows `C1`; every other group heading now shows only what comes before
+       its first ` · `, so `⚙️ Engines · what RUNS this subject` becomes
+       `Engines` instead of repeating the whole heading the reader is looking
+       at. The clipboard still carries the full address. */
+    var id = label.match(/^((?:A\d+|C\d+|P\d*))\s*·/);
+    if (id) return id[1];
+    var head = label.split(' · ')[0].trim();
+    return head.replace(/^[^\p{L}\p{N}]+/u, '').trim() || label;
+  }
+
   function ownHead(host) {
     return host ? host.querySelector(':scope > summary.ch, :scope > .ch') : null;
   }
@@ -113,7 +136,7 @@
         var name = plainLabel(ch);
         if (!name) return;
         var box = ch.closest(SECT) || ch.parentElement || ch;
-        headingRail(ch, sec, sec.id + ' / ' + name, file,
+        headingRail(ch, sec, sec.id + ' / ' + name, shortLabel(name), file,
                     function () { return box; }, false);
       });
       function subPath(el) {
@@ -123,12 +146,23 @@
       }
       sec.querySelectorAll('.sh').forEach(function (sh) {
         if (!plainLabel(sh)) return;
-        headingRail(sh, sec, subPath(sh), file,
+        headingRail(sh, sec, subPath(sh), shortLabel(plainLabel(sh)), file,
                     function () { return shRun(sh); }, true);
       });
       sec.querySelectorAll('details.csec > summary').forEach(function (sm) {
         if (!plainLabel(sm)) return;
-        headingRail(sm, sec, subPath(sm), file,
+        // `C1` comes from 10-address.js, which runs first; the visible `.caddr`
+        // chip beside it is the same id, so this rail shows no second copy of
+        // it and contributes only the ⧉ and 🤖 buttons.
+        var cid = (sm.parentElement && sm.parentElement.dataset)
+          ? sm.parentElement.dataset.contentId : '';
+        // Aims and States groups fold like Content divisions since 260802, so
+        // they arrive here too. They have no `C1` from the sentence grammar,
+        // and the fallback printed the WHOLE title beside a heading already
+        // showing it (JL 260802: "they are nested together"). Their own id is
+        // the first token of the heading, `A0` or `P`, so use that.
+        if (!cid) cid = shortLabel(plainLabel(sm));
+        headingRail(sm, sec, subPath(sm), cid || plainLabel(sm), file,
                     function () { return sm.parentElement; }, true);
       });
     });

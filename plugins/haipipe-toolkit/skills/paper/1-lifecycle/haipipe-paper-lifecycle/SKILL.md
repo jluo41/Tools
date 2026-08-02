@@ -392,18 +392,18 @@ points, and the paths are relative to THIS skill folder:
 
 ```bash
 # 1. REBUILD — after every write. Idempotent, ~1s, safe to over-run.
-python3 ../../../board/haipipe-board/build.py <paper-root>/0-lifecycle
+python3 ../../../board/haipipe-board/cli/build.py <paper-root>/0-lifecycle
 
 # 2. WATCH — run once per session in its own terminal, then stop thinking about it.
 #    Polls mtimes and rebuilds on any .md change. This is what makes it SMOOTH:
 #    it also closes the browser's "Sync to md" gap, where a human's comment lands
 #    in the markdown but board.html stays stale until someone runs Python.
-python3 ../../../board/haipipe-board/watch.py <paper-root>/0-lifecycle
+python3 ../../../board/haipipe-board/cli/watch.py <paper-root>/0-lifecycle
 
 # 3. SERVE — the live layer, port 5599. The human reads
 #    http://127.0.0.1:5599/<repo-relative-path>/0-lifecycle/board.html
 #    NEVER file:// — the live layer is dead there and it is not the same page.
-python3 ../../../board/haipipe-board/serve.py
+python3 ../../../board/haipipe-board/cli/serve.py
 ```
 
 Calling is not owning. `haipipe-board` owns the build, the filename rule, the html and the

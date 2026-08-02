@@ -12,7 +12,7 @@ This face is the anchor for four questions that are all about this same object, 
 
 What is unsettled sits at the seams rather than in the middle. One rule is declared twice, in a stage's `formatting:` and again by `QC5`. One region is machine-managed and sha256-digested, and nothing tells a writer to stay out of it. And when the venue's Structural Blueprint, the stage template and the page's own `style_from:` all describe one paragraph, only a single stage's contract says which wins.
 
-Scope: This page covers What a stage page is, its four regions and their owners, why the contracts layer instead of competing, and the seams where they can still disagree. Neighbouring pages cover What the contract declares is `QC2`; the four sub-questions are `QC3a` to `QC3d`; the flow that modifies the page is `QC4`; the board's own face grammar and the ①/③ ownership line are `QA8`; what a line inside a division may be is `QC5` to `QB5b`.
+Scope: This page covers What a stage page is, its four regions and their owners, why the contracts layer instead of competing, and the seams where they can still disagree. Neighbouring pages cover What the contract declares is `QC2`; the four sub-questions are `QC3a` to `QC3d`; the flow that modifies the page is `QC4`; the board's own face grammar and the ①/③ ownership line are `QA8`; what a line inside a division may be is `QC5` to `QB12d`.
 
 ## Diagram
 ```
@@ -57,7 +57,7 @@ Scope: This page covers What a stage page is, its four regions and their owners,
                                 │
                                 ▼
       🅲 the sentence layer ▶ what a LINE inside a division may be
-                                              → QC5 QB3a QB4a QB5a QB5b
+                                              → QC5 QB12a QB12b QB12c QB12d
 
       ⇒ the stage template is NOT a file a phase opens and copies.
         It was already turned into this page's skeleton before any
@@ -129,7 +129,7 @@ This Paper Board supplies that second layer without changing Board grammar.
 ### Why this is the anchor rather than four unrelated faces
 `QC3a` to `QC3d` were four separate faces until 260726 and read as interchangeable, because each opened by describing the same file from a different angle. Naming the object once, here, lets each of them ask only its own question: what shapes it, what it is called, what a re-run does, what comes out.
 
-## Items to Finish
+## Aims
 - [x] 📐 The four contracts are layered, not arbitrated
       Shell at `stage.py new`, divisions at `create-page.py`, prose in a phase. Each writes a different region at a different moment, and the layering is live rather than proposed: 40 S pages on the MISQ paper, 39 of them carrying a generated `## Stage Contract` block.
 - [ ] 🧠 Rule where `style-from:` ranks against the venue blueprint
@@ -145,7 +145,7 @@ This Paper Board supplies that second layer without changing Board grammar.
 - [ ] 🧪 Hand-edit a managed block, then run `stage.py sync`
       The acceptance test for the protected region. Copy one of the 39 pages, write a line inside the block, sync, and confirm the line is gone and nothing warned. The reversion is stated in `stage.py:142` and has never been watched happen.
 
-## Where we are
+## States
 The layering works and is in daily use on the MISQ paper, which carries 40 S pages, 39 of them with a generated `## Stage Contract`. A stage is called, the page already exists with its shell and its divisions, and the phases fill them; nobody has had to arbitrate, because the four owners never touch the same bytes. The one page without a managed block is `S-Seed-0-seed.md`, and that is correct: seed has no upstream, so it declares no `requires:` and no `style-from:`, and the generator has nothing to render.
 
 The boundary is now explicit: Board owns generic page mechanics; this Paper Board owns the manuscript-specific requirements that live in those mechanics. The detailed sentence and evidence rules remain on `QC5`.

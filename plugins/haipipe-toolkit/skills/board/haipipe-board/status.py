@@ -24,15 +24,31 @@ from src.parse import parse_dir  # noqa: E402
 
 MODES = ("discussion", "sourcing", "implementation", "review", "status")
 STATUSES = ("ready", "working", "blocked", "done")
-MARKERS = {"ready": "⬜", "working": "🔥", "blocked": "⛔", "done": "✅"}
+MARKERS = {"ready": "🟢", "working": "🔥", "blocked": "⛔", "done": "✅"}
 LOOPBACK_URL = "http://127.0.0.1:5599"
 
 
-def short_board_name(name):
-    """A compact, human label for the clickable line: drop a leading "NN-"
-    ordinal and a trailing "-YYMMDD" date so "01-boardform-260722" reads as
-    "boardform". The long served path stays behind the link, not on screen.
-    Falls back to the raw name if stripping would empty it."""
+def short_board_name(name, board=None):
+    """A compact, human label for the clickable line.
+
+    The BOARD'S OWN TITLE wins (JL 260802: of `boardform · QB/QB4`, "I think it
+    should be haipipe-board · QB4"). `board.md`'s first heading is what the
+    board calls itself, and the folder name is an accident of the day it was
+    created: `01-boardform-260722` says nothing a reader wants, while its title
+    line says `/haipipe-board`. This is the same rule the pages follow, that a
+    name states what the thing IS.
+
+    Falls back to the folder name with its `NN-` ordinal and `-YYMMDD` date
+    stripped, for a board whose title is a sentence rather than a name.
+    """
+    if board is not None:
+        try:
+            head = (board / "board.md").read_text(encoding="utf-8").split("\n", 1)[0]
+        except OSError:
+            head = ""
+        m = re.match(r"#\s+/?([A-Za-z][\w-]*)\s*[:·]", head)
+        if m:
+            return m.group(1)
     trimmed = re.sub(r"^\d+[-_]", "", name)
     trimmed = re.sub(r"[-_]\d{6}$", "", trimmed)
     return trimmed or name
@@ -150,7 +166,7 @@ def board_url(board, root, base_url, anchor):
 
 
 def render(board, focus="board", mode="status", status="ready", next_action="",
-           queue="", root=None, base_url=None):
+           queue="", root=None, base_url=None, no_url=False):
     board = Path(board).resolve()
     root = Path(root or Path.cwd()).resolve()
     base_url = configured_base_url(root, base_url)
@@ -190,6 +206,17 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
     url = board_url(board, root, base_url, target["anchor"])
     if url is None:
         problem = f"Board is outside the served root {root}"
+    # JL 260801: a chat reply should not carry a raw address, and the terminal
+    # expands every markdown link back into `label (url)`, so a link is the raw
+    # address. The label already names the board and the page, and the reader
+    # has the board open; `--url` opts back in for a reader who does not.
+    # The label is a LINK by default again (JL 260802: "I cannot click the url
+    # here, right?"). The 260801 default hid it because the TUI expanded a
+    # markdown link back into `label (url)` and the raw address was glaring;
+    # in a surface that renders markdown the label stays short AND clickable,
+    # which is what was wanted both times. `--no-url` still opts out.
+    if no_url:
+        url = None
 
     queue_id = group_code(active_queue)
     if active_queue and not queue_id:
@@ -208,10 +235,21 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
         next_action = f"continue {mode} on {location}"
 
     marker = MARKERS[status]
-    attachment = f"{short_board_name(board.name)} · {location}"
-    first = f"🧭 [{attachment}]({url})" if url else f"🧭 {attachment}"
+    # `QB/QB4` repeats itself: the page id already carries its group letter
+    # (JL 260802 wrote it as `haipipe-board · QB4`). Keep the group only when
+    # the id does not already start with it.
+    if "/" in location:
+        grp, _, pg = location.partition("/")
+        if pg.upper().startswith(grp.upper()):
+            location = pg
+    attachment = f"{short_board_name(board.name, board)} · {location}"
+    # Three rows, and the address rides INSIDE the board-page name (JL 260802).
+    # The one-row version merged place and status and lost the shape: these are
+    # three different things a reader looks for in three different moments, and
+    # the link belongs on the name because the name is what it points at.
+    where = f"🧭 [{attachment}]({url})" if url else f"🧭 {attachment}"
     return "\n".join([
-        first + "  ",
+        where + "  ",
         f"{marker} {status} · {mode}  ",
         f"→ {next_action}",
     ])
@@ -245,6 +283,16 @@ def main(argv=None):
             "environment or <root>/env.sh, then loopback"
         ),
     )
+    parser.add_argument(
+        "--no-url",
+        action="store_true",
+        help="print a plain label with no link (the link is the default)",
+    )
+    parser.add_argument(
+        "--url",
+        action="store_true",
+        help="accepted and ignored: a linked label is the default (JL 260802)",
+    )
     args = parser.parse_args(argv)
     board = Path(args.board)
     if not (board / "board.md").is_file():
@@ -258,6 +306,7 @@ def main(argv=None):
         queue=args.queue,
         root=args.root,
         base_url=args.base_url,
+        no_url=args.no_url,
     ))
     return 0
 

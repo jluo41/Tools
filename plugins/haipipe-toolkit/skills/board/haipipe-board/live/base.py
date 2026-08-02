@@ -57,7 +57,9 @@ TERMS = {}
 TERM_DIR = Path(os.environ.get("TMPDIR", "/tmp")) / "haiboard-terms"
 
 
-USE_TTYD = False        # --ttyd 开旧路（保险丝，QD3m §8 M2；验收过就拆）
+USE_TTYD = False
+# the address serve.py bound to, so a copy-ready ssh line can name it
+BIND_HOST = ""        # the address serve.py bound to (set in main), for copy-ready ssh lines
 
 
 RING_CAP = 262144       # 每个终端回放缓冲的上限（myrlin 的重连即时回屏）
@@ -134,9 +136,90 @@ class BaseMixin:
 
     def rebuild(self, board):
         # A Board-folder build always updates the canonical board/ tree.
-        cmd = [sys.executable, str(HERE / "build.py"), str(board)]
+        # `cli/`, NOT the engine dir. The 0.99.0 move took build.py into cli/
+        # and this line kept pointing at a path that no longer exists, so EVERY
+        # write through the server — comment, sentence edit, resolve, chat, the
+        # terminal — updated the Markdown and then silently failed to rebuild
+        # the html. The board simply stopped changing, with a 200 on the wire
+        # and the error text handed back inside `build` where nothing read it
+        # (found 260802 by checks/splitgaps.py G4, which is the first check to
+        # write through the server and then look at the page).
+        cmd = [sys.executable, str(HERE / "cli" / "build.py"), str(board)]
         r = subprocess.run(cmd, capture_output=True, text=True)
         return (r.stdout or r.stderr).strip()
+
+    # ── the wire (QD5 C2 P5, 260802) ─────────────────────────────────────
+    # A board page is 163 KB and 67% of it is the rail repeated on every page;
+    # the index is 244 KB and the largest page 451 KB. None of it was ever
+    # compressed, and the reader is usually on the far end of a VS Code or ssh
+    # forward, where bytes are the whole cost — the server itself answers in
+    # 2 to 6 ms. Text this repetitive compresses 5 to 7 times, so this is the
+    # cheapest large win available and it needs no change to what is built.
+    #
+    # Deliberately narrow: GET only, text only, and only above 1 KB, because
+    # compressing a small file costs more than it saves. HEAD is left to the
+    # parent on purpose — the panes poll with HEAD and only read `Last-Modified`
+    # from it (QD5 C4 P3), so there is nothing there worth compressing.
+    GZ_SUFFIX = (".html", ".css", ".js", ".json", ".svg", ".md", ".txt", ".map")
+    _gz_cache = {}
+
+    def try_gzip(self):
+        """Serve a static text file compressed. True if it was handled here."""
+        if self.command != "GET":
+            return False
+        if "gzip" not in (self.headers.get("Accept-Encoding") or "").lower():
+            return False
+        clean = self.path.split("?", 1)[0].split("#", 1)[0]
+        if not clean.endswith(self.GZ_SUFFIX):
+            return False
+        try:
+            fs = Path(self.translate_path(self.path))
+            st = fs.stat()
+        except OSError:
+            return False
+        if not fs.is_file() or st.st_size < 1024:
+            return False
+        # REVALIDATION STILL HAS TO WORK. The tree's speed rests on an unchanged
+        # page coming back as a 0-byte 304 (see end_headers below), and that is
+        # the parent's job, which this path is bypassing — so do it here too.
+        ims = self.headers.get("If-Modified-Since")
+        if ims and not self.headers.get("If-None-Match"):
+            try:
+                import email.utils
+                when = email.utils.parsedate_to_datetime(ims)
+                if when.tzinfo is None:
+                    when = when.replace(tzinfo=dt.timezone.utc)
+                if int(st.st_mtime) <= int(when.timestamp()):
+                    self.send_response(304)
+                    self.send_header("Last-Modified", self.date_time_string(st.st_mtime))
+                    self.send_header("Vary", "Accept-Encoding")
+                    self.end_headers()
+                    return True
+            except (TypeError, ValueError, OverflowError):
+                pass
+        key = (str(fs), st.st_mtime_ns, st.st_size)
+        body = self._gz_cache.get(key)
+        if body is None:
+            import gzip as _gzip
+            try:
+                body = _gzip.compress(fs.read_bytes(), 6)
+            except OSError:
+                return False
+            # A board is rebuilt constantly, so every entry goes stale the
+            # moment it is written; keep a handful and drop the lot when full
+            # rather than pretend this is a cache with a policy.
+            if len(self._gz_cache) > 64:
+                self._gz_cache.clear()
+            self._gz_cache[key] = body
+        self.send_response(200)
+        self.send_header("Content-Type", self.guess_type(str(fs)))
+        self.send_header("Content-Encoding", "gzip")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Last-Modified", self.date_time_string(st.st_mtime))
+        self.send_header("Vary", "Accept-Encoding")
+        self.end_headers()
+        self.wfile.write(body)
+        return True
 
     def guess_type(self, path):
         # .md 当纯文本发（utf-8），这样点卡片头那个「📄 QX.md」链接是**在浏览器里直接显示
@@ -163,6 +246,15 @@ class BaseMixin:
         # fix did not work", and it cost a round of exactly that confusion
         # (JL 260726: "why now I cannot open them"). The page is local and
         # cheap; correctness beats a saved kilobyte every time.
+        # `no-store` was the sledgehammer for that, and the tree changed the
+        # arithmetic (JL 260801: "why does it take a long time to navigate").
+        # A board is no longer one file you open once: every click fetches a
+        # page, 82% of whose bytes are the rail the router then throws away.
+        # `no-cache` keeps the guarantee that mattered, because it means
+        # REVALIDATE BEFORE USE, not "may be stale": the browser still asks the
+        # server on every navigation, and an unchanged page comes back as a
+        # 0-byte 304 instead of 136 KB. `no-store` forbade even keeping the copy
+        # that makes that possible.
         if self.path.split("?", 1)[0].endswith((".html", ".css", ".js", ".md")):
-            self.send_header("Cache-Control", "no-store, must-revalidate")
+            self.send_header("Cache-Control", "no-cache, must-revalidate")
         SimpleHTTPRequestHandler.end_headers(self)

@@ -23,6 +23,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 STAGES = HERE / "stages"
 BOARD_STAGE = HERE.parents[2] / "board" / "haipipe-board" / "stage.py"
+Q_TOKEN = r"Q-[A-Za-z0-9<>-]*<n>"
 
 
 def scalar(value):
@@ -90,17 +91,17 @@ def template_divisions(path):
     """Read the stage's logical divisions from its Setext template.
 
     `Q-consumer` is a logical division in every stage contract, but Board owns
-    its physical home: recognizable checklist records in `## Items to Finish`.
+    its physical home: recognizable Aim records in `## Aims`.
     Callers must not put that division under `## Content`.
     """
     text = path.read_text(encoding="utf-8")
     board_content = re.search(
-        r"^## Content\s*$\n(.*?)(?=^## Items to Finish\s*$)",
+        r"^## Content\s*$\n(.*?)(?=^## (?:Aims|Items to Finish)\s*$)",
         text,
         re.M | re.S,
     )
     board_items = re.search(
-        r"^## Items to Finish\s*$\n(.*?)(?=^## Where we are\s*$)",
+        r"^## (?:Aims|Items to Finish)\s*$\n(.*?)(?=^## (?:States|State|Where we are|Now)\s*$)",
         text,
         re.M | re.S,
     )
@@ -114,7 +115,7 @@ def template_divisions(path):
             rule = re.search(r"<!--\s*(RULE:.*?)-->", division_body, re.S | re.I)
             job = compact_rule(rule.group(1)) if rule else f"Complete the {hit.group(1)} stage output."
             divisions.append((hit.group(1).strip(), job))
-        if re.search(r"Q-[A-Za-z]+-<n>", board_items.group(1)):
+        if re.search(Q_TOKEN, board_items.group(1)):
             divisions.append(("Q-consumer", "Raise the evidence questions this display cannot answer itself."))
         if divisions:
             return divisions
@@ -171,15 +172,59 @@ def template_divisions(path):
     return divisions
 
 
-def board_template_items(path):
-    """Return a full Board template's own Items scaffold, if it has one."""
+def board_template_aims(path):
+    """Return a full Board template's own Aim scaffold, including legacy forms."""
     text = path.read_text(encoding="utf-8")
     match = re.search(
-        r"^## Items to Finish\s*$\n(.*?)(?=^## Where we are\s*$)",
+        r"^## (?:Aims|Items to Finish)\s*$\n(.*?)(?=^## (?:States|State|Where we are|Now)\s*$)",
         text,
         re.M | re.S,
     )
-    return match.group(1).strip() if match else ""
+    if match:
+        return match.group(1).strip()
+    q_consumer = re.search(
+        r"^Q-consumer\s*$\n-{3,}\s*$\n(.*?)(?=^[^\n]+\n-{3,}\s*$|\Z)",
+        text,
+        re.M | re.S,
+    )
+    return q_consumer.group(1).strip() if q_consumer else ""
+
+
+def consumer_q_id(pattern, title, unit, slug):
+    """Materialize one stage-specific consumer id from the contract pattern."""
+    match = re.search(Q_TOKEN, pattern or "")
+    if not match:
+        return f"Q-{title}-1"
+    slug_token = "".join(
+        piece.capitalize() for piece in re.split(r"[^A-Za-z0-9]+", slug) if piece
+    )
+    return (
+        match.group(0)
+        .replace("<unit>", str(unit))
+        .replace("<Slug>", slug_token)
+        .replace("<n>", "1")
+    )
+
+
+def consumer_aim(body, q_id):
+    """Convert one template Q-consumer example into a canonical page-level Aim."""
+    title = "<concrete consumer question>"
+    hit = re.search(r"Q-[A-Za-z0-9<>-]+\s+·\s+(.+?)\s*$", body or "", re.M)
+    if hit:
+        title = hit.group(1).strip()
+
+    def field(name, fallback):
+        match = re.search(rf"\*\*{name}:\*\*\s*(.+?)\s*$", body or "", re.M)
+        return match.group(1).strip() if match else fallback
+
+    return "\n".join([
+        f"- P1 · {q_id} · {title}",
+        "  **Done when:** The answer has landed, been interpreted, and been woven into Content.",
+        f"  **Description:** {field('Description', '<what must be learned, using the consumer wording>')}",
+        f"  **Reason:** {field('Reason', '<which Content assertion depends on it and what breaks if it fails>')}",
+        f"  **Probe:** {field('Probe', 'not opened yet')}",
+        f"  **Answer:** {field('Answer', '<empty until PROBE lands, interprets, and weaves the answer>')}",
+    ])
 
 
 def resolve_template(stage_path, values, paper_root, board, section_kind="", override=""):
@@ -348,7 +393,7 @@ def main():
         f"Content scaffold comes from `{readable_path(stage_path)}` and "
         f"`{readable_path(template)}`."
     )
-    page = replace_section(page, "Question", question_body, "Boundary")
+    page = replace_section(page, "Opening", question_body, "Writing Style")
 
     content_lines = []
     q_consumer_jobs = []
@@ -359,26 +404,31 @@ def main():
         content_lines.extend([f"### {division}", f"({job})", ""])
     if not q_consumer_jobs:
         raise SystemExit(f"stage template has no Q-consumer division: {template}")
-    page = replace_section(page, "Content", "\n".join(content_lines), "Items to Finish")
+    page = replace_section(page, "Content", "\n".join(content_lines), "Aims")
 
-    q_pattern = values.get("q_id_pattern", "")
-    q_match = re.search(r"Q-[A-Za-z]+-<n>", q_pattern)
-    q_id = q_match.group(0).replace("<n>", "1") if q_match else f"Q-{title}-1"
-    items = board_template_items(template)
-    if items:
-        items = re.sub(r"Q-[A-Za-z]+-<n>", q_id, items)
-    else:
-        items = "\n".join([
-            f"- [ ] 🔎 {q_id} · <concrete consumer question>",
-            "      **Description:** <what must be learned, in the consumer's own words>",
-            "      **Reason:** <which Content assertion depends on it and what breaks if it fails>",
-            "      **Probe:** not opened yet",
-            "      **Answer:** <empty until PROBE lands, interprets, and weaves the answer>",
-        ])
-    page = replace_section(page, "Items to Finish", items, "Where we are")
+    q_id = consumer_q_id(values.get("q_id_pattern", ""), title, unit, slug)
+    template_aims = board_template_aims(template)
+    aims = "\n".join([
+        "### Stage Output",
+        f"- A1.1 · Produce the declared {title} output.",
+        "  **Done when:** The observable artifact exists and meets its acceptance condition.",
+        "- A1.2 · Pass the human gate.",
+        "  **Done when:** The decision is recorded before this stage changes to ✅ SETTLED.",
+        "",
+        "### P · Stage questions",
+        consumer_aim(template_aims, q_id),
+    ])
+    page = replace_section(page, "Aims", aims, "States")
 
-    where = f"The Board shell and the `{title}` Content divisions have been created. DRAFT has not yet authored the stage substance."
-    page = replace_section(page, "Where we are", where, "Files")
+    states = "\n".join([
+        "### Stage Output",
+        "- ⬜ A1.1 · Not started; the stage scaffold exists but its substance has not been authored.",
+        "- ⬜ A1.2 · Not started; no human gate ruling has been recorded.",
+        "",
+        "### P · Stage questions",
+        f"- ⬜ P1 · Not started; {q_id} has not been organized into a probe entry.",
+    ])
+    page = replace_section(page, "States", states, "Files")
     generated.write_text(page.rstrip() + "\n", encoding="utf-8")
     print(generated)
 

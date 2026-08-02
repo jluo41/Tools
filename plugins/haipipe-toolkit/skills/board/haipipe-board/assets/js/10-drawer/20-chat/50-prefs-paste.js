@@ -103,6 +103,23 @@
                   + (detail ? ' ' + String(detail).slice(0, 120) : ''));
     if (chatDiag.length > 200) chatDiag.shift();
   }
+  /* THE TEST BRIDGE. The drawer is one closure, so nothing inside it is
+     reachable from Runtime.evaluate, and `checks/chatui.mjs` T8 and T10 were
+     therefore reporting "not reachable" and had NEVER ONCE RUN — two checks
+     that looked like coverage and were not. Anything the suite must reach goes
+     here, deliberately and by name, rather than by leaking the whole scope. */
+  window.__chatProbe = {
+    bubble: function (k, t) { return bubble(k, t); },
+    inflight: function () { return !!inflight; },
+    activeSid: function () { return activeSid; },
+    logKey: function () { return logKey(); },
+    switchTo: function (sid, name, landed) { return switchTo(sid, name, landed); },
+    sidText: function () { return (chat.querySelector('.sid') || {}).textContent || ''; },
+    switchMarks: function () {
+      return [].map.call(chat.querySelectorAll('.bd .switchsep'),
+                         function (e) { return e.textContent; });
+    }
+  };
   window.__chatDiag = function () {
     var d = {
       when: new Date().toISOString(),
@@ -128,7 +145,7 @@
   var chatQueue = [];
   function queueMsg(text) {
     chatQueue.push(text);
-    var d = bubble('you', text);
+    var d = bubble('you', text); bdJump();
     d.classList.add('queued');
     d.title = 'queued — sends when the current turn finishes';
     busyBump();
@@ -144,29 +161,76 @@
     chatSend(next);
   }
 
+  /* R1 · HOW FAR THIS READER GOT IN THE TURN'S RING.
+     The server now keeps every turn's events in a ring with a monotonic cursor
+     (`live/turnring.py`), so the only thing a returning drawer needs in order to
+     rejoin is the number of the last event it saw. It lives in storage rather
+     than in a variable precisely because the thing it has to survive is the
+     page that was reading — a reload, a navigation, a phone locking. */
+  /* Keyed on the SCOPE, never on the session. The ring is per question path on
+     the server, and `logKey()` folds in the session id — which CHANGES mid-turn
+     the first time a new session is created, so a cursor written before that
+     point was looked for under a key that no longer existed and the rejoin
+     started from near zero. Caught by reloading a real page, not by reading. */
+  var CURK = function () {
+    return 'board-chat-cur:' + location.pathname + ':'
+         + ((cq && (cq.group ? 'G:' + cq.group : cq.file)) || '');
+  };
+  function curGet() {
+    try { return parseInt(localStorage.getItem(CURK()) || '0', 10) || 0; }
+    catch (e) { return 0; }
+  }
+  function curSet(n) { try { localStorage.setItem(CURK(), String(n)); } catch (e) {} }
+
+  /* Rejoin a turn that is still running with nobody watching it.
+     Returns true when it actually attached, so the caller can fall back to
+     reading the transcript when nothing is live. */
+  function chatRejoin() { return chatSend(null, { attach: true }); }
+
   async function chatSend(preset, opts) {
+    /* Attach mode replays the SAME reader loop against /_board/attach instead
+       of /_board/chat. Everything below the fetch is identical on purpose: a
+       rejoined turn has to paint exactly like the live one it is a continuation
+       of, which is the whole difference between this and the transcript
+       replay it replaces. */
+    var attach = !!(opts && opts.attach);
     var ta = chat.querySelector('textarea'), btn = chat.querySelector('.send');
-    if (inflight) return chatStop();       // 正在跑 → 这一下是「停」
-    var msg = (preset || ta.value).trim();
-    if (!msg || !cq) return;
-    if (!preset) ta.value = '';
+    if (inflight) return attach ? false : chatStop();   // 正在跑 → 这一下是「停」
+    if (!cq) return false;
+    var msg = attach ? '' : (preset || ta.value).trim();
+    if (!attach && !msg) return false;
+    if (!preset && !attach) ta.value = '';
     /* On a phone the utility controls are deliberately folded.  Starting the
        next turn must give its live answer the room, rather than leaving model,
        permission and session metadata above the composer. */
     setUtility(false);
     chatBusy(true);
-    var log = chatLoad(cq.id);
-    bubble('you', msg); log.push({ k: 'you', t: msg }); chatSave(cq.id, log);
-    diag('SEND', msg.slice(0, 60));
+    var log = chatLoad(logKey());
+    if (!attach) {
+      bubble('you', msg); bdJump(); log.push({ k: 'you', t: msg }); chatSave(logKey(), log);
+    }
+    diag(attach ? 'REJOIN' : 'SEND', attach ? ('at cursor ' + curGet()) : msg.slice(0, 60));
     traceStart();
-    busyStart('Thinking');
+    /* A REJOIN IS A PROBE, AND A PROBE THAT FINDS NOTHING MUST SAY NOTHING.
+       The sync heartbeat calls this on a timer to ask whether a turn is running
+       with nobody watching, so on a quiet page it fires over and over — and it
+       used to paint "Rejoining" every time, then let the watchdog escalate to
+       "no reply for 60s — ⏹ to stop" and a diagnostics button, for a question
+       whose honest answer was "nothing is running" (JL 260802: "why it is
+       always indicating the rejoining? what is it about?"). So the label waits
+       for the first real event: a rejoin that finds a live turn paints exactly
+       as before, and one that finds nothing is invisible. */
+    if (!attach) busyStart('Thinking');
     var ctrl = new AbortController();
     inflight = { ctrl: ctrl, file: cq.file };
     /* Watchdog. The fetch can hang with no event ever arriving, and then the
        code below never reaches chatBusy(false): red stop button, dead drawer,
        nothing moving. Report the silence, then give up rather than hang. */
     var lastEv = Date.now();
-    var QUIET_WARN = 45000, QUIET_GIVEUP = 420000;
+    /* A silent PROBE is the expected case, not a hang: give up in seconds and
+       without a word. A real turn keeps the long, loud timings. */
+    var QUIET_WARN = attach ? Infinity : 45000;
+    var QUIET_GIVEUP = attach ? 6000 : 420000;
     var watchdog = setInterval(function () {
       var quiet = Date.now() - lastEv;
       /* belt and braces: something else wiped the drawer while we are still
@@ -192,10 +256,13 @@
       }
     }, 5000);
     try {
-      var r = await fetch('/_board/chat', {
+      var r = await fetch(attach ? '/_board/attach' : '/_board/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         signal: ctrl.signal,
-        body: JSON.stringify({ path: boardPath(), file: cq.file,
+        body: JSON.stringify(attach
+        ? { path: boardPath(), file: cq.file,
+            group: (cq && cq.group) || undefined, cursor: curGet() }
+        : { path: boardPath(), file: cq.file,
           group: (cq && cq.group) || undefined,
           message: focusedMessage(msg),
           session: chatSid,
@@ -219,11 +286,36 @@
         var errTxt = '';
         try { errTxt = (JSON.parse(await r.text()) || {}).err || ''; } catch (e) {}
         diag('REFUSED ' + r.status, errTxt);
+        /* A REJOIN that is refused is not the reader's problem and must never
+           reach the transcript. A server older than the ring answers 404 to
+           /_board/attach, and because the drawer asks on open, on focus and on
+           a 25s heartbeat, the polite version of this bug painted a ⚠ bubble
+           into the conversation several times a minute and made a working
+           drawer look broken (found 260802 by opening the live board and
+           clicking the button, which is the only way this was ever going to
+           show up). Fail silently and let the caller read the transcript. */
+        if (attach) {
+          busyEnd(); traceEnd();
+          clearInterval(watchdog); window.__pendingSince = 0;
+          inflight = null; chatBusy(false);
+          return false;
+        }
         busyEnd(); traceEnd();
         bubble('sys', '⚠ ' + (errTxt || ('the server refused this turn (HTTP ' + r.status + ')')));
         clearInterval(watchdog); window.__pendingSince = 0;
         inflight = null; chatBusy(false); ta.focus();
-        return;
+        return false;
+      }
+      /* R1: /_board/attach answers one of two ways — the rest of a live turn as
+         NDJSON, or a plain JSON `live:false`. Nothing running is the ORDINARY
+         case, not an error: leave the drawer exactly as it was and let the
+         caller fall back to reading the transcript. */
+      if (attach && (r.headers.get('Content-Type') || '').indexOf('ndjson') < 0) {
+        diag('REJOIN', 'nothing live');
+        busyEnd(); traceEnd();
+        clearInterval(watchdog); window.__pendingSince = 0;
+        inflight = null; chatBusy(false);
+        return false;
       }
       var rd = r.body.getReader(), dec = new TextDecoder(), buf = '';
       var cur = null, acc = '', seg = '', j = { ok: true };
@@ -238,16 +330,28 @@
         for (var i = 0; i < lines.length; i++) {
           if (!lines[i].trim()) continue;
           var ev; try { ev = JSON.parse(lines[i]); } catch (e) { continue; }
+          /* A ring keepalive is NOT progress. The watchdog exists to notice a
+             turn that has gone silent, so counting a ping as activity would
+             make a hung turn look healthy forever. */
+          if (ev.t === 'ping') continue;
           lastEv = Date.now();
+          /* ask the DOM, not `busyWhat`: that variable keeps its last value
+             after a turn ends, so it cannot answer "is anything painted now" */
+          if (attach && !document.querySelector('#chat .busy')) busyStart('Rejoining');
+          /* Remember where we are, every event, so an interruption at any
+             point can be rejoined at the next one rather than from the top. */
+          if (typeof ev.n === 'number') curSet(ev.n + 1);
           if (ev.t !== 'delta' && ev.t !== 'think') diag('ev:' + ev.t, ev.name || ev.text || '');
-          if (ev.t === 'stage') {                 // real progress while nothing streams yet
+          if (ev.t === 'gap') {                   // rejoined past the buffer's front
+            bubble('sys', '⚠ ' + (ev.text || 'reconnected mid-turn; some earlier output is past the buffer'));
+          } else if (ev.t === 'stage') {          // real progress while nothing streams yet
             busySay(ev.text.length > 46 ? ev.text.slice(0, 46) + '…' : ev.text);
           } else if (ev.t === 'think') {          // 思考过程 → 折叠块，边想边展开
             busySay('Thinking');
             if (!thinkEl) thinkEl = thinkBubble();
             thinkAcc += ev.text;
             thinkEl.querySelector('.tk-body').textContent = thinkAcc;
-            chat.querySelector('.bd').scrollTop = 1e9;
+            bdAuto();
           } else if (ev.t === 'delta') {
             if (busyWhat !== 'Responding') busySay('Responding');          // 逐字答案
             if (thinkEl && thinkEl.open) {        // 答案一来就收起思考；标题留个量
@@ -308,7 +412,23 @@
          A turn with no tool calls has exactly one segment, so its trace ends up
          holding only the thinking and the answer reads as one plain reply. */
       if (lastRow && lastRow.parentNode) lastRow.parentNode.removeChild(lastRow);
-      traceEnd(tookTxt + ' · finished ' + stamp);
+      /* The context meter, which the CLI shows under /context and the drawer
+         never had (JL 260801: "我怎么看到我现在这个 context 的 usage，就是用了
+         百分之几"). It rides the turn's own done event, so it costs no extra
+         call, and it is absent rather than wrong on an SDK that cannot report
+         it. Shown on the trace label, beside how long the turn took. */
+      var ctxTxt = '';
+      if (j.ctx && typeof j.ctx.pct === 'number') {
+        var k = function (n) {
+          return typeof n === 'number' ? Math.round(n / 1000) + 'k' : '?';
+        };
+        ctxTxt = ' · ctx ' + Math.round(j.ctx.pct) + '%'
+               + (j.ctx.used ? ' (' + k(j.ctx.used) + '/' + k(j.ctx.max) + ')' : '');
+        var cw = chat.querySelector('.cost');
+        if (cw) cw.textContent = 'ctx ' + Math.round(j.ctx.pct) + '%'
+                               + (typeof j.usd === 'number' ? ' · $' + j.usd.toFixed(3) : '');
+      }
+      traceEnd(tookTxt + ' · finished ' + stamp + ctxTxt);
       var txt = j.ok ? (lastSeg || j.text || acc ||
                         '(no text reply — it may have only used tools)')
                      : ('⚠ ' + (j.err || 'failed'));
@@ -316,11 +436,26 @@
       bubble('cc', txt);              /* the answer, once, at full size */
       /* history keeps the WHOLE turn, not just its last line */
       log.push({ k: 'cc', t: (j.ok ? (j.text || acc || txt) : txt) });
-      chatSave(cq.id, log);
+      chatSave(logKey(), log);
       if (j.ok) {
         // 这一轮聊到的 session 现在就是 current（服务器已写回头部）——
         // 拣选状态归位、清单重拉，免得下一条还带着旧的点名
-        if (j.session) { chatSid = ''; sessName = ''; loadSessions(); }
+        if (j.session) {
+          /* The server has just told us which session this turn actually ran
+             in, which for a NEW one is the first time that id exists anywhere.
+             Move the log we wrote under the '#new' key onto the real id, adopt
+             it as the shown session, and repaint the header — otherwise a new
+             session's first turn is stored where nothing will ever look for it
+             and `.sid` keeps naming the session you started from. */
+          if (j.session !== activeSid) {
+            var oldKey = logKey();
+            activeSid = j.session;
+            chatSave(logKey(), log);
+            try { localStorage.removeItem(CHATK(oldKey)); } catch (e) {}
+            paintSid(activeSid);
+          }
+          chatSid = ''; sessName = ''; loadSessions();
+        }
         var bits = [];
         if (j.model) bits.push(j.model.replace('claude-', '') + ' / ' + j.effort);
         if (j.scope) bits.push({scoped:'scoped',full:'full·ask',bypass:'full·no-ask'}[j.scope] || j.scope);
@@ -345,12 +480,30 @@
       bubble('sys', e.name === 'AbortError'
         ? 'Stopped waiting. The server got the stop signal too.'
         : '⚠ ' + e.message);
+      /* KEEP WHAT ARRIVED. The answer was only written to the local log at
+         'done', so a turn that never got there left the question saved and the
+         reply lost: reopening showed your own message with nothing under it,
+         and the text seemed to reappear only once a new message was sent
+         (JL 260801: "只有我发一个新的 message 之后，你的 response 才能显现出来").
+         Whatever streamed is real; save it, marked, instead of dropping it. */
+      try {
+        if (acc && acc.trim()) {
+          /* `partial` is what lets syncFromServer REPLACE this later. Without
+             it the local log is the same LENGTH as the server's, and the
+             length test concluded the server knew nothing new, so a half
+             answer could never be upgraded to the real one. */
+          log.push({ k: 'cc', t: acc + '\n\n(this turn was cut short)', partial: true });
+          chatSave(logKey(), log);
+        }
+      } catch (e2) {}
     }
     clearInterval(watchdog);
     window.__pendingSince = 0;
-    inflight = null; chatBusy(false); ta.focus();
+    inflight = null; chatBusy(false);
+    if (!attach) ta.focus();     // a rejoin must not steal focus from a reader
     drainQueue();                       // whatever you typed while it ran
     if (followPending && !inflight) follow();   // you navigated while it ran
+    return true;
   }
   chat.querySelector('.send').onclick = function () { chatSend(); };
   chat.querySelector('textarea').addEventListener('keydown', function (ev) {

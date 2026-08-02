@@ -70,7 +70,7 @@ Trigger · Serves · Reads · May write · Produces · Hands off · Refuses · E
 `May write` is narrower than `Serves`: a skill may support Main without owning Main Content.
 For the five Board cards, `Serves` is the shared substrate and `May write` remains the Board contract's own narrow, anchored operation; their cards must never be read as authority to author Paper content.
 
-## Items to Finish
+## Aims
 - [x] 🗺️ Create the Delivery × Engine crosswalk.
       It names routes without claiming their content or tests are complete.
 - [ ] 🔗 Add `Engine route` and `Execute evidence` links to every Delivery overview.
@@ -84,7 +84,7 @@ For the five Board cards, `Serves` is the shared substrate and `May write` remai
 - [ ] 🚧 Keep Present and Round explicitly route-missing.
       They become runnable only after a callable contract and bounded execution exist.
 
-## Where we are
+## States
 The crosswalk shape is now explicit, including the distinction between three delivery-serving lanes (Paper, Probe, Display) and the Board substrate they share.
 Only Main-1 has a recorded candidate-only execution through its Build route; it is blocked at G4 and is recorded on `QF1`.
 No Delivery authority moved into this page.

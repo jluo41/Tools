@@ -1,18 +1,16 @@
-# Board-Webpage Design
+# Board-Webpage design
 state: 🟡 PARTIAL
 owner: JL
 method: distinguish the Board-Webpage-Index from an opened Board-Webpage-Page, then settle what the Index must answer and how the shared surface makes it legible
 session: d2199106-8b6a-499d-8c24-9db3658486b5
 
-## Question
-How should the Board-Webpage be designed, beginning with its Board-Webpage-Index, so a person knows **within three seconds which page to act on** without mistaking the Index for another Q webpage?
+## Opening
+How should the Board index help a reader choose the right page within three seconds?
 
-The Board-Webpage has two views in one generated HTML document. The Board-Webpage-Index is the top view before a row is opened; a Board-Webpage-Page is the focused Q/S view after the click. This face owns the Index and the visual system shared across both. The QAa faces own the internal sections of the opened Page.
-
-It is hard because the Board-Webpage-Index must hold everything at once: all pages, all groups, every state and completion, plus Board-level Topic, Pipeline, and Board-Structure. One notch more information and it becomes a wall nobody can enter.
-It matters because a Board is for the second person: if the Index does not show "which page is stuck, which one is mine to move", the Board is only usable by whoever wrote it.
-The visual half is the same question asked about pixels. An external taste skill can expose defaults an AI repeats without noticing, but the default taste skill targets landing pages and portfolios rather than dense control planes, and applied literally its layout variance, motion and imagery would make this board less useful. The narrow version is what this face owns: which bias-correction rules improve a research work surface, which must be rejected, and what evidence is required before a visual preference becomes board law.
-Downstream it drives group ordering, state display, completion coloring and default sort, all in `build.py`'s index-rendering pass, coupled to `board.md`'s `## Pages`, and the shared palette, typography and density in `assets/board.css`.
+This page defines the Index information hierarchy and the visual language shared across the Board webpage.
+The hard part is showing groups, state, ownership, progress, and relationships without turning the Index into a wall of detail.
+If those signals are poorly balanced, only the author can tell what is stuck or whose move comes next.
+The design succeeds when a cold reader can point to the next actionable page within three seconds.
 
 
 ## Boundary

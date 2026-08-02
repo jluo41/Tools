@@ -92,14 +92,15 @@ Abstract: <word limit, structure (prose vs labeled), arc>.
 
 Q-consumer
 ----------
-<!-- RULE: logical source for Board `## Items to Finish`: each venue-fit question becomes one
-     `- [ ] 🔎 Q-Venue-<n>` checklist record there, with Description / Reason / Probe / Answer.
+<!-- RULE: logical source for Board `## Aims`: each venue-fit question becomes one
+     `- P<n> · Q-Venue-<n>` Aim record there, with Done when / Description / Reason / Probe / Answer.
      ANSWERABLE + SPECIFIC — a concrete lookup (recent-publications check, competing-paper /
      editor check), never a vague "is this a good fit?". `Reason` names the venue decision or
      requirement it bears on; cite it inline in Venue Decision. -->
 
-- [ ] 🔎 Q-Venue-<n> · <question title — e.g. recent-publications check>
-      **Description:** <the specific lookup — one sentence per line>
-      **Reason:** <which venue decision/requirement it bears on, and why it matters if wrong>
-      **Probe:** not opened yet
-      **Answer:** <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>
+- P<n> · Q-Venue-<n> · <question title — e.g. recent-publications check>
+  **Done when:** The answer has landed, been interpreted, and been woven into Content.
+  **Description:** <the specific lookup — one sentence per line>
+  **Reason:** <which venue decision/requirement it bears on, and why it matters if wrong>
+  **Probe:** not opened yet
+  **Answer:** <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>

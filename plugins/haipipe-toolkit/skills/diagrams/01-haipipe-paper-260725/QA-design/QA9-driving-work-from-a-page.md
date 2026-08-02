@@ -4,13 +4,14 @@ owner: JL
 method: one seam at a time, each ruled for its own reason
 
 ## Opening
-Where does a person see, start, steer and resume paper work, and what does a worker read when it gets there? The Board is the control plane and a coding session is an ephemeral worker, so everything a worker needs has to be ON the page, and everything it produces has to come back to the same page.
+Where does a person see, start, steer and resume paper work, and what does a worker read when it gets there?
+The Board is the control plane and a coding session is an ephemeral worker, so everything a worker needs has to be ON the page, and everything it produces has to come back to the same page.
 
 `QA8` settles who may write which region. This face is the other half: given a page, how work actually leaves it and comes back. The Board is the control plane and a coding session is an ephemeral worker, so everything a session needs must be ON the page, and everything it produces must return to the same page.
 
 Four questions follow from that one stance: what the control plane is, what the queue is, where a finished item's result lives, and what the runner does when the Board hands it an item.
 
-Scope: This page covers The Board as control plane, the executable queue, where a completed item's handoff lives, and the page-first runner. Neighbouring pages cover Who may write which region is `QA8`; the collaboration as a whole is `QA4`. The live layer's mechanism, one session per question, the drawer, the terminal and in-page locking, is ruled on the tool's own board at `../01-boardform-260722/` (`QB5c`-`QB5e`, `QE4` THERE, not here).
+Scope: This page covers The Board as control plane, the executable queue, where a completed item's handoff lives, and the page-first runner. Neighbouring pages cover Who may write which region is `QA8`; the collaboration as a whole is `QA4`. The live layer's mechanism, one session per question, the drawer, the terminal and in-page locking, is ruled on the tool's own board at `../01-boardform-260722/` (`QB13a`-`QB13c`, `QE4` THERE, not here).
 
 ## Diagram
 ```
@@ -64,7 +65,7 @@ Scope: This page covers The Board as control plane, the executable queue, where 
 
  WHAT THIS FACE DOES NOT DECIDE
     one session per question · the drawer · the real CLI · locking
-    ⤷ all ruled on the BOARDFORM board at QB5c-QB5e and QE4.
+    ⤷ all ruled on the BOARDFORM board at QB13a-QB13c and QE4.
 ```
 
 ## Content
@@ -167,7 +168,7 @@ DPRC remains a safety model, but phases become queue semantics rather than the u
 The loop is designed and recorded.
 The live stage skill remains stage-first and has not been compacted around this entry.
 
-## Items to Finish
+## Aims
 - [x] 🧭 Choose the Board as the remote control plane
       The durable working state lives on pages rather than in session memory.
 - [ ] 🖱 Define the two Board actions
@@ -201,7 +202,7 @@ The live stage skill remains stage-first and has not been compacted around this 
 - [ ] 🧪 Forward-test three item kinds
       Test one Section edit, one existing Display revision, and one evidence-bearing request.
 
-## Where we are
+## States
 Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Every division, item and Law below is the original's, unchanged; only the framing above is new.
 
 ## Files
@@ -209,7 +210,7 @@ Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Ever
   The durable interaction surface.
 - `haipipe-paper-stage/`
   The execution engine behind an S page.
-- `haipipe-board/ref/q-template.md`
+- `haipipe-board/ref/page-template.md`
   The current Items to Finish grammar.
 - `haipipe-paper-stage/SKILL.md`
   The future queue loop.

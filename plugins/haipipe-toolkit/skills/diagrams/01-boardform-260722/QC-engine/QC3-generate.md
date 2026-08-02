@@ -5,12 +5,12 @@ owner: JL
 method: mirror `stage.py`: generate the page once, keep one managed block in sync, and never touch what a human wrote around it
 
 ## Question
-A board page is usually typed by a person, but two things worth a page already exist on disk with their own lives: a skill folder, and a meeting note.
-How does the board generate a page from a thing that exists whether or not a board mentions it, without becoming a second, stale copy of it?
-This face is the generator family's front door; each source's own generator lives on its sibling faces.
+How can the Board represent an existing skill or meeting note without becoming a stale second copy?
 
-It is hard for the same reason both times: the source already carries its own version and history, so the generated page must decide what it may OWN and what it must keep POINTING at.
-Copy too much and the board is a stale mirror, which is the exact failure `![[...]]` was built to prevent; copy too little and the page cannot be read on its own.
+These sources have their own files, versions, and histories before the Board mentions them.
+The difficult boundary is what the generated page may refresh and what a person must continue to own.
+That choice determines whether the page stays current without erasing human judgment or discussion.
+It succeeds when managed spans resync from the source and every authored line survives untouched.
 
 ## Boundary
 - ✅ Covered here

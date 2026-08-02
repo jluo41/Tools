@@ -4,7 +4,8 @@ owner: JL
 method: one door in, ① dispatches and ③ renders, and every paper-specific behaviour stays behind one declared seam
 
 ## Opening
-/haipipe-board is not part of /haipipe-paper, and half this board's rulings land in it. What is the relationship, where is its edge, and WHO DOES THE USER TYPE? Two separate skills write the same markdown file to produce a paper and its board, and this face is how they manage that without ever colliding.
+/haipipe-board is not part of /haipipe-paper, and half this board's rulings land in it. What is the relationship, where is its edge, and WHO DOES THE USER TYPE?
+Two separate skills write the same markdown file to produce a paper and its board, and this face is how they manage that without ever colliding.
 
 The typing question was the one that had never been answered, and the board contradicted itself about it. `QA1` drew `③` as a peer the human reaches directly and said `①` owns neither channel out. `QA2` said `①` is a thin front door that RESOLVES THE PAPER, OPENS THE BOARD, and routes. Both could not be true, and at the time this page opened the code answered a third way: `haipipe-paper-enter` read `board.md` as a data file and rendered its own text dashboard, so the human had to type the second skill with the paper's `0-lifecycle/` path.
 
@@ -14,7 +15,7 @@ The map is four pairs, each a thing and the board that governs it (`QA1`). This 
 
 That earns it a place on the map, and it earns the number by the same test that excluded the evidence banks. We rule nothing about what is inside `tasks/`, so the banks are a wall rather than a room. We rule a great deal about `haipipe-board`: who composes an S filename, who creates a page, what `## Items to Finish` means, what a `>` lane binds to, and how a citation chip resolves. Nine faces on this board already rule its behaviour. A thing you rule that much is not outside the map.
 
-## Items to Finish
+## Aims
 - [x] 🚪 Rule the door
       `①` is the single thing a human types; `③` is called, never typed, for a board inside a paper (JL 260726). `/haipipe-board` stays a real door for the five boards that are not inside a paper.
 - [x] 🔁 Rule the three moments
@@ -241,7 +242,7 @@ The line is ownership, not politeness. A rule about the paper dialect stated onl
 ### How a ruling reaches both halves
 It does not, today. That is the open item. A Law that graduates from `②` lands in a paper skill file by the map on `QA2`, and nothing carries it across into `③` or checks that it arrived. Both failures on 2026-07-26 were found by hand, one of them by nearly overwriting the other session's work.
 
-## Items to Finish
+## Aims
 - [x] 🖐 Name it as the fifth thing
       Not a folder beside the four: the tool the whole board column is made of (JL 260726).
 - [x] 🚪 The seam is one declared line
@@ -253,7 +254,7 @@ It does not, today. That is the open item. A Law that graduates from `②` lands
 - [x] 🏷 Re-letter the relationship group under QA
       Done 260726: the five ownership seams became `QA8`, the four running-work seams became `QA9`.
 
-## Where we are
+## States
 The relationship is real, load-bearing, named, and since 260726 it is also the only way in: `①` is the single door and calls `③`. `haipipe-board` now lives as the first-class `skills/board/` family, renders both of this family's Boards plus the other repository Boards, and keeps paper-specific behaviour behind one opt-in line.
 
 One half of the seam gained a check on 260726. The `dialect:` line had a silent failure. A board that writes markers and forgets the two frontmatter lines rendered them as plain text, produced an EMPTY marker report, and looked completely fine, so `build.py` 0.29.0 now says so. The trigger is the board's own CONTENT rather than its folder name, because a dialect must stay deletable: code spans are stripped first, since a board that MEANS a marker writes it in prose while a board that DISCUSSES the syntax quotes it. Zero false positives across all four real boards; a real paper board with the two lines removed reports 429.

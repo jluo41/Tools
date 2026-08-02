@@ -3,10 +3,13 @@ state: 🔴 OPEN
 owner: JL
 method: derive a proposal procedure from real boards, then test whether a fresh agent produces clear pages and coherent groups
 
-## Question
-How should Board `open` and `add` turn a topic into a reviewable proposal of page questions, page titles, and page groups?
+## Opening
+How should Board `open` and `add` turn a topic into a clear set of pages and groups before writing any files?
 
-`open` creates a board; `add` extends an existing board with a page or group. The current rules define the file grammar, short-title form, numbering, slug, group storage, and index display, but they never explain how to discover the right pages or decide why several pages belong together. Without that method, an agent can produce overlapping questions, vague names, and arbitrary groups that render correctly but do not help anyone steer the work. This question owns the proposal the user reviews before those actions write files.
+This page defines the proposal a user reviews for page scope, names, finish conditions, and group ownership.
+The file grammar says how to store an accepted page, but it cannot decide which decisions or stages deserve pages of their own.
+Without a decomposition test, an agent can create overlap, vague titles, and arbitrary groups that render cleanly but cannot steer the work.
+The proposal succeeds when the user can see complete, non-overlapping ownership before approving any new file.
 
 
 ## Boundary
@@ -65,7 +68,7 @@ An `open` proposal shows the whole candidate board. An `add` proposal shows the 
 The settled procedure will be recorded as `ref/proposal-rules.md` and invoked by the `open` and `add` sections of `SKILL.md`. This QA2 page records the design discussion and evidence until those rules are settled.
 
 ### 3 · What exists today
-The `open` action asks for a list of pages and requires user approval, but it gives the agent no method for producing that list. `q-template.md` says a page title is a short phrase and its lead is an actual question. `writing-rules.md` requires a self-contained question and a short heading. `board-form.md` defines ids, slugs, and the `## Pages` grammar. `QA2b` defines how accepted groups and rows appear on the Board-Webpage-Index. `serve.py` can add a group or question from a title, but it does not judge the title or group.
+The `open` action asks for a list of pages and requires user approval, but it gives the agent no method for producing that list. `page-template.md` says a page title is a short phrase and its lead is an actual question. `writing-rules.md` requires a self-contained question and a short heading. `board-form.md` defines ids, slugs, and the `## Pages` grammar. `QA2b` defines how accepted groups and rows appear on the Board-Webpage-Index. `serve.py` can add a group or question from a title, but it does not judge the title or group.
 
 ### 4 · What is missing
 A page proposal needs a test for whether each page owns one independently closable decision or stage, whether two pages overlap, whether an item in the requirements inventory has no page, and whether the title distinguishes the page without repeating the full question. A group proposal needs an enduring responsibility: a shared function, output, stakeholder, or lifecycle segment that applies to every member and distinguishes those pages from pages outside the group. It must not merely cluster similar words.
@@ -147,7 +150,7 @@ These are the calls only JL can make; CC ticks nothing here.
   A future structural check could detect duplicate or weak page and group proposals after the human rule is settled.
 
 ### Input files
-- `../../board/haipipe-board/ref/q-template.md`
+- `../../board/haipipe-board/ref/page-template.md`
   Defines the title as a short phrase and the lead as the full question.
 - `../../board/haipipe-board/ref/writing-rules.md`
   Requires short headings and self-contained questions, but has no naming or decomposition test.

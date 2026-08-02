@@ -4,13 +4,14 @@ owner: JL
 method: one file per question inside the paper, bound BY PATH to an answer the paper may not produce
 
 ## Opening
-A paper may not run code and may not read the literature, so where does a question live between being raised and being answered? Every number and every citation in the manuscript arrives through one door, and this face is the door's near side: the file that holds the question, the words that describe it, and the wall it is asked across. Get it wrong and a claim ends up resting on something nobody can trace back.
+A paper may not run code and may not read the literature, so where does a question live between being raised and being answered?
+Every number and every citation in the manuscript arrives through one door, and this face is the door's near side: the file that holds the question, the words that describe it, and the wall it is asked across. Get it wrong and a claim ends up resting on something nobody can trace back.
 
-The map has three reusable skills, not two. `①` writes the paper, `③` renders and runs its boards, and `⑤ /haipipe-probe` owns the crossing where evidence enters. It is the same relationship in all three cases: this family depends on a contract it does not own, and rules only its own half.
+The map has five reusable skills, not two. `①` writes the paper, `③` renders and runs its boards, `⑤ /haipipe-probe` owns the crossing where evidence enters, `⑨` makes the floats, and `⑪` rewrites prose that already exists. It is the same relationship in all five cases: this family depends on a contract it does not own, and rules only its own half. `⑤` and `③` are the two that are CHANNELS, which is a narrower claim than being shared (`QA1`).
 
 That is not a design analogy, it is written in the skill. `haipipe-paper-probe/SKILL.md` says of itself: "THE MODEL IS NOT THIS FILE'S, it is owned by `probe/haipipe-probe/SKILL.md`. This file is only the paper-side deltas." Exactly as `create-page.py` is the paper-side delta on the Board's `stage.py`. Every phase worker in `①` is an adapter onto a shared model, and until now only one of those models was on the map.
 
-Scope: This page covers Where `1-probes/` sits, what one probe file contains, the vocabulary the whole loop is written in, what is on the far side of the wall and who owns it, and why the answer is pointed at rather than copied. Neighbouring pages cover What the LAYER guarantees rather than what a consumer needs from it, its wall, its contract and what a machine enforces, is the probe board, `probe-board/`: the step order is `QB1@probe`, what a MATCH may spend is `QB3@probe`, and where an answer comes to rest is `QB6@probe`. That board restructured twice on 260726, so face-level links here are the ones that resolved at build time and not a stable contract. What the STAGE declares and consumes, its route, its ceiling and when an answer counts as landed, is `QC4b`; what the prose says meanwhile is `QC4a`; how a landed value renders on a sentence is `QB4a`. The probe-file anatomy, the QA state-line contract and the two LAWS belong to `⑤` itself and are not ours to change.
+Scope: This page covers Where `1-probes/` sits, what one probe file contains, the vocabulary the whole loop is written in, what is on the far side of the wall and who owns it, and why the answer is pointed at rather than copied. Neighbouring pages cover What the LAYER guarantees rather than what a consumer needs from it, its wall, its contract and what a machine enforces, is the probe board, `probe-board/`: the step order is `QB1@probe`, what a MATCH may spend is `QB3@probe`, and where an answer comes to rest is `QB6@probe`. That board restructured twice on 260726, so face-level links here are the ones that resolved at build time and not a stable contract. What the STAGE declares and consumes, its route, its ceiling and when an answer counts as landed, is `QC4b`; what the prose says meanwhile is `QC4a`; how a landed value renders on a sentence is `QB12b`. The probe-file anatomy, the QA state-line contract and the two LAWS belong to `⑤` itself and are not ours to change.
 
 ## Diagram
 ```
@@ -78,7 +79,7 @@ Rounds moved onto the board and probes should not, and the three reasons are the
                         discussion, a stored       the chip already surface
                         latest.md pointer          it on the sentence
 ```
-Moving it would break a path two families bind to, force a cross-stage topic into a single-unit page, and gain nothing, because `QB3a` and `QB4a`'s chips already resolve a probe's state onto the sentence that owes it: 215 of them on the MISQ board.
+Moving it would break a path two families bind to, force a cross-stage topic into a single-unit page, and gain nothing, because `QB12a` and `QB12b`'s chips already resolve a probe's state onto the sentence that owes it: 215 of them on the MISQ board.
 
 ### What `⑤` owns, and what we own
 ```
@@ -93,9 +94,9 @@ Moving it would break a path two families bind to, force a cross-stage topic int
                      carry, and how a landed answer is interpreted
 ```
 
-## Items to Finish
-- [x] 🧭 Name the probe layer as the third reusable skill
-      `①` writes, `③` renders and runs, `⑤` owns the crossing. Each phase worker is a paper-side delta on a model owned elsewhere (JL 260726).
+## Aims
+- [x] 🧭 Name the probe layer as a reusable skill in its own right
+      `①` writes, `③` renders and runs, `⑤` owns the crossing. Each phase worker is a paper-side delta on a model owned elsewhere (JL 260726). It was called the THIRD until 260802, when `⑨` and `⑪` joined the map and made the ordinal meaningless.
 - [x] 🗣 Put the vocabulary on the board
       Q-consumer, q-executor, a-executor, a-consumer, bank binding, `Q-<Stage>-<n>`, and why the stake is stripped.
 - [x] 🚫 Rule that `1-probes/` does not move into `⑧`, WITH an expiry test
@@ -122,11 +123,11 @@ Moving it would break a path two families bind to, force a cross-stage topic int
       The paper-side deltas, yes; the anatomy and the QA state line, no. Written above as prose and not yet checkable.
 - [ ] 🧠 Rule what happens when `⑤`'s contract changes
       Two consumer families depend on `1-probes/`. Nothing says who migrates a paper when the anatomy moves, and `QA8`'s equivalent question for the Board grammar is open for the same reason.
-- [ ] 📚 The one reusable skill without a board
-      `⑤`'s rationale lives at `diagram/260714-probe-qa/`, a design folder rather than a board, so it cannot be read, commented on, or closed the way `②` and `④` can.
+- [x] 📚 `⑤` has a board, and this item was stale
+      It said `⑤`'s rationale lived at `diagram/260714-probe-qa/`, a design folder rather than a board. `diagrams/01-probe-qa-260726/` has been a real board since 260726 and this page went on recording the gap as open (cleared 260802, with the same claim on `QA1`).
 
-## Where we are
-The layer is implemented, in daily use, and now on the map. Eighteen probe files on the MISQ paper bind to ten QA answers across nineteen task groups, and the chips on `QB3a` and `QB4a` resolve their states onto the sentences that owe them.
+## States
+The layer is implemented, in daily use, and now on the map. Eighteen probe files on the MISQ paper bind to ten QA answers across nineteen task groups, and the chips on `QB12a` and `QB12b` resolve their states onto the sentences that owe them.
 
 What is new here is placement, not mechanism: the vocabulary and the wall were live for months and appeared nowhere on this board, so a reader could see `QC4b`'s five steps without ever learning what a q-executor is or why the stake is stripped.
 
@@ -137,8 +138,8 @@ What is new here is placement, not mechanism: the vocabulary and the wall were l
   The paper-side deltas, which say so in their own summary.
 - `1-probes/`
   Eighteen live probe files on the MISQ paper.
-- `diagram/260714-probe-qa/`
-  `⑤`'s rationale, as a design folder rather than a board.
+- `diagrams/01-probe-qa-260726/`
+  `⑥`, `⑤`'s own board. Read-only from here.
 
 ## Law
 The probe layer is the third reusable skill this family depends on and does not own. `①` writes the paper, `③` renders and runs its boards, `⑤` owns the crossing where evidence enters. In every case the paper side is a delta on a shared model, and this board rules the delta and never the model.
@@ -171,3 +172,4 @@ This ruling carries an expiry test. If `/haipipe-application` stops binding `1-p
   PP03 entries whose QA files exist but were never harvested into `### a-executor`, and two
   PP05 answers that landed in the bank and were never read back. That work was always owed and
   nothing could see it.
+260802 · Two stale claims cleared: `⑤` was described as the one reusable skill without a board, and as the third of three. Its board `01-probe-qa-260726` has existed since 260726, and the map now carries five shared families.

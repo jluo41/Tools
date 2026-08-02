@@ -4,10 +4,12 @@ owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-haipipe-board-sentence is a shipped skill: what does it still owe, and is it healthy?
+Does `haipipe-board-sentence` define one stable unit for text, comments, evidence, edits, and focused chat?
 
-Write here what this skill is for in one paragraph a stranger could follow, why it exists as its own skill rather than as part of its neighbour, and what would have to be true for it to be considered finished.
-The generated sections answer what it IS; only this one can answer whether it is any good.
+A source line becomes both a readable sentence and the anchor for every record attached to it.
+The hard part is preserving that identity while the page is rendered, edited, discussed, and eventually archived.
+Routing and the live drawer depend on the same grammar so their writes land and read consistently.
+It is healthy when every consumer uses one address and lifecycle without silently deleting or inventing records.
 
 ## Diagram
 <!-- haipipe:skill:tree:start f5e312722743a0b5 board/haipipe-board-sentence -->

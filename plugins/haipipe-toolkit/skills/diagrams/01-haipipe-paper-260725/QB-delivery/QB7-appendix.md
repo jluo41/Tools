@@ -24,10 +24,10 @@ S-Appendix source divisions + A–F gates → candidate appendices/ → appendix
 | Gate | Every leaf has a unique non-empty selector and its owning source page is GATED. |
 | Open gaps | The MISQ A–F source is centralized and OPEN; prompt/table leaf divisions remain incomplete. |
 
-## Items to Finish
+## Aims
 - [ ] Split or explicitly select every MISQ prompt/table leaf before Appendix generation.
 
-## Where we are
+## States
 G0 maps all appendix targets, but G1 correctly refuses all current Appendix units.
 
 ## Files

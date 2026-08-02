@@ -5,6 +5,153 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.101.0 - 2026-08-02
+
+Stale-statement sweep of `SKILL.md` and `ref/` against QB4's rewritten contract
+(QB4 `## Law`, 260801-260802). No rule was invented here; every edit repairs a
+sentence QB4 now contradicts.
+
+- Aim status vocabulary corrected to `⬜ 🔨 🧠 ✅ ❄️` in `SKILL.md`'s sync
+  table, `ref/page-template.md` (`## States` prose plus its two example rows)
+  and `ref/writing-rules.md`. The old `🟡 🟠 ⏸️` are named as still parsing but
+  no longer written. The page `state:` line keeps its own `✅ 🟡 🔴 ⏸️` set,
+  which is a different vocabulary and was left untouched everywhere.
+- Aims/States group ids are `A<n>`, carrying the Content part's number, name
+  and emoji: `ref/page-template.md`'s two `### C1 ·` example groups and
+  `ref/writing-rules.md`'s "an Aim for division C3".
+- A sentence comment is `> Comment WHO …`: `ref/board-form.md` §5's syntax row,
+  `ref/page-template.md`'s apparatus example, `ref/writing-rules.md`, and
+  `SKILL.md`'s never-delete rule. `## Discussion` keeps its own `> JL:` /
+  `>> CC0726:` thread grammar and is called out as unaffected.
+- Dead CLI paths after the move into `cli/`: `SKILL.md`'s script table
+  (`stage.py`, `skillpage.py`, `regroup.py`, `refs.py`, `xcal.py`,
+  `gate_live.py`), `ref/board-form.md` §6's build/watch commands, its
+  `regroup.py` and `stage.py new` invocations, and `structure_op()`, which
+  lives in `live/structure.py` and not in `serve.py`.
+- Content is numbered all the way down: the template's example divisions are
+  `### 1 ·` / `### 2 ·`, its group title `**1.1 ·**`, its paragraph
+  `#### 2.1 ·` (it was `#### P1.`).
+- Everything starts SHUT: the template no longer says human comments and edit
+  records open by default, and `ref/board-form.md` §8's shut-by-default list
+  now names every section and every Content division, with Opening as the one
+  section that folds from its lead instead of its heading.
+- The Opening drawer is FLAT behind one click: the template's "EVERY one of
+  those rows starts collapsed" and `ref/board-form.md`'s matching parenthetical
+  contradicted the same file's own flat-drawer spec and `render_subsections(
+  ..., flat=True)`.
+- Files is the action map for "if I change a rule here, what do I touch?", and
+  its groups are a MENU of actions: Engines · Contracts · Checks · Input files ·
+  Output files (`ref/page-template.md`; the old text offered only the trio and
+  cited two archived pages).
+- Decision Now goes FIRST in States and carries the fixed row shape (📍 Part ·
+  🔔 Why now · ⭐ on the recommended option · 🛑 Blocks · 🤖 If nobody answers);
+  an answered decision LEAVES States, its ruling to `## Law` and its change to
+  `## Log`. The template's dated-change-record example moved out of States for
+  the same reason, and the `span.stmp` construct it was the fixture for is now
+  exercised by a dated `## Law` ruling.
+- `## Law` / `## Lesson` / `## Glossary` entries are `- ` rows opening with an
+  emoji, and a Glossary term is bold (template and writing-rules).
+- Dead page pointers repaired: `ref/writing-rules.md`'s worked example was
+  `QA4-pagelayout.md`, which no longer exists; the template pointed at `QB4c`,
+  `QB4a-QB4g`, `QB4f` and `QA2b`, all folded into QB4 or archived on 260801.
+- `ref/page-template.md` is described by its own name in `SKILL.md`'s ref
+  table; the note claiming a historical filename was kept predates the
+  260801 rename from `ref/q-template.md`.
+
+## 0.100.0 - 2026-08-02
+
+## 0.58.0 — 260802
+
+- `## Discussion` renders as a nested, collapsible THREAD (`render_thread` in
+  `src/body.py`): avatar with initials, author bold on its own row, body
+  aligned under the name, replies nested inside what they answer so the rail
+  spans the subtree, and `⊖`/`⊕` collapse via `<details>`.
+- The author is now OPTIONAL in a thread line. Five of QB4's 34 discussion
+  lines had been falling through to raw text with their `>` markers visible,
+  because a parenthetical before the colon or an unsigned thread opener did
+  not match the old author-required pattern.
+- `## Law`, `## Lesson` and `## Glossary` take an emoji per entry and a bold
+  Glossary term; the renderer already lifts a leading emoji into the row icon.
+
+## 0.57.0 — 260802
+
+- `cli/check.py --summary` scores a board instead of listing it: findings per
+  rule, the worst pages, and how many are clean. QB4 §9 says the findings ARE
+  the measurement, and a 291-row list does not tell you whether the board is
+  improving.
+- Six new checks land the QB4 rules mechanically: `group-name-drift`,
+  `two-canvases`, `division-no-figure`, `division-no-caption`,
+  `old-comment-form`, `dead-file-path`, plus an on-stage paragraph ceiling
+  replacing the old prose-line count.
+- `haipipe-board-reviewer-agent` 0.4.1: its `check.py` path had gone stale when
+  the CLI moved into `cli/`, it now also runs `--summary`, and it states that it
+  LOADS `haipipe-board-page` rather than restating the contract, which is what
+  keeps it from drifting a night behind the rules.
+
+**The board can be OPERATED as three panes: index, page, chat, each refreshing on its own (QD5).** `live/shell.py` adds four routes and no dependency: `/_shell?p=<page or board folder>` serves one document holding three same-origin iframes; `<any board page>?pane=index|page|chat` serves the SAME static file with a `<style>`, a `window.__boardPane` marker and, for the index, `<base target="page">` injected at serve time, so strip the query and the byte-identical page is still there (QB2 intact). A rail click is now ordinary HTML — `target="page"` loads the sibling frame, `70-router.js` returns at its first line inside a pane, and links carry `?pane=page` out with them so a frame stays a frame. `/boards` cards gained a `⇱ Split` link, because nobody should have to type a route.
+
+**The refresh mechanism was built three times, and each version was removed by the cost of the last.** First a server push: `/_events` streamed the path of every rewritten page and the shell reloaded the matching frame. It worked, and it holds one of the browser's six connections per origin for as long as the document lives — and a browser neither closes nor makes readable a connection belonging to a document it has replaced, so opening the split twice inside a few seconds wanted seven connections in six slots. That failure is silent by construction: the second shell's panes never loaded, its frames' `location.reload()` did nothing at all, and a queued request is indistinguishable from a slow one. Bounding the stream (a per-tab id retiring its own orphan, a 55s life, a 3s heartbeat) reduced it and could not remove it, because the terminal's WebSocket spends a second connection the same way. Second, a shell-side poll: it had to remember what it had already told a frame to do, and a reload dropped mid-navigation was then never retried, so a page could sit stale forever while the code believed it was fresh. Third, and shipped: **each pane asks about its own url** — a `HEAD` every 800 ms compared against `document.lastModified`, reload on difference, and the chat pane never asks at all. Nothing is held, nothing is remembered, and being still stale on the next tick IS the retry. Two engine fixes were needed for it and nothing else would have found them: `serve_pane` must send `Last-Modified` (the static handler gives it for free; a served pane did not, so the `HEAD` had nothing to compare), and the baseline must be `document.lastModified` rather than the first answer received (an edit landing between a frame's load and its first tick was otherwise adopted as current).
+
+**And the gap suite found a bug that was never about the split.** `checks/splitgaps.py` runs 21 assertions on a throwaway fixture with its own server and Chrome, because unlike `splitshell.mjs` these WRITE: G1 proves an ORDINARY board page is unchanged by this session (the router still swaps `div.wrap`, `20-live-refresh.js` still lands an edit in place, neither reloads — the regression surface of every change here, previously untested), G2 that scroll and open sections survive a pane refresh, G3 that all three pane kinds still read with every `<script>` stripped, G4 that a comment posted to `/_board/comment` repaints the page pane and leaves the chat pane alone. G4 failed, and the cause was `live/base.py`: `rebuild()` still pointed at `HERE / "build.py"`, which 0.99.0 moved into `cli/`. So since that release EVERY write through the server — comment, sentence edit, resolve, chat, terminal — updated the Markdown and then silently failed to rebuild the html, answering 200 with the error text tucked into a `build` field nobody reads. `checks/run.py` carried the same two stale paths. Both fixed. Also recorded: a real reload loses scroll where the old `div.wrap` swap did not, so `80-restore.js` is now LOAD-BEARING in a pane rather than the deletable thing A2.3 predicted.
+
+Verified by driving it, not by reading it: `checks/splitshell.mjs` (23 assertions in headless Chrome — three frames, a rail click that moves only the page frame, the address bar following it, a rebuild that repaints only the page frame while a real `claude` keeps running in the chat pane) plus `tests/test_shell.py` (11, no browser). Green twice from a fresh browser; run back-to-back in a tab that held a shell moments ago, the refresh still lands but takes ~10s while the previous terminal socket is collected, which is the residue QD5 C4 P6 names. **And the wire itself, which was the thing JL actually felt.** He asked why opening a page takes so long; the server answers in 2 to 6 ms, so it was never the machine. Nothing had ever been compressed: a page is 172 KB, the index 244 KB, the largest page 451 KB, and `board.js` + `board.css` another 350 KB, all crossing a VS Code or ssh forward at full price. `live/base.py try_gzip()` now sends static text gzipped (GET only, above 1 KB) and `_send_html` does the same for the panes and the shell, which the static handler never sees. Measured 5.6× on a page, 7.2× on the index, 3.6× on the largest: a cold page open went 521 KB → 140 KB, and the split's first open 937 KB → 206 KB. HEAD is left alone on purpose — the panes poll with it and read only `Last-Modified` — and revalidation still answers a 0-byte 304, and a `.md` link still arrives as text rather than a download. Recorded as QD5 C2 P5 and a new Aim A2.5.
+
+**`/boards` took 95 seconds.** JL said he could not open it and I first read that as a network problem; it was `render_home()`. `rglob("board.md")` descends everywhere and the skip list was applied to the RESULTS, so the home page walked 366,951 entries — `.venv`, `node_modules`, `.git`, `_WorkSpace`, and the generated `board/` tree under every board — to find ten files. Warm 2.7 s, cold 95 s. Pruning `dirnames` in place during an `os.walk` leaves 11,670 entries and the page now answers in 0.12 s, measured three times in a row. Also this release: the split's url is now the PAGE's own url plus `?split` (JL: "why they don't share the same URL? It is very weird") with `/_shell?p=` kept as an alias; the shell carries a 30 px strip naming the board and the page, with 🏠, ☰ and 💬 — the same two gestures the one-document board has, where hiding a pane is a zero-width column and never an unloaded frame, so a terminal mid-command survives being put away; and the chat pane hides the drawer's own ✕ while keeping its `>_` / `←`, which is the GUI-to-TUI switch JL asked to keep. Refusing to mirror a frame that has not loaded also killed `/_shell?p=blank`, an address that named no board and 404'd on reload.
+
+Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are the honest gaps: A3.2's behaviour is there but the guard code it names (deferred swaps, asset-stamp deferral, PTY parking) is still in the tree: the index is loaded once per session because it is its own frame, but every page still SHIPS the 53 `sb-out` blocks and the pane only stops drawing them.
+
+## 0.99.0 - 2026-08-01
+
+**The skill folder stopped opening onto a pile of `.py`.** JL, browsing the new RELATED FOLDERS fold: "为什么有那么多 .py 文件是在最外面的?它不应该放到哪一个文件夹内部吗? ... 因为它本身是一个 skill folder,你这么多 Python 的文件放外面,感觉不对吧?" He was right, and the first answer here was a bad one: the top level was defended with a reference count (`serve.py` named 73 times, `build.py` 64), which turned out to be counting PROSE mentions on board pages. The number that decides a migration is how many places EXECUTE a path, and that was 15, in 6 SKILL.md files. Two moves followed. First the 11 `test_*.py` into `tests/`, then the 13 runnable scripts into `cli/`, leaving a top level of `SKILL.md`, `CHANGELOG.md`, `status.py`, and folders. Both moves ran against a before-and-after suite (50 passed → 50 passed) rather than inspection, which is what caught the silent part: `HERE` meant "the engine dir" in every script and every test, so a plain move re-pointed `HERE / "ref"`, `HERE / "cli" / "build.py"`, `HERE / "serve.py"` and `root.parents[1]` at the wrong folder. `tests/conftest.py` now puts both the engine dir and `cli/` on `sys.path`. `check.py` then caught the half no test could see: the board's `## Links` still named the old paths, so 96 rendered hrefs were dead; repointing them took it back to 0 error. `status.py` stays at the top on purpose, because the reply-footer automation invokes it by absolute path. Also this release: the Board Map is shut by default (JL: "默认的话就合起来", it pushed the roster off the first screen), and the RELATED FOLDERS fold became a real directory browser whose files are clickable links rather than inlined content. Recorded on QC2 and QB2.
+
+## 0.97.0 - 2026-08-01
+
+**Writing Style now has one owner.** Stage Contract carries Required Inputs and
+Venue, while `stage.py` materializes `style-from` prose rules in a managed block
+inside the page's own `## Writing Style`. Author-written page rules and
+`### Provides` remain outside generated spans. A focused regression test locks
+the ownership boundary.
+
+## 0.96.0 - 2026-08-01
+
+**Quality Check now evaluates the page section by section.** Requirements keep
+one source in `haipipe-board-page`; the evaluator resolves the base contract,
+consumer variant, page Writing Style, Stage Contract, local Content division,
+and paragraph job before judging. The page action returns one evidence-bearing
+`MEETS | NEEDS WORK | N/A | NOT VERIFIABLE` row per review unit, separates
+mechanics, function, evidence, and readability, and reports requirement
+conflicts instead of silently choosing one source. The fresh Board reviewer now
+uses the same contract as the independent gate.
+
+## 0.95.1 - 2026-08-01
+
+**The paired record sections now use paired plural labels.** JL rejected the
+visual asymmetry of `Aims / State`. The canonical headings and rendered labels
+are now `Aims / States`: one Aim still maps to one State record, while each
+section contains several records. `State`, `Where we are`, and `Now` remain
+input aliases so old boards rebuild without migration.
+
+## 0.95.0 - 2026-08-01
+
+**A page now separates intent from fact.** JL ruled that the task-shaped `Items to Finish` and the catch-all `Where we are` made it hard to tell what a page wanted from what was merely true today. The canonical page sequence is now `Opening → Diagram → Content → Aims → State → Files`. An Aim is a durable target state linked to its Content division (`A3.1` under C3), with `P1` reserved for a genuine page-level target. Its optional `Done when` defines acceptance and its optional `Plan` records a temporary route. State mirrors those Aim ids and carries exactly one current emoji per Aim: ⬜ not started, 🟡 active, 🟠 waiting, ✅ met, or ⏸️ held. State transitions belong in Log.
+
+**The model is executable, not only renamed.** The renderer derives Aim and group counts from State, the Section Matrix and JSON output use the same progress helper, the checker validates page-state alignment against Aim State, and the new-page, stage, skill, and meeting generators emit the canonical shape. `Aims` and `State` are aliases of the historical parser slots, so `Items to Finish`, `Done when`, `Where we are`, `Now`, and the Chinese headings continue to rebuild without migration. QB4 is the worked design page and the template/spec/writing rules carry the same contract.
+
+**Page closure and quick actions follow the same boundary.** A Q may close from
+met or explicitly held Aims; an S may close only at its human gate. Browser
+quick actions now ask about open Aim States and never present the legacy
+`Done when` checkbox shape as canonical.
+
+## 0.94.0 - 2026-08-01
+
+**The ⚑ badge was being posted as part of the sentence, so nothing could be written.** JL sent a screenshot: the edit form open on a sentence that carries one comment, and the server answering "this sentence is not in the source file, nothing written". It was not. `QC7`'s anchor is an EXACT match of the posted string against a source line, and the payload ended `…below the read.⚑ 1`, because the badge now lives INSIDE the `<p>` (it became a zero-width span in 0.88.0 so it could never wrap onto a line of its own) while all three writers still read `p.textContent` raw. Every edit, every added lane and every sentence-local comment on a sentence that already had apparatus therefore failed, and the server was right to refuse each one. There is now ONE reader, `window.__boardSentenceText`, stripping `.sbz/.sbadge` and the controls; the edit path, the add-a-lane path and the comment path all call it, and `40-sentence/10-address.js` dropped its own copy instead of keeping a second implementation of the same grammar. Proven in Chrome without writing anything: posting the stripped text now reaches the server's SECOND gate, "the sentence has not changed", which is only reachable once the line has been found.
+
+**The edit form was one character wide.** Same screenshot. `.sedit` is a grid and the error message sat in a fifth column, so a message the length of a Chinese sentence took the row's width and left the textarea a sliver. The message spans its own row now and the textarea has a 12em floor: measured at 480px after a real double-click.
+
+**Navigation stopped re-downloading a rail it throws away.** JL: "why I feel it will have a long time to navigate to different pages?" Measured: the server answers in 8ms and re-wiring a swapped page costs 4ms, so the fetch was the whole cost. Every page file carries the complete 112 KB rail and the router swaps only `div.wrap`, so 82% of a median 136 KB page is discarded on arrival, and both the fetch and the server said `no-store`, which re-downloaded it every visit. `no-store` was the wrong instrument for the guarantee it protected (JL 260726, "why now I cannot open them"): that requirement is never serve a page from before the last build, and it is spelled `no-cache`, meaning REVALIDATE BEFORE USE. Both sides now say it, a revisit costs 0.3 KB instead of 119 KB, and the staleness guarantee was re-tested by editing a page on disk and watching the next fetch come back full-size with the new bytes. The 112 KB duplicated into every page file is recorded as an open decision on QC4.
+
+**Two smaller repairs.** The rail's drag handle is `position:fixed` and placed off `--sbw` alone, so with the rail collapsed it stood 238px into the page as a bar across the text (JL screenshot); it now carries the rail's own two visibility conditions and moved from `80-matrix.css` to `70-sidebar.css` beside what it resizes. And `check.py` called `fig/image copy.png` a dead link because it compared a URL-encoded `%20` against a filesystem path; it unquotes first. Recorded on QB5c, QC4 and QB2a.
+
 ## 0.93.0 - 2026-08-01
 
 **One canonical generated shape.** A Board source folder now has one generated output: `board/index.html`, one `board/<GROUP>.html` per group, one `board/<GROUP>/<page>.html` per source page, and shared `board/_assets/`. `SKILL.md`, `ref/board-form.md`, the Index spec, `build.py`, `watch.py`, the live rebuild path, and the Paper Board's own structure description now name that same shape. The retired `board.html` remains only as a compatibility input or cleanup target, never as a new folder-build output.
@@ -19,7 +166,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## 0.92.0 - 2026-08-01
 
-**A group intro's figure renders as a figure on the group page.** `index_rows` and the group page built the same intro body two ways: the index turned a ``` fence into `<pre class="gidia">`, while the group page flattened every fence line into `<p>` prose, which is how a group's ladder arrived mangled inside "why this group exists" (JL 260801). Both paths now share `page_board._gi_body()`, and `.gwhy-b .gidia` joins the `.gib .gidia` CSS rule so the figure is styled there too. Board-side, on the design board: the QB group intro redrawn as the section-protocol ladder (one reader question per section), and the seven QB4a-QB4g faces each open with the five-row protocol (conveys · holds · source · rules · omit), master view on QB4 §0; graduation of those five rows into `ref/q-template.md` + `haipipe-board-page` is proposed on QB4's Decision Now.
+**A group intro's figure renders as a figure on the group page.** `index_rows` and the group page built the same intro body two ways: the index turned a ``` fence into `<pre class="gidia">`, while the group page flattened every fence line into `<p>` prose, which is how a group's ladder arrived mangled inside "why this group exists" (JL 260801). Both paths now share `page_board._gi_body()`, and `.gwhy-b .gidia` joins the `.gib .gidia` CSS rule so the figure is styled there too. Board-side, on the design board: the QB group intro redrawn as the section-protocol ladder (one reader question per section), and the seven QB4a-QB4g faces each open with the five-row protocol (conveys · holds · source · rules · omit), master view on QB4 §0. JL ruled the graduation (option A) the same day: the template's How-to-use comment now carries the reader-question ladder + the misplaced-sentence rule, and `haipipe-board-page` 0.3.0 carries the five-row contract.
 
 ## 0.91.1 - 2026-08-01
 

@@ -324,7 +324,7 @@ stages/section-kinds.yml            90 ln
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [x] 📜 Make the contract the source of stage behavior
       The stage key is resolved in `index.yml`; the executor reads only that
       stage's `stage.md`, never all eight contracts and never an invented phase.
@@ -341,7 +341,7 @@ stages/section-kinds.yml            90 ln
       inherited contract, and CHECK scope without leaking another section's
       state into the run.
 
-## Where we are
+## States
 The stage page now makes its three controls legible: one selected contract, one explicit S-page identity, and one declared phase-and-gate path.
 The dynamic per-section path is the remaining acceptance case to run through this page.
 

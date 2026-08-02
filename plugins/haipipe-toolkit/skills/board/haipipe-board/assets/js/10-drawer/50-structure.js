@@ -126,6 +126,8 @@
     var qs = document.querySelectorAll('section.q');
     return qs.length === 1 ? qs[0] : null;
   }
+  // The rail needs the same answer and must not compute it a second way.
+  window.__boardDocPage = docPage;
   /* A GROUP file (board/QA.html) holds no page section and its own h1 IS the
      group title, in board.md's `### QA · Design` grammar. That title is exactly
      what a group session is keyed by, so no new registry is needed. The index's
@@ -148,9 +150,100 @@
   }
   var fab = document.createElement('button');
   fab.id = 'chatfab';
+
+  /* ── THE CHAT PICKER (JL 260802: "could we make it a list that I can choose
+     GUI-Chat or TUI-Chat") ────────────────────────────────────────────────
+     This board has TWO chats and one button, so which one you got was decided
+     by a stored preference you could not see, and the only way to switch was a
+     `>_` in the drawer header that is hard to find on a phone ("我咋按这个键啊",
+     260801). The list makes the pair visible at the moment you are choosing.
+
+     It also carries the thing no surface reported until now: whether something
+     is ALREADY running. The ring answers that for a turn and `term-probe` for
+     a parked PTY, so the extra tap buys a fact rather than costing one.
+
+     Deliberately the FAB only. A per-card `🤖 Chat` means "talk about THIS
+     card" and its reader has already decided; giving twelve buttons a chooser
+     would be noise. Those keep going straight to the last-used view. */
+  var TUIKEY = 'board-tui-default';
+  function tuiDefault() {
+    try { return localStorage.getItem(TUIKEY) !== '0'; } catch (e) { return true; }
+  }
+  var pick = document.createElement('div');
+  pick.id = 'chatpick';
+  pick.hidden = true;
+  pick.setAttribute('role', 'menu');
+  document.body.appendChild(pick);
+
+  function pickClose() {
+    pick.hidden = true;
+    document.removeEventListener('pointerdown', pickAway, true);
+    document.removeEventListener('keydown', pickKey, true);
+  }
+  function pickAway(e) {
+    if (!pick.contains(e.target) && e.target !== fab) pickClose();
+  }
+  function pickKey(e) { if (e.key === 'Escape') { e.preventDefault(); pickClose(); } }
+
+  function pickTarget(tgt) {
+    if (!tgt) return { file: 'board.md' };
+    if (tgt.group) return { file: 'board.md', group: tgt.group };
+    return { file: tgt.getAttribute && tgt.getAttribute('data-file') || 'board.md' };
+  }
+
+  /* Both questions at once, and neither is allowed to hold the menu up: a
+     picker that waits on the network is a picker that feels broken, so the
+     rows paint immediately and the state lines fill in when they arrive. */
+  function pickState(body, paint) {
+    fetch('/_board/attach', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ path: boardPath(), probe: 1 }, body)) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { paint('gui', j && j.live ? '⚡ a turn is still running' : ''); })
+      .catch(function () {});
+    fetch('/_board/term-probe', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ path: boardPath() }, body)) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var n = (j && j.terminals || []).length;
+        paint('tui', n ? '🟢 a session is parked here' : '');
+      })
+      .catch(function () {});
+  }
+
+  function pickOpen() {
+    var tgt = chatTarget();
+    var tui = tuiDefault();
+    pick.innerHTML =
+      '<button class="pk" data-v="gui" role="menuitem">'
+        + '<b>\u{1F4AC} GUI-Chat</b><i>the SDK drawer: gated edits, diffs, tool cards</i>'
+        + '<u></u><s>' + (tui ? '' : '●') + '</s></button>'
+      + '<button class="pk" data-v="tui" role="menuitem">'
+        + '<b>⌨️ TUI-Chat</b><i>the real CLI in a terminal: long jobs, skills</i>'
+        + '<u></u><s>' + (tui ? '●' : '') + '</s></button>';
+    pick.hidden = false;
+    document.addEventListener('pointerdown', pickAway, true);
+    document.addEventListener('keydown', pickKey, true);
+    pickState(pickTarget(tgt), function (which, text) {
+      var row = pick.querySelector('.pk[data-v="' + which + '"] u');
+      if (row) row.textContent = text;
+    });
+    pick.querySelectorAll('.pk').forEach(function (b) {
+      b.onclick = function () {
+        try { localStorage.setItem(TUIKEY, b.dataset.v === 'tui' ? '1' : '0'); } catch (e) {}
+        pickClose();
+        var t = chatTarget();
+        chatOpen(t || 'board');
+      };
+    });
+    var first = pick.querySelector('.pk');
+    if (first) first.focus();
+  }
+
   fab.onclick = function () {
-    var sec = chatTarget();
-    if (sec) chatOpen(sec); else chatOpen('board');
+    if (!pick.hidden) return pickClose();
+    pickOpen();
   };
   function fabLbl() {
     var tgt = chatTarget();
@@ -173,9 +266,21 @@
   /* Sentence chat reuses this question's existing session. The click establishes
      a visible focus card but does not spend a model turn. The next user message
      is augmented with the address, sentence, and direct apparatus at send time. */
+  /* "Add to chat" in the TUI (JL 260801). The SDK half shows the quote in a
+     focus card and augments the next message; a real CLI has no such card, so
+     the address and the sentence are typed into the prompt instead, unsubmitted,
+     for the reader to finish. Same gesture, whichever half is open. */
+  function sentenceToTerm(ref, sentence, contentPath) {
+    if (!(window.__boardTermOn && window.__boardTermOn())) return false;
+    var where = (contentPath ? contentPath + ' · ' : '') + (ref || '');
+    var q = 'About ' + where + ':\n> ' + String(sentence || '').trim() + '\n';
+    return !!window.__boardTermType(q);
+  }
+
   window.__boardSentenceChat = async function (sec, ref, sentence, attached, contentPath) {
     if (!sec || !sec.classList.contains('q')) return;
     await chatOpen(sec);
+    if (sentenceToTerm(ref, sentence, contentPath)) return;
     if (location.hash !== '#' + sec.id) location.hash = sec.id;
     setSentenceFocus(ref, sentence, attached, contentPath);
     chat.querySelector('textarea').focus();
@@ -188,6 +293,7 @@
   window.__boardHeadingChat = async function (sec, path, block, file) {
     if (!sec || !sec.classList.contains('q')) return;
     await chatOpen(sec);
+    if (sentenceToTerm(path, block, file)) return;
     setSentenceFocus(path, block, '', file, 'heading');
     chat.querySelector('textarea').focus();
   };

@@ -48,3 +48,19 @@
     try { return JSON.parse(localStorage.getItem(CHATK(id)) || '[]'); } catch (e) { return []; }
   }
   function chatSave(id, log) { localStorage.setItem(CHATK(id), JSON.stringify(log)); }
+  /* The ONE key for the scope the drawer is on. chatOpen and syncFromServer
+     already read 'G:'+id for a group, but the send path saved under the bare
+     id, so a GROUP chat wrote to one key and read from another and its
+     history never came back (JL 260801: "我再把你打开，你这个新东西又没有了").
+     Everything goes through here now, so the two halves cannot drift again.
+
+     ONE MORE HALF, 260801: the key was per PAGE, so every session of a question
+     shared a single transcript in this browser. Switching sessions therefore
+     could not change what was stored, only what happened to be drawn, and the
+     next save wrote the new session's turns on top of the old one's. The key is
+     now per (scope, session), which is what makes a switch survive a reload. */
+  function logKey() {
+    if (!cq) return '';
+    var base = cq.group ? 'G:' + cq.id : cq.id;
+    return base + '#' + (activeSid || 'new');
+  }

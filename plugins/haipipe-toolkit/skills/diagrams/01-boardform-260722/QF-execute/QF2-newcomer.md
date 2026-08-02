@@ -4,13 +4,12 @@ owner: CC
 method: start an agent with no memory of this conversation and hand it only SKILL.md
 
 ## Question
-How do we prove this skill is **usable**, and not usable only by the person who wrote it?
-The working answer is to hand `SKILL.md` alone to an agent with no memory of building it, and watch HOW it works rather than what it produces.
-The repo settles what that is worth: `CLAUDE.md` makes a fresh-agent run the gate for any skill change, so one that has not passed is not finished.
+How do we prove that a fresh agent can use the board skill from its written instructions alone?
 
-It is hard because the author's head holds a pile of things that never made it into SKILL.md, so self-testing in the same conversation can never reveal what is missing.
-Leaving it unproven is not an option here: the repo's `CLAUDE.md` hard-codes the rule that any skill change must be validated by a fresh agent before it counts as done, so unvalidated equals unfinished.
-Downstream, this is the only acceptance gate that can be **re-run**, since every structural change (like the 260723 redesign) voids the previous acceptance and forces a re-run.
+The author can fill documentation gaps from memory and therefore cannot perform this test.
+A clean agent reveals every step, convention, or gate that the skill forgot to state.
+Material revisions invalidate the previous result because the workflow it proved has changed.
+Acceptance means the agent opens a valid board, respects every gate, and leaves no guessed rule unfixed.
 
 
 ## Boundary
@@ -62,7 +61,7 @@ Downstream, this is the only acceptance gate that can be **re-run**, since every
 
 - 260725 CC · 🔁 Second run passed, and paid for itself in gaps
   The agent produced a valid board and a correct build, so the verdict is YES, but everything it had to invent was about **S pages**, because the skill described them only for the reading side: ① how an S page is listed in `## Pages` (it invented a `### S · …` group, which happened to be right); ② what `state:` an S carries, since `close` said "human-gated / explicitly parked" while the template offered only four pill values; ③ the `open` procedure asked for "有哪几个 Q" and told you to name files `Q<letter><n>`, never mentioning S at all; ④ the Q-consumer `**Probe:**` line pointed at `1-probes/PPNN_topic/…`, which does not exist on a standalone board.
-  All four were written into `SKILL.md` / `ref/board-form.md` / `ref/q-template.md` in the same pass (0.16.0).
+  All four were written into `SKILL.md` / `ref/board-form.md` / `ref/page-template.md` in the same pass (0.16.0).
   It also flagged that `build.py` runs on plain `python3` while `serve.py` needs the venv, now stated in the build section.
 - 260725 CC · ✅ The fixes were verified by a second fresh reader, not by us
   A third agent, given only the docs and forbidden to read any board or any source file, was asked the five things the second agent had to guess and told that "NOT DOCUMENTED" was an acceptable answer.

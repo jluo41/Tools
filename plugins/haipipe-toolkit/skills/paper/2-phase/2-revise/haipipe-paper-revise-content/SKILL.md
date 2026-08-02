@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.1.4"
   last_updated: "2026-07-19"
-  summary: "REVISE worker: edit prose CONTENT at section->¶->weave->sentence, change directly + leave why-comments. Carries the ¶-flow weave step (arc/hinges/rhythm, ref/weaving.md). Fully automatic."
+  summary: "REVISE worker: edit prose CONTENT at section->¶->weave->sentence, change directly + leave why-comments. Carries the ¶-flow weave step (arc/hinges/rhythm, loaded from writing/haipipe-writing/ref/weaving.md). Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -51,7 +51,7 @@ Fixing sentences inside a paragraph that should not exist is wasted work.
 1. **Section** -- state the section's one job in a sentence; make the paragraph banner skeleton (`grep '^% Para '`) tell the section's story; fix boundaries and order.
 2. **Paragraph** -- one paragraph = one point (its banner's point); topic sentence first; merge/split so each banner is true.
 3. **Weave** -- paragraph-to-paragraph flow: ARC (order/logic/redundancy, 🔴 first), HINGES (each Pn->Pn+1 seam picks up what Pn put down; content linkage, never bare connectives), RHYTHM (role variety).
-   Method + severity discipline + role vocabulary: `ref/weaving.md`.
+   Method + severity discipline + role vocabulary: `writing/haipipe-writing/ref/weaving.md` (moved there 260801; the method is prose craft, this worker still owns when it runs and what it may touch).
 4. **Sentence** -- one assertion each; cut filler; concrete over vague; one term per concept.
 
 ## Flag, don't fabricate
@@ -78,7 +78,7 @@ Leaving a flag is correct; guessing a value or a citation is not.
 ## Reference
 
 - `ref/content-edit.md` -- the section / paragraph / sentence checklists in full.
-- `ref/weaving.md` -- the weave step: paragraph-flow diagnosis (ARC / HINGES / RHYTHM, severity + roles).
+- `writing/haipipe-writing/ref/weaving.md` -- the weave step: paragraph-flow diagnosis (ARC / HINGES / RHYTHM, severity + roles). Migrated out 260801; load it from there.
 - `ref/write-principles.md` -- condensed revision rule sheet (comment preservation, hard rules).
 - `ref/example-intro-logic-flow.txt` -- worked logic-flow example for an intro.
 - `../../REF/prose-quality.md` -- universal prose rules.

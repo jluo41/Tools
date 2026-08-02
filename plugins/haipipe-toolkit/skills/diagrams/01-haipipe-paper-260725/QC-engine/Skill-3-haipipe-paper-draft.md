@@ -385,7 +385,7 @@ feedback/README.md       4 ln  haipipe-paper-draft -- Feedback Inbox
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [x] ✍️ Establish DRAFT's two owned outputs
       DRAFT writes real first-pass Content and the logical Q-consumer records,
       physically represented as checklist items on the owning S page.  It does
@@ -415,7 +415,7 @@ feedback/README.md       4 ln  haipipe-paper-draft -- Feedback Inbox
       Confirm that a section's sentence ids, checklist records, Board chips,
       PROBE entry, answer, REVISE placement, and CHECK all retain one join key.
 
-## Where we are
+## States
 The DRAFT page now states the exact source grammar the Board can render and PROBE can consume.
 The remaining test is a full section run in which every placeholder either reaches a matched answer or remains visibly owned at CHECK.
 

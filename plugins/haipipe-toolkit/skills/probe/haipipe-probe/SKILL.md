@@ -3,9 +3,9 @@ name: haipipe-probe
 description: "The probe layer: a consumer-level Q/A map in a paper or application's 1-probes/PPNN_topic/ folder, one file per q-executor, that binds each question the consumer cannot answer itself by PATH to a QA file in the probe-unaware task/discovery bank. Owns the probe-file anatomy, the five-step loop, the cost ladder, the QA state-line contract, the two LAWS, and the checker's FAIL conditions. Trigger: probe, probe file, PPNN, q-executor, a-consumer, QA file, qa verb, state, working, answered, superseded, evidence, /haipipe-probe."
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "0.10.4"
-  last_updated: "2026-07-26"
-  summary: "The probe layer, operational form. DRAFT raises Q-consumer questions only; PROBE owns ORGANIZE→MATCH→DISPATCH→POINT→INTERPRET and uses the shared q-executor collector for the stake-free dispatch tail. A probe maps a question to a QA file in the probe-unaware bank — communication, not judgment. History: ./CHANGELOG.md."
+  version: "0.11.1"
+  last_updated: "2026-08-01"
+  summary: "The probe layer, operational form. Board-first Q-consumers are Content-linked Aims with separate rows in States; PROBE owns ORGANIZE→MATCH→DISPATCH→POINT→INTERPRET."
 ---
 
 Skill: haipipe-probe — the probe layer
@@ -70,18 +70,22 @@ That copy may preserve the stake; it never crosses the wall.
 The two arrows are the two loop steps: T1 = ① ORGANIZE (write `### q-executor`), T2 = ⑤ INTERPRET (write `### a-executor`, a copy of the QA answer; each consumer then writes its own a-consumer in its stage doc).
 Q-consumer is the logical collection where a stage RAISES its questions.
 Its physical adapter belongs to the consumer family.
-A Board-first paper S page stores each Q-consumer as a recognizable checklist
-record in `## Items to Finish`; an application that does not use Board may keep
-a literal `Q-consumer` section.
+A Board-first paper S page stores each Q-consumer as a recognizable,
+Content-linked Aim in `## Aims`; an application that does not use Board may
+keep a literal `Q-consumer` section.
 There is one record per question, with an id, title, stake-bearing description,
 reason, probe pointer, and answer (the answer lands later, at PROBE):
 
 ```text
-   - [ ] 🔎 Q-<Stage>-<n> · <question title>
+   - A<section>.<n> · Q-<Stage>-<n> · <question title>
+         **Done when:** <the answer is interpreted into this stage's Content>
          **Description:** <what this question wants to know>
          **Reason:** <which Content assertion depends on it and what breaks>
          **Probe:** not opened yet
          **Answer:** <empty until PROBE>
+
+   ## States
+   - ⬜ A<section>.<n> · <current fact about Q-<Stage>-<n>>
 ```
 
 The Q-consumer id is CONSUMER-LOCAL — `Q-Seed-1`, `Q-Claim-6` (paper); each family owns its own scheme and the ids never collide across consumers, because a Q-consumer id (like a PP number) never crosses the wall. Only the `q-executor` is shared vocabulary. (The `resource` stage already numbers this way.)
@@ -264,7 +268,7 @@ The sections above are the MODEL; these are the DO-THIS rules a phase worker fol
 DRAFT phase — author content and raise questions:
 1. Write the stage artifact per the STAGE's own spec (real content; the spec is the stage skill's, not this file's).
 2. FIND the questions a reader or later phase must settle. Each stage skill owns a **Questions this stage typically raises** section naming the kinds it is prone to. Walk the draft against it and add whatever the mechanical sweeps returned unowned.
-3. For each open question, raise a `## Q-<Stage>-<n>` or Board-native Q checklist item in the owning S page's Q-consumer. Write no probe entry, `### q-executor`, `route`, `bank`, or `target`; never open `1-probes/`.
+3. For each open question, raise a `## Q-<Stage>-<n>` or a Board-native Content-linked Aim in the owning S page's Q-consumer, then give that Aim one matching State row. Write no probe entry, `### q-executor`, `route`, `bank`, or `target`; never open `1-probes/`.
 4. SELF-REVIEW the draft content and Q-consumer shape against the stage artifact spec; fix and re-review, bounded.
 5. Record `[DRAFT]` in the owning S page's `## Log`, then continue to the next declared phase. DRAFT opens no human gate unless a future stage explicitly lists `draft` in `gates:`.
 

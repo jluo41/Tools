@@ -5,13 +5,12 @@ owner: CC
 method: start with a per-file lock (`HOLD` already exists); do not reach for a CRDT first
 
 ## Question
-The page can take comments, discussion, and resolutions today, but it cannot edit body text.
-Changing `## Where we are`, or ticking a line in `## Items to Finish`, still means going back to an editor and changing the markdown.
-What JL wants is to "really work on a question", and that runs into two things: editing in the page, and two people editing the same question without overwriting each other.
+How can people edit a board page in place without letting simultaneous changes overwrite the Markdown source?
 
-The hard part is that markdown is the single source of truth, the board's foundation, but a markdown file is not a database: two people writing the same `Q*.md` means the later write silently wins, with no warning, and the only reason this has not bitten yet is that `serve.py` is localhost and single user.
-Leave it and the board stays at "readable and commentable" and never becomes a workbench, so JL's "we can work hard to solve the problem" cannot happen.
-Downstream it decides which editor to use, whether to bring in Yjs, whether `HOLD` grows from "one session per question" to "one editor per question", and how in-page edits get recorded in `## Log`.
+In-page editing would turn the board from a reading and comment surface into a real workbench.
+The hard part is that Markdown is a file, not a collaborative database, so the last writer can erase the first.
+The answer determines which sections can change, how edits are traced, and whether locking is enough.
+It succeeds when two readers collide visibly and no content is lost.
 
 
 ## Boundary

@@ -60,10 +60,15 @@ details.sent[open]>summary .sbadge{background:var(--accent);color:#fff;border-co
 .sadd .serr{font:12px ui-monospace,Menlo,monospace;color:var(--mut);white-space:nowrap}
 .saddrow{margin-top:8px;font:12.5px ui-monospace,Menlo,monospace;color:var(--mut);cursor:pointer}
 .saddrow:hover{color:var(--accent)}
-.sedit{display:grid;grid-template-columns:1fr auto auto auto auto;gap:6px;align-items:center;
+.sedit{display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center;
  margin:6px 0 10px;padding:8px;border:1px solid var(--accent);border-radius:var(--radius-control);
  background:var(--card)}
-.sedit textarea{min-height:2.3em;resize:vertical;font:inherit;background:var(--bg);color:var(--fg);
+/* The message used to sit in a fifth grid column, so a long one (the anchor
+   failure is a whole sentence of Chinese) took the width and squeezed the
+   textarea down to a single character (JL 260801, screenshot). It spans its own
+   row now, and the textarea keeps a floor. */
+.sedit .serr{grid-column:1 / -1}
+.sedit textarea{min-width:12em;min-height:2.3em;resize:vertical;font:inherit;background:var(--bg);color:var(--fg);
  border:1px solid var(--line);border-radius:var(--radius-control);padding:5px 7px}
 .sedit input{width:4.5em;font:12px ui-monospace,Menlo,monospace;background:var(--bg);color:var(--fg);
  border:1px solid var(--line);border-radius:var(--radius-control);padding:5px}
@@ -78,7 +83,7 @@ details.sent[open]>summary .sbadge{background:var(--accent);color:#fff;border-co
 .chcopy:hover{color:var(--accent);border-color:var(--accent)}
 /* Heading address rail (QB5d): breadcrumb + ⧉ + 🤖 at the END of a `##` or
    `###` heading. It collapses to ZERO WIDTH rather than to opacity:0, because a
-   `QB4e / Where we are / Decision Now` chip is long enough to reflow the
+   `QB4 / State / Decision Now` chip is long enough to reflow the
    heading it decorates if it keeps its box while invisible. Hidden on touch,
    exactly as the C/H chips and the sentence rail are. */
 .hpath{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;

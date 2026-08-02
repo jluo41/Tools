@@ -3,13 +3,13 @@ state: ✅ SETTLED
 owner: CC
 method: recursive discovery in build.py + path vetting in serve.py; ruled by JL 260724, shipped same day
 
-## Question
-Can a question file live inside the folder it is about, so a board can sit on top of an existing tree instead of mirroring it?
-The working answer is yes: discovery walks the whole tree, so a page sits beside what it discusses while `## Pages` keeps bare filenames for order alone.
-That unlocks the case which forced the question: a paper's own `0-lifecycle/` becomes a board in place, rather than a second structure kept in step by hand.
+## Opening
+Can a Board page live beside the files it describes without breaking discovery or safe write-back?
 
-The first consumer forced the question: JL wanted the MISQ paper's `0-lifecycle/` itself to be a board, with each stage folder acting as a question's home (the way `5-section-edit/` keeps one folder per unit).
-Flat-only discovery made that impossible: `build.py` only globbed the board's top level, and `serve.py` resolved comment write-backs as `board / filename`.
+This page lets an existing project tree serve directly as a Board instead of requiring a mirrored page folder.
+The hard part is that discovery, ordering, and server writes originally assumed every page lived at the Board root.
+That flat-only rule forces lifecycle trees to be copied and kept in step by hand.
+The design succeeds when a nested page is discovered, ordered, and edited safely while flat Boards behave exactly as before.
 
 
 ## Boundary

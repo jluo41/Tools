@@ -106,7 +106,7 @@ def parse_doc(d, paths):
 def strip_notes(md):
     """Drop `<!-- ... -->` author notes, BEFORE the text is cut into sections.
 
-    `ref/q-template.md` has always told authors a note "is dropped at generation
+    `ref/page-template.md` has always told authors a note "is dropped at generation
     either way". It was not: the only strip lived in the Stage Contract path, and
     the template's own notes happen to sit above the first `## `, where nothing
     renders. Written anywhere else a note came out as escaped `&lt;!--` prose
@@ -161,7 +161,7 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
     # Author notes are dropped ONCE, here, so every downstream renderer sees clean
     # text. Doing it per-renderer was the old shape and it missed paths: a comment
     # written under ## Question came out as escaped `&lt;!--` prose on the page,
-    # while ref/q-template.md had always promised it "is dropped at generation
+    # while ref/page-template.md had always promised it "is dropped at generation
     # either way" (found 260726). Fenced blocks are protected so a figure may still
     # show one, and `<!-- haipipe:contract:* -->` is kept because stage_contract
     # reads those markers back out of the rendered section.

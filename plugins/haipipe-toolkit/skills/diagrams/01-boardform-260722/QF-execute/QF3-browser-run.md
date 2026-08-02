@@ -4,11 +4,12 @@ owner: JL
 method: list the failures that shipped green, group them into what a browser can answer, and make the run repeatable
 
 ## Opening
-What has to be clicked, dragged, and typed before a board change can be called done?
-`QF1` names two instruments, a mechanical checker for structure and a zero-background reviewer for prose, and 260731 showed that a whole class of failure passes both: the board built, the checker was green, the reviewer would have read the markdown and found nothing wrong, and the page in front of JL was broken.
+What must a real browser click, drag, and observe before a board change can be called usable?
 
-This face owns the third instrument.
-It is not a better checker and it is not a second reviewer: it is a browser that loads the built page, looks at what the CSS actually did, clicks the things a person clicks, and edits a file to see whether the page notices.
+Source checks cannot tell whether CSS hid a control, JavaScript built the wrong widget, or a write failed in the page.
+Those failures can leave every Markdown and structural check green while the product in front of the reader is broken.
+The browser run closes that gap by exercising the same page and gestures a person uses.
+It succeeds when navigation, controls, writes, refreshes, and in-progress work survive together.
 
 ## Content
 ### 1 · Six failures that shipped with a green checker

@@ -4,12 +4,13 @@ state: 🟡 PARTIAL · sentence focus settled; section/subsection focus designed
 owner: JL
 method: generate render-local paths for page headings plus fine Content addresses, then reuse one page Chat session for either focus
 
-## Question
+## Opening
 How can someone copy or call Chat about one section, subsection, heading, or sentence without creating a separate session for every location?
 
-The Board already has one chat session per page. A sentence therefore needs a focus address and an entry button, not another session.
-Every rendered `##` section and `###` subsection now also needs a human-readable generated path.
-Inside Content, the existing fine address remains: `C` is a Content division, `H` is a terminal Heading node, and prose uses sibling `P.S` leaves.
+This page reuses one page Chat session and gives each visible location a generated focus address.
+The hard part is making that address precise enough to locate the text without pretending it is a permanent identity after the page changes.
+Separate sessions fragment the conversation, while no focus packet forces the agent to guess what the reader means.
+The design succeeds when one action opens the existing Chat on the exact visible location without changing the source.
 
 
 ## Boundary

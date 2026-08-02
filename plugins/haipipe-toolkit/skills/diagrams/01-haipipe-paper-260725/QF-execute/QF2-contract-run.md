@@ -1,127 +1,225 @@
-# The contract form: one index, one file per stage
+# The contract form: a tiny index everyone pays for, and a full contract only the picked stage loads
+
 state: 🟡 PARTIAL
 owner: CC
 method: keep the split; keep the index small enough to read on every invocation
 
 ## Opening
-How should a stage be described, so that a router can pick it cheaply and an executor can run it correctly? A tiny index is read on every single invocation and the full contract only for the stage actually picked, and that split is a real constraint on what may live where.
 
-The design splits the description in two: a tiny index read on every invocation, and a full contract loaded only for the stage actually picked. That split is a real constraint on what may live where, and it is the reason the index has stayed readable while the contracts have grown.
+How should a stage be described, so a router can pick it cheaply and an executor can run it correctly?
 
+Those two readers want opposite things. A router needs almost nothing, and it reads on every single invocation including the ones that turn out to be about something else. An executor needs everything, but only for the one stage that won. So the description is split across two files that are read at very different rates.
 
-The approach is a two-file split, a tiny index read on every invocation and a full contract loaded only for the stage picked, with the required fields stated rather than inferred. What we want is for a stranger to be able to write a correct new stage contract without comparing eight existing ones to guess the pattern.
-Scope: This page covers What lives in `index.yml`, what lives in `stage.md`, what a contract must declare, and how `artifact:` resolves. Neighbouring pages cover Who owns the filename is `QC3b`; which dependency declaration is authoritative is `QA8`; whether display's grain is per-unit is `QC3b`.
+**Where this page sits**: QC2 owns what a stage IS, and QC3b owns who names its files.
+This page owns the FORM of the description: what lives in `index.yml`, what lives in `stage.md`, what a contract must declare, and how `artifact:` resolves to a real path.
+
+**Why the split is a real constraint and not a preference**: anything added to the index is paid for by every user of the skill, forever, including users whose request had nothing to do with stages.
+That is the entire reason board navigation fields live in `stage.md`, and it is why the index has stayed readable while the contracts grew.
+
+**What the repair found**: 22 of 31 declared paths did not exist on the paper they pointed at.
+Every mechanical check had been passing, because a path that resolves to nothing still parses.
+
+## Writing Style
+
+How this page must be written. Read it before editing, and edit to it.
+
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+
+**Measure, then state; never assert a core**: the 24-and-43 split came from counting all eight contracts on 260726.
+A claim about what contracts have in common is worth nothing unless it says how it was counted.
+
+**A proposal is labelled a proposal**: `CONTRACT.md` argues for keeping craft prose in the contract, and that argument is not a ruling.
+This page must never let the two read alike, because a proposal that gets cited as settled is how an off-the-cuff rule becomes law.
+
+**A dangling path is a defect; a declared block is not**: say `blocked_on: <Q page>` when a path cannot resolve yet.
+Writing round it, or leaving it silent, is what produced the 22.
 
 ## Diagram
-```
- TWO FILES, BECAUSE THEY ARE READ AT DIFFERENT RATES
 
+**Two files, two read rates**: what each carries, and who pays for it.
+
+```text
  ┌ stages/index.yml ─────────────────────────────────┐
- │ key · order · dir · triggers · migrated           │  READ EVERY TIME
- │ JUST enough to resolve WHICH stage is meant       │  even when the
- └──────────────────┬────────────────────────────────┘  request turns out
-                    │ one row wins                      to be about
-                    ▼                                   something else
+ │ key · order · dir · triggers · migrated           │  📖 READ EVERY TIME
+ │ JUST enough to resolve WHICH stage is meant       │     even when the
+ └──────────────────┬────────────────────────────────┘     request turns out
+                    │ one row wins                          to be about
+                    ▼                                       something else
  ┌ stages/<order>-<key>/stage.md ────────────────────┐
- │ phases · gates · probe_depth · artifact ·         │  LOADED ONLY for
- │ venue contract · craft prose                      │  the stage picked
+ │ phases · gates · probe_depth · artifact ·         │  📥 LOADED ONLY for
+ │ venue contract · craft prose                      │     the stage picked
  └───────────────────────────────────────────────────┘
 
- ANYTHING ADDED TO THE INDEX IS PAID FOR BY EVERY USER, FOREVER.
- That is why board navigation lives in stage.md, and the header says so.
-
- THE REQUIRED CORE, MEASURED 260726 rather than asserted
-   24 fields   in ALL EIGHT contracts        ──► the real common core
-   43 fields   in one to six of them         ──► genuinely optional
-   the core was REAL and had simply never been written down, which is
-   why no reader could tell required from optional. Now in CONTRACT.md,
-   grouped by the question each field answers.
-
- WHAT THE CONTRACTS WERE ACTUALLY DECLARING, before the repair
-   22 of 31 declared paths DID NOT EXIST on the paper they pointed at
-     8x  artifact:    every stage named the PRE-restructure filename
-     8x  log:         _LOG_<stage>.md — zero have ever existed
-     6x  read paths   read_order · units_from · venue_contract · read_first
-   a DRAFT run would have created 0-seed/0-seed.md beside the
-   S-Seed-0-seed.md that replaced it.  ⚠️
-   the restructure happened on the PAPER and was never told to the SKILL.
-
- STILL OWED TO JL  🧠
-   ① where contract CHECKING lives    A paper skill · B haipipe-board · C none
-   ② does craft prose belong in a contract, or split from the fields
+ 💰 anything added to the INDEX is paid for by every user, forever
+ 🚫 that is why board navigation lives in stage.md, and the header says so
 ```
 
 ## Content
-### The split
+
+### 1 · The two-file split
+
+**What lives where**: the line, and the reason it sits there.
+
+```text
+  📇 index.yml     one row per stage: key · order · dir · triggers · migrated
+                   just enough to resolve WHICH stage is meant
+                   ⏱ read on EVERY invocation
+
+  📜 stage.md      phases · gates · probe_depth · artifact ·
+                   venue contract · craft prose
+                   ⏱ loaded ONLY for the stage picked
 ```
- index.yml    one row per stage: key, order, dir, triggers, migrated
-              JUST enough to resolve which stage is meant. Read every time.
- stage.md     phases, gates, probe_depth, artifact, venue contract, craft prose.
-              Loaded ONLY for the stage picked.
+
+📇 Establishes the split, and the cost argument that decides what may cross it.
+
+#### 1.1 · The index is small because everyone pays for it
+(a field added there is a tax on requests that were never about stages)
+It is read on every single invocation, including ones that turn out to concern something else entirely.
+Board navigation fields therefore live in `stage.md`, and the index header states the rule so the next person does not have to rediscover it.
+
+### 2 · The required core, measured
+
+**24 and 43**: what all eight contracts share, against what only some carry.
+
+```text
+  🔢 measured 260726 across ALL EIGHT contracts
+  ─────────────────────────────────────────────
+  24 fields  in all eight          ━━▶  the REAL common core
+  43 fields  in one to six         ━━▶  genuinely optional
+
+  🔑 the core was real and had simply never been written down,
+     which is why no reader could tell required from optional
+  📄 now in CONTRACT.md, grouped by the QUESTION each field answers:
+     identity · board · execution · product · evidence · graph · closing
 ```
 
-### Why the index must stay small
-It is read on every single invocation, including ones that turn out to be about something else entirely. Anything added to it is paid for by every user of the skill forever. That is why board navigation fields live in `stage.md` and not in the index, and the header says so.
+📐 Establishes the required core as a measurement rather than an assertion, so a stranger can write a new contract without comparing eight old ones.
 
-### What the required core actually is
-(measured on 2026-07-26, not asserted)
+#### 2.1 · How the artifact resolves, in one place
+(the rule had been living in three places at once by the end of the repair)
+A stage names the directory and the identity; Board tooling composes `S-<board_family>-<board_unit>-<board_slug>.md`.
+That composition now lives only in `haipipe-board/`'s `stage.py`, as `resolve_filename()` plus a `resolve` verb, and every other layer calls it instead of repeating the pattern.
 
-Twenty-four fields appear in all eight contracts, and forty-three more appear in one to six of them. That ratio is the answer to why a reader could not tell required from optional: the common core was real, it was just never written down. It is now in `CONTRACT.md`, grouped by the question each field answers: identity, board, execution, product, evidence, graph, closing.
+### 3 · What the contracts were declaring before the repair
 
-### How the artifact resolves
-The stage names the directory and the identity; Board tooling composes the filename as `S-<board_family>-<board_unit>-<board_slug>.md`. That rule was living in three places at once by the end of the repair: `haipipe-board/`'s `stage.py`, a prose paragraph, and a checker. It now lives in `stage.py` alone, as `resolve_filename()` plus a `resolve` verb, and everything else calls it.
+**22 of 31**: paths that parsed perfectly and pointed at nothing.
 
-### What the contracts were declaring before the repair
+```text
+  🔍 22 of 31 declared paths DID NOT EXIST on the paper they pointed at
+  ────────────────────────────────────────────────────────────────────
+   8×  artifact:    every stage named the PRE-restructure filename
+   8×  log:         _LOG_<stage>.md ── zero have EVER existed
+   6×  read paths   read_order · units_from · venue_contract · read_first
+
+  ⚠️ a DRAFT run would have created 0-seed/0-seed.md BESIDE the
+     S-Seed-0-seed.md that had replaced it
+  🔑 the restructure happened on the PAPER and was never told to the SKILL
 ```
- 22 of 31 declared paths did not exist on the paper they pointed at
-    8x artifact:    every stage pointed at the pre-restructure filename
-    8x log:         _LOG_<stage>.md, of which zero have ever existed
-    6x read paths   read_order, units_from, venue_contract, read_first
+
+🔧 Establishes the failure this page exists to prevent: a description that is internally valid and externally wrong.
+
+#### 3.1 · Old papers keep working through a declared fallback
+(the repair could not be allowed to break papers that predate the layout)
+Paper-SubjectiveLabel-Panel and Paper-PhyPatSim still carry `<stage>/<stage>.md`.
+Each repointed contract declares `artifact_fallback:`, and a run must state which of the two it used, so the compatibility is visible in the record rather than silent.
+
+### 4 · What is still owed to JL
+
+**Two rulings**: neither is settled, and both change where code lives.
+
+```text
+  🧠 ①  where contract CHECKING lives
+        A · the paper skill checks its own contracts     ← what exists now
+        B · haipipe-board's stage.py grows a verb        one checker for all,
+                                                          at the cost of teaching
+                                                          board tooling what a
+                                                          paper stage is
+        C · no checker; CONTRACT.md alone
+
+  🧠 ②  does craft prose belong in a contract, or split from the fields
+        CONTRACT.md argues for KEEPING it: the executor that reads the
+        machine fields is the one that must do the work, and a split
+        would let the two drift
+        ⚠️ that is a PROPOSAL, not a ruling
 ```
-A stage run on the MISQ paper would have created a second `0-seed/0-seed.md` beside the `S-Seed-0-seed.md` that replaced it. The restructure happened on the paper and was never told to the skill.
 
-### Craft prose in the contract
-Below the frontmatter each contract carries prose about doing the work well. `CONTRACT.md` now argues for keeping it: the executor that reads the machine fields is the one that must do the work, and a split would let the two drift. That argument is written down as a PROPOSAL. It is not ruled, and the item below stays open until JL rules it.
+🧠 Establishes the two open decisions, so neither the provisional checker nor the proposal is read as settled.
 
-## Items to Finish
-- [x] 🗂 The two-file split is implemented
-      Eight stages, one row each, one contract each.
-- [x] 🪶 The index is kept small
-      Its own header states the rule and the reason.
-- [x] 📐 State the required fields of a contract
-      `CONTRACT.md`, from a measurement of all eight: 24 required, 43 stage-specific, plus the conditional set and the two retired fields.
-- [x] 🔧 Repoint every contract onto the live S faces
-      Six stages resolved to their S face, `log:` retired, read paths repointed, `board_slug:` added, `venue_role:` added for the venue stage, which is neither venue-free nor venue-aligned because it is the stage that picks the venue.
-- [x] 🛟 Do not break the papers that predate the restructure
-      Paper-SubjectiveLabel-Panel and Paper-PhyPatSim still carry `<stage>/<stage>.md`. Each repointed contract declares `artifact_fallback:`, and a run must say which of the two it used.
-- [ ] 🧠 Rule where contract checking lives
-      A: the paper skill checks its own contracts, which is what exists now. B: `haipipe-board/`'s `stage.py` grows a verb, one checker for everything, at the cost of teaching board tooling what a paper stage is. C: no checker, and `CONTRACT.md` alone. JL raised this on 2026-07-26 and it is not settled.
-- [ ] 🧠 Rule whether craft prose belongs in the contract
-      `CONTRACT.md` states the case for keeping it. That is a proposal, not a ruling.
-- [ ] 📐 Give display a resolvable artifact
-      `4-display` is the one stage whose `artifact:` still dangles. It declares `blocked_on: QC3b`, so a check reports it as KNOWN rather than passing it silently. It cannot resolve until QC3b rules whether display is per-unit.
+#### 4.1 · The display artifact is blocked, not dangling
+(the distinction is the whole point of `blocked_on:`)
+`4-display` is the one stage whose `artifact:` still does not resolve, and it declares `blocked_on: QC3b`.
+A check therefore reports it as KNOWN rather than passing it silently, and it cannot resolve until QC3b rules whether display's grain is per-unit.
 
-## Where we are
-The form is now stated rather than inferred, and the contracts point at files that exist. Every declared path on the eight contracts resolves against the MISQ paper except `4-display`'s artifact, which is declared blocked on QC3b rather than left dangling.
+## Aims
 
-Two things are open and both need JL. Where the checking lives is unruled, so the checker exists in the paper skill provisionally and may move or be deleted. Whether craft prose belongs in a contract is argued in `CONTRACT.md` but not decided.
+### A1 · 📇 The two-file split
+- A1.1 · The two-file split is implemented across every stage.
+  **Done when:** eight stages have one index row and one contract each, and nothing in the index duplicates a contract field.
+- A1.2 · The index stays small enough to read on every invocation.
+  **Done when:** the index header states the rule and the reason, and no board navigation field appears in it.
+
+### A2 · 📐 The required core, measured
+- A2.1 · The required fields of a contract are stated rather than inferred.
+  **Done when:** `CONTRACT.md` names the required core, the stage-specific set, the conditional set, and the retired fields, each traced to the measurement.
+- A2.2 · The S filename rule has exactly one home.
+  **Done when:** only `stage.py`'s `resolve_filename()` composes an S filename, and every other layer calls it.
+
+### A3 · 🔧 What the contracts were declaring before the repair
+- A3.1 · Every contract points at files that exist on a live paper.
+  **Done when:** every declared path on the eight contracts resolves against the MISQ paper, or declares `blocked_on:` with a reason.
+- A3.2 · Papers that predate the restructure keep working.
+  **Done when:** each repointed contract declares `artifact_fallback:`, and a run reports which of the two paths it used.
+- A3.3 · `4-display` has a resolvable artifact.
+  **Done when:** QC3b rules whether display is per-unit, and `4-display` drops its `blocked_on:` for a real path.
+
+### A4 · 🧠 What is still owed to JL
+- A4.1 · Where contract checking lives is ruled.
+  **Done when:** JL picks A, B, or C, and the checker either stays in the paper skill, moves into `stage.py`, or is deleted.
+- A4.2 · Whether craft prose belongs in a contract is ruled.
+  **Done when:** `CONTRACT.md`'s argument is either adopted as a rule or replaced by a split, with the decision dated.
+
+## States
+
+### A1 · 📇 The two-file split
+- ✅ A1.1 · Done. Eight stages, one row each, one contract each.
+- ✅ A1.2 · Held. The index carries its own header stating the rule and the reason it exists.
+
+### A2 · 📐 The required core, measured
+- ✅ A2.1 · Done 260726. `CONTRACT.md` records 24 required and 43 stage-specific fields, plus the conditional set and the two retired ones, grouped by the question each answers.
+- ✅ A2.2 · Done. `resolve_filename()` and the `resolve` verb live in `stage.py`, replacing a rule that had been in three places.
+
+### A3 · 🔧 What the contracts were declaring before the repair
+- ✅ A3.1 · Done. Six stages resolved onto their S face, `log:` retired, read paths repointed, `board_slug:` added, and `venue_role:` added for the venue stage, which is neither venue-free nor venue-aligned because it picks the venue.
+- ✅ A3.2 · Done. Every repointed contract declares `artifact_fallback:`, and a run says which it used.
+- 🧠 A3.3 · Waiting on QC3b. `4-display` declares `blocked_on: QC3b`, so it is reported as known rather than green, and it cannot resolve until display's grain is ruled.
+
+### A4 · 🧠 What is still owed to JL
+- 🧠 A4.1 · Waiting on JL since 260726. The checker exists in the paper skill provisionally and may move or be deleted.
+- 🧠 A4.2 · Waiting on JL. `CONTRACT.md` states the case for keeping craft prose in the contract, and that remains a proposal.
 
 ## Files
-- `CONTRACT.md`
-  The required core, the resolution rule, the conditional fields, the retired ones.
-- `index.yml`
-  Unchanged: still one row per stage.
-- `stages/`
-  All eight contracts repointed. `5-section-edit` is the largest and the only per-unit one; its artifact is a pattern, not a path.
-- `haipipe-board/`
-  `stage.py` now exposes `resolve_filename()` and a `resolve` verb, so the S filename rule has one home.
+
+- `CONTRACT.md` · the required core, the resolution rule, the conditional fields, the retired ones
+- `index.yml` · unchanged, still one row per stage
+- `stages/` · all eight contracts repointed; `5-section-edit` is the largest and the only per-unit one, and its artifact is a pattern rather than a path
+- `haipipe-board/` · `stage.py` exposes `resolve_filename()` and a `resolve` verb, so the S filename rule has one home
 
 ## Law
-A contract declares the directory and the identity; it never spells an S filename. The name is composed by `haipipe-board/`'s `stage.py resolve` from family, unit and slug, and any layer that needs it calls that rather than repeating the pattern.
 
-A declared path that cannot be resolved is declared `blocked_on: <Q page>` with the reason. A dangling path with no `blocked_on` is a defect, not a known limitation, and nothing may report it as green.
+A contract declares the directory and the identity; it never spells an S filename.
+The name is composed by `haipipe-board/`'s `stage.py resolve` from family, unit and slug, and any layer that needs it calls that rather than repeating the pattern.
+
+A declared path that cannot be resolved is declared `blocked_on: <Q page>` with the reason.
+A dangling path with no `blocked_on` is a defect, not a known limitation, and nothing may report it as green.
 
 A stage repointed onto a new layout declares `artifact_fallback:` for as long as any live paper predates that layout, and a run says which of the two it used.
 
+## Glossary
+
+- **Common core**: the 24 fields present in all eight contracts, established by counting rather than by assertion.
+- **`blocked_on:`**: the declaration that turns an unresolvable path from a defect into a known limitation with an owner.
+
 ## Log
+
+260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered into four divisions with face figures and captions, Aims regrouped as A1 to A4 with `Done when`, States mirrored per Aim.
 260726 · Measured the eight contracts: 24 fields common to all, 43 stage-specific. Wrote `CONTRACT.md`. Repointed 22 dangling paths; retired `log:`; added `board_slug`, `artifact_fallback`, `venue_role`, `blocked_on`. Extracted the filename rule into `stage.py`'s `resolve_filename()`. Left `4-display` blocked on QC3b, and both rulings open.

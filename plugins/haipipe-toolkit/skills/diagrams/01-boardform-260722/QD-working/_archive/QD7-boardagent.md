@@ -1,5 +1,5 @@
 # Board-level agent
-state: 📦 MERGED into QD5 · 260801, JL: "merge it to QD5" — nothing had shipped, so the board-level-agent question and its four open JL decisions move into QD5's Content §4; this file is the archive of the full question and stays readable, never deleted.
+state: 🗄️ ARCHIVED · 260801, JL: "你把那个 Q board 的 agent 给删掉，我们不再需要了" — the premise expired rather than the work being done. This page was opened when chat and terminal were pinned to ONE question, so board-wide work had nowhere to live; `QD1` has since settled that a chat attaches at three levels and board chat and group chat both ship, which answers the need this page existed to raise. The open session/HOLD-widening and how-much-power decisions retire with it. File stays readable in _archive, never deleted.
 owner: CC
 method: widen the live layer's scope from "one question" to "the whole board"; settle the session rules before building
 
@@ -83,6 +83,7 @@ These are the calls only JL can make; CC ticks nothing here.
   What a board-level agent mostly edits is its `## Roster`.
 
 ## Log
+260801 · Restored to QD; the QD5 merge reverted — the board-level agent is a chat/session concern (same stock as QD1/2/3), and QD5 (the drawing-attach page) moved to QB, so gluing the two was wrong
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · Restored from _archive into QDa · Working (JL: board-agent work is working-layer work); ids repointed to the QDa naming
 260725 1036 · Archived from the index page (moved to _archive/)

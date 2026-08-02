@@ -1,4 +1,4 @@
-"""Managed requirements and writing-style contracts for S pages.
+"""Managed requirements and page-writing sources for S pages.
 
 This module is intentionally independent of the board parser. The parser calls
 ``contract_status`` after it has assembled the page map; ``stage.py`` calls the
@@ -10,6 +10,8 @@ from pathlib import Path
 
 START = "<!-- haipipe:contract:start"
 END = "<!-- haipipe:contract:end -->"
+STYLE_START = "<!-- haipipe:style:start"
+STYLE_END = "<!-- haipipe:style:end -->"
 
 
 def refs(value):
@@ -81,6 +83,17 @@ def managed_span(text):
     return start, end + len(END)
 
 
+def managed_style_span(text):
+    """Return the managed Writing Style block's [start, end) span, or None."""
+    start = text.find(STYLE_START)
+    if start < 0:
+        return None
+    end = text.find(STYLE_END, start)
+    if end < 0:
+        return None
+    return start, end + len(STYLE_END)
+
+
 def replace_managed(text, block):
     """Replace only the generated block; preserve all authored prose."""
     span = managed_span(text)
@@ -96,3 +109,20 @@ def replace_managed(text, block):
     suffix = text[at:].lstrip()
     out = prefix + "\n\n## Stage Contract\n\n" + block + "\n\n"
     return out + suffix
+
+
+def replace_managed_style(text, block):
+    """Replace only generated prose inside ``## Writing Style``."""
+    span = managed_style_span(text)
+    if span:
+        return text[:span[0]] + block + text[span[1]:]
+    heading = re.search(r"^## Writing Style\s*$", text, re.M)
+    if not heading:
+        before = re.search(r"^## (?:Stage Contract|Diagram|Content)\s*$", text, re.M)
+        at = before.start() if before else len(text.rstrip())
+        prefix = text[:at].rstrip()
+        suffix = text[at:].lstrip()
+        out = prefix + "\n\n## Writing Style\n\n" + block + "\n\n"
+        return out + suffix
+    at = heading.end()
+    return text[:at] + "\n\n" + block + text[at:]

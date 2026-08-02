@@ -4,12 +4,12 @@ owner: JL
 method: name the addressing contract every write endpoint already shares, measure where it fails on this board, then rule the ladder and the version token
 
 ## Opening
-How does one click in the browser find the exact line of markdown it must change, and what happens when it cannot find it?
-Every write endpoint in `serve.py` answers this the same way today: normalize the sentence the browser sends, scan the source for a line whose normalized form matches it exactly, and refuse when there are zero matches or more than one.
-That rule decides whether a comment lands on the right sentence, whether an edit is allowed at all, and whether two sessions writing the same page can silently overwrite each other.
-It is stated nowhere except in code comments, it is implemented twice, and no face owns it.
+How should a browser action find the exact Markdown line to change and refuse the write when certainty is lost?
 
-This is the contract underneath `QB5b`, `QB5c`, and every future write, so it is worth stating once rather than re-deciding per endpoint.
+A wrong anchor can place a comment or edit under a sentence nobody selected.
+Rendered text also hides Markdown formatting, and concurrent sessions can make an apparently valid target stale.
+This contract protects every comment, edit, and future sentence-level write that returns to the source file.
+It succeeds when one shared matcher handles decorated and repeated text and rejects stale writes without mutation.
 
 
 ## Diagram

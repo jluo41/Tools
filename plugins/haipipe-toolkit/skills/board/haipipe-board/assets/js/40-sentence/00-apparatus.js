@@ -17,6 +17,29 @@
    directly under that sentence in the markdown (POST /_board/sentence). Script-only
    enhancement: without scripts the page still reads; writing needs serve.py anyway. */
 (function () {
+
+  /* ONE reading of "what this sentence says". `QC7`'s anchor is an EXACT match
+     on this string against a source line, so anything the renderer added has to
+     come back out. The ⚑ badge is the trap: it lives INSIDE the <p> (it became a
+     zero-width span so it could never wrap), so a raw textContent posts
+     "…below the read.⚑ 1", which is not in the markdown and never will be, and
+     the server correctly answers "not found, nothing written" (JL 260801, with
+     a screenshot of exactly that). Both writers on this page use this, and the
+     address module reuses it rather than keeping a second copy. */
+  function sentenceText(p) {
+    var c = p.cloneNode(true);
+    // `.cmk` is the 💬 the comment layer inserts INSIDE the paragraph for every
+    // pending comment it still holds in localStorage. It is added text, so a
+    // sentence that once failed to write would post "…text 💬" and keep failing
+    // forever, poisoned by the very comment that failed. `button` covers the
+    // paper dialect's chips, whose LABEL is not the source text anyway
+    // (`Smith 2024` for `\citep{smith2024}`), so both sides delete rather than
+    // keep: the server strips the marker out of the source line to match.
+    c.querySelectorAll('.cmk,.sbz,.sbadge,.cv,.schatbar,button,input,select,textarea')
+      .forEach(function (x) { x.remove(); });
+    return c.textContent.replace(/\s+/g, ' ').trim();
+  }
+  window.__boardSentenceText = sentenceText;
   var LANES = ['JL', 'CC', 'Note', 'Check', 'Citation', 'Value', 'Display',
                'Q-consumer', 'Link', 'Source'];
   var cur = null;
@@ -49,7 +72,7 @@
       fetch('/_board/sentence', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: boardPath(), file: file,
-          sentence: sentP.textContent.replace(/\s+/g, ' ').trim(),
+          sentence: sentenceText(sentP),
           lane: sel.value, text: text })
       }).then(function (r) { return r.json(); })
         .then(function (j) {
@@ -67,7 +90,7 @@
   }
   function edit(afterEl, sentP, file) {
     close();
-    var before = sentP.textContent.replace(/\s+/g, ' ').trim();
+    var before = sentenceText(sentP);
     var d = document.createElement('div');
     d.className = 'sedit';
     var inp = document.createElement('textarea'); inp.value = before;

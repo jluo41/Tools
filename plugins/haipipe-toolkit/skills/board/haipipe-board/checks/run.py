@@ -74,7 +74,7 @@ def full_tier():
         if len(keep) != len(lines):
             md.write_text("".join(keep), encoding="utf-8")
     print(f"fixture: {fx}", flush=True)
-    r = subprocess.run([sys.executable, str(SKILL / "build.py"), str(fx)],
+    r = subprocess.run([sys.executable, str(SKILL / "cli" / "build.py"), str(fx)],
                        capture_output=True, text=True)
     if "✅" not in (r.stdout or ""):
         print("fixture build FAILED:\n" + (r.stdout + r.stderr)[-1500:])
@@ -84,7 +84,7 @@ def full_tier():
     base = f"http://127.0.0.1:{port}"
     board_url = f"/{src.name}"
     srv = subprocess.Popen(
-        [sys.executable, str(SKILL / "serve.py"), "--root", str(work / "b"),
+        [sys.executable, str(SKILL / "cli" / "serve.py"), "--root", str(work / "b"),
          "--port", str(port), "--host", "127.0.0.1"],
         stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     chrome = None

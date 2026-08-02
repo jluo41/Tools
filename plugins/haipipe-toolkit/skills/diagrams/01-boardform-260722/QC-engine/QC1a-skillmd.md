@@ -4,13 +4,12 @@ owner: CC
 method: SKILL.md stays as short as possible; details live in the ref/ files
 
 ## Question
-Someone else, or a future me without this conversation's memory, types `/haipipe-board`.
-What should they follow?
-What exactly does SKILL.md say, and what does it leave to `ref/`?
+What must `SKILL.md` explain, and what detail should it leave to `ref/`?
 
-It is hard because SKILL.md enters the context on every invocation, so shorter is better, yet too short and nothing is explained, and the cut line needs a rule, not a feel.
-Leave it unwritten and the whole workflow lives only in this conversation: a different agent walking in sees a `build.py` and a few boards, cannot guess the moves, and what was built here would be gone next time.
-It reaches downstream because SKILL.md is the skill's entry point and the only export channel for "rules the board has settled" (the graduation mechanism).
+This file is the first thing every Board session reads, so each extra line has a recurring cost.
+Cut too much and a newcomer cannot operate the tools or recover the rules this Board settled.
+The split determines whether the manual stays both usable and small as the system grows.
+It succeeds when a fresh agent can run the workflow and knows exactly where deeper specifications live.
 
 
 ## Boundary
@@ -35,7 +34,7 @@ user types  /haipipe-board
           └─ board ↔ SKILL.md: the graduation mechanism
                 │
                 ▼  go to ref/ only when detail is needed
-        ref/q-template.md     copy to add a Q or S page (mirrors QA4 since 0.15.1)
+        ref/page-template.md     copy to add a Q or S page (mirrors QA4 since 0.15.1)
         ref/board-form.md     full spec: numbering · section↔page · syntax table · embeds §5 · order §8
         ref/writing-rules.md  how to write plainly + cold-read prompt + convergence criterion
         ref/board-example.md  a minimal two-question example
@@ -50,7 +49,7 @@ user types  /haipipe-board
 - [x] Answers "how to open a new board"
       The open section, five steps, including the single place that must stop and ask the user (the Q list needs a nod).
 - [x] Answers "how to add a Q to a board"
-      Copy `ref/q-template.md` → rename → into the Pages → regenerate.
+      Copy `ref/page-template.md` → rename → into the Pages → regenerate.
 - [x] Answers "when does a board close"
       Every question at ✅ or ⏸️; `close:` is the closing condition and must be verifiable.
 
@@ -71,7 +70,7 @@ user types  /haipipe-board
 - [x] 📝 The manual describes S pages on the writing side, not only the reading side
       Until 260725 SKILL.md explained how an S page RENDERS but never how to create one: `open` asked "有哪几个 Q", step 4 named files `Q<letter><n>` only, `close` used the words "human-gated / explicitly parked" as if they were states, and nothing said how an S is listed in `## Pages`.
       QF2's re-run had to guess all of it (and guessed right, which is worse: the documents took credit for the agent's judgment).
-      Fixed in the same pass: `open` steps 1 and 4 now ask for Q **and** S pages and give both filename shapes plus S's required `## Content`; `close` and the Page section state that both kinds share the same four `state:` values, with ✅ meaning "checkboxes closed" on Q and "human gate passed" on S; `ref/board-form.md` §2 gained the S state mapping and the Pages rule (bare filename, free-text group heading), §3's example gained an S line; `ref/q-template.md`'s consumer record no longer assumes a paper's `1-probes/` tree.
+      Fixed in the same pass: `open` steps 1 and 4 now ask for Q **and** S pages and give both filename shapes plus S's required `## Content`; `close` and the Page section state that both kinds share the same four `state:` values, with ✅ meaning "checkboxes closed" on Q and "human gate passed" on S; `ref/board-form.md` §2 gained the S state mapping and the Pages rule (bare filename, free-text group heading), §3's example gained an S line; `ref/page-template.md`'s consumer record no longer assumes a paper's `1-probes/` tree.
       The build section also names the interpreter split (build/watch on any `python3`, `serve.py` on the venv for the SDK).
 
 
@@ -82,14 +81,14 @@ user types  /haipipe-board
   JL asked whether the Skill pages are up to date and dispatched the review as a fan-out, which is the first real use of the parallel pattern `Agent-2` was built for.
   Three agents took the two SPECs, the routing and index units, and this door skill; they returned 20, 16, and 19 actionable findings, and every one carried file-and-line evidence on both sides.
   All seven mirror pages were already in sync, so nothing was stale in the SENSE the generator can detect; what the reviewers found is drift the generator cannot see, between a contract's words and the code it claims to describe.
-  Fixed the same round, each verified against source before the edit: the frontmatter version said 0.73.1 while its own CHANGELOG documented 0.78.0 and its summary was already 0.78.0's text, so the board displayed the wrong version; a blind Question to Opening replacement on 260731 had turned three alias declarations into the tautology "Opening is an alias for Opening" in `SKILL.md`, `ref/board-form.md`, and `ref/q-template.md`, which destroyed the only statement that old pages still parse; ten further `Question` residues were repointed individually across four files; two SPECs carried a version number inside body prose that had already rotted two releases behind their own frontmatter; `haipipe-board-page` cited §8 for a mapping that lives in §4; and the sentence spec cited `> USER:`, which is the paper family's lane id and appears nowhere in this family's authority.
+  Fixed the same round, each verified against source before the edit: the frontmatter version said 0.73.1 while its own CHANGELOG documented 0.78.0 and its summary was already 0.78.0's text, so the board displayed the wrong version; a blind Question to Opening replacement on 260731 had turned three alias declarations into the tautology "Opening is an alias for Opening" in `SKILL.md`, `ref/board-form.md`, and `ref/page-template.md`, which destroyed the only statement that old pages still parse; ten further `Question` residues were repointed individually across four files; two SPECs carried a version number inside body prose that had already rotted two releases behind their own frontmatter; `haipipe-board-page` cited §8 for a mapping that lives in §4; and the sentence spec cited `> USER:`, which is the paper family's lane id and appears nowhere in this family's authority.
   Still open, and too large for one round: the door never mentions the `live/` package at all, so four of its five live-layer citations point at `serve.py` where the code no longer is; three sections describe Index elements that 0.78.0 removed; `Skill-<n>` and `Agent-<n>` are missing from its page-kind list while line 45 actively denies that such kinds ship here; and the `page` SPEC still says three page kinds when the code has four.
 
 - `SKILL.md`, ~280 lines as of 260725
   Operations only: the shape (Q + S pages, group intros, embeds), nine actions (view / open / add / build / sync / link / close offline, serve / comment live), the sections of one Q/S page, three writing rules, four prohibitions, the graduation mechanism, a ref/ index.
   Spec and prose details never inlined; it enters the context on every invocation, shorter is better.
 - `ref/`, four files
-  `q-template.md`: the shared Q/S source template; mirrors QA4's rendered contract (0.15.1).
+  `page-template.md`: the shared Q/S source template; mirrors QA4's rendered contract (0.15.1).
   `board-form.md`, the full spec: folder, numbering, section↔page mapping, syntax table, embeds (§5), on-stage order (§8), Comments format, the invariant.
   `writing-rules.md`: hard writing rules + the zero-background review prompt, convergence criterion, and past scores.
   `board-example.md`: a minimal two-question example; predates the Q/S merge (no S page, no Content section) and its prose is still Chinese, so the template, not it, is the authority on shape.
@@ -99,7 +98,7 @@ user types  /haipipe-board
 
 - 260725 CC · 📝 The S-page instructions caught up with the S-page renderer
   QF2's re-run exposed that every S instruction in the manual was about reading a stage, not writing one, so a newcomer had to invent the Pages listing, the state value, the filename, and the probe pointer.
-  All four are now written down (`open` steps 1/4, `close`, the Page section, `ref/board-form.md` §2/§3, `ref/q-template.md`).
+  All four are now written down (`open` steps 1/4, `close`, the Page section, `ref/board-form.md` §2/§3, `ref/page-template.md`).
   The lesson is general: **the reading contract graduated on its own and left the authoring contract behind**, which is invisible to anyone who already knows both.
 
 Still open: the live layer (serve/chat/terminal) graduates in only when the QD questions settle.
@@ -134,7 +133,7 @@ Two of the three below were ruled by JL on 260731, and their ticked rows stay he
 ## Files
 - `SKILL.md`
   The deliverable itself.
-- `ref/board-form.md` · `ref/writing-rules.md` · `ref/q-template.md` · `ref/board-example.md`
+- `ref/board-form.md` · `ref/writing-rules.md` · `ref/page-template.md` · `ref/board-example.md`
   Where the details go; SKILL.md stays minimal because these four catch everything.
 - `CHANGELOG.md`
   Version and change record, aligned with SKILL.md's `version:`.

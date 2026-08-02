@@ -4,17 +4,12 @@ owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-haipipe-board-creator-agent is a shipped unit: what does it still owe, and is it healthy?
+Can `haipipe-board-creator-agent` write one complete page in parallel without touching anything another writer owns?
 
-It writes exactly one page of a board, in its own fresh context, from an assignment packet rather than from the board.
-The point of that narrow scope is throughput: opening a board with eight pages meant `haipipe-board` writing eight pages one after another in a single context, so the cost grew with the count and the last page was written by an agent whose context was already full of the first seven.
-Fanning out one agent per page makes the wall-clock cost that of the slowest page instead of the sum, and gives every page an equally fresh reader of the specs.
-
-It exists on its own rather than inside `haipipe-board` because parallel writing is only safe when one participant holds no shared state, and a skill you invoke inside your own context cannot make that promise.
-Its safety is structural rather than advisory: it has no Bash tool, so it cannot rebuild; `board.md` is outside its scope, so the registry every writer would collide on stays with the caller; and it may not read a sibling page, so two agents cannot start duplicating each other's judgment mid-flight.
-`Agent-1` is the judge of what it produces, which is the same creator and reviewer split the task and discovery families already run on.
-
-It is finished when a real multi-page board has been opened this way and the reviewer passed the batch without the caller repairing overlap between pages by hand.
+One fresh writer per page keeps a large Board from becoming a long serial drafting session.
+The hard part is preventing overlap while each agent lacks the sibling context and shared registry it would normally inspect.
+The caller must keep every shared write, then integrate the batch once and send it to an independent reviewer.
+It is healthy when a real multi-page batch passes review without hand-repairing scope collisions.
 
 ## Diagram
 <!-- haipipe:skill:tree:start 562e8abf4d93927d board/agents/haipipe-board-creator-agent.md -->
@@ -76,7 +71,7 @@ Read these canonical sources before writing:
 1. `../haipipe-board-page/SKILL.md` for what a page is: the three kinds, the one
    base, the seven sections, and which of them a machine may write.
 2. `../haipipe-board-sentence/SKILL.md` for how a line must read.
-3. `../haipipe-board/ref/q-template.md` for the section order and the skeleton.
+3. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
 4. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
    judged against.
 

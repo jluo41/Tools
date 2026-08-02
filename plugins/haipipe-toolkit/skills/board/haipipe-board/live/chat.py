@@ -26,6 +26,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from . import base
+from . import turnring
 from .base import ALWAYS, ASKS, ASK_SEQ, HERE, RUNS, page_files
 from .structure import page_id_of
 
@@ -202,7 +203,16 @@ def prime_context(f, board, root):
     title = tm.group(1).strip() if tm else ""
     qm = re.search(r"^## (?:Opening|Question)\s*\n(.*?)(?=\n## |\Z)", txt, re.S | re.M)
     qtext = " ".join(qm.group(1).split()) if qm else ""
-    nitem = len(re.findall(r"^-\s*\[ \]\s", txt, re.M))
+    am = re.search(r"(?ms)^## (?:Aims|Items to Finish|Done when)\s*$\n(.*?)(?=^## |\Z)", txt)
+    sm = re.search(r"(?ms)^## (?:States|State|Where we are|Now)\s*$\n(.*?)(?=^## |\Z)", txt)
+    aims, state = (am.group(1) if am else ""), (sm.group(1) if sm else "")
+    ids = re.findall(r"(?m)^- (A\d+(?:\.\d+)*|P\d+(?:\.\d+)*) ·", aims)
+    if ids:
+        closed = set(re.findall(
+            r"(?m)^- (?:✅|⏸️?) (A\d+(?:\.\d+)*|P\d+(?:\.\d+)*) ·", state))
+        nitem = len([aim_id for aim_id in ids if aim_id not in closed])
+    else:
+        nitem = len(re.findall(r"^-\s*\[ \]\s", aims, re.M))
     btitle, bname = "", Path(board).name
     bmd = Path(board) / "board.md"
     if bmd.exists():
@@ -218,7 +228,7 @@ def prime_context(f, board, root):
     if qtext:
         lines.append(f"  · What it asks: {qtext[:280]}")
     if nitem:
-        lines.append(f"  · {nitem} unticked item(s) in its ## Items to Finish.")
+        lines.append(f"  · {nitem} open Aim(s) in its ## Aims.")
     lines.append("Read that file for the full picture. You already know which page and board "
                  "this is; wait for the user's instruction.")
     lines.extend(status_strip_context(board, qid, root))
@@ -291,11 +301,11 @@ the question touches — not just the board folder. The one question you belong 
 is the file given below (a path relative to the repo root). That board folder
 holds `board.md` (board-level title/spine/pages) and one `QX-<slug>.md` per
 question, each with fixed sections:
-## Opening / ## Diagram / ## Content / ## Items to Finish /
-## Where we are / ## Files / ## Law / ## Lesson / ## Glossary /
+## Opening / ## Diagram / ## Content / ## Aims /
+## States / ## Files / ## Law / ## Lesson / ## Glossary /
 ## Discussion / ## Log
-(Old boards may still say `## Done when` for Items to Finish and `## Now` for
-Where we are; both are accepted. `## Why here` is retired.)
+(Old boards may still say `## Items to Finish` or `## Done when` for Aims and
+`## State`, `## Where we are`, or `## Now` for States; all are accepted. `## Why here` is retired.)
 
 Sentence-local review is a `>` line written DIRECTLY UNDER a sentence in the
 body, bound to it by adjacency alone, and typed by its first word:
@@ -330,8 +340,8 @@ repo root). This session belongs to that question: prefer to keep your board
 edits inside its `QX-<slug>.md`, and whatever you change there, add one line at
 the TOP of its `## Log`: `YYMMDD HHMM · what changed`.
 
-Each `QX-<slug>.md` has fixed sections: ## Opening / ## Diagram / ## Done when /
-## Now / ## Why here / ## Law / ## Lesson / ## Glossary / ## Discussion /
+Each `QX-<slug>.md` has fixed sections: ## Opening / ## Diagram / ## Content /
+## Aims / ## States / ## Files / ## Law / ## Lesson / ## Glossary / ## Discussion /
 ## Log. Preserve direct `> WHO:` comments and `> ✎` edit records beneath the
 sentence they concern.
 
@@ -589,7 +599,7 @@ class ChatMixin:
         # 的空壳，resume 会失败；这时当没有，起个全新的，结束时把新 id 写回头部覆盖掉空壳。
         if prior and not self.session_landed(prior):
             prior = None
-        out, sid, usd = [], None, None
+        out, sid, usd, ctx = [], None, None, None
         # HOLD stops the drawer and the terminal fighting over one session, but
         # two drawer turns on the same question passed it, and with a HELD client
         # the second one silently queued behind the first forever (found by
@@ -602,21 +612,26 @@ class ChatMixin:
         stop = threading.Event()
         RUNS[str(f)] = stop
         stream = bool(p.get("stream"))
-        if stream:                       # 流式：不等跑完，边出边发
-            self.send_response(200)
-            self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
-            self.send_header("Cache-Control", "no-store")
-            self.send_header("Connection", "close")
-            self.end_headers()
+        # R1: the turn's events go to a RING, not to this socket.
+        #
+        # 260801 had already stopped a departed reader from KILLING the turn, so
+        # the work survived; what did not survive was any way to SEE it, because
+        # the only copy of the turn's trace was the response being written. The
+        # ring makes the record outlive every reader: this request is now just
+        # the first one to attach, and `/_board/attach` lets the next one pick up
+        # at the cursor it left off. Same asymmetry `term.py` never had.
+        turn = turnring.start(str(f))
 
         def emit(obj):
-            if not stream:
-                return
+            turn.push(obj)
+
+        def sock_write(obj):
             try:
                 self.wfile.write((json.dumps(obj, ensure_ascii=False) + "\n").encode())
                 self.wfile.flush()
+                return True
             except Exception:
-                stop.set()               # 浏览器断了 -> 也把这一轮停掉
+                return False             # this reader is gone; the turn is not
 
         denied = []
         wrote = []          # 这一轮真的改过盘上文件的写工具名（决定要不要说「已写盘」）
@@ -763,9 +778,21 @@ class ChatMixin:
                 resume=prior or None,
                 model=model,
                 effort=effort,
-                # 显式开思考并给预算 —— 客户端收进折叠块。实测 effort 和 thinking 能并存，
-                # 都会有 thinking_delta 流出来（adaptive 会让简单问题跳过，所以用 enabled）。
-                thinking={"type": "enabled", "budget_tokens": 6000},
+                # Thinking, in the form the CURRENT models accept. `{"type":
+                # "enabled", "budget_tokens": N}` is the pre-4.6 shape and is
+                # rejected on Opus 4.7/4.8/5 and Sonnet 5, which is every model
+                # this picker offers except Haiku; the stream then carried
+                # `stage`, `delta` and `done` and never a single `think`, so the
+                # trace box had nothing in it but the busy line and `traceEnd`
+                # dropped it as empty (JL 260801: "the display of the UI will be
+                # gone", measured: 0 think events over a full turn).
+                #
+                # `display` is the half that actually shows it. It is
+                # `ThinkingDisplay = Literal["summarized", "omitted"]` and the
+                # CLI defaults to omitting, so even a correct `adaptive` config
+                # streamed no thinking at all: a 2m10s three-tool turn produced
+                # `tool`, `tool_result`, `delta`, `done` and zero `think`.
+                thinking={"type": "adaptive", "display": "summarized"},
             )
             if mode == "scoped":
                 kw["disallowed_tools"] = SCOPED_OFF   # 硬关，不经过 can_use_tool
@@ -804,7 +831,7 @@ class ChatMixin:
                                "registry, the first message is the slow one"
                                if sources else "booting claude (scoped — quick)")})
             async def drive(client, fresh):
-              nonlocal sid, usd
+              nonlocal sid, usd, ctx
               if stream:
                   emit({"t": "stage", "text": ("session up — sending your message"
                                                if fresh else "session already up")})
@@ -862,6 +889,21 @@ class ChatMixin:
                       sid = m.session_id
                       usd = getattr(m, "total_cost_usd", None)
 
+              # How much of the window is gone — the meter the CLI shows under
+              # /context and the drawer never had (JL 260801: "我怎么看到我现在
+              # 这个 context 的 usage，就是用了百分之几"). It is a streaming-mode
+              # verb, so it only became reachable the day M1 held the client.
+              # Best-effort by design: an SDK too old to have it, or a call that
+              # fails, must never cost this turn its answer.
+              try:
+                  cu = await client.get_context_usage()
+                  if isinstance(cu, dict):
+                      ctx = {"pct": cu.get("percentage"),
+                             "used": cu.get("totalTokens"),
+                             "max": cu.get("maxTokens")}
+              except Exception:
+                  pass
+
             if not HOLD_CHAT:                     # --no-hold: the pre-M1 path
                 async with ClaudeSDKClient(options=opts) as client:
                     await drive(client, True)
@@ -897,44 +939,131 @@ class ChatMixin:
                 if sid:
                     live.sid = sid            # what this held client now IS
 
-        try:
-            if HOLD_CHAT:
-                # every operation on a held client must happen on the ONE loop
-                # that owns it (the SDK forbids crossing async runtime contexts)
-                fut = host().submit(run())
-                try:
-                    fut.result()
-                finally:
-                    # The browser going away (a reload, a closed tab) aborts the
-                    # HTTP side but NOT the coroutine: it keeps running on the
-                    # host loop with the client still mid-turn, and the next
-                    # query queues behind it forever. Stop it, and drop the
-                    # client, because its state is no longer known.
-                    if not fut.done():
-                        stop.set()
-                        fut.cancel()
-                        host().evict(str(f))
-            else:
-                anyio.run(run)
-        except Exception as e:
-            return None, f"{type(e).__name__}: {e}"
-        finally:
-            RUNS.pop(str(f), None)
-            self.release(f, "drawer")
-        if sid:
-            self.remember_session(f, sid, name=p.get("name"))
-        # 只有真改过盘上文件才重新生成 html —— 读一读、聊两句不该触发 rebuild
-        build = self.rebuild(board) if wrote else ""
+        result = {}
+
+        def runner():
+            """The turn, start to finish, on a thread that owns no socket.
+
+            Everything that must happen EXACTLY ONCE lives here rather than in
+            the request: writing the session id back, regenerating the html, and
+            the closing `done` event. Before R1 all three sat after the request
+            had blocked on the future, so a reader who left took the tail with
+            them; now the reader leaving is invisible to this function.
+            """
+            err = None
+            try:
+                if HOLD_CHAT:
+                    # every operation on a held client must happen on the ONE
+                    # loop that owns it (the SDK forbids crossing async runtime
+                    # contexts)
+                    fut = host().submit(run())
+                    try:
+                        fut.result()
+                    finally:
+                        # The genuine failure case only: a future that never
+                        # finished, where the client's state really is unknown
+                        # and the next query would queue behind it forever.
+                        if not fut.done():
+                            stop.set()
+                            fut.cancel()
+                            host().evict(str(f))
+                else:
+                    anyio.run(run)
+            except Exception as e:
+                err = f"{type(e).__name__}: {e}"
+            finally:
+                RUNS.pop(str(f), None)
+                self.release(f, "drawer")
+            build = ""
+            try:
+                if sid:
+                    self.remember_session(f, sid, name=p.get("name"))
+                # 只有真改过盘上文件才重新生成 html —— 读一读、聊两句不该触发 rebuild
+                build = self.rebuild(board) if wrote else ""
+            except Exception as e:
+                err = err or f"{type(e).__name__}: {e}"
+            done = {"t": "done", "text": "\n\n".join(out).strip(),
+                    "session": sid, "usd": usd, "ctx": ctx, "model": model,
+                    "scope": mode, "effort": effort, "denied": denied,
+                    "stopped": stop.is_set(), "wrote": bool(wrote),
+                    "build": build}
+            if err:
+                done["ok"], done["err"] = False, err
+            result.update(done)
+            turn.push(done)
+            turn.finish()
+
         if stream:
-            emit({"t": "done", "text": "\n\n".join(out).strip(),
-                  "session": sid, "usd": usd, "model": model, "scope": mode,
-                  "effort": effort, "denied": denied, "stopped": stop.is_set(),
-                  "wrote": bool(wrote), "build": build})
+            self.send_response(200)
+            self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Connection", "close")
+            self.end_headers()
+            # This request stops OWNING the turn and becomes its first READER.
+            # It may end at any moment — a navigation, a reload, a phone
+            # locking — and the thread below carries on filling the ring.
+            threading.Thread(target=runner, daemon=True,
+                             name="chat-turn-" + Path(f).name).start()
+            turn.drain(0, sock_write)
             return "STREAMED", None
-        return {"text": "\n\n".join(out).strip(),
-                "session": sid, "usd": usd, "auth": src, "denied": denied, "scope": mode,
+        runner()
+        if result.get("ok") is False:
+            return None, result.get("err")
+        return {"text": result.get("text", ""),
+                "session": sid, "usd": usd, "ctx": ctx, "auth": src, "denied": denied, "scope": mode,
                 "wrote": bool(wrote), "stopped": stop.is_set(),
                 "model": model, "effort": effort}, None
+
+    def attach(self, f, p):
+        """POST /_board/attach {file, cursor} → the rest of a live turn.
+
+        The half of R1 a reader actually feels. A drawer that reloaded, was
+        navigated away from, or simply came back to the tab asks for everything
+        after the cursor it last saw; if nothing is running it gets a plain JSON
+        `live:false` and moves on. QD3's terminal has answered this question
+        since it was built (`term.py:679` replays the ring on reconnect); chat
+        could not answer it at all.
+        """
+        turn = turnring.get(str(f))
+        # `probe` asks the question WITHOUT joining the queue. The chat picker
+        # (QD2 C8) needs to say "a turn is still running" before a reader
+        # commits to opening anything, and a plain attach would answer that by
+        # parking on the ring until the turn ended, which is the opposite of a
+        # question. Same endpoint, because it is the same fact.
+        if p.get("probe"):
+            return {"live": turn is not None and not turn.done,
+                    "ended": turn is not None and turn.done,
+                    "seq": turn.seq if turn else 0}, None
+        if turn is None or turn.done:
+            # A FINISHED ring is deliberately not re-streamed, and the browser
+            # found out why: the drawer asks on open, on focus and on a 25s
+            # heartbeat, so a still-readable finished turn was re-attached and
+            # its `done` re-rendered every time — one duplicate answer bubble
+            # per heartbeat, for the whole grace window.
+            # Once a turn has ended the transcript IS the right source, which is
+            # what the 260801 sync already reads. The ring's job is the window
+            # the transcript cannot cover: while the turn is still running.
+            return {"live": False, "ended": turn is not None}, None
+        try:
+            cursor = int(p.get("cursor") or 0)
+        except (TypeError, ValueError):
+            cursor = 0
+        self.send_response(200)
+        self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Connection", "close")
+        self.end_headers()
+
+        def sock_write(obj):
+            try:
+                self.wfile.write((json.dumps(obj, ensure_ascii=False) + "\n").encode())
+                self.wfile.flush()
+                return True
+            except Exception:
+                return False
+
+        turn.drain(cursor, sock_write)
+        return "STREAMED", None
 
     # session id 就记在 Q 文件头部，跟 state/owner/method 并列
     def session_of(self, f):
@@ -1064,6 +1193,22 @@ class ChatMixin:
                     kind = o.get("type")
                     if kind not in ("user", "assistant"):
                         continue
+                    # A REPLAY SHOULD SHOW THE TOOLS A LIVE TURN SHOWED
+                    # (JL 260801: "我重新打开一个过去的 session ... content 和
+                    # 界面都非常差"). This used to keep assistant TEXT only, so
+                    # a turn that ran ten tools replayed as one bare paragraph
+                    # and the live view and the replay disagreed about what had
+                    # happened. The .jsonl has the calls; hand them over and let
+                    # the drawer draw the same cards it draws live.
+                    if kind == "assistant":
+                        blocks = (o.get("message") or {}).get("content")
+                        for b in (blocks if isinstance(blocks, list) else []):
+                            if isinstance(b, dict) and b.get("type") == "tool_use":
+                                tin = b.get("input") if isinstance(b.get("input"), dict) else {}
+                                out.append({"k": "tool",
+                                            "name": b.get("name", "?"),
+                                            "t": tool_brief(b.get("name", "?"), tin),
+                                            "ts": o.get("timestamp")})
                     txt = text_of(o.get("message")).strip()
                     if not txt:
                         continue
@@ -1080,14 +1225,14 @@ class ChatMixin:
                             seen_first_user = True
                             continue
                         seen_first_user = True
-                        out.append({"k": "you", "t": txt})
+                        out.append({"k": "you", "t": txt, "ts": o.get("timestamp")})
                     else:
-                        out.append({"k": "ai", "t": txt})
+                        out.append({"k": "ai", "t": txt, "ts": o.get("timestamp")})
         except Exception as e:
             return {"ok": False, "err": str(e)}
         # a very long session would blow up the drawer; keep the tail, which is
         # what "continue where I left off" actually means
-        MAX = 120
+        MAX = 300          # raised with tool rows: 120 was ~4 real turns
         clipped = len(out) > MAX
         return {"ok": True, "log": out[-MAX:], "clipped": clipped, "total": len(out)}
 

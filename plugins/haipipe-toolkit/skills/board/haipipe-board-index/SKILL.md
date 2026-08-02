@@ -3,9 +3,9 @@ name: haipipe-board-index
 description: >-
   The BOARD and GROUP altitude of a board: propose a board's structure with the human before any file exists, materialize it, and own the two canvases the index carries: the board-level map of how groups connect, and one engine·pages·folder lane block per group. Use when starting a new board from a topic, when adding or renaming a page group, when the index no longer explains the board, or when the user says board structure, board index, page group, group map, board canvas, lanes, regroup, or /haipipe-board-index. It does NOT render HTML: haipipe-board owns build, serve, page and sentence.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-01"
-  summary: "Align the Index contract with the canonical board/ site: source-only Topic/Pipeline/Board Structure, then Map, Related Folders, Section Matrix, page roster, and Activity."
+  version: "0.2.1"
+  last_updated: "2026-08-02"
+  summary: "Points one-page-section work at haipipe-board-page, which now exists, instead of the archived QAa face group."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,7 +27,7 @@ proposing a NEW board        (this skill never emits HTML)
 ```
 
 If a change is about ONE page's sections, it is not this skill.
-That is `QAa`, and it will move to `haipipe-board-page`.
+That is `haipipe-board-page`, whose canonical design page is `QB4`.
 
 ## 🧭 Two canvases, two altitudes
 
@@ -119,11 +119,11 @@ A page's `# ` title only SEEDS a new row's name; the column is 29 characters and
 
 ### `regroup` · move pages into one folder per group
 
-Wraps `haipipe-board/regroup.py`, which is the migration tool for any group rename or split:
+Wraps `haipipe-board/cli/regroup.py`, which is the migration tool for any group rename or split:
 
 ```bash
-python3 ../haipipe-board/regroup.py <board-dir>            # plan
-python3 ../haipipe-board/regroup.py <board-dir> --apply    # git mv
+python3 ../haipipe-board/cli/regroup.py <board-dir>            # plan
+python3 ../haipipe-board/cli/regroup.py <board-dir> --apply    # git mv
 ```
 
 Renaming a group letter is a THREE-part change and all three must land together: `git mv` the folder and files, keep the old id as a declared alias so existing citations resolve, then grep the repo for the old id and fix every hit.
@@ -137,7 +137,7 @@ Renaming a group letter is a THREE-part change and all three must land together:
 · the board canvas is not a copy of the index
 ```
 
-Page-level and sentence-level checks belong to `haipipe-board/check.py`.
+Page-level and sentence-level checks belong to `haipipe-board/cli/check.py`.
 
 ## 📂 Files
 

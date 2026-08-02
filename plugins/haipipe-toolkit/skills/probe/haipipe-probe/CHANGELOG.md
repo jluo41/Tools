@@ -3,6 +3,18 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.11.1] — 2026-08-01 — Board section labels are paired plurals
+
+- Emits Q-consumer status rows under canonical `## States`; one row is still
+  the singular State record paired with one Aim.
+
+## [0.11.0] — 2026-08-01 — Board Q-consumers are Aims with State
+
+- Replaced Board-first checklist records in `## Items to Finish` with
+  Content-linked records in `## Aims`.
+- Gave every such Aim one separate factual `## State` row while preserving the
+  consumer-local Q id used by PROBE.
+
 ## [0.10.4] — 2026-07-26 — Q-consumer is a logical role
 
 - Defined the consumer-family adapter: Board-first paper S pages store

@@ -195,7 +195,7 @@ class XcalMixin:
                     continue
                 if fence:
                     continue
-                if re.match(r"^## (?:Content|Items to Finish|Done when|完成条件|清单)\b", ln):
+                if re.match(r"^## (?:Content|Aims|Items to Finish|Done when|完成条件|清单)\b", ln):
                     anchor = i
                     break
             block = ["## Diagram", url, ""]
