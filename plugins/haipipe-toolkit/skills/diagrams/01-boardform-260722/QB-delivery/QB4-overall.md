@@ -178,33 +178,40 @@ Required and optional markers belong in the first body line, never in the headin
    "## Opening (required)"  ↯  renders NOTHING, and nothing reports it
 ```
 
-**Using this page**: the two ways in, and where they meet.
+**Using this page**: what you say, and what happens after you say it.
 
 ```
+🗣 WHAT YOU TYPE IN A SESSION
+   "create a new page on <topic>"        "update QB2"  ·  "work on QB2"
+   "add a page about <topic> to QB"      "bring QB2 up to the standard"
+        │                                        │
+        └────────── /haipipe-board ──────────────┘
+                     routes anything about ONE PAGE to
+                     /haipipe-board-page · you pick nothing
+
 📄 A NEW PAGE                          🔧 AN EXISTING PAGE
 
-📋 copy ref/page-template.md           📐 /haipipe-board-page <page.md>
-   │                                      │  loads the rules, not a copy
+📋 copies ref/page-template.md         📐 loads this contract, not a copy
+   born conforming, zero findings         and reads the whole page first
    ▼                                      ▼
-✍️ fill the seven sections             ⚙️ cli/check.py <board> | grep <page>
-   🏷 title says the PURPOSE              │  every finding names its rule
-   🧭 Opening: blank line = the split     ▼
-   📚 Content: numbered, captioned     🔨 mechanical first, no judgment needed
+✍️ fills the seven sections            ⚙️ runs the checker on that page
+   🏷 title says the PURPOSE               every finding names its rule
+   🧭 Opening: blank line = the split      ▼
+   📚 Content: numbered, captioned     🔨 mechanical first, no judgment
    🎯 Aims ▸ 📍 States ▸ 📎 Files          📎 dead paths · 🖼 missing figures
-   │                                      🏷 captions · 🔢 group names
+   🗂 registers it in board.md             🏷 captions · 🔢 group names
    │                                      ▼
-   │                                   👁 then READ it, for what no check sees
-   │                                      🗣 weak-English axis · one question
-   │                                      per part · does the Opening say
-   │                                      anything the title did not
+   │                                   👁 then READS it, for what no check sees
+   │                                      🗣 weak-English · one question per
+   │                                      part · does the Opening earn a screen
    └────────────────┬─────────────────────┘
                     ▼
-       ⚙️ cli/build.py <board>   ── the watcher does this on any .md save
-                    ▼
-       🧪 cli/check.py <board> --summary
+       ⚙️ build ── the watcher already did it on any .md save
+       🧪 check --summary ── the count is the proof
                     ▼
        ✅ zero findings on that page, and the RENDER read, not the markdown
 
+🚫 you never call build.py or check.py, and never pick the sub-skill
 🚫 not done when the source is right: a dead watcher and a shut <details>
    each produced a correct file and a wrong page
 ```
@@ -1241,13 +1248,20 @@ This page's own title broke the rule the day it was reworded: the edit replaced 
 (adding a page means copying it, not remembering the shape)
 `ref/page-template.md` carries every recognized `##` section with one guide line each, so the shape travels with the file instead of living in someone's head.
 
-#### 8.2.2 · Section names must be kept verbatim
+#### 8.2.2 · A repeated `##` heading silently discards the first block
+(the render keeps the LAST one, and nothing reports the loss)
+`split_sections` builds a dict, so a second `## Where we are` wins and everything under the first never reaches the page.
+This is the worst failure shape on the board: the file looks whole in the editor, the page is merely short, and no reader can tell that something is missing because nothing renders where it would have been.
+QB2a carried two for two days, and roughly 4.6 KB of dated post-mortems under the first had never been seen by anyone. A fresh-context agent found it on 260802; no check did.
+`check.py` now reports it as an ERROR rather than a warning, because it is silent data loss rather than a style defect. Its first run found two more pages on this board and one on another.
+
+#### 8.2.3 · Section names must be kept verbatim
 (`build.py` takes the WHOLE string after `## ` as the key)
 `## Opening (required)` yields nothing at all, and nothing reports it, which is the worst kind of failure.
 Required and optional markers go in the first body line, never in the heading.
 Renaming a section goes through `ALIAS`, so boards already written keep parsing.
 
-#### 8.2.3 · What every page requires
+#### 8.2.4 · What every page requires
 (seven base elements, plus one strongly advised section)
 Required: title, `state`, `owner`, `## Opening`, `## Writing Style`, `## Aims`, `## States`.
 Strongly advised: `## Files`.
@@ -1473,6 +1487,23 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 ## States
 ### Decision Now
 
+- [ ] 🗣 Do the four sibling boards get swept onto the settled vocabulary too?
+      📍 `Part` `### 8 · Checks`
+      🔔 `Why now` This board was swept on 260802 and `check.py` gained `retired-section`. Because the checker is shared, the same rule now reports 217 rows on boards this sweep was never asked to touch: `01-probe-qa-260726` 80, `01-haipipe-task-260726` 76, `01-haipipe-display-260727` 60, `01-haipipe-paper-260725` 1. They are not broken; they render correctly, because `src/common.py` aliases every old name.
+      ⭐ `A ·` sweep all four now with the same script. The rename is mechanical, the renderer already treats the names as equivalent, and no page had a collision on this board. One vocabulary across every board is the whole point of a shared contract.
+      `B ·` sweep only when a board is next worked on. Each of those boards belongs to a different thread, and a 76-page diff landing unannounced in someone else's work is the kind of help nobody asked for.
+      `C ·` scope `retired-section` to this board. This is the option that makes the rule a lie everywhere else, and it is listed only so it is on the record as rejected.
+      🛑 `Blocks` nothing. Every one of those boards renders correctly today.
+      🤖 `If nobody answers` B. The sweep is safe but it is not urgent, and the checker now says so on each board the moment anyone opens it.
+
+- [ ] 🖌 Four pages link to a frame nobody has drawn
+      📍 `Part` `### 2 · Diagram`
+      🔔 `Why now` `check.py` gained `dead-canvas-frame` on 260802 after three fresh-context agents each hit it from a different page. `QB8`, `QC1a`, `QC2a` and `QF2` point at `frame=QB8`, `QC1`, `QC2` and `QF2`, and `board.excalidraw` holds none of those names, so `serve_frame()` 404s while the page still looks as though it has a drawing. Separately, frames named `QB2`, `QB5` and `QB8` exist holding OTHER subjects, left behind by the 260731 renumbering.
+      ⭐ `A ·` draw the four missing frames and rename the three stale ones to match the current ids. Only a person with the canvas open can do either.
+      `B ·` drop the four dead links until someone draws them, so no page promises a picture it does not have.
+      🛑 `Blocks` nothing structural; it is four dead links and three misleading frame names.
+      🤖 `If nobody answers` the check keeps reporting all four, which is the point: this was invisible until 260802.
+
 - [ ] 🗣 Does the fifth section keep the name `Folds`?
       📍 `Part` `### 7 · Folds`
       🔔 `Why now` JL 260801: "why 'fold', very bad". The casing was fixed the same day; the word itself is the objection.
@@ -1570,6 +1601,12 @@ The dated implementation history lives in Log, so this section stays a current s
   ⚠️ Generated by `cli/build.py`. Never hand-edit.
 
 ## Law
+- 🕰️ **A rename the renderer forgives is a rename nobody finishes**: when `src/common.py` aliases a retired section name, every page on the old name keeps rendering correctly, so the drift is invisible and nobody is ever prompted to finish it.
+  On 260802 that cost 45 of 55 pages, still on names retired 260731, while `haipipe-board-page` stated in writing that the conversion was done.
+  Retire a name in the CHECKER on the day you retire it in the contract; the alias exists so old pages still render, not so new pages may use it.
+- 📄 **One heading, once**: a repeated `## ` heading silently discards everything under the first, because `split_sections` builds a dict and the later block wins (JL 260802, found by a fresh-context agent).
+  It is the worst failure shape on the board: the file looks whole in the editor, the page is merely short, and nothing renders where the lost block would have been, so no reader can tell.
+  QB2a held two `## Where we are` for two days with 4.6 KB of dated records under the first that nobody had ever seen. `check.py` reports it as an ERROR, and its first run found two more pages here and one on another board.
 - 🗣 **Decision on the page**: a decision is a row in the owning page's `States › Decision Now`, never a question asked only in a chat session (JL 260802).
   Write the row first, then say in chat which page and which row; the chat line is a pointer and the page is the decision.
   A decision left in a session cannot be seen by anyone else, carries no `Blocks:` and no `Default:` so it evaporates instead of resolving itself, and leaves no record of the options weighed, which is what the next person to reopen it needs.
@@ -1859,6 +1896,8 @@ The dated implementation history lives in Log, so this section stays a current s
 >> CC0801: left alone deliberately. `P3` in Decision Now may retire the word entirely in favour of `Memory`, so recapitalizing it now is work that a ruling could throw away. It is recorded here so the inconsistency is known rather than missed.
 
 ## Log
+ 260802 1530 · The board was swept onto the settled vocabulary, which turned out to be the larger half of the 260731 ruling: 45 of 55 pages still said `Question` / `Items to Finish` / `Where we are`, and 26 still carried the retired `## Boundary`, whose pointers moved into each Opening's drawer as `**Covered elsewhere**:`. Nothing had reported it, because `src/common.py` aliases every old name, so the renders looked right; `haipipe-board-page` even claimed the removal had finished. `check.py` gained `retired-section`, which is what makes the claim checkable now. Archived pages keep theirs, since rewriting an archive would falsify a record. Two checker blind spots were closed in the same pass, both found by fresh-context agents and not by the checker: `division-no-figure` never saw a `### §1 x` division, and `dead-file-path` read only the first backticked path in a row, so QB5 reported one dead path while carrying five
+260802 1330 · A fresh-context agent bringing QB2a up to this page found a defect worth more than the page it was assigned: two `## Where we are` headings, with roughly 4.6 KB of dated records under the first that had never rendered, because `split_sections` builds a dict and the later block wins. It reported it rather than reaching outside its assignment, which is what the brief asked for. `check.py` gained `duplicate-section` as an ERROR, since this is silent data loss and not a style defect; its first run rescued 8 more lines on QC2b and 6 on QF1, and found one page on the paper board. `### 8.2.2` and a Law record now state it
 260802 1130 · `### 5.2.3` and a Law record now state that a decision lives on the PAGE and never only in a chat session (JL: "don't put the decision in the claude code session"). The evening earned the rule: several proposals were put to JL in chat and only the `haipipe-writing` roster row on QC1b was ever written down, so the rest would have vanished with the session. The Index roll-up of open Decision Now rows, which had been asked twice in chat, is now a real row on QB2. `haipipe-board` carries the rule too, since it binds every board and not only this page
 260802 1100 · One door, not two (JL: "you can just say, haipipe-board update the page etc, it will route to the haipipe-board-page"). `haipipe-board` 0.102.0 lists `create a page` and `update a page` as routed verbs beside the eleven it runs itself, with the rule that routing goes by SCOPE rather than by wording: one page is the page skill's, the board and its structure are the board skill's, and a request naming a page id or path is the page skill's even when it sounds structural. `### 10.1` says the same thing from the reader's side, which is that they choose nothing
 260802 1040 · `### 10` rewritten from a command list into TWO VERBS on JL's ask ("could we just rely on haipipe-board-page for this purpose? like haipipe-board-page create a new xxx on the topic of xxx, or working on the xxx"). It had been a manual telling a reader which engine to call, which is exactly the knowledge a door exists to remove. `haipipe-board-page` 0.8.0 now carries both verbs with their procedures, and its boundary was restated rather than broken: "never renders, serves or checks" always meant it does not CONTAIN that code, and calling the engine is not owning it, which is the same separation `### 9.3.3` requires of the reviewer

@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: CC
 method: start an agent with no memory of this conversation and hand it only SKILL.md
 
-## Question
+## Opening
 How do we prove that a fresh agent can use the board skill from its written instructions alone?
 
 The author can fill documentation gaps from memory and therefore cannot perform this test.
@@ -11,13 +11,8 @@ A clean agent reveals every step, convention, or gate that the skill forgot to s
 Material revisions invalidate the previous result because the workflow it proved has changed.
 Acceptance means the agent opens a valid board, respects every gate, and leaves no guessed rule unfixed.
 
+**Covered elsewhere**: **What SKILL.md says**: that is `QC1`. This question only judges whether it suffices.
 
-## Boundary
-- ✅ Covered here
-  **How acceptance is run**: what the fresh agent is given, what it must do, what counts as passing, how often to re-run.
-- ↪ Covered elsewhere
-  **What SKILL.md says**: that is `QC1`.
-  This question only judges whether it suffices.
 
 ## Diagram
 
@@ -37,7 +32,7 @@ Acceptance means the agent opens a valid board, respects every gate, and leaves 
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QF2
 
-## Items to Finish
+## Aims
 - [x] Start an agent with no memory of this conversation; give it only SKILL.md + ref/ and one real topic
       Topic: "set the usage rules for the lab's new GPU cluster".
       Explicitly forbidden from looking at any existing board.
@@ -56,7 +51,7 @@ Acceptance means the agent opens a valid board, respects every gate, and leaves 
       Verdict **YES**: it built on the first run, 5 pages discovered, the index counted `0/4 questions settled · 0/1 stages gated`, the S page's Stage Record was lifted into Opening, and it stopped at the right gate (it quoted the "Q list needs a nod" sentence and the question it would have asked).
       Four documentation gaps it had to guess through were all fixed the same day, see Where we are.
 
-## Where we are
+## States
 **Run twice, both YES: 260723 on the Q-only skill, 260725 on the shared Q/S skill. The four gaps the second run had to guess through are closed.**
 
 - 260725 CC · 🔁 Second run passed, and paid for itself in gaps

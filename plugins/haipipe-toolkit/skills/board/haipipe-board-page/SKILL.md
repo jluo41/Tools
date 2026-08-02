@@ -229,7 +229,9 @@ Execution uses existing surfaces rather than a new skill:
 
 The quick check helps the author iterate; only the fresh reviewer tests whether the page stands on its own without conversation context.
 
-There is NO `## Boundary` section (JL 260731, said twice). It was added by CC on 260723, never ruled in, and removed from all 47 pages that carried one. What a page covers is the Opening's job; point at a neighbouring page from the prose that needs it.
+There is NO `## Boundary` section (JL 260731, said twice). It was added by CC on 260723 and never ruled in. What a page covers is the Opening's job; point at a neighbouring page from the prose that needs it, as a `**Covered elsewhere**:` part in the Opening's drawer.
+
+The same ruling renamed three sections: `## Question` -> `## Opening`, `## Items to Finish` -> `## Aims`, `## Where we are` -> `## States`. `src/common.py` still ALIASES every old name, so a page on the old vocabulary keeps rendering correctly. Do not read that as permission. This skill claimed the removal was finished on 260731; on 260802 the board still had 26 `## Boundary` sections and 45 of 55 pages on the old names, because a forgiving renderer means nobody ever sees the drift. `check.py` now reports every retired name as `retired-section`, which is the only reason this paragraph can be trusted.
 
 One name is RESERVED inside States (JL 260731): `### Decision Now` holds the decisions a machine proposes and the human must make, one `- [ ]` row each carrying the ask, the options, and a recommendation.
 A proposal never lives only in chat: it is written there on the owning page, the human answers by ticking, and an answered row moves into the page's dated record.

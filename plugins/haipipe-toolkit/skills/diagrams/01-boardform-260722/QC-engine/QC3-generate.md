@@ -4,7 +4,7 @@ state: 🟡 PARTIAL · both generators ship, routing of consequences does not
 owner: JL
 method: mirror `stage.py`: generate the page once, keep one managed block in sync, and never touch what a human wrote around it
 
-## Question
+## Opening
 How can the Board represent an existing skill or meeting note without becoming a stale second copy?
 
 These sources have their own files, versions, and histories before the Board mentions them.
@@ -12,12 +12,7 @@ The difficult boundary is what the generated page may refresh and what a person 
 That choice determines whether the page stays current without erasing human judgment or discussion.
 It succeeds when managed spans resync from the source and every authored line survives untouched.
 
-## Boundary
-- ✅ Covered here
-  The shared contract: managed spans that resync, human spans that are never clobbered.
-- ↪ Covered elsewhere
-  A skill folder → a synced Skill page: `QC3a` (`skillpage.py`). A meeting note → a board page: `QC3b` (`meetingpage.py`).
-  Migrating the two old boards was archived 260801 (we no longer hold them). The round trip a generated page then joins: `QC4`.
+**Covered elsewhere**: A skill folder → a synced Skill page: `QC3a` (`skillpage.py`). A meeting note → a board page: `QC3b` (`meetingpage.py`). Migrating the two old boards was archived 260801 (we no longer hold them). The round trip a generated page then joins: `QC4`.
 
 ## Diagram
 
@@ -34,12 +29,12 @@ It succeeds when managed spans resync from the source and every authored line su
 `QC3b` gives a meeting note a home the board can show (page discovery matches a NAME, and a dated file was invisible), then separates the artifact from its consequences: the note gets a page, and what it decided routes into the Q pages that own it.
 Both mirror `stage.py`: one managed block resyncs, everything a human wrote around it is left alone.
 
-## Items to Finish
+## Aims
 - [x] 🧪 skill folder → synced page ships (QC3a)
 - [x] 🧪 meeting note → board page kind ships (QC3b)
 - [ ] 🧠 routing a meeting's consequences into the owning Q pages (QC3b) still to build
 
-## Where we are
+## States
 Both page kinds generate and are live; what remains is routing a meeting note's decisions into the Q pages they change, which is the one open item on QC3b.
 
 ### Decision Now

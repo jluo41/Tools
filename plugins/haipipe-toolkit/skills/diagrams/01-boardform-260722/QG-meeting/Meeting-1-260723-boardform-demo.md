@@ -1414,7 +1414,7 @@ Each of these belongs on the page that owns it; routing them is a separate pass,
 
 <!-- haipipe:meeting:body:end -->
 
-## Items to Finish
+## Aims
 ### From the meeting
 - [ ] S1(作者)— 完成 single-question web page layout 模板(question 短段+bullet、downwind、items to finish、now)并 push。
 - [ ] S1 — 把 board 里中文表述改为英文,section heading 更清晰。
@@ -1426,7 +1426,7 @@ Each of these belongs on the page that owns it; routing them is a separate pass,
 - [ ] 全员 — pull 后让 Claude 读一遍 skill 说明,尝试为自己的任务新建一个 board 并反馈体验。
 - [ ] S1 — 后续考虑跨 board 汇总视图(space 级别看哪些 board 有未完成任务)。
 
-## Where we are
+## States
 Imported 260731 from `meeting/260723-meeting.md`.
 Nothing has been routed onto the Q pages yet, so this page is the whole record so far.
 

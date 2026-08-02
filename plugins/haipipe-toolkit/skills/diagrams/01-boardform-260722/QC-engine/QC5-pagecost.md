@@ -1,16 +1,16 @@
 # What a board page costs to open, and what we spend to make it less
 
-state: 🟡 PARTIAL · the wire half is measured and closed; the browser half has counts but no timings
+state: 🟡 PARTIAL · bytes and lanes are both measured and closed; the browser half has counts but no timings
 owner: CC
 method: measure the wire and the browser separately, then spend only where a number says to
 
 ## Opening
 What does opening one board page actually cost, and which of those costs is worth paying to remove?
 
-A board page is a file the server sends and the browser then builds into something readable, and each half has its own price.
-The wire half is bytes: how big the file is, how much of it repeats on every other page, and whether the browser is allowed to keep a copy.
-The browser half is work: parsing the html, running the board's JavaScript, and building the elements you scroll through.
-This page rules what those costs are and which ones we spend engineering time to reduce.
+A board page is a file the server sends and the browser then builds into something you can read, and each half has its own price.
+The wire half is bytes and the lanes that carry them: file size, what repeats on every page, and whether a connection is free to send it at all.
+The browser half is work: parsing, running the JavaScript, building what you scroll.
+This page rules which of those costs we pay to remove.
 
 **What "a page" means here**: One generated `.html` under a board's `board/` folder, such as `QB1-opening.html`, together with the `board.css` and `board.js` it asks for.
 The three arrive separately, and only the first is different from page to page.
@@ -18,9 +18,13 @@ The three arrive separately, and only the first is different from page to page.
 **Where this page sits**: `QC` owns the engine, and every lever named here is in it: `build.py` decides what a page contains, `serve.py` decides what crosses the wire and what a browser may cache, and `assets/` is the bundle both halves pay for.
 `QD5` owns the pane layout and keeps only what is true because there are three frames; the costs on this page would exist if the split had never been built.
 
-**Why this is hard**: The two halves fail in ways that look identical from a chair.
-A page that arrives slowly and a page that arrives fast but takes a second to build both read as "it is slow", and the tools that measure one are blind to the other: `curl` never parses, and a browser profile never shows you a cache header.
-So a number from the wrong half sends the work in the wrong direction, which has already happened twice on this board.
+**What "a lane" means here**: A browser opens at most SIX connections to one origin and shares them across every tab.
+A request that has not finished is still holding one, so a request that never finishes removes a lane permanently.
+
+**Why this is hard**: Three different failures read as one word, "slow".
+A page can arrive slowly, arrive fast but take a second to build, or never leave the browser's queue because no lane is free, and from a chair all three are the same wait.
+The tools are each blind to two of the three: `curl` never parses and always gets its own fresh connection, and a browser profile never shows you a cache header.
+So a number from the wrong instrument sends the work in the wrong direction, which has now happened three times on this board, once for eight days.
 
 **What decides it**: Every claim here carries the command that produced it, and no lever is pulled without a number naming it.
 
@@ -34,11 +38,15 @@ So a number from the wrong half sends the work in the wrong direction, which has
   page html      20-49 KB gzipped       parse html      605 KB uncompressed
   board.js       82 KB · cached         execute js      250 KB uncompressed
   board.css      33 KB · cached         build the DOM   3,455 elements
-  ────────────────────────────────      ────────────────────────────────
-  measured by    curl, CDP Network      measured by     devtools, CDP Tracing
-  paid           once per session       paid            once per NAVIGATION
-                 for the assets                         unless the page swaps
+  a free lane    1 of 6 per origin      ────────────────────────────────
+  ────────────────────────────────      measured by     devtools, CDP Tracing
+  measured by    curl, CDP Network      paid            once per NAVIGATION
+  bytes paid     once per session                       unless the page swaps
+  lanes paid     for as long as a
+                 request stays open
 ```
+
+A lane is the row that was missing until 260802, and it is the only one whose cost is TIME HELD rather than a size, which is why no byte count ever showed it.
 
 **Where a page's bytes go**: measured on `QD5-split-workspace.html`, and the shape holds board-wide.
 
@@ -48,12 +56,30 @@ So a number from the wrong half sends the work in the wrong direction, which has
     the page itself     52,764 B   33%        what the reader came for
   ────────────────────────────────────────────────────────────────────────
   the rail is the single largest thing a board sends and the only one
-  that is identical on every page it is sent with          A2.2 is this row
+  that is identical on every page it is sent with          A2.4 is this row
+```
+
+**The six lanes**: why a fast server and a fast link still produced a two-minute page.
+
+```
+  a browser opens at most SIX connections per origin, shared by every tab
+  ────────────────────────────────────────────────────────────────────────
+  1  POST /_board/activity    held · the walk never returned
+  2  POST /_board/activity    held · another tab
+  3  POST /_board/activity    held · another tab
+  4  POST /_board/activity    held
+  5  POST /_board/activity    held
+  6  POST /_board/activity    held
+  ────────────────────────────────────────────────────────────────────────
+  GET QB1-form.html?pane=page   ⏳ queued, no lane free
+     devtools calls this "Provisional headers are shown"
+     the page was never slow to serve; it never got a socket to be served on
 ```
 
 **What is already spent**: the levers pulled on 260802, each with the number that justified it.
 
 ```
+  free the six lanes       60 s+ → 43 ms     POST /_board/activity, the same walk
   gzip on text            521 KB → 140 KB    a cold page open
   gzip on vendored xterm  477 KB → 118 KB    /_board/asset/ bypassed the first pass
   immutable on ?v= assets 114 KB → 0         per navigation, after the first
@@ -65,15 +91,17 @@ So a number from the wrong half sends the work in the wrong direction, which has
 
 ### 1 · What is measured, and by what
 
-**Which tool sees which half**: what each measurement can report, and what it is blind to.
+**Which tool sees which cost**: what each measurement can report, and what it is blind to.
 
 ```
-              wire bytes   requests   cache hdr   parse   execute   paint
-  curl            ✅          ✅          ✅        ✗        ✗        ✗
-  CDP Network     ✅          ✅          ✅        ✗        ✗        ✗
-  devtools trace  ~           ~           ✗        ✅       ✅        ✅
+              wire bytes   cache hdr   LANE HELD   parse   execute   paint
+  curl            ✅           ✅          ✗         ✗        ✗        ✗
+  CDP Network     ✅           ✅          ✅        ✗        ✗        ✗
+  devtools        ✅           ✅          ✅        ~        ~        ~
+  devtools trace  ~            ✗           ✗         ✅       ✅        ✅
   ─────────────────────────────────────────────────────────────────────
-  a reading from the wrong half has sent this work the wrong way twice
+  the LANE HELD column is why this took eight days: the instrument used
+  most is the one instrument that cannot see it              1.3 is this
 ```
 
 #### 1.1 · Two tools, two blind spots
@@ -88,6 +116,14 @@ Measured 260802 from a laptop over a direct tailnet path: 24 to 35 ms round trip
 The server answers a static asset in about 1 ms and a generated page in about 20 ms, so neither the link nor the server explains a slow page on its own.
 What the link does is set the price of a REQUEST: at 30 ms, seven requests cost a fifth of a second before a byte of content is drawn, which is why request COUNT is a first-class number here and not a detail.
 
+#### 1.3 · Why every measurement said fast while a reader waited two minutes
+
+`curl` opens its own connection every time, so it can never be short of one, and it reported 20 to 70 milliseconds for a page throughout the eight days a page took one to two minutes to open.
+That is not a wrong reading: the server really was that fast, and so was the link at 24 to 35 milliseconds.
+What `curl` cannot represent is the browser's SHARED budget of six connections per origin, so a page whose request is sitting in Chrome's queue with no lane free is, to `curl`, a page that does not exist to be measured.
+The instrument that does see it is CDP or devtools, and the question it has to be asked is not "how long did the page take" but "is anything still pending", which is a different question and was never asked until 260802.
+`checks/pending.mjs` now asks it on every run.
+
 ### 2 · The wire half
 
 **What a second page in a session costs**: everything already paid for, and what is left.
@@ -96,7 +132,7 @@ What the link does is set the price of a REQUEST: at 30 ms, seven requests cost 
   first page of a session    html 20-49 KB  +  js 82 KB  +  css 33 KB
   every page after           html 20-49 KB     cached       cached
   ────────────────────────────────────────────────────────────────────
-  of that html, 67% is the rail, identical on all 53 pages     A2.3
+  of that html, 67% is the rail, identical on all 53 pages     A2.4
 ```
 
 #### 2.1 · The assets are cached, and the version hash is why
@@ -111,7 +147,26 @@ Nothing was compressed until 260802, and board text compresses 3 to 7 times beca
 A cold page open went from 521 KB to 140 KB, the split's first open from 937 KB to 206 KB, and `xterm.min.js`, at 477 KB the largest single thing this server hands out, from 477 KB to 118 KB once `/_board/asset/` stopped bypassing the compression path.
 It is one header and a `gzip.compress`, and it beat every structural change considered beside it.
 
-#### 2.3 · The rail is what is left
+#### 2.3 · A request that never returns costs more than any number of bytes
+
+Every board page posts `op=stats` to `/_board/activity` as it loads, and that call ran an unpruned `rglob` over the whole repository, 366,951 entries, to find ten `board.md` files.
+It was measured here at over 60 seconds with no answer at all, and a browser allows only SIX connections per origin across all its tabs, so a handful of open pages held every lane and the next CLICK simply queued behind them, which devtools reports as "Provisional headers are shown" and a reader experiences as one to two minutes of nothing.
+It is the same walk that made `/boards` take 95 seconds, fixed there earlier the same day and missed in this copy, which sits on a far hotter path.
+Pruning it in place and caching the result for two seconds took the endpoint to 43 milliseconds, ten at once to 0.88 seconds, and a click from `QB1` to `QB2` to 53 milliseconds.
+
+The three commands behind those numbers, so the claim can be re-derived:
+
+```
+  the endpoint      curl -X POST $HOST/_board/activity -d '{"op":"stats","path":"<board>/board.md"}'
+  under load        the same, ten times with &, then wait
+  a real page       node checks/pending.mjs $HOST
+  ────────────────────────────────────────────────────────────────────────────────
+  the last one is the only one of the three that can fail on a held lane
+```
+
+The symptom to recognise next time is not a timing at all: it is devtools showing "Provisional headers are shown" with "0 B transferred", which means Chrome never sent the request, and the count of ESTABLISHED connections from one client sitting at exactly six.
+
+#### 2.4 · The rail is what is left
 
 67% of a page's bytes are the navigation rail, the same 53 blocks on all 53 pages, and gzip does not remove it: it makes a repeated thing cheap to send, not absent.
 Deleting it from the shipped page is `A2.2` on `QD5`, and it is the only remaining lever of that size.
@@ -147,13 +202,17 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 ### A1 · 🔬 What is measured, and by what
 - A1.1 · Every cost claim on this page names the command that produced it.
   **Done when:** each number in Content can be re-derived from a command written beside it.
+- A1.2 · Every instrument on this page has its blind spot written down.
+  **Done when:** the table in 1 names, for each tool, at least one cost it cannot see, and no claim rests on a tool blind to it.
 
 ### A2 · 🚚 The wire half
 - A2.1 · Nothing unchanged is sent twice.
   **Done when:** the assets carry a content hash and an immutable header, and a second page in a session fetches only its own html.
 - A2.2 · Text crosses the wire compressed.
   **Done when:** every text response above 1 KB is gzipped, including vendored assets, with revalidation and `HEAD` unchanged.
-- A2.3 · A page does not carry the whole board.
+- A2.3 · No request holds a connection longer than it needs.
+  **Done when:** after a page settles, nothing is still pending, and every board endpoint answers in well under a second under concurrent load.
+- A2.4 · A page does not carry the whole board.
   **Done when:** a page's own bytes are the majority of what it ships.
 
 ### A3 · 🧠 The browser half
@@ -165,12 +224,14 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 ## States
 
 ### A1 · 🔬 What is measured, and by what
-- ✅ A1.1 · Every figure in Content carries its source; the two readings that came from the wrong half are named in 1.1 so the mistake is not repeatable.
+- ✅ A1.1 · Every figure in Content carries its source; the three readings that came from the wrong instrument are named in 1.1 and 1.3 so the mistake is not repeatable.
+- ✅ A1.2 · The table in 1 carries a `LANE HELD` column precisely because the tool used most, `curl`, is the one that cannot see it. That gap is what 1.3 is about.
 
 ### A2 · 🚚 The wire half
 - ✅ A2.1 · `serve.py` answers a `?v=` request with `public, max-age=31536000, immutable`; a second page in a session fetches only its own html, measured at 1 request and 29 KB.
 - ✅ A2.2 · `try_gzip` covers static text and `serve_asset` covers the vendored bundle; 304 revalidation, `HEAD` and the `.md` links were each checked by hand afterwards.
-- 🧠 A2.3 · The rail is still 67% of every page. This is `QD5`'s A2.2 and it waits on a person: taking it out changes what a standalone page can do.
+- ✅ A2.3 · `log_boards` prunes in place and caches for two seconds. `POST /_board/activity` went from over 60 s with no answer to 43 ms, ten concurrent to 0.88 s, and a headless load of `QB1-form.html?pane=page` finished all 8 requests with nothing pending.
+- 🧠 A2.4 · The rail is still 67% of every page. This is `QD5`'s A2.2 and it waits on a person: taking it out changes what a standalone page can do.
 
 ### A3 · 🧠 The browser half
 - ✅ A3.1 · The one-document board always swapped; the split now does too, after a regression that made every click a full document load. 7 requests to 1.
@@ -179,6 +240,8 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 ## Files
 
 ### ⚙️ Engines
+- `live/activity.py`
+  `log_boards`, the walk behind every page's `op=stats` post, and the two-second cache that keeps many tabs from each paying for it.
 - `cli/serve.py`
   Decides what crosses the wire: the gzip path, the cache headers, and the `?v=` branch that makes an asset immutable.
 - `live/base.py`
@@ -189,8 +252,16 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
   The swap that keeps a navigation from rebuilding the document.
 
 ### 🧪 Checks
+- `checks/pending.mjs`
+  Opens a page in headless Chrome and asserts that NOTHING is still pending once it settles. This is the check that would have caught A2.3: the page loaded fine, so every existing check passed while a request sat holding a socket.
 - `checks/splitgaps.py`
   G1 asserts the ordinary page still swaps rather than reloads, which is the regression this page's A3.1 exists to prevent.
 
+## Lesson
+260802 · A FAST SERVER AND A FAST LINK DO NOT ADD UP TO A FAST PAGE, because the third term is whether a connection was free, and that term is invisible to the tool most likely to be reached for. Eight days of measurements all said 20 to 70 ms and all of them were correct. The reading that finally landed was not a faster timing, it was a COUNT: exactly six ESTABLISHED connections from one laptop, which is a ceiling rather than a coincidence, and one request that had not finished after 25 seconds.
+260802 · WHEN A WALK IS FIXED IN ONE PLACE, GREP FOR THE OTHERS THE SAME HOUR. `rglob` over the repository root was found and fixed in `live/home.py` in the morning and left standing in `live/activity.py` until the evening, on a path a hundred times hotter. The fix was known; only its second site was not. `grep -rn "rglob" live/` takes one second and was not run.
+260802 · A CHECK THAT ASKS "DID IT WORK" WILL NOT FIND A RESOURCE LEAK. Every existing check passed throughout, because the page did load and its content was right. The question that finds this class of bug is "is anything still pending", and it has to be asked of a real browser, since a request never sent is not a request any server log will show.
+
 ## Log
+260802 · Found and fixed the cause of the one-to-two-minute page JL had reported for days, recorded in 2.3. `POST /_board/activity` never returned, because `log_boards` still ran the unpruned `rglob` that `/boards` had been fixed for that morning. Each hung post held one of the browser's six connections per origin, so a few open tabs left a CLICK with nowhere to go, which is the "Provisional headers are shown" in JL's devtools and the "12 requests / 0 B transferred" beneath it. The diagnosis took as long as it did because every measurement said the server was fast, and it was: 20 to 70 ms to serve a page, on a 24 to 35 ms link. Nothing was measuring whether a socket was free to serve it on, which is why `checks/pending.mjs` now exists and asks exactly that
 260802 · Opened, after the same performance question was asked and answered three times inside `QD5` and did not belong there. `QD5` owns the pane layout; what a page costs to open is true of the one-document board as well, and every lever is in `QC`'s engine. Carries the measurements taken on 260802 from both sides of the wire, including JL's own laptop-side record, and the two readings that came from the wrong half: a `no-store` header read off a URL the browser never requests, and a click called fast because it measured 49 ms on the machine serving it

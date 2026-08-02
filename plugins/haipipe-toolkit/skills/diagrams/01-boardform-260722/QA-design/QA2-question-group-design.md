@@ -11,12 +11,8 @@ The file grammar says how to store an accepted page, but it cannot decide which 
 Without a decomposition test, an agent can create overlap, vague titles, and arbitrary groups that render cleanly but cannot steer the work.
 The proposal succeeds when the user can see complete, non-overlapping ownership before approving any new file.
 
+**Covered elsewhere**: File membership and numbering are `QB1`; the Q/S source shape is `QB4` (the template moved there when QA2 merged, 260729); Board-Webpage-Index rendering and structure controls are `QB2`; prose inside an accepted page is checked by `QF1`.
 
-## Boundary
-- ✅ Covered here
-  The procedure for proposing page scope, page names, group membership, group names, and the evidence used to judge that proposal.
-- ↪ Covered elsewhere
-  File membership and numbering are `QB1`; the Q/S source shape is `QB4` (the template moved there when QA2 merged, 260729); Board-Webpage-Index rendering and structure controls are `QB2`; prose inside an accepted page is checked by `QF1`.
 
 ## Diagram
 
@@ -84,7 +80,7 @@ If page scope, coverage, or separation fails, revise the decomposition. If the p
 - **Fallback:** pages with no coherent shared responsibility remain ungrouped.
 - **Review:** no files are created until the user accepts or revises the proposal table.
 
-## Items to Finish
+## Aims
 ### The proposal method's tests
 - [ ] 🧭 Settle how candidate pages are derived
       Define how the approved requirements inventory becomes candidate decision pages or ordered lifecycle-stage pages.
@@ -101,7 +97,7 @@ If page scope, coverage, or separation fails, revise the decomposition. If the p
 - [ ] 🧪 Test the method on real boards
       Freeze two fixture packets and answer keys: one decision board with independent questions and one lifecycle board with ordered stages and outputs. A fresh agent receives only `ref/proposal-rules.md` plus each packet and produces a proposal table. An independent reviewer scores both tables on the acceptance dimensions. After an accepted table is materialized, a second cold reader sees only `board.md` and must match the answer key for every page title's ownership and every group's reason without opening page bodies. Finish conditions are judged from the proposal table, not inferred from `board.md`.
 
-## Where we are
+## States
 Only fragments exist: titles must be short phrases, questions must be self-contained, ids and slugs have a grammar, and groups have an index representation. No rule currently tells an agent how to propose the pages or groups themselves.
 
 - 260731 JL · 🗂 The groups settled at six

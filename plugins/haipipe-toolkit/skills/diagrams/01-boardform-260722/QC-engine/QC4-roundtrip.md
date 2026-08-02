@@ -88,7 +88,7 @@ JL ruled it out on 260731, and a Board-folder build now removes a leftover monol
 The no-script property moved with the canonical output: every page remains complete and navigable with JavaScript removed, and `build.py` plus `check.py` assert that property on the split files.
 A single Markdown target may still render one HTML file for compatibility; that is not a Board-folder output and is not a second front door.
 
-## Items to Finish
+## Aims
 ### The loop as one description
 - [x] 🔁 Write the loop into the skill, once
       `SKILL.md` now states the complete source → render → delivery → write-back loop in one place; the implementation files remain its executable parts.
@@ -105,7 +105,7 @@ A single Markdown target may still render one HTML file for compatibility; that 
 - [x] 🔗 Intercept internal links
       So navigation inside the tree never destroys the drawer or the terminal, and so the no-JS path still navigates.
 
-## Where we are
+## States
 
 - 260801 JL · 🐢 Navigation was re-downloading a rail it throws away
   JL: "why I feel it will have a long time to navigate to different pages?"

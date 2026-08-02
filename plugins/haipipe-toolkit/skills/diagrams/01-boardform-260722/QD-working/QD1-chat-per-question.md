@@ -4,7 +4,7 @@ owner: JL
 method: settle the levels, the read/write permissions, and where conversations go; implementation split to QD2 / QD3
 session: e4ac2dc0-af0d-46cc-972c-c19582f2ba62
 
-## Question
+## Opening
 How should a board, group, or page get its own Claude Code conversation without two windows colliding on the same work?
 
 A scoped conversation keeps context close to the work it owns.
@@ -12,12 +12,8 @@ The hard part is deciding what it may change and which session is current.
 If two live windows share one session, histories can fork and file edits can collide.
 This page succeeds when every conversation has a clear scope, a resumable history, and one safe live window.
 
+**Covered elsewhere**: The implementations: the web drawer is `QD2`, the real terminal is `QD3`; both also open on the whole board through the index page's chatbot (recorded on `QD2`).
 
-## Boundary
-- ✅ Covered here
-  **The rules**: board level vs. question level, one session per question, one window per session, where the session id is stored.
-- ↪ Covered elsewhere
-  The implementations: the web drawer is `QD2`, the real terminal is `QD3`; both also open on the whole board through the index page's chatbot (recorded on `QD2`).
 
 ## Diagram
 
@@ -52,7 +48,7 @@ This page succeeds when every conversation has a clear scope, a resumable histor
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD1
 
-## Items to Finish
+## Aims
 ### ⚖️ The framework questions
 - [x] Spell out what board level and question level each own
       Board level = this "session for top" conversation: open/close questions, edit build.py and serve.py, cross-question decisions.
@@ -79,7 +75,7 @@ This page succeeds when every conversation has a clear scope, a resumable histor
       Both: QD2 (web drawer) for daily use, QD3 (real terminal) as the escape hatch.
       Both are built.
 
-## Where we are
+## States
 All three framework questions are answered; the last one (two agents, one file) remains.
 
 - The levels

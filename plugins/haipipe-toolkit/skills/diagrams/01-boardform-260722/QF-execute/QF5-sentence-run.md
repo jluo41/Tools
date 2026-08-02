@@ -12,14 +12,7 @@ A small change in any one layer can leave the page looking healthy while comment
 The test must cross every rendered sentence shape with every operation and make honest refusals part of the result.
 It succeeds when each action lands once beside the intended line or clearly explains why it cannot.
 
-## Boundary
-- ✅ Covered here
-  Every operation that reads a sentence and writes markdown, every shape a sentence can take on a page, what each instrument can and cannot see, and what a run must assert.
-- ↪ Covered elsewhere
-  What the operations ARE and what they mean: `QB5` and its faces.
-  The anchoring contract itself: `QC4a`.
-  Driving the page in a browser at all: `QF3`, whose harness this one specialises.
-  Whether a checker run BLOCKS a change: `QF1`.
+**Covered elsewhere**: What the operations ARE and what they mean: `QB5` and its faces. The anchoring contract itself: `QC4a`. Driving the page in a browser at all: `QF3`, whose harness this one specialises. Whether a checker run BLOCKS a change: `QF1`.
 
 ## Diagram
 
@@ -208,7 +201,7 @@ F · DOES IT SURVIVE THE PAGE MOVING
 
 Nothing here needs a human eye: A and E are measured in a real browser, B is the parity sweep, C and D are a markdown diff against a fixture.
 
-## Items to Finish
+## Aims
 ### Tier 1, the parity sweep
 - [x] 🧪 Write it
       `sentencerun.py`: its own tab, every page, the page's own reader, the server's own matcher, no writes.
@@ -243,7 +236,7 @@ Nothing here needs a human eye: A and E are measured in a real browser, B is the
 - [ ] 🚦 Decide what a red run stops
       `QF1` leaves this open for the checker; this run should not invent a different answer.
 
-## Where we are
+## States
 
 - 260801 CC · 🟩 The write grid is green, and it went green by finding real defects
   A second harness, `sentencewrite.py`, builds a throwaway fixture board, posts every operation against every shape, and asserts on the MARKDOWN rather than the status code: exactly one record, in the right slot, the rest of the file byte-identical, and not written twice.

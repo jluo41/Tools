@@ -4,7 +4,7 @@ state: 🟡 PARTIAL · read-only half verified; no route ruled, nothing deployed
 owner: JL
 method: first sort out "who needs to see it", then decide local vs. server
 
-## Question
+## Opening
 How can someone outside the author's machine open this board without exposing more of the repository than they should?
 
 The static pages are easy to share, but comments, chat, and terminal access require a live service beside the source files.
@@ -12,13 +12,8 @@ Those two halves carry very different risks, especially in a repository with pri
 The chosen route determines authentication, write permissions, and whether collaborators get a view or a workbench.
 It succeeds when a second reader can use the promised tier through a protected, narrow path.
 
+**Covered elsewhere**: The Board's **content and layout**: that is the `QA` group, and `QB2` for the Board-Webpage-Index and the shared surface. Nor whether **work can be done on the board**: that is the `QD` group; this question only owns "where it opens from".
 
-## Boundary
-- ✅ Covered here
-  **How the board is reached**: local / LAN / server, who can see it, login or not, static export vs. full function.
-- ↪ Covered elsewhere
-  The Board's **content and layout**: that is the `QA` group, and `QA2b` for the Board-Webpage-Index and the shared surface.
-  Nor whether **work can be done on the board**: that is the `QD` group; this question only owns "where it opens from".
 
 ## Diagram
 
@@ -33,7 +28,7 @@ It succeeds when a second reader can use the promised tier through a protected, 
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE1
 
-## Items to Finish
+## Aims
 ### Rulings awaiting JL
 - [ ] Sort out "who needs to see it, and which half"
       A read-only glance (②) or commenting and working together (③).
@@ -90,7 +85,7 @@ It succeeds when a second reader can use the promised tier through a protected, 
 - [ ] A second person has actually opened it once
       That is the acceptance line: not "theoretically possible": someone really opened it from another machine and left a comment.
 
-## Where we are
+## States
 **One route only: local, tunneled out by Remote-SSH.**
 
 - How it opens today

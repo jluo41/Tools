@@ -11,10 +11,8 @@ The hard part is that those records have different forms but must share one visi
 Rendering them as loose paragraphs makes the sentence unreadable and leaves its evidence easy to misplace.
 The design succeeds when the sentence stays clean and one click reveals every adjacent record tied to the same source line.
 
+**Covered elsewhere**: `QC0@paper` through `QC4@paper` rule the paper marker meanings, `QAa0` owns page order, `QB5b` owns comment pinning, `QB5` is the family's front door, `QB5c` owns editing the sentence itself, and `QB5d` owns what an agent is handed.
 
-## Boundary
-- ✅ Covered here: apparatus-lane adjacency, the ⚑ badge, drawer rendering, and the mechanism that hosts resolved inline-marker chips.
-- ↪ Covered elsewhere: `QC0@paper` through `QC4@paper` rule the paper marker meanings, `QAa0` owns page order, `QA6` owns comment pinning, `QAb0` is the family's front door, `QAb2` owns editing the sentence itself, and `QAb3` owns what an agent is handed.
 
 ## Diagram
 
@@ -44,7 +42,7 @@ This does not replace selection comments (`QA6`): select any span for a pinned `
 The paper unit docs already write review threads and CHECK blocks under the sentence they discuss, so existing files gain the behavior with zero edits once their board rebuilds.
 The typed lanes are JL's extension of that same convention, proposed in the MISQ-Paper-Board session on 260725: `> Citation`, `> Value`, `> Display` lanes map one-to-one onto the paper placeholders `\cite{TOADD}`, `{VAL:? …}`, and DR display ids, which is the alignment path to `/haipipe-paper`.
 
-## Items to Finish
+## Aims
 ### The renderer and write mechanism
 - [x] ⚑ Adjacency fold shipped
       A plain sentence followed by `>` lines renders as a native `<details>`: the sentence plus a ⚑N badge on stage, the apparatus in a drawer beneath.
@@ -87,7 +85,7 @@ The typed lanes are JL's extension of that same convention, proposed in the MISQ
       Content is now the section itself, and each heading names it (`📚 Content · Main 7 Results`, `📚 Content · Main 9 Conclusion`).
       `stage.py sync --all` then ran and left every authored venue contract untouched, which proves an authored subsection under `## Stage Contract` survives sync.
 
-## Where we are
+## States
 Sentence adjacency, typed lanes, click-to-add, copy controls, and inline-marker chips are implemented and live on the lab and MISQ Boards.
 The only open gate is JL's visual and interaction acceptance on the lab Board before the interaction is treated as settled.
 

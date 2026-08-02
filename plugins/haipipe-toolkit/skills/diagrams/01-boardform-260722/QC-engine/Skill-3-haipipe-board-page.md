@@ -177,11 +177,11 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       The named next step (QC6 §7): `serve.py`'s hand-rolled `CHAT_RULES` string becomes this contract's consumer instead of restating it, which kills the copy that has already rotted once.
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
-## Where we are
+## States
 Page generated 260731 1115. Nothing ruled yet.
 
 ## Log

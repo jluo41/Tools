@@ -139,11 +139,11 @@ Read these canonical sources before reviewing:
       ```
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
-## Where we are
+## States
 Page generated 260727 0017. Nothing ruled yet.
 
 ## Log

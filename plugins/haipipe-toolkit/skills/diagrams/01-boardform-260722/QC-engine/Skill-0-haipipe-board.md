@@ -815,11 +815,11 @@ xcal.py                            324 ln  board.md + the pages' ASCII figures -
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
-## Where we are
+## States
 Page generated 260726 2325. Nothing ruled yet.
 
 ## Log

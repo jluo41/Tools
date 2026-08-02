@@ -180,11 +180,11 @@ src/lanes.py     253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane b
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
-## Where we are
+## States
 Page generated 260730 1720. Health still unruled, but the COPY is now verified: on 260801 all three managed spans were regenerated from `board/haipipe-board-index/` and compared byte for byte against what sits on this page, and all three were identical. A second pass confirmed the transform is lossless: every one of SKILL.md's 109 content lines reaches `## Content`, with only the frontmatter and the `# ` title dropped by design.
 
 Worth knowing before trusting a green `check`: `skillpage.py check` hashes the frontmatter's derived facts ONLY (`name` `version` `last_updated` `summary` `allowed-tools`), by `digest()`'s own docstring, "so prose edits never look like drift". A ✅ therefore means the metadata is current, NOT that the prose matches. Byte equality needs the regenerate-and-diff done above. That gap belongs to `skillpage.py`, which ships in `haipipe-board`, so it is [Skill-0-haipipe-board](QC-engine/Skill-0-haipipe-board.md)'s to carry, not this skill's.

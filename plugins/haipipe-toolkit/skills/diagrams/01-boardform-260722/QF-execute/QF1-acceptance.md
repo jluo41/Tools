@@ -3,7 +3,7 @@ state: 🟡 PARTIAL
 owner: CC
 method: two instruments cover four failure classes on one planned trigger: a mechanical checker tests structure and detectable interaction/status contradictions; a zero-background reviewer tests readability and visible staleness
 
-## Question
+## Opening
 How should every board change trigger the checks that catch broken structure, unreadable prose, and stale or contradictory claims before the round closes?
 
 Authors miss these failures because they carry the intended result and missing context in their heads.
@@ -11,10 +11,8 @@ A mechanical checker and a fresh reader see different evidence, so neither can r
 The hard part is making both run at the right scope and deciding what a red result stops.
 This page succeeds when every change produces a clear, repeatable review instead of waiting for a reader to notice the damage.
 
+**Covered elsewhere**: `QB4` owns the page template and one Content division per section; `QF2` owns the separate fresh-agent usability acceptance for a revised skill; `QF3` owns browser behavior.
 
-## Boundary
-- ✅ Covered here: the mechanical checker, the fresh reviewer, their four failure classes, their shared trigger, and the report produced when either instrument is red.
-- ↪ Covered elsewhere: `QB4` owns the page template and one Content division per section; `QF2` owns the separate fresh-agent usability acceptance for a revised skill; `QF3` owns browser behavior.
 
 ## Diagram
 
@@ -115,7 +113,7 @@ Its brief is fixed and narrow, and it is told not to praise or summarize: name t
 It grades each page clear, half, or unreadable, where half means the reader can restate what is asked but not why it matters or what counts as done.
 The prompt and the rules it enforces live in `ref/writing-rules.md`, so the check and its standard are one document rather than a habit.
 
-## Items to Finish
+## Aims
 ### The template fixture
 - [x] 🧪 The shared template exercises both Q and S renderer modes
       Copying `ref/page-template.md` twice and renaming the copies must be enough to exercise one Q render path and one S render path before the author replaces the guide prose.
@@ -197,16 +195,7 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
       This is a decision about how we work rather than about the code, so it is JL's, and until it is made both checks report.
 
-## Where we are
-
-- 260801 JL · 🔬 A THIRD instrument exists, and this face's two were green through every failure it catches
-  `QF3` opened on 260801 after a browser run passed 36 of 36 assertions.
-  What it changes here is the claim this face makes: the two instruments named above are a mechanical checker and a zero-background reader, and BOTH of them read text.
-  Six failures shipped on 260731 with this face's checker green and a reader who would have found nothing: the index rendering as inline links because invented class names matched no CSS, the left rail missing from a template, six ASCII figures never emitted, every write from a tree page failing silently, a CSS fix that never reached the page for want of cache-busting, and a stray triangle that survived two fixes on a specificity tie.
-  Every one lived in what the BROWSER did with text that was itself correct, which is the boundary between this face and `QF3`.
-  The shared trigger argument in §"Why they share a trigger anyway" now covers three instruments rather than two.
-
-## Where we are
+## States
 Both instruments now exist and have a registered runner.
 `check.py` is the mechanical instrument; `haipipe-board-reviewer-agent` is the read-only fresh-context runner that combines its report with the prose and staleness review.
 The checker now reads the same state contract as the renderer: the first emoji is the four-value machine status, optional text is human detail, and live `/_board/` plus `/_excalidraw` routes are not mistaken for missing files.
@@ -263,6 +252,13 @@ These are the calls only JL can make; CC ticks nothing here.
       The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
       A tick here also closes the same row in Items to Finish.
 
+- 260801 JL · 🔬 A THIRD instrument exists, and this face's two were green through every failure it catches
+  `QF3` opened on 260801 after a browser run passed 36 of 36 assertions.
+  What it changes here is the claim this face makes: the two instruments named above are a mechanical checker and a zero-background reader, and BOTH of them read text.
+  Six failures shipped on 260731 with this face's checker green and a reader who would have found nothing: the index rendering as inline links because invented class names matched no CSS, the left rail missing from a template, six ASCII figures never emitted, every write from a tree page failing silently, a CSS fix that never reached the page for want of cache-busting, and a stray triangle that survived two fixes on a specificity tie.
+  Every one lived in what the BROWSER did with text that was itself correct, which is the boundary between this face and `QF3`.
+  The shared trigger argument in §"Why they share a trigger anyway" now covers three instruments rather than two.
+
 ## Files
 ### The two instruments
 - `cli/check.py`
@@ -304,6 +300,7 @@ Opening: the always-visible opening section that states a page's question and sc
 > JL: Board should be a first-class family, and it should have a reviewer agent.
 
 ## Log
+260802 · A second `## Where we are` heading was silently discarding everything under the first: `split_sections` builds a dict, so the later block won and 1023 bytes of dated records had never rendered. The two are merged and the duplicate heading is gone; `check.py` gained a `duplicate-section` ERROR the same day, because nothing reported this.
 260801 · QF3 opened as the third instrument: a browser run, because this face's two instruments both read text and six 260731 failures lived in what the browser did with it
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · The trigger's scope written down: a shared change is checked across the root, a board-local change on its board, because one server serves every board under the SPACE (QA0)

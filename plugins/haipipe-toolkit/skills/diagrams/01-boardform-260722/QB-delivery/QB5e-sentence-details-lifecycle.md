@@ -11,13 +11,8 @@ The hard part is that comments, evidence, and edits do not share one lifecycle, 
 Without explicit distinctions, the panel either grows forever or deletes context that still matters.
 The lifecycle succeeds when active records stay protected, every cleanup is previewed, archives can be restored, and purge remains separate.
 
+**Covered elsewhere**: `QB5a` owns what apparatus can attach and how adjacency renders it. `QB5b` owns writing a sentence-local comment, `QB5c` owns editing and change records, and `QB5d` owns C/H/P/S addresses plus Sentence Focus in Chat.
 
-## Boundary
-- ✅ Covered here
-  The Sentence details panel, its Overview and typed filters, record states, retention limits, archive, restore, and permanent deletion.
-- ↪ Covered elsewhere
-  `QAb1` owns what apparatus can attach and how adjacency renders it.
-  `QA6` owns writing a sentence-local comment, `QAb2` owns editing and change records, and `QAb3` owns C/H/P/S addresses plus Sentence Focus in Chat.
 
 ## Diagram
 
@@ -81,7 +76,7 @@ A C/H/P/S address says where the record appears in the current render and may ch
 Archive and restore therefore cannot use `QAb4.C1.P1.S1` as durable identity.
 The remaining identity decision is whether an attached sentence receives a hidden stable key or whether archive is intentionally page-level and cannot restore to a sentence after its wording changes.
 
-## Items to Finish
+## Aims
 ### The panel's name and three families
 - [x] 🧭 Open one independent lifecycle Q
       `QAb4` owns filtering, record state, cleanup, archive, restore, and purge.
@@ -106,7 +101,7 @@ The remaining identity decision is whether an attached sentence receives a hidde
 - [ ] 🧪 Pass fresh-context lifecycle acceptance
       A new agent must discover the rules, preserve active records, archive only eligible records, and stop before purge.
 
-## Where we are
+## States
 `QAb4` now exists as the independent Sentence details lifecycle decision.
 The name, three record families, and archive-first safety boundary are recorded, but no filter, state marker, archive store, restore path, stable key, or purge action has been implemented.
 

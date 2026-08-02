@@ -315,6 +315,25 @@ The server answers in two to six milliseconds, so none of the wait was ever the 
 `xterm.min.js` alone is 477 KB and `/_board/asset/` bypassed the compression path, because that route serves VENDORED files which do not live under `--root`: the single largest thing this server hands out was the one thing going uncompressed, on every cold chat.
 Compressing the static text and that route took a cold split from 1,312 KB to 563 KB and the old single page from 631 KB to 260 KB, and only then was it honest to compare the two doors at all.
 
+#### P4. Three frames spend the connection budget three times as fast
+(what the split changes about a cost that is not bytes, found the hard way on 260802)
+A browser opens at most SIX connections per origin and shares them across every tab, and a request that has not finished is still holding one.
+One document asking for things spends that budget once; three panes in one tab spend it three ways, and two tabs of the split can reach the ceiling on their own.
+
+```
+  per TAB, at rest              old board        split
+  ────────────────────────────────────────────────────────────
+  documents polling                    1             2   index + page
+  a chat holding a socket              1             1   only when shown
+  a page's own load requests           3             4
+  ────────────────────────────────────────────────────────────
+  a leak that is survivable in one document is not survivable in three
+```
+
+This is not hypothetical: `POST /_board/activity` never returned, one per pane, and the ceiling was reached with a few tabs open, which is `QC5`'s `2.3` and the reason a click sat unanswered for two minutes.
+The split's two defences are both already here and both were built for other reasons: a pane you cannot see is never loaded at all, so a hidden index and a hidden chat cost no lanes, and the refresh poll backs off from 800 ms to 5 s while nothing changes, so an idle tab is not spending a lane every second.
+What the split must never do is add a long-lived connection per pane; the design rule is at most one per TAB, which is why the shell's update channel is a poll on each frame rather than a stream each.
+
 ## Aims
 
 ### C1 · What operating the board is today
@@ -384,6 +403,7 @@ Compressing the static text and that route took a cold split from 1,312 KB to 56
 ### C5 · Performance comparison
 - ✅ A5.1 · Measured 260802: 204 ms and 150 KB the old way, 137 ms and 158 KB in the split. Faster by about a third, for the 8 KB the shell document costs.
 - ✅ A5.2 · Both side frames ship as `data-src`; opening a page is 157 KB and 4 requests, the rail costs 34 KB when first shown, the chat 228 KB, and toggling either afterwards is 1 to 3 ms and no request at all.
+- ✅ A5.3 · Lazy panes and the 800 ms to 5 s backoff hold the per-tab cost down, and `checks/pending.mjs` now fails if any pane leaves a request pending. Verified after the `/_board/activity` fix: 8 requests on a page pane, none pending, one ESTABLISHED connection from the laptop where there had been six.
 
 ### P · Page-level
 - ✅ P1 · Run end to end in headless Chrome: the shell opens, a real `claude` runs in the chat pane, an edit to the md repaints the page frame, and that terminal keeps running untouched. 23 assertions in `checks/splitshell.mjs`, 21 in `checks/splitgaps.py`, and 12 unit tests in `tests/test_shell.py`.
@@ -436,6 +456,7 @@ chat: the third pane, meaning whatever you talk to Claude through. It is the SDK
 pane: one of the three regions of the operating shell, each loading its own document, so refreshing one cannot disturb another.
 
 ## Log
+260802 CC · Recorded `C5 P4`: three panes spend the browser's six-connection budget three times as fast, and `POST /_board/activity` never returning is what proved it. Two tabs of the split reached the ceiling and a click then had no lane to travel on, which is `QC5`'s `2.3`. The split's two defences already existed for other reasons, lazy panes and the 800 ms to 5 s poll backoff, and the design rule they imply is now written down: at most ONE long-lived connection per tab, never one per pane
 260802 · Ran `/haipipe-board-page` on this page and worked the checker's list before touching prose: 24 findings to 0. The one ERROR was the `state:` line, which opened with a bare 🟢 where the grammar wants one of ✅ SETTLED · 🟡 PARTIAL · 🔴 OPEN · ⏸ ON HOLD, so it now reads 🟡 PARTIAL. The other 23 were em-dashes, every one of them in Log lines I wrote today, and each was repaired on its own terms rather than swept: a colon where the clause explains, parentheses where it is an aside, a full stop where it was really two sentences
 260802 · REBUILT THE DIAGRAM SECTION to the page contract and to what actually exists. It carried two figures, neither captioned, and the first was still labelled PROPOSED and still claimed the guard code was deleted, which is not true and is exactly what A3.2 says. Four captioned figures now: the two doors (one address, four ways to ask), what the split IS with each frame's real state and byte cost, the working loop with what every step costs, and a fourth that names what three frames have NOT retired. `80-restore.js` turned out to be load-bearing rather than deletable, PTY parking is still there, and the rail's 83% is still shipped three times over, so the page says so in a figure instead of leaving it to a State row
 260802 · Gave the numbers their own division, `C5 · Performance comparison`, with the Aims and States rows the shape requires (JL: "update the Content with the division of Performance Comparison"). It carries three things that had been scattered: P1 the two doors measured against each other, P2 what each pane costs the first time it is shown, P3 where the wire time went before any of it was worth measuring. `A5.1` asks that the split not be slower to READ than the board it replaces and `A5.2` that a pane you cannot see cost nothing; both are ✅ with the measurement beside them

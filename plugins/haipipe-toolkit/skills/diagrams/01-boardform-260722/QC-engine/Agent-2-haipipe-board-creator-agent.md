@@ -172,7 +172,7 @@ duplicating each other's judgment.
       batch, and dispatches `haipipe-board-reviewer-agent` to judge the result.
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 - [ ] 🚚 Give the caller its half, in `haipipe-board`
@@ -182,7 +182,7 @@ duplicating each other's judgment.
 - [ ] 📐 Decide the batch size ceiling, if there is one
       Eight pages is eight contexts reading the same four specs; whether that is worth it at every size, or only above some count, is unmeasured.
 
-## Where we are
+## States
 The agent is written and registered; nothing has run through it yet, and the caller's half does not exist.
 
 - 260731 JL · 🤖 Opened on JL's ask for a parallel page writer

@@ -138,7 +138,7 @@ The edit box should carry the SOURCE line rather than the rendered text.
 The server already knows the line, since it just found it, so the response that opens the editor can return the raw markdown for the author to edit directly.
 Formatting is then never guessed at and never erased, the 47.3% refusal disappears, and the rule stays "the machine never rewrites markdown it did not understand".
 
-## Items to Finish
+## Aims
 ### Finding the line
 - [ ] 🔗 Collapse the two normalizers into one
       `_plain_sentence` and `add_sentence`'s private `plain()` are the same three substitutions written twice; one is the rule and the other is a copy waiting to drift.
@@ -154,7 +154,7 @@ Formatting is then never guessed at and never erased, the 47.3% refusal disappea
 - [ ] 🧪 Prove the refusals with a test
       A fixture page with a duplicated sentence, a decorated sentence, and a stale version, asserting that each is refused with its own message and that none of them writes anything.
 
-## Where we are
+## States
 The addressing rule works on this board today and has never written to the wrong line, which is worth saying plainly before changing anything.
 What it lacks is a stated contract, a second level for the case it currently refuses, and any protection against a concurrent write.
 The measurement above is the argument for ordering: the duplicate case is latent, so the edit refusal and the missing version token are the two that cost something today.

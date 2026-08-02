@@ -11,12 +11,8 @@ The distinction is hard because all three are casually called the Board even tho
 Putting a file in the wrong layer can leave a decision nonbinding, make working history ship as law, or lose an edit on the next build.
 The model succeeds when a reader can place any new rule, page, or artifact without guessing where it belongs.
 
+**Covered elsewhere**: Where a board folder lives and what it is named is `QC1`; a page living inside its home folder is `QC4`; the words this family uses are `QB1`; how a topic becomes pages and groups is `QA2`; which units the family ships is `QC1b` and the `Q-Skill` roster.
 
-## Boundary
-- ✅ Covered here
-  The three folders, which kind of truth each holds, why a subskill nests inside `①`, the movements allowed between them, and the two forbidden ones.
-- ↪ Covered elsewhere
-  Where a board folder lives and what it is named is `QC1`; a page living inside its home folder is `QC4`; the words this family uses are `QB1`; how a topic becomes pages and groups is `QA2`; which units the family ships is `QC6` and the `Q-Skill` roster.
 
 ## Diagram
 ```
@@ -153,7 +149,7 @@ Every unit inside `①` is deletable from every other unit inside `①`.
 `②` is deletable from all of them: it argues the family and ships nothing.
 That is the test this face exists to protect, and it is the reason a runtime may never read a Q page.
 
-## Items to Finish
+## Aims
 ### Rulings awaiting JL
 - [ ] 🗂 Confirm the three folders and the nesting
       JL confirms that `①` is the family folder, `②` is this board folder, `③` is everything `①` renders, and that subskills are units inside `①`.
@@ -172,7 +168,7 @@ That is the test this face exists to protect, and it is the reason a runtime may
       QB2's RELATED FOLDERS Index fold reads its list from the `## Related Folders` section of board.md, which this face governs: `①` the shipping family `skills/board/haipipe-board/` and `②` this board folder.
       For the B (clickable) depth the section also names which files each folder opens (for example `①`'s `SKILL.md`); `related_folders()` embeds ONLY those named `.md`/`.txt` files at build and refuses any path outside the repo root, so the fold can never show a file this face did not list.
 
-## Where we are
+## States
 The three folders are named and the movements are drawn, but nothing has been confirmed by JL and no checker enforces either forbidden direction.
 
 - 260731 JL · 🗂 This folder map became the RELATED FOLDERS fold's data source

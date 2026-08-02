@@ -4,7 +4,7 @@ state: 🔴 OPEN
 owner: CC
 method: start with a per-file lock (`HOLD` already exists); do not reach for a CRDT first
 
-## Question
+## Opening
 How can people edit a board page in place without letting simultaneous changes overwrite the Markdown source?
 
 In-page editing would turn the board from a reading and comment surface into a real workbench.
@@ -12,14 +12,8 @@ The hard part is that Markdown is a file, not a collaborative database, so the l
 The answer determines which sections can change, how edits are traced, and whether locking is enough.
 It succeeds when two readers collide visibly and no content is lost.
 
+**Covered elsewhere**: The comment and discussion write-back path: that is finished, and belongs to `QB5b`. Nor chat / terminal working on a question: that is `QD1`/`QD2`/`QD3`. Nor who is allowed to edit: that is `QE1`'s authentication.
 
-## Boundary
-- ✅ Covered here
-  **Editing body text from the page**: which sections are editable, which editor, what happens when two people edit at once, and how an edit gets written into `## Log`.
-- ↪ Covered elsewhere
-  The comment and discussion write-back path: that is finished, and belongs to `QA6`.
-  Nor chat / terminal working on a question: that is `QD1`/`QD2`/`QD3`.
-  Nor who is allowed to edit: that is `QE1`'s authentication.
 
 ## Diagram
 
@@ -45,7 +39,7 @@ concurrency: three steps, do not skip one
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE4
 
-## Items to Finish
+## Aims
 ### The editor half
 - [ ] Decide which sections are editable from the page
       All of it?
@@ -64,7 +58,7 @@ concurrency: three steps, do not skip one
       That is the acceptance test.
       Not "a lock was added", but someone really collided and saw the warning.
 
-## Where we are
+## States
 **Writing back to markdown has worked for a while; it is just only exposed for those three comment actions.**
 
 - Write-back that already runs

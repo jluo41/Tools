@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: decide the console's top level first (individual / group / boards), then move the view
 
-## Question
+## Opening
 Where should Boards sit in a console organized around individual patients and groups?
 
 A board belongs to the workroom, not to a patient or a cohort.
@@ -12,13 +12,8 @@ Placing it inside either scope makes the navigation easy to build but tells the 
 Its position determines where SPACE selection and board discovery live.
 The design works when a newcomer finds Boards quickly without mistaking them for patient or group data.
 
+**Covered elsewhere**: What the Boards view shows once opened: that is `QE2`. Nor exposure/auth: that is `QE1`.
 
-## Boundary
-- ✅ Covered here
-  **Where Boards sits in the console's information architecture**: inside the scopes, a third top-level entry, or a space-level shell above the scopes.
-- ↪ Covered elsewhere
-  What the Boards view shows once opened: that is `QE2`.
-  Nor exposure/auth: that is `QE1`.
 
 ## Diagram
 
@@ -37,7 +32,7 @@ The design works when a newcomer finds Boards quickly without mistaking them for
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE5
 
-## Items to Finish
+## Aims
 - [x] JL picks ① / ② / ③
       **②, approved 260724** ("what is your plan?
       Please go ahead", on the plan that named ② as the recommendation). ③ stays the growth path for the day WellDoc-SPACE is really mounted; ② grows into it without rework.
@@ -47,7 +42,7 @@ The design works when a newcomer finds Boards quickly without mistaking them for
 - [ ] The zero-background test
       Same bar as `QA2b`: a fresh reader lands on the console and finds "where the boards live" within three seconds, and nothing implies a board belongs to a patient.
 
-## Where we are
+## States
 **② is implemented: `/boards` is the third top-level entry (260724). Only the zero-background test remains.**
 
 - The shape now

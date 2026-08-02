@@ -12,12 +12,8 @@ The hard part is making that address precise enough to locate the text without p
 Separate sessions fragment the conversation, while no focus packet forces the agent to guess what the reader means.
 The design succeeds when one action opens the existing Chat on the exact visible location without changing the source.
 
+**Covered elsewhere**: Sentence-local human comments are `QB5b`; tracked edits are `QB5c`; typed evidence lanes are `QB5a`; one session per page is `QD1`.
 
-## Boundary
-- ✅ Covered here
-  Generated section/subsection paths, automatic Content sentence addresses, Copy and Chat actions, and the context handed to the existing page chat.
-- ↪ Covered elsewhere
-  Sentence-local human comments are `QA6`; tracked edits are `QAb2`; typed evidence lanes are `QAb1`; one session per page is `QD1`.
 
 ## Diagram
 
@@ -95,7 +91,7 @@ On a pointer device, the compact `C1.P1.S1`, `＋`, and `💬` rail appears when
 `＋` opens the comment form directly under that sentence, while double-click remains reserved for inline editing.
 On touch devices, one muted `⋯` opens a menu containing the full address plus Comment, Chat, and Edit.
 
-## Items to Finish
+## Aims
 ### The section and subsection breadcrumb half
 - [x] Generate paths for every rendered `##` section
       `QB4e / Where we are`, built from the heading's own label with its emoji, its `1/7` count, and its `· 6 sections` suffix stripped, because an address is spoken and pasted.
@@ -126,7 +122,7 @@ On touch devices, one muted `⋯` opens a menu containing the full address plus 
 - [x] Show a clearable Sentence Focus card without spending a model turn
 - [x] Collapse Comment, Chat, and Edit into `⋯` on touch
 
-## Where we are
+## States
 The existing client indexes Content successfully: each `.csec` receives `Cn`; each `.ph` receives terminal `Cn.Hn`; and each eligible prose line receives sibling `Cn.Pn.S1`.
 
 Fresh-context Chrome acceptance proved that non-Content prose has no address, Heading refs terminate at `Hn`, sentence refs omit `H`, and Chat receives the Content/Heading display path.

@@ -69,7 +69,7 @@ Two areas are moving right now, and moving them would be doing the work twice.
 Chat is about to become a session host (`QD2` M1), which rewrites that area, so the honest sequence is to let M1 land IN `live/chat.py` as that module's first version rather than to move the current code and then replace it.
 The terminal took the PTY in-house on 260731 (0.64.0) and `QD3m`'s route is still open, so it moves last.
 
-## Items to Finish
+## Aims
 ### The mechanical split
 - [x] 🧪 Build the gate before moving anything
       BUILT as `gate_live.py`: it starts a real server against a frozen throwaway copy of this board, runs 18 requests covering every route including the error paths, and hashes all 54 written files afterwards.
@@ -97,7 +97,7 @@ The terminal took the PTY in-house on 260731 (0.64.0) and `QD3m`'s route is stil
 - [ ] 📥 Promote SDK-Talk's `navtest.mjs` (💬 follows the router) into `checks/` once its harness settles
       It was mid-iteration when the battery shipped; copying an in-flight file would freeze a flaky version.
 
-## Where we are
+## States
 Nothing is built.
 The question was opened by JL on 260731 ("could we separate them? I don't think it is good to put all the things in one"), and the inventory that motivates it was gathered the same day on `QD2` §5.
 
