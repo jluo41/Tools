@@ -1,5 +1,5 @@
 # The page template: one grammar every page kind obeys
-state: 🟡 PARTIAL · section evaluation shipped and cold-read; one earlier routing ruling awaits JL
+state: 🟡 PARTIAL · 14/14 Aims met and zero findings; held on two rows that would change this page itself, the name of `### 7` and where `_archive/`'s design history lands
 owner: CC
 method: one page grammar, one fixed on-stage order; each section's own rules live in this page's matching Content division
 session: 67eb4e34-029f-4986-9d6e-645e16f23267
