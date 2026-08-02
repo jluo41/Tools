@@ -3,7 +3,7 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.102.0"
+  version: "0.103.0"
   last_updated: "2026-08-02"
   summary: "Stale-statement sweep against QB4's rewritten contract: Aim statuses ⬜ 🔨 🧠 ✅ ❄️, A<n> groups, > Comment WHO, the cli/ paths, numbered Content, everything shut, and Files as a menu of actions."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -199,6 +199,16 @@ The link wraps the attachment on line 1; queue and focus use their short ids.
 The Board files remain the durable record.
 Do **not** create a shared `STATUS.md`: concurrent sessions would overwrite one another and stale live state would look authoritative.
 When discussion changes a decision, item, comment, or log, still run the normal `sync` action in the same round; the closing block does not replace write-back.
+
+## 🗣 A decision lives on the page
+
+Never ask for a ruling only in chat (JL 260802: "don't put the decision in the claude code session"). Write the row FIRST, in the owning page's `States › Decision Now`, then say in chat which page and which row. The chat line is a pointer; the page is the decision.
+
+A decision left in a session cannot be seen by anyone else, carries no `Blocks:` and no `Default:` so it evaporates instead of resolving itself, and leaves no record of the options weighed, which is what the next person to reopen it needs.
+
+The row's shape is QB4 §5.2: 🗣 the question as the row's title · 📍 `Part` · 🔔 `Why now` · the options with ⭐ on the recommended one · 🛑 `Blocks` · 🤖 `If nobody answers`. A row that blocks nothing MUST carry a default, so it resolves itself and the list stays short.
+
+And the prior question: most proposed decisions do not belong there at all. The test is whether anything STOPS until it is answered. If you could decide it yourself, decide it and write it in `## Log`.
 
 ## 🔨 Actions
 

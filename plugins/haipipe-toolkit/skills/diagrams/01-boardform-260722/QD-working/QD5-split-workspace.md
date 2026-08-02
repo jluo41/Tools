@@ -128,6 +128,7 @@ This page is also the successor to the archived `QD4-liveupdate`, which chased t
   cause 5   nothing gzipped   ──▶  every one of those bytes crosses the
             (found 260802)         forward at full price · 5 to 7 times
                                    more than it needed to be
+                                   · measured and closed in C5 P3
 ```
 
 #### P1. The update is a poll, so the wait is built in
@@ -154,28 +155,6 @@ The flicker is not a rendering artifact, it is the page genuinely being rebuilt,
 A CSS change hot-swaps the `<link>` and nobody notices, which is already the right behavior.
 A JS change cannot be hot-swapped safely, so the code calls `location.reload()` even with a terminal open, and survives it only because the PTY is parked rather than killed and the drawer reattaches afterwards.
 That machinery works, and it is still a full reload of everything in order to update one file.
-
-#### P4b. What the split costs against the board it replaces
-(the comparison JL asked for: both doors, one server, one cold cache, one criterion)
-The same page opened two ways is the only fair test, and `?plain` is what makes it possible, since the old board and the split are now the same file behind the same address.
-
-```
-  READING A PAGE                     time     bytes   requests
-  ────────────────────────────────────────────────────────────
-  old board   ?plain                204 ms   150 KB      3
-  split       bare url              137 ms   158 KB      4
-                                    ▲ a third faster, for 8 KB
-
-  THEN OPENING THE CHAT ON IT
-  old board   drawer + terminal    +106 ms  +148 KB     12
-  split       >_ TUI               +296 ms  +199 KB     21
-                                    ▲ +190 ms and +51 KB
-```
-
-Reading is where the time actually goes, and the split is the faster door by about a third: the shell paints in ten kilobytes while the page frame loads beside it, and nothing else is fetched at all, because the index and chat frames are not loaded until they are asked for.
-Opening the chat is where the split pays, and it pays for exactly the property this page exists to buy: the chat pane is its OWN document, so it fetches a second copy of the page that the one-document board already had in hand.
-So the trade, stated plainly, is about 190 ms and 50 KB once per page, in exchange for a chat that a page refresh cannot touch.
-The old board's price for that same isolation is not zero either; it is the four cooperating files in `C1` and most of the bugs this page's Log records.
 
 #### P5. Nothing on the wire was compressed
 (the cause the page did not have, added the day JL asked why opening a page takes so long)
@@ -276,6 +255,61 @@ Bounding the stream (an id per tab so a reload retires its own orphan, a 55 seco
 So the push was removed and each pane now asks about itself, which holds nothing: the whole class of failure is gone rather than bounded, and the panes only ever ask about one url each.
 The residue is honest and small: open a second split within a few seconds of the first and its page frame takes about ten seconds to catch its first refresh, until the previous tab's terminal socket is collected.
 
+### C5 · Performance comparison
+
+```
+  what a reader pays, both doors, one server, one cold cache
+  ────────────────────────────────────────────────────────────
+  read a page      old 204 ms / 150 KB      split 137 ms / 158 KB   ▲ split
+  open the chat    old +106 ms / +148 KB    split +296 ms / +199 KB ▲ old
+  a pane you       —                        0 KB until you show it
+  cannot see
+  toggle it back   —                        1-3 ms, 0 requests
+```
+
+#### P1. Reading a page, which is where the time goes
+The same page opened two ways is the only fair test, and `?plain` is what makes it possible, since the old board and the split are now the same file behind the same address.
+
+```
+  READING A PAGE                     time     bytes   requests
+  ────────────────────────────────────────────────────────────
+  old board   ?plain                204 ms   150 KB      3
+  split       bare url              137 ms   158 KB      4
+                                    ▲ a third faster, for 8 KB
+
+  THEN OPENING THE CHAT ON IT
+  old board   drawer + terminal    +106 ms  +148 KB     12
+  split       >_ TUI               +296 ms  +199 KB     21
+                                    ▲ +190 ms and +51 KB
+```
+
+Reading is where the time actually goes, and the split is the faster door by about a third: the shell paints in ten kilobytes while the page frame loads beside it, and nothing else is fetched at all, because the index and chat frames are not loaded until they are asked for.
+Opening the chat is where the split pays, and it pays for exactly the property this page exists to buy: the chat pane is its OWN document, so it fetches a second copy of the page that the one-document board already had in hand.
+So the trade, stated plainly, is about 190 ms and 50 KB once per page, in exchange for a chat that a page refresh cannot touch.
+The old board's price for that same isolation is not zero either; it is the four cooperating files in `C1` and most of the bugs this page's Log records.
+
+#### P2. What each pane costs the first time you show it
+(the number JL asked to have recorded, because a pane is now loaded lazily and the cost moved)
+Both side frames ship as `data-src` and are given a real `src` the first time they are shown, so opening a page loads ONE document.
+
+```
+  opening a page  (index and chat hidden)   167 ms   157 KB    4 requests
+  ☰  first open of the index                 30 ms    34 KB    3 requests
+  >_ first open of the chat                  31 ms   228 KB   27 requests
+     its xterm mounted                      +69 ms
+  toggling anything, once loaded            1-3 ms     0 KB    0 requests
+```
+
+Against the eager version measured the same morning, 310 ms and 563 KB for a cold split, that is 3.6 times fewer bytes to read a page.
+The two costs that used to dominate every open are now paid only by someone who opens the chat: 118 KB of `xterm.min.js`, and a `claude` process that takes about 1.4 seconds to boot.
+Once a frame is loaded it stays loaded, so hiding it is still only a zero-width column and a terminal mid-command survives being put away.
+
+#### P3. Where the wire time went, before any of this was true
+(the finding that made every number above worth measuring)
+The server answers in two to six milliseconds, so none of the wait was ever the machine thinking; it was bytes crossing a VS Code or ssh forward, and nothing was compressed.
+`xterm.min.js` alone is 477 KB and `/_board/asset/` bypassed the compression path, because that route serves VENDORED files which do not live under `--root`: the single largest thing this server hands out was the one thing going uncompressed, on every cold chat.
+Compressing the static text and that route took a cold split from 1,312 KB to 563 KB and the old single page from 631 KB to 260 KB, and only then was it honest to compare the two doors at all.
+
 ## Aims
 
 ### C1 · What operating the board is today
@@ -311,6 +345,12 @@ The residue is honest and small: open a second split within a few seconds of the
 - A4.3 · A page is linkable even though it lives in a frame.
   **Done when:** the shell mirrors the page frame's path into its own query string, and opening that address opens the shell already showing that page.
 
+### C5 · Performance comparison
+- A5.1 · The split is not slower to READ than the board it replaces.
+  **Done when:** the same page is measured through both doors on one server with one cold cache, and the split reaches a readable page at least as fast.
+- A5.2 · A pane you cannot see costs nothing.
+  **Done when:** opening a page loads one document, and the index and chat frames are fetched only the first time each is shown.
+
 ### P · Page-level
 - P1 · The split is proven on one real job.
   **Done when:** the shell opens, a terminal runs inside it, that terminal edits a page, the page frame refreshes, and the terminal keeps running untouched.
@@ -335,6 +375,10 @@ The residue is honest and small: open a second split within a few seconds of the
 - ✅ A4.1 · `/_shell?p=…` serves the three frames from URLs that each work on their own, and accepts a board FOLDER as well as a page. The `⇱ Split` link on `/boards` opens it, so nobody types the route.
 - ✅ A4.2 · The index frame is served with `<base target="page">` and its links carry `?pane=page`; a click loads the sibling frame with no script running in that frame at all.
 - ✅ A4.3 · The shell mirrors the page frame's path into its own query string on every frame load, and `?p=` opens the shell already showing that page.
+
+### C5 · Performance comparison
+- ✅ A5.1 · Measured 260802: 204 ms and 150 KB the old way, 137 ms and 158 KB in the split. Faster by about a third, for the 8 KB the shell document costs.
+- ✅ A5.2 · Both side frames ship as `data-src`; opening a page is 157 KB and 4 requests, the rail costs 34 KB when first shown, the chat 228 KB, and toggling either afterwards is 1 to 3 ms and no request at all.
 
 ### P · Page-level
 - ✅ P1 · Run end to end in headless Chrome: the shell opens, a real `claude` runs in the chat pane, an edit to the md repaints the page frame, and that terminal keeps running untouched. 23 assertions in `checks/splitshell.mjs`, 21 in `checks/splitgaps.py`, and 12 unit tests in `tests/test_shell.py`.
@@ -387,6 +431,7 @@ chat: the third pane, meaning whatever you talk to Claude through. It is the SDK
 pane: one of the three regions of the operating shell, each loading its own document, so refreshing one cannot disturb another.
 
 ## Log
+260802 · Gave the numbers their own division, `C5 · Performance comparison`, with the Aims and States rows the shape requires (JL: "update the Content with the division of Performance Comparison"). It carries three things that had been scattered: P1 the two doors measured against each other, P2 what each pane costs the first time it is shown, P3 where the wire time went before any of it was worth measuring. `A5.1` asks that the split not be slower to READ than the board it replaces and `A5.2` that a pane you cannot see cost nothing; both are ✅ with the measurement beside them
 260802 · Measured the split AGAINST the old board, which is the comparison JL actually asked for and which `?plain` finally makes possible: the same file, the same server, one cold cache, one criterion. Reading a page is 204 ms / 150 KB the old way and 137 ms / 158 KB in the split — a third faster for 8 KB, because the shell paints in ten kilobytes while the page frame loads beside it and nothing else is fetched. Opening the chat is 106 ms / 148 KB the old way and 296 ms / 199 KB in the split, and that is the split paying for the thing it exists for: the chat pane is its own document, so it fetches a second copy of the page the old board already had. Recorded as C2 P4b
 260802 · ⚠️ REPAIRED MY OWN DAMAGE: the `#### P5` block had been pasted THREE times, once correctly in Content and twice into the middle of Aims and States, because the replacement I anchored it on — the `### C3` heading — occurs in all three sections. Two copies removed. A section heading is not a unique anchor on a page whose Aims and States repeat the Content headings by design, which is the shape `QB4` rules
 260802 · A PANE YOU CANNOT SEE IS NO LONGER PAID FOR (JL: "could you by default to hide the index and chat? and could you record the timing of opening them as well?"). Both side frames now ship as `data-src` and are given a real `src` the first time they are shown, so opening a page loads ONE document. Measured cold, gzip on, on the family's own board:
