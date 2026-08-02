@@ -419,6 +419,16 @@ A concern group is therefore a superset of its stage pages, and this page states
       🛑 `Blocks` nothing. Papers retarget today and the author decides case by case.
       🤖 `If nobody answers` A takes effect, recorded in Log as CC's ruling and overturnable like any other.
 
+- [ ] 🗣 What owns `S-Venue-3-decisions.md`, which no stage produces?
+
+      📍 `Part` `### 5 · What the paper board shows`
+      🔔 `Why now` It sits in the MISQ paper's Opening group and `index.yml` declares no stage that writes it, so this concern describes three stage pages while the live group holds a fourth nobody accounts for.
+      ⭐ `A ·` Name it here as a register the concern carries without a stage, alongside the family control pages. Recommended: it is what the page already is, and it makes the four-kinds list in `§5` complete rather than aspirational.
+      `B ·` Give it a stage in `index.yml`, so every page in the group has a producer. Uniform, and it invents a stage for something that is a running record rather than a phase.
+      `C ·` Retire it and fold its decisions into the pages they belong to. Cleanest model, and it destroys a record the paper has been keeping.
+      🛑 `Blocks` nothing. The page renders and the paper compiles.
+      🤖 `If nobody answers` A takes effect, recorded in Log as CC's ruling and overturnable like any other.
+
 ### A1 · 📜 The delivery contract
 - ✅ A1.1 · JL ruled the sequence on 260729: Opening includes Venue. `## Pages` lists QB1 Opening then QB2 Work, and no Venue group exists on the board.
 - ✅ A1.2 · The Scope paragraph names QB6 Main as the owner of the Introduction, and no §1 prose guidance appears on this page.
@@ -439,8 +449,8 @@ A concern group is therefore a superset of its stage pages, and this page states
 - 🔨 A4.2 · Written into `§4.3`. That a venue change re-runs the designation is the concrete half of the fork in Decision Now above.
 
 ### A5 · 📋 What the paper board shows
-- 🧠 A5.1 · Waiting on JL, and it is an edit to a live paper rather than to this board. The MISQ `Delivery · Opening` group still lists the narrative page.
-- ⬜ A5.2 · Not started. `S-Venue-3-decisions.md` exists on the paper, no stage declares it, and no page on this board mentions it.
+- 🧠 A5.1 · Waiting on JL. The MISQ `Delivery · Opening` group still lists the narrative page, and the choice is one row, on QB2's Decision Now, because Work is the group that gains it.
+- 🧠 A5.2 · Waiting on JL. `S-Venue-3-decisions.md` exists on the paper and no stage declares it; the three options are the second row in Decision Now above.
 
 ### P · 🏁 Page-level
 - 🧠 P1 · Waiting on QA6, which owns retargeting semantics. The fork is stated in Decision Now above with a recommendation and a default.
