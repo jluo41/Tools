@@ -16,7 +16,7 @@ It succeeds when navigation, controls, writes, refreshes, and in-progress work s
 Every one of these was found by JL rather than by the pipeline, and every one of them was invisible to `check.py` by construction.
 
 The index rendered as a wall of inline underlined links, because its rows were reimplemented with invented class names and not one CSS rule matched.
-The left sidebar was absent from the tree entirely, because the template never had the slot.
+The left page list was absent from the tree entirely, because the template never had the slot.
 Six group-intro ASCII figures were missing, so the ASCII was not failing to render as monospace, it was not being emitted at all.
 Every write from a tree page failed SILENTLY, because the path a write posts resolved to a folder with no `board.md` in it.
 A shipped CSS fix did not reach the page, because the linked stylesheet had no cache-busting.
@@ -42,12 +42,12 @@ Nine groups, 36 assertions, all passing on 260801.
 
 ```text
 ①  index renders its ruled components   rows · groups · intros · ASCII figures
-                                        Board Map · Matrix · Activity · sidebar
+                                        Board Map · Matrix · Activity · page list
 ②  the ASCII is really monospace        computed font-family and white-space
 ③  every link the index offers resolves 62 targets, HEAD each one
 ④  a page renders in focus format       no coloured bar, focus width, breadcrumb
-⑤  every widget the JS builds           drawer · fabs · dock · sidebar · drag handle
-⑥  the sidebar drags and the text yields   238 to 440, content 369 to 470
+⑤  every widget the JS builds           drawer · fabs · dock · page list · drag handle
+⑥  the page list drags and the text yields   238 to 440, content 369 to 470
 ⑦  a real write reaches the .md         row lands in place, page does not jump
 ⑧  the loop closes                      .md edited, page updates itself in ~3s,
                                         open sections, scroll AND a half-typed

@@ -101,7 +101,7 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 **v1 shipped in `haichat-inlab` (`boards_api.py` + the Boards view), verified end to end on 260724.**
 
 - The short route is BUILT, and option A of the URL-length row is what was built
-  JL said go ahead on 260802 rather than tick, so the row below stays open for his mark while the work is done and tested. `/b/<slug>[/<page-id>]` answers 302 with the real generated file, and the strip's link went from 131 characters to 42.
+  JL ruled it in chat on 260802 and the row below is closed with that answer recorded, under the same-day rule that a machine closes a row the person has already answered. `/b/<slug>[/<page-id>]` answers 302 with the real generated file, and the strip's link went from 131 characters to 42.
   `live/home.py` owns it: `board_slug()` strips the `NN-` ordinal and the `-YYMMDD` date, and `resolve_short()` walks the same `_manifests()` discovery the Home page already uses, so there is no second registry. `HomeMixin.short_request()` matches only `/b/<slug>` and `/b/<slug>/<id>`, and `serve_short()` redirects rather than serving the bytes, so the address bar lands on the canonical URL and every relative asset and write-back path inside the page keeps working.
   `status.py` prints the short form whenever the anchor resolves to a generated file, and keeps the long URL when it does not, because the route answers 404 there and a long working link beats a short dead one. It imports `board_slug` rather than copying the rule.
   Driven on a second server on port 5601, leaving the live one untouched: `/b/boardform` → the Index, `/b/boardform/QE2` and `/b/boardform/QD6` → their pages, `/b/boardform/QE` → the group page, and following the redirect ends on a 200. `/b/boardform/NOPE` and `/b/nosuchboard/QE2` both 404 rather than redirecting somewhere plausible. All 10 boards in this SPACE produce distinct slugs, so nothing is ambiguous today. 5 new tests in `tests/test_home.py`; the suite is 87 green.
@@ -117,7 +117,7 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 
 - What runs now
   `GET /api/board/spaces` (mounted SPACEs + board counts) · `GET /api/board/boards?space=` (rows with progress) · `GET /api/board/q` (one board as JSON, same code path as `build.py --json`) · `GET /_board/page/{space}/{path}` (the real `board.html`, path-vetted) · `POST /_board/comment|discuss|resolve` (the page's own write-backs, relayed to the skill's `serve.py` functions, then rebuild).
-  The console SPA gained a **Boards** page, since QE5 ② (260724) a third TOP-LEVEL entry at `/boards`, not a scoped sidebar view: SPACE picker → board list → the embedded page.
+  The console SPA gained a **Boards** page, since QE5 ② (260724) a third TOP-LEVEL entry at `/boards`, not a scoped page list view: SPACE picker → board list → the embedded page.
 - What the verification showed
   Two spaces mounted; `Physician-SPACE` discovers this board and `subjective-label/diagram/02-method-260722`; a comment posted through the console landed in the scratch board's md as `- [ ] JL “…” · 260724 1315` and the html rebuilt; resolve flipped it to `[x]`; a write aimed outside a board folder was rejected; `/_board/chat` answers 501 (chat/terminal stay on the workstation, `QE3`'s Law).
 - Still missing

@@ -89,7 +89,7 @@ The specification sets no length for the context, and Hypothesis in practice sto
 Hypothesis is the largest production answer, and two details of its behaviour matter more here than the ladder itself.
 It tries `RangeAnchor`, then `TextPositionAnchor`, then the fuzzy `TextQuoteAnchor`, but a structural hit is only accepted after the text it lands on is compared against the stored quote, and a mismatch throws and falls through rather than winning.
 Its quote matcher then scans for an exact hit first and only runs approximate search when there is none, which is the same order this face proposes.
-Its fuzzy layer is the `approx-string-match` library rather than the diff-match-patch described in their 2015 write-up, and an annotation that anchors nowhere is marked an orphan and shown in its own sidebar tab instead of disappearing.
+Its fuzzy layer is the `approx-string-match` library rather than the diff-match-patch described in their 2015 write-up, and an annotation that anchors nowhere is marked an orphan and shown in its own page list tab instead of disappearing.
 A published study of their corpus found 27% of annotations already orphaned and 61% at risk, which is the number to keep in mind before trusting any anchor to survive an edit.
 
 Markdown has a native stable anchor as well, though not a standard one.

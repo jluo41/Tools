@@ -87,7 +87,7 @@ Chat opens the existing drawer with that same path visible in the Focus card and
 
 #### Quiet until needed
 The Content division and Heading display small generated `C1` and `H1` chips.
-On a pointer device, the compact `C1.P1.S1`, `＋`, and `💬` sidebar appears when the sentence is hovered or the control receives focus.
+On a pointer device, the compact `C1.P1.S1`, `＋`, and `💬` page list appears when the sentence is hovered or the control receives focus.
 `＋` opens the comment form directly under that sentence, while double-click remains reserved for inline editing.
 On touch devices, one muted `⋯` opens a menu containing the full address plus Comment, Chat, and Edit.
 
@@ -117,7 +117,7 @@ On touch devices, one muted `⋯` opens a menu containing the full address plus 
 - [x] Show a compact sentence address and chat button on hover/focus
 - [x] Reuse the existing Q chat session
 - [x] Send the address, sentence text, and direct apparatus as the chat focus
-- [x] Add the desktop `Cn.Pn.S1 ＋ 💬` action sidebar
+- [x] Add the desktop `Cn.Pn.S1 ＋ 💬` action page list
 - [x] Open Comment directly beneath the sentence
 - [x] Show a clearable Sentence Focus card without spending a model turn
 - [x] Collapse Comment, Chat, and Edit into `⋯` on touch
@@ -132,10 +132,10 @@ Reopened 260730 because the page design now requires coarser focus above Content
 Heading focus was designed here on 260730 and built on 260731, so every item on this face is now ticked.
 
 - 260731 CC · 🧭 Heading focus is built, and it reuses every contract the sentence rail already had
-  Every rendered `##` section and `###` subsection heading now carries a sidebar at its END, invisible until that heading is hovered: the generated breadcrumb, `⧉` for a subsection's text, and `🤖` for chat.
+  Every rendered `##` section and `###` subsection heading now carries a page list at its END, invisible until that heading is hovered: the generated breadcrumb, `⧉` for a subsection's text, and `🤖` for chat.
   `QB4e` yields 17 of them, from `QB4e / Opening` down to `QB4e / Where we are / Decision Now`.
   Two decisions inside it are worth stating because they were not obvious.
-  The sidebar collapses to zero WIDTH rather than to `opacity:0`, which the `C1` chips use, because a breadcrumb is long enough to reflow the heading it decorates if it keeps its box while invisible.
+  The page list collapses to zero WIDTH rather than to `opacity:0`, which the `C1` chips use, because a breadcrumb is long enough to reflow the heading it decorates if it keeps its box while invisible.
   And `⧉` on a `##` heading keeps copying the section's TEXT, JL's 260725 ruling, so copying the ADDRESS moved onto the chip itself; the two copies are next to each other and say which is which on hover.
   Driven in Chrome rather than read: the chip put `QB4e / Where we are / Decision Now · QB-delivery/QB4e-where-we-are.md` on the clipboard, `⧉` put that subsection's text there, and `🤖` opened this page's own session with the Focus card showing the breadcrumb and the source path.
 
@@ -166,13 +166,13 @@ Heading focus was designed here on 260730 and built on 260731, so every item on 
 All location Chat actions reuse the page's existing session. Fine structural addresses remain Content-only: `C` owns sibling terminal `H` nodes and prose `P.S` leaves, so `C1.H1` and `C1.P1.S1` are valid while `C1.H1.P1.S1` is not. Every page section and subsection may also expose a coarser human-readable breadcrumb with its source path. Both forms are generated UI metadata, not durable Markdown identity.
 
 ## Log
-260731 2015 · Heading focus BUILT: every `##` and `###` heading gains a hover-revealed sidebar (breadcrumb chip that copies address + source path, `⧉` for a subsection's text, `🤖` for page chat); `__boardHeadingChat` + a `kind` on the focus packet; recomputed by the existing rewire hook. All 5 remaining items ticked; the state line waits on JL
+260731 2015 · Heading focus BUILT: every `##` and `###` heading gains a hover-revealed page list (breadcrumb chip that copies address + source path, `⧉` for a subsection's text, `🤖` for page chat); `__boardHeadingChat` + a `kind` on the focus packet; recomputed by the existing rewire hook. All 5 remaining items ticked; the state line waits on JL
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · Address chips moved to the END of their heading and became hover-reveal, on JL's "C11" read; shipped in board.js/board.css, haipipe-board 0.58.0
 260730 · Reopened for section/subsection focus: every heading gains a generated breadcrumb plus Copy and Chat actions while the accepted Content sentence grammar remains unchanged
 260729 · Fresh Chrome acceptance passed on pointer and touch: 106 C, 73 H, 978 C.P.S refs, deterministic across three rewires; exact focus path and apparatus Send packet verified.
 260729 · Replaced page-global `Pn.Sn` with Content-aware `Cn.Hn` and `Cn.Pn.S1`; JL ruled that `H` terminates and never contains `P.S`.
 260729 · Fresh browser acceptance passed after rebuilding the Send-handler repair: zero request on focus, exactly one on Send, exact focus packet, clean user bubble, and clear-focus behavior verified.
-260729 · Refined the interaction: desktop action sidebar, inline Comment, clearable Chat focus, deferred model call, and touch overflow menu.
+260729 · Refined the interaction: desktop action page list, inline Comment, clearable Chat focus, deferred model call, and touch overflow menu.
 260729 · Fresh-context acceptance passed: 2,463 sentence controls verified, with deterministic rewiring, page-session reuse, complete focus packets, and no regressions.
 260729 · Implemented sentence-specific chat: generated `Pn.Sn`, hover/focus controls, existing-Q-session reuse, and a focus packet containing the address, sentence, and direct apparatus.
