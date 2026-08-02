@@ -15,14 +15,27 @@
   'use strict';
 
   function rowText(row) {
-    var body = row.querySelector('.itw');
-    var txt = (body || row).innerText || '';
-    return txt.replace(/ /g, ' ')
-              .split('\n')
-              .map(function (l) { return l.replace(/\s+$/, ''); })
-              .filter(function (l, i, a) { return l || (i && a[i - 1]); })
-              .join('\n')
-              .trim();
+    /* textContent, NOT innerText. innerText reads LAID-OUT text, and a decision
+       row lives inside `details.it` nested in `details.sect`, both shut on load.
+       Nothing is rendered, so innerText returns '' and the button cheerfully
+       copies an empty string while still flashing \u2713. Caught by clicking it
+       (JL 260731: "did you clicked it yourself?"), never by reading the markup.
+
+       textContent ignores layout but also drops every line break, so block
+       boundaries are re-inserted on a DETACHED clone first. */
+    var body = row.querySelector('.itw') || row;
+    var clone = body.cloneNode(true);
+    var blocks = clone.querySelectorAll('div,p,br,summary,li,tr');
+    Array.prototype.forEach.call(blocks, function (el) {
+      if (el.parentNode) { el.parentNode.insertBefore(document.createTextNode('\n'), el); }
+    });
+    return (clone.textContent || '')
+      .replace(/\u00a0/g, ' ')
+      .split('\n')
+      .map(function (l) { return l.replace(/\s+/g, ' ').trim(); })
+      .filter(function (l, i, a) { return l || (i > 0 && a[i - 1]); })
+      .join('\n')
+      .trim();
   }
 
   function copy(btn, text) {
@@ -50,9 +63,19 @@
   }
 
   function isDecisionRow(row) {
-    /* Only rows under a `### Decision Now` subheading. Every other `- [ ]` on a
-       board is a legacy checklist item, and a copy button on those would put the
-       affordance on hundreds of rows that nobody moves anywhere. */
+    /* Only rows under `Decision Now`. Every other `- [ ]` on a board is a legacy
+       checklist item, and putting the affordance on those would decorate
+       hundreds of rows nobody moves anywhere.
+
+       The heading is NOT a sibling: a `###` inside States renders as
+       `details.csec > summary` with the rows in a following `div.cbody`, so this
+       climbs to the owning `details` and reads its own summary. A first version
+       walked previousElementSibling for a `.sh` and matched nothing, which is
+       invisible in the markup and obvious the moment you open the page. */
+    var host = row.closest ? row.closest('details.csec') : null;
+    var head = host && host.querySelector(':scope > summary');
+    if (head) { return /decision now/i.test(head.textContent || ''); }
+    /* Fallback for a flat render, where `###` becomes a plain `div.sh`. */
     var n = row.previousElementSibling;
     while (n) {
       if (n.classList && n.classList.contains('sh')) {

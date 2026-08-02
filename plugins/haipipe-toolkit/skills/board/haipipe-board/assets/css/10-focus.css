@@ -176,7 +176,23 @@ body.split .q .ql{font-size:13px;margin:0 0 8px}
 .cbody p{margin:0 0 8px;line-height:1.65}
 
 /* 勾选清单：md 里写 - [ ] / - [x] */
-.ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65}
+.ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65;
+ position:relative}
+/* Hidden ⧉ on a Decision Now row (JL 260802: "could you give a hidden copy
+   button so I can copy the decision easier?"). Absent at rest so the page still
+   reads as a document; revealed on hover, and on focus so it is reachable from
+   the keyboard. `visibility` rather than `display` keeps the row from reflowing
+   under the cursor. */
+.dcopy{position:absolute;top:0;right:0;width:22px;height:20px;
+ display:inline-grid;place-items:center;padding:0;
+ background:var(--card);color:var(--mut);border:1px solid var(--line);
+ border-radius:var(--radius-pill);cursor:pointer;font:11px/1 sans-serif;
+ visibility:hidden;opacity:0;transition:opacity .12s}
+.ck:hover>.dcopy,.ck:focus-within>.dcopy,.dcopy:focus-visible{
+ visibility:visible;opacity:1}
+.dcopy:hover,.dcopy:focus-visible{color:var(--accent);border-color:var(--accent);
+ outline:none}
+@media (hover:none),(pointer:coarse){.dcopy{visibility:visible;opacity:1}}
 .ck .ct{font-weight:600}
 .ck.on .ct{font-weight:600;opacity:.85}
 .ck .bd{padding-left:0;margin-top:2px}
