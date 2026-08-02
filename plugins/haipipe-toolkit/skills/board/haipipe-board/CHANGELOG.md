@@ -7,6 +7,16 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## 0.101.0 - 2026-08-02
 
+## 0.102.0 — 260802
+
+- ONE DOOR (JL 260802: "you can just say, haipipe-board update the page etc,
+  it will route to the haipipe-board-page"). `## Actions` now lists two routed
+  verbs, `create a page` and `update a page`, with the routing table beside
+  the eleven this skill runs itself. Route by SCOPE: one page is the page
+  skill's, the board and its structure are this skill's, and a request naming
+  a page id or path is the page skill's even when it sounds structural.
+- The `## Actions` command paths were still pre-`cli/`.
+
 Stale-statement sweep of `SKILL.md` and `ref/` against QB4's rewritten contract
 (QB4 `## Law`, 260801-260802). No rule was invented here; every edit repairs a
 sentence QB4 now contradicts.

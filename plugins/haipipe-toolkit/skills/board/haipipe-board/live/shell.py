@@ -231,11 +231,11 @@ def _shell_doc(page_url, index_url):
   <a id="plain" href="__PAGEPATH__?plain" target="_top" title="open this page on its own, without the split">↗ plain</a>
 </div>
 <div id="split">
-  <iframe name="index" id="fi" src="__INDEX__" title="pages"></iframe>
+  <iframe name="index" id="fi" data-src="__INDEX__" title="pages"></iframe>
   <div class="gr" data-var="iw" data-min="140" data-max="520"></div>
   <iframe name="page"  id="fp" src="__PAGE__"  title="page"></iframe>
   <div class="gr" data-var="cw" data-min="280" data-max="900" data-rev="1"></div>
-  <iframe name="chat"  id="fc" src="__CHAT__"  title="chat"></iframe>
+  <iframe name="chat"  id="fc" data-src="__CHAT__"  title="chat"></iframe>
 </div>
 <script>
 (function () {
@@ -307,12 +307,23 @@ def _shell_doc(page_url, index_url):
      `--iw` and `--cw` already do. Hiding is a zero-width COLUMN, never an
      unloaded frame: a terminal mid-command must survive being put away. */
   var split = document.getElementById('split');
+  /* LAZY, AND HIDDEN BY DEFAULT (JL 260802). A pane that is not on screen should
+     not be paid for: the chat frame alone is a 30 KB document, 118 KB of xterm
+     and a `claude` process that takes over a second to boot, and the index frame
+     is the largest page on the board. Opening a page now loads ONE document and
+     the other two arrive when they are first asked for. Once loaded they STAY
+     loaded — hiding is still only a zero-width column, so a terminal mid-command
+     survives being put away. */
+  function load(fr) {
+    if (fr && !fr.src && fr.dataset.src) fr.src = fr.dataset.src;
+  }
   function pane(cls, key, btn) {
-    var off = false;
-    try { off = localStorage.getItem(key) === '0'; } catch (e) {}
+    var off = true;                       // hidden until asked for
+    try { off = localStorage.getItem(key) !== '1'; } catch (e) {}
     function paint() {
       split.classList.toggle(cls, off);
       btn.setAttribute('aria-pressed', off ? 'false' : 'true');
+      if (!off) load(document.getElementById(cls === 'hi' ? 'fi' : 'fc'));
     }
     paint();
     return {
@@ -332,8 +343,8 @@ def _shell_doc(page_url, index_url):
      clicking the lit one hides the pane, and neither lit means there is no chat
      on screen. The pane is only ever COLLAPSED, never unloaded, so a terminal
      mid-command is still running when you bring it back. */
-  var hidden = false;
-  try { hidden = localStorage.getItem('board-split-chat') === '0'; } catch (e) {}
+  var hidden = true;                     // hidden until asked for
+  try { hidden = localStorage.getItem('board-split-chat') !== '1'; } catch (e) {}
   var wanted = 'tui';
   try { wanted = localStorage.getItem('board-split-mode') || 'tui'; } catch (e) {}
   var btns = [document.getElementById('mtui'), document.getElementById('mgui')];
@@ -344,6 +355,7 @@ def _shell_doc(page_url, index_url):
   }
   function paint() {
     split.classList.toggle('hc', hidden);
+    if (!hidden) load(document.getElementById('fc'));
     var on = hidden ? '' : liveMode();
     btns.forEach(function (b) {
       b.setAttribute('aria-pressed', String(b.dataset.mode === on));

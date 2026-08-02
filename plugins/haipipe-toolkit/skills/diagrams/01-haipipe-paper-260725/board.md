@@ -11,6 +11,7 @@ This is a **Skill-Board** for the Paper family, organized like the `/haipipe-boa
 
 - **QA · Design** defines the Paper system, its eleven folders, and ownership boundaries, including the four shared families the paper calls and owns none of.
 - **QB · Delivery** defines what the paper must give readers and collaborators, in the paper-facing order below, and then the three series that say what each delivery rule applies to: a whole section, one sentence, or one float.
+- **QBv · Venue Packs** holds what each venue KNOWS, one page per pack in `paper/venue/`. It is not an eleventh Delivery concern: `QB1` still owns which venue this paper picked, and this group owns what that venue rewards, desk-rejects, and requires of a section.
 - **QC · Engine** defines the reusable skills and contracts that can produce those deliveries.
 - **QF · Execute** records bounded runs, checks, receipts, and fresh-agent evidence.
 
@@ -29,6 +30,10 @@ QB · DELIVERY   what readers and collaborators receive
        ├─ QB11 Delivery-Section    the rule applies to a whole ## Content
        ├─ QB12 Delivery-Sentence   the rule applies to one sentence
        └─ QB13 Delivery-Display    the rule applies to one float
+       │
+       │ ◀── reads ── QBv · VENUE PACKS   what each venue KNOWS
+       │              QB1 picks the venue · QBv holds its rewards,
+       │              desk signals, and section norms
        │ served by
        ▼
 QC · ENGINE     which reusable Paper / Probe / Display route may produce each delivery,
@@ -71,6 +76,7 @@ QB10  Round contains one review/rebuttal/revision/resubmission batch.
 QB11  Section series: a rule here cannot be checked one sentence at a time, because a section is a sequence.
 QB12  Sentence series: four attachment types, one marker grammar, differing only in who may complete one.
 QB13  Float series: what Paper owns about a display between the render and the sentence that points at it.
+QBv0  A pack cuts across Delivery: its README maps to Claims, Display, Minimap, and Write/Edit at once, so it can be filed under no single concern. The packs are their own repository and this plugin reads them and never writes them.
 QC1 names the four-part Engine: Paper, Probe, Display, and the Board substrate. QC5 is where the Paper Board adds its manuscript-specific writing dialect above Board's generic page and sentence grammar.
 QF1–QF3 prove or block a Delivery × Engine route; they never become a second authoring tree.
 ```
@@ -86,6 +92,7 @@ This Board has one editable Board-Folder and one generated Board-Webpage site. T
 ├── board.md                         Board-level source and page registry
 ├── QA-design/                        Design pages and paper-boundary records
 ├── QB-delivery/                      reader-facing paper delivery pages
+├── QBv-venue-packs/                  what each venue knows, one page per pack
 ├── QC-engine/                        skills and their contracts
 ├── QF-execute/                       bounded execution records
 ├── _fixture/                         inspectable Paper evidence used by this Board
@@ -177,6 +184,27 @@ QB13-delivery-display.md
 QB13a-display-folder.md
 QB13b-requested-display.md
 QB13c-display-caption.md
+
+### QBv · Venue Packs
+What each venue KNOWS, one page per pack, read by Delivery but owned by none of it. `QB1` ruled on 260729 that the venue DECISION lives inside Opening and that ruling stands: this group is not an eleventh Delivery concern, it is the catalog Opening reads to make that decision and that four other concerns read afterwards.
+A pack cuts across Delivery, which is why it cannot be filed under any single concern. Every `playbook-*/README.md` carries four stage maps: rewards land on QB4 Value, display conventions on QB5 Display, the section arc on QB6 Main, and the language profile on QB11a. The packs live in their own repository and this plugin reads them and never writes them.
+
+```text
+⚙️ ENGINE                      📋 PAGES · the working record          📂 FOLDER
+─────────────────────────      ───────────────────────────────────    ────────────────────────
+2a-venue reads packs:       ◀── QBv0     what a pack owes            ──▶  paper/venue/
+QB1 owns the DECISION       ◀── QBv1–QBv5 the five journal packs     ──▶  playbook-*/<outlet>/
+QB4·QB5·QB6·QB11a read it   ◀── QBv6–QBv7 grant and patent, no       ──▶  README delta tables
+                                          outlet tree by design
+```
+QBv0-venue-pack-contract.md
+QBv1-utd-is.md
+QBv2-jama-portfolio.md
+QBv3-nature-portfolio.md
+QBv4-pnas.md
+QBv5-medical-journals.md
+QBv6-grant.md
+QBv7-patent.md
 
 ### QC · Engine
 How reusable Paper, Probe, and Display routes serve Delivery on a shared Board substrate. The Engine map, mirrored skill pages, stage/page contracts, and Paper-specific sentence/evidence dialect stay here; Board supplies generic structure but never manuscript truth.

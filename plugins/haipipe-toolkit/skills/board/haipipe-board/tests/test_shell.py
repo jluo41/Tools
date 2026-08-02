@@ -103,9 +103,16 @@ class ShellDocTest(unittest.TestCase):
         self.doc = _shell_doc("/b/board/QD/QD5-x.html", "/b/board/index.html")
 
     def test_three_frames_each_pointing_at_its_own_pane(self):
-        self.assertIn('name="index" id="fi" src="/b/board/index.html?pane=index"', self.doc)
+        """The page frame has a `src`; the other two carry `data-src` and are
+        given one the first time they are shown (260802), so opening a page
+        loads ONE document."""
         self.assertIn('name="page"  id="fp" src="/b/board/QD/QD5-x.html?pane=page"', self.doc)
-        self.assertIn('name="chat"  id="fc" src="/b/board/QD/QD5-x.html?pane=chat"', self.doc)
+        self.assertIn('name="index" id="fi" data-src="/b/board/index.html?pane=index"', self.doc)
+        self.assertIn('name="chat"  id="fc" data-src="/b/board/QD/QD5-x.html?pane=chat"', self.doc)
+
+    def test_the_side_panes_are_hidden_until_asked_for(self):
+        self.assertIn("var off = true;", self.doc)      # the rail
+        self.assertIn("var hidden = true;", self.doc)   # the chat
 
     def test_no_placeholder_survives_into_the_served_document(self):
         self.assertNotIn("__", self.doc.replace("__", "", 0) and

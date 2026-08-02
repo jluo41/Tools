@@ -3,7 +3,7 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.101.0"
+  version: "0.102.0"
   last_updated: "2026-08-02"
   summary: "Stale-statement sweep against QB4's rewritten contract: Aim statuses ⬜ 🔨 🧠 ✅ ❄️, A<n> groups, > Comment WHO, the cli/ paths, numbered Content, everything shut, and Files as a menu of actions."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -202,10 +202,27 @@ When discussion changes a decision, item, comment, or log, still run the normal 
 
 ## 🔨 Actions
 
-Offline (needs `build.py`, plus `stage.py` for `stage`): **view · open · add · stage · build · sync · link · close**
-Live (needs `serve.py` running): **serve · excalidraw · comment**
+Offline (needs `cli/build.py`, plus `cli/stage.py` for `stage`): **view · open · add · stage · build · sync · link · close**
+Live (needs `cli/serve.py` running): **serve · excalidraw · comment**
+Routed to `haipipe-board-page`: **create a page · update a page**
 
-That is 11 verbs.
+That is 11 verbs here, plus two this skill does not run itself.
+
+**One door** (JL 260802: "you can just say, haipipe-board update the page etc, it will route to the haipipe-board-page"). Anything about ONE PAGE routes to `haipipe-board-page`, which owns the page contract and drives that page end to end:
+
+```
+🚪 say it here                                    ▸ runs there
+──────────────────────────────────────────────────────────────────
+"create a new page on <topic>"                    ▸ haipipe-board-page
+"update / fix / work on <page>"                   ▸ haipipe-board-page
+"bring <page> up to the standard"                 ▸ haipipe-board-page
+"why does <page> fail the checker"                ▸ haipipe-board-page
+
+anything about the BOARD: its groups, roster,     ▸ here
+index, serving, the round trip
+```
+
+Route by SCOPE, not by wording: one page is the page skill's, the board and its structure are this skill's. When a request names a page id or a page path, it is the page skill's even if it sounds structural, because whoever asks is looking at one page.
 `xcal.py` rebuilds the scene offline, but both the embedded canvas and the editable one go through `serve.py`, so `excalidraw` is counted as live.
 
 > **"Open `<some board>`" = view (look at an existing one), not open (create a new one).**
