@@ -1,4 +1,4 @@
-# haipipe-paper-stage · v0.8.8
+# haipipe-paper-stage · v0.9.1
 state: 🟡 PARTIAL · account written; the acceptance test is open in Items
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -9,45 +9,45 @@ What makes a lifecycle stage a repeatable, inspectable unit rather than a loose 
 This page examines the one-stage executor: it resolves one declared stage, creates or refreshes that stage's S page, and drives only the phases and gate the contract permits.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 371f631d04d89be8 paper/1-lifecycle/haipipe-paper-stage -->
+<!-- haipipe:skill:tree:start 2f15bb4d02d080dd paper/1-lifecycle/haipipe-paper-stage -->
 
 ```
 haipipe-paper-stage/
   stages/
     0-seed/
       stage.md          169 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-      template.md        61 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/0-seed/0-seed.md from this skeleton: replace every <…>, a
+      template.md        62 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/0-seed/0-seed.md from this skeleton: replace every <…>, a
     1a-resource/
       stage.md          188 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-      template.md        46 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/S-Work-0-resources.md from this skeleton: replace
+      template.md        47 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/S-Work-0-resources.md from this skeleton: replace
     1b-claims/
       stage.md          185 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-      template.md        66 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/1b-claims.md from this skeleton: replace every <…>
+      template.md        68 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/1b-claims.md from this skeleton: replace every <…>
     2a-venue/
-      stage.md          246 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-      template.md       105 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/S-Venue-0-venue.md from this skeleton: replace ev
+      stage.md          249 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
+      template.md       112 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/S-Venue-0-venue.md from this skeleton: replace ev
     2b-pitch/
       readability.md    115 ln  Pitch Readability
       stage.md          231 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-      template.md       105 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/2b-pitch.md from this skeleton: replace every <…>
+      template.md       106 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/2b-pitch.md from this skeleton: replace every <…>
     3-narrative/
-      stage.md          228 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-      template.md       134 ln  Narrative: <Paper Title>
+      stage.md          230 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
+      template.md       187 ln  Narrative: <Paper Title>
     4-display/
       checklist.md       50 ln  display stage checklist
       figure-logic.md   123 ln  Reference: Figure Logic and Design
       stage.md          303 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-      template.md       185 ln  <!-- TEMPLATE · ONE DISPLAY ASSET = ONE S PAGE.
+      template.md       196 ln  <!-- TEMPLATE · ONE DISPLAY ASSET = ONE S PAGE.
     5-section-edit/
       stage.md          315 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-      template.md       102 ln  <tpl: GENERIC FALLBACK TEMPLATE. Every (venue, section-kind) may have its own template. For a pack-having venu
+      template.md       103 ln  <tpl: GENERIC FALLBACK TEMPLATE. Every (venue, section-kind) may have its own template. For a pack-having venu
     CONTRACT.md         217 ln  The stage contract form
     index.yml            37 ln
     section-kinds.yml    90 ln
-  CHANGELOG.md          154 ln  haipipe-paper-stage — Changelog
+  CHANGELOG.md          172 ln  haipipe-paper-stage — Changelog
   check-contracts.py    190 ln  Check every stage contract against stages/CONTRACT.md, and against a real paper.
-  create-page.py        387 ln  Create one paper lifecycle S page through the Board's shell primitive.
-  section-stats.py      294 ln  Measure an S page's prose FORM and print the structure block for `## Diagram`.
+  create-page.py        437 ln  Create one paper lifecycle S page through the Board's shell primitive.
+  section-stats.py      305 ln  Measure an S page's prose FORM and print the structure block for `## Diagram`.
   SKILL.md              257 ln  Skill: haipipe-paper-stage
 ```
 
@@ -70,13 +70,13 @@ DRAFT ──▶ PROBE ──▶ REVISE? ──▶ CHECK (the declared human gate
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 371f631d04d89be8 paper/1-lifecycle/haipipe-paper-stage -->
+<!-- haipipe:skill:body:start 2f15bb4d02d080dd paper/1-lifecycle/haipipe-paper-stage -->
 
-**haipipe-paper-stage** · `0.8.8` · last shipped 2026-07-27
+**haipipe-paper-stage** · `0.9.1` · last shipped 2026-08-01
 
 - folder   `paper/1-lifecycle/haipipe-paper-stage/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, Skill
-- summary  Board-first stage router: Paper is the public page creator; Board owns the shell, filename, pages, and optional inherited contracts.
+- summary  Board-first stage router: unfinished work is expressed as Content-linked Aims with a separate factual row in States per Aim.
 
 ### SKILL.md
 
@@ -118,14 +118,14 @@ no longer exist — every stage comes through here, stage key first.
       ```sh
       python3 create-page.py <stage-key> <paper-root>
       ```
-      `create-page.py` selects the stage template, then calls `haipipe-board/stage.py new` for the
+      `create-page.py` selects the stage template, then calls `haipipe-board/cli/stage.py new` for the
       filename, face grammar, listing under Pages, and managed Stage Contract. It does not draft the
       research substance. For a dynamic `runs: per-unit` page, pass the resolved identity and directory
       with `--family`, `--unit`, `--slug`, and `--directory`; Section-edit also requires
       `--section-kind`, which resolves the exact template from the Venue page's `Section Styles`
       record (or its declared generic fallback). `--template` is an explicit repair/testing override,
       not the normal routing path. Do not create a sidecar request or handoff file; unfinished work
-      stays in that page's `## Items to Finish`.
+      stays in that page's `## Aims`, with its current fact in `## States`.
       **Step 3 — read the loop, once.**
       The declared phase loop, the gates, and the phase-transition contract are NOT restated per stage.
       They live at:
@@ -160,8 +160,8 @@ no longer exist — every stage comes through here, stage key first.
       stage execution order and do not replace `artifact:`. The actual run still follows
       `stages/index.yml`, `upstream`, and `downstream`; for example Narrative is followed by the
       independent Display family before manuscript sections consume its assets. After any phase changes
-      the artifact, sync the resolved S face in the same turn: update its `state:`,
-      `## Items to Finish`, and `## Where we are`, then rebuild the board. When the S face embeds the
+      the artifact, sync the resolved S face in the same turn: update its page-level
+      `state:`, `## Aims`, `## States`, and `## Log`, then rebuild the board. When the S face embeds the
       artifact, do not copy its Content. Submission and revision are downstream board rounds, not extra
       router stages here.
       The mapped S face may declare `requires:`, `style-from:`, and `provides:`; all three are optional.
@@ -171,7 +171,7 @@ no longer exist — every stage comes through here, stage key first.
       downstream handoff. A stage contract may carry `read_order:` as optional craft guidance for the
       sequence in which DRAFT opens material; it is not a second dependency graph. Create or refresh the
       managed `## Stage Contract` block with
-      `haipipe-board/stage.py`; never copy whole upstream Content, and never let `build.py` edit
+      `haipipe-board/cli/stage.py`; never copy whole upstream Content, and never let `build.py` edit
       Markdown. If the board reports a stale contract after an upstream change, run explicit
       `stage.py sync` before CHECK.
       **Step 4b — the PROBE ceiling.**
@@ -228,10 +228,10 @@ no longer exist — every stage comes through here, stage key first.
       ```text
          a stage run writes S-<Family>-<n>-<slug>.md
               │
-              ├─ DRAFT   → ## Content + Q-consumer records in ## Items to Finish
+              ├─ DRAFT   → ## Content + Content-linked Q-consumer records in ## Aims
               ├─ PROBE   → the entry pointers
               ├─ REVISE  → the same page + %% why-comments, when declared
-              ├─ CHECK   → state: ✅   (a HUMAN writes this)
+              ├─ CHECK   → page-level state: ✅   (a HUMAN writes this)
               │
               └─ then ALWAYS: call ③ haipipe-board build on 0-lifecycle/
                               and put the deep link in the closing block
@@ -296,27 +296,27 @@ no longer exist — every stage comes through here, stage key first.
 
 ```
 check-contracts.py                 190 ln  Check every stage contract against stages/CONTRACT.md, and against a real paper.
-create-page.py                     387 ln  Create one paper lifecycle S page through the Board's shell primitive.
-section-stats.py                   294 ln  Measure an S page's prose FORM and print the structure block for `## Diagram`.
+create-page.py                     437 ln  Create one paper lifecycle S page through the Board's shell primitive.
+section-stats.py                   305 ln  Measure an S page's prose FORM and print the structure block for `## Diagram`.
 stages/0-seed/stage.md             169 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-stages/0-seed/template.md           61 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/0-seed/0-seed.md from this skeleton: replace every <…>, a
+stages/0-seed/template.md           62 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/0-seed/0-seed.md from this skeleton: replace every <…>, a
 stages/1a-resource/stage.md        188 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-stages/1a-resource/template.md      46 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/S-Work-0-resources.md from this skeleton: replace
+stages/1a-resource/template.md      47 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/S-Work-0-resources.md from this skeleton: replace
 stages/1b-claims/stage.md          185 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-stages/1b-claims/template.md        66 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/1b-claims.md from this skeleton: replace every <…>
-stages/2a-venue/stage.md           246 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-stages/2a-venue/template.md        105 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/S-Venue-0-venue.md from this skeleton: replace ev
+stages/1b-claims/template.md        68 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/1-work/1b-claims.md from this skeleton: replace every <…>
+stages/2a-venue/stage.md           249 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
+stages/2a-venue/template.md        112 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/S-Venue-0-venue.md from this skeleton: replace ev
 stages/2b-pitch/readability.md     115 ln  Pitch Readability
 stages/2b-pitch/stage.md           231 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-stages/2b-pitch/template.md        105 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/2b-pitch.md from this skeleton: replace every <…>
-stages/3-narrative/stage.md        228 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-stages/3-narrative/template.md     134 ln  Narrative: <Paper Title>
+stages/2b-pitch/template.md        106 ln  <!-- TEMPLATE (follow, don't ship). Fill 0-lifecycle/2-venue/2b-pitch.md from this skeleton: replace every <…>
+stages/3-narrative/stage.md        230 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
+stages/3-narrative/template.md     187 ln  Narrative: <Paper Title>
 stages/4-display/checklist.md       50 ln  display stage checklist
 stages/4-display/figure-logic.md   123 ln  Reference: Figure Logic and Design
 stages/4-display/stage.md          303 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-stages/4-display/template.md       185 ln  <!-- TEMPLATE · ONE DISPLAY ASSET = ONE S PAGE.
+stages/4-display/template.md       196 ln  <!-- TEMPLATE · ONE DISPLAY ASSET = ONE S PAGE.
 stages/5-section-edit/stage.md     315 ln  CONTRACT — machine-readable. No `name:` field: this is DATA the router reads,
-stages/5-section-edit/template.md   102 ln  <tpl: GENERIC FALLBACK TEMPLATE. Every (venue, section-kind) may have its own template. For a pack-having venu
+stages/5-section-edit/template.md   103 ln  <tpl: GENERIC FALLBACK TEMPLATE. Every (venue, section-kind) may have its own template. For a pack-having venu
 stages/CONTRACT.md                 217 ln  The stage contract form
 stages/index.yml                    37 ln
 stages/section-kinds.yml            90 ln
@@ -350,10 +350,24 @@ The dynamic per-section path is the remaining acceptance case to run through thi
 260727 1440 · Created the stage-executor page from `paper/1-lifecycle/haipipe-paper-stage/`.
 It records contract selection, Board identity, and phase/gate ownership as separate controls.
 
-<!-- haipipe:skill:log:start 371f631d04d89be8 paper/1-lifecycle/haipipe-paper-stage -->
+<!-- haipipe:skill:log:start 2f15bb4d02d080dd paper/1-lifecycle/haipipe-paper-stage -->
 
-Converted from the skill's own `CHANGELOG.md`: 14 releases.
+Converted from the skill's own `CHANGELOG.md`: 16 releases.
 
+260801 · `0.9.1` · Board section labels are paired plurals
+      - Synchronizes stage status rows under canonical `## States`, paired with
+        `## Aims`; singular State remains the name of one record.
+      - Migrates every active stage contract and Q-consumer template to canonical Aim
+        records (`P<n>`) with a Done-when condition, while retaining old headings as
+        read-only parser aliases.
+      - Updates `create-page.py` to replace the canonical Board shell sections and
+        emit one matching State row for each generated Aim; `section-stats.py` now
+        stops Content at either canonical headings or legacy aliases.
+260801 · `0.9.0` · Stage work uses Aims and State
+      - Replaced active `Items to Finish` and `Where we are` instructions with
+        Content-linked Aims and one factual State row per Aim.
+      - Kept the page-level CHECK gate distinct from individual Aim status and added
+        Log synchronization for transitions.
 260727 · `0.8.8` · Display review blocks are a Board projection
       - The Display template now says plainly that Current Float, live artifact, Display Versions,
         current folder, and explanation are injected in generated `board.html` for allocated units.

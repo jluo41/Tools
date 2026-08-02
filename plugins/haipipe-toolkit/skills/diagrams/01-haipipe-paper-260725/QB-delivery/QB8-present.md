@@ -147,8 +147,8 @@ The open gap is that Present has no concrete skill pages, and it will not get th
 
 ## Law
 
-Present contains slides and posters. They project the paper; they do not become manuscript source.
-A projection is accepted only when a human has checked both audience fit and that no claim on it exceeds the paper.
+- Present contains slides and posters. They project the paper; they do not become manuscript source.
+  A projection is accepted only when a human has checked both audience fit and that no claim on it exceeds the paper.
 
 ## Glossary
 

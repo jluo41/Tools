@@ -157,9 +157,9 @@ A plausible-looking plot built from the wrong column is not, so QB12d carries th
 
 ## Law
 
-The unit of this series is one sentence, and the test of a sentence rule is that it survives the paragraphs being shuffled.
-A rule that needs to know what came before belongs in QB11.
-A rule is lifted to this head only after it has been checked against all four faces, and it names the face it came from.
+- The unit of this series is one sentence, and the test of a sentence rule is that it survives the paragraphs being shuffled.
+  A rule that needs to know what came before belongs in QB11.
+  A rule is lifted to this head only after it has been checked against all four faces, and it names the face it came from.
 
 ## Glossary
 

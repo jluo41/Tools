@@ -335,13 +335,10 @@ The checker got its own job wrong twice before it worked, and both are recorded 
 
 ## Law
 
-The prose verb is the fourth reusable family this board's paper depends on and does not own, and the first whose board is `②`. A family that owns a KIND of artifact earns a board of its own; a family that owns none is argued where its prose already lives.
-
-`⑪` owns whether a reader whose English is weak can follow a sentence, and `①` owns everything a venue decides: how loudly a paper may claim, how it cites, which gates a claim must pass, and the `%%` grammar LaTeX needs. They share machinery and never share judgment.
-
-`⑪` writes ONE lane out of the ten `③` defines. It never redefines the lane, the evidence card, or the archive lifecycle, and a reference here that restates `③`'s contract instead of citing it is a defect, which is exactly what `0.4.0` repaired.
-
-A change record is APPENDED, is never erased once signed, and is placed by position rather than by where the writer stopped typing.
+- The prose verb is the fourth reusable family this board's paper depends on and does not own, and the first whose board is `②`. A family that owns a KIND of artifact earns a board of its own; a family that owns none is argued where its prose already lives.
+- `⑪` owns whether a reader whose English is weak can follow a sentence, and `①` owns everything a venue decides: how loudly a paper may claim, how it cites, which gates a claim must pass, and the `%%` grammar LaTeX needs. They share machinery and never share judgment.
+- `⑪` writes ONE lane out of the ten `③` defines. It never redefines the lane, the evidence card, or the archive lifecycle, and a reference here that restates `③`'s contract instead of citing it is a defect, which is exactly what `0.4.0` repaired.
+- A change record is APPENDED, is never erased once signed, and is placed by position rather than by where the writer stopped typing.
 
 ## Glossary
 

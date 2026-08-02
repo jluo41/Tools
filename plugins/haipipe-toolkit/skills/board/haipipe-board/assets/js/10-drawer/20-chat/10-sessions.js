@@ -172,6 +172,7 @@
      drawer never flashes empty, then ask the server for the session's real
      transcript and adopt it when it knows more. A reload now costs the live
      trace of an in-flight turn and nothing else.  */
+  function diagSync(m) { try { if (typeof diag === 'function') diag('SYNC', m); } catch (e) {} }
   async function syncFromServer() {
     if (!cq || !cq.file) return;
     try {
@@ -225,8 +226,23 @@
       bd.innerHTML = '';
       if (mark) bd.appendChild(mark);
       if (j2.clipped) bubble('sys', 'Showing the last ' + srv.length + ' of ' + j2.total + ' messages.');
-      srv.forEach(replayRow);
-      chatSave(logKey(), srv);
+      /* ADOPTING MUST NOT DELETE. This wiped the pane and repainted the
+         SERVER's rows only, then saved them over the local log — so any answer
+         this browser had that the session's .jsonl does not carry was lost from
+         the screen AND from storage. It happens: a turn that was stopped, or
+         one whose reply never reached the transcript, is real to the reader and
+         absent from the file (found 260802 — leaving the page and coming back
+         dropped two 8k answers). Keep whatever the server does not have, in
+         order, after what it does. */
+      var seen = {};
+      srv.forEach(function (m) { if (m && m.t) seen[m.k + '\u0000' + m.t] = 1; });
+      var kept = local.filter(function (m) {
+        return m && m.t && !m.partial && !seen[m.k + '\u0000' + m.t];
+      });
+      var merged = srv.concat(kept);
+      merged.forEach(replayRow);
+      chatSave(logKey(), merged);
+      if (kept.length) diagSync('kept ' + kept.length + ' local row(s) the server did not have');
       bdJump();
     } catch (e) { /* offline or an old server: the local paint still stands */ }
     return true;

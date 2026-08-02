@@ -178,8 +178,10 @@ Today that question needs 141 changelogs read by hand; after this it is one stri
       A single flat group would mean 35 pages in one folder, which is the wall `QB1` just removed.
       The skill tree already has groups (`0-enter`, `1-lifecycle`, `2-phase`, `3-deliver`, …), so the likely answer is one board group per skill sub-family.
 - [ ] 🎯 Scope: this family only, or every skill in the plugin
-      Settled for THIS board on 260727: `Q-Skill` covers `skills/board/` and nothing else, because a roster that reaches past its board's subject makes the board a directory of the whole plugin.
-      Still open: whether each other family gets the same group on its own design board (paper 35, task 44, application 23, discovery 15), or one roster board carries all 141.
+      Ruled for THIS board on 260727 as `skills/board/` and nothing else, and WIDENED by JL on 260802 when he asked to add `skills/writing` to the roster; `Skill-7-haipipe-writing` is the first row outside the board family.
+      The widening is defensible on its own terms, because that unit owns `ref/writing-rules.md`, the prose standard every page here is judged against, so it is a neighbour rather than a stranger.
+      What is NOT yet stated is where the new line falls, and that is the row in Decision Now below.
+      Still open besides that: whether each other family gets the same group on its own design board (paper 36, task 44, application 23, discovery 15), or one roster board carries all 152.
 
 ### The generator, built and proven
 - [x] 🏷 The generated pages get their own named family and group
@@ -234,9 +236,14 @@ These are the calls only JL can make; CC ticks nothing here.
 - [ ] 🗂 Decide the grouping before 35 files land in one folder
       The page's stated likely answer is one board group per skill sub-family, mirroring the skill tree's own groups.
       A tick here also closes the same row in Items to Finish.
-- [ ] 🎯 Settle the scope beyond this board
-      The options the page records: each other family gets the same group on its own design board (paper 35, task 44, application 23, discovery 15), or one roster board carries all 141.
-      A tick here also closes the same row in Items to Finish.
+- [ ] 🎯 Where does the roster's line fall now that it has moved?
+      📍 `Part` `### 5 · Where each generated thing goes` and the scope Aim above
+      🔔 `Why now` The 260727 ruling was `skills/board/` and nothing else. JL widened it on 260802 by asking for `skills/writing`, and `Skill-7` now exists, so the roster has a new boundary and no stated rule for it. The next person to ask "should X be on here?" has nothing to check.
+      ⭐ `A ·` units this board DEPENDS ON. `haipipe-writing` owns the prose standard every page is judged against, so it qualifies and a random other family does not. This is the smallest rule that covers what JL actually asked for, and it stays checkable.
+      `B ·` this one addition and no rule; treat `skills/writing` as a one-off. Honest, but the next request re-opens the question from scratch.
+      `C ·` every skill in the plugin, all 152. The roster becomes a plugin directory, which is the outcome the 260727 ruling was written to prevent.
+      🛑 `Blocks` nothing today; `Skill-7` is written either way.
+      🤖 `If nobody answers` A, because it is the only option that explains why `haipipe-writing` belongs and a paper stage does not.
 
 ## Files
 ### The precedent to mirror
@@ -256,6 +263,7 @@ managed block: a span between `<!-- haipipe:...:start -->` and `:end` that a gen
 roster page: a page whose subject exists independently of the board, unlike a ruling, which exists only as the question it asks.
 
 ## Log
+260802 2000 · JL widened the 260727 scope ruling by asking to add `skills/writing` to the roster, and `Skill-7-haipipe-writing` is the first row outside `skills/board/`. It is a sound widening because that unit owns the prose standard every page here is judged against, but no rule states where the line now falls, so a Decision Now row carries the three options with `units this board depends on` recommended
 260801 0140 · Full renumber QC5a -> QC3a (JL forced 260801)
 260801 0130 · Reindexed QC5 -> QC5a under the new QC5 generator parent (JL 260801)
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

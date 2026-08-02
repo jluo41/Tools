@@ -7,6 +7,40 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.9.0 - 2026-08-02
+
+- **`haipipe-board-index` is merged into this skill and retired** (JL 260802: "maybe
+  merge, I will do B"). This verb now owns BOTH altitudes: `board.md`'s structure and
+  a page's sections. The family goes from one door, one altitude, two specs and one
+  verb to one door, two specs, one verb.
+- What the audit found, and why the merge and not a rename. Three of the index's five
+  verbs were other people's work written a second time: `propose` and `materialize`
+  are `haipipe-board`'s `open` action, `regroup` wrapped `haipipe-board/cli/regroup.py`,
+  and `check` was a subset of `haipipe-board/cli/check.py`. Only `src/lanes.py` was
+  code the family held nowhere else, and it moved here with the merge.
+- **The gap this closes, which is the actual reason to do it.** A finding about a
+  whole GROUP had no target and stayed in chat, because this verb resolved pages only
+  while the block such a finding belongs in was owned by the other unit. The new
+  landing rule: a group-altitude input lands in the group's intro prose in `board.md`
+  `## Pages`, written at the section boundary, with `lanes.py` refreshing the block
+  underneath. Decomposing a group finding onto its member pages was the alternative
+  and is refused, because the pieces individually say less than the whole did.
+- **The two altitudes keep separate approval rules, and the merge must not blur them.**
+  A page-altitude write lands on its own, because it records something that already
+  happened. A board-altitude write asks a person first, because it decides what pages
+  will exist and the group letters it chooses are cited by every future page.
+- `haipipe-board`'s `open` action keeps its own description of propose and materialize
+  on purpose: a person opening their first board should not have to load a second
+  skill. The duplication is now declared in both files rather than undiscovered, and
+  the two must be corrected together.
+- Inherited from `haipipe-board-index`, unchanged in substance: `lanes.py` round-trips
+  (roster generated from `## Pages`, every typed cell kept, a new page arrives with `?`,
+  a retired page's row dropped); kept cells are collected GLOBALLY by page id, so a
+  page that changes group carries its cells with it, proven when 31 of 42 pages moved
+  in the `01-boardform-260722` restructure; the board canvas shows how GROUPS connect
+  and is never a second copy of the page roster; a group anchors at `#group-<token>`
+  and is not a page.
+
 ## 0.8.0 - 2026-08-02
 
 - Carries QA3's five-condition gate that runs BEFORE the reply, with `cli/gate.py`

@@ -6,7 +6,12 @@ method: state what Nature Communications requires of reach, and record why its b
 
 ## Opening
 
-This desk's test names a person who does not work in your field and asks whether they keep reading. It is the only bar in the tree that a paper cannot check against its own data. So how is it supposed to be scored?
+How do you score a bar that names a reader instead of a field?
+> ✎ ~This desk's test~ *How do you score a bar that* names a ~person who does not work in your field and~ *reader instead of a field? Nature Communications* asks whether ~they~ *a researcher outside your subfield would* keep reading. ~It is the only bar~ *Every other outlet* in the *venue* tree ~that~ *names a domain, so* a paper ~cannot check against its own data. So how is~ *can be matched to* it ~supposed to be scored?~ *by topic. This one names an audience, and no file on disk says who that audience is. This page records what the pack does state about that bar, and marks the places where it goes quiet.* · CC · 260802 1540
+Nature Communications asks whether a researcher outside your subfield would keep reading.
+Every other outlet in the venue tree names a domain, so a paper can be matched to it by topic.
+This one names an audience, and no file on disk says who that audience is.
+This page records what the pack does state about that bar, and marks the places where it goes quiet.
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-nature-portfolio/nature-communications/`.
@@ -80,6 +85,9 @@ How this page must be written. Read it before editing, and edit to it.
 ```
 
 🌍 Establishes the abstract as the artifact this desk actually scores, which is a section-level consequence of an outlet-level bar.
+> ✎ 🌍 Establishes the abstract as the artifact this desk actually scores, which is a section-level consequence of an outlet-level bar. *The term for that bar sits in `## Glossary`. An audience bar states its requirement in terms of who reads the paper, not what field the paper is in.* · CC · 260802 1540
+The term for that bar sits in `## Glossary`.
+An audience bar states its requirement in terms of who reads the paper, not what field the paper is in.
 
 #### 1.1 · Definitive-scale replication is a fit signal, which is unusual
 (most desks in this tree treat replication as a lesser contribution)
@@ -140,22 +148,40 @@ That is a genuine route for a paper with large data and no novel mechanism, and 
 (the pack gives exemplar sentences; a slot is what survives when the content is someone else's)
 `style.md` "Signature moves" names four, and each is a position in the paragraph rather than a phrasing.
 The opening is `<broad condition or phenomenon> <its scale in the world>, <a yet-clause naming what is still not possible>`, and the method name may not appear in it.
-The pivot is `<pivot verb> <NAME>, <an appositive naming what kind of thing it is> that <capability>`, where NatComm accepts a mix of pivot verbs ("Here we present", "We present", "We introduce", "In this work, we", "This study investigates") and an empirical paper may pivot with no system name at all.
-The result slot is `<subject> achieved <metric with its unit> (<comparator, interval, or n>)`, and `style.md` "Contrast with NMI" is explicit that leaving it directional is the NMI habit, not this one.
+The pivot is `<pivot verb> <NAME>, <an appositive naming what kind of thing it is> that <capability>`.
+> ✎ The pivot is `<pivot verb> <NAME>, <an appositive naming what kind of thing it is> that ~<capability>`, where~ *<capability>`.* NatComm accepts a mix of pivot verbs ~("Here~ *here: "Here* we present", "We present", "We introduce", "In this work, we", "This study ~investigates") and an~ *investigates". An* empirical paper may pivot with no system name at all. · CC · 260802 1540
+NatComm accepts a mix of pivot verbs here: "Here we present", "We present", "We introduce", "In this work, we", "This study investigates".
+An empirical paper may pivot with no system name at all.
+The result slot is `<subject> achieved <metric with its unit> (<comparator, interval, or n>)`.
+> ✎ The result slot is `<subject> achieved <metric with its unit> (<comparator, interval, or ~n>)`, and~ *n>)`.* `style.md` "Contrast with NMI" is explicit that leaving it directional is the NMI habit, not this one. · CC · 260802 1540
+`style.md` "Contrast with NMI" is explicit that leaving it directional is the NMI habit, not this one.
 The close is `<gerund phrase naming a use> for <a constituency wider than the subfield>`.
 
 #### 3.2 · Where breadth has to be visible here
 (sentence one and sentence last, and nowhere else does the desk get a second look)
 The one-sentence test in `taste.md` asks whether a researcher outside this subfield stops scrolling, and the only text that reader has is this paragraph.
-The pack's own opening exemplars are all field-external: a disease and its projected growth, a drug class and its uptake, a records system and what it made possible, none of them naming a method.
+The pack's own opening exemplars are all field-external, and none of them names a method.
+> ✎ The pack's own opening exemplars are all ~field-external:~ *field-external, and none of them names* a *method. A* disease and its projected ~growth, a~ *growth. A* drug class and its ~uptake, a~ *uptake. A* records system and what it made ~possible, none of them naming a method.~ *possible.* · CC · 260802 1540
+A disease and its projected growth.
+A drug class and its uptake.
+A records system and what it made possible.
 The close is the same test from the other end, since `style.md` requires the final sentence to leave the specific result and land on who else can use it.
 Everything between those two sentences is read by an editor who has already decided to keep reading.
 
 #### 3.3 · What the pack forbids
 (six anti-patterns, and four of them are breadth failures in a formatting costume)
-`style.md` "Anti-patterns" rules out structured Background/Methods/Results/Conclusions labels, an opening on the method name, a close on the method or a bare metric, an absence of quantitative results, passive-heavy construction, and anything over roughly 280 words.
+`style.md` "Anti-patterns" rules out six things here.
+> ✎ `style.md` "Anti-patterns" rules out *six things here. No* structured Background/Methods/Results/Conclusions ~labels, an~ *labels. No* opening on the method ~name, a~ *name. No* close on the method or *on* a bare ~metric, an absence of~ *metric. No abstract without* quantitative ~results,~ *results. No* passive-heavy ~construction, and anything~ *construction. Nothing* over roughly 280 words. · CC · 260802 1540
+No structured Background/Methods/Results/Conclusions labels.
+No opening on the method name.
+No close on the method or on a bare metric.
+No abstract without quantitative results.
+No passive-heavy construction.
+Nothing over roughly 280 words.
 A labelled abstract, a method-first opening and a metric close all address a reader who already knows the subfield.
-Omitting the numbers leaves the outside reader nothing to weigh, which is why this outlet parts company with NMI on exactly that point.
+Omitting the numbers leaves the outside reader nothing to weigh.
+> ✎ Omitting the numbers leaves the outside reader nothing to ~weigh, which~ *weigh. That* is ~why~ *the exact point where* this outlet parts company with ~NMI on exactly that point.~ *NMI.* · CC · 260802 1540
+That is the exact point where this outlet parts company with NMI.
 
 #### 3.4 · When the pack and the paper's own blueprint disagree
 (a rule the whole pack shares, folded in from the retired family page)
@@ -256,11 +282,20 @@ Citations throughout are superscript numbers, and this is the one outlet in the 
 (P1, and the extra length exists to serve it)
 `style.md` "Signature moves" requires the first sentence to establish why the domain matters rather than what the method does, and the exemplar hooks are all readable by a non-specialist.
 The longer background this outlet permits is not a licence to review more papers; it is room to explain the field to someone who is not in it before the gap is stated.
-An introduction that reaches its gap in 600 words by assuming the reader's vocabulary has spent the extra room it was given on nothing.
+An introduction that reaches its gap in 600 words has assumed the reader already knows the field.
+> ✎ An introduction that reaches its gap in 600 words ~by assuming~ *has assumed* the ~reader's vocabulary~ *reader already knows the field. It* has spent the extra room *this outlet gives* it ~was given~ on nothing. · CC · 260802 1540
+It has spent the extra room this outlet gives it on nothing.
 
 #### 4.3 · What the pack forbids
 (six anti-patterns, one of which is a whole section)
-`style.md` "Anti-patterns" rules out opening with the method, a separate Related Work subsection inside the introduction, bulleted contributions, author-year as the default citation format, results or data analysis in the introduction, and anything past roughly 2,500 words.
+`style.md` "Anti-patterns" rules out six things here.
+> ✎ `style.md` "Anti-patterns" rules out *six things here. No* opening with the ~method, a~ *method. No* separate Related Work subsection inside the ~introduction,~ *introduction. No* bulleted ~contributions,~ *contributions. No* author-year as the default citation ~format,~ *format. No* results or data analysis in the ~introduction, and anything~ *introduction. Nothing* past roughly 2,500 words. · CC · 260802 1540
+No opening with the method.
+No separate Related Work subsection inside the introduction.
+No bulleted contributions.
+No author-year as the default citation format.
+No results or data analysis in the introduction.
+Nothing past roughly 2,500 words.
 The bulleted-contributions ban is worth naming twice, because it is the habit the IS family trains and the "Contrast with IS journals" block calls out directly.
 
 #### 4.4 · Format values
@@ -351,28 +386,55 @@ The scope close, `We evaluated <what> across <how many settings or datasets>` fr
 
 #### 5.1 · What this kind is not
 (it situates; it does not build)
-`stages/section-kinds.yml` states it in the comment above its own vocabulary: `theory` in the IS family develops the model and its hypotheses, `related-work` in the Nature family situates the paper against prior literature, and those are different jobs rather than aliases of one.
-`natcomm-related-work/style.md` "Contrast with IS journals" says the same thing from the outlet's side: the IS journals use related work to establish theoretical grounding and position against theories, while this outlet uses it purely to identify the technical or empirical gap and positions against method categories.
+`stages/section-kinds.yml` states it in the comment above its own vocabulary.
+> ✎ `stages/section-kinds.yml` states it in the comment above its own ~vocabulary:~ *vocabulary.* `theory` in the IS family develops the model and its ~hypotheses,~ *hypotheses.* `related-work` in the Nature family situates the paper against prior ~literature, and those~ *literature. Those* are *two* different ~jobs rather than aliases of~ *jobs, not two names for* one. · CC · 260802 1540
+`theory` in the IS family develops the model and its hypotheses.
+`related-work` in the Nature family situates the paper against prior literature.
+Those are two different jobs, not two names for one.
+`natcomm-related-work/style.md` "Contrast with IS journals" says the same thing from the outlet's side.
+> ✎ `natcomm-related-work/style.md` "Contrast with IS journals" says the same thing from the outlet's ~side: the~ *side. The* IS journals use related work to establish theoretical ~grounding~ *grounding,* and *they* position against ~theories, while this~ *theories. This* outlet uses it purely to identify the technical or empirical ~gap~ *gap,* and *it* positions against method categories. · CC · 260802 1540
+The IS journals use related work to establish theoretical grounding, and they position against theories.
+This outlet uses it purely to identify the technical or empirical gap, and it positions against method categories.
 Nothing here is developed.
-The whole job is to place the paper against what exists, which is why the pack can distribute it across four homes without losing anything.
+The whole job is to place the paper against what exists.
+> ✎ The whole job is to place the paper against what ~exists, which is why the pack~ *exists. A job that only places* can ~distribute it~ *be spread* across four homes ~without losing anything.~ *and lose nothing, and the pack does exactly that.* · CC · 260802 1540
+A job that only places can be spread across four homes and lose nothing, and the pack does exactly that.
 
 #### 5.2 · What section-edit still produces
 (a declared kind is still a unit of work, so it still gets a page)
 The kind is declared, so `section-edit` runs on it and writes it an `S-Main-<n>` page like any other, exactly as the generated Section kinds block below records.
 What that page does not get is a heading in the manuscript.
-It projects instead into three sections that do have headings, the Introduction where the gap is assembled, the Results where prior methods appear as baselines, and the Discussion where the positioning runs point by point, plus a Supplementary Note when the survey is heavy, which is a separate upload rather than a section.
-So this is the one unit on the paper board whose page has no one-to-one destination, and reading its state as "not yet written into the manuscript" will always be wrong: it is written into three places at once or into none.
+It projects instead into three sections that do have headings.
+> ✎ It projects instead into three sections that do have ~headings, the Introduction~ *headings. The Introduction,* where the gap is ~assembled, the Results~ *assembled. The Results,* where prior methods appear as ~baselines, and the Discussion~ *baselines. The Discussion,* where the positioning runs point by ~point, plus~ *point. A heavy survey goes to* a Supplementary Note ~when the survey is heavy, which~ *on top of those three, and a Note* is a separate upload rather than a section. · CC · 260802 1540
+The Introduction, where the gap is assembled.
+The Results, where prior methods appear as baselines.
+The Discussion, where the positioning runs point by point.
+A heavy survey goes to a Supplementary Note on top of those three, and a Note is a separate upload rather than a section.
+So this is the one unit on the paper board whose page has no one-to-one destination.
+> ✎ So this is the one unit on the paper board whose page has no one-to-one ~destination, and reading~ *destination. Reading* its state as "not yet written into the manuscript" will always be ~wrong: it~ *wrong. It* is written into three places at ~once~ *once,* or into none. · CC · 260802 1540
+Reading its state as "not yet written into the manuscript" will always be wrong.
+It is written into three places at once, or into none.
 `natcomm-related-work/template.md` makes the failure mode explicit, telling the writer to stop and flag it if the paper's `2a-venue.md` ever maps this unit to a standalone section of its own.
 
 #### 5.3 · Where breadth has to be visible here
 (in the names of the categories)
-The unit of description is an approach category, and `style.md` "Brevity of individual work descriptions" caps each at one to three sentences, with one sentence for an entire field as a working example.
+The unit of description is an approach category, not a paper.
+> ✎ The unit of description is an approach category, ~and~ *not a paper.* `style.md` "Brevity of individual work descriptions" caps each *one* at one to three ~sentences, with one sentence for~ *sentences. Its working example gives* an entire field ~as~ a ~working example.~ *single sentence.* · CC · 260802 1540
+`style.md` "Brevity of individual work descriptions" caps each one at one to three sentences.
+Its working example gives an entire field a single sentence.
 A category named in the subfield's shorthand is invisible to the reader the desk imagines, so the compression this outlet demands is also where the audience bar is either met or missed.
 The gap statement inherits the same constraint, since it is assembled out of those category names.
 
 #### 5.4 · What the pack forbids
 (six anti-patterns, and the first is the section itself)
-`style.md` "Anti-patterns" rules out a standalone Related Work or Literature Review section, a full paragraph reviewing one prior work, chronological organization, author-year as the default format, front-loading all positioning into the introduction, and discussing individual paper contributions at length.
+`style.md` "Anti-patterns" rules out six things here.
+> ✎ `style.md` "Anti-patterns" rules out ~a~ *six things here. No* standalone Related Work or Literature Review ~section, a~ *section. No* full paragraph reviewing one prior ~work,~ *work. No* chronological ~organization,~ *organization. No* author-year as the default ~format,~ *format. No* front-loading *of* all positioning into the ~introduction, and~ *introduction. No* discussing individual paper contributions at length. · CC · 260802 1540
+No standalone Related Work or Literature Review section.
+No full paragraph reviewing one prior work.
+No chronological organization.
+No author-year as the default format.
+No front-loading of all positioning into the introduction.
+No discussing individual paper contributions at length.
 Inline author naming survives as a narrow exception, used only when the paper is directly extending or contrasting a specific named study.
 
 #### 5.5 · Format values
@@ -425,7 +487,9 @@ The pivot-plus-limitation beat that closes a background unit and feeds the Intro
 The inline author-naming exception 5.4 allows, used only where the paper is directly extending one named study.
 
 "TrialMatchAI outperformed the non-fine-tuned LLM-Match baseline on TREC2021/2022 (e.g., TREC2022 nDCG@10 0.75 vs 0.40)." [Abdallah 2026]
-The Discussion positioning beat, where a prior method arrives as a number rather than as a review, which is why this unit needs no section of its own.
+The Discussion positioning beat, where a prior method arrives as a number rather than as a review.
+> ✎ The Discussion positioning beat, where a prior method arrives as a number rather than as a ~review, which is why~ *review. A number takes one clause, so* this unit needs no section of its own. · CC · 260802 1540
+A number takes one clause, so this unit needs no section of its own.
 
 ### 6 · Methods, end-placed and reproducibility-heavy
 
@@ -462,8 +526,14 @@ The Discussion positioning beat, where a prior method arrives as a number rather
 
 #### 6.1 · The signature moves, written as slots
 (ten are named; these five decide whether the section passes)
-The opening is `This study was conducted in accordance with all relevant ethical regulations. <approving IRB or ethics committee> <protocol number>`, and `style.md` notes this is more prominent here than at NMI because of the clinical scope.
-Each subsection runs What, then How, then an optional Why: name the component in one sentence, describe it in three to eight with the hyperparameters in them, and give at most one sentence of rationale.
+The opening is `This study was conducted in accordance with all relevant ethical regulations. <approving IRB or ethics committee> <protocol number>`.
+> ✎ The opening is `This study was conducted in accordance with all relevant ethical regulations. <approving IRB or ethics committee> <protocol ~number>`, and~ *number>`.* `style.md` notes *that* this is more prominent here than at ~NMI~ *NMI,* because of the clinical scope. · CC · 260802 1540
+`style.md` notes that this is more prominent here than at NMI, because of the clinical scope.
+Each subsection runs What, then How, then an optional Why.
+> ✎ Each subsection runs What, then How, then an optional ~Why: name~ *Why. What names* the component in one ~sentence, describe~ *sentence. How describes* it in three to eight *sentences,* with the hyperparameters in ~them, and give~ *them. Why gives* at most one sentence of rationale. · CC · 260802 1540
+What names the component in one sentence.
+How describes it in three to eight sentences, with the hyperparameters in them.
+Why gives at most one sentence of rationale.
 Numbered display equations belong here and not in Results, at 0 for evaluation-only papers, 1 to 5 for zhou and salvatore, and 5 to 16 for ho and xu.
 Software versions are pinned by name and number rather than described.
 Data availability and Code availability close the section as labelled subsections, with GitHub plus a Zenodo DOI in 9 of the 11 exemplars.
@@ -471,12 +541,24 @@ Data availability and Code availability close the section as labelled subsection
 #### 6.2 · Where breadth has to be visible here
 (in the apparatus, because the outside reader has no subfield conventions to trust)
 End placement is itself the breadth device: the reader who does not share the vocabulary reaches the whole finding before any machinery.
-The reproducibility apparatus does the rest, since a Statistics and Reproducibility subsection, pinned software versions, and an availability statement are what an outsider checks in place of trusting how the subfield usually does things.
+The reproducibility apparatus does the rest.
+> ✎ The reproducibility apparatus does the ~rest, since~ *rest. An outsider has no subfield conventions to trust, so they check that apparatus instead. It is* a Statistics and Reproducibility subsection, pinned software versions, and an availability ~statement are what an outsider checks in place of trusting how the subfield usually does things.~ *statement.* · CC · 260802 1540
+An outsider has no subfield conventions to trust, so they check that apparatus instead.
+It is a Statistics and Reproducibility subsection, pinned software versions, and an availability statement.
 The retired family page recorded the portfolio rule this rests on: the Reporting Summary and the Data and Code availability statements are submission-facing mandates, not post-acceptance cleanup.
 
 #### 6.3 · What the pack forbids
 (eight anti-patterns, most of them omissions)
-`style.md` "Anti-patterns" rules out Methods before Results, Methods merged with Results, omitted hyperparameters, omitted Data or Code availability, an omitted ethics statement where there is human data, primary equations placed in Results, exclusively passive voice, and an omitted Statistics and Reproducibility subsection.
+`style.md` "Anti-patterns" rules out eight things here.
+> ✎ `style.md` "Anti-patterns" rules out *eight things here. No* Methods before ~Results,~ *Results. No* Methods merged with ~Results,~ *Results. No* omitted ~hyperparameters,~ *hyperparameters. No* omitted Data or Code ~availability, an~ *availability. No* omitted ethics statement where there is human ~data,~ *data. No* primary equations placed in ~Results,~ *Results. No* exclusively passive ~voice, and an~ *voice. No* omitted Statistics and Reproducibility subsection. · CC · 260802 1540
+No Methods before Results.
+No Methods merged with Results.
+No omitted hyperparameters.
+No omitted Data or Code availability.
+No omitted ethics statement where there is human data.
+No primary equations placed in Results.
+No exclusively passive voice.
+No omitted Statistics and Reproducibility subsection.
 Five of the eight are things left out rather than things done wrong, which makes this the section a checklist actually helps.
 
 #### 6.4 · Format values
@@ -579,7 +661,14 @@ Descriptive headings are the breadth device: a reader scanning only the headings
 
 #### 7.3 · What the pack forbids
 (six anti-patterns, and one of them is a formatting habit borrowed from a sibling)
-`style.md` "Anti-patterns" rules out generic headings such as "Experiment 1", Methods before Results, omitting tables when a structured numeric comparison is needed, a result paragraph that points at no figure or table, front-loading all benchmarks, and omitting ablation or validation.
+`style.md` "Anti-patterns" rules out six things here.
+> ✎ `style.md` "Anti-patterns" rules out *six things here. No* generic headings such as "Experiment ~1",~ *1". No* Methods before ~Results,~ *Results. No* omitting tables when a structured numeric comparison is ~needed, a~ *needed. No* result paragraph that points at no figure or ~table,~ *table. No* front-loading *of* all ~benchmarks, and~ *benchmarks. No* omitting ablation or validation. · CC · 260802 1540
+No generic headings such as "Experiment 1".
+No Methods before Results.
+No omitting tables when a structured numeric comparison is needed.
+No result paragraph that points at no figure or table.
+No front-loading of all benchmarks.
+No omitting ablation or validation.
 Deferring tables to the supplement is the NMI habit and is named here as wrong for this outlet.
 
 #### 7.4 · Format values
@@ -676,12 +765,22 @@ The close is `<a forward-looking clause naming who the finding serves>`, and it 
 
 #### 8.2 · Where breadth has to be visible here
 (the close is the second and last place the audience bar is scored)
-The abstract wins the outside reader and the closing sentence tells them what they now have, which is why `style.md` "Anti-patterns" bars ending on a limitation.
+The abstract wins the outside reader, and the closing sentence tells them what they now have.
+> ✎ The abstract wins the outside ~reader~ *reader,* and the closing sentence tells them what they now ~have, which is why~ *have. So* `style.md` "Anti-patterns" bars ending on a limitation. · CC · 260802 1540
+So `style.md` "Anti-patterns" bars ending on a limitation.
 The limitations block matters to breadth in the opposite direction: it is where a claim that travels gets an honest boundary, and the paired future direction keeps the boundary from reading as a retraction.
 
 #### 8.3 · What the pack forbids
 (seven anti-patterns, two of them about proportion)
-`style.md` "Anti-patterns" rules out a Discussion longer than Results, new results or data introduced here, omitted limitations, a limitation with no paired future direction, the abstract repeated verbatim as the opening, ending on a limitation, and running past roughly 1,500 words with no sub-headings.
+`style.md` "Anti-patterns" rules out seven things here.
+> ✎ `style.md` "Anti-patterns" rules out ~a~ *seven things here. No* Discussion longer than ~Results,~ *Results. No* new results or data introduced ~here,~ *here. No* omitted ~limitations, a~ *limitations. No* limitation ~with no~ *left without its* paired future ~direction, the~ *direction. No* abstract repeated verbatim as the ~opening,~ *opening. No* ending on a ~limitation, and~ *limitation. No* running past roughly 1,500 words with no sub-headings. · CC · 260802 1540
+No Discussion longer than Results.
+No new results or data introduced here.
+No omitted limitations.
+No limitation left without its paired future direction.
+No abstract repeated verbatim as the opening.
+No ending on a limitation.
+No running past roughly 1,500 words with no sub-headings.
 
 #### 8.4 · Format values
 (four metrics, each value naming the guide line or exemplar it came from; this page measures nothing itself)
@@ -775,7 +874,12 @@ The travels-beyond close, the second and last place 8.2 says this desk scores th
 #### 9.1 · What belongs in the body and what belongs here
 (one question decides it: does the item carry the argument or deepen it)
 `style.md` "Triage rule" keeps the core results figures and tables, the headline metrics and the key visualizations in the main text, at up to roughly ten display items.
-It sends to the Supplementary Information PDF the extended methodological detail such as prompts and pipelines and data-construction steps, the additional results that support without carrying the argument, the sensitivity and robustness analyses, and the secondary comparisons.
+Four kinds of material go to the Supplementary Information PDF.
+> ✎ ~It sends~ *Four kinds of material go* to the Supplementary Information ~PDF the~ *PDF. The* extended methodological ~detail~ *detail,* such as ~prompts and~ *prompts,* pipelines and data-construction ~steps, the~ *steps. The* additional results that support *the argument* without carrying ~the argument, the~ *it. The* sensitivity and robustness ~analyses, and the~ *analyses. The* secondary comparisons. · CC · 260802 1540
+The extended methodological detail, such as prompts, pipelines and data-construction steps.
+The additional results that support the argument without carrying it.
+The sensitivity and robustness analyses.
+The secondary comparisons.
 It sends to Supplementary Data the full result tables, the code lists such as ICD, drug-concept and LOINC lists, and the subgroup baseline characteristics.
 It sends to Source Data one file per main-text figure panel, named after the figure it reproduces.
 Formatting inside the PDF mirrors the main text, since each Supplementary Figure carries a bold title line and then a legend paragraph in main-text legend style.
@@ -788,8 +892,12 @@ A supplement with no cap is not permission to move the argument into it, since `
 
 #### 9.3 · What the family rule does not settle here
 (the Extended Data tier, which this outlet's guide never mentions)
-`playbook-nature-portfolio/README.md` states a shared convention that Extended Data is capped at 10 items total, peer-reviewed, inside the article PDF, and cites `NMI-appendix` and `natmed-appendix` as its sources.
-`natcomm-appendix/style.md` names no Extended Data tier at all, describes three classes that are all separate uploads, and states that this outlet imposes no hard cap on supplementary items.
+`playbook-nature-portfolio/README.md` states a shared convention: Extended Data is capped at 10 items total, peer-reviewed, inside the article PDF.
+> ✎ `playbook-nature-portfolio/README.md` states a shared ~convention that~ *convention:* Extended Data is capped at 10 items total, peer-reviewed, inside the article ~PDF, and~ *PDF. It* cites `NMI-appendix` and `natmed-appendix` as its sources. · CC · 260802 1540
+It cites `NMI-appendix` and `natmed-appendix` as its sources.
+`natcomm-appendix/style.md` names no Extended Data tier at all.
+> ✎ `natcomm-appendix/style.md` names no Extended Data tier at ~all,~ *all. It* describes three classes that are all separate uploads, and *it* states that this outlet imposes no hard cap on supplementary items. · CC · 260802 1540
+It describes three classes that are all separate uploads, and it states that this outlet imposes no hard cap on supplementary items.
 So the family cap cannot be assumed here, and whether Nature Communications runs an Extended Data tier is a question the pack does not answer.
 
 #### 9.4 · Format values
@@ -829,8 +937,12 @@ So the family cap cannot be assumed here, and whether Nature Communications runs
 #### 9.5 · The language, in the papers' own words
 (the one guide in this pack with no attributed prose, so what it does attribute is recorded and nothing is added)
 
-`natcomm-appendix/style.md` carries no "Signature moves" section and no "Exemplar sentences" section, unlike the six guides above it, so this division has no attributed sentence to quote and none is invented here.
-What the file does attribute is referencing tokens rather than prose, and there are two competing forms, held apart because the division figure's REFERENCING block requires a paper to pick one and use it everywhere.
+`natcomm-appendix/style.md` carries no "Signature moves" section and no "Exemplar sentences" section, unlike the six guides above it.
+> ✎ `natcomm-appendix/style.md` carries no "Signature moves" section and no "Exemplar sentences" section, unlike the six guides above ~it, so~ *it. So* this division has no attributed sentence to ~quote~ *quote,* and none is invented here. · CC · 260802 1540
+So this division has no attributed sentence to quote, and none is invented here.
+What the file does attribute is referencing tokens rather than prose.
+> ✎ What the file does attribute is referencing tokens rather than ~prose, and there~ *prose. There* are two competing forms, ~held~ *kept* apart *here* because the division figure's REFERENCING block ~requires~ *tells* a paper to pick one and use it everywhere. · CC · 260802 1540
+There are two competing forms, kept apart here because the division figure's REFERENCING block tells a paper to pick one and use it everywhere.
 
 "see Supplementary Figure 1" and "Supplementary Fig. 21" [Xu 2026]
 The long form, used by that paper for every figure in the Supplementary Information PDF, abbreviated after first use.
@@ -838,7 +950,9 @@ The long form, used by that paper for every figure in the Supplementary Informat
 "(Figure S2a)" and "(Supplementary Data 2)" [Salvatore 2026]
 The short form for the PDF figures, paired with the long form for the machine-readable files, which is the split 9.1 records between the Supplementary Information PDF and Supplementary Data.
 
-The third string the file attributes is a formatting pattern rather than a sentence: `Supplementary Figure N. Title.` as a bold title line, followed by a legend paragraph in main-text legend style [Xu 2026].
+The third string the file attributes is a formatting pattern rather than a sentence.
+> ✎ The third string the file attributes is a formatting pattern rather than a ~sentence:~ *sentence. It is* `Supplementary Figure N. Title.` as a bold title line, followed by a legend paragraph in main-text legend style [Xu 2026]. · CC · 260802 1540
+It is `Supplementary Figure N. Title.` as a bold title line, followed by a legend paragraph in main-text legend style [Xu 2026].
 
 ## Aims
 
@@ -946,7 +1060,7 @@ The third string the file attributes is a formatting pattern rather than a sente
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -956,7 +1070,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -969,8 +1086,8 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-This is the one outlet in the tree whose bar names an audience rather than a domain, so the abstract carries the whole test and a correct, well-validated, narrow paper fails here while passing elsewhere.
-A bar with no artifact behind it is scored against exemplars or it is not scored at all.
+- This is the one outlet in the tree whose bar names an audience rather than a domain, so the abstract carries the whole test and a correct, well-validated, narrow paper fails here while passing elsewhere.
+  A bar with no artifact behind it is scored against exemplars or it is not scored at all.
 
 ## Glossary
 
@@ -980,8 +1097,31 @@ A bar with no artifact behind it is scored against exemplars or it is not scored
 ## Log
 
 260802 · Opened with the QBv outlet pages, from `playbook-nature-portfolio/nature-communications` at `Venue-Paper@fe25a88`.
-260802 · Added divisions 3-9, one per section kind, from each `natcomm-<kind>/style.md` and `template.md`; folded in the retired family pages (`playbook-nature-portfolio/README.md`, `style-profile.md`) at the two points where they conflict with this outlet, the declarative Results headings sourced from NMI and the Extended Data cap sourced from NMI and Nature Medicine; relaxed the Writing Style bullet so a sourced number may be stated.
-260802 · Added a `Format values` block and a quoted-language block to each of the seven section divisions (3-9). Every value carries its `natcomm-<kind>/style.md` heading or its exemplar; nothing was measured on this pass, because `examples/` holds only PDFs plus `INDEX.md` and this pack has no extracted-text exemplar. Three findings surfaced: VALUE DENSITY is recorded by only 2 of the venue tree's 95 `style.md` files, both at JAMA flagship under the name `Estimate density`, and by none of this outlet's seven; citation density is recorded per SENTENCE only for the abstract, the introduction and the related-work unit, and per PARAGRAPH or only qualitatively for methods, results and discussion; and `natcomm-abstract/template.md` promotes three measured observations (the 110-280 word range, the single-paragraph shape, the zero-citation count) into a block headed ⛔ HARD CAPS and marked BINDING, where `style.md` states all three only as observed.
+260802 · Added divisions 3-9, one per section kind, from each `natcomm-<kind>/style.md` and `template.md`.
+> ✎ 260802 · Added divisions 3-9, one per section kind, from each `natcomm-<kind>/style.md` and ~`template.md`; folded~ *`template.md`. Folded* in the retired family pages (`playbook-nature-portfolio/README.md`, `style-profile.md`) at the two points where they conflict with this ~outlet,~ *outlet. Those two points are* the declarative Results headings sourced from ~NMI~ *NMI,* and the Extended Data cap sourced from NMI and Nature ~Medicine; relaxed~ *Medicine. Relaxed* the Writing Style bullet so a sourced number may be stated. · CC · 260802 1540
+  Folded in the retired family pages (`playbook-nature-portfolio/README.md`, `style-profile.md`) at the two points where they conflict with this outlet.
+  Those two points are the declarative Results headings sourced from NMI, and the Extended Data cap sourced from NMI and Nature Medicine.
+  Relaxed the Writing Style bullet so a sourced number may be stated.
+260802 · Added a `Format values` block and a quoted-language block to each of the seven section divisions (3-9).
+> ✎ 260802 · Added a `Format values` block and a quoted-language block to each of the seven section divisions (3-9). Every value carries its `natcomm-<kind>/style.md` heading or its ~exemplar; nothing~ *exemplar. Nothing* was measured on this pass, because `examples/` holds only PDFs plus `INDEX.md` and this pack has no extracted-text exemplar. Three findings ~surfaced:~ *surfaced. First,* VALUE DENSITY is recorded by only 2 of the venue tree's 95 `style.md` files, both at JAMA flagship under the name `Estimate density`, and by none of this outlet's ~seven;~ *seven. Second,* citation density is recorded per SENTENCE only for the abstract, the introduction and the related-work ~unit,~ *unit. For methods, results* and *discussion it is recorded* per PARAGRAPH or only ~qualitatively for methods, results and discussion; and~ *qualitatively. Third,* `natcomm-abstract/template.md` promotes three measured observations ~(the 110-280 word range, the single-paragraph shape, the zero-citation count)~ into a block headed ⛔ HARD CAPS and marked BINDING, where `style.md` states all three only as observed. *Those three observations are the 110-280 word range, the single-paragraph shape, and the zero-citation count.* · CC · 260802 1540
+  Every value carries its `natcomm-<kind>/style.md` heading or its exemplar.
+  Nothing was measured on this pass, because `examples/` holds only PDFs plus `INDEX.md` and this pack has no extracted-text exemplar.
+  Three findings surfaced.
+  First, VALUE DENSITY is recorded by only 2 of the venue tree's 95 `style.md` files, both at JAMA flagship under the name `Estimate density`, and by none of this outlet's seven.
+  Second, citation density is recorded per SENTENCE only for the abstract, the introduction and the related-work unit.
+  For methods, results and discussion it is recorded per PARAGRAPH or only qualitatively.
+  Third, `natcomm-abstract/template.md` promotes three measured observations into a block headed ⛔ HARD CAPS and marked BINDING, where `style.md` states all three only as observed.
+  Those three observations are the 110-280 word range, the single-paragraph shape, and the zero-citation count.
 260802 · Recorded the whole-article conflict on the WORDS row of divisions 4, 6, 7, 8 and 9: `natcomm-appendix/style.md` "Triage rule" puts an Article's main text at "typically 3,000-5,000 words" while Methods alone is budgeted to 5,500 and Results to 5,000+, and summing the four main-text guides' own per-paper figures puts every named exemplar past the ceiling, ho-2026 lowest at ~6,500 words.
-260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. It CORRECTS the Extended Data row this page inherited: Extended Data appears in none of this outlet's three author pages, so Nature Communications has no such tier and the 10-item cap borrowed from NMI and Nature Medicine does not reach it, while the only 10 on its own pages is a main-text display-item ceiling that is easy to mistake for the cap. It CONFIRMS the no-standalone-Related-Work rule from an exhaustive Article division that runs Introduction, Results, Discussion, Methods. On LaTeX it records one rule unique to this outlet in the group, that BibTeX bibliography files cannot be accepted, and that the Springer Nature LaTeX template reaches here through its own scope statement rather than through any Nature Communications page.
-260802 · Sharpened division 5 against `stages/section-kinds.yml`: `related-work` is declared for all five Nature outlets and for no outlet in any other pack, yet produces no manuscript heading, so its `S-Main-<n>` page projects into the Introduction, the Results and the Discussion rather than into one section of its own.
+260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day.
+> ✎ 260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. It CORRECTS the Extended Data row this page ~inherited:~ *inherited.* Extended Data appears in none of this outlet's three author pages, so Nature Communications has no such tier and the 10-item cap borrowed from NMI and Nature Medicine does not reach ~it, while the~ *it. The* only 10 on its own pages is a main-text display-item ~ceiling that~ *ceiling, which* is easy to mistake for the cap. It CONFIRMS the no-standalone-Related-Work rule from an exhaustive Article division that runs Introduction, Results, Discussion, Methods. On LaTeX it records one rule unique to this outlet in the group, that BibTeX bibliography files cannot be ~accepted, and~ *accepted. It also records* that the Springer Nature LaTeX template reaches here through its own scope statement rather than through any Nature Communications page. · CC · 260802 1540
+  It CORRECTS the Extended Data row this page inherited.
+  Extended Data appears in none of this outlet's three author pages, so Nature Communications has no such tier and the 10-item cap borrowed from NMI and Nature Medicine does not reach it.
+  The only 10 on its own pages is a main-text display-item ceiling, which is easy to mistake for the cap.
+  It CONFIRMS the no-standalone-Related-Work rule from an exhaustive Article division that runs Introduction, Results, Discussion, Methods.
+  On LaTeX it records one rule unique to this outlet in the group, that BibTeX bibliography files cannot be accepted.
+  It also records that the Springer Nature LaTeX template reaches here through its own scope statement rather than through any Nature Communications page.
+260802 · Sharpened division 5 against `stages/section-kinds.yml`.
+> ✎ 260802 · Sharpened division 5 against ~`stages/section-kinds.yml`:~ *`stages/section-kinds.yml`.* `related-work` is declared for all five Nature outlets and for no outlet in any other pack, yet *it* produces no manuscript ~heading, so~ *heading. So* its `S-Main-<n>` page projects into the Introduction, the Results and the Discussion rather than into one section of its own. · CC · 260802 1540
+  `related-work` is declared for all five Nature outlets and for no outlet in any other pack, yet it produces no manuscript heading.
+  So its `S-Main-<n>` page projects into the Introduction, the Results and the Discussion rather than into one section of its own.

@@ -6,15 +6,20 @@ method: state what makes a grant a venue at all, record the agency deltas as the
 
 ## Opening
 
-This system calls a venue whatever fixes the structure and states the acceptance test. An agency does both harder than any journal: page limits are enforced, section names are prescribed, and the review criteria are published in advance. So why would a funding agency not be in a tree of journals?
+In this system a venue is anything that fixes the structure and says in advance what it will accept. A funding agency does both, and it is stricter than a journal on each. Page limits are enforced, section names are prescribed, and the criteria are published before anyone writes. So why is its pack built so differently from the journal packs beside it?
+> ✎ ~This~ *In this* system ~calls~ a venue ~whatever~ *is anything that* fixes the structure and ~states the acceptance test. An~ *says in advance what it will accept. A funding* agency does ~both harder~ *both, and it is stricter* than ~any journal: page~ *a journal on each. Page* limits are enforced, section names are prescribed, and the ~review~ criteria are published ~in advance.~ *before anyone writes.* So why ~would a funding agency not be in a tree of journals?~ *is its pack built so differently from the journal packs beside it?* · CC · 260802 1542
 
-What changes is the tense. A journal desk asks what you found. A review panel asks what you will do, why you are the one to do it, and whether the plan is feasible. Everything the paper system knows how to argue from evidence has to be re-aimed at a plan.
+The difference is tense. A journal desk asks what you found, in the past. A review panel asks what you will do, why you are the one to do it, and whether the plan can be carried out. So every argument the paper system builds out of evidence has to be pointed at a plan instead.
+> ✎ ~What changes~ *The difference* is ~the~ tense. A journal desk asks what you ~found.~ *found, in the past.* A review panel asks what you will do, why you are the one to do it, and whether the plan ~is feasible. Everything~ *can be carried out. So every argument* the paper system ~knows how to argue from~ *builds out of* evidence has to be ~re-aimed~ *pointed* at a ~plan.~ *plan instead.* · CC · 260802 1542
 
 **Where this page sits**: it is one venue target in `QBv`, and the only one in its pack.
 This page owns only what is true of `playbook-grant`.
 
 **Why this pack has no outlet tree**: agencies do not have sections in the way journals do; they have prescribed backbones that differ per agency.
-The pack encodes them as delta tables inside `README.md`, and `stages/section-kinds.yml` declares this pack blueprint-only by design, which is where a stage reader meets the exception.
+The pack records each agency's backbone, meaning the order of sections that agency prescribes, as a row in a delta table inside `README.md`.
+> ✎ The pack ~encodes them~ *records each agency's backbone, meaning the order of sections that agency prescribes,* as *a row in a* delta *table inside `README.md`. Those* tables ~inside `README.md`, and~ *also carry each agency's review lens, meaning the criteria its panel scores a proposal against.* `stages/section-kinds.yml` *then* declares this pack blueprint-only by design, ~which~ *and that file* is where a stage reader meets the exception. · CC · 260802 1542
+Those tables also carry each agency's review lens, meaning the criteria its panel scores a proposal against.
+`stages/section-kinds.yml` then declares this pack blueprint-only by design, and that file is where a stage reader meets the exception.
 
 **What the pack is missing that every journal pack has**: exemplars.
 Eight agencies, no funded proposals on disk, and no `style.md` extracted from anything.
@@ -206,10 +211,16 @@ The Agencies table then scores it as one of exactly two criteria, so a generic B
 
 The README names `examples/` as the home of funded-proposal content and says in the same paragraph that it is not yet built, so no NSF sentence exists on disk to quote.
 What the pack wrote instead is two family-level slot patterns.
-"Despite progress in [X], [specific gap] remains unaddressed because [reason]. This proposal addresses it by [approach], which will [expected impact]." [`style-profile.md`, Gap statement] illustrates the paragraph the profile calls the single most important sentence in the proposal, and `taste.md` repeats its opening clause as the gap a panellist wants to find.
+The gap statement reads "Despite progress in [X], [specific gap] remains unaddressed because [reason]. This proposal addresses it by [approach], which will [expected impact]." [`style-profile.md`, Gap statement]
+> ✎ *The gap statement reads* "Despite progress in [X], [specific gap] remains unaddressed because [reason]. This proposal addresses it by [approach], which will [expected impact]." [`style-profile.md`, Gap statement] ~illustrates the paragraph the~ *The* profile calls *that paragraph* the single most important sentence in the proposal, and `taste.md` repeats its opening clause as the gap a panellist wants to find. · CC · 260802 1542
+The profile calls that paragraph the single most important sentence in the proposal, and `taste.md` repeats its opening clause as the gap a panellist wants to find.
 "Building on [preliminary result], we will [objective]; success yields [deliverable]." [`style-profile.md`, Aims and hypotheses] illustrates the rationale to objective to deliverable trace every aim is asked to make.
-Neither pattern names NSF, so the only NSF-specific language guidance on disk is a four-clause tone note: clear direct English, Aim-based bold headings, one preliminary-data paragraph per aim, and Broader Impacts concrete and specific [`style-profile.md`, per-agency tone notes].
-A tone note describes language rather than showing it, and the README calls the Write/Edit map "the main purpose" of the pack, so what is missing is the pack's own stated centre.
+Neither pattern names NSF, so the only NSF-specific language guidance on disk is a tone note of four clauses.
+> ✎ Neither pattern names NSF, so the only NSF-specific language guidance on disk is a ~four-clause~ tone ~note:~ *note of four clauses. It asks for* clear direct English, Aim-based bold headings, one preliminary-data paragraph per aim, and Broader Impacts *that are* concrete and specific [`style-profile.md`, per-agency tone notes]. · CC · 260802 1542
+It asks for clear direct English, Aim-based bold headings, one preliminary-data paragraph per aim, and Broader Impacts that are concrete and specific [`style-profile.md`, per-agency tone notes].
+A tone note describes language rather than showing it.
+> ✎ A tone note describes language rather than showing ~it, and the~ *it. The* README calls the Write/Edit map "the main purpose" of the pack, so what is missing is the pack's own stated centre. · CC · 260802 1548
+The README calls the Write/Edit map "the main purpose" of the pack, so what is missing is the pack's own stated centre.
 
 ### 5 · NSFC: one backbone, two programmes, four more with no row
 
@@ -258,7 +269,9 @@ The review lens is glossed the same way, from the four criteria the Agencies tab
 #### 5.2 · The pack lists six NSFC sub-programmes and encodes two
 (so a proposal pinned to any of the other four falls back on a row nobody chose for it)
 The README's `Relationship to the venue layer` section names six NSFC sub-programmes as the deep knowledge the `playbook-grant/` skill carries.
-The Minimap table then carries a row for the General Program and one for Young Scientists, and none for the remaining four, which the README names only in Chinese and this page glosses as Excellent Young Scientists, Distinguished Young Scholars, Overseas Excellent Young Scientists, and the Key Program.
+The Minimap table then carries a row for the General Program and one for Young Scientists, and none for the remaining four.
+> ✎ The Minimap table then carries a row for the General Program and one for Young Scientists, and none for the remaining ~four, which the~ *four. The* README names *those four* only in ~Chinese~ *Chinese,* and this page glosses *them* as Excellent Young Scientists, Distinguished Young Scholars, Overseas Excellent Young Scientists, and the Key Program. · CC · 260802 1542
+The README names those four only in Chinese, and this page glosses them as Excellent Young Scientists, Distinguished Young Scholars, Overseas Excellent Young Scientists, and the Key Program.
 Nothing in the pack says which row those four resolve to, and GENERIC is the only honest answer the pack currently offers.
 
 #### 5.3 · Format values
@@ -283,8 +296,13 @@ Nothing in the pack says which row those four resolve to, and GENERIC is the onl
 (no funded NSFC proposal is on disk, and the guidance that exists is written in a language this board does not carry)
 
 The pack stores no NSFC proposal, so the eight-section backbone has correct headings and no sample of what goes under any of them.
-The only NSFC-specific language guidance is the tone note, glossed here: a formal Chinese academic register, a rationale section positioned at the international frontier, numbered innovation points, a prior-accumulation section citing the applicant's own publications, and a detailed feasibility analysis [`style-profile.md`, per-agency tone notes].
-Each of those five clauses names a section and none shows a sentence, and the note's own terms are Chinese, so a writer working from this board gets a gloss of a description of prose that is not on disk.
+The only NSFC-specific language guidance is the tone note, and this page glosses it in English.
+> ✎ The only NSFC-specific language guidance is the tone note, ~glossed here:~ *and this page glosses it in English. It asks for* a formal Chinese academic register, a rationale section positioned at the international frontier, *and* numbered innovation ~points,~ *points. It also asks for* a prior-accumulation section citing the applicant's own publications, and *for* a detailed feasibility analysis [`style-profile.md`, per-agency tone notes]. · CC · 260802 1542
+It asks for a formal Chinese academic register, a rationale section positioned at the international frontier, and numbered innovation points.
+It also asks for a prior-accumulation section citing the applicant's own publications, and for a detailed feasibility analysis [`style-profile.md`, per-agency tone notes].
+Each of those five clauses names a section, and none shows a sentence.
+> ✎ Each of those five clauses names a ~section~ *section,* and none shows a ~sentence, and the~ *sentence. The* note's own terms are Chinese, so a writer working from this board gets a gloss of a description of prose that is not on disk. · CC · 260802 1548
+The note's own terms are Chinese, so a writer working from this board gets a gloss of a description of prose that is not on disk.
 The two slot patterns quoted in 4.4 are the pack's only sentence-shaped guidance and they are written in English, which is the register the NSFC note itself rules out.
 The README calls the Write/Edit map the pack's main purpose, and NSFC is the row where that map is furthest from being usable.
 
@@ -323,7 +341,9 @@ The README calls the Write/Edit map the pack's main purpose, and NSFC is the row
 (so the one display ERC actually scores has no row in the stage that produces displays)
 The Display map lists four grant-family displays: the conceptual framework diagram as hero, preliminary-data figures, a timeline or Gantt chart, and a budget-justification table.
 The ERC work-package table overlaps the timeline without being the same object, because it binds deliverables and milestones to work packages rather than to dates.
-`style-profile.md` states that a timeline with concrete milestones and deliverables is itself a feasibility argument, which is the criterion the Agencies table calls Methodology, so this table is scored rather than decorative.
+`style-profile.md` states that a timeline with concrete milestones and deliverables is itself a feasibility argument.
+> ✎ `style-profile.md` states that a timeline with concrete milestones and deliverables is itself a feasibility ~argument, which~ *argument. Feasibility* is the criterion the Agencies table calls Methodology, so this table is scored rather than decorative. · CC · 260802 1542
+Feasibility is the criterion the Agencies table calls Methodology, so this table is scored rather than decorative.
 
 #### 6.2 · Format values
 (the pack's only other stated limit, and its only agency-specific exhibit)
@@ -349,9 +369,13 @@ The ERC work-package table overlaps the timeline without being the same object, 
 #### 6.3 · The language, in the proposals' own words
 (no funded ERC synopsis is on disk, so the pack's hardest language requirement has no demonstration)
 
-ERC is the one agency whose tone note asks a whole document to do something rather than a section to say something: the Extended Synopsis must be self-contained and the narrative compelling and high-risk / high-gain [`style-profile.md`, per-agency tone notes].
+ERC is the one agency whose tone note asks a whole document to do something, rather than asking one section to say something.
+> ✎ ERC is the one agency whose tone note asks a whole document to do ~something~ *something,* rather than ~a~ *asking one* section to say ~something: the~ *something. The* Extended Synopsis must be ~self-contained~ *self-contained,* and the narrative *must be* compelling and high-risk / high-gain [`style-profile.md`, per-agency tone notes]. · CC · 260802 1542
+The Extended Synopsis must be self-contained, and the narrative must be compelling and high-risk / high-gain [`style-profile.md`, per-agency tone notes].
 Nothing on disk shows what a self-contained five-page synopsis reads like, because the pack stores no funded ERC proposal.
-The Claims map names high-risk / high-gain as ERC's mission language and pairs it with NSF's Broader Impacts [`playbook-grant/README.md`, the -> Claims map], which tells a writer which words to aim at and not how to build a sentence around them.
+The Claims map names high-risk / high-gain as ERC's mission language and pairs it with NSF's Broader Impacts [`playbook-grant/README.md`, the -> Claims map].
+> ✎ The Claims map names high-risk / high-gain as ERC's mission language and pairs it with NSF's Broader Impacts [`playbook-grant/README.md`, the -> Claims ~map], which~ *map]. That* tells a writer which words to aim ~at~ *at,* and not how to build a sentence around them. · CC · 260802 1542
+That tells a writer which words to aim at, and not how to build a sentence around them.
 The two slot patterns in 4.4 are the only sentence shapes the pack offers and neither is a synopsis opening.
 So the pack states an imitation purpose for ERC and holds nothing to imitate, on the one row where the requirement is a whole document.
 
@@ -420,7 +444,9 @@ The pack has no English KAKENHI backbone anywhere, so nothing on disk can be cit
 #### 7.4 · The language, in the proposals' own words
 (the register the pack names is Japanese, the pack holds no Japanese prose, and this board carries none either)
 
-The tone note asks for the formal declarative register of Japanese academic writing, societal significance and originality stated up front, concrete yearly milestones, and citations to KAKEN-funded related projects [`style-profile.md`, per-agency tone notes].
+The tone note asks for the formal declarative register of Japanese academic writing, with societal significance and originality stated up front.
+> ✎ The tone note asks for the formal declarative register of Japanese academic writing, *with* societal significance and originality stated up ~front,~ *front. It also asks for* concrete yearly milestones, and *for* citations to KAKEN-funded related projects [`style-profile.md`, per-agency tone notes]. · CC · 260802 1542
+It also asks for concrete yearly milestones, and for citations to KAKEN-funded related projects [`style-profile.md`, per-agency tone notes].
 A register is the hardest thing to convey by description and the easiest to convey by example, and the pack has no funded KAKENHI proposal to serve as that example.
 The README's KAKENHI rows are section names in Japanese, glossed only in part, so the pack's own text is not a sample of proposal prose either.
 The two slot patterns in 4.4 are English, would have to be rewritten in that register before a writer could use them here, and the pack says nothing about how.
@@ -468,9 +494,13 @@ A proposal built for the other three therefore arrives at NWO with its feasibili
 
 #### 8.2 · These four are where the pack's per-agency knowledge runs out
 (so they are the rows most likely to be wrong and the least likely to be noticed)
-Each of the four is one backbone string and one lens string, with no page limit, no sub-programme, and no tone note beyond the two clauses `style-profile.md` gives ARC and NWO.
+Each of the four is one backbone string and one lens string.
+> ✎ Each of the four is one backbone string and one lens ~string, with no~ *string. None of them carries a* page limit, ~no~ *a* sub-programme, ~and no~ *or a* tone note beyond the two clauses `style-profile.md` gives ARC and NWO. · CC · 260802 1548
+None of them carries a page limit, a sub-programme, or a tone note beyond the two clauses `style-profile.md` gives ARC and NWO.
 NSF, NSFC, ERC and KAKENHI each get a second description in the Minimap table and a paragraph of their own in the per-agency tone notes; these four get neither.
-The README states that the deep agency knowledge is carried in the `playbook-grant/` skill, so a thin row here is not evidence the knowledge is missing, only that this pack does not hold it.
+The README states that the deep agency knowledge is carried in the `playbook-grant/` skill.
+> ✎ The README states that the deep agency knowledge is carried in the `playbook-grant/` ~skill, so~ *skill. So* a thin row here is not evidence *that* the knowledge is missing, only that this pack does not hold it. · CC · 260802 1542
+So a thin row here is not evidence that the knowledge is missing, only that this pack does not hold it.
 
 #### 8.3 · Format values
 (one block for four agencies, because the pack records the same absence four times over)
@@ -496,11 +526,17 @@ The README states that the deep agency knowledge is carried in the `playbook-gra
 #### 8.4 · The language, in the proposals' own words
 (four agencies share two clauses of tone guidance between them, and hold no proposal at all)
 
-The whole of the pack's language guidance for these four is one line: a state-of-the-art-then-objectives backbone, ARC stresses benefit to Australia, NWO stresses knowledge utilisation [`style-profile.md`, per-agency tone notes].
+The whole of the pack's language guidance for these four is one line.
+> ✎ The whole of the pack's language guidance for these four is one ~line:~ *line. It gives them* a state-of-the-art-then-objectives backbone, *and adds that* ARC stresses benefit to ~Australia,~ *Australia and* NWO stresses knowledge utilisation [`style-profile.md`, per-agency tone notes]. · CC · 260802 1548
+It gives them a state-of-the-art-then-objectives backbone, and adds that ARC stresses benefit to Australia and NWO stresses knowledge utilisation [`style-profile.md`, per-agency tone notes].
 DFG and SNSF get no clause of their own in it, so two of the four have no language guidance in this pack whatsoever.
 No funded DFG, SNSF, ARC or NWO proposal is on disk, which leaves those two clauses as the only thing a writing stage can act on for the group.
-8.1 already names the routing consequence, and the language gap sharpens it: a proposal built for the other three arrives at NWO with no knowledge-utilisation prose, and nothing here shows what such prose sounds like.
-A one-line note still looks like guidance, which is why this is the group where the distance from the README's stated main purpose is both largest and hardest to notice.
+8.1 already names the routing consequence, and the language gap sharpens it.
+> ✎ 8.1 already names the routing consequence, and the language gap sharpens ~it: a~ *it. A* proposal built for the other three arrives at NWO with no knowledge-utilisation prose, and nothing here shows what such prose sounds like. · CC · 260802 1542
+A proposal built for the other three arrives at NWO with no knowledge-utilisation prose, and nothing here shows what such prose sounds like.
+A one-line note still looks like guidance.
+> ✎ A one-line note still looks like ~guidance, which is why~ *guidance. So* this is the group where the distance from the README's stated main purpose is both largest and hardest to notice. · CC · 260802 1542
+So this is the group where the distance from the README's stated main purpose is both largest and hardest to notice.
 
 ### 9 · GENERIC: the escape hatch, and three fields nobody is asked for
 
@@ -530,7 +566,9 @@ A one-line note still looks like guidance, which is why this is the group where 
 
 #### 9.1 · GENERIC is the only row whose review lens is also user-supplied
 (so it is the one target in this tree that ships with no acceptance test at all)
-Every other row in the README's Agencies table names its criteria, because an agency publishes them in advance, which is the property division 1 uses to call a grant a venue.
+Every other row in the README's Agencies table names its criteria, because an agency publishes them in advance.
+> ✎ Every other row in the README's Agencies table names its criteria, because an agency publishes them in ~advance, which~ *advance. That* is the property division 1 uses to call a grant a venue. · CC · 260802 1542
+That is the property division 1 uses to call a grant a venue.
 GENERIC names none, and until a person types three fields in, a proposal pinned to it has a venue by name and not by this tree's own definition.
 The escape hatch is therefore also the one place the definition this page opens with stops holding, and the pack does not say so.
 
@@ -557,9 +595,15 @@ The escape hatch is therefore also the one place the definition this page opens 
 (the one row carrying neither a proposal nor a description of one)
 
 Every other agency in the pack gets at least a clause in the per-agency tone notes, and GENERIC gets no line there at all [`style-profile.md`, per-agency tone notes].
-It therefore inherits family guidance only: the two slot patterns quoted in 4.4, the significance-first arc, and `taste.md`'s question, "Could the panelist, after one read of the Specific Aims page, retell the gap, the aims, and why this team will deliver".
-That question is the family's own acceptance test, and it illustrates what the pack expects a reader to be able to do after one page, which for GENERIC is the only test on offer, because 9.1 shows the row's criteria are user-supplied too.
-No funded proposal is on disk for any agency, so a GENERIC target arrives with no sample, no tone note, and no criteria, three absences where every other row has at least one field filled.
+It therefore inherits family guidance only: the two slot patterns quoted in 4.4 and the significance-first arc.
+> ✎ It therefore inherits family guidance only: the two slot patterns quoted in ~4.4,~ *4.4 and* the significance-first ~arc, and~ *arc. The third piece is* `taste.md`'s question, "Could the panelist, after one read of the Specific Aims page, retell the gap, the aims, and why this team will deliver". · CC · 260802 1542
+The third piece is `taste.md`'s question, "Could the panelist, after one read of the Specific Aims page, retell the gap, the aims, and why this team will deliver".
+That question is the family's own acceptance test, and it shows what the pack expects a reader to be able to do after one page.
+> ✎ That question is the family's own acceptance test, and it ~illustrates~ *shows* what the pack expects a reader to be able to do after one ~page, which for~ *page. For* GENERIC *it* is the only test on offer, because 9.1 shows *that* the row's criteria are user-supplied too. · CC · 260802 1542
+For GENERIC it is the only test on offer, because 9.1 shows that the row's criteria are user-supplied too.
+No funded proposal is on disk for any agency, so a GENERIC target arrives with no sample, no tone note, and no criteria.
+> ✎ No funded proposal is on disk for any agency, so a GENERIC target arrives with no sample, no tone note, and no ~criteria,~ *criteria. That is* three ~absences~ *absences,* where every other row has at least one field filled. · CC · 260802 1542
+That is three absences, where every other row has at least one field filled.
 The Write/Edit map is still what a GENERIC proposal reaches, and at this row it carries nothing that was written for the agency being written to.
 
 ### 10 · The appendix question: supporting documents, not an overflow
@@ -599,21 +643,31 @@ The Write/Edit map is still what a GENERIC proposal reaches, and at this row it 
 
 #### 10.1 · A supporting document cannot absorb narrative overflow
 (which is the practical difference from a journal appendix, and the reason the split matters)
-A journal appendix takes what the main text cannot hold, and the same reviewer reads both, which is why a page-limited section can push material into it.
-An agency's supporting documents are separate uploads on their own forms, the pack states no page limit for any of them, and nothing about them relaxes the 15-page NSF Project Description or the 14-page ERC Part B2.
+A journal appendix takes what the main text cannot hold, and the same reviewer reads both.
+> ✎ A journal appendix takes what the main text cannot hold, and the same reviewer reads ~both, which is why~ *both. So* a page-limited section can push material into it. · CC · 260802 1542
+So a page-limited section can push material into it.
+An agency's supporting documents are separate uploads on their own forms, and the pack states no page limit for any of them.
+> ✎ An agency's supporting documents are separate uploads on their own forms, *and* the pack states no page limit for any of ~them, and nothing~ *them. Nothing* about them relaxes the 15-page NSF Project Description or the 14-page ERC Part B2. · CC · 260802 1542
+Nothing about them relaxes the 15-page NSF Project Description or the 14-page ERC Part B2.
 `taste.md` pushes the burden the other way: preliminary data, existing datasets, infrastructure and a timeline with concrete milestones are feasibility evidence the panel expects inside the narrative, not filed behind it.
 
 #### 10.2 · The budget justification is a display unit, and the one rule the pack states about it is a ban
 (so the pack's only instruction on writing a supporting document is about what may not be written)
-The Display map lists a budget-justification table among the four grant-family displays, mapping cost categories to aims, narrative only, with amounts left as `[AMOUNT]` placeholders.
+The Display map lists a budget-justification table among the four grant-family displays.
+> ✎ The Display map lists a budget-justification table among the four grant-family ~displays, mapping~ *displays. It maps* cost categories to aims, *in* narrative only, with amounts left as `[AMOUNT]` placeholders. · CC · 260802 1542
+It maps cost categories to aims, in narrative only, with amounts left as `[AMOUNT]` placeholders.
 `taste.md` and `style-profile.md` both repeat the ban: never fabricate an amount, a publication or a credential, and leave a `[AMOUNT]` or `[TODO]` placeholder instead.
 That is the whole of what the pack says about how a supporting document is written, and it says nothing about what belongs in one.
 
 #### 10.3 · Results from Prior Support is claim-bearing, which no journal appendix is
 (so the closest thing to an appendix here is scored, not tolerated)
 The Claims map lists PI track record among the two to four supporting claims a grant proposal is built from, alongside preliminary-data feasibility and broader impact.
-`taste.md` asks for the gap to be positioned against competing funded projects, and ERC, DFG and SNSF each score it in the README's Agencies table, as PI track record, PI qualification and track record respectively.
-So the material a journal writer would file as back matter is a named backbone section at NSF and a scored criterion at three more agencies, which is four of the pack's nine rows.
+`taste.md` asks for the gap to be positioned against competing funded projects.
+> ✎ `taste.md` asks for the gap to be positioned against competing funded ~projects, and~ *projects.* ERC, DFG and SNSF each score ~it~ *that record* in the README's Agencies table, as PI track record, PI qualification and track ~record respectively.~ *record, in that order.* · CC · 260802 1542
+ERC, DFG and SNSF each score that record in the README's Agencies table, as PI track record, PI qualification and track record, in that order.
+So the material a journal writer would file as back matter is a named backbone section at NSF, and a scored criterion at three more agencies.
+> ✎ So the material a journal writer would file as back matter is a named backbone section at ~NSF~ *NSF,* and a scored criterion at three more ~agencies, which~ *agencies. That* is four of the pack's nine rows. · CC · 260802 1542
+That is four of the pack's nine rows.
 
 ## Aims
 
@@ -736,8 +790,10 @@ Filed at FAMILY level under `../../paper/venue/playbook-grant/examples/`, not un
 
 ## Law
 
-A grant is a venue because it prescribes structure and publishes its acceptance test, and it is a stricter one than any journal on both counts.
-A panel buys a plan, so every lifecycle artifact is re-aimed from what was found to what will be done, and a claim converted into an aim without changing tense has not been converted.
+- A grant is a venue because it prescribes structure and publishes its acceptance test, and it is a stricter one than any journal on both counts.
+  A panel buys a plan, so every lifecycle artifact is re-aimed from what was found to what will be done.
+> ✎ A panel buys a plan, so every lifecycle artifact is re-aimed from what was found to what will be ~done, and a~ *done. A* claim converted into an aim without changing tense has not been converted. · CC · 260802 1548
+  A claim converted into an aim without changing tense has not been converted.
 
 ## Glossary
 
@@ -747,8 +803,34 @@ A panel buys a plan, so every lifecycle artifact is re-aimed from what was found
 
 ## Log
 
-260802 · Authority block added at the end of Files, from the agencies' own rules rather than the pack, covering seven of the nine rows. NSF's two page limits are confirmed at source, and Results from Prior NSF Support is corrected: it is capped at five pages and counted inside the 15, which this page recorded as unlimited in three places. ERC's five-page synopsis survives under a new name, Part I, while the 14-page Part B2 does not: it is now Part II at seven pages for Starting, Consolidator and Advanced Grants and ten for Synergy, so 19 becomes 12. Two of the four thin rows do state limits the pack calls absent, DFG at 25 pages split 17 plus 8 and SNSF at 15 pages and 60,000 characters, and SNSF also opens its research plan on the current state of research, which breaks the claim at 8.1 and A8.1 that only DFG supports the grouped state-of-the-art note. ARC is the one agency with no link: arc.gov.au refused every connection tried that day.
-260802 · Added a Format values block and a language subsubsection to each of the six agency divisions, twelve in all. Of the twenty-four metric rows, three carry a value: NSF's and ERC's page counts, which the pack states in place of any word budget, and ERC's WP / deliverables / milestones table. Citation density is recorded nowhere in the pack, and value density is absent by construction, since no style.md in the venue tree records it and this pack has no style.md at all. The pack stores no funded proposal, so the language subsubsections quote the two slot patterns `style-profile.md` wrote for itself and name the per-agency tone note as the only agency-specific guidance on disk, which describes prose rather than showing it.
-260802 · Expanded Content with one division per agency the README encodes, plus one on what a proposal has instead of an appendix. Each division carries that agency's backbone, its page limits, and its published review lens, with the source named inline. Three findings came out of writing them: the README describes NSF and KAKENHI in two tables that name different sections, only NSF and ERC have any stated page limit, and the pack names six NSFC sub-programmes while encoding two. All CJK in the pack's NSFC and KAKENHI rows is carried here as English glosses, marked as glosses where the README does not supply one.
-260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page. That file already carries the glob rule for the section abbreviation, an outlet-to-kinds map measured on disk, the `theory-model` alias, and the blueprint-only declaration for grant and patent. Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
+260802 · Authority block added at the end of Files, from the agencies' own rules rather than the pack, covering seven of the nine rows.
+> ✎ 260802 · Authority block added at the end of Files, from the agencies' own rules rather than the pack, covering seven of the nine rows. NSF's two page limits are confirmed at ~source, and~ *source.* Results from Prior NSF Support is corrected: it is capped at five pages and counted inside the 15, which this page recorded as unlimited in three places. ERC's five-page synopsis survives under a new name, Part I, while the 14-page Part B2 does ~not: it~ *not. Part B2* is now Part ~II~ *II,* at seven pages for Starting, Consolidator and Advanced Grants and ten for Synergy, so 19 becomes 12. Two of the four thin rows do state limits the pack calls ~absent,~ *absent:* DFG at 25 pages split 17 plus ~8~ *8,* and SNSF at 15 pages and 60,000 ~characters, and~ *characters.* SNSF also opens its research plan on the current state of research, which breaks the claim at 8.1 and A8.1 that only DFG supports the grouped state-of-the-art note. ARC is the one agency with no link: arc.gov.au refused every connection tried that day. · CC · 260802 1542
+  NSF's two page limits are confirmed at source.
+  Results from Prior NSF Support is corrected: it is capped at five pages and counted inside the 15, which this page recorded as unlimited in three places.
+  ERC's five-page synopsis survives under a new name, Part I, while the 14-page Part B2 does not.
+  Part B2 is now Part II, at seven pages for Starting, Consolidator and Advanced Grants and ten for Synergy, so 19 becomes 12.
+  Two of the four thin rows do state limits the pack calls absent: DFG at 25 pages split 17 plus 8, and SNSF at 15 pages and 60,000 characters.
+  SNSF also opens its research plan on the current state of research, which breaks the claim at 8.1 and A8.1 that only DFG supports the grouped state-of-the-art note.
+  ARC is the one agency with no link: arc.gov.au refused every connection tried that day.
+260802 · Added a Format values block and a language subsubsection to each of the six agency divisions, twelve in all.
+> ✎ 260802 · Added a Format values block and a language subsubsection to each of the six agency divisions, twelve in all. Of the twenty-four metric rows, three carry a ~value:~ *value. Two are* NSF's and ERC's page counts, which the pack states in place of any word budget, and *the third is* ERC's WP / deliverables / milestones table. Citation density is recorded nowhere in the ~pack, and value~ *pack. Value* density is absent by construction, since no style.md in the venue tree records it and this pack has no style.md at all. The pack stores no funded proposal, so the language subsubsections quote the two slot patterns `style-profile.md` wrote for ~itself and~ *itself. They also* name the per-agency tone note as the only agency-specific guidance on disk, which describes prose rather than showing it. · CC · 260802 1542
+  Of the twenty-four metric rows, three carry a value.
+  Two are NSF's and ERC's page counts, which the pack states in place of any word budget, and the third is ERC's WP / deliverables / milestones table.
+  Citation density is recorded nowhere in the pack.
+  Value density is absent by construction, since no style.md in the venue tree records it and this pack has no style.md at all.
+  The pack stores no funded proposal, so the language subsubsections quote the two slot patterns `style-profile.md` wrote for itself.
+  They also name the per-agency tone note as the only agency-specific guidance on disk, which describes prose rather than showing it.
+260802 · Expanded Content with one division per agency the README encodes, plus one on what a proposal has instead of an appendix.
+> ✎ 260802 · Expanded Content with one division per agency the README encodes, plus one on what a proposal has instead of an appendix. Each division carries that agency's backbone, its page limits, and its published review lens, with the source named inline. Three findings came out of writing ~them: the~ *them. The* README describes NSF and KAKENHI in two tables that name different ~sections, only~ *sections. Only* NSF and ERC have any stated page ~limit, and the~ *limit. The* pack names six NSFC sub-programmes while encoding two. All CJK in the pack's NSFC and KAKENHI rows is carried here as English glosses, marked as glosses where the README does not supply one. · CC · 260802 1542
+  Each division carries that agency's backbone, its page limits, and its published review lens, with the source named inline.
+  Three findings came out of writing them.
+  The README describes NSF and KAKENHI in two tables that name different sections.
+  Only NSF and ERC have any stated page limit.
+  The pack names six NSFC sub-programmes while encoding two.
+  All CJK in the pack's NSFC and KAKENHI rows is carried here as English glosses, marked as glosses where the README does not supply one.
+260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page.
+> ✎ 260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page. That file already carries the glob rule for the section ~abbreviation,~ *abbreviation and* an outlet-to-kinds map measured on ~disk,~ *disk. It also carries* the `theory-model` ~alias,~ *alias* and ~the blueprint-only declaration for~ *declares* grant and ~patent.~ *patent blueprint-only by design.* Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards. · CC · 260802 1542
+  That file already carries the glob rule for the section abbreviation and an outlet-to-kinds map measured on disk.
+  It also carries the `theory-model` alias and declares grant and patent blueprint-only by design.
+  Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
 260802 · Opened with the QBv group, from `playbook-grant` at `Venue-Paper@fe25a88`.

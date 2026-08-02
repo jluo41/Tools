@@ -14,7 +14,7 @@ So this page settles one control, the exact line it writes, and everything the w
 **Where this page sits**: `QB4 §2` rules what a `## Diagram` section holds, which is the ascii figure that opens with the section and the canvas that takes one more click.
 It says what a good canvas line looks like and never says how that line gets into the file.
 This page is that other half: the control, where the line lands, and what the write declines.
-`QB5c` owns editing body prose from the page, and `QE4` owns what happens when two people write at the same time.
+`QB5 §6` owns editing body prose from the page, and `QE4` owns what happens when two people write at the same time.
 
 **What a canvas is, and what it is not**: A canvas is an Excalidraw scene, and this board keeps one scene with one frame per page.
 It is where colleagues move boxes around while they are talking.
@@ -170,7 +170,7 @@ Proved 260726. It removes the API key, the subscription, the vendored bundle and
 
 #### P0. One excalidraw for the board, one FRAME per page
 (JL 260726, and the single scene is the point rather than a packaging detail)
-`board.excalidraw` is one file holding one frame per page, named for the page: `QB4b`, `QD5`, `QB5a`.
+`board.excalidraw` is one file holding one frame per page, named for the page: `QB8`, `QD5`, `QB5`.
 It is never split into a file per page, because a single surface is the only thing that can say how the pages RELATE, which is the job `## Pipeline` does badly in ASCII and the only argument for drawing at all.
 Editing happens on the whole board; a page's Diagram opens at its own frame.
 
@@ -259,7 +259,7 @@ The board already holds everything the layout needs, because `## Pages` gives th
 #### P2. What a generated excalidraw would be FOR
 (not prettier figures; the relationships a single page cannot hold)
 A per-page excalidraw can only ever say something about that page.
-One surface can say QB5b feeds QB5a, that QD is the live layer, that QE6 is the local half of QE1, and it can say it by position and arrow rather than by prose.
+One surface can say QB5 feeds QB4, that QD is the live layer, that QE6 is the local half of QE1, and it can say it by position and arrow rather than by prose.
 That is the job `## Pipeline` does badly today, in ASCII, and it is the only argument for this feature that a per-page excalidraw does not already satisfy.
 
 #### 4.3 · The routes not taken

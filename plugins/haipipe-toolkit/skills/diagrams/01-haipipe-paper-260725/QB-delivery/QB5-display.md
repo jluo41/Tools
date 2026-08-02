@@ -152,7 +152,7 @@ The six detail pages left this concern for the series that owns their unit, and 
 
 ## Law
 
-Paper owns why a Display exists, what it says, where it lands, and whether it is accepted. The Display layer makes it.
+- Paper owns why a Display exists, what it says, where it lands, and whether it is accepted. The Display layer makes it.
 
 ## Glossary
 

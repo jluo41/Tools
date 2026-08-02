@@ -117,7 +117,7 @@ A single Markdown target may still render one HTML file for compatibility; that 
   The staleness guarantee was tested directly rather than assumed: warm fetch 0.3 KB, then the file was edited on disk, and the very next fetch was a full 119 KB carrying the new bytes.
 
 - 260801 CC · 🧭 The contract and the canonical output agree
-  `SKILL.md`, `ref/board-form.md`, `haipipe-board-index`, `build.py`, `watch.py`, `check.py`, and the design and Paper boards now describe the same Board-Folder to Board-Webpage tree.
+  `SKILL.md`, `ref/board-form.md`, `haipipe-board-routing` (which absorbed `haipipe-board-index` on 260802), `build.py`, `watch.py`, `check.py`, and the design and Paper boards now describe the same Board-Folder to Board-Webpage tree.
   The Paper Board exposed the remaining runtime defect: evidence-card panels were outside the body reroot pass, so 749 source links plus their images and PDF objects broke on split pages.
   One shared `tree_reroot()` now moves `href`, `src`, and `data`; the checker covers all three.
 

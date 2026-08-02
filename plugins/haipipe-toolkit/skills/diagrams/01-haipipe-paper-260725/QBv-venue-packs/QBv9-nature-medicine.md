@@ -6,12 +6,15 @@ method: state what Nature Medicine requires of translational evidence, and recor
 
 ## Opening
 
-Most desks in this tree can be satisfied by re-argument: the same study, framed for a different reader. This one usually cannot. What is it asking for that a rewrite cannot produce?
+A journal's editors read a paper before any reviewer does, and they can turn it away right there. That first gate is the desk. Most desks on this board can be satisfied by a rewrite: the same study, framed for a different reader. This one usually cannot. What is it asking for that a rewrite cannot produce?
+> ✎ *A journal's editors read a paper before any reviewer does, and they can turn it away right there. That first gate is the desk.* Most desks ~in~ *on* this ~tree~ *board* can be satisfied by ~re-argument:~ *a rewrite:* the same study, framed for a different reader. This one usually cannot. What is it asking for that a rewrite cannot produce? · CC · 260802 1540
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-nature-portfolio/nature-medicine/`.
 
-**Why this outlet sits upstream of the venue stage**: its headline desk-reject is retrospective single-center AI with no external validation, and prospective multi-center validation is a study-design property.
+**Why this outlet must be chosen long before the venue stage runs**: its headline desk-reject is retrospective single-center AI with no external validation.
+Prospective means the data was planned and collected going forward; multi-center means more than one site took part.
+Both are settled when the study is designed, so no rewrite can add them.
 This is one of two Nature outlets decided before venue runs; npj Digital Medicine at `QBv8` is the other.
 
 **What that means in practice**: shortlisting this outlet for a paper whose data collection is finished is usually already a mistake, and nothing in the lifecycle says so.
@@ -22,9 +25,10 @@ How this page must be written. Read it before editing, and edit to it.
 
 **Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
 
-**Quote a norm only with its source beside it**: a budget or count from `nature-medicine/natmed-<section>/style.md` may stand in a section-kind division, but the style.md heading or the exemplar name rides on the same line, so a number is never the page's own claim.
+**Quote a norm only with its source beside it**: a budget or count from `nature-medicine/natmed-<section>/style.md` may stand in a section-kind division.
+The style.md heading or the exemplar name rides on the same line, so a number is never the page's own claim.
 
-**Say the bar is a design property, not a strength**: describing it as rigor invites a paper to try harder at revision, which is exactly what cannot work here.
+**Say the bar is a design property, not a strength**: call it rigor and a paper answers by trying harder at revision, and revision is the one thing that cannot reach this bar.
 
 ✅ `prospective multi-center validation cannot be added later`  ❌ `Nature Medicine wants very rigorous validation`
 
@@ -81,8 +85,11 @@ How this page must be written. Read it before editing, and edit to it.
 
 #### 1.1 · The same trap exists at ISR, in a different field
 (so it is a tree-wide pattern rather than a Nature quirk)
-`QBv2` records that a clean identification strategy is likewise unacquirable at revision.
-Both desks reward a property of how the evidence was gathered, which means the venue stage inherits a decision it did not make.
+`QBv2` records the same trap at ISR: a clean identification strategy cannot be added at revision either.
+> ✎ `QBv2` records ~that~ *the same trap at ISR:* a clean identification strategy ~is likewise unacquirable~ *cannot be added* at ~revision.~ *revision either.* · CC · 260802 1540
+Both desks reward a property of how the evidence was gathered.
+> ✎ Both desks reward a property of how the evidence was ~gathered, which means~ *gathered. So* the venue stage inherits a decision it did not make. · CC · 260802 1540
+So the venue stage inherits a decision it did not make.
 
 ### 2 · Where it sits against its four siblings
 
@@ -136,13 +143,17 @@ Both desks reward a property of how the evidence was gathered, which means the v
      citations          0
 ```
 
-📝 Establishes the abstract as the first place the desk reads a study design, which is why the pivot slot and not the opening slot carries this outlet's bar.
+📝 Establishes the abstract as the first place the desk reads a study design.
+> ✎ 📝 Establishes the abstract as the first place the desk reads a study ~design, which is why~ *design. The bar therefore lands on* the pivot ~slot and~ *slot,* not *on* the opening ~slot carries this outlet's bar.~ *slot.* · CC · 260802 1540
+The bar therefore lands on the pivot slot, not on the opening slot.
 
 #### 3.1 · The moves, written as slots
 (each position, with what fills it rather than a sentence to copy)
 M1 takes `<patient-facing fact about the clinical problem>` and never the system name, which is the first anti-pattern the pack lists.
 M3 takes `Here we <study verb> a <design> in <n sites or participants>`, so the design adjectives that this desk desk-rejects on, prospective and multi-center, are visible before any result.
-M5 takes `<count/denominator (%)> in <arm A> and <count/denominator (%)> in <arm B> (<estimate> <lo> to <hi>, P = <p>)`, and natmed-abstract/style.md gives the shape from brinton-2026 with the aOR, the 95% CI and the P value all inline.
+M5 takes `<count/denominator (%)> in <arm A> and <count/denominator (%)> in <arm B> (<estimate> <lo> to <hi>, P = <p>)`.
+> ✎ M5 takes `<count/denominator (%)> in <arm A> and <count/denominator (%)> in <arm B> (<estimate> <lo> to <hi>, P = ~<p>)`, and~ *<p>)`.* natmed-abstract/style.md gives the shape from ~brinton-2026~ *brinton-2026,* with the aOR, the 95% CI and the P value all inline. · CC · 260802 1540
+natmed-abstract/style.md gives the shape from brinton-2026, with the aOR, the 95% CI and the P value all inline.
 M7 takes `<who> should <do what>`, addressed to clinicians, developers, policymakers or regulators.
 M8 takes `<registry name>: <id>` and exists only for a trial.
 
@@ -156,6 +167,7 @@ No passive-heavy construction, since the register mixes an active author voice w
 #### 3.3 · The measured layer is two papers wide
 (a caveat that applies to every budget quoted in divisions 3 to 9)
 Each `natmed-<kind>/style.md` opens with "Extracted from 14 Nature Medicine exemplar papers", while the exemplars block below lists 24 PDFs on disk, so seven of the stored papers have never been distilled into any norm.
+> Check: this page says seven undistilled papers here and again in A7.1's State, while the generated exemplars block below computes 24 minus 14 and prints 10. One of the two numbers is wrong and a reader cannot tell which. · CC · 260802 1540
 Every "Micro-norms (measured 2026-07-08)" table in this pack is narrower still: it is measured from brinton-2026 and bean-2026 alone, one RCT and one AI evaluation, with two or three sampled paragraphs per paper.
 So a number quoted on this page is a measurement of two papers reconciled against a stated range, never a rule the desk publishes.
 
@@ -217,16 +229,24 @@ The plainly stated null, which is the nearest thing an abstract has to a limitat
 
 #### 4.1 · The gap slot names a tier, not an absence
 (why "little is known" fails here and "prospective evidence remains limited" passes)
-natmed-introduction/style.md requires the gap to be specific and named, and its exemplars all name an evidence tier: brinton-2026 says prospective interventional evidence from real-world studies remains limited, osullivan-2026 says it remains unclear whether the model replicates expert decision-making, and zhou-2026 names the underrepresentation of multi-ethnic populations and the lack of validation for multidisease risk stratification.
+natmed-introduction/style.md requires the gap to be specific and named, and its exemplars all name an evidence tier.
+> ✎ natmed-introduction/style.md requires the gap to be specific and named, and its exemplars all name an evidence ~tier:~ *tier.* brinton-2026 says prospective interventional evidence from real-world studies remains ~limited,~ *limited.* osullivan-2026 says it remains unclear whether the model replicates expert ~decision-making, and~ *decision-making.* zhou-2026 names the underrepresentation of multi-ethnic populations and the lack of validation for multidisease risk stratification. · CC · 260802 1540
+brinton-2026 says prospective interventional evidence from real-world studies remains limited.
+osullivan-2026 says it remains unclear whether the model replicates expert decision-making.
+zhou-2026 names the underrepresentation of multi-ethnic populations and the lack of validation for multidisease risk stratification.
 The slot is `However, <evidence tier> evidence for <population or setting> remains <limited | untested | poorly characterized>.`
 This is the sentence the venue stage can read to see whether the paper has claimed a tier it did not actually collect, which is the failure division 1 above describes.
 
 #### 4.2 · The moves and the anti-patterns
 (what fills P1 and P4, and the seven things the pack refuses)
 P1 takes `<condition or setting> accounts for <burden>` or `Globally, there is a <shortage or gap> in <care>`, with the subject being patients or a health system, never a technology.
-P4 takes `Here we conducted a <design> in <setting>` or `To address this, we introduce <system>`, framed as clinical evidence generation rather than a technical advance, and the citation density falls to zero or one marker.
+P4 takes `Here we conducted a <design> in <setting>` or `To address this, we introduce <system>`, framed as clinical evidence generation rather than a technical advance.
+> ✎ P4 takes `Here we conducted a <design> in <setting>` or `To address this, we introduce <system>`, framed as clinical evidence generation rather than a technical ~advance, and~ *advance. In that paragraph* the citation density falls to zero or one marker. · CC · 260802 1540
+In that paragraph the citation density falls to zero or one marker.
 A study-design or CONSORT Figure 1 may be cited from P4, and natmed-introduction/template.md rules that this figure is a display request, never a probe question.
-The pack forbids opening with the technology, a separate Related Work or Background subsection, a bulleted "First, Second, Third" contribution list, author-year citations, more than two or three sentences per prior-work category, results inside the introduction, and framing the contribution as a technical advance.
+The pack forbids opening with the technology, a separate Related Work or Background subsection, a bulleted "First, Second, Third" contribution list, and author-year citations.
+> ✎ The pack forbids opening with the technology, a separate Related Work or Background subsection, a bulleted "First, Second, Third" contribution list, *and* author-year ~citations,~ *citations. It also forbids* more than two or three sentences per prior-work category, results inside the introduction, and framing the contribution as a technical advance. · CC · 260802 1540
+It also forbids more than two or three sentences per prior-work category, results inside the introduction, and framing the contribution as a technical advance.
 
 #### 4.3 · Format values
 (the same four rows for the Introduction, the section whose citation density this pack states most precisely)
@@ -289,23 +309,40 @@ No primary-endpoint sentence and no limitation appear here: natmed-introduction/
 
 #### 5.1 · A declared unit whose output the manuscript never shows
 (what section-edit runs on, and where the prose actually lands)
-`stages/section-kinds.yml` declares `related-work` for all five Nature outlets and for no outlet in any other pack, so this is a real unit: section-edit runs on it and writes it an `S-Main-<n>` page like any other section.
-What that page holds is a distributed positioning narrative rather than a section draft, and its paragraphs project into the Introduction, the Discussion and, rarely, the Results, while the manuscript never grows a heading called Related Work.
-The pack says so in three independent places: natmed-related-work/style.md opens on the core rule that no standalone section exists and calls one a structural violation, natmed-introduction/style.md repeats it as signature move 6 and as an anti-pattern, and the family README carries it as a convention holding across every `*-related-work/style.md` in the pack.
-It is also not the IS family's `theory`, and section-kinds.yml states the difference instead of aliasing the two: `theory` develops a model and its hypotheses, `related-work` situates a paper against prior literature.
-natmed-related-work/template.md closes the loop by ruling that a `related-work` unit expecting a standalone heading is itself the defect, to be flagged as a norm conflict in the log.
+`stages/section-kinds.yml` declares `related-work` for all five Nature outlets and for no outlet in any other pack.
+> ✎ `stages/section-kinds.yml` declares `related-work` for all five Nature outlets and for no outlet in any other ~pack, so~ *pack. So* this is a real unit: section-edit runs on it and writes it an `S-Main-<n>` page like any other section. · CC · 260802 1540
+So this is a real unit: section-edit runs on it and writes it an `S-Main-<n>` page like any other section.
+What that page holds is a positioning plan rather than a section draft.
+> ✎ What that page holds is a ~distributed~ positioning ~narrative~ *plan* rather than a section ~draft, and its~ *draft. Its* paragraphs ~project~ *go* into the Introduction, the Discussion and, rarely, the Results, ~while~ *and* the manuscript never grows a heading called Related Work. · CC · 260802 1540
+Its paragraphs go into the Introduction, the Discussion and, rarely, the Results, and the manuscript never grows a heading called Related Work.
+The pack says so in three independent places.
+natmed-related-work/style.md opens on the core rule that no standalone section exists, and calls one a structural violation.
+natmed-introduction/style.md repeats it as signature move 6 and as an anti-pattern.
+The family README carries it as a convention holding across every `*-related-work/style.md` in the pack.
+It is also not the IS family's `theory`, and section-kinds.yml states the difference instead of aliasing the two.
+> ✎ It is also not the IS family's `theory`, and section-kinds.yml states the difference instead of aliasing the ~two:~ *two.* `theory` develops a model and its ~hypotheses,~ *hypotheses;* `related-work` situates a paper against prior literature. · CC · 260802 1540
+`theory` develops a model and its hypotheses; `related-work` situates a paper against prior literature.
+natmed-related-work/template.md rules that the expectation itself is the defect.
+> ✎ natmed-related-work/template.md ~closes~ *rules that* the ~loop by ruling that a~ *expectation itself is the defect. A* `related-work` unit ~expecting~ *that expects* a standalone heading is ~itself the defect, to be~ flagged as a norm conflict in the log. · CC · 260802 1540
+A `related-work` unit that expects a standalone heading is flagged as a norm conflict in the log.
 
 #### 5.2 · The two halves, as slots
 (what the introduction half and the discussion half each take)
-The introduction half takes `<evidence category> have shown <result>. However, <the limitation of that category>.` repeated for two or three categories, each characterized in one or two clauses and never reviewed paper by paper.
+The introduction half takes `<evidence category> have shown <result>. However, <the limitation of that category>.`, repeated for two or three categories.
+> ✎ The introduction half takes `<evidence category> have shown <result>. However, <the limitation of that ~category>.`~ *category>.`,* repeated for two or three ~categories, each characterized~ *categories. Each category is described* in one or two clauses and never reviewed paper by paper. · CC · 260802 1540
+Each category is described in one or two clauses and never reviewed paper by paper.
 It closes on the gap statement that division 4 owns.
 The discussion half takes `Our finding of <X> <aligns with | contrasts with> <prior evidence>, which reported <Y>.`, positioning by study design, population or capability rather than by date.
 The rare Results touch takes a single clause naming the prior benchmark that motivates a comparison, and natmed-related-work/style.md gives bean-2026 scoring a targeted subset of MedQA as its only exemplar.
-The pack forbids a standalone section, full-paragraph reviews of single works, chronological ordering, author-year citations, front-loading all comparison into the introduction, and dense citation inside the contribution paragraph.
+The pack forbids a standalone section, full-paragraph reviews of single works, and chronological ordering.
+> ✎ The pack forbids a standalone section, full-paragraph reviews of single works, *and* chronological ~ordering,~ *ordering. It also forbids* author-year citations, front-loading all comparison into the introduction, and dense citation inside the contribution paragraph. · CC · 260802 1540
+It also forbids author-year citations, front-loading all comparison into the introduction, and dense citation inside the contribution paragraph.
 
 #### 5.3 · One exemplar in this file is borrowed
 (a known hole the pack itself marks)
-natmed-related-work/style.md carries a positioning-by-scale example lifted from an NMI exemplar, marked in the file as borrowed and to be replaced when a Nature Medicine paper is mined for the same move.
+natmed-related-work/style.md carries a positioning-by-scale example lifted from an NMI exemplar.
+> ✎ natmed-related-work/style.md carries a positioning-by-scale example lifted from an NMI ~exemplar, marked in the~ *exemplar. The* file *marks it* as ~borrowed and~ *borrowed,* to be replaced when a Nature Medicine paper is mined for the same move. · CC · 260802 1540
+The file marks it as borrowed, to be replaced when a Nature Medicine paper is mined for the same move.
 Both this file and natmed-discussion/template.md repeat the borrowed line, so replacing it is a two-file edit.
 
 #### 5.4 · Format values
@@ -323,14 +360,17 @@ Both this file and natmed-discussion/template.md repeat the borrowed line, so re
 "Key gaps persist, including the underrepresentation of multi-ethnic populations and the lack of sufficient validation for multidisease risk stratification." [Zhou 2026]
 The evidence-tier gap sentence, closing the Introduction half of the slot pair at 5.2.
 "Vignette-based comparisons suggest that LLMs can match or exceed provider performance on some diagnostic and triage tasks." [Brinton 2026]
-The category characterization: one clause per evidence tier, which is how the tier ladder at 5.1 gets written rather than reviewed.
+The category characterization: one clause per evidence tier, so the tier ladder at 5.1 is written rather than reviewed.
+> ✎ The category characterization: one clause per evidence tier, ~which is how~ *so* the tier ladder at 5.1 ~gets~ *is* written rather than reviewed. · CC · 260802 1540
 "The improvement in process outcomes observed aligns with findings from both controlled and real-world studies." [Brinton 2026]
 The Discussion half's alignment move, positioning by study design rather than by date.
 "Our finding of no significant demographic bias contrasts with ref. 7, which reported race and sex effects in general-purpose LLMs." [Levine 2026]
 The same slot in its contrast form, naming the prior finding it disagrees with instead of the year it appeared.
 "we scored the LLMs on a targeted subset of the popular MedQA benchmark" [Bean 2026]
 The rare Results touch, a single clause naming the benchmark that motivates a comparison.
-The file's positioning-by-scale example is still the borrowed pontikos sentence from an NMI paper, marked borrowed in the file and unreplaced, so it is not quoted above and must never be shown as this outlet's own.
+The file's positioning-by-scale example is still the borrowed pontikos sentence from an NMI paper, marked borrowed in the file and unreplaced.
+> ✎ The file's positioning-by-scale example is still the borrowed pontikos sentence from an NMI paper, marked borrowed in the file and ~unreplaced, so~ *unreplaced. So* it is not quoted ~above~ *above,* and *it* must never be shown as this outlet's own. · CC · 260802 1540
+So it is not quoted above, and it must never be shown as this outlet's own.
 
 ### 6 · Methods: a clinical protocol placed after Discussion
 
@@ -361,28 +401,42 @@ The file's positioning-by-scale example is still the borrowed pontikos sentence 
      cited to           reporting standards, benchmarks, instruments
 ```
 
-🧪 Establishes Methods as the section where this desk's unacquirable bar is either discharged in the first sentence or exposed as absent.
+🧪 Establishes Methods as the section where the bar no rewrite can supply is either met in the first sentence or shown to be missing.
+> ✎ 🧪 Establishes Methods as the section where ~this desk's unacquirable~ *the* bar *no rewrite can supply* is either ~discharged~ *met* in the first sentence or ~exposed as absent.~ *shown to be missing.* · CC · 260802 1540
 
 #### 6.1 · The first sentence is where the validation design is declared
 (the study-design opener carries prospective, multi-center and the site count)
-The exemplar openers stack the design adjectives before the noun: brinton-2026 opens on a pragmatic, multicenter, parallel-group cluster-randomized controlled trial across 16 primary care facilities, and varoquaux-2026 opens on a prospective, multicenter, randomized controlled trial conducted across five NHS Trusts between stated dates.
+The exemplar openers put the design adjectives in front of the noun.
+> ✎ The exemplar openers ~stack~ *put* the design adjectives ~before~ *in front of* the ~noun:~ *noun.* brinton-2026 opens on a pragmatic, multicenter, parallel-group cluster-randomized controlled trial across 16 primary care ~facilities, and~ *facilities.* varoquaux-2026 opens on a prospective, multicenter, randomized controlled trial conducted across five NHS Trusts between stated dates. · CC · 260802 1540
+brinton-2026 opens on a pragmatic, multicenter, parallel-group cluster-randomized controlled trial across 16 primary care facilities.
+varoquaux-2026 opens on a prospective, multicenter, randomized controlled trial conducted across five NHS Trusts between stated dates.
 The slot is `A <prospective | retrospective>, <multicenter | single-center>, <design> was conducted <dates> across <n> <site type>.`
 A paper that cannot fill the first two positions has already met the desk-reject line drawn in the Diagram above, and no later subsection recovers it.
-For an AI system paper the Participants subsection becomes dataset provenance and the Intervention subsection becomes the system description, which is the substitution that makes a single-source retrospective cohort visible as exactly one dataset.
+For an AI system paper the Participants subsection becomes dataset provenance, and the Intervention subsection becomes the system description.
+> ✎ For an AI system paper the Participants subsection becomes dataset ~provenance~ *provenance,* and the Intervention subsection becomes the system ~description, which~ *description. That swap* is ~the substitution that~ *what* makes a ~single-source~ retrospective cohort *from one source* visible as exactly one dataset. · CC · 260802 1540
+That swap is what makes a retrospective cohort from one source visible as exactly one dataset.
 
 #### 6.2 · Validation cohorts arrive through Participants, Outcomes and the standard
 (three subsections carry what the desk checks, and each has its own slot)
 Participants carries eligibility, recruitment and setting per site, so a multi-center design is reported as a roster rather than as an adjective.
 Outcomes defines the primary and every secondary outcome precisely, and natmed-methods/template.md notes these definitions bind how Results may report them.
-The reporting standard named in Methods is the tier's witness: CONSORT-AI and the CONSORT cluster extension for a trial, PRISMA 2020 for a review, TRIPOD for a prediction model, and TRIPOD is the one that governs external validation reporting.
-Sample size arrives with a full power calculation, and the pack's brinton-2026 example states the design effect, the power, the two-sided alpha, the assumed loss to follow-up and the target enrollment in one chain.
+The reporting standard named in Methods is the tier's witness: CONSORT-AI and the CONSORT cluster extension for a trial, PRISMA 2020 for a review, TRIPOD for a prediction model.
+> ✎ The reporting standard named in Methods is the tier's witness: CONSORT-AI and the CONSORT cluster extension for a trial, PRISMA 2020 for a review, TRIPOD for a prediction ~model, and~ *model.* TRIPOD is the one that governs external validation reporting. · CC · 260802 1540
+TRIPOD is the one that governs external validation reporting.
+Sample size arrives with a full power calculation.
+> ✎ Sample size arrives with a full power ~calculation, and the~ *calculation. The* pack's brinton-2026 example states the design effect, the power, the two-sided alpha, the assumed loss to follow-up and the target enrollment in one chain. · CC · 260802 1540
+The pack's brinton-2026 example states the design effect, the power, the two-sided alpha, the assumed loss to follow-up and the target enrollment in one chain.
 
 #### 6.3 · Ethics is longer here than anywhere else in the portfolio
 (what the pack demands by name, and what it refuses)
-Ethics names the committee with its approval number, states written informed consent, records any regulatory determination, describes the Data Safety Monitoring Board for a trial, and may carry a separate equity and inclusion statement about local co-design.
+Ethics names the committee with its approval number, states written informed consent, and records any regulatory determination.
+> ✎ Ethics names the committee with its approval number, states written informed consent, *and* records any regulatory ~determination,~ *determination. It* describes the Data Safety Monitoring Board for a trial, and may carry a separate equity and inclusion statement about local co-design. · CC · 260802 1540
+It describes the Data Safety Monitoring Board for a trial, and may carry a separate equity and inclusion statement about local co-design.
 natmed-methods/style.md contrasts this directly with NMI, whose Methods never name an ethics committee.
 The closing subsections are mandatory: Reporting summary pointing at the Nature Portfolio Reporting Summary, Data availability, and Code availability, each with a URL or a stated access route.
-The pack forbids placing Methods before Results, omitting ethics detail, omitting the sample size calculation for a trial, omitting Data or Code availability, omitting the Reporting summary pointer, merging method into result, omitting exact software versions, and writing exclusively in the passive.
+The pack forbids placing Methods before Results, merging method into result, omitting exact software versions, and writing exclusively in the passive.
+> ✎ The pack forbids placing Methods before Results, ~omitting ethics detail, omitting the sample size calculation for a trial, omitting Data or Code availability, omitting the Reporting summary pointer,~ merging method into result, omitting exact software versions, and writing exclusively in the passive. *It also forbids four omissions: ethics detail, the sample size calculation for a trial, Data or Code availability, and the Reporting summary pointer.* · CC · 260802 1540
+It also forbids four omissions: ethics detail, the sample size calculation for a trial, Data or Code availability, and the Reporting summary pointer.
 
 #### 6.4 · Format values
 (the longest section in the paper, and the one with the lowest citation density in it)
@@ -397,7 +451,8 @@ The pack forbids placing Methods before Results, omitting ethics detail, omittin
 #### 6.5 · The language, in the papers' own words
 (five sentences natmed-methods/style.md already quotes, four of them from the subsections this desk actually checks)
 "A prospective, multicenter, randomized controlled trial was conducted between July 2023 and December 2024 across five NHS Trusts in England." [Varoquaux 2026]
-The prospective and multicentre design declaration, filling the whole 6.1 slot: both unacquirable adjectives and the site count arrive in one sentence.
+The prospective and multicentre design declaration, filling the whole 6.1 slot: the two adjectives a rewrite cannot add, plus the site count, arrive in one sentence.
+> ✎ The prospective and multicentre design declaration, filling the whole 6.1 slot: ~both unacquirable~ *the two* adjectives ~and~ *a rewrite cannot add, plus* the site ~count~ *count,* arrive in one sentence. · CC · 260802 1540
 "This review was conducted and reported in accordance with the Preferred Reporting Items for Systematic Reviews and Meta-Analyses (PRISMA) 2020 guidelines." [Lu 2026]
 The reporting standard 6.2 calls the tier's witness, here in its review form rather than the CONSORT-AI form a trial takes.
 "we calculated that 265 cases per group would be needed to detect a difference with 95% power" [Varoquaux 2026]
@@ -435,20 +490,33 @@ The ethics move at 6.3, named committee plus approval number, which the pack rec
 
 #### 7.1 · The moves, as slots
 (headings, inline sub-headings, statistics and tables)
-A subsection heading takes a procedural noun phrase such as `Patient disposition` or `Primary outcome`, not a claim; natmed-results/style.md records declarative headings in two AI system papers, zhou-2026 and khasentino-2025, and calls descriptive headings the dominant pattern.
+A subsection heading takes a procedural noun phrase such as `Patient disposition` or `Primary outcome`, never a claim.
+> ✎ A subsection heading takes a procedural noun phrase such as `Patient disposition` or `Primary outcome`, ~not~ *never* a ~claim;~ *claim.* natmed-results/style.md records declarative headings in two AI system papers, zhou-2026 and khasentino-2025, and calls descriptive headings the dominant pattern. · CC · 260802 1540
+natmed-results/style.md records declarative headings in two AI system papers, zhou-2026 and khasentino-2025, and calls descriptive headings the dominant pattern.
 Inside a subsection, fine-grained results take `**<Bold inline sub-heading>.**` followed by their own statistics.
 An estimate takes `<estimate> (95% CI <lo> to <hi>; P = <p>)`, with the interval written in words for trials and with a dash or colon for evaluation papers.
-Main-text tables belong here and are the sharpest divergence from NMI: a baseline characteristics table and a primary-outcome-by-arm table are the standard pair, and the pack lists eight exemplars carrying between one and five main-text tables.
+Main-text tables belong here, and they are the sharpest divergence from NMI.
+> ✎ Main-text tables belong ~here~ *here,* and *they* are the sharpest divergence from ~NMI: a~ *NMI. A* baseline characteristics table and a primary-outcome-by-arm table are the standard pair, and the pack lists eight exemplars carrying between one and five main-text tables. · CC · 260802 1540
+A baseline characteristics table and a primary-outcome-by-arm table are the standard pair, and the pack lists eight exemplars carrying between one and five main-text tables.
 
 #### 7.2 · Where external validation actually lands
 (the pack names no external-validation subsection, so three existing slots carry it)
 natmed-results/style.md has no subsection for external, multi-center or held-out validation, and its two arcs stop at subgroup analyses and robustness.
-The multi-site evidence therefore lands in slots the pack does measure: the disposition slot, whose enrollment sentence names every contributing site, as when varoquaux-2026 reports 97,731 chest radiographs across five NHS Trusts; the subgroup slot, listed in the AI-evaluation arc as modality, difficulty and specialty; and the per-cohort estimate itself, as when zhou-2026 reports an AUROC of 0.833 with a 95% CI of 0.810 to 0.856.
-This is a hole in the pack rather than a silence of the desk, since the exemplar base includes multi-site validation papers that no style.md has been mined for, and A7.1 below holds it open.
+The multi-site evidence therefore lands in three slots the pack does measure.
+> ✎ The multi-site evidence therefore lands in *three* slots the pack does ~measure: the~ *measure. The* disposition slot, whose enrollment sentence names every contributing site, as when varoquaux-2026 reports 97,731 chest radiographs across five NHS ~Trusts; the~ *Trusts. The* subgroup slot, listed in the AI-evaluation arc as modality, difficulty and ~specialty; and~ *specialty. And* the per-cohort estimate itself, as when zhou-2026 reports an AUROC of 0.833 with a 95% CI of 0.810 to 0.856. · CC · 260802 1540
+The disposition slot, whose enrollment sentence names every contributing site, as when varoquaux-2026 reports 97,731 chest radiographs across five NHS Trusts.
+The subgroup slot, listed in the AI-evaluation arc as modality, difficulty and specialty.
+And the per-cohort estimate itself, as when zhou-2026 reports an AUROC of 0.833 with a 95% CI of 0.810 to 0.856.
+This is a hole in the pack rather than a silence of the desk: the exemplar base includes multi-site validation papers that no style.md has been mined for.
+> ✎ This is a hole in the pack rather than a silence of the ~desk, since~ *desk:* the exemplar base includes multi-site validation papers that no style.md has been mined ~for, and~ *for.* A7.1 below holds it open. · CC · 260802 1540
+A7.1 below holds it open.
 
 #### 7.3 · What the pack forbids here
 (seven refusals, several of them inversions of the NMI norm)
-No declarative claim headings as the default, no avoidance of main-text tables, no missing CONSORT flow diagram for a trial, no reporting of positive findings only, no effect size without its CI, no safety reporting moved out of Results, and no benchmark results placed ahead of clinical outcomes in a clinical validation paper.
+No declarative claim headings as the default, no avoidance of main-text tables, and no missing CONSORT flow diagram for a trial.
+> ✎ No declarative claim headings as the default, no avoidance of main-text tables, *and* no missing CONSORT flow diagram for a ~trial, no~ *trial. No* reporting of positive findings only, no effect size without its CI, *and* no safety reporting moved out of ~Results, and no~ *Results. No* benchmark results placed ahead of clinical outcomes in a clinical validation paper. · CC · 260802 1540
+No reporting of positive findings only, no effect size without its CI, and no safety reporting moved out of Results.
+No benchmark results placed ahead of clinical outcomes in a clinical validation paper.
 
 #### 7.4 · Format values
 (the one division whose display evidence rests on nine named papers instead of two)
@@ -504,21 +572,32 @@ The plainly stated null, the closest Results comes to a limitation, and the refu
 
 #### 8.1 · The opening restatement re-declares the design
 (the same adjectives that Methods proved, now carrying the finding)
-The exemplar openers embed the design in the restatement: varoquaux-2026 opens on a large, multisite randomized study, nijman-2026 opens on a multicountry prospective study conducted in seven locations across Asia, and lang-2026 opens on a prospective, paired, noninferiority clinical trial.
+The exemplar openers put the design inside the restatement.
+> ✎ The exemplar openers ~embed~ *put* the design ~in~ *inside* the ~restatement:~ *restatement.* varoquaux-2026 opens on a large, multisite randomized ~study,~ *study.* nijman-2026 opens on a multicountry prospective study conducted in seven locations across ~Asia, and~ *Asia.* lang-2026 opens on a prospective, paired, noninferiority clinical trial. · CC · 260802 1540
+varoquaux-2026 opens on a large, multisite randomized study.
+nijman-2026 opens on a multicountry prospective study conducted in seven locations across Asia.
+lang-2026 opens on a prospective, paired, noninferiority clinical trial.
 The slot is `In this <design descriptor> study <in setting>, we found <finding in clinical terms>.`
 natmed-discussion/style.md forbids repeating the abstract verbatim, so the restatement sits one synthesis level above it.
 
 #### 8.2 · Limitations are formulaic, paired and never final
 (the one move a single-center paper cannot avoid)
-The limitations paragraph opens on a stock phrase, and natmed-discussion/style.md catalogues eleven variants across the exemplars, from a bare "This study has limitations." to a longer request for caution and humility.
+The limitations paragraph opens on a stock phrase.
+> ✎ The limitations paragraph opens on a stock ~phrase, and~ *phrase.* natmed-discussion/style.md catalogues eleven variants across the exemplars, from a bare "This study has limitations." to a longer request for caution and humility. · CC · 260802 1540
+natmed-discussion/style.md catalogues eleven variants across the exemplars, from a bare "This study has limitations." to a longer request for caution and humility.
 Each limitation then takes `<limitation> -> <mitigation or future direction>`, and lang-2026 supplies the pattern a single-site paper must use, pairing the single-site design with the diversity within that site.
 Limitations stay woven into the prose flow and never become a labeled subsection, and the Discussion never ends on one.
 The close takes `In conclusion,` or `In summary,` plus a clinical recommendation, which the pack contrasts with NMI, whose Discussion never recommends a clinical action.
 
 #### 8.3 · What the pack forbids here
 (nine refusals, and the null-result rule is the one with teeth)
-No Discussion longer than Results, no new data or analysis, no omitted limitations, no ending on a limitation, no verbatim abstract, no labeled Limitations or Conclusion subsection, no omitted clinical implications, no comprehensive literature review, and no spinning of a null result.
-When the primary outcome is null the pack requires one or two paragraphs explaining why, and its examples convert the interval into a clinical quantity, as brinton-2026 does by restating the estimate as between 13 fewer and 1 additional treatment failures per 1,000 patients.
+No Discussion longer than Results, no new data or analysis, and no verbatim abstract.
+> ✎ No Discussion longer than Results, no new data or analysis, *and* no *verbatim abstract. No* omitted limitations, no ending on a limitation, ~no verbatim abstract,~ *and* no labeled Limitations or Conclusion ~subsection, no~ *subsection. No* omitted clinical implications, no comprehensive literature review, and no spinning of a null result. · CC · 260802 1540
+No omitted limitations, no ending on a limitation, and no labeled Limitations or Conclusion subsection.
+No omitted clinical implications, no comprehensive literature review, and no spinning of a null result.
+When the primary outcome is null the pack requires one or two paragraphs explaining why.
+> ✎ When the primary outcome is null the pack requires one or two paragraphs explaining ~why, and its~ *why. Its* examples convert the interval into a clinical quantity, as brinton-2026 does by restating the estimate as between 13 fewer and 1 additional treatment failures per 1,000 patients. · CC · 260802 1540
+Its examples convert the interval into a clinical quantity, as brinton-2026 does by restating the estimate as between 13 fewer and 1 additional treatment failures per 1,000 patients.
 
 #### 8.4 · Format values
 (a section budgeted against Results rather than in its own right)
@@ -573,23 +652,35 @@ The clinical recommendation the close must carry, the move the pack records as a
 
 #### 9.1 · What belongs in each tier
 (the triage rule, stated as three questions)
-Main text holds the core argument: the study-design schematic, the primary-outcome figures and the key comparison plots, with both measured exemplars carrying two to four main-text figures and a Brief Communication limited to two display items.
-Extended Data holds peer-reviewed supporting analyses a reviewer must see but that would interrupt the narrative, and natmed-appendix/style.md names the recurring kinds: subgroup breakdowns and secondary analyses, evaluation rubrics and instruments, representative qualitative examples, descriptive reference tables, platform screenshots and pairwise statistical comparison panels.
+Main text holds the core argument: the study-design schematic, the primary-outcome figures and the key comparison plots.
+> ✎ Main text holds the core argument: the study-design schematic, the primary-outcome figures and the key comparison ~plots, with both~ *plots. Both* measured exemplars ~carrying~ *carry* two to four main-text ~figures~ *figures,* and a Brief Communication *is* limited to two display items. · CC · 260802 1540
+Both measured exemplars carry two to four main-text figures, and a Brief Communication is limited to two display items.
+Extended Data holds peer-reviewed supporting analyses a reviewer must see but that would interrupt the narrative.
+> ✎ Extended Data holds peer-reviewed supporting analyses a reviewer must see but that would interrupt the ~narrative, and~ *narrative.* natmed-appendix/style.md names the recurring kinds: subgroup breakdowns and secondary analyses, evaluation rubrics and instruments, representative qualitative examples, descriptive reference tables, platform screenshots and pairwise statistical comparison panels. · CC · 260802 1540
+natmed-appendix/style.md names the recurring kinds: subgroup breakdowns and secondary analyses, evaluation rubrics and instruments, representative qualitative examples, descriptive reference tables, platform screenshots and pairwise statistical comparison panels.
 Supplementary Information holds everything else, and the pack names full scenario texts, detailed demographics, hyperparameter tables, power analyses, cost breakdowns and exhaustive per-condition results.
 Because subgroup breakdowns are named Extended Data content, the per-site and per-cohort tables that carry this desk's external validation compete directly for the ten-item cap.
 
 #### 9.2 · The cap and the rules that hang off it
 (what a paper must do once it accepts ten items)
 The cap is ten items total across Extended Data figures and tables combined, and both measured exemplars sit inside it at three and seven.
-Each Extended Data item occupies one full published page, captions run 100 to 200 words, tables are typeset rather than screenshots of spreadsheets, and the main text must cite every Extended Data item at least once.
+Each Extended Data item occupies one full published page, and captions run 100 to 200 words.
+> ✎ Each Extended Data item occupies one full published page, *and* captions run 100 to 200 ~words, tables~ *words. Tables* are typeset rather than screenshots of spreadsheets, and the main text must cite every Extended Data item at least once. · CC · 260802 1540
+Tables are typeset rather than screenshots of spreadsheets, and the main text must cite every Extended Data item at least once.
 Supplementary Information is a separate file with no cap, not paginated with the article, checked editorially rather than sent to reviewers as a mandatory read.
-The Nature Portfolio Reporting Summary is a separate required three-page form and is not part of Supplementary Information, and the paper closes with a fixed-order block running from Online content through Data and Code availability to the correspondence and peer-review pointers.
+The Nature Portfolio Reporting Summary is a separate required three-page form, and it is not part of Supplementary Information.
+> ✎ The Nature Portfolio Reporting Summary is a separate required three-page ~form~ *form,* and *it* is not part of Supplementary ~Information, and the~ *Information. The* paper closes with a fixed-order block running from Online content through Data and Code availability to the correspondence and peer-review pointers. · CC · 260802 1540
+The paper closes with a fixed-order block running from Online content through Data and Code availability to the correspondence and peer-review pointers.
 
 #### 9.3 · Two holes in this file, unlike the other six
 (a contradiction the pack states without resolving, and a missing Anti-patterns section)
-natmed-appendix/style.md says Extended Data and Supplementary Information have independent numbering sequences, with figures and tables both starting at 1 inside each tier, and then observes that bean-2026's Supplementary tables begin above the Extended Data table count, which it reads as suggesting a single continuous table sequence across tiers.
+natmed-appendix/style.md says Extended Data and Supplementary Information have independent numbering sequences, with figures and tables both starting at 1 inside each tier.
+> ✎ natmed-appendix/style.md says Extended Data and Supplementary Information have independent numbering sequences, with figures and tables both starting at 1 inside each ~tier, and~ *tier. It* then observes that bean-2026's Supplementary tables begin above the Extended Data table count, ~which it~ *and* reads *that* as suggesting a single continuous table sequence across tiers. · CC · 260802 1540
+It then observes that bean-2026's Supplementary tables begin above the Extended Data table count, and reads that as suggesting a single continuous table sequence across tiers.
 Both statements sit in the same file and nothing chooses between them, so a drafting agent numbering a Supplementary table has two defensible answers; A9.1 below holds it open.
-This is also the only one of the seven kind files with no "Anti-patterns" heading: its prohibitions are inline, namely never abbreviating Extended Data to "ED", never exceeding ten items, never submitting a spreadsheet screenshot as a table, and never leaving an Extended Data item uncited in the main text.
+This is also the only one of the seven kind files with no "Anti-patterns" heading, so its prohibitions sit inline.
+> ✎ This is also the only one of the seven kind files with no "Anti-patterns" ~heading:~ *heading, so* its prohibitions ~are inline, namely~ *sit inline. They are:* never ~abbreviating~ *abbreviate* Extended Data to "ED", never ~exceeding~ *exceed* ten items, never ~submitting~ *submit* a spreadsheet screenshot as a table, and never ~leaving~ *leave* an Extended Data item uncited in the main text. · CC · 260802 1540
+They are: never abbreviate Extended Data to "ED", never exceed ten items, never submit a spreadsheet screenshot as a table, and never leave an Extended Data item uncited in the main text.
 
 #### 9.4 · Format values
 (the division whose rows are display inventories, because the pack drops prose metrics here and counts items instead)
@@ -605,7 +696,9 @@ This is also the only one of the seven kind files with no "Anti-patterns" headin
 (the one kind file that quotes no prose, so nothing is quoted here)
 natmed-appendix/style.md has no "Signature moves" heading and no "Exemplar sentences" heading, and it quotes no sentence from any paper.
 Its only attributed strings are typographic: the caption form `Extended Data Table 1 | Title in sentence case.` and the in-text form `(Extended Data Fig. 1a,b)`, both credited to bean-2026 and restrepo-2026.
-Those are formats and not language, so this division has no voice to copy, and writing one would put a sentence in this outlet's mouth that no exemplar said.
+Those are formats and not language, so this division has no voice to copy.
+> ✎ Those are formats and not language, so this division has no voice to ~copy, and writing~ *copy. Writing* one would put a sentence in this outlet's mouth that no exemplar said. · CC · 260802 1540
+Writing one would put a sentence in this outlet's mouth that no exemplar said.
 It is the same thinness recorded at 9.3, where the file's prohibitions sit inline because it carries no Anti-patterns heading either.
 
 ## Aims
@@ -721,7 +814,7 @@ It is the same thinness recorded at 9.3, where the file's prohibitions sit inlin
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -731,7 +824,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -744,8 +840,9 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-Two of this desk's three rejections are properties of how the evidence was gathered, so the outlet is chosen at the task layer and merely confirmed at the venue stage.
-A venue recommendation that ignores an unacquirable bar is not a recommendation, it is a deferral of the rejection.
+- Two of this desk's three rejections are properties of how the evidence was gathered, so the outlet is chosen at the task layer and merely confirmed at the venue stage.
+A venue recommendation that ignores a bar no rewrite can reach only postpones the rejection.
+> ✎ A venue recommendation that ignores ~an unacquirable~ *a* bar ~is not a recommendation, it is a deferral of~ *no rewrite can reach only postpones* the rejection. · CC · 260802 1540
 
 ## Glossary
 
@@ -754,7 +851,27 @@ A venue recommendation that ignores an unacquirable bar is not a recommendation,
 
 ## Log
 
+260802 1540 · Rewrote the page for a reader whose English is weak, `haipipe-writing`, 43 sentences carrying a `✎` record each.
+  The coinage "unacquirable bar" left the prose. 1.1, the 6 job line, 6.5 and the Law now say the plain thing: the bar is a property of how the study was designed, so no rewrite reaches it.
+  The Glossary keeps the term, and the Files row still points `QBv2` at it.
+  Four lines were rewritten with NO record, because `cli/wdiff.py` refuses any text holding its own change marks `~` and `*`.
+  Those four are the two Opening drawer labels, the two Writing Style labels, and 5.1's three-places sentence.
+  Nothing was changed in 3.3, which is the provenance caveat, in the generated exemplars and kinds blocks, or in the Authority URLs.
+260802 1540 · A number on this page disagrees with itself and is left alone rather than guessed at, recorded as a `> Check:` lane under 3.3.
+  3.3 and A7.1's State both say seven stored papers back no norm; the generated exemplars block computes 24 minus 14 and prints 10.
 260802 · Opened with the QBv outlet pages, from `playbook-nature-portfolio/nature-medicine` at `Venue-Paper@fe25a88`.
-260802 · Added divisions 3 to 9, one per section kind, from the seven `natmed-<kind>/style.md` and `template.md` pairs; folded in the retired family README and `../style-profile.md`; recorded at 5.1 that `related-work` is declared for all five Nature outlets and printed by none, at 7.2 that no external-validation norm is measured, and at 9.3 the Supplementary numbering contradiction.
-260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. It closes the pack's open LaTeX question: TeX/LaTeX is required or permitted at both stages, no journal class file exists, standard article.cls / revtex.cls / amsart.cls are the instruction, and the journal itself links the Springer Nature LaTeX template, whose URL is now recorded. It CONFIRMS both of this board's inherited claims at source: "A maximum of 10 Extended Data display figures is permitted", where the unit is display FIGURES rather than items, and a four-block Article division that contains no prior-work section and forbids subheadings in the Discussion.
-260802 · Added a Format values and a language subsubsection to each of divisions 3 to 9: four rows each (words, citation density, value density, displays) carrying the natmed-<kind>/style.md heading and the measured base beside every number, plus 3 to 6 attributed one-sentence quotes per division taken only from what the pack already quotes; recorded that no style.md in this pack measures value density under that or any name, that every "Micro-norms (measured 2026-07-08)" table rests on brinton-2026 and bean-2026 alone while 24 papers sit on disk, that the Results display counts alone rest on nine named papers, that related-work has no budget and spends its hosts' instead, and that natmed-appendix/style.md quotes no prose at all.
+260802 · Added divisions 3 to 9, one per section kind, from the seven `natmed-<kind>/style.md` and `template.md` pairs.
+> ✎ 260802 · Added divisions 3 to 9, one per section kind, from the seven `natmed-<kind>/style.md` and `template.md` ~pairs; folded~ *pairs. Folded* in the retired family README and ~`../style-profile.md`; recorded~ *`../style-profile.md`. Recorded* at 5.1 that `related-work` is declared for all five Nature outlets and printed by none, at 7.2 that no external-validation norm is measured, and at 9.3 the Supplementary numbering contradiction. · CC · 260802 1540
+  Folded in the retired family README and `../style-profile.md`.
+  Recorded at 5.1 that `related-work` is declared for all five Nature outlets and printed by none, at 7.2 that no external-validation norm is measured, and at 9.3 the Supplementary numbering contradiction.
+260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day.
+> ✎ 260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. It closes the pack's open LaTeX question: TeX/LaTeX is required or permitted at both stages, no journal class file exists, *and* standard article.cls / revtex.cls / amsart.cls are the ~instruction, and the~ *instruction. The* journal itself links the Springer Nature LaTeX template, whose URL is now recorded. It CONFIRMS both of this board's inherited claims at source: "A maximum of 10 Extended Data display figures is permitted", where the unit is display FIGURES rather than items, and a four-block Article division that contains no prior-work section and forbids subheadings in the Discussion. · CC · 260802 1540
+  It closes the pack's open LaTeX question: TeX/LaTeX is required or permitted at both stages, no journal class file exists, and standard article.cls / revtex.cls / amsart.cls are the instruction.
+  The journal itself links the Springer Nature LaTeX template, whose URL is now recorded.
+  It CONFIRMS both of this board's inherited claims at source: "A maximum of 10 Extended Data display figures is permitted", where the unit is display FIGURES rather than items, and a four-block Article division that contains no prior-work section and forbids subheadings in the Discussion.
+260802 · Added a Format values and a language subsubsection to each of divisions 3 to 9.
+> ✎ 260802 · Added a Format values and a language subsubsection to each of divisions 3 to ~9:~ *9. Format values carries* four rows each (words, citation density, value density, ~displays) carrying~ *displays), with* the natmed-<kind>/style.md heading and the measured base beside every ~number, plus~ *number. The language subsubsection carries* 3 to 6 attributed one-sentence quotes per ~division~ *division,* taken only from what the pack already ~quotes; recorded~ *quotes. Recorded* that no style.md in this pack measures value density under that or any name, *and* that every "Micro-norms (measured 2026-07-08)" table rests on brinton-2026 and bean-2026 alone while 24 papers sit on ~disk,~ *disk. Recorded* that the Results display counts alone rest on nine named papers, that related-work has no budget and spends its hosts' instead, and that natmed-appendix/style.md quotes no prose at all. · CC · 260802 1540
+  Format values carries four rows each (words, citation density, value density, displays), with the natmed-<kind>/style.md heading and the measured base beside every number.
+  The language subsubsection carries 3 to 6 attributed one-sentence quotes per division, taken only from what the pack already quotes.
+  Recorded that no style.md in this pack measures value density under that or any name, and that every "Micro-norms (measured 2026-07-08)" table rests on brinton-2026 and bean-2026 alone while 24 papers sit on disk.
+  Recorded that the Results display counts alone rest on nine named papers, that related-work has no budget and spends its hosts' instead, and that natmed-appendix/style.md quotes no prose at all.

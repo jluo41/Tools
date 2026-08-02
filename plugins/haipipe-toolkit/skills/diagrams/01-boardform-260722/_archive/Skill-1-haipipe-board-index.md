@@ -1,5 +1,5 @@
 # haipipe-board-index · v0.2.1
-state: 🔴 OPEN
+state: 🟡 in question · retirement proposed on QC1b
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 session: dff70bd0-2dc2-425e-882b-bdcd25df0013
@@ -25,11 +25,33 @@ haipipe-board-index/
 
 <!-- haipipe:skill:tree:end -->
 
-```
-WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
-Draw how this skill is actually used: the entry point, what it reads,
-what it writes, and where it hands off. Delete this fence if the tree
-above is the whole story.
+```text
+WORKFLOW  five verbs, one file written, and where three of them already exist
+
+  a topic, no board yet
+        │
+        ▼
+  📐 propose      spine · close · groups · pages · connections · skills
+        │         talk only, write NOTHING, stop for the user's approval
+        │         ⚠️ also written in haipipe-board's `open` action
+        ▼
+  🏗 materialize  board.md + one folder per group + one file per page
+        │         ⚠️ also written in haipipe-board's `open` action
+        ▼
+  🛤 lanes        src/lanes.py <board> [--apply]   ← the only code held here
+        │         round-trips: roster generated, every typed cell kept
+        │         the one live caller is haipipe-board-creator-agent's
+        │         brief, which runs it BY PATH and never opens this door
+        ▼
+  🚚 regroup      wraps haipipe-board/cli/regroup.py
+  ✅ check        a subset of haipipe-board/cli/check.py
+        │
+        ▼
+  hands off to haipipe-board, which builds the board/ site
+
+  reads and writes board.md ONLY · never a page file · never board/
+  ⚠️ three of the five verbs are the door's own work written twice, which
+     is the fact behind the retirement row on QC1b's Decision Now
 ```
 
 ## Content
@@ -175,15 +197,33 @@ src/lanes.py     253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane b
 <!-- haipipe:skill:body:end -->
 
 ## Aims
-- [ ] 🧠 Rule this skill's health
-      `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
+- [ ] 📐 The unit's own existence is ruled
+      JL asked on 260802 what this skill is for and proposed merging it with `haipipe-board-routing`.
+      The three options and the evidence behind them are one row on `QC1b`'s Decision Now, which owns the roster; this page does not carry a second copy of them.
+- [ ] 🧹 The duplication with the door's `open` action ends
+      `propose` and `materialize` are written here and again in `haipipe-board`'s `open`, so two files can drift on what a new board is asked for.
+      Either verb set is deleted or the other one points at it; today neither does.
+- [ ] 🛤 `src/lanes.py` keeps a home and a caller whichever way the ruling goes
+      It is the one thing this unit holds that exists nowhere else in the family, and its only live caller runs it by path from `haipipe-board-creator-agent`'s brief.
+      A retirement that forgets the script breaks that caller silently, because the brief names a path rather than a skill.
+- [x] 🪞 The page is a verified copy, not a claimed one
+      Regenerated and compared byte for byte on 260801: all three managed spans identical, and every one of `SKILL.md`'s 109 content lines reaches `## Content`.
 
 ## States
-Page generated 260730 1720. Health still unruled, but the COPY is now verified: on 260801 all three managed spans were regenerated from `board/haipipe-board-index/` and compared byte for byte against what sits on this page, and all three were identical. A second pass confirmed the transform is lossless: every one of SKILL.md's 109 content lines reaches `## Content`, with only the frontmatter and the `# ` title dropped by design.
+This unit ships at 0.2.1 and is now the subject of a retirement question rather than a development one.
+The audit behind that question is on `QC1b`: three of its five verbs are the door's own work written a second time, and only `src/lanes.py` is code held nowhere else.
+Its health is therefore `🟡 in question`, which is a statement about the roster and not about the code, because nothing here is broken.
 
-Worth knowing before trusting a green `check`: `skillpage.py check` hashes the frontmatter's derived facts ONLY (`name` `version` `last_updated` `summary` `allowed-tools`), by `digest()`'s own docstring, "so prose edits never look like drift". A ✅ therefore means the metadata is current, NOT that the prose matches. Byte equality needs the regenerate-and-diff done above. That gap belongs to `skillpage.py`, which ships in `haipipe-board`, so it is [Skill-0-haipipe-board](QC-engine/Skill-0-haipipe-board.md)'s to carry, not this skill's.
+- 260802 CC · 📐 The retirement question came from JL, and the audit came after it
+  JL asked what the index is for and said it may not be needed, which is the first time anyone checked its verbs against the door's.
+  That order is worth recording: `A2.2` on `QC1b` had been open since 260731 asking exactly this and had never been run, so the question did the audit's job.
+- 260801 CC · 🪞 The copy is verified, and a green `check` does not mean what it looks like
+  `skillpage.py check` hashes the frontmatter's derived facts only (`name` `version` `last_updated` `summary` `allowed-tools`), by `digest()`'s own docstring, "so prose edits never look like drift".
+  A ✅ therefore means the metadata is current, not that the prose matches, and byte equality needs the regenerate-and-diff done on 260801.
+  That gap belongs to `skillpage.py`, which ships in `haipipe-board`, so it is `Skill-0`'s to carry rather than this skill's.
 
 ## Log
+260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder and now marks which three verbs are the door's work written twice, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in question. The 260801 verified-copy note and the `check`-hash caveat were folded into dated State records rather than left as loose paragraphs
 260801 0107 · verified the three managed spans against `board/haipipe-board-index/`: tree, body and log all regenerate byte-identical, no SKILL.md line missing. Noted that `check`'s hash covers frontmatter only.
 260730 1720 · page generated from `board/haipipe-board-index/` by `skillpage.py new`
 

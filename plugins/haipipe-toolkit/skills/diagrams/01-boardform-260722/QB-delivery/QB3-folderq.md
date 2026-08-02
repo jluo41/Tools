@@ -2,6 +2,7 @@
 state: ✅ SETTLED
 owner: CC
 method: recursive discovery in build.py + path vetting in serve.py; ruled by JL 260724, shipped same day
+session: 62ed99a0-fe6c-4a9b-8ad7-a3a97425adb2
 
 ## Opening
 Can a Board page live beside the files it describes without breaking discovery or safe write-back?

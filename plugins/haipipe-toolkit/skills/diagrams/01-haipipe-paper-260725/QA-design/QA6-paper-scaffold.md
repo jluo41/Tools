@@ -518,20 +518,16 @@ The display unit's working/shipping split is now explicit. The remaining trial g
   The measured tree: four numbered work areas, 9 reachable section entrypoints, 11 reachable appendix files, 8 unreachable `.tex` files, and PDFs of 47 and 46 pages.
 
 ## Law
-The prefix is a submission-cut boundary: on a copy, remove all numbered work areas and the unnumbered paper must still compile and submit.
-That copy-only packaging test is never permission to erase the working repository.
 
-There are four current numbered work areas: authoritative lifecycle pages, probe bindings, build recipes, and derived format candidates/handoffs.
-The S page is source authority; `3-dist/` is candidate/handoff projection; the unnumbered tree is submission projection.
-Generation and promotion are separate, and no candidate may be promoted until G0-G4 pass and a human explicitly authorizes G5.
-
-`0-lifecycle/3-display/` owns Display pages and rebuild work. Unnumbered `displays/` is the submission projection: one folder per unit containing only `float.tex` and selected `assets/`. There is no active top-level `figures/` or flat `Figure/`/`Table/` bucket.
-
-Inside `0-lifecycle/`, one family one folder, and the folder holds S pages and its own index and nothing else.
-
-A new paper is created Board-first and minimal, and every other page is absent until its unit is allocated. No request file, sidecar, section stub or empty stage tree is created in advance. Manuscript machinery is an upgrade performed at the Display or section frontier, never at creation.
-
-Every stage declares exactly one of venue-free or venue-aligned, decided by whether a different journal could change its answer. The venue stage itself declares `venue_role`, because it is the stage that picks the venue and is therefore neither. Evidence is venue-free: a retarget may rewrite how a paper is told and may not reopen what it found.
+- The prefix is a submission-cut boundary: on a copy, remove all numbered work areas and the unnumbered paper must still compile and submit.
+  That copy-only packaging test is never permission to erase the working repository.
+- There are four current numbered work areas: authoritative lifecycle pages, probe bindings, build recipes, and derived format candidates/handoffs.
+  The S page is source authority; `3-dist/` is candidate/handoff projection; the unnumbered tree is submission projection.
+  Generation and promotion are separate, and no candidate may be promoted until G0-G4 pass and a human explicitly authorizes G5.
+- `0-lifecycle/3-display/` owns Display pages and rebuild work. Unnumbered `displays/` is the submission projection: one folder per unit containing only `float.tex` and selected `assets/`. There is no active top-level `figures/` or flat `Figure/`/`Table/` bucket.
+- Inside `0-lifecycle/`, one family one folder, and the folder holds S pages and its own index and nothing else.
+- A new paper is created Board-first and minimal, and every other page is absent until its unit is allocated. No request file, sidecar, section stub or empty stage tree is created in advance. Manuscript machinery is an upgrade performed at the Display or section frontier, never at creation.
+- Every stage declares exactly one of venue-free or venue-aligned, decided by whether a different journal could change its answer. The venue stage itself declares `venue_role`, because it is the stage that picks the venue and is therefore neither. Evidence is venue-free: a retarget may rewrite how a paper is told and may not reopen what it found.
 
 ## Discussion
 > JL 260729: confirmed that this work is on the Paper skill Board and asked CC to continue the design.

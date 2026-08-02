@@ -9,9 +9,9 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
   last_updated: "2026-08-01"
-  summary: "The independent judge reviews each page locally and changed Openings together in Board order, so individually clear but templated prose still fails."
+  summary: "Loads haipipe-board-page-for-skill whenever a page under review is a Skill or Agent roster page, whose Opening rule inverts the base's."
   changelog: "./CHANGELOG.md"
 ---
 
@@ -25,8 +25,15 @@ copy is exactly what goes a night out of date while the contract moves:
 
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
 2. `../haipipe-board-page/SKILL.md` for the base page and evaluation contract.
-3. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
-4. The target Board's `board.md` for topic, pipeline, groups, links, and page order.
+3. `../haipipe-board-page-for-skill/SKILL.md` WHENEVER a page under review is a
+   `Skill-<n>` or `Agent-<n>` roster page. It is the variant those two kinds are
+   judged against, and its Opening rule is the OPPOSITE of the base's: a roster
+   page mirrors a unit that ships elsewhere and decides nothing, so it must
+   INTRODUCE that unit and may never open with a question. Judging a roster page
+   by the base alone marks correct prose as wrong and passes the form letter this
+   variant exists to catch.
+4. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
+5. The target Board's `board.md` for topic, pipeline, groups, links, and page order.
 
 ## Scope and boundary
 

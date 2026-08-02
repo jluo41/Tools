@@ -161,7 +161,7 @@ The open gap is not on the paper board: it is that Word has no `.bib`, so a cita
 
 ## Law
 
-An agent may search and verify bibliography evidence; it never invents or silently writes a bibliography entry.
+- An agent may search and verify bibliography evidence; it never invents or silently writes a bibliography entry.
 
 ## Glossary
 

@@ -151,8 +151,8 @@ G0 maps every appendix target and G1 correctly refuses all of them, because the 
 
 ## Law
 
-An appendix wrapper contains wiring only; every prose or template leaf must have an explicit authoritative source region.
-Appendix units are lettered rather than numbered, so a unit added late renumbers nothing that cites the others.
+- An appendix wrapper contains wiring only; every prose or template leaf must have an explicit authoritative source region.
+  Appendix units are lettered rather than numbered, so a unit added late renumbers nothing that cites the others.
 
 ## Glossary
 

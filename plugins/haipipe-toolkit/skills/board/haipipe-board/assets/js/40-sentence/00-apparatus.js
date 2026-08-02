@@ -88,7 +88,14 @@
         .then(function (j) {
           if (!j.ok) { err.textContent = '⚠ ' + (j.err || 'failed'); return; }
           err.textContent = '✔ saved';
-          setTimeout(close, 700);
+          // CLOSE FIRST, THEN ASK (JL 260802). The swap refuses to run while
+          // any textarea inside `div.wrap` still holds text, which is the rule
+          // that stops a board rebuild from eating what someone is typing.
+          // This form is inside `div.wrap` and its input still holds what was
+          // just saved, so asking before closing asks for something that can
+          // only be refused, and the lane then waited for the poll instead.
+          close();
+          if (window.__boardRefresh) window.__boardRefresh();
         })
         .catch(function () { err.textContent = '⚠ serve.py not running?'; });
     }
@@ -125,7 +132,23 @@
       }).then(function (r) { return r.json(); }).then(function (j) {
         if (!j.ok) { err.textContent = '⚠ ' + (j.err || 'failed'); return; }
         localStorage.setItem('board-user-last', actor);
-        location.reload();
+        // A RELOAD IS THE WRONG TOOL HERE (JL 260802: adding something and
+        // having the whole page refresh is what "not smooth" means). It threw
+        // away the scroll position, shut every section the reader had opened
+        // to reach this sentence, and cost a full document parse, all to show
+        // one changed line. The swap keeps the reader exactly where they were
+        // and still falls back to a real reload when the board's JS changed.
+        //
+        // CLOSE FIRST. This editor's textarea lives inside `div.wrap` and
+        // still holds the sentence that was just saved, and the swap refuses
+        // to run while any textarea in there has text, which is the rule that
+        // stops a rebuild from eating what someone is typing. The reload this
+        // replaced never met that rule, so the guard had never been crossed
+        // here before: the markdown gained its `> ✎` record and the page sat
+        // unchanged until the reader refreshed by hand.
+        close();
+        if (window.__boardRefresh) window.__boardRefresh();
+        else location.reload();
       }).catch(function () { err.textContent = '⚠ serve.py not running?'; });
     }
     ok.onclick = save;

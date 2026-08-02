@@ -2,21 +2,32 @@
 
 state: 🟡 PARTIAL · 3 jurisdictions as README delta tables · no outlet tree · no exemplars
 owner: JL
-method: state what a claim means in a filing as against in a paper, record the three jurisdiction deltas, and keep this pack's word collision with the Claims stage from doing damage
+method: state what the word claim means in a filing as against in a paper, record the three jurisdiction deltas, and keep this pack's word collision with the Claims stage from doing damage
 
 ## Opening
 
-Every other venue in this tree accepts a document. A patent office accepts a sentence, and the rest of the filing exists to support it. What does that inversion change?
+Every other venue in this tree accepts a document, but a patent office accepts one sentence. What does that change?
+> ✎ Every other venue in this tree accepts a ~document. A~ *document, but a* patent office accepts ~a sentence,~ *one sentence. What does that change? That sentence is the patent claim,* and the ~rest of the~ *whole* filing ~exists~ *is written* to support it. ~What does that~ *The trap is the word: a patent claim in a filing and a lifecycle claim in the paper are two different objects sharing one name. This page states what the* inversion ~change?~ *costs, fixes the word so a revision pass cannot soften the wrong object, and gives each office its own division.* · CC · 260802 1542
+That sentence is the patent claim, and the whole filing is written to support it.
+The trap is the word: a patent claim in a filing and a lifecycle claim in the paper are two different objects sharing one name.
+This page states what the inversion costs, fixes the word so a revision pass cannot soften the wrong object, and then takes the three offices one at a time.
+> ✎ This page states what the inversion costs, fixes the word so a revision pass cannot soften the wrong object, and ~gives each office its own division.~ *then takes the three offices one at a time.* · CC · 260802 1542
 
-It also produces the most dangerous word collision in the paper system. The lifecycle has a Claims stage. A filing has claims. They are not the same object and the pack's `-> Claims` map runs straight through the ambiguity.
+**The word collision, and the only defence against it**: spell the word out every time.
+The lifecycle has a Claims stage, and a filing has patent claims.
+> ✎ ~It also produces the most dangerous word collision in the paper system.~ The lifecycle has a Claims ~stage. A~ *stage, and a* filing has *patent* claims. They are ~not the same object~ *different objects that share one word,* and the pack's `-> Claims` map runs ~straight through~ *from one to* the ~ambiguity.~ *other without warning anybody.* · CC · 260802 1542
+They are different objects that share one word, and the pack's `-> Claims` map runs from one to the other without warning anybody.
 
 **Where this page sits**: it is one venue target in `QBv`, and the only one in its pack.
 This page owns only what is true of `playbook-patent`.
 
 **Why this pack has no outlet tree**: jurisdictions are not journals.
-CNIPA, USPTO, and EPO prescribe different specification orders, different claim forms, and different abstract limits, and the pack encodes them as delta tables in `README.md`. That is the same declared exception `QBv15` carries.
+CNIPA, USPTO, and EPO each prescribe their own specification order, their own patent claim form, and their own abstract limit.
+> ✎ CNIPA, USPTO, and EPO *each* prescribe ~different~ *their own* specification ~orders, different~ *order, their own patent* claim ~forms,~ *form,* and ~different~ *their own* abstract ~limits, and the~ *limit. The* pack encodes ~them~ *those differences* as delta tables in ~`README.md`. That is~ *`README.md`,* the same declared exception `QBv15` carries. · CC · 260802 1542
+The pack encodes those differences as delta tables in `README.md`, the same declared exception `QBv15` carries.
 
-**What is unusual about its lifecycle**: the pack documents a drafting process, which no journal pack does, because a filing is prosecuted over years rather than submitted once.
+**What is unusual about its lifecycle**: the pack documents a drafting process, which no journal pack does.
+A filing is prosecuted over years rather than submitted once.
 
 ## Writing Style
 
@@ -40,14 +51,14 @@ The collision is the single most likely source of a wrong action anywhere in thi
 ```text
   ⚖️ THE INVERSION
      journal ── the DOCUMENT is the deliverable
-     patent  ── the CLAIM is the deliverable,
+     patent  ── the PATENT CLAIM is the deliverable,
                 the specification exists to support it
 
   🌍 THREE JURISDICTIONS
   ┌──────────────┬──────────────┬─────────────┬──────────────┐
   │              │ CN · CNIPA   │ US · USPTO  │ EP · EPO     │
   ├──────────────┼──────────────┼─────────────┼──────────────┤
-  │ claim form   │ two-part,    │ single-     │ two-part     │
+  │ patent claim │ two-part,    │ single-     │ two-part     │
   │              │ character-   │ clause      │ "character-  │
   │              │ izing clause │ "compris-   │ ised in      │
   │              │              │ ing"        │ that", Rule  │
@@ -73,23 +84,24 @@ The collision is the single most likely source of a wrong action anywhere in thi
 
 ### 1 · The inversion, and what it does to the lifecycle
 
-**The specification supports the claim**: every artifact the paper system produces changes role.
+**The specification supports the patent claim**: every artifact the paper system produces changes role.
 
 ```text
   📄 journal            📑 filing
   ──────────            ─────────
-  the document IS   ▶   the CLAIM is the deliverable
+  the document IS   ▶   the PATENT CLAIM is the deliverable
   the deliverable       the specification SUPPORTS it
 
   ── a figure is not illustration, it is support for a
      limitation, and its reference signs are load-bearing
-  ── background is not motivation, it is what the claim
-     must be distinguished FROM
+  ── background is not motivation, it is what the patent
+     claim must be distinguished FROM
   ── the abstract is a length-capped formality, and the
      EPO forbids stating merits in it
 ```
 
-⚖️ Establishes the inversion as the pack's core content, which is why every stage map here reads differently from a journal pack's.
+⚖️ Establishes the inversion as the pack's core content, so every stage map here reads differently from a journal pack's.
+> ✎ ⚖️ Establishes the inversion as the pack's core content, ~which is why~ *so* every stage map here reads differently from a journal pack's. · CC · 260802 1542
 
 #### 1.1 · Prosecution is a lifecycle no journal pack has
 (so this pack documents a drafting process rather than a submission)
@@ -110,8 +122,8 @@ A filing is amended against office actions over years, which makes the closest p
      during revision            narrowing the right
 
   💥 the pack's  ->Claims  map points the lifecycle stage at
-     the filing's claim set, and nothing in the wording of
-     either says they are different objects
+     the filing's patent claim set, and nothing in the
+     wording of either says they are different objects
 
   🛡 the mitigation is vocabulary, not structure:
      write "patent claim" or "lifecycle claim", always
@@ -130,9 +142,9 @@ The same pass applied to a patent claim narrows the granted right, and the pack 
 
 ```text
   ✅ the jurisdiction table is specific and correct
-     claim form · spec order · reference signs · abstract
-     limits · drawing labels · utility model availability
-     · term
+     patent claim form · spec order · reference signs ·
+     abstract limits · drawing labels · utility model
+     availability · term
 
   📭 0 exemplars
      ── no granted CNIPA specification, no USPTO Detailed
@@ -182,9 +194,11 @@ The same pass applied to a patent claim narrows the granted right, and the pack 
 #### 4.1 · The order in the table is shorter than the order in the same README
 (so a CNIPA draft built from the table alone ships without two required parts)
 The delta table's CNIPA spec order runs Title, Field, Background, Disclosure, Drawings, Embodiments, and stops there.
-The filing-order list under the same README's `-> Minimap` map carries Claims and Abstract after the Detailed Description.
+The filing-order list under the same README's `-> Minimap` map carries the patent claims and the Abstract after the Detailed Description.
+> ✎ The filing-order list under the same README's `-> Minimap` map carries ~Claims~ *the patent claims* and *the* Abstract after the Detailed Description. · CC · 260802 1542
 Nothing states that the short row is an elision of the long list, so the two missing parts read as an absence.
-The USPTO row on the same table does name the Abstract, which is what makes the CNIPA row look deliberate rather than truncated.
+The USPTO row on the same table does name the Abstract, so the CNIPA row looks deliberate rather than truncated.
+> ✎ The USPTO row on the same table does name the Abstract, ~which is what makes~ *so* the CNIPA row ~look~ *looks* deliberate rather than truncated. · CC · 260802 1542
 
 #### 4.2 · The utility model is a patent-claim decision, not a formatting one
 (which is why it cannot be deferred to the compile step)
@@ -230,10 +244,19 @@ The README places the invention-versus-utility-model choice in the filing's STAT
 #### 4.4 · The language, in the filings' own words
 (the pack stores no granted CNIPA specification, so what follows is its own formulation, rendered in English)
 The pack's CNIPA cells are written in Chinese and this board is English-only, so every phrase below is a rendering rather than a quotation from a filing.
-The two-part connector renders as "characterized in that", and it is what makes a CNIPA patent claim two-part: preamble, connector, characterizing clause [style-profile.md, Per-jurisdiction language notes].
-The dependent recital is given as a fixed frame that names its parent by number and then repeats the connector, rather than as a sentence lifted from a grant [style-profile.md, Claims].
-The Summary's advantages frame renders as "because the [structure] is adopted, the [effect] is obtained", which is the pack's one worked sentence shape and the reason a CNIPA advantage is structural rather than measured [style-profile.md, Specification].
-None of this comes from a granted CNIPA specification: the pack's own enrichment checklist asks for three to five real granted-patent patent-claim-1 sentences and none has been pulled, while the README calls the Write / Edit map "the main purpose".
+The two-part connector renders as "characterized in that".
+> ✎ The two-part connector renders as "characterized in ~that", and it~ *that". It* is what makes a CNIPA patent claim two-part: preamble, *then* connector, *then* characterizing clause [style-profile.md, Per-jurisdiction language notes]. · CC · 260802 1542
+It is what makes a CNIPA patent claim two-part: preamble, then connector, then characterizing clause [style-profile.md, Per-jurisdiction language notes].
+The dependent recital is given as a fixed pattern: it names its parent patent claim by number, then repeats the connector.
+> ✎ The dependent recital is given as a fixed ~frame that~ *pattern: it* names its parent *patent claim* by ~number and~ *number,* then repeats the ~connector, rather than as~ *connector. It is not* a sentence lifted from a ~grant~ *granted filing* [style-profile.md, Claims]. · CC · 260802 1542
+It is not a sentence lifted from a granted filing [style-profile.md, Claims].
+The Summary states an advantage as "because the [structure] is adopted, the [effect] is obtained".
+> ✎ The ~Summary's advantages frame renders~ *Summary states an advantage* as "because the [structure] is adopted, the [effect] is ~obtained", which~ *obtained". That* is the pack's one worked sentence ~shape~ *shape,* and ~the reason~ *it is why* a CNIPA advantage is structural rather than measured [style-profile.md, Specification]. · CC · 260802 1542
+That is the pack's one worked sentence shape, and it is why a CNIPA advantage is structural rather than measured [style-profile.md, Specification].
+None of this comes from a granted CNIPA specification.
+> ✎ None of this comes from a granted CNIPA ~specification: the~ *specification. The* pack's own enrichment checklist asks for three to five real ~granted-patent patent-claim-1~ *patent claim 1* sentences *out of granted patents,* and none has been ~pulled, while~ *pulled. Meanwhile* the README calls the Write / Edit map "the main purpose". · CC · 260802 1542
+The pack's own enrichment checklist asks for three to five real patent claim 1 sentences out of granted patents, and none has been pulled.
+Meanwhile the README calls the Write / Edit map "the main purpose".
 
 ### 5 · USPTO, and the one order that ends on the abstract
 
@@ -266,9 +289,15 @@ None of this comes from a granted CNIPA specification: the pack's own enrichment
 
 #### 5.1 · Three of this row's limits are enforceable by counting
 (so a USPTO draft is the one a machine can gate without judgment)
-150 words and 15 lines are both countable, as is the 500-character title cap in style-profile.md. Corrected 260802: the 2500-character figure the pack paired with the 150 words has no source in 37 CFR 1.72 or MPEP Chapter 600, and both surviving limits are stated as preferences rather than caps.
+150 words and 15 lines are both countable, as is the 500-character title cap in style-profile.md.
+> ✎ 150 words and 15 lines are both countable, as is the 500-character title cap in style-profile.md. Corrected 260802: the 2500-character figure the pack paired with the 150 words has no source in 37 CFR 1.72 or MPEP Chapter ~600, and both~ *600. Both* surviving limits are stated as preferences rather than caps. · CC · 260802 1542
+Corrected 260802: the 2500-character figure the pack paired with the 150 words has no source in 37 CFR 1.72 or MPEP Chapter 600.
+Both surviving limits are stated as preferences rather than caps.
 Antecedent basis is countable too: every "the X" needs an earlier "a X" inside the same patent claim.
-No equivalent count exists for the merits ban at the EPO or for the CNIPA character cap once a filing is drafted in English and translated later, and the pack does not say which side of translation the cap is measured on.
+No equivalent count exists for the merits ban at the EPO.
+> ✎ No equivalent count exists for the merits ban at the ~EPO or~ *EPO. None exists* for the CNIPA character cap *either,* once a filing is drafted in English and translated ~later, and the~ *later. The* pack does not say which side of *the* translation the cap is measured on. · CC · 260802 1542
+None exists for the CNIPA character cap either, once a filing is drafted in English and translated later.
+The pack does not say which side of the translation the cap is measured on.
 
 #### 5.2 · Format values
 (the office with the most countable limits records the same two absences as the other two)
@@ -305,12 +334,22 @@ No equivalent count exists for the merits ban at the EPO or for the CNIPA charac
 
 #### 5.3 · The language, in the filings' own words
 (the only office whose phrasings the pack states in English, and not one of them from a granted filing)
-"comprising" is the open transition that keeps a patent claim open to unrecited elements, against "consisting of" which closes it and "consisting essentially of" which sits between, and the pack's default is the open one for breadth [style-profile.md, Claims].
+"comprising" is the open transition: it keeps a patent claim open to elements the patent claim does not recite.
+> ✎ "comprising" is the open ~transition that~ *transition: it* keeps a patent claim open to ~unrecited elements, against~ *elements the patent claim does not recite.* "consisting of" ~which~ closes ~it~ *it,* and "consisting essentially of" ~which~ sits ~between, and~ *between* the *two. The* pack's default is the open ~one~ *one,* for breadth [style-profile.md, Claims]. · CC · 260802 1542
+"consisting of" closes it, and "consisting essentially of" sits between the two.
+The pack's default is the open one, for breadth [style-profile.md, Claims].
 Antecedent basis arrives as a two-word pattern rather than a sentence: "a" or "an" on first use, then "the" or "said" thereafter [style-profile.md, Claims].
-"means for ..." is the one phrase the pack quotes in order to warn against it, because functional language invokes a narrow statutory interpretation tied to the structure in the specification [style-profile.md, Claims; taste.md, No].
-The banned Title words are literal: "improved", "new", "novel", plus trademarks, and the pack states them once for every office even though the 500-character cap beside them is USPTO's alone [style-profile.md, Title and Abstract].
+"means for ..." is the one phrase the pack quotes in order to warn against it.
+> ✎ "means for ..." is the one phrase the pack quotes in order to warn against ~it, because functional~ *it. Functional* language invokes a narrow statutory ~interpretation~ *interpretation,* tied to the structure ~in~ the specification *describes* [style-profile.md, Claims; taste.md, No]. · CC · 260802 1542
+Functional language invokes a narrow statutory interpretation, tied to the structure the specification describes [style-profile.md, Claims; taste.md, No].
+The banned Title words are literal: "improved", "new", "novel", plus trademarks.
+> ✎ The banned Title words are literal: "improved", "new", "novel", plus ~trademarks, and the~ *trademarks. The* pack states them once for every ~office~ *office,* even though the 500-character cap beside them is USPTO's alone [style-profile.md, Title and Abstract]. · CC · 260802 1542
+The pack states them once for every office, even though the 500-character cap beside them is USPTO's alone [style-profile.md, Title and Abstract].
 The banned relative terms are literal too, "rapid", "efficient" and "substantially", each barred unless the specification defines it [style-profile.md, Claims; taste.md, No].
-All five are the pack's own formulation and none is lifted from a grant: no USPTO Detailed Description is stored, the dependent recital is given as a template frame, and the README calls the Write / Edit map "the main purpose" of a pack whose examples/ folder does not exist.
+All five are the pack's own formulation, and none is lifted from a granted filing.
+> ✎ All five are the pack's own ~formulation~ *formulation,* and none is lifted from a ~grant: no~ *granted filing. No* USPTO Detailed Description is stored, *and* the dependent recital is given as a ~template frame, and the~ *template. The* README calls the Write / Edit map "the main purpose" of a pack whose examples/ folder does not exist. · CC · 260802 1542
+No USPTO Detailed Description is stored, and the dependent recital is given as a template.
+The README calls the Write / Edit map "the main purpose" of a pack whose examples/ folder does not exist.
 
 ### 6 · EPO, and the reference-signs list as a separate part
 
@@ -347,7 +386,9 @@ All five are the pack's own formulation and none is lifted from a grant: no USPT
 #### 6.1 · Wherever appropriate is the only cell a drafter has to judge
 (and the pack gives no test for applying it)
 Every other cell in the delta table is a fact: a cap, a label, a route, a term of years.
-Rule 43(1) makes the two-part form conditional, the README repeats the condition in both its table and its per-jurisdiction notes, and neither says which independent patent claims meet it.
+Rule 43(1) makes the two-part form conditional.
+> ✎ Rule 43(1) makes the two-part form ~conditional, the~ *conditional. The* README repeats the condition in ~both~ its table and *in* its per-jurisdiction notes, and neither says which independent patent claims meet it. · CC · 260802 1542
+The README repeats the condition in its table and in its per-jurisdiction notes, and neither says which independent patent claims meet it.
 The taste.md examiner test does not reach patent claim form at all, so the one judgment call in the table has no source in the pack that could settle it.
 
 #### 6.2 · Format values
@@ -383,10 +424,17 @@ The taste.md examiner test does not reach patent claim form at all, so the one j
 
 #### 6.3 · The language, in the filings' own words
 (one connector, one condition, and no EPO filing behind either)
-"characterised in that" is the EPO two-part connector, spelled the British way for this office where the CNIPA rendering takes the American spelling, and the difference is the pack's own inconsistency rather than an office rule [README.md delta table, Claim form row; style-profile.md, Per-jurisdiction language notes].
-"wherever appropriate" is quoted from Rule 43(1) and is the pack's only conditional phrasing, which is why §6.1 records it as the one cell with no test behind it.
+"characterised in that" is the EPO two-part connector, spelled the British way here while the CNIPA rendering takes the American spelling.
+> ✎ "characterised in that" is the EPO two-part connector, spelled the British way ~for this office where~ *here while* the CNIPA rendering takes the American ~spelling, and the~ *spelling. The* difference is the pack's own ~inconsistency rather than~ *inconsistency, not* an office rule [README.md delta table, Claim form row; style-profile.md, Per-jurisdiction language notes]. · CC · 260802 1542
+The difference is the pack's own inconsistency, not an office rule [README.md delta table, Claim form row; style-profile.md, Per-jurisdiction language notes].
+"wherever appropriate" is quoted from Rule 43(1), and it is the pack's only conditional phrasing.
+> ✎ "wherever appropriate" is quoted from Rule ~43(1)~ *43(1),* and *it* is the pack's only conditional ~phrasing, which is why~ *phrasing.* §6.1 records it as the one cell *in the table* with no test behind it. · CC · 260802 1542
+§6.1 records it as the one cell in the table with no test behind it.
 The abstract rule is stated as a ban and not as a phrasing, so the pack offers no EPO abstract sentence to imitate, only the merits it must not state.
-Beyond those two phrases the pack holds nothing: no EPO Reference Signs List is stored, so the part this jurisdiction is defined by has no example of its own line format anywhere, and the README's Write / Edit map, which it calls "the main purpose", points at an examples/ folder that was never built.
+Beyond those two phrases the pack holds nothing.
+> ✎ Beyond those two phrases the pack holds ~nothing: no~ *nothing. No* EPO Reference Signs List is stored, so the part this jurisdiction is defined by has no example of its own line format ~anywhere, and the~ *anywhere. The* README's Write / Edit map, ~which~ *the one* it calls "the main purpose", points at an examples/ folder that was never built. · CC · 260802 1542
+No EPO Reference Signs List is stored, so the part this jurisdiction is defined by has no example of its own line format anywhere.
+The README's Write / Edit map, the one it calls "the main purpose", points at an examples/ folder that was never built.
 
 ### 7 · The drafting process, which is a Round and not a submission
 
@@ -424,7 +472,9 @@ Beyond those two phrases the pack holds nothing: no EPO Reference Signs List is 
 (which makes QB10 the only page in this repo that already describes what prosecution does)
 QB10 defines a Round as one externally triggered batch of review, rebuttal, revision, and resubmission, held as one dated S-Round page per batch.
 An office action is externally triggered, answered by a written response, applied as a patent claim amendment, and refiled, so each one is a batch on exactly that definition.
-QB10's gate, that a human verifies every response is applied or explicitly declined and that the resubmission matches the round record, is the same verification a response to an office action needs.
+QB10's gate asks a human to verify two things: that every response is applied or explicitly declined, and that the resubmission matches the round record.
+> ✎ QB10's ~gate, that~ *gate asks* a human ~verifies~ *to verify two things: that* every response is applied or explicitly ~declined~ *declined,* and that the resubmission matches the round ~record, is the same verification a~ *record. A* response to an office action ~needs.~ *needs the same verification.* · CC · 260802 1542
+A response to an office action needs the same verification.
 The gap QB10 records as still open, that Round is not yet resolvable as a first-class family in the board tooling, is therefore open for filings too.
 
 #### 7.2 · A submission is the wrong analogue, and step 6 says why
@@ -435,7 +485,9 @@ Nothing in the pack says whether the offices share one round record or keep one 
 
 #### 7.3 · Steps 1, 2 and 5 have no owner in the paper lifecycle
 (so the process is documented and unroutable at the same time)
-Prior-art search, patentability analysis, and examiner-style review are not writing, and the README carries all three under `-> Write / Edit` because that is where the drafting-process subsection sits.
+Prior-art search, patentability analysis, and examiner-style review are not writing.
+> ✎ Prior-art search, patentability analysis, and examiner-style review are not ~writing, and the~ *writing. The* README carries all three under `-> Write / ~Edit`~ *Edit`,* because that is where the drafting-process subsection sits. · CC · 260802 1542
+The README carries all three under `-> Write / Edit`, because that is where the drafting-process subsection sits.
 The pack's other three maps each name a lifecycle folder; the drafting process names none.
 A reader following the maps reaches steps 3, 4 and 6, and never reaches the three that decide whether a filing is worth drafting at all.
 
@@ -465,23 +517,30 @@ A reader following the maps reaches steps 3, 4 and 6, and never reaches the thre
      and named office-action bait by taste.md
 ```
 
-🧳 Establishes that a filing has no optional part, which is why the appendix question resolves into three named homes rather than one.
+🧳 Establishes that a filing has no optional part, so the appendix question resolves into three named homes rather than one.
+> ✎ 🧳 Establishes that a filing has no optional part, ~which is why~ *so* the appendix question resolves into three named homes rather than one. · CC · 260802 1542
 
 #### 8.1 · By shape the nearest thing is the EPO Reference Signs List
 (the only part of a filing that is a separate, list-shaped document)
 An appendix is separate matter appended after the main text, and the EPO order is the only one that ends on a separate part rather than on prose.
-CNIPA folds the same content into the Brief Description of Drawings and USPTO puts it inline, so at those two offices the shape does not exist at all.
+CNIPA puts the same content inside the Brief Description of Drawings, and USPTO puts it inline.
+> ✎ CNIPA ~folds~ *puts* the same content ~into~ *inside* the Brief Description of ~Drawings~ *Drawings,* and USPTO puts it ~inline, so at~ *inline. At* those two offices the *separate-list* shape does not exist at all. · CC · 260802 1542
+At those two offices the separate-list shape does not exist at all.
 The closest structural analogue is therefore jurisdiction-specific, which no journal outlet's appendix answer is.
 
 #### 8.2 · By function the nearest thing is not optional
 (so calling it an appendix would license exactly the wrong edit)
 The Detailed Description's alternatives are what a paper would push into an appendix: extra cases, kept out of the main argument.
-In a filing they are what supports the breadth of the patent claim, and taste.md names a broad patent claim resting on a single narrow embodiment as a defect the examiner acts on.
+In a filing they are what supports the breadth of the patent claim.
+> ✎ In a filing they are what supports the breadth of the patent ~claim, and~ *claim.* taste.md names a broad patent claim resting on a single narrow embodiment as a defect the examiner acts on. · CC · 260802 1542
+taste.md names a broad patent claim resting on a single narrow embodiment as a defect the examiner acts on.
 Cutting them shortens the specification and narrows the granted right, which is the same asymmetry division 2 records for softening a patent claim.
 
 #### 8.3 · The drawings are the one part a display stage already produces
 (and the pack refuses most of what that stage makes)
-The `-> Display` map says drawings show what is claimed, not how well it performs, and rules out experimental plots and result charts.
+The `-> Display` map says a drawing shows what a patent claim covers, not how well the invention performs.
+> ✎ The `-> Display` map says ~drawings show~ *a drawing shows* what ~is claimed,~ *a patent claim covers,* not how well ~it performs, and~ *the invention performs. It* rules out experimental plots and result charts. · CC · 260802 1542
+It rules out experimental plots and result charts.
 A paper's display set is largely those plots, so converting a paper into a filing discards most of the display layer rather than relocating it.
 What survives is the block diagram and the flowchart, each element carrying a reference numeral consistent across every figure and every mention in the specification.
 
@@ -495,7 +554,7 @@ What survives is the block diagram and the flowchart, each element carrying a re
 - A2.1 · The vocabulary rule is written where either stage reads, not only on this page.
   **Done when:** no skill can act on the word claim in a patent context without meeting the disambiguation.
 - A2.2 · A revise pass cannot silently soften a patent claim.
-  **Done when:** the humanizer and content workers are barred from a filing's claim set, or the bar is written and checkable.
+  **Done when:** the humanizer and content workers are barred from a filing's patent claim set, or the bar is written and checkable.
 
 ### A3 · ⚠️ Three jurisdictions, no exemplars
 - A3.1 · At least one granted filing per jurisdiction this repo actually targets lands in the pack.
@@ -594,8 +653,8 @@ Filed at FAMILY level under `../../paper/venue/playbook-patent/examples/`, not u
 
 ## Law
 
-In a filing the patent claim is the deliverable and the specification supports it, which inverts the role of every artifact the paper lifecycle produces.
-A patent claim and a lifecycle claim are different objects that share a word: softening one improves a paper and narrows a granted right, so no revision pass may treat them alike.
+- In a filing the patent claim is the deliverable and the specification supports it, which inverts the role of every artifact the paper lifecycle produces.
+  A patent claim and a lifecycle claim are different objects that share a word: softening one improves a paper and narrows a granted right, so no revision pass may treat them alike.
 
 ## Glossary
 
@@ -605,8 +664,35 @@ A patent claim and a lifecycle claim are different objects that share a word: so
 
 ## Log
 
-260802 · The USPTO abstract cap is corrected in the body, not only in the Authority block. `2500 characters` appears in no USPTO instrument and is dropped from the Diagram, from 5, 5.1 and 5.2. What replaces it is 15 lines from MPEP 608.01(b), and both that and the 150 words are stated as preferences. Verified independently at source: 37 CFR 1.72(b) reads "preferably not exceeding 150 words in length" and carries no character count.
-260802 · Authority block added at the end of Files, from the three offices' own rules rather than the pack, and it corrects this page's EPO headline. The EPO prescribes no Reference Signs List: Rule 42(1) EPC gives six description contents and stops, and Guidelines F-II, 4.8 asks only for consistency and for every sign to be explained, so the separate list is a drafting convention and "recommended by the EPO Guidelines, strongly expected for grant" is unsupported, which reaches 6, 6.2, 8.1 and A6.1. The USPTO 2500-character abstract figure has no source in MPEP Chapter 600 or 37 CFR 1.72 and is dropped; the real companion to the 150 words is a 15-line ceiling the pack never recorded, and both are "preferably" rather than hard. Confirmed at source: the CNIPA 300-character cap, though it now lives in the Guidelines and not in the 2023 Implementing Regulations; the CNIPA specification order and two-part patent claim form at Articles 20 and 24; the EPO abstract's soft 150 words under Rule 47(3) beside an absolute merits ban under Rule 47(2); Rule 43(1)'s two-part form for independent patent claims only, with no test for "wherever appropriate" at the office either, which leaves A6.2 open on both sides; and the USPTO 500-character title. One addition: 37 CFR 1.77(b) puts the patent claims at (11) before the abstract at (12), so the pack's USPTO order drops them the same way 4.1 records for CNIPA.
-260802 · Added a Format values block and a language subsubsection to each jurisdiction division: 4.3 and 4.4 for CNIPA, 5.2 and 5.3 for USPTO, 6.2 and 6.3 for EPO. Of the four format metrics only WORDS and DISPLAYS are recorded by `playbook-patent`, and both differ per office; CITATION DENSITY is absent because a filing cites prior art rather than literature and the pack records no count of either, and VALUE DENSITY is absent by construction, since the pack has no `style.md` and none of the venue tree's 95 `style.md` files records the metric anywhere. No granted filing is stored at any office, so the language subsubsections quote `style-profile.md`'s own formulations, with the CNIPA ones rendered into English, and say so.
-260802 · Expanded Content from three divisions to eight: one per jurisdiction (CNIPA, USPTO, EPO) carrying its prescribed specification order, patent claim form, abstract cap, drawing label, reference-sign placement and utility-model availability from the delta table in `playbook-patent/README.md`, plus the six-step drafting process mapped onto `QB10` Round, plus the appendix question answered from the parts a filing actually has. The CNIPA cells are rendered in English because this board is English-only and the pack states them in Chinese.
+260802 · The USPTO abstract cap is corrected in the body, not only in the Authority block.
+  `2500 characters` appears in no USPTO instrument, and is dropped from the Diagram, from 5, 5.1 and 5.2.
+  What replaces it is 15 lines from MPEP 608.01(b).
+  Both that and the 150 words are stated as preferences.
+  Verified independently at source: 37 CFR 1.72(b) reads "preferably not exceeding 150 words in length" and carries no character count.
+260802 · Authority block added at the end of Files, from the three offices' own rules rather than the pack.
+  It corrects this page's EPO headline.
+  The EPO prescribes no Reference Signs List: Rule 42(1) EPC gives six description contents and stops.
+  Guidelines F-II, 4.8 asks only for consistency and for every sign to be explained.
+  So the separate list is a drafting convention, and "recommended by the EPO Guidelines, strongly expected for grant" is unsupported.
+  That reaches 6, 6.2, 8.1 and A6.1.
+  The USPTO 2500-character abstract figure has no source in MPEP Chapter 600 or 37 CFR 1.72, and is dropped.
+  The real companion to the 150 words is a 15-line ceiling the pack never recorded, and both are "preferably" rather than hard.
+  Confirmed at source:
+  the CNIPA 300-character cap, though it now lives in the Guidelines and not in the 2023 Implementing Regulations;
+  the CNIPA specification order and two-part patent claim form at Articles 20 and 24;
+  the EPO abstract's soft 150 words under Rule 47(3) beside an absolute merits ban under Rule 47(2);
+  Rule 43(1)'s two-part form for independent patent claims only, with no test for "wherever appropriate" at the office either, which leaves A6.2 open on both sides;
+  and the USPTO 500-character title.
+  One addition: 37 CFR 1.77(b) puts the patent claims at (11) before the abstract at (12), so the pack's USPTO order drops them the same way 4.1 records for CNIPA.
+260802 · Added a Format values block and a language subsubsection to each jurisdiction division: 4.3 and 4.4 for CNIPA, 5.2 and 5.3 for USPTO, 6.2 and 6.3 for EPO.
+  Of the four format metrics only WORDS and DISPLAYS are recorded by `playbook-patent`, and both differ per office.
+  CITATION DENSITY is absent because a filing cites prior art rather than literature, and the pack records no count of either.
+  VALUE DENSITY is absent by construction: the pack has no `style.md`, and none of the venue tree's 95 `style.md` files records the metric anywhere.
+  No granted filing is stored at any office, so the language subsubsections quote `style-profile.md`'s own formulations, with the CNIPA ones rendered into English, and say so.
+260802 · Expanded Content from three divisions to eight.
+  One division per jurisdiction: CNIPA, USPTO, EPO.
+  Each division carries that office's prescribed specification order, patent claim form, abstract cap, drawing label, reference-sign placement and utility-model availability, all from the delta table in `playbook-patent/README.md`.
+  Plus the six-step drafting process mapped onto `QB10` Round.
+  Plus the appendix question, answered from the parts a filing actually has.
+  The CNIPA cells are rendered in English because this board is English-only and the pack states them in Chinese.
 260802 · Opened with the QBv group, from `playbook-patent` at `Venue-Paper@fe25a88`.

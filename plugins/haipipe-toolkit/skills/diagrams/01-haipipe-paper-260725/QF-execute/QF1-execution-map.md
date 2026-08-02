@@ -189,8 +189,8 @@ Naming the reopen path in the record is what sends the repair to the owning disp
 
 ## Law
 
-An execution must name its Delivery target, Engine route, fixture, observable evidence, non-write boundary, and failure-to-reopen path.
-Passing an execution permits only its declared next handoff; it never implies promotion.
+- An execution must name its Delivery target, Engine route, fixture, observable evidence, non-write boundary, and failure-to-reopen path.
+  Passing an execution permits only its declared next handoff; it never implies promotion.
 
 ## Glossary
 

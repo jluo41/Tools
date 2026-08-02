@@ -32,11 +32,10 @@ The model succeeds when a reader can place any new rule, page, or artifact witho
        │     ref/              board-form.md · page-template.md
        │     build.py check.py serve.py watch.py
        │     xcal.py regroup.py skillpage.py stage.py status.py
-       ├── haipipe-board-index/               board + group altitude
-       │     SKILL.md · src/lanes.py
        ├── haipipe-board-page/                SPEC · what a page is
        ├── haipipe-board-sentence/            SPEC · the atomic unit
-       ├── haipipe-board-routing/             VERB · anchored write-back
+       ├── haipipe-board-routing/             VERB · BOTH altitudes
+       │     SKILL.md · src/lanes.py          structure + anchored write-back
        ├── agents/                            the reviewer
        │     haipipe-board-reviewer-agent.md
        ├── DESIGN.md  README.md  CHANGELOG.md
@@ -87,7 +86,7 @@ The model succeeds when a reader can place any new rule, page, or artifact witho
         A comment, an item, an archive move: always the .md, never the .html.
 
    ⒟  inside ①, the units stay separable
-        haipipe-board-index reads board.md and each page's `# ` line and
+        haipipe-board-routing reads board.md and each page's `# ` line and
         never imports haipipe-board/src/, so the two ship on their own
         clocks. That is what makes them subskills and not one skill.
 
@@ -117,10 +116,11 @@ kind          lifetime                    breaks how
 ### A subskill is a unit inside ①, never a folder beside it
 `skills/board/` is one folder on disk and one family in the roster, so it is one number.
 Inside it, a unit earns its own directory when it has its own trigger, its own contract, and its own version, which is exactly the test that admitted `haipipe-board-index` on 260730 and still refuses `haipipe-skill`.
+That admission was reversed on 260802: JL merged the index into `haipipe-board-routing`, because three of its five verbs turned out to be other units' work written a second time, which the trigger-contract-version test does not detect.
 Numbering a subskill beside `②` would claim it is a peer of the board folder, when it is a peer of the engine.
 
 The separability rule is what keeps this honest.
-`haipipe-board-index` never imports `haipipe-board/src/`; it reads `board.md` and each page's `# ` line, which is a surface both units can hold still.
+`haipipe-board-routing` never imports `haipipe-board/src/`; it reads `board.md` and each page's `# ` line, which is a surface both units can hold still.
 If that import ever appears, the two are one skill wearing two folders.
 
 ### One folder per group, inside the board folder
@@ -209,8 +209,9 @@ These are the calls only JL can make; CC ticks nothing here.
   Its shape section states the folder layout this face argues.
 - `../../board/haipipe-board/ref/board-form.md`
   §1 owns the folder rules in full, including the one-folder-per-group ruling and the `cli/regroup.py` migration.
-- `../../board/haipipe-board-index/SKILL.md`
-  The first subskill, and the statement that it never imports the engine's `src/`.
+- `../../board/haipipe-board-routing/SKILL.md`
+  The write verb, and the statement that it never imports the engine's `src/`.
+  It absorbed the first subskill, `haipipe-board-index`, on 260802.
 - `../../board/agents/haipipe-board-reviewer-agent.md`
   The second subskill, an agent rather than a skill.
 

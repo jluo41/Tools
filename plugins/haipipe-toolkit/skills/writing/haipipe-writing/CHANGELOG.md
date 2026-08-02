@@ -1,4 +1,27 @@
 # haipipe-writing
+## 0.6.1 — 2026-08-02
+
+**A split rewrite anchored its record on the LAST new line, not the first.**
+
+`ref/change-record.md` §3 states both halves of the rule: the diff covers the
+whole rewritten run, and the record sits under the FIRST of the new lines.
+`apply` wrote `[first] + tail + kept + [rec]`, which puts it under the last. So a
+40-word sentence broken into three short ones carried its record on sentence
+three, describing words that had moved up to sentence one. That is the exact
+mis-anchoring this tool exists to prevent, in the tool.
+
+It survived four releases because every rewrite it had been handed was
+single-line, where `tail` is empty and the two orders produce the same string.
+Found on `QBv1-misq.md` (260802), on the first rewrite that split one source line
+into three.
+
+- `cli/wdiff.py` — `[first] + kept + [rec] + tail`. The existing lane run still
+  travels with the sentence it belonged to, and the new record still joins the
+  END of that run; only the rest of the split now follows it.
+- `tests/test_roundtrip.py` — a split case, asserting the record sits under line
+  one after its existing `> Citation:` lane, that line two follows it, and that
+  the diff still covers the whole run.
+
 ## 0.6.0 — 2026-08-02
 
 **`cli/agree.py`: two statements of one fact, compared** (JL 260802, from `QA10`

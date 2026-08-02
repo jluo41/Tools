@@ -2,6 +2,18 @@ board agents: Changelog
 ========================
 
 Agent-scoped history. Versions match the agent frontmatter.
+## 0.5.0 / 0.4.0 - 2026-08-02
+
+**Both agents now load `haipipe-board-page-for-skill` for a roster page.**
+
+That variant shipped earlier the same day and neither consumer was told about it. Six writers used it only because the dispatching session named it by hand in every packet, so the next dispatch without that sentence would have judged and written `Skill-<n>` and `Agent-<n>` pages against the base contract that explicitly does not fit them.
+
+The two Opening rules are OPPOSITE, which is why silence here is not a small gap: the base ends its Opening on what the page decides, and a roster page decides nothing, so applying the base marks correct roster prose as wrong and passes the form letter the variant exists to catch.
+
+- `haipipe-board-reviewer-agent` 0.4.0 -> 0.5.0: source 3, loaded WHENEVER a page under review is a roster page. The list renumbers to five.
+- `haipipe-board-creator-agent` 0.3.0 -> 0.4.0: source 2, with an instruction to CHECK THE FILENAME before writing a word. The list renumbers to five.
+
+The general lesson, which cost nothing here only because a person asked: shipping a variant is not done when the variant exists. It is done when every agent that loads the base knows when to reach past it.
 
 ## [0.4.0] · 2026-08-01 · haipipe-board-reviewer-agent
 

@@ -1,42 +1,95 @@
-# haipipe-board-sentence · v0.1.2
-state: 🔴 OPEN
+# haipipe-board-sentence · v0.3.0
+state: 🟡 in flux · became a door 260802; three releases that day, all now in the changelog
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-Does `haipipe-board-sentence` define one stable unit for text, comments, evidence, edits, and focused chat?
+What does an agent need to know to write ONE line that reads like the board?
+It needs the board's smallest addressable thing: one source line, which renders as one row a reader can click.
+It needs the two ways something attaches to that line, because they are not the same: a card takes a few marked WORDS and renders inside the sentence, and a `>` lane takes the whole line and renders under it.
+This unit is that contract, and since 260802 it is also the door that runs it.
 
-A source line becomes both a readable sentence and the anchor for every record attached to it.
-The hard part is preserving that identity while the page is rendered, edited, discussed, and eventually archived.
-Routing and the live drawer depend on the same grammar so their writes land and read consistently.
-It is healthy when every consumer uses one address and lifecycle without silently deleting or inventing records.
+**Since when it is a door**: say `comment on "<the sentence>"`, `edit "<the sentence>"` or `card on "<the words>"` and this skill runs that verb.
+`haipipe-board-page` is what you reach for when the question is which SECTION a write belongs in rather than which line.
+
+**What the words mean**: an address like `QB5.C1.P1.S1` points at one sentence, reading page `QB5`, Content division 1, paragraph 1, sentence 1.
+A lane is a signed `>` line written beneath that sentence, such as `> Comment JL …` for a person's remark or `> ✎ the sentence with ~removed~ *added* words · CC · 260802 1720` for a change record.
+A card is different: `> Card the words: what to show` quotes a span from the line above, and the reader sees those very words carry a panel, keeping the prose's own font, colour and weight.
+
+**What changed on 260802**: `QB5` closed with all 16 of its Aims met and JL moved the line on what this unit is.
+It stopped being only a thing an agent LOADS and became a thing a person RUNS, with three verbs that write to one line: comment, edit, card.
+The rules the verbs share are the interesting part, because each is a scar: the anchor is an exact match on the source line and a miss fails visibly, a form must close before it asks for the repaint so a rebuild cannot eat a half-written comment, and a duplicate sentence is REFUSED rather than guessed at.
+
+**Covered elsewhere**: which section a write lands in, and what a whole page owes its reader, belong to `haipipe-board-page`.
+Rendering the line (`src/body.py`), the write path (`live/write.py`) and the popover a card opens in are `haipipe-board`'s, and locks and concurrent writers are `QE4`'s.
+The grammar's authority is `haipipe-board/ref/board-form.md` §5, which this spec cites and is forbidden to fork.
+
+**Where it stands**: 0.1.0 to 0.3.0 in two days, and the door half is one day old with nothing measured against it.
+Its three named consumers are still only named: `live/chat.py`, whose duplicated lane rules justified cutting this spec out in the first place, still teaches the grammar from its own Python prose.
+And `cli/agree.py` reports the plainest kind of drift on it right now, a `SKILL.md` declaring 0.3.0 against a changelog whose newest entry is 0.2.0, so the release that made it a door was never written down.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 2de6b0217a674318 board/haipipe-board-sentence -->
+<!-- haipipe:skill:tree:start da4abcb009149bd0 board/haipipe-board-sentence -->
+
+**What `haipipe-board-sentence` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-board-sentence/
-  CHANGELOG.md          39 ln  haipipe-board-sentence · Changelog
-  SKILL.md              94 ln  /haipipe-board-sentence · the sentence, as a contract you can load
+  CHANGELOG.md          61 ln  haipipe-board-sentence · Changelog
+  SKILL.md             191 ln  /haipipe-board-sentence · the sentence, as a contract you can load
 ```
 
 <!-- haipipe:skill:tree:end -->
 
-```
-WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
-Draw how this skill is actually used: the entry point, what it reads,
-what it writes, and where it hands off. Delete this fence if the tree
-above is the whole story.
+**Two anchors, three verbs**: what attaches to a few WORDS renders inside the line; what attaches to the LINE renders under it.
+
+```text
+WORKFLOW  one line, two anchors, and the three verbs that write to it
+
+  ONE source line  =  ONE row on the page  =  ONE anchor
+  prose is one sentence per line; check.py warns on a hard wrap,
+  because a wrapped sentence renders as a broken row
+        │
+        ▼
+  QB5.C1.P1.S1     page · Content division · paragraph · sentence
+                   UPPERCASE and digit tokens only, so a section
+                   slug can never collide with a coordinate
+        │
+   ┌────┴─────────────────────────┐
+   ▼                              ▼
+ 🪪 ON THE WORDS                 📎 ON THE LINE
+   > Card the words: …             > Comment WHO …      a person's remark
+   quotes a span above             > ✎ ~old~ *new* …    the change record
+   renders INSIDE the             > Citation: · Value:  the typed lanes
+   sentence, keeping the           renders UNDER the line
+   prose's own font and            badge says which kind is below:
+   colour                          💬 waiting ▸ ✎ change ▸ ⚑ lane
+
+  ── the three verbs it now RUNS (0.3.0, JL moved the line 260802) ──
+  💬 comment on "<the sentence>"   ✎ edit "<the sentence>"
+  🪪 card on "<the words>"
+     · the anchor is an EXACT match; a miss FAILS VISIBLY
+     · a form CLOSES before the repaint, or the swap refuses it, so a
+       rebuild cannot eat a half-written comment
+     · a duplicate sentence is REFUSED, never guessed at
+     · a write needs serve.py; with it down the page keeps a pending
+       line and never grows a comment area at its foot
+
+  ── the boundary ──────────────────────────────────────────────────
+  this says what a sentence IS and runs the three verbs on one.
+  haipipe-board RENDERS it (src/body.py), WRITES it (live/write.py)
+  and serves the popover. haipipe-board-page owns which SECTION.
+  QE4 owns locks. board-form.md §5 is the authority this must not fork.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 2de6b0217a674318 board/haipipe-board-sentence -->
+<!-- haipipe:skill:body:start da4abcb009149bd0 board/haipipe-board-sentence -->
 
-**haipipe-board-sentence** · `0.1.2` · last shipped 2026-08-02
+**haipipe-board-sentence** · `0.3.0` · last shipped 2026-08-02
 
 - folder   `board/haipipe-board-sentence/`
 - tools    not declared
-- summary  The lane figure and the lane rules teach `> Comment WHO`, the only comment form to write since 260802, and mark ## Discussion's thread grammar as unaffected.
+- summary  Became the DOOR for one sentence, not only its spec: comment, edit and card are its three verbs, migrated out of haipipe-board's SKILL.md on the haipipe-board-page precedent.
 
 ### SKILL.md
 
@@ -70,13 +123,69 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
                           never collide with a coordinate
       ```
       The address is how chat focuses one location, how a comment pins, and how an edit names what it replaces.
+      **The boundary, and it is the same hard one `haipipe-board-page` keeps:**
+      **Who owns what**: this skill holds the contract, `haipipe-board` holds the machinery.
+      ```
+      haipipe-board-sentence           haipipe-board
+      ─────────────────────            ──────────────────────────────
+      what a sentence IS               rendering it (src/body.py)
+      what may attach, and how         the write routes (live/write.py, serve.py)
+      which gesture reaches which      the controls (assets/js/40-sentence/)
+      where a write may land           the checker (cli/check.py)
+      the two anchors                  the recorded drive (tests/drive_sentence.py)
+      ```
+      This skill never CONTAINS the renderer, the server or the controls. It CALLS them, because someone asking to comment on one line should not have to know which file does what.
 
-- 2 · 💬 The lanes
+- 2 · 🚪 Three verbs, and this skill is the door for all of them
+      Say any of these and this skill runs it. You never call the engine yourself.
+      ```
+      💬 COMMENT    /haipipe-board-sentence comment on "<the sentence>"
+      ✎ EDIT       /haipipe-board-sentence edit "<the sentence>"
+      🪪 CARD       /haipipe-board-sentence card on "<the words>"
+      ```
+
+- 2.1 · 💬 comment · a person's remark under one line
+      Hover the sentence and click the `＋` in its rail, or select text inside it and click 💬 Comment, then Save. The live layer writes `> Comment WHO … · YYMMDD HHMM` directly beneath that sentence and rebuilds.
+      There is no comment box at the bottom of the page and never will be: a queue down there makes the reader rebuild the context the writer already had. `## Discussion` is a different grammar and holds only discussion pinned to no sentence.
+
+- 2.2 · ✎ edit · replace one line, leave one record
+      Double-click the sentence, change the words, Save. The source line is replaced and one word-level record is written beside it:
+      ```
+      The coefficient is 0.42 in the clustered pooled model.
+      > ✎ The coefficient is 0.42 in the *clustered* pooled model. · JL · 260729 1502
+      ```
+      The old wording is never stored a second time and no History section is built. A duplicate sentence and a sentence carrying markdown decoration are both REFUSED rather than guessed at. Locks and concurrent writers are not this skill's: they belong to the board's `QE4`.
+
+- 2.3 · 🪪 card · attach a panel to a few words
+      Select the words and click 🪪 Card, or type the line yourself. See `## 🃏 The evidence card` below for both sources and what the render refuses.
+
+- 2.4 · What every verb must hold
+      ```
+      · the anchor is an EXACT match on the source line; a miss FAILS VISIBLY
+      · a form CLOSES before it asks for the repaint, or the swap refuses it:
+        the swap will not run while a textarea inside div.wrap holds text, which
+        is the rule that stops a rebuild from eating a half-written comment
+      · a write needs serve.py; with it down the page keeps a pending line or a
+        copyable patch and never grows a comment area at the foot of the page
+      · the badge names WHICH KIND is underneath: 💬 waiting ▸ ✎ change ▸ ⚑ lane
+      ```
+
+- 3 · 🏷 The reader's controls
+      ```
+      🖱 hover      the address, ＋ Comment, 💬 Chat fade in on the right
+      🖱 dblclick   edit this sentence
+      📱 touch      one quiet ⋯ expands to the address plus Comment · Chat · Edit
+      🔒 default    every attached record starts SHUT; one click opens
+      ```
+      A single click on the body is unclaimed on purpose, so selecting and copying still work normally.
+
+- 4 · 💬 The lanes
       A `>` line under a sentence is a LANE: a signed, dated remark that belongs to the sentence above it.
       ```
       > Comment JL …   the human's lane · decisions and corrections live here
       > ✎ ~old~ *new* · WHO · YYMMDD HHMM   the change record
       > Citation: · > Value: · > Display: …  the typed lanes, named by what they attach
+      > Card the words: what to show   the ONE lane that renders INSIDE the sentence
       >> CC{MMDD}: the worker's dated reply lane, nested under what it answers
       ```
       Lane rules a machine must hold:
@@ -90,12 +199,32 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
       · a lane without a signature is not a lane, it is unclaimed prose
       ```
 
-- 3 · 🃏 The evidence card
+- 5 · 🃏 The evidence card
+      TWO SURFACES, TWO ANCHORS (JL 260802). A LANE anchors to the whole line and opens in a drawer beneath it. A CARD anchors to a few WORDS inside the line and opens over the prose when those words are clicked. A machine writing one must know which it is producing.
+      ```
+      anchor       ① the marked words          ② the whole sentence
+      opens        over the prose              a drawer below it
+      holds        one thing                   any number, any kind
+      answers      "what is this?"             "what do we know about this line?"
+      ```
+      A card has two sources and the same render:
+      ```
+      ✍️ a record       > Card the words: what to show
+         the span is QUOTED in the record, so the prose gains no marker and no id;
+         the renderer finds those words in the sentence above by exact text, the
+         same match `serve.py` uses one level up to find a sentence.
+         Words it cannot find render as a LOUD row in the drawer, never as silence.
+
+      📐 a paper marker  \citep{} · {VAL:? …} · [Q-X-n] · displayNN · \ref{}
+         the marker names itself, and the build resolves it against .bib,
+         1-probes/ and displays/. The paper dialect stays deletable.
+      ```
+      The words KEEP THE PROSE'S OWN FONT, COLOUR AND WEIGHT and take one dotted underline. A box around them turns a paragraph into a row of buttons, which costs more attention than the card is worth.
       A marker in a sentence (a citation, a value, a display unit) renders as a chip whose card shows the THING, not a description of it: the reference as the paper's own .bst prints it, the figure itself, the rows themselves.
       The card is a strict superset of a bare link, which is why a display unit's name in prose ALWAYS renders as the card (JL 260727).
       This contract owns what a card must show; the paper dialect that resolves markers stays deletable (`haipipe-board/src/dialect_paper.py`).
 
-- 4 · ♻️ The record lifecycle
+- 6 · ♻️ The record lifecycle
       The canonical sentence normally REMAINS; what ages is what attaches to it.
       ```
       comment lanes · evidence · edit records     archive on resolution, restorable
@@ -104,7 +233,7 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
       ```
       Resolved threads leave the stage for the archive the same way a retired page leaves for `_archive/`: recoverable, out of the read.
 
-- 5 · 📂 Files
+- 7 · 📂 Files
       ```
       haipipe-board-sentence/
       ├── SKILL.md            this contract
@@ -115,19 +244,55 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
 <!-- haipipe:skill:body:end -->
 
 ## Aims
-- [ ] 🧠 Rule this skill's health
-      `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
+- [ ] 📓 The release that made it a door is written down
+      `cli/agree.py` reports `SKILL.md says 0.3.0 · CHANGELOG.md shipped 0.2.0`, so the three verbs shipped with no changelog entry.
+      The entry belongs to whoever shipped 0.3.0, not to this page; this row is the report, and the finding came from `Skill-7`'s own tool pointed at the family.
+- [ ] 🧪 Something is measured against the door half
+      It gained three verbs on 260802 and nothing has exercised them from this contract: no run, no fresh agent choosing this door, no check that the exact-match anchor fails visibly the way the page says it does.
+      Its two shared rules read as scars from real incidents, which is a good sign about their origin and no evidence at all about their current state.
+- [ ] 🧹 `live/chat.py` loads this spec instead of restating it
+      Two of its four rule strings teach the lane grammar in Python prose, and `QB5d` caught one describing a page shape that no longer existed.
+      This is `A6.1` on `QC1b`, it is the consumer whose duplication justified cutting this spec out, and it still has not become a consumer.
+- [ ] 🔗 The no-fork promise is checked, not just written
+      This contract cites `haipipe-board/ref/board-form.md` §5 as the authority and promises never to fork it, and it doubled in size to 191 lines while nothing verified that promise.
+      A spec that quietly restates its authority is the exact failure it was cut out to prevent.
 
 ## States
-Page generated 260731 1116. Nothing ruled yet.
+The ground moved under this page on 260802: `QB5` closed with all 16 Aims met, and this unit went from a 94-line contract an agent loads to a 191-line door a person runs, across three releases in two days.
+Its health is `🟡 in flux` for two separate reasons now, one good and one not: the door half is a day old and untested, and the release that introduced it was never written into the changelog.
+
+- 260802 JL · 🚪 It stopped being only a SPEC
+  `QB5` settled the sentence as the board's atomic unit and handed each attachment its own page, and the skill followed by taking three verbs: comment, edit, card.
+  The roster on `QC1b` had it filed as a pure SPEC beside `haipipe-board-page`, which is now half true, and the same misfiling is what hid `haipipe-board-index`'s duplication for two days.
+- 260802 CC · 📓 A tool built one page over found the drift on this one
+  `Skill-7`'s `cli/agree.py` compares two statements of one fact and reported this unit's `SKILL.md` at 0.3.0 against a changelog shipping 0.2.0.
+  That is the first time a roster row was checked by another roster row's engine rather than by a person reading it, which is worth more than the defect it found.
+- 260802 CC · ⚠️ This page contradicted itself for several hours
+  The derived Content span carried `Three verbs, and this skill is the door for all of them` while the authored fence directly above it still read `loaded, never run`.
+  A sync updates the derived half and cannot touch the authored one, so a page can be green on `skillpage.py check` and self-contradictory on screen, which is the sharpest example yet of why that check covers frontmatter only.
 
 ## Log
+260802 2030 · Rewritten after `QB5` closed and this unit reached 0.3.0: the Opening and the `WORKFLOW` fence had said `loaded, never run` while the page's own derived Content announced three verbs. Four Aims replace the earlier set, including the missing 0.3.0 changelog entry that `agree.py` found, and `state:` now names the two live problems rather than the one it had
+260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the address, the three consumers and the boundary, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. Recorded plainly that this unit's consumers are declared rather than measured, and that `live/chat.py`, the consumer that justified cutting it out, still carries its own copy
 260731 1116 · page generated from `board/haipipe-board-sentence/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 2de6b0217a674318 board/haipipe-board-sentence -->
+<!-- haipipe:skill:log:start da4abcb009149bd0 board/haipipe-board-sentence -->
 
-Converted from the skill's own `CHANGELOG.md`: 3 releases.
+Converted from the skill's own `CHANGELOG.md`: 5 releases.
 
+260802 · `0.3.0`
+      **🚪 Became the DOOR for one sentence, not only its spec** (JL 260802: "if we want to put sentence things, we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?").
+      The `haipipe-board-page` precedent is precise about what migrates: that skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. This unit had it the other way round, with the operating detail living in `haipipe-board`'s SKILL.md while this file was 94 lines of spec carrying no verbs at all.
+      - **Three verbs**, migrated out of `haipipe-board` 0.111.0: `comment` (a person's remark under one line), `edit` (one line replaced, one word-level record), `card` (a panel on a few words inside the line).
+      - **The boundary block**, mirroring the page skill's: this holds what a sentence IS, what may attach, which gesture reaches which, and the two anchors. `haipipe-board` keeps the renderer, the write routes, the controls, the checker and the recorded drive.
+      - **The reader's controls**: hover rail, double-click to edit, one `⋯` on touch, every record shut by default.
+      - **What every verb must hold**: the anchor is an exact match and a miss fails visibly; a form CLOSES before it asks for the repaint, because the live swap will not run while a textarea inside `div.wrap` holds text.
+      192 lines, against the page skill's 299.
+260802 · `0.2.0`
+      **Two surfaces, two anchors.** The spec knew about lanes under the line and about markers, but not that a card can be attached to a few WORDS by a record that quotes them. An agent loading this to write one line could not have produced `> Card the words: what to show`, and would not have known that a card and a lane anchor differently.
+      - `## 💬 The lanes` — `> Card the words: what to show` joins the lane figure, marked as the one lane that renders INSIDE the sentence rather than under it.
+      - `## 🃏 The evidence card` — opens with the two-anchor table, then the card's two sources: a record that quotes its span, and a paper marker that names itself. Adds the rule that the words keep the prose's own font, colour and weight.
+      Engine and board-page work shipped in `haipipe-board` 0.108.0-0.110.0; this is the loadable contract catching up.
 260802 · `0.1.2`
       - Repointed the door test from `QC6 §7` to `QC1b §1` after that page's 260802 Content rebuild,
         and corrected the named next step: the drawer's lane instructions live in `live/chat.py`, not

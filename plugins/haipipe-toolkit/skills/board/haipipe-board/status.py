@@ -278,11 +278,18 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
     # with the URL never drawn. A chat reply renders markdown, where `[a](b)`
     # does the same job. The wrong one on either surface shows the raw address,
     # which is the thing being removed, so pick by whether stdout is a TTY.
+    # JL 260802 ruled the chat form: the address is SHOWN, in parentheses, not
+    # hidden behind a label. A markdown link is only clickable where markdown
+    # renders, and the strip is read in places that do not render it (a paste,
+    # a log, a phone), where `[a](b)` is noise around an address you then cannot
+    # copy. The short `/b/<board>/<page>` route is what makes showing it
+    # bearable: it is one line, it is typeable, and it redirects to the long
+    # path. The terminal keeps OSC 8, because there the label IS clickable.
     if url:
         if sys.stdout.isatty():
             where = f"🧭 \033]8;;{url}\033\\{attachment}\033]8;;\033\\"
         else:
-            where = f"🧭 [{attachment}]({url})"
+            where = f"🧭 {attachment} ({url})"
     else:
         where = f"🧭 {attachment}"
     return "\n".join([

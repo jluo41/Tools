@@ -198,9 +198,9 @@ The four page ids stayed, because a stable id that no longer matches its group i
 
 ## Law
 
-Build includes diffusion/distribution.
-Generation and promotion are separate commands.
-Only an explicit human `PROMOTE` decision may replace declared submission targets, and a failed G0–G4 gate refuses G5.
+- Build includes diffusion/distribution.
+  Generation and promotion are separate commands.
+  Only an explicit human `PROMOTE` decision may replace declared submission targets, and a failed G0–G4 gate refuses G5.
 
 ## Glossary
 

@@ -2,6 +2,7 @@
 state: 🟡 PARTIAL · the page list and the per-page section outline ship; the outline's reach forks await JL
 owner: JL
 method: render the page list from the same listing as the index and the same Structure rows as the Opening drawer, so the page list can never disagree with the page
+session: 552d0d85-7735-417b-b3a7-50bbc8f67677
 
 ## Opening
 How can one left page list take a reader to any page, and to any section inside it, without ever drifting from what the page holds?

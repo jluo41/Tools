@@ -258,13 +258,11 @@ Addressing is where this page reopened. `QA6`'s one-family-one-folder ruling lan
   Line 2 already names the S-face target the contract does not.
 
 ## Law
-A Paper stage declares the stable identity, `board_family` + `board_unit` + `board_slug`. Board tooling owns the literal `S-<Family>-<unit>-<slug>.md` filename and resolves or creates it from that identity. No stage contract stores a filename, and no layer repeats the pattern; anything that needs a name calls `stage.py`.
 
-A declared path that cannot be resolved carries `blocked_on: <Q page>` with the reason. A dangling path with no `blocked_on` is a defect, and nothing may report it as green.
-
-The unit follows the human gate, not the folder called a stage. A stage is `per-unit` exactly when one unit can be approved while another is rejected. By this rule Display and Section Edit are per-unit; Seed, Resource, Claims, Venue, Pitch and Narrative are single-output.
-
-A stage repointed onto a new layout declares `artifact_fallback:` for as long as any live paper predates that layout, and a run says which of the two it used.
+- A Paper stage declares the stable identity, `board_family` + `board_unit` + `board_slug`. Board tooling owns the literal `S-<Family>-<unit>-<slug>.md` filename and resolves or creates it from that identity. No stage contract stores a filename, and no layer repeats the pattern; anything that needs a name calls `stage.py`.
+- A declared path that cannot be resolved carries `blocked_on: <Q page>` with the reason. A dangling path with no `blocked_on` is a defect, and nothing may report it as green.
+- The unit follows the human gate, not the folder called a stage. A stage is `per-unit` exactly when one unit can be approved while another is rejected. By this rule Display and Section Edit are per-unit; Seed, Resource, Claims, Venue, Pitch and Narrative are single-output.
+- A stage repointed onto a new layout declares `artifact_fallback:` for as long as any live paper predates that layout, and a run says which of the two it used.
 
 ## Discussion
 > CC 260727: the two family items are one judgment with two faces, and it is JL's. `FAMILIES` is a closed tuple of seven in two programs; a family is therefore whatever those tuples say, and everything else on the board is a folder. Under that reading Submission is a family with no stage, which is legal and means the lifecycle is not the only writer to the board, and Round is simply not a family, so `7-round/` is a folder holding an archive and `QA6:192` is the thing that is wrong.

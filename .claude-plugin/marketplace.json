@@ -1,6 +1,6 @@
 {
   "name": "jluo41-tools",
-  "description": "Personal Claude Code skill plugins for chronicle workflows, HAI-Pipe research, visual artifacts, and subjective labeling",
+  "description": "Personal Claude Code skill plugins for chronicle workflows, HAI-Pipe research, in-lab endpoint evaluation, JHU research-IT help, and subjective labeling",
   "owner": {
     "name": "Junjie Luo",
     "url": "https://github.com/jluo41"
@@ -21,10 +21,17 @@
       "category": "research"
     },
     {
-      "name": "diagram-skill",
-      "description": "Claude Skills for visual artifacts and reports - ASCII diagrams, draw.io, Excalidraw, and image-heavy Markdown progress logs",
-      "version": "1.0.0",
-      "source": "./plugins/diagram-skill",
+      "name": "inlab-human",
+      "description": "In-lab human interaction with deployed prediction endpoints — the Claude Code chat is the UI. CONSOLE mode (default): patient-first on-demand inference — list patients, view the full chart, list available models (Endpoint_Set packages + live status), and run 'this model on this patient': the endpoint-predict MCP tool prepares the payload (required tables + trigger record), POSTs to the endpoint, and returns the score verbatim with a data-gaps report. STUDY mode: formal reader protocol (frozen review_bundle.json, blind→assisted session, decision-influence metrics vs gold). Endpoint-agnostic: local Flask, Databricks, SageMaker — same wire contract.",
+      "version": "0.2.1",
+      "source": "./plugins/inlab-human",
+      "category": "research"
+    },
+    {
+      "name": "jhu-research-it",
+      "description": "JHU Research-IT helpdesk chatbot. Answers how-to questions about Johns Hopkins research IT infrastructure (PMAP, SAFE, SAFER, Discovery, Databricks, Crunchr, Epic Cosmos, REACH) by reading a local WIKI/ knowledge base. Invoke as /jhu-research-it.",
+      "version": "0.1.0",
+      "source": "./plugins/jhu-research-it",
       "category": "productivity"
     },
     {
@@ -33,13 +40,6 @@
       "version": "0.3.0",
       "source": "./plugins/subjective-label",
       "category": "research"
-    },
-    {
-      "name": "figure-to-svg",
-      "description": "Replicate raster figures and icons as clean, editable, hand-authored SVGs for papers and slides: figure-to-svg (whole infographic via regenerate/vectorize/compose + fresh-eyes review, plus lesson/feedback/digest knowledge verbs) and icon-to-svg (one icon)",
-      "version": "2.0.0",
-      "source": "./plugins/figure-to-svg",
-      "category": "productivity"
     }
   ]
 }

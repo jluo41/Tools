@@ -408,15 +408,24 @@ def check_opening(text, name, rep):
         return
     # strip_fences yields (lineno, line): a figure may legitimately be long
     raw = [ln.rstrip() for _, ln in strip_fences(body, prose_only=True)]
-    # everything above the FIRST BLANK LINE is what the reader sees on stage
+    # everything above the FIRST BLANK LINE is what the reader sees on stage,
+    # MINUS the sentence apparatus. `page_question.py` composes the lead as
+    # `" ".join(x for x in lead_lines if not x.startswith(">"))` and hands every
+    # `>` line to `render_apparatus`, so a `> Citation:` or a `> ✎` record under
+    # the lead is a lane the reader opens, never a clause in the paragraph.
+    # Counting it as prose made the checker and the renderer disagree about the
+    # same fact: one ✎ record on a 340-char lead reported it as 841 chars and
+    # flagged the record's own diff as a stuffed sentence (found on QBv1, 260802).
     onstage = []
     for ln in raw:
         if not ln.strip():
             if onstage:
                 break
             continue
+        if ln.lstrip().startswith(">"):
+            continue
         onstage.append(ln)
-    prose = [ln for ln in raw if ln.strip()]
+    prose = [ln for ln in raw if ln.strip() and not ln.lstrip().startswith(">")]
     if not prose:
         rep.add(WARN, "opening-empty", name, "Opening has a heading and no prose")
         return
@@ -635,8 +644,11 @@ def check_comment_form(text, name, rep):
         if fence:
             continue
         m = re.match(r"^>\s*([A-Z]{1,4}\d{0,4})\s*[「\"]?.*?[:：]", ln)
+        # `Card` joins the named lanes (JL 260802). Without it, `> Card SPAN
+        # of words: …` matched the bare-initials shape as author "C", so every
+        # span card on the board reported itself as a legacy comment.
         if m and not re.match(r"^>\s*(Citation|Value|Display|Check|Q-consumer|"
-                              r"Link|Source|Note|Comment)\b", ln, re.I):
+                              r"Link|Source|Note|Comment|Card)\b", ln, re.I):
             rep.add(WARN, "old-comment-form", f"{name} · Content",
                     f"`> {m.group(1)}:` is the legacy sentence-comment form; "
                     f"write `> Comment {m.group(1)} …` (QB4 §3.3.3)")

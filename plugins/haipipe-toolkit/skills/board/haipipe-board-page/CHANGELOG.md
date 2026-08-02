@@ -7,6 +7,19 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.11.0 - 2026-08-02
+
+- Names `haipipe-board-page-for-skill` as the variant for the Skill and Agent mirror
+  kinds, and says to load it before writing or fixing any `Skill-<n>` or `Agent-<n>`
+  page. It is the one variant that ships BESIDE this skill rather than under a
+  consumer family, because for those two kinds the consumer IS the board family.
+- Records why that variant had to exist rather than a tighter rule here. This skill
+  already carries the noun-substitution test, so the rule was on the books when five
+  roster pages came out of one template on 260802. The cause is upstream of the test:
+  this skill's Opening shape ends in `what this page decides`, and a mirror page
+  decides nothing, so a writer obliged to ask a question can only manufacture a
+  rhetorical one. The empty slot was the defect, not the writers.
+
 ## 0.10.0 - 2026-08-02
 
 - `working on an existing page` gains steps 7 and 8: ONE page is the deliverable,

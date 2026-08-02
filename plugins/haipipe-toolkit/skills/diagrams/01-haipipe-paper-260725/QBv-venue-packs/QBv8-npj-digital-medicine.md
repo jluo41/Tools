@@ -6,7 +6,8 @@ method: state what npj Digital Medicine requires of a digital tool, and record t
 
 ## Opening
 
-This desk is where a digital-health paper is supposed to land, and it is also where such a paper is most often rejected for the reason it thought was its strength. What separates a tool this desk wants from a benchmark it refuses?
+npj Digital Medicine is the obvious home for a digital-health paper. It is also where such a paper is most often rejected, and it is rejected for the part its authors were proudest of. A better score on a benchmark is usually that part. So what separates a tool this desk wants from a benchmark it refuses?
+> ✎ ~This desk~ *npj Digital Medicine* is ~where~ *the obvious home for* a digital-health ~paper is supposed to land, and it~ *paper. It* is also where such a paper is most often *rejected, and it is* rejected for the ~reason it thought was~ *part* its ~strength. What~ *authors were proudest of. A better score on a benchmark is usually that part. So what* separates a tool this desk wants from a benchmark it refuses? · CC · 260802 1540
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-nature-portfolio/npj-digital-medicine/`.
@@ -145,8 +146,12 @@ The same work reported as classifier accuracy is one of its three rejections, on
 
 #### 3.1 · The quantitative layer rests on nine papers, and the measured rows on two
 (so a number on this page is only as strong as the sample its own style.md names)
-Six of the seven `npjdm-<kind>/style.md` guides open on "Extracted from 9 npj Digital Medicine exemplar papers", against 20 exemplar PDFs on disk, and `npjdm-appendix/style.md` names only `zhuang-2026` and `lai-2026`.
-Every "Micro-norms (measured 2026-07-08)" table in this outlet was read from exactly two papers, `momenzadeh-2026` for the full article and `wang-2026` for the brief communication, so the measured layer is a two-point spread rather than a distribution.
+Six of the seven `npjdm-<kind>/style.md` guides open on "Extracted from 9 npj Digital Medicine exemplar papers", against 20 exemplar PDFs on disk.
+> ✎ Six of the seven `npjdm-<kind>/style.md` guides open on "Extracted from 9 npj Digital Medicine exemplar papers", against 20 exemplar PDFs on ~disk, and~ *disk.* `npjdm-appendix/style.md` names only `zhuang-2026` and `lai-2026`. · CC · 260802 1540
+`npjdm-appendix/style.md` names only `zhuang-2026` and `lai-2026`.
+Every "Micro-norms (measured 2026-07-08)" table in this outlet was read from exactly two papers: `momenzadeh-2026` for the full article and `wang-2026` for the brief communication.
+> ✎ Every "Micro-norms (measured 2026-07-08)" table in this outlet was read from exactly two ~papers,~ *papers:* `momenzadeh-2026` for the full article and `wang-2026` for the brief ~communication, so~ *communication. So* the measured layer is a two-point spread rather than a distribution. · CC · 260802 1540
+So the measured layer is a two-point spread rather than a distribution.
 
 ### 4 · The abstract is one paragraph that opens on a patient
 
@@ -274,12 +279,15 @@ The clinical-utility close, slot M4, which is the sentence the anti-pattern "clo
      ending without the headline finding
 ```
 
-🔻 Establishes the introduction as this outlet's first prior-work home, which is why no related-work section will ever appear beside it.
+🔻 Establishes the introduction as this outlet's first prior-work home, so no related-work section will ever appear beside it.
+> ✎ 🔻 Establishes the introduction as this outlet's first prior-work home, ~which is why~ *so* no related-work section will ever appear beside it. · CC · 260802 1540
 
 #### 5.1 · The reference band is a portfolio target, not an npjDM count
 (so a paper reaching 15 references here has met a borrowed number)
 `npjdm-introduction/style.md` line 50 sets ~15-40 superscript references by importing the NMI, Nature Medicine and Nature Communications bands, then notes that a 2026-07-08 pass read ~12 for the brief communication and ~42 for the full article by taking the highest superscript reached.
-Line 105 says the count is approximate because superscripts fuse to the preceding word and blur with content numbers, so the band is a target to write toward rather than a figure to audit against.
+Line 105 says the count is approximate because superscripts fuse to the preceding word and blur with content numbers.
+> ✎ Line 105 says the count is approximate because superscripts fuse to the preceding word and blur with content ~numbers, so~ *numbers. So* the band is a target to write toward rather than a figure to audit against. · CC · 260802 1540
+So the band is a target to write toward rather than a figure to audit against.
 
 #### 5.2 · Format values
 (word and citation figures measured at this outlet, against a reference band imported from three sibling outlets)
@@ -315,7 +323,8 @@ The clinical-prevalence opening, slot M1 in this division's figure, and the sent
 The gap sentence at arc position P4, stated as a mismatch between what was studied and who is in the bed.
 
 "The recent emergence of large language models (LLMs) suggests that risk stratification and diagnosis of ACS may be performed directly from patients' narrative information..." [wang-2026]
-The stepping-stone move at P2-P3, which is the same positioning content division 6 sends here from the related-work unit.
+The stepping-stone move at P2-P3. Division 6 sends this same positioning content here from the related-work unit.
+> ✎ The stepping-stone move at ~P2-P3, which is the~ *P2-P3. Division 6 sends this* same positioning content ~division 6 sends~ here from the related-work unit. · CC · 260802 1540
 
 "Here, we created a knowledge-graph-driven embedding store named ClinVec..." [johnson-2026]
 The contribution pivot, slot M5, and the point where the citation density in the row above drops to about zero.
@@ -380,18 +389,32 @@ The enumerated-contribution close, slot M4, which is the optional P6 of the arc 
      npj DM      400-800w across two homes  · 5-15 papers
 ```
 
-📚 Establishes this kind as a placement instruction rather than a section, which is why its lifecycle page is the one page in the set that answers to three headings and owns none.
+📚 Establishes this kind as a placement instruction rather than a section, so its lifecycle page is the one page in the set that answers to three headings and owns none.
+> ✎ 📚 Establishes this kind as a placement instruction rather than a section, ~which is why~ *so* its lifecycle page is the one page in the set that answers to three headings and owns none. · CC · 260802 1540
 
 #### 6.1 · A declared kind and a manuscript heading are not the same object
 (so reading the folder as a section is the mistake this outlet invites)
-`stages/section-kinds.yml` line 54 puts `related-work` in the closed set of kinds and lines 74 to 78 declare it for all five Nature outlets, so `section-edit` resolves a real pack path, runs the unit, and writes an `S-Main-<n>` page for it.
-What that page produces is prose for other sections: `npjdm-related-work/template.md` line 2 calls it a positioning workbench, tells the drafting agent that the Introduction-side blocks go to the introduction unit and the Discussion-side blocks go to the discussion unit, and rules that a standalone section should be raised to the user before it is drafted at all.
-The archived `QBv3-nature-portfolio.md` glossary made exactly that error, defining this as "a standalone manuscript section between Introduction and Methods", which reads the presence of a folder as the presence of a heading.
+`stages/section-kinds.yml` line 54 puts `related-work` in the closed set of kinds, and lines 74 to 78 declare it for all five Nature outlets.
+> ✎ `stages/section-kinds.yml` line 54 puts `related-work` in the closed set of ~kinds~ *kinds,* and lines 74 to 78 declare it for all five Nature ~outlets, so~ *outlets. So* `section-edit` resolves a real pack path, runs the unit, and writes an `S-Main-<n>` page for it. · CC · 260802 1540
+So `section-edit` resolves a real pack path, runs the unit, and writes an `S-Main-<n>` page for it.
+What that page produces is prose for other sections.
+> ✎ What that page produces is prose for other ~sections:~ *sections.* `npjdm-related-work/template.md` line 2 calls it a positioning workbench, *and* tells the drafting agent ~that~ *to send* the Introduction-side blocks ~go~ to the introduction unit and the Discussion-side blocks ~go~ to the discussion ~unit, and~ *unit. It also* rules that a standalone section should be raised to the user before it is drafted at all. · CC · 260802 1540
+`npjdm-related-work/template.md` line 2 calls it a positioning workbench.
+> ✎ `npjdm-related-work/template.md` line 2 calls it a positioning ~workbench, and~ *workbench. It* tells the drafting agent to send the Introduction-side blocks to the introduction ~unit~ *unit,* and the Discussion-side blocks to the discussion unit. · CC · 260802 1540
+It tells the drafting agent to send the Introduction-side blocks to the introduction unit, and the Discussion-side blocks to the discussion unit.
+It also rules that a standalone section should be raised to the user before it is drafted at all.
+The archived `QBv3-nature-portfolio.md` glossary made exactly that error.
+> ✎ The archived `QBv3-nature-portfolio.md` glossary made exactly that ~error, defining~ *error. It defined* this as "a standalone manuscript section between Introduction and Methods", which reads the presence of a folder as the presence of a heading. · CC · 260802 1540
+It defined this as "a standalone manuscript section between Introduction and Methods", which reads the presence of a folder as the presence of a heading.
 
 #### 6.2 · The family and the outlet disagree on how many homes there are
 (so a drafter following README alone would write a third block with nowhere to put it)
-`playbook-nature-portfolio/README.md` line 127 states "No standalone Related Work section" as a convention shared by all five outlets, and line 128 distributes the positioning across Introduction for the gap, Results for the head-to-head, and Discussion for the comparison.
-`npjdm-related-work/style.md` lines 9 to 10 names only two homes, Introduction and Discussion, and its own budget, paragraph and reference counts are all split across those two, so the Results home has no measured allocation behind it at this outlet.
+`playbook-nature-portfolio/README.md` line 127 states "No standalone Related Work section" as a convention shared by all five outlets.
+> ✎ `playbook-nature-portfolio/README.md` line 127 states "No standalone Related Work section" as a convention shared by all five ~outlets, and line~ *outlets. Line* 128 distributes the positioning across Introduction for the gap, Results for the head-to-head, and Discussion for the comparison. · CC · 260802 1540
+Line 128 distributes the positioning across Introduction for the gap, Results for the head-to-head, and Discussion for the comparison.
+`npjdm-related-work/style.md` lines 9 to 10 name only two homes, Introduction and Discussion, and its own budget, paragraph and reference counts are all split across those two.
+> ✎ `npjdm-related-work/style.md` lines 9 to 10 ~names~ *name* only two homes, Introduction and Discussion, and its own budget, paragraph and reference counts are all split across those ~two, so~ *two. So* the Results home has no measured allocation behind it at this outlet. · CC · 260802 1540
+So the Results home has no measured allocation behind it at this outlet.
 
 #### 6.3 · Format values
 (a unit with no section of its own, so every row states what it costs the sections that host it)
@@ -433,13 +456,15 @@ The stepping-stone opening in the Introduction home, matching the pattern this d
 The describe-a-prior-system half of the cite-and-differentiate move, still in the Introduction home and still constructive.
 
 "The low precision (~0.1) in both studies indicates high number of false alerts, contributing to alert fatigue." [momenzadeh-2026]
-The differentiate half of the same move, naming a clinical consequence rather than attacking the paper, which is the anti-pattern this division lists last.
+The differentiate half of the same move. It names a clinical consequence instead of attacking the paper, and attacking prior work is the anti-pattern this division lists last.
+> ✎ The differentiate half of the same ~move, naming~ *move. It names* a clinical consequence ~rather than~ *instead of* attacking the paper, ~which~ *and attacking prior work* is the anti-pattern this division lists last. · CC · 260802 1540
 
 "In contrast, the LSTM in this study achieved precision 0.23 and recall 0.44 (F1 = 0.30), more than doubling precision..." [momenzadeh-2026]
 The Discussion-home benchmark move, and the slot this division's figure already carries as prior work as BENCHMARKS.
 
 "As recently argued in Nature Medicine, claims of clinical value for medical AI must be supported by proportionate evidence..." [he-2026]
-The clinical-utility standard invoked as a benchmark, which is how a review paper occupies the Discussion home when it has no model to compare.
+The clinical-utility standard invoked as a benchmark. That is how a review paper occupies the Discussion home when it has no model to compare.
+> ✎ The clinical-utility standard invoked as a ~benchmark, which~ *benchmark. That* is how a review paper occupies the Discussion home when it has no model to compare. · CC · 260802 1540
 
 ### 7 · Methods is a reproducibility funnel placed after the Discussion
 
@@ -498,7 +523,9 @@ The clinical-utility standard invoked as a benchmark, which is how a review pape
 #### 7.1 · Placing Methods last is what keeps result numbers out of it
 (so the order is a content rule and not only a layout rule)
 `npjdm-methods/style.md` line 127 states that because Methods sits after the Discussion it carries no result numbers beyond hyperparameter settings.
-That same placement is what lets Results open on a cohort overview without repeating anything, which `npjdm-results/style.md` then makes mandatory at its anti-pattern line 72.
+That same placement is what lets Results open on a cohort overview without repeating anything.
+> ✎ That same placement is what lets Results open on a cohort overview without repeating ~anything, which~ *anything.* `npjdm-results/style.md` then makes *that opening* mandatory at its anti-pattern line 72. · CC · 260802 1540
+`npjdm-results/style.md` then makes that opening mandatory at its anti-pattern line 72.
 
 #### 7.2 · Format values
 (the reproducibility section's measured spread, and the value load the pack names but never counts)
@@ -535,13 +562,15 @@ That same placement is what lets Results open on a cohort overview without repea
 The ethics lead at arc position §.1, already carried as a slot in this division's figure, and the one subsection whose absence is an anti-pattern on its own.
 
 "Eligible admissions met the following inclusion criteria: (i) age >=18 years, (ii) length of stay >=24 hours..." [momenzadeh-2026]
-The cohort-definition move at §.2, enumerated rather than prose, which is why the exclusion rate becomes a traceable number instead of a claim.
+The cohort-definition move at §.2, enumerated rather than prose. That is what makes the exclusion rate a traceable number instead of a claim.
+> ✎ The cohort-definition move at §.2, enumerated rather than ~prose, which~ *prose. That* is ~why~ *what makes* the exclusion rate ~becomes~ a traceable number instead of a claim. · CC · 260802 1540
 
 "We used DeLong's test for pairwise AUC comparisons on correlated receiver operating characteristic curves..." [wang-2026]
 The statistical-protocol move at §.6, naming the test per comparison, which is the shape the figure records for [wang-2026].
 
 "The review was conducted and reported in accordance with the Preferred Reporting Items for Systematic Reviews and Meta-Analyses (PRISMA) guidelines." [he-2026]
-The reporting-guideline declaration, and the review-or-map branch of the two subsection patterns this division names, where TRIPOD+AI is the model-paper branch.
+The reporting-guideline declaration. It takes the review-or-map branch of the two subsection patterns this division names, and TRIPOD+AI is the model-paper branch.
+> ✎ The reporting-guideline ~declaration, and~ *declaration. It takes* the review-or-map branch of the two subsection patterns this division names, ~where~ *and* TRIPOD+AI is the model-paper branch. · CC · 260802 1540
 
 "Model training consumed approximately 18,000 GPU hours on a 64xNVIDIA H100 cluster..." [wang-2026]
 The training-detail move at §.5, where the main text keeps the hardware and the key hyperparameters that the DISPLAYS row above refuses to send downstairs.
@@ -594,7 +623,9 @@ The training-detail move at §.5, where the main text keeps the hardware and the
 #### 8.1 · A brief communication may have no Results heading at all
 (so this section kind can exist with nothing on the page carrying its name)
 `npjdm-results/style.md` line 119 records that `wang-2026` runs its findings continuously in the body between the introduction and the Discussion, under no Results header.
-`npjdm-results/template.md` line 36 turns that into a drafting instruction: fold the subsections into the body, drop the headers, and log the deviation rather than inventing a heading the article type does not use.
+`npjdm-results/template.md` line 36 turns that into a drafting instruction.
+> ✎ `npjdm-results/template.md` line 36 turns that into a drafting ~instruction: fold~ *instruction. Fold* the subsections into the body, drop the headers, and log the deviation rather than inventing a heading the article type does not use. · CC · 260802 1540
+Fold the subsections into the body, drop the headers, and log the deviation rather than inventing a heading the article type does not use.
 
 #### 8.2 · Format values
 (the section that leans hardest on displays, and the pack counts none of them in the main text)
@@ -695,7 +726,10 @@ The clinical vignette, whose absence in a decision-support paper is an anti-patt
 #### 9.1 · The limitations budget was corrected downward by measurement
 (so a single enumerated paragraph is the measured norm and not a shortfall)
 `npjdm-discussion/style.md` line 107 records that the guide's stated 1-3 paragraph limitations expectation was restated as "1 (measured) to 3" because both exemplars pack limitations into one First-to-Fifth block.
-Line 92 keeps the contrast with NMI intact: NMI limitations are typically one paragraph, and npjDM limitations are more clinically specific about health-system generalizability, demographic subgroups and deployment constraints, whether or not they run longer.
+Line 92 keeps the contrast with NMI intact.
+> ✎ Line 92 keeps the contrast with NMI ~intact:~ *intact.* NMI limitations are typically one ~paragraph, and~ *paragraph.* npjDM limitations are more clinically specific about health-system generalizability, demographic subgroups and deployment constraints, whether or not they run longer. · CC · 260802 1540
+NMI limitations are typically one paragraph.
+npjDM limitations are more clinically specific about health-system generalizability, demographic subgroups and deployment constraints, whether or not they run longer.
 
 #### 9.2 · Format values
 (a stated paragraph range the measurement pinned to one number, and a limitations budget corrected downward)
@@ -729,7 +763,8 @@ The clinical restatement at P1, the slot this division's figure already carries,
 The workflow-integration move at P3, which is where this desk's clinical-utility test is actually answered rather than asserted.
 
 "Compared with the graph-free LLM baselines, GPT and DeepSeek yielded substantially lower accuracy and F1-scores..." [lai-2026]
-The head-to-head comparison at P4, the same content the related-work unit drafts into this section, which is why division 6 calls the Discussion its second home.
+The head-to-head comparison at P4, and the same content the related-work unit drafts into this section.
+> ✎ The head-to-head comparison at P4, *and* the same content the related-work unit drafts into this ~section, which is why division 6 calls the Discussion its second home.~ *section.* · CC · 260802 1540
 
 "Second, development and prospective evaluation cohorts were drawn from a single health system in Los Angeles..." [momenzadeh-2026]
 One item inside the single enumerated limitations paragraph, the First-to-Fifth block that the measurement in 9.1 corrected the budget down to.
@@ -784,8 +819,13 @@ The translational close at P8, and the sentence that satisfies the anti-pattern 
 
 #### 10.1 · This guide's own two exemplars are not the two it measured
 (so its numbering advice and its item counts rest on different papers)
-`npjdm-appendix/style.md` lines 3 to 6 name `zhuang-2026` and `lai-2026` as the guide's provenance, while its "Micro-norms" table at line 125 was measured from `momenzadeh-2026` and `wang-2026`, and line 134 says so in the open.
-That table then writes "SFig. 1-5" and "STable 1-8" in the shorthand the guide's own line 69 forbids, so an author copying the micro-norm row breaks the referencing rule two screens above it.
+`npjdm-appendix/style.md` lines 3 to 6 name `zhuang-2026` and `lai-2026` as the guide's provenance.
+> ✎ `npjdm-appendix/style.md` lines 3 to 6 name `zhuang-2026` and `lai-2026` as the guide's ~provenance, while its~ *provenance. Its* "Micro-norms" table at line 125 was measured from `momenzadeh-2026` and ~`wang-2026`, and line~ *`wang-2026` instead, the outlet's usual two papers that division 3.1 records. Line* 134 says so in the open. · CC · 260802 1540
+Its "Micro-norms" table at line 125 was measured from `momenzadeh-2026` and `wang-2026` instead, the outlet's usual two papers that division 3.1 records.
+Line 134 says so in the open.
+That table then writes "SFig. 1-5" and "STable 1-8" in the shorthand the guide's own line 69 forbids.
+> ✎ That table then writes "SFig. 1-5" and "STable 1-8" in the shorthand the guide's own line 69 ~forbids, so~ *forbids. So* an author copying the micro-norm row breaks the referencing rule two screens above it. · CC · 260802 1540
+So an author copying the micro-norm row breaks the referencing rule two screens above it.
 
 #### 10.2 · Format values
 (the only division where the pack counts displays, and it counts them in the Supplementary tier)
@@ -814,7 +854,9 @@ That table then writes "SFig. 1-5" and "STable 1-8" in the shorthand the guide's
 #### 10.3 · The language, in the papers' own words
 (what this guide attributes, which is four referencing fragments and no exemplar sentence at all)
 
-This is the one section kind here whose `style.md` carries no "Signature moves" and no "Exemplar sentences" block, so nothing in it is a sentence a paper wrote about its own science.
+This is the one section kind here whose `style.md` carries no "Signature moves" and no "Exemplar sentences" block.
+> ✎ This is the one section kind here whose `style.md` carries no "Signature moves" and no "Exemplar sentences" ~block, so~ *block. So* nothing in it is a sentence a paper wrote about its own science. · CC · 260802 1540
+So nothing in it is a sentence a paper wrote about its own science.
 Its four attributed strings are all in-text referencing forms, quoted at `npjdm-appendix/style.md` lines 63 to 66, and they are reproduced here unchanged.
 
 "...detailed in the Supplementary Materials" [zhuang-2026]
@@ -827,7 +869,8 @@ The lettered-block reference, accepted by the guide but marked less conventional
 The range reference to a run of tables, the form that makes lai-2026's 56 tables citable from the main text without a page number.
 
 "Supplementary Table S24-S34 for 7-day and Table S35-S45 for 30-day" [lai-2026]
-Two ranges tied to two horizons in one clause, which is what the TRIAGE rows above mean by verifying a number without following the argument.
+Two ranges tied to two horizons in one clause. That is what the TRIAGE rows above mean by verifying a number without following the argument.
+> ✎ Two ranges tied to two horizons in one ~clause, which~ *clause. That* is what the TRIAGE rows above mean by verifying a number without following the argument. · CC · 260802 1540
 
 ### 11 · tech-check gates format, and no skill opens it
 
@@ -1022,7 +1065,7 @@ Its structure block at line 12 caps the abstract at 200 words, while `npjdm-abst
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -1032,7 +1075,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -1045,7 +1091,9 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-This desk buys a change in what a clinician can know, measure, or do, so its three desk-rejects are one failure with three faces: an outcome variable about the model rather than the care.
+This desk buys a change in what a clinician can know, measure, or do.
+> ✎ This desk buys a change in what a clinician can know, measure, or ~do, so~ *do. So* its three desk-rejects are one failure with three faces: an outcome variable about the model rather than the care. · CC · 260802 1540
+So its three desk-rejects are one failure with three faces: an outcome variable about the model rather than the care.
 A paper this repo published into an outlet is evidence about that outlet's pack, and leaving it unfiled wastes the only verification the pack can get for free.
 
 ## Glossary
@@ -1055,8 +1103,11 @@ A paper this repo published into an outlet is evidence about that outlet's pack,
 
 ## Log
 
-260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. It settles three things this page could only infer from the pack: LaTeX is accepted at the acceptance stage only and no npj Digital Medicine page publishes a template, so the Springer Nature LaTeX package is the only published one that reaches here; Extended Data appears nowhere in the journal's instructions, which CONFIRMS division 10; and the no-standalone-Related-Work rule is confirmed by an exhaustive Article format table plus a ban on subheadings in both the Introduction and the Discussion. One CORRECTION landed: the journal caps an Article abstract at 150 words, against 100-250 in `npjdm-abstract/style.md` L7-9 and 200 in `tech-check.md` L12, so A11.1's two-way conflict is really three-way.
+260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. It settles three things this page could only infer from the pack. First, LaTeX is accepted at the acceptance stage only, and no npj Digital Medicine page publishes a template, so the Springer Nature LaTeX package is the only published one that reaches here. Second, Extended Data appears nowhere in the journal's instructions, which CONFIRMS division 10. Third, the no-standalone-Related-Work rule is confirmed by an exhaustive Article format table plus a ban on subheadings in both the Introduction and the Discussion. One CORRECTION landed: the journal caps an Article abstract at 150 words, against 100-250 in `npjdm-abstract/style.md` L7-9 and 200 in `tech-check.md` L12, so A11.1's two-way conflict is really three-way.
+> ✎ 260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. It settles three things this page could only infer from the ~pack:~ *pack. First,* LaTeX is accepted at the acceptance stage ~only~ *only,* and no npj Digital Medicine page publishes a template, so the Springer Nature LaTeX package is the only published one that reaches ~here;~ *here. Second,* Extended Data appears nowhere in the journal's instructions, which CONFIRMS division ~10; and~ *10. Third,* the no-standalone-Related-Work rule is confirmed by an exhaustive Article format table plus a ban on subheadings in both the Introduction and the Discussion. One CORRECTION landed: the journal caps an Article abstract at 150 words, against 100-250 in `npjdm-abstract/style.md` L7-9 and 200 in `tech-check.md` L12, so A11.1's two-way conflict is really three-way. · CC · 260802 1540
 260802 · Added a Format values block and a papers'-own-words block to each of the seven section-kind divisions, 4 through 10. Two findings came out of it: no `npjdm-<kind>/style.md` records value density, and only 2 of the venue tree's 95 `style.md` files do, both at JAMA flagship under the name `Estimate density`, and the introduction's ~15-40 reference band at `npjdm-introduction/style.md` line 50 is imported from NMI, Nature Medicine and Nature Communications rather than measured at this outlet. Nothing was measured from an exemplar: `examples/` holds 20 PDFs and `INDEX.md`, with no extracted-text `.md`.
-260802 · Division 6 rewritten against `stages/section-kinds.yml`: `related-work` is a DECLARED kind for all five Nature outlets whose `S-Main-<n>` page projects into other sections instead of becoming a heading. It is not a standalone section between Introduction and Methods, and the archived `QBv3` glossary that said so read a folder as a heading. README line numbers corrected to 127, 128 and 133.
-260802 · Expanded Content from two divisions to eleven: one per section kind, one for the family layer absorbed from the retired `QBv3-nature-portfolio`, and one for `tech-check.md`. Every budget now names its `style.md` line, which relaxed the Writing Style bullet that forbade transcription outright.
+260802 · Division 6 rewritten against `stages/section-kinds.yml`. `related-work` is a DECLARED kind for all five Nature outlets, and its `S-Main-<n>` page projects into other sections instead of becoming a heading. It is not a standalone section between Introduction and Methods, and the archived `QBv3` glossary that said so read a folder as a heading. README line numbers corrected to 127, 128 and 133.
+> ✎ 260802 · Division 6 rewritten against ~`stages/section-kinds.yml`:~ *`stages/section-kinds.yml`.* `related-work` is a DECLARED kind for all five Nature ~outlets whose~ *outlets, and its* `S-Main-<n>` page projects into other sections instead of becoming a heading. It is not a standalone section between Introduction and Methods, and the archived `QBv3` glossary that said so read a folder as a heading. README line numbers corrected to 127, 128 and 133. · CC · 260802 1540
+260802 · Expanded Content from two divisions to eleven: one per section kind, one for the family layer absorbed from the retired `QBv3-nature-portfolio`, and one for `tech-check.md`. Every budget now names its `style.md` line. That relaxed the Writing Style bullet that forbade transcription outright.
+> ✎ 260802 · Expanded Content from two divisions to eleven: one per section kind, one for the family layer absorbed from the retired `QBv3-nature-portfolio`, and one for `tech-check.md`. Every budget now names its `style.md` ~line, which~ *line. That* relaxed the Writing Style bullet that forbade transcription outright. · CC · 260802 1540
 260802 · Opened with the QBv outlet pages, from `playbook-nature-portfolio/npj-digital-medicine` at `Venue-Paper@fe25a88`.

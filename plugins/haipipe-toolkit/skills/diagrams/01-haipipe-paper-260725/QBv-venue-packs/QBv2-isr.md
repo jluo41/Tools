@@ -6,16 +6,21 @@ method: state ISR's own desk signals and one-sentence test, and record the ident
 
 ## Opening
 
-An ISR paper opens declaratively and never with a question: `[Domain] is characterized by [tension] that leads to [consequences]`, cited in the first sentence. By its third paragraph it says "To the best of our knowledge, ours is one of the first" and never "we are the first". Before the theory section starts it has named every data source it will use. What is that shape enforcing?
+An ISR paper opens with a statement, never a question: `[Domain] is characterized by [tension] that leads to [consequences]`, cited in the first sentence. By its third paragraph it says "To the best of our knowledge, ours is one of the first", and never "we are the first". Before the theory section starts, it has already named every data source it will use. What is that shape for?
+> ✎ An ISR paper opens ~declaratively and~ *with a statement,* never ~with~ a question: `[Domain] is characterized by [tension] that leads to [consequences]`, cited in the first sentence. By its third paragraph it says "To the best of our knowledge, ours is one of the ~first"~ *first",* and never "we are the first". Before the theory section ~starts~ *starts,* it has *already* named every data source it will use. What is that shape ~enforcing?~ *for?* · CC · 260802 1430
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-utd-is/ISR/`, and its shape claims are measured from the two exemplars the pack stores.
 
 **What the measured papers actually look like**: Bao 2021 runs about 1,270 introduction words across 10 paragraphs; Zhang 2026 runs about 730 across 4.
-Both hit the same seven beats, so the arc is the invariant and the length is not, which is why the blueprint budget binds and the pack's own range is reference only.
+Both hit the same seven beats, so the arc is the part that stays the same and the length is not.
+> ✎ Both hit the same seven beats, so the arc is the ~invariant~ *part that stays the same* and the length is ~not, which is why the~ *not. The* blueprint budget ~binds~ *is what binds,* and the pack's own range is reference only. · CC · 260802 1430
+The blueprint budget is what binds, and the pack's own range is reference only.
 
 **The one thing the pack says twice**: an ISR introduction must preview the identification strategy AND the data, not just the theory.
-That is the same demand its desk signals make, arriving one section earlier, and it is why this outlet is decided before a paper is written rather than at retarget.
+That is the same demand its desk signals make, arriving one section earlier.
+> ✎ That is the same demand its desk signals make, arriving one section ~earlier, and it is why~ *earlier. So* this outlet is decided before a paper is ~written rather than~ *written, not* at retarget. · CC · 260802 1430
+So this outlet is decided before a paper is written, not at retarget.
 
 ## Writing Style
 
@@ -95,7 +100,8 @@ How this page must be written. Read it before editing, and edit to it.
      ── and the contribution paragraphs cite NOTHING
 ```
 
-📐 Establishes the ISR paper's own measured shape, which is what a writer needs before any comparison to a sibling desk is useful.
+📐 Establishes the ISR paper's own measured shape, which a writer needs before any comparison to a sibling desk is useful.
+> ✎ 📐 Establishes the ISR paper's own measured shape, which ~is what~ a writer needs before any comparison to a sibling desk is useful. · CC · 260802 1430
 
 #### 1.1 · The hedge in the gap sentence is a rule, not a habit
 (so a draft that sharpens it into a stronger claim has made the paper weaker at this desk)
@@ -105,7 +111,8 @@ A revise pass that tightens this into "we are the first" is a desk-reject move d
 #### 1.2 · Naming every data source in the introduction is load-bearing
 (it is how the reader knows the empirical scope before entering the theory)
 Bao names MSSP, the CMS meaningful-use program, and the AHA IT supplement, in the introduction.
-This is the section-level face of the same demand the desk makes: the identification strategy and the data are previewed, not deferred.
+It is the same demand the desk makes, met here in the introduction: the identification strategy and the data are previewed, not deferred.
+> ✎ ~This~ *It* is ~the section-level face of~ the same demand the desk ~makes:~ *makes, met here in the introduction:* the identification strategy and the data are previewed, not deferred. · CC · 260802 1430
 
 #### 1.3 · Format values
 (four metrics, each carrying the file and heading it was taken from, or the words that say the pack never took the measurement)
@@ -158,7 +165,8 @@ The positioning sentence that closes a gap paragraph, listed as a strong move us
      behavioral theory, organizational IS        (also MISQ)
 ```
 
-🎯 Establishes the difference as a wording consequence with a venue cause, which is why it cannot be fixed downstream.
+🎯 Establishes that the difference shows up in the wording but is caused by the venue, so it cannot be fixed downstream.
+> ✎ 🎯 Establishes *that* the difference ~as a~ *shows up in the* wording ~consequence with a venue cause, which~ *but* is ~why~ *caused by the venue, so* it cannot be fixed downstream. · CC · 260802 1430
 
 #### 2.1 · The gap sentence has to be genuinely empty
 (the pack calls out the phrasing, which means the desk has seen it misused)
@@ -167,11 +175,22 @@ An overstated gap sentence is cheap to write and expensive to defend at this des
 
 #### 2.2 · The family delta, and the signals that route here
 (these rows come from `playbook-utd-is/README.md`, whose own page was retired, so the routing lives on this page now)
-The README's outlet table gives ISR a primary claim that is a tight theory to hypotheses to evidence chain, or the first large-scale causal evidence that an IT artifact or policy affects an outcome.
-Its dominant method is quantitative: causal-identification archival work using DiD, IV, RD or matching, plus surveys, experiments and computational work on IS phenomena, with interpretive and design-science papers appearing rarely.
-Its theory bar asks for a named mechanism behind every hypothesis, which is a different demand from MISQ's row, where the bar is the highest theoretical one in the family and one primary theory is used rigorously.
+The README's outlet table gives ISR two shapes of primary claim.
+> ✎ The README's outlet table gives ISR ~a~ *two shapes of* primary ~claim that~ *claim. One* is a tight theory to hypotheses to evidence ~chain, or~ *chain. The other is* the first large-scale causal evidence that an IT artifact or policy affects an outcome. · CC · 260802 1430
+One is a tight theory to hypotheses to evidence chain.
+The other is the first large-scale causal evidence that an IT artifact or policy affects an outcome.
+Its dominant method is quantitative: archival work that identifies a causal effect, using DiD, IV, RD or matching.
+> ✎ Its dominant method is quantitative: ~causal-identification~ archival work *that identifies a causal effect,* using DiD, IV, RD or ~matching, plus surveys,~ *matching. Surveys,* experiments and computational work on IS ~phenomena, with~ *phenomena count too, and* interpretive ~and~ *or* design-science papers ~appearing~ *appear* rarely. · CC · 260802 1430
+Surveys, experiments and computational work on IS phenomena count too, and interpretive or design-science papers appear rarely.
+Its theory bar asks for a named mechanism behind every hypothesis.
+> ✎ Its theory bar asks for a named mechanism behind every ~hypothesis, which is a different demand from~ *hypothesis.* MISQ's ~row, where the bar is~ *row asks for something else:* the highest theoretical ~one~ *bar* in the ~family and~ *family, with* one primary theory ~is~ used rigorously. · CC · 260802 1430
+MISQ's row asks for something else: the highest theoretical bar in the family, with one primary theory used rigorously.
 Its hero display is the research-model figure with directional relationships, plus the identification display carrying any causal claim.
-The README's tie-break, when two outlets are still live, is to let the dominant method and the type of primary claim decide: a formal model or a welfare statement goes to MS-IS, a new construct with a pluralistic method goes to MISQ, and a tight mechanism with clean causal identification comes here.
+When two outlets are still live, the README's tie-break lets the dominant method and the type of primary claim decide.
+> ✎ ~The README's tie-break, when~ *When* two outlets are still live, ~is to let~ *the README's tie-break lets* the dominant method and the type of primary claim ~decide: a~ *decide. A* formal model or a welfare statement goes to ~MS-IS, a~ *MS-IS. A* new construct with a pluralistic method goes to ~MISQ, and a~ *MISQ. A* tight mechanism with clean causal identification comes here. · CC · 260802 1430
+A formal model or a welfare statement goes to MS-IS.
+A new construct with a pluralistic method goes to MISQ.
+A tight mechanism with clean causal identification comes here.
 
 ### 3 · What arriving here costs
 
@@ -236,7 +255,9 @@ A null finding takes the "Contrary to ..." shape rather than "we find no effect"
 
 #### 4.2 · The family README agrees with the pack on this section
 (worth saying, because it is the one place a family-level file and a section-level file can be checked against each other)
-The minimap note in `playbook-utd-is/README.md` gives ISR an unstructured prose abstract of 200-250 words, with the arc IS phenomenon, gap, approach naming data and identification, then theoretical and empirical contribution.
+The minimap note in `playbook-utd-is/README.md` gives ISR an unstructured prose abstract of 200-250 words.
+> ✎ The minimap note in `playbook-utd-is/README.md` gives ISR an unstructured prose abstract of 200-250 ~words, with the~ *words. Its* arc *runs* IS phenomenon, *then* gap, *then the* approach naming data and identification, then *the* theoretical and empirical contribution. · CC · 260802 1430
+Its arc runs IS phenomenon, then gap, then the approach naming data and identification, then the theoretical and empirical contribution.
 That is the same arc ISR-abstract/style.md measures, and the same target its revised word budget states.
 
 #### 4.3 · Format values
@@ -312,7 +333,11 @@ A theory synthesis runs `[Theory A] establishes [the base mechanism]. [Theory B]
 #### 5.2 · The hypothesis count is a range, and zero is inside it
 (ISR-theory/style.md revised its own guidance here, so the older "more than five reads as fishing" line is only half the rule)
 The revised guideline in that file is 2 to 8 hypotheses, with anything above 5 needing a visible organizing structure such as stages, levels, or one distinct mechanism per item.
-It also records three ISR papers carrying zero numbered hypotheses: Saifee 2020 uses research questions because the theory predicts no direction, Wang 2026 lets a coined mechanism carry the predictions, and methodology papers use Assumptions, Theorems, Propositions and Corollaries instead.
+It also records three ISR papers carrying zero numbered hypotheses.
+> ✎ It also records three ISR papers carrying zero numbered ~hypotheses:~ *hypotheses.* Saifee 2020 uses research ~questions~ *questions,* because the theory predicts no ~direction,~ *direction.* Wang 2026 lets a coined mechanism carry the ~predictions, and methodology~ *predictions. Methodology* papers use Assumptions, Theorems, Propositions and Corollaries instead. · CC · 260802 1430
+Saifee 2020 uses research questions, because the theory predicts no direction.
+Wang 2026 lets a coined mechanism carry the predictions.
+Methodology papers use Assumptions, Theorems, Propositions and Corollaries instead.
 Its stated decision rule is formal hypotheses for directional theory, research questions when the direction is genuinely ambiguous, named-mechanism predictions when the paper coins a concept, and theorems for a methodology paper.
 
 #### 5.3 · Format values
@@ -385,13 +410,23 @@ The zero-hypothesis paper 5.2 records, where a coined mechanism carries the pred
 
 #### 6.1 · Two demands ISR-methods/style.md added after its first pass
 (both are cheap to write, and both are named as anti-patterns when missing)
-The first is the estimand: under matching or a quasi-experiment that file requires the paper to say whether the estimate is an ATE, an ATT or a LATE, and it quotes Liu 2025 stating its estimates should be read as local average treatment effects.
-The second is cost: when a method spends API calls, crowdsourcing or compute, it wants the per-unit cost and the total, and it cites Mousavi 2026 setting about $3.35 of model calls against about $300 for human annotation of the same 3,000 items.
+The first is the estimand.
+> ✎ The first is the ~estimand: under~ *estimand. Under* matching or a ~quasi-experiment~ *quasi-experiment,* that file requires the paper to say whether the estimate is an ATE, an ATT or a ~LATE, and it~ *LATE. It* quotes Liu 2025 stating its estimates should be read as local average treatment effects. · CC · 260802 1430
+Under matching or a quasi-experiment, that file requires the paper to say whether the estimate is an ATE, an ATT or a LATE.
+It quotes Liu 2025 stating its estimates should be read as local average treatment effects.
+The second is cost.
+> ✎ The second is ~cost: when~ *cost. When* a method spends API calls, crowdsourcing or compute, ~it~ *that file* wants the per-unit cost and the ~total, and it~ *total. It* cites Mousavi 2026 setting about $3.35 of model calls against about $300 for human annotation of the same 3,000 items. · CC · 260802 1430
+When a method spends API calls, crowdsourcing or compute, that file wants the per-unit cost and the total.
+It cites Mousavi 2026 setting about $3.35 of model calls against about $300 for human annotation of the same 3,000 items.
 
 #### 6.2 · The variable table is a display, not prose
 (the pack records two measured shapes for it, and both are exhibits the display stage owns)
-ISR-methods/style.md records Bao 2021's Table 1 as Variable, Definition, Mean with standard deviation, and Zhang 2026's Table 2 as Variable, Mean, SD, Median, Min, Max, with variables grouped by role.
-The ISR-methods template turns that table into a display request rather than a paragraph, which is the same line the results and appendix templates draw.
+ISR-methods/style.md records Bao 2021's Table 1 as Variable, Definition, Mean with standard deviation.
+> ✎ ISR-methods/style.md records Bao 2021's Table 1 as Variable, Definition, Mean with standard ~deviation, and~ *deviation. It records* Zhang 2026's Table 2 as Variable, Mean, SD, Median, Min, Max, with variables grouped by role. · CC · 260802 1430
+It records Zhang 2026's Table 2 as Variable, Mean, SD, Median, Min, Max, with variables grouped by role.
+The ISR-methods template turns that table into a display request rather than a paragraph.
+> ✎ The ISR-methods template turns that table into a display request rather than a ~paragraph, which is the same line the~ *paragraph. The* results and appendix templates ~draw.~ *draw the same line.* · CC · 260802 1430
+The results and appendix templates draw the same line.
 
 #### 6.3 · Format values
 (the only section division whose displays row rests on a real exhibit count, because the pack had to exclude those exhibits to measure the prose)
@@ -460,15 +495,23 @@ The method-justification slot: prior use, a named domain, and a citation carryin
 
 #### 7.1 · The endogeneity subsection is the pack's named signature move
 (it is written in the reviewer's voice on purpose, and two openings are recorded as standard)
-ISR-results/style.md calls the dedicated endogeneity subsection the ISR signature move, and gives Bao 2021's slot as `One may argue that [IV] is endogenous with [DV], since [reverse-causality story]. To mitigate endogeneity concerns, we deploy [strategy].`
+ISR-results/style.md calls the dedicated endogeneity subsection the ISR signature move.
+> ✎ ISR-results/style.md calls the dedicated endogeneity subsection the ISR signature ~move, and~ *move. It* gives Bao 2021's slot as `One may argue that [IV] is endogenous with [DV], since [reverse-causality story]. To mitigate endogeneity concerns, we deploy [strategy].` · CC · 260802 1430
+It gives Bao 2021's slot as `One may argue that [IV] is endogenous with [DV], since [reverse-causality story]. To mitigate endogeneity concerns, we deploy [strategy].`
 The narrower variant from Liu 2025 is `One potential concern is [threat]. To address this concern, we [remedy].`
-Both are ISR standard by that file's own statement, and putting the threat in the reviewer's voice is what shows the critique was anticipated rather than missed.
+Both are ISR standard by that file's own statement.
+> ✎ Both are ISR standard by that file's own ~statement, and putting~ *statement. Putting* the threat in the reviewer's voice is what shows the critique was anticipated rather than missed. · CC · 260802 1430
+Putting the threat in the reviewer's voice is what shows the critique was anticipated rather than missed.
 
 #### 7.2 · The if-then move turns a defence into evidence
 (the file's own phrase is that it makes defensive robustness offensive)
 Before a mechanism test the slot is `If [alternative mechanism] were the primary driver, we would expect [specific pattern]. In contrast, [our mechanism] predicts [different pattern].`
-ISR-results/style.md attributes it to Wang 2026 and Liu 2025, and pairs it with named mechanism subsections, where each mechanism takes its own heading, its own test and its own verdict.
-A null result gets the same treatment in reverse, as `Contrary to [prior findings or popular belief], [our robust results show no significant relationship]`, framed as predicted by theory rather than apologized for.
+ISR-results/style.md attributes it to Wang 2026 and Liu 2025, and pairs it with named mechanism subsections.
+> ✎ ISR-results/style.md attributes it to Wang 2026 and Liu 2025, and pairs it with named mechanism ~subsections, where each~ *subsections. Each* mechanism takes its own heading, its own test and its own verdict. · CC · 260802 1430
+Each mechanism takes its own heading, its own test and its own verdict.
+A null result gets the same treatment in reverse: `Contrary to [prior findings or popular belief], [our robust results show no significant relationship]`.
+> ✎ A null result gets the same treatment in ~reverse, as~ *reverse:* `Contrary to [prior findings or popular belief], [our robust results show no significant ~relationship]`,~ *relationship]`. It is* framed as predicted by theory rather than apologized for. · CC · 260802 1430
+It is framed as predicted by theory rather than apologized for.
 
 #### 7.3 · Format values
 (the section where a value-density figure would matter most, and the one place the pack comes closest to noticing values without ever counting them)
@@ -528,18 +571,23 @@ The balance diagnostic a matching-based check owes its reader before its verdict
      a Discussion that only restates the Results
 ```
 
-🎁 Establishes the section that decides how strongly the paper is allowed to speak, which is where the posture from division 2 is finally cashed.
+🎁 Establishes the section that decides how strongly the paper is allowed to speak about cause, which is where the choice made in division 2 finally lands.
+> ✎ 🎁 Establishes the section that decides how strongly the paper is allowed to ~speak,~ *speak about cause,* which is where the ~posture from~ *choice made in* division 2 ~is~ finally ~cashed.~ *lands.* · CC · 260802 1430
 
 #### 8.1 · The hedge from the introduction comes back here
 (the same "to the best of our knowledge" wording, restated rather than upgraded)
 ISR-discussion/style.md records Bao 2021 reprising the gap-filling claim in the Discussion with the hedged phrasing its introduction used.
-That is the section-level partner of the rule in division 1: a revise pass that sharpens the hedge in one place and not the other leaves the paper claiming two different things about its own novelty.
+Division 1 states the same rule for the introduction.
+> ✎ ~That is~ *Division 1 states* the ~section-level partner of~ *same rule for* the ~rule in division 1: a~ *introduction. A* revise pass that sharpens the hedge in one place and not the other leaves the paper claiming two different things about its own novelty. · CC · 260802 1430
+A revise pass that sharpens the hedge in one place and not the other leaves the paper claiming two different things about its own novelty.
 
 #### 8.2 · The final sentence has a job, and it is not summary
 (the pack calls this conceptual frame elevation and names it the strongest closing shape)
 The slot is `In this study, we [show] the role of [mechanism] in [outcome]. [One sentence on the broader significance]. [One sentence moving from we-found-X to this-means-Y-for-the-field].`
 ISR-discussion/style.md lists closing the paper on a limitation as an anti-pattern, and a pure results restatement as a second one.
-For a methods paper the same file permits an advisory register instead, with "We recommend ..." and "We advise against ...", plus an explicit statement of what the proposed method does not do.
+For a methods paper the same file permits an advisory register instead, with "We recommend ..." and "We advise against ...".
+> ✎ For a methods paper the same file permits an advisory register instead, with "We recommend ..." and "We advise against ~...", plus~ *...". It also asks for* an explicit statement of what the proposed method does not do. · CC · 260802 1430
+It also asks for an explicit statement of what the proposed method does not do.
 
 #### 8.3 · Format values
 (the one budget on this page whose target survived measurement unchanged, because both measured exemplars landed inside it)
@@ -610,14 +658,24 @@ The closing elevation, using the one advocacy verb 4.1 allows and only in a fina
 
 #### 9.1 · The page limit that makes this tier load-bearing
 (a family-level number, and the reason an over-long body section cannot simply grow)
-The minimap note in `playbook-utd-is/README.md` gives ISR about 35 pages of double-spaced text, excluding references and appendices. Verified 260802 against the desk, that matches neither real cap: ISR states 32 pages of text and 38 including all material.
-The body is self-contained at that limit and the Online Appendix is hosted separately at the DOI, so an over-long robustness battery does not shrink the paper, it moves.
-ISR-appendix/style.md states no page limit for the appendix itself and records both of its exemplars using extensive ones, which makes length a triage decision rather than a budget decision.
+The minimap note in `playbook-utd-is/README.md` gives ISR about 35 pages of double-spaced text, excluding references and appendices.
+> ✎ The minimap note in `playbook-utd-is/README.md` gives ISR about 35 pages of double-spaced text, excluding references and appendices. ~Verified 260802~ *Checked* against the ~desk,~ *desk on 260802,* that *number* matches neither real cap: ISR states 32 pages of text and 38 including all material. · CC · 260802 1430
+Checked against the desk on 260802, that number matches neither real cap: ISR states 32 pages of text and 38 including all material.
+The body is self-contained at that limit, and the Online Appendix is hosted separately at the DOI.
+> ✎ The body is self-contained at that ~limit~ *limit,* and the Online Appendix is hosted separately at the ~DOI, so~ *DOI. So* an over-long robustness battery does not shrink the ~paper, it~ *paper. It* moves. · CC · 260802 1430
+So an over-long robustness battery does not shrink the paper. It moves.
+ISR-appendix/style.md states no page limit for the appendix itself, and records both of its exemplars using extensive ones.
+> ✎ ISR-appendix/style.md states no page limit for the appendix ~itself~ *itself,* and records both of its exemplars using extensive ~ones, which makes length~ *ones. Length is therefore* a triage decision rather than a budget decision. · CC · 260802 1430
+Length is therefore a triage decision rather than a budget decision.
 
 #### 9.2 · Neither stored exemplar contains its own appendix
 (the pack's own recorded gap, and worth knowing before trusting any count in that file)
-The micro-norms note in ISR-appendix/style.md says Bao's stored preprint ends at Table 6 and Zhang's Online Appendices live in a separate supplemental file at the DOI.
-Every count in that file therefore comes from main-text pointers rather than from appendix pages, so the lettering scheme and the reference patterns are measured while page counts and exhibit totals are not.
+The micro-norms note in ISR-appendix/style.md says Bao's stored preprint ends at Table 6.
+> ✎ The micro-norms note in ISR-appendix/style.md says Bao's stored preprint ends at Table ~6 and~ *6.* Zhang's Online Appendices live in a separate supplemental file at the DOI. · CC · 260802 1430
+Zhang's Online Appendices live in a separate supplemental file at the DOI.
+Every count in that file therefore comes from main-text pointers rather than from appendix pages.
+> ✎ Every count in that file therefore comes from main-text pointers rather than from appendix ~pages, so~ *pages. So* the lettering scheme and the reference patterns are ~measured while~ *measured, and* page counts and exhibit totals are not. · CC · 260802 1430
+So the lettering scheme and the reference patterns are measured, and page counts and exhibit totals are not.
 
 #### 9.3 · Format values
 (the emptiest row set on this page, and 9.2 already gives the reason: the pack never held the pages it would have had to measure)
@@ -631,7 +689,9 @@ Every count in that file therefore comes from main-text pointers rather than fro
 #### 9.4 · The language, in the papers' own words
 (the one section division whose style file quotes no prose from the section it describes, so what follows is the body language that points at it)
 ISR-appendix/style.md carries no sentence from inside an Online Appendix, and its own Micro-norms says why: neither stored PDF contains the appendix pages.
-What that file does attribute is one front-page line and a set of pointer patterns, quoted here because they are the appendix language a reader actually meets.
+What that file does attribute is one front-page line and a set of pointer patterns.
+> ✎ What that file does attribute is one front-page line and a set of pointer ~patterns,~ *patterns. They are* quoted here because they are the appendix language a reader actually meets. · CC · 260802 1430
+They are quoted here because they are the appendix language a reader actually meets.
 [Mousavi 2026] "Supplemental Material: The online appendix and supplemental material are available at [DOI URL]."
 The front-page line that declares the separate tier, and the reason the appendix is hosted rather than bound.
 [Mousavi 2026] "see Online Appendix K for detailed analysis"
@@ -639,7 +699,8 @@ The inline pointer, the shortest of the five reference forms this division's fig
 [Wang 2026] "Tables A2 and A3 of Online Appendix A"
 The specific-exhibit pointer, naming the table number and its appendix letter together as the lettering scheme requires.
 [Wang 2026] "(reported in Table B2 in Online Appendix B)"
-The parenthetical pointer, which is how a robustness sub-check closes without moving its evidence back into the body.
+The parenthetical pointer: a robustness sub-check closes this way without moving its evidence back into the body.
+> ✎ The parenthetical ~pointer, which is how~ *pointer:* a robustness sub-check closes *this way* without moving its evidence back into the body. · CC · 260802 1430
 
 ## Aims
 
@@ -648,8 +709,8 @@ The parenthetical pointer, which is how a robustness sub-check closes without mo
   **Done when:** a draft introduction can be failed for missing a beat or for citing inside its contribution paragraphs.
 
 ### A2 · 🎯 The one axis that separates ISR from MISQ
-- A2.1 · The MISQ-against-ISR posture difference is applied when either is recommended.
-  **Done when:** a UTD-IS recommendation states which Discussion posture the pinned outlet permits.
+- A2.1 · The wording difference between MISQ and ISR is applied when either is recommended.
+  **Done when:** a UTD-IS recommendation states how strongly the pinned outlet lets a Discussion speak about cause.
 
 ### A3 · 🚫 What arriving here costs
 - A3.1 · The identification bar is scored before venue rather than discovered at submission.
@@ -672,7 +733,7 @@ The parenthetical pointer, which is how a robustness sub-check closes without mo
   **Done when:** a results draft under five checks, or with checks merged into one paragraph, is flagged against the pack's range.
 
 ### A8 · 🎁 Discussion: contribution first, limitations visible, and the last sentence elevates
-- A8.1 · The Discussion's posture matches the identification the paper actually holds.
+- A8.1 · How strongly the Discussion speaks about cause matches the identification the paper actually holds.
   **Done when:** a Discussion drafted for ISR is read for causal wording its identification does not support, before the draft gate.
 
 ### A9 · 🅰 The Online Appendix: lettered, DOI-hosted, and free to outweigh the paper
@@ -752,7 +813,7 @@ The parenthetical pointer, which is how a robustness sub-check closes without mo
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -762,7 +823,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -777,21 +841,50 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-An ISR introduction previews the identification strategy and the data, not only the theory, so the demand its desk makes arrives one section early and cannot be deferred to Methods.
-ISR rewards identification more than MISQ does, so one result carries two different Discussions at the two desks, and the posture is chosen at venue and never repaired at revise.
+An ISR introduction previews the identification strategy and the data, not only the theory.
+So the demand its desk makes arrives one section early, and it cannot be deferred to Methods.
+> ✎ An ISR introduction previews the identification strategy and the data, not only the ~theory, so~ *theory. So* the demand its desk makes arrives one section ~early~ *early,* and *it* cannot be deferred to Methods. · CC · 260802 1430
+ISR rewards identification more than MISQ does, so one result carries two different Discussions at the two desks.
+How strongly each Discussion may speak about cause is chosen at venue, and never repaired at revise.
+> ✎ ISR rewards identification more than MISQ does, so one result carries two different Discussions at the two ~desks, and the posture~ *desks. How strongly each Discussion may speak about cause* is chosen at ~venue~ *venue,* and never repaired at revise. · CC · 260802 1430
 An identification strategy is a study-design property, so this outlet is decided upstream of the venue stage.
 
 ## Glossary
 
 - **Layered robustness**: several named identification checks reported individually, which this desk lists as a fit signal rather than an appendix courtesy.
-- **Posture**: how strongly a Discussion is permitted to speak about causation at a given desk.
+- **Posture**: the family's word for how strongly a Discussion is permitted to speak about causation at a given desk. `MISQ/taste.md` writes it as "honest identification posture"; this page says it in plain words instead.
 - **Slot pattern**: the pack's way of recording a signature move as a fillable shape rather than a sentence, so a draft imitates the structure and never the wording.
 
 ## Log
 
-260802 · Corrected against the desk. The pack's "~35 pp double-spaced text" matches neither ISR limit: the journal states 32 pages of text and 38 including all material. Separately, `ISR-abstract/style.md` marks 200-250 words HARD and BINDING where the desk's own cap is 300, so the pack is stricter than the venue and a draft written to it leaves 50 words unused.
-260802 · Authority sub-block added at the end of Files, from ISR's own submission guidelines rather than from the pack; the INFORMS LaTeX archive was fetched and is a real archive. Three corrections follow. The desk's length rule is 32 pages of text and 38 pages including all material, which is neither of the family README's readings of "~35 pp". The desk's abstract cap is 300 words, so the 200-250 that `ISR-abstract/template.md` marks HARD and BINDING is a house target measured off exemplars and not the journal's rule. And the contribution statement, required in the cover letter since 1 June 2023 on pain of the paper not moving forward, appears nowhere in the pack.
-260802 · Every section-kind division gained two subsubsections: a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS with the style.md heading named inline on each row, and a `The language, in the papers' own words` block of 4-6 short attributed quotations. VALUE DENSITY reads `not recorded by the pack` in all seven, since no style.md in the venue tree counts numeric values per sentence; `7.3` records the nearest thing, ISR-results/style.md's note that in-prose coefficients and p-values inflate words per sentence. DISPLAYS is recorded only for theory, methods and the appendix; results records a body total rather than a section one. `9.4` states that ISR-appendix/style.md quotes no appendix prose at all, so its four quotations are main-text pointers. Nothing was measured from a PDF, and the pack stores no extracted-text exemplar to measure from. Note for the owner: `## Writing Style` still says quote the SHAPE, never the content, which the new quotation blocks read against; each parenthetical says the slot patterns remain the thing a draft copies, but the bullet itself needs a ruling.
-260802 · Content extended to one division per declared section kind: `### 4` abstract, `### 5` theory, `### 6` methods, `### 7` results, `### 8` discussion, `### 9` Online Appendix, each carrying its arc, its measured budget with the source named inline, its signature moves as slot patterns, and the anti-patterns the pack names. The retired family page's rows were folded in: the outlet delta and the lean signals into `### 2.2`, the ~35 pp double-spaced body limit into `### 9.1`, and the README's 200-250 abstract target into `### 4.2`. The Writing Style bullet on section norms was relaxed to allow a number when its source is named inline.
-260802 · JL: this page is about the ISR papers themselves. Opening rewritten to lead on the measured shape of an ISR introduction rather than on the MISQ comparison, and a new `### 1` carries the seven-beat arc, the two measured lengths, the first-sentence slot, and the clustered citation density. The MISQ routing moved down to `### 2`, which is what it is for.
+260802 · Corrected against the desk.
+  The pack's "~35 pp double-spaced text" matches neither ISR limit: the journal states 32 pages of text and 38 including all material.
+  Separately, `ISR-abstract/style.md` marks 200-250 words HARD and BINDING where the desk's own cap is 300.
+  So the pack is stricter than the venue, and a draft written to it leaves 50 words unused.
+260802 · Authority sub-block added at the end of Files, from ISR's own submission guidelines rather than from the pack.
+  The INFORMS LaTeX archive was fetched and is a real archive.
+  Three corrections follow.
+  The desk's length rule is 32 pages of text and 38 pages including all material, which is neither of the family README's readings of "~35 pp".
+  The desk's abstract cap is 300 words, so the 200-250 that `ISR-abstract/template.md` marks HARD and BINDING is a house target measured off exemplars and not the journal's rule.
+  And the contribution statement, required in the cover letter since 1 June 2023 on pain of the paper not moving forward, appears nowhere in the pack.
+260802 · Every section-kind division gained two subsubsections.
+  The first is a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS, with the style.md heading named inline on each row.
+  The second is a `The language, in the papers' own words` block of 4-6 short attributed quotations.
+  VALUE DENSITY reads `not recorded by the pack` in all seven, since no style.md in the venue tree counts numeric values per sentence.
+  `7.3` records the nearest thing: ISR-results/style.md's note that in-prose coefficients and p-values inflate words per sentence.
+  DISPLAYS is recorded only for theory, methods and the appendix; results records a body total rather than a section one.
+  `9.4` states that ISR-appendix/style.md quotes no appendix prose at all, so its four quotations are main-text pointers.
+  Nothing was measured from a PDF, and the pack stores no extracted-text exemplar to measure from.
+  Note for the owner: `## Writing Style` still says quote the SHAPE, never the content, which the new quotation blocks read against.
+  Each parenthetical says the slot patterns remain the thing a draft copies, but the bullet itself needs a ruling.
+> ✎ 260802 · Every section-kind division gained two ~subsubsections:~ *subsubsections. The first is* a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and ~DISPLAYS~ *DISPLAYS,* with the style.md heading named inline on each ~row, and~ *row. The second is* a `The language, in the papers' own words` block of 4-6 short attributed quotations. VALUE DENSITY reads `not recorded by the pack` in all seven, since no style.md in the venue tree counts numeric values per ~sentence;~ *sentence.* `7.3` records the nearest ~thing,~ *thing:* ISR-results/style.md's note that in-prose coefficients and p-values inflate words per sentence. DISPLAYS is recorded only for theory, methods and the appendix; results records a body total rather than a section one. `9.4` states that ISR-appendix/style.md quotes no appendix prose at all, so its four quotations are main-text pointers. Nothing was measured from a PDF, and the pack stores no extracted-text exemplar to measure from. Note for the owner: `## Writing Style` still says quote the SHAPE, never the content, which the new quotation blocks read ~against; each~ *against. Each* parenthetical says the slot patterns remain the thing a draft copies, but the bullet itself needs a ruling. · CC · 260802 1430
+260802 · Content extended to one division per declared section kind: `### 4` abstract, `### 5` theory, `### 6` methods, `### 7` results, `### 8` discussion, `### 9` Online Appendix.
+  Each carries its arc, its measured budget with the source named inline, its signature moves as slot patterns, and the anti-patterns the pack names.
+  The retired family page's rows were folded in: the outlet delta and the lean signals into `### 2.2`, the ~35 pp double-spaced body limit into `### 9.1`, and the README's 200-250 abstract target into `### 4.2`.
+  The Writing Style bullet on section norms was relaxed to allow a number when its source is named inline.
+260802 · JL: this page is about the ISR papers themselves.
+  Opening rewritten to lead on the measured shape of an ISR introduction rather than on the MISQ comparison.
+  A new `### 1` carries the seven-beat arc, the two measured lengths, the first-sentence slot, and the clustered citation density.
+  The MISQ routing moved down to `### 2`, the division that does the routing.
+> ✎ 260802 · JL: this page is about the ISR papers themselves. Opening rewritten to lead on the measured shape of an ISR introduction rather than on the MISQ ~comparison, and a~ *comparison. A* new `### 1` carries the seven-beat arc, the two measured lengths, the first-sentence slot, and the clustered citation density. The MISQ routing moved down to `### 2`, ~which is what it is for.~ *the division that does the routing.* · CC · 260802 1430
 260802 · Opened with the QBv outlet pages, from `playbook-utd-is/ISR` at `Venue-Paper@fe25a88`.

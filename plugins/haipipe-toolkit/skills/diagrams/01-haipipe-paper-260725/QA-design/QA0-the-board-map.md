@@ -217,21 +217,16 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 
 ## Law
 
-Read Delivery first, then skill-first Engine, then Execute evidence. Design comes before all three, because it fixes what the system is and who owns its boundaries.
-
-Delivery order is Opening, Work, Literature, Value, Display, Main, Appendix, Present, Build, Round. Venue sits inside Opening, Present includes slides and posters, Build owns diffusion and distribution, and the response unit is a Round because it is a batch.
-
-Delivery owns content authority. Engine only routes skills across it, and Execute only records bounded runs. Tests, gates, receipts, compile checks and fresh-agent observations are all Execute evidence rather than a separate authoring layer.
-
-A failure reopens the owning Delivery or Engine page. A failed candidate never becomes an implicit promotion.
-
-Regrouping aligns every live page id with its current group and preserves every non-conflicting historical id as a declared alias.
+- Read Delivery first, then skill-first Engine, then Execute evidence. Design comes before all three, because it fixes what the system is and who owns its boundaries.
+- Delivery order is Opening, Work, Literature, Value, Display, Main, Appendix, Present, Build, Round. Venue sits inside Opening, Present includes slides and posters, Build owns diffusion and distribution, and the response unit is a Round because it is a batch.
+- Delivery owns content authority. Engine only routes skills across it, and Execute only records bounded runs. Tests, gates, receipts, compile checks and fresh-agent observations are all Execute evidence rather than a separate authoring layer.
+- A failure reopens the owning Delivery or Engine page. A failed candidate never becomes an implicit promotion.
+- Regrouping aligns every live page id with its current group and preserves every non-conflicting historical id as a declared alias.
 
 ## Lesson
 
-An emoji-dense figure is a rendering surface, not just text. The `QB4` contract asks for emoji-dense face figures, and exactly one glyph in common use, `⚠️`, is read by the figure linker as a group token when it opens a fenced line. Nothing warned; the page simply grew a dead link. The rule that follows is not about that glyph: a figure is rendered, so a new figure convention needs one build-and-check before it is applied to fifty pages.
-
-A page count written into Content outlives two regroupings. This page carried "53 Page routes" through the growth to 63, because a number stated as a design fact is never revisited, while the same number in States is expected to move.
+- An emoji-dense figure is a rendering surface, not just text. The `QB4` contract asks for emoji-dense face figures, and exactly one glyph in common use, `⚠️`, is read by the figure linker as a group token when it opens a fenced line. Nothing warned; the page simply grew a dead link. The rule that follows is not about that glyph: a figure is rendered, so a new figure convention needs one build-and-check before it is applied to fifty pages.
+- A page count written into Content outlives two regroupings. This page carried "53 Page routes" through the growth to 63, because a number stated as a design fact is never revisited, while the same number in States is expected to move.
 
 ## Glossary
 

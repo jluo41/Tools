@@ -299,17 +299,13 @@ Two states remain unbuilt and both are named in Items: no chip yet distinguishes
   The manuscript itself, which no face renders and `build.py` therefore audits.
 
 ## Law
-A marker resolves at BUILD time, never at page load. Every chip carries its state as a class and its record both as a native `title=` and inside a native `popover` panel, so both work with no script at all and a script may only enrich what is already there.
 
-Evidence belongs in BODY TEXT, not in an attribute. An attribute survives the strip-the-scripts check without being readable, searchable or printable, which passes the test while missing its point. The panel is the record; `title=` is the fallback.
-
-A marker inside a DISCUSSION lane is a person asking for evidence, not supplying it, and is never chipped. Typed evidence lanes are the opposite and always are.
-
-A checker reports what it can see and says what it cannot. The board renders faces, so a defect in an unrendered `.tex` is printed as a build warning rather than left to a clean-looking page.
-
-`dialect: paper` is opt-in and declared by the board that wants it. Board tooling does not assume a paper, and a board that says nothing gets no chips and pays no cost.
-
-A rewriter never touches a marker inside a code span or a tag attribute. Prose about a placeholder is documentation, not a defect.
+- A marker resolves at BUILD time, never at page load. Every chip carries its state as a class and its record both as a native `title=` and inside a native `popover` panel, so both work with no script at all and a script may only enrich what is already there.
+- Evidence belongs in BODY TEXT, not in an attribute. An attribute survives the strip-the-scripts check without being readable, searchable or printable, which passes the test while missing its point. The panel is the record; `title=` is the fallback.
+- A marker inside a DISCUSSION lane is a person asking for evidence, not supplying it, and is never chipped. Typed evidence lanes are the opposite and always are.
+- A checker reports what it can see and says what it cannot. The board renders faces, so a defect in an unrendered `.tex` is printed as a build warning rather than left to a clean-looking page.
+- `dialect: paper` is opt-in and declared by the board that wants it. Board tooling does not assume a paper, and a board that says nothing gets no chips and pays no cost.
+- A rewriter never touches a marker inside a code span or a tag attribute. Prose about a placeholder is documentation, not a defect.
 
 ## Discussion
 > JL 260726: could you also add the google scholar search link of it?

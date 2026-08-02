@@ -10,9 +10,9 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
   last_updated: "2026-08-01"
-  summary: "One fresh agent owns one page: create it or revise only its Opening, load the page skill directly, then self-check without self-approving."
+  summary: "Checks the target filename first and loads haipipe-board-page-for-skill for a Skill or Agent roster page, whose Opening rule inverts the base's."
   changelog: "./CHANGELOG.md"
 ---
 
@@ -29,9 +29,15 @@ the assignment packet as a substitute for loading the skill. At minimum, read:
 
 1. `../haipipe-board-page/SKILL.md` for what a page is: the three kinds, the one
    base, the fixed page spine, and which state a machine may write.
-2. `../haipipe-board-sentence/SKILL.md` for how a line must read.
-3. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
-4. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
+2. `../haipipe-board-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
+   `Agent-<n>` roster page. Check the filename before you write a word. That
+   variant inverts the base's Opening rule: a roster page mirrors a unit that
+   ships elsewhere and DECIDES NOTHING, so it introduces that unit and never
+   opens with a question. Five roster pages were written from the base alone on
+   260802 and came out as one form letter with the nouns swapped.
+3. `../haipipe-board-sentence/SKILL.md` for how a line must read.
+4. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
+5. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
    judged against.
 
 Do NOT read the whole board to orient yourself. Your assignment carries the

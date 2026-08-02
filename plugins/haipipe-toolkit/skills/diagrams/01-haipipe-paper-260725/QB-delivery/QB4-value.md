@@ -159,7 +159,7 @@ What is missing is machine enforcement: the projection check compares markers an
 
 ## Law
 
-A manuscript value binds to a producing run, not merely to a file containing the same digits.
+- A manuscript value binds to a producing run, not merely to a file containing the same digits.
 
 ## Glossary
 

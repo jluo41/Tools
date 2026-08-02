@@ -245,7 +245,13 @@ def parse_dir(d):
             # otherwise consume `4a` and then fail the `-|$` that follows,
             # which made such a page silently unparseable rather than rejected.
             r"S-(Seed|Work|Venue|Display|Main|Appendix|Submission)-"
-            r"(\d+[a-z][a-z0-9]+|\d+[a-z]?|[A-Z]|[A-Z][a-z]+)(?:-|$)",
+            # A CAPITAL PLUS DIGITS is a per-unit member of a lettered series
+            # (JL 2026-08-02, choosing option A): in Work the letter says the
+            # STAGE and the number says the UNIT, so `S-Work-R` is the resources
+            # control page and `S-Work-R1` is one resource. It leads `[A-Z]`
+            # because that alternative would otherwise consume the `R` of `R1`
+            # and then fail the `-|$`, making such a page silently unparseable.
+            r"(\d+[a-z][a-z0-9]+|\d+[a-z]?|[A-Z]\d+|[A-Z]|[A-Z][a-z]+)(?:-|$)",
             p.stem,
             re.I,
         )

@@ -322,17 +322,13 @@ The silent half is the work, and it is what the rest of this group is for. Seven
   Where the venue resolution is STORED, in the `Section Styles` table, alongside the pack's pinned commit and its drift diff.
 
 ## Law
-A stage is not an object. It IS its `stage.md` frontmatter: twenty-four required fields in seven blocks, plus a conditional set. A ruling on this board is a change to a named field, and a face that cannot name the field it would change has not finished its work.
 
-Every field answers to a named reader. The ROUTER reads `stages/index.yml` on every invocation, so that file holds only what is needed to CHOOSE. The CREATOR reads eleven contract fields to make the page, eight of them from the required twenty-four. The EXECUTOR reads the remaining sixteen, as prose, and cannot refuse anything.
-
-A field must be checked by a program, read by a human at a named moment, or deleted. A field that is none of the three is decoration that looks like a contract, and a reader will trust it.
-
-`upstream`, `downstream` and `handoff` are craft orientation and do not bind. The authoritative dependency is the S page's own `requires:`, because it carries the upstream page's live gate state and cannot go stale.
-
-Declaring a stage costs four files and nothing else: one row in `stages/index.yml`, one folder at `stages/<order>-<key>/`, its `stage.md`, its `template.md`. No new skill, no version bump, no router edit.
-
-A declared path that cannot resolve carries `blocked_on: <Q page>` with the reason. A dangling path with no `blocked_on` is a defect, and nothing may report it as green.
+- A stage is not an object. It IS its `stage.md` frontmatter: twenty-four required fields in seven blocks, plus a conditional set. A ruling on this board is a change to a named field, and a face that cannot name the field it would change has not finished its work.
+- Every field answers to a named reader. The ROUTER reads `stages/index.yml` on every invocation, so that file holds only what is needed to CHOOSE. The CREATOR reads eleven contract fields to make the page, eight of them from the required twenty-four. The EXECUTOR reads the remaining sixteen, as prose, and cannot refuse anything.
+- A field must be checked by a program, read by a human at a named moment, or deleted. A field that is none of the three is decoration that looks like a contract, and a reader will trust it.
+- `upstream`, `downstream` and `handoff` are craft orientation and do not bind. The authoritative dependency is the S page's own `requires:`, because it carries the upstream page's live gate state and cannot go stale.
+- Declaring a stage costs four files and nothing else: one row in `stages/index.yml`, one folder at `stages/<order>-<key>/`, its `stage.md`, its `template.md`. No new skill, no version bump, no router edit.
+- A declared path that cannot resolve carries `blocked_on: <Q page>` with the reason. A dangling path with no `blocked_on` is a defect, and nothing may report it as green.
 
 ## Discussion
 > CC 260727: the sixteen silent fields do not need sixteen rulings, and I would not spend them that way. Three of the sixteen are the GRAPH block, which the Law already declares advisory, so ruling those three closes the sharpest instance and costs one inline comment repeated 24 times. My recommendation is to rule GRAPH now and declare the remaining thirteen craft prose by default, with the burden on any future author who wants one to BIND.

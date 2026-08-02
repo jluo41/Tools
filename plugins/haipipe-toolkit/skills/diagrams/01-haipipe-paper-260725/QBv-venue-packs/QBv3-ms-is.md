@@ -6,7 +6,16 @@ method: state what Management Science's IS department requires that its UTD-IS s
 
 ## Opening
 
-The pack's own taste file gives this desk its sharpest line. MS-IS thinks in mechanisms, equilibria, and welfare, not in constructs, theories, and implications. That is a vocabulary claim rather than a topic one. So what does a paper have to become?
+MS-IS is the Information Systems department of Management Science, and the pack's own taste file gives this desk its sharpest line. It thinks in mechanisms, equilibria and welfare. It does not think in constructs, theories or implications. That is a claim about words, not topics: a paper can keep its subject here and still have to change every term it uses. So what does a paper have to become?
+> ✎ *MS-IS is the Information Systems department of Management Science.* The pack's own taste file gives this desk its sharpest ~line. MS-IS~ *line: it* thinks in mechanisms, equilibria, and welfare, not in constructs, theories, and implications. That is a ~vocabulary~ claim ~rather than a topic one.~ *about words, not about topics. A paper can keep its subject and still have to change every term it uses.* So what does a paper have to become? · CC · 260802 1538
+> ✎ MS-IS is the Information Systems department of Management ~Science. The~ *Science, and the* pack's own taste file gives this desk its sharpest ~line: it~ *line. It* thinks in mechanisms, ~equilibria,~ *equilibria* and ~welfare,~ *welfare. It does* not *think* in constructs, ~theories, and~ *theories or* implications. That is a claim about words, not ~about topics. A~ *topics: a* paper can keep its subject *here* and still have to change every term it uses. So what does a paper have to become? · CC · 260802 1545
+
+**The six words in the question**: a mechanism is the economic story of how one thing moves another, and `5` carries the pack's own list of the names it wants used, switching costs and adverse selection among them.
+An equilibrium is where that story settles, once no agent wants to move again.
+Welfare is who ended up better or worse off, counted as surplus.
+Those three are what this desk asks for.
+The three it refuses are a construct, a named idea from a behavioral theory such as TAM, measured on a survey scale; a theory, the body of work that construct came from; and an implication, a sentence about what the field should think next.
+The Glossary at the foot of this page defines these and the rest of the desk's vocabulary.
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-utd-is/MS-IS/`.
@@ -82,7 +91,8 @@ The theory folder is `MS-IS-theory-model/` on disk, which `stages/section-kinds.
      ── the pack says so outright
 ```
 
-🔄 Establishes the arrival cost as a vocabulary translation, which is why a MISQ paper cannot be resubmitted here unedited.
+🔄 Establishes the arrival cost as a vocabulary translation. A MISQ paper therefore cannot be resubmitted here unedited.
+> ✎ 🔄 Establishes the arrival cost as a vocabulary ~translation, which is why a~ *translation. A* MISQ paper *therefore* cannot be resubmitted here unedited. · CC · 260802 1538
 
 #### 1.1 · Reduced form is permitted and unanchored reduced form is not
 (so this is a weaker formal bar than it first reads, with a strict condition)
@@ -191,7 +201,9 @@ Beat ④ filling the `We find that [X] increases [Y] by [magnitude] (SE: [Z])` s
 "PBMs reduce overall spending by 28%, without greatly limiting patient access" [Feng 2025].
 Beat ④ for a counterfactual paper, where the magnitude is a simulated quantity rather than an estimate and the trailing clause carries the welfare reading.
 "The new GPT method achieves an accuracy of 96% and reduces the non-answer error rate by 70%" [de Kok 2025].
-Beat ④ for a method paper, whose primary result is a performance number rather than an effect, which is why the slot list holds no shape for it.
+Beat ④ for a method paper, whose primary result is a performance number rather than an effect.
+> ✎ Beat ④ for a method paper, whose primary result is a performance number rather than an ~effect, which is why the~ *effect. The* slot list holds no shape for ~it.~ *that.* · CC · 260802 1545
+The slot list holds no shape for that.
 
 ### 4 · The introduction previews every result before the data arrives
 
@@ -241,7 +253,8 @@ Beat ④ for a method paper, whose primary result is a performance number rather
      a roadmap placed BEFORE the results             L134-135
 ```
 
-🔢 Establishes the introduction as the place where the paper's punchlines are spent rather than saved, which is why an MISQ introduction cannot be reused here.
+🔢 Establishes the introduction as the place where the paper's punchlines are spent rather than saved. An MISQ introduction cannot be reused here.
+> ✎ 🔢 Establishes the introduction as the place where the paper's punchlines are spent rather than ~saved, which is why an~ *saved. An* MISQ introduction cannot be reused here. · CC · 260802 1538
 
 #### 4.1 · The stated paragraph count and the measured one disagree
 (7-12 is written at the top of the file; 9-13 is what the two measured papers run)
@@ -287,7 +300,9 @@ The structural variant opening, where an apparent contradiction in the data is t
 "More generally, we contribute to the literature studying the productivity and on-the-job performance of software developers" [Cui 2025].
 The P9-P10 contribution written as literature-stream positioning, filling the `We contribute to the literature on [X] by [Y]` slot.
 
-Bick et al. is quoted twice by `MS-IS-introduction/style.md` at L61-74 and is not one of the ten PDFs on disk, so the pack's two sharpest introduction quotations come from a paper it does not store.
+Bick et al. is quoted twice by `MS-IS-introduction/style.md` at L61-74, and it is not one of the ten PDFs on disk.
+> ✎ Bick et al. is quoted twice by `MS-IS-introduction/style.md` at ~L61-74~ *L61-74,* and *it* is not one of the ten PDFs on ~disk, so~ *disk. So* the pack's two sharpest introduction quotations come from a paper it does not store. · CC · 260802 1538
+So the pack's two sharpest introduction quotations come from a paper it does not store.
 
 ### 5 · The model section is where a Proposition lives and its proof does not
 
@@ -355,7 +370,9 @@ Bick et al. is quoted twice by `MS-IS-introduction/style.md` at L61-74 and is no
 #### 5.1 · The Proposition apparatus has no exemplar behind it
 (the desk is named for formal results and the pack stores none)
 The Proposition, Theorem and welfare-Proposition phrasing at L88-111 is written as a pattern, and the enrichment need at L178-180 that asked for an analytical exemplar was closed with Feng 2025.
-Feng's arc at L270-297 is a structural model of numbered equations and a Bellman equation with no Proposition anywhere in it, so none of the eight papers the pack mined shows what this desk's most distinctive apparatus actually reads like.
+Feng's arc at L270-297 is a structural model: numbered equations and a Bellman equation, with no Proposition anywhere in it.
+> ✎ Feng's arc at L270-297 is a structural ~model of~ *model:* numbered equations and a Bellman ~equation~ *equation,* with no Proposition anywhere in ~it, so~ *it. So* none of the eight papers the pack mined shows what this desk's most distinctive apparatus actually reads like. · CC · 260802 1538
+So none of the eight papers the pack mined shows what this desk's most distinctive apparatus actually reads like.
 Two of the ten PDFs on disk are named by no `style.md` at all, so the gap may be smaller than it looks and nobody has checked.
 
 #### 5.2 · The analytical budget is stated and never measured
@@ -394,7 +411,9 @@ The bare numbered hypothesis, this desk's minimum formal statement, stated in op
 "For individuals who cannot reach outcomes above the new threshold, effort decreases." [Huesmann 2025].
 A lettered sub-part of a hypothesis, and the nearest attested thing to the comparative static the figure asks for: one parameter moves and one outcome moves with it.
 "Let Z-tilde = sigma_X * Z - lambda * sigma_Z * X-hat, then Cov(Z-tilde, u) = 0." [Burtch 2026].
-A numbered Lemma carrying its provenance in the label, which is how a methodological paper imports a formal result instead of proving it here.
+A numbered Lemma that carries its source in the label.
+> ✎ A numbered Lemma ~carrying~ *that carries* its ~provenance~ *source* in the ~label, which~ *label. That* is how a methodological paper imports a formal result instead of proving it here. · CC · 260802 1538
+That is how a methodological paper imports a formal result instead of proving it here.
 "E[epsilon | X, W] = 0" [Burtch 2026].
 A numbered Assumption set as a display object, the shape the slot list calls `We assume X because [economic reason]` once the reason moves to the prose below it.
 "This assumption is undesirable, but necessary because of data limitations and to make estimation feasible." [Feng 2025].
@@ -454,7 +473,9 @@ The Proposition block, its `*Intuition.*` readback and the welfare Proposition a
 #### 6.1 · Threats are written in the referee's voice
 (the concern is stated as an attack before it is answered)
 L104-109 asks each endogeneity concern to be named as if a referee raised it, then addressed with a named strategy and a named check.
-The move costs a sentence and buys the referee's own objection back in the author's wording, which is why the pack records it as a signature rather than a courtesy.
+The move costs a sentence and buys the referee's own objection back in the author's wording.
+> ✎ The move costs a sentence and buys the referee's own objection back in the author's ~wording, which is why the~ *wording. The* pack records it as a signature rather than a courtesy. · CC · 260802 1545
+The pack records it as a signature rather than a courtesy.
 
 #### 6.2 · Heavy machinery leaves the body by rule
 (proofs, extended robustness, instrument construction and variable definitions)
@@ -486,7 +507,9 @@ The body's job at this desk is to stay readable, not to stay complete.
 "Here, beta is the coefficient of interest, D_it is an adoption dummy that turns on after a developer first uses GitHub Copilot" [Cui 2025].
 Every term defined in the sentence immediately under the display equation, which is the slot at L90-94 written out in full rather than deferred to a `where:` block.
 "We exploit the experimental variation and address imperfect compliance by using assignment to treatment as an instrument for GitHub Copilot adoption." [Cui 2025].
-The identification stated as an economic argument about who complies, not as the name of an estimator, which is the difference this division draws against a statistics section.
+The identification stated as an economic argument about who complies, not as the name of an estimator.
+> ✎ The identification stated as an economic argument about who complies, not as the name of an ~estimator, which~ *estimator. That* is the difference this division draws against a statistics section. · CC · 260802 1538
+That is the difference this division draws against a statistics section.
 "We assumed a medium effect size (Cohen's d = 0.4), a conventional power of 0.8, and a statistical significance level of alpha = 0.05" [Huesmann 2025].
 The a priori power analysis, an experiment-only obligation the arc lists at L206-211 and the figure's four owed items do not cover.
 "We drop all branded drugs where a generic version was introduced in the middle of this time period" [Chao/Larkin 2022].
@@ -494,7 +517,9 @@ One exclusion stated with the reason it was made, the shape the data arc at L264
 "we only have five states in the data and clustering over so few states could lead to bias" [Chao/Larkin 2022].
 The clustering level justified rather than announced, which is the owed item at L409-412 and the reason the four-layer inference ladder exists at all.
 
-The referee-voice threat pattern this division records at `6.1` is written at L107-109 with bracketed placeholders and no paper's name, so the signature move has a shape and no worked sentence.
+The referee-voice threat pattern this division records at `6.1` is written at L107-109 with bracketed placeholders and no paper's name.
+> ✎ The referee-voice threat pattern this division records at `6.1` is written at L107-109 with bracketed placeholders and no paper's ~name, so~ *name. So* the signature move has a shape and no worked sentence. · CC · 260802 1538
+So the signature move has a shape and no worked sentence.
 
 ### 7 · Results are ordered by identification, never by hypothesis
 
@@ -547,7 +572,8 @@ The referee-voice threat pattern this division records at `6.1` is written at L1
      robustness presented as new results            L165-166
 ```
 
-📊 Establishes the results section as ordered by what identifies the estimate, which is why a hypothesis-ordered draft reads as the wrong venue before a single number is checked.
+📊 Establishes the results section as ordered by what identifies the estimate. A draft ordered by hypothesis reads as the wrong venue before a single number is checked.
+> ✎ 📊 Establishes the results section as ordered by what identifies the ~estimate, which is why a hypothesis-ordered~ *estimate. A* draft *ordered by hypothesis* reads as the wrong venue before a single number is checked. · CC · 260802 1538
 
 #### 7.1 · An inline Discussion sits inside Results and is not the Discussion
 (two sections carry the word, and they answer different questions)
@@ -556,7 +582,9 @@ The final section then translates into action, so a draft that argues LATE at th
 
 #### 7.2 · Heterogeneity is a section, not a robustness footnote
 (the desk asks where the effect is strongest, not only whether it exists)
-L100-108 records MS papers elevating heterogeneity to a standalone section with one table panel per subgroup, and the contrast row at L176 sets that against moderation hypotheses at MISQ and post-hoc analysis at ISR.
+L100-108 records MS papers raising heterogeneity to a standalone section, with one table panel per subgroup.
+> ✎ L100-108 records MS papers ~elevating~ *raising* heterogeneity to a standalone ~section~ *section,* with one table panel per ~subgroup, and the~ *subgroup. The* contrast row at L176 sets that against moderation hypotheses at MISQ and post-hoc analysis at ISR. · CC · 260802 1538
+The contrast row at L176 sets that against moderation hypotheses at MISQ and post-hoc analysis at ISR.
 Reading heterogeneity as robustness demotes the one analysis this desk treats as a finding.
 
 #### 7.3 · Format values
@@ -587,7 +615,9 @@ Reading heterogeneity as robustness demotes the one analysis this desk treats as
 "on average, the number of weekly pull requests made by developers increases by 26.08% (SE: 10.3%)" [Cui 2025].
 The primary result leading its section with a coefficient and a standard error, the move the figure's `We present our results in Table N` slot introduces and this one completes.
 "we express coefficients as percentage effects by dividing each by the pre-treatment mean in the control group" [Cui 2025].
-The percentage-of-control-mean convention stated in the prose rather than left in a table note, which is what makes magnitudes comparable across outcomes.
+The convention of dividing by the control mean, stated in the prose rather than left in a table note.
+> ✎ The ~percentage-of-control-mean~ convention *of dividing by the control mean,* stated in the prose rather than left in a table ~note, which~ *note. That* is what makes magnitudes comparable across outcomes. · CC · 260802 1538
+That is what makes magnitudes comparable across outcomes.
 "A subject's effort level depends on the ranking system design and on the subject's ability type." [Huesmann 2025].
 A numbered `Result` block in the body, the only formal numbered statement any stored paper carries in a results section, and the lab-paper stand-in for a Proposition.
 "We find that the total cost of statins would increase by almost 50%." [Feng 2025].
@@ -595,7 +625,10 @@ The counterfactual as the structural paper's result, which is where a comparativ
 "due to imperfect compliance, we rely on instrumental variables (IV) estimation, which identifies a LATE" [Cui 2025].
 The inline Discussion opening, arguing what the design can and cannot identify inside Results, which is the split `7.1` records against the final section.
 
-No welfare sentence and no numbered Corollary is quoted from any paper in this file: the welfare arc at L59-61 and the Corollary instruction at L56-58 are prescriptions, so the analytical half of this division rests on nothing measured.
+No welfare sentence and no numbered Corollary is quoted from any paper in this file.
+> ✎ No welfare sentence and no numbered Corollary is quoted from any paper in this ~file: the~ *file. The* welfare arc at L59-61 and the Corollary instruction at L56-58 are ~prescriptions, so~ *prescriptions. So* the analytical half of this division rests on nothing measured. · CC · 260802 1538
+The welfare arc at L59-61 and the Corollary instruction at L56-58 are prescriptions.
+So the analytical half of this division rests on nothing measured.
 
 ### 8 · The discussion translates results into an action and states the welfare
 
@@ -657,7 +690,9 @@ No welfare sentence and no numbered Corollary is quoted from any paper in this f
 #### 8.1 · The welfare requirement is stated and unexemplified
 (required at L166-168, and absent from every stored paper)
 The contrast row at L178 marks the welfare statement required at MS-IS and not expected at MISQ or ISR, and the pattern at L110-112 gives its wording.
-Feng 2025, the nearest market paper the pack mined, reports counterfactual spending changes rather than consumer surplus, so the requirement has a rule, a slot, and no worked example.
+Feng 2025 is the nearest market paper the pack mined, and it reports counterfactual spending changes rather than consumer surplus.
+> ✎ Feng ~2025,~ *2025 is* the nearest market paper the pack mined, *and it* reports counterfactual spending changes rather than consumer ~surplus, so~ *surplus. So* the requirement has a rule, a slot, and no worked example. · CC · 260802 1538
+So the requirement has a rule, a slot, and no worked example.
 
 #### 8.2 · Two discussion budgets, and only one was revised
 (500-1,500 in the contrast table, 500-2,500 everywhere else)
@@ -689,7 +724,9 @@ The contrast row at L174 still reads 500-1,500, and `MS-IS-discussion/template.m
 (five sentences the discussion style file quotes with a paper's name attached, and the requirement that carries none)
 
 "Taken together, our results provide clinical leaders with valuable insights into the design of performance-feedback mechanisms" [Huesmann 2025].
-The P1 contribution restatement, naming the decision-maker in the same breath, which is how a healthcare paper opens the action-bearing section.
+The P1 contribution restatement, naming the decision-maker in the same breath.
+> ✎ The P1 contribution restatement, naming the decision-maker in the same ~breath, which~ *breath. That* is how a healthcare paper opens the ~action-bearing section.~ *section that asks for an action.* · CC · 260802 1538
+That is how a healthcare paper opens the section that asks for an action.
 "increasing the coverage of disclosure or making disclosed payments more salient ... may be an effective method for changing physician behavior" [Chao/Larkin 2022].
 The P3 managerial implication derived FROM the estimate, naming both the actor and the lever, which is the move the anti-pattern `important implications for IS research and practice` is written against.
 "the implementation of an advanced AI system can yield inferior outcomes even when compared with a technologically inferior IT system" [Krakowski 2026].
@@ -699,7 +736,11 @@ The P5 limitation ranked and stated flatly, in the cite-free paragraph the micro
 "Future research could also explore the cost of tailoring, which was not addressed in this study." [Krakowski 2026].
 The P6 future direction as one concrete question, which is the whole budget this desk gives it.
 
-The welfare sentence, the one thing this desk requires that MISQ and ISR do not, is a bracketed pattern at L110-112 with no paper's name on it, and the `Proposition 2 implies that firms should ...` translation at L71-74 is equally unattributed, which is what `8.1` records.
+The welfare sentence is the one thing this desk requires that MISQ and ISR do not.
+> ✎ The welfare ~sentence,~ *sentence is* the one thing this desk requires that MISQ and ISR do ~not, is~ *not. It survives here only as* a bracketed pattern at ~L110-112~ *L110-112,* with no paper's name on ~it, and the~ *it. The* `Proposition 2 implies that firms should ...` translation at L71-74 ~is equally unattributed, which is what~ *carries no name either.* `8.1` ~records.~ *records both.* · CC · 260802 1538
+It survives here only as a bracketed pattern at L110-112, with no paper's name on it.
+The `Proposition 2 implies that firms should ...` translation at L71-74 carries no name either.
+`8.1` records both.
 
 ### 9 · The Online Appendix is a separate document, lettered A onward
 
@@ -760,22 +801,29 @@ The welfare sentence, the one thing this desk requires that MISQ and ISR do not,
      🚫 never a bare `see the Online Appendix`               L58-59
 ```
 
-🗂 Establishes the appendix as an addressed place rather than an overflow, which is what lets every other division say "relegate it" and mean something checkable.
+🗂 Establishes the appendix as an addressed place rather than an overflow. That is what lets every other division say "relegate it" and mean something checkable.
+> ✎ 🗂 Establishes the appendix as an addressed place rather than an ~overflow, which~ *overflow. That* is what lets every other division say "relegate it" and mean something checkable. · CC · 260802 1538
 
 #### 9.1 · The proof leaves the body and the Proposition stays
 (the split this desk's formal apparatus depends on)
-`MS-IS-theory-model/style.md` L100-101 keeps short proofs in the body and sends long ones to the Online Appendix under the note "All proofs are in the Online Appendix", and the appendix triage at L71 lists derivations, proofs and propositions as Appendix A content.
+`MS-IS-theory-model/style.md` L100-101 keeps short proofs in the body and sends long ones to the Online Appendix, under the note "All proofs are in the Online Appendix".
+> ✎ `MS-IS-theory-model/style.md` L100-101 keeps short proofs in the body and sends long ones to the Online ~Appendix~ *Appendix,* under the note "All proofs are in the Online ~Appendix", and the~ *Appendix". The* appendix triage at L71 lists derivations, proofs and propositions as Appendix A content. · CC · 260802 1538
+The appendix triage at L71 lists derivations, proofs and propositions as Appendix A content.
 So the body carries the numbered statement and its intuition, the appendix carries the verification, and the main text names the letter it went to.
 
 #### 9.2 · No stored exemplar is an appendix
 (every count in this division came from an in-text cross-reference)
 L119-121 records that both stored PDFs are typeset main articles, so the section counts and item counts were read out of the papers' own pointers rather than out of the supplements.
-The prose micro-norms are marked not measurable at L118, which is why this is the one section kind in the pack with no sentence-level shape at all.
+The prose micro-norms are marked not measurable at L118.
+> ✎ The prose micro-norms are marked not measurable at ~L118, which~ *L118. This* is ~why this is~ *therefore* the one section kind in the pack with no ~sentence-level~ shape at *the sentence level at* all. · CC · 260802 1538
+This is therefore the one section kind in the pack with no shape at the sentence level at all.
 
 #### 9.3 · Two page counts, in two different units
 (35 manuscript pages against 13-16 typeset ones)
 `playbook-utd-is/README.md` L148 gives MS-IS roughly 35 pages of text with proofs, robustness and instrument items pushed online, while `MS-IS-appendix/style.md` L89 measures published main papers at 13-16 typeset pages.
-Neither file states its unit, so the two numbers are reconcilable only by assuming one counts a double-spaced manuscript and the other a typeset article.
+Neither file states its unit.
+> ✎ Neither file states its ~unit, so the~ *unit. The* two numbers ~are reconcilable~ *agree* only ~by assuming~ *if* one counts a double-spaced manuscript and the other a typeset article. · CC · 260802 1538
+The two numbers agree only if one counts a double-spaced manuscript and the other a typeset article.
 
 #### 9.4 · Format values
 (the four format metrics for the appendix, the one section kind the pack sizes in items rather than in words)
@@ -812,9 +860,14 @@ The relegation verb moving a whole secondary experiment out of the body, which i
 "For more information, see Section C of the Online Appendix" [Huesmann 2025, endnote 4].
 The same pointer written inside an endnote, the third address a body has for supplementary material after the text and the float.
 "Proposition EC.1" [Huesmann 2025].
-The legacy INFORMS element prefix, and the pack's only numbered Proposition attached to a real paper, known to the pack as a name in a cross-reference rather than as a statement anyone has read.
+The legacy INFORMS element prefix, and the pack's only numbered Proposition attached to a real paper.
+> ✎ The legacy INFORMS element prefix, and the pack's only numbered Proposition attached to a real ~paper, known to the~ *paper. The* pack *knows it* as a name in a ~cross-reference rather than~ *cross-reference, not* as a statement anyone has read. · CC · 260802 1538
+The pack knows it as a name in a cross-reference, not as a statement anyone has read.
 
-`MS-IS-appendix/style.md` L118 declares its prose micro-norms not measurable, so these pointer phrasings are all the attributable language this section kind has, and no sentence of appendix prose is quoted anywhere in the pack.
+`MS-IS-appendix/style.md` L118 declares its prose micro-norms not measurable.
+> ✎ `MS-IS-appendix/style.md` L118 declares its prose micro-norms not ~measurable, so~ *measurable. So* these pointer phrasings are all the ~attributable~ language this section kind ~has, and no~ *can attach to a paper's name. No* sentence of appendix prose is quoted anywhere in the pack. · CC · 260802 1538
+So these pointer phrasings are all the language this section kind can attach to a paper's name.
+No sentence of appendix prose is quoted anywhere in the pack.
 
 ## Aims
 
@@ -921,7 +974,7 @@ The legacy INFORMS element prefix, and the pack's only numbered Proposition atta
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -931,7 +984,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -945,19 +1001,64 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-MS-IS thinks in mechanisms, equilibria, and welfare rather than constructs, theories, and implications, so arriving here is a vocabulary translation and not a reframing.
-Reduced-form empirics are permitted when identification is credible and theory frames the mechanism; empirical work with no structural interpretation is not.
+- MS-IS thinks in mechanisms, equilibria, and welfare rather than constructs, theories, and implications, so arriving here is a vocabulary translation and not a reframing.
+  Reduced-form empirics are permitted when identification is credible and theory frames the mechanism; empirical work with no structural interpretation is not.
 
 ## Glossary
 
+Every term here is a real term of this field, and a paper written for this desk needs all of them. What follows is a plain reading of each, not a replacement for it.
+
+- **Desk**: the editorial department a paper is judged by. MS-IS is the Information Systems department of Management Science, and the Authority block records that it is not a separate submission site, only a manuscript Type chosen at ScholarOne Step 1.
+- **The pack**: the folder of style files, templates and mined exemplar papers at `playbook-utd-is/MS-IS/`. It is the only thing this page describes.
+- **Mechanism**: the economic story of how one thing moves another. `5` carries the pack's own table of the names it wants that story told in.
+- **Equilibrium**: the point where every agent's choice is the best answer to every other choice, so nobody moves again.
+- **Welfare**: who ends up better or worse off, counted as consumer surplus, producer surplus and the total of the two. `8` makes a statement of it obligatory for a market or platform paper.
 - **Structural primitive**: a recovered parameter of the underlying economic model, one of the four things this desk accepts as a contribution.
 - **Comparative static**: how an equilibrium outcome moves with a parameter, part of the apparatus this desk expects around a formal result.
+- **Micro-foundation**: the account of individual choice a result rests on. `2` records that this desk asks for one where MISQ asks for a primary theory.
+- **Reduced form**: an estimate of how an outcome moves with a treatment, with no model of the choices behind it. It is permitted here when identification is credible and theory frames the mechanism, and refused when it speaks to no mechanism at all.
+- **Identification**: the argument that an estimate measures the effect claimed and not something else. `6` asks for it as an economic argument about who is affected, never as the name of an estimator.
 
 ## Log
 
-260802 · Corrected against the desk. Management Science states NO page limit on an initial submission: the 47 and 32 page rules bind invited revisions only, with the online appendix excluded, so the pack's "~35 pp text" matches no stated number at any stage. Two more: the packs warn against a structured five-label abstract that the current instructions no longer state anywhere, and none of them records the one real rule, a 250-word abstract cap. MS-IS and MS-Marketing share ONE submission page; the department is a ScholarOne manuscript Type, not a separate desk, though their taste files differ legitimately.
-260802 · Authority sub-block added at the end of Files, from Management Science's own submission guidelines rather than from the pack; the MNSC LaTeX archive was fetched and is a real archive. The first finding is structural: the department is not a separate desk with its own instructions, it is the manuscript Type chosen at ScholarOne Step 1, and the Information Systems scope statement sits on the journal's shared editorial-statement page, so QBv3 and QBv4 answer to one authority and differ only in that statement. Two corrections follow. There is no page limit on an initial submission at all, and the 47-page or 32-page limit binds invited revisions only with the online appendix excluded, so the family README's "~35 pp text" matches no number the desk states; its routing of proofs to the online appendix is confirmed. The instructions state no structured abstract anywhere, only a cap of 250 words the pack does not record.
-260802 · Two subsubsections added to each of the seven section-kind divisions: a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS with the `style.md` line each was read from, and a `The language, in the papers' own words` block quoting only sentences the pack already attributes to a paper. Three findings came out of it. VALUE DENSITY, the numeric-per-sentence figure this repo's value marker refers to, is recorded by NO section kind at this desk, and no extracted-text exemplar exists to measure it from, since the only two `.md` files under `examples/` are the pack's own manifests. Numbered Propositions, Theorems and display equations are named as required apparatus and never counted as objects, in the model section and in the results section alike. The appendix inverts the pattern: it is the one kind with no word budget and no citation density, and the only one whose displays are counted.
-260802 · Seven section-kind divisions added, one per kind this outlet declares, each carrying the pack's measured budget with its `style.md` line, the arc, the signature moves as slot patterns, and the anti-patterns the pack names by hand. The formal apparatus is now addressed: Propositions and comparative statics in `### 5`, the estimating equation in `### 6`, welfare in `### 7` and `### 8`, proofs in `### 9`. Load-bearing content from the retired family page folded in from `playbook-utd-is/README.md`: the one-claim thread through abstract, introduction and discussion, the market-paper welfare claim, and the manuscript-length figure. Three unreconciled numbers recorded as sub-paragraphs rather than smoothed over: three abstract ranges, two discussion ranges, and an analytical budget with no counted section under it. The Writing Style bullet was relaxed from never transcribing a norm to citing every number inline.
-260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page. That file already carries the glob rule for the section abbreviation, an outlet-to-kinds map measured on disk, the `theory-model` alias, and the blueprint-only declaration for grant and patent. Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
+260802 1538 · Rewritten for a reader whose English is weak, with `haipipe-writing`.
+  Twenty-four `> ✎` word-level records over twenty-three sentences.
+  They cover the Opening paragraph twice, four figure readbacks that bolted a clause onto a finished sentence, and eighteen Content sentences that ran long or did the same, each split at the hinge.
+  No number, no `style.md` line reference and no paper's name was changed.
+  The Opening drawer gained a part defining the six words its question uses.
+  The Glossary grew from two entries to ten, so every field term this desk needs is kept and anchored rather than simplified away.
+  The five long entries below were split into indented continuation lines, which the Log renderer joins back into one entry each, so what they record is unchanged.
+  One sentence could not be recorded. The closing sentence of `5.4` quotes the pack's `*Intuition.*` block name, and `cli/wdiff.py` refuses any text carrying `*` because that is its own insertion mark, so that 41-word sentence is left as it stands.
+260802 · Corrected against the desk. Management Science states NO page limit on an initial submission.
+  The 47 and 32 page rules bind invited revisions only, with the online appendix excluded.
+  So the pack's "~35 pp text" matches no stated number at any stage.
+  Two more. The packs warn against a structured five-label abstract that the current instructions no longer state anywhere.
+  And none of them records the one real rule, a 250-word abstract cap.
+  MS-IS and MS-Marketing share ONE submission page.
+  The department is a ScholarOne manuscript Type, not a separate desk, though their taste files differ legitimately.
+260802 · Authority sub-block added at the end of Files, from Management Science's own submission guidelines rather than from the pack.
+  The MNSC LaTeX archive was fetched and is a real archive.
+  The first finding is structural. The department is not a separate desk with its own instructions; it is the manuscript Type chosen at ScholarOne Step 1.
+  The Information Systems scope statement sits on the journal's shared editorial-statement page, so QBv3 and QBv4 answer to one authority and differ only in that statement.
+  Two corrections follow. There is no page limit on an initial submission at all.
+  The 47-page or 32-page limit binds invited revisions only, with the online appendix excluded.
+  So the family README's "~35 pp text" matches no number the desk states, while its routing of proofs to the online appendix is confirmed.
+  The instructions state no structured abstract anywhere, only a cap of 250 words the pack does not record.
+260802 · Two subsubsections added to each of the seven section-kind divisions.
+  One is a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS, with the `style.md` line each was read from.
+  The other is a `The language, in the papers' own words` block, quoting only sentences the pack already attributes to a paper.
+  Three findings came out of it.
+  VALUE DENSITY, the numeric-per-sentence figure this repo's value marker refers to, is recorded by NO section kind at this desk.
+  No extracted-text exemplar exists to measure it from either, since the only two `.md` files under `examples/` are the pack's own manifests.
+  Numbered Propositions, Theorems and display equations are named as required apparatus and never counted as objects, in the model section and in the results section alike.
+  The appendix inverts the pattern. It is the one kind with no word budget and no citation density, and the only one whose displays are counted.
+260802 · Seven section-kind divisions added, one per kind this outlet declares.
+  Each carries the pack's measured budget with its `style.md` line, the arc, the signature moves as slot patterns, and the anti-patterns the pack names by hand.
+  The formal apparatus is now addressed: Propositions and comparative statics in `### 5`, the estimating equation in `### 6`, welfare in `### 7` and `### 8`, proofs in `### 9`.
+  The load-bearing content the retired family page carried was folded in from `playbook-utd-is/README.md`: the one-claim thread through abstract, introduction and discussion, the market-paper welfare claim, and the manuscript-length figure.
+  Three numbers that do not reconcile are recorded as sub-paragraphs rather than smoothed over: three abstract ranges, two discussion ranges, and an analytical budget with no counted section under it.
+  The Writing Style bullet was relaxed from never transcribing a norm to citing every number inline.
+260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page.
+  That file already carries the glob rule for the section abbreviation, an outlet-to-kinds map measured on disk, the `theory-model` alias, and the blueprint-only declaration for grant and patent.
+  Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
 260802 · Opened with the QBv outlet pages, from `playbook-utd-is/MS-IS` at `Venue-Paper@fe25a88`.

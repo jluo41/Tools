@@ -125,8 +125,8 @@ A renderer may rebuild candidates inside the workspace as often as it likes, and
 
 ## Law
 
-One Display unit has one identity and two filesystem roles.
-Board authority and rebuild state stay numbered; only the selected `float.tex` and assets enter the unnumbered journal projection.
+- One Display unit has one identity and two filesystem roles.
+  Board authority and rebuild state stay numbered; only the selected `float.tex` and assets enter the unnumbered journal projection.
 
 ## Glossary
 

@@ -4,7 +4,13 @@
         s = chat.querySelector('.scope');
     m.value = localStorage.getItem(MK) || 'opus';
     e.value = localStorage.getItem(EK) || 'high';
-    s.value = localStorage.getItem(SK) || 'full';
+    /* DEFAULT: Full · no ask (JL 260802 ruled it). The board's chat is a tool
+       you drive on your own machine, on your own files, and a prompt before
+       every edit is a click you make hundreds of times a day to answer "yes"
+       every time. `scoped` stays for a session you want fenced to one page, and
+       `full` for CLI-style per-call prompts. A choice already made is
+       remembered, so this only changes what a NEW browser starts with. */
+    s.value = localStorage.getItem(SK) || 'bypass';
     m.onchange = function () { localStorage.setItem(MK, m.value); };
     e.onchange = function () { localStorage.setItem(EK, e.value); };
     s.onchange = function () {
@@ -68,6 +74,13 @@
         body: JSON.stringify({ path: boardPath(), file: inflight.file }) });
       bubble('sys', 'Stop signal sent — it will wrap up at the next message…');
     } catch (e) { /* 服务器都不通了，直接放弃等待 */ }
+    /* ONE ACTION, ONE MESSAGE. The abort below lands in the catch, which says
+       "Stopped waiting. The server got the stop signal too." — so pressing ⏹
+       printed two lines that half contradict each other, the first saying it
+       will wrap up and the second that we stopped waiting (found 260802 by
+       asserting the drawer says exactly one thing about stopping). The line
+       above is the honest one and it is already on screen. */
+    if (inflight.mark) inflight.mark();
     inflight.ctrl.abort();                // 浏览器这边立刻不等了
   }
   function chatBusy(on) {
@@ -331,6 +344,8 @@
     if (!attach) busyStart('Thinking');
     var ctrl = new AbortController();
     inflight = { ctrl: ctrl, file: cq.file };
+    var stoppedByUser = false;
+    inflight.mark = function () { stoppedByUser = true; };
     /* Watchdog. The fetch can hang with no event ever arriving, and then the
        code below never reaches chatBusy(false): red stop button, dead drawer,
        nothing moving. Report the silence, then give up rather than hang. */
@@ -607,9 +622,11 @@
         diag('REJOIN', 'gave up quietly: ' + (e.name || e.message || 'error'));
         return false;
       }
-      bubble('sys', e.name === 'AbortError'
-        ? 'Stopped waiting. The server got the stop signal too.'
-        : '⚠ ' + e.message);
+      if (!(e.name === 'AbortError' && stoppedByUser)) {
+        bubble('sys', e.name === 'AbortError'
+          ? 'Stopped waiting. The server got the stop signal too.'
+          : '⚠ ' + e.message);
+      }
       /* KEEP WHAT ARRIVED. The answer was only written to the local log at
          'done', so a turn that never got there left the question saved and the
          reply lost: reopening showed your own message with nothing under it,

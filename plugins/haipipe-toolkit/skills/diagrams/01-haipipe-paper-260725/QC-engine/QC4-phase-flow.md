@@ -146,11 +146,10 @@ What is open is no longer a ruling. Re-checking this face on 260727 found the sh
   The announce-every-boundary rule and the no-silent-skips rule, and the seed run that caused them.
 
 ## Law
-A stage does not do work; it walks its declared `phases:` in order and dispatches each to its own worker skill. A phase executed inline did not run.
 
-`phases:` is a list, not a type, and it always ends with `check`. `gates:` is declared the same way, and defaults to `[check]`.
-
-No silent skips. A phase may be skipped at run time only by an explicit logged verdict: one reply line with the reason, a `[PHASE] skipped -- <reason>` entry in the owning S page's `## Log`, and `--` on the phase line. "The draft looks fine" is a verdict to record, never a licence to say nothing.
+- A stage does not do work; it walks its declared `phases:` in order and dispatches each to its own worker skill. A phase executed inline did not run.
+- `phases:` is a list, not a type, and it always ends with `check`. `gates:` is declared the same way, and defaults to `[check]`.
+- No silent skips. A phase may be skipped at run time only by an explicit logged verdict: one reply line with the reason, a `[PHASE] skipped -- <reason>` entry in the owning S page's `## Log`, and `--` on the phase line. "The draft looks fine" is a verdict to record, never a licence to say nothing.
 
 ## Discussion
 > CC 260727: this face's one 🧠 turned out to be already ruled on disk, in three places, so after this pass nothing on it is undecided and everything left is write-down, check, or pointer work. Under the board's own `state:` contract that reads ✅ RULED, not 🟡. I did not touch the line, because closing a face is JL's act and because there is a real cost to closing it: four open items sit in this queue, one of them the mechanical assertion that would have caught the silent seed run, and a ✅ face gets read less often than a 🟡 one.

@@ -66,6 +66,19 @@
     if (!termT) return;
     var host = chat.querySelector('.tm');
     var w = host.clientWidth, h = host.clientHeight;
+    /* MEASURE THE FRAME WHEN THE HOST MEASURES NONSENSE. Inside QD5's chat
+       PANE the drawer is `position:fixed;inset:0` and `.tm` reported a
+       clientWidth of 16, which is its horizontal padding and nothing else. The
+       guard below then returned every time, so xterm kept whatever size it was
+       built with — a 501px screen inside a 16px box, 64 columns that never
+       changed however the pane was dragged. That is the messy terminal layout
+       (JL 260802), and it is measurable rather than a matter of taste.
+       The viewport is always right, so fall back to it. */
+    if (w < 40 && window.innerWidth >= 40) w = window.innerWidth;
+    if (h < 40 && window.innerHeight >= 40) {
+      var hd = chat.querySelector('.hd');
+      h = window.innerHeight - (hd ? hd.getBoundingClientRect().height : 0) - 8;
+    }
     if (w < 40 || h < 40) return;
     var c = cellDims();
     var cols = Math.max(20, Math.floor((w - 16) / c.w));
@@ -110,6 +123,13 @@
     };
     ws.onmessage = function (ev) {
       window.__wsDbg.msgs++;
+      /* A FRAME CAN ARRIVE AFTER THE TERMINAL IS GONE. `onclose` has guarded
+         against a null `termT` since it was written; this one never did, so
+         switching the pane from the TUI to the GUI while bytes were still in
+         flight threw `Cannot read properties of null (reading 'write')` into
+         the page (found 260802 by a suite that does exactly that switch).
+         Nothing to write to means nothing to write. */
+      if (!termT) return;
       var d = ev.data;
       if (typeof d === 'string') { if (d.charCodeAt(0) === 48) termT.write(d.slice(1)); return; }
       var b = new Uint8Array(d);
@@ -208,6 +228,20 @@
     setTimeout(function () { termT && termT.focus(); }, 50);
   }
   window.addEventListener('resize', function () { if (termOn) fitTerm(); });
+  /* A FRAME CAN CHANGE SIZE WITHOUT A WINDOW RESIZE. Dragging the split's
+     handle changes the chat pane's width and fires no `resize` inside it, so
+     the terminal kept its old column count and the text ran wrong until
+     something else happened to refit it. Watch the box itself. */
+  (function () {
+    if (typeof ResizeObserver !== 'function') return;
+    var host = chat.querySelector('.tm');
+    if (!host) return;
+    var t = null;
+    new ResizeObserver(function () {
+      clearTimeout(t);
+      t = setTimeout(function () { if (termOn) fitTerm(); }, 80);
+    }).observe(host);
+  })();
   /* Anything that changes the pane's box must refit, not just a window resize:
      the strip appearing, the drawer being dragged, a font swap. One observer on
      the pane covers every cause, including ones not invented yet. */

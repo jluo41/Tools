@@ -1,4 +1,4 @@
-# haipipe-writing · v0.6.0
+# haipipe-writing · v0.6.1
 state: 🟡 PARTIAL
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -16,7 +16,7 @@ It would be finished when a caller can run score, rewrite, apply and check end t
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
 
 ## Diagram
-<!-- haipipe:skill:tree:start ea4202a825457260 writing/haipipe-writing -->
+<!-- haipipe:skill:tree:start f230e8df4faea9c7 writing/haipipe-writing -->
 
 ```
 haipipe-writing/
@@ -24,7 +24,7 @@ haipipe-writing/
     agree.py            176 ln  Two statements of one fact, compared. Read-only.
     holes.py             95 ln  Audit the holes in a document: unowned placeholders, and dangling owners.
     score.py            113 ln  Find the prose most likely to fail the weak-English test. Read-only.
-    wdiff.py            194 ln  Word-level change records, computed rather than written.
+    wdiff.py            201 ln  Word-level change records, computed rather than written.
   ref/
     ai-tells.md          55 ln  AI tells: the general catalogue
     change-record.md    113 ln  The change record: `✎`
@@ -32,8 +32,8 @@ haipipe-writing/
     plain-rules.md       91 ln  The plain-English rules, and the ruling behind each one
     weaving.md           59 ln  Weaving: the paragraph-flow pass
   tests/
-    test_roundtrip.py    94 ln  What `apply` writes, `check` must accept. Run: python3 tests/test_roundtrip.py
-  CHANGELOG.md          164 ln  haipipe-writing
+    test_roundtrip.py   114 ln  What `apply` writes, `check` must accept. Run: python3 tests/test_roundtrip.py
+  CHANGELOG.md          187 ln  haipipe-writing
   SKILL.md              173 ln  /haipipe-writing · rewrite prose, and leave a trail
 ```
 
@@ -63,9 +63,9 @@ WORKFLOW  ── who calls it, and where the judgment sits
 ```
 
 ## Content
-<!-- haipipe:skill:body:start ea4202a825457260 writing/haipipe-writing -->
+<!-- haipipe:skill:body:start f230e8df4faea9c7 writing/haipipe-writing -->
 
-**haipipe-writing** · `0.6.0` · last shipped 2026-08-02
+**haipipe-writing** · `0.6.1` · last shipped 2026-08-02
 
 - folder   `writing/haipipe-writing/`
 - tools    not declared
@@ -221,13 +221,13 @@ So the reader who pays is the one who knows least, and nobody in the room is tha
 cli/agree.py                176 ln  Two statements of one fact, compared. Read-only.
 cli/holes.py                 95 ln  Audit the holes in a document: unowned placeholders, and dangling owners.
 cli/score.py                113 ln  Find the prose most likely to fail the weak-English test. Read-only.
-cli/wdiff.py                194 ln  Word-level change records, computed rather than written.
+cli/wdiff.py                201 ln  Word-level change records, computed rather than written.
 ref/ai-tells.md              55 ln  AI tells: the general catalogue
 ref/change-record.md        113 ln  The change record: `✎`
 ref/holes.md                 90 ln  The hole discipline: what to do about what you do not know
 ref/plain-rules.md           91 ln  The plain-English rules, and the ruling behind each one
 ref/weaving.md               59 ln  Weaving: the paragraph-flow pass
-tests/test_roundtrip.py      94 ln  What `apply` writes, `check` must accept. Run: python3 tests/test_roundtrip.py
+tests/test_roundtrip.py     114 ln  What `apply` writes, `check` must accept. Run: python3 tests/test_roundtrip.py
 ```
 
 <!-- haipipe:skill:body:end -->
@@ -272,10 +272,28 @@ tests/test_roundtrip.py      94 ln  What `apply` writes, `check` must accept. Ru
 260802 1400 · P2 and P3 both closed. The version drift was repaired at its source, and the humanizer call was verified rather than assumed: real, wired twice, no second implementation. The verification itself produced P4 and P5.
 260802 1130 · Recorded the version drift as P2 rather than repairing it here. The number lives in the skill folder, and a board page that edits its subject to make its own header look right is the wrong direction of travel.
 
-<!-- haipipe:skill:log:start ea4202a825457260 writing/haipipe-writing -->
+<!-- haipipe:skill:log:start f230e8df4faea9c7 writing/haipipe-writing -->
 
-Converted from the skill's own `CHANGELOG.md`: 6 releases.
+Converted from the skill's own `CHANGELOG.md`: 7 releases.
 
+260802 · `0.6.1`
+      **A split rewrite anchored its record on the LAST new line, not the first.**
+      `ref/change-record.md` §3 states both halves of the rule: the diff covers the
+      whole rewritten run, and the record sits under the FIRST of the new lines.
+      `apply` wrote `[first] + tail + kept + [rec]`, which puts it under the last. So a
+      40-word sentence broken into three short ones carried its record on sentence
+      three, describing words that had moved up to sentence one. That is the exact
+      mis-anchoring this tool exists to prevent, in the tool.
+      It survived four releases because every rewrite it had been handed was
+      single-line, where `tail` is empty and the two orders produce the same string.
+      Found on `QBv1-misq.md` (260802), on the first rewrite that split one source line
+      into three.
+      - `cli/wdiff.py` — `[first] + kept + [rec] + tail`. The existing lane run still
+        travels with the sentence it belonged to, and the new record still joins the
+        END of that run; only the rest of the split now follows it.
+      - `tests/test_roundtrip.py` — a split case, asserting the record sits under line
+        one after its existing `> Citation:` lane, that line two follows it, and that
+        the diff still covers the whole run.
 260802 · `0.6.0`
       **`cli/agree.py`: two statements of one fact, compared** (JL 260802, from `QA10`
       aim 7). Three defects surfaced that afternoon and all three were one shape, two

@@ -47,7 +47,11 @@ def chat_scope(payload):
     if bool(payload.get("quality_check")):
         return "scoped"
     requested = payload.get("scope")
-    return requested if requested in ("scoped", "full", "bypass") else "full"
+    # A browser that names no tier gets Full · no ask (JL 260802). The old
+    # default was `full`, which prompts per tool call; on a board you drive on
+    # your own files that is a click you make hundreds of times to say yes.
+    # Quality Check above is exempt and stays read-only whatever is asked.
+    return requested if requested in ("scoped", "full", "bypass") else "bypass"
 
 
 def quality_tool_allowed(name):
@@ -1089,6 +1093,8 @@ class ChatMixin:
         except Exception:
             return {}
 
+    _SESSMAP_LOCK = threading.Lock()
+
     def record_session(self, f, sid, name=None):
         """登记条目从裸 id 升级成 {id, name}（JL 260731：session 要有名字，
         Qxxx-干什么用的）。旧表里的裸字符串就地迁移；name=None 不覆盖已有名。"""
@@ -1105,11 +1111,34 @@ class ChatMixin:
                 name = old.get("name", "")
         rows.insert(0, {"id": sid, "name": name or ""})   # 最新的在前
         m[key] = rows[:50]
-        try:
-            self._sess_map_path().write_text(json.dumps(m, indent=1),
-                                             encoding="utf-8")
-        except Exception:
-            pass
+        # RE-READ AND MERGE UNDER A LOCK, then write once.
+        #
+        # This was a plain read-modify-write on a file several processes share:
+        # one serve.py per board is the normal case, but a checks run, a second
+        # window or a stray daemon all write the same `sessions.json`, and the
+        # last writer wins with whatever it happened to read minutes earlier.
+        # Measured 260802: QD2's list went from three sessions to ONE, so the
+        # picker offered nothing to switch to and `＋ New session` looked
+        # broken while the .jsonl files were all still on disk.
+        with self._SESSMAP_LOCK:
+            fresh = self._sess_map()
+            for k, v in fresh.items():
+                if k == key:
+                    continue
+                m.setdefault(k, v)
+            # keep anything another writer added to OUR key while we worked
+            mine = {r["id"] for r in m[key]}
+            for r in fresh.get(key, []):
+                r = r if isinstance(r, dict) else {"id": r, "name": ""}
+                if r["id"] not in mine:
+                    m[key].append(r)
+            m[key] = m[key][:50]
+            try:
+                tmp = self._sess_map_path().with_suffix(".json.tmp")
+                tmp.write_text(json.dumps(m, indent=1), encoding="utf-8")
+                tmp.replace(self._sess_map_path())      # atomic on POSIX
+            except Exception:
+                pass
 
     def name_session(self, f, p):
         """POST /_board/session-name {file, id, name} → 给某段 session 改名。

@@ -181,8 +181,8 @@ It is written here with what it did NOT exercise, so a later reader cannot mista
 
 ## Law
 
-A correct-looking artifact produced by ignoring the contract is a failure, not a pass.
-The author may run ① and ①ʹ; only a stranger may produce ② evidence, and a partial clean-context run is never recorded as partial credit toward it.
+- A correct-looking artifact produced by ignoring the contract is a failure, not a pass.
+  The author may run ① and ①ʹ; only a stranger may produce ② evidence, and a partial clean-context run is never recorded as partial credit toward it.
 
 ## Glossary
 

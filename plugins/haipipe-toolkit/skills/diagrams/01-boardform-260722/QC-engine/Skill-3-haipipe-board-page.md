@@ -1,42 +1,86 @@
-# haipipe-board-page · v0.10.0
-state: 🔴 OPEN
+# haipipe-board-page · v0.11.0
+state: 🟡 in flux · door test passed 260802, scope bound unmeasured
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-Does `haipipe-board-page` give every author and reviewer one dependable contract for what a Board page must do?
+`haipipe-board-page` is the spec a board page is measured against, and the door for its two verbs: create a page, or work on one that exists.
+Load it when the unit of work is one page, and `haipipe-board` when you want to build or check a whole board.
+This skill holds the contract; that one holds the machinery.
+Finding it is proven; where an agent stops once inside is not.
+On 260802 three fresh agents all opened it unaided, then wrote to 15, 1 and 2 files from the same instruction.
 
-This spec owns the shared frame, section responsibilities, closure records, and evaluation rules for every page kind.
-The difficult boundary is letting consumer variants define their substance without redefining the frame around it.
-Routing, page creation, quick checks, and fresh review all depend on this contract agreeing with itself.
-It is healthy when those consumers resolve the same requirements and reach evidence-based verdicts without private copies.
+**Where the line with `haipipe-board` runs**: both are doors, and the unit of work is what separates them.
+Ask for a board and `haipipe-board` renders it, serves it and checks it.
+Ask for a page and this skill decides what that page must contain, then calls those same scripts.
+So the renderer, the write-back server, `check.py` and `ref/page-template.md` all live over there, and this skill cites the template rather than forking it.
+
+**What the 260802 measurement showed**: the test removed every hint, giving three fresh agents one sentence each with no path, no skill name and no example page.
+All three opened this skill unaided, at tool calls #5, #6 and #5, including the one phrased "can you clean up QF5-sentence-run for me", whose words match no trigger in the description.
+They drove three pages from 15, 13 and 10 findings to zero.
+The same run exposed what nobody had questioned: from that one instruction they wrote to 15 files, 1 file and 2 files, so the verb said where to start and never where to stop.
+`0.10.0` wrote that bound in as steps 7 and 8, and no second run has measured it.
+
+**Covered elsewhere**: `haipipe-board-sentence` owns everything below a section, such as a comment lane attached to one sentence.
+`haipipe-board-routing` is a consumer rather than a neighbour: it loads this contract to decide which page and which section an input belongs in.
+`haipipe-board-page-for-skill` owns the Skill and Agent mirror kinds, and it is the variant this page itself is written to.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 372a94b2e00ec17f board/haipipe-board-page -->
+<!-- haipipe:skill:tree:start 1c40462ba7492253 board/haipipe-board-page -->
+
+**What `haipipe-board-page` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-board-page/
-  CHANGELOG.md         151 ln  haipipe-board-page · Changelog
-  SKILL.md             295 ln  /haipipe-board-page · the page, as a contract you can load
+  CHANGELOG.md         164 ln  haipipe-board-page · Changelog
+  SKILL.md             299 ln  /haipipe-board-page · the page, as a contract you can load
 ```
 
 <!-- haipipe:skill:tree:end -->
 
-```
-WORKFLOW  (authored: a folder can be read off disk, an intent cannot)
-Draw how this skill is actually used: the entry point, what it reads,
-what it writes, and where it hands off. Delete this fence if the tree
-above is the whole story.
+**How the page contract is reached**: the two verbs that run it, the spec load that only reads it, and the scope bound added at 0.10.0.
+
+```text
+WORKFLOW  two verbs and one spec load, from the same door
+
+  ── loaded as a SPEC ──────────────────────────────────────────
+  an agent with NO board open needs to know what a page is:
+  routing picking a section · a variant author in another family
+  (haipipe-paper-stage is the first) · the chat drawer, one day
+        │  it READS the contract and writes nothing
+        ▼
+  the seven sections, in their fixed order, and what each one owes
+  🧭 Opening  🖼 Diagram  📚 Content  🎯 Aims  📍 States  📎 Files  🗃 folds
+
+  ── invoked as a VERB ─────────────────────────────────────────
+  "create a new page on <topic>"      "working on <page>"
+        │                                   │
+        ▼                                   ▼
+  scaffold from ref/page-template.md   start from check.py's findings
+  register it in board.md ## Pages     bring the page to the contract
+        │                                   │
+        └───────────────┬───────────────────┘
+                        ▼
+              calls haipipe-board's ENGINE
+              build.py · check.py · never its own renderer
+
+  ── the bound, added at 0.10.0 because it was measured missing ──
+  steps 7 and 8: ONE page is the deliverable. A write outside it is
+  allowed only when the page cannot be made correct without it, and
+  it must be named in the report. A sibling's CONTENT is never
+  rewritten. Three fresh agents given the same instruction wrote to
+  15 files, 1 file and 2 files: the verb said where to start and
+  never where to stop.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 372a94b2e00ec17f board/haipipe-board-page -->
+<!-- haipipe:skill:body:start 1c40462ba7492253 board/haipipe-board-page -->
 
-**haipipe-board-page** · `0.10.0` · last shipped 2026-08-02
+**haipipe-board-page** · `0.11.0` · last shipped 2026-08-02
 
 - folder   `board/haipipe-board-page/`
 - tools    not declared
-- summary  Two verbs, create and working-on, drive one page end to end; the skill owns the contract and calls haipipe-board's engine rather than containing it.
+- summary  Names haipipe-board-page-for-skill as the Skill and Agent mirror variant, the one variant that ships beside this skill rather than under a consumer family.
 
 ### SKILL.md
 
@@ -78,6 +122,9 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       A page kind used by one consumer family is a VARIANT of the base: it defines Content and may populate fixed extension points in Aims, States, and Stage Contract, but it never redefines, adds, removes, or reorders those frame sections.
       The variant ships under its consumer (`haipipe-paper-stage` is the first), never here.
       This skill owns the BASE those variants extend.
+      The Skill and Agent mirror kinds are the exception, because their consumer IS the board family: their variant is `haipipe-board-page-for-skill`, which ships beside this skill.
+      Load it before writing or fixing any `Skill-<n>` or `Agent-<n>` page.
+      It exists because a mirror page DECIDES NOTHING, so this skill's Opening shape, which ends in `what this page decides`, leaves it with no question to ask; five roster pages filled that empty slot with the same rhetorical question on 260802.
 
 - 2 · 📑 The seven sections, in their fixed on-stage order
       **The seven sections in order**: what each owes a reader, and how much a machine may write into it.
@@ -263,19 +310,52 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
 <!-- haipipe:skill:body:end -->
 
 ## Aims
-- [ ] 🧠 Rule this skill's health
-      `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
+- [x] 🧪 The door test passes on evidence rather than on argument
+      Three fresh agents were given one sentence each, with no path, no skill name and no example page, and all three opened this door unaided at tool calls #5, #6 and #5.
+      One of them was phrased "can you clean up QF5-sentence-run for me", whose words match no trigger in the skill's description, and it opened the door anyway.
+      The same run drove three pages from 15, 13 and 10 findings to zero and took the board from 210 findings to 171.
+- [ ] 🛑 The scope bound holds on a second measured run
+      The same three agents wrote to 15 files, 1 file and 2 files from the same instruction, so what failed was never discovery, it was where to stop.
+      0.10.0 added that bound as steps 7 and 8, and nobody has re-run the measurement since, so the fix is reasoning until a second run produces a tighter spread.
+- [ ] 🧹 `live/chat.py` loads this spec instead of restating it
+      Four rule strings there teach an agent the page and board contracts in Python prose, and `QB5d` already caught one describing a page shape that no longer existed.
+      This is `A6.1` on `QC1b`, and it is the family's one real defect: the fix costs one function and adds no version surface.
+- [ ] 🧩 A page can name the unit that supports it
+      `QB5a · Evidence Card` should be able to say `supported by haipipe-board-sentence · Evidence Card` without duplicating the board-level roster.
+      The syntax is unruled and no page carries one, which is `A7.1` on `QC1b`.
 
 ## States
-Page generated 260731 1115. Nothing ruled yet.
+This is the most proven unit in the family and also the one changing fastest: 10 releases to 0.10.0, and the only one whose door test was measured rather than assumed.
+Its health is `🟡 in flux` because 0.10.0 shipped a bound that has not been re-measured, not because anything about it is unsettled.
+It is also the base that variant doors extend, so `haipipe-paper-stage` and any future task or display variant depend on this contract staying one file.
+
+- 260802 CC · 🧪 The measurement, and the thing it accidentally proved instead
+  The 260731 fan-out could not test the door: its brief pasted the path to `SKILL.md` and named `QB4` as the worked example, so all five agents read the contract as a plain file and not one of them invoked it.
+  The real test removed every hint, and what it proved was the trigger surface; what it disproved was the scope, which had never been questioned.
+  A test that only confirms what you expected has told you less than one that fails somewhere you were not looking.
+- 260802 CC · 📄 The base and variant split makes this spec's second consumer real
+  `haipipe-paper-stage` ships the S page kind under the paper family, which JL's base and variant model reads as the first variant door working as intended rather than as a leak.
+  So this unit is not written only for routing: variant authors in other families resolve the same base contract, which is why a rule may never be forked into a variant.
 
 ## Log
+260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the spec load, the two verbs and the 0.10.0 scope bound, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. The measured door test recorded as met, and its scope failure recorded as the one Aim it left open
 260731 1115 · page generated from `board/haipipe-board-page/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 372a94b2e00ec17f board/haipipe-board-page -->
+<!-- haipipe:skill:log:start 1c40462ba7492253 board/haipipe-board-page -->
 
-Converted from the skill's own `CHANGELOG.md`: 10 releases.
+Converted from the skill's own `CHANGELOG.md`: 11 releases.
 
+260802 · `0.11.0`
+      - Names `haipipe-board-page-for-skill` as the variant for the Skill and Agent mirror
+        kinds, and says to load it before writing or fixing any `Skill-<n>` or `Agent-<n>`
+        page. It is the one variant that ships BESIDE this skill rather than under a
+        consumer family, because for those two kinds the consumer IS the board family.
+      - Records why that variant had to exist rather than a tighter rule here. This skill
+        already carries the noun-substitution test, so the rule was on the books when five
+        roster pages came out of one template on 260802. The cause is upstream of the test:
+        this skill's Opening shape ends in `what this page decides`, and a mirror page
+        decides nothing, so a writer obliged to ask a question can only manufacture a
+        rhetorical one. The empty slot was the defect, not the writers.
 260802 · `0.10.0`
       - `working on an existing page` gains steps 7 and 8: ONE page is the deliverable,
         a write outside it is allowed only when the page cannot be made correct without

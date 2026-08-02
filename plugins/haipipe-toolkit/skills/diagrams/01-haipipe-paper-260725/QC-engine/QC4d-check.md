@@ -200,11 +200,10 @@ Two things are genuinely open, and both are about form rather than mechanism. Th
   The MISQ page carrying the agent-approved seed gate.
 
 ## Law
-A stage closes at exactly one gate, at CHECK, and the human's attention is spent there and nowhere else. The phases before it run unattended only because none of them can spend; that is the whole safety argument, and raising `probe_depth` reopens all three.
 
-CHECK is never implicit. Entering it means presenting the exit-criteria report and the approval ask. Feedback arriving early does not become a gate because somebody responded to it.
-
-An agent may stand in for the human only in the declared `autopilot` mode, in a fresh context, and it may never pass a human-only item: those are marked DEFERRED and accumulate in a human queue. The ledger records the actor. A human may reopen any agent-approved gate, which resets that stage's ledger row.
+- A stage closes at exactly one gate, at CHECK, and the human's attention is spent there and nowhere else. The phases before it run unattended only because none of them can spend; that is the whole safety argument, and raising `probe_depth` reopens all three.
+- CHECK is never implicit. Entering it means presenting the exit-criteria report and the approval ask. Feedback arriving early does not become a gate because somebody responded to it.
+- An agent may stand in for the human only in the declared `autopilot` mode, in a fresh context, and it may never pass a human-only item: those are marked DEFERRED and accumulate in a human queue. The ledger records the actor. A human may reopen any agent-approved gate, which resets that stage's ledger row.
 
 ## Discussion
 > CC 260727: the ledger row's shape needs JL, because the two candidates are each backed by something that already binds. `ref/08-stage-gate.md:207` documents a five-column pipe table. Nine live rows are prose sentences, and the no-pipe-table rule that `2a-venue`'s own `done_criteria` enforces is on the prose side. Option A, adopt the prose row: costs nothing to migrate because it is what the pages already do, and it keeps the ledger consistent with every other hand-edited region on an S page; it costs a checker, because "confirmed 2026-06-23 by JL" is a sentence a grep can find but not parse into an actor, so the mode-and-actor assertion would have to match a fixed prefix rather than read a column. Option B, keep the table: buys a parseable row immediately, and costs nine migrations plus a standing exception to the no-pipe-table convention inside the one region where history accumulates. My recommendation is A with a fixed prefix, `GATE · <stage> · <verdict> <date> by <actor> · mode <copilot|autopilot>`, which is greppable on all five values while staying a sentence. The cost of A that I would not hide is that it makes the ledger a convention rather than a structure, so the checker only catches a row that was written carelessly, never one that was never written.

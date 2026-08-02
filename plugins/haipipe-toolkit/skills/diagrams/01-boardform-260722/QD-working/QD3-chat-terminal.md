@@ -36,7 +36,45 @@ This page succeeds when the process can be opened, resumed, released, and handed
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD3
 
+## Content
+
+### 1 · Using the TUI smoothly, and handing the question back and forth
+
+```
+  ⌨️ WHEN TO REACH FOR THIS ONE, not the GUI chat of `QD2`
+     long jobs · skills · anything CLI-shaped · watching a command run
+     the GUI chat is for gated edits in the page, diffs, and tool cards
+
+  🔁 ONE QUESTION, TWO WINDOWS, NEVER BOTH        QD1's Law
+     >_ TUI Chat  ▶ hands this question to a real terminal
+     💬 GUI Chat  ▶ takes it back, transcript intact
+     the strip's two buttons are one radio: the lit one is where you are,
+     clicking it again puts the whole chat pane away
+
+  🧷 WHAT SURVIVES WHAT
+     a page-pane navigation   ▶ the terminal is untouched, different frame
+     a reload of the shell    ▶ the PTY is PARKED, not killed; it comes back
+     closing the tab          ▶ parked, then reaped on its own timer
+```
+
+The terminal is the real CLI on the machine the files are on, so it can do everything a terminal does, and that is the reason to pick it over the drawn chat of `QD2`.
+Reach for it when the job is long, when it needs skills, or when you want to watch a command run rather than read a summary of it.
+
+The handover is the part worth learning, and it is one gesture.
+`>_ TUI Chat` gives this question to the terminal, `💬 GUI Chat` takes it back, and the transcript is still there when it returns.
+They are one radio rather than two buttons: the lit one says where you are, clicking the other switches, and clicking the lit one puts the chat pane away without ending anything.
+Both are driven and asserted in `checks/guichat.mjs` T17, so a broken handover is a failing check rather than a surprise.
+
+Why never both at once: `QD1`'s Law is one live window per question, because two front ends writing one `.jsonl` fork the history.
+The switch is therefore a handover and not a second window, which is also why the drawer's own `>_` control still exists underneath and does the actual work.
+
 ## Aims
+### 🔁 Coming back to a parked terminal
+- A4.1 · A reader who reloads the shell gets the SAME terminal back, with what was on it.
+  **Done when:** after a full reload the pane shows the parked session and its ring replay, not an empty terminal.
+- A4.2 · The terminal is the size of the pane it is in, at every width.
+  **Done when:** dragging the split handle changes the terminal's column count, and no width leaves a sideways scrollbar.
+
 ### ⌨ The entry and its session
 - [x] A ⌨ entry on every Q card
       A ⌨ in the drawer header; switching turns the whole drawer into this question's real terminal.
@@ -97,6 +135,9 @@ This page succeeds when the process can be opened, resumed, released, and handed
       The console relay widens the audience the day inlab is exposed (`QE1`): auth lands there first.
 
 ## States
+### 🔁 Coming back to a parked terminal
+- ✅ A4.1 · CLOSED 260802, and it was never broken. The terminal comes back after a full shell reload with the SAME key and its ring replayed, four runs out of four (`1c87f5ece80e` → `1c87f5ece80e`, ~1,240 characters). Two false alarms had to be cleared first, both mine. I reported it as coming back EMPTY: it does not, and the missing pre-reload `echo` is the CLI repainting itself on reconnect, which is what a full-screen app does. Then I reported it as non-deterministic, roughly half the runs: it is not, and the coin-flip was `checks/tuichat.mjs` clicking `>_ TUI` unconditionally. The strip's two buttons are a radio with an OFF position, so clicking the lit one PUTS THE CHAT AWAY; whether it was already lit depended on the previous run's `board-split-chat`, and the suite was closing the pane it meant to open. Now asserted rather than reported.
+
 Built, and it lives in the page. ⌨ in the drawer header enters the terminal; clicking again (💬) hands the session back.
 
 - 260801 JL · 🩹 The shredded screen was the ring replay, painted at the previous viewer's width
@@ -154,11 +195,11 @@ Built, and it lives in the page. ⌨ in the drawer header enters the terminal; c
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
-- [x] 🧭 Ruled 260801: board-level work lives in `QD1`'s attachment levels, and `QD7` is archived
+- [x] 🧭 Ruled 260801: board-level work lives in `QD1`'s attachment levels, and `QDa7` is archived
       JL: "你把那个 Q board 的 agent 给删掉，我们不再需要了."
-      CC had proposed narrowing `QD7` to a DISPATCHED agent that runs with no reader watching; JL ruled the simpler way and retired the page instead.
-      `QD1` settled that a chat attaches to a board, a group, or a page, and board chat and group chat both ship, which answers the need `QD7` was opened to raise back when chat was pinned to one question.
-      The page is readable at `_archive/QD7-boardagent.md` and `QD7` still resolves there through `## Links`.
+      CC had proposed narrowing `QDa7` to a DISPATCHED agent that runs with no reader watching; JL ruled the simpler way and retired the page instead.
+      `QD1` settled that a chat attaches to a board, a group, or a page, and board chat and group chat both ship, which answers the need `QDa7` was opened to raise back when chat was pinned to one question.
+      The page is readable at `_archive/QD7-boardagent.md` and `QDa7` resolves there through `## Links`; the bare `QD7` alias was deleted on 260802, because a LIVE `QD7` now exists and silently won every one of these links.
 
 - 260801 JL+CC · 📦 QD3m folded back into this page; one terminal page again
   JL: "the QD3 and QD3m, should we just keep one of them?" — yes, this one. QD3m's engine half (§8 own-PTY) had already shipped INTO this page as 0.64.0, its picker and paste items were built and ticked, and its still-open smooth view rides `QD2` M1's session host, so a separate page held only a decision list. The open work moved up into the 🪄 smooth-pane items with CC's proposals adopted as plan of record (route D · toggle standing A), the file is archived at `_archive/QD3m-smooth-terminal.md` with the full myrlin analysis intact, and `checks/pty_e2e.py`'s default target repointed here.
@@ -294,6 +335,11 @@ Fine to use as a standalone tool; constraints bite when you copy it into somethi
 >> CC0723: read its source: the discovery path matches ours exactly. But it is a whole application, too heavy; ended with ttyd + serve.py's own proxy embedded instead.
 
 ## Log
+260802 · A4.1 closed, and the lesson is worth more than the row. The terminal reattach after a reload was reported by me twice as broken, first as coming back empty and then as non-deterministic, and it was correct both times. The empty screen is the CLI repainting on reconnect. The coin-flip was the CHECK clicking `>_ TUI` unconditionally: the strip's buttons are a radio with an off position, clicking the lit one puts the chat away, and whether it was lit depended on what the previous run left in `board-split-chat` — so the suite was closing the pane it meant to open, about half the time. Click-only-if-not-lit, and it is four for four. The rule this leaves: when a UI control is a TOGGLE, a test that clicks it without reading its state is measuring its own history, not the product
+260802 · A4.1 corrected, and the correction is the finding. The terminal does NOT come back empty after a reload: same key either side, 1,300 characters replayed from the ring, parking working as designed. The missing `echo` is the CLI repainting on reconnect, which is what a full-screen app does. What is real is that the reattach is not DEPENDABLE — three outcomes from identical code in one sitting, including one where no terminal returned inside sixty seconds. Also learned, and worth keeping: the shell mirrors the page frame's path into its own address, so a test that moves the page frame and then reloads is asking for a DIFFERENT page's terminal, and asserting sameness across that is the test lying rather than the terminal failing
+260802 · The messy terminal layout was found, measured and fixed. Inside the chat pane xterm held a 501px screen in a 16px box at a fixed 64 columns, because `fitTerm` measures `.tm` and the pane's fixed positioning left that element reporting only its padding, so the small-box guard returned on every call. It now falls back to the frame's viewport and watches its own box with a `ResizeObserver`, since dragging the split handle resizes a frame without firing `resize` in it. Columns now track the pane: 64 at 520px, 102 at 820px, 36 at 300px, 47 by 11 on a phone, no sideways scrollbar anywhere. Recorded as A4.2 and asserted in `checks/switchback.mjs` S3
+260802 · `checks/tuichat.mjs` written, the first check this page has ever had, and it found the one rough edge on the terminal side. U1 the terminal opens on this question · U2 what you type runs and its output comes back, using `echo` so it costs nothing · U3 moving the page pane leaves it and its scrollback alone · U4 a full shell reload. U4 is the finding: the terminal comes back and it comes back EMPTY, and across runs it is not dependable about returning inside sixty seconds. Parking exists and `term.py` replays a 256KB ring on reconnect, so the machinery is there and the reattach is not reaching it. Recorded as A4.1 rather than asserted, because a flaky red teaches nothing
+260802 · Added `## Content` with the usage half a reader actually needs, on JL's ask that QD2 and QD3 both say how to use the two chats smoothly. It states when to reach for the terminal rather than the drawn chat, that the strip's `>_ TUI Chat` and `💬 GUI Chat` are ONE radio handing the same question back and forth under `QD1`'s Law rather than two windows, and what survives what: a page-pane navigation leaves the terminal untouched because it is a different frame, and a shell reload parks the PTY rather than killing it. The handover is driven and asserted in `checks/guichat.mjs` T17, so a broken one is a failing check instead of a surprise
 260801 · JL: "他已经在跑了，为什么我看不到？我切完之后，他那个状态全都没了" Root cause found and it is an ENGINE defect, not a form one: the 260801 (page, session) re-key changed where terminals are REGISTERED (`term_key(f, sid)`, term.py:538) and left four lookups on the old page-only key (`hold` 398/408, `park` 460, `kill_term` 734), so they cannot match by construction. `hold()` therefore rules a live terminal's claim void and lets the drawer open a second writer on the same `.jsonl`, which is how switching loses the state. Proven by key arithmetic (live `47d8ca068ee1` vs page-only `f891ba932470` for the same page) and by `/_board/release` returning `closed:false` on a terminal `/_board/terms` listed as alive. Fix drafted, not applied: it needs a serve.py restart, which ends every running terminal, so JL picks the moment
 260801 · JL retired `QD7` (the board-level agent): its premise expired when `QD1` settled three attachment levels, so the page is archived rather than narrowed as CC had proposed. Closes this page's 🧭 Decision Now item
 260801 · Design half split out as `QD4` after JL's phone session: this page keeps the engine, QD4 takes the form. The 📱 item handed over, Boundary now names the seam. Three diagnoses recorded there, all read from code and none yet confirmed on a device: the doubled keystroke on a phone is a THIRD cause (the IME's composition path, not the twice-fixed listener duplication), a correct repaint at ~46 columns is still unreadable, and the freeze after switching away is `pagehide` registered in three files with `pageshow` in none

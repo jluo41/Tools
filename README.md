@@ -1,16 +1,49 @@
 # Tools
 
 Personal [Claude Code](https://claude.ai/code) skill plugins for productivity,
-academic research, visual artifacts, and knowledge management.
+academic research, clinical model evaluation, and knowledge management.
 
 ## Plugins
 
 | Plugin | Description |
 |--------|-------------|
 | **[chronicle](plugins/chronicle/)** | Session logs, daily rollups, email indexing, and Obsidian/JSON Canvas workflows |
-| **[diagram-skill](plugins/diagram-skill/)** | ASCII diagrams, Excalidraw, draw.io, remote diagram sharing, and progress logs |
-| **[haipipe](plugins/haipipe-toolkit/)** | HAI-Pipe research toolkit: data, NN, endpoint, task, experiment, insight, paper, and application workflows |
+| **[haipipe](plugins/haipipe-toolkit/)** | HAI-Pipe research toolkit: data, NN, endpoint, task, discovery, probe, paper, application, board, and display workflows |
+| **[inlab-human](plugins/inlab-human/)** | In-lab human interaction with deployed prediction endpoints, where the Claude Code chat is the UI: on-demand inference in CONSOLE mode, blind-then-assisted reader protocol in STUDY mode |
+| **[jhu-research-it](plugins/jhu-research-it/)** | JHU Research-IT helpdesk: answers how-to questions about PMAP, SAFE, SAFER, Discovery, Databricks, Crunchr, Epic Cosmos, and REACH from a local `WIKI/` |
 | **[subjective-label](plugins/subjective-label/)** | Multi-agent subjective text annotation with calibration, validation, and scale workflows |
+
+`plugins/learn-infra/` is skills only (`learn-azure`, `learn-databricks`,
+`learn-audio-to-pronunciation`) and carries no `.claude-plugin/plugin.json`, so it
+is not installable as a plugin. Its skills arrive through the symlink installs
+below like any other.
+
+### Inside haipipe
+
+The largest plugin by far, and the one whose shape moves most. Counted from disk
+on 2026-08-02, excluding `_archive/`:
+
+```text
+family        skills   what it covers
+────────────────────────────────────────────────────────────────────────
+task            44     the internal executor: plan → build → execute → report
+paper           37     the paper lifecycle, seed through submission
+application     23     grant and application lifecycle
+discovery       15     the external-evidence executor: search · review · idea
+display         10     tables, figures, diagrams, slides, posters
+0_utils          8     shared utilities (diagrams, notebooks, obsidian, arxiv)
+board            5     one topic, one folder, one page per decision or stage
+0_connect        3     remote and infrastructure connectors
+probe            1     the consumer-level Q/A map binding questions to answers
+project          1     container scaffolding for a new project
+writing          1     prose rules for any authored text in the repo
+────────────────────────────────────────────────────────────────────────
+                148    plus 20 agents, and `diagrams/` (design boards, not skills)
+```
+
+`diagrams/` holds design **boards** rather than skills: one folder per topic,
+argued page by page, which is where a family's rules are settled before they
+graduate into a `SKILL.md`. See `plugins/haipipe-toolkit/skills/STRUCTURE.md`.
 
 ## Installation
 
@@ -26,10 +59,16 @@ Then in Claude Code:
 
 ```text
 /plugin install chronicle@jluo41-tools
-/plugin install diagram-skill@jluo41-tools
 /plugin install haipipe@jluo41-tools
+/plugin install inlab-human@jluo41-tools
+/plugin install jhu-research-it@jluo41-tools
 /plugin install subjective-label@jluo41-tools
 ```
+
+The list a plugin name must appear in is `.claude-plugin/marketplace.json`, and
+its `source` must be a directory that exists. An entry pointing at a deleted
+folder fails only at install time, which is why the two halves are worth checking
+together whenever a plugin is added or retired.
 
 By default, `install.sh` registers this repository as the `jluo41-tools`
 marketplace. If the parent workspace has a `.claude/` directory, it symlinks
@@ -59,7 +98,7 @@ the agents directory, which is how a re-run can refresh its own copies and delet
 retired ones while never touching an agent file you wrote yourself.
 
 Junctions use absolute targets, so re-run `install.ps1` if you relocate the
-repo. The generated links are OS/machine-specific — gitignore
+repo. The generated links are OS/machine-specific, so gitignore
 `<workspace>/.claude/skills/` and `<workspace>/.codex/skills/` and regenerate
 per machine rather than committing them (committed symlinks check out as dead
 text stubs on Windows).
@@ -73,7 +112,12 @@ text stubs on Windows).
 This symlinks every discovered skill into `/path/to/workspace/.claude/skills/`
 and `/path/to/workspace/.codex/skills/` when those tool directories exist.
 Skill discovery is recursive, so deeply nested skills such as
-`haipipe-toolkit/skills/F_paper/4-write/paper-write` are included.
+`haipipe-toolkit/skills/paper/3-deliver/4-ship/haipipe-paper-to-word` are
+included.
+
+Recursive means recursive: anything matching `*/skills/*/SKILL.md` is a skill, at
+any depth. A vendored dependency that ships its own `SKILL.md` is therefore picked
+up too, so keep third-party trees out of `skills/`.
 
 ### Global Install
 

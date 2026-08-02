@@ -124,8 +124,8 @@ That makes placement a fact about citation order, which is a sequence, so it lef
 
 ## Law
 
-The unit of this series is the section, and the test of a section rule is that it cannot be checked one sentence at a time.
-A rule that reads the same with the paragraphs shuffled belongs on QB12, not here.
+- The unit of this series is the section, and the test of a section rule is that it cannot be checked one sentence at a time.
+  A rule that reads the same with the paragraphs shuffled belongs on QB12, not here.
 
 ## Glossary
 

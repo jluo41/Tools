@@ -16,8 +16,8 @@ Its central boundary is that it asks a question but never plans, routes, or exec
 haipipe-paper-draft/
   feedback/
     README.md            4 ln  haipipe-paper-draft -- Feedback Inbox
-  CHANGELOG.md         221 ln  haipipe-paper-draft — Changelog
-  SKILL.md             384 ln  Skill: haipipe-paper-draft (internal phase worker)
+  CHANGELOG.md         231 ln  ## 2026-08-01
+  SKILL.md             394 ln  Skill: haipipe-paper-draft (internal phase worker)
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -219,7 +219,15 @@ Users invoke stage skills:
 - 3.7 · Step 4c. 🤖 SELF-REVIEW — check the draft before handoff
       Verify mechanically that every `\cite{TOADD}` and `{VAL:?}` has a
       `[Q-<Stage>-<n>]` owner and every owner resolves to a Q-consumer block in the S
-      page. Do not run the probe-entry checker yet: no entries should exist from this
+      page. RUN IT, do not eyeball it (JL 260801):
+      ```text
+      python3 <skills>/writing/haipipe-writing/cli/holes.py <stage-doc> --dialect paper
+      ```
+      It checks both directions, and the second one is the one a reader misses: a hole
+      carrying `[Q-Main-9]` when no `Q-Main-9` exists LOOKS owned, so nobody ever goes
+      looking for it. The discipline behind the check is
+      `writing/haipipe-writing/ref/holes.md`; the notation, the `.bib` grep, and the
+      `1-probes/` boundary stay here, because none of those generalize. Do not run the probe-entry checker yet: no entries should exist from this
       phase. The sub-agent's job is semantic judgment — whether the draft says
       something, follows the stage contract, and raises answerable questions.
       Then, the CREATOR/REVIEWER split, so the drafter does not grade its own work. Dispatch a review sub-agent in a FRESH context (report-only; the drafter applies the fixes):

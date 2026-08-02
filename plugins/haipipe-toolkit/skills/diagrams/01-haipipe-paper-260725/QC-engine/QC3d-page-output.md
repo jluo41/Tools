@@ -162,11 +162,10 @@ The two stages the rule does not reach are pitch and narrative, each with an und
   Already walks `sections/`, `appendices/` and `0-lifecycle/`. Where the pairing assertion goes.
 
 ## Law
-The `.md` is the paper. The `.tex` is a build product, generated from it in one direction, and nothing reads back. A compiled artifact may never become the source of a claim, because at that moment two manuscripts exist and only one of them is reviewed.
 
-A delivered `.tex` with no S page behind it is not a build product, it is a second manuscript, whatever its filename says.
-
-Extraction is mechanical, not interpretive: an extractor that decides what a heading meant is a second author. That is a constraint the direction imposes on the extraction ruling; the ruling itself is `QB11a`'s.
+- The `.md` is the paper. The `.tex` is a build product, generated from it in one direction, and nothing reads back. A compiled artifact may never become the source of a claim, because at that moment two manuscripts exist and only one of them is reviewed.
+- A delivered `.tex` with no S page behind it is not a build product, it is a second manuscript, whatever its filename says.
+- Extraction is mechanical, not interpretive: an extractor that decides what a heading meant is a second author. That is a constraint the direction imposes on the extraction ruling; the ruling itself is `QB11a`'s.
 
 ## Discussion
 > CC 260727: on the orphan, I recommend writing the S page rather than deleting the file, and the two files should not get the same answer. `D_extended_literature_review.tex` is thirty-eight lines of real review prose with its own citations; deleting it costs nothing today and costs a rewrite the first time a reviewer asks for an extended literature treatment. The cost of the page is also real and worth naming: an `S-Appendix-<letter>` page is a gate, and this paper already carries forty S pages of which sixteen report an unconfirmed or blocked gate, so adding one adds a thing to confirm. `B_robustness_tables.tex` is seven lines and one `\input`, duplicating a letter `B_validation_details.tex` already owns, so it is the cheap opposite case and should probably just go. If you want one answer for both, delete both and accept that the review text is gone.

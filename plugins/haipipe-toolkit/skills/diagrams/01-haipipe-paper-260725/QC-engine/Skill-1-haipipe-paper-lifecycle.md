@@ -399,25 +399,25 @@ Specialists
       ---
       Board Refresh (every verb that writes an S page ends here)
       ----------------------------------------------------------
-      Ruled 2026-07-26 (design board `QA1`, `QA4`): **`/haipipe-paper` is the single thing a human types**, and `enter` leaves them LOOKING at the generated Board site in a browser. So a stale board is a
+      Ruled 2026-07-26 (design board `QA1`, `QA4`): **`/haipipe-paper` is the single thing a human types**, and `enter` leaves them LOOKING at `board.html` in a browser. So a stale board is a
       DEFECT, not an inconvenience: the human is reading a picture of a paper that no longer exists.
       Every verb routed from here that writes an S page ends by rebuilding.
       `haipipe-board` lives outside this family, at `skills/board/haipipe-board/`. Three entry
       points, and the paths are relative to THIS skill folder:
       ```bash
       # 1. REBUILD — after every write. Idempotent, ~1s, safe to over-run.
-      python3 ../../../board/haipipe-board/build.py <paper-root>/0-lifecycle
+      python3 ../../../board/haipipe-board/cli/build.py <paper-root>/0-lifecycle
 
       # 2. WATCH — run once per session in its own terminal, then stop thinking about it.
       #    Polls mtimes and rebuilds on any .md change. This is what makes it SMOOTH:
       #    it also closes the browser's "Sync to md" gap, where a human's comment lands
-      #    in the markdown but board/ stays stale until someone runs Python.
-      python3 ../../../board/haipipe-board/watch.py <paper-root>/0-lifecycle
+      #    in the markdown but board.html stays stale until someone runs Python.
+      python3 ../../../board/haipipe-board/cli/watch.py <paper-root>/0-lifecycle
 
       # 3. SERVE — the live layer, port 5599. The human reads
-      #    http://127.0.0.1:5599/<repo-relative-path>/0-lifecycle/board/index.html
+      #    http://127.0.0.1:5599/<repo-relative-path>/0-lifecycle/board.html
       #    NEVER file:// — the live layer is dead there and it is not the same page.
-      python3 ../../../board/haipipe-board/serve.py
+      python3 ../../../board/haipipe-board/cli/serve.py
       ```
       Calling is not owning. `haipipe-board` owns the build, the filename rule, the html and the
       write-back; this router calls it and renders nothing.
@@ -459,7 +459,7 @@ Specialists
       ```text
       ✅  say what failed, print the path or URL anyway, continue
       ✗   report success when only part of it worked
-      ✗   hand-edit board/ — it is generated, always
+      ✗   hand-edit board.html — it is generated, always
       ```
       The URL travels over the VS Code IPC socket, and `open` acts on the machine the agent runs on,
       which is not necessarily where the human is sitting. Hand over the URL; do not assume you can
@@ -577,11 +577,11 @@ Converted from the skill's own `CHANGELOG.md`: 20 releases.
       The pin needed no new field. It was already on the page's own `state:` line: `state: ✅ PINNED · MISQ 2026`. Corrected in 12 places across the stage contract, the console, the router, the two refs, the anatomy spec and `restructure`.
       Recorded on design-board face `QA4` as the third cross-package gap of the day, with the rule it produced: **`haipipe-paper` may not invent a face-grammar key.** It uses a key that already parses, or it goes to the board's own board and asks.
 260726 · `0.5.0` · the router calls haipipe-board, and surfaces its marker report
-      New `Board Refresh` section. Before this the router had **zero** references to `haipipe-board`, `build.py` or the generated Board site: it dispatched every stage verb, each of which writes an S page, and none of them ever rebuilt the board the human is looking at.
-      - **The three entry points, with paths that resolve from this folder**: `build.py` (after every write, idempotent, ~1s), `watch.py` (once per session, polls mtimes, and closes the browser's "Sync to md" gap where a human's comment lands in the markdown but `board/` stays stale until someone runs Python), `serve.py` (the live layer on 5599; never `file://`).
+      New `Board Refresh` section. Before this the router had **zero** references to `haipipe-board`, `build.py` or `board.html`: it dispatched every stage verb, each of which writes an S page, and none of them ever rebuilt the board the human is looking at.
+      - **The three entry points, with paths that resolve from this folder**: `build.py` (after every write, idempotent, ~1s), `watch.py` (once per session, polls mtimes, and closes the browser's "Sync to md" gap where a human's comment lands in the markdown but `board.html` stays stale until someone runs Python), `serve.py` (the live layer on 5599; never `file://`).
       - **The build's marker report is documented as the content check**, because nothing else in the family cross-checks prose against the `.bib` and the display units. Its three categories decoded: `broken` (a `\citep{}` not in the `.bib`, HUMAN-ONLY to fix), `unowned` (a placeholder with no `[Q-…]`, or a `\ref{}` with no `\label` — a `??` in the PDF), `uncited` (a display unit no section references). Worked example from `Paper-Personality2Opioid-MISQ2026`: 40 pages, 22 markers, 1/12/9, where the 9 uncited say the display layer ran ahead of the sections rather than that the displays are wrong.
       - **The two `board.md` lines that make chips resolve at all** (`dialect: paper`, `paper-root: ..`). Without them the markers render as plain text and the report above is empty and useless.
-      - **Failure rules**: say what failed and print the path anyway; never hand-edit generated `board/`; `open` acts on the machine the agent runs on, not necessarily where the human is sitting.
+      - **Failure rules**: say what failed and print the path anyway; never hand-edit `board.html`; `open` acts on the machine the agent runs on, not necessarily where the human is sitting.
       Implements the single-door ruling (design board faces `QA1` + `QA4`, JL 2026-07-26). Calling is not owning: `haipipe-board` still owns the build, the filename rule, the html and the write-back.
 260726 · `0.4.0` · the router names paths that exist
       Aligned with the paper-folder layout ruled 2026-07-26 on the design board (`skills/diagrams/01-haipipe-paper-260725`, face QA6): `0-sections/` to `sections/`, `0-displays/` to `displays/` (one folder per unit, the only home of an asset, no top-level `figures/`), `1-compile.sh` to `2-src/compile.sh`, and `STATUS.md` retired. 14 path corrections across the verb table, the skill roster, the stage descriptions and the two ASCII maps. The router is where a reader learns what a verb produces, so every wrong path here is a wrong expectation set before the work starts.

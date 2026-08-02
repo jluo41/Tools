@@ -248,19 +248,25 @@ Per section it records subsections, paragraphs per subsection, sentences per par
 Each row carries a `[source: <journal>-<section>/style.md]` anchor, so a later reader can check the measurement rather than trust it.
 It also records the adaptation: how this paper's own claims map onto that section.
 
-#### 3.3 · Venue has no REVISE, and that follows from what it produces
+#### 3.3 · The blueprint is where a paper's section list comes from
+(one folder per section in the playbook, transcribed here, then adapted by narrative)
+A venue playbook holds one folder per section with its own measured `style.md`, and MISQ has seven: abstract, introduction, theory, methods, results, discussion, appendix.
+The blueprint transcribes those, and QB2's narrative page then cuts them into the sections THIS paper writes, recording which venue section each one obeys.
+That is why the blueprint carries an `Adaptation:` row: the venue says how a paper of this journal reads, and the paper says how it is cut (JL 260802).
+
+#### 3.4 · Venue has no REVISE, and that follows from what it produces
 (the one place these three stages differ in shape, and it is not an oversight)
 Seed and pitch run draft, probe, revise, check; venue runs draft, probe, check.
 What venue produces is a scored decision plus a transcribed blueprint, so there is no prose for REVISE to polish.
 The only invariant the three share is that `phases` ends with `check`.
 
-#### 3.4 · Relevant Files is the division that shows what an empty group looks like
+#### 3.5 · Relevant Files is the division that shows what an empty group looks like
 (it records what the decision was read from, and reading a file raises nothing)
 The other three can each raise a `Q-Venue-<n>`: the decision runs recent-publications, editor, and competing-paper checks, the blueprint can owe a measurement, and a writing principle can owe a confirmation.
 `### 2` states where the evidence was read from, which is a fact about this page rather than a claim about the world, so it has no Aims group at all.
 That is the shape QB4 §4.2.1 describes when it says a part with nothing left to establish simply has no group.
 
-#### 3.5 · Records are written as lines, never as a pipe table
+#### 3.6 · Records are written as lines, never as a pipe table
 (the template says so twice, and it is the shape this stage's output is checked in)
 Both the reward mapping and the claim-to-RQ mapping are record lines.
 A table invites one-word cells, and what makes these reviewable is the reason attached to each row.
@@ -458,23 +464,19 @@ That leaves one live gap in the Opening group, `S-Venue-2-narrative.md`, which m
 
 ## Law
 
-**Opening is Seed plus Venue plus Pitch** (JL 260729).
-Venue is not a separate Delivery group.
-Rejected: keeping Venue as its own concern, because that made the paper read as though it chose a journal after deciding what it argued.
-
-**Narrative belongs to Work, not to Opening** (JL 260802: "I think the narrative should go to the Work as well").
-An arc is built from the claim ledger, so it cannot be honest before the ledger is.
-Rejected: leaving narrative here, and cutting the concern at Work so that venue, pitch, and narrative became a fourth group; JL chose the move instead.
-
-**A venue change reopens the pitch and leaves the seed** (JL 260802, answering Decision Now with "A").
-Why a paper exists does not change with the journal; what it promises is shaped by one.
-Rejected: re-gating the whole concern on every retarget, because that reopens a seed nobody intended to change; and reopening nothing automatically, because two papers retargeted the same way would then end in different states.
-
-**There is no central decision register; a decision lives on the stage page that owns it** (JL 260802: "we will delete it, and will not use it anymore. The decision will be in each stages' Decision").
-`S-Venue-3-decisions.md` is retired and not replaced.
-Rejected: keeping it for the rulings that bind several pages at once, which was CC's recommendation on the ground that a cross-page rule has no single owner; JL ruled that one queue beats two, and that a shared rule takes the Law of a page it binds.
-
-**Reading order, never an execution graph**: this grouping does not renumber stages and it does not replace their explicit dependency graph.
+- **Opening is Seed plus Venue plus Pitch** (JL 260729).
+  Venue is not a separate Delivery group.
+  Rejected: keeping Venue as its own concern, because that made the paper read as though it chose a journal after deciding what it argued.
+- **Narrative belongs to Work, not to Opening** (JL 260802: "I think the narrative should go to the Work as well").
+  An arc is built from the claim ledger, so it cannot be honest before the ledger is.
+  Rejected: leaving narrative here, and cutting the concern at Work so that venue, pitch, and narrative became a fourth group; JL chose the move instead.
+- **A venue change reopens the pitch and leaves the seed** (JL 260802, answering Decision Now with "A").
+  Why a paper exists does not change with the journal; what it promises is shaped by one.
+  Rejected: re-gating the whole concern on every retarget, because that reopens a seed nobody intended to change; and reopening nothing automatically, because two papers retargeted the same way would then end in different states.
+- **There is no central decision register; a decision lives on the stage page that owns it** (JL 260802: "we will delete it, and will not use it anymore. The decision will be in each stages' Decision").
+  `S-Venue-3-decisions.md` is retired and not replaced.
+  Rejected: keeping it for the rulings that bind several pages at once, which was CC's recommendation on the ground that a cross-page rule has no single owner; JL ruled that one queue beats two, and that a shared rule takes the Law of a page it binds.
+- **Reading order, never an execution graph**: this grouping does not renumber stages and it does not replace their explicit dependency graph.
 
 ## Lesson
 

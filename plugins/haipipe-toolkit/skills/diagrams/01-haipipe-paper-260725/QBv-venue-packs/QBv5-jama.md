@@ -6,7 +6,11 @@ method: state JAMA's own desk signals and one-sentence test, and record that thi
 
 ## Opening
 
-JAMA's test is the shortest in the tree and the hardest to fake: will a practising clinician change what they do Monday morning because of this result? Everything else the desk asks for is downstream of that. So which papers actually clear it?
+JAMA's desk runs one test, and this page calls it the Monday test: will a practising clinician change what they do Monday morning because of this result?
+> ✎ JAMA's ~test is~ *desk runs one test, and this page calls it* the ~shortest in the tree and the hardest to fake:~ *Monday test:* will a practising clinician change what they do Monday morning because of this result? ~Everything else~ *It is the shortest bar any venue on this board sets, and the hardest to fake. Every other thing* the desk asks for ~is downstream of that.~ *follows from that one question.* So which papers ~actually~ clear ~it?~ *it, and which ones does it throw out?* · CC · 260802 1540
+It is the shortest bar any venue on this board sets, and the hardest to fake.
+Every other thing the desk asks for follows from that one question.
+So which papers clear it, and which ones does it throw out?
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-jama-portfolio/jama-flagship/`.
@@ -159,12 +163,17 @@ That is a placement rule from the desk itself, and `jama-introduction/style.md` 
 #### 3.1 · The box and the headings are the family's shared shape, and the delta table is what splits the outlets
 (this is the knowledge that used to sit one level up, in the portfolio README)
 `style-profile.md` line 23 makes the Key Points box mandatory across the flagship, JAMA Internal Medicine and JAMA Network Open, and line 36 gives all three the same seven headings.
-What separates them is not the form but the bar, recorded as the per-journal delta table at `playbook-jama-portfolio/README.md` lines 110-121: this outlet rewards broad practice-changing findings, JAMA IM rewards prescribing and overuse work, and JAMA Network Open rewards soundness over novelty.
+What separates them is not the form but the bar.
+> ✎ What separates them is not the form but the ~bar, recorded as the~ *bar. The* per-journal delta table at `playbook-jama-portfolio/README.md` lines ~110-121: this~ *110-121 records what each one rewards. This* outlet rewards broad practice-changing findings, JAMA IM rewards prescribing and overuse work, and JAMA Network Open rewards soundness over novelty. · CC · 260802 1540
+The per-journal delta table at `playbook-jama-portfolio/README.md` lines 110-121 records what each one rewards.
+This outlet rewards broad practice-changing findings, JAMA IM rewards prescribing and overuse work, and JAMA Network Open rewards soundness over novelty.
 So a retarget inside this family keeps the abstract's shape and changes what IMPORTANCE has to argue.
 
 #### 3.2 · The family style file is not grounded in this outlet
 (which matters the moment a writer reaches for the shared profile instead of the flagship's own)
-`style-profile.md` lines 3-10 say its templates come from JAMA Network Open papers plus one JAMA IM paper, while the flagship per-section guides come from flagship Original Investigations: Krebs 2018, Mathioudakis 2025, Cipriani 2026, Rotenstein 2026.
+`style-profile.md` lines 3-10 say its templates come from JAMA Network Open papers plus one JAMA IM paper.
+> ✎ `style-profile.md` lines 3-10 say its templates come from JAMA Network Open papers plus one JAMA IM ~paper, while the~ *paper. The* flagship per-section guides come from flagship Original ~Investigations:~ *Investigations instead:* Krebs 2018, Mathioudakis 2025, Cipriani 2026, Rotenstein 2026. · CC · 260802 1540
+The flagship per-section guides come from flagship Original Investigations instead: Krebs 2018, Mathioudakis 2025, Cipriani 2026, Rotenstein 2026.
 The same file leaves the per-outlet abstract cap open at line 88, an unticked box asking for the exact limit from author instructions.
 For this desk the flagship `jama-<section>/style.md` files are the grounded source and the profile is the siblings' voice.
 
@@ -188,7 +197,8 @@ The IMPORTANCE opener, closing on the gap rather than on the problem, and fillin
 The OBJECTIVE field, one sentence opening `To <verb>`, which the anti-pattern list above turns into a hard shape requirement.
 
 "How is adoption of artificial intelligence (AI) scribes associated with changes in electronic health record (EHR) time expenditure and weekly visit volume?" [Rotenstein 2026]
-The Key Points Question line, the interrogative that sits beside the abstract in the box this division records as mandatory.
+The Key Points Question line, the one question that sits beside the abstract in the box this part of the page records as mandatory.
+> ✎ The Key Points Question line, the ~interrogative~ *one question* that sits beside the abstract in the box this ~division~ *part of the page* records as mandatory. · CC · 260802 1540
 
 "mean 12-month BPI interference was 3.4 for the opioid group and 3.3 for the nonopioid group (difference, 0.1 [95% CI, -0.5 to 0.7])." [Krebs 2018]
 The RESULTS field carrying its full statistical package, which is where the value density above is concentrated.
@@ -243,7 +253,9 @@ The CONCLUSIONS AND RELEVANCE sentence in associational voice, the field the ant
 
 #### 4.1 · Three beats travel from an IS introduction and all three fail here
 (so a retarget from `QBv1` or `QBv2` is a deletion job before it is a writing job)
-The anti-patterns name the findings preview, the contribution list and the roadmap sentence, and all three are required beats at the IS desks this board carries.
+The anti-patterns name the findings preview, the contribution list and the roadmap sentence.
+> ✎ The anti-patterns name the findings preview, the contribution list and the roadmap ~sentence, and all~ *sentence. All* three are required beats at the IS desks this board carries. · CC · 260802 1540
+All three are required beats at the IS desks this board carries.
 `jama-introduction/style.md` line 42 states the consequence the desk wants instead: the reader moves directly from "this study did X" into Methods.
 
 #### 4.2 · Format values
@@ -336,7 +348,8 @@ The P4 close, one past-tense sentence announcing the study, and the shortest ins
 #### 5.1 · The observational layout is a different subsection set, not a shortened one
 (and it is the layout this repo's prescribing work would actually file)
 `jama-methods/style.md` lines 41-48 record Rotenstein 2026's set: Study Setting and Population, Variables, Main Analytic Approach, Subgroup Analyses, Sensitivity Analyses, then a domain-specific one.
-Randomization, Interventions and Sample Size drop out, and an analytic-framework sentence replaces the power calculation.
+Randomization, Interventions and Sample Size drop out, and a sentence naming the analytic framework replaces the power calculation.
+> ✎ Randomization, Interventions and Sample Size drop out, and ~an analytic-framework~ *a* sentence *naming the analytic framework* replaces the power calculation. · CC · 260802 1540
 The two invariants survive the swap: the opening paragraph still names design, ethics and STROBE, and Statistical Analysis is still last.
 
 #### 5.2 · Format values
@@ -422,8 +435,16 @@ The observational replacement for that power calculation, and the sentence that 
 
 #### 6.1 · The display set is fixed before the prose is written
 (so a missing display is a build request and never a sentence)
-`playbook-jama-portfolio/README.md` lines 62-70 name the family's standard set: a mandatory Table 1, a mandatory STROBE cohort flow diagram, the primary-association display as the hero tied to the one primary claim, a subgroup forest plot for the vulnerable-population amplification, and a dose-response figure when relevant.
-`jama-results/style.md` move 5 requires each of them to be named inline where its data are discussed, as `(Table 2)`, `(Figure 1)` or `(Figure 3 and eTable 14 in Supplement 2)`, and line 86 makes the unnamed display a defect on its own.
+`playbook-jama-portfolio/README.md` lines 62-70 name the family's standard set of displays.
+> ✎ `playbook-jama-portfolio/README.md` lines 62-70 name the family's standard ~set: a mandatory~ *set of displays. Two of them are mandatory:* Table 1, *and* a ~mandatory~ STROBE cohort flow ~diagram, the~ *diagram. The* primary-association display ~as~ *is* the ~hero~ *hero,* tied to the one primary ~claim, a~ *claim. A* subgroup forest plot ~for~ *carries* the vulnerable-population ~amplification, and a~ *amplification. A* dose-response figure *is added* when relevant. · CC · 260802 1540
+Two of them are mandatory: Table 1, and a STROBE cohort flow diagram.
+The primary-association display is the hero, tied to the one primary claim.
+A subgroup forest plot carries the vulnerable-population amplification.
+A dose-response figure is added when relevant.
+`jama-results/style.md` move 5 requires each of them to be named inline, right where its data are discussed.
+> ✎ `jama-results/style.md` move 5 requires each of them to be named ~inline~ *inline, right* where its data are ~discussed, as~ *discussed. The forms it accepts are* `(Table 2)`, `(Figure 1)` ~or~ *and* `(Figure 3 and eTable 14 in Supplement ~2)`, and line~ *2)`. Line* 86 *of the same file* makes ~the~ *an* unnamed display a defect on its own. · CC · 260802 1540
+The forms it accepts are `(Table 2)`, `(Figure 1)` and `(Figure 3 and eTable 14 in Supplement 2)`.
+Line 86 of the same file makes an unnamed display a defect on its own.
 
 #### 6.2 · Format values
 (the only section in this pack whose file measures all four, because the estimate density it records is the value density under another name)
@@ -442,7 +463,8 @@ The observational replacement for that power calculation, and the sentence that 
 The participant-flow opener, and the flow slot printed above with its display named inline exactly as move 5 requires.
 
 "Mean age was 58.3 years (range, 21-80) and 32 patients (13.0%) were women (Table 1)." [Krebs 2018]
-The baseline slot, one sentence of demographics ending on the Table 1 reference that `6.1` makes a mandatory unit.
+The baseline slot: one sentence of demographics, ending on the Table 1 reference that `6.1` lists as mandatory.
+> ✎ The baseline ~slot,~ *slot:* one sentence of ~demographics~ *demographics,* ending on the Table 1 reference that `6.1` ~makes a mandatory unit.~ *lists as mandatory.* · CC · 260802 1540
 
 "AI scribe adoption was associated with 13.4 (95% CI, 9.1-17.7) fewer minutes of EHR time" [Rotenstein 2026]
 The primary-outcome clause carrying its estimate and CI together, which is the sentence the estimate density above is counting.
@@ -507,7 +529,9 @@ The plain null statement, stated as flatly as a positive finding, which is the n
 
 #### 7.1 · The hedge is a family rule, and this repo's work has a named framing inside it
 (which is the sentence-level face of the observational language bar)
-`style-profile.md` lines 72-79 set the tone as measured, patient centered and policy aware, forbid causal verbs on observational data, and give this repo's prescribing work its framing: agreeable approximates saying yes, clinical firmness can protect, and the mechanism is presented as a trade-off rather than a fault.
+`style-profile.md` lines 72-79 set the tone as measured, patient centered and policy aware, and forbid causal verbs on observational data.
+> ✎ `style-profile.md` lines 72-79 set the tone as measured, patient centered and policy aware, *and* forbid causal verbs on observational ~data, and~ *data. The same lines* give this repo's prescribing work its framing: agreeable approximates saying yes, clinical firmness can protect, and the mechanism is presented as a trade-off rather than a fault. · CC · 260802 1540
+The same lines give this repo's prescribing work its framing: agreeable approximates saying yes, clinical firmness can protect, and the mechanism is presented as a trade-off rather than a fault.
 `jama-discussion/style.md` move 3 supplies the hedging vocabulary the desk reads as appropriate: may, could, it is possible that, suggesting.
 
 #### 7.2 · Format values
@@ -588,7 +612,8 @@ The Conclusions clause, ending on a clinical implication rather than on a method
         counts come from the main text's cross-references
 ```
 
-📎 Establishes the Supplement as an addressed destination rather than an overflow bin, which is why the triage decision happens before drafting rather than after a length check.
+📎 Establishes the Supplement as an addressed destination rather than an overflow bin, so the triage decision happens before drafting and not after a length check.
+> ✎ 📎 Establishes the Supplement as an addressed destination rather than an overflow bin, ~which is why~ *so* the triage decision happens before drafting ~rather than~ *and not* after a length check. · CC · 260802 1540
 
 #### 8.1 · Authors label the items, the journal numbers the Supplements
 (so the manifest is authorable but half of every address is not final until production)
@@ -608,7 +633,9 @@ The author controls `eTable 1` and `eFigure 1`; the `in Supplement M` half of ev
 #### 8.3 · The language, in the papers' own words
 (and this is the one section whose file has no Signature moves block, so it quotes no sentences of its own)
 
-`jama-appendix/style.md` carries no attributed sentence: it has neither a Signature moves nor an Exemplar sentences heading, and what it quotes from the two papers are cross-reference fragments.
+`jama-appendix/style.md` carries no attributed sentence.
+> ✎ `jama-appendix/style.md` carries no attributed ~sentence: it~ *sentence. It* has neither a Signature moves *heading* nor an Exemplar sentences ~heading,~ *one,* and what it quotes from the two papers are cross-reference fragments. · CC · 260802 1540
+It has neither a Signature moves heading nor an Exemplar sentences one, and what it quotes from the two papers are cross-reference fragments.
 Those fragments are still the papers' own strings, so they are given here as fragments, and nothing is added to make them read as prose.
 
 "eFigure 3, eTables 16-19 in Supplement 2" [Mathioudakis 2025]
@@ -676,18 +703,30 @@ The one complete sentence the pack quotes about a Supplement, and it sits in `ja
      or Conclusions subsections · a findings preview up top
 ```
 
-✉️ Establishes the letter as a full compressed study rather than a short paper, which is why its caps bind the study design and not only the prose.
+✉️ Establishes the letter as a full compressed study rather than a short paper, so its caps bind the study design and not only the prose.
+> ✎ ✉️ Establishes the letter as a full compressed study rather than a short paper, ~which is why~ *so* its caps bind the study design and not only the prose. · CC · 260802 1540
 
 #### 9.1 · This outlet has the letter kind, and the pack wrongly denies it to JAMA Network Open
 (so a retarget between two siblings in one family can force a format rewrite)
-`stages/section-kinds.yml` lines 80-82 give `letter` to `jama-flagship` and to `jama-im`, and withhold it from `jama-netopen`. That withholding is wrong: verified 260802, JAMA Network Open publishes Research Letters at 800 words, 10 references and up to 2 small tables or figures, so the omission is a gap in the pack rather than a property of that desk.
-A letter moving to the open-access sibling has to become an Original Investigation, which means acquiring a structured abstract and a Key Points box, both of which the letter format forbids at `jama-letter/style.md` lines 13-14.
+`stages/section-kinds.yml` lines 80-82 give the `letter` kind to `jama-flagship` and to `jama-im`.
+> ✎ `stages/section-kinds.yml` lines 80-82 give *the* `letter` *kind* to `jama-flagship` and to ~`jama-im`, and withhold it~ *`jama-im`. It withholds that kind* from `jama-netopen`. That withholding is wrong: verified 260802, JAMA Network Open publishes Research Letters at 800 words, 10 references and up to 2 small tables or ~figures, so~ *figures. So* the omission is a gap in the pack rather than a property of that desk. · CC · 260802 1540
+It withholds that kind from `jama-netopen`.
+That withholding is wrong: verified 260802, JAMA Network Open publishes Research Letters at 800 words, 10 references and up to 2 small tables or figures.
+So the omission is a gap in the pack rather than a property of that desk.
+A letter moving to the open-access sibling has to become an Original Investigation.
+> ✎ A letter moving to the open-access sibling has to become an Original ~Investigation, which~ *Investigation. That* means acquiring a structured abstract and a Key Points box, ~both of which~ *and* the letter format forbids *both* at `jama-letter/style.md` lines 13-14. · CC · 260802 1540
+That means acquiring a structured abstract and a Key Points box, and the letter format forbids both at `jama-letter/style.md` lines 13-14.
 That is a rewrite decided at venue, not a reformat done at revise.
 
 #### 9.2 · The letter pack contradicts itself on how many Discussion paragraphs there are
 (and the measured note at the bottom of the file is the one to follow)
-`jama-letter/style.md` line 92 still forbids separate Limitations and Conclusions subsections on the grounds that both fold into "the single Discussion paragraph", while line 89 and the 2026-07-08 reconciliation at line 117 record both stored letters using TWO Discussion paragraphs, and `jama-letter/template.md` splits them into P5 and P6.
-Take the measured two-paragraph split; the surviving singular is stale wording inside one anti-pattern line.
+`jama-letter/style.md` line 92 still forbids separate Limitations and Conclusions subsections, on the grounds that both belong inside "the single Discussion paragraph".
+> ✎ `jama-letter/style.md` line 92 still forbids separate Limitations and Conclusions ~subsections~ *subsections,* on the grounds that both ~fold into~ *belong inside* "the single Discussion ~paragraph", while line~ *paragraph". Line* 89 and the 2026-07-08 reconciliation at line 117 ~record~ *say otherwise:* both stored letters ~using~ *use* TWO Discussion ~paragraphs, and~ *paragraphs.* `jama-letter/template.md` splits them into P5 and P6. · CC · 260802 1540
+Line 89 and the 2026-07-08 reconciliation at line 117 say otherwise: both stored letters use TWO Discussion paragraphs.
+`jama-letter/template.md` splits them into P5 and P6.
+Take the measured two-paragraph split.
+> ✎ Take the measured two-paragraph ~split; the surviving singular~ *split. The word "single" at line 92* is stale wording *left* inside one anti-pattern line. · CC · 260802 1540
+The word "single" at line 92 is stale wording left inside one anti-pattern line.
 
 #### 9.3 · Format values
 (the second place in this pack where an estimate density is on record, and it is the densest single paragraph anywhere in the tree)
@@ -715,7 +754,9 @@ The Methods pipe label doing the work of a heading, followed immediately by the 
 The trend sentence with its CI inline, one instance of the 19 that make this paragraph the densest in the pack.
 
 "Study limitations include unavailable Medicare Advantage data, potentially missing clinical information" [Yang 2026]
-The limitations clause folded into the Discussion block, which is how a letter carries what an Original Investigation gives a titled subsection.
+The limitations clause, folded into the Discussion block.
+> ✎ The limitations ~clause~ *clause,* folded into the Discussion ~block, which is how a letter carries what an~ *block. An* Original Investigation gives *limitations* a titled ~subsection.~ *subsection; the letter format forbids one.* · CC · 260802 1540
+An Original Investigation gives limitations a titled subsection; the letter format forbids one.
 
 ## Aims
 
@@ -829,7 +870,7 @@ The limitations clause folded into the Discussion block, which is how a letter c
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -839,7 +880,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Appendix-A` · appendix
 - `S-Main-0` of its OWN paper · letter, a standalone article format rather than a section of this one
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -852,8 +896,8 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-This desk's bar is a change in clinical action, so the binding constraint is the outcome variable, which is fixed at the task layer and cannot be acquired during a retarget.
-An exemplar is filed under the outlet it exemplifies, because a section norm extracted from a folder inherits whatever is in it.
+- This desk's bar is a change in clinical action, so the binding constraint is the outcome variable, which is fixed at the task layer and cannot be acquired during a retarget.
+  An exemplar is filed under the outlet it exemplifies, because a section norm extracted from a folder inherits whatever is in it.
 
 ## Glossary
 
@@ -862,8 +906,35 @@ An exemplar is filed under the outlet it exemplifies, because a section norm ext
 
 ## Log
 
-260802 · Corrected against the journal's own instructions. `9.1` said JAMA Network Open does not have the `letter` kind and treated the omission as deliberate; the journal publishes Research Letters, so `section-kinds.yml` is incomplete and this page had repeated the pack's gap as a finding. The pack's letter limits (600 words, 6 references, 1 display) are MEASURED exemplar figures, not the journal's rule, which is 800 / 10 / 2.
-260802 · Authority sub-block added at the end of Files, from the journal's own instructions rather than the pack. Three findings the pack cannot see: the Research Letter's real limits are 800 words, 10 references and up to 2 small tables or figures, so the 600 and 6 at `jama-letter/style.md` lines 7-14 are measured exemplar figures rather than the journal's rule and the two letters logged as over-cap are not over anything; Original Investigations carry an undocumented display cap of 5 tables and/or figures total; and the `eItem N in Supplement M` address form is nowhere in the instructions, making it house style read off published articles. Submission is Word, and LaTeX is not named on any JAMA page fetched, which puts a conversion step between this repo's projection and this desk.
-260802 · Two subsubsections added to each of the seven section divisions: a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS with the `jama-<kind>/style.md` line behind each, and a `The language, in the papers' own words` block of 4-5 short attributed quotations, one per Signature move. Value density is on record in three files only, as "Estimate density" at `jama-results/style.md` line 114 and `jama-letter/style.md` line 119 and as the per-RESULTS-sentence rule at `jama-abstract/style.md` line 105; the other four rows read `not recorded by the pack` and nothing was measured, because the only extractable exemplars in this folder are the three JNO papers whose presence `A2.2` exists to undo.
-260802 · Seven section-kind divisions added at `### 3` through `### 9`, one per kind `stages/section-kinds.yml` gives `jama-flagship`, each carrying its arc, its budget with the `style.md` line or exemplar the number came from, its signature moves as slot patterns, and the anti-patterns the pack names. Family knowledge from the retired pack page folded in: the shared seven abstract headings and the Key Points box at `3`, the outlet delta table at `3.1`, the standard display set at `6.1`, and the no-blame framing at `7.1`. The Writing Style bullet on section norms relaxed from never-copy to cite-the-source.
+260802 · Readability pass over the whole page, run with `haipipe-writing`.
+  The Opening now names the Monday test in the same breath as the question it stands for, and drops the house word "tree".
+  Seventeen sentences in Content prose were split or reworded, three of them to cut a bolted-on explanatory clause.
+  The four long entries below were split into short sentences, and no fact, number or source citation changed.
+  Every rewritten Content sentence carries its own `✎` word-level record.
+  This section cannot show one, so this entry is the trail for the four below.
+260802 · Corrected against the journal's own instructions.
+  `9.1` said JAMA Network Open does not have the `letter` kind, and treated that omission as deliberate.
+  The journal publishes Research Letters, so `section-kinds.yml` is incomplete and this page had repeated the pack's gap as a finding.
+  The pack's letter limits (600 words, 6 references, 1 display) are MEASURED exemplar figures, not the journal's rule, which is 800 / 10 / 2.
+260802 · Authority sub-block added at the end of Files, from the journal's own instructions rather than the pack.
+  Three findings the pack cannot see.
+  First, the Research Letter's real limits are 800 words, 10 references and up to 2 small tables or figures.
+  So the 600 and 6 at `jama-letter/style.md` lines 7-14 are measured exemplar figures rather than the journal's rule, and the two letters logged as over-cap are not over anything.
+  Second, Original Investigations carry an undocumented display cap of 5 tables and/or figures total.
+  Third, the `eItem N in Supplement M` address form is nowhere in the instructions, so it is house style read off published articles.
+  Submission is Word, and LaTeX is not named on any JAMA page fetched, so a conversion step sits between this repo's projection and this desk.
+260802 · Two subsubsections added to each of the seven section divisions.
+  The first is a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS, with the `jama-<kind>/style.md` line behind each.
+  The second is a `The language, in the papers' own words` block of 4-5 short attributed quotations, one per Signature move.
+  Value density is on record in three files only.
+  It is "Estimate density" at `jama-results/style.md` line 114 and `jama-letter/style.md` line 119.
+  It is the per-RESULTS-sentence rule at `jama-abstract/style.md` line 105.
+  The other four rows read `not recorded by the pack`, and nothing was measured.
+  The only extractable exemplars in this folder are the three JNO papers whose presence `A2.2` exists to undo.
+260802 · Seven section-kind divisions added at `### 3` through `### 9`.
+  That is one section per kind `stages/section-kinds.yml` gives `jama-flagship`.
+  Each carries its arc, its budget with the `style.md` line or exemplar the number came from, its signature moves as slot patterns, and the anti-patterns the pack names.
+  Family knowledge from the retired pack page moved in.
+  It landed at `3` (the shared seven abstract headings and the Key Points box), `3.1` (the outlet delta table), `6.1` (the standard display set) and `7.1` (the no-blame framing).
+  The Writing Style bullet on section norms relaxed from never-copy to cite-the-source.
 260802 · Opened with the QBv outlet pages, from `playbook-jama-portfolio/jama-flagship` at `Venue-Paper@fe25a88`.

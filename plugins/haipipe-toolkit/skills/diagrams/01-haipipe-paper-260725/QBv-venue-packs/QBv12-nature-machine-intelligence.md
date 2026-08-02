@@ -6,13 +6,20 @@ method: state what NMI requires of a method paper, and record that this is the o
 
 ## Opening
 
-Every other desk in this tree treats a method as an enabler and refuses it as a claim. This one takes the method as the contribution, and then asks a second question the ML venues do not. What is that second question?
+What does Nature Machine Intelligence ask of a paper that no other desk in this tree asks?
+> ✎ ~Every~ *What does Nature Machine Intelligence ask of a paper that no* other desk in this tree ~treats~ *asks? It asks for two things at once, and it refuses* a ~method as an enabler~ *paper that brings only one. The first half is a novel method,* and ~refuses it as a claim. This one takes~ *this is the only desk in the tree that lets* the method ~as~ *be* the ~contribution, and then~ *claim. The second half is impact outside machine learning, so the work must matter to someone who does not build models. This page records what the desk* asks ~a second question~ *of each of its seven sections, in* the ~ML venues do not. What is that second question?~ *pack's own numbers.* · CC · 260802 1545
+It asks for two things at once, and it refuses a paper that brings only one.
+The first half is a novel method, and this is the only desk in the tree that lets the method be the claim.
+The second half is impact outside machine learning, so the work must matter to someone who does not build models.
+This page records what the desk asks of each of its seven sections, in the pack's own numbers.
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-nature-portfolio/NMI/`.
 
 **Why this outlet is the tree's exception**: `QBv1` records MISQ refusing method-as-contribution outright, and `QBv5` records JAMA refusing an AI paper with no patient-outcome impact.
-NMI accepts the method as the claim and then requires impact beyond the ML community, which is a conjunction rather than a substitution.
+NMI accepts the method as the claim, and then asks for impact beyond the ML community as well.
+> ✎ NMI accepts the method as the ~claim~ *claim,* and then ~requires~ *asks for* impact beyond the ML ~community, which is a conjunction~ *community as well. It adds the second demand* rather than ~a substitution.~ *trading one for the other.* · CC · 260802 1545
+It adds the second demand rather than trading one for the other.
 
 **What is unusual on disk**: the outlet folder is the only one in the tree named in capitals, `NMI/`, with `NMI-<section>/` beneath it. Every sibling uses a lowercase slug.
 
@@ -24,7 +31,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 **Quote a number with its source, never own it**: a word budget, paragraph count or density may appear in a section division, but only with the file block or exemplar it was measured from named on the same line, and the page never states a norm as its own claim.
 
-**Always state the conjunction**: the method and the impact, never one of them, because dropping either half describes a different venue.
+**Always name both halves**: the method AND the impact, never one of them, because dropping either half describes a different venue.
 
 ✅ `the method AND the impact`  ❌ `a strong methodological contribution`
 
@@ -61,7 +68,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ## Content
 
-### 1 · The conjunction is the bar
+### 1 · The bar is both halves: the method AND the impact
 
 **Two halves that fail differently**: and each half alone names a different venue.
 
@@ -80,7 +87,8 @@ How this page must be written. Read it before editing, and edit to it.
      ── the third is the one most often missing
 ```
 
-🔀 Establishes the conjunction as the routing instrument: which half is missing names where the paper actually belongs.
+🔀 Establishes the two halves as a routing test: the half that is missing names where the paper actually belongs.
+> ✎ 🔀 Establishes the ~conjunction~ *two halves* as *a routing test:* the ~routing instrument: which~ half *that* is missing names where the paper actually belongs. · CC · 260802 1545
 
 #### 1.1 · "Off-the-shelf ML where only the dataset is new" describes a common shape in this repo
 (so the rejection is worth reading before a study is framed as a method paper)
@@ -105,7 +113,8 @@ The same work is welcome at npj Digital Medicine if the claim moves from the mod
         records for WEIRD samples, and equally fixable
 ```
 
-🔀 Establishes a concrete descent path for each rejection, which no other page in this group can currently offer.
+🔀 Establishes a concrete next outlet for each rejection, which no other page in this group can currently offer.
+> ✎ 🔀 Establishes a concrete ~descent path~ *next outlet* for each rejection, which no other page in this group can currently offer. · CC · 260802 1545
 
 ### 3 · The abstract is one unstructured paragraph
 
@@ -179,7 +188,8 @@ The S4 pivot slot, in the exact shape the SLOTS block records as "Here we <verb>
 "CSFM outperforms traditional approaches and maintains robust performance across varying lead configurations..." [gu-2026]
 The S7-8 results beat: the baseline comparison is stated, hedged and directional, with no statistic attached.
 "This framework can be broadly applied to the analysis of multimodal omics studies and reveals more powerful biological insights from limited cohort sizes." [mataraso-2025]
-The S9 close, and the impact-beyond-ML half of the conjunction, placed in the last sentence rather than the first.
+The S9 close, and the impact-beyond-ML half, placed in the last sentence rather than the first.
+> ✎ The S9 close, and the impact-beyond-ML ~half of the conjunction,~ *half,* placed in the last sentence rather than the first. · CC · 260802 1545
 
 ### 4 · The introduction is a funnel that ends on the contribution
 
@@ -227,7 +237,10 @@ The S9 close, and the impact-beyond-ML half of the conjunction, placed in the la
 
 #### 4.1 · Citations render as superscript numbers, and the key stays real
 (so the numeric rendering is a sync-time fact, not a licence to write a number into the draft)
-`NMI-introduction/template.md` states the rule for every NMI kind: the outlet renders citations as superscript numbers in the naturemag style, never author-year, and often in ranges such as "refs 1-5".
+`NMI-introduction/template.md` states the rule for every NMI kind.
+> ✎ `NMI-introduction/template.md` states the rule for every NMI ~kind: the outlet~ *kind. A citation* renders ~citations~ as *a* superscript ~numbers~ *number* in the naturemag style, never ~author-year, and often in ranges~ *as author-year. Ranges* such as "refs ~1-5".~ *1-5" are common.* · CC · 260802 1545
+A citation renders as a superscript number in the naturemag style, never as author-year.
+Ranges such as "refs 1-5" are common.
 The draft still authors a real `\citep{key}` verified against the .bib, because only the rendered form is numeric.
 Where no key exists, the draft carries `\cite{TOADD}` with the owning question id until PROBE closes it.
 
@@ -313,13 +326,17 @@ The contrib slot, carrying both the acronym expansion and the figure pointer the
      discussing an individual paper's contribution at length
 ```
 
-🧭 Establishes that the related-work unit is a draft with three addressees and no home of its own, which is why its output is measured on borrowed paragraphs.
+🧭 Establishes that the related-work unit is a draft with three destinations and no section of its own.
+> ✎ 🧭 Establishes that the related-work unit is a draft with three ~addressees~ *destinations* and no ~home~ *section* of its ~own, which is why~ *own. So* its output is measured on *paragraphs* borrowed ~paragraphs.~ *from other sections.* · CC · 260802 1545
+So its output is measured on paragraphs borrowed from other sections.
 
 #### 5.1 · The kind name says section and the pack says otherwise
 (so this is the one kind whose name a drafter must not take literally)
 `section-kinds.yml` separates two positioning kinds that are not aliases: the IS family's `theory` DEVELOPS a model and its hypotheses, while the Nature family's `related-work` SITUATES the paper against prior literature.
 The separation is real, but at NMI the situating happens inside three other sections rather than under a heading of its own.
-`NMI-related-work/template.md` opens with a structural warning that says so, and instructs the draft gate to confirm with the author that a standalone section is not wanted.
+`NMI-related-work/template.md` opens with a structural warning that says so.
+> ✎ `NMI-related-work/template.md` opens with a structural warning that says ~so, and instructs~ *so. It also tells* the draft gate to ~confirm~ *check* with the author that ~a~ *no* standalone section is ~not~ wanted. · CC · 260802 1545
+It also tells the draft gate to check with the author that no standalone section is wanted.
 
 #### 5.2 · The family README states the same rule one level up
 (so the retired family page's only load-bearing claim about this kind is recorded here)
@@ -361,7 +378,9 @@ Destination two, the Results head-to-head, written as a subsection heading rathe
 "Our approach based on LLM embeddings should not be seen as a competitor to these lines of work, but rather as synergistic." [doerig-2025]
 Destination three, the Discussion positioning-by-contrast, filling the synergy slot this division records.
 "we further detail related work in Supplementary Note A.2" [serapio-garcia-2025]
-Destination four, the Supplementary pointer, which is how the extended review leaves the main text without leaving the paper.
+Destination four, the Supplementary pointer.
+> ✎ Destination four, the Supplementary ~pointer, which is how the~ *pointer. The* extended review leaves the main text *this way* without leaving the paper. · CC · 260802 1545
+The extended review leaves the main text this way without leaving the paper.
 
 ### 6 · Methods is last, and it is where the equations live
 
@@ -424,14 +443,20 @@ The density in Methods clusters where an architecture, a tool, a dataset, or a p
 #### 6.2 · An equation is drafted as prose, a label, and its variables
 (so the display math never enters the markdown that cannot hold it)
 `NMI-methods/template.md` marks this with a warning: NMI Methods carry numbered display equations, but the board's markdown allows no LaTeX except citation commands.
-So an equation is drafted here as its prose setup, then the marker "(Eq. k)", then the variable definitions, and the display math body is authored at sync-to-tex.
+So an equation is drafted here as its prose setup, then the marker "(Eq. k)", then the variable definitions.
+> ✎ So an equation is drafted here as its prose setup, then the marker "(Eq. k)", then the variable ~definitions, and the~ *definitions. The* display math body is authored at sync-to-tex. · CC · 260802 1545
+The display math body is authored at sync-to-tex.
 An equation is neither a display request nor a question, which separates it from every figure in the paper.
 
 #### 6.3 · The evaluation apparatus is split across three files, and one third has no home
 (so the desk's third demand is the one a drafter can silently skip)
 `taste.md` desk-rejects a paper with "no ablation, no comparison to strong baselines, no failure analysis", and the section guides place only two of those three.
-The baseline SETUP is a Methods subsection, the head-to-head NUMBER is a Results subsection, and `NMI-appendix/style.md` sends "Robustness checks and ablation details" to Supplementary Information.
-Failure analysis is named in `taste.md` and in this page's Diagram, and appears in none of the seven section guides, so the pack cannot say what a failure-analysis paragraph looks like or where it sits.
+The baseline SETUP is a Methods subsection, and the head-to-head NUMBER is a Results subsection.
+> ✎ The baseline SETUP is a Methods subsection, *and* the head-to-head NUMBER is a Results ~subsection, and~ *subsection.* `NMI-appendix/style.md` sends "Robustness checks and ablation details" to Supplementary Information. · CC · 260802 1545
+`NMI-appendix/style.md` sends "Robustness checks and ablation details" to Supplementary Information.
+Failure analysis is named in `taste.md` and in this page's Diagram, and in none of the seven section guides.
+> ✎ Failure analysis is named in `taste.md` and in this page's Diagram, and ~appears~ in none of the seven section ~guides, so~ *guides. So* the pack cannot say what a failure-analysis paragraph looks ~like~ *like,* or where it sits. · CC · 260802 1545
+So the pack cannot say what a failure-analysis paragraph looks like, or where it sits.
 
 #### 6.4 · Format values
 (the Methods budget, and the one display class this outlet carries that a board's markdown cannot hold)
@@ -466,7 +491,8 @@ Failure analysis is named in `taste.md` and in this page's Diagram, and appears 
 "The model consists of three GCN layers and one FC layer, with four attention heads, a feed-forward size of 1,024" [qiao-2025]
 The architecture move that opens the arc, stated as a parts list rather than as a design argument.
 "learning rate was set to 0.0001; batch size was set to 16; Dropout probability was fixed at 50%" [pontikos-2025]
-The hyperparam slot this division records, at the grain the desk's reproducibility demand needs.
+The hyperparam slot this division records, at the level of detail the desk's reproducibility demand needs.
+> ✎ The hyperparam slot this division records, at the ~grain~ *level of detail* the desk's reproducibility demand needs. · CC · 260802 1545
 "subject-wise splitting to prevent data leakage" [gu-2026]
 The split slot, and specifically its STRATEGY word, which the guide treats as mandatory alongside the ratios.
 "Python 3.10.6, NumPy 1.23.3, Pandas 1.5.0, SciPy 1.9.1, scikit-learn 1.1.2, PyTorch 1.12.1, Gensim 4.3.0" [mataraso-2025]
@@ -523,7 +549,9 @@ The deferral that keeps Methods inside its budget, and the reason division 9's t
 (so a drafter following the template will refuse a layout three exemplars actually use)
 `NMI-results/style.md` move 2 states a strict figure-subsection mapping, and `NMI-results/template.md` turns it into a failure condition: a result subsection with no figure display request fails the mapping.
 The same style file's measured table then shows mataraso-2025 at 9 subsections to 6 figures and pontikos-2025 at 7 to 4, which is roughly 1.5 and 2 subsections per figure.
-Only gu-2026, chen-w-2025 and mon-williams-2025 are actually 1:1, so the template's hard gate should be read as a target rather than a measurement.
+Only gu-2026, chen-w-2025 and mon-williams-2025 are actually 1:1.
+> ✎ Only gu-2026, chen-w-2025 and mon-williams-2025 are actually ~1:1, so~ *1:1. So read* the template's hard ~gate should be read~ *rule* as a ~target rather than~ *target, not as* a measurement. · CC · 260802 1545
+So read the template's hard rule as a target, not as a measurement.
 
 #### 7.2 · The dominant in-text reference here is the paper's own back matter
 (so low literature density in Results is a norm, not an omission)
@@ -569,7 +597,9 @@ The purpose sentence that opens the micro-arc, naming what was tested before the
 "CSFM achieved a macro-F1 of 0.677 (95% confidence intervals (CI): 0.656, 0.699)" [gu-2026]
 The stat slot in prose, which is the form forbidden in the abstract and required here.
 "We show that COMET achieves state-of-the-art predictive modelling results" [mataraso-2025]
-The baseline comparison, hedged with "We show that" rather than claimed outright, which is how the desk's strong-baseline demand surfaces.
+The baseline comparison, hedged with "We show that" rather than claimed outright.
+> ✎ The baseline comparison, hedged with "We show that" rather than claimed ~outright, which~ *outright. This* is ~how~ *where* the desk's ~strong-baseline~ demand ~surfaces.~ *for strong baselines shows up.* · CC · 260802 1545
+This is where the desk's demand for strong baselines shows up.
 "the faithfulness score increased from 0.74 to 0.88 with RAG" [mon-williams-2025]
 A before-and-after value pair, and an instance of exactly the numeric content the VALUE DENSITY row above shows no style file in this pack counts.
 
@@ -631,7 +661,9 @@ A before-and-after value pair, and an instance of exactly the numeric content th
 
 #### 8.1 · Sub-headed is the exception, and the exemplar count says so
 (so a drafter reaching for four labelled sub-heads is copying one paper out of eight)
-`NMI-discussion/style.md` move 5 names sub-headed Discussion as present but rare, and only serapio-garcia-2025 uses it: Limitations and future work, Broader implications, Ethical considerations, Conclusion.
+`NMI-discussion/style.md` move 5 names sub-headed Discussion as present but rare.
+> ✎ `NMI-discussion/style.md` move 5 names sub-headed Discussion as present but ~rare, and only~ *rare. Only* serapio-garcia-2025 uses ~it:~ *it, under four sub-heads:* Limitations and future work, Broader implications, Ethical considerations, Conclusion. · CC · 260802 1545
+Only serapio-garcia-2025 uses it, under four sub-heads: Limitations and future work, Broader implications, Ethical considerations, Conclusion.
 Its ~13 paragraph count is a consequence of that labelling, not of a longer argument.
 The default is un-sub-headed, and qiao-2025 runs seven unlabeled paragraphs at the same word count.
 
@@ -667,7 +699,9 @@ The limits slot in its stock form, opening the P4 admission the desk expects of 
 "The current focus is pairwise interactions; higher-order is important but combinatorially hard." [chen-w-2025]
 One real limitation, scoped to a capability rather than to the data, and short enough to pair immediately with its future direction.
 "This work has important implications for AI alignment and harm mitigation, and informs ethics discussions concerning AI anthropomorphization, personalization and potential misuse." [serapio-garcia-2025]
-The P5 close on significance, and the impact-beyond-ML half again, which is why this section may never end on a limitation.
+The P5 close on significance, and the impact-beyond-ML half again.
+> ✎ The P5 close on significance, and the impact-beyond-ML half ~again, which is why this~ *again. A* section ~may never end~ *that ends* on a ~limitation.~ *limitation ends on the wrong half.* · CC · 260802 1545
+A section that ends on a limitation ends on the wrong half.
 
 ### 9 · The back matter is two tiers with independent counters
 
@@ -729,13 +763,17 @@ The P5 close on significance, and the impact-beyond-ML half again, which is why 
      more than 10 Extended Data items
 ```
 
-🗄 Establishes the tier decision as a triage made before any display unit is built, because the tier fixes the label, the counter, and whether a reviewer will read the item.
+🗄 Establishes the tier decision as a triage made before any display unit is built.
+> ✎ 🗄 Establishes the tier decision as a triage made before any display unit is ~built, because the~ *built. The* tier fixes the label, the counter, and whether a reviewer will read the ~item.~ *item at all.* · CC · 260802 1545
+The tier fixes the label, the counter, and whether a reviewer will read the item at all.
 
 #### 9.1 · This is the thinnest guide in the outlet, by exemplar count
 (so its numbers carry less weight than the six sections around it)
 `NMI-appendix/style.md` opens by declaring it was extracted from 2 exemplar papers, where every other NMI section guide declares 8.
 Its two measured papers also diverge on the central question: serapio-garcia-2025 uses both tiers while qiao-2025 uses none, so the corpus offers no majority behaviour to imitate.
-The 10-item cap survives that thinness because it is Nature portfolio policy rather than a measurement, which is why the guide keeps it while flagging its own exemplar for breaking it.
+The 10-item cap survives that thinness because it is Nature portfolio policy rather than a measurement.
+> ✎ The 10-item cap survives that thinness because it is Nature portfolio policy rather than a ~measurement, which is why~ *measurement. So* the guide keeps ~it while flagging~ *the cap, and still flags* its own exemplar for breaking it. · CC · 260802 1545
+So the guide keeps the cap, and still flags its own exemplar for breaking it.
 
 #### 9.2 · Format values
 (every row here rests on two exemplars, and those two disagree, so the caveat is repeated rather than stated once)
@@ -768,7 +806,8 @@ The 10-item cap survives that thinness because it is Nature portfolio policy rat
 #### 9.3 · The language, in the papers' own words
 (this guide carries no Signature moves block and no Exemplar sentences block, so these come from its cross-reference section, and from two papers only)
 "Further statistical details are available in Supplementary Information section 1." [gu-2026]
-The clause-integrated pointer, carrying the full label, which is the naming rule this division records.
+The pointer written inside a clause, carrying the full label, which is the naming rule this division records.
+> ✎ The ~clause-integrated pointer,~ *pointer written inside a clause,* carrying the full label, which is the naming rule this division records. · CC · 260802 1545
 "see Supplementary Note A.1.2 on the background of personality science" [serapio-garcia-2025]
 The inline directive, hierarchically numbered, and the form the related-work unit's fourth destination arrives in.
 "results are summarized in Table 1 and raw reliability data are provided in Extended Data Tables 1 and 2" [serapio-garcia-2025]
@@ -779,7 +818,7 @@ Three of these four are the same paper, because the guide has only two, which is
 
 ## Aims
 
-### A1 · 🔀 The conjunction is the bar
+### A1 · 🔀 The bar is both halves: the method AND the impact
 - A1.1 · An ML-shaped candidate is scored on both halves rather than on novelty.
   **Done when:** a paper missing the impact half is not shortlisted here.
 
@@ -823,8 +862,8 @@ Three of these four are the same paper, because the guide has only two, which is
 
 ## States
 
-### A1 · 🔀 The conjunction is the bar
-- ⬜ A1.1 · Not started. The conjunction is prose in `NMI/taste.md`.
+### A1 · 🔀 The bar is both halves: the method AND the impact
+- ⬜ A1.1 · Not started. Both halves are prose in `NMI/taste.md`.
 
 ### A2 · 🔀 Where a rejected NMI paper goes
 - ⬜ A2.1 · Not started. The routing is written here for the first time.
@@ -892,7 +931,7 @@ Three of these four are the same paper, because the guide has only two, which is
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -902,7 +941,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -915,17 +957,51 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-NMI is the one desk in this tree where the method may be the contribution, and it is a conjunction: the method advances what machines can do AND the impact reaches beyond the ML community, with neither half sufficient.
-Which half is missing names the outlet the paper actually belongs to, so a rejection here is a routing result rather than a dead end.
+- NMI is the one desk in this tree where the method may be the contribution, and it still wants both halves: a method that advances what machines can do, AND impact that reaches beyond the ML community. Neither half alone is enough.
+  The half that is missing names the outlet the paper actually belongs to. So a rejection here is a routing result rather than a dead end.
 
 ## Glossary
 
-- **The conjunction**: this desk's requirement that a paper carry both a novel method and demonstrated impact outside ML, unique in the venue tree.
+- **Both halves**: this desk's requirement that a paper carry both a novel method and demonstrated impact outside ML, unique in the venue tree.
 - **Failure analysis**: the third element of the evaluation apparatus this desk names, alongside ablations and strong baselines.
 
 ## Log
 
 260802 · Opened with the QBv outlet pages, from `playbook-nature-portfolio/NMI` at `Venue-Paper@fe25a88`.
-260802 · Added divisions 3-9, one per section kind, from the seven `NMI-<kind>/style.md` + `template.md` pairs; folded in the retired family page (`playbook-nature-portfolio/README.md` + `style-profile.md`); relaxed the Writing Style bullet to allow a number carrying its source; recorded three clashes (related-work name against the pack's no-standalone rule, the introduction paragraph count against itself, the results figure mapping against its own exemplar table) and one hole (failure analysis has no section guide).
-260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. This outlet is one of the two the pack names as the origin of the 10-item Extended Data cap, and the journal states it directly, as "A maximum of 10 Extended Data display figures is permitted", so the borrowing is anchored rather than inherited and its unit is display FIGURES rather than items. It CONFIRMS the no-standalone-Related-Work rule from an exhaustive four-block Article division, resolving the first of the three clashes the entry below records. On LaTeX: TeX/LaTeX at both stages, no journal class file, and the journal's own link to the Springer Nature LaTeX template, whose URL is now recorded.
-260802 · Added 14 subsubsections, two per section-kind division: a `Format values` block quoting WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS with each figure's source named inline, and a `The language, in the papers' own words` block quoting 4-5 attributed sentences per kind from the guides' own Signature moves and Exemplar sentences. Nothing was measured from a paper: `examples/` holds PDFs only, so every number is quoted from an `NMI-<kind>/style.md` block. Recorded a second hole across all seven kinds: VALUE DENSITY, the per-sentence count of numeric values in prose that this repo marks with `{VAL:?}`, is recorded by only 2 of the 95 style.md files in the venue tree, both at JAMA flagship and both under the name `Estimate density` (`jama-results/style.md:114`, `jama-letter/style.md:119`), by none of this outlet's seven, which bites hardest in an ML Results section where the benchmark numbers are the evidence. The seven guides record only words per sentence and citations per sentence.
+260802 · Added divisions 3-9, one per section kind, from the seven `NMI-<kind>/style.md` + `template.md` pairs.
+  Folded in the retired family page, `playbook-nature-portfolio/README.md` + `style-profile.md`.
+  Relaxed the Writing Style bullet to allow a number carrying its source.
+  Recorded three clashes: the related-work name against the pack's no-standalone rule, the introduction paragraph count against itself, and the results figure mapping against its own exemplar table.
+  Recorded one hole: failure analysis has no section guide.
+260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day.
+  This outlet is one of the two the pack names as the origin of the 10-item Extended Data cap.
+  The journal states it directly, as "A maximum of 10 Extended Data display figures is permitted".
+  So the borrowing is anchored rather than inherited, and its unit is display FIGURES rather than items.
+  It CONFIRMS the no-standalone-Related-Work rule from an exhaustive four-block Article division.
+  That resolves the first of the three clashes the entry below records.
+  On LaTeX: TeX/LaTeX at both stages, no journal class file, and the journal's own link to the Springer Nature LaTeX template, whose URL is now recorded.
+260802 · Added 14 subsubsections, two per section-kind division.
+  The first is a `Format values` block quoting WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS, with each figure's source named inline.
+  The second is a `The language, in the papers' own words` block quoting 4-5 attributed sentences per kind from the guides' own Signature moves and Exemplar sentences.
+  Nothing was measured from a paper: `examples/` holds PDFs only, so every number is quoted from an `NMI-<kind>/style.md` block.
+  Recorded a second hole across all seven kinds.
+  VALUE DENSITY is the per-sentence count of numeric values in prose that this repo marks with `{VAL:?}`.
+  It is recorded by only 2 of the 95 style.md files in the venue tree, and by none of this outlet's seven.
+  Both sit at JAMA flagship, and both call it `Estimate density` (`jama-results/style.md:114`, `jama-letter/style.md:119`).
+  That bites hardest in an ML Results section where the benchmark numbers are the evidence.
+  The seven guides record only words per sentence and citations per sentence.
+260802 1545 · Rewritten for a reader whose English is weak, with `haipipe-writing`.
+  Twenty `> ✎` word-level records in all.
+  They cover the Opening lead, one sentence in its More details part, and four figure readbacks that bolted a clause onto a finished sentence.
+  The other fourteen are Content sentences that ran long, or did the same.
+  The Opening lead now answers its own question on stage.
+  It used to end on "What is that second question?", so a reader had to click to learn what the second demand was.
+  The three long entries above were split into indented continuation lines, which the Log renderer joins back into one entry each, so what they record is unchanged.
+  Those three carry no `> ✎` record, and this entry is their record instead.
+  A record placed inside a Log entry sets the renderer's continuation state to none.
+  Every line under it then falls out of the entry and renders as a loose paragraph with no date.
+  That is a defect in `src/body.py`, not in the entries, and it is left for the page that owns the renderer.
+  This page's own word `the conjunction` is retired in favour of `both halves` and `the method AND the impact`.
+  It was replaced in seven places: the Writing Style rule, division 1, the matching Aims and States groups, the `A1.1` State row, the Law and the Glossary entry.
+  Those seven sit in a heading, a bullet or a list row, which `cli/wdiff.py` will not anchor a record under, so this entry is their record.
+  No number, no `style.md` line reference and no exemplar name was changed.

@@ -272,6 +272,8 @@ def resolve_filename(family, unit, slug):
     unit = str(unit)
     if re.fullmatch(r"[A-Za-z]", unit):
         unit = unit.upper()          # an appendix letter: S-Appendix-C
+    elif re.fullmatch(r"[A-Za-z]\d+", unit):
+        unit = unit[0].upper() + unit[1:]   # a lettered series member: S-Work-R1
     elif not re.fullmatch(r"\d+|\d+[a-z][a-z0-9]*", unit):
         # A BLOCK + MEMBER id is the Display family's grammar (JL 260727): the number
         # is the narrative block a unit serves and the lowercase letter is its position
@@ -283,7 +285,8 @@ def resolve_filename(family, unit, slug):
         # lowercase on disk and the board's own parser reads them either way.
         raise SystemExit(
             "unit must be a number (S-Main-6), one letter (S-Appendix-C), "
-            "a block+member id (S-Display-4a), or a variant of one (S-Display-4al2)")
+            "a lettered series member (S-Work-R1), a block+member id "
+            "(S-Display-4a), or a variant of one (S-Display-4al2)")
     slug = re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
     if not slug:
         raise SystemExit("slug must contain at least one letter or number")

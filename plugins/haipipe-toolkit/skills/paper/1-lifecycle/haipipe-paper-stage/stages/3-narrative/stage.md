@@ -52,13 +52,15 @@ venue_contract:           # read BEFORE composing — see the craft body
   stale: "recorded pack commit behind venue HEAD -> note 'consider /haipipe-paper-stage venue refresh',
           but still use S-Venue-0-venue.md; never silently re-read packs"
 
-sections:                 # in order; the middle four MIRROR the paper's real sections, in reading order
+sections:                 # in order. The MIDDLE IS NOT FIXED (JL 260802, ruling A): one `## ` per
+                          # section THIS paper writes, taken from read_first's Structural Blueprint
+                          # and adapted. Each carries `venue-section:` and `Adaptation:`.
+                          # template.md's Introduction/Methods/Results/Discussion are a FALLBACK,
+                          # used only when no blueprint exists. `units_from` makes each one an
+                          # S-Main page, so this list IS the manuscript's page list.
   - Readiness Legend
   - Spine (throughline)
-  - Introduction
-  - Methods
-  - Results
-  - Discussion
+  - "<venue sections>"    # variable count, from S-Venue-0-venue.md's Structural Blueprint
   - Probes
   - Footer Ledger
 

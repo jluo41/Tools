@@ -6,13 +6,17 @@ method: state what the Marketing department of Management Science requires, and 
 
 ## Opening
 
-This is the one UTD-IS outlet whose test names an actor rather than a field. Not what an IS reader learns, not what equilibrium is characterized: what decision does this inform, and who is worse or better off? So when is a paper here rather than at MS-IS?
+Management Science has a Marketing department, and it is the one UTD-IS outlet whose test names a person or a firm rather than a field. The other three ask what an IS reader now knows, what mechanism is identified, or what equilibrium holds. This desk asks two plainer things. What decision does the evidence inform, and who ends up better or worse off? So when does a paper belong here rather than at MS-IS, the sibling department inside the same journal?
+> ✎ ~This~ *Management Science has a Marketing department, and it* is the one UTD-IS outlet whose test names ~an actor~ *a person or a firm* rather than a field. ~Not~ *The other three ask* what an IS reader ~learns, not~ *now knows, what mechanism is identified, or* what equilibrium ~is characterized: what~ *holds. This desk asks two plainer things. What* decision does ~this~ *the evidence* inform, and who ~is~ *ends up better or* worse ~or better~ off? So when ~is~ *does* a paper *belong* here rather than at ~MS-IS?~ *MS-IS, the sibling department inside the same journal?* · CC · 260802 1720
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-utd-is/MS-Marketing/`.
 
 **Why the boundary against MS-IS is the live question**: both sit in Management Science, both want economic interpretation and welfare, and both take structural work.
-The pack separates them on whether the phenomenon is a marketing decision or an IS-artifact question, which is a judgement rather than a signal.
+The pack separates them on one thing: is the phenomenon a marketing decision, or a question about an IS artifact?
+> ✎ The pack separates them on ~whether~ *one thing: is* the phenomenon *a marketing decision, or a question about an IS artifact? That* is a ~marketing decision~ *judgement, not a signal you can read off the paper. The tiebreak is the actor test, which the Glossary at the foot of this page defines as naming the person* or ~an IS-artifact question, which is a judgement rather than a signal.~ *firm whose choice the evidence changes.* · CC · 260802 1720
+That is a judgement, not a signal you can read off the paper.
+The tiebreak is the actor test, which the Glossary at the foot of this page defines as naming the person or firm whose choice the evidence changes.
 
 **What is thin**: five exemplars, against fifteen for MISQ and sixteen for ISR, behind section guides written with identical confidence.
 
@@ -51,7 +55,7 @@ How this page must be written. Read it before editing, and edit to it.
      "What marketing decision does this evidence inform, and
       what is the welfare or profit consequence?"
 
-  📊 5 exemplars ── MISQ 17 · ISR 18 · MS-IS 12
+  📊 5 exemplars ── MISQ 15 · ISR 16 · MS-IS 10
      ⚠️ under half of its siblings, same section confidence
 
   🔀 THE BOUNDARY against MS-IS
@@ -77,7 +81,8 @@ How this page must be written. Read it before editing, and edit to it.
      bar than it looks
 ```
 
-🎯 Establishes this desk's test as actor-anchored, which is what makes the MS-IS boundary decidable in practice.
+🎯 Establishes the actor test as this desk's bar, the one thing that makes the MS-IS boundary decidable in practice.
+> ✎ 🎯 Establishes *the actor test as* this desk's ~test as actor-anchored, which is what~ *bar, the one thing that* makes the MS-IS boundary decidable in practice. · CC · 260802 1720
 
 #### 1.1 · Pure prediction is rejected here for a different reason than at MS-IS
 (the same rejection, two different missing pieces)
@@ -90,9 +95,9 @@ A recommender-system paper can satisfy one and fail the other, so the two reject
 
 ```text
   📊 exemplars behind the section norms
-     🏛 MISQ           17
-     🔬 ISR            18
-     📈 MS-IS          12
+     🏛 MISQ           15
+     🔬 ISR            16
+     📈 MS-IS          10
      🛒 MS-Marketing    5   ⚠️
 
   💥 nothing in MS-Marketing-<section>/style.md says its
@@ -131,7 +136,8 @@ A recommender-system paper can satisfy one and fail the other, so the two reject
 
 #### 3.1 · The variant is picked by how many result families the paper has
 (one clean family, or several stacked ones)
-`abstract/template.md` lines 13-16 makes the choice mechanical rather than stylistic: one clean result family takes the compact empirical variant, layered results take the analytical one, and the word count follows the pick instead of being chosen separately. Moshary 2025 is the compact anchor at about 97 words in 4 sentences, and `style.md` line 74 notes it is also the only exemplar that opens on the paper rather than on a phenomenon. Guo 2025 and Li 2025 are the layered anchors at about 222 and 228 words. `style.md` line 105 records the skew behind those anchors: 3 of the 5 exemplars are analytical, so the median is pulled long and a purely empirical abstract may sit far under it.
+`abstract/template.md` lines 13-16 makes the choice mechanical rather than stylistic. One clean result family takes the compact empirical variant, and layered results take the analytical one. The word count then follows that pick, instead of being chosen separately. Moshary 2025 is the compact anchor at about 97 words in 4 sentences. `style.md` line 74 notes it is also the only exemplar that opens on the paper rather than on a phenomenon. Guo 2025 and Li 2025 are the layered anchors at about 222 and 228 words. `style.md` line 105 records the skew behind those anchors: 3 of the 5 exemplars are analytical, so the median is pulled long and a purely empirical abstract may sit far under it.
+> ✎ `abstract/template.md` lines 13-16 makes the choice mechanical rather than ~stylistic: one~ *stylistic. One* clean result family takes the compact empirical variant, *and* layered results take the analytical ~one, and the~ *one. The* word count *then* follows ~the pick~ *that pick,* instead of being chosen separately. Moshary 2025 is the compact anchor at about 97 words in 4 ~sentences, and~ *sentences.* `style.md` line 74 notes it is also the only exemplar that opens on the paper rather than on a phenomenon. Guo 2025 and Li 2025 are the layered anchors at about 222 and 228 words. `style.md` line 105 records the skew behind those anchors: 3 of the 5 exemplars are analytical, so the median is pulled long and a purely empirical abstract may sit far under it. · CC · 260802 1720
 
 #### 3.2 · The six moves, written as slots
 (from `abstract/style.md` "Signature moves" lines 34-49)
@@ -185,7 +191,8 @@ One result per sentence with its magnitude in economic units, the slot 3.2 write
 The profit consequence, carried by the `However, <the reversal>.` turn that 3.2 lists fourth.
 
 "We attribute the efficacy of product information provision to its enhancement of the value of ad spots in position auctions." [Chen 2025]
-The mechanism attribution, which is why the result holds rather than what it is.
+The mechanism attribution. It says why the result holds, not what it is.
+> ✎ The mechanism ~attribution, which is~ *attribution. It says* why the result ~holds rather than~ *holds, not* what it is. · CC · 260802 1720
 
 "the AMMR decision rule effectively selects the optimal marketing action and improves revenue across various data-generating processes" [Joo 2026]
 The close on a managerial capability, the move 3.3 names as refused when a paper ends on its technique instead.
@@ -272,7 +279,8 @@ Opening on prior research is refused; phenomenon and market stakes come first an
 The market-fact hook, which is the `<market> reached <dollar figure> in <year>` slot in 4.2.
 
 "A prominent example is the recent Federal Trade Commission (FTC) complaint against Amazon" [Moshary 2025]
-The decision-relevant framing: a named regulator already acting on the phenomenon, which is what makes the actor test in part 1 concrete.
+The decision-relevant framing: a named regulator is already acting on the phenomenon. That makes the actor test in part 1 concrete.
+> ✎ The decision-relevant framing: a named regulator *is* already acting on the ~phenomenon, which is what~ *phenomenon. That* makes the actor test in part 1 concrete. · CC · 260802 1720
 
 "However, existing literature on sponsored search/position auctions predominantly focuses on optimizing position allocation" [Chen 2025]
 The gap turn, naming what prior work optimizes before naming what it misses, per the second slot in 4.2.
@@ -376,7 +384,8 @@ The normalization, stated before anything is derived from it, per the second slo
 The multi-interpretation paragraph that maps an abstract primitive onto several marketing contexts, and the reason 5.3 refuses an assumption with no economic reading.
 
 "We employ the cascade model proposed by Kempe and Mahdian (2008) to depict the consumer's purchase behavior." [Chen 2025]
-The borrowed-model citation, which is why citation density here stays near 0.02-0.05 per sentence: citations import components rather than survey findings.
+The borrowed-model citation. Citation density here stays near 0.02-0.05 per sentence because citations import model components rather than survey findings.
+> ✎ The borrowed-model ~citation, which is why citation~ *citation. Citation* density here stays near 0.02-0.05 per ~sentence:~ *sentence because* citations import *model* components rather than survey findings. · CC · 260802 1720
 
 "Theorem 1 is novel in the literature." [Joo 2026]
 The plain-language readback that follows a formal block immediately, the pairing 5.2 writes as `Theorem <n> (<Named Result>).` and its readback.
@@ -419,7 +428,8 @@ The institutional descriptive of the empirical variant, where quantified market 
 
 #### 6.1 · The variant is picked by where the variation comes from
 (assigned by the researcher, observed at a firm, or generated in simulation)
-`methods/style.md` lines 8-15 lays the three out by section title. Variation the researcher assigned gives the field-experiment variant, `3. Field Experiment Design`. Variation a firm already ran gives the case-study variant, Joo 2026's `4.1 Background and the Experiment Setup` sitting inside an Application section, where the estimating equation follows the company's own specification rather than the author's preferred one. Variation generated in simulation gives the numerical-experiment variant, Li 2025's `6. Numerical Experiments`, whose setup half names, cites and coins each benchmark before enumerating the metrics and stating the sample-path count. The two analytical rows in that same table, Chen 2025's `3. The Optimal Mechanism` and Guo 2025's `3. Analysis and Results`, are listed there to show what a methods section is not.
+`methods/style.md` lines 8-15 lays the three out by section title. Variation the researcher assigned gives the field-experiment variant, `3. Field Experiment Design`. Variation a firm already ran gives the case-study variant, Joo 2026's `4.1 Background and the Experiment Setup` sitting inside an Application section. There the estimating equation follows the company's own specification rather than the author's preferred one. Variation generated in simulation gives the numerical-experiment variant, Li 2025's `6. Numerical Experiments`. Its setup half names, cites and coins each benchmark, then enumerates the metrics and states the sample-path count. The two analytical rows in that same table are listed there to show what a methods section is not: Chen 2025's `3. The Optimal Mechanism` and Guo 2025's `3. Analysis and Results`.
+> ✎ `methods/style.md` lines 8-15 lays the three out by section title. Variation the researcher assigned gives the field-experiment variant, `3. Field Experiment Design`. Variation a firm already ran gives the case-study variant, Joo 2026's `4.1 Background and the Experiment Setup` sitting inside an Application ~section, where~ *section. There* the estimating equation follows the company's own specification rather than the author's preferred one. Variation generated in simulation gives the numerical-experiment variant, Li 2025's `6. Numerical ~Experiments`, whose~ *Experiments`. Its* setup half names, cites and coins each ~benchmark before enumerating~ *benchmark, then enumerates* the metrics and ~stating~ *states* the sample-path count. The two analytical rows in that same ~table,~ *table are listed there to show what a methods section is not:* Chen 2025's `3. The Optimal Mechanism` and Guo 2025's `3. Analysis and ~Results`, are listed there to show what a methods section is not.~ *Results`.* · CC · 260802 1720
 
 #### 6.2 · The moves, written as slots
 (from `methods/style.md` "Signature moves" lines 42-58)
@@ -523,7 +533,8 @@ The numerical-experiment move, where every baseline gets a citation and a coined
 
 #### 7.1 · The shape is picked by what the finding is made of
 (an estimate, a proposition, or a policy comparison)
-`results/style.md` lines 5-8 names three shapes, each anchored on different papers. An estimate takes the empirical shape, walked panel by panel with percent effects, then robustness, heterogeneity and secondary outcomes; Moshary 2025 is its only anchor. A proposition takes the analytical shape, where each numbered Proposition or Theorem is followed by a plain-language interpretation paragraph and the worst-case guarantee is the headline number; Chen 2025 and Guo 2025 anchor it. A policy comparison takes the numerical or Monte Carlo shape, where a coined policy runs against cited benchmarks on enumerated metrics and at least one verdict is scaled to dollars; Li 2025 and Joo 2026 anchor it. `results/style.md` line 123 then corrects its own printed range: Moshary's paragraph count merges several table-note blocks, so 9 to 12 prose paragraphs is the working range for an empirical main-results section.
+`results/style.md` lines 5-8 names three shapes, each anchored on different papers. An estimate takes the empirical shape, walked panel by panel with percent effects, then robustness, heterogeneity and secondary outcomes. Moshary 2025 is its only anchor. A proposition takes the analytical shape, where each numbered Proposition or Theorem is followed by a plain-language interpretation paragraph and the worst-case guarantee is the headline number. Chen 2025 and Guo 2025 anchor it. A policy comparison takes the numerical or Monte Carlo shape, where a coined policy runs against cited benchmarks on enumerated metrics and at least one number is scaled to dollars. Li 2025 and Joo 2026 anchor it. `results/style.md` line 123 then corrects its own printed range. Moshary's paragraph count merges several table-note blocks, so 9 to 12 prose paragraphs is the working range for an empirical main-results section.
+> ✎ `results/style.md` lines 5-8 names three shapes, each anchored on different papers. An estimate takes the empirical shape, walked panel by panel with percent effects, then robustness, heterogeneity and secondary ~outcomes;~ *outcomes.* Moshary 2025 is its only anchor. A proposition takes the analytical shape, where each numbered Proposition or Theorem is followed by a plain-language interpretation paragraph and the worst-case guarantee is the headline ~number;~ *number.* Chen 2025 and Guo 2025 anchor it. A policy comparison takes the numerical or Monte Carlo shape, where a coined policy runs against cited benchmarks on enumerated metrics and at least one ~verdict~ *number* is scaled to ~dollars;~ *dollars.* Li 2025 and Joo 2026 anchor it. `results/style.md` line 123 then corrects its own printed ~range:~ *range.* Moshary's paragraph count merges several table-note blocks, so 9 to 12 prose paragraphs is the working range for an empirical main-results section. · CC · 260802 1720
 
 #### 7.2 · The moves, written as slots
 (from `results/style.md` "Signature moves" lines 46-62)
@@ -582,7 +593,8 @@ The table walk, and in the source sentence the number arrives attached to column
 The explicit enumeration of the spillover, which 7.2 writes as `A second finding is that <the composition effect>.`
 
 "An implication for e-commerce platforms is that sponsored search poses a trade-off between transaction revenue and advertising revenue." [Moshary 2025]
-The implication sitting inside the results walk, which is what 7.3 refuses to let a paper quarantine in a discussion section.
+The implication sitting inside the results walk. Part 7.3 refuses to let a paper quarantine this in a discussion section.
+> ✎ The implication sitting inside the results ~walk, which is what~ *walk. Part* 7.3 refuses to let a paper quarantine *this* in a discussion section. · CC · 260802 1720
 
 "The platform's average earnings are 4.37% higher for users who see ads." [Moshary 2025]
 The profit consequence, already scaled to a business unit, which is the bottom-line slot in 7.2.
@@ -624,7 +636,8 @@ The mixed evidence kept in the main text, which 7.3 records as the exemplar norm
 
 #### 8.1 · This kind carries no named variants, only a length and one split
 (the other six kinds each carry types; this one does not)
-`discussion/style.md` lines 9-15 lists five titles and five lengths and names no types at all, so the pack offers no variant to pick. What changes across the exemplars is how the forward look is built: Chen 2025 and Guo 2025 convert modeling choices into directions, with Guo running five of them and reaching the 800-word ceiling; Moshary 2025 bounds what a single experiment identifies; Joo 2026 opens by naming the convention it overturns. `discussion/template.md` line 13 turns that into the only real decision this kind offers, which is whether the practitioner guidance splits off into its own pre-conclusion section, drafted as a separate unit, or does not exist.
+`discussion/style.md` lines 9-15 lists five titles and five lengths and names no types at all, so the pack offers no variant to pick. What changes across the exemplars is how the forward look is built. Chen 2025 and Guo 2025 convert modeling choices into directions, and Guo runs five of them and reaches the 800-word ceiling. Moshary 2025 bounds what a single experiment identifies. Joo 2026 opens by naming the convention it overturns. `discussion/template.md` line 13 turns that into the only real decision this kind offers. Either the practitioner guidance splits off into its own pre-conclusion section, drafted separately, or it does not exist.
+> ✎ `discussion/style.md` lines 9-15 lists five titles and five lengths and names no types at all, so the pack offers no variant to pick. What changes across the exemplars is how the forward look is ~built:~ *built.* Chen 2025 and Guo 2025 convert modeling choices into directions, ~with~ *and* Guo ~running~ *runs* five of them and ~reaching~ *reaches* the 800-word ~ceiling;~ *ceiling.* Moshary 2025 bounds what a single experiment ~identifies;~ *identifies.* Joo 2026 opens by naming the convention it overturns. `discussion/template.md` line 13 turns that into the only real decision this kind ~offers, which is whether~ *offers. Either* the practitioner guidance splits off into its own pre-conclusion section, drafted ~as a separate unit,~ *separately,* or *it* does not exist. · CC · 260802 1720
 
 #### 8.2 · The moves, written as slots
 (from `discussion/style.md` "Signature moves" lines 37-51)
@@ -637,7 +650,8 @@ The mixed evidence kept in the main text, which 7.3 records as the exemplar norm
 
 #### 8.3 · What this desk refuses in a conclusion
 (from `discussion/style.md` "Anti-patterns" lines 70-78)
-A multi-page conclusion with `Theoretical Contributions` and `Practical Implications` subsections is refused; this is 2 to 6 paragraphs of continuous prose. Re-arguing contributions to the literature is refused, because positioning already happened in the introduction. Dropping the numbers is refused, and a vague recap such as "we found substantial effects" is off-register against exemplars that restate exact magnitudes. Future-research items disconnected from a named limitation or modeling choice are refused. A conclusion longer than the results section is refused. Burying substantial practitioner guidance inside the conclusion is refused. `style.md` line 78 keeps three rules from the pre-mining stub: name the decision maker who should act, translate findings into profit, welfare or policy consequences, and be honest about external validity, which Moshary 2025 does by repeating the phrase "in this case study".
+A multi-page conclusion with `Theoretical Contributions` and `Practical Implications` subsections is refused; this is 2 to 6 paragraphs of continuous prose. Re-arguing contributions to the literature is refused, because positioning already happened in the introduction. Dropping the numbers is refused, and a vague recap such as "we found substantial effects" is off-register against exemplars that restate exact magnitudes. Future-research items disconnected from a named limitation or modeling choice are refused. A conclusion longer than the results section is refused. Burying substantial practitioner guidance inside the conclusion is refused. `style.md` line 78 keeps three rules from the pre-mining stub: name the decision maker who should act, translate findings into profit, welfare or policy consequences, and be honest about external validity. Moshary 2025 keeps that last rule by repeating the phrase "in this case study".
+> ✎ A multi-page conclusion with `Theoretical Contributions` and `Practical Implications` subsections is refused; this is 2 to 6 paragraphs of continuous prose. Re-arguing contributions to the literature is refused, because positioning already happened in the introduction. Dropping the numbers is refused, and a vague recap such as "we found substantial effects" is off-register against exemplars that restate exact magnitudes. Future-research items disconnected from a named limitation or modeling choice are refused. A conclusion longer than the results section is refused. Burying substantial practitioner guidance inside the conclusion is refused. `style.md` line 78 keeps three rules from the pre-mining stub: name the decision maker who should act, translate findings into profit, welfare or policy consequences, and be honest about external ~validity, which~ *validity.* Moshary 2025 ~does~ *keeps that last rule* by repeating the phrase "in this case study". · CC · 260802 1720
 
 #### 8.4 · One number in this guide does not close against itself
 (the block table and the paragraph ceiling disagree)
@@ -675,7 +689,8 @@ A multi-page conclusion with `Theoretical Contributions` and `Practical Implicat
 The past-tense recap with its motivation clause, the first slot in 8.2.
 
 "users who see ads are 0.47% less likely to make any purchase" [Moshary 2025]
-The headline quantity surviving into the conclusion, which is what 8.3 refuses to let a vague recap replace.
+The headline quantity surviving into the conclusion. Part 8.3 refuses to let a vague recap replace it.
+> ✎ The headline quantity surviving into the ~conclusion, which is what~ *conclusion. Part* 8.3 refuses to let a vague recap ~replace.~ *replace it.* · CC · 260802 1720
 
 "Importantly, all these results are manifestations of the same underlying mechanism: The action cost enhances the marginal value of information" [Guo 2025]
 The mechanism restatement that unifies a battery of results, and the third slot in 8.2.
@@ -729,11 +744,13 @@ The practitioner register, written imperatively, and the reason 8.1 makes the pr
 
 #### 9.2 · What is a Display Request, what is prose, and what is neither
 (`appendix/template.md` lines 21, 35, 97)
-Three kinds of thing live in an appendix and only one of them is prose. Every lettered exhibit is a Display Request, a DR row in the paper's `0-lifecycle/4-display/_DISPLAY_REQUEST.md`, cited by its lettered coordinate both from the appendix prose and from the body sentence that routed the reader there; `appendix/template.md` line 97 states that a missing display unit is never a Q-consumer question. Proofs are complete LaTeX derivations, which are neither prose sentences nor Display Requests, and `style.md` line 51 refuses sketches of them. Prose is the mini-abstract paragraph that opens the appendix plus the walk under it, and that prose alone is what the 1-to-4-paragraph budget counts. Two things stay questions rather than becoming Display Requests: a foundational-theory citation with no bib key, which Joo's Appendix A illustrates by citing Wald 1950, and a missing number inside an appendix table, which enters as a value placeholder anchored to a `Q-Section` id.
+Three kinds of thing live in an appendix and only one of them is prose. Every lettered exhibit is a Display Request, a DR row in the paper's `0-lifecycle/4-display/_DISPLAY_REQUEST.md`. It is cited by its lettered coordinate twice, once from the appendix prose and once from the body sentence that routed the reader there. `appendix/template.md` line 97 states that a missing display unit is never a Q-consumer question. Proofs are complete LaTeX derivations, which are neither prose sentences nor Display Requests, and `style.md` line 51 refuses sketches of them. Prose is the mini-abstract paragraph that opens the appendix plus the walk under it, and that prose alone is what the 1-to-4-paragraph budget counts. Two things stay questions rather than becoming Display Requests. One is a foundational-theory citation with no bib key, which Joo's Appendix A illustrates by citing Wald 1950. The other is a missing number inside an appendix table, which enters as a value placeholder anchored to a `Q-Section` id.
+> ✎ Three kinds of thing live in an appendix and only one of them is prose. Every lettered exhibit is a Display Request, a DR row in the paper's ~`0-lifecycle/4-display/_DISPLAY_REQUEST.md`,~ *`0-lifecycle/4-display/_DISPLAY_REQUEST.md`. It is* cited by its lettered coordinate ~both~ *twice, once* from the appendix prose and *once* from the body sentence that routed the reader ~there;~ *there.* `appendix/template.md` line 97 states that a missing display unit is never a Q-consumer question. Proofs are complete LaTeX derivations, which are neither prose sentences nor Display Requests, and `style.md` line 51 refuses sketches of them. Prose is the mini-abstract paragraph that opens the appendix plus the walk under it, and that prose alone is what the 1-to-4-paragraph budget counts. Two things stay questions rather than becoming Display ~Requests:~ *Requests. One is* a foundational-theory citation with no bib key, which Joo's Appendix A illustrates by citing Wald ~1950, and~ *1950. The other is* a missing number inside an appendix table, which enters as a value placeholder anchored to a `Q-Section` id. · CC · 260802 1720
 
 #### 9.3 · Lettered exhibits take the letter of their appendix
 (Figure A.1, Figure A.2, Table A.1)
-`appendix/style.md` line 47 records the scheme from Moshary 2025: an exhibit's number is the owning appendix's letter, a dot, and a counter running inside that appendix, so Appendix A holds `Figure A.1`, `Figure A.2` and `Table A.1`, with figures and tables counted separately. The same line carries the condition attached to that numbering, which is that the note under each exhibit repeats the sample definition and the confidence-interval convention so the exhibit stands alone without the body. Proof placement, by contrast, is not settled in the appendix at all: `style.md` line 37 and `introduction/template.md` line 133 both put the relegation sentence in the introduction's roadmap paragraph, once, which is where Li 2025 writes that all proofs are relegated to the online appendices.
+`appendix/style.md` line 47 records the scheme from Moshary 2025. An exhibit's number is the owning appendix's letter, a dot, and a counter running inside that appendix, so Appendix A holds `Figure A.1`, `Figure A.2` and `Table A.1`. Figures and tables are counted separately. The same line carries one condition attached to that numbering: the note under each exhibit repeats the sample definition and the confidence-interval convention, so the exhibit stands alone without the body. Proof placement, by contrast, is not settled in the appendix at all. `style.md` line 37 and `introduction/template.md` line 133 both put the relegation sentence in the introduction's roadmap paragraph, once. That is where Li 2025 writes that all proofs are relegated to the online appendices.
+> ✎ `appendix/style.md` line 47 records the scheme from Moshary ~2025: an~ *2025. An* exhibit's number is the owning appendix's letter, a dot, and a counter running inside that appendix, so Appendix A holds `Figure A.1`, `Figure A.2` and `Table ~A.1`, with figures~ *A.1`. Figures* and tables *are* counted separately. The same line carries ~the~ *one* condition attached to that ~numbering, which is that~ *numbering:* the note under each exhibit repeats the sample definition and the confidence-interval ~convention~ *convention,* so the exhibit stands alone without the body. Proof placement, by contrast, is not settled in the appendix at ~all:~ *all.* `style.md` line 37 and `introduction/template.md` line 133 both put the relegation sentence in the introduction's roadmap paragraph, ~once, which~ *once. That* is where Li 2025 writes that all proofs are relegated to the online appendices. · CC · 260802 1720
 
 #### 9.4 · What this desk refuses in an appendix
 (from `appendix/style.md` "Anti-patterns" lines 49-56)
@@ -778,7 +795,8 @@ Sketched proofs are refused; in-paper and online proofs alike are complete deriv
 The one-line relegation sentence, settled once in the introduction's roadmap rather than in the appendix, which is the placement 9.3 records.
 
 "Appendix B investigates the imbalance, showing that it occurs in one month of the data." [Moshary 2025]
-The routing sentence whose verdict is already stated inline, which is how 9.4 keeps the main text readable without the appendix.
+The routing sentence with its verdict already stated inline. That is how 9.4 keeps the main text readable without the appendix.
+> ✎ The routing sentence ~whose~ *with its* verdict ~is~ already stated ~inline, which~ *inline. That* is how 9.4 keeps the main text readable without the appendix. · CC · 260802 1720
 
 "Proof of Proposition 1. Taking the first-order derivative of the seller's expected profit" [Guo 2025]
 The proof block opening on the standard formula, a complete derivation and one of the three things 9.2 says are not prose.
@@ -824,15 +842,18 @@ The self-contained exhibit note, the condition attached in 9.3 to the letter-plu
 
 #### 10.1 · The claim, the display and the abstract sentence are one chain
 (`README.md` line 181)
-`README.md` line 181 ties three slots to a single object: the `[primary]` claim drives the abstract's contribution sentence, the introduction's contribution paragraph, and the first implication in the discussion. At this desk that claim has a fixed shape, given at README lines 87-91, which is causal or structural evidence informing a marketing decision with the welfare or profit consequence stated. So the actor test in part 1 is not only a routing rule for choosing between departments; it is the shape of a sentence three separate sections have to carry, and a paper that cannot name who acts differently fails in three places rather than one.
+`README.md` line 181 ties three slots to a single object. The `[primary]` claim drives the abstract's contribution sentence, the introduction's contribution paragraph, and the first implication in the discussion. At this desk that claim has a fixed shape, given at README lines 87-91: causal or structural evidence informing a marketing decision, with the welfare or profit consequence stated. So the actor test in part 1 does more than route a paper between departments. It is the shape of a sentence three separate sections have to carry, and a paper that cannot name who acts differently fails in three places rather than one.
+> ✎ `README.md` line 181 ties three slots to a single ~object: the~ *object. The* `[primary]` claim drives the abstract's contribution sentence, the introduction's contribution paragraph, and the first implication in the discussion. At this desk that claim has a fixed shape, given at README lines ~87-91, which is~ *87-91:* causal or structural evidence informing a marketing ~decision~ *decision,* with the welfare or profit consequence stated. So the actor test in part 1 ~is not only~ *does more than route* a ~routing rule for choosing~ *paper* between ~departments; it~ *departments. It* is the shape of a sentence three separate sections have to carry, and a paper that cannot name who acts differently fails in three places rather than one. · CC · 260802 1720
 
 #### 10.2 · Economic units is a display rule before it is a prose rule
 (README lines 119-123, and `results/style.md` line 96)
-The family page states this outlet's hero display as the identification display, an event-study plot with visible pre-trends for a difference-in-differences design, or counterfactual and welfare-simulation figures for a structural paper, with effect sizes reported in dollars, percentage lift or elasticities rather than significance stars. `results/style.md` line 96 says the same thing from the prose side, refusing a paper that reports only relative performance and requiring at least one number scaled to business units. The two agree, which is worth recording because they were written from different sources: the README from editorial knowledge, the section guide from measuring five PDFs.
+The family page states this outlet's hero display as the identification display. For a difference-in-differences design that is an event-study plot with visible pre-trends; for a structural paper it is counterfactual and welfare-simulation figures. Effect sizes are reported in dollars, percentage lift or elasticities rather than significance stars. `results/style.md` line 96 says the same thing from the prose side, refusing a paper that reports only relative performance and requiring at least one number scaled to business units. The two agree, and that is worth recording because they were written from different sources: the README from editorial knowledge, the section guide from measuring five PDFs.
+> ✎ The family page states this outlet's hero display as the identification ~display,~ *display. For a difference-in-differences design that is* an event-study plot with visible ~pre-trends~ *pre-trends;* for a ~difference-in-differences design, or~ *structural paper it is* counterfactual and welfare-simulation ~figures for a structural paper, with effect~ *figures. Effect* sizes *are* reported in dollars, percentage lift or elasticities rather than significance stars. `results/style.md` line 96 says the same thing from the prose side, refusing a paper that reports only relative performance and requiring at least one number scaled to business units. The two agree, ~which~ *and that* is worth recording because they were written from different sources: the README from editorial knowledge, the section guide from measuring five PDFs. · CC · 260802 1720
 
 #### 10.3 · The exemplar base is thinner than its own count
 (and part 2 understates by one step how far the markers go)
-`abstract/style.md` line 106 and `introduction/style.md` line 110 both record that two of the five exemplars were accepted by neighboring Management Science departments, Chen 2025 by revenue management and market analytics and Li 2025 by operations management. Both notes add that their abstract and introduction architecture matches the marketing-department papers, so they are usable, but it leaves three marketing-department exemplars behind seven section guides: Guo 2025, Joo 2026 and Moshary 2025. Part 2 records that no `style.md` marks the size of the base behind its numbers, and three of the seven do carry a narrower caveat worth naming: the field-experiment methods norms rest on Moshary plus Joo (`methods/style.md` line 105), the empirical results micro-norms rest on Moshary alone (`results/style.md` line 124), and the in-paper appendix micro-norms rest on Guo, Joo and Moshary because Chen and Li keep everything online (`appendix/style.md` line 79). The abstract, introduction, theory and discussion guides carry no such marker.
+`abstract/style.md` line 106 and `introduction/style.md` line 110 both record that two of the five exemplars were accepted by neighboring Management Science departments: Chen 2025 by revenue management and market analytics, Li 2025 by operations management. Both notes add that their abstract and introduction architecture matches the marketing-department papers, so they are usable. That still leaves three marketing-department exemplars behind seven section guides: Guo 2025, Joo 2026 and Moshary 2025. Part 2 records that no `style.md` marks the size of the base behind its numbers. Three of the seven do carry a narrower caveat worth naming. The field-experiment methods norms rest on Moshary plus Joo (`methods/style.md` line 105). The empirical results micro-norms rest on Moshary alone (`results/style.md` line 124). The in-paper appendix micro-norms rest on Guo, Joo and Moshary, because Chen and Li keep everything online (`appendix/style.md` line 79). The abstract, introduction, theory and discussion guides carry no such marker.
+> ✎ `abstract/style.md` line 106 and `introduction/style.md` line 110 both record that two of the five exemplars were accepted by neighboring Management Science ~departments,~ *departments:* Chen 2025 by revenue management and market ~analytics and~ *analytics,* Li 2025 by operations management. Both notes add that their abstract and introduction architecture matches the marketing-department papers, so they are ~usable, but it~ *usable. That still* leaves three marketing-department exemplars behind seven section guides: Guo 2025, Joo 2026 and Moshary 2025. Part 2 records that no `style.md` marks the size of the base behind its ~numbers, and three~ *numbers. Three* of the seven do carry a narrower caveat worth ~naming: the~ *naming. The* field-experiment methods norms rest on Moshary plus Joo (`methods/style.md` line ~105), the~ *105). The* empirical results micro-norms rest on Moshary alone (`results/style.md` line ~124), and the~ *124). The* in-paper appendix micro-norms rest on Guo, Joo and ~Moshary~ *Moshary,* because Chen and Li keep everything online (`appendix/style.md` line 79). The abstract, introduction, theory and discussion guides carry no such marker. · CC · 260802 1720
 
 ## Aims
 
@@ -932,7 +953,7 @@ The family page states this outlet's hero display as the identification display,
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -942,7 +963,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -955,8 +979,8 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-This desk buys a decision and its welfare or profit consequence, so a paper that cannot name who would act differently has no claim here whatever its identification.
-A section norm inherits the authority of the exemplars it was extracted from, and stating a 7-paper norm as confidently as an 18-paper one misrepresents both.
+- This desk buys a decision and its welfare or profit consequence, so a paper that cannot name who would act differently has no claim here whatever its identification.
+  A section norm inherits the authority of the exemplars it was extracted from, and stating a 7-paper norm as confidently as an 18-paper one misrepresents both.
 
 ## Glossary
 
@@ -964,8 +988,12 @@ A section norm inherits the authority of the exemplars it was extracted from, an
 
 ## Log
 
+260802 · Sibling exemplar counts in the Diagram corrected from 17 / 18 / 12 to 15 / 16 / 10. The old row was inflated the same way this page's own count was: `ls | wc -l` counted `INDEX.md` and the EBSCO manifest as papers. The Opening already carried the true figures, so the page had been contradicting itself.
 260802 · Corrected against the desk. Management Science states NO page limit on an initial submission (the 47 / 32 page rules bind invited revisions only), so the pack's "~35 pp text" matches no stated number. The one real abstract rule is a 250-word cap, which no pack file records, and the five-label structured-abstract warning the packs carry is not in the current instructions. This outlet shares its submission page with MS-IS: the department is a ScholarOne manuscript Type, not a separate desk.
 260802 · Opened with the QBv outlet pages, from `playbook-utd-is/MS-Marketing` at `Venue-Paper@fe25a88`.
-260802 · Content expanded from 2 to 10 parts: one part per section kind (3 abstract, 4 introduction, 5 theory, 6 methods, 7 results, 8 discussion, 9 appendix), each carrying its arc, its measured budget with the `style.md` line named, its named variants and what picks one, its moves as slots and its anti-patterns; part 10 absorbs the retired `playbook-utd-is/README.md`. Writing Style relaxed to allow a sourced number. Corrected part 2's exemplar count from 7 to 5, matching the Diagram, the state line and every `style.md` header; the Opening still reads "seven exemplars" and is left for its owner.
-260802 · Two subsubsections added to each of the seven section-kind parts (3 through 9), fourteen in all: a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS with every figure sourced to a `MS-Marketing-<kind>/style.md` heading or line, and a `The language, in the papers' own words` block quoting 5 to 6 attributed exemplar sentences per kind from the pack's own "Signature moves" and "Exemplar sentences". VALUE DENSITY is `not recorded by the pack` in all seven, since no style.md in the venue tree measures numeric values per sentence; citation density is recorded per sentence for abstract, introduction, theory, results and discussion, but only as a per-section count for methods and appendix. Nothing was measured from a PDF, and `MS-Marketing/examples/` holds no extracted-text exemplar, so no metric on this page is newly measured.
-260802 · Authority sub-block added at the end of Files, from Management Science's own submission guidelines rather than from the pack; the MNSC LaTeX archive was fetched and is a real archive. The first finding is structural: this outlet has no instructions of its own, since the department is the manuscript Type chosen at ScholarOne Step 1 and the Marketing scope statement sits on the journal's shared editorial-statement page, so QBv3 and QBv4 answer to one authority. A trap worth naming sits on the same INFORMS template page, which lists a Marketing Science archive beside the Management Science one; they are different journals and only the second belongs to this outlet. Two rules the pack lacks: no page limit binds an initial submission, only invited revisions at 47 or 32 pages with the online appendix excluded, and the sole abstract rule is a cap of 250 words, above every number the pack measured.
+260802 · Content expanded from 2 to 10 parts: one part per section kind (3 abstract, 4 introduction, 5 theory, 6 methods, 7 results, 8 discussion, 9 appendix). Each part carries its arc, its measured budget with the `style.md` line named, its named variants and what picks one, its moves as slots and its anti-patterns. Part 10 absorbs the retired `playbook-utd-is/README.md`. Writing Style relaxed to allow a sourced number. Corrected part 2's exemplar count from 7 to 5, matching the Diagram, the state line and every `style.md` header. The Opening still reads "seven exemplars" and is left for its owner.
+> ✎ 260802 · Content expanded from 2 to 10 parts: one part per section kind (3 abstract, 4 introduction, 5 theory, 6 methods, 7 results, 8 discussion, 9 ~appendix), each carrying~ *appendix). Each part carries* its arc, its measured budget with the `style.md` line named, its named variants and what picks one, its moves as slots and its ~anti-patterns; part~ *anti-patterns. Part* 10 absorbs the retired `playbook-utd-is/README.md`. Writing Style relaxed to allow a sourced number. Corrected part 2's exemplar count from 7 to 5, matching the Diagram, the state line and every `style.md` ~header; the~ *header. The* Opening still reads "seven exemplars" and is left for its owner. · CC · 260802 1720
+260802 · Two subsubsections added to each of the seven section-kind parts (3 through 9), fourteen in all. The first is a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and DISPLAYS, with every figure sourced to a `MS-Marketing-<kind>/style.md` heading or line. The second is a `The language, in the papers' own words` block, quoting 5 to 6 attributed exemplar sentences per kind from the pack's own "Signature moves" and "Exemplar sentences". VALUE DENSITY is `not recorded by the pack` in all seven, since no style.md in the venue tree measures numeric values per sentence. Citation density is recorded per sentence for abstract, introduction, theory, results and discussion, but only as a per-section count for methods and appendix. Nothing was measured from a PDF, and `MS-Marketing/examples/` holds no extracted-text exemplar, so no metric on this page is newly measured.
+> ✎ 260802 · Two subsubsections added to each of the seven section-kind parts (3 through 9), fourteen in ~all:~ *all. The first is* a `Format values` block carrying WORDS, CITATION DENSITY, VALUE DENSITY and ~DISPLAYS~ *DISPLAYS,* with every figure sourced to a `MS-Marketing-<kind>/style.md` heading or ~line, and~ *line. The second is* a `The language, in the papers' own words` ~block~ *block,* quoting 5 to 6 attributed exemplar sentences per kind from the pack's own "Signature moves" and "Exemplar sentences". VALUE DENSITY is `not recorded by the pack` in all seven, since no style.md in the venue tree measures numeric values per ~sentence; citation~ *sentence. Citation* density is recorded per sentence for abstract, introduction, theory, results and discussion, but only as a per-section count for methods and appendix. Nothing was measured from a PDF, and `MS-Marketing/examples/` holds no extracted-text exemplar, so no metric on this page is newly measured. · CC · 260802 1720
+260802 · Authority sub-block added at the end of Files, from Management Science's own submission guidelines rather than from the pack. The MNSC LaTeX archive was fetched and is a real archive. The first finding is structural: this outlet has no instructions of its own. The department is the manuscript Type chosen at ScholarOne Step 1, and the Marketing scope statement sits on the journal's shared editorial-statement page, so QBv3 and QBv4 answer to one authority. A trap worth naming sits on the same INFORMS template page, which lists a Marketing Science archive beside the Management Science one. They are different journals and only the second belongs to this outlet. Two rules the pack lacks. No page limit binds an initial submission, only invited revisions at 47 or 32 pages with the online appendix excluded. And the sole abstract rule is a cap of 250 words, above every number the pack measured.
+> ✎ 260802 · Authority sub-block added at the end of Files, from Management Science's own submission guidelines rather than from the ~pack; the~ *pack. The* MNSC LaTeX archive was fetched and is a real archive. The first finding is structural: this outlet has no instructions of its ~own, since the~ *own. The* department is the manuscript Type chosen at ScholarOne Step ~1~ *1,* and the Marketing scope statement sits on the journal's shared editorial-statement page, so QBv3 and QBv4 answer to one authority. A trap worth naming sits on the same INFORMS template page, which lists a Marketing Science archive beside the Management Science ~one; they~ *one. They* are different journals and only the second belongs to this outlet. Two rules the pack ~lacks: no~ *lacks. No* page limit binds an initial submission, only invited revisions at 47 or 32 pages with the online appendix ~excluded, and~ *excluded. And* the sole abstract rule is a cap of 250 words, above every number the pack measured. · CC · 260802 1720

@@ -100,11 +100,11 @@ No Delivery authority moved into this page.
   Owns actual run evidence.
 
 ## Law
-Delivery owns canonical content and the human completion decision.
-Engine maps callable skill routes across that content but never becomes a second authoring authority.
-Every claimed route must name its Execute evidence or state that no execution exists.
 
-Board owns generic working-record mechanics, not manuscript semantics. This Paper Board owns the Paper dialect above that substrate; section, paragraph, sentence, and evidence requirements belong to QC3/QC5 and must not be copied into the generic Board skill.
+- Delivery owns canonical content and the human completion decision.
+  Engine maps callable skill routes across that content but never becomes a second authoring authority.
+  Every claimed route must name its Execute evidence or state that no execution exists.
+- Board owns generic working-record mechanics, not manuscript semantics. This Paper Board owns the Paper dialect above that substrate; section, paragraph, sentence, and evidence requirements belong to QC3/QC5 and must not be copied into the generic Board skill.
 
 ## Glossary
 - **Skill route**: the ordered callable skills that may serve one delivery.

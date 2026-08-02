@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.107.0"
+  version: "0.112.0"
   last_updated: "2026-08-02"
-  summary: "sentencerun.py asks the server for ?pane=page: the live shell had moved every page into an iframe, so the anchor-parity sweep read the shell's window and reported all 55 pages unreadable."
+  summary: "The family block names haipipe-board-page-for-skill, the roster-page variant for Skill and Agent mirror pages."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,7 +25,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
 - You know when you can stop.
   That rests on `close` (the closing condition) and each page's `## Aims` plus `## States`.
 
-## 👪 The family: one door, three specs, one verb (QC1b §2, shipped 260731)
+## 👪 The family: one door, three specs, one verb (QC1b §2, variant added 260802)
 
 This skill is the DOOR: you invoke it to run a board.
 The rest of `skills/board/` is what other agents LOAD or CALL without opening the door, and this skill routes to them rather than restating them:
@@ -33,18 +33,25 @@ The rest of `skills/board/` is what other agents LOAD or CALL without opening th
 **The board's sub-skills**: which altitude each one works at.
 
 ```
-haipipe-board-index      the board + group altitude: propose a structure,
-                         materialize it, the per-group lane blocks (lanes.py)
 haipipe-board-page       SPEC · what a page IS: three kinds over one base,
                          the seven sections, where a machine may write
-haipipe-board-sentence   SPEC · the atomic unit: lanes, evidence card,
-                         addresses, the archive-never-delete lifecycle
-haipipe-board-routing    VERB · one input → owning page → anchored write;
+haipipe-board-page-for-skill
+                         SPEC · the VARIANT for Skill-<n> and Agent-<n> roster
+                         pages, which decide nothing and so ask nothing
+haipipe-board-sentence   DOOR + SPEC · one sentence: comment, edit, card;
+                         lanes, addresses, the archive-never-delete lifecycle
+haipipe-board-routing    VERB · every write onto a board, at BOTH altitudes:
+                         board.md's structure (propose · materialize · lanes ·
+                         regroup) and one input → owning page → anchored write;
                          proposes, never creates; closes only answered rows
 haipipe-board-creator-agent    AGENT · writes ONE page in a fresh context;
                          designed to fan out N of them, keep every shared write here
 haipipe-board-reviewer-agent   AGENT · the read-only fresh-context reviewer
 ```
+
+`haipipe-board-index` was retired on 260802 (JL: "maybe merge, I will do B") and its whole altitude, including `lanes.py`, lives in `haipipe-board-routing`.
+Three of its five verbs were other units' work written a second time, and the merge gave a group-altitude finding somewhere to land, which it had never had.
+The `open` action below still describes proposing and materializing a board, on purpose: a person opening their first board should not have to load a second skill, and the two descriptions are corrected together.
 
 The specs cite this skill's `ref/` files as their authority and never fork them; the verbs load the specs.
 `haipipe-board-digest` (a transcript fanned out through routing) is named on the roster and not yet shipped.
@@ -223,8 +230,9 @@ And the prior question: most proposed decisions do not belong there at all. The 
 Offline (needs `cli/build.py`, plus `cli/stage.py` for `stage`): **view · open · add · stage · build · sync · link · close**
 Live (needs `cli/serve.py` running): **serve · excalidraw · comment**
 Routed to `haipipe-board-page`: **create a page · update a page**
+Routed to `haipipe-board-sentence`: **comment · edit · card**
 
-That is 11 verbs here, plus two this skill does not run itself.
+That is 11 verbs here, plus five this skill does not run itself.
 
 **One door** (JL 260802: "you can just say, haipipe-board update the page etc, it will route to the haipipe-board-page"). Anything about ONE PAGE routes to `haipipe-board-page`, which owns the page contract and drives that page end to end:
 
@@ -236,9 +244,15 @@ That is 11 verbs here, plus two this skill does not run itself.
 "bring <page> up to the standard"                 ▸ haipipe-board-page
 "why does <page> fail the checker"                ▸ haipipe-board-page
 
+"comment on / edit <sentence>"                    ▸ haipipe-board-sentence
+"put a card on <these words>"                     ▸ haipipe-board-sentence
+"what may attach to a sentence"                   ▸ haipipe-board-sentence
+
 anything about the BOARD: its groups, roster,     ▸ here
 index, serving, the round trip
 ```
+
+Route by SCOPE at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board and its structure are this skill's.
 
 Route by SCOPE, not by wording: one page is the page skill's, the board and its structure are this skill's. When a request names a page id or a page path, it is the page skill's even if it sounds structural, because whoever asks is looking at one page.
 `xcal.py` rebuilds the scene offline, but both the embedded canvas and the editable one go through `serve.py`, so `excalidraw` is counted as live.
@@ -451,29 +465,22 @@ The seeding is **one-way**: md is always the only source, and an edit on the can
 Re-running it is safe, which is why it could be made a script at all: ids are stable (`frame-QAa2`), a frame a human moved keeps its position, hand-drawn content is carried over untouched, and **a frame whose page has retired is deleted**.
 `--fresh` is the only mode that destroys anything (it re-lays out everything and drops hand-drawn content), so it is never the default.
 
-### comment / edit · comments and edits on a sentence (needs serve.py running)
+### comment / edit / card · anything about ONE SENTENCE (routed)
 
-- **Comment**: hover a sentence → click the `＋` on the right, or select text inside the sentence → click "💬 Comment" → write the comment → **Save**.
-  The live layer writes it **directly under that sentence** (`live/write.py`): `> JL: comment · 260729 1502`, and then rebuilds the html.
-  There is no comment box at the bottom of the page, and no need to hunt for context among the comments on different sentences.
-  `## Discussion` still holds only loose discussion that is pinned to no sentence.
-- **Edit**: double-click a sentence → change the words → Save.
-  The body becomes the final sentence, and a complete sentence diff is added automatically below it: `> ✎ Whole sentence with ~removed~ *added* words. · JL · 260729 1502`.
-  `~…~` are the removed words, `*…*` are the added words.
-  One line per edit, and no separate History is built.
-  A touch device can also reach Edit from the sentence's `⋯` menu; a single click on the body is unclaimed, so selecting and copying still work normally.
-- **Content addresses**: only `## Content` is addressed.
-  Every `###` division is `Cn`; a `####` heading inside it is a terminal node `Cn.Hn`, a body paragraph is that heading's sibling, and a sentence address is `Cn.Pn.S1`.
-  So `QAb3.C1.H1` and `QAb3.C1.P1.S1` are both legal, and `QAb3.C1.H1.P1.S1` is never legal.
-  Today one source line is one sentence, so every P has only `S1`; the S level is kept for a future paragraph with several sentences.
-- **The sentence action bar**: on a pointer device, hover or focus a sentence and `Cn.Pn.S1 ＋ 💬` fades in on the right; `＋` opens Comment under the sentence and `💬` opens Chat.
-  A touch device keeps only one quiet `⋯` in place, which expands to the full address plus Comment / Chat / Edit, so that three small buttons do not sit on top of the prose permanently.
-- **Sentence chat**: clicking `💬` reuses this Q's existing chat session, shows a closable Sentence Focus at the top of the drawer (the full address, the Content/Heading display name, the sentence, the adjacent apparatus), and puts the cursor into the input box; **the click itself does not call the model**.
-  The focused content is handed to the agent together with the message only when the user sends the next message.
-  The `×` on the focus card, or `Esc` in the input box, clears only the sentence focus and does not close the Q chat.
-  Addresses are generated at every render and live refresh; they are only this page load's focus address, they are not written into the Markdown, and they promise nothing about staying stable after a Content division, Heading, or Paragraph is inserted.
-- A new write needs serve.py, because it has to find that sentence in the server's Markdown.
-  When the service is down, the page keeps only a pending line or a copyable patch, and it never creates a comment area at the bottom of the page.
+Routed to `haipipe-board-sentence`, which owns the sentence contract and its three verbs the way `haipipe-board-page` owns the page. Say it here and it runs there:
+
+```
+💬 "comment on <sentence>"      a person's remark, written under that line
+✎ "edit <sentence>"            one line replaced, one word-level record
+🪪 "card on <words>"            a panel on a few words INSIDE the line
+```
+
+This skill keeps the machinery those verbs call, and nothing else: `src/body.py` renders both surfaces, `live/write.py` and `cli/serve.py` hold the four write routes, `assets/js/40-sentence/` holds the controls a reader touches, and `tests/drive_sentence.py` drives all of it in a real browser.
+
+Two rules that bind the ENGINE rather than the contract, so they stay here:
+
+- **A write needs `serve.py`**, because it has to find that sentence in the server's Markdown. With the service down the page keeps only a pending line or a copyable patch, and it never grows a comment area at the foot of the page.
+- **A form CLOSES before it asks for the repaint.** The live swap refuses to run while a textarea inside `div.wrap` holds text, which is what stops a rebuild from eating a half-written comment; a save form is inside `div.wrap` and still holds what it just saved, so asking first asks for something that can only be refused (260802: the edit path wrote its `> ✎` record and the page sat unchanged until someone pressed reload).
 
 The old page-bottom comment queue is dead: it is no longer read, displayed, or migrated.
 
@@ -656,7 +663,7 @@ Operating rules go into SKILL.md's prose, and **specifications** such as display
   (This really happened: `QD1`'s permission rule was first written off the cuff as "may only change this one file", and JL later overturned it into "the same as the CLI".)
 - So SKILL.md always equals **the sum of the settled rules**, no more and no less.
   Before changing it, check whether that question is `✅`.
-- Graduated so far: `QAa0` (Q and S share one source template → `ref/page-template.md`, formerly QA2, merged 260729; formerly QA4: Q and S share one page layout → `ref/board-form.md §8`, and display specifications are not stuffed in here) · `QA6` (comments land on disk) · `QA1` (where a board lives, formerly QC1, merged 260729) · `QC3` (a Q may live in its own folder) · `QB5` (the Python split per page into `src/`).
+- Graduated so far: `QAa0` (Q and S share one source template → `ref/page-template.md`, formerly QA2, merged 260729; formerly QA4: Q and S share one page layout → `ref/board-form.md §8`, and display specifications are not stuffed in here) · `QA6` (comments land on disk) · `QA1` (where a board lives, formerly QC1, merged 260729) · `QC3` (a Q may live in its own folder) · `QB5` (the Python split per page into `src/`; note the SENTENCE page is also QB5 on the design board, whose five faces folded into it on 260802).
 - The live layer's chat and terminal (`QD1`/`QD2`/`QD3`) are still 🟡, so only pointers to them are given above, never rules.
   The embed syntax (formerly `QF1`) is settled into `ref/board-form.md §5`; the QF1 page itself retired on 260725, see the note on the board's QF group.
 
