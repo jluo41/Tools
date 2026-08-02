@@ -194,7 +194,7 @@ These are the calls only JL can make; CC ticks nothing here.
       → CC recommends A; `QD4`'s Law already names SSE as the upgrade path, and this is the case it was reserved for.
 
 ## Files
-- `../../board/haipipe-board/build.py`
+- `../../board/haipipe-board/cli/build.py`
   The forward path's entry point; it decides the output shape, so the `board/` tree is a change here and nowhere else.
 - `../../board/haipipe-board/live/write.py`
   The return path: four endpoints, one anchoring rule, one implementation.
@@ -202,9 +202,9 @@ These are the calls only JL can make; CC ticks nothing here.
   The delivery half: the 4 second poll, the swap, and the link behaviour that a split tree would change.
 - `../../board/haipipe-board/src/common.py`
   `page_files()`, the discovery rule whose `_` prefix exclusion is what makes `board/` free.
-- `QC4a-writepath.md`
+- `QC-engine/QC4a-writepath.md`
   The return direction's addressing contract, which this face uses and does not restate.
-- `QD4-liveupdate.md`
+- `QD-working/QD5-split-workspace.md`
   How the browser learns and what it replaces, including the three symptoms this face's unit argument explains.
 
 ## Log

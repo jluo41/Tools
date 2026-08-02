@@ -69,7 +69,7 @@ All five items are complete and the ruling is settled.
   Deterministic renderer for the reply-ending strip.
 - `SKILL.md`
   Single source of truth for when the strip is required and how attachment is resolved.
-- `serve.py`
+- `cli/serve.py`
   Injects Board and page attachment when a drawer or terminal session opens.
 
 ### Input files

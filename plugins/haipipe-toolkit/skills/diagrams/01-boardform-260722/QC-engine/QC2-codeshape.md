@@ -75,7 +75,7 @@ The folder's own shape is settled: 25 top-level `.py` → 1. The engine now pres
 ## Files
 - `cli/build.py` · `src/` · `cli/serve.py`
   The three files the Law is applied to; the two entries moved into `cli/` on 260801.
-- `QC2a-buildsplit.md` · `QC2b-srcsplit.md` · `QC2c-livesplit.md`
+- `QC-engine/QC2a-buildsplit.md` · `QC-engine/QC2b-srcsplit.md` · `QC-engine/QC2c-livesplit.md`
   The family, one file each.
 
 ## Log

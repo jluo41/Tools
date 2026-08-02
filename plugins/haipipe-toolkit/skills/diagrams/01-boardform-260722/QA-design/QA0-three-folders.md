@@ -212,7 +212,7 @@ These are the calls only JL can make; CC ticks nothing here.
   The engine's own contract.
   Its shape section states the folder layout this face argues.
 - `../../board/haipipe-board/ref/board-form.md`
-  §1 owns the folder rules in full, including the one-folder-per-group ruling and the `regroup.py` migration.
+  §1 owns the folder rules in full, including the one-folder-per-group ruling and the `cli/regroup.py` migration.
 - `../../board/haipipe-board-index/SKILL.md`
   The first subskill, and the statement that it never imports the engine's `src/`.
 - `../../board/agents/haipipe-board-reviewer-agent.md`

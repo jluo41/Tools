@@ -265,7 +265,7 @@ These are the calls only JL can make; CC ticks nothing here.
 
 ## Files
 ### The two instruments
-- `check.py`
+- `cli/check.py`
   The mechanical half. Four families, the 15-construct table, and the gap report. Read-only.
 - `haipipe-board-reviewer-agent.md`
   The standing zero-background runner for the mechanical, prose, and visible-staleness review. It returns findings and never edits.
@@ -285,10 +285,10 @@ These are the calls only JL can make; CC ticks nothing here.
   The page renderer, which owns the Opening drawer, the Content subsections, and the Stage Contract.
 - `src/body.py`
   The body grammar: paragraph headings, job lines, group titles, sentence apparatus, typed lanes, and code folds.
-- `assets/board.css`
+- `assets/css/10-focus.css`
   Where a construct's meaning can change without any Python changing, which is how ordinary drawer prose ended up styled like small metadata labels.
-- `build.py`
-  The generator. Its built-in assertion checks that the body survives with every script stripped; `check.py` and the fresh reviewer are separate checks.
+- `cli/build.py`
+  The generator. Its built-in assertion checks that the body survives with every script stripped; `cli/check.py` and the fresh reviewer are separate checks.
 
 ## Glossary
 zero-background reader: someone who has never touched this project, played by a freshly started agent because it genuinely does not know, while the author knows too much unwritten context to test anything themselves.

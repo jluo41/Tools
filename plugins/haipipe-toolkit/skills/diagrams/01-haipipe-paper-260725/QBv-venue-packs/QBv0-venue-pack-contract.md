@@ -90,10 +90,10 @@ Point at the file; state the rule the file must satisfy.
 
 📦 Establishes the pack as a two-level unit, so a missing file is a missing answer rather than a missing folder.
 
-#### 1.1 · The section abbreviation is not the outlet folder name
-(it matters because every reader that composes the path by hand gets it wrong)
+#### 1.1 · The section abbreviation is not the outlet folder name, and the lifecycle already knows
+(so the pack shape has a reader-side resolver, and that is where the rule for it lives)
 The outlet folder is `npj-digital-medicine` and its section folders are `npjdm-introduction`; `jama-netopen` uses `jno-`, `jama-im` uses `jamaim-`, `diabetes-care` uses `diabcare-`, and `MISQ` uses `MISQ-`.
-Five conventions across fourteen outlets means the abbreviation has to be discovered by listing the folder, and no file records it.
+`stages/section-kinds.yml` measured this on 260720 and ruled the consequence: reach the path by GLOB (`*-<kind>`), never by concatenation, which happens to work for MISQ and fails on six other outlets.
 
 ### 2 · Who reads a pack, and who may write one
 
@@ -143,10 +143,11 @@ Nothing in this plugin can drift a pack, because nothing here can commit into on
         and named in its own taste.md: correct knowledge,
         wrong shape, and an inflated count on the sibling
 
-  ⚠️ playbook-grant · playbook-patent   no outlet tree at all
-     ── agency and jurisdiction deltas are README tables, which
-        the venue README calls an explicit exception ── and no
-        READER meets that sentence
+  ✅ playbook-grant · playbook-patent   no outlet tree at all
+     ── agency and jurisdiction deltas are README tables, and
+        `stages/section-kinds.yml` declares both packs
+        blueprint-only BY DESIGN, in a file the venue and
+        section-edit stages both read
 
   💥 nothing FAILS on any of these ── a reader gets silence
 ```
@@ -156,8 +157,8 @@ Nothing in this plugin can drift a pack, because nothing here can commit into on
 ## Aims
 
 ### A1 · 📦 What a pack owes, file by file
-- A1.1 · The pack shape is written as a checkable contract, with the section abbreviation recorded rather than discovered.
-  **Done when:** a reader can resolve `<outlet>/<abbr>-<section>/style.md` from a declared field instead of by listing the folder.
+- A1.1 · The pack shape is checkable against the resolver the lifecycle already has, so the two cannot drift.
+  **Done when:** a kind folder added to or removed from any outlet fails a check until `section-kinds.yml`'s outlet map agrees.
 
 ### A2 · 🔒 Who reads a pack, and who may write one
 - A2.1 · An uninitialized `paper/venue/` fails loudly instead of reading as zero packs.
@@ -168,13 +169,13 @@ Nothing in this plugin can drift a pack, because nothing here can commit into on
   **Done when:** a reader resolving taste for an unfamiliar pack knows which level to look at without listing both.
 - A3.2 · An exemplar is filed under the outlet it exemplifies.
   **Done when:** listing any outlet folder gives that outlet's true exemplar count, with no cross-pointing needed.
-- A3.3 · The grant and patent exception is declared where a reader meets it, not only inside the pack README.
-  **Done when:** `QBv6` and `QBv7` state the non-journal shape and the venue stage's `packs:` note points at them.
+- A3.3 · The blueprint-only declaration and the packs' own contents cannot disagree.
+  **Done when:** adding a per-section pack to grant or patent fails until `section-kinds.yml` stops calling it blueprint-only.
 
 ## States
 
 ### A1 · 📦 What a pack owes, file by file
-- ⬜ A1.1 · Not started. Five abbreviation conventions across fourteen outlets, recorded in no file.
+- ⬜ A1.1 · Not started, and narrower than first written. `stages/section-kinds.yml` already carries the glob rule and an outlet-to-kinds map measured on disk; what is missing is anything that fails when a pack changes and that map does not.
 
 ### A2 · 🔒 Who reads a pack, and who may write one
 - ⬜ A2.1 · Not started, and hit today. `paper/venue/` was empty on this checkout until it was initialized on 260802; the stage contract's `packs:` path resolved to an empty directory with no error.
@@ -182,7 +183,7 @@ Nothing in this plugin can drift a pack, because nothing here can commit into on
 ### A3 · ⚠️ Where the shape actually varies
 - ⬜ A3.1 · Not started. Thirteen outlets carry `taste.md` at outlet level; `pnas`, `grant`, and `patent` carry it at family level, and no file says which rule applies.
 - ⬜ A3.2 · Not started. Three JNO exemplars sit under `jama-flagship/examples/`, which both empties one outlet's count and inflates the other's.
-- ⬜ A3.3 · Not started. The exception is one sentence in `venue/README.md` and appears nowhere a stage reader looks.
+- ✅ A3.3 · Resolved on inspection, and replaced. `section-kinds.yml` already declares grant and patent blueprint-only by design, and both venue and section-edit read it; what remains unguarded is the two declarations staying in step.
 
 ## Files
 
@@ -207,5 +208,6 @@ This group holds what a venue knows; `QB1` holds which venue this paper picked, 
 
 ## Log
 
+260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page. That file already carries the glob rule for the section abbreviation, an outlet-to-kinds map measured on disk, the `theory-model` alias, and the blueprint-only declaration for grant and patent. Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
 260802 · Every outlet page now lists its exemplars, generated by `_tools/sync-exemplars.py` rather than typed. Writing the generator immediately disproved thirteen counts this board had stated: they came from `ls | wc -l`, which counts `INDEX.md` and `*_RESULTS.md` as papers. The real total is 236 papers, and the script now fails on any count a page states that the folder does not.
 260802 · Opened with the QBv group. Split the venue KNOWLEDGE from the venue DECISION so this group could exist without re-opening the 260729 QB1 ruling, and recorded the empty-submodule failure found while checking the packs.

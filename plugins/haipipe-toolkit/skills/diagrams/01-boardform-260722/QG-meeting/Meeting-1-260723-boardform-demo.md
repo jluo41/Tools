@@ -1442,7 +1442,7 @@ Nothing has been routed onto the Q pages yet, so this page is the whole record s
 
 ## Files
 ### Engines
-- `../../board/haipipe-board/meetingpage.py`
+- `../../board/haipipe-board/cli/meetingpage.py`
   Reads the note and writes the three managed spans; seeds Items and Decision Now once.
 
 ### Input files

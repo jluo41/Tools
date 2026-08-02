@@ -256,6 +256,7 @@ QD3-chat-terminal.md
 QD4-terminal-design.md
 QD5-split-workspace.md
 QD6-session-status-strip.md
+QD7-rejoin-bench-a-scratch-page.md
 ### QE · Sharing
 How a board is hosted, mounted, and opened by someone who is not its author.
 

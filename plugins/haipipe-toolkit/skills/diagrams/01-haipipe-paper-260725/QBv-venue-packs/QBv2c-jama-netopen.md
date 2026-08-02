@@ -1,8 +1,8 @@
 # JAMA Network Open: the desk that publishes a rigorous null result
 
-state: 🟡 PARTIAL · 3 papers filed under the flagship · 6 sections · taste ✓ · the only outlet with no examples folder
+state: 🟡 PARTIAL · 3 papers filed under the flagship · 6 declared kinds · taste ✓ · the only outlet with no examples folder
 owner: JL
-method: state what JAMA Network Open accepts that its two siblings do not, and record the two shape defects in its folder
+method: state what JAMA Network Open accepts that its two siblings do not, and separate its one real folder defect from the section count that is declared
 
 ## Opening
 
@@ -14,7 +14,7 @@ This page owns only what is true of `playbook-jama-portfolio/jama-netopen/`.
 **Why this outlet is a route rather than a fallback**: `QBv2` rules that the descent is planned before writing, so a paper written for `QBv2b`'s bar arrives here unchanged.
 Calling it a backup hides that the manuscript was written for both.
 
-**What is wrong with its folder**: it has no `examples/` at all, and its three papers sit under `jama-flagship/examples/`. It also carries six section folders where both siblings carry seven, with no `jno-letter/` and no note saying why.
+**What is wrong with its folder**: it has no `examples/` at all, and its three papers sit under `jama-flagship/examples/`. Its six section folders against its siblings' seven are NOT a defect: `section-kinds.yml` withholds the `letter` kind from this outlet deliberately.
 
 ## Writing Style
 
@@ -56,8 +56,8 @@ How this page must be written. Read it before editing, and edit to it.
 
   ⚠️ FOLDER DEFECTS
      no examples/ ── its 3 papers are under jama-flagship/
-     6 section folders where both siblings have 7 ── no
-       jno-letter/, undeclared
+     ✅ 6 section folders against 7 is DECLARED, not missing
+        ── section-kinds.yml withholds `letter` here
 ```
 
 ## Content
@@ -90,9 +90,9 @@ How this page must be written. Read it before editing, and edit to it.
 The flagship rewards practice change and will read causal framing on a trial as appropriate.
 This desk takes observational work and therefore polices the verb, so descending does not relax the prose, it tightens it.
 
-### 2 · Two shape defects in one folder
+### 2 · One shape defect, and one that is declared
 
-**Missing exemplars and a missing section**: both visible only by listing, and one of them inflates a sibling.
+**One real defect, one that only looked like one**: the missing exemplars inflate a sibling; the missing section is declared.
 
 ```text
   📂 papers ── 0 here, 3 under jama-flagship/examples/
@@ -106,11 +106,12 @@ This desk takes observational work and therefore polices the verb, so descending
   📐 sections ── 6 here, 7 in both siblings
      jno-abstract · jno-appendix · jno-discussion ·
      jno-introduction · jno-methods · jno-results
-     ❌ no jno-letter/, and nothing says whether that is
-        deliberate
+     ✅ the missing `letter` kind IS deliberate:
+        `stages/section-kinds.yml` gives it to flagship and
+        im and withholds it here
 ```
 
-⚠️ Establishes both defects as filing and declaration problems rather than knowledge gaps, which makes them cheap and worth doing.
+⚠️ Establishes the exemplar filing as the one real defect, and the section count as a declared choice this page first misread.
 
 ## Aims
 
@@ -118,20 +119,20 @@ This desk takes observational work and therefore polices the verb, so descending
 - A1.1 · The associational-verb rule is checkable on a manuscript pinned to this outlet.
   **Done when:** a causal verb in the Results or Discussion of a JNO-pinned paper is caught before submission.
 
-### A2 · ⚠️ Two shape defects in one folder
+### A2 · ⚠️ One shape defect, and one that is declared
 - A2.1 · The three exemplars move into `jama-netopen/examples/`.
   **Done when:** listing this outlet gives its true count and the flagship's count drops to 20.
-- A2.2 · The missing `jno-letter/` is added or declared absent on purpose.
-  **Done when:** the six-against-seven difference is written down rather than discovered.
+- A2.2 · The pack folders and `section-kinds.yml`'s kind list for this outlet cannot drift apart.
+  **Done when:** adding or removing a kind folder here fails a check until the map agrees.
 
 ## States
 
 ### A1 · 🎯 A null result is a deliverable here
 - ⬜ A1.1 · Not started. The rule is prose in `jno-taste.md`.
 
-### A2 · ⚠️ Two shape defects in one folder
+### A2 · ⚠️ One shape defect, and one that is declared
 - ⬜ A2.1 · Not started. Three files, named here, filed next door.
-- ⬜ A2.2 · Not started. Both siblings carry a letter section; this one does not.
+- ✅ A2.2 · Resolved on inspection, and replaced. The absence is declared; the drift between the two sources is not guarded.
 
 ## Files
 
@@ -148,6 +149,21 @@ This desk takes observational work and therefore polices the verb, so descending
 
 <!-- exemplars:end -->
 
+<!-- kinds:begin -->
+
+📐 **Section kinds** · 6 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
+
+Each kind is one unit `section-edit` runs on, and one page it writes: 5 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+
+- `abstract` · `S-Main-<n>`
+- `introduction` · `S-Main-<n>`
+- `methods` · `S-Main-<n>`
+- `results` · `S-Main-<n>`
+- `discussion` · `S-Main-<n>`
+- `appendix` · `S-Appendix-<letter>`
+
+<!-- kinds:end -->
+
 ## Law
 
 This desk publishes a rigorous null result, so the design feature that defused the confound may itself be the contribution, and the Discussion stays associational without exception.
@@ -160,4 +176,5 @@ Descending to this outlet tightens the prose rather than relaxing it, because a 
 
 ## Log
 
+260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page. That file already carries the glob rule for the section abbreviation, an outlet-to-kinds map measured on disk, the `theory-model` alias, and the blueprint-only declaration for grant and patent. Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
 260802 · Opened with the QBv outlet pages, from `playbook-jama-portfolio/jama-netopen` at `Venue-Paper@fe25a88`.

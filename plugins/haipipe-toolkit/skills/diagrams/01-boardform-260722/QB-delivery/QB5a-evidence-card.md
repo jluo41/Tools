@@ -106,11 +106,11 @@ The only open gate is JL's visual and interaction acceptance on the lab Board be
 ### Engines
 - `src/body.py`
   RENDER. The attachment walk (`last_p`, `appar`) and `render_apparatus`: which `>` lines fold under which sentence, and the ⚑ badge count.
-- `serve.py`
+- `cli/serve.py`
   WRITE. `add_sentence` and the `/_board/sentence` route: the anchor match, and the rule that a new lane is appended at the end of the sentence's existing run.
-- `haipipe-board/assets/js/40-sentence.js`
+- `haipipe-board/assets/js/40-sentence/00-apparatus.js`
   The ➕ control that calls it: the lane dropdown, the input, and the `.saddrow` row inside an open drawer.
-- `assets/board.css`
+- `assets/css/10-focus.css`
   The `.sent` summary row, ⚑ badge, drawer, lane styles, and the hover tint.
 
 ### The demo home and the visibility boundary

@@ -58,9 +58,9 @@ The old `## Comments` queue, quote anchors, open/solved state, and re-anchoring 
   The three blanket `.folds` guards in `board.js` narrowed to what cannot anchor, so Law, Lesson, Glossary, and Discussion prose take sentence comments like main text; the ruling and the story live on `QB4g` (haipipe-board 0.59.0).
 
 ## Files
-- `serve.py`
+- `cli/serve.py`
   `add_comment` performs the server-side sentence-adjacent write.
-- `assets/board.js`
+- `assets/js/00-header.js`
   Opens the selection composer and posts the selected sentence.
 - `src/body.py`
   Renders sentence-local comments in their sentence apparatus.

@@ -159,7 +159,7 @@ Heading focus was designed here on 260730 and built on 260731, so every item on 
   On touch there is no hover, so chips stay hidden there exactly as the sentence chip does.
 
 ## Files
-- `haipipe-board/assets/js/40-sentence.js`
+- `haipipe-board/assets/js/40-sentence/00-apparatus.js`
   Generates addresses, adds the sentence controls, gathers direct apparatus, and bridges into the existing Q chat.
 - `haipipe-board/assets/css/`
   Provides the quiet hover/focus layout.

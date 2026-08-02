@@ -130,7 +130,7 @@ The code is uncommitted in the `Tools` submodule, alongside the `--host` flag fr
 
 ## Files
 ### The write half
-- `serve.py`
+- `cli/serve.py`
   `add_diagram` and the `/_board/diagram` route. All the refusals and the placement rules live here.
 - `haipipe-board/assets/js/10-drawer/20-chat.js`
   `wireXcal`, called from `rewire()` so the control survives a live refresh.

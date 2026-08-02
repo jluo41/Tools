@@ -181,16 +181,16 @@ These are the calls only JL can make; CC ticks nothing here.
 ### Engines
 - `../../board/haipipe-board/live/write.py`
   `_plain_sentence`, `_sentence_line`, and `_apparatus_end` are the rule; `add_comment`, `edit_sentence`, `add_sentence`, and `add_discuss` are its four callers.
-  They lived in `serve.py` when this face was opened and moved here the same afternoon under `QC8`'s split, which changed no behaviour.
+  They lived in `cli/serve.py` when this face was opened and moved here the same afternoon under `QC8`'s split, which changed no behaviour.
 - `../../board/haipipe-board/assets/js/10-drawer/10-comment-dock.js`
   `findAndWrap` holds the approximate fallback that this face rules acceptable for highlights and forbidden for writes.
 
 ### The faces this contract borders
 - `QC6-subskills.md`
   §9 is the section-boundary law this face's step ③ implements, and the incident that produced it.
-- `QE4-editlock.md`
+- `QE-sharing/QE4-editlock.md`
   The lock around a page, which composes with the version token rather than replacing it.
-- `QB5b-comments.md`
+- `QB-delivery/QB5b-comments.md`
   What a comment is, as opposed to how its line is found.
 
 ## Glossary

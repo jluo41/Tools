@@ -144,9 +144,9 @@ These are the calls only JL can make; CC ticks nothing here.
 ### Engines
 - `../../board/haipipe-board/SKILL.md`
   The `open` action requires page-list approval but does not explain how the list is proposed.
-- `../../board/haipipe-board/serve.py`
+- `../../board/haipipe-board/cli/serve.py`
   `_slugify`, `Q_STUB`, and `structure_op` materialize a supplied title without judging it.
-- `../../board/haipipe-board/check.py`
+- `../../board/haipipe-board/cli/check.py`
   A future structural check could detect duplicate or weak page and group proposals after the human rule is settled.
 
 ### Input files
@@ -156,7 +156,7 @@ These are the calls only JL can make; CC ticks nothing here.
   Requires short headings and self-contained questions, but has no naming or decomposition test.
 - `../../board/haipipe-board/ref/board-form.md`
   Defines ids, slugs, groups, and `## Pages` after the proposal has already been accepted.
-- `QB2-board-webpage-design.md`
+- `QB-delivery/QB2-board-webpage-design.md`
   Owns how groups and page rows render and how they are edited, not how they are conceived.
 
 ## Discussion

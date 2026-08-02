@@ -134,11 +134,11 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
   `src/components/BoardsView.tsx` + the `boards` entries in `src/views.ts` / `src/types.ts` / `src/Console.tsx`.
 
 ### Imported from the skill
-- `live/home.py` · `serve.py` · `src/page_board.py`
+- `live/home.py` · `cli/serve.py` · `src/page_board.py`
   The direct-service `/boards` route, its read-only discovery/rendering, and the return link present on every generated Board page.
-- `build.py`
+- `cli/build.py`
   `parse_dir()` / `to_json()`: the board list's numbers come from here, no second parser (imported by `boards_api.py`).
-- `serve.py`
+- `cli/serve.py`
   The md-writers `boards_api.py` imports (`add_comment` / `add_discuss` / `resolve`), and still the whole live layer on the workstation.
 
 ### The pattern it copied

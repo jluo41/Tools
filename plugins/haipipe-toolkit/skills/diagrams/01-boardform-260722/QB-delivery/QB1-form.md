@@ -347,11 +347,11 @@ It also removes the question entirely from every future board, which is the real
 - `src/common.py`
   `q_files()` is the membership rule: `rglob("Q*.md")`, skipping `_`, `.` and `fig/` segments.
   `ALIAS` is the section registry, which is why a section name the parser does not know renders nowhere.
-- `serve.py`
+- `cli/serve.py`
   `structure_op`, the write-back path for every keystroke a human contributes from the page.
-- `regroup.py`
+- `cli/regroup.py`
   The 260726 sweep, and the precedent for repairing what our own tool broke.
-- `check.py`
+- `cli/check.py`
   What turns a defect on a board we render into a report: `pages-ghost`, `dead-link`, `dead-href`.
 
 ## Law

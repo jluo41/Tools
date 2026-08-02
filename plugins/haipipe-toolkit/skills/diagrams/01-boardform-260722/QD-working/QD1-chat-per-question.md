@@ -144,7 +144,7 @@ These are the calls only JL can make; CC ticks nothing here.
       → CC's proposal: D, staged: B now (cheap insurance, one copy at release time) and C once the P2 mirror's jsonl parser exists anyway; both stay gitignored, because transcripts can carry secrets and this repo is distributed.
 
 ## Files
-- `serve.py`
+- `cli/serve.py`
   `HOLD` / `RUNS` / `TERMS`: "one window per session" is enforced by these tables.
 - Each question's `.md` header
   The `session:` line is where that question's session id lives.

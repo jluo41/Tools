@@ -7,6 +7,17 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.6.0 - 2026-08-02
+
+- The reply LISTS its Decision Now rows in brief instead of naming a count
+  (JL 260802: "I think you can also briefly list the 5 decisions here as well").
+  One line per row, the ask plus the recommended option; the full row, with its
+  `Part`, `Why now`, options, `Blocks` and default, still lives only on the page.
+  This amends the count-only rule of 260731, which was too thin to act on: a
+  number says something waits, not whether it is worth opening the page now.
+- Note for the reader: `0.5.0` is in `SKILL.md` frontmatter with no entry below.
+  It was not written by this change and its content is unknown here.
+
 ## 0.4.1 - 2026-08-01
 
 - Routes current records into the canonical plural `## States` section while
