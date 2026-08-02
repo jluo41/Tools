@@ -233,7 +233,7 @@ class WriteMixin:
         hit, err = self._sentence_line(lines, sentence)
         if err:
             return None, err
-        rows = self._record_lines(f"> {who}: ", text, when)
+        rows = self._record_lines(f"> Comment {who} ", text, when)
         if not rows:
             return None, "评论是空的"
         at = self._apparatus_end(lines, hit)
@@ -274,6 +274,11 @@ class WriteMixin:
         """往 ## Discussion 末尾追加一条自由想法（一整段 → 一条 > WHO: …）。
         跟 add_comment 一样跳 ``` 围栏找真的段；没有 ## Discussion 就在
         ## Log 前新建。不钉在某句话上 —— 就是自由讨论。"""
+        # A SENTENCE comment is written `> Comment WHO …` since 260802. The
+        # bare-initial form still parses, but it is not what to write, and
+        # `check.py` warns on it inside Content: the engine must not produce
+        # what the checker flags. `## Discussion` is untouched below, because
+        # its `> JL:` / `>> CC0726:` thread grammar is a different thing.
         who = re.sub(r"[^A-Za-z0-9]", "", p.get("who", "JL")).upper()[:4] or "JL"
         # Same record grammar as a comment: a typed paragraph break survives as
         # a continuation instead of being flattened into one long line.

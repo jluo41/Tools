@@ -180,7 +180,7 @@ QB5e-sentence-details-lifecycle.md
 QB8-diagramattach.md
 ### QC · Engine
 How the delivery is produced and shipped.
-QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
+QC5 what a board page costs to open, on the wire and in the browser; QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
 One synced Skill page per shipped unit.
 The family took QC1b §8's shape on 260731: one door (Skill-0 haipipe-board), the board+group altitude (Skill-1 index), two loadable SPECS (Skill-3 page, Skill-4 sentence), and the write-back VERB (Skill-5 routing); digest is named on the roster and unshipped.
 An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer and Agent-2 the page creator, one page each so N run at once.
@@ -196,6 +196,7 @@ build.py src/ serve.py      ◀── QC2      the code's shape · one Law    �
 build.py                    ◀── QC2a     build.py's size               ──▶  assets/*.css  *.js
 src/*.py                    ◀── QC2b     the src/ split                ──▶  src/ modules
 serve.py  src/common.py     ◀── QC2c     splitting the live layer      ──▶  live/ modules + thin CLI
+serve.py  build.py  assets/  ◀── QC5     what a page costs to open    ──▶  the wire · the browser
 skillpage.py meetingpage.py ◀── QC3      a page from outside the board ──▶  Skill-*.md · a meeting page
 skillpage.py                ◀── QC3a     skill folder -> skill page    ──▶  Skill-*.md
 meetingpage.py              ◀── QC3b     a meeting note on the board   ──▶  the dated note file
@@ -209,6 +210,7 @@ skillpage.py sync           ◀── Skill-5  the routing VERB              ─
 skillpage.py sync           ◀── Agent-1  the fresh-context reviewer    ──▶  its definition .md
 skillpage.py sync           ◀── Agent-2  the page creator, N at once   ──▶  one Q*.md per agent
 ```
+QC5-pagecost.md
 QC1-skillfamily.md
 QC1a-skillmd.md
 QC1b-subskills.md

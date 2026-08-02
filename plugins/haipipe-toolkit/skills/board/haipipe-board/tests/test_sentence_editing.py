@@ -40,7 +40,9 @@ class SentenceEditingTest(unittest.TestCase):
         self.assertEqual(result["sentence"], "First sentence.")
         self.assertEqual(
             self.read(),
-            "First sentence.\n> JL: Please clarify. · 260729 1502\nSecond sentence.\n",
+            # `> Comment WHO …` since 260802: the engine must not write what
+            # check.py flags. `## Discussion` keeps its own `> JL:` grammar.
+            "First sentence.\n> Comment JL Please clarify. · 260729 1502\nSecond sentence.\n",
         )
         self.assertNotIn("## Comments", self.read())
 
@@ -74,7 +76,7 @@ class SentenceEditingTest(unittest.TestCase):
     def test_inline_comment_and_change_are_visible_below_the_sentence(self):
         html = body(
             "New sentence.\n"
-            "> JL: Please clarify. · 260729 1502\n"
+            "> Comment JL Please clarify. · 260729 1502\n"
             "> ✎ ~Old~ *New* sentence. · JL · 260729 1503\n"
         )
         # SHUT since 260801: nothing on a page opens itself, and the badge

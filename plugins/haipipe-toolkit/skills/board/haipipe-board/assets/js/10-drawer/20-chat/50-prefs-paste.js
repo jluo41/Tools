@@ -182,10 +182,118 @@
   }
   function curSet(n) { try { localStorage.setItem(CURK(), String(n)); } catch (e) {} }
 
+  /* ── THE REJOIN IS NOT A TURN ────────────────────────────────────────────
+     It used to be: `chatRejoin` called `chatSend({attach:true})` and every
+     failure branch of a 250-line turn function became something the reader
+     saw. That cost two separate fixes in one day — the 404 branch, then the
+     abort branch — and JL still ended up with ~120 copies of "Stopped waiting.
+     The server got the stop signal too." on one page (260802), a sentence that
+     was false twice over. A third branch would have been missed the same way.
+
+     So the two are separated the way the VS Code extension separates them. Its
+     webview never owns a turn: the extension host owns the session and the
+     webview only RENDERS events, which is why it can be thrown away and
+     rebuilt at any moment without anything being lost or anything being said
+     about it. `chatSend` owns a turn: the composer, the log, the cost line,
+     the failure report. `chatAttach` owns nothing at all. It paints events
+     into the transcript and, on any failure whatsoever, returns false without
+     a word. There is no branch left in it that can address the reader. */
+  var reattaching = false;
+
+  async function chatAttach() {
+    if (inflight || reattaching || !cq) return false;
+    reattaching = true;
+    var painted = false, cur = null, acc = '', seg = '';
+    var thinkEl = null, thinkAcc = '', lastRow = null, lastSeg = '';
+    var t0 = Date.now();
+    try {
+      var r = await fetch('/_board/attach', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file,
+          group: (cq && cq.group) || undefined, cursor: curGet() })
+      });
+      /* Nothing running is the ORDINARY answer, and an older server with no
+         ring is an ordinary answer too. Both are "false", both are silent. */
+      if (!r.ok || (r.headers.get('Content-Type') || '').indexOf('ndjson') < 0) {
+        diag('REJOIN', 'nothing live');
+        return false;
+      }
+      diag('REJOIN', 'attached at cursor ' + curGet());
+      var log = chatLoad(logKey());
+      traceStart(); busyStart('Rejoining'); chatBusy(true); painted = true;
+      var rd = r.body.getReader(), dec = new TextDecoder(), buf = '', j = null;
+      while (true) {
+        var ch = await rd.read();
+        if (ch.done) break;
+        buf += dec.decode(ch.value, { stream: true });
+        var lines = buf.split('\n'); buf = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          var ev; try { ev = JSON.parse(lines[i]); } catch (e) { continue; }
+          if (typeof ev.n === 'number') curSet(ev.n + 1);
+          if (ev.t === 'ping') continue;
+          if (ev.t === 'gap') {
+            bubble('sys', '⚠ ' + (ev.text || 'reconnected mid-turn'));
+          } else if (ev.t === 'stage') {
+            busySay(ev.text.length > 46 ? ev.text.slice(0, 46) + '…' : ev.text);
+          } else if (ev.t === 'think') {
+            busySay('Thinking');
+            if (!thinkEl) thinkEl = thinkBubble();
+            thinkAcc += ev.text;
+            thinkEl.querySelector('.tk-body').textContent = thinkAcc;
+            bdAuto();
+          } else if (ev.t === 'delta') {
+            if (busyWhat !== 'Responding') busySay('Responding');
+            if (thinkEl && thinkEl.open) {
+              thinkEl.open = false;
+              thinkEl.querySelector('summary').textContent =
+                '💭 Thinking (' + thinkAcc.length + ' chars — click to reopen)';
+            }
+            if (!cur) { cur = traceRow('say', '✍️', ''); seg = ''; }
+            seg += ev.text; acc += ev.text;
+            cur.querySelector('.x').textContent = seg;
+            lastRow = cur; lastSeg = seg;
+            traceScroll();
+          } else if (ev.t === 'tool') {
+            cur = null; seg = ''; toolCard(ev); busySay(ev.name || 'tool');
+          } else if (ev.t === 'tool_result') {
+            toolResult(ev); busySay('Thinking');
+          } else if (ev.t === 'ask') {
+            cur = null; askUI(ev);
+          } else if (ev.t === 'done') {
+            j = ev;
+          }
+        }
+      }
+      if (!j) return false;             /* the stream ended without an answer */
+      busyEnd();
+      if (lastRow && lastRow.parentNode) lastRow.parentNode.removeChild(lastRow);
+      var took = (Date.now() - t0) / 1000;
+      traceEnd('rejoined · ' + (took < 60 ? took.toFixed(1) + 's'
+        : Math.floor(took / 60) + 'm' + String(Math.round(took % 60)).padStart(2, '0') + 's'));
+      var txt = lastSeg || j.text || acc;
+      if (!txt) return false;
+      bubble('cc', txt);
+      log.push({ k: 'cc', t: j.text || acc || txt });
+      chatSave(logKey(), log);
+      if (j.session) loadSessions();
+      return true;
+    } catch (e) {
+      /* EVERY failure lands here and NONE of it is the reader's business:
+         an abort, a dropped socket, a restarted server, a parse error. It goes
+         to the drawer's own diagnostics and nowhere else. */
+      diag('REJOIN', 'gave up quietly: ' + (e.name || e.message || 'error'));
+      return false;
+    } finally {
+      reattaching = false;
+      if (painted) { busyEnd(); traceEnd(); chatBusy(false); }
+    }
+  }
+
   /* Rejoin a turn that is still running with nobody watching it.
      Returns true when it actually attached, so the caller can fall back to
      reading the transcript when nothing is live. */
-  function chatRejoin() { return chatSend(null, { attach: true }); }
+  function chatRejoin() { return chatAttach(); }
 
   async function chatSend(preset, opts) {
     /* Attach mode replays the SAME reader loop against /_board/attach instead
@@ -333,7 +441,14 @@
           /* A ring keepalive is NOT progress. The watchdog exists to notice a
              turn that has gone silent, so counting a ping as activity would
              make a hung turn look healthy forever. */
-          if (ev.t === 'ping') continue;
+          /* A keepalive is not progress FOR A TURN — the watchdog exists to
+             notice one that has gone silent, so counting it would make a hung
+             turn look healthy. For a REJOIN it is the opposite: a ping is the
+             server saying the turn is alive and still working, and the only
+             thing the rejoin is waiting for. Without this the 6s give-up below
+             fired on every single rejoin, because between events the ring
+             sends nothing else (JL 260802: ~120 × "Stopped waiting"). */
+          if (ev.t === 'ping') { if (attach) lastEv = Date.now(); continue; }
           lastEv = Date.now();
           /* ask the DOM, not `busyWhat`: that variable keeps its last value
              after a turn ends, so it cannot answer "is anything painted now" */
@@ -477,6 +592,21 @@
       }
     } catch (e) {
       busyEnd(); traceEnd();     /* a failed turn still closes its trace */
+      /* A REJOIN THAT FAILS IS NEVER THE READER'S PROBLEM, and it must never
+         reach the transcript. The drawer rejoins on open, on focus, on a 25s
+         heartbeat and on four backoff timers, so one noisy failure path is not
+         one message: it is a wall of them. JL got ~120 of "Stopped waiting.
+         The server got the stop signal too." on one page (260802), and that
+         sentence was a lie twice over — nobody pressed stop and no stop signal
+         was sent. The 404 half of this was made silent earlier the same day;
+         this is the half that was missed, which is abort, network and anything
+         else that throws. Fail quietly and let the transcript speak. */
+      if (attach) {
+        clearInterval(watchdog); window.__pendingSince = 0;
+        inflight = null; chatBusy(false);
+        diag('REJOIN', 'gave up quietly: ' + (e.name || e.message || 'error'));
+        return false;
+      }
       bubble('sys', e.name === 'AbortError'
         ? 'Stopped waiting. The server got the stop signal too.'
         : '⚠ ' + e.message);
