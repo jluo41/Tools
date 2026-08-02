@@ -49,6 +49,43 @@ The split is therefore an operate-time shell and never the shipped artifact.
   scroll, caret and drawer restoration      against and the guard code is deleted
 ```
 
+Working a page into shape, which is what the split is FOR:
+
+```
+  ① OPEN IT                                  a bare board url is the split now
+     …/QB5e-sentence-details.html            ?plain gives the old one document
+     ┌────────────────────────────────────────────────────────────┐
+     │ 🏠 ☰ Index  >_ TUI  💬 GUI · boardform · QB5e …   ↗ plain   │
+     ├────────────────────────────────────────────────────────────┤
+     │                    the page, alone                         │  157 KB
+     │            index and chat are not even loaded               │  167 ms
+     └────────────────────────────────────────────────────────────┘
+
+  ② READ THE SHAPE                           ③ ASK FOR THE WORK
+     ☰ Index  → the rail, 30 ms                 >_ TUI or 💬 GUI → 100 ms
+     ┌────────┬──────────────────┬────────────────┐
+     │ QA0 …  │ ⏱ Opening        │ ▸ "conform     │  the chat SEES this page:
+     │ QB4 ◀──┤ 🖼 Diagram        │    QB5e to     │  it is attached to the .md
+     │  the   │ 📚 Content        │    QB4"        │  behind the middle pane
+     │  page  │ 🎯 Aims           │                │
+     │  that  │ 📍 States         │ it edits the   │
+     │  RULES │ 📁 Files          │ MARKDOWN       │
+     │  shape │                  │                │
+     └────────┴──────────────────┴────────────────┘
+                      ▲                   │
+                      │   ④ IT REPAINTS   │  the md changes → build.py runs →
+                      └───────────────────┘  the page frame reloads ITSELF
+                          ~1.5 s, and         the chat is a different document,
+                          only that frame     so the terminal never blinks
+
+  ⑤ REPEAT ③④ until the page reads right. Nothing else moves: the rail keeps
+     its scroll, the chat keeps its history, and you keep your place — which is
+     the whole reason this is three frames and not one document.
+
+  A NEW page starts the same way: add it from the rail (＋ in the index), open
+  its url, and ③④ from an empty template instead of an existing one.
+```
+
 ## Content
 
 ### C1 · What operating the board is today
@@ -117,6 +154,28 @@ The flicker is not a rendering artifact, it is the page genuinely being rebuilt,
 A CSS change hot-swaps the `<link>` and nobody notices, which is already the right behavior.
 A JS change cannot be hot-swapped safely, so the code calls `location.reload()` even with a terminal open, and survives it only because the PTY is parked rather than killed and the drawer reattaches afterwards.
 That machinery works, and it is still a full reload of everything in order to update one file.
+
+#### P4b. What the split costs against the board it replaces
+(the comparison JL asked for: both doors, one server, one cold cache, one criterion)
+The same page opened two ways is the only fair test, and `?plain` is what makes it possible, since the old board and the split are now the same file behind the same address.
+
+```
+  READING A PAGE                     time     bytes   requests
+  ────────────────────────────────────────────────────────────
+  old board   ?plain                204 ms   150 KB      3
+  split       bare url              137 ms   158 KB      4
+                                    ▲ a third faster, for 8 KB
+
+  THEN OPENING THE CHAT ON IT
+  old board   drawer + terminal    +106 ms  +148 KB     12
+  split       >_ TUI               +296 ms  +199 KB     21
+                                    ▲ +190 ms and +51 KB
+```
+
+Reading is where the time actually goes, and the split is the faster door by about a third: the shell paints in ten kilobytes while the page frame loads beside it, and nothing else is fetched at all, because the index and chat frames are not loaded until they are asked for.
+Opening the chat is where the split pays, and it pays for exactly the property this page exists to buy: the chat pane is its OWN document, so it fetches a second copy of the page that the one-document board already had in hand.
+So the trade, stated plainly, is about 190 ms and 50 KB once per page, in exchange for a chat that a page refresh cannot touch.
+The old board's price for that same isolation is not zero either; it is the four cooperating files in `C1` and most of the bugs this page's Log records.
 
 #### P5. Nothing on the wire was compressed
 (the cause the page did not have, added the day JL asked why opening a page takes so long)
@@ -235,14 +294,6 @@ The residue is honest and small: open a second split within a few seconds of the
 - A2.5 · Opening a page costs what the text costs, not what the markup costs.
   **Done when:** `serve.py` sends text compressed, and revalidation, `HEAD` and the `.md` links all still behave exactly as before.
 
-#### P5. Nothing on the wire was compressed
-(the cause the page did not have, added the day JL asked why opening a page takes so long)
-The server answers in two to six milliseconds, so the wait is not the machine thinking; it is bytes crossing a VS Code or ssh forward at full price.
-Measured 260802: a page is 172,525 bytes and gzips to 30,741, the index is 243,979 and gzips to 33,709, the largest page is 450,824 and gzips to 125,564; `board.js` and `board.css` are another 349,503 that gzip to 109,762.
-Opening one page cold cost 521 KB and now costs 140 KB, and the split's first open cost 937 KB across its three documents and now costs 206 KB.
-`serve.py` sends `Content-Encoding: gzip` for GET on text above 1 KB, and nothing else changed: revalidation still answers a 0-byte 304, `HEAD` is left alone because the panes poll with it and read only `Last-Modified`, and a `.md` link still opens as text rather than downloading.
-This is orthogonal to `cause 2`: compression makes the repeated rail cheap to send, and `A2.2` is what stops sending it at all.
-
 ### C3 · Three frames, and why iframes won
 - A3.1 · A terminal edit to a page's Markdown refreshes the page frame on its own.
   **Done when:** the terminal writes this page's md and the page frame repaints with no pane reloaded by hand.
@@ -274,14 +325,6 @@ This is orthogonal to `cause 2`: compression makes the repeated rail cheap to se
 - ⬜ A2.2 · Half by behaviour, none by bytes: the index is now loaded once per session because it is its own frame, but every page still SHIPS the 53 `sb-out` blocks and the pane only stops drawing them. Deleting them is a `build.py` change that would take the rail off a page opened on its own, so it needs its own decision.
 - ✅ A2.3 · Proven, and the Aim's own reasoning turned out to be half wrong. The outcome holds: `checks/splitgaps.py` G2 opens a drawer, scrolls the frame, rebuilds, and finds both back afterwards. But the Aim expected `80-restore.js` to become deletable, and a real reload genuinely loses scroll where a `div.wrap` swap did not, so that file is now LOAD-BEARING in a pane rather than removable. What went away is the drawer-key matching and the caret bookkeeping across panes, not the restore.
 - 🔨 A2.4 · Unchanged: the CSS half hot-swaps, the JS half still reloads. It is no longer a reader-visible cost in the shell, because the reload it triggers is one frame's.
-
-#### P5. Nothing on the wire was compressed
-(the cause the page did not have, added the day JL asked why opening a page takes so long)
-The server answers in two to six milliseconds, so the wait is not the machine thinking; it is bytes crossing a VS Code or ssh forward at full price.
-Measured 260802: a page is 172,525 bytes and gzips to 30,741, the index is 243,979 and gzips to 33,709, the largest page is 450,824 and gzips to 125,564; `board.js` and `board.css` are another 349,503 that gzip to 109,762.
-Opening one page cold cost 521 KB and now costs 140 KB, and the split's first open cost 937 KB across its three documents and now costs 206 KB.
-`serve.py` sends `Content-Encoding: gzip` for GET on text above 1 KB, and nothing else changed: revalidation still answers a 0-byte 304, `HEAD` is left alone because the panes poll with it and read only `Last-Modified`, and a `.md` link still opens as text rather than downloading.
-This is orthogonal to `cause 2`: compression makes the repeated rail cheap to send, and `A2.2` is what stops sending it at all.
 
 ### C3 · Three frames, and why iframes won
 - ✅ A3.1 · Verified through the write path the terminal and the drawer both use: `checks/splitgaps.py` G4 posts a comment to `/_board/comment`, and the page pane repaints with that comment visible while the chat pane's window marker survives. Finding it took fixing a real bug first, recorded in the Log: `rebuild()` pointed at a `build.py` that the 0.99.0 move had taken into `cli/`, so every write updated the Markdown and silently never rebuilt the html.
@@ -344,6 +387,18 @@ chat: the third pane, meaning whatever you talk to Claude through. It is the SDK
 pane: one of the three regions of the operating shell, each loading its own document, so refreshing one cannot disturb another.
 
 ## Log
+260802 · Measured the split AGAINST the old board, which is the comparison JL actually asked for and which `?plain` finally makes possible: the same file, the same server, one cold cache, one criterion. Reading a page is 204 ms / 150 KB the old way and 137 ms / 158 KB in the split — a third faster for 8 KB, because the shell paints in ten kilobytes while the page frame loads beside it and nothing else is fetched. Opening the chat is 106 ms / 148 KB the old way and 296 ms / 199 KB in the split, and that is the split paying for the thing it exists for: the chat pane is its own document, so it fetches a second copy of the page the old board already had. Recorded as C2 P4b
+260802 · ⚠️ REPAIRED MY OWN DAMAGE: the `#### P5` block had been pasted THREE times, once correctly in Content and twice into the middle of Aims and States, because the replacement I anchored it on — the `### C3` heading — occurs in all three sections. Two copies removed. A section heading is not a unique anchor on a page whose Aims and States repeat the Content headings by design, which is the shape `QB4` rules
+260802 · A PANE YOU CANNOT SEE IS NO LONGER PAID FOR (JL: "could you by default to hide the index and chat? and could you record the timing of opening them as well?"). Both side frames now ship as `data-src` and are given a real `src` the first time they are shown, so opening a page loads ONE document. Measured cold, gzip on, on the family's own board:
+
+      opening a page (index and chat hidden)   167 ms   157 KB    4 requests
+      ☰ first open of the index                 30 ms    34 KB    3 requests
+      >_ first open of the chat                 31 ms   228 KB   27 requests
+         its xterm mounted                     +69 ms
+      toggling anything, once loaded           1-3 ms     0 KB    0 requests
+
+  Against the eager version measured earlier the same day, 310 ms and 563 KB for a cold split, that is 3.6× fewer bytes to read a page, and the two costs that dominated — 118 KB of xterm and a `claude` process that takes ~1.4 s to boot — are now paid only by someone who opens the chat. Once a frame is loaded it STAYS loaded, so hiding remains a zero-width column and a terminal mid-command still survives being put away
+260802 · Added the second `## Diagram`: how a page is actually worked into shape in the split — open it, ☰ the rail to see the page that RULES the shape, ask the chat to conform this one, watch the middle frame repaint, repeat. A new page starts the same way from an empty template. The first diagram says what the split IS; this one says what it is FOR, which is the question JL asked and the page could not answer
 260802 · THE SPLIT IS THE DEFAULT (JL: "could you make the ?split to be default and make ?plain to be the old version?"). Opening any board page in a browser now gives the three panes; `?plain` gives the one document it always was, and `↗ plain` in the strip is that link. The test is what the request ASKS FOR: `?pane=` or `?plain` are answered with the file, `Accept: text/html` means a tab is navigating and gets the shell, and everything programmatic — `70-router.js`, `20-live-refresh.js`, curl, a scraper — sends `*/*` and still receives the page. QB2 survives on that last line: the page a reader can open and read with scripts stripped is still one GET away, and is what every non-browser gets by default
 260802 · `Sec-Fetch-Dest: document` was the obvious test and it is useless here, which cost a round of "the change did nothing": browsers send the `Sec-Fetch-*` headers only to a TRUSTWORTHY origin — https, or localhost — and this board is plain http on a tailnet address, so they never arrive. Chrome's own request headers over that origin are `Upgrade-Insecure-Requests` and `User-Agent`, nothing else. The header is still believed when it IS present, so an iframe that announces itself is never mistaken for a tab
 260802 · The narrow layout was broken and JL hit it by making the window smaller: one pane filling the top and white below. `#split.hi` and `#split.hc` are id+class, so they outranked the bare `#split` inside the media query and the column layout survived into a phone-width screen. Below 820px the same five children are now rows — index, gutter, page, gutter, chat — with every hidden-state selector repeated at the same specificity, and the drag handles follow the axis the grid is actually on

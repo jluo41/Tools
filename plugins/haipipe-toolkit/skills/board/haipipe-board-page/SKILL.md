@@ -1,18 +1,18 @@
 ---
 name: haipipe-board-page
 description: >-
-  The PAGE contract of a board, as a loadable spec: the base every page kind varies from (Q decision, S stage, Skill mirror), the seven on-stage sections in their fixed order (Opening, Diagram, Content, Aims, States, Files, folds), what each section owes a reader, how to write or revise one page or Opening, where a machine may write, and how to evaluate page units against resolved requirements. Load this when an agent must read, write, revise, or review ONE page without operating the whole board: rewriting an Opening, routing an input to a section, priming a per-page chat session, authoring a page-kind variant, or running a section evaluation. Trigger: page contract, page grammar, page sections, write page, rewrite Opening, Opening quality, section evaluation, quality check, which section, base page, page kind, /haipipe-board-page.
+  The PAGE contract of a board, as a loadable spec: the base every page kind varies from (Q decision, S stage, Skill mirror), the seven on-stage sections in their fixed order (Opening, Diagram, Content, Aims, States, Files, folds), what each section owes a reader, how to write or revise one page or Opening, where a machine may write, and how to evaluate page units against resolved requirements. TWO VERBS, and this skill is the door for both: `create a new page on <topic>` scaffolds one from the template and registers it, and `working on <page>` brings an existing page up to the contract, starting from the checker's findings. It owns the contract and CALLS haipipe-board's engine rather than containing it. Also loadable as a pure spec by an agent with no board open: routing an input to a section, priming a per-page chat session, authoring a page-kind variant, or running a section evaluation. Trigger: create a page, new page, make a page, working on a page, update a page, fix a page, bring a page up to standard, page contract, page grammar, page sections, rewrite Opening, Opening quality, section evaluation, quality check, which section, base page, page kind, /haipipe-board-page.
 metadata:
-  version: "0.7.0"
+  version: "0.8.0"
   last_updated: "2026-08-02"
-  summary: "Load the skill with a page and start from the checker findings; the contract carries the Opening split, figure captions, Content numbering, the A<n> group ids and the shape-not-hue Aim statuses."
+  summary: "Two verbs, create and working-on, drive one page end to end; the skill owns the contract and calls haipipe-board's engine rather than containing it."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-board-page · the page, as a contract you can load
 
 `haipipe-board` is the door you walk through to RUN a board.
-This skill is a SPEC: what a page IS, loadable by an agent that has no board open.
+This skill is the door for ONE PAGE, and the spec that page is measured against. Say `create a new page on <topic>` or `working on <page>` and it runs; load it with no board open and it is a pure contract.
 QC6 §7 on the design board states the test it passes: a consumer needs these rules with no board open, and the consumers exist: the routing verb deciding "which page, which section", the chat drawer priming a per-page session, and the variant authors in other families.
 
 **The boundary, and it is a hard one:**
@@ -28,7 +28,7 @@ where a write may land           the checker (check.py)
 the base/variant model           the template file itself (ref/page-template.md)
 ```
 
-This skill NEVER renders, serves, or checks.
+This skill never CONTAINS the renderer, the server or the checker. It calls them, because a reader asking for one page should not have to know which script does what, and owning one page end to end is not the same as owning the machinery.
 The authoritative template stays `haipipe-board/ref/page-template.md`; this contract cites it and must never fork it.
 
 ## 🧬 Three page kinds, one base
@@ -91,19 +91,48 @@ An Aim is not a task. Write `- A3.1 · target` for a result owned by Content par
 
 The section labels are deliberately both plural: `Aims` contains Aim records and `States` contains their State records. States mirrors every Aim id exactly once: `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or something outside this page, `✅` met with the evidence named, or `❄️` on ice, held on purpose. Each says its meaning by SHAPE (JL 260802); the old `🟡` `🟠` `⏸️` still parse. This is the AIM vocabulary and NOT the page `state:` line, which keeps its own ✅ 🟡 🔴 ⏸️ set and is checked apart. The section is a snapshot, so the reason for a transition belongs in Log. The strict one-to-one relationship is Aim to current State row, never Content division to Aim.
 
-## ✍️ Author or revise one page
+## 🚪 Two verbs, and this skill is the door for both
 
-**To bring one page up to these rules, load this skill with the page:**
-`/haipipe-board-page <path/to/PAGE.md>`.
+Say either of these and this skill runs it. You never call the engine yourself.
 
-START FROM THE FINDINGS, not from the top of the file. Run the checker first and work its list, because every finding already names the rule it breaks and the part it is in, so no reading is needed to know what to do:
+```
+📄 CREATE     /haipipe-board-page create a new page on <topic>   [on <board>]
+🔧 WORK ON    /haipipe-board-page working on <page>              or just the path
+```
+
+`haipipe-board` owns the machinery and this skill owns the contract, which is why the boundary above says this skill never renders, serves or checks: it does not CONTAIN that code. It does CALL it. A page is one unit of work, and a reader asking for one page should not have to know which script does what.
+
+### 📄 create a new page on a topic
+
+1. Resolve the board folder, and the group the page belongs to. Ask ONLY if the group is genuinely ambiguous.
+2. Pick the id (`Q<group><n>-<slug>`, or `S-<Family>-<unit>-<slug>` for a lifecycle stage) and copy `haipipe-board/ref/page-template.md` to it. Never retype the shape from memory: the template's guide sentences ARE the contract.
+3. Write the title so it states the page's PURPOSE, in sentence case.
+4. Write the Opening: the visible paragraph above the first blank line, everything else below it.
+5. Write Content as numbered parts, each opening with a caption, a `/diagram-ascii` figure and a short intro.
+6. Write Aims, their States, and Files.
+7. Register the page in the board's `board.md` roster.
+8. Build, check, and read the RENDER. Report the page's finding count, not the fact that you finished.
+
+### 🔧 working on an existing page
+
+1. Read the whole target file first, including Content, Aims, States, Files and the settled folds.
+2. Run the checker on it and work its list. Every finding names the rule it breaks and the part it is in, so nothing has to be read to know what to do.
+3. Fix the MECHANICAL findings first, in bulk: dead `## Files` paths, a part with no figure, a figure with no caption, a group name that drifted. None needs judgment.
+4. Then read for what no checker reaches: the weak-English axis, whether each part still answers one question, whether the Opening's visible paragraph says anything the title did not.
+5. If a fix reveals a rule nobody wrote down, write it in three places: the owning page, `haipipe-board/ref/page-template.md`, and this file. A repair that stops at one page will be needed again next week.
+6. Build, check, read the render, and report the before and after counts.
+
+The engine both verbs call, so nobody has to remember it:
 
 ```bash
+python3 <toolkit>/skills/board/haipipe-board/cli/build.py <board-folder>
 python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> | grep '^<PAGE>'
 python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> --summary
 ```
 
-That is the mechanical two-thirds, and it is deterministic: dead `## Files` paths, parts with no figure, a figure with no caption, a group name that drifted from its Content part. Fix those, re-run, and the count is the proof. Then read the page for the half no checker can reach: the weak-English axis, whether each part still answers one question, and whether the Opening's visible paragraph says anything the reader could not get from the title.
+`watch.py` rebuilds on any `.md` save, so step "build" is usually already done; a change to `.py`, `.css` or `.js` is not watched and needs the build run once.
+
+## ✍️ What both verbs are writing to
 
 Load this skill and `haipipe-board/ref/writing-rules.md` directly before writing.
 Do not copy their requirements into an assignment prompt: a copied checklist becomes a second prose authority and drifts.

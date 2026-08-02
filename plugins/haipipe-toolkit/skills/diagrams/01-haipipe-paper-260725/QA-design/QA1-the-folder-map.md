@@ -7,22 +7,20 @@ method: every THING has a board; name all eleven, allow four crossings, and trea
 ## Opening
 
 Where does a new rule, file, or page belong?
-
-The word "paper" names four different things at once. A reusable SKILL that ships, a design BOARD that argues about that skill, one MANUSCRIPT, and the control plane that manuscript is worked from. All four get called "the paper work" in conversation, and they sit in two different repositories. So nothing stops a file from landing in the wrong one, and the wrong one is silent.
+Everything here comes in a pair: `skills/paper/` ships the procedure a run follows, and `01-haipipe-paper-260725` holds the rulings that produced it.
+One word names both, so a file lands in the wrong half easily.
+Nothing reports it, because a rule in the wrong folder binds nothing rather than breaking.
+This page names every folder and rules which one owns what.
 
 **Where this page sits**: This is the first face on the board, because every later ownership question assumes it is answered.
 `QC3b` can only say who names a file once it is settled which tree the file is in.
 `QA8` can only draw an ownership line inside a shared page once it is settled which two owners exist.
 A reader who cannot place a thing cannot rule on it.
 
-**What the failures cost, and they are not symmetric**: A rule written into a working folder binds nothing, because no runtime reads it.
+**What each wrong placement costs, and they are not symmetric**: A rule written into a working folder binds nothing, because no runtime reads it.
 Working state written into the manual makes the manual wrong for every other paper.
 A design argument that runtime starts depending on means the skill can no longer ship without its own history.
 A paper that keeps its own copy of the universal contract drifts from it silently, because nothing compares the two.
-
-**One of these has already happened here**: This page once said "design Board" in the singular, collapsing the skill's board and a paper's board into one word.
-They use the same tool, the same page grammar and the same four `state:` values, so the collapse looked harmless.
-It was not: the graduation rule, which says a settled ruling leaves the board for the skill, then appeared to apply to a paper's S pages, whose Content must never leave because it IS the paper.
 
 **Which pages take it from here**: `QA2` what is inside the skill set · `QA3` what is on a skill board · `QA4` the board tool · `QA5` the evidence channel · `QA10` the prose verb · `QA6` what a new paper gets · `QA7` what is on a paper board.
 How a question actually crosses the evidence wall, and what it may cost, is `QC4b`.
@@ -319,6 +317,8 @@ No runtime skill may require an open Q page, and no paper's state may be inferre
 A board is ruled by its owner alone and consulted by everyone else. This board rules `①`, `⑪`, and the contract half of `③`. It never rules `④`, `⑥` or `⑩`.
 
 ## Lesson
+
+Two things that look alike collapse into one word, and the collapse looks harmless until a rule crosses it. This page once said "design Board" in the singular, covering both the skill's board and a paper's board. They use the same tool, the same page grammar and the same four `state:` values, so nothing looked wrong. It was: the graduation rule, which says a settled ruling leaves the board for the skill, then appeared to apply to a paper's S pages, whose Content must never leave because it IS the paper.
 
 A claim about a folder this board does not own goes stale in silence. `⑥` was recorded as "a design folder rather than a board, the one gap" for a week after `01-probe-qa-260726` existed, on this page and on `QA5`, because nothing on this side fails when the other side fixes itself. `check.py` reads structure and never judges whether a sentence is still true.
 

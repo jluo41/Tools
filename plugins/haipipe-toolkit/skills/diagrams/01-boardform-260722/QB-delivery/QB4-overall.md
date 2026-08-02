@@ -178,6 +178,37 @@ Required and optional markers belong in the first body line, never in the headin
    "## Opening (required)"  ↯  renders NOTHING, and nothing reports it
 ```
 
+**Using this page**: the two ways in, and where they meet.
+
+```
+📄 A NEW PAGE                          🔧 AN EXISTING PAGE
+
+📋 copy ref/page-template.md           📐 /haipipe-board-page <page.md>
+   │                                      │  loads the rules, not a copy
+   ▼                                      ▼
+✍️ fill the seven sections             ⚙️ cli/check.py <board> | grep <page>
+   🏷 title says the PURPOSE              │  every finding names its rule
+   🧭 Opening: blank line = the split     ▼
+   📚 Content: numbered, captioned     🔨 mechanical first, no judgment needed
+   🎯 Aims ▸ 📍 States ▸ 📎 Files          📎 dead paths · 🖼 missing figures
+   │                                      🏷 captions · 🔢 group names
+   │                                      ▼
+   │                                   👁 then READ it, for what no check sees
+   │                                      🗣 weak-English axis · one question
+   │                                      per part · does the Opening say
+   │                                      anything the title did not
+   └────────────────┬─────────────────────┘
+                    ▼
+       ⚙️ cli/build.py <board>   ── the watcher does this on any .md save
+                    ▼
+       🧪 cli/check.py <board> --summary
+                    ▼
+       ✅ zero findings on that page, and the RENDER read, not the markdown
+
+🚫 not done when the source is right: a dead watcher and a shut <details>
+   each produced a correct file and a wrong page
+```
+
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QAa0
 
 ## Content
@@ -226,7 +257,7 @@ With it, a sentence in the wrong place has somewhere to go instead of something 
 `### 3` holds the table of where things go, because Content is where they land wrongly most often.
 
 #### 0.3 · Divisions 1 through 7 specify the page sections
-(one division per section, all seven; §8 specifies the source file they are written in, and §9 how every authored unit is evaluated)
+(one division per section, all seven; §8 specifies the source file they are written in, §9 how every authored unit is evaluated, and §10 what a reader does with all of it)
 👁 conveys is what the reader gets, and 📦 holds is what goes into it.
 ✍️ source is how it is written in the `.md`, ⚖️ rules is what binds, and ⏭ omit is when the section may be left out.
 
@@ -1338,6 +1369,50 @@ The traps are worth naming because they are not obvious and each one cost real d
 Its report takes the same shape as any other evaluation: one row per file, the stale statement quoted, and the smallest fix.
 It must also report any contradiction it finds INSIDE this page, because a defect in the standard is worth more than any fix downstream of it.
 
+### 10 · Using this page
+**Two verbs**: what you say to make a new page, and to bring an existing one up to this.
+
+```
+🚪 ONE DOOR · say it to haipipe-board · page work routes to haipipe-board-page
+
+📄 "create a new page on <topic>"     🔧 "working on <page>"
+   📋 copies ref/page-template.md        ⚙️ runs the checker on that page
+   ✍️ writes the seven sections          🔨 fixes the MECHANICAL findings
+   🗂 registers it in board.md            👁 then reads for what no check sees
+        └──────────────┬──────────────────────┘
+                       ▼
+        ⚙️ build ▸ 🧪 check ▸ ✅ zero findings, read on the RENDER
+
+🚫 you never pick the sub-skill, and never call build.py or check.py
+🚫 not done when the source is right: a dead watcher and a shut <details>
+   each produced a correct file and a wrong page
+```
+📘 Establishes what a reader DOES with everything above: two things to say, and what finished means.
+
+#### 10.1 · There is one door, and it is a sentence
+(say it to `haipipe-board`; page work routes itself)
+Say `create a new page on <topic>` or `update <page>` and you are done choosing. `haipipe-board` is the door for everything about a board, and anything about ONE PAGE routes to `haipipe-board-page`, which owns this contract and drives that page end to end (JL 260802).
+You never pick the sub-skill, and you never call `build.py` or `check.py`. Someone asking for one page should not have to know which skill or which script does what.
+Routing is by SCOPE, not by wording: one page belongs to the page skill, the board and its structure belong to the board skill, and a request naming a page id or a path is the page skill's even when it sounds structural, because whoever asks is looking at one page.
+`haipipe-board` still owns the machinery. The page skill CALLS the engine rather than containing it, which is the same separation `### 9.3.3` requires of the reviewer: one source of rules, several things that run them.
+
+#### 10.2 · Start from the findings, never from the top of the file
+(every finding already names the rule it breaks and the part it is in)
+That is what makes bringing an old page up cheap: the mechanical two thirds need no reading at all.
+Dead `## Files` paths, a part with no figure, a figure with no caption, a group name that drifted from its Content part. On this board those are 66% of everything.
+Only then read the page, for the half no checker reaches: the weak-English axis in `### 9`, whether each part still answers one question, and whether the Opening's visible paragraph says anything the title did not.
+
+#### 10.3 · Finished means zero findings on that page, read on the render
+(`--summary` scores it; the page is the proof, not the file)
+`--summary` gives findings per rule, the worst pages, and how many are clean, so "is this better" is a number rather than an impression.
+A page at zero is what the others get made to look like, which is the whole reason this page exists.
+Then open the rendered page and read what a reader opens. Source-is-correct is not page-is-correct: a stopped watcher and a shut `<details>` each produced a correct file and a wrong page on 260801.
+
+#### 10.4 · The rule travels with the fix
+(a repair that stops at the page will be needed again next week)
+When a fix reveals a rule that was never written down, write it in three places: here, in `ref/page-template.md` so new pages inherit it, and in `haipipe-board-page` so the verbs apply it.
+That is `### 6.1.1`'s question in reverse, and it is what turns one page's repair into every page's default.
+
 ## Aims
 ### A0 · 📋 The page protocol
 - A0.1 · The fixed page sequence separates intent, substance, fact, and continuation.
@@ -1771,6 +1846,9 @@ The dated implementation history lives in Log, so this section stays a current s
 >> CC0801: left alone deliberately. `P3` in Decision Now may retire the word entirely in favour of `Memory`, so recapitalizing it now is work that a ruling could throw away. It is recorded here so the inconsistency is known rather than missed.
 
 ## Log
+260802 1100 · One door, not two (JL: "you can just say, haipipe-board update the page etc, it will route to the haipipe-board-page"). `haipipe-board` 0.102.0 lists `create a page` and `update a page` as routed verbs beside the eleven it runs itself, with the rule that routing goes by SCOPE rather than by wording: one page is the page skill's, the board and its structure are the board skill's, and a request naming a page id or path is the page skill's even when it sounds structural. `### 10.1` says the same thing from the reader's side, which is that they choose nothing
+260802 1040 · `### 10` rewritten from a command list into TWO VERBS on JL's ask ("could we just rely on haipipe-board-page for this purpose? like haipipe-board-page create a new xxx on the topic of xxx, or working on the xxx"). It had been a manual telling a reader which engine to call, which is exactly the knowledge a door exists to remove. `haipipe-board-page` 0.8.0 now carries both verbs with their procedures, and its boundary was restated rather than broken: "never renders, serves or checks" always meant it does not CONTAIN that code, and calling the engine is not owning it, which is the same separation `### 9.3.3` requires of the reviewer
+260802 1015 · `### 10 · Using this page` added on JL's ask, with a third figure in `## Diagram` drawing the same thing: the page stated the rules and never said what to DO with them, which is the one thing a reader wants after finishing it. Two ways in, copy the template for a new page or load this contract with an existing one, meeting at build, check, and a render read. It also caught itself immediately: written with three group titles over four paragraphs, two of those groups held exactly ONE paragraph, which is the floating-group-title defect `### 3.3.2` forbids and which `### 4.2`'s own story says numbering exposes. Four paragraphs need no groups, so they run flat as `10.1` to `10.4`
 260802 0940 · A fresh-context agent audited the nine files that carry these rules and found 38 stale statements, fixing 37; more usefully it found THREE contradictions inside this page, which is what `### 9.4.2` asks an auditor to report above everything else. All three were real. `### 4`'s face figure still taught `🚧` for "working now" while every binding statement and `src/common.py` say `🔨`, because the 260802 glyph migration was deliberately narrowed to Aim ROWS after a blind replace had corrupted sixteen files. Both live `Decision Now` rows still carried `Ask:` and `→ CC recommends:`, the two fields `### 5.2.4` had just removed, because the rewrite that removed them was lost in the `s.index` corruption at 0300 and only the prose half was restored. And `## Writing Style`'s "Below the lead" still described the whole remainder of Opening as one rationale paragraph, which the blank-line split replaced. The agent wrote the template to the Law rather than to the rows, which was the right call
 260802 0900 · `### 9` gained `9.4`, the other direction of evaluation: everything above it asks whether a PAGE obeys the contract, and this asks whether the files that CARRY the contract still state it correctly. It exists because `### 6.1.1` spreads every rule across the page, the template, the page skill, the renderer and the checker, and any of those can fall behind with nothing on this page reporting it: on 260802 `haipipe-board-page` was teaching the previous night's status glyphs in four places and the reviewer agent was calling `check.py` at its pre-`cli/` path. `9.4.2` states the method, which is to run it in a fresh context and hand the auditor THIS PAGE rather than a summary of it, since a brief that restates the rules is one more copy to keep in sync and copies are what the audit exists to find. A9.2 records it
 260802 0800 · `## Files` audited against tonight's work on JL's ask, using `### 6.1.1`'s question rather than a diff. A diff proposed 53 additions and 52 were wrong: most belong to another session, and the rest are files nobody changing a rule on this page would open, which is exactly what `### 6.1.2` means by an exhaustive list hiding the entry points. One row was genuinely missing, `agents/haipipe-board-reviewer-agent.md`, since `### 9.3.3` makes it the thing that applies these rules, and `src/body.py`'s role line was stale after it gained the thread renderer. `### 6.3.1` now states the limit plainly: a dead path is mechanical and checked, an absent one is a judgment and cannot be

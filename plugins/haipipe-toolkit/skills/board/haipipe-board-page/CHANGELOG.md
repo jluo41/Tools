@@ -9,6 +9,20 @@ never reaches `1.0.0` without JL's explicit say-so.
 
 ## 0.6.0 - 2026-08-01
 
+## 0.8.0 — 260802
+
+- TWO VERBS, and this skill is the door for both (JL 260802: "could we just
+  rely on haipipe-board-page for this purpose? like haipipe-board-page create
+  a new xxx on the topic of xxx, or working on the xxx"): `create a new page
+  on <topic>` scaffolds from the template and registers it in the roster;
+  `working on <page>` brings an existing page up to the contract, starting
+  from the checker's findings rather than the top of the file.
+- The boundary was restated rather than broken. "Never renders, serves or
+  checks" meant this skill does not CONTAIN that code; it does call it. A
+  reader asking for one page should not have to know which script does what.
+- The engine commands both verbs run are listed once, so nobody memorises
+  them, with the note that `watch.py` covers `.md` only.
+
 ## 0.7.0 — 260802
 
 - Usage stated at the top of the revise section: `/haipipe-board-page <page>`,

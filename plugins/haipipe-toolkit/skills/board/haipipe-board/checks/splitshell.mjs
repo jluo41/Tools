@@ -134,6 +134,15 @@ async function openShell(page) {
     if (!await ev(`!!window.__gone`)) break;
     await sleep(100);
   }
+  /* ASK FOR THE SIDE PANES. They are hidden AND UNLOADED by default now
+     (260802), which is the whole point of that change: a page open pays for one
+     document. Everything below tests three panes, so this suite opens them the
+     way a reader does, with the two toggles. */
+  for (let i = 0; i < 60; i++) {
+    if (await ev(`!!document.getElementById('ti')`) === true) break;
+    await sleep(100);
+  }
+  await ev(`document.getElementById('ti').click(); document.getElementById('mtui').click(); 1`);
   return await settled();
 }
 

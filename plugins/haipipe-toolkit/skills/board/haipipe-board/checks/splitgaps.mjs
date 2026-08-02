@@ -114,7 +114,22 @@ const READY = `(function(){try{
     return typeof frames[n].__boardPane === 'string' &&
            frames[n].document.readyState === 'complete' })
 }catch(e){return false}})()`;
-ok('the shell opened', await goto(`${PAGE}?split`, READY));
+/* The side panes are hidden AND UNLOADED by default (260802), so a suite that
+   wants three of them has to ask, the way a reader does. */
+async function openSides() {
+  for (let i = 0; i < 60; i++) {
+    if (await ev(`!!document.getElementById('ti')`) === true) break;
+    await sleep(100);
+  }
+  await ev(`document.getElementById('ti').click(); document.getElementById('mtui').click(); 1`);
+  for (let i = 0; i < 150; i++) {
+    if (await ev(READY) === true) return true;
+    await sleep(100);
+  }
+  return false;
+}
+await goto(`${PAGE}?split`, `!!document.getElementById('split')`);
+ok('the shell opened', await openSides());
 const opened = await ev(`(function(){
   var d = frames.page.document.querySelector('div.wrap details');
   if (!d) return null;
@@ -169,7 +184,8 @@ console.log('G4 · a comment written through the server repaints the page pane')
    shell measures that residue rather than the write (QD5 C4 P6). */
 await ev(`location.href='about:blank'`);
 await sleep(3000);
-await goto(`${PAGE}?split`, READY);
+await goto(`${PAGE}?split`, `!!document.getElementById('split')`);
+await openSides();
 await sleep(1500);
 await ev(`frames.chat.__mark = 1; frames.index.__mark = 1; 1`);
 const was = await ev(`frames.page.document.lastModified`);

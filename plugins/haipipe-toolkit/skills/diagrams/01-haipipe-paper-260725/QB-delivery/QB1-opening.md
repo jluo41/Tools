@@ -20,6 +20,10 @@ QB6 Main owns the manuscript Introduction; this page is lifecycle control, never
 **Why Venue lives inside Opening**: a venue is not a later administrative step, it is one of the three answers a reader wants immediately.
 Filing it as its own Delivery group made the paper look as though it chose a journal after deciding what it argued, which is backwards.
 
+**What the 260802 `QBv` group did NOT take from this page**: the decision.
+`QBv` holds what each venue KNOWS, one page per pack in `paper/venue/`, because a pack's rewards reach QB4, QB5, QB6, and QB11a at once and can be filed under none of them.
+This page still owns which venue this paper picked and where that pin lives; `QBv0` states the split and cites this ruling rather than reopening it.
+
 **What this grouping does not do**: it does not renumber stages and it does not replace the explicit dependency graph.
 Delivery order is reading order; execution order is declared by each stage contract.
 
@@ -448,6 +452,7 @@ A concern group is therefore a superset of its stage pages, and this page states
 
 - `board.md` · the `## Pages` order and the Board Map row naming Seed, Venue, and Pitch; changing what this concern holds means editing it
 - `QB2-work.md` · the concern that took the arc, and the only other page that has to agree with this one
+- `../QBv-venue-packs/QBv0-venue-pack-contract.md` · the venue KNOWLEDGE group opened 260802; it cites this page's ruling and owns no part of the decision
 
 📥 **Input files** · what the work reads
 
@@ -476,6 +481,7 @@ Rejected: leaving narrative here, and cutting the concern at Work so that venue,
 
 ## Log
 
+260802 · The `QBv · Venue Packs` group opened, and this page kept the decision. The split is knowledge against decision: a pack's `-> Claims`, `-> Display`, `-> Minimap`, and `-> Write/Edit` maps reach four other Delivery concerns, so the knowledge sits outside all of them, while the pin stays on `S-Venue-0` and stays this page's. The 260729 ruling is cited by `QBv0`, not reopened.
 260802 · JL: say what the paper board is expected to show. `### 5` added, measured against the MISQ paper's `0-lifecycle/board.md`: the concern is the GROUP there, three stage pages are expected in it, and two more are present that this concern does not own. It also records the four kinds of page a group can hold, since "one stage, one page" holds only in the stage-to-page direction. A5.1 and A5.2 carry the two live gaps.
 260802 · JL: the bracket is not the whole story, check the QB12 series. `§2.2` said a sentence carries its question id in a trailing bracket and stopped there, which is half the grammar: QB12a specifies marker plus join bracket IN the sentence and a typed lane UNDER it, rendering together as the evidence card. New `§2.6` names the three parts and points at QB12 rather than restating it, and A2.4 opens on the templates, which ask for the bracket alone.
 260802 · Corrected a claim this page made and QB2 disproved: `§1.3` said there was no `S-Venue-2`, but narrative declares `board_family: Venue` and `board_unit: 2`, so unit 2 exists and belongs to Work.
