@@ -401,7 +401,7 @@ A concern group is therefore a superset of its stage pages, and this page states
 
 ### P · 🏁 Page-level
 - P1 · Retargeting a paper to a different venue has defined consequences for the answers it does not change.
-  **Done when:** QA6 rules what a venue change does to seed and pitch, and this page cites that ruling.
+  **Done when:** a ruling says which of the three a venue change reopens, and this page carries it in `## Law` with the options it rejected.
 - P2 · These three divisions cannot silently disagree with the templates they restate.
   **Done when:** a mechanical check compares each division against its `template.md` and reports a rule this page missed.
 
@@ -409,24 +409,14 @@ A concern group is therefore a superset of its stage pages, and this page states
 
 ### Decision Now
 
-- [ ] 🗣 When a paper retargets to a different venue, what reopens?
-
-      📍 `Part` `### 1 · The delivery contract`
-      🔔 `Why now` The gate accepts seed, venue, and pitch together, and nothing says which of them a venue change reopens. It has sat unruled since the grouping was decided on 260729, and retargeting happens on real papers today.
-      ⭐ `A ·` The pitch reopens and the seed does not, because why a paper exists does not change with the journal while what it promises is shaped by one. Recommended: it is the only option that matches what authors already do by hand.
-      `B ·` Everything in the concern reopens, so the whole Opening contract is re-gated on every retarget. Safest, and it re-gates a seed nobody intended to change.
-      `C ·` Nothing reopens automatically, and the author reopens by judgement. Cheapest, and it means two papers retargeted the same way can end up in different states.
-      🛑 `Blocks` nothing. Papers retarget today and the author decides case by case.
-      🤖 `If nobody answers` A takes effect, recorded in Log as CC's ruling and overturnable like any other.
-
-- [ ] 🗣 What owns `S-Venue-3-decisions.md`, which no stage produces?
+- [ ] 🗣 Is a cross-page ruling register a thing this concern keeps, or does every decision go to its owning page?
 
       📍 `Part` `### 5 · What the paper board shows`
-      🔔 `Why now` It sits in the MISQ paper's Opening group and `index.yml` declares no stage that writes it, so this concern describes three stage pages while the live group holds a fourth nobody accounts for.
-      ⭐ `A ·` Name it here as a register the concern carries without a stage, alongside the family control pages. Recommended: it is what the page already is, and it makes the four-kinds list in `§5` complete rather than aspirational.
-      `B ·` Give it a stage in `index.yml`, so every page in the group has a producer. Uniform, and it invents a stage for something that is a running record rather than a phase.
-      `C ·` Retire it and fold its decisions into the pages they belong to. Cleanest model, and it destroys a record the paper has been keeping.
-      🛑 `Blocks` nothing. The page renders and the paper compiles.
+      🔔 `Why now` JL proposed retiring `S-Venue-3-decisions.md` because decisions belong in the Value and Display groups. Reading it changed the question: it is 312 lines carrying five rulings, and it states its own admission test, "a ruling belongs here when more than one page has to follow it; everything else is a checkbox on the page that does the work." Its five entries do cross pages: how the paper reports its IV and its estimates bind Results, Display, and Value at once.
+      ⭐ `A ·` Keep it as a CROSS-PAGE ruling register and move its two open rulings out to Decision Now on the pages that own them. Recommended: it splits the two jobs that got merged, a decision QUEUE, which QB4 §5.2 already owns page by page, and a Law INDEX for rulings no single page owns. It also retires the register's fourth status vocabulary, `✅ decided · ⏳ open · ⛔ contested`, which is neither QB4's five States nor a Decision Now checkbox.
+      `B ·` Retire it and file each ruling in the Law of one page it binds, with the others citing that page. What JL proposed. Cleanest model, and it makes an arbitrary page the owner of a rule that is not its own, and duplicates or scatters a record the paper has kept for five rulings.
+      `C ·` Keep it exactly as it is, register and queue together. No work, and two places keep asking JL for decisions.
+      🛑 `Blocks` nothing. The register renders and the paper compiles.
       🤖 `If nobody answers` A takes effect, recorded in Log as CC's ruling and overturnable like any other.
 
 ### A1 · 📜 The delivery contract
@@ -450,10 +440,10 @@ A concern group is therefore a superset of its stage pages, and this page states
 
 ### A5 · 📋 What the paper board shows
 - 🧠 A5.1 · Waiting on JL. The MISQ `Delivery · Opening` group still lists the narrative page, and the choice is one row, on QB2's Decision Now, because Work is the group that gains it.
-- 🧠 A5.2 · Waiting on JL. `S-Venue-3-decisions.md` exists on the paper and no stage declares it; the three options are the second row in Decision Now above.
+- 🧠 A5.2 · Waiting on JL. The register turned out to hold five cross-page rulings and its own admission test, so the question moved from what owns it to whether a cross-page register is a kind this board recognises. The options are the row in Decision Now above.
 
 ### P · 🏁 Page-level
-- 🧠 P1 · Waiting on QA6, which owns retargeting semantics. The fork is stated in Decision Now above with a recommendation and a default.
+- ✅ P1 · Ruled by JL on 260802, directly rather than through QA6: a retarget reopens the pitch and leaves the seed. The ruling with its rejected options is in `## Law`, and QB1 `§4.3` already carries the pitch half, since a venue change re-runs the primary-claim designation.
 - ⬜ P2 · Not started, and it is this page's weak point. Three divisions restate three `template.md` files, so a rule added to any of them leaves this page quietly wrong and nothing reports it.
 
 ## Files

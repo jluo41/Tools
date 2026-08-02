@@ -972,6 +972,8 @@ So the test is not "is this a choice?" but "does anything stop until it is answe
 (the session is gone tomorrow; the page is what a person opens)
 Never ask for a ruling only in chat (JL 260802: "don't put the decision in the claude code session").
 Write the row FIRST, in the owning page's `States › Decision Now`, and then say in chat which page and which row. The chat line is a pointer, not the decision.
+Do not hunt for the page by hand: `haipipe-board-routing` takes the decision, reads `board.md`'s `## Pages` as the only registry, and lands it on the owning page and section.
+It may never tick a decision, only write the row, which is the line that keeps the ruling the person's.
 Three things fail when it lives in a session instead. Nobody else can see it, so a decision that needs a second person cannot reach them. It has no `Blocks:` and no `Default:`, so an unanswered question just evaporates rather than resolving itself. And it leaves no record of the options that were weighed, which is what the next person to reopen the question actually needs.
 The test is simple: if it is a question only YOU can answer, it is a row. If it is a question I should have answered myself, `### 5.2.2` says decide it and put it in Log.
 

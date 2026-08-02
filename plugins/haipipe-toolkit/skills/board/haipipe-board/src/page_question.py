@@ -769,9 +769,15 @@ def render_question(q, prv, nxt):
                  f'<code>&gt; Comment JL …</code></p>'))
     # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
     folds += det("💡 Why here", body(why, apparatus=False))
-    folds += det("⚖️ Law", body(sec(q["sec"], "Law"), apparatus=False, show_lead=True))
-    folds += det("🧠 Lesson", body(sec(q["sec"], "Lesson"), apparatus=False, show_lead=True))
-    folds += det("📖 Glossary", body(sec(q["sec"], "Glossary"), apparatus=False, show_lead=True))
+    # Every fold says how much is inside, the way Discussion and Log already
+    # did (JL 260802). A shut row with no count makes a reader open it to find
+    # out whether it is worth opening, which is the job the count removes.
+    def _n(name):
+        return len(re.findall(r"(?m)^\s*[-*]\s+\S", sec(q["sec"], name)))
+    for icon, name in (("⚖️", "Law"), ("🧠", "Lesson"), ("📖", "Glossary")):
+        n = _n(name)
+        folds += det(f"{icon} {name}" + (f" ({n})" if n else ""),
+                     body(sec(q["sec"], name), apparatus=False, show_lead=True))
     log = sort_log(sec(q["sec"], "Log").strip())
     nlog = len(re.findall(r"^(?:[-*]\s+)?\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
     folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))

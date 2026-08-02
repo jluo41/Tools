@@ -6,7 +6,7 @@ method: state what JAMA Internal Medicine buys that its two siblings do not, and
 
 ## Opening
 
-The pack's outlet table names this desk's territory in five words: prescribing, overuse, safety, health services, and it calls that the lane this repo's opioid work sits in. So what does the desk want that the flagship above it does not?
+The pack's outlet table names this desk's territory in five words: prescribing, overuse, safety, health services. It calls that the lane this repo's opioid work sits in. So what does this desk want that the flagship above it does not?
 
 **Where this page sits**: it is one outlet under `QBv2`, which owns the JAMA house format the three outlets share.
 This page owns only what is true of `playbook-jama-portfolio/jama-im/`.

@@ -1,9 +1,9 @@
 ---
 name: haipipe-board-routing
 description: >-
-  The routing VERB of the board family: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write. It loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. It may update an Aim State from inspected evidence, but may never tick a human decision or change a page-level human gate. Use when work happened and the board must record it: route this to the board, write it back, which page owns this, claim the question. Trigger: route, write back, owning page, land this on the board, update the log, /haipipe-board-routing.
+  The routing VERB of the board family: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write. It loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. It may update an Aim State from inspected evidence, but may never tick a human decision or change a page-level human gate. Use when work happened and the board must record it: route this to the board, write it back, which page owns this, claim the question. A DECISION is its most common input: the moment a ruling is made, or a question needs one, call this to find the owning page and write the row or the record, because a decision that stays in the session cannot be seen, carries no Blocks or Default, and leaves no trace of the options weighed. Trigger: route, write back, owning page, land this on the board, update the log, we decided, you ruled, JL said, record this decision, add a Decision Now, needs a ruling, which page owns this, put this on the board, /haipipe-board-routing.
 metadata:
-  version: "0.4.1"
+  version: "0.5.0"
   last_updated: "2026-08-01"
   summary: "Routes current facts into States and reserves Decision Now and page-level gates for the human."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

@@ -6,7 +6,7 @@ method: state what Management Science's IS department requires that its UTD-IS s
 
 ## Opening
 
-The pack's own taste file gives this desk its sharpest line: MS-IS thinks in mechanisms, equilibria, and welfare, not in constructs, theories, and implications. That is a vocabulary claim, not a topic claim. So what does a paper have to become?
+The pack's own taste file gives this desk its sharpest line. MS-IS thinks in mechanisms, equilibria, and welfare, not in constructs, theories, and implications. That is a vocabulary claim rather than a topic one. So what does a paper have to become?
 
 **Where this page sits**: it is one outlet under `QBv1`, which owns what the UTD-IS family shares.
 This page owns only what is true of `playbook-utd-is/MS-IS/`.

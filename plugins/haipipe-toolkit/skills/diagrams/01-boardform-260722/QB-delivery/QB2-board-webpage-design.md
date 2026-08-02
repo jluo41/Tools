@@ -471,14 +471,6 @@ The panel is authored, not inferred: which folders count as related and what eac
 
 ### Decision Now
 
-- [ ] 🗣 Does the Index roll up every board's open Decision Now rows?
-      📍 `Part` the Index, `### 1 · Board-Webpage-Index and Board-Webpage-Page`
-      🔔 `Why now` JL 260802 asked whether a human could just check Decision Now and nothing else. The answer is that it is the only thing that REQUIRES them, but today it means opening pages one at a time to find out most have nothing waiting. Across 53 pages this board has 2 open rows.
-      ⭐ `A ·` the Index shows one block of every open row on the board, each linked to its page, plus which ones will resolve themselves by their `Default:` if nobody answers. One screen, and a page is opened only when there is a reason to.
-      `B ·` a per-page badge in the sidebar rail: a page with an open row carries a 🗣, and the Index stays as it is. Cheaper, and still needs a scan.
-      `C ·` leave it. The rows live on their pages and a reader finds them by reading the board.
-      🛑 `Blocks` nothing.
-      🤖 `If nobody answers` A takes effect, since `QB4 §5.2` already gives every row the fields the roll-up would print, so the work is a reader over existing structure rather than a new record.
 - [ ] 🗂 Rule whether a group gets a SOURCE FILE, and therefore a real template
       The group page now shows purpose, why, progress and members, all derived from `board.md`. That is the ceiling of what derivation can give: a group still cannot hold a decision, an open item, or a state of its own.
       A · a group gets its own markdown file with the page sections that make sense at group altitude (Opening, Items to Finish, Where we are with Decision Now), rendered as the group page, with the member list appended by the generator.
@@ -589,7 +581,13 @@ The panel is authored, not inferred: which folders count as related and what eac
 >> CC0729: merged, and it closes the QC dissolution that started the same day. What the front page must SHOW and how the surface must LOOK were being decided on two faces that each needed the other's answer; the three-second test is a visual claim and the visual dials only matter because a dense index has to be scannable.
 > JL: 🦴 Topic — what this board is about 🔄 Pipeline — how these Qs are ordered 🧭 Board-Structure — Board-Folder and Board-Webpage I want to remove them,just keep the Map is ok.
 
+## Law
+- 🗂 **Index stays as it is**: the Index does not roll up open `Decision Now` rows; a reader goes to a page's States to find them (JL 260802).
+  Chosen over a roll-up block on the Index and over a per-page 🗣 badge in the rail.
+  The rows already live where they are owned, and a second surface listing them is a second thing that can disagree with the first. The cost is real and accepted: finding what is waiting means opening pages.
+
 ## Log
+260802 1150 · JL ruled option C on the Index roll-up, the same day it was raised: the Index stays as it is and a reader goes to States to find an open row. Recorded in Law and removed from Decision Now, per QB4 §5.2.7, which says an answered decision leaves States entirely rather than moving down the page
 260802 1130 · An Index roll-up of every open `Decision Now` row was proposed and recorded here rather than left in a chat session (JL 260802: "don't put the decision in the claude code session"). It came out of JL asking whether a human could check Decision Now and nothing else: it is the only thing that requires them, but finding the rows today means opening 53 pages to learn that 51 have nothing waiting
 260731 1945 · RELATED FOLDERS shipped as haipipe-board 0.87.0: build-time-embed fold (related_folders() in src/page_board.py + `## Related Folders` grammar in parse.py + board.md + board.css), rendering in board.html and the board/ tree; 2 folders / 4 files embedded, order Board Map → Related Folders → Section Matrix verified, body survives JS strip; QC8 live endpoint deferred. Also fixed the Board Map header typo "placement is not one." → "placement is not."
 260731 1930 · RELATED FOLDERS depth ruled B (clickable browser) on JL's "do the B level"; split across QB2 (fold + page_board.py render), QA0 (folder list + contents), QC8 (serve.py content endpoint)

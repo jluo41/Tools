@@ -141,7 +141,7 @@ Its section layout is therefore evidence, and it is the closest thing this repo 
 - A1.1 · The venue stage scores a Nature-portfolio candidate on the desk-reject column and records which rows it survived.
   **Done when:** a 2a-venue run naming a Nature outlet cites the rejection rows it cleared, not only the fit row it matched.
 
-### A2 · 🧩 The two structural features unique to npj DM
+### A2 · 🧩 The two structural features this pack does not share
 - A2.1 · The related-work section and `tech-check.md` are declared as retarget costs where a retarget is decided.
   **Done when:** moving a paper into or out of npj DM surfaces both before pitch is rewritten.
 
@@ -154,7 +154,7 @@ Its section layout is therefore evidence, and it is the closest thing this repo 
 ### A1 · 🎯 Routing on the rejection, not the fit
 - ⬜ A1.1 · Not started. The table is read by hand and no run records which rows it cleared.
 
-### A2 · 🧩 The two structural features unique to npj DM
+### A2 · 🧩 The two structural features this pack does not share
 - ⬜ A2.1 · Not started. Both are visible only by listing the outlet folder.
 
 ### A3 · 📊 What is stocked
