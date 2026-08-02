@@ -180,7 +180,7 @@ QB5e-sentence-details-lifecycle.md
 QB8-diagramattach.md
 ### QC · Engine
 How the delivery is produced and shipped.
-QC5 what a board page costs to open, on the wire and in the browser; QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
+QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
 One synced Skill page per shipped unit.
 The family took QC1b §8's shape on 260731: one door (Skill-0 haipipe-board), the board+group altitude (Skill-1 index), two loadable SPECS (Skill-3 page, Skill-4 sentence), and the write-back VERB (Skill-5 routing); digest is named on the roster and unshipped.
 An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer and Agent-2 the page creator, one page each so N run at once.
@@ -196,7 +196,6 @@ build.py src/ serve.py      ◀── QC2      the code's shape · one Law    �
 build.py                    ◀── QC2a     build.py's size               ──▶  assets/*.css  *.js
 src/*.py                    ◀── QC2b     the src/ split                ──▶  src/ modules
 serve.py  src/common.py     ◀── QC2c     splitting the live layer      ──▶  live/ modules + thin CLI
-serve.py  build.py  assets/  ◀── QC5     what a page costs to open    ──▶  the wire · the browser
 skillpage.py meetingpage.py ◀── QC3      a page from outside the board ──▶  Skill-*.md · a meeting page
 skillpage.py                ◀── QC3a     skill folder -> skill page    ──▶  Skill-*.md
 meetingpage.py              ◀── QC3b     a meeting note on the board   ──▶  the dated note file
@@ -210,7 +209,6 @@ skillpage.py sync           ◀── Skill-5  the routing VERB              ─
 skillpage.py sync           ◀── Agent-1  the fresh-context reviewer    ──▶  its definition .md
 skillpage.py sync           ◀── Agent-2  the page creator, N at once   ──▶  one Q*.md per agent
 ```
-QC5-pagecost.md
 QC1-skillfamily.md
 QC1a-skillmd.md
 QC1b-subskills.md
@@ -232,10 +230,11 @@ Agent-1-haipipe-board-reviewer-agent.md
 Agent-2-haipipe-board-creator-agent.md
 ### QD · Working with Chat
 How people and agents work on a live board.
-QD1 a session per question, QD2 the SDK chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, and QD6 the status strip.
+QD1 a session per question, QD2 the SDK chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, QD6 the status strip, and QD8 what a page costs to open and what we spend to make it less.
 Numbers in this lane are POSITIONS, and the lane is renumbered to close its gaps (JL 260801: "为啥不按序号来排?").
 The earlier rule was the opposite, that a number is a permanent address and a retired page leaves a hole, which is how six live pages came to be numbered up to QD14; the holes were doing more damage than the renumbering they were meant to prevent, because a reader cannot tell a gap from a missing page.
 Renumbered 260801: QD14 (the terminal's form) became QD4 so it sits beside the engine it designs, and QD13 (the split workspace) became QD5; QD1, QD2, QD3 and QD6 did not move.
+QD8 arrived from `QC` on 260802 (JL: "move it"): what a page costs to open was opened in the engine lane because every lever is engine code, and moved here because WAITING is what stops the work and this lane is where the work happens. The rule it sets for the next page like it is that a lane is chosen by where a cost is FELT, not by which file holds its fix.
 What the retired pages took with them is recorded here rather than in a gap: QD4 (live pages) was archived 260801 and its file keeps its own name, `_archive/QD4-liveupdate.md`; the drawing-attach page moved to QB as `QB8`; the board-level agent was archived once QD1 settled that a chat attaches at three levels; and the 260731 split into QE · Sharing carried off five more.
 QD4 is QD3's design half, split out on 260801 when the terminal proved hard to use on a phone: QD3 owns the engine and QD4 owns the FORM, meaning where typing happens, what the pane shows when 80 columns will not fit, and what the page owes a reader who switches away and comes back.
 QD5 asks whether the board should be operated as three side-by-side panes (index · page · chat) rather than as one html document that swaps its own middle; it measured the four causes of the unsmooth refresh, ruled the mechanism as three same-origin iframes in one shell page on 260801, and is the successor to the archived live-update page's in-place-swap approach.
@@ -249,6 +248,7 @@ serve.py                   ◀── QD3   terminal · raw + smooth panes ──
 30-terminal.js             ◀── QD4   the terminal's FORM per device──▶  phone · desktop
 serve.py build.py          ◀── QD5   each pane refreshes on its own──▶  index · page · chat
 serve.py                   ◀── QD6   the reply status strip        ──▶  every reply's footer
+serve.py live/activity.py  ◀── QD8   what a page COSTS to open     ──▶  bytes · lanes · the browser
 ```
 QD1-chat-per-question.md
 QD2-chat-sdk.md
@@ -257,6 +257,7 @@ QD4-terminal-design.md
 QD5-split-workspace.md
 QD6-session-status-strip.md
 QD7-rejoin-bench-a-scratch-page.md
+QD8-pagecost.md
 ### QE · Sharing
 How a board is hosted, mounted, and opened by someone who is not its author.
 
@@ -296,7 +297,7 @@ QF5-sentence-run.md
 What was said out loud, kept where it can be cited.
 One page per meeting, imported from an `echo-meeting` vault note by `meetingpage.py`: the summary is the reading path, the raw transcript is reference, and the decisions inside it are routed onto the pages that own them.
 This group ACCUMULATES, which is why it is a group rather than a few rows inside `QD`: a roster of shipped units has a natural size, a history of meetings does not.
-`QD8` rules how a note becomes one of these pages.
+`QC3b` rules how a note becomes one of these pages.
 
 Meeting-1-260723-boardform-demo.md
 
@@ -318,6 +319,7 @@ QDa4                QD-working/_archive/QD4-liveupdate.md
 QD4-liveupdate      QD-working/_archive/QD4-liveupdate.md
 QDa5                QB-delivery/QB8-diagramattach.md
 QD13                QD-working/QD5-split-workspace.md
+QC5-pagecost        QD-working/QD8-pagecost.md
 QD14                QD-working/QD4-terminal-design.md
 QDa6                QD-working/QD6-session-status-strip.md
 QDa7                QD-working/_archive/QD7-boardagent.md
@@ -328,7 +330,6 @@ QDb3                QE-sharing/QE3-whereitruns.md
 QDb4                QE-sharing/QE4-editlock.md
 QDb5                QE-sharing/QE5-consolescope.md
 QDb6                QE-sharing/QE6-bindaddress.md
-QD8                 QE-sharing/QE2-mountspace.md
 QD9                 QE-sharing/QE3-whereitruns.md
 QD10                QE-sharing/QE4-editlock.md
 QD11                QE-sharing/QE5-consolescope.md

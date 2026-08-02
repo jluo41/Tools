@@ -203,7 +203,7 @@ Requiring it on every round is honest and slow; requiring it on rounds that chan
    order   part                    owner
    ──────────────────────────────────────────────────────────────
    1       outcome                 this page, §5
-   2       the body                ⚠️ NOBODY · see §6
+   2       the body                this page, §5.2
    3       pending decisions,      haipipe-board-routing 0.6.0
            one line each
    4       routing footer          haipipe-board-routing
@@ -222,6 +222,22 @@ The rule it amends came from JL himself on 260731 and said the opposite, that de
 The line drawn is between LISTING and RE-ARGUING.
 The reply carries one line per row, the ask plus the recommended option, and the full row keeps its `Part`, `Why now`, options, `Blocks` and default on the page where they can be commented on.
 `haipipe-board-routing` 0.6.0 carries this, and the same five lines are now a figure at the top of this page's own `Decision Now`, so the page and the reply say the same thing from one source.
+
+#### 5.2 · The body is written for a weak English reader
+JL asked on 260802 for a reply he could actually read, being a weak English speaker with ADHD, and then said of the result "I love this format".
+What he was shown, and what this page now requires of every reply body, is four things.
+Short lines, because a wall of prose is where an ADHD reader stops.
+Big numbers in a before-to-after shape, because a number that moved is the whole result and a paragraph describing it is not.
+Plain words, so `retired-section` becomes "the alarm" and `alias` becomes "the computer quietly accepts the old name".
+One `/diagram-ascii` figure per idea rather than per topic, numbered `[N/TOTAL]`, because the numbering is what lets him answer "explain 2 again" instead of re-reading the whole reply.
+The body says WHAT MOVED and WHY IT WAS HIDDEN; it never re-argues the options, which is the page's job and `### 6`'s line.
+
+#### 5.3 · List the rows this round touched, not every row on the board
+`### 5.1` says the reply lists its Decision Now rows in brief rather than counting them, and read literally that does not survive contact with the board: there were 83 open rows across 42 pages on 260802, and a reply carrying all 83 is a reply nobody reads, which is the exact defect `### 5.1` exists to prevent.
+The rows a reply lists are the ones the round CREATED or CHANGED.
+Every other open row keeps its home on its own page, where the Index roll-up already counts it.
+A reply that touched no row lists none and says so, rather than padding itself with rows the reader has already seen.
+
 
 ### 6 · Who controls the reply's shape once a board is attached
 
