@@ -28,6 +28,16 @@
      address module reuses it rather than keeping a second copy. */
   function sentenceText(p) {
     var c = p.cloneNode(true);
+    // 🪪 A SPAN CARD IS THE EXCEPTION TO THE RULE BELOW (JL 260802, QB5 D).
+    // Every other button in a sentence is a paper-dialect chip, whose label
+    // replaced a marker and is NOT the source text, so deleting it is what
+    // makes the posted string match the file. A span card is the opposite: it
+    // sits on words the author typed and its label IS those words. Deleting it
+    // would post a sentence with a hole in it, and every later write on that
+    // sentence would miss its anchor forever. So it is UNWRAPPED, not removed.
+    c.querySelectorAll('button.chip.card.span').forEach(function (b) {
+      b.parentNode.replaceChild(document.createTextNode(b.textContent), b);
+    });
     // `.cmk` is the 💬 the comment layer inserts INSIDE the paragraph for every
     // pending comment it still holds in localStorage. It is added text, so a
     // sentence that once failed to write would post "…text 💬" and keep failing

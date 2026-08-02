@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: make visual alternatives reversible until the consumer makes an explicit selection
 
-## Question
+## Opening
 When does a render become the visual a reader sees?
 
 A render is a candidate until the consumer approves promotion.
@@ -25,13 +25,13 @@ It is safe to explore different visual forms and emphasis before a decision.
 Paper Display decides whether a candidate supports the reader's argument.
 The renderer may produce alternatives but cannot select one for the paper.
 
-## Items to Finish
+## Aims
 - [x] 🅰️ Define candidate-mode write boundaries
       Candidates and candidate recipes are isolated from the selected bundle.
 - [x] 🏁 Assign promotion to the caller
       Promotion and demotion are REVISE decisions, not renderer behavior.
 
-## Where we are
+## States
 The generic output contract prohibits silent replacement of a reader-facing asset.
 
 ## Files

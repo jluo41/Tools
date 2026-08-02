@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: review code that has never run, against the intent it was supposed to implement
 
-## Question
+## Opening
 What is a pre-run code review for, when the code has not run and no test has been written? Gate 1 sits between BUILD and EXECUTE and produces `CODE_REVIEW.md`. Its whole value rests on catching something that running the code would not reveal, and if it cannot name that class of defect it is a delay rather than a gate.
 
 It can, and the family already names it: an intent-versus-implementation mismatch. Code that runs cleanly, produces plausible numbers, and measures something other than what the author meant. No test catches that, because a test encodes the same misunderstanding; the run does not catch it, because there is nothing to crash; and the author does not catch it, because they wrote both halves.
 
 That is why the author convention exists: every task script must carry an `Intent` section in its docstring. Gate 1 is the comparison between that paragraph and the code beneath it, and it is the only place in the lifecycle where those two are read against each other by something that did not write either.
 
-## Boundary
-- ✅ Covered here
-  What Gate 1 is for, what it can catch that nothing else can, and what its skip mechanisms cost.
-- ↪ Covered elsewhere
-  Why the reviewer is a separate agent is `QB6`; the post-run audit is `QB5`; the four sister files this phase creates are `QC1`; who presses the run button is `QB4`.
+**Covered elsewhere**: Why the reviewer is a separate agent is `QB6`; the post-run audit is `QB5`; the four sister files this phase creates are `QC1`; who presses the run button is `QB4`.
 
 ## Diagram
 ```
@@ -75,7 +71,7 @@ the snapshot is already written by the run script.
 BUILD touches only code, configs and runs. It does not write `results/`, which belongs to EXECUTE,
 and it does not touch `workflow/plan*.yaml`, which is the contract it is being judged against.
 
-## Items to Finish
+## Aims
 - [ ] 📝 Record when the gate was skipped
       One key in `runtime.yaml`. Today a skipped gate and a passed gate leave identical evidence, so nothing downstream can weigh a number by whether it was reviewed.
 - [ ] 🎯 State the gate's single defect class in the reviewer's contract
@@ -83,7 +79,7 @@ and it does not touch `workflow/plan*.yaml`, which is the contract it is being j
 - [ ] 📏 Rule what happens when there is no `Intent` docstring
       The convention says MUST. If the gate proceeds anyway it silently becomes a style review, and if it blocks, every legacy script fails. Neither is written.
 
-## Where we are
+## States
 The gate runs and produces `CODE_REVIEW.md`. Its purpose is stated in `SKILL.md` prose. Nothing is
 ruled here, and the skip is unrecorded.
 

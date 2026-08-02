@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: a ticket that becomes a receipt, with exactly one field allowed to change
 
-## Question
+## Opening
 The bank's answer is a file; what may change in it afterwards, and who may change it?
 Exactly one mutable field, the `state:` line, and exactly one writer for its whole life, the executor.
 Everything else follows: a claim that expires at 24 hours, a noclobber race guard, and supersession that writes a new file rather than rewriting a body.
@@ -15,12 +15,7 @@ A claim must expire, or a crashed run would block a question forever, so `QA_WOR
 The race guard is `set -C` and nothing more: two runs may both pick `QA/3-`, the claim is created under noclobber, and the loser re-scans and defers.
 An answer that later changes is never rewritten; a new file is written and the old one gains `superseded-by:`, so the record of what was believed when stays intact.
 
-## Boundary
-- ✅ Covered here
-  The QA file's contract: the state values, the mandatory fields, the TTL, the race guard, and supersession.
-- ↪ Covered elsewhere
-  The executor-side flow that writes these files, the `qa` verb, is `haipipe-task/`'s `fn/qa.md` and its discovery twin.
-  The entry states on the consumer side are `QC3`.
+**Covered elsewhere**: The executor-side flow that writes these files, the `qa` verb, is `haipipe-task/`'s `fn/qa.md` and its discovery twin. The entry states on the consumer side are `QC3`.
 
 ## Diagram
 ```
@@ -35,7 +30,7 @@ An answer that later changes is never rewritten; a new file is written and the o
    The race guard is `set -C` and nothing more; the loser re-scans and defers.
 ```
 
-## Items to Finish
+## Aims
 - [x] 🎫 One mutable field, one writer, two writes
 - [x] ⏰ A claim expires at 24 hours and becomes restartable
 - [x] 🔒 The race guard is noclobber, and the loser defers
@@ -44,7 +39,7 @@ An answer that later changes is never rewritten; a new file is written and the o
       It is a constant chosen once and never tested against a real long-running task.
       A build-lane answer legitimately takes days, which is why `commissioned` exists, but the interaction between the two has not been walked through.
 
-## Where we are
+## States
 Ruled and enforced: four of the checker's FAIL conditions are about this file alone.
 The one soft spot is the TTL constant, which was picked rather than derived.
 

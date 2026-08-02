@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: count every folder that holds probe material, say which of them this board rules, and name what deliberately gets no page
 
-## Question
+## Opening
 Where does a probe rule, file, or page belong, and how many folders is this layer actually spread across?
 Six, plus three file shapes that live inside every project, and this board rules the wall between them and nothing else.
 Counting them is the point: the layer reads as one shared skill, and it is not one folder.
@@ -13,13 +13,7 @@ The parts that ship and the part that enforces are in different places, which is
 A shared model in `probe/` defines the vocabulary and holds a test fixture, while the only machine that enforces any of it sits forked in two consumer families, 1096 lines against 679.
 A reader who assumes the shared folder is the layer will look for the checker there and not find it, and a reader who patches one fork has changed the rule for one consumer.
 
-## Boundary
-- ✅ Covered here
-  Every folder that holds probe material, what kind of truth each holds, the crossings between them, and the explicit list of what gets no page.
-- ↪ Covered elsewhere
-  Each folder itself: `QA2` through `QA8` take one each, in the order numbered here.
-  The loop's steps are `QB1` through `QB7`, one page each; the contract is the `QC` group.
-  What a consumer may ask and spend is `QB9@paper`; how a landed answer becomes prose is `QC1@paper`.
+**Covered elsewhere**: Each folder itself: `QA2` through `QA8` take one each, in the order numbered here. The loop's steps are `QB1` through `QB7`, one page each; the contract is the `QC` group. What a consumer may ask and spend is `QB9@paper`; how a landed answer becomes prose is `QC1@paper`.
 
 ## Diagram
 ```
@@ -137,7 +131,7 @@ Same folder, two readers, and the two descriptions must not drift into disagreei
  an answer                            →  ⑨, written by the bank, never by us
 ```
 
-## Items to Finish
+## Aims
 - [x] 🗺 The layer is drawn once, with the out-of-scope list beside it
 - [x] 🔗 The seam with the paper board is declared in both directions
 - [x] 🗂 Every folder that holds probe material is counted
@@ -156,7 +150,7 @@ Same folder, two readers, and the two descriptions must not drift into disagreei
       `QA5@paper` and `QA7` describe one thing from two sides; nobody has read them together to check they still agree.
       `QA1@paper` also still calls this board's folder "the one gap", which the existence of this board makes wrong.
 
-## Where we are
+## States
 The map is drawn, the seams are declared, and as of 260726 the folders are counted rather than gestured at.
 
 Counting them found two things that the phrase "the probe layer" had been hiding.

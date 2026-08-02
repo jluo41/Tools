@@ -6,7 +6,11 @@ method: rule the paper-side half of a family that owns no artifact kind, and kee
 
 ## Opening
 
-A paper's prose is written by someone who already knows the subject, so who makes it readable to someone who does not, and where is that decision recorded?
+Who makes a paper's prose readable to someone whose English is weak?
+The author cannot: they already know the subject, so their own jargon is invisible to them.
+`haipipe-writing` is the family that does it, on any host, leaving a `✎` record under every sentence it changed.
+It owns no artifact kind of its own, so it has no board of its own.
+Its record lives here, and the seam with the paper's own revision chain is ruled below.
 
 This is the fourth shared family on the map and the first one whose board is this board. `①` writes the paper, `③` renders and runs its boards, `⑤` owns the crossing where evidence enters, `⑨` makes the floats, and `⑪` rewrites prose that already exists. The pattern is the same in all five cases: this family depends on a contract it does not own and rules only its own half. What is different here is where the other half is argued, because `⑪` has no board of its own.
 

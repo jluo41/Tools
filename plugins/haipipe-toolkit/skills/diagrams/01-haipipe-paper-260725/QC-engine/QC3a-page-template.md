@@ -41,7 +41,7 @@ Scope: This page covers What `template.md` is, both things that read it, and wha
       ## Content
       ### <Title>
       (job line = that RULE, whitespace-collapsed, cut at 220 chars)
-      ## Items to Finish
+## Aims
       (a BOARD-form template's OWN Items block, copied whole, with
        `q_id_pattern`'s id substituted · board_template_items() :174)
 

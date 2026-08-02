@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: five rungs cheapest first, a hit that requires reading the answer, and a read-only eye on the bank
 
-## Question
+## Opening
 Before anything is dispatched, how hard should the layer look for an answer that already exists, and what counts as finding one?
 Five rungs, cheapest first, where only the top two summon an agent and a hit counts only if the file LITERALLY answers the question.
 The reading rule is the load-bearing half: without it, reuse becomes a way to mark anything answered by finding a file on roughly the right subject.
@@ -13,12 +13,7 @@ This step is also where LAW 1's one permission lives.
 Rooting a question against the bank means reading the bank, so a read-only grep of `{tasks,discoveries}/**/QA/*.md` is legal and required, while writing anything there is not.
 The law bans the pen and the run, not the eye, and this step is the reason the distinction had to be drawn at all.
 
-## Boundary
-- ✅ Covered here
-  The rungs, what each costs, what counts as a hit, and the verdict and target this step writes.
-- ↪ Covered elsewhere
-  LAW 1 itself is `QA6`; what a paper is allowed to spend, its `probe_depth` ceiling, is `QB9@paper`.
-  The ceiling gate that consumes this step's verdict is `QB4`; what makes the target honest is `QB5`.
+**Covered elsewhere**: LAW 1 itself is `QA6`; what a paper is allowed to spend, its `probe_depth` ceiling, is `QB9@paper`. The ceiling gate that consumes this step's verdict is `QB4`; what makes the target honest is `QB5`.
 
 ## Diagram
 ```
@@ -64,7 +59,7 @@ So the finding that "T2 did not dominate" is really that `reuse` did not dominat
 That is still the contradiction it looked like, because `reuse` is T2 by both ladders.
 But the two rungs the constitution names as the cheap majority, T0 and T1, are not counted at all by this measurement, and T0 was separately measured to be firing on 6 of 17 entries.
 
-## Items to Finish
+## Aims
 - [x] 🪜 Five rungs, cheapest first, agent only at T3 and T4
 - [x] 📖 A hit requires reading the file, not matching the topic
 - [x] 👁 The read-only grep is named as legal and required, so LAW 1 does not forbid this step
@@ -80,7 +75,7 @@ But the two rungs the constitution names as the cheap majority, T0 and T1, are n
       An entry can be a legitimate T4 while the run's `probe_depth` forbids it; today that lands as `deferred`.
       This closes when the interaction is stated on one page rather than inferred from two.
 
-## Where we are
+## States
 Ruled, followed, and measured once.
 
 The rungs are stated with their costs and the anti-gaming rule is explicit, which is the part that matters most.

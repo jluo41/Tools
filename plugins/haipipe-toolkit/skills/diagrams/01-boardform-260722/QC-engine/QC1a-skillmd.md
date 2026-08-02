@@ -36,7 +36,7 @@ user types  /haipipe-board
         ref/board-example.md  a minimal two-question example
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC1
+No canvas frame is linked here. `board.excalidraw` holds no frame named `QC1`, and JL ruled on 260802 that a page shows no link rather than one that 404s; the link returns when someone draws the frame.
 
 ## Aims
 ### The manual's operating answers

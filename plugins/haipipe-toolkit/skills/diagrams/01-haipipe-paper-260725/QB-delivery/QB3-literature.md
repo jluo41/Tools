@@ -31,6 +31,9 @@ This page says a citation must be bound and human-keyed; it does not say what th
 
 **Always separate searching from writing**: the Law turns on that distinction, so a sentence that blurs "find" and "record" weakens the one rule this page exists to hold.
 
+**This page DESIGNS; the paper board SHOWS**: `### 2` states what a paper must carry for this concern, not what one paper happens to have today.
+Where the MISQ paper differs, say so as a gap with an owner, never as the definition.
+
 ## Diagram
 
 **The literature path**: five hops, and the one a machine may not take.
@@ -82,6 +85,44 @@ This page says a citation must be bound and human-keyed; it does not say what th
 Verifying that a source exists is the cheap half and it is already automatic.
 The gate is whether it supports the sentence it was attached to, which no checker can answer, and which is the only failure a reviewer will actually catch.
 
+### 2 · What we want on the paper board
+
+**The group we are designing**: two pages, two families, and no stage of its own.
+
+```text
+  🎯 WHAT WE WANT a paper to carry for this concern
+  ### Delivery · Literature
+        📄 S-Seed-1-literature.md   the research-lineage MAP
+                                    written BEFORE Work · refreshed AFTER
+        📄 S-Main-2-literature.md   the reader-facing Literature Review
+                                    the authoritative manuscript section
+
+  ⚡ this concern owns NO STAGE ── `index.yml` has no `literature` key
+  🔑 so its pages are written by OTHER stages: seed writes the map,
+     section-edit writes the review
+  🚫 no S-Literature family ── the filename says who wrote it,
+     the group says who owns the rule
+```
+
+🎯 Establishes what a paper board must show for this concern, and why a concern can be real with no stage behind it.
+
+#### 2.1 · A concern can own a rule without owning a stage
+(QB1 and QB2 each group stages; this one groups a rule that cuts across pages other stages wrote)
+`index.yml` declares seed, resource, claims, venue, pitch, narrative, display, and section-edit, and none of them is literature.
+The map page is written during seed and the review section during section-edit, so this concern never runs anything.
+What it owns is the Law: an agent may search and verify a source and may never invent or silently write a bibliography entry, and that binds both pages plus every citing sentence in the manuscript.
+
+#### 2.2 · The map comes twice, and that is the design rather than a repair
+(`S-Seed-1` is drafted before Work and refreshed once Work accepts discovery answers)
+The first pass frames the questions Work will commission, so it is oriented intuition rather than a survey.
+The second pass rewrites it against what discovery actually returned, which is the only version a reader should trust.
+`S-Main-2` is separate and stays the authoritative standalone section, so the map is working state and the review is the deliverable.
+
+#### 2.3 · Where the MISQ paper stands against this
+(the concern is built as designed, and the gap is one open rule rather than a missing page)
+Both pages exist on the MISQ paper and sit under `Delivery · Literature`.
+The open gap is not on the paper board: it is that Word has no `.bib`, so a citation binding has no agreed form in that export, which QB11b owns.
+
 ## Aims
 
 ### A1 · 📜 The delivery contract
@@ -89,6 +130,12 @@ The gate is whether it supports the sentence it was attached to, which no checke
   **Done when:** no bibliography key on any paper reaches the manuscript without a recorded human approval, and an unapproved one renders as visibly owed.
 - A1.2 · The detailed citation contract stays on QB12a rather than being restated here.
   **Done when:** this page names no marker syntax, and QB12a is the only page specifying the chip and the evidence card.
+
+### A2 · 🎯 What we want on the paper board
+- A2.1 · A paper board shows this concern as one group holding the map and the review.
+  **Done when:** `Delivery · Literature` lists `S-Seed-1-literature.md` and `S-Main-2-literature.md`, and neither is filed under the group of the stage that wrote it.
+- A2.2 · The map is refreshed after Work rather than left at its first pass.
+  **Done when:** a paper's `S-Seed-1` names the discovery answers it was rewritten against.
 
 ### P · 🏁 Page-level
 - P1 · A binding survives export to a format with no bibliography.
@@ -99,6 +146,10 @@ The gate is whether it supports the sentence it was attached to, which no checke
 ### A1 · 📜 The delivery contract
 - ✅ A1.1 · Ruled and stated in the Law: an agent may search and verify, never invent or silently write.
 - ✅ A1.2 · Held. The Scope paragraph hands the marker to QB12a, and no marker syntax appears on this page.
+
+### A2 · 🎯 What we want on the paper board
+- ✅ A2.1 · Built as designed on the MISQ paper: both pages sit under `Delivery · Literature`, although `S-Seed-1` carries a Seed prefix and `S-Main-2` a Main one.
+- ❄️ A2.2 · Held while we work the design board. The two-pass design is written here; reading the MISQ `S-Seed-1` to see whether it was refreshed is paper work, and it thaws when we turn to the paper.
 
 ### P · 🏁 Page-level
 - ❄️ P1 · Held, pending QB11b. This concern's rule is ruled without it: QB11b owns the Word adapter and has not yet decided how a citation survives with no `.bib`, so P1 thaws when that adapter rules.
@@ -118,5 +169,6 @@ An agent may search and verify bibliography evidence; it never invents or silent
 
 ## Log
 
+260802 · `### 2 · What we want on the paper board` added. This concern turned out to own NO stage: `index.yml` has no `literature` key, so its two pages are written by seed and by section-edit, and what the concern owns is the Law rather than a stage. That is a second kind of Delivery concern, and QB1 and QB2 read as though every concern grouped stages.
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered with a face figure and caption, Aims regrouped as A1/P with `Done when`, States mirrored per Aim.
 260729 · Literature placed after Work in the accepted Delivery order.

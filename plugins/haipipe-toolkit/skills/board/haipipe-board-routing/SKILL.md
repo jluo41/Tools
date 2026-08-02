@@ -3,7 +3,7 @@ name: haipipe-board-routing
 description: >-
   The routing VERB of the board family: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write. It loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. It may update an Aim State from inspected evidence, and closes a Decision Now row the human has already answered while never ticking one nobody answered and never changing a page-level human gate. Use when work happened and the board must record it: route this to the board, write it back, which page owns this, claim the question. A DECISION is its most common input: the moment a ruling is made, or a question needs one, call this to find the owning page and write the row or the record, because a decision that stays in the session cannot be seen, carries no Blocks or Default, and leaves no trace of the options weighed. Trigger: route, write back, owning page, land this on the board, update the log, we decided, you ruled, JL said, record this decision, add a Decision Now, needs a ruling, which page owns this, put this on the board, /haipipe-board-routing.
 metadata:
-  version: "0.7.0"
+  version: "0.8.0"
   last_updated: "2026-08-02"
   summary: "Routes current facts into States, reserves Decision Now and page-level gates for the human, and has the reply list its pending decisions in brief."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -81,6 +81,23 @@ PROPOSED   no page owns this: routing drafts the page id, title, and group
            Decision Now rather than staying in chat
 REPORTED   the owner is another family's board: a report, not an edit
 ```
+
+**The gate before the reply (QA3, JL 260802).**
+Five conditions hold before an agent may tell a person a round is done, and `cli/gate.py` runs the two that are mechanical:
+
+```
+①  WRITTEN BACK   every change has a record on the page that owns it
+②  REBUILT        board.html came from the .md as it stands now
+③  CHECKED        0 errors, and no page this round touched gained a warning
+④  REACHABLE      the tab the person opens can run what shipped
+⑤  STATED         the reply names which of ①-④ ran, with ③'s numbers
+```
+
+Run `python3 cli/gate.py <board> --start` before the work and `cli/gate.py <board>` after it.
+③ compares PER PAGE, never the board's total, because a second session writing the same board moves the total underneath you: it went 304 to 276 during one round on 260802. A warning the round introduced blocks the handback; the board's standing warnings are out of scope.
+① and ④ are printed as not tested, because whether a change was substantive and whether the person's own tab has the new assets are judgments the command cannot make. A gate that reports a condition it did not test is worse than no gate.
+A round that changed PROSE also owes a cold read by `haipipe-board-reviewer-agent`; a round that changed only mechanics does not, since there is nothing for a reader to judge.
+A failed gate is reported, never hidden. "The checker is red and here is why" is worth more than "done" and wrong.
 
 **The reply contract (JL 260731).**
 Whatever the end state, the reply closes with the routing footer: one line per write, `page id · ## section`, so the human sees where every record landed without hunting.

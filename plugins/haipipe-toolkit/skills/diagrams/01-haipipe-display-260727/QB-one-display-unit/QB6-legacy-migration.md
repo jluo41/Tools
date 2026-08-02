@@ -3,16 +3,11 @@ state: ✅ SETTLED
 owner: JL
 method: preserve working legacy units while requiring an explicit migration decision before adopting the new shape
 
-## Question
+## Opening
 What happens to units that already use `source/` or independently authored wrappers?
 
 They remain valid legacy units.
 They are not automatically renamed or mixed with the new layout.
-
-## Boundary
-- ✅ A renderer explicitly handed a legacy unit may preserve its `source/` path.
-- ✅ A new unit uses `intake/` and `recipe/`.
-- 🚫 Never create a mixed `source/` plus `intake/recipe/` layout as incidental cleanup.
 
 ## Content
 ### Why migration is deliberate
@@ -23,13 +18,13 @@ Renaming it just to make the tree look modern can break a manuscript without imp
 A deliberate migration verifies sources, materializes Intake, moves rebuild material to recipe, and reconciles the wrapper against the Paper page.
 It is a unit-level review task, not a global search-and-replace.
 
-## Items to Finish
+## Aims
 - [x] 🕰️ Declare compatibility rules
       Existing units remain readable through a legacy path.
 - [x] 🚧 Reject accidental hybrid layouts
       New renderers choose either the legacy compatibility path or the new contract.
 
-## Where we are
+## States
 The active MISQ paper retains legacy units and is not changed by the new Intake contract.
 
 ## Files

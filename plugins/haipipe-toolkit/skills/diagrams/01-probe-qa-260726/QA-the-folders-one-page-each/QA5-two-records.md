@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: count the citations, name what each record can and cannot do, and rule which one a fresh agent should reach
 
-## Question
+## Opening
 Two folders hold this layer's rationale; which one is the contract, and which one is a fresh agent actually sent to?
 This board is `⑤` and nothing cites it, while `⑥` is five `.txt` files from 260714 named the spec of record in ten places.
 Until that is decided, the layer has two rationales and the one being read is the one that cannot be updated.
@@ -13,12 +13,7 @@ The two are not the same kind of object and that is the whole difficulty.
 `⑥` was approved by JL on a date, carries numbered rulings R1 to R18, and is quoted by eight skill families as the authority their changelogs came from.
 `⑤` has state, items, comments and a close condition, so it can be worked and closed, and it has never been cited by anything outside itself.
 
-## Boundary
-- ✅ Covered here
-  What each record is, who cites which, what each can do that the other cannot, and the options for resolving it.
-- ↪ Covered elsewhere
-  The vocabulary source, which is a different question about a different file, is `QD1`.
-  Whether a fresh agent can run the layer at all is `QD2`.
+**Covered elsewhere**: The vocabulary source, which is a different question about a different file, is `QD1`. Whether a fresh agent can run the layer at all is `QD2`.
 
 ## Diagram
 ```
@@ -92,7 +87,7 @@ Until something graduates, `⑤` is a record of arguments and `⑥` is the recor
 `C` is the current state by default rather than by decision, which is the only reason this face is open.
 `B` is the honest one if the R-numbers are load-bearing, because eight changelogs quote them and rewriting those entries would falsify history.
 
-## Items to Finish
+## Aims
 - [x] 📊 Both records are inventoried, with the citation count measured
       `⑥` is 5 files and 43 KB carrying R1 to R18; `⑤` is 17 faces; the citations run 10 or more to zero, counted 260726.
 - [x] 🔀 The three resolutions are laid out with their costs
@@ -106,7 +101,7 @@ Until something graduates, `⑤` is a record of arguments and `⑥` is the recor
       The paper board's map says the evidence channel's rationale "cannot be read, commented on or closed the way the other two can", which the existence of this board makes wrong.
       It is a ✅ face on another board, so it is flagged here rather than edited from here.
 
-## Where we are
+## States
 Measured and not decided.
 
 `⑥` is cited by `STRUCTURE.md` twice, by the shared `SKILL.md` three times, and by seven skill families' changelogs, and `⑤` is cited by nothing.

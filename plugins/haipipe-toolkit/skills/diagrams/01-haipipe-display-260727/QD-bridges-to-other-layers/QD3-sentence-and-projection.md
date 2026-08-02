@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: connect a selected display to the reader without treating a visual citation as a new source of values
 
-## Question
+## Opening
 How does a selected Display unit reach a reader-facing sentence?
 
 The Paper wrapper references the selected asset.
@@ -24,13 +24,13 @@ This makes the display a reader-facing claim support rather than a detached gall
 A sentence may describe what the reader should notice.
 It does not type values into the wrapper or reinterpret the task result without going through the Paper's claim and revision process.
 
-## Items to Finish
+## Aims
 - [x] 🔗 Make the reader sentence part of the provenance chain
       Link ⑥ names the section, paragraph, and sentence.
 - [x] 📌 Keep the wrapper as the only Paper asset reference
       Sections do not create parallel figure blocks or ad hoc includes.
 
-## Where we are
+## States
 The Paper Display template and sentence apparatus distinguish making a display from citing it.
 
 ## Files

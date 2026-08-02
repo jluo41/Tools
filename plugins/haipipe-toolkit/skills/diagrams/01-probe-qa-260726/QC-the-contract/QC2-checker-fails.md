@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: CC
 method: enumerate the FAIL conditions from the SCRIPT rather than from the manual, so the gap between agreed, documented and enforced is visible
 
-## Question
+## Opening
 Which rules on this board are held by a machine rather than by agreement, and does the manual know?
 Thirty-four named FAIL conditions in the paper checker and thirty-one in the application one, against the eleven `SKILL.md` documents.
 What turns on it is knowing the size of the honour system, and the answer changed once the list was read off the script instead of off the manual.
@@ -14,11 +14,7 @@ A reader of the constitution believes eleven things are enforced, so twenty-thre
 That cuts both ways: work fails a gate for a reason the manual never mentions, and a rule everyone assumed was honour-system has been mechanical all along.
 The checker is the mechanical backstop at CHECK; the DRAFT self-review reads what the checker cannot, and the two are complementary rather than alternatives.
 
-## Boundary
-- ✅ Covered here
-  The FAIL list, what each condition protects, and what is deliberately not checked.
-- ↪ Covered elsewhere
-  The QA contract itself is `QC1`; the entry states are `QC3`; the laws are `QA6` and `QA8`; the fork this script lives in is `QA4`.
+**Covered elsewhere**: The QA contract itself is `QC1`; the entry states are `QC3`; the laws are `QA6` and `QA8`; the fork this script lives in is `QA4`.
 
 ## Diagram
 ```
@@ -65,7 +61,7 @@ The checker is the mechanical backstop at CHECK; the DRAFT self-review reads wha
    answer still matches ① · whether a hit really answers the question
 ```
 
-## Items to Finish
+## Aims
 - [x] 🧪 The FAIL conditions are counted from the script, not the manual
       34 in the paper fork, 31 in the application fork, against 11 in `SKILL.md`, counted 260726.
 - [x] 🔬 A test suite with fixtures for five QX states
@@ -93,7 +89,7 @@ The checker is the mechanical backstop at CHECK; the DRAFT self-review reads wha
       The model states the deferral rule generally and only one fork enforces it, so an application deferral with no depth-and-cost line passes today.
       Same shape as `QA4`'s `concern` question, and it closes with the same ruling.
 
-## Where we are
+## States
 The checker exists, is tested against fixtures, enforces three times what the manual says it does, and fails correct work depending on the caller's working directory.
 
 It has not been run green against a real consumer, and the honour-system half of the board is not written down anywhere a reader would find it.

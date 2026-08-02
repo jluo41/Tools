@@ -26,6 +26,9 @@ How this page must be written. Read it before editing, and edit to it.
 
 **Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
 
+**This page DESIGNS; the paper board SHOWS**: the design division states what a paper must carry for this concern, not what one paper happens to have today.
+Where the MISQ paper differs, say so as a gap with an owner, never as the definition.
+
 **Never explain the gates**: G0 through G5 belong to QB9 Build, and naming them here reads as though this page owned them.
 Say "projection checks pass" and let Build define what that means.
 
@@ -83,6 +86,38 @@ A sentence that puts `sections/` first, even harmlessly, is how the second-autho
 The board adds a Main-unit page only when a rule has to hold across papers.
 Anything true of one paper's §3 belongs on that paper's own S page, where the prose it governs actually lives.
 
+### 2 · What we want on the paper board
+
+**The group we are designing**: a control page, then one page per numbered manuscript section.
+
+```text
+  🎯 WHAT WE WANT a paper to carry for this concern
+  ### Delivery · Main
+        🗂 S-Main-Dash.md         controls the SET
+        📄 S-Main-0-abstract       ┐
+        📄 S-Main-1-introduction   │ one page per numbered section,
+        📄 S-Main-3-theory         │ NUMBERED because order is the argument
+        📄 S-Main-4 … 8            ┘
+        ⚠️ S-Main-2-literature is filed under Delivery · Literature
+
+  ⚡ written by section-edit, the ONE stage that declares `runs: per-unit`
+  🔗 units_from: S-Venue-2-narrative.md ── the arc supplies the section list
+  🔢 NUMBERED, unlike Appendix, because a Main section's position IS
+     part of what it claims
+```
+
+🎯 Establishes what a paper board must show for this concern, and where its section list comes from.
+
+#### 2.1 · The section list is inherited, not invented
+(section-edit reads `units_from: S-Venue-2-narrative.md`, so Work's arc decides the units)
+That is the concrete meaning of QB2's claim that Main inherits an order rather than inventing one.
+Change the arc and the unit list changes with it, which is why a narrative page is a prerequisite for this concern rather than a nicety.
+
+#### 2.2 · One page is filed under another concern, and that is correct
+(`S-Main-2-literature.md` keeps its Main id and sits under `Delivery · Literature`)
+Its family prefix says Main wrote it and its group says Literature owns the rule it follows.
+This is the clearest single example of the board's rule that a filename names the family and a group names the concern.
+
 ## Aims
 
 ### A1 · 📜 The delivery contract
@@ -106,8 +141,14 @@ Anything true of one paper's §3 belongs on that paper's own S page, where the p
 
 ## Files
 
-- `0-lifecycle/4-main/` · the authored S pages, one per Main unit
-- `sections/` · generated projection, never edited by hand
+📋 **Contracts** · what carries this page's rule to somewhere else
+
+- `board.md` · the `## Pages` order and the Board Map row for this concern
+- `QB2-work.md` · owns the narrative page that supplies this concern's section list
+
+📥 **Input files** · what the work reads
+
+- `../../paper/1-lifecycle/haipipe-paper-stage/stages/5-section-edit/stage.md` · the per-unit stage that authors a Main page, and where `units_from:` is declared
 
 ## Law
 

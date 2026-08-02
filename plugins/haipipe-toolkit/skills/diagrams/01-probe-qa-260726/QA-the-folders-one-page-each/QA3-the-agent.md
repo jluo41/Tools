@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: name what the agent does, list what it refuses, and be honest that the refusal is architectural rather than checked
 
-## Question
+## Opening
 What is in `probe/agents/`, and why is the wall enforced by an agent's ignorance rather than by a check?
 One agent, 93 lines, running only the two steps that need no stake, in a context that never receives one.
 It cannot leak what it was never handed, which is the layer's strongest guarantee and the only one nothing verifies.
@@ -13,13 +13,7 @@ The design decision worth seeing is how much this agent declines to do.
 It does not decide reuse against the bank, it does not write the stripped question, it does not interpret the answer, and it does not judge whether anything settles anything.
 Every one of those is stake-aware, so each stays with the consumer, and what is left is the mechanical middle: dispatch a batch, get paths back.
 
-## Boundary
-- ✅ Covered here
-  The agent's inputs, its two steps, its explicit refusals, and what its clean context does and does not guarantee.
-- ↪ Covered elsewhere
-  LAW 1 itself, and whether it can be enforced, is `QA6`.
-  The order of the steps is `QB1`; the two this agent runs are `QB4` and `QB5`, and whether a dispatch carried more than the q-executor is `QB4`'s check.
-  The bank orchestrators it calls belong to `/haipipe-task` and `/haipipe-discovery`.
+**Covered elsewhere**: LAW 1 itself, and whether it can be enforced, is `QA6`. The order of the steps is `QB1`; the two this agent runs are `QB4` and `QB5`, and whether a dispatch carried more than the q-executor is `QB4`'s check. The bank orchestrators it calls belong to `/haipipe-task` and `/haipipe-discovery`.
 
 ## Diagram
 ```
@@ -81,7 +75,7 @@ The return is per entry: the QX id, and either an answering QA path, `in-flight 
 `in-flight` is the interesting one, because it is how the QA state line's `working` value reaches the consumer without the consumer ever touching a bank file.
 The stage then harvests each answered target itself, at ⑤, which is where the stake legitimately re-enters.
 
-## Items to Finish
+## Aims
 - [x] 🤖 One agent, stake-free, question-level, shared by both families
       93 lines, v1.1.0, running ③ and ④ only.
 - [x] 🚫 The refusal list is explicit, and each refusal has a stated reason
@@ -95,7 +89,7 @@ The stage then harvests each answered target itself, at ⑤, which is where the 
       `QB3` measured 46 percent of the MISQ paper's entries landing on `code`, which is close to the smell this agent is told to report.
       This closes when a run either raises the smell on such a batch or is shown not to.
 
-## Where we are
+## States
 The agent is built, shipped, shared by both families, and its boundaries are the clearest writing in the layer.
 
 Its guarantee is real but structural: it cannot leak a stake it was never handed, and nothing checks what it was handed.

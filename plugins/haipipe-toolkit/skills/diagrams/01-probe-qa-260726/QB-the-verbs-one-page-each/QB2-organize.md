@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: write the executor-facing question, freeze it, and keep the original beside it so the strip can be audited rather than trusted
 
-## Question
+## Opening
 Turning a consumer's question into the one that crosses is the probe's core act; what must it drop, and how do we know it dropped it?
 Everything that says why the asker wants to know, and by keeping the original next to the rewrite so a reviewer can compare the two.
 The defence is structural rather than careful, because a stake hides in ordinary words and no amount of care catches all of them.
@@ -13,12 +13,7 @@ The rewrite is easy to do badly and the failure is invisible.
 "Rescue", "we want", "the hoped-for", a claim id, or "our paper" all carry a stake, and a question can leak the wanted answer purely by what it declines to ask.
 A leaked stake does not produce an error; it produces an answer shaped around one hypothesis, which reads fine to the asker and is worth nothing to the next consumer.
 
-## Boundary
-- ✅ Covered here
-  The act: what is written, what is dropped, what freezes, what the entry inherits, and the pre-gate review that reads the result.
-- ↪ Covered elsewhere
-  The file the act writes into, and its four subsections, is `QA7`; where the stake legitimately lives is `QA6`, which also holds the open ruling on the word list.
-  The T0 case, where an existing q-executor already asks it, is `QB3`'s ladder.
+**Covered elsewhere**: The file the act writes into, and its four subsections, is `QA7`; where the stake legitimately lives is `QA6`, which also holds the open ruling on the word list. The T0 case, where an existing q-executor already asks it, is `QB3`'s ladder.
 
 ## Diagram
 ```
@@ -72,7 +67,7 @@ It runs before the human gate and never replaces it, and it is complementary to 
 Both are word-list tests over the `### q-executor` text, and neither appears in the eleven conditions `SKILL.md` documents.
 So the strip is machine-checked, weakly, by a mechanism the manual does not mention, which is `QC2`'s finding seen from this step.
 
-## Items to Finish
+## Aims
 - [x] ✂️ The strip has its own subsection, frozen once written
 - [x] 🪞 The original is kept beside it, so the strip is auditable
 - [x] 📋 A fresh-context reviewer checklist exists and runs before the gate
@@ -85,7 +80,7 @@ So the strip is machine-checked, weakly, by a mechanism the manual does not ment
       `stake-disclosed` and `LAW2-q-executor-leak` are both word-list tests, and `QA6` records a live false positive from the same family of test.
       This closes when the ruling on `QA6` lands and this step's check follows it.
 
-## Where we are
+## States
 The act is structurally sound and measurably doing its job.
 
 Freezing, keeping the original beside the rewrite, and grading the result in a fresh context are three independent defences, and none of them depends on the writer being careful.

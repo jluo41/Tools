@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: measure what is actually there before ruling what should be, and treat an unadopted mandatory rule as a broken rule
 
-## Question
+## Opening
 What is in one task-group's folder, and what tells a human what state that group is in? A group holds several runnable folders that share a context, and the specification gives it exactly one place to say what it is and how far along it is: a `diagram/` folder of static `.txt` files. That surface is documented as mandatory for a cohesive group. It exists on 5 of 67 groups.
 
 An unadopted rule is worse than an absent one, because it makes the docs describe a repository that does not exist. A reader of `ref/task-structure.md` expects `01-overview.txt`, `02-tasks.txt`, `03-progress.txt` and `04-design.txt` in every cohesive group, and will find them in 7% of them. Anyone reasoning about the bank from the docs is reasoning about a different bank.
 
 The reason for the non-adoption is not laziness and that is the useful part. A `.txt` file has no state, no checklist that counts itself, nowhere for a comment to land, and nothing opens it. Writing it is beside the work rather than on the path through it, so it is written once at scaffold and never again, and `03-progress.txt` is stale by the second run. What this face has to settle is what a group folder contains once the thing that reports its state is something the entry command actually opens.
 
-## Boundary
-- ✅ Covered here
-  What a task-group holds, what the doc surface was supposed to be, what it actually is, and what crosses this folder's edges.
-- ↪ Covered elsewhere
-  What would replace `diagram/` is `QA7`. What makes a child directory a task-folder is `QB1`. What binds one run together inside a child is the `QC` group. The letter-and-index naming rules are `hierarchy.md`'s and are not re-ruled here. The paper's version of this question is `QA6@paper`, whose delete test has no counterpart here.
+**Covered elsewhere**: What would replace `diagram/` is `QA7`. What makes a child directory a task-folder is `QB1`. What binds one run together inside a child is the `QC` group. The letter-and-index naming rules are `hierarchy.md`'s and are not re-ruled here. The paper's version of this question is `QA6@paper`, whose delete test has no counterpart here.
 
 ## Diagram
 ```
@@ -110,7 +106,7 @@ Almost nothing in a group is authored at group level. The code, the configs, the
 results all live one level down. What the group genuinely owns is the SHAPE: which children
 exist, why they belong together, and how far each has got.
 
-## Items to Finish
+## Aims
 - [ ] 📏 Accept the measurement as the starting point
       5 of 67, 21 of 107, 1 of 107. These are counts from disk on 260726, not estimates, and the first one says a documented mandatory rule is not followed.
 - [ ] ✂️ Rule which of the four .txt files survive
@@ -122,7 +118,7 @@ exist, why they belong together, and how far each has got.
 - [ ] 🔍 Make "no consumer vocabulary" checkable
       A grep over `tasks/` for claim ids, paper names and the word "paper" in a stake-bearing sense. The rule is stated in `SKILL.md` and enforced nowhere.
 
-## Where we are
+## States
 Nothing is ruled and the measurement is done. 67 task-groups hold 107 task-folders. The
 documented group-level doc surface exists on 5 of them, the per-folder `workflow/` on 21 of 107,
 and a `QA/` on 1 of 107.

@@ -79,7 +79,10 @@ sections:                  # logical order; Q-consumer adapts to Board Aims
   - Venue Decision         #   (a provenance header sits above them: pack @ commit, outlet dir)
   - Relevant Files
   - Section Styles         #   the RESOLVED per-kind pack paths (style + template) — see owns_resolution
-  - Requirements           #   two blocks: Structural Blueprint, then Writing Principles
+  - <one per section>      #   JL 260802 ruled B: ONE `###` division per manuscript section
+                           #   (opening = title + abstract, introduction, methods, results…),
+                           #   the list taken from this outlet's kinds, never fixed here
+  - Writing Principles     #   the one cross-section division, prose companion to the above
   - Q-consumer
 
 owns_resolution: |         # THIS stage resolves, ONCE, what every downstream stage would

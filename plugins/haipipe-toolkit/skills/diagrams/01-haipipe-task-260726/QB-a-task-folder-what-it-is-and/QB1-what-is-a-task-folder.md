@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: test by structure, never by name, and say what the name convention is actually for
 
-## Question
+## Opening
 Given a directory, how do you know whether it is a task-folder? Everything else in this layer depends on the answer: the router picks a scope from it, group iteration enumerates from it, and an audit walks from it. Get it wrong in the cheap way and 31% of the bank becomes invisible.
 
 The cheap way is to match the name. `{NN}_{task_name}` is the documented convention and it holds for 235 of 342 real folders, which is exactly the ratio that makes a name filter feel safe. It is not: `B4_fit_scaling_law`, `C3-Visual-ForecastScaling`, `B6f_crosscompare` and `A4_data_population_comparison` are all real task-folders, and every one of them is skipped by a `{NN}_*` glob.
 
 So the test has to be structural, and the interesting part is that the structural test is not merely safer, it is also the correct definition. A task-folder is a directory that holds runnable work. That is what the router needs to know, it is what the name was only ever a hint about, and it excludes `__pycache__`, `figures/`, `sbatch/` and `diagram/` for free.
 
-## Boundary
-- ✅ Covered here
-  The structural test, why the name convention is not it, and what the convention is still for.
-- ↪ Covered elsewhere
-  What a task-folder contains once identified is `QA6`'s neighbourhood and the `QC` group; the four phases it runs are `QB2` to `QB5`; the naming and indexing rules themselves are `hierarchy.md`'s and are not re-ruled here.
+**Covered elsewhere**: What a task-folder contains once identified is `QA6`'s neighbourhood and the `QC` group; the four phases it runs are `QB2` to `QB5`; the naming and indexing rules themselves are `hierarchy.md`'s and are not re-ruled here.
 
 ## Diagram
 ```
@@ -74,7 +70,7 @@ That is the same instinct as the structural test, one level up. The number is fo
 not an identifier, and anything that treats a contiguous sequence as meaningful has made the name
 load-bearing again.
 
-## Items to Finish
+## Aims
 - [x] 🧪 The structural test is stated and used
       Five markers, in `SKILL.md` Step 2 and the Step 3d enumeration snippet, with the 31% figure attached to both.
 - [ ] 🔍 Verify no code path still globs the name
@@ -84,7 +80,7 @@ load-bearing again.
 - [ ] 📏 Say out loud what the name convention IS for
       Sorting. The refs describe the convention in detail and never say that membership is not part of its job, which is exactly the gap the bug grows in.
 
-## Where we are
+## States
 The rule is settled and stated; the enforcement is partial. `SKILL.md` carries the structural test
 twice with its cost measured, and 107 task-folders are detected by it across 67 groups.
 

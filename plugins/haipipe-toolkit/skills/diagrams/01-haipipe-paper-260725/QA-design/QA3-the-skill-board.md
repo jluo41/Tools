@@ -9,7 +9,7 @@ method: keep the reasoning here, copy only the ruling out, and never let runtime
 What belongs on a design board, and what happens to a question once it is answered?
 This folder looks like documentation and is not: `skills/paper/SKILL.md` is what a worker follows, and this is the argument that produced it.
 Mistake one for the other and the board becomes a second manual that drifts from the first, with nothing saying which binds.
-This page rules what stays, what is copied out, and why nothing may depend on either.
+The argument stays, only the Law is copied out, and nothing may depend on either.
 
 **Where this page sits**: `QA1` says which folder a thing belongs in; this page says what one KIND of folder holds.
 `QA7` is its deliberate opposite, because nothing graduates out of a paper board.

@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: route by visual form and editability rather than by a generic request to make a figure
 
-## Question
+## Opening
 Which renderer should make a requested display?
 
 The form of the intended visual determines the renderer.
@@ -31,13 +31,13 @@ Choosing a diagram does not license unsupported numeric facts.
 Choosing a figure does not permit recomputing a result.
 The Intake and Paper brief remain the governing boundary.
 
-## Items to Finish
+## Aims
 - [x] 🧭 Publish a four-way routing table
       The generic output contract names the appropriate renderer for each visual form.
 - [x] ✏️ Preserve editable form where it matters
       Architecture and workflow visuals route to FigureSpec rather than an opaque image by default.
 
-## Where we are
+## States
 All four paper-facing renderer skills use the same display-unit contract.
 
 ## Files

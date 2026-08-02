@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: mirror the plan's IPO shape with evidence, and let the audit compare rather than describe
 
-## Question
+## Opening
 When a run has finished, what has to be true before its numbers may be used? REPORT writes `workflow/report.yaml` mirroring the plan, and `RUN_AUDIT.md` as Gate 2. The mirroring is the whole idea: the same IPO shape holds intent at one end and evidence at the other, so the comparison is mechanical instead of a reading.
 
 What Gate 2 can catch is the opposite of Gate 1's, and the pair only works because they are opposite. Gate 1 reads code that has never run and cannot see numbers. Gate 2 reads numbers and cannot see whether the code that made them meant to. So Gate 2's unique job is the result-level mismatch: an output the plan promised and the run did not produce, a metric whose value is impossible, a file written somewhere the plan did not say.
 
 The blocker is upstream. If a plan may declare `metrics.json` without naming its keys, then "did the run produce what the plan promised" is not a checkable question, and Gate 2 degrades into a reader saying the numbers look reasonable. That is `QB2`'s completeness ruling, and this phase cannot be made rigorous before it lands.
 
-## Boundary
-- ✅ Covered here
-  What REPORT writes, what Gate 2 uniquely catches, and what blocks it from being mechanical.
-- ↪ Covered elsewhere
-  The plan it mirrors is `QB2`; the pre-run gate is `QB3`; the digest that may be written at this phase is `QD1`; where outputs were allowed to land is `QC2`.
+**Covered elsewhere**: The plan it mirrors is `QB2`; the pre-run gate is `QB3`; the digest that may be written at this phase is `QD1`; where outputs were allowed to land is `QC2`.
 
 ## Diagram
 ```
@@ -71,7 +67,7 @@ REPORT touches `workflow/report*.yaml`, `RUN_AUDIT.md`, and `QA/` when one is du
 touch `results/`, which is EXECUTE's and is now evidence: a phase that could edit the numbers it is
 auditing would make the audit worthless.
 
-## Items to Finish
+## Aims
 - [ ] 🔓 Unblock the mechanical check
       Blocked on `QB2`. Until a plan must name its output keys, Gate 2 cannot verify that a promise was kept and can only observe that a file exists.
 - [ ] 🚨 List the impossible-value checks worth running
@@ -81,7 +77,7 @@ auditing would make the audit worthless.
 - [ ] 📋 State the three reasons a digest is due
       They are in `SKILL.md` prose. In the reporter's own contract, where the decision is actually made, they are not.
 
-## Where we are
+## States
 The phase runs and produces both artifacts. Its rigour is capped by `QB2`: with plans that name
 files rather than fields, the audit compares existence rather than content.
 

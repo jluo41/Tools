@@ -5,6 +5,13 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.106.0 - 2026-08-02
+
+- The live `mode` now decides the shape of a reply's BODY (QA3 §6, JL 260802):
+  `discussion` keeps the repo default; `implementation`, `review` and `sourcing`
+  collapse the reply to outcome, routing footer and strip, and a drawing, table,
+  section or row-list becomes a page write first and a pointer second.
+
 ## 0.105.0 - 2026-08-02
 
 - A machine now CLOSES a `### Decision Now` row once the person has answered it,

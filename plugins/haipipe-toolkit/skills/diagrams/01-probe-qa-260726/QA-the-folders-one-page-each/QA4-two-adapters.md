@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: measure the fork, separate the differences that are real from the ones that are drift, then rule who owns it
 
-## Question
+## Opening
 Two consumer families each carry their own probe skill; what is legitimately different between them, and what has merely drifted apart?
 The two skills are thin and honest, and the two checkers inside them are 1096 lines against 679 with a 600 line diff.
 Some of that gap is a paper having a manuscript and an application not having one, and some of it is nobody having decided.
@@ -13,12 +13,7 @@ The fork is where the layer's enforcement actually lives, which is what makes it
 A rule agreed on this board and written into the shared model binds nothing until it reaches a checker, and there are two checkers, held in step by a comment asking the reader to keep them in step.
 So the question is not whether forking was wrong, it is who owns the reconciliation now that the two have moved.
 
-## Boundary
-- ✅ Covered here
-  What each adapter is, what each declares as its own delta, the measured size of the fork, and which differences are defensible.
-- ↪ Covered elsewhere
-  What the checker fails on, and the failures it currently reports on real data, is `QC2`.
-  The shared model both adapters defer to is `QA2`; the vocabulary propagation rule is `QD1`.
+**Covered elsewhere**: What the checker fails on, and the failures it currently reports on real data, is `QC2`. The shared model both adapters defer to is `QA2`; the vocabulary propagation rule is `QD1`.
 
 ## Diagram
 ```
@@ -95,7 +90,7 @@ The paper copy declares itself the source and the application copy repeats the r
 Reconciliation therefore happens when somebody remembers, reads 1775 lines across two files, and decides per hunk whether a difference is a family delta or a missed port.
 No diff runs, no test compares them, and the shared `test/` fixture drives one of the two without saying which, which is `QA2`'s open item and this page's problem too.
 
-## Items to Finish
+## Aims
 - [x] 📏 Both adapters are inventoried, with the deltas each declares
       Line counts, versions, ref files and the declared family differences, measured 260726.
 - [x] 🍴 The fork is measured rather than described
@@ -119,7 +114,7 @@ No diff runs, no test compares them, and the shared `test/` fixture drives one o
       `①` documents eleven and the forks enforce more, so the constitution under-reports its own contract.
       This overlaps `QC2` and closes with it.
 
-## Where we are
+## States
 The two skills are in good shape and the two checkers are not.
 
 The skills are thin, disclaim the model, and list only family deltas, which is exactly what an adapter should be.

@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: two agents, one produces and one judges, and the reviewer starts from a context it did not build
 
-## Question
+## Opening
 Why is every phase run by two agents rather than one careful one? Three phases of four use the same shape: a creator produces the artifact, a reviewer evaluates it, and the loop repeats on a revise verdict. That doubles the work, so the separation has to buy something a single more-careful agent could not.
 
 It buys independence of context, and that is the whole of it. The defect the family cares about is the intent-versus-implementation mismatch, where code runs and measures the wrong thing. An author cannot reliably catch that in their own work because the misunderstanding that produced the code also produces the reading of it. A reviewer starting from a clean context has no such attachment, and that is a structural property, not a matter of being more diligent.
 
 What is unresolved is the loop's ending. The verdicts are pass, warn, revise and fail; the documented rule is that a first warn feeds back for one retry and a second warn advances. That "advance on a repeated warn" is a decision to ship a known concern, and nothing records that it happened.
 
-## Boundary
-- ✅ Covered here
-  Why the pair exists, what independence buys, the verdict ladder, and what the loop's ending costs.
-- ↪ Covered elsewhere
-  What each gate uniquely catches is `QB3` and `QB5`; the phase with no pair at all is `QB4`; the acceptance test for the whole package is `QE1`.
+**Covered elsewhere**: What each gate uniquely catches is `QB3` and `QB5`; the phase with no pair at all is `QB4`; the acceptance test for the whole package is `QE1`.
 
 ## Diagram
 ```
@@ -70,7 +66,7 @@ distinguish it from an artifact that passed cleanly.
 EXECUTE has no pair, for the reasons on `QB4`. Worth stating here so the pattern's absence reads
 as deliberate rather than as an oversight: three phases have a pair, one has a human.
 
-## Items to Finish
+## Aims
 - [x] 👥 The pair is implemented and the invariant is stated
       Creator produces, reviewer evaluates, neither does the other's job. The three agent contracts are in `task/agents/`.
 - [ ] 📝 Record a warn that was advanced past
@@ -80,7 +76,7 @@ as deliberate rather than as an oversight: three phases have a pair, one has a h
 - [ ] 🔁 Rule what a second `revise` means
       The ladder bounds `warn` at two and says nothing about repeated `revise`. An infinite loop is prevented by the workflow's own limits rather than by a stated rule.
 
-## Where we are
+## States
 Implemented and in use: three agents in `task/agents/`, driven by
 `ref/task-lifecycle.workflow.js`, with the creator/reviewer invariant stated in `SKILL.md`.
 

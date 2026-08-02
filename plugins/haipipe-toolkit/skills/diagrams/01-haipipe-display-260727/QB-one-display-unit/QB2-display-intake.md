@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: snapshot only the approved small aggregate while retaining a path and hash back to its canonical producer
 
-## Question
+## Opening
 What is the source of a Display unit?
 
 The canonical source is the producing task's aggregate.
@@ -28,13 +28,13 @@ The renderer reads only the snapshot.
 A diagram or illustration can declare `role: narrative-context` instead of values.
 Any real number inside that concept visual still needs a values source.
 
-## Items to Finish
+## Aims
 - [x] 📥 Define the Intake manifest and source roles
       The manifest template records values, narrative context, and permitted use.
 - [x] 🔐 Require aggregate and safety verification
       Raw or PHI data cannot enter a paper-facing Intake.
 
-## Where we are
+## States
 The Intake contract is implemented and fresh-context agents followed it correctly.
 
 ## Files

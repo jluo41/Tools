@@ -10,7 +10,7 @@
   var last = null, busy = false;
   function tick() {
     if (busy || document.hidden) return;
-    fetch(location.pathname, { method: 'HEAD', cache: 'no-store' })
+    fetch(location.href, { method: 'HEAD', cache: 'no-store' })
       .then(function (h) {
         var lm = h.headers.get('last-modified');
         if (!lm) return;
@@ -32,7 +32,7 @@
           }
         }
         busy = true;
-        return fetch(location.pathname, { cache: 'no-store' })
+        return fetch(location.href, { cache: 'no-store' })
           .then(function (r) { return r.text(); })
           .then(function (t) {
             var doc = new DOMParser().parseFromString(t, 'text/html');
@@ -197,7 +197,23 @@
      is NOT interrupted, and a terminal mid-command is exactly what a reload
      would take. Everything the shell knows about refreshing is now this. */
   if (window.__boardPane) {
-    window.__boardRefresh = function () { location.reload(); };
+    /* A PANE SWAPS TOO (JL 260802: "怎么让这个东西变得比较丝滑… 我加了
+       comments，一点提交，然后它就 refresh 一下").
+
+       This used to reload, on the reasoning that a pane holds one thing and
+       the browser rebuilds a document better than we can patch it. That is
+       true of the DOCUMENT and false of the READER: a page pane holds the
+       scroll position, every `details` the reader opened to get here, the
+       text they have selected, and the composer they are typing into. A
+       reload takes all four and hands back a page scrolled to the top with
+       every section shut, which is what "not smooth" means.
+
+       The swap above already keeps all of it, and it was written for exactly
+       this. It also holds itself back mid-selection and mid-typing, and it
+       still falls back to a real reload when the board's JS changed, which is
+       the one case a patch cannot cover. So the pane gets the swap and keeps
+       the reload only as that fallback. */
+    window.__boardRefresh = function () { if (last === null) last = '0'; tick(); };
     if (window.__boardPane === 'chat') return;
     /* THE BASELINE IS THIS DOCUMENT, not the first answer we happen to get.
        Asking once and keeping that as "current" looks equivalent and is not:
@@ -237,15 +253,28 @@
       if (!document.hidden) quick();
     });
     function arm() { timer = setTimeout(ask, wait); }
+    /* The swap landed, so THIS frame is now showing that build: take its tag
+       as the new baseline and go back to polling fast. */
+    window.addEventListener('board:updated', function () {
+      fetch(location.href, { method: 'HEAD', cache: 'no-store' })
+        .then(function (h) { var t = h.headers.get('etag'); if (t) tag = t; })
+        .catch(function () {});
+      wait = FAST;
+    });
     function ask() {
       if (document.hidden) { wait = SLOW; return arm(); }
       fetch(location.href, { method: 'HEAD', cache: 'no-store' })
         .then(function (h) {
           var t = h.headers.get('etag');
-          if (tag && t) { if (t !== tag) return location.reload(); }
+          /* The tag is NOT rebased here. `tick()` holds itself back while the
+             reader is selecting or typing, so rebasing on the poll would tell
+             this frame it is current while it still shows the old build, and
+             the change would never arrive. It is rebased on `board:updated`
+             below, which only fires once the swap actually landed. */
+          if (tag && t) { if (t !== tag) { window.__boardRefresh(); return arm(); } }
           else {
             var lm = Date.parse(h.headers.get('last-modified') || '');
-            if (lm && mine && lm !== mine) return location.reload();
+            if (lm && mine && lm !== mine) { window.__boardRefresh(); return arm(); }
           }
           /* nothing changed: ask a little less often, up to the ceiling */
           wait = Math.min(SLOW, Math.round(wait * 1.6));

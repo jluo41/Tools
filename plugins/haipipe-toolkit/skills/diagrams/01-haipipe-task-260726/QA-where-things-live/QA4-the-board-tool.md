@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: one door in, /haipipe-task dispatches and /haipipe-board renders, and the tool stays generic
 
-## Question
+## Opening
 When a human enters a task-group, what do they SEE, and who puts it in front of them? Today they see a paragraph of text. Entering a paper now opens a live board in a browser. That is the same human on the same day getting a control plane for the manuscript and a printed summary for the work that produced it, and the asymmetry has no defence.
 
 The gap is not cosmetic, because the two surfaces are not equivalent renderings of the same thing. A board carries `state:` per unit, a checklist that counts itself, a comment that lands on a sentence and is written back to disk, and a log. Printed text carries none of those, so anything a human notices while reading it has nowhere to go except a follow-up message. Work observed and not recorded is work done twice, and a group of a dozen task-folders is exactly the scale at which that starts to hurt.
 
 JL ruled the shape on 260726: `/haipipe-task` is the single door, and `/haipipe-board` is CALLED rather than typed, exactly as `/haipipe-paper enter` now calls it. What is not yet ruled is the harder half. `/haipipe-paper` has an `enter` verb to hang this on and `/haipipe-task` has none: a bare path today means "run the full lifecycle on this", which is the most expensive thing the skill can do. So the door has to be named before it can be opened.
 
-## Boundary
-- ✅ Covered here
-  What `/haipipe-board` is to this skill, when this skill calls it, what the call replaces, and what stays this skill's own.
-- ↪ Covered elsewhere
-  What a board IS, its face grammar, its live layer and its write-back are `④`'s, at `01-boardform-260722`, and this face may not rule any of them. What the board would be laid over is `QA7`. Who owns which REGION of a shared page is already ruled at `QA8@paper` and is inherited here, not re-argued. The same ruling on the paper side is `QA4@paper`.
+**Covered elsewhere**: What a board IS, its face grammar, its live layer and its write-back are `④`'s, at `01-boardform-260722`, and this face may not rule any of them. What the board would be laid over is `QA7`. Who owns which REGION of a shared page is already ruled at `QA8@paper` and is inherited here, not re-argued. The same ruling on the paper side is `QA4@paper`.
 
 ## Diagram
 ```
@@ -122,7 +118,7 @@ Content, Items to Finish and Where we are.
 Nothing about that seam is task-specific, so this board inherits it whole. A page here that
 restates it will drift from `QA8@paper` and then two boards will disagree about the same file.
 
-## Items to Finish
+## Aims
 - [ ] 🚪 Name the door
       Rule A, B or C above. Everything else on this page is blocked on it, because none of the three can be implemented halfway.
 - [ ] 📏 Measure whether the bare path is load-bearing
@@ -136,7 +132,7 @@ restates it will drift from `QA8@paper` and then two boards will disagree about 
 - [ ] 🧪 Enter one real group and get a board
       The acceptance test for this face: a group on disk, one command, a board in the browser, no second command typed.
 
-## Where we are
+## States
 Nothing is built. `/haipipe-task` contains no reference to `/haipipe-board`, `board.html` or port
 5599, so the two skills have never been connected in either direction.
 

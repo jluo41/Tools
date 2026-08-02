@@ -65,11 +65,13 @@ significance · style: <resolved .../*-significance/style.md | — blueprint-onl
 Requirements (what the final paper must do)
 -------------------------------------------
 <!-- RULE: the venue's demands the final paper MUST meet — the "results" this stage hands to pitch/narrative/display/section-edit. TRANSCRIBE every number from the pack's `<journal>-<section>/style.md` (word budget + `## Micro-norms`), tag its source, NEVER invent; if a guide is missing, measure 2-3 stored exemplars and say so. Hard caps (word/display limits) stay caps even if exemplars deviate; carry any measured-vs-budget clash or "to verify" caveat verbatim.
-     · Structural Blueprint — one block per manuscript section, in order.
-     · Writing Principles — the prose companion to the blueprint. -->
+     · ONE `###` DIVISION PER MANUSCRIPT SECTION, in order (JL 260802, chose B over one
+       shared Structural Blueprint division). The division LIST is not fixed here: it is the
+       kind list this outlet actually has, taken from the Section Styles table above, so a
+       venue with a Key Points box gets a division for it and a venue without one does not.
+     · Writing Principles — the prose companion, and the ONE cross-section division. -->
 
-### Structural Blueprint
-Section: <name> (<role>)
+### <Section name> (<role>)
   Subsections: <count> (<names>)
   Paragraphs / subsection: <count or range>
   Sentences / paragraph: <count or range (median ~k)>
@@ -79,7 +81,11 @@ Section: <name> (<role>)
   Display units: <which figures/tables belong here>
   Adaptation: <how THIS paper's claims map onto the section, e.g. H1 → subsection 2>
   [source: <journal>-<section>/style.md "<heading>" + "Micro-norms (measured <date>)"]
-<repeat per section: abstract, introduction, theory/related-work, methods, results, discussion, appendix, + venue-specific units (Key Points box, Significance Statement…)>
+<ONE `###` division like the one above per section this outlet has: opening (title + abstract),
+introduction, theory/related-work, methods, results, discussion, appendix, plus venue-specific
+units such as a Key Points box or a Significance Statement. Number them in reading order after
+`### 2 · Relevant Files`. Each division mirrors into one `### A<n>` Aims group with the SAME
+number, name and emoji; a division that raises no question simply has no group.>
 
 ### Writing Principles
 Language/tone: <formal vs accessible, jargon level, hedging conventions>.

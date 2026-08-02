@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: one q-executor, one file, one path, four named subsections, and the original kept beside the strip so it can be audited
 
-## Question
+## Opening
 What is one probe, and what is it on disk?
 One question a consumer cannot answer, bound BY PATH to one bank file that answers it, living as one `QXn_<slug>.md` of its own.
 Those are one ruling seen twice: nothing binds by id across the wall, so the unit has to be reachable by path, and a path needs a file.
@@ -14,13 +14,7 @@ It sees the question and it sees the answer, and it is tempting to let it judge 
 It must not, because whether an answer settles a claim depends on the claim, and the claim lives in the consumer's own files where a human can still argue with it.
 The disk shape follows from the same wall: an entry named "the third heading in that file" is not a pointer anyone can hand to an agent.
 
-## Boundary
-- ✅ Covered here
-  What one probe is, the folder and file layout, the four subsections, the frozen strip and how it is audited, and the pre-gate review that reads what a checker cannot.
-- ↪ Covered elsewhere
-  The stake this folder must not contain, and the law about it, is `QA6`; the bank on the other side is `QA8`.
-  Where the answer comes to rest after it lands here is `QB6`; the act that writes into this folder is `QB2`, and the loop's order is `QB1`.
-  What a consumer needs in order to USE the channel, rather than what the layer guarantees, is `QA5@paper`.
+**Covered elsewhere**: The stake this folder must not contain, and the law about it, is `QA6`; the bank on the other side is `QA8`. Where the answer comes to rest after it lands here is `QB6`; the act that writes into this folder is `QB2`, and the loop's order is `QB1`. What a consumer needs in order to USE the channel, rather than what the layer guarantees, is `QA5@paper`.
 
 ## Diagram
 ```
@@ -81,7 +75,7 @@ It must carry `**deferred**: depth-<n> · <what it would take>`; without that li
 An entry whose answer takes days to weeks carries owner, eta, blocks and cross-project fields, and only at `state: commissioned`.
 An entry still commissioned when a gate runs is build-lane by definition, so those fields are unconditional there.
 
-## Items to Finish
+## Aims
 - [x] 📐 The unit is the q-executor, and it is one file with one path
       `QXn_<slug>.md` per q-executor, one `## QX<n>` each; the flat form is retired and the checker glob still covers it.
 - [x] 🧱 Carrying and judging are separated in the contract
@@ -98,7 +92,7 @@ An entry still commissioned when a gate runs is build-lane by definition, so tho
 - [ ] 📖 A worked example of every entry state ships with the skill
       The fixtures cover five states as test inputs; the prose shows one filled entry.
 
-## Where we are
+## States
 Ruled and in use. The unit is the q-executor, the layer is communication only, the strip is auditable because both halves are kept, and the disk shape makes every question path-addressable.
 
 Three gaps remain and none is about the design: judging is unchecked, two projects still hold an empty folder in the retired shape, and the states are shown as rules rather than as examples.

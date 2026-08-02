@@ -3,16 +3,11 @@ state: ✅ SETTLED
 owner: JL
 method: bind governance to an S page and artifacts to a unit directory without storing either twice
 
-## Question
+## Opening
 Why does one display have both an `S-Display-N` page and a `displays/displayNN-<slug>/` folder?
 
 The page is the decision record.
 The folder is the reproducible visual bundle.
-
-## Boundary
-- ✅ The page contains claim, reader takeaway, provenance links, wrapper, gate, and decision history.
-- ✅ The folder contains Intake, recipe, candidates, assets, preview, and the serialized float.
-- 🚫 Neither is a second home for raw task data or a free-form alternative to the other.
 
 ## Diagram
 ```text
@@ -32,13 +27,13 @@ Its `### Wrapper` is the canonical Paper-owned caption, label, and placement spe
 The unit folder lets a renderer rebuild and verify the actual visual without rereading an entire lifecycle Board.
 The manifest links the folder back to the S page through `requested_by`.
 
-## Items to Finish
+## Aims
 - [x] 🔗 Define the cross-link in both directions
       `requested_by` points to the S page and provenance link ② points to the manifest.
 - [x] 🧱 Keep semantic and artifact fields separate
       The wrapper and gate remain on the page while recipe and asset remain in the folder.
 
-## Where we are
+## States
 The page-folder pair is the atomic operational unit for a paper display.
 
 ## Files

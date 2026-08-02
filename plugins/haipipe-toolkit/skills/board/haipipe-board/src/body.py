@@ -321,7 +321,7 @@ def _sources(meta):
     return html
 
 
-def _chip(kind, state, label, tip, meta=None):
+def _chip(kind, state, label, tip, meta=None, head=None):
     """A chip is a BUTTON that opens an attached panel, and the panel is real
     body text (JL 260726).
 
@@ -345,7 +345,8 @@ def _chip(kind, state, label, tip, meta=None):
     CARDS.append(
         f'<div popover id="{cid}" class="chipcard {kind} {state}"'
         f' style="position-anchor:{anc}">'
-        f'<div class="cch"><span class="cck">{esc(kind)} · {esc(state)}</span>'
+        f'<div class="cch"><span class="cck">'
+        f'{esc(head or f"{kind} · {state}")}</span>'
         f'<b>{esc(label)}</b></div>'
         f'<div class="ccb">{body}</div>{_sources(meta)}</div>')
     return (f'<button type="button" class="chip {kind} {state}"'
@@ -705,6 +706,88 @@ LANE = re.compile(r"^>+\s*(Citation|Value|Display|Check|Q-consumer|Link|Source|N
                   r"\s*[:：]\s*(.*)$", re.I)
 LANE_ICON = {"citation": "📚", "value": "🔢", "display": "🖼", "check": "⚠️",
              "q-consumer": "🔎", "link": "🔗", "source": "📄", "note": "📝"}
+
+# ── 🪪 a card on a SPAN of words (JL 260802, ruled on QB5) ──────────────────
+# `> Card <the words>: <what to show>` is the ONE record that does not render
+# as a row under the sentence. It names a few words of the sentence above and
+# turns them into a button whose panel carries the text.
+#
+# Why the span travels in the LANE and not in the prose. A card needs to know
+# which words it is about, and there were only three places to put that: a
+# marker inside the sentence, which makes the author pay a visible token for a
+# board feature; a character offset stored elsewhere, which is wrong the first
+# time anyone edits the line; or the words themselves, quoted in the record.
+# The third is what every writer on this board already does: `serve.py` finds a
+# sentence by matching its exact text, so a card finds its span the same way,
+# one level down. The prose stays exactly what the author typed.
+#
+# A span that is not in the sentence renders as a loud row instead of a chip.
+# Failing visibly is the rule the whole write layer keeps: a miss the reader
+# cannot see is the one failure this grammar is not allowed to have.
+CARD_LANE = re.compile(r"^>+\s*Card\s+(.+?)\s*[:：]\s*(.*)$", re.I)
+
+_REC_HEAD = (
+    re.compile(r"^>+\s*✎\s"),
+    re.compile(r"^>+\s*Comment\s+[A-Z]{1,4}\d{0,4}", re.I),
+    re.compile(r"^>+\s*[A-Z]{1,4}\d{0,4}\s*[「\"]"),
+    re.compile(r"^>+\s*[A-Z]{1,4}\d{0,4}\s*(?:\[[^\]]+\])?\s*[:：]"),
+)
+
+
+def _starts_record(ln):
+    """True when this `>` line OPENS a record rather than continuing one."""
+    return bool(LANE.match(ln) or CARD_LANE.match(ln)
+                or any(p.match(ln) for p in _REC_HEAD))
+
+
+def _split_cards(lines):
+    """-> (cards, rest): pull the `> Card <span>: <text>` records out.
+
+    A card's continuation lines travel with it, exactly as any other record's
+    do, so a long card body keeps its paragraphing instead of leaking into the
+    drawer as an orphan row.
+    """
+    cards, rest, cur = [], [], None
+    for ln in lines:
+        m = CARD_LANE.match(ln)
+        if m:
+            cur = [m.group(1).strip(), m.group(2).strip()]
+            cards.append(cur)
+            continue
+        if cur is not None and not _starts_record(ln):
+            cur[1] = (cur[1] + "\n" + ln.lstrip(">").strip()).strip()
+            continue
+        cur = None
+        rest.append(ln)
+    return cards, rest
+
+
+def _wrap_span(p_html, span, chip):
+    """-> (html, ok): replace the first plain-text run of `span` with `chip`.
+
+    The scan skips everything inside `<...>`, so a span is never matched
+    against a class name or an href, and the contiguity check refuses a match
+    that straddles a tag: wrapping `the **pooled** model` there would emit
+    broken HTML, so it is reported as a miss instead.
+    """
+    needle = esc(span)
+    if not needle:
+        return p_html, False
+    at, intag = [], False
+    for i, c in enumerate(p_html):
+        if c == "<":
+            intag = True
+        elif c == ">":
+            intag = False
+        elif not intag:
+            at.append(i)
+    k = "".join(p_html[i] for i in at).find(needle)
+    if k < 0:
+        return p_html, False
+    a, b = at[k], at[k + len(needle) - 1] + 1
+    if b - a != len(needle):          # a tag sits inside the match
+        return p_html, False
+    return p_html[:a] + chip + p_html[b:], True
 
 
 def render_change(text):
@@ -1156,7 +1239,28 @@ def body(txt, fold_code=True, apparatus=True, show_lead=False):
     flush()
     # 把收集到的装置行折进各自的句子（native <details>，零脚本不变量成立）
     for idx, lines in appar.items():
+        # 🪪 cards come out FIRST: they belong IN the sentence, not under it,
+        # so a sentence carrying only cards keeps its plain <p> and never grows
+        # an empty drawer with a `⚑ 0` badge on it.
+        cards, lines = _split_cards(lines)
+        missed = []
+        for span, text in cards:
+            chip = _chip("card", "span", span, text or span, head="🪪 card")
+            wrapped, ok = _wrap_span(out[idx], span, chip)
+            if ok:
+                out[idx] = wrapped
+            else:
+                missed.append((span, text))
+        if not lines and not missed:
+            continue
         inner, heads, kind = render_apparatus(lines)
+        for span, text in missed:
+            inner += ('<div class="lane cardmiss"><b>🪪 Card</b> '
+                      f'<code>{esc(span)}</code> is not in this sentence, '
+                      f'so it has nothing to attach to · {inline(text)}</div>')
+            heads += 1
+        if missed and kind == "⚑":
+            kind = "⚠️"
         # 句尾挂 ⚑N：徽标塞进一个 0 宽的行内块（.sbz），断行时当它不存在，
         # 因此永远不可能被推到下一行（JL 260731 两次：先是徽标单独落一行，
         # 后是「词 + 徽标」整团落一行，同样扎眼）。它挂在句末最后一个字符右侧，

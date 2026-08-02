@@ -215,7 +215,16 @@ const after = JSON.parse(await ev(`JSON.stringify({
 })`));
 ok('the click had a target to hit', !!clicked, clicked);
 ok('page frame navigated', !after.page.endsWith('QD5-split-workspace.html'), after.page);
-ok('page frame is a NEW document', after.pageMark === false, after.pageMark);
+/* INVERTED 260802, and the inversion is the point. This asserted `=== false`,
+   meaning a sidebar click must produce a NEW document in the page frame, which
+   was the design on 260801: the router returned early in every pane, so a click
+   was a real frame load. That made every click re-parse the page and re-execute
+   the whole bundle, JL felt it immediately ("really slow to click and go to a
+   new page"), and `70-router.js` now keeps the router in the PAGE pane so a
+   click swaps `div.wrap` instead. `__mark` surviving is the proof the document
+   was never replaced, which is QD5's A3.1. The check outlived the ruling by one
+   day and would have failed every run from here on. */
+ok('page frame SWAPPED rather than reloaded', after.pageMark === true, after.pageMark);
 ok('index frame did NOT reload', after.indexMark === true);
 ok('chat frame did NOT reload', after.chatMark === true);
 

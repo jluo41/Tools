@@ -3,16 +3,11 @@ state: 🟡 PARTIAL
 owner: JL
 method: retain the proven Paper entry path while deciding whether non-paper consumers justify a shared Display router
 
-## Question
+## Opening
 Does the Display family need one public `haipipe-display` entry skill?
 
 Today a paper starts through `haipipe-paper display`, which creates or resolves the unit and then commissions a named renderer.
 The four renderers are independently callable when a caller already has a valid unit.
-
-## Boundary
-- ✅ Paper-facing work enters through Paper Display because Paper owns meaning and placement.
-- ✅ A renderer may be called directly only with a resolved unit and verified Intake.
-- 🟡 Slides, posters, and HTML may eventually need a shared Display front door.
 
 ## Content
 ### Current route
@@ -23,13 +18,13 @@ It can decide whether a task aggregate is missing, allocate the S page, material
 A generic entry skill should exist only if it can resolve a non-paper consumer without stealing Paper's semantic role.
 The Board keeps this visible rather than adding a superficial router now.
 
-## Items to Finish
+## Aims
 - [x] 🚪 State the Paper-facing entry route
       Existing aggregate → Paper Display → Intake → renderer.
 - [ ] 🧭 Test a real slide, poster, or HTML consumer that needs generic unit allocation
       Decide whether one shared Display front door reduces ambiguity without duplicating adapters.
 
-## Where we are
+## States
 The current contracts work for paper consumers.
 The generic entry-door decision is intentionally open.
 

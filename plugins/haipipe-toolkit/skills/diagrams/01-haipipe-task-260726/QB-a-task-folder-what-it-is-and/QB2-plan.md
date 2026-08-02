@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: write the IPO contract, and let the reviewer judge the contract rather than the intention
 
-## Question
+## Opening
 What does PLAN have to settle so that BUILD has nothing left to invent? It writes one thing, `workflow/plan.yaml`, in the IPO shape: what goes in, what happens, what comes out. Everything after it is judged against that file, so a vague plan does not fail here, it fails at Report, where the cost of being wrong is a run that already burned.
 
 The difficulty is that a plan is judged before anything can be tested. A reviewer at this phase has no code and no numbers, only a description of both, so the only thing it can catch is a contract that is incomplete or internally inconsistent. That is a narrower job than it sounds and it needs saying, because a reviewer that tries to judge whether the plan is a good idea is doing the researcher's job with less information.
 
 What is unresolved is what "complete" means for an IPO block. The schema exists. Whether an output declared as `metrics.json` with no keys named is complete, or whether a plan must name the actual fields it will produce, decides whether Report can be checked mechanically at all.
 
-## Boundary
-- ✅ Covered here
-  What PLAN writes, what a reviewer at this phase can and cannot judge, and what completeness would have to mean.
-- ↪ Covered elsewhere
-  The IPO schema itself is `haipipe-workflow`'s; the reviewer pairing is `QB6`; what Report checks the plan against is `QB5`; the run naming that a plan's outputs must respect is `QC1`.
+**Covered elsewhere**: The IPO schema itself is `haipipe-workflow`'s; the reviewer pairing is `QB6`; what Report checks the plan against is `QB5`; the run naming that a plan's outputs must respect is `QC1`.
 
 ## Diagram
 ```
@@ -69,7 +65,7 @@ would have one author and Gate 1 would have nothing independent to compare.
 plan file. That is not necessarily wrong, since most of those predate the phase, but it does mean
 the contract-versus-evidence comparison has never been exercised at scale.
 
-## Items to Finish
+## Aims
 - [ ] 📐 Rule what makes an IPO block complete
       Whether an output must name its keys, or whether a filename is enough. This decides if `QB5` can check Report mechanically or only by reading.
 - [ ] ✂️ State the reviewer's boundary at this phase
@@ -77,7 +73,7 @@ the contract-versus-evidence comparison has never been exercised at scale.
 - [ ] 📈 Decide whether the 86 planless folders matter
       21 of 107 have `workflow/`. Either the rest are legacy and exempt, or the phase is not actually mandatory, and the docs currently imply the second while reading like the first.
 
-## Where we are
+## States
 The phase runs, the schema exists, and the completeness question is untouched. Nothing here has
 been ruled.
 

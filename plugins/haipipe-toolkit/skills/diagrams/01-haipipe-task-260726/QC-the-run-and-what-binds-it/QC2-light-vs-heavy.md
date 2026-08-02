@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: split by what a repository can carry, name the extensions, and keep a pointer where the thing itself may not go
 
-## Question
+## Opening
 When a run produces a file, how does it decide whether that file goes in the repository or outside it? Two destinations exist: `results/<run>/` inside the task-folder, and `_WorkSpace/{N}-*Store/` outside the repository entirely. The rule is stated as light versus heavy, which sounds like a judgment call and is meant to be a list.
 
 The cost of getting it wrong is asymmetric and that is why it is a hard error rather than a warning. A light file in `_WorkSpace/` is merely inconvenient: it is out of git and someone has to go find it. A heavy file in `results/` is committed, and a committed checkpoint is in the repository's history permanently, where it makes every later clone pay for it.
 
 What keeps the rule usable is the pointer. A run that produces a model writes the model to `_WorkSpace/` and a `model_path.txt` to `results/`, so the repository still records that the run produced a model and where it went. Without that, the rule would be trading correctness for traceability, and it does not have to.
 
-## Boundary
-- ✅ Covered here
-  The two destinations, the extension list, the pointer convention, and why the error is asymmetric.
-- ↪ Covered elsewhere
-  What binds a run's outputs to its inputs is `QC1`; which notebook is the run record is `QC3`; the gate that would catch a violation is `QB5`; the `_WorkSpace/` store layout belongs to `/haipipe-data` and is not ruled here.
+**Covered elsewhere**: What binds a run's outputs to its inputs is `QC1`; which notebook is the run record is `QC3`; the gate that would catch a violation is `QB5`; the `_WorkSpace/` store layout belongs to `/haipipe-data` and is not ruled here.
 
 ## Diagram
 ```
@@ -73,7 +69,7 @@ gap between "printed in a log" and "checked" is the whole of this face's open wo
 6-EndpointStore}` belongs to the data and NN families. This layer decides only that heavy artifacts
 go there, not what the numbered stores mean or how they are organized.
 
-## Items to Finish
+## Aims
 - [ ] 🚨 Make the hard error actually hard
       An extension check over `results/` at Gate 2. The list exists, the gate exists, and they have never been connected.
 - [ ] 📍 Require the pointer, not just permit it
@@ -83,7 +79,7 @@ go there, not what the numbered stores mean or how they are organized.
 - [ ] 🧹 Check the existing bank
       107 task-folders, none audited for this. A single committed checkpoint is already permanent, so the value here is knowing rather than fixing.
 
-## Where we are
+## States
 The rule is documented in `hierarchy.md` and `authoring-conventions.md` §3 with an explicit
 extension list, and `task-structure.md` calls a heavy artifact in `results/` a hard error caught by
 inspection.

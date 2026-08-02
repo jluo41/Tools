@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: let the consumer own visual meaning while a renderer may serialize only approved fields
 
-## Question
+## Opening
 Who owns `float.tex`, its caption, label, and placement?
 
 For a paper, the matching `S-Display-N` page owns those semantic fields in `### Wrapper`.
@@ -26,13 +26,13 @@ They are not rendering parameters that a visual generator should infer.
 Candidates can exist without a wrapper.
 Finalization requires approved wrapper fields and preserves a hand-edited existing wrapper.
 
-## Items to Finish
+## Aims
 - [x] 🏷️ Define a canonical Paper wrapper source
       The `### Wrapper` block records literal caption, label, and placement.
 - [x] 🛑 Prevent renderer-authored semantics
       The generic contract allows only asset-reference maintenance from caller-supplied fields.
 
-## Where we are
+## States
 The illustration helper requires explicit wrapper flags for a display-unit finalization.
 
 ## Files

@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: argue here, graduate the Law into the skill, and keep the runtime free of any dependency on an open page
 
-## Question
+## Opening
 What belongs on this board rather than in the skill, and what happens to a ruling once it is made? A design board and the package it argues about hold two different kinds of truth, and the failure when they blur is specific: a rule that lives only here binds nothing, because no runtime reads a design page.
 
 The mechanism that keeps them separate is graduation. A question reaches ✅ and its `## Law` is copied into `SKILL.md` or the right `ref/`, so the manual is exactly the sum of settled rulings, no more and no less. What stays here is the argument: why the rule is that way, what was tried, and what is still open.
 
 The direction that is easy to get wrong is the other one. An unsettled page must NOT be copied into the skill, because a convenient improvisation written into a manual becomes a rule nobody chose. So the board's job is as much to hold things back as to hand them over.
 
-## Boundary
-- ✅ Covered here
-  What this board is for, what graduates and where to, and the dependency the runtime may never have on it.
-- ↪ Covered elsewhere
-  What ships is `QA2`; the map that places this folder is `QA1`; what a board IS belongs to `01-boardform-260722`. The paper family's version of this face is `QA3@paper` and the two are deliberately the same argument.
+**Covered elsewhere**: What ships is `QA2`; the map that places this folder is `QA1`; what a board IS belongs to `01-boardform-260722`. The paper family's version of this face is `QA3@paper` and the two are deliberately the same argument.
 
 ## Diagram
 ```
@@ -69,7 +65,7 @@ It may not rule what a board IS, what a probe IS, or what a QA file IS. Those ar
 `⑥` again, and a Law here that restates one of them creates two authorities for one rule, which
 is worse than having none.
 
-## Items to Finish
+## Aims
 - [ ] 🎓 State the graduation targets explicitly
       Five destinations are listed in the Diagram. Whether that list is closed, and who decides when a Law does not fit any of them, is not written.
 - [ ] 🚫 Verify the one-way rule holds today
@@ -79,7 +75,7 @@ is worse than having none.
 - [ ] 🧪 Graduate the first Law
       Nothing has graduated yet, because nothing is ✅. The first one will show whether the destination list above survives contact.
 
-## Where we are
+## States
 The board is one day old and nothing has graduated. Nineteen faces exist, all 🔴 or 🟡, and the
 mechanism above is stated rather than exercised.
 

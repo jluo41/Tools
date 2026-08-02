@@ -33,7 +33,7 @@ should it move to haichat-board?  NO —
   there and offline builds + serve.py + other SPACEs all lose their parser.
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC2
+No canvas frame is linked here. `board.excalidraw` holds no frame named `QC2`, and JL ruled on 260802 that a page shows no link rather than one that 404s; the link returns when someone draws the frame.
 
 ## Aims
 ### Where build.py lives

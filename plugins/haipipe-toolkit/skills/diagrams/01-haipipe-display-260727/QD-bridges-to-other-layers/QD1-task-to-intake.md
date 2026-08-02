@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: make a task export a compact, safe aggregate and provenance record before a display is allowed to snapshot it
 
-## Question
+## Opening
 How does Task hand a result to Display without handing over its whole workspace?
 
 The display-input task exports only `source_data.csv` and `provenance.json` for one run.
@@ -29,13 +29,13 @@ The Display unit regenerates the selected visual from its approved snapshot.
 The manifest repeats holder, run, artifact, and hashes.
 This keeps a display auditable even when the task environment is remote or later changes.
 
-## Items to Finish
+## Aims
 - [x] 📤 Define the display-input task output contract
       One compact aggregate and provenance record are required.
 - [x] 🔗 Define task-to-Intake materialization
       Paper Display copies the approved aggregate and records its origin.
 
-## Where we are
+## States
 `haipipe-task-for-display` now produces display-ready inputs rather than a canonical paper asset.
 
 ## Files

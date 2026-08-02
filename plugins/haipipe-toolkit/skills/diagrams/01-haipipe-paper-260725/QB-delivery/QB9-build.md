@@ -27,6 +27,9 @@ How this page must be written. Read it before editing, and edit to it.
 
 **Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
 
+**This page DESIGNS; the paper board SHOWS**: the design division states what a paper must carry for this concern, not what one paper happens to have today.
+Where the MISQ paper differs, say so as a gap with an owner, never as the definition.
+
 **The gates are named here and recorded on QF1**: this page may define what G0 through G5 mean; it may not carry the run log.
 A dated result belongs on QF1, and a rule about what a gate requires belongs here.
 
@@ -115,6 +118,37 @@ The absent Display input is reached by the baseline master, so the candidate rep
 Repair belongs to the owning section or display work, and QF1 carries the failure-to-reopen link.
 The older `displays/Table/table-gradient-results.tex` TODO is commented out in TeX and is now correctly excluded from the static closure.
 
+### 3 · What we want on the paper board
+
+**The group we are designing**: four submission pages, reused every round.
+
+```text
+  🎯 WHAT WE WANT a paper to carry for this concern
+  ### Delivery · Build (includes Submission and distribution)
+        📄 S-Submission-0-reconcile.md
+        📄 S-Submission-1-compile.md
+        📄 S-Submission-2-review.md
+        📄 S-Submission-3-submit.md
+
+  ⚡ this concern owns NO STAGE ── `index.yml` has no `build` key
+  🔁 the SAME four pages run again for every Round ── QB10 adds a dated
+     round record, and never a second set of these
+  🏷 the S-Submission ids are HISTORICAL and unchanged; Build is the
+     broader concern that now owns them
+```
+
+🎯 Establishes what a paper board must show for this concern, and why the page set never grows.
+
+#### 3.1 · Four pages, reused, rather than four per round
+(a paper with three rounds still has exactly these four)
+Reconcile, compile, review, and submit are the same four moves every time the paper goes out.
+Duplicating them per round would give a paper twelve pages describing one procedure, and QB10 already keeps what actually differs between rounds.
+
+#### 3.2 · The ids say Submission and the concern says Build
+(the family name predates the concern, and renaming it would break every citation)
+JL widened the concern to Build on 260729 so that projection, distribution, compile, and promotion sat together.
+The four page ids stayed, because a stable id that no longer matches its group is cheaper than a rename that breaks every page pointing at it.
+
 ## Aims
 
 ### A1 · 📜 The delivery contract
@@ -151,12 +185,16 @@ The older `displays/Table/table-gradient-results.tex` TODO is commented out in T
 
 ## Files
 
-- `paper/3-deliver/1-build/haipipe-paper-project/` · the runtime with the four separate commands
-- `2-src/projection.yaml` · wiring only, never content authority
-- `2-src/projection-receipts/` · what each bounded run recorded
-- `3-dist/tex/f53ccf5c5fc965bbc0c74f478e9015ac8ded949e91e7bc35a667c54cc38ffa98/` · the receipted main-1 candidate
+📋 **Contracts** · what carries this page's rule to somewhere else
+
+- `board.md` · the `## Pages` order and the Board Map row for this concern
 - `QB11a-section-to-latex.md` · the LaTeX adapter this concern calls
 - `QB11b-section-to-word.md` · the Word adapter this concern calls
+- `../QF-execute/QF1-execution-map.md` · owns the record of each bounded run and its receipts
+
+⚙️ **Engines** · what RUNS the subject
+
+- `../../paper/3-deliver/1-build/haipipe-paper-project/` · the runtime with the four separate commands
 
 ## Law
 

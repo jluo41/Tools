@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: state the closure as a rule about readers rather than about files, and find the one place it can be checked
 
-## Question
+## Opening
 May a consumer read `results/` directly? The rule says no: the digest is the readable answer and a consumer reads that, never the results themselves. This is the closure that makes `QD1` meaningful, because a door only matters if the wall around it holds.
 
 The reason is that `results/` is not a communication surface and was never designed as one. A `metrics.json` has whatever keys that run needed, a `report.md` was written for whoever was standing there, and a filename means what it meant that afternoon. None of it carries the caveats, and the caveats are most of what makes a number safe to use. `## Caveats` and `## Not-done` exist in the digest precisely because the raw evidence cannot carry them.
 
 What makes this hard to enforce is that it is a rule about READERS, and this layer cannot see its readers. Everything else in the family is a rule about files: what may be written, where, containing what. This one says a file that exists and is perfectly readable must not be read by a particular party, and nothing here knows who is reading.
 
-## Boundary
-- ✅ Covered here
-  Why `results/` is closed to consumers, what that costs, and where the rule could actually be checked.
-- ↪ Covered elsewhere
-  What DOES leave is `QD1`; the door a question arrives through is `QA5`; the consumer side of the same wall is `QA8@probe`, which is where a checker would most plausibly live.
+**Covered elsewhere**: What DOES leave is `QD1`; the door a question arrives through is `QA5`; the consumer side of the same wall is `QA8@probe`, which is where a checker would most plausibly live.
 
 ## Diagram
 ```
@@ -81,7 +77,7 @@ has to live where the citation is written, and the probe layer already walks exa
 bindings when it verifies that each entry points at a real QA file. An entry pointing at
 `results/…` instead is the observable violation.
 
-## Items to Finish
+## Aims
 - [ ] 🚫 State the closure as a rule with a reason attached
       `SKILL.md` says a consumer reads the digest and never `results/`. It does not say why, and the reason (the caveats cannot travel) is the only part that will survive contact with someone in a hurry.
 - [ ] 🔎 Put the check on the consumer side
@@ -91,7 +87,7 @@ bindings when it verifies that each entry points at a real QA file. An entry poi
 - [ ] 📏 Rule what happens when no digest exists and one is needed
       Today the honest answer is "ask, and wait for a run". Whether a consumer may cite a result while its digest is pending, with the pointer recorded, is the case that decides if this rule is livable.
 
-## Where we are
+## States
 Stated once, in `SKILL.md`, in a single sentence: a task ends at Report, produces `results/`, and
 the readable answer is the digest a consumer reads instead.
 

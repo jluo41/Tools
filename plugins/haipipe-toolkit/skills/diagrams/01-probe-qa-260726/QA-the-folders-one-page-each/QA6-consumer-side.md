@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: name the one place a stake is allowed, state the law that keeps it there, and admit that the law is held by nothing
 
-## Question
+## Opening
 Where does a consumer's reason for asking live, and what stops it from travelling with the question?
 In the stage doc's `Q-consumer` section, and nothing stops it except a phase boundary and a law with no enforcement.
 The stake is legitimate here and forbidden everywhere else, which makes this folder the only one on the map defined by what it is allowed to hold.
@@ -13,13 +13,7 @@ A stake hides in ordinary words, which is why the rule cannot be a filter.
 "Rescue", "we want", "the hoped-for", a claim id, or "our paper" all carry it, and a question can leak the wanted answer purely by what it declines to ask.
 So the defence is structural: the stake stays in a section that is never dispatched, the stripped version is written somewhere else, and the two sit far enough apart that carrying one does not carry the other.
 
-## Boundary
-- ✅ Covered here
-  What is in the consumer's own folder, how a question is raised there, LAW 1, and the phase boundary that keeps DRAFT out of the probe files.
-- ↪ Covered elsewhere
-  The stripped question and the audit of the strip live on the wall, which is `QA7`.
-  The bank's half of the wall is `QA8`; the loop step that does the strip is `QB2`.
-  Where the answer comes back to rest in this folder is `QB6`.
+**Covered elsewhere**: The stripped question and the audit of the strip live on the wall, which is `QA7`. The bank's half of the wall is `QA8`; the loop step that does the strip is `QB2`. Where the answer comes back to rest in this folder is `QB6`.
 
 ## Diagram
 ```
@@ -86,7 +80,7 @@ A claim's status lives in `1b-claims.md`, written by the author, and never in a 
 That separation is the same wall seen from the other direction: the probe carries, the consumer judges.
 The consumer's own registries also sit here, and they are the T1 rung of the cost ladder, the answers a consumer can give itself without asking anyone.
 
-## Items to Finish
+## Aims
 - [x] 📍 The stake's home is named, and it is the stage doc
       One `## Q-<Stage>-<n>` per question, at the end of every stage doc, in the consumer's own words.
 - [x] ⚖️ LAW 1 is stated with the eye, pen and run distinction explicit
@@ -102,7 +96,7 @@ The consumer's own registries also sit here, and they are the T1 rung of the cos
       A list of forbidden words is a weak proxy, and 260726 produced a live false positive: a QA file reading "citing this paper does not upgrade it into construct evidence" trips the "this paper" pattern while referring to a cited paper in the literature.
       A fluent leak passes the same list.
 
-## Where we are
+## States
 The consumer side is the settled half of the wall.
 
 The stake has one legal home, the ids are local, binding is by path, and the phase boundary between raising a question and working it is stated plainly enough that a violation is nameable.

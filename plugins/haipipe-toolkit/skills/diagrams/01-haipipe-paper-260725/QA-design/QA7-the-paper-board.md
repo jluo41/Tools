@@ -10,7 +10,7 @@ What is on a paper's own board, and how is it not a design board?
 `Paper-X/0-lifecycle/` uses the same tool, the same page grammar and the same four `state:` values as this one, so the two look alike.
 They are opposites: a design board empties as its rulings leave, and this one never does, because a gated page's Content IS the paper.
 Confuse them and you wait for a passed section to empty into the manuscript.
-This page rules what it holds, how its state is derived, and why nothing leaves.
+A control plane, a frontier that is derived rather than stored, and nothing that ever leaves.
 
 **Where this page sits**: `QA3` is the deliberate opposite of this page, and the two were written as a pair.
 `QA6` covers what else is in the paper folder, `QC3b` the grain that decides how many S pages a stage gets, and `QA8` who creates one.

@@ -3,7 +3,7 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.105.0"
+  version: "0.106.0"
   last_updated: "2026-08-02"
   summary: "sentencerun.py asks the server for ?pane=page: the live shell had moved every page into an iframe, so the anchor-parity sweep read the shell's window and reported all 55 pages unreadable."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -170,6 +170,12 @@ The strip uses a small closed vocabulary:
 
 Sourcing never floats.
 `mode=sourcing` must name a page or page group that owns the evidence; whole-Board sourcing without a queue is blocked.
+
+**The mode also decides the shape of the reply's BODY (QA3 §6, JL 260802).**
+`discussion` keeps the repo's own default, because working an idea out in the terminal before anything is written down is the one thing that surface is genuinely better at.
+`implementation`, `review` and `sourcing` collapse the reply to the outcome, the routing footer and the strip. In those modes a drawing, a comparison, a section or a list of rows is a PAGE WRITE FIRST and a pointer second, because only the page carries an address, a state, and a place for a comment to land.
+JL 260802: "some content we want to put them in the Page, and not the user read the claude code results in TUI."
+The failure this prevents is one figure existing in a transcript and on no page, disagreeing with the board within the hour, in the copy nobody can correct.
 
 Render the closing block immediately before replying:
 

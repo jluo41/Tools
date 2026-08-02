@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: write one file per direction explored, in general language, for nobody in particular
 
-## Question
+## Opening
 What does this layer hand out when someone asks it something? One file: `QA/<n>-<slug>.md` inside the task-folder that did the work, holding plain prose with `[→ results/…]` anchors back to the evidence. That is the entire readable surface of the bank, and a consumer reads it and never reaches past it.
 
 The property that makes it worth writing is that it is addressed to nobody. It carries no claim id, no paper name and no reason anyone wanted to know, so the next question that lands on the same ground inherits it whole. A digest written for one consumer would have to be rewritten for the next, and a bank of those does not accumulate.
 
 The awkward part is that it is written for reasons the writer decides. `SKILL.md` gives three: a question arrived, results already answered something with no digest, or a finding was judged worth digesting. That last one is entirely this layer's own judgment, which is correct and means the bank's coverage depends on a call nobody reviews.
 
-## Boundary
-- ✅ Covered here
-  What a digest is for, when one is due, what it may not contain, and why it is addressed to nobody.
-- ↪ Covered elsewhere
-  The QA FILE CONTRACT is not ours: its `state:` line, the `started:` TTL, supersession and the checker codes are `QC1@probe` and `QC2@probe`. What may not leave besides it is `QD2`; the door a question arrives through is `QA5`; the phase that writes it is `QB5`.
+**Covered elsewhere**: The QA FILE CONTRACT is not ours: its `state:` line, the `started:` TTL, supersession and the checker codes are `QC1@probe` and `QC2@probe`. What may not leave besides it is `QD2`; the door a question arrives through is `QA5`; the phase that writes it is `QB5`.
 
 ## Diagram
 ```
@@ -83,7 +79,7 @@ digest across 107 task-folders.
 Low is not automatically wrong, since most folders were never asked about. It is worth knowing
 rather than assuming.
 
-## Items to Finish
+## Aims
 - [ ] 🔍 Make the vocabulary rule checkable
       A grep for claim ids, probe ids and consumer nouns over every `QA/*.md`. The rule is stated in three documents and enforced in none. Shared with `QA5`.
 - [ ] 📏 Decide whether 1 of 107 is a coverage problem
@@ -93,7 +89,7 @@ rather than assuming.
 - [ ] 📝 State the three reasons in the reporter's own contract
       They live in `SKILL.md` prose. The creator agent, which actually decides at Report, does not carry them.
 
-## Where we are
+## States
 The contract exists in `fn/qa.md` and the shape is stable: `# Q`, `## Answer` with anchors,
 `## Caveats`, `## Not-done`, ordered by creation so `ls` is the index.
 

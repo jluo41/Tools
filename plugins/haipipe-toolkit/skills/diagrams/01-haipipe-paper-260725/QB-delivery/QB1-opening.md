@@ -21,8 +21,8 @@ QB6 Main owns the manuscript Introduction; this page is lifecycle control, never
 Filing it as its own Delivery group made the paper look as though it chose a journal after deciding what it argued, which is backwards.
 
 **What the 260802 `QBv` group did NOT take from this page**: the decision.
-`QBv` holds what each venue KNOWS, one page per pack in `paper/venue/`, because a pack's rewards reach QB4, QB5, QB6, and QB11a at once and can be filed under none of them.
-This page still owns which venue this paper picked and where that pin lives; `QBv0` states the split and cites this ruling rather than reopening it.
+`QBv` holds what each venue KNOWS, one page per venue TARGET, because a venue's rewards reach QB4, QB5, QB6, and QB11a at once and can be filed under none of them.
+This page still owns which venue this paper picked and where that pin lives; the QBv group intro states the split and cites this ruling rather than reopening it.
 
 **What this grouping does not do**: it does not renumber stages and it does not replace the explicit dependency graph.
 Delivery order is reading order; execution order is declared by each stage contract.
@@ -41,6 +41,9 @@ A sentence about how to phrase the paper's first paragraph belongs on Main. A se
 ✅ `seed, venue, pitch`  ❌ `seed, pitch, and also the venue`
 
 Any other order makes Venue look appended again, which is the reading the 260729 ruling overturned.
+
+**A Decision Now row is read once, by a person in a hurry**: short sentences, plain words, real numbers.
+Any option a reader has to re-read has already failed, whatever it says.
 
 **The arc is not this page's**: narrative moved to QB2 Work on 260802.
 A sentence here about how the argument is ordered has crossed into Work, whatever it is about.
@@ -336,15 +339,15 @@ Every point ties to a table, display, model, check, or source, and a planned one
         📄 S-Venue-0-venue.md      ← stage venue 2a    ✅ expected
         📄 S-Venue-1-pitch.md      ← stage pitch 2b    ✅ expected
         📄 S-Venue-2-narrative.md  ← stage narrative 3 ⚠️ Work's since 260802
-        📄 S-Venue-3-decisions.md  ← NO STAGE makes it ⚠️
+        🗑 S-Venue-3-decisions.md  ← RETIRED 260802, not replaced
 
-  🔑 FOUR kinds of page can sit in a concern group
+  🔑 THREE kinds of page can sit in a concern group
      📄 one per runs:once stage      seed · venue · pitch
      📑 N when a stage is per-unit   section-edit ━▶ S-Main-0 … S-Main-8
      🗂 a family control page        S-Main-Dash · S-Appendix-0-control
-     📝 a register no stage owns     S-Venue-3-decisions
   🚫 "one stage, one page" holds one way only: every stage makes a page,
      not every page comes from a stage
+  🚫 no central decision register ── a decision sits on the page that owns it
 ```
 
 📋 Establishes what this concern is expected to look like on a paper's own board, measured against the MISQ paper.
@@ -355,11 +358,11 @@ Every point ties to a table, display, model, check, or source, and a planned one
 The families cut across it: `S-Seed-1-literature.md` is family Seed and appears under `Delivery · Literature`, and `S-Venue-2-narrative.md` is family Venue and belongs to Work.
 Reading a filename tells you the family and tells you nothing about the group.
 
-#### 5.2 · Two pages in the live Opening group are not this concern's
-(both are real, and neither is a defect in the paper)
-`S-Venue-2-narrative.md` is still filed under Opening on the MISQ paper, because narrative moved to Work on 260802 and the paper board has not caught up.
-`S-Venue-3-decisions.md` is a decision register that no stage in `index.yml` produces, so nothing this page says about stages accounts for it.
-A concern group is therefore a superset of its stage pages, and this page states the stages while the paper board states the group.
+#### 5.2 · A decision sits on the page that owns it, and nowhere else
+(JL retired the central register on 260802, so the group has no page outside the three kinds)
+The MISQ paper kept `S-Venue-3-decisions.md`, a register of rulings more than one page had to follow.
+It is retired and not replaced: a decision is a `Decision Now` row in the States of the stage page it belongs to, and a ruling that binds several pages takes the Law of one of them while the others cite it.
+That leaves one live gap in the Opening group, `S-Venue-2-narrative.md`, which moved to Work on 260802 and which the paper board has not caught up with.
 
 ## Aims
 
@@ -397,7 +400,9 @@ A concern group is therefore a superset of its stage pages, and this page states
 - A5.1 · The live Opening group holds only pages this concern owns.
   **Done when:** `S-Venue-2-narrative.md` sits under `Delivery · Work` on the MISQ paper, matching the 260802 ruling.
 - A5.2 · Every page in the group has a declared owner, whether or not a stage made it.
-  **Done when:** `S-Venue-3-decisions.md` either gains a stage or is named here as a register the concern carries without one.
+  **Done when:** the group holds only the three kinds in `§5`, and no page sits outside them.
+- A5.3 · The five rulings the retired register held are re-homed before it is deleted.
+  **Done when:** each of D01, D05, D11, D15 and D16 sits in the Law of one page it binds, or in a `Decision Now` row if it is still open, and only then does the file go.
 
 ### P · 🏁 Page-level
 - P1 · Retargeting a paper to a different venue has defined consequences for the answers it does not change.
@@ -406,18 +411,6 @@ A concern group is therefore a superset of its stage pages, and this page states
   **Done when:** a mechanical check compares each division against its `template.md` and reports a rule this page missed.
 
 ## States
-
-### Decision Now
-
-- [ ] 🗣 Is a cross-page ruling register a thing this concern keeps, or does every decision go to its owning page?
-
-      📍 `Part` `### 5 · What the paper board shows`
-      🔔 `Why now` JL proposed retiring `S-Venue-3-decisions.md` because decisions belong in the Value and Display groups. Reading it changed the question: it is 312 lines carrying five rulings, and it states its own admission test, "a ruling belongs here when more than one page has to follow it; everything else is a checkbox on the page that does the work." Its five entries do cross pages: how the paper reports its IV and its estimates bind Results, Display, and Value at once.
-      ⭐ `A ·` Keep it as a CROSS-PAGE ruling register and move its two open rulings out to Decision Now on the pages that own them. Recommended: it splits the two jobs that got merged, a decision QUEUE, which QB4 §5.2 already owns page by page, and a Law INDEX for rulings no single page owns. It also retires the register's fourth status vocabulary, `✅ decided · ⏳ open · ⛔ contested`, which is neither QB4's five States nor a Decision Now checkbox.
-      `B ·` Retire it and file each ruling in the Law of one page it binds, with the others citing that page. What JL proposed. Cleanest model, and it makes an arbitrary page the owner of a rule that is not its own, and duplicates or scatters a record the paper has kept for five rulings.
-      `C ·` Keep it exactly as it is, register and queue together. No work, and two places keep asking JL for decisions.
-      🛑 `Blocks` nothing. The register renders and the paper compiles.
-      🤖 `If nobody answers` A takes effect, recorded in Log as CC's ruling and overturnable like any other.
 
 ### A1 · 📜 The delivery contract
 - ✅ A1.1 · JL ruled the sequence on 260729: Opening includes Venue. `## Pages` lists QB1 Opening then QB2 Work, and no Venue group exists on the board.
@@ -440,7 +433,8 @@ A concern group is therefore a superset of its stage pages, and this page states
 
 ### A5 · 📋 What the paper board shows
 - 🧠 A5.1 · Waiting on JL. The MISQ `Delivery · Opening` group still lists the narrative page, and the choice is one row, on QB2's Decision Now, because Work is the group that gains it.
-- 🧠 A5.2 · Waiting on JL. The register turned out to hold five cross-page rulings and its own admission test, so the question moved from what owns it to whether a cross-page register is a kind this board recognises. The options are the row in Decision Now above.
+- ✅ A5.2 · Ruled by JL on 260802 with option B: the register is retired and not replaced. `§5` now lists three kinds, and the Law carries the ruling with the option it rejected.
+- ❄️ A5.3 · Held while we work the design board. The register still holds five rulings and two of them are open, so deleting the file before they are re-homed would lose them. This thaws when we turn to the MISQ paper.
 
 ### P · 🏁 Page-level
 - ✅ P1 · Ruled by JL on 260802, directly rather than through QA6: a retarget reopens the pitch and leaves the seed. The ruling with its rejected options is in `## Law`, and QB1 `§4.3` already carries the pitch half, since a venue change re-runs the primary-claim designation.
@@ -452,7 +446,7 @@ A concern group is therefore a superset of its stage pages, and this page states
 
 - `board.md` · the `## Pages` order and the Board Map row naming Seed, Venue, and Pitch; changing what this concern holds means editing it
 - `QB2-work.md` · the concern that took the arc, and the only other page that has to agree with this one
-- `../QBv-venue-packs/QBv0-venue-pack-contract.md` · the venue KNOWLEDGE group opened 260802; it cites this page's ruling and owns no part of the decision
+- `../QBv-venue-packs/QBv1-misq.md` · the venue KNOWLEDGE group opened 260802, one page per venue target; it cites this page's ruling and owns no part of the decision
 
 📥 **Input files** · what the work reads
 
@@ -472,7 +466,27 @@ Rejected: keeping Venue as its own concern, because that made the paper read as 
 An arc is built from the claim ledger, so it cannot be honest before the ledger is.
 Rejected: leaving narrative here, and cutting the concern at Work so that venue, pitch, and narrative became a fourth group; JL chose the move instead.
 
+**A venue change reopens the pitch and leaves the seed** (JL 260802, answering Decision Now with "A").
+Why a paper exists does not change with the journal; what it promises is shaped by one.
+Rejected: re-gating the whole concern on every retarget, because that reopens a seed nobody intended to change; and reopening nothing automatically, because two papers retargeted the same way would then end in different states.
+
+**There is no central decision register; a decision lives on the stage page that owns it** (JL 260802: "we will delete it, and will not use it anymore. The decision will be in each stages' Decision").
+`S-Venue-3-decisions.md` is retired and not replaced.
+Rejected: keeping it for the rulings that bind several pages at once, which was CC's recommendation on the ground that a cross-page rule has no single owner; JL ruled that one queue beats two, and that a shared rule takes the Law of a page it binds.
+
 **Reading order, never an execution graph**: this grouping does not renumber stages and it does not replace their explicit dependency graph.
+
+## Lesson
+
+- 🔧 **A replacement without an assert is a silent no-op that reports success** (260802).
+  Two rulings were announced as written into `## Law` and neither had landed: both anchors had been reworded by an earlier repair in the same session, so the replace matched nothing and returned the text unchanged.
+  Every other edit that day carried `assert t.count(old) == 1`, and every one of those landed.
+  A write with no assertion is not a write, and a page that CLAIMS a record exists must be read back before the claim is made.
+
+- 🗣 **A Decision Now row must be readable in ONE pass by a weak English reader** (JL 260802: "I didn't get your question after one read").
+  The first version of the row below stacked three abstract nouns into its question and hung four clauses off one `Why now`.
+  The rule QB4 states for the Opening paragraph applies here with more force, because this is the one section that ASKS the reader to act.
+  Write short sentences. Use numbers. Name the real file. Say what each option costs in one line.
 
 ## Glossary
 
@@ -481,7 +495,7 @@ Rejected: leaving narrative here, and cutting the concern at Work so that venue,
 
 ## Log
 
-260802 · The `QBv · Venue Packs` group opened, and this page kept the decision. The split is knowledge against decision: a pack's `-> Claims`, `-> Display`, `-> Minimap`, and `-> Write/Edit` maps reach four other Delivery concerns, so the knowledge sits outside all of them, while the pin stays on `S-Venue-0` and stays this page's. The 260729 ruling is cited by `QBv0`, not reopened.
+260802 · The `QBv · Venue Packs` group opened, and this page kept the decision. The split is knowledge against decision: a pack's `-> Claims`, `-> Display`, `-> Minimap`, and `-> Write/Edit` maps reach four other Delivery concerns, so the knowledge sits outside all of them, while the pin stays on `S-Venue-0` and stays this page's. The 260729 ruling is cited by the QBv group intro, not reopened.
 260802 · JL: say what the paper board is expected to show. `### 5` added, measured against the MISQ paper's `0-lifecycle/board.md`: the concern is the GROUP there, three stage pages are expected in it, and two more are present that this concern does not own. It also records the four kinds of page a group can hold, since "one stage, one page" holds only in the stage-to-page direction. A5.1 and A5.2 carry the two live gaps.
 260802 · JL: the bracket is not the whole story, check the QB12 series. `§2.2` said a sentence carries its question id in a trailing bracket and stopped there, which is half the grammar: QB12a specifies marker plus join bracket IN the sentence and a typed lane UNDER it, rendering together as the evidence card. New `§2.6` names the three parts and points at QB12 rather than restating it, and A2.4 opens on the templates, which ask for the bracket alone.
 260802 · Corrected a claim this page made and QB2 disproved: `§1.3` said there was no `S-Venue-2`, but narrative declares `board_family: Venue` and `board_unit: 2`, so unit 2 exists and belongs to Work.

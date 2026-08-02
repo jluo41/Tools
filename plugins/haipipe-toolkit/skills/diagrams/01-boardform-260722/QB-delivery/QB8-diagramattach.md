@@ -44,7 +44,7 @@ The button takes away every step except the paste.
 🚫 no marker · no metadata · nothing only the button knows how to write
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QB8
+No canvas frame is linked here. `board.excalidraw` holds no frame named `QB8`, and JL ruled on 260802 that a page shows no link rather than one that 404s; the link returns when someone draws the frame.
 
 ## Content
 ### 1 · The write path
@@ -150,6 +150,145 @@ Two people attaching at once is unhandled, which is the same gap `QE4` owns for 
 What a canvas URL may be, and the rule that a canvas never replaces the ascii figure, belong to `QB4 §2.7`.
 The embed line as a piece of board grammar is `ref/board-form.md §5`.
 Whether a reader who was never told about the button can find it is still open here, because the control sits two clicks deep.
+
+### 4 · How the canvas got here, and the routes not taken
+
+**The design history behind the button**: where the canvas lives, what we own under each route, and the routes rejected.
+
+```text
+  🗺 THE ROUTE TAKEN                       🚫 THE ROUTES NOT TAKEN
+     our own Excalidraw, on localhost         a excalidraw.com share link
+     ✅ the .md keeps the URL                 ❌ a link we cannot re-serve
+     ✅ one scene, one frame per page         ❌ one file per drawing
+     ✅ served by serve.py                    ❌ an account per person
+```
+
+📌 Moved here from `_archive/QB4b-diagram.md` §1-§4 on 260802, on JL's ruling (option A): this material answers "how does the canvas work", so it belongs with the page that owns attaching a drawing rather than with the page-template contract.
+
+#### 4.1 · The route: our own Excalidraw, on localhost
+Proved 260726. It removes the API key, the subscription, the vendored bundle and the SVG exporter at once.
+
+#### P0. One excalidraw for the board, one FRAME per page
+(JL 260726, and the single scene is the point rather than a packaging detail)
+`board.excalidraw` is one file holding one frame per page, named for the page: `QB4b`, `QD5`, `QB5a`.
+It is never split into a file per page, because a single surface is the only thing that can say how the pages RELATE, which is the job `## Pipeline` does badly in ASCII and the only argument for drawing at all.
+Editing happens on the whole board; a page's Diagram opens at its own frame.
+
+#### P0b. The scene lives at the board ROOT, as a first-class citizen
+(JL 260729: "we will put the excalidraw at the root, as the 1st level citizen")
+`board.excalidraw` sits beside `board.md` and `board.html`, and `fig/` goes back to holding images only.
+The reason it is a decision rather than a preference is what the three root files are: the source you write, the page you read, and the surface you draw on, which are the board's three projections of one topic. A figure folder is where a page's assets go, and the scene is not one page's asset.
+It was found as a defect the same day, which is how the question surfaced at all: the scene had been sitting at the root since 260729 1211 while `xcal.py` still wrote to `fig/`, so 35 faces carried a `## Diagram` URL that returned 404 and no page's canvas opened.
+`xcal.py` now writes the root path and falls back to an existing `fig/` scene where a board already keeps one, because migrating another board's scene is that board owner's call under `QB1` §4.
+
+#### P1. The editor is ours, and it already knows how to load our file
+(`docker run --rm -d -p 5610:80 excalidraw/excalidraw`, reached through `serve.py`)
+The open-source app carries a scene loader nobody documents: `window.location.hash.match(/^#url=(.*)$/)`.
+So it fetches a scene from any URL, which means it fetches ours, out of the repo, served by `serve.py`.
+It runs in its own container on its own port, and only 5599 is forwarded to a laptop, so an iframe at `127.0.0.1:5610` answers "refused to connect" on any machine that is not the one running docker.
+`serve.py` therefore proxies it at `/_excalidraw/`, the same trick ttyd already uses for the terminal, and the whole thing lives behind the one port that is forwarded.
+That also makes the editor same-origin with the scene, so the `Access-Control-Allow-Origin` header on `.excalidraw` is now a belt rather than the braces it was.
+
+#### P2. The per-frame anchor has to come from our side
+(`?element=` is Excalidraw+; the open-source app does not read it)
+Grepping the app's own bundle, the query string it reads is `id`, `resourcekey`, `start`, `t`, and nothing else.
+So `serve.py` computes the projection instead: one file on disk, two kinds of URL off it.
+
+```
+ the whole board, for drawing
+   127.0.0.1:5599/_excalidraw/#url=http://127.0.0.1:5599/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw
+
+ one page's frame, for its Diagram
+No canvas frame is linked for this history. `board.excalidraw` holds no frame named `QA4a`, retired in the 260731 renumbering, and JL ruled on 260802 that a page shows no link rather than one that 404s.
+
+ same file · the second returns that frame and its children only
+ an unknown name answers with the list of real ones, never silently empty
+```
+
+#### P3. Every frame is SEEDED with the ASCII figure its page already has
+(a blank frame reads as a broken feature, which is how JL found it)
+JL opened `?frame=QC4` on 260726, worked through the load dialog, and landed on an empty rectangle.
+The scene at that point was 28 named frames and nothing inside them, so the feature looked broken while working exactly as built.
+`xcal.py` now writes each page's first `## Diagram` fenced block into its frame as one monospace text element, so opening any frame shows the figure that page already argues with, and the frame is sized to it rather than to a fixed grid.
+It is a ONE-WAY seed and the markdown stays the truth: the ASCII figure is the half that survives being copied, which is §0's rule and is not weakened by also being drawable.
+Three pages seed a grey placeholder instead, because they have no ASCII figure at all, and that placeholder is the most honest thing the frame can say.
+
+#### P4. Regenerating is safe, which is what makes it usable
+(stable ids, kept positions, kept drawings, dropped ghosts)
+Every element `xcal.py` mints carries a prefixed id (`frame-QB4b`, `t-QB4b-fig`), so a regen renames nothing and no page's link dies.
+An element with any other id is a human's drawing and is carried through untouched, and a frame that already exists keeps the x/y a human moved it to.
+A frame whose page has been retired is dropped rather than kept, since a prefixed id that matches no page is a ghost and not a drawing; `--fresh` is the one destructive mode and is never the default.
+This is the acceptance bar this page set before anything was built, and it is the only reason the generator can be re-run at all.
+
+#### P5. The loop is closed by taking over the browser's own storage
+(`#url=` is gone; the editor is seeded from the file and writes back to it)
+The app has no save-to-a-server, and both of its failures came from one place: it loads from `#url=` and saves to `localStorage`.
+So `serve.py` injects a script into the app it already proxies, and that script owns the storage instead.
+On load it fetches the scene and seeds it, which means there is no external drawing to confirm and the "Replace my content" dialog never appears.
+While editing it watches the same key and POSTs changes to `/_board/excalidraw-save`, which merges them into the file.
+A page's URL is now `?board=<scene>&frame=<page>` rather than `#url=…`, and the boot script is the only thing that reads it.
+
+#### P6. An embed reads, a tab writes, and that split is forced by the browser
+(28 iframes on one page share one origin, so an editable embed would be 28 editors fighting over one key)
+Every page's Diagram is an iframe of the same app on the same origin, so if each one persisted, each would overwrite the others and then read somebody else's drawing back as its own.
+An embed therefore gets an IN-MEMORY storage: it renders the frame, pans and zooms, and persists nothing.
+Editing happens in the tab that "✏️ Edit this frame" opens, and a lock in real storage keeps that to one tab at a time; a second tab silently drops to read-only and says so.
+The app refuses to restore `viewModeEnabled` from storage, which is the obvious way to do this and does not work; it does restore `activeTool` and `zenModeEnabled`, so a locked hand tool and zen mode do the job better, because panning survives.
+
+#### P7. An image is a file on disk, not base64 in the scene
+(`fig/assets/<fileId>.png`, with a pointer in the scene; JL 260726)
+Excalidraw stores a pasted image as a base64 dataURL inside the document, which is the one thing a version-controlled scene cannot afford: a single screenshot is megabytes that git re-diffs every time anyone moves a box.
+So the save endpoint decodes the bytes into `fig/assets/` and leaves `{"id", "mimeType", "path"}` behind, and the read endpoint turns the pointer back into a dataURL for whichever elements it is returning.
+Fetched through `serve.py` the scene is therefore self-contained, exactly as the editor expects; read straight off disk by the VS Code or Obsidian plugin it is not, and images will show as missing there.
+That is the cost of the split and it is worth naming, because "open the file in any Excalidraw" was one of the arguments for owning the file in the first place.
+
+#### P8. A frame saves its own slice, which is what makes one file safe to share
+(`/_board/excalidraw-save` merges; it does not overwrite)
+Editing QC4 replaces the elements whose `frameId` is QC4's and leaves the other 27 frames byte-identical, verified by comparing every other slice before and after.
+The frame's id and name are forced back on save, because the name IS the page's link and an editor rename would break that page.
+Deleting the frame puts it back rather than losing the page's anchor, deleted elements are dropped rather than accumulating, and the write is atomic through a temp file.
+Editing the whole board, with no `frame=`, replaces everything, because that edit was made with everything on screen.
+
+#### 4.2 · What we own either way
+#### P1. The scene is just JSON, and we own the ids
+(so a frame can be named for the page it belongs to, and stay named)
+`.excalidraw` is an open format, and `diagram-ascii-canvas/bin/txt_to_canvas_lib.py` already writes it with `frameId`, so a board-shaped excalidraw is a generator away rather than a product away.
+Element ids are strings we choose, which is the part that makes any of this automatable: a frame can carry the page id itself, so `?element=QB4` is predictable instead of discovered.
+The board already holds everything the layout needs, because `## Pages` gives the groups and the order and `## Pipeline` gives the arrows.
+
+#### P2. What a generated excalidraw would be FOR
+(not prettier figures; the relationships a single page cannot hold)
+A per-page excalidraw can only ever say something about that page.
+One surface can say QB5b feeds QB5a, that QD is the live layer, that QE6 is the local half of QE1, and it can say it by position and arrow rather than by prose.
+That is the job `## Pipeline` does badly today, in ASCII, and it is the only argument for this feature that a per-page excalidraw does not already satisfy.
+
+#### 4.3 · The routes not taken
+#### P3. Excalidraw+ publishes an API, and this repo did not know
+(checked against their docs on 260726, after this page first said the opposite)
+`plus.excalidraw.com/docs/api` documents a key created in workspace settings and sent as a bearer token, with endpoints for Scenes, Scene Content, Collections, Logs, Users and Workspace.
+Scenes can be created, their metadata patched, and their content replaced outright, and the list endpoint returns scenes "with their metadata and associated links".
+Frames are not mentioned, which does not block anything: a frame is an element, so it arrives with the content we replace, and the id is ours to choose.
+It is a paid tier and marked public beta with breaking changes expected, and both of those are the real cost rather than the engineering.
+
+#### P4. This repo's own attempt predates or ignores it
+(the Playwright script is evidence about us, not about Excalidraw)
+`share-via-excalidraw.py` drives a browser: drag-drop, button hunting, screenshots to a debug folder.
+I read that first and told JL an API probably did not exist, which was wrong, and the lesson is the one this board keeps relearning: a local artifact is evidence of what someone tried, never of what is available.
+
+#### P5. We can also host it ourselves, and JL is right that the plugins already do
+(the file is the thing; both editors open it with no server at all)
+The VS Code Excalidraw extension and the Obsidian Excalidraw plugin both open and edit `.excalidraw` in place, so a drawing committed beside the board is fully editable with no account, no key and no network.
+What that route does not give is a URL, and therefore no `?element=` deep link, so a page would have to render the drawing rather than link to it.
+Rendering it ourselves means exporting to SVG at build time and inlining the result, which is the same shape as every other rule on this board: an inlined SVG survives being copied, works offline, and needs nothing from anyone, exactly as §0 requires of the ASCII figure.
+The catch is the exporter, since Excalidraw's own is JavaScript and a hand-rolled one would render only the subset we generate, not what a human later draws by hand.
+
+#### 4.4 · Where identity has to live
+#### P5. One scene id in board.md, one anchor per page
+(so a re-share costs one line instead of twenty-seven)
+The scene half of the URL is minted by the share and is the same for every frame; the element half belongs to the page.
+Declaring the scene once in `## Links` and composing the anchor at build time means a re-share edits one line, and a page that has no frame yet simply has no link rather than a broken one.
+Storing the whole URL per page is the version that breaks all at once, and this board has now watched that exact failure three times in one afternoon.
+
 
 ## Aims
 ### A1 · 🖌 The write path

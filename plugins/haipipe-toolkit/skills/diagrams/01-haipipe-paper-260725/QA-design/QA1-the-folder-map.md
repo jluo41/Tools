@@ -10,7 +10,7 @@ Where does a new rule, file, or page belong?
 Everything here comes in a pair: `skills/paper/` ships the procedure a run follows, and `01-haipipe-paper-260725` holds the rulings that produced it.
 One word names both, so a file lands in the wrong half easily.
 Nothing reports it, because a rule in the wrong folder binds nothing rather than breaking.
-This page names every folder and rules which one owns what.
+Eleven folders, six pairs, and one rule deciding which half of a pair owns what.
 
 **Where this page sits**: This is the first face on the board, because every later ownership question assumes it is answered.
 `QC3b` can only say who names a file once it is settled which tree the file is in.

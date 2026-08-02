@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: one token names one execution in four folders, and every tool depends on the pairing rather than on a lookup
 
-## Question
+## Opening
 What holds one execution together, when its parts live in four different folders? A run is not a folder. It is a NAME, and that name appears as the filename in `configs/`, in `runs/`, as the directory in `results/` and as the notebook in `notebooks/`. Nothing links them but the shared token, and every tool in the layer relies on that.
 
 This is the layer's most load-bearing convention and its least defended one. `run-sh-template.sh` hard-codes `CONFIG="configs/${RUN_NAME}.yaml"`, so a config whose name drifts from its runner does not produce a warning, it produces a run against the wrong parameters, or no run at all. There is no registry, no manifest and no index: the pairing IS the data structure.
 
 What makes it worth a page rather than a line in a ref file is that the convention is invisible at the moment it is broken. Renaming one of the four is a normal, tidy-looking edit, and the failure surfaces later as a result directory that does not match anything.
 
-## Boundary
-- ✅ Covered here
-  What the four sisters are, what binds them, what breaks when one drifts, and what the token may contain.
-- ↪ Covered elsewhere
-  Where each sister's contents go is `QC2`; which notebook is the record is `QC3`; who starts the run is `QB4`; the `<NAME>` token's own grammar is `authoring-conventions.md` §1 and is not restated here.
+**Covered elsewhere**: Where each sister's contents go is `QC2`; which notebook is the record is `QC3`; who starts the run is `QB4`; the `<NAME>` token's own grammar is `authoring-conventions.md` §1 and is not restated here.
 
 ## Diagram
 ```
@@ -77,7 +73,7 @@ and it is exactly what `audit` should be doing. `fn/audit.md` exists and audits 
 the four-sister contract; whether it verifies the token set or only that the folders exist has not
 been checked.
 
-## Items to Finish
+## Aims
 - [ ] 🔍 Verify whether `audit` checks the token SET or only the folders
       The whole convention's enforcement rests on this and nobody has looked. If it only checks that `configs/` exists, the four-sister contract is documentation.
 - [ ] 🧮 Report orphans in both directions
@@ -87,7 +83,7 @@ been checked.
 - [ ] 🧪 Rename one sister and confirm it fails loudly
       The acceptance test. Today the expected result is a silent failure, which is what this face is about.
 
-## Where we are
+## States
 The convention is documented in three places, `hierarchy.md`, `task-structure.md` and
 `authoring-conventions.md`, and implemented in `run-sh-template.sh`, which derives the config path
 from the script's own filename.
