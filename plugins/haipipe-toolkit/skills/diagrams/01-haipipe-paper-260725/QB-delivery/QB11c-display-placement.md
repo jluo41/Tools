@@ -170,8 +170,8 @@ Until this face says what a section does when its unit is not promoted, five `re
 
 ## Law
 
-Placement and reaching are two conditions, and a float satisfies neither by satisfying the other.
-A float that is not on a path the master reaches compiles to `??`, whatever any section page declares about it.
+- Placement and reaching are two conditions, and a float satisfies neither by satisfying the other.
+  A float that is not on a path the master reaches compiles to `??`, whatever any section page declares about it.
 
 ## Glossary
 

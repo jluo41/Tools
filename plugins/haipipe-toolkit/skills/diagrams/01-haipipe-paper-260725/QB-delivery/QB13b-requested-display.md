@@ -176,9 +176,9 @@ It may not replace `assets/`, retarget `float.tex`, or recategorize a candidate 
 
 ## Law
 
-A commissioned render lands in `candidates/` and touches `assets/`, `float.tex`, and the unit's status never.
-Promotion of a winner into `assets/` and demotion of losers into `versions/` is a REVISE decision made by the caller, never by the renderer.
-A render is the display stage's own step rather than a bank question, so it does not spend against `probe_depth`, and the user may strike any render at the gate before it runs.
+- A commissioned render lands in `candidates/` and touches `assets/`, `float.tex`, and the unit's status never.
+  Promotion of a winner into `assets/` and demotion of losers into `versions/` is a REVISE decision made by the caller, never by the renderer.
+  A render is the display stage's own step rather than a bank question, so it does not spend against `probe_depth`, and the user may strike any render at the gate before it runs.
 
 ## Glossary
 

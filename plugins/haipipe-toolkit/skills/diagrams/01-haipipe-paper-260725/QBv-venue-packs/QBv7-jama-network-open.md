@@ -6,15 +6,24 @@ method: state what JAMA Network Open accepts that its two siblings do not, and s
 
 ## Opening
 
-Every other desk in this tree wants a finding. This one says outright that a rigorous null result is publishable, and that soundness beats novelty. So what does that change about how the paper is written?
+Every other desk in this tree wants a finding. This one will publish a rigorous null result, and says soundness beats novelty. So what does that change about how the paper is written?
+> ✎ Every other desk in this tree wants a finding. This one ~says outright that~ *will publish* a rigorous null ~result is publishable,~ *result,* and ~that~ *says* soundness beats novelty. So what does that change about how the paper is written? · CC · 260802 2200
+
+**What a rigorous null result is**: a study that was built well and found nothing.
+The desk's own files use the phrase, so this page keeps it.
+What it asks for is that the nothing is led with, not buried under some subgroup that did move.
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-jama-portfolio/jama-netopen/`.
 
-**Why this outlet is a route rather than a fallback**: the three JAMA outlets share one manuscript format, so the descent is planned before writing and a paper written for `QBv6`'s bar arrives here unchanged.
+**Why this outlet is a route rather than a fallback**: the three JAMA outlets share one manuscript format.
+So the descent is planned before writing, and a paper written for `QBv6`'s bar arrives here unchanged.
 Calling it a backup hides that the manuscript was written for both.
 
-**What is wrong with its folder**: it has no `examples/` at all, and its three papers sit under `jama-flagship/examples/`. Its six section folders against its siblings' seven are a REAL gap, verified 260802 against the journal: JAMA Network Open publishes Research Letters at 800 words, 10 references and up to 2 small tables or figures, so `section-kinds.yml` withholding the `letter` kind here contradicts the desk rather than reading it.
+**What is wrong with its folder**: it has no `examples/` at all, and its three papers sit under `jama-flagship/examples/`.
+Its six section folders against its siblings' seven are a REAL gap, verified 260802 against the journal.
+JAMA Network Open publishes Research Letters at 800 words, 10 references and up to 2 small tables or figures.
+So `section-kinds.yml` withholding the `letter` kind here contradicts the desk rather than reading it.
 
 ## Writing Style
 
@@ -84,7 +93,9 @@ How this page must be written. Read it before editing, and edit to it.
      way a sound paper fails this desk
 ```
 
-🎯 Establishes the null result as publishable and the associational posture as non-negotiable, which together make this the most language-sensitive desk in the pack.
+🎯 Establishes the null result as publishable, and the verb rule as non-negotiable: the Discussion may write "was associated with" and never "reduced" or "led to".
+> ✎ 🎯 Establishes the null result as ~publishable~ *publishable,* and the ~associational posture~ *verb rule* as ~non-negotiable, which together~ *non-negotiable: the Discussion may write "was associated with" and never "reduced" or "led to". Together they* make this the most language-sensitive desk in the pack. · CC · 260802 2200
+Together they make this the most language-sensitive desk in the pack.
 
 #### 1.1 · The language bar is stricter here than at the outlets above it
 (which inverts the usual reading that a lower acceptance bar means a looser paper)
@@ -190,9 +201,18 @@ Anti-pattern line 79 names that reach directly, and rules the null must be led w
 
 #### 3.3 · Format values
 (two metrics read off the pack, one measured here, one the pack never carried)
-Counting rule for the measured row, and it is the rule every division below reuses: a sentence is a terminal-punctuation unit of the section's narrative paragraphs once citation superscripts and display wrappers are stripped, and a value is every numeric token left in it, counting each confidence-interval bound and each P value separately and discarding calendar years, display and Supplement labels, and digits inside a proper name.
-No `style.md` under `jama-netopen/` records a value density under that or any other name, and only 2 of the venue tree's 95 style files record it at all, both at the flagship and both under the heading `Estimate density`.
-Burns 2024 has no stored full text anywhere in the tree, only a 303-word note, so every measured row on this page rests on Kim 2026 and Witt 2026 and on nothing else.
+Counting rule for the measured row, and every division below reuses it.
+> ✎ Counting rule for the measured row, and ~it is the rule~ every division below ~reuses: a~ *reuses it. A* sentence is a terminal-punctuation unit of the section's narrative ~paragraphs~ *paragraphs,* once citation superscripts and display wrappers are ~stripped, and a~ *stripped. A* value is every numeric token left in ~it, counting each~ *it. Each* confidence-interval bound and each P value ~separately and discarding calendar~ *counts separately. Calendar* years, display and Supplement labels, and digits inside a proper ~name.~ *name are discarded.* · CC · 260802 2200
+A sentence is a terminal-punctuation unit of the section's narrative paragraphs, once citation superscripts and display wrappers are stripped.
+A value is every numeric token left in it.
+Each confidence-interval bound and each P value counts separately.
+Calendar years, display and Supplement labels, and digits inside a proper name are discarded.
+No `style.md` under `jama-netopen/` records a value density, under that name or any other.
+> ✎ No `style.md` under `jama-netopen/` records a value ~density~ *density,* under that *name* or any ~other name, and only~ *other. Only* 2 of the venue tree's 95 style files record it at all, both at the flagship and both under the heading `Estimate density`. · CC · 260802 2200
+Only 2 of the venue tree's 95 style files record it at all, both at the flagship and both under the heading `Estimate density`.
+Burns 2024 has no stored full text anywhere in the tree, only a 303-word note.
+> ✎ Burns 2024 has no stored full text anywhere in the tree, only a 303-word ~note, so~ *note. So* every measured row on this page rests on Kim 2026 and Witt ~2026~ *2026,* and on nothing else. · CC · 260802 2200
+So every measured row on this page rests on Kim 2026 and Witt 2026, and on nothing else.
 
 ```text
   📏 WORDS            ~335-345 w body excluding labels · Kim 359 w and
@@ -212,16 +232,20 @@ Burns 2024 has no stored full text anywhere in the tree, only a 303-word note, s
                       sentences, words and citations, and no display row]
 ```
 
-📏 Establishes the abstract as the second-densest numeric surface in the paper, and the one place where the Key Points box splits by finding: a trend paper packs it, a null paper empties it.
+📏 Establishes the abstract as the second-densest numeric surface in the paper, after Results.
+> ✎ 📏 Establishes the abstract as the second-densest numeric surface in the paper, ~and~ *after Results. It is also* the one place where the Key Points box splits by finding: a trend paper packs it, a null paper empties it. · CC · 260802 2200
+It is also the one place where the Key Points box splits by finding: a trend paper packs it, a null paper empties it.
 
 #### 3.4 · The language, in the papers' own words
 (five short quotations, one move each, and the only division where Burns 2024 speaks)
-Burns 2024 appears here on one line only, because `jno-abstract/style.md` line 62 stores that Conclusions sentence as verbatim; the paper itself has no stored full text, so it says nothing anywhere else on this page.
+Burns 2024 appears here on one line only, because `jno-abstract/style.md` line 62 stores that Conclusions sentence as verbatim.
+> ✎ Burns 2024 appears here on one line only, because `jno-abstract/style.md` line 62 stores that Conclusions sentence as ~verbatim; the~ *verbatim. The* paper itself has no stored full text, so it says nothing anywhere else on this page. · CC · 260802 2200
+The paper itself has no stored full text, so it says nothing anywhere else on this page.
 
 - "However, little is known about how prescribing patterns vary by clinician type over time." [Kim 2026]
   The Importance pivot of move 1, doing the entire gap in one clause after a single problem sentence.
 - "In this quality improvement study among 169 hospitalists, clinician-specific feedback using peer benchmarking was not associated with subsequent changes to hospitalist prescribing" [Witt 2026]
-  The Key Points Findings line leading with the null instead of a subgroup win, which is what anti-pattern line 79 demands.
+  The Key Points Findings line leading with the null instead of a subgroup win, exactly as anti-pattern line 79 demands.
 - "the intervention was not significantly associated with lower prescribing rates (RR, 0.97; 95% CI, 0.91-1.04)." [Witt 2026]
   The Results null slot: the associational verb carrying the full statistical package, never a causal one.
 - "In this cohort study, clinician-, hospital-, and patient-level factors had important contributions to substantial variation of opioid administrations during surgical procedures." [Burns 2024]
@@ -319,7 +343,9 @@ The citation and value rows invert each other here, which is the fact this divis
                       row, and the section names no figure or table]
 ```
 
-📚 Establishes the introduction as the exact inverse of the Results section: nearly two citations per sentence and effectively no numbers, which is why a burden statistic imported from a flagship opener reads wrong here.
+📚 Establishes the introduction as the exact inverse of the Results section: nearly two citations per sentence and effectively no numbers.
+> ✎ 📚 Establishes the introduction as the exact inverse of the Results section: nearly two citations per sentence and effectively no ~numbers, which is why a~ *numbers. A* burden statistic imported from a flagship opener *therefore* reads wrong here. · CC · 260802 2200
+A burden statistic imported from a flagship opener therefore reads wrong here.
 
 #### 4.4 · The language, in the papers' own words
 (five short quotations, one move each, with Burns 2024 absent by provenance)
@@ -336,7 +362,7 @@ Nothing here is attributable to Burns 2024, and nothing is invented to fill the 
 - "By characterizing these patterns over a decade, this study provides a descriptive foundation for understanding workforce-related shifts in antipsychotic prescribing across clinician types." [Kim 2026]
   Move 5, the descriptive-foundation claim 4.2 calls the outlet's own sentence.
 
-### 5 · jno-methods: where the associational posture is earned
+### 5 · jno-methods: where the verb rule is earned
 
 **The verb discipline is a Methods problem before it is a prose problem**: the design feature that defuses the confound is what lets every later section stay honest.
 
@@ -398,13 +424,19 @@ Nothing here is attributable to Burns 2024, and nothing is invented to fill the 
      stored (style.md L90). All in ../jama-flagship/examples/.
 ```
 
-🔬 Establishes Methods as the section that buys the associational reading, through a named reporting guideline, quantified data-source blind spots, and a Statistical Analysis subsection that is always last.
+🔬 Establishes Methods as the section that buys the right to say "was associated with".
+> ✎ 🔬 Establishes Methods as the section that buys the ~associational reading, through~ *right to say "was associated with". It buys it with* a named reporting guideline, quantified data-source blind spots, and a Statistical Analysis subsection that is always last. · CC · 260802 2200
+It buys it with a named reporting guideline, quantified data-source blind spots, and a Statistical Analysis subsection that is always last.
 
 #### 5.1 · A crosswalk is a display, not a paragraph
 (so the drug list never appears in Methods prose)
 Anti-pattern line 54 forbids leaving exposure or cohort definitions to prose alone and requires every classification to point at its eTable.
-Kim 2026 sends the antipsychotic drug list, the clinician-type grouping, and the rural-urban mapping to eTables 1 to 3 in Supplement 1, which is what keeps a 583-word Methods readable and still auditable.
-`jno-methods/template.md` line 45 routes each such crosswalk to a display request rather than a probe question, which is why a missing eTable is never a Q.
+Kim 2026 sends the antipsychotic drug list, the clinician-type grouping, and the rural-urban mapping to eTables 1 to 3 in Supplement 1.
+> ✎ Kim 2026 sends the antipsychotic drug list, the clinician-type grouping, and the rural-urban mapping to eTables 1 to 3 in Supplement ~1, which~ *1. That* is what keeps a 583-word Methods readable and still auditable. · CC · 260802 2200
+That is what keeps a 583-word Methods readable and still auditable.
+`jno-methods/template.md` line 45 routes each such crosswalk to a display request rather than a probe question.
+> ✎ `jno-methods/template.md` line 45 routes each such crosswalk to a display request rather than a probe ~question, which is why~ *question. So* a missing eTable is never a Q. · CC · 260802 2200
+So a missing eTable is never a Q.
 
 #### 5.2 · The confound-defusing design is what `taste.md` calls the contribution
 (and all three exemplars carry a different one)
@@ -534,7 +566,9 @@ So a Results paragraph that explains anything, or cites anyone, has taken work t
 The measured row uses the counting rule stated at 3.3.
 Burns 2024 has no stored Results text, per `jno-results/style.md` line 92, so the measurement rests on two papers.
 This is the kind where a clinical Results guide would record the metric, and two do: `jama-results/style.md` line 114 and `jama-letter/style.md` line 119, both under the heading `Estimate density`.
-Both belong to the flagship, so neither may be carried across, and `jno-results/style.md`'s own micro-norms at lines 83 to 88 track paragraphs, sentences, words and citations only.
+Both belong to the flagship, so neither may be carried across.
+> ✎ Both belong to the flagship, so neither may be carried ~across, and~ *across.* `jno-results/style.md`'s own micro-norms at lines 83 to 88 track paragraphs, sentences, words and citations only. · CC · 260802 2200
+`jno-results/style.md`'s own micro-norms at lines 83 to 88 track paragraphs, sentences, words and citations only.
 
 ```text
   📏 WORDS            ~750-1,050 narrative w, display content excluded,
@@ -555,7 +589,9 @@ Both belong to the flagship, so neither may be carried across, and `jno-results/
                       [jno-appendix/style.md L30]
 ```
 
-📊 Establishes Results as the inverse of the introduction on both axes at once, and puts a number on the discipline: a sentence here averages three to four values and almost never a citation.
+📊 Establishes Results as the inverse of the introduction on both measures at once, and puts a number on the discipline.
+> ✎ 📊 Establishes Results as the inverse of the introduction on both ~axes~ *measures* at once, and puts a number on the ~discipline: a~ *discipline. A* sentence here averages three to four values and almost never a citation. · CC · 260802 2200
+A sentence here averages three to four values and almost never a citation.
 
 #### 6.4 · The language, in the papers' own words
 (five short quotations, one move each, and no consecutive pair from one sentence)
@@ -646,14 +682,18 @@ Both belong to the flagship, so neither may be carried across, and `jno-results/
 (and it is the one the pack hedges hardest)
 Anti-pattern line 57 rules out causal language and substitutes "may have", "likely reflects", and "suggesting that".
 Kim 2026 uses that register against its own headline, saying the rise in total claims likely reflects growth in the Medicare population rather than higher prescribing.
-Witt 2026 uses the same register for the opposite job, arguing the null is design-earned because a before-and-after analysis assuming independent observations would have found a reduction that is not there.
+Witt 2026 uses the same register for the opposite job.
+> ✎ Witt 2026 uses the same register for the opposite ~job, arguing~ *job. It argues* the ~null~ *design* is ~design-earned because~ *what earned the null:* a before-and-after analysis assuming independent observations would have found a reduction that is not there. · CC · 260802 2200
+It argues the design is what earned the null: a before-and-after analysis assuming independent observations would have found a reduction that is not there.
 The two uses are why the hedge is not timidity on this page: it is the sentence carrying the design argument.
 
 #### 7.2 · A null closes on a cost verdict, not on a hope
 (which is the honest form of "more research is needed")
 Move 4 has Witt 2026 write that launching the initiative was costly and that, considering the equivocal influence of the reports alone, the authors would not recommend continuing without modification.
 Move 5 has Kim 2026 enumerate concrete stratifications instead: specialty, practice model, prescribing setting, mode of delivery, and new versus refill.
-Anti-pattern line 60 rules out the third option of spinning the null, so the section closes on either a verdict or a named next cut, never on a gesture.
+Anti-pattern line 60 rules out the third option, which is spinning the null.
+> ✎ Anti-pattern line 60 rules out the third ~option of~ *option, which is* spinning the ~null, so~ *null. So* the section closes on either a verdict or a named next cut, never on a gesture. · CC · 260802 2200
+So the section closes on either a verdict or a named next cut, never on a gesture.
 
 #### 7.3 · Format values
 (the section where the numbers drop away and the citations come back)
@@ -680,7 +720,9 @@ The Discussion and Limitations figure is reported apart from the Conclusions sec
                       [jno-discussion/style.md anti-pattern L56]
 ```
 
-💬 Establishes the Discussion as the citation-heavy, number-light mirror of Results, and shows the two sections that close the paper, Limitations and Conclusions, carrying no citation and almost no value at all.
+💬 Establishes the Discussion as the mirror of Results: heavy on citations, light on numbers.
+> ✎ 💬 Establishes the Discussion as the ~citation-heavy, number-light~ mirror of ~Results, and~ *Results: heavy on citations, light on numbers. It also* shows the two sections that close the paper, Limitations and Conclusions, carrying no citation and almost no value at all. · CC · 260802 2200
+It also shows the two sections that close the paper, Limitations and Conclusions, carrying no citation and almost no value at all.
 
 #### 7.4 · The language, in the papers' own words
 (six short quotations, one move each, covering the defusal, the verdict and the limit)
@@ -760,7 +802,9 @@ The Discussion and Limitations figure is reported apart from the Conclusions sec
 (so a flagship habit imported here is a defect, not a preference)
 `jno-appendix/style.md` lines 22 to 24 give two rules of thumb: Supplement 1 holds the eTables and eFigures, and the Data Sharing Statement is always the final Supplement.
 Line 63 records that the flagship RCT convention is the inverse, protocol in Supplement 1 and exhibits in Supplement 2, and that both JNO exemplars invert it.
-Line 79 still asks for the layout to be re-verified against current JNO author instructions, together with any main-text exhibit cap, so this is a measured tendency at n = 2 rather than a stated rule.
+Line 79 still asks for the layout to be re-verified against current JNO author instructions, together with any main-text exhibit cap.
+> ✎ Line 79 still asks for the layout to be re-verified against current JNO author instructions, together with any main-text exhibit ~cap, so~ *cap. So* this is a measured tendency at n = ~2 rather than~ *2, not* a stated rule. · CC · 260802 2200
+So this is a measured tendency at n = 2, not a stated rule.
 
 #### 8.2 · An eTable is a display request, never a probe question
 (which is what keeps the supplement out of the evidence layer)
@@ -772,7 +816,9 @@ That split is why the appendix kind writes a manifest and a reference grammar, a
 (the one division whose section has no prose, so two of the four rows are about the main text instead)
 The measured row uses the counting rule stated at 3.3.
 Burns 2024 has no stored supplement information, per `jno-appendix/style.md` line 80, so the measurement rests on two papers.
-A per-sentence figure is undefined for a section that is an exhibit container, so the value row is measured on the main-text sentences that cite an eItem, which is the only prose this kind governs.
+A per-sentence figure is undefined for a section that is an exhibit container.
+> ✎ A per-sentence figure is undefined for a section that is an exhibit ~container, so~ *container. So* the value row is measured on the main-text sentences that cite an eItem, ~which is~ the only prose this kind governs. · CC · 260802 2200
+So the value row is measured on the main-text sentences that cite an eItem, the only prose this kind governs.
 
 ```text
   📏 WORDS            no prose budget · the supplement is a labeled-exhibit
@@ -793,7 +839,9 @@ A per-sentence figure is undefined for a section that is an exhibit container, s
                       [jno-appendix/style.md L64, anti-pattern L44]
 ```
 
-📎 Establishes the appendix kind as the one with no prose of its own, and puts the measurable load where it actually falls: on the handful of main-text sentences that reach into a Supplement.
+📎 Establishes the appendix kind as the one with no prose of its own.
+> ✎ 📎 Establishes the appendix kind as the one with no prose of its ~own, and~ *own. It* puts the measurable load where it actually falls: on the handful of main-text sentences that reach into a Supplement. · CC · 260802 2200
+It puts the measurable load where it actually falls: on the handful of main-text sentences that reach into a Supplement.
 
 #### 8.4 · The language, in the papers' own words
 (five short quotations, one move each, all of them reference grammar rather than prose)
@@ -832,7 +880,7 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 - A4.1 · The paragraph-count variant is picked before drafting, never discovered at the word count.
   **Done when:** a JNO-pinned introduction names its variant, full or compressed, before its first sentence is written.
 
-### A5 · 🔬 jno-methods: where the associational posture is earned
+### A5 · 🔬 jno-methods: where the verb rule is earned
 - A5.1 · Every constructed variable reaches CHECK with an eTable crosswalk filed as a display request.
   **Done when:** no classification list survives inline in the Methods prose of a JNO-pinned draft.
 - A5.2 · The confound-defusing design feature is named in Statistical Analysis, not implied.
@@ -872,7 +920,7 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 ### A4 · 📚 jno-introduction: the citation-densest section in the paper
 - ⬜ A4.1 · Not started. The picker exists at `jno-introduction/template.md` lines 13 to 16 and nothing enforces its use.
 
-### A5 · 🔬 jno-methods: where the associational posture is earned
+### A5 · 🔬 jno-methods: where the verb rule is earned
 - ⬜ A5.1 · Not started. The routing rule is prose in `jno-methods/template.md` line 45.
 - ⬜ A5.2 · Not started. The three design features are listed in `taste.md` and in no checkable form.
 
@@ -908,7 +956,7 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 
 📐 **Section kinds** · 6 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 5 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 5 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -917,7 +965,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 5 numbered
 - `S-Main-4` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -930,18 +981,53 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-This desk publishes a rigorous null result, so the design feature that defused the confound may itself be the contribution, and the Discussion stays associational without exception.
-Descending to this outlet tightens the prose rather than relaxing it, because a lower acceptance bar here comes with a stricter verb.
+- This desk publishes a rigorous null result, so the design feature that defused the confound may itself be the contribution. The Discussion stays associational without exception: "was associated with", never "reduced" or "led to".
+  Descending to this outlet tightens the prose rather than relaxing it, because a lower acceptance bar here comes with a stricter verb.
 
 ## Glossary
 
-- **Rigorous null**: a well-designed study whose primary outcome is not significant, led with rather than buried, and publishable at this desk.
-- **Associational posture**: the verb discipline this desk requires, where "was associated with" replaces "reduced" or "led to" throughout.
+- **Rigorous null**: a study that was built well and found nothing. This desk asks for it to be led with rather than buried, and it will publish it.
+- **Associational language**: the verbs this desk allows. A JNO paper writes "was associated with", and never "reduced" or "led to".
 
 ## Log
 
-260802 · Authority sub-block added at the end of Files, from the journal's own instructions rather than the pack, and it breaks this page's headline claim. JAMA Network Open publishes Research Letters at 800 words, 10 references and 2 small tables and/or figures, so `stages/section-kinds.yml` withholding the `letter` kind here is a pack gap and not a deliberate reading of the desk, which the Opening, division 2 and `QBv5` 9.1 all currently state the other way. The unverified 350-word abstract ceiling at division 3.1 is settled as a stated maximum, Original Investigations run to 3000 words, and Key Points is capped at 75-100 words. Submission is Word, LaTeX is unnamed, and the `eItem N in Supplement M` form appears nowhere in the instructions.
-260802 · Added a `Format values` block and a `The language, in the papers' own words` block to each of the six section-kind divisions, 3.3 to 8.4. Words, citation density and displays are read off the `jno-<kind>/style.md` lines named in each row, and the two rows the pack never carried are marked `not recorded by the pack` rather than estimated. Value density is measured here for the first time, because no `style.md` under `jama-netopen/` records it under any name and only 2 of the venue tree's 95 style files do at all, `jama-results/style.md` line 114 and `jama-letter/style.md` line 119, both at the flagship and both under the heading `Estimate density`. It was counted from the two JATS XML full texts, `jamanetworkopen-2026-antipsychotic-by-clinician-type.xml` and `jamanetworkopen-2026-peer-feedback-hospitalist-antibiotic.xml`, with the counting rule stated at 3.3. The three `.md` files under `../jama-flagship/examples/` turned out to be 200 to 303-word repo notes about the papers rather than extracted article text, and Burns 2024 has no XML at all, so all six divisions rest on n = 2, Kim 2026 and Witt 2026.
-260802 · Added one Content division per declared section kind, divisions 3 to 8, each carrying the arc, the measured budget with its `jno-<kind>/style.md` line or exemplar named inline, the signature moves as slot patterns, and the anti-patterns the pack states. Folded in the retired family layer, `README.md` plus `style-profile.md`, and carried the provenance caveat that all three exemplars behind these numbers sit under `jama-flagship/examples/`. Relaxed the Writing Style bullet that forbade stating a norm, and fixed a dead `QBv15-jama-im.md` path in Files to `QBv6-jama-im.md`.
-260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page. That file already carries the glob rule for the section abbreviation, an outlet-to-kinds map measured on disk, the `theory-model` alias, and the blueprint-only declaration for grant and patent. Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
+260802 2200 · Rewritten for a reader whose English is weak, through `haipipe-writing`.
+  Nineteen sentences in the Opening and Content were split or reworded.
+  Each one carries its own `> ✎` word-level record, under the sentence it changed.
+  "Associational posture" is retired as a term, because "posture" is not a word this reader can use.
+  Part 5, its Aim and its State now read "where the verb rule is earned".
+  The Glossary entry became "Associational language", which names the verbs instead.
+  "Rigorous null result" stays, since it is close to the desk's own words.
+  The Opening now glosses it before it is used: a study that was built well and found nothing.
+  Some edits take no `> ✎` record: the Log, Law and Glossary boxes, and the quotation notes at 3.4 to 8.4.
+  A record written in any of those renders as raw `~` and `*` text with no author on it, so they are named here instead.
+  Nothing any of them records was changed, only where the sentences end.
+  Each Log entry is now one sentence per source line, indented under its date.
+  `sort_log` carries those lines with their head, so the rendered entry is unchanged.
+  Every measured value, the counting rule at 3.3 and the n = 2 provenance caveat survive word for word.
+260802 · Authority sub-block added at the end of Files, from the journal's own instructions rather than the pack, and it breaks this page's headline claim.
+  JAMA Network Open publishes Research Letters at 800 words, 10 references and 2 small tables and/or figures.
+  So `stages/section-kinds.yml` withholding the `letter` kind here is a pack gap and not a deliberate reading of the desk.
+  The Opening, division 2 and `QBv5` 9.1 all currently state it the other way.
+  The unverified 350-word abstract ceiling at division 3.1 is settled as a stated maximum.
+  Original Investigations run to 3000 words, and Key Points is capped at 75-100 words.
+  Submission is Word, LaTeX is unnamed, and the `eItem N in Supplement M` form appears nowhere in the instructions.
+260802 · Added a `Format values` block and a `The language, in the papers' own words` block to each of the six section-kind divisions, 3.3 to 8.4.
+  Words, citation density and displays are read off the `jno-<kind>/style.md` lines named in each row.
+  The two rows the pack never carried are marked `not recorded by the pack` rather than estimated.
+  Value density is measured here for the first time.
+  No `style.md` under `jama-netopen/` records it under any name, and only 2 of the venue tree's 95 style files do at all.
+  Those two are `jama-results/style.md` line 114 and `jama-letter/style.md` line 119, both at the flagship and both under the heading `Estimate density`.
+  It was counted from the two JATS XML full texts, `jamanetworkopen-2026-antipsychotic-by-clinician-type.xml` and `jamanetworkopen-2026-peer-feedback-hospitalist-antibiotic.xml`, with the counting rule stated at 3.3.
+  The three `.md` files under `../jama-flagship/examples/` turned out to be 200 to 303-word repo notes about the papers rather than extracted article text.
+  Burns 2024 has no XML at all, so all six divisions rest on n = 2, Kim 2026 and Witt 2026.
+260802 · Added one Content division per declared section kind, divisions 3 to 8.
+  Each carries the arc, the measured budget with its `jno-<kind>/style.md` line or exemplar named inline, the signature moves as slot patterns, and the anti-patterns the pack states.
+  Folded in the retired family layer, `README.md` plus `style-profile.md`.
+  Carried the provenance caveat that all three exemplars behind these numbers sit under `jama-flagship/examples/`.
+  Relaxed the Writing Style bullet that forbade stating a norm, and fixed a dead `QBv15-jama-im.md` path in Files to `QBv6-jama-im.md`.
+260802 · Corrected against `stages/section-kinds.yml`, found while answering how a Content division becomes an S-Main page.
+  That file already carries the glob rule for the section abbreviation and an outlet-to-kinds map measured on disk.
+  It also carries the `theory-model` alias and the blueprint-only declaration for grant and patent.
+  Four claims on this group that something was undeclared were wrong, and the Aims they carried are replaced by drift guards.
 260802 · Opened with the QBv outlet pages, from `playbook-jama-portfolio/jama-netopen` at `Venue-Paper@fe25a88`.

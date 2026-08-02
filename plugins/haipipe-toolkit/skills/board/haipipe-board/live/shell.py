@@ -156,13 +156,31 @@ window.addEventListener('load', function () {
   /* Belt and braces for the race the other way: if the drawer had already
      opened in the other mode before this ran, switch it with the one control
      that owns the handover. */
-  setTimeout(function () {
+  /* LATE, AND ONLY IF NOTHING ELSE DID IT. This used to fire at 300ms and it
+     RACED the drawer's own default-view opener: `chatOpen` schedules
+     `__boardOpenDefaultView()` which opens the terminal when the TUI is the
+     default, that involves a fetch and takes longer than 300ms, so this saw
+     mode still `gui` and clicked `.term` a second time — and `.term` is a
+     TOGGLE, so the second click closed what the first was opening. Measured
+     260802: the terminal failed to come back after a reload in one run out of
+     three, non-deterministically, which is exactly what a race looks like.
+     Now the derived `board-tui-default` above makes path one correct on its
+     own, and this is a fallback that waits for things to settle and stands
+     down if a terminal is already up or on its way. */
+  var settle = 0;
+  var settleT = setInterval(function () {
+    settle += 1;
     try {
       var m = localStorage.getItem('board-split-mode');
-      if ((m === 'gui' || m === 'tui') && window.__paneModeNow
-          && window.__paneModeNow() !== m) window.__paneMode(m);
-    } catch (e) {}
-  }, 300);
+      if (m !== 'gui' && m !== 'tui') { clearInterval(settleT); return; }
+      if (!window.__paneModeNow) return;                 // not booted yet
+      if (window.__paneModeNow() === m) { clearInterval(settleT); return; }
+      if (window.__boardTermOn && window.__boardTermOn()) return;  // on its way
+      if (settle < 6) return;                            // ~3s of quiet first
+      clearInterval(settleT);
+      window.__paneMode(m);
+    } catch (e) { clearInterval(settleT); }
+  }, 500);
   /* The drawer's own `.term` button still DOES the switch: handing a session
      between the chat box and the CLI is QD1's one-window Law and keeps exactly
      one implementation. This only gives the shell a handle on it. */

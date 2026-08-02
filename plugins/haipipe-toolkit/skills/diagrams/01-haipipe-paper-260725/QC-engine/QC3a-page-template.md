@@ -212,7 +212,8 @@ Nothing is ruled. This face is 🔴 because the central question, what the file 
   95 `template.md` files under `playbook-<family>/<VENUE>/<VENUE>-<kind>/`, out of 504 files (245 md, 254 pdf). All 95 carry a Q-consumer division.
 
 ## Law
-_None yet. This face is 🔴 and its first item is the ruling that would produce one._
+
+- _None yet. This face is 🔴 and its first item is the ruling that would produce one._
 
 ## Discussion
 > CC 260726: I would rule A. The parse path is the one with an error channel, so it is the one that will stay honest; a skeleton nobody parses drifts silently, which is precisely what the five stale `Fill` lines are. Under A the template header changes from "follow, don't ship" to something like "this file's `-----` sections BECOME the page's Content divisions; the first sentence of each RULE becomes its job line; everything after that is help for the drafter."

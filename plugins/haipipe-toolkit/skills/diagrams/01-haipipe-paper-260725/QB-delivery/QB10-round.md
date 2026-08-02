@@ -161,9 +161,9 @@ That is the correct state for a paper that has not been submitted, so nothing he
 
 ## Law
 
-Use Round, not Response. One batch is one round, and every round keeps its review, decision, applied change, and shipped artifact together.
-The four Build submission pages are reused every round; a round never duplicates a page set.
-A response is answered when it is applied or when it is explicitly declined with a reason.
+- Use Round, not Response. One batch is one round, and every round keeps its review, decision, applied change, and shipped artifact together.
+  The four Build submission pages are reused every round; a round never duplicates a page set.
+  A response is answered when it is applied or when it is explicitly declined with a reason.
 
 ## Glossary
 

@@ -6,15 +6,20 @@ method: state what the PNAS desk asks of a paper and record the doubled folder n
 
 ## Opening
 
-This outlet has a section folder for a component no other journal in the tree has, and its readiness test lives one directory above it. Which one does a writer actually read first?
+PNAS is the only journal in this tree with a section folder of its own for the Significance Statement. The test that decides whether a paper can carry one at all sits a level up, in `playbook-pnas/taste.md`. The rules for writing it sit in `playbook-pnas/pnas/pnas-significance/style.md`. Neither file names the other, so a writer who opens one never learns the second exists. Which one comes first?
+> ✎ ~This outlet has~ *PNAS is the only journal in this tree with* a section folder *of its own* for *the Significance Statement. The test that decides whether* a ~component no other journal~ *paper can carry one at all sits a level up,* in *`playbook-pnas/taste.md`. The rules for writing it sit in `playbook-pnas/pnas/pnas-significance/style.md`. Neither file names* the ~tree has, and its readiness test lives~ *other, so a writer who opens* one ~directory above it.~ *never learns the second exists.* Which one ~does a writer actually read~ *comes* first? · CC · 260802 1543
 
 **Where this page sits**: it is one venue target in `QBv`, and the only one in its pack.
 This page owns only what is true of `playbook-pnas/pnas/`.
 
 **Why this outlet has almost nothing of its own**: the pack has one journal, so `taste.md` and `examples/` were kept at family level and only the section folders sit here.
-the group intro on the Index owns that placement split; this page is the outlet where it is most confusing, because `playbook-pnas/pnas/` doubles the name.
+The group intro on the Index owns that placement split.
+> ✎ ~the~ *The* group intro on the Index owns that placement ~split; this page is the outlet where it~ *split. It* is most ~confusing,~ *confusing at this outlet,* because ~`playbook-pnas/pnas/` doubles~ the ~name.~ *pack folder `playbook-pnas/` holds one outlet folder called `pnas/`, so the full path says the name twice: `playbook-pnas/pnas/`.* · CC · 260802 1543
+It is most confusing at this outlet, because the pack folder `playbook-pnas/` holds one outlet folder called `pnas/`, so the full path says the name twice: `playbook-pnas/pnas/`.
 
-**What is split apart**: the readiness test is in `playbook-pnas/taste.md` and the section norms for the Significance Statement are in `pnas/pnas-significance/style.md`, and neither points at the other.
+**What is split apart**: the readiness test is in `playbook-pnas/taste.md`.
+The section norms for the Significance Statement are in `playbook-pnas/pnas/pnas-significance/style.md`.
+Neither file points at the other.
 
 ## Writing Style
 
@@ -85,7 +90,9 @@ How this page must be written. Read it before editing, and edit to it.
 
 #### 1.1 · The readiness test is the only venue bar in this tree a bare topic can take
 (so losing it inside a family-level file costs more than tidiness)
-This test needs a sentence rather than a study, which makes it the one venue bar in this tree usable on the venue stage's `--no-pin` path, against a bare topic with no paper folder.
+This test needs a sentence rather than a study.
+> ✎ This test needs a sentence rather than a ~study, which~ *study. That* makes it the one venue bar in this tree ~usable on~ the venue ~stage's~ *stage can run on its* `--no-pin` path, against a bare topic with no paper folder. · CC · 260802 1543
+That makes it the one venue bar in this tree the venue stage can run on its `--no-pin` path, against a bare topic with no paper folder.
 Every other desk's signals need a design or a result before they can be scored.
 
 ### 2 · What the ceiling removes
@@ -108,7 +115,8 @@ Every other desk's signals need a design or a result before they can be scored.
      PNAS     ▶ REMOVES
 ```
 
-➖ Establishes PNAS as the tree's only subtractive retarget, which is why its cost lands on the claim ledger rather than on prose.
+➖ Establishes PNAS as the tree's only subtractive retarget, so its cost lands on the claim ledger rather than on prose.
+> ✎ ➖ Establishes PNAS as the tree's only subtractive retarget, ~which is why~ *so* its cost lands on the claim ledger rather than on prose. · CC · 260802 1543
 
 ### 3 · Significance Statement: the gate you pass before the section you write
 
@@ -167,7 +175,9 @@ Every other desk's signals need a design or a result before they can be scored.
 #### 3.1 · The ceiling this gate sits under
 (so a writer who passes the test still has to fit the paper inside it)
 `playbook-pnas/taste.md` puts the article budget at about 6 pages, roughly 50,000 characters, and lists "long, discursive papers that could be cut by half" among its desk-reject signals.
-Adding the maximum of every `Word budget` line across the six `pnas-<kind>/style.md` files gives about 6,970 words before references and captions, so those six ranges are one shared ceiling to spend against rather than six independent allowances.
+Adding the maximum of every `Word budget` line across the six `pnas-<kind>/style.md` files gives about 6,970 words, before references and captions.
+> ✎ Adding the maximum of every `Word budget` line across the six `pnas-<kind>/style.md` files gives about 6,970 ~words~ *words,* before references and ~captions, so~ *captions. So* those six ranges are one shared ceiling to spend ~against rather than~ *against, not* six independent allowances. · CC · 260802 1543
+So those six ranges are one shared ceiling to spend against, not six independent allowances.
 Division 2 records what a retarget spends to buy that room: claims, floats, and methods detail, in that order.
 
 #### 3.2 · Format values
@@ -202,7 +212,8 @@ Division 2 records what a retarget spends to buy that room: claims, floats, and 
 The universal-stakes opening, and the shortest sentence the pack records anywhere: 8 words, no jargon, no citation, filling slot 1 on this division's figure.
 
 "However, existing text analysis methods have a number of shortcomings." [Rathje 2024]
-The gap in one lay sentence, which is how slot 1 reaches slot 2 without naming a literature.
+The gap in one lay sentence, and the way slot 1 reaches slot 2 without naming a literature.
+> ✎ The gap in one lay sentence, ~which is how~ *and the way* slot 1 reaches slot 2 without naming a literature. · CC · 260802 1543
 
 "We develop a Turing test to assess the behavioral and personality traits exhibited by AI." [Mei 2024]
 The pivot, slot 2, in exactly the plain-verb form the figure carries as "We develop a <method> to assess <target>."
@@ -262,8 +273,12 @@ The policy close, slot 4, and the source of the figure's "The findings underscor
 
 #### 4.1 · The register these two front blocks set for everything after them
 (because the family style file states it once, for the whole manuscript, and no section file repeats it)
-`playbook-pnas/style-profile.md` puts four rules under "Sentences": declarative and significance-forward, one idea per sentence, a term that crosses a disciplinary boundary defined at first use, and no buzzword stacks.
-Its "Contribution framing" block rules that a method novel elsewhere is an enabler in Methods rather than the headline, which `playbook-pnas/README.md` repeats in its "-> Claims" map as the reason PNAS admits exactly one `[primary]` claim plus 2 to 4 supporting ones.
+`playbook-pnas/style-profile.md` puts four rules under "Sentences": write declarative and significance-forward, one idea per sentence, define a cross-field term at first use, and stack no buzzwords.
+> ✎ `playbook-pnas/style-profile.md` puts four rules under "Sentences": *write* declarative and significance-forward, *keep* one idea per sentence, *define* a term ~that crosses a disciplinary boundary defined~ at first ~use,~ *use when it crosses in from another field,* and *stack* no ~buzzword stacks.~ *buzzwords.* · CC · 260802 1543
+> ✎ `playbook-pnas/style-profile.md` puts four rules under "Sentences": write declarative and significance-forward, ~keep~ one idea per sentence, define a *cross-field* term at first ~use when it crosses in from another field,~ *use,* and stack no buzzwords. · CC · 260802 1548
+Its "Contribution framing" block rules that a method novel elsewhere is an enabler in Methods here, not the headline.
+> ✎ Its "Contribution framing" block rules that a method novel elsewhere is an enabler in Methods ~rather than~ *here, not* the ~headline, which~ *headline.* `playbook-pnas/README.md` repeats *that* in its "-> Claims" ~map~ *map,* as the reason PNAS admits exactly one `[primary]` claim plus 2 to 4 supporting ones. · CC · 260802 1543
+`playbook-pnas/README.md` repeats that in its "-> Claims" map, as the reason PNAS admits exactly one `[primary]` claim plus 2 to 4 supporting ones.
 Its "Tone & preferences" block adds the reporting furniture: the method executed by its own standards, explicit data and code availability, and domain reporting standards such as CONSORT where they apply.
 
 #### 4.2 · Format values
@@ -399,7 +414,9 @@ The cold open at its shortest, 3 words, and the anchor of the figure's "<Phenome
 
 "As Alan Turing foresaw to be inevitable, modern AI has reached the point of emulating humans: holding conversations, providing advice, writing poems, and proving theorems." [Mei 2024]
 The same slot at 25 words, filed under the same "Cold open" heading of the same file.
-Signature move 1 calls this move a "Two-to-four-word cold open" while the file's own "Exemplar sentences" list attests a 25-word one, so the numeric claim and the exemplar set conflict inside `pnas-introduction/style.md`.
+Signature move 1 calls this move a "Two-to-four-word cold open", while the file's own "Exemplar sentences" list attests a 25-word one.
+> ✎ Signature move 1 calls this move a "Two-to-four-word cold ~open"~ *open",* while the file's own "Exemplar sentences" list attests a 25-word ~one, so~ *one. So* the numeric claim and the exemplar set conflict inside *one file,* `pnas-introduction/style.md`. · CC · 260802 1543
+So the numeric claim and the exemplar set conflict inside one file, `pnas-introduction/style.md`.
 
 "Do female patients receive less pain treatment than males for similar complaints?" [Guzikevits 2024]
 The research question posed as a literal question, the figure's `question` slot, and the move that keeps a PNAS intro off a field-internal gap sentence.
@@ -530,7 +547,8 @@ The precise null, carried with the same stat block as a positive result rather t
 The hand-off, the figure's `hand-off` slot, and the pointer convention that division 9 records as the SI Appendix's only written rule.
 
 "Overall, GPT appears to be effective at multilingual sentiment analysis, with performance comparable to top-performing machine learning models from several years ago." [Rathje 2024]
-The interpretive micro-summary that closes a subsection, which is why the anti-pattern list forbids ending one on a number.
+The one-sentence interpretive summary that closes a subsection, and the reason the anti-pattern list forbids ending one on a number.
+> ✎ The *one-sentence* interpretive ~micro-summary~ *summary* that closes a subsection, ~which is why~ *and the reason* the anti-pattern list forbids ending one on a number. · CC · 260802 1543
 
 ### 7 · Discussion: it opens above the findings and closes higher still
 
@@ -804,29 +822,44 @@ The availability statement, the figure's `availability` slot, and the last block
         on this page until 260802
 ```
 
-📦 Establishes the SI Appendix as real, load-bearing and unowned, and as the section the pack itself calls the defining constraint: the ceiling pushes the majority of the Methods into it and no file in the pack says what shape it takes once it lands.
+📦 Establishes the SI Appendix as real, load-bearing and unowned, and as the section the pack itself calls the defining constraint.
+> ✎ 📦 Establishes the SI Appendix as real, load-bearing and unowned, and as the section the pack itself calls the defining ~constraint: the~ *constraint. The* ceiling pushes ~the majority~ *most* of the Methods into ~it~ *it,* and no file in the pack says what shape it takes once it lands. · CC · 260802 1543
+> ✎ 📦 Establishes the SI Appendix as real, load-bearing and unowned, and as the section the pack itself calls the defining constraint. The ceiling pushes most of the Methods into ~it,~ *the SI,* and no file in the pack says what shape it takes once it lands. · CC · 260802 1548
+The ceiling pushes most of the Methods into the SI, and no file in the pack says what shape it takes once it lands.
 
 #### 9.1 · What a writer does with no SI guide
 (because the material still has to be written, and the pack stops at the pointer)
 `pnas-methods/style.md` gives the SI its only two rules: every item is pointed to by name from the main text, and about one pointer belongs in each methods block.
 `pnas-results/style.md` adds that guzikevits-2024 references the SI Appendix more than ten times in Results alone, seven of them in Study 1.
-Neither file says how long an SI section runs, what order its sections take, or which of its tables need a display unit built, so the SI is currently shaped by whatever the main text could not hold.
+Neither file says how long an SI section runs, what order its sections take, or which of its tables need a display unit built.
+> ✎ Neither file says how long an SI section runs, what order its sections take, or which of its tables need a display unit ~built, so~ *built. So* the SI is ~currently~ shaped by whatever the main text could not hold. · CC · 260802 1543
+So the SI is shaped by whatever the main text could not hold.
 
 #### 9.2 · What the journal itself says, fetched 260802
 (because this division claims the SI is unowned, and half of that claim is about the pack rather than about PNAS)
-The PNAS author center rules that "SI will be published as provided by the authors and will not be edited or typeset", so the SI Appendix is the one part of a PNAS paper that reaches the reader in the author's own hand.
+The PNAS author center rules that "SI will be published as provided by the authors and will not be edited or typeset".
+> ✎ The PNAS author center rules that "SI will be published as provided by the authors and will not be edited or ~typeset", so~ *typeset". So* the SI Appendix is the one part of a PNAS paper that reaches the reader in the author's own hand. · CC · 260802 1543
+So the SI Appendix is the one part of a PNAS paper that reaches the reader in the author's own hand.
 It arrives as a single artifact: "SI Appendix: Supply a single PDF, combining all text, figures, tables, movie legends, and SI references."
 Three rules bound what may leave the main text, and the pack states none of them.
 The first is absolute: "The main text of the paper must stand on its own without the SI."
-The second governs the Methods split this division is named for: a writer who moves detailed materials and methods "must provide sufficient detail in the main-text methods to enable a reader to follow the logic of the procedures and results", and "The main article text also must reference the SI methods".
+The second governs the Methods split this division is named for.
+> ✎ The second governs the Methods split this division is named ~for: a~ *for. A* writer who moves detailed materials and methods *out* "must provide sufficient detail in the main-text methods to enable a reader to follow the logic of the procedures and ~results", and~ *results". The same rule adds that* "The main article text also must reference the SI methods". · CC · 260802 1543
+A writer who moves detailed materials and methods out "must provide sufficient detail in the main-text methods to enable a reader to follow the logic of the procedures and results".
+The same rule adds that "The main article text also must reference the SI methods".
 The third is a floor the split may not cross: "If a paper is fundamentally a study of a new method or technique, then the methods must be described completely in the main text."
 Two conventions land underneath them.
 Supporting figures and tables are numbered "starting with S1, S2, etc.", which is the form division 6 quotes from guzikevits-2024 without a source behind it.
 SI references are their own stream, "cited in numerical order as they appear in the SI", and a writer may not "cite main-text references in the SI and vice versa".
 One deadline closes the section: SI "cannot be altered by authors after acceptance", so the SI is finished at acceptance rather than at proof.
 So this division's finding holds in half.
-PNAS gives the SI no word budget and no arc, which is what leaves the hand-off unshaped and keeps A9.1 open.
-It does give a composition rule, a numbering rule, a reference rule, a revision deadline, and an SI Appendix template in both Word and LaTeX, all listed under Files, so those four gaps are a transcription this pack has not done rather than a rule nobody wrote.
+PNAS gives the SI no word budget and no arc.
+> ✎ PNAS gives the SI no word budget and no ~arc, which~ *arc. That* is what leaves the hand-off ~unshaped~ *unshaped,* and *it* keeps A9.1 open. · CC · 260802 1543
+So the hand-off has no shape, and A9.1 stays open.
+> ✎ ~That is what leaves~ *So* the hand-off ~unshaped,~ *has no shape,* and ~it keeps~ A9.1 *stays* open. · CC · 260802 1548
+It does give a composition rule, a numbering rule, a reference rule, a revision deadline, and an SI Appendix template in both Word and LaTeX, all listed under Files.
+> ✎ It does give a composition rule, a numbering rule, a reference rule, a revision deadline, and an SI Appendix template in both Word and LaTeX, all listed under ~Files, so~ *Files. So* those four gaps are a transcription this pack has not ~done rather than~ *done, not* a rule nobody wrote. · CC · 260802 1543
+So those four gaps are a transcription this pack has not done, not a rule nobody wrote.
 
 ## Aims
 
@@ -949,7 +982,7 @@ Filed at FAMILY level under `../../paper/venue/playbook-pnas/examples/`, not und
 
 📐 **Section kinds** · 6 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages, and no Appendix family.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, and no Appendix family.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · significance
@@ -958,7 +991,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-4` · results
 - `S-Main-5` · discussion
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -978,8 +1014,8 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-The PNAS Significance Statement is a readiness gate before it is a section, and its test and its section norms currently sit in two files that do not reference each other, so a writer meets one half at a time.
-A retarget into this outlet subtracts claims and floats rather than adding sections, which is the opposite of every other retarget in this group.
+- The PNAS Significance Statement is a readiness gate before it is a section. Its test and its section norms sit in two files that do not reference each other, so a writer meets one half at a time.
+  A retarget into this outlet subtracts claims and floats rather than adding sections, which is the opposite of every other retarget in this group.
 
 ## Glossary
 
@@ -987,9 +1023,15 @@ A retarget into this outlet subtracts claims and floats rather than adding secti
 
 ## Log
 
-260802 · Corrected against the journal. Two of the four gaps this page claimed at `### 9` were wrong: PNAS publishes an SI template in Word and in official Overleaf LaTeX, plus a composition, numbering and reference-stream rule. No word budget and no arc remain true, and `A9.1` still stands on those. The length claim was also wrong in the direction that matters: the journal states 6 pages preferred and 12 maximum and CONVERTS it itself, about 4,000 words for a standard 6-page article, so the pack's ~50,000 characters is unsourced and the six per-section budgets summing to about 6,970 words run roughly 74 percent past the journal's own figure. A paper drafted to this pack's budgets is far too long.
-260802 · JL: PNAS has the SI things, check that. `### 9` strengthened with the pack's own framing: `pnas-methods/style.md:14` calls the SI Appendix split the DEFINING constraint of the Methods section, and guzikevits-2024's main Methods is about 700 words against an SI holding the variable dictionaries plus five analysis tables. The finding is not that PNAS lacks an appendix, it is that the larger artifact is the one with no kind, no style guide, no template and no S page.
+260802 · Rewrite pass for a weak-English reader, run through `/haipipe-writing`. The Opening now names both files and what is wrong between them. Its drawer writes the doubled path in full, as this page's own Writing Style already required. Long sentences split in `### 1`, `3.1`, `4.1`, `5.2`, `6.2`, `### 9`, `9.1`, `9.2`, Law and five Log entries. Every fact, number, source and quotation is unchanged. Two edits carry no change record, because `cli/wdiff.py` refuses any line holding an asterisk or a tilde: the `What is split apart` part and the Law record.
+260802 · Corrected against the journal. Two of the four gaps this page claimed at `### 9` were wrong. PNAS publishes an SI template in Word and in official Overleaf LaTeX, plus a composition, numbering and reference-stream rule. No word budget and no arc remain true, and `A9.1` still stands on those. The length claim was wrong too, in the direction that matters. The journal states 6 pages preferred and 12 maximum, and CONVERTS it itself: about 4,000 words for a standard 6-page article. So the pack's about 50,000 characters is unsourced. The six per-section budgets, summing to about 6,970 words, then run roughly 74 percent past the journal's own figure. A paper drafted to this pack's budgets is far too long.
+> ✎ 260802 · Corrected against the journal. Two of the four gaps this page claimed at `### 9` were ~wrong:~ *wrong.* PNAS publishes an SI template in Word and in official Overleaf LaTeX, plus a composition, numbering and reference-stream rule. No word budget and no arc remain true, and `A9.1` still stands on those. The length claim was ~also~ wrong *too,* in the direction that ~matters: the~ *matters. The* journal states 6 pages preferred and 12 ~maximum~ *maximum,* and CONVERTS it ~itself,~ *itself:* about 4,000 words for a standard 6-page ~article, so~ *article. So* the pack's about 50,000 characters is ~unsourced and the~ *unsourced. The* six per-section ~budgets~ *budgets,* summing to about 6,970 ~words~ *words, then* run roughly 74 percent past the journal's own figure. A paper drafted to this pack's budgets is far too long. · CC · 260802 1543
+260802 · JL: PNAS has the SI things, check that. `### 9` strengthened with the pack's own framing. `pnas-methods/style.md:14` calls the SI Appendix split the DEFINING constraint of the Methods section. And guzikevits-2024's main Methods is about 700 words, against an SI holding the variable dictionaries plus five analysis tables. The finding is not that PNAS lacks an appendix. It is that the larger artifact is the one with no kind, no style guide, no template and no S page.
+> ✎ 260802 · JL: PNAS has the SI things, check that. `### 9` strengthened with the pack's own ~framing:~ *framing.* `pnas-methods/style.md:14` calls the SI Appendix split the DEFINING constraint of the Methods ~section, and~ *section. And* guzikevits-2024's main Methods is about 700 ~words~ *words,* against an SI holding the variable dictionaries plus five analysis tables. The finding is not that PNAS lacks an ~appendix, it~ *appendix. It* is that the larger artifact is the one with no kind, no style guide, no template and no S page. · CC · 260802 1543
 260802 · Opened with the QBv outlet pages, from `playbook-pnas/pnas` at `Venue-Paper@fe25a88`.
-260802 · Added divisions 3 to 9: one per section kind from each `pnas-<kind>/style.md` and `template.md`, plus the no-appendix division from `stages/section-kinds.yml`; folded in the retired pack head's `taste.md`, `README.md` and `style-profile.md` content, and relaxed the length-number rule to cite-with-source.
-260802 · Added an Authority block to Files and a `9.2` to the SI division, both from the PNAS author center fetched that day. Three findings against the pack: the ceiling is stated in PAGES with the journal's own conversion (6 preferred, 12 maximum, a 6-page article about 4,000 words), so the about 50,000 characters at 3.1 and 8.1 is unsourced and the 6,970-word sum runs about 74% past the preferred length; PNAS does publish an SI Appendix template in Word and LaTeX, so division 9's template gap belongs to the pack and not to the journal; and the SI carries five rules the pack has no file for, single PDF, published as provided, S1 numbering, its own reference stream, and frozen at acceptance. What survives is the real hole: no SI word budget and no SI arc, which is what A9.1 is still open on.
-260802 · Added a `Format values` and a `The language, in the papers' own words` subsubsection to each of the six section-kind divisions; the WORDS rows now carry the running sum to 6,970 / 6,970 against a ceiling the pack states only in characters, VALUE DENSITY reads `not recorded by the pack` in all six, and the introduction's cold open is recorded as a conflict inside one file.
+260802 · Added divisions 3 to 9: one per section kind, from each `pnas-<kind>/style.md` and `template.md`, plus the no-appendix division from `stages/section-kinds.yml`. Folded in the retired pack head's `taste.md`, `README.md` and `style-profile.md` content. Relaxed the length-number rule to cite-with-source.
+> ✎ 260802 · Added divisions 3 to 9: one per section ~kind~ *kind,* from each `pnas-<kind>/style.md` and `template.md`, plus the no-appendix division from ~`stages/section-kinds.yml`; folded~ *`stages/section-kinds.yml`. Folded* in the retired pack head's `taste.md`, `README.md` and `style-profile.md` ~content, and relaxed~ *content. Relaxed* the length-number rule to cite-with-source. · CC · 260802 1543
+260802 · Added an Authority block to Files and a `9.2` to the SI division, both from the PNAS author center fetched that day. Three findings landed against the pack. First, the ceiling is stated in PAGES, with the journal's own conversion (6 preferred, 12 maximum, a 6-page article about 4,000 words). So the about 50,000 characters at 3.1 and 8.1 is unsourced, and the 6,970-word sum runs about 74% past the preferred length. Second, PNAS does publish an SI Appendix template in Word and LaTeX, so division 9's template gap belongs to the pack and not to the journal. Third, the SI carries five rules the pack has no file for: single PDF, published as provided, S1 numbering, its own reference stream, and frozen at acceptance. What survives is the real hole: no SI word budget and no SI arc. That is what A9.1 is still open on.
+> ✎ 260802 · Added an Authority block to Files and a `9.2` to the SI division, both from the PNAS author center fetched that day. Three findings *landed* against the ~pack:~ *pack. First,* the ceiling is stated in ~PAGES~ *PAGES,* with the journal's own conversion (6 preferred, 12 maximum, a 6-page article about 4,000 ~words), so~ *words). So* the about 50,000 characters at 3.1 and 8.1 is ~unsourced~ *unsourced,* and the 6,970-word sum runs about 74% past the preferred ~length;~ *length. Second,* PNAS does publish an SI Appendix template in Word and LaTeX, so division 9's template gap belongs to the pack and not to the ~journal; and~ *journal. Third,* the SI carries five rules the pack has no file ~for,~ *for:* single PDF, published as provided, S1 numbering, its own reference stream, and frozen at acceptance. What survives is the real hole: no SI word budget and no SI ~arc, which~ *arc. That* is what A9.1 is still open on. · CC · 260802 1543
+260802 · Added a `Format values` and a `The language, in the papers' own words` subsubsection to each of the six section-kind divisions. The WORDS rows now carry the running sum to 6,970 / 6,970, against a ceiling the pack states only in characters. VALUE DENSITY reads `not recorded by the pack` in all six. And the introduction's cold open is recorded as a conflict inside one file.
+> ✎ 260802 · Added a `Format values` and a `The language, in the papers' own words` subsubsection to each of the six section-kind ~divisions; the~ *divisions. The* WORDS rows now carry the running sum to 6,970 / ~6,970~ *6,970,* against a ceiling the pack states only in ~characters,~ *characters.* VALUE DENSITY reads `not recorded by the pack` in all ~six, and~ *six. And* the introduction's cold open is recorded as a conflict inside one file. · CC · 260802 1543

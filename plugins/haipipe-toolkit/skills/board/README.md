@@ -8,16 +8,25 @@ reviewable set of question pages or lifecycle stages.
 - `haipipe-board/` is the callable skill and owns the Board format, actions,
   renderer, local service, write-back, checks, and the reply-ending session
   status strip. It is the family's one DOOR.
-- `haipipe-board-index/` owns the board + group altitude: proposing a board's
-  structure before any file exists, and the per-group lane blocks (`lanes.py`).
 - `haipipe-board-page/` is a loadable SPEC: what a page is, its three kinds over
   one base, the seven sections, and where a machine may write into one.
+- `haipipe-board-page-for-skill/` is the loadable VARIANT of that base for the
+  two roster kinds, `Skill-<n>` and `Agent-<n>`. A roster page mirrors a unit
+  that ships elsewhere and decides nothing, so its Opening introduces the unit
+  instead of asking a question.
 - `haipipe-board-sentence/` is a loadable SPEC: the atomic unit, the `>` lanes,
   the evidence card, and the archive-never-delete record lifecycle.
-- `haipipe-board-routing/` is a VERB: one input, find the owning page and
-  section, append an anchored write; it proposes rather than creates, and it
-  closes only the boxes you have already answered. (`haipipe-board-digest`, the transcript-scale fan-out, is
-  named on the roster and not yet shipped.)
+- `haipipe-board-routing/` is the WRITE VERB, at both altitudes. Board and group:
+  propose a board's structure before any file exists, materialize it after
+  approval, and keep the per-group lane blocks current (`src/lanes.py`). Page:
+  one input, find the owning page and section, append an anchored write. It
+  proposes rather than creates, and it closes only the boxes you have already
+  answered. (`haipipe-board-digest`, the transcript-scale fan-out, is named on
+  the roster and not yet shipped.)
+- `haipipe-board-index/` was retired on 260802 and merged into
+  `haipipe-board-routing`: three of its five verbs were the door's own `open`,
+  `regroup.py` and `check.py` written a second time, and its one unique script
+  moved with it.
 - `agents/haipipe-board-creator-agent.md` writes exactly ONE page in a fresh
   context, from an assignment packet rather than from the board, so N of them
   run at once instead of one context writing every page in turn. It holds no
@@ -38,10 +47,11 @@ board/
 │   ├── CHANGELOG.md
 │   ├── haipipe-board-creator-agent.md
 │   └── haipipe-board-reviewer-agent.md
-├── haipipe-board-index/
 ├── haipipe-board-page/
+├── haipipe-board-page-for-skill/
 ├── haipipe-board-sentence/
 ├── haipipe-board-routing/
+│   └── src/lanes.py
 └── haipipe-board/
     ├── SKILL.md
     ├── CHANGELOG.md

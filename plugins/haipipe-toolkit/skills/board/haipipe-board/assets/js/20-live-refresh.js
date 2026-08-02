@@ -121,13 +121,39 @@
             // whatever the reader had opened, which reads as the page resetting
             // itself under them. Keyed by the drawer's own heading text, so it
             // survives a section moving up or down the page.
+            /* THE KEY IS THE AUTHORED HEADING, NOT WHAT IS ON SCREEN
+               (JL 260802, measured: a comment saved at scroll 1112 came back
+               at 171 with every section shut, on a document that had shrunk
+               from 2000px to 1091px).
+
+               `board.js` DECORATES a summary after each render: the `C1`/`H1`
+               address chip, the ⧉ copy, the 🤖 chat, the sentence badge. So
+               the OLD summary reads "📚 Content C1 ⧉ 🤖" while the same
+               summary in the freshly fetched html reads "📚 Content", and the
+               two never matched. Nothing reported it, because the fallback
+               only runs when the drawer COUNT changed, and the count changes
+               exactly when a sentence gains its first record: the comment
+               path, and nothing else. That is why the card path looked smooth
+               and the comment path did not.
+
+               So both sides are read with the decoration removed, the same way
+               `sentenceText` reads a sentence for its anchor. */
+            function sumKey(d) {
+              var s = d.querySelector('summary');
+              if (!s) return '';
+              var c = s.cloneNode(true);
+              c.querySelectorAll('.caddr,.haddr,.sbz,.sbadge,.cmk,.cv,'
+                                 + '.schatbar,button,input,select').forEach(
+                function (x) { x.remove(); });
+              return c.textContent.replace(/\s+/g, ' ').trim();
+            }
             var oldD = old.querySelectorAll('details');
             var openAt = [], openKey = {};
             oldD.forEach(function (d, i) {
               if (!d.open) return;
               openAt.push(i);
-              var s = d.querySelector('summary');
-              if (s) openKey[s.textContent.replace(/\s+/g, ' ').trim()] = 1;
+              var k = sumKey(d);
+              if (k) openKey[k] = 1;
             });
             old.replaceWith(nw);
             var newD = nw.querySelectorAll('details');
@@ -136,11 +162,11 @@
               // sentence does not add or remove drawers.
               openAt.forEach(function (i) { newD[i].open = true; });
             } else {
-              // The page gained or lost a drawer, so fall back to the summary
-              // text, which survives a section moving.
+              // The page gained or lost a drawer, so fall back to the heading,
+              // which survives a section moving up or down the page.
               newD.forEach(function (d) {
-                var s = d.querySelector('summary');
-                if (s && openKey[s.textContent.replace(/\s+/g, ' ').trim()]) d.open = true;
+                var k = sumKey(d);
+                if (k && openKey[k]) d.open = true;
               });
             }
             if (window.__boardRewire) window.__boardRewire();

@@ -1,5 +1,5 @@
 # The write path: one browser edit, one markdown mutation
-state: 🔴 OPEN
+state: 🟡 PARTIAL · one Aim met silently, 4 rulings waiting on JL, remeasured 260802
 owner: JL
 method: name the addressing contract every write endpoint already shares, measure where it fails on this board, then rule the ladder and the version token
 
@@ -42,18 +42,42 @@ It succeeds when one shared matcher handles decorated and repeated text and reje
 ```
 
 ```text
-   ── where it actually fails, measured on this board 260731 ───────
+   ── where it fails · measured 260731, REMEASURED 260802 ──────────
 
-   4908  prose sentences a write could address
-      0  duplicated within their page      the "more than one" refusal is
-                                           LATENT here, not a live problem
-   2321  carry markdown decoration (47.3%) `edit_sentence` refuses EVERY one
-                                           of them: half the board cannot be
-                                           edited from the page at all
-      2  implementations of the normalizer  _plain_sentence, and a private
-                                           plain() inside add_sentence
-      0  writes carry a version token       three sessions wrote this board
-                                           today with nothing checking
+              260731    260802
+   lines       4908      7752   prose lines a write could address
+                                the board grew 58% in two days
+   duplicated     0         0   the "more than one" refusal is still
+                                LATENT here, not a live problem
+   decorated   2321      3474   `edit_sentence` refuses EVERY one of them
+              47.3%     44.8%   the share barely moved: still ~half the
+                                board cannot be edited from the page
+   normalizers    2         1   ✅ FIXED, and nobody wrote it back.
+                                `add_sentence`'s private plain() is gone;
+                                one `_plain_sentence` serves every caller
+   version        0         0   no If-Match, no ETag, no 412, no hash
+   tokens                       anywhere in live/write.py
+```
+
+```text
+   ── what changed AROUND this face on 260802, after it was written ─
+
+   ✍️ a THIRD writer is coming. haipipe-board-routing 0.9.0 names as its
+      next step: "the write path moves behind serve.py's anchored-append
+      endpoint, so a routed write and a clicked comment share one code
+      path." This face's title says ONE BROWSER EDIT. That scope is now
+      too narrow: an agent's routed write wants the same anchor contract.
+
+   ✒️ the law is now RESTATED in a shipped skill. haipipe-board-sentence
+      0.3.0 carries "the anchor is an EXACT match on the source line; a
+      miss FAILS VISIBLY" and "a write needs serve.py" under its own
+      heading. That is this face's rule, written a second time, which is
+      the duplication disease that cost the family two days on QC1b.
+
+   🈶 the refusal a reader actually meets is in CHINESE.
+      edit_sentence returns 这句话带有 Markdown 格式；为避免丢格式，请先在
+      源文件编辑 — the one message 44.8% of this board's sentences produce,
+      on boards JL ruled English-only on 260724.
 ```
 
 ## Content
@@ -140,8 +164,14 @@ Formatting is then never guessed at and never erased, the 47.3% refusal disappea
 
 ## Aims
 ### Finding the line
-- [ ] 🔗 Collapse the two normalizers into one
-      `_plain_sentence` and `add_sentence`'s private `plain()` are the same three substitutions written twice; one is the rule and the other is a copy waiting to drift.
+- [x] 🔗 Collapse the two normalizers into one
+      Met, and met SILENTLY: `grep -rn "def plain("` across `live/`, `cli/` and `src/` now returns nothing, and every caller goes through the single `_plain_sentence`.
+      Nobody wrote it back, so this page claimed an open defect that had already been fixed, which is the "stale pretty thing" the sync verb exists to prevent.
+      Remeasured 260802.
+- [ ] 🈶 The refusal a reader meets is in English
+      `edit_sentence` returns `这句话带有 Markdown 格式；为避免丢格式，请先在源文件编辑`, and it is the single most-produced message in the write path because 44.8% of this board's lines trigger it.
+      JL ruled boards and artifacts English-only on 260724; a UI string a reader hits daily is squarely inside that rule.
+      It is one line and it is not the same work as the fix below, which is why it is its own row: even if the refusal stays, it should be readable.
 - [ ] 🪜 Implement the level 2 anchor
       Carry `prefix` and `suffix` context on the write, in the `TextQuoteSelector` shape, so a repeated sentence stops being unaddressable before this board grows one.
 
@@ -151,6 +181,12 @@ Formatting is then never guessed at and never erased, the 47.3% refusal disappea
 - [ ] 🔒 Put a version token on every write
       Send the hash the page was built from and refuse on mismatch, the `If-Match` and `412` shape, so a concurrent write is reported rather than lost.
       iA's Markdown Annotations does the file-level version of this with a SHA-256 over the annotated range, which is the closest precedent for a format rather than a request.
+- [ ] 🌐 Widen the contract past the browser
+      This face is titled "one browser edit" and `haipipe-board-routing` 0.9.0 names moving the write path behind one anchored-append endpoint so a routed agent write and a clicked comment share it.
+      An agent write has no rendered `textContent` to normalize, so it enters the ladder at a different rung, and nothing states which.
+- [ ] 🔁 Take the law back from `haipipe-board-sentence`
+      That skill's 0.3.0 restates "the anchor is an EXACT match on the source line; a miss FAILS VISIBLY" and "a write needs serve.py" in its own words.
+      This face owns the rule, so the skill should cite it rather than carry a second copy, which is the same defect `QC1b` spent two days finding in the index.
 - [ ] 🧪 Prove the refusals with a test
       A fixture page with a duplicated sentence, a decorated sentence, and a stale version, asserting that each is refused with its own message and that none of them writes anything.
 
@@ -158,6 +194,22 @@ Formatting is then never guessed at and never erased, the 47.3% refusal disappea
 The addressing rule works on this board today and has never written to the wrong line, which is worth saying plainly before changing anything.
 What it lacks is a stated contract, a second level for the case it currently refuses, and any protection against a concurrent write.
 The measurement above is the argument for ordering: the duplicate case is latent, so the edit refusal and the missing version token are the two that cost something today.
+
+Remeasured on 260802, two days after the figures this page was opened with, and three things moved.
+The normalizer duplication is FIXED and this page did not know, which is the reverse of the usual staleness and the more embarrassing direction.
+The edit refusal did not improve: the board grew 58% to 7752 addressable lines and the decorated share only fell from 47.3% to 44.8%, so the absolute count of uneditable sentences rose from 2321 to 3474.
+And the face's own scope aged, because `haipipe-board-routing` 0.9.0 now wants to send agent writes down this same path while the title still says one browser edit.
+
+- 260802 CC · ✅ An Aim was met and nobody claimed it
+  The private `plain()` inside `add_sentence` is gone and one `_plain_sentence` serves every caller.
+  It most likely went during the `QC2c` live-layer split, which this page records as having moved both copies unchanged, so either that record or the code was wrong for two days and no check compares them.
+  This is the failure mode `check.py`'s `open-with-met-aims` was written for, and it cannot see a defect stated only in prose.
+- 260802 CC · 🈶 The most-produced message in the write path is in Chinese
+  44.8% of this board's addressable lines produce it, and `haipipe-board`'s own assets carry several more Chinese docstrings and comments from the same period.
+  Only the user-facing refusal is proposed as an Aim here; the internal comments are a different sweep and belong to whoever owns `live/`.
+- 260802 CC · 🌐 A second consumer arrived before the contract was ratified
+  `haipipe-board-routing` absorbed the board altitude and named the shared endpoint as its next step, and `cli/sentencerun.py` already calls `_sentence_line` outside the browser path.
+  So the four rulings below are now blocking two consumers rather than one, which raises what they cost to leave open.
 
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
@@ -186,11 +238,11 @@ These are the calls only JL can make; CC ticks nothing here.
   `findAndWrap` holds the approximate fallback that this face rules acceptable for highlights and forbidden for writes.
 
 ### The faces this contract borders
-- `QC6-subskills.md`
+- `QC-engine/QC1b-subskills.md`
   §9 is the section-boundary law this face's step ③ implements, and the incident that produced it.
 - `QE-sharing/QE4-editlock.md`
   The lock around a page, which composes with the version token rather than replacing it.
-- `QB-delivery/QB5b-comments.md`
+- `QB-delivery/QB5-overview.md`
   What a comment is, as opposed to how its line is found.
 
 ## Glossary
@@ -204,6 +256,7 @@ The sources behind §3, so every claim there is checkable.
 - iA Markdown Annotations, the SHA-256 over the annotated range: https://github.com/iainc/Markdown-Annotations
 
 ## Log
+260802 2130 · Remeasured against disk and the numbers all moved: 4908 to 7752 addressable lines, decorated 47.3% to 44.8% but 2321 to 3474 in absolute count, and the two normalizers are now ONE, so that Aim was met silently and is ticked. Three new Aims: the Chinese refusal message, widening the contract past the browser now that routing wants the same endpoint, and taking the law back from `haipipe-board-sentence` 0.3.0 which restates it. `state:` 🔴 to 🟡 PARTIAL
 260801 0140 · Full renumber QC7a -> QC4a (JL forced 260801)
 260801 0130 · Reindexed QC7 -> QC7a: the write path is now the return-half face of the QC7 round trip (JL 260801)
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

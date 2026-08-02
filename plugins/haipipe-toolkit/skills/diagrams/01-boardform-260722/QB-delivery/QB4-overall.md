@@ -774,8 +774,8 @@ The three lanes `Citation`, `Value`, and `Display` map one to one onto the paper
 #### 3.3.4 · Which page owns which part of the sentence
 (this part says evidence attaches HERE; the QB5 family says how it all works)
 `QB5` is the front door: what the sentence is, and why it is the board's smallest unit.
-`QB5a` owns the evidence card itself, the lane grammar, the ⚑ badge, and how the drawer renders.
-`QB5b` owns comments, `QB5c` owns editing a sentence from the page, and `QB5d` owns chatting about one location.
+`QB5` owns the sentence and everything written onto it: the card on its words, the lane grammar, the ⚑ badge, how the drawer renders, a person's remark, and editing a sentence from the page.
+`QD8` owns chatting about one location, and `QB5e` owns what happens once the records pile up.
 `QB5e` owns the lifecycle: when a record appears, when it is answered, and when it stops being shown.
 This part owns only the rule that evidence attaches in Content, and why.
 
@@ -1833,7 +1833,7 @@ The dated implementation history lives in Log, so this section stays a current s
 
 ## Glossary
 - 🧬 **page kind**: a family of pages that hold the same sort of material, such as decision pages or lifecycle-stage pages. Every kind uses the same seven sections in the same order, and only Content changes between them (JL 260802: "what is 'A Kind', not good for the weaker English speaker").
-- ⚑ **evidence card**: everything attached to one sentence, shown when the sentence is clicked. Three kinds hang there: a typed lane (⚑), a comment (💬), and a change record (✎). `QB5a` owns it.
+- ⚑ **evidence card**: everything attached to one sentence, shown when the sentence is clicked. Three kinds hang there: a typed lane (⚑), a comment (💬), and a change record (✎). `QB5 §4` owns it.
 - 👁 **on stage**: visible on the page without clicking anything. Everything else needs one click, and this page used the phrase seventeen times before it was ever explained (JL 260801: "what does the on stage mean here?").
 - 📖 **More details**: the fold that holds everything written below `## Opening`'s first blank line. It was labelled "Why this matters" until 260801.
 - 🖼 **unframed**: no border, rounded corners, or card background wrapping the content; it sits directly on the page.

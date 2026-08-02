@@ -228,19 +228,15 @@ Nothing has ever checked that no runtime skill references a Q page, and `QA1` ow
 
 ## Law
 
-A board holds the argument while the thing holds the instruction. A worker following a procedure never reads a Q face.
-
-When a face reaches `✅`, its `## Law` is COPIED into the owning skill file and the skill binds from then on. The face stays, as the record of why. A settled face with no `## Law` has nothing to graduate and is not finished.
-
-A ruling that touches two skills is graduated only when it has landed in both. Applied to one, it is a defect rather than partial success.
-
-`state:` on a design board is about the decision only. Whether the implementation exists is a separate fact and belongs in Aims.
-
-No runtime skill may import, read, or require a Q page: delete the board and the skill still runs. That delete test is the only proof available, because nothing else distinguishes a design record from a dependency.
+- A board holds the argument while the thing holds the instruction. A worker following a procedure never reads a Q face.
+- When a face reaches `✅`, its `## Law` is COPIED into the owning skill file and the skill binds from then on. The face stays, as the record of why. A settled face with no `## Law` has nothing to graduate and is not finished.
+- A ruling that touches two skills is graduated only when it has landed in both. Applied to one, it is a defect rather than partial success.
+- `state:` on a design board is about the decision only. Whether the implementation exists is a separate fact and belongs in Aims.
+- No runtime skill may import, read, or require a Q page: delete the board and the skill still runs. That delete test is the only proof available, because nothing else distinguishes a design record from a dependency.
 
 ## Lesson
 
-A count restated away from its owner is a count nobody revisits. This page said "the easiest of the eight" and "there are four such pairs" through two corrections to `QA1`'s map, because a reader fixing the map has no reason to grep for every page that quoted it.
+- A count restated away from its owner is a count nobody revisits. This page said "the easiest of the eight" and "there are four such pairs" through two corrections to `QA1`'s map, because a reader fixing the map has no reason to grep for every page that quoted it.
 
 ## Glossary
 

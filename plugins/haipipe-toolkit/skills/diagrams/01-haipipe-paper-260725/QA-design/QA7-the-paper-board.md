@@ -250,23 +250,17 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
 
 ## Law
 
-A paper board is a control plane, not a record. Each S page is one independently gated unit; its Content is the thing that unit produces, and that Content is the paper.
-
-`✅` means a human passed the gate. Only a human may write it.
-
-The frontier is READ, as the earliest page in the explicit dependency graph whose gate has not passed, and is never stored in a second place. The Delivery index is a reading order and never an implicit execution graph.
-
-Nothing graduates out of a paper board. Where a design board empties as its rulings leave, a gated S page keeps everything it has.
-
-A round is a gated unit and therefore a page: one `S-Round` page per round, carrying that round's discussion, decisions, applied work and gate. `S-Submission`'s four verbs stay stable and are reused every round. No file outside this board records which round is current.
-
-Every edge runs through a page. There is no path by which work reaches the paper without a page recording that it happened.
+- A paper board is a control plane, not a record. Each S page is one independently gated unit; its Content is the thing that unit produces, and that Content is the paper.
+- `✅` means a human passed the gate. Only a human may write it.
+- The frontier is READ, as the earliest page in the explicit dependency graph whose gate has not passed, and is never stored in a second place. The Delivery index is a reading order and never an implicit execution graph.
+- Nothing graduates out of a paper board. Where a design board empties as its rulings leave, a gated S page keeps everything it has.
+- A round is a gated unit and therefore a page: one `S-Round` page per round, carrying that round's discussion, decisions, applied work and gate. `S-Submission`'s four verbs stay stable and are reused every round. No file outside this board records which round is current.
+- Every edge runs through a page. There is no path by which work reaches the paper without a page recording that it happened.
 
 ## Lesson
 
-A stored derivation agrees for a while, which is why it survives review. `STATUS.md`'s `current_layer` and `1-rounds/latest.md` were the same defect twice, written to save a pass over the pages, and each would have reported a stage the gates no longer supported without announcing the moment it started lying.
-
-A rule stated only on a design board reaches nobody who runs. Both statements of the record-versus-control-plane difference sit where runtime is forbidden to read, so the worker most likely to confuse the two boards is the one who cannot see the rule.
+- A stored derivation agrees for a while, which is why it survives review. `STATUS.md`'s `current_layer` and `1-rounds/latest.md` were the same defect twice, written to save a pass over the pages, and each would have reported a stage the gates no longer supported without announcing the moment it started lying.
+- A rule stated only on a design board reaches nobody who runs. Both statements of the record-versus-control-plane difference sit where runtime is forbidden to read, so the worker most likely to confuse the two boards is the one who cannot see the rule.
 
 ## Glossary
 

@@ -267,23 +267,16 @@ What is still missing is the mechanism connecting the two halves in the other di
   The one place this family reaches into it.
 
 ## Law
-`①` is the SINGLE thing a human types. For a board inside a paper, `③` is CALLED, never typed. `/haipipe-board` remains its own door for boards that are not inside a paper.
 
-CALLING IS NOT OWNING. `③` owns the format, the build, the filename rule, the html and the write-back; `①` owns the entry and dispatches, and renders nothing.
-
-`①` calls `③` at THREE moments: on ENTER, after EVERY write to `⑧`, and before `①` acts (because a human's click may have changed the page underneath). A stale generated `board/` site is a defect, not an inconvenience.
-
-The URL push may never fail silently. Say it failed, print the URL, and never fall back to `file://`.
-
-`①` MAY NOT INVENT A FACE-GRAMMAR KEY. The frontmatter whitelist belongs to `③` and is ruled on `④`. When `①` needs to record something on a page it uses a key that already parses, or it goes to `④` and asks.
-
-`/haipipe-board` is a peer, not a part. It belongs to the first-class `skills/board/` family, and this family may rule the CONTRACT between them and never what a Board is.
-
-The paper session is the explicit composed-closing case. Direct Board work ends with `status.py`; when `①` calls `③`, the one Paper closing block carries the active `board:` deep link and no second Board strip is appended.
-
-Every paper-specific behaviour in the tool sits behind the single `dialect: paper` declaration. A board that does not declare it renders identically and pays nothing.
-
-A ruling that touches both halves is not graduated until it has landed in both. Applied to one side only, it produces a page and an implementation that disagree, which is a defect and not a partial success.
+- `①` is the SINGLE thing a human types. For a board inside a paper, `③` is CALLED, never typed. `/haipipe-board` remains its own door for boards that are not inside a paper.
+- CALLING IS NOT OWNING. `③` owns the format, the build, the filename rule, the html and the write-back; `①` owns the entry and dispatches, and renders nothing.
+- `①` calls `③` at THREE moments: on ENTER, after EVERY write to `⑧`, and before `①` acts (because a human's click may have changed the page underneath). A stale generated `board/` site is a defect, not an inconvenience.
+- The URL push may never fail silently. Say it failed, print the URL, and never fall back to `file://`.
+- `①` MAY NOT INVENT A FACE-GRAMMAR KEY. The frontmatter whitelist belongs to `③` and is ruled on `④`. When `①` needs to record something on a page it uses a key that already parses, or it goes to `④` and asks.
+- `/haipipe-board` is a peer, not a part. It belongs to the first-class `skills/board/` family, and this family may rule the CONTRACT between them and never what a Board is.
+- The paper session is the explicit composed-closing case. Direct Board work ends with `status.py`; when `①` calls `③`, the one Paper closing block carries the active `board:` deep link and no second Board strip is appended.
+- Every paper-specific behaviour in the tool sits behind the single `dialect: paper` declaration. A board that does not declare it renders identically and pays nothing.
+- A ruling that touches both halves is not graduated until it has landed in both. Applied to one side only, it produces a page and an implementation that disagree, which is a defect and not a partial success.
 
 ## Log
 260726 · closed a composition ambiguity found by a fresh reviewer: direct `③` sessions own the `status.py` strip, while an `①` session emits one Paper block containing the deep Board link; the call does not append two mutually exclusive closing blocks

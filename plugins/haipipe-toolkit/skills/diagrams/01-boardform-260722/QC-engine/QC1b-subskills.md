@@ -1,5 +1,5 @@
 # Sub-skills: what else this family ships
-state: 🟡 PARTIAL · roster ruled 260731, five of six units ship
+state: 🟡 PARTIAL · roster ruled 260731, index merged out and the roster variant added 260802
 owner: JL
 method: name every candidate and apply one test to each, then let JL rule the set; a shipped skill follows settled decisions, never precedes them
 
@@ -13,32 +13,34 @@ Get it wrong and the same rule gets written twice, or a capability another workf
 
 **Why the answer moved**: CC read the roster on 260729 as defer page and sentence, because nothing then needed either one without a board. JL named `haipipe-board-routing` and `haipipe-board-digest` the same day, and both verbs are handed raw input with no board attached, so the missing consumer had simply not been proposed yet.
 
-**Covered elsewhere**: What a page IS, and its section contract: `QB4`. What a sentence IS, and its records: `QB5`. What SKILL.md must say, and the rule that specs go to `ref/`: `QC1a`. Where a write may land on somebody else's board: `QB1` §4. One synced mirror page per shipped unit: `Skill-0` through `Skill-5`, `Agent-1`, `Agent-2`.
+**Covered elsewhere**: What a page IS, and its section contract: `QB4`. What a sentence IS, and its records: `QB5`. What SKILL.md must say, and the rule that specs go to `ref/`: `QC1a`. Where a write may land on somebody else's board: `QB1` §4. One synced mirror page per shipped unit: `Skill-0`, `Skill-3`, `Skill-4`, `Skill-5`, `Agent-1`, `Agent-2`; the retired `Skill-1` is in `_archive/` and its id still resolves.
 
 ## Diagram
 
-**The family, one door and five units**: which unit runs at which moment, and what each one loads.
+**The family, one door and three units**: which unit runs at which moment, and what each one loads.
 
 ```
                         🚪 haipipe-board · the door you invoke
                                      │
-        ┌────────────────────────────┼────────────────────────────┐
-        │                            │                            │
-   🗂 opening a board          ✍️ an ordinary turn          🖌 a page edit
-        │                            │                            │
-        ▼                            ▼                            ▼
-  📐 haipipe-board-index      🧭 haipipe-board-routing     📄 haipipe-board-page
-     Spine · Groups             Board → Group →               sections · kinds
-     Pages · canvas             Page → Section                what a machine writes
-     writes nothing                   │                            ▲
-     before approval                  │  loads the spec it needs   │
-                                      ├────────────────────────────┘
-                                      │
-                                      └──▶ ✒️ haipipe-board-sentence
-                                             Evidence Card · Comment · Edit
+        ┌────────────────────────────┴────────────────────────────┐
+        │                                                         │
+   ✍️ anything that WRITES                              🖌 a page edit
+        │                                                         │
+        ▼                                                         ▼
+  🧭 haipipe-board-routing · both altitudes             📄 haipipe-board-page
+     🗂 opening a board  Spine · Groups · Pages            sections · kinds
+        canvas · lanes · writes NOTHING                 what a machine writes
+        before approval                                          ▲
+     ✍️ an ordinary turn Board → Group → Page → Section           │
+        │                                                        │
+        │  loads the spec it needs ─────────────────────────────┘
+        │
+        └──▶ ✒️ haipipe-board-sentence
+               Evidence Card · Comment · Edit
 
   🔁 haipipe-board-digest  =  many recent turns, routing called once each
      🚧 named on the roster, not on disk
+  🗑 haipipe-board-index   =  merged into routing 260802, folder deleted
 ```
 
 ## Content
@@ -92,35 +94,37 @@ The door test passes on evidence, and what failed instead was scope: the same th
 
 ### 2 · The roster, and what each unit owns
 
-**One door, one altitude, two specs, two verbs**: the shape JL ruled, and what each unit is loaded for.
+**One door, three specs, two verbs**: the shape JL ruled, and what each unit is loaded for.
 
 ```
 🚪 haipipe-board          the operating manual you invoke to run a board
-📐 haipipe-board-index    the BOARD and GROUP altitude, before any page exists
-📄 haipipe-board-page     SPEC · what one page is
-✒️ haipipe-board-sentence SPEC · what one sentence carries
-🧭 haipipe-board-routing  VERB · one input  → one owning page → one write
+📄 haipipe-board-page     SPEC · what one page is · and a door for 2 verbs
+🪞 haipipe-board-page-for-skill
+                          SPEC · the VARIANT for the two roster kinds
+✒️ haipipe-board-sentence SPEC · what one sentence carries · and a door
+                                 for 3 verbs since 260802 (comment · edit · card)
+🧭 haipipe-board-routing  VERB · every write onto a board, at BOTH altitudes
+                                 board.md's structure, and one input → one
+                                 owning page → one anchored write
 🔁 haipipe-board-digest   VERB · one session → many inputs → routing, fanned out
 ```
-📌 The roster took its shape across two days: JL named the units on 260729, added the index altitude on 260730, and ordered four of them built on 260731.
+📌 The roster took its shape across four days: JL named the units on 260729, added the index altitude on 260730, ordered four of them built on 260731, and folded the index back into routing on 260802.
 
 `haipipe-board` stays the public orchestrator, and it does not load every detailed contract on every turn: it invokes the smallest unit that owns the current transition.
 That is the progressive-disclosure shape, so opening a Board loads Index, an ordinary turn loads Routing, a Page edit loads Page, and sentence apparatus loads Sentence.
 
 **2.1 · What each unit owns**
 
-- `haipipe-board-index`, the Board and Group layer.
-  Its first action is interactive: propose Spine, Close, Groups, Pages, their relationships and the linked SkillSet, show one reviewable structure, and write nothing until the user confirms.
-  After confirmation it materializes the Board-Webpage-Index, the Board-Webpage-Group views, and the relationship canvas at the top.
-  The canvas is not decoration: it is the accepted relationship model, and it must update when a Group, Page or dependency changes.
 - `haipipe-board-page`, the Page layer.
   It owns the common Page frame, the page kinds, the section contracts, Aims, States, paths and closure semantics.
   The name is singular because it defines the contract for any ONE page, where `pages` would sound like a batch operation.
 - `haipipe-board-sentence`, the atomic layer.
   It owns sentence identity and the records attached to a sentence: Evidence Card, local Comment, Edit, Chat focus and lifecycle.
-- `haipipe-board-routing`, the unit verb.
-  For each incoming turn it resolves Board → Group → Page → Section, shows the proposed attachment when confidence is not decisive, and never silently creates a Page.
+- `haipipe-board-routing`, the write verb, at both altitudes since 260802.
+  At the BOARD and GROUP altitude its first action is interactive: propose Spine, Close, Groups, Pages and their relationships, show one reviewable structure, and write nothing until the user confirms; after confirmation it materializes `board.md` and keeps each group's lane block current with `src/lanes.py`.
+  At the PAGE altitude, for each incoming turn it resolves Board → Group → Page → Section, shows the proposed attachment when confidence is not decisive, and never silently creates a Page.
   Once attached it loads the Page or Sentence contract it needs for one anchored write.
+  The two altitudes keep separate approval rules, which is the one thing the merge must not blur: a page write lands on its own because it records what already happened, and a board write asks first because it decides what pages will exist.
 - `haipipe-board-digest`, the batch verb, named and not built.
   It reconciles a recent session by calling routing repeatedly, and it never invents a second routing policy.
 
@@ -131,24 +135,38 @@ Routing has to answer "which page, and which section of it", which is the page c
 Neither verb has a board open when it starts and both are handed raw input, which is the test in `### 1`, passed.
 The split also gives every page and sentence rule a graduation target that is not "another section of the manual".
 
-#### 2.3 · Contracts and actions are deliberately different things
+#### 2.3 · Contracts and actions are deliberately different things, and the split keeps failing
 
-Index, Page and Sentence are contracts that other skills can consume, while Routing and Digest are actions that consume those contracts.
+Page and Sentence began as contracts that other skills consume, while Routing and Digest are actions that consume those contracts.
+The split has now been wrong twice, in opposite directions, which is worth more than either instance.
+Index was filed as a CONTRACT on 260730 and was five verbs with no contract in it, and on 260802 both Page and Sentence grew verbs of their own and became doors as well, so the column they sit in is half true.
+A unit is better described by what a reader DOES with it than by which column it was filed in, and every roster row now names both when both apply.
 That is why the two halves are named differently and versioned separately: a contract changes when the form changes, and an action changes when the workflow changes.
+That misfiling is why the duplication in `2.4` went two days without being seen, because a unit shelved as a contract is not compared against an action's verb list.
+The second failure runs the other way and cost nothing yet: `haipipe-board-sentence` reached 0.3.0 on 260802 with three verbs of its own, and this roster still called it a pure SPEC until its mirror page was rewritten the same evening.
+
+#### 2.4 · The merge that removed a unit, and what it bought
+
+JL asked on 260802 what the index was for, said it might not be needed, and proposed merging it with routing; his ruling was "maybe merge, I will do B".
+The audit that question forced found three of its five verbs were other units' work written a second time: `propose` and `materialize` are `haipipe-board`'s own `open` action, `regroup` wrapped `cli/regroup.py`, and `check` was a subset of `cli/check.py`.
+Only `src/lanes.py` was code the family held nowhere else, and it moved into `haipipe-board-routing/src/`.
+What the merge BOUGHT is the reason to prefer it over deleting the unit outright: a finding about a whole group had no landing rule and stayed in chat, because routing resolved pages only while the block such a finding belongs in was owned by the other unit.
+One unit owning both altitudes settles that by construction, which is why the row below this one closed on the same ruling rather than needing its own.
 
 ### 3 · What the family ships today, counted
 
-**The units on disk, 260802**: one door, four sub-skills, two agents, with the version each carries.
+**The units on disk, 260802 after the merge and the new variant**: one door, four sub-skills, two agents, with the version each carries.
 
 ```
-🚪 haipipe-board                  0.104.1   699 lines SKILL.md · 14 cli · 11 src
-📐 haipipe-board-index            0.2.1     153 lines
-📄 haipipe-board-page             0.8.1     285 lines
-✒️ haipipe-board-sentence         0.1.2      94 lines
-🧭 haipipe-board-routing          0.6.1     101 lines
+🚪 haipipe-board                  0.112.0   the DOOR · 14 cli · 11 src · live/
+📄 haipipe-board-page             0.11.0    295 lines
+🪞 haipipe-board-page-for-skill   0.1.0     the roster-page VARIANT, new 260802
+✒️ haipipe-board-sentence         0.3.0     191 lines · ⚠️ changelog stops at 0.2.0
+🧭 haipipe-board-routing          0.9.0     both altitudes · src/lanes.py
 🤖 haipipe-board-reviewer-agent   0.4.0     read only, no write tools
 🤖 haipipe-board-creator-agent    0.3.0     no Bash, one page per dispatch
 🚧 haipipe-board-digest           not on disk
+🗑 haipipe-board-index            merged into routing 260802, folder deleted
 ```
 📌 Counted rather than estimated, because the roster argument is only as good as the count under it, and the first count on 260729 went stale within three days.
 
@@ -181,7 +199,7 @@ Routing automates the claim, which makes both failure modes run at machine speed
 
 #### 4.1 · An id no longer predicts a folder
 
-This board carries `QA2`, `QB5b`, `QC1b` and `QB8` under group letters they were not opened under, precisely so external citations keep working.
+This board carries `QA2`, `QB5`, `QC1b` and `QB8` under group letters they were not opened under, precisely so external citations keep working.
 So routing cannot resolve a page by name pattern: it has to read `board.md`'s `## Pages`, with `## Links` resolving the older ids.
 `haipipe-board-routing` 0.6.0 states exactly that in its step 3, and `check.py`'s `declared_links` resolves ids the same way, so the two agree.
 
@@ -252,8 +270,8 @@ That is worth doing whether or not the page door ships, and the page door shippi
 **The support map**: what a reader is looking at, and which unit backs it.
 
 ```
-🗂 Board structure + top canvas        →  haipipe-board-index
-✍️ incoming user question              →  haipipe-board-routing
+🗂 Board structure + top canvas        →  haipipe-board-routing (board altitude)
+✍️ incoming user question              →  haipipe-board-routing (page altitude)
 📄 Opening · Content · Aims · States   →  haipipe-board-page
 ✒️ Evidence Card · Comment · Edit      →  haipipe-board-sentence
 🔁 recent conversation reconciliation  →  haipipe-board-digest
@@ -261,7 +279,7 @@ That is worth doing whether or not the page door ships, and the page door shippi
 📌 The mapping is a support record, not a new skill per UI component, so a part of the board with no unit of its own is normal rather than a gap.
 
 The Board-level SkillSet declares the linked units once, while each owning Page or subsection may point at the exact capability that supports it.
-For example `QB5a · Evidence Card` should show `supported by haipipe-board-sentence · Evidence Card`.
+For example `QB5 · The sentence` should show `supported by haipipe-board-sentence · Evidence Card`.
 
 #### 7.1 · When a capability earns its own door instead of a support row
 
@@ -350,6 +368,17 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 ## States
 ### Decision Now
 
+- [x] 📐 Does `haipipe-board-index` stay a unit of its own?
+      ✅ `B` · JL ruled 260802, in his own words: "maybe merge, I will do B".
+      Merged into `haipipe-board-routing` 0.9.0, which now owns both write altitudes; the folder is deleted and `src/lanes.py` moved with it.
+      The recommendation on this row had been `A`, retire it into the door, and JL took the option that also closes the group-altitude row below.
+
+- [x] 🧭 Where does a group-altitude input land?
+      ✅ `A` · Settled by the merge above rather than by a separate ruling.
+      A finding about a whole group lands in that group's intro prose in `board.md` `## Pages`, written at the section boundary, with `lanes.py` refreshing the block underneath it.
+      `B`, decomposing a group finding onto its member pages, is refused for the reason the row stated: the pieces individually say less than the whole did.
+      The rule was only available once one unit owned both altitudes, which is what `B` above bought.
+
 - [ ] 🧠 Is the roster ruling settled by conduct?
       📍 `Part` `### 2 · The roster, and what each unit owns`
       🔔 `Why now` The row has waited since 260731 while four units shipped on JL's own instructions, so the page still asks for a ruling it appears to have received.
@@ -366,14 +395,6 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
       🛑 `Blocks` nothing today; the agent is not dispatched automatically.
       🤖 `If nobody answers` A. Nothing has been changed on the B reading, so A is already the status quo.
 
-- [ ] 🧭 Where does a group-altitude input land?
-      📍 `Part` `### 4 · Routing automates the hard step`
-      🔔 `Why now` Routing 0.6.0 resolves PAGES only, so a finding about a whole group, such as the QB status readout of 260731, has no landing rule and stays in chat.
-      ⭐ `A ·` land it in the group's intro prose in `board.md` `## Pages`, written at the section boundary. The group already has prose there, and one write keeps the finding whole.
-      `B ·` decompose every group finding onto its member pages. Nothing new is written, but a finding about the group as a whole is split into pieces that individually say less than it did.
-      🛑 `Blocks` group-level findings from being routed at all.
-      🤖 `If nobody answers` A, because B loses information and A only adds a target.
-
 - [ ] 🚪 Where do routing's own design questions live?
       📍 `Part` `### 8 · What is still open`
       🔔 `Why now` Routing has shipped and reached 0.6.0, so it now generates design questions of its own, and this face is carrying them by default rather than by decision.
@@ -387,14 +408,21 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 
 ### A2 · 🧱 The roster, and what each unit owns
 - 🧠 A2.1 · Ruled by conduct and not yet by a tick. JL ordered `index` on 260730 and `page`, `sentence` and `routing` on 260731, and all four are on disk; the confirmation waits in Decision Now above.
-- 🔨 A2.2 · Each shipped SKILL.md carries a boundary block, and no audit has yet confirmed that a rule is not written in two of them.
+- 🔨 A2.2 · The first audit found a duplication rather than confirming there was none, and the duplication is now resolved.
+  `haipipe-board-index`'s `propose` and `materialize` were `haipipe-board`'s `open` action written a second time, and its `regroup` and `check` wrapped the door's own scripts.
+  JL ruled `B` on 260802 and the unit is merged into `haipipe-board-routing` 0.9.0, which now owns both write altitudes; the folder is deleted and `src/lanes.py` moved with it.
+  One duplication survives ON PURPOSE and is now declared in both files: the door's `open` still describes proposing and materializing a board, because a person opening their first board should not have to load a second skill.
+  The remaining three units have not been audited against each other yet.
 
 ### A3 · 🔢 What the family ships today, counted
 - ✅ A3.1 · Recounted against disk on 260802: five skills, two agents, versions in `### 3`. The 260729 count of two units is superseded and kept only in `## Log`.
 
 ### A4 · 🧭 Routing automates the hard step
 - ✅ A4.1 · Met. `haipipe-board-routing` 0.6.0 step 3 reads `board.md` `## Pages` and resolves older ids through `## Links`, and `check.py`'s `declared_links` resolves ids the same way, so the resolver and the checker agree.
-- 🧠 A4.2 · Waiting on the group-altitude ruling in Decision Now above.
+- ✅ A4.2 · Met 260802 by the merge rather than by a separate ruling.
+  A group-altitude finding lands in that group's intro prose in `board.md` `## Pages`, written at the section boundary, with `lanes.py` refreshing the block underneath it.
+  `haipipe-board-routing` 0.9.0 carries the rule under its own heading, and it was only available once one unit owned both altitudes.
+  No real group-altitude finding has been landed through it yet, which is the half of this Aim that rests on the next one that arrives.
 
 ### A5 · ⚖️ What routing and digest may write
 - ✅ A5.1 · Met for the half that ships. `haipipe-board-routing` 0.6.0 carries the human-decision law, the cross-board law and the anchored-append rule under its own headings, so digest inherits a written protocol rather than needing a new one.
@@ -433,6 +461,13 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
   ⚠️ Generated by `cli/build.py`. Never hand-edit it; the markdown is the only source.
 
 ## Law
+- 260802 JL · 🔀 **A unit whose verbs are other units' work is merged, not kept**
+  JL ruled `B` on the index question: "maybe merge, I will do B".
+  Three of its five verbs were the door's `open`, `regroup.py` and `check.py` written a second time, and one script was all it held alone.
+  The test this sets for the next candidate is not whether the unit is a coherent topic, which the index was, but whether its VERB LIST is already somebody else's.
+- 260802 CC · 🗂 **Filing a verb set as a contract hides its duplication**
+  Index was shelved with Page and Sentence as a contract on 260730 and it never was one: its `SKILL.md` was five verbs and no contract.
+  A unit filed on the wrong side of that split is never compared against the right list, which is how the duplication went two days unseen.
 - 260729 JL · 🚪 **The roster is one door, two specs, two verbs**
   `haipipe-board` stays the operating manual; `haipipe-board-page` and `haipipe-board-sentence` are SPECS that other units load; `haipipe-board-routing` and `haipipe-board-digest` are VERBS that consume them.
   JL named the set directly, describing routing as "like an input, it will automatically find which page to go, to update the log and update the content as well" and digest as "the input will be the recent claude code content, update each haipipe page accordingly".
@@ -448,6 +483,10 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
   One page's `.md` fails that test and fans out; `board.md`, the lane block, the rebuild and the checker pass it and stay with the caller.
 
 ## Log
+260802 2030 · `QB5` closed and `haipipe-board-sentence` reached 0.3.0 with three verbs, so the roster's contract-versus-action column is wrong a second time and in the opposite direction from the index. `2.3` now records both failures and rules that a row names what a reader DOES with a unit when it is both. The count in `3` corrected to 0.3.0 and 191 lines, with the changelog drift `agree.py` found flagged in place
+260802 · 🚪 The sentence unit became a DOOR, on JL's read of the `haipipe-board-page` precedent ("we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?"). The precedent is precise about what migrates: the page skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. The sentence half had been the other way round, with the operating detail in `haipipe-board`'s SKILL.md and a 94-line spec carrying no verbs. `haipipe-board-sentence` 0.3.0 now holds three verbs (comment, edit, card), the boundary block, and the reader's controls, at 192 lines against the page skill's 299; `haipipe-board` 0.111.0 keeps only the two rules that bind the ENGINE rather than the contract, which are that a write needs `serve.py` and that a form closes before it asks for the repaint. The one-door table now states the rule at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board is the board skill's
+260802 1810 · JL ruled `B`, merge: `haipipe-board-index` is deleted and `haipipe-board-routing` 0.9.0 owns both write altitudes, with `src/lanes.py` moved into it. Two Decision Now rows closed on the one ruling, because the group-altitude landing rule was only ever blocked on which unit would own it. `haipipe-board` 0.109.0 corrects the family block and its heading, which had said "three specs" while one of the three was a verb set. `Skill-1` retires to `_archive/` and `Skill-5` absorbs the altitude
+260802 1710 · JL asked what `haipipe-board-index` is for, said it may not be needed, and proposed merging it with `haipipe-board-routing`. The question forced the first real `A2.2` audit and it found a duplication: three of the index's five verbs are the door's own `open`, `regroup.py` and `check.py` written a second time, and only `src/lanes.py` is code held nowhere else. Three options are on the row in Decision Now, and the recommendation is retiring the unit rather than merging it, because merging moves a script into a verb that holds none
 260802 1610 · The renumber carried through to everything citing it. Four shipped skills pointed at `QC6 §7/§8/§9/§10` for the door test, the roster shape, the anchored write and the two write laws; all now read `QC1b §1/§2/§4/§5`, and `haipipe-board` 0.104.1, `-page` 0.8.1, `-routing` 0.6.1 and `-sentence` 0.1.2 record why. `board.md`'s QC group intro and `QC1`'s "four of six" both corrected in the same pass
 260802 1600 · Content rebuilt from 13 divisions to 8, each with a face diagram: the roster layers of 260729, 260730 and 260731 merged into `### 2`, the withdrawn defer reading moved to `## Law`, and the stale count in `### 3` replaced with the 260802 figures (five skills, two agents, 152 plugin skills). Aims and States converted to the `A<n>` groups keyed to Content parts, Files regrouped onto the action menu, and the dead `QB1-skillmd.md` and `QA1-form.md` rows repointed at `QC1a-skillmd.md` and `QB1-form.md`
 260802 1600 · `serve.py` lines 297 and 357 corrected to `live/chat.py` lines 297 to 378: the rule strings moved in the `QC2c` live-layer split and there are four of them, not two, so the de-duplication is the same defect at twice the size

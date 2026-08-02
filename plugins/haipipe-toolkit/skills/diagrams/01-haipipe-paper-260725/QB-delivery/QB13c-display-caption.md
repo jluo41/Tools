@@ -168,8 +168,8 @@ A reader chasing the `??` in §4 finds a missing float, when what is actually wr
 
 ## Law
 
-A caption is an argument in the author's voice and a label is a promise other files depend on; a renderer may serialize both and may invent or revise neither.
-Two units may never declare the same label, and renaming one is a breaking change across the manuscript.
+- A caption is an argument in the author's voice and a label is a promise other files depend on; a renderer may serialize both and may invent or revise neither.
+  Two units may never declare the same label, and renaming one is a breaking change across the manuscript.
 
 ## Glossary
 

@@ -115,7 +115,14 @@ def apply(path, old, new, who, when, host="board"):
         end += 1
     kept = body[at + 1:end]                       # existing lanes: NEVER touched
     tail = lines[1:]
-    body[at:end] = [first] + tail + kept + [rec]
+    # ANCHOR and SCOPE are two questions and the split rewrite answers them
+    # differently: the diff covers the whole run, the record sits under the
+    # FIRST new line. Writing `[first] + tail + kept + [rec]` put it under the
+    # LAST one, so a sentence broken into three carried its record on sentence
+    # three, describing words that had moved to sentence one. Invisible for four
+    # releases because every rewrite the tool had been given was single-line,
+    # where `tail` is empty and the two orders are the same string.
+    body[at:end] = [first] + kept + [rec] + tail
     out = "\n".join(body)
     if len(re.findall(r"^>\s*✎", out, re.M)) < keep_before:
         raise SystemExit("✗ refusing to write: this edit would destroy an existing ✎ record")

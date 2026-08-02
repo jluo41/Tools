@@ -67,10 +67,10 @@ Rewording it here without touching the file it graduated into is how the board a
   │   ├── 🖥️  vendor/xterm               the terminal's front end          (QD3)
   │   └── 🧪 tests/        13 files     what proves a change              (QF1)
   │
-  ├── 📇 haipipe-board-index/           the board and the group altitude
   ├── 📄 haipipe-board-page/            SPEC · what ONE PAGE is            (QB4)
   ├── ✏️  haipipe-board-sentence/        SPEC · the atomic unit            (QB5)
-  ├── 🔀 haipipe-board-routing/         VERB · one input, one write       (QC4a)
+  ├── 🔀 haipipe-board-routing/         VERB · BOTH altitudes             (QC4a)
+  │      src/lanes.py                   board.md structure + one write
   │
   └── ⚖️  agents/                        DISPATCHED, never loaded
       ├── 🔍 haipipe-board-reviewer-agent.md    judges · ⛔ NO write tools

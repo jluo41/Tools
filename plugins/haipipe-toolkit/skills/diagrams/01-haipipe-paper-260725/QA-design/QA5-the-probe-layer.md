@@ -228,23 +228,17 @@ On the MISQ board that is 215 chips over eighteen probe files.
 
 ## Law
 
-The probe layer is a reusable family this paper depends on and does not own. The paper side is a delta on a shared model, and this board rules the delta and never the model.
-
-A question crosses the wall as a STRING with its stake stripped, and the answer comes back as a FILE the executor wrote, bound BY PATH. The manuscript never contains the bank's file and the bank never learns the claim, because a clean context IS the wall: strip the stake and the answer is evidence, leave it in and it is a request.
-
-`1-probes/` stays where it is, and the line is PAGE versus FILE rather than working-state versus output. Rounds moved into `⑧` because a round can be a page: one round, one gate, one unit. A probe file cannot, because it is topic-scoped across stages and its four-section shape belongs to `⑤` and is shared with `/haipipe-application`.
-
-The layer is therefore VISIBLE from the board without living in it: an S page's Q-consumer names its questions, and the sentence chips resolve their states.
-
-A Q-consumer id is CONSUMER-LOCAL and must not collide across consumers, so a stage that `runs: per-unit` names its unit in its own token, both halves read off the S page filename. The resolver takes the FURTHEST-ALONG match among entries claiming an id, so a shared id lets a DEFERRED question inherit an ANSWERED one's state. That is a manufactured green on the exact chip a reader trusts.
-
-This ruling carries an expiry test. If `/haipipe-application` stops binding `1-probes/`, re-open it.
+- The probe layer is a reusable family this paper depends on and does not own. The paper side is a delta on a shared model, and this board rules the delta and never the model.
+- A question crosses the wall as a STRING with its stake stripped, and the answer comes back as a FILE the executor wrote, bound BY PATH. The manuscript never contains the bank's file and the bank never learns the claim, because a clean context IS the wall: strip the stake and the answer is evidence, leave it in and it is a request.
+- `1-probes/` stays where it is, and the line is PAGE versus FILE rather than working-state versus output. Rounds moved into `⑧` because a round can be a page: one round, one gate, one unit. A probe file cannot, because it is topic-scoped across stages and its four-section shape belongs to `⑤` and is shared with `/haipipe-application`.
+- The layer is therefore VISIBLE from the board without living in it: an S page's Q-consumer names its questions, and the sentence chips resolve their states.
+- A Q-consumer id is CONSUMER-LOCAL and must not collide across consumers, so a stage that `runs: per-unit` names its unit in its own token, both halves read off the S page filename. The resolver takes the FURTHEST-ALONG match among entries claiming an id, so a shared id lets a DEFERRED question inherit an ANSWERED one's state. That is a manufactured green on the exact chip a reader trusts.
+- This ruling carries an expiry test. If `/haipipe-application` stops binding `1-probes/`, re-open it.
 
 ## Lesson
 
-A scheme change is never only a rename. The per-unit consumer id needed three letters-only regexes to move with it, in `dialect_paper.py`, `body.py` and `check-probe-cards.sh`, and every one of them silently dropped the new token instead of erroring. Fixing the last also exposed a permanent vacuous green: the gate derived `section-edit` and grepped `q-section-edit`, which matched nothing, so the stage had been passing on an empty set.
-
-An ordinal given to a member of an open set goes wrong when the set grows. This page called the probe layer "the third reusable skill" until two more families joined the map.
+- A scheme change is never only a rename. The per-unit consumer id needed three letters-only regexes to move with it, in `dialect_paper.py`, `body.py` and `check-probe-cards.sh`, and every one of them silently dropped the new token instead of erroring. Fixing the last also exposed a permanent vacuous green: the gate derived `section-edit` and grepped `q-section-edit`, which matched nothing, so the stage had been passing on an empty set.
+- An ordinal given to a member of an open set goes wrong when the set grows. This page called the probe layer "the third reusable skill" until two more families joined the map.
 
 ## Glossary
 

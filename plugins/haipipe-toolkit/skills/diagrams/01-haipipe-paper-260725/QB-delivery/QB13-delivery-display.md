@@ -149,8 +149,8 @@ Anything in QB13a or QB13b that specifies how a render is produced fails that te
 
 ## Law
 
-Paper owns why a float exists, what it argues, where it lands, and whether it is accepted.
-Everything about HOW it is made belongs to the Display layer, and a page here that specifies making is a page in the wrong board.
+- Paper owns why a float exists, what it argues, where it lands, and whether it is accepted.
+  Everything about HOW it is made belongs to the Display layer, and a page here that specifies making is a page in the wrong board.
 
 ## Glossary
 

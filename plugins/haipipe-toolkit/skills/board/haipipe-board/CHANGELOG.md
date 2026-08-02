@@ -5,6 +5,121 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.112.0 - 2026-08-02
+
+**🔗 The `✎` record has one computation, and a test that keeps it one.**
+
+JL asked how `haipipe-writing` wires in. The answer is one place, and it is the `> ✎` change record: this file and `haipipe-writing/cli/wdiff.py` both computed the word-level diff with difflib and agreed byte for byte on every case tried, which is agreement by luck. The next edit to either splits them, and the record is a review trail somebody reads months later.
+
+- `live/write.py` — `_change_diff` now calls `wdiff(host="board")`. It is LOOKED UP BY PATH, not imported, because every unit in this family must stay deletable from every other; the local computation survives as the fallback for a checkout with no `haipipe-writing` beside it.
+- `tests/test_change_diff.py` — compares the fallback against the shared function over ten pairs, including an empty side, a full replacement and an unchanged sentence. Drift is now a red test.
+
+**🌐 `tests/drive_board.py`** — a second recorded drive, 16 checks, against the REAL board instead of a fixture, and it writes nothing so it is safe to point at a live one. It answers the question the sentence drive cannot: a sentence can work perfectly on a page nobody can reach.
+
+Its first run produced three FALSE REDS, both worth naming. It read `innerText`, which reports only what is on screen while every section is folded shut, so a complete page looked empty. And its detail line printed "found <probe>" whether or not the probe was found, so a red row read like a green one. Both fixed; it reads `textContent` and reports which half failed.
+
+## 0.111.0 - 2026-08-02
+
+**🚪 The sentence verbs migrated to `haipipe-board-sentence`, on the `haipipe-board-page` precedent (JL 260802).**
+
+JL: "if we want to put sentence things, we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?" Yes, and the precedent is precise about WHAT migrates: `haipipe-board-page` owns the page contract and its two verbs and owns no scripts, calling this engine rather than containing it. The sentence half had been the other way round: the operating detail lived in this SKILL.md while `haipipe-board-sentence` was a 94-line spec with no verbs at all.
+
+- `### comment / edit` (26 lines of gestures, addresses, the action bar and sentence chat) is now a ROUTE. What stays are the two rules that bind the engine rather than the contract: a write needs `serve.py`, and a form closes before it asks for the repaint.
+- The one-door table gained three sentence rows, and now states the rule at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board is this skill's.
+- The family roster now reads `DOOR + SPEC` for the sentence unit rather than `SPEC`.
+
+## 0.110.0 - 2026-08-02
+
+**📄 The family gains a page-kind variant: `haipipe-board-page-for-skill`.**
+
+JL asked whether a skill page is special enough to need its own contract that calls `haipipe-board-page` inside it. It is. A `Skill-<n>` or `Agent-<n>` page mirrors a unit that ships elsewhere and DECIDES NOTHING, so the base Opening shape, which ends in `what this page decides`, leaves it with no question to ask. Five roster pages filled that empty slot with the same rhetorical question, and read consecutively they were one form letter with the nouns swapped.
+
+The family block and its heading change back to `three specs` for a real third spec this time, rather than for a verb set filed as one.
+
+## 0.110.0 - 2026-08-02
+
+**🔍 Two write paths still needed a manual reload, and nothing had ever tested past the point where they could not fail.**
+
+JL asked directly: when I add a comment, or I do an edit, does the page only update when I refresh it myself? The card and comment paths were fine. The other two were not.
+
+**Editing a sentence** called `location.reload()` on save. It threw away the scroll position and shut every section the reader had opened to reach that sentence, to show one changed line. Replacing it with the swap then exposed a second, quieter defect: the swap refuses to run while any textarea inside `div.wrap` holds text, which is the rule that stops a rebuild from eating a half-written comment. The editor's own textarea is inside `div.wrap` and still held the sentence that had just been saved, so the repaint could only ever be refused. The `> ✎` record reached the markdown and the page sat unchanged until somebody pressed reload. The reload it replaced had never met that guard, which is why it had never shown.
+
+**Adding a typed lane** never asked for a repaint at all. It printed "✔ saved", closed its form, and left the lane to arrive whenever the background poll noticed, which backs off to five seconds on a page nobody has touched.
+
+- `assets/js/40-sentence/00-apparatus.js` — both forms now CLOSE first and then call `window.__boardRefresh()`. The rule this sets: a writer clears its own draft before it asks for the page back.
+
+All four write paths now repaint in 0.4s and hold the reader's place: card 883→883, comment 1204→1204, edit 1925→1925 with 16 open sections before and after, typed lane unchanged across the save.
+
+**🧪 `tests/drive_sentence.py` grew from 31 to 36 checks.** The old F3 was called "double-click opens the sentence editor" and checked exactly that, which is the half that cannot fail; both defects lived after it. Four new steps follow the edit and the lane through to the repainted row, including a window flag set before the save and read after it, which is how a swap is told apart from a reload. `tests/fixture_board.py` gained five more targets: a sentence carrying both surfaces, a card naming absent words, two cards on one sentence, a three-line card body, and a sentence to edit.
+
+Two of the new steps were red for a while because of the harness, not the code, and both are worth naming: the lane form is reached from the `＋` in the hover rail rather than by double-click, which opens the editor; and its dropdown remembers what was used last and falls back to `JL`, which is a person's initials and renders as a comment row, so the step was counting a lane that was never going to appear.
+
+## 0.109.0 - 2026-08-02
+
+**👪 `haipipe-board-index` is retired, and the family is one door, two specs, one verb.**
+
+JL ruled the merge on 260802 ("maybe merge, I will do B") after asking what the index was for. The audit that question forced found three of its five verbs were other units' work written a second time: `propose` and `materialize` are this skill's own `open` action, `regroup` wrapped `cli/regroup.py`, and `check` was a subset of `cli/check.py`. Only `src/lanes.py` was code the family held nowhere else, and it moved to `haipipe-board-routing/src/lanes.py`.
+
+The family block and the section heading both change: `three specs` was already wrong before the merge, since index was a verb set rather than a contract, and it is now `two specs`.
+
+`open` keeps its own description of proposing and materializing a board on purpose, and the file now says so. A person opening their first board should not have to load a second skill; the duplication is declared in both files rather than left to be rediscovered, and the two are corrected together.
+
+## 0.108.1 - 2026-08-02
+
+**📏 The Opening budget stopped charging a page for its own change records.**
+
+`check.py`'s Opening rules measured the on-stage paragraph as every non-blank line above the first blank line. `page_question.py` does not: it hands every `>` line to `render_apparatus` and joins only the rest into the lead. So the two halves disagreed about the same fact, and the disagreement only appeared once a sentence apparatus landed on the lead.
+
+Found on `QBv1-misq.md` (260802): one `> ✎` record under a 340-char lead reported the paragraph as 841 chars, and reported the record's own word-level diff as a stuffed sentence carrying 6 clauses. Both findings described a line no reader sees in the paragraph.
+
+- `cli/check.py` — `onstage` and `prose` now skip `>` lines, which is exactly what the renderer does. A lane is somebody's signed record, not a clause the reader has to get through.
+
+## 0.109.0 - 2026-08-02
+
+**🗺 The sentence family folded from six pages to two, and `check.py` learned the `Card` lane.**
+
+Board-content work rather than engine work, but the checker change ships here. `QB5`'s five faces were carved on 260729, when the model was one sentence with five attachments and a page for each. The 260802 card ruling replaced that with TWO surfaces, and the split stopped carrying it: `QB5a` ended up owning both while its own title still said "click a sentence", which is the lane gesture.
+
+Same shape as `QB4`'s seven section faces on 260801, and the same answer:
+
+    QB5a  evidence card      -> QB5 §3 (the card) + §4 (the lanes)   archived
+    QB5b  comments           -> QB5 §5 (a person's remark)           archived
+    QB5c  editing            -> QB5 §6 (changing a sentence)         archived
+    QB5d  chat + addresses   -> QD8, in the working lane             moved
+    QB5e  details lifecycle  -> unchanged, still its own page
+
+`QB5d` moved rather than folded because a generated address is how a machine POINTS AT a location, not a thing attached to a sentence: nothing is written under the sentence and nothing enters the file at all. Its readers are the chat drawer and the routing verb, both of which live in `QD`.
+
+- `cli/check.py` — `old-comment-form` now knows `Card`. Without it, `> Card SPAN of words: …` matched the bare-initials shape as author "C", so every span card on every board reported itself as a legacy comment.
+- `ref/board-form.md` — the `> Card` row joined the syntax table.
+- Board 54 pages to 51, zero errors, `QB5` and every page whose live prose pointed at a folded face repointed. Every retired id (`QB5a`-`QB5d`, `QAb1`-`QAb3`, `QA6`, `QA8`, `QA8a`) still resolves through `board.md`'s Links table, so nothing already written breaks.
+
+## 0.108.0 - 2026-08-02
+
+**🪪 A card on a SPAN of words, and saving stopped throwing the reader back to the top.**
+
+JL asked for two things on the sentence and named them apart: a card reached by clicking the selected words, and lanes under the line taking a citation, a comment, or any other kind. The second already shipped. The first did not: a card existed only where a paper marker did, so nobody could attach one by hand.
+
+JL delegated the ruling. The three options drafted on `QB5` were all wrong in the same way, because each one asked where to put a MARKER. Option D, ruled instead: the record names its own span.
+
+    The pooled coefficient reached a stable value in the third quarter.
+    > Card stable value: what should open when someone clicks those words
+
+- `src/body.py` — `CARD_LANE`, `_split_cards`, `_wrap_span`, and a `head=` on `_chip`. Cards are pulled out of the apparatus BEFORE it renders, so a sentence carrying only cards keeps its plain `<p>` and never grows an empty drawer with a `⚑ 0` badge.
+- `live/write.py` — `add_card` behind `POST /_board/card`, with three refusals: the sentence must be found exactly once, the words must really be in that source line, and the same card may not be written twice.
+- `assets/js` — 🪪 Card beside 💬 Comment, offered only when the selected words are genuinely in the sentence, because a button that can only fail is worse than no button.
+- `assets/css/60-chips.css` — the words stay PROSE. A `\citep{}` chip replaced a marker nobody wanted to read and may look like a control; a span card sits on words the author wrote, so it keeps the text's font, colour and weight and takes one dotted underline.
+- `sentenceText` gained its one exception: it deletes every `button`, because a paper chip's label is not the source text. A span card's label IS the source text, so it is unwrapped instead. Without this every later write on that sentence would miss its anchor forever.
+- `check.py` learned `Card`, which it had been reporting as a legacy `> C:` comment.
+
+**🎯 The smoothness half** (JL: adding a comment and hitting save made the whole thing refresh).
+
+- A pane used to `location.reload()` on every write. It now runs the same drawer-preserving swap the single-document path always had, and the writer asks for it immediately rather than waiting up to 800ms for the poll to notice.
+- The swap's fold restore was keyed on summary TEXT, and `board.js` decorates summaries after each render, so the old key read `📚 Content C1 ⧉ 🤖` and the fetched one read `📚 Content`. They never matched. It only showed on the comment path, because the text fallback runs only when the drawer count changed, which happens exactly when a sentence gains its first record.
+- Measured: a card save holds scroll 883 to 883 with 16 sections open before and after; a comment save holds 1229 to 1229. Both land in 0.4s.
+
+**🧪 `tests/drive_sentence.py`** — a recorded Chrome drive, 14 of 14 green. It builds its own throwaway board (`tests/fixture_board.py`), serves it on a free port, moves the real mouse through every gesture, and writes one screenshot and one row per step into a `report.md`. The first version drove `QB5` itself and had to be thrown away: it left five cards on a page a person reads, and its second run could not tell a pass from a break.
+
 ## 0.107.0 - 2026-08-02
 
 - A hidden `⧉` on every `Decision Now` row (JL: "could you give a hidden copy

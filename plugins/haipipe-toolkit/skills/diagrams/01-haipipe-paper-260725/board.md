@@ -151,6 +151,7 @@ QA10-the-writing-layer.md
 
 ### QB · Delivery
 What one paper must give its reader or collaborator, read in two passes. QB1 through QB10 are the ten reader-facing concerns, in reader order and uninterrupted. QB11, QB12, and QB13 are three series heads, each owning the rules whose unit is a whole section, one sentence, or one float; their faces sort under them.
+QB0 sits before all of them and draws the whole paper board at once, which is the one thing no single concern can show.
 A concern says what the reader GETS. A series says what a rule APPLIES TO. Reading QB1 to QB10 top to bottom is the paper; dropping into a series head is how you find the rule that governs a unit.
 
 ```text
@@ -161,6 +162,7 @@ adapters                    ◀── QB11a–c    unit = a whole section     �
 probe + evidence            ◀── QB12a–d    unit = one sentence        ──▶  markers and chips
 Display layer               ◀── QB13a–c    unit = one float           ──▶  displays/<unit>/
 ```
+QB0-paper-board-layout.md
 QB1-opening.md
 QB2-work.md
 QB3-literature.md
@@ -236,7 +238,6 @@ Skill-3-haipipe-paper-draft.md
 Skill-4-haipipe-paper-probe.md
 Skill-5-haipipe-paper-revise.md
 Skill-6-haipipe-board.md
-Skill-7-haipipe-board-index.md
 Skill-8-haipipe-board-page.md
 Skill-9-haipipe-board-sentence.md
 Skill-10-haipipe-board-routing.md
@@ -294,7 +295,8 @@ Q-Skill-haipipe-paper-draft    QC-engine/Skill-3-haipipe-paper-draft.md
 Q-Skill-haipipe-paper-probe    QC-engine/Skill-4-haipipe-paper-probe.md
 Q-Skill-haipipe-paper-revise   QC-engine/Skill-5-haipipe-paper-revise.md
 Q-Skill-haipipe-board          QC-engine/Skill-6-haipipe-board.md
-Q-Skill-haipipe-board-index    QC-engine/Skill-7-haipipe-board-index.md
+Q-Skill-haipipe-board-index    _archive/Skill-7-haipipe-board-index.md
+Skill-7              _archive/Skill-7-haipipe-board-index.md
 Q-Skill-haipipe-board-page     QC-engine/Skill-8-haipipe-board-page.md
 Q-Skill-haipipe-board-sentence QC-engine/Skill-9-haipipe-board-sentence.md
 Q-Skill-haipipe-board-routing  QC-engine/Skill-10-haipipe-board-routing.md
@@ -316,6 +318,9 @@ Legacy-QC3          QB-delivery/QB12c-sentence-display-table.md
 Legacy-QC4          QB-delivery/QB12d-sentence-display-figure.md
 Legacy-QC5          QB-delivery/QB11a-section-to-latex.md
 Legacy-QC6          QB-delivery/QB11b-section-to-word.md
+QV0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/delivery-value/QV0-value-delivery.md
+QP0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/delivery-present/QP0-present-delivery.md
+QR0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/7-round/QR0-round-delivery.md
 QB3a                QB-delivery/QB12a-sentence-citation.md
 QB4a                QB-delivery/QB12b-sentence-value.md
 QB5a                QB-delivery/QB12c-sentence-display-table.md
@@ -337,7 +342,7 @@ haipipe-writing/   ../../writing/haipipe-writing/
 writing/           ../../writing/
 haipipe-display/   ../../display/
 haipipe-board/     ../../board/haipipe-board/
-haipipe-board-index/ ../../board/haipipe-board-index/
+haipipe-board-routing/ ../../board/haipipe-board-routing/
 haipipe-board-page/ ../../board/haipipe-board-page/
 haipipe-board-sentence/ ../../board/haipipe-board-sentence/
 haipipe-board-routing/ ../../board/haipipe-board-routing/
@@ -368,8 +373,7 @@ QB3@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB3-match.md
 QC1@probe          ../01-probe-qa-260726/QC-the-contract/QC1-qa-state-line.md
 QB6@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB6-interpret.md
 QB4@boardform      ../01-boardform-260722/QB-delivery/QB4-overall.md
-QA8@boardform      ../01-boardform-260722/QB-delivery/QB5a-evidence-card.md
-QA8a@boardform     ../01-boardform-260722/QB-delivery/QB5d-agent-visibility.md
+QA8@boardform      ../01-boardform-260722/QB-delivery/_archive/QB5a-evidence-card.md
 QA1@display        ../01-haipipe-display-260727/QA-where-display-lives/QA1-display-map.md
 QA3@display        ../01-haipipe-display-260727/QA-where-display-lives/QA3-unit-page-and-unit-folder.md
 QB1@display        ../01-haipipe-display-260727/QB-one-display-unit/QB1-unit-contract.md

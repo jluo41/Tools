@@ -121,13 +121,11 @@ One ruling is genuinely live, and it is the gap that cannot be phrased as an ans
   `:199`, where the bracket rule reappears as an exit criterion: every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]`. One of the three prose homes the unwritten regex would replace.
 
 ## Law
-DRAFT does not create a file. It fills named regions of a page whose shell came from the Board, whose Content divisions were compiled from the stage's template at creation time, and whose sentences must satisfy the sentence layer's formats.
 
-DRAFT writes prose and QUESTIONS. It never writes a fact it cannot source: not a bibtex entry, not a number, not a citation key it has not verified, and never an answer to its own question. The `.bib` is human-only; an agent greps it and never writes it.
-
-Every unsourceable assertion becomes a marked hole with a named question beside it, and one `- [ ] 🔎 Q-<Stage>-<n>` record in `## Items to Finish`. The marker and the bracket sit side by side and are never fused, because a placeholder with no question is a hole nothing will ever fill.
-
-DRAFT never touches `1-probes/`. Raising the question is this phase; planning and running it is PROBE's.
+- DRAFT does not create a file. It fills named regions of a page whose shell came from the Board, whose Content divisions were compiled from the stage's template at creation time, and whose sentences must satisfy the sentence layer's formats.
+- DRAFT writes prose and QUESTIONS. It never writes a fact it cannot source: not a bibtex entry, not a number, not a citation key it has not verified, and never an answer to its own question. The `.bib` is human-only; an agent greps it and never writes it.
+- Every unsourceable assertion becomes a marked hole with a named question beside it, and one `- [ ] 🔎 Q-<Stage>-<n>` record in `## Items to Finish`. The marker and the bracket sit side by side and are never fused, because a placeholder with no question is a hole nothing will ever fill.
+- DRAFT never touches `1-probes/`. Raising the question is this phase; planning and running it is PROBE's.
 
 ## Discussion
 > CC 260727: on the unphraseable gap I would rule (b), require a record even when the question is vague, and I want to be clear about what it costs because the cost is the reason (a) is tempting. (b) puts unanswerable questions into a queue PROBE has to look at and cannot route, and at `probe_depth: 0` it can only mark them DEFERRED, so the queue grows with items nobody can close. That is a real tax on the phase this board most wants to keep cheap.

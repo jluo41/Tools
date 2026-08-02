@@ -355,13 +355,11 @@ Reopened to 🟡 on 260726: the edge map raised a real unruled question, which i
   The output and shipping family.
 
 ## Law
-The numbered family spine stays. Each layer owns one responsibility and control flows one way: the front door selects context, the stage runner works one S page, a bounded worker returns to that same page, delivery adapters materialize accepted Content.
 
-`venue/` is knowledge consulted lazily and never carries a lifecycle verb. `diagram/` holds design Boards and never a runtime contract. Neither is in the chain of command.
-
-Inside one skill: progressive disclosure. Metadata selects, `SKILL.md` carries the shortest complete procedure and names which conditional reference to read, and everything else loads only when its branch is taken. Design history never sits in the invocation path.
-
-Nothing in this folder names one paper. A rule that mentions a specific manuscript belongs in `⑦` or `⑧`, not here.
+- The numbered family spine stays. Each layer owns one responsibility and control flows one way: the front door selects context, the stage runner works one S page, a bounded worker returns to that same page, delivery adapters materialize accepted Content.
+- `venue/` is knowledge consulted lazily and never carries a lifecycle verb. `diagram/` holds design Boards and never a runtime contract. Neither is in the chain of command.
+- Inside one skill: progressive disclosure. Metadata selects, `SKILL.md` carries the shortest complete procedure and names which conditional reference to read, and everything else loads only when its branch is taken. Design history never sits in the invocation path.
+- Nothing in this folder names one paper. A rule that mentions a specific manuscript belongs in `⑦` or `⑧`, not here.
 
 ## Log
 260726 · The map stopped being only a map. 16 skills aligned to `QA6`'s layout in one pass, plus the shared anatomy spec and 90 venue templates; the front door became the single door (`QA4`). The diagram's front-door box now names both dispatches. One correction the pass produced belongs here: measuring per SKILL.md badly understated the work, because `haipipe-paper-stage`'s real debt was in its eight `stages/*/stage.md` contracts, whose paths RESOLVE AT RUN TIME. A stale path in a contract does not read wrong; it writes to the wrong place.

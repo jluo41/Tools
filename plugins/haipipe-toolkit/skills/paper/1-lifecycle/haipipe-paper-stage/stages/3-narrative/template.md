@@ -2,7 +2,7 @@
 
 Date: <YYYY-MM-DD>
 
-The design contract for ONE paper: a one-page, evidence-tracked story. It is NOT a draft of the paper. It mirrors the paper's REAL sections (Intro -> Methods -> Results -> Discussion), and every beat carries a readiness tag wired to the probe pipeline plus an interrogation comment.
+The design contract for ONE paper: a one-page, evidence-tracked story. It is NOT a draft of the paper. It mirrors the paper's REAL sections, and the section list comes from the VENUE rather than from this file (JL 260802), and every beat carries a readiness tag wired to the probe pipeline plus an interrogation comment.
 
 How to use: copy this file to `<paper>/0-lifecycle/2-venue/3-narrative.md`, then replace every `<...>` placeholder. Delete beats you do not need; add beats the paper needs. Keep the readiness legend and the comment vocabulary. A filled real-world exemplar (older .tex form, same structure) lives at `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal/0-lifecycle/2-venue/3-narrative.tex`.
 
@@ -29,9 +29,52 @@ The whole paper in one breath: an arrow chain from the problem to the so-what. E
 
 <the problem / stakes> -> <the move or signal this paper introduces> -> <the core finding> -> <the so-what / what it is and is not>
 
-Format reminder: each section below = a short story PARAGRAPH (the narrative flow, draft-quality, plain language) + "Key points to cover" bullets behind it. Each bullet = readiness tag + bold label + 1-3 sentences + an interrogation comment. Adapt section subtitles, Flow lines, and beats to the venue.
+Format reminder: each section below = a short story PARAGRAPH (the narrative flow, draft-quality, plain language) + "Key points to cover" bullets behind it. Each bullet = readiness tag + bold label + 1-3 sentences + an interrogation comment.
+
+## Sections: where the list comes from
+
+<!-- RULE: DO NOT copy the four sections below as the paper's section list. They are a FALLBACK,
+     used only when no venue blueprint exists yet.
+
+     THE LIST COMES FROM THE VENUE (JL 260802, ruling A).
+     · Read `S-Venue-0-venue.md`'s `### Structural Blueprint`. It carries one row per section of
+       the target journal, transcribed from that venue's playbook, where each section has its own
+       measured `<journal>-<section>/style.md`.
+     · Write ONE `## ` section here per section THIS paper writes.
+     · A paper MAY SPLIT one venue section into two, and MAY ADD one the venue does not list.
+       It records which venue section each one obeys, and why it diverged.
+     · The style rules always come from the venue section a section points at, so splitting
+       changes the CUT and never the NORMS.
+     · `section-edit` reads this file as `units_from:`, so one section here becomes one
+       `S-Main-<n>` page. Getting this list wrong gets the manuscript's page list wrong.
+
+     EVERY SECTION CARRIES TWO LINES under its heading:
+       venue-section: <the blueprint row it obeys, or `—` when the paper added it>
+       Adaptation:    <one sentence: why this paper split, merged, or added it. `none` if it maps 1:1>
+
+     Worked example, MISQ: the venue lists seven sections and the paper writes nine.
+       ## Abstract        venue-section: abstract      Adaptation: none
+       ## Introduction    venue-section: introduction  Adaptation: none
+       ## Literature      venue-section: theory        Adaptation: split; the lineage map is its own section
+       ## Theory          venue-section: theory        Adaptation: split; hypotheses argued separately
+       ## Measurement     venue-section: methods       Adaptation: split; the construct needs its own defence
+       ## Empirical       venue-section: methods       Adaptation: split; design and estimator sit apart
+       ## Results         venue-section: results       Adaptation: none
+       ## Discussion      venue-section: discussion    Adaptation: none
+       ## Conclusion      venue-section: —             Adaptation: added; MISQ folds it into Discussion
+     The venue's `appendix` section is NOT written here: an appendix is its own Delivery concern. -->
+
+## FALLBACK sections (use only when no venue blueprint exists)
+
+<!-- RULE: the four below are a generic skeleton, kept so a paper drafted before its venue is
+     pinned still has something to fill. Replace them with the venue's list as soon as
+     `S-Venue-0-venue.md` carries a Structural Blueprint. Their Flow lines and beat roles stay
+     useful whatever the venue: reuse them on whichever section they fit. -->
 
 ## Introduction: <what is known, the gap, and the bet>
+
+venue-section: introduction
+Adaptation: <none, or why this paper split, merged, or added it>
 
 **Flow:** <known fact> -> <what exists at scale> -> <the precise unmet gap> -> <so we test X>
 
@@ -48,6 +91,9 @@ Key points to cover:
    - ↪ keep · contribution: <keep the scope tight; keep enabler-vs-contribution clear here, not floated to Methods>.
 
 ## Methods: <how we test it>
+
+venue-section: methods
+Adaptation: <none, or why this paper split, merged, or added it>
 
 **Flow:** <the cohort/setting> -> <the build> -> <the exposure/measure> -> <the outcomes> -> <the estimator and its honesty>
 
@@ -67,6 +113,9 @@ Key points to cover:
    - ↪ keep · guardrail: <carries the honesty (e.g. associational); pre-specify primary contrasts or they read as cherry-picked>.
 
 ## Results: <what the data reveal>
+
+venue-section: results
+Adaptation: <none, or why this paper split, merged, or added it>
 
 **Flow:** <who is in the sample> -> <the main result> -> <where it concentrates> -> <the high-risk tail> -> <it survives the obvious confound> -> <it holds under the robustness check>
 
@@ -88,6 +137,9 @@ Key points to cover:
    - ↪ cut from Results · mechanism: <why it is invalid to assert now; it returns as a Discussion mechanism beat after the probe>.
 
 ## Discussion: <what it means>
+
+venue-section: discussion
+Adaptation: <none, or why this paper split, merged, or added it>
 
 **Flow:** <finding restated> -> <most plausible explanation, no blame> -> <what it means in practice> -> <what the result is good for> -> <what it cannot claim>
 

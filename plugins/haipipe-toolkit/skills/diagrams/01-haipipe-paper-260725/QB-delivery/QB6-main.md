@@ -108,10 +108,11 @@ Anything true of one paper's §3 belongs on that paper's own S page, where the p
 
 🎯 Establishes what a paper board must show for this concern, and where its section list comes from.
 
-#### 2.1 · The section list is inherited, not invented
-(section-edit reads `units_from: S-Venue-2-narrative.md`, so Work's arc decides the units)
-That is the concrete meaning of QB2's claim that Main inherits an order rather than inventing one.
-Change the arc and the unit list changes with it, which is why a narrative page is a prerequisite for this concern rather than a nicety.
+#### 2.1 · The section list is inherited twice, and this concern is the end of the chain
+(the venue names the sections, narrative cuts them for this paper, section-edit makes one page each)
+`section-edit` reads `units_from: S-Venue-2-narrative.md`, so Work's arc decides the units.
+The arc did not invent them either: a venue playbook holds one folder per section, the venue stage transcribes them into the Structural Blueprint, and narrative adapts that list into the sections this paper writes (JL 260802).
+So a Main unit exists because a venue has that section and this paper kept it, and changing either end changes the page list here.
 
 #### 2.2 · One page is filed under another concern, and that is correct
 (`S-Main-2-literature.md` keeps its Main id and sits under `Delivery · Literature`)
@@ -152,8 +153,8 @@ This is the clearest single example of the board's rule that a filename names th
 
 ## Law
 
-Main S pages are authored.
-`sections/` is a submission projection and is never edited as the independent source.
+- Main S pages are authored.
+  `sections/` is a submission projection and is never edited as the independent source.
 
 ## Glossary
 
@@ -162,5 +163,6 @@ Main S pages are authored.
 
 ## Log
 
+260802 · `§2.1` rewritten to name the whole chain rather than only its last hop: venue playbook, then Structural Blueprint, then narrative's adaptation, then `units_from` here.
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered with a face figure and caption, Aims regrouped as A1/P with `Done when`, States mirrored per Aim.
 260730 · Main-1 candidate passed G0-G3 in the first runtime trial.

@@ -291,13 +291,11 @@ Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Ever
   The mechanism half: `cite_chips()` and the code-span guard.
 
 ## Law
-**Two declarations of the same dependency.** Dependencies are optional. When a page declares `requires:`, that field is the authoritative dependency graph. A stage may declare optional `read_order:` to preserve writing craft; it states sequence only and cannot create a dependency.
 
-**Who creates a page.** Paper Stage is the only public creator. It selects the paper stage and its template, then calls the Board's `stage.py new` as a shell primitive. Board owns filename, face grammar, Pages insertion, and the optional managed Stage Contract; Paper owns stage-specific Content jobs. The first slice composes Board shell + stage template. Venue-template and prior-contract composition remain later work for venue-aligned per-unit pages.
-
-**Paper writing dialect.** Board's generic page and sentence grammar is a substrate, not a manuscript specification. This Paper Board owns the reader-facing purpose of a section, the job and progression of a paragraph, and the rhetorical/evidentiary job of a sentence; `QC5` is the authoritative contract and the Board skills do not duplicate it.
-
-**The board runs paper code: where is that boundary.** - Dialect code may hold grammar and resolution. Rendering, invariants and file writing stay with the Board. - A dialect is DELETABLE: the board must build without it, and boards that do not declare it must render byte-identical. - A dialect is opted into by a declaration on the board, never by detection.
+- **Two declarations of the same dependency.** Dependencies are optional. When a page declares `requires:`, that field is the authoritative dependency graph. A stage may declare optional `read_order:` to preserve writing craft; it states sequence only and cannot create a dependency.
+- **Who creates a page.** Paper Stage is the only public creator. It selects the paper stage and its template, then calls the Board's `stage.py new` as a shell primitive. Board owns filename, face grammar, Pages insertion, and the optional managed Stage Contract; Paper owns stage-specific Content jobs. The first slice composes Board shell + stage template. Venue-template and prior-contract composition remain later work for venue-aligned per-unit pages.
+- **Paper writing dialect.** Board's generic page and sentence grammar is a substrate, not a manuscript specification. This Paper Board owns the reader-facing purpose of a section, the job and progression of a paragraph, and the rhetorical/evidentiary job of a sentence; `QC5` is the authoritative contract and the Board skills do not duplicate it.
+- **The board runs paper code: where is that boundary.** - Dialect code may hold grammar and resolution. Rendering, invariants and file writing stay with the Board. - A dialect is DELETABLE: the board must build without it, and boards that do not declare it must render byte-identical. - A dialect is opted into by a declaration on the board, never by detection.
 
 ## Log
 260726 · Merged from five faces that each ruled one seam of the `①`/`③` joint. Every division, item and Law is the original's. Seam labels were renumbered to `SEAM n` after a board-wide glyph sweep collided them with the folder numbers.

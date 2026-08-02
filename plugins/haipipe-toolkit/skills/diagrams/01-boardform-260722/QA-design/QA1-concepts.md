@@ -33,9 +33,10 @@ state: the first emoji of the `state:` line (🔴 OPEN · 🟡 PARTIAL · ✅ SE
 
 ### 3 · The sentence family
 sentence: the atomic row, one per source line (`QB5`).
-apparatus / lane: a typed `>` line bound to the sentence above it by adjacency (`QB5a`).
-comment: a sentence-local `> WHO:` row written directly below the sentence it discusses (`QB5b`); the former page-bottom queue and its open/solved lifecycle are retired.
-edit record: a sentence-local `> ✎` row recording one saved whole-sentence change (`QB5c`).
+apparatus / lane: a typed `>` line bound to the sentence above it by adjacency (`QB5 §4`).
+comment: a sentence-local `> Comment WHO` row written directly below the sentence it discusses (`QB5 §5`); the former page-bottom queue and its open/solved lifecycle are retired.
+edit record: a sentence-local `> ✎` row recording one saved whole-sentence change (`QB5 §6`).
+card: a panel opened by clicking a few marked words INSIDE a sentence, written `> Card the words: what to show` (`QB5 §3`).
 
 ### 4 · The working vocabulary
 decision: what a Q face settles; the word replaced "ruling" on 260729 (JL). A settled decision GRADUATES: its `## Law` is copied into `SKILL.md` (operating rules) or `ref/` (specs), and only then binds.

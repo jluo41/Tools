@@ -6,13 +6,23 @@ method: state what JAMA Internal Medicine buys that its two siblings do not, and
 
 ## Opening
 
-The pack's outlet table names this desk's territory in five words: prescribing, overuse, safety, health services. It calls that the lane this repo's opioid work sits in. So what does this desk want that the flagship above it does not?
+The pack's outlet table names this desk's territory: prescribing, overuse, safety, health services. It calls that the lane this repo's opioid work sits in. So what does this desk want that the flagship above it does not?
+> ✎ The pack's outlet table names this desk's ~territory in five words:~ *territory:* prescribing, overuse, safety, health services. It calls that the lane this repo's opioid work sits in. So what does this desk want that the flagship above it does not? *It wants a system-level finding, one that changes how care is organized, delivered, or made safe. A drug effect alone does not clear that bar.* · CC · 260802 1539
+It wants a system-level finding, one that changes how care is organized, delivered, or made safe. A drug effect alone does not clear that bar.
+
+**The words in that question**: a `desk` is one journal's editors and what they buy, and this page is about one desk, JAMA Internal Medicine.
+The `flagship` is JAMA itself, the outlet one step above this one, and `QBv5` is its page.
+A `lane` is the pack's own name for a kind of paper an outlet wants, here the prescribing-safety claim this repo's opioid work makes.
+The `pack` is the venue playbook those names come from, and the Glossary at the foot of this page carries the rest.
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-jama-portfolio/jama-im/`.
 
 **Why this is the middle bar and the right one**: `QBv5` requires a change in clinical action at national scale; this desk asks whether the way care is organized, delivered, or made safe has changed.
-The three outlets share one manuscript format and differ only in bar, which is why writing for this middle bar keeps JAMA Network Open available and writing for the flagship's does not.
+The three outlets share one manuscript format and differ only in bar.
+> ✎ The three outlets share one manuscript format and differ only in ~bar, which is why writing for~ *bar. So a paper written to* this middle bar ~keeps~ *can still go to* JAMA Network Open ~available and writing for~ *unchanged. Writing to* the flagship's ~does not.~ *bar closes that door.* · CC · 260802 1539
+So a paper written to this middle bar can still go to JAMA Network Open unchanged.
+Writing to the flagship's bar closes that door.
 
 **What is not recorded anywhere**: the pack names the lane and no paper in this repo carries the pin, so the routing exists only inside the venue folder.
 
@@ -89,7 +99,9 @@ How this page must be written. Read it before editing, and edit to it.
 #### 1.1 · A physician-behavior paper can be desk-rejected here for its framing alone
 (because two of the four rejections are about what the paper does with its finding)
 A descriptive prevalence study and an attitudes survey both fail on missing actionability, not on method.
-The same data framed as variation with a safety consequence clears the desk that the same data framed as prevalence does not.
+Frame the same data as prevalence and it fails here.
+> ✎ ~The~ *Frame the* same data ~framed~ *as prevalence and it fails here. Frame it* as variation with a safety consequence ~clears the desk that the same data framed as prevalence does not.~ *and it clears.* · CC · 260802 1539
+Frame it as variation with a safety consequence and it clears.
 
 ### 2 · What separates it from the two siblings
 
@@ -106,7 +118,8 @@ The same data framed as variation with a safety consequence clears the desk that
      stay open
 ```
 
-📐 Establishes this outlet as the planning position within the portfolio, which is why the descent is decided before writing.
+📐 Establishes this outlet as the one a paper plans from, so the step down to JAMA Network Open is settled before writing starts.
+> ✎ 📐 Establishes this outlet as the ~planning position within~ *one a paper plans from, so* the ~portfolio, which~ *step down to JAMA Network Open* is ~why the descent is decided~ *settled* before ~writing.~ *writing starts.* · CC · 260802 1539
 
 ### 3 · The abstract: two labeled blocks under one hard ceiling
 
@@ -163,13 +176,20 @@ The same data framed as variation with a safety consequence clears the desk that
 
 #### 3.1 · The design variant picks the label set before the first word is written
 (because an observational claims study and a trial disagree at label 4 and label 8)
-`jamaim-abstract/style.md` line 16 splits EXPOSURES from INTERVENTIONS, line 26 records that this desk commonly writes EXPOSURE in the singular for a single-exposure observational design, and line 20 attaches TRIAL REGISTRATION to trials only, so a claims paper deletes that label outright.
+`jamaim-abstract/style.md` line 16 splits EXPOSURES from INTERVENTIONS.
+> ✎ `jamaim-abstract/style.md` line 16 splits EXPOSURES from ~INTERVENTIONS, line~ *INTERVENTIONS. Line* 26 records that this desk commonly writes EXPOSURE in the singular for a single-exposure observational ~design, and line~ *design. Line* 20 attaches TRIAL REGISTRATION to trials only, so a claims paper deletes that label outright. · CC · 260802 1539
+Line 26 records that this desk commonly writes EXPOSURE in the singular for a single-exposure observational design.
+Line 20 attaches TRIAL REGISTRATION to trials only, so a claims paper deletes that label outright.
 Line 29 adds that a sub-banner such as "Original Investigation | LESS IS MORE" shapes the framing and never the label structure.
 
 #### 3.2 · The abstract apparatus is family-wide, and that is what makes the descent cheap
 (because the retired family page carried this, and it is the mechanism under the shared-format rule)
-`style-profile.md` line 23 records the Key Points box as mandatory for Original Investigations across the flagship, this desk and JAMA Network Open, and its lines 36-37 give the same heading order listed above.
-The playbook `README.md` line 108 adds that the whole family shares STROBE for observational work and associational language, so a manuscript written to these labels moves down without restructuring.
+`style-profile.md` line 23 records the Key Points box as mandatory for Original Investigations across the flagship, this desk and JAMA Network Open.
+> ✎ `style-profile.md` line 23 records the Key Points box as mandatory for Original Investigations across the flagship, this desk and JAMA Network ~Open, and its~ *Open. Its* lines 36-37 give the same heading order listed above. · CC · 260802 1539
+Its lines 36-37 give the same heading order listed above.
+The playbook `README.md` line 108 adds that the whole family shares STROBE for observational work and associational language.
+> ✎ The playbook `README.md` line 108 adds that the whole family shares STROBE for observational work and associational ~language, so~ *language. So* a manuscript written to these labels moves down without restructuring. · CC · 260802 1539
+So a manuscript written to these labels moves down without restructuring.
 That is the tie-break `README.md` lines 118-121 state for an observational prescribing-safety claim: primary JAMA Internal Medicine, backup JAMA Network Open, pinned once as `venue_outlet:` in the paper's `STATUS.md`.
 
 #### 3.3 · Format values
@@ -195,7 +215,9 @@ That is the tie-break `README.md` lines 118-121 state for an observational presc
 #### 3.4 · The language, in the papers' own words
 (one move per quote, each already quoted in the abstract guide)
 "Sepsis survivors experience high morbidity and mortality after discharge, but health systems lack effective approaches to improve recovery." [Taylor 2025]
-The IMPORTANCE opener, burden then adversative pivot, filling the two-part slot division 3 records, though this one states its burden without a number [jamaim-abstract/style.md line 73].
+The IMPORTANCE opener: a burden first, then the However pivot to what is unknown.
+> ✎ The IMPORTANCE ~opener,~ *opener: a* burden *first,* then ~adversative pivot, filling~ *the However pivot to what is unknown. It fills* the two-part slot division 3 records, though this one states its burden without a number [jamaim-abstract/style.md line 73]. · CC · 260802 1539
+It fills the two-part slot division 3 records, though this one states its burden without a number [jamaim-abstract/style.md line 73].
 "To investigate whether individuals living in a household with a prescription opioid user are more likely to initiate prescription opioids themselves" [Seamans 2018]
 The OBJECTIVE infinitive on one verb from the pack's list of six, and the stored sentence closest to a prescribing-exposure question [style.md lines 76-77].
 "Among 2003 participants (median [IQR] age, 67 [58-78] years; 1040 female [52%])" [Masterson 2025]
@@ -253,8 +275,12 @@ The Key Points Meaning line, hedged on "may" and carrying no causal verb for an 
 
 #### 4.1 · The gap is framed as a practice or policy hole, not a knowledge hole
 (because that framing is what the pack names as separating this desk from a methods journal)
-`jamaim-introduction/style.md` line 15 records that this desk frames the gap in clinical-practice or health-policy terms, and line 91 records the policy hook: a named policy, such as Medicaid expansion or the CDC guideline, rather than a field.
-Line 95 removes the temptation a variance paper carries into medicine: this desk states no formal hypotheses, so the aim paragraph closes on a question, and line 116 measures its citation density at zero because the aim borrows no authority.
+`jamaim-introduction/style.md` line 15 records that this desk frames the gap in clinical-practice or health-policy terms.
+> ✎ `jamaim-introduction/style.md` line 15 records that this desk frames the gap in clinical-practice or health-policy ~terms, and line~ *terms. Line* 91 records the policy hook: *name* a ~named~ *real* policy, such as Medicaid expansion or the CDC guideline, rather than a field. · CC · 260802 1539
+Line 91 records the policy hook: name a real policy, such as Medicaid expansion or the CDC guideline, rather than a field.
+Line 95 removes the temptation a variance paper carries into medicine: this desk states no formal hypotheses, so the aim paragraph closes on a question.
+> ✎ Line 95 removes the temptation a variance paper carries into medicine: this desk states no formal hypotheses, so the aim paragraph closes on a ~question, and line~ *question. Line* 116 measures ~its~ *that paragraph's* citation density at ~zero~ *zero,* because the aim borrows no authority. · CC · 260802 1539
+Line 116 measures that paragraph's citation density at zero, because the aim borrows no authority.
 
 #### 4.2 · Format values
 (the stated budget and the measured one disagree, and the guide reconciled them itself)
@@ -347,8 +373,12 @@ The aim sentence on an associational verb, first person, bundling design and dat
 
 #### 5.1 · Quasi-experimental identification lives in a named model, never in an adjective
 (because the pack's first anti-pattern is naming a family of models instead of one)
-`jamaim-methods/style.md` line 110 rejects "regression" with no model specified, and line 81's Wen 2020 shape shows where the identification actually sits: weights, time-varying controls for concurrent policies, and standard errors clustered at the level the variation lives on.
-Line 102 records the a priori confounder framing with causal diagrams as increasingly common here, which is the sentence that carries a claims paper's confounding argument.
+`jamaim-methods/style.md` line 110 rejects "regression" with no model specified.
+> ✎ `jamaim-methods/style.md` line 110 rejects "regression" with no model ~specified, and line~ *specified. Line* 81's Wen 2020 shape shows where the identification actually sits: weights, time-varying controls for concurrent policies, and standard errors clustered at the level the variation lives on. · CC · 260802 1539
+Line 81's Wen 2020 shape shows where the identification actually sits: weights, time-varying controls for concurrent policies, and standard errors clustered at the level the variation lives on.
+Line 102 records the a priori confounder framing with causal diagrams as increasingly common here.
+> ✎ Line 102 records the a priori confounder framing with causal diagrams as increasingly common ~here, which is the~ *here. That one* sentence ~that~ carries a claims paper's *whole* confounding argument. · CC · 260802 1539
+That one sentence carries a claims paper's whole confounding argument.
 
 #### 5.2 · Format values
 (the observational half of each range is the one this repo's claims work is measured against)
@@ -386,7 +416,9 @@ The comparator justified clinically rather than statistically, which is the sign
 "identified a priori using subject matter knowledge and causal diagrams" [Seamans 2018]
 The confounder sentence a prescribing-variation paper needs, in the form the guide calls increasingly common at this desk [style.md line 102].
 "Standard errors were clustered at the state level to allow for arbitrary correlation within states" [Wen 2020]
-Identification carried by a named estimator choice rather than an adjective, which is what the anti-pattern in 5.1 turns on [style.md line 81].
+Identification carried by a named estimator choice rather than an adjective.
+> ✎ Identification carried by a named estimator choice rather than an ~adjective, which~ *adjective. That* is what the anti-pattern in 5.1 turns on [style.md line 81]. · CC · 260802 1539
+That is what the anti-pattern in 5.1 turns on [style.md line 81].
 "Analyses were performed using SAS version 9.4 (SAS Institute)." [Taylor 2025]
 The closing house-style sentence, software and version last, immediately after the significance threshold [style.md lines 82, 84].
 
@@ -442,8 +474,12 @@ The closing house-style sentence, software and version last, immediately after t
 
 #### 6.1 · The confidence interval, not the p-value, is the inference for observational work
 (because the exemplars report both but the pack says only one of them is doing the work)
-`jamaim-results/style.md` line 57 assigns the P value to trials and makes the CI's overlap with the null the inference mechanism for observational studies, and line 71 makes the CI compulsory next to every estimate.
-Line 88 extends that to nulls: the interval is reported so a reader can see the range of effects the data still allow, which is the sentence a prescribing-variation paper needs when a subgroup comes back flat.
+`jamaim-results/style.md` line 57 assigns the P value to trials.
+> ✎ `jamaim-results/style.md` line 57 assigns the P value to ~trials and~ *trials. For an observational study it* makes the ~CI's overlap with~ *inference turn on whether* the ~null~ *CI overlaps* the ~inference mechanism for observational studies,~ *null,* and line 71 makes the CI compulsory next to every estimate. · CC · 260802 1539
+For an observational study it makes the inference turn on whether the CI overlaps the null, and line 71 makes the CI compulsory next to every estimate.
+Line 88 extends that to nulls: report the interval so a reader can see the range of effects the data still allow.
+> ✎ Line 88 extends that to nulls: *report* the interval ~is reported~ so a reader can see the range of effects the data still ~allow, which~ *allow. That* is the sentence a prescribing-variation paper needs when a subgroup comes back flat. · CC · 260802 1539
+That is the sentence a prescribing-variation paper needs when a subgroup comes back flat.
 Line 139 measured zero reference markers in both exemplar Results sections against ~8-13 parenthetical exhibit cross-refs, so a Results paragraph that cites literature is out of register here.
 
 #### 6.2 · Format values
@@ -540,9 +576,14 @@ The subgroup sentence, each stratum named and each carrying its own interval rat
 
 #### 7.1 · The limitation list a claims paper owes is already ordered for it
 (because the pack ranks limitation types by how often they actually appear)
-`jamaim-discussion/style.md` lines 99-106 order them generalizability, unmeasured confounding, claims data lacking clinical detail, measurement by administrative proxy rather than clinical assessment, temporality or reverse causation, then power for a null.
-Line 114 requires each numbered limitation to be followed by how it was partially addressed or why it is unlikely to change the main conclusion, and lines 154 and 172 reconcile the shape: numbering inside one paragraph is accepted, an unnumbered run-on is not.
-Line 74 explains the mechanism paragraph's plural form as a consequence of the observational emphasis, which is why a single confident mechanism reads wrong at this desk.
+`jamaim-discussion/style.md` lines 99-106 put the limitation types in this order: generalizability, unmeasured confounding, claims data lacking clinical detail, measurement by administrative proxy rather than clinical assessment, temporality or reverse causation, then power for a null.
+> ✎ `jamaim-discussion/style.md` lines 99-106 ~order them~ *put the limitation types in this order:* generalizability, unmeasured confounding, claims data lacking clinical detail, measurement by administrative proxy rather than clinical assessment, temporality or reverse causation, then power for a null. · CC · 260802 1539
+Line 114 requires each numbered limitation to be followed by how it was partially addressed, or by why it is unlikely to change the main conclusion.
+> ✎ Line 114 requires each numbered limitation to be followed by how it was partially ~addressed~ *addressed,* or *by* why it is unlikely to change the main ~conclusion, and lines~ *conclusion. Lines* 154 and 172 reconcile the shape: numbering inside one paragraph is accepted, an unnumbered run-on is not. · CC · 260802 1539
+Lines 154 and 172 reconcile the shape: numbering inside one paragraph is accepted, an unnumbered run-on is not.
+Line 74 traces the mechanism paragraph's plural form back to the observational emphasis.
+> ✎ Line 74 ~explains~ *traces* the mechanism paragraph's plural form ~as a consequence of~ *back to* the observational ~emphasis, which is why a single~ *emphasis. One* confident mechanism reads wrong at this ~desk.~ *desk for the same reason.* · CC · 260802 1539
+One confident mechanism reads wrong at this desk for the same reason.
 
 #### 7.2 · Format values
 (the paragraph count is fixed at 8 in both exemplars while the split behind it is not)
@@ -575,7 +616,8 @@ The roadmap sentence the guide names as common here for a policy paper carrying 
 "Previous studies on prescription opioids have used MarketScan, but none examined patterns of use within families." [Seamans 2018]
 Prior work positioned by what it did not cover, which is the move rather than a summary of the literature [style.md line 63].
 "The association between potential access to household opioids and opioid initiation could be explained by multiple mechanisms." [Seamans 2018]
-The plural-mechanism opener, hedged on "could", which is why one confident mechanism reads wrong at this desk [style.md line 71].
+The plural-mechanism opener, hedged on "could": several explanations offered, none of them settled [style.md line 71].
+> ✎ The plural-mechanism opener, hedged on ~"could", which is why one confident mechanism reads wrong at this desk~ *"could": several explanations offered, none of them settled* [style.md line 71]. · CC · 260802 1539
 "Clinicians may need to consider the context within which medications will be used and the potential risk of subsequent opioid initiation" [Seamans 2018]
 The policy implication written for the internist reader, in the signature paragraph that sits before Limitations [style.md line 82].
 "Second, Medicaid expansions were not randomly assigned." [Wen 2020]
@@ -632,7 +674,9 @@ A numbered limitation stated flatly, then followed by what the design does about
 
 #### 8.1 · A stored exemplar breaks the rule the guide states
 (because the never-write-"in the Supplement" rule is the current convention, not the archive's)
-`jamaim-appendix/style.md` line 112 records Seamans 2018 writing the unnumbered articled form throughout and tells a writer not to imitate it; lines 13-15 and 68 hold the current form, "Supplement N", capitalized and without an article, verified on Williams 2025, Fournier 2026 and Taylor 2025.
+`jamaim-appendix/style.md` line 112 records Seamans 2018 writing the unnumbered articled form throughout, and tells a writer not to imitate it.
+> ✎ `jamaim-appendix/style.md` line 112 records Seamans 2018 writing the unnumbered articled form ~throughout~ *throughout,* and tells a writer not to imitate ~it; lines~ *it. Lines* 13-15 and 68 hold the current form, "Supplement N", capitalized and without an article, verified on Williams 2025, Fournier 2026 and Taylor 2025. · CC · 260802 1539
+Lines 13-15 and 68 hold the current form, "Supplement N", capitalized and without an article, verified on Williams 2025, Fournier 2026 and Taylor 2025.
 Lines 96-97 hold the one label that separates this desk from the flagship: a non-RCT here uses "eAppendix N" for text-heavy sections where the flagship exemplars used "eMethods".
 For a Medicare claims study the triage rule is close to a packing list, since the definitions, the cohort flow and every robustness cut fall on the supplement side by that rule alone.
 
@@ -660,9 +704,13 @@ For a Medicare claims study the triage rule is close to a packing list, since th
 
 #### 8.3 · The language, in the papers' own words
 (this guide quotes no exemplar prose at all, so what follows are the reference strings it does record)
-The appendix guide carries no Signature moves block and no exemplar sentences; its only quoted material is the observed forms the main text uses to point at a supplement [jamaim-appendix/style.md lines 54-68].
+The appendix guide carries no Signature moves block and no exemplar sentences.
+> ✎ The appendix guide carries no Signature moves block and no exemplar ~sentences; its~ *sentences. Its* only quoted material is the observed forms the main text uses to point at a supplement [jamaim-appendix/style.md lines 54-68]. · CC · 260802 1539
+Its only quoted material is the observed forms the main text uses to point at a supplement [jamaim-appendix/style.md lines 54-68].
 "eTable 2 and eFigure 3 in Supplement 1" [Williams 2025]
-Two e-streams named in one pointer, each numbered inside its own type, which is how the independent sequences stay legible [jamaim-appendix/style.md line 56].
+Two e-streams named in one pointer, each numbered inside its own type.
+> ✎ Two e-streams named in one pointer, each numbered inside its own ~type, which~ *type. That* is how the ~independent~ *two* sequences stay legible *side by side* [jamaim-appendix/style.md line 56]. · CC · 260802 1539
+That is how the two sequences stay legible side by side [jamaim-appendix/style.md line 56].
 "eTables 2-3 in Supplement 2" [Fournier 2026]
 A range within one e-type, and the RCT layout where the data supplement is the second file rather than the first [style.md line 61].
 "available in Supplement 1" [Fournier 2026]
@@ -720,8 +768,13 @@ The 2018 articled form the guide records precisely to tell a writer not to imita
 
 #### 9.1 · This is the only division whose own guide lists what it still owes
 (because the pack wrote the repair before anyone needed it)
-`jamaim-letter/style.md` lines 82 to 84 name three items: store one or two published JAMA IM Research Letters in `jama-im/examples/`, verify the word, reference and display caps and the pipe-label formatting against current journal guidance, and measure a Micro-norms block in the shape the six sibling guides use.
-Line 83 adds the open question a claims paper would hit first, whether this desk's letters carry a sub-banner such as LESS IS MORE that the flagship's do not.
+`jamaim-letter/style.md` lines 82 to 84 name three items this guide still owes.
+> ✎ `jamaim-letter/style.md` lines 82 to 84 name three ~items: store~ *items this guide still owes. Store* one or two published JAMA IM Research Letters in ~`jama-im/examples/`, verify~ *`jama-im/examples/`. Verify* the word, reference and display ~caps~ *caps,* and the pipe-label ~formatting~ *formatting,* against current journal ~guidance, and measure~ *guidance. Measure* a Micro-norms block in the shape the six sibling guides use. · CC · 260802 1539
+Store one or two published JAMA IM Research Letters in `jama-im/examples/`.
+Verify the word, reference and display caps, and the pipe-label formatting, against current journal guidance.
+Measure a Micro-norms block in the shape the six sibling guides use.
+Line 83 adds the open question a claims paper would hit first: do this desk's letters carry a sub-banner such as LESS IS MORE, which the flagship's do not?
+> ✎ Line 83 adds the open question a claims paper would hit ~first, whether~ *first: do* this desk's letters carry a sub-banner such as LESS IS ~MORE that~ *MORE, which* the flagship's do ~not.~ *not?* · CC · 260802 1539
 
 #### 9.2 · Format values
 (not one of these is a JAMA Internal Medicine measurement; every figure below is inherited from the flagship letter guide)
@@ -746,9 +799,15 @@ Line 83 adds the open question a claims paper would hit first, whether this desk
 
 #### 9.3 · The language, in the papers' own words
 (there is nothing here to quote, and that absence is the finding)
-The letter guide carries no exemplar sentence of any kind: line 44 states that its format-level moves are carried over from the flagship guide and sends a reader to that file for the quotes, and line 5 records that the two named exemplars, Yang 2026 and Cantor 2025, are quoted there and not here.
+The letter guide carries no exemplar sentence of any kind.
+> ✎ The letter guide carries no exemplar sentence of any ~kind: line~ *kind. Line* 44 states that its format-level moves are carried over from the flagship ~guide~ *guide,* and sends a reader to that file for the ~quotes, and line~ *quotes. Line* 5 records that the two named exemplars, Yang 2026 and Cantor 2025, are quoted there and not here. · CC · 260802 1539
+Line 44 states that its format-level moves are carried over from the flagship guide, and sends a reader to that file for the quotes.
+Line 5 records that the two named exemplars, Yang 2026 and Cantor 2025, are quoted there and not here.
 So this division adds no quotation, because every sentence a writer could copy for a research letter at this desk today would be a JAMA flagship sentence wearing this desk's name.
-The nearest thing this outlet does own is the carry-over list at lines 53 to 58, which routes the effect and CI shapes to `jamaim-results`, the hedging to `jamaim-discussion`, and the software line to `jamaim-methods`, so the sentences a letter would actually reuse are the ones already quoted in divisions 5, 6 and 7 above.
+The nearest thing this outlet does own is the carry-over list at lines 53 to 58.
+> ✎ The nearest thing this outlet does own is the carry-over list at lines 53 to ~58, which~ *58. It* routes the effect and CI shapes to `jamaim-results`, the hedging to `jamaim-discussion`, and the software line to ~`jamaim-methods`, so~ *`jamaim-methods`. So* the sentences a letter would actually reuse are the ones already quoted in divisions 5, 6 and 7 above. · CC · 260802 1539
+It routes the effect and CI shapes to `jamaim-results`, the hedging to `jamaim-discussion`, and the software line to `jamaim-methods`.
+So the sentences a letter would actually reuse are the ones already quoted in divisions 5, 6 and 7 above.
 That routing is why the repair at lines 82 to 84 is worth doing rather than working around: the prose is already inherited safely, and what is missing is the measurement.
 
 ## Aims
@@ -852,7 +911,7 @@ That routing is why the repair at lines 82 to 84 is worth doing rather than work
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -862,7 +921,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Appendix-A` · appendix
 - `S-Main-0` of its OWN paper · letter, a standalone article format rather than a section of this one
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -875,18 +937,27 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-This desk buys a system-level insight about how care is organized, delivered, or made safe, so the same data framed as prevalence fails where the same data framed as variation with a safety consequence clears.
-Writing for this middle bar keeps the flagship above and Network Open below both reachable; writing for the flagship's bar closes the floor.
+- This desk buys a system-level insight about how care is organized, delivered, or made safe, so the same data framed as prevalence fails where the same data framed as variation with a safety consequence clears.
+  Write for this middle bar and both doors stay open, the flagship above and Network Open below.
+  Write for the flagship's bar instead and the door below shuts.
 
 ## Glossary
 
+- **Desk**: one journal's editors and what they buy. This page is about one desk, JAMA Internal Medicine.
+- **The pack**: the venue playbook at `playbook-jama-portfolio/`, holding the outlet table, one style guide per section kind, and the stored papers this page counts.
+- **Bar**: how high a finding has to reach for an outlet to take it. The flagship's bar is the highest of the three siblings and this desk's is the middle one.
+- **The pin**: the line in a paper's own file that names its target outlet, written once as `venue_outlet:` in `STATUS.md`.
 - **The ProjB lane**: the pack's own phrase for the prescribing / overuse / safety / health-services observational claim this repo's opioid work makes.
 - **Actionability**: what separates a prevalence description from a finding at this desk, and what two of its four desk-rejects turn on.
 
 ## Log
 
-260802 · Authority sub-block added at the end of Files, from the journal's own instructions rather than the pack. Two of the pack's measured figures are contradicted by stated limits: the Research Letter is 800 words with 10 references and 2 small tables and/or figures, not the 600 and 6 `jamaim-letter/style.md` inherits from the flagship, and the Key Points box is capped at 75-100 words, not the measured 80-120 at division 3. The 350-word abstract ceiling and the seven-label heading set are both confirmed, so A3.1's evidence now exists. Submission is Word, LaTeX is unnamed, and the `eItem N in Supplement M` form appears nowhere in the instructions.
-260802 · The one exemplar this pack tells a writer to mirror most closely is not on disk. `examples/schroeder-2019-jamaim-dental-opioid.md` calls itself the TARGET-OUTLET exemplar for the lane this repo targets and says the full PDF is stored beside it; no such PDF exists, and the note is 289 words about the paper rather than the paper. The outlet's paper count drops from 16 to 15, and the guides that cite Schroeder rest on a note.
+260802 · Plain-English pass over the whole page. 31 sentences were rewritten. Long ones are split at their hinge, one per line, and the bolted-on trailing clauses are gone. The Opening now answers its own question on stage, and names desk, flagship, lane and pack below it. The Glossary gained desk, pack, bar and pin. No fact, number, source line or exemplar name changed, and no Log line was removed.
+
+260802 · A `✎` record renders only inside Opening and Content, where all 26 of them sit. The Law and Log folds print a record raw instead, so the five written there were removed after reading the built page. They covered the four Log lines below, split into shorter sentences with nothing added or dropped, and Law's second line, rewritten from "keeps the flagship above and Network Open below both reachable ... closes the floor". Law's first line is untouched: `wdiff.py check` refuses a record anchored to a line starting with a dash, and that is how a Law rule row is written.
+
+260802 · Authority sub-block added at the end of Files, from the journal's own instructions rather than the pack. Two of the pack's measured figures are contradicted by stated limits. The Research Letter is 800 words with 10 references and 2 small tables and/or figures, not the 600 and 6 `jamaim-letter/style.md` inherits from the flagship. The Key Points box is capped at 75-100 words, not the measured 80-120 at division 3. The 350-word abstract ceiling and the seven-label heading set are both confirmed, so A3.1's evidence now exists. Submission is Word, LaTeX is unnamed, and the `eItem N in Supplement M` form appears nowhere in the instructions.
+260802 · The one exemplar this pack tells a writer to mirror most closely is not on disk. `examples/schroeder-2019-jamaim-dental-opioid.md` calls itself the TARGET-OUTLET exemplar for the lane this repo targets, and says the full PDF is stored beside it. No such PDF exists, and the note is 289 words about the paper rather than the paper. The outlet's paper count drops from 16 to 15, and the guides that cite Schroeder rest on a note.
 260802 · Opened with the QBv outlet pages, from `playbook-jama-portfolio/jama-im` at `Venue-Paper@fe25a88`.
-260802 · Added divisions 3 to 9, one per section kind, from the seven `jamaim-<kind>` style and template pairs; folded the retired family page's shared abstract apparatus and its `venue_outlet:` descent pin into 3.2; relaxed the Writing Style bullet to allow a measured number with its source named inline.
-260802 · Gave each of the seven section divisions a Format values block and a quotation block, in the shape `QBv1` and `QBv2` already use; recorded value density as not recorded by the pack in all seven, since no `jamaim-<kind>/style.md` measures it and the only extracted-text exemplar on disk is a note about Schroeder 2019 rather than the paper's own text; marked every letter figure as inherited from the flagship and left 9.3 without quotations because that guide stores none.
+260802 · Added divisions 3 to 9, one per section kind, from the seven `jamaim-<kind>` style and template pairs. Folded the retired family page's shared abstract apparatus and its `venue_outlet:` descent pin into 3.2. Relaxed the Writing Style bullet to allow a measured number with its source named inline.
+260802 · Gave each of the seven section divisions a Format values block and a quotation block, in the shape `QBv1` and `QBv2` already use. Recorded value density as not recorded by the pack in all seven, since no `jamaim-<kind>/style.md` measures it and the only extracted-text exemplar on disk is a note about Schroeder 2019 rather than the paper's own text. Marked every letter figure as inherited from the flagship, and left 9.3 without quotations because that guide stores none.

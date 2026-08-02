@@ -206,16 +206,27 @@ One question may be cited by more than one claim, which is how the ledger links 
   📄 S-Venue-2-narrative.md     🔨 draft · probe · revise · check
   ⚠️ family Venue, unit 2 ── the arc is Work's, the FAMILY is not
 
-  📚 ## Content · one division PER SECTION   🎯 ## Aims · mirrored
-  ────────────────────────────────────────   ──────────────────────
-  ### 1 · Spine (throughline)         ━━▶    ### A1 · 🪢 Spine
-        problem ▸ move ▸ finding ▸ so-what
-  ### 2 · Introduction                ━━▶    ### A2 · 📖 Introduction
-  ### 3 · Methods                     ━━▶    ### A3 · 🔬 Methods
-  ### 4 · Results                     ━━▶    ### A4 · 📊 Results
-  ### 5 · Discussion                  ━━▶    ### A5 · 💬 Discussion
-  ### 6 · Footer Ledger               ━━▶    ### A6 · 📒 Footer Ledger
+  📚 ## Content · one division PER SECTION OF THIS PAPER
+  ─────────────────────────────────────────────────────────────
+  ### 1 · Spine (throughline)   problem ▸ move ▸ finding ▸ so-what
+  ### 2 · Abstract              venue-section: abstract
+  ### 3 · Introduction          venue-section: introduction
+  ### 4 · Literature            venue-section: theory      ⟵ SPLIT
+  ### 5 · Theory                venue-section: theory      ⟵ SPLIT
+  ### 6 · Measurement           venue-section: methods     ⟵ SPLIT
+  ### 7 · Empirical             venue-section: methods     ⟵ SPLIT
+  ### 8 · Results               venue-section: results
+  ### 9 · Discussion            venue-section: discussion
+  ### 10 · Conclusion           venue-section: —           ⟵ ADDED
+  ### 11 · Footer Ledger
 
+  🏛 the LIST comes from the venue, not from the template
+     playbook-utd-is/MISQ/MISQ-<section>/style.md ── 7 sections, measured
+        ━━▶ S-Venue-0 Structural Blueprint ── transcribed, per section
+        ━━▶ HERE ── one division per section THIS paper writes
+        ━━▶ section-edit units_from ── one S-Main page per division
+  📌 every division carries venue-section: and Adaptation:
+     the style rules come FROM the venue section it points at
   🏷 every beat carries a READINESS tag: [LIT] · [READY] · …
   🪢 everything below the spine must serve that one line
 ```
@@ -227,12 +238,19 @@ One question may be cited by more than one claim, which is how the ledger links 
 It runs problem and stakes, then the move this paper introduces, then the core finding, then what it is and is not.
 A beat anywhere below that does not serve the spine is a beat the arc does not need, which is the only pruning rule this stage has.
 
-#### 4.2 · The divisions mirror the manuscript, which is what "section-mirrored" means
-(Introduction, Methods, Results, Discussion, each a story paragraph plus its key points)
-Each section division carries a short draft-quality paragraph in plain language, then numbered key points to cover.
+#### 4.2 · The section list comes from the venue, and this page adapts it
+(the venue says how a paper of this journal reads; this page says how THIS paper is cut)
+A venue playbook holds one folder per section with its own measured `style.md`, and MISQ has seven.
+The venue stage transcribes those into `S-Venue-0`'s Structural Blueprint, and this page turns them into one division per section this paper actually writes.
+A paper may SPLIT one venue section into two divisions, or ADD one the venue does not list, and each division records which venue section it obeys and why it diverged.
+The style rules still come from the venue section a division points at, so splitting changes the cut and never the norms.
+
+#### 4.3 · Each division is a story paragraph plus its key points
+(draft-quality plain language first, then the numbered beats that carry it)
+Each section division carries a short paragraph in plain language, then numbered key points to cover.
 That is why this stage is the bridge to QB6 Main: the divisions are already the sections, so Main inherits an order rather than inventing one.
 
-#### 4.3 · A readiness tag says which beat is real and which is still owed
+#### 4.4 · A readiness tag says which beat is real and which is still owed
 (`[LIT]` needs a citation, `[READY]` is settled, and the legend defines the rest)
 Every key point carries a tag, so the arc reports its own completeness rather than reading as finished prose.
 That is what lets this concern's gate eventually test the arc: a section whose beats are all tagged owed is not ready, whatever the paragraph reads like.
@@ -293,6 +311,8 @@ So the reader's rule is the one in `§1.3`: the filename says which family wrote
   **Done when:** no claim in a ledger is statusless, and each names its `[Q-Claim-<n>]` evidence inline.
 
 ### A4 · 🧵 Stage Narrative
+- A4.0 · The narrative template stops hardcoding a section list.
+  **Done when:** `3-narrative/template.md` takes its divisions from the venue's Structural Blueprint instead of naming Introduction, Methods, Results and Discussion itself.
 - A4.1 · The arc is section-mirrored, so Main inherits an order rather than inventing one.
   **Done when:** a narrative page's divisions are the manuscript sections, and QB6 Main's units map onto them one to one.
 - A4.2 · Every beat carries a readiness tag, so the arc reports its own completeness.
@@ -300,6 +320,8 @@ So the reader's rule is the one in `§1.3`: the filename says which family wrote
 
 ### A5 · 📋 What the paper board shows
 - A5.1 · The live Work group holds all three of this concern's pages.
+- A5.2 · Resource and claims split into per-unit pages under a control page each.
+  **Done when:** a paper carries `S-Work-R` plus one `S-Work-R<n>` per resource, and `S-Work-C` plus one `S-Work-C<n>` per claim.
   **Done when:** `S-Venue-2-narrative.md` is listed under `Delivery · Work` on the MISQ paper rather than under `Delivery · Opening`.
 
 ### P · 🏁 Page-level
@@ -323,10 +345,12 @@ So the reader's rule is the one in `§1.3`: the filename says which family wrote
 - 🔨 A3.2 · Written into `§3.2` and `§3.3`. The three-word vocabulary is in the template; nothing checks that a live ledger uses it.
 
 ### A4 · 🧵 Stage Narrative
-- 🔨 A4.1 · Written into `§4.2`. The template's divisions are Introduction, Methods, Results, and Discussion; whether QB6 Main's units map one to one has not been verified on a real paper.
+- ✅ A4.0 · Done 260802. `3-narrative/template.md` gained a `## Sections: where the list comes from` block that sends the author to `S-Venue-0-venue.md`'s Structural Blueprint, with a worked MISQ example showing seven venue sections becoming nine paper sections. The old four are kept, relabelled `## FALLBACK sections (use only when no venue blueprint exists)`, so papers drafted before their venue is pinned still have a skeleton. `3-narrative/stage.md`'s `sections:` list now carries `<venue sections>` in the middle instead of the four names.
+- 🔨 A4.1 · Written into `§4.3`. The template's divisions are Introduction, Methods, Results, and Discussion; whether QB6 Main's units map one to one has not been verified on a real paper.
 - 🔨 A4.2 · Written into `§4.3`. The readiness legend is the template's first section, so the tags exist; no check reports an untagged beat.
 
 ### A5 · 📋 What the paper board shows
+- 🔨 A5.2 · Ruled by JL on 260802, option A: the letter says the stage and the number says the unit, so `S-Work-R` is the resources control and `S-Work-R1` one resource. Blocked on the parser, which rejects a capital-plus-digit unit; QB0 A3.2 carries that.
 - ❄️ A5.1 · Ruled and held. JL answered A on 260802, so the move is decided and recorded in `## Law`; the edit itself is parked while we work the Paper Skill-Board, and it thaws when we turn to the MISQ paper.
 
 ### P · 🏁 Page-level
@@ -348,14 +372,21 @@ So the reader's rule is the one in `§1.3`: the filename says which family wrote
 
 ## Law
 
-Paper never performs discovery or computation inline.
-Work records the need and grows the owning bank through probes.
-Narrative is Work's: the arc is built from the claim ledger, never from the promise (JL 260802: "I think the narrative should go to the Work as well").
-Hypotheses stay venue-neutral on the claims page; the venue-specific reframing belongs to pitch.
+- Paper never performs discovery or computation inline.
+  Work records the need and grows the owning bank through probes.
+  Narrative is Work's: the arc is built from the claim ledger, never from the promise (JL 260802: "I think the narrative should go to the Work as well").
+  Hypotheses stay venue-neutral on the claims page; the venue-specific reframing belongs to pitch.
 
-**The MISQ paper's narrative page moves into this group** (JL 260802, answering Decision Now with "A": "yes, we will do").
-It is one line in the paper's `0-lifecycle/board.md`, with no rename and no file move.
-Rejected: taking back the 260802 narrative ruling, and letting paper boards lag this board by policy, which would leave a reader unable to trust either board about where a stage lives.
+- 🔠 **In Work the letter says the stage and the number says the unit** (JL 260802, choosing option A).
+  `R` resource, `C` claims, `N` narrative; `S-Work-R` is the control page and `S-Work-R1` is one resource.
+  Resource and claims split because QC3b's test says a stage is per-unit exactly when one unit can be approved while another is rejected; narrative does not split, because a paper has one arc.
+  Rejected: reusing the existing `0a` and `1b` shape, which parses today with no code change but buries the stage behind a number and breaks every name if two stages swap order.
+- **The section list comes from the venue, and the paper adapts it** (JL 260802, answering with "A").
+  A narrative page carries one division per section THIS paper writes, and each division records the venue section it obeys plus why it split or added.
+  Rejected: treating the venue's list as a contract the paper must match exactly, which would have forced the MISQ paper's nine sections to merge into seven and would have put the venue's `appendix` section inside a page whose only consumer builds Main.
+- **The MISQ paper's narrative page moves into this group** (JL 260802, answering Decision Now with "A": "yes, we will do").
+  It is one line in the paper's `0-lifecycle/board.md`, with no rename and no file move.
+  Rejected: taking back the 260802 narrative ruling, and letting paper boards lag this board by policy, which would leave a reader unable to trust either board about where a stage lives.
 
 ## Glossary
 
@@ -366,6 +397,9 @@ Rejected: taking back the 260802 narrative ruling, and letting paper boards lag 
 
 ## Log
 
+260802 · JL chose option A for unit naming: letter for the stage, number for the unit. The Law carries it with the rejected `0a` shape and why it lost. Narrative keeps `board_family: Venue`, because the family records whether a retarget rewrites a page and narrative is venue-aligned; `S-Work-N` stays available if JL would rather the family follow the concern.
+260802 · A4.0 closed. The narrative template and contract stop hardcoding a section list: both now point at the venue's Structural Blueprint, each section carries `venue-section:` and `Adaptation:`, and the four generic ones survive as a labelled fallback so papers written before a venue is pinned do not break.
+260802 · JL ruled A on the section list: the venue supplies it and the paper adapts it. `§4` now shows the divisions as THIS paper's nine sections, each carrying `venue-section:` and `Adaptation:`, with the chain drawn from the venue playbook through the Structural Blueprint to `section-edit`'s `units_from`. A4.0 opened on the real defect: the narrative template hardcodes four generic sections, the venue knows seven, and the paper built nine.
 260802 · JL ruled option A: the narrative page moves into this group on the MISQ paper. The ruling is in `## Law` with its rejected options; the edit is parked, because JL asked to stay on the Paper Skill-Board, so A5.1 is ❄️ held rather than done.
 260802 · JL: the decision row was hard to read in one pass. Rewritten in short sentences, with the disagreement stated as two facts rather than one long clause.
 260802 · JL: a decision belongs in `### Decision Now` where he can tick it, not in a chat reply. States gained its first Decision Now row, on whether the MISQ narrative page moves into this group, and A5.1 now points at it instead of describing it.

@@ -225,13 +225,11 @@ Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Ever
   The permitted worker routes and stop conditions.
 
 ## Law
-**The Board is the control plane.** A person sees, starts, steers and resumes paper work from a page. A CLI may remain an internal execution mechanism or a recovery path, and never the front door.
 
-**`## Items to Finish` is the queue.** The page's item list IS the executable queue; no second queue file is created anywhere. A queue held outside the page is a second copy of the truth and will disagree with it.
-
-**A completed item's handoff stays on that item.** The result of finishing a queue item is recorded on the item that asked for it. No `_DISPLAY_REQUEST.md`, no handoff sidecar, no per-change request file.
-
-**The runner is page-first.** `haipipe-paper-stage` is invoked with a page and an item, resolves the one stage contract that page needs, dispatches a bounded worker, and returns the result to that same page. A session is ephemeral; everything it needed was on the page, and everything it produced goes back there.
+- **The Board is the control plane.** A person sees, starts, steers and resumes paper work from a page. A CLI may remain an internal execution mechanism or a recovery path, and never the front door.
+- **`## Items to Finish` is the queue.** The page's item list IS the executable queue; no second queue file is created anywhere. A queue held outside the page is a second copy of the truth and will disagree with it.
+- **A completed item's handoff stays on that item.** The result of finishing a queue item is recorded on the item that asked for it. No `_DISPLAY_REQUEST.md`, no handoff sidecar, no per-change request file.
+- **The runner is page-first.** `haipipe-paper-stage` is invoked with a page and an item, resolves the one stage contract that page needs, dispatches a bounded worker, and returns the result to that same page. A session is ephemeral; everything it needed was on the page, and everything it produced goes back there.
 
 ## Log
 260726 · Merged from four faces. Its `## Law` was empty after the merge, which a cold-read review caught: a face about how work runs, on a board whose close condition is that Laws graduate, had nothing to graduate. Written from its four seams.

@@ -6,7 +6,12 @@ method: state what Nature Human Behaviour requires of behavioral evidence, and r
 
 ## Opening
 
-Two of this desk's three rejections are about who was studied and one is about whether anything was explained. Together they make an unusual demand: prove the behavior generalizes, and say why it happens. So what does that rule out?
+What does Nature Human Behaviour turn a paper down for?
+> ✎ *What does Nature Human Behaviour turn a paper down for?* Two of ~this desk's~ *its* three *stated* rejections are about who was ~studied~ *studied,* and ~one~ *the third* is about whether anything was explained. ~Together they make an unusual demand: prove~ *One of them names WEIRD samples: Western, educated, industrialized, rich and democratic, sold as a claim about humans. So this desk asks two things of one paper: show* the ~behavior generalizes,~ *finding holds beyond the group you sampled,* and say why ~it~ *the behavior* happens. ~So~ *This page records* what ~does that rule out?~ *each section has to do to meet both.* · CC · 260802 1542
+Two of its three stated rejections are about who was studied, and the third is about whether anything was explained.
+One of them names WEIRD samples: Western, educated, industrialized, rich and democratic, sold as a claim about humans.
+So this desk asks two things of one paper: show the finding holds beyond the group you sampled, and say why the behavior happens.
+This page records what each section has to do to meet both.
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-nature-portfolio/nature-human-behaviour/`.
@@ -80,7 +85,9 @@ Every one of those guides was distilled from the same three papers, so a cited n
      ── and nothing in this repo's lifecycle records that
 ```
 
-👥 Establishes this as a claim-scope rejection rather than a design rejection, which makes it the rare Nature bar a rewrite can clear.
+👥 Establishes this as a rejection of what the paper claims, not of how it was designed.
+> ✎ 👥 Establishes this as a ~claim-scope~ rejection ~rather than a design rejection, which~ *of what the paper claims, not of how it was designed. That* makes it the rare Nature bar a rewrite can clear. · CC · 260802 1542
+That makes it the rare Nature bar a rewrite can clear.
 
 #### 1.1 · A US-claims-data study is a bounded population, not a universal one
 (which is the shape this repo's own work has)
@@ -147,7 +154,9 @@ Framed as a claim about that population it is honest; framed as a claim about ph
      closing on a metric or a technique
 ```
 
-📄 Establishes that move S4 is where a reader first meets the population, so 150 words are enough room to commit the claim-scope error this desk rejects for.
+📄 Establishes that move S4 is where a reader first meets the population.
+> ✎ 📄 Establishes that move S4 is where a reader first meets the ~population, so~ *population. So* 150 words ~are~ *leave* enough room to ~commit~ *overstate who* the ~claim-scope~ *finding covers, and that is the* error this desk rejects for. · CC · 260802 1542
+So 150 words leave enough room to overstate who the finding covers, and that is the error this desk rejects for.
 
 #### 3.1 · The abstract carries no citation and no display
 (a measured absence, not a house preference)
@@ -181,7 +190,9 @@ All three exemplars carry zero reference superscripts inside the abstract, per t
                        nhb-abstract/template.md lines 30 and 79
 ```
 
-📏 Establishes the abstract as the one place this outlet's numbers were counted rather than read off a page span, which makes every other section's budget weaker evidence than this one.
+📏 Establishes the abstract as the one place this outlet's numbers were counted rather than read off a page span.
+> ✎ 📏 Establishes the abstract as the one place this outlet's numbers were counted rather than read off a page ~span, which makes every~ *span. Every* other section's budget *is* weaker evidence than this one. · CC · 260802 1542
+Every other section's budget is weaker evidence than this one.
 
 #### 3.3 · The language, in the papers' own words
 (four moves from `nhb-abstract/style.md`, one quotation each, all three exemplars represented)
@@ -235,11 +246,15 @@ All three exemplars carry zero reference superscripts inside the abstract, per t
      universality claimed from a WEIRD or single-population sample
 ```
 
-🌍 Establishes that at this desk the gap sentence and the scope sentence are the same sentence, which is why an introduction written around a technical unknown reads as having no gap at all.
+🌍 Establishes that at this desk the gap sentence and the scope sentence are the same sentence.
+> ✎ 🌍 Establishes that at this desk the gap sentence and the scope sentence are the same ~sentence, which is why~ *sentence. So* an introduction written around a technical unknown reads as having no gap at all. · CC · 260802 1542
+So an introduction written around a technical unknown reads as having no gap at all.
 
 #### 4.1 · A scope caveat belongs in the introduction, not only the discussion
 (signature move 6, and the guide calls it reflexivity the desk rewards)
-`nhb-introduction/style.md` lines 88-92 record cologna-2025 disclaiming its own frame inside the introduction: "By investigating trust in scientists, we do not mean to imply that trust is always warranted."
+`nhb-introduction/style.md` lines 88-92 record cologna-2025 limiting its own claim inside the introduction.
+> ✎ `nhb-introduction/style.md` lines 88-92 record cologna-2025 ~disclaiming~ *limiting* its own ~frame~ *claim* inside the ~introduction:~ *introduction. The quoted sentence is* "By investigating trust in scientists, we do not mean to imply that trust is always warranted." · CC · 260802 1542
+The quoted sentence is "By investigating trust in scientists, we do not mean to imply that trust is always warranted."
 A paper that waits until the discussion to bound its population has already spent an introduction selling the wider claim.
 
 #### 4.2 · Format values
@@ -328,22 +343,33 @@ A paper that waits until the discussion to bound its population has already spen
      heavy citation inside the contribution paragraph
 ```
 
-📚 Establishes that the `related-work` kind writes a plan for three other sections and never a section under its own name, which makes it the only kind whose output never appears in the manuscript as itself.
+📚 Establishes that the `related-work` kind writes a plan for three other sections and never a section under its own name.
+> ✎ 📚 Establishes that the `related-work` kind writes a plan for three other sections and never a section under its own ~name, which makes it~ *name. It is* the only kind whose output never appears in the manuscript as itself. · CC · 260802 1542
+It is the only kind whose output never appears in the manuscript as itself.
 
 #### 5.1 · A declared kind whose output the manuscript never shows as a section
 (both statements are right, which is exactly why it needs saying)
-`stages/section-kinds.yml` lists `related-work` for all five Nature outlets and for no outlet in any other pack, commenting that it "situates against prior literature", which distinguishes it from the IS family's `theory`, a kind that develops a model instead.
+`stages/section-kinds.yml` lists `related-work` for all five Nature outlets and for no outlet in any other pack.
+> ✎ `stages/section-kinds.yml` lists `related-work` for all five Nature outlets and for no outlet in any other ~pack, commenting that it~ *pack. Its comment says the kind* "situates against prior literature", which ~distinguishes~ *sets* it *apart* from the IS family's `theory`, a kind that develops a model instead. · CC · 260802 1542
+Its comment says the kind "situates against prior literature", which sets it apart from the IS family's `theory`, a kind that develops a model instead.
 `nhb-related-work/style.md` line 128 then forbids the section that name implies, and `playbook-nature-portfolio/README.md` line 127 states the same rule for the whole pack, citing every `*-related-work/style.md`.
-The resolution is that the unit drafts a distributed positioning narrative rather than a heading: which camp goes in the introduction, which contrast goes in the discussion, which benchmark rate goes in the results.
+The resolution is that this kind drafts a placement plan rather than a heading.
+> ✎ The resolution is that ~the unit~ *this kind* drafts a ~distributed positioning narrative~ *placement plan* rather than a ~heading:~ *heading. It says* which camp goes in the introduction, which contrast goes in the discussion, *and* which benchmark rate goes in the results. · CC · 260802 1542
+It says which camp goes in the introduction, which contrast goes in the discussion, and which benchmark rate goes in the results.
 
 The consequence for a paper board is concrete.
-`section-edit` still runs on this unit and still writes it an `S-Main-<n>` page like any other kind, but that page projects into three other sections instead of into one heading of its own.
+`section-edit` still runs on this kind and still writes it an `S-Main-<n>` page, like any other kind.
+> ✎ `section-edit` still runs on this ~unit~ *kind* and still writes it an `S-Main-<n>` ~page~ *page,* like any other ~kind, but~ *kind. But* that page projects into three other sections instead of into one heading of its own. · CC · 260802 1542
+But that page projects into three other sections instead of into one heading of its own.
 It is the only stage page on a Nature-pinned paper whose approval does not produce a section a reader can point to.
 
 #### 5.2 · Two placements are NHB-specific inside the Nature family
 (the organizing axis, and the one inline citation the desk allows)
 `nhb-related-work/style.md` lines 143-152 separate this desk from its siblings on two counts.
-Nature Medicine organizes introduction prior work by clinical evidence tier, while this desk organizes it by disciplinary camp or by generalizability scope, and NHB embeds more benchmark anchoring in the Results than Nature Medicine does.
+Nature Medicine organizes introduction prior work by clinical evidence tier.
+> ✎ Nature Medicine organizes introduction prior work by clinical evidence ~tier, while this~ *tier. This* desk organizes it by disciplinary camp or by generalizability ~scope, and~ *scope instead.* NHB ~embeds~ *also anchors* more ~benchmark anchoring~ *benchmarks* in the Results than Nature Medicine does. · CC · 260802 1542
+This desk organizes it by disciplinary camp or by generalizability scope instead.
+NHB also anchors more benchmarks in the Results than Nature Medicine does.
 Like Nature Communications, it will name one prior author inline in the Discussion when a study is being directly extended, which NMI and Nature Medicine avoid.
 
 #### 5.3 · Every norm on this page rests on three papers
@@ -351,7 +377,12 @@ Like Nature Communications, it will name one prior author inline in the Discussi
 `nhb-related-work/style.md` line 3 declares itself extracted from 3 exemplars, against 8 for NMI, 9 for npj Digital Medicine, 11 for Nature Communications, and 14 for Nature Medicine.
 All seven `nhb-<section>/style.md` guides declare the same three papers, cologna-2025, gachter-2025, and fillingim-2025, so every budget and count in divisions 3 through 9 rests on that base.
 Sixteen exemplar PDFs sit on disk for this outlet, as the exemplars block below lists, which means thirteen of them have never been mined.
-Each guide says so itself: the caveat blocks mark ranges as indicative rather than authoritative, and mark exact reference counts and word budgets as "to verify" because they were estimated from page span and from citation superscripts that partly drop in text extraction.
+Each guide says so itself.
+> ✎ Each guide says so ~itself: the~ *itself. The* caveat blocks mark *their* ranges as indicative rather than ~authoritative, and~ *authoritative. They also* mark exact reference counts and word budgets as "to ~verify"~ *verify",* because ~they~ *both* were estimated ~from~ *rather than counted. One source of the estimate is* page ~span and from~ *span. The other is* citation ~superscripts that~ *superscripts, which* partly drop in text extraction. · CC · 260802 1542
+The caveat blocks mark their ranges as indicative rather than authoritative.
+They also mark exact reference counts and word budgets as "to verify", because both were estimated rather than counted.
+One source of the estimate is page span.
+The other is citation superscripts, which partly drop in text extraction.
 
 #### 5.4 · Format values
 (the only kind with no size target at all, because it writes no section to size)
@@ -456,14 +487,22 @@ Each guide says so itself: the caveat blocks mark ranges as indicative rather th
 (two published papers say the thing a draft is tempted to omit)
 `nhb-methods/style.md` line 54 records gachter-2025 writing "The experiments were not pre-registered." and line 62 records "No statistical methods were used to predetermine sample sizes."
 Both papers ran in the journal.
-The anti-patterns at lines 124-128 target the omission rather than the negative: a Methods that leaves pre-registration implicit misses a Reporting Summary requirement, while one that denies it plainly does not.
+The anti-patterns at lines 124-128 target the omission rather than the negative.
+> ✎ The anti-patterns at lines 124-128 target the omission rather than the ~negative: a~ *negative. A* Methods that leaves pre-registration implicit misses a Reporting Summary requirement, while one that denies it plainly does not. · CC · 260802 1542
+A Methods that leaves pre-registration implicit misses a Reporting Summary requirement, while one that denies it plainly does not.
 
 #### 6.2 · The subsection roster changes with the design
 (three rosters, one per exemplar, at lines 137-168)
-A survey paper carries about ten subsections: overview, IRB, questionnaire and consent, measures, preregistration with deviations, power analysis, data collection, data preparation, analyses, availability.
-An experimental paper carries about seven: ethics and consent, common procedures, an overview of all experiments with per-experiment N, reporting conventions, task and construct detail, payments, availability.
+A survey paper carries about ten subsections.
+> ✎ A survey paper carries about ten ~subsections:~ *subsections. They are* overview, IRB, questionnaire and consent, measures, preregistration with deviations, power analysis, data collection, data preparation, analyses, *and* availability. · CC · 260802 1542
+They are overview, IRB, questionnaire and consent, measures, preregistration with deviations, power analysis, data collection, data preparation, analyses, and availability.
+An experimental paper carries about seven subsections.
+> ✎ An experimental paper carries about ~seven:~ *seven subsections. They are* ethics and consent, common procedures, an overview of all experiments with per-experiment N, reporting conventions, task and construct detail, payments, *and* availability. · CC · 260802 1542
+They are ethics and consent, common procedures, an overview of all experiments with per-experiment N, reporting conventions, task and construct detail, payments, and availability.
 An ML-prediction paper carries about six: cohort and ethics, predictor modalities, outcome definitions, statistical analysis, external validation, availability.
-Picking the wrong roster shows up as a missing subsection rather than as weak prose, which is why the count range at micro-norms line 189 runs so wide.
+Picking the wrong list of subsections shows up as a missing subsection rather than as weak prose.
+> ✎ Picking the wrong ~roster~ *list of subsections* shows up as a missing subsection rather than as weak ~prose, which is why the~ *prose. The* count range at micro-norms line 189 runs ~so wide.~ *wide for that reason.* · CC · 260802 1542
+The count range at micro-norms line 189 runs wide for that reason.
 
 #### 6.3 · Format values
 (the section that records the population, sized by a method the guide itself calls page span)
@@ -675,7 +714,9 @@ That makes the pre-registration commitment recorded in Methods something the Res
 
 #### 8.1 · The pairing is what makes a limitation publishable
 (a weakness with no next step reads as a defect)
-`nhb-discussion/style.md` lines 81-89 record every exemplar limitation arriving with a concrete follow-on, and lines 156-157 note that this desk's future directions are disproportionately "test this cross-culturally" or "within-subject".
+`nhb-discussion/style.md` lines 81-89 record every exemplar limitation arriving with a concrete follow-on.
+> ✎ `nhb-discussion/style.md` lines 81-89 record every exemplar limitation arriving with a concrete ~follow-on, and lines~ *follow-on. Lines* 156-157 note that this desk's future directions ~are disproportionately~ *run heavily to* "test this cross-culturally" or "within-subject". · CC · 260802 1542
+Lines 156-157 note that this desk's future directions run heavily to "test this cross-culturally" or "within-subject".
 Lines 176-177 caveat the count as well: gachter-2025 enumerates five limitations, so the 1-3 paragraph bound at line 145 is approximate rather than a cap.
 
 #### 8.2 · Format values
@@ -773,12 +814,20 @@ Lines 176-177 caveat the count as well: gachter-2025 enumerates five limitations
      a supplementary item referenced generically, with no number
 ```
 
-📦 Establishes the 10-item Extended Data cap as the only hard count anywhere in this pack, and the triage rule as what decides which side of it a display unit lands on.
+📦 Establishes the 10-item Extended Data cap as the only hard count anywhere in this pack.
+> ✎ 📦 Establishes the 10-item Extended Data cap as the only hard count anywhere in this ~pack, and the~ *pack. The* triage rule ~as~ *is* what decides which side of it a ~display unit~ *figure or table* lands on. · CC · 260802 1542
+The triage rule is what decides which side of it a figure or table lands on.
 
 #### 9.1 · The rule of thumb the pack states for the split
 (one sentence, and it decides most cases)
-`nhb-appendix/style.md` lines 92-95 give the test: a peer-reviewed figure or table needed to verify a main-text number but not needed to follow the argument goes to Extended Data under the cap, and anything bulky, tabular, or instrument-shaped goes to Supplementary Information.
-Lines 152-154 caveat that the split varies by paper, since tabular-heavy surveys lean on Supplementary while figure-heavy studies use Extended Data, so the observed item counts are instances rather than norms.
+`nhb-appendix/style.md` lines 92-95 give the test.
+> ✎ `nhb-appendix/style.md` lines 92-95 give the ~test: a~ *test. A* peer-reviewed figure or table needed to verify a main-text ~number~ *number,* but not needed to follow the ~argument~ *argument,* goes to Extended Data under the ~cap, and anything~ *cap. Anything* bulky, tabular, or instrument-shaped goes to Supplementary Information. · CC · 260802 1542
+A peer-reviewed figure or table needed to verify a main-text number, but not needed to follow the argument, goes to Extended Data under the cap.
+Anything bulky, tabular, or instrument-shaped goes to Supplementary Information.
+Lines 152-154 caveat that the split varies by paper.
+> ✎ Lines 152-154 caveat that the split varies by ~paper, since tabular-heavy surveys lean~ *paper. A survey heavy in tables leans* on ~Supplementary~ *Supplementary,* while ~figure-heavy studies use~ *a study heavy in figures uses* Extended ~Data, so~ *Data. So* the observed item counts are instances rather than norms. · CC · 260802 1542
+A survey heavy in tables leans on Supplementary, while a study heavy in figures uses Extended Data.
+So the observed item counts are instances rather than norms.
 
 #### 9.2 · Sample composition can itself be a display unit
 (fillingim-2025 made it one)
@@ -939,7 +988,7 @@ It is also the concrete shape the unscored gap in this page's Opening would take
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -949,7 +998,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -962,7 +1014,10 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-This desk's central rejection is a claim-scope error rather than a design error: the sample is not the defect, selling it as universal is, so a paper that states its population honestly can clear a bar that the same data sold wider cannot.
+This desk's central rejection is about what a paper claims, not about how it was designed.
+> ✎ This desk's central rejection is *about what* a ~claim-scope error rather than a design error: the~ *paper claims, not about how it was designed. The* sample is not the ~defect,~ *defect;* selling it as universal ~is, so~ *is. So* a paper that states its population honestly can clear a bar that the same ~data~ *data,* sold ~wider~ *wider,* cannot. · CC · 260802 1542
+The sample is not the defect; selling it as universal is.
+So a paper that states its population honestly can clear a bar that the same data, sold wider, cannot.
 A mechanism demand is shared by four desks across two packs, which makes carrying one the most portable property a paper has.
 
 ## Glossary
@@ -973,7 +1028,28 @@ A mechanism demand is shared by four desks across two packs, which makes carryin
 ## Log
 
 260802 · Opened with the QBv outlet pages, from `playbook-nature-portfolio/nature-human-behaviour` at `Venue-Paper@fe25a88`.
-260802 · Added §3-§9, one division per section kind, from the seven `nhb-<section>/style.md` guides and their `template.md` siblings; folded in the retired family page (`playbook-nature-portfolio/README.md`, `style-profile.md`); relaxed the Writing Style bullet to allow a number that names its source.
-260802 · §5 recorded as the pack's sharpest fact: `related-work` is declared for all five Nature outlets and for no outlet elsewhere, yet `nhb-related-work/style.md` line 128 and `README.md` line 127 forbid the section, so `section-edit` writes it an `S-Main-<n>` page that projects into three other sections. §5.3 records the evidence base: 3 exemplars here against 8, 9, 11, and 14 at the siblings, with 13 of this outlet's 16 PDFs never mined.
-260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. It settles the hole the entry below records: the 10-item Extended Data cap is no longer inherited from the NMI and Nature Medicine appendix guides, because this journal states it itself, as "A maximum of 10 Extended Data display figures is permitted", where the unit is display FIGURES rather than items. It CONFIRMS the no-standalone-Related-Work rule from an exhaustive four-block Article division, and records that Article, Registered Report and Resource all share it. On LaTeX: TeX/LaTeX at both stages, no journal class file, and the journal's own link to the Springer Nature LaTeX template, whose URL is now recorded.
-260802 · Added a `Format values` block and a quotation block to each of §3-§9, from the seven `nhb-<kind>/style.md` micro-norm tables and their `template.md` siblings. Of the four metrics, only the abstract's word count is a real count (`nhb-abstract/style.md` line 155); Methods, Results, and Discussion word budgets say "estimated from page span" in their own caveats; every citation density is an estimate under the pdftotext superscript-drop caveat, and the introduction's rests on gachter-2025 alone; VALUE DENSITY is recorded by no guide; the appendix's 10-item Extended Data cap is inherited from the NMI and Nature Medicine appendix guides and is restated by no NHB exemplar. Nothing was measured: this outlet's `examples/` holds 16 PDFs and no extracted-text `.md`, so no exemplar could be counted without opening a PDF.
+260802 · Added §3-§9, one division per section kind, from the seven `nhb-<section>/style.md` guides and their `template.md` siblings.
+> ✎ 260802 · Added §3-§9, one division per section kind, from the seven `nhb-<section>/style.md` guides and their `template.md` ~siblings; folded~ *siblings. 260802 · Folded* in the retired family page (`playbook-nature-portfolio/README.md`, ~`style-profile.md`); relaxed~ *`style-profile.md`). 260802 · Relaxed* the Writing Style bullet to allow a number that names its source. · CC · 260802 1542
+260802 · Folded in the retired family page (`playbook-nature-portfolio/README.md`, `style-profile.md`).
+260802 · Relaxed the Writing Style bullet to allow a number that names its source.
+260802 · §5 recorded as the pack's sharpest fact: `related-work` is declared for all five Nature outlets and for no outlet elsewhere.
+> ✎ 260802 · §5 recorded as the pack's sharpest fact: `related-work` is declared for all five Nature outlets and for no outlet ~elsewhere, yet~ *elsewhere. 260802 · §5 also records that* `nhb-related-work/style.md` line 128 and `README.md` line 127 forbid the ~section, so~ *section. 260802 · So* `section-edit` writes it an `S-Main-<n>` page that projects into three other sections. *260802 ·* §5.3 records the evidence base: 3 exemplars here against 8, 9, 11, and 14 at the siblings, with 13 of this outlet's 16 PDFs never mined. · CC · 260802 1542
+260802 · §5 also records that `nhb-related-work/style.md` line 128 and `README.md` line 127 forbid the section.
+260802 · So `section-edit` writes it an `S-Main-<n>` page that projects into three other sections.
+260802 · §5.3 records the evidence base: 3 exemplars here against 8, 9, 11, and 14 at the siblings, with 13 of this outlet's 16 PDFs never mined.
+260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day.
+> ✎ 260802 · Added an 🔗 Authority block to `## Files`, from the journal's own pages fetched and verified that day. ~It~ *260802 · The Authority block* settles the hole the entry below ~records: the~ *records. 260802 · The* 10-item Extended Data cap is no longer inherited from the NMI and Nature Medicine appendix guides, because this journal states it ~itself, as~ *itself. 260802 · The journal's words are* "A maximum of 10 Extended Data display figures is permitted", where the unit is display FIGURES rather than items. ~It~ *260802 · The block* CONFIRMS the no-standalone-Related-Work ~rule from~ *rule, which the journal states as* an exhaustive ~four-block~ *list of four* Article ~division, and~ *blocks. 260802 · It also* records that Article, Registered Report and Resource all share ~it.~ *those four blocks. 260802 ·* On LaTeX: TeX/LaTeX at both stages, no journal class file, and the journal's own link to the Springer Nature LaTeX template, whose URL is now recorded. · CC · 260802 1542
+260802 · The Authority block settles the hole the entry below records.
+260802 · The 10-item Extended Data cap is no longer inherited from the NMI and Nature Medicine appendix guides, because this journal states it itself.
+260802 · The journal's words are "A maximum of 10 Extended Data display figures is permitted", where the unit is display FIGURES rather than items.
+260802 · The block CONFIRMS the no-standalone-Related-Work rule, which the journal states as an exhaustive list of four Article blocks.
+260802 · It also records that Article, Registered Report and Resource all share those four blocks.
+260802 · On LaTeX: TeX/LaTeX at both stages, no journal class file, and the journal's own link to the Springer Nature LaTeX template, whose URL is now recorded.
+260802 · Added a `Format values` block and a quotation block to each of §3-§9, from the seven `nhb-<kind>/style.md` micro-norm tables and their `template.md` siblings.
+> ✎ 260802 · Added a `Format values` block and a quotation block to each of §3-§9, from the seven `nhb-<kind>/style.md` micro-norm tables and their `template.md` siblings. *260802 ·* Of the four metrics, only the abstract's word count is a real count (`nhb-abstract/style.md` line ~155);~ *155). 260802 · The* Methods, Results, and Discussion word budgets say "estimated from page span" in their own ~caveats; every~ *caveats. 260802 · Every* citation density is an estimate under the pdftotext superscript-drop caveat, and the introduction's rests on gachter-2025 ~alone;~ *alone. 260802 ·* VALUE DENSITY is recorded by no ~guide; the~ *guide. 260802 · The* appendix's 10-item Extended Data cap is inherited from the NMI and Nature Medicine appendix ~guides~ *guides,* and is restated by no NHB exemplar. *260802 ·* Nothing was measured: this outlet's `examples/` holds 16 PDFs and no extracted-text `.md`, so no exemplar could be counted without opening a PDF. · CC · 260802 1542
+260802 · Of the four metrics, only the abstract's word count is a real count (`nhb-abstract/style.md` line 155).
+260802 · The Methods, Results, and Discussion word budgets say "estimated from page span" in their own caveats.
+260802 · Every citation density is an estimate under the pdftotext superscript-drop caveat, and the introduction's rests on gachter-2025 alone.
+260802 · VALUE DENSITY is recorded by no guide.
+260802 · The appendix's 10-item Extended Data cap is inherited from the NMI and Nature Medicine appendix guides, and is restated by no NHB exemplar.
+260802 · Nothing was measured: this outlet's `examples/` holds 16 PDFs and no extracted-text `.md`, so no exemplar could be counted without opening a PDF.

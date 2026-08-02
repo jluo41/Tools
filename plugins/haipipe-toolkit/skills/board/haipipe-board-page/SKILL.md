@@ -3,9 +3,9 @@ name: haipipe-board-page
 description: >-
   The PAGE contract of a board, as a loadable spec: the base every page kind varies from (Q decision, S stage, Skill mirror), the seven on-stage sections in their fixed order (Opening, Diagram, Content, Aims, States, Files, folds), what each section owes a reader, how to write or revise one page or Opening, where a machine may write, and how to evaluate page units against resolved requirements. TWO VERBS, and this skill is the door for both: `create a new page on <topic>` scaffolds one from the template and registers it, and `working on <page>` brings an existing page up to the contract, starting from the checker's findings. It owns the contract and CALLS haipipe-board's engine rather than containing it. Also loadable as a pure spec by an agent with no board open: routing an input to a section, priming a per-page chat session, authoring a page-kind variant, or running a section evaluation. Trigger: create a page, new page, make a page, working on a page, update a page, fix a page, bring a page up to standard, page contract, page grammar, page sections, rewrite Opening, Opening quality, section evaluation, quality check, which section, base page, page kind, /haipipe-board-page.
 metadata:
-  version: "0.10.0"
+  version: "0.11.0"
   last_updated: "2026-08-02"
-  summary: "Two verbs, create and working-on, drive one page end to end; the skill owns the contract and calls haipipe-board's engine rather than containing it."
+  summary: "Names haipipe-board-page-for-skill as the Skill and Agent mirror variant, the one variant that ships beside this skill rather than under a consumer family."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -49,6 +49,10 @@ Skill mirror  Skill-<unit>-<slug>          the unit ships · NEVER counted
 A page kind used by one consumer family is a VARIANT of the base: it defines Content and may populate fixed extension points in Aims, States, and Stage Contract, but it never redefines, adds, removes, or reorders those frame sections.
 The variant ships under its consumer (`haipipe-paper-stage` is the first), never here.
 This skill owns the BASE those variants extend.
+
+The Skill and Agent mirror kinds are the exception, because their consumer IS the board family: their variant is `haipipe-board-page-for-skill`, which ships beside this skill.
+Load it before writing or fixing any `Skill-<n>` or `Agent-<n>` page.
+It exists because a mirror page DECIDES NOTHING, so this skill's Opening shape, which ends in `what this page decides`, leaves it with no question to ask; five roster pages filled that empty slot with the same rhetorical question on 260802.
 
 ## 📑 The seven sections, in their fixed on-stage order
 

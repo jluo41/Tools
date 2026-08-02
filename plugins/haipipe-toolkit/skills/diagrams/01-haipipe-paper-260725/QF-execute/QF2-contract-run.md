@@ -206,13 +206,11 @@ A check therefore reports it as KNOWN rather than passing it silently, and it ca
 
 ## Law
 
-A contract declares the directory and the identity; it never spells an S filename.
-The name is composed by `haipipe-board/`'s `stage.py resolve` from family, unit and slug, and any layer that needs it calls that rather than repeating the pattern.
-
-A declared path that cannot be resolved is declared `blocked_on: <Q page>` with the reason.
-A dangling path with no `blocked_on` is a defect, not a known limitation, and nothing may report it as green.
-
-A stage repointed onto a new layout declares `artifact_fallback:` for as long as any live paper predates that layout, and a run says which of the two it used.
+- A contract declares the directory and the identity; it never spells an S filename.
+  The name is composed by `haipipe-board/`'s `stage.py resolve` from family, unit and slug, and any layer that needs it calls that rather than repeating the pattern.
+- A declared path that cannot be resolved is declared `blocked_on: <Q page>` with the reason.
+  A dangling path with no `blocked_on` is a defect, not a known limitation, and nothing may report it as green.
+- A stage repointed onto a new layout declares `artifact_fallback:` for as long as any live paper predates that layout, and a run says which of the two it used.
 
 ## Glossary
 

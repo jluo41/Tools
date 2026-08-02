@@ -300,29 +300,20 @@ That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than �
 
 ## Law
 
-Eleven folders in six pairs, and exactly four crossings between them. Every thing has a board, and that board holds the arguments that produced it.
-
-A board may be the board of more than one thing. `②` is the board of `①` and of `⑪`, and the test of whether a family needs its own board is whether it owns a KIND of artifact. A family that owns one has a subject to argue and earns a board; a family that owns none is argued where its prose already lives. `⑨` owns the float and has `⑩`; `⑪` owns nothing and has `②`.
-
-A shared family is not a channel. There are four shared families and exactly two channels, and the counts move independently: a channel is a door out of the paper, and `⑨` and `⑪` are neither.
-
-A settled ruling graduates from the skill board into the OWNING SKILL, which for seven of thirteen groups means both `①` and `③`, and only then binds. A ruling landed on one half of a pair is a defect.
-
-`①` and `③` produce `⑦` and `⑧` together, on one file, in disjoint regions: the tool owns the shell and every human keystroke, the paper skill owns the substance and every generated manuscript file. A paper consumes the settled contract and never stores the universal manual. A paper binds a question it cannot answer to a bank answer, by path, across a wall it may not reach through in any other way.
-
-The evidence banks are not a folder of this skill. They are owned elsewhere, and nothing on this board rules their contents.
-
-No runtime skill may require an open Q page, and no paper's state may be inferred from a design board. A design record is never a runtime dependency: delete any board and every skill still runs.
-
-A board is ruled by its owner alone and consulted by everyone else. This board rules `①`, `⑪`, and the contract half of `③`. It never rules `④`, `⑥` or `⑩`.
+- Eleven folders in six pairs, and exactly four crossings between them. Every thing has a board, and that board holds the arguments that produced it.
+- A board may be the board of more than one thing. `②` is the board of `①` and of `⑪`, and the test of whether a family needs its own board is whether it owns a KIND of artifact. A family that owns one has a subject to argue and earns a board; a family that owns none is argued where its prose already lives. `⑨` owns the float and has `⑩`; `⑪` owns nothing and has `②`.
+- A shared family is not a channel. There are four shared families and exactly two channels, and the counts move independently: a channel is a door out of the paper, and `⑨` and `⑪` are neither.
+- A settled ruling graduates from the skill board into the OWNING SKILL, which for seven of thirteen groups means both `①` and `③`, and only then binds. A ruling landed on one half of a pair is a defect.
+- `①` and `③` produce `⑦` and `⑧` together, on one file, in disjoint regions: the tool owns the shell and every human keystroke, the paper skill owns the substance and every generated manuscript file. A paper consumes the settled contract and never stores the universal manual. A paper binds a question it cannot answer to a bank answer, by path, across a wall it may not reach through in any other way.
+- The evidence banks are not a folder of this skill. They are owned elsewhere, and nothing on this board rules their contents.
+- No runtime skill may require an open Q page, and no paper's state may be inferred from a design board. A design record is never a runtime dependency: delete any board and every skill still runs.
+- A board is ruled by its owner alone and consulted by everyone else. This board rules `①`, `⑪`, and the contract half of `③`. It never rules `④`, `⑥` or `⑩`.
 
 ## Lesson
 
-Two things that look alike collapse into one word, and the collapse looks harmless until a rule crosses it. This page once said "design Board" in the singular, covering both the skill's board and a paper's board. They use the same tool, the same page grammar and the same four `state:` values, so nothing looked wrong. It was: the graduation rule, which says a settled ruling leaves the board for the skill, then appeared to apply to a paper's S pages, whose Content must never leave because it IS the paper.
-
-A claim about a folder this board does not own goes stale in silence. `⑥` was recorded as "a design folder rather than a board, the one gap" for a week after `01-probe-qa-260726` existed, on this page and on `QA5`, because nothing on this side fails when the other side fixes itself. `check.py` reads structure and never judges whether a sentence is still true.
-
-A count in a title outlives the fact it states. This page was `QA1-eight-folders.md` through two corrections before the name was changed to something that survives the next family.
+- Two things that look alike collapse into one word, and the collapse looks harmless until a rule crosses it. This page once said "design Board" in the singular, covering both the skill's board and a paper's board. They use the same tool, the same page grammar and the same four `state:` values, so nothing looked wrong. It was: the graduation rule, which says a settled ruling leaves the board for the skill, then appeared to apply to a paper's S pages, whose Content must never leave because it IS the paper.
+- A claim about a folder this board does not own goes stale in silence. `⑥` was recorded as "a design folder rather than a board, the one gap" for a week after `01-probe-qa-260726` existed, on this page and on `QA5`, because nothing on this side fails when the other side fixes itself. `check.py` reads structure and never judges whether a sentence is still true.
+- A count in a title outlives the fact it states. This page was `QA1-eight-folders.md` through two corrections before the name was changed to something that survives the next family.
 
 ## Glossary
 

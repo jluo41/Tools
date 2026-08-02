@@ -60,6 +60,26 @@ assert "> Note: " in out and "~~three~~" in out and "**five**" in out, "paper no
 assert "260801 1200" in out, "a paper-host call destroyed a board record"
 print("✅ paper host emits ~~old~~ **new** and destroys no ✎ record")
 
+# A split is the rewrite this skill exists for: one long sentence becomes two or
+# three short ones, one per source line. The record anchors on the FIRST of them
+# (ref/change-record.md §3). Until 0.6.1 `apply` wrote it after the LAST, so the
+# record described words that had moved to a line above it.
+SPLIT = "It rains, and the road is wet.\nSo the road is wet."
+with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
+    f.write("# t\n\nIt rains, so the road is wet.\n> Citation: a source\n\nAnother.\n")
+    _p = f.name
+wdiff.apply(_p, "It rains, so the road is wet.", SPLIT, "CC", "260802 1500")
+_lines = Path(_p).read_text().splitlines()
+_i = next(k for k, x in enumerate(_lines) if x.startswith("> ✎"))
+assert _lines[_i - 2] == "It rains, and the road is wet.", \
+    "the record must sit under the FIRST line of a split, after its existing lanes"
+assert _lines[_i - 1] == "> Citation: a source", "the existing lane run was reordered"
+assert _lines[_i + 1] == "So the road is wet.", "the rest of the split must follow the record"
+assert "~so~" in _lines[_i] and "*and*" in _lines[_i], \
+    "the diff must cover the whole rewritten run, not just its first line"
+assert not wdiff.check(_p), "check must accept what apply wrote for a split"
+print("✅ %-46s %s" % ("a split anchors on its FIRST line", "record under line 1, tail below"))
+
 print("\n── what check must still reject ──")
 
 

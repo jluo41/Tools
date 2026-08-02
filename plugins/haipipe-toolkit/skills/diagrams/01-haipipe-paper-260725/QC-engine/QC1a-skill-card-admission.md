@@ -88,7 +88,8 @@ The first cohort is now rendered as six named skill pages. It follows the Paper 
   Evidence, paragraph, and sentence revision hub.
 
 ## Law
-Follow the Paper control flow when selecting Q-Skill pages. Create one when the skill owns a decision that another skill may not make, and link shared mechanisms and passive knowledge sources to their existing owners.
+
+- Follow the Paper control flow when selecting Q-Skill pages. Create one when the skill owns a decision that another skill may not make, and link shared mechanisms and passive knowledge sources to their existing owners.
 
 ## Log
 260727 · Audited against `board.md`'s decision-only rule. This page needed no judgement at all: all five items were already ticked and it still read 🟡, which is exactly `check.py`'s `partial-with-nothing-open` shape. Flipped with no ruling made.

@@ -1,35 +1,40 @@
-# Chat about one location
+# Chat about one location: the address a machine is handed
 
-state: 🟡 PARTIAL · sentence focus settled; section/subsection focus designed, not implemented
+state: 🟡 PARTIAL · both halves built and every Aim closed; the state line is JL's to move
 owner: JL
 method: generate render-local paths for page headings plus fine Content addresses, then reuse one page Chat session for either focus
 
 ## Opening
-How can someone copy or call Chat about one section, subsection, heading, or sentence without creating a separate session for every location?
+How do you point an agent at one part of a page without opening a new conversation for it?
+A location is anything a reader can see: a section, a heading, or one sentence.
+Each gets an address the browser works out at render time, such as `QB5.C1.P1.S1`.
+The page's existing chat takes that address as its focus, so nothing new is opened.
+The address is not durable on purpose, which is the trade this page makes.
 
-This page reuses one page Chat session and gives each visible location a generated focus address.
-The hard part is making that address precise enough to locate the text without pretending it is a permanent identity after the page changes.
-Separate sessions fragment the conversation, while no focus packet forces the agent to guess what the reader means.
-The design succeeds when one action opens the existing Chat on the exact visible location without changing the source.
+**Why it is not durable**: it says where something appears in THIS render, so insert a paragraph and it changes.
 
-**Covered elsewhere**: Sentence-local human comments are `QB5b`; tracked edits are `QB5c`; typed evidence lanes are `QB5a`; one session per page is `QD1`.
+**Where the trade bites**: a durable id would survive an edit, and would then have to be written into the markdown and kept in step by hand.
+A render address costs nothing to maintain and is wrong the moment you save it, so it may focus a chat and may never key a record.
+`QB5e` is where that limit lands: it needs to archive and restore an attached record, and it cannot use one of these.
+
+**Covered elsewhere**: `QB5` owns the sentence itself and everything written onto it, which is the card on its words, the typed lanes, a person's remark, and the change record left by an edit. One session per page is `QD1`.
 
 
 ## Diagram
 
 ```
-QAb3 Content
+QD8 Content
   C1 · Addressing
-    H1 · Generated, not stored        → QAb3.C1.H1
-    first prose sentence              → QAb3.C1.P1.S1
-    second prose sentence             → QAb3.C1.P2.S1
+    H1 · Generated, not stored        → QD8.C1.H1
+    first prose sentence              → QD8.C1.P1.S1
+    second prose sentence             → QD8.C1.P2.S1
 
 sentence action rail
   The Board already has one chat session per page.  C2.P1.S1 ＋ 💬
                                                               │
                                                               ▼
-existing QAb3 chat session
-  FOCUS  QAb3.C2.P1.S1                               ×
+existing QD8 chat session
+  FOCUS  QD8.C2.P1.S1                               ×
   C2 · Chat behavior
   H1 · One page session
   The Board already has one chat session per page.
@@ -38,33 +43,63 @@ existing QAb3 chat session
   Ask about this sentence…                            Send
 
 heading focus
-  📍 Where we are
-     Current decision        QAb3 / Where we are / Current decision  ⧉ 🤖
+  📍 States
+     Current decision        QD8 / States / Current decision  ⧉ 🤖
                                                                        │
                                                                        ▼
-  existing QAb3 chat session
+  existing QD8 chat session
   FOCUS  section/subsection path · source file · visible heading/body
 ```
 
 ## Content
 ### §1 Addressing
+**Two address families, one page**: what each names, and how deep it goes.
+
+```
+🧭 THE BREADCRUMB · every ## section and ### subsection
+   QB5 / States / Decision Now · QB-delivery/QB5-where-we-are.md
+   spoken, pasted, copied · human-readable all the way down
+
+🎯 THE FINE ADDRESS · inside ## Content only
+   C1        a ### division
+   C1.H1     a #### heading · TERMINAL, nothing hangs below it
+   C1.P1.S1  a prose sentence · P is H's SIBLING, never its child
+   C1.H1.P1.S1  never legal
+
+🔄 both are GENERATED at every render and stored nowhere
+```
+📌 Establishes what an address IS before the page says what it is for.
+
 #### Section and subsection paths
-Every rendered `##` section and `###` subsection receives a generated human-readable breadcrumb, for example `QAa5 / Where we are / Current decision`.
+Every rendered `##` section and `###` subsection receives a generated human-readable breadcrumb, for example `QB5 / States / Decision Now`.
 Copy includes the page id, breadcrumb, and Markdown source path so Claude Code can locate it without guessing.
 The breadcrumb is render-local UI metadata, just like the existing Content addresses; renaming or moving a heading recomputes it and never rewrites the source merely to preserve an obsolete index.
 
 #### Generated, not stored
 The browser assigns addresses after each Board render and again after a live refresh.
 Nothing is added to the Markdown, so renumbering never produces source-file churn.
-The full sentence address is page id plus Content, Paragraph, and Sentence, for example `QAb3.C2.P1.S1`.
+The full sentence address is page id plus Content, Paragraph, and Sentence, for example `QD8.C2.P1.S1`.
 
 #### C, H, P, and S
 `C` counts `###` divisions only inside `## Content`.
-`H` counts `####` headings inside its `C` and terminates there, for example `QAb3.C1.H1`.
-`P` is a sibling of `H`, not its child; prose therefore uses `QAb3.C1.P1.S1`, never `QAb3.C1.H1.P1.S1`.
+`H` counts `####` headings inside its `C` and terminates there, for example `QD8.C1.H1`.
+`P` is a sibling of `H`, not its child; prose therefore uses `QD8.C1.P1.S1`, never `QD8.C1.H1.P1.S1`.
 Board writing keeps one source sentence per line, so each current paragraph ends in an S-one leaf; the explicit sentence level leaves room for a future paragraph containing more than one sentence.
 
 ### §2 Chat behavior
+**One session, two kinds of focus**: what a click sends, and what it does not.
+
+```
+🖱 click 💬 on a sentence  →  the page's EXISTING chat session
+🖱 click 🤖 on a heading   →  the same session, coarser focus
+
+   FOCUS CARD  address · display name · the text · its apparatus   ×
+   🚫 no model turn is spent on the click itself
+   📤 the packet reaches the agent with the NEXT message
+   ✂️ × or Esc clears the focus and leaves the chat open
+```
+📌 Establishes that focusing is free, which is the whole reason it can be a click.
+
 #### One focus packet
 Section, subsection, and sentence actions all reuse the existing page Chat session.
 A heading-focus packet carries page id, section and subsection names, source file, and the visible block; a sentence-focus packet keeps its current `C.P.S` address and direct apparatus.
@@ -80,6 +115,19 @@ The next user message is augmented with that location, the full address, sentenc
 The focus card's `×` clears sentence focus without closing the Q chat.
 
 ### §3 Layout
+**Quiet until wanted**: where each control lives, and what reveals it.
+
+```
+🖱 pointer   hover a heading  → breadcrumb chip · ⧉ text · 🤖 chat
+             hover a sentence → C1.P1.S1 · ＋ · 💬
+📱 touch     no hover exists, so ONE ⋯ expands to all of it
+🎨 chips     at the END of the heading, never the front:
+             a leading C1 before "1 · Content" read as "C11 · Content"
+📐 collapse  to zero WIDTH, not opacity, or a breadcrumb reflows
+             the heading it decorates while invisible
+```
+📌 Establishes why none of this sits on the prose permanently.
+
 #### Heading actions
 Every visible section and subsection heading shows a quiet generated path chip plus Copy and Chat actions on hover or keyboard focus.
 Copy places the human breadcrumb and source path on the clipboard.
@@ -94,11 +142,11 @@ On touch devices, one muted `⋯` opens a menu containing the full address plus 
 ## Aims
 ### The section and subsection breadcrumb half
 - [x] Generate paths for every rendered `##` section
-      `QB4e / Where we are`, built from the heading's own label with its emoji, its `1/7` count, and its `· 6 sections` suffix stripped, because an address is spoken and pasted.
+      `QB5 / States`, built from the heading's own label with its emoji, its `1/7` count, and its `· 6 sections` suffix stripped, because an address is spoken and pasted.
 - [x] Generate paths for every rendered `###` subsection
-      `QB4e / Where we are / Decision Now`, for a `div.sh` outside Content and for a `details.csec` division inside it.
+      `QB5 / States / Decision Now`, for a `div.sh` outside Content and for a `details.csec` division inside it.
 - [x] Copy page id, breadcrumb, and Markdown source path from a heading
-      Clicking the chip copies `QB4e / Where we are / Decision Now · QB-delivery/QB4e-where-we-are.md`; a subsection also gains its own `⧉`, which copies that subsection's text the way `##` headings already do.
+      Clicking the chip copies `QB5 / States / Decision Now · QB-delivery/QB5-where-we-are.md`; a subsection also gains its own `⧉`, which copies that subsection's text the way `##` headings already do.
 - [x] Open the existing page Chat with a section/subsection focus packet
       `🤖` calls `window.__boardHeadingChat`, which reuses this page's session and fills the same Focus card with the breadcrumb and the source path.
 - [x] Recompute heading paths after live Board refresh
@@ -111,6 +159,10 @@ On touch devices, one muted `⋯` opens a menu containing the full address plus 
 - [x] Keep `H` and `P` as siblings; never emit `H.P.S`
 - [x] Recompute addresses after live Board refresh
 - [x] Pass fresh-context acceptance for the Content-aware grammar
+
+### The human gate
+- [ ] 🧠 JL accepts this face and moves its state line
+      **Done when:** JL has read the built page and either flips it to ✅ SETTLED or names what is missing. Every other Aim here is ticked and both halves are live; only the state line is a person's to move.
 
 ### The sentence rail and chat focus
 - [x] Show Content and Heading names in Sentence Focus without changing its address
@@ -133,11 +185,14 @@ Heading focus was designed here on 260730 and built on 260731, so every item on 
 
 - 260731 CC · 🧭 Heading focus is built, and it reuses every contract the sentence rail already had
   Every rendered `##` section and `###` subsection heading now carries a page list at its END, invisible until that heading is hovered: the generated breadcrumb, `⧉` for a subsection's text, and `🤖` for chat.
-  `QB4e` yields 17 of them, from `QB4e / Opening` down to `QB4e / Where we are / Decision Now`.
+  `QB5` yields 17 of them, from `QB5 / Opening` down to `QB5 / States / Decision Now`.
   Two decisions inside it are worth stating because they were not obvious.
   The page list collapses to zero WIDTH rather than to `opacity:0`, which the `C1` chips use, because a breadcrumb is long enough to reflow the heading it decorates if it keeps its box while invisible.
   And `⧉` on a `##` heading keeps copying the section's TEXT, JL's 260725 ruling, so copying the ADDRESS moved onto the chip itself; the two copies are next to each other and say which is which on hover.
-  Driven in Chrome rather than read: the chip put `QB4e / Where we are / Decision Now · QB-delivery/QB4e-where-we-are.md` on the clipboard, `⧉` put that subsection's text there, and `🤖` opened this page's own session with the Focus card showing the breadcrumb and the source path.
+  Driven in Chrome rather than read: the chip put `QB5 / States / Decision Now · QB-delivery/QB5-where-we-are.md` on the clipboard, `⧉` put that subsection's text there, and `🤖` opened this page's own session with the Focus card showing the breadcrumb and the source path.
+
+### The human gate
+- 🧠 JL accepts this face and moves its state line. All 19 build items are ticked and both halves run; this is the only thing left.
 
 ### Decision Now
 - [ ] 🧠 Flip this face to ✅ SETTLED
@@ -166,8 +221,10 @@ Heading focus was designed here on 260730 and built on 260731, so every item on 
 All location Chat actions reuse the page's existing session. Fine structural addresses remain Content-only: `C` owns sibling terminal `H` nodes and prose `P.S` leaves, so `C1.H1` and `C1.P1.S1` are valid while `C1.H1.P1.S1` is not. Every page section and subsection may also expose a coarser human-readable breadcrumb with its source path. Both forms are generated UI metadata, not durable Markdown identity.
 
 ## Log
+260802 · 🔎 Brought to the current page contract after a fresh cold read. The Opening's blank line sat after the question, so the whole rationale rendered behind a click and the page opened as one bare sentence; the four sentences under it were also the named form-letter scaffold ("This page …", "The hard part is …", "The design succeeds when …"), so they were rewritten in this page's own order around the trade it actually makes, which is that a render address may focus a chat and may never key a record. Thirteen occurrences of `QAb3` still taught the page by an id two renames old, twelve worked examples cited `QB4e`, which is archived, and nine breadcrumbs showed the retired section name `Where we are` while this page's own new §1 figure already showed `States`. All of it now reads `QD8`, `QB5` and `States`
+260802 · Moved out of the sentence family to `QD8` when `QB5`'s five faces folded. A generated address is not an attachment: nothing is written under the sentence and nothing enters the file at all, because addresses are made at render time and stored nowhere. Its readers are the chat drawer and the routing verb, both in this lane, so it sits beside `QD1`'s one session per page. The old ids `QB5d` and `QD8` still resolve through `board.md`'s Links table
 260731 2015 · Heading focus BUILT: every `##` and `###` heading gains a hover-revealed page list (breadcrumb chip that copies address + source path, `⧉` for a subsection's text, `🤖` for page chat); `__boardHeadingChat` + a `kind` on the focus packet; recomputed by the existing rewire hook. All 5 remaining items ticked; the state line waits on JL
-260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
+260731 · Items, States, and Files regrouped to the QB4d/QB5/QB4f subsection conventions (matrix retrofit)
 260731 · Address chips moved to the END of their heading and became hover-reveal, on JL's "C11" read; shipped in board.js/board.css, haipipe-board 0.58.0
 260730 · Reopened for section/subsection focus: every heading gains a generated breadcrumb plus Copy and Chat actions while the accepted Content sentence grammar remains unchanged
 260729 · Fresh Chrome acceptance passed on pointer and touch: 106 C, 73 H, 978 C.P.S refs, deterministic across three rewires; exact focus path and apparatus Send packet verified.

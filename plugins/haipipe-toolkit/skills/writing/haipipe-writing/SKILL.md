@@ -3,7 +3,7 @@ name: haipipe-writing
 description: >-
   The WRITING verb: take prose someone already wrote and make it readable by a person whose English is weak, recording every edit as a word-level change under the sentence it changed. Not a style guide and not a spec: it rewrites, and it leaves a trail a reviewer can read. Use it on any authored prose in the repo, a board page, a SKILL.md, a README, an application section; it is host-agnostic and knows where to put its records. Three verbs, two of them deterministic code: `score` ranks what is worth rewriting, `rewrite` changes prose and anchors a `✎` record per sentence, `check` audits the records. Trigger: rewrite this, make this readable, too long, sounds like AI, plain English, weak English reader, change record, word-level diff, ✎, /haipipe-writing.
 metadata:
-  version: "0.6.0"
+  version: "0.6.1"
   last_updated: "2026-08-02"
   summary: "cli/agree.py compares two statements of one fact, because the three defects of 260802 were all that shape; tests/test_roundtrip.py locks in the apply-versus-check repair, which no grep could have seen."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

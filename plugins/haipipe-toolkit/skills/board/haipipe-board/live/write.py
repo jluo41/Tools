@@ -22,6 +22,7 @@ import sys
 import threading
 import time
 import urllib.parse
+import pathlib
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -220,8 +221,46 @@ class WriteMixin:
         return j
 
     @staticmethod
-    def _change_diff(before, after):
+    def _wdiff():
+        """-> haipipe-writing's `wdiff` function, or None if it is not here.
+
+        ONE COMPUTATION, NOT TWO THAT AGREE (JL 260802: "we also need to have a
+        very good writing diff to track the changes along the way"). This file
+        and `haipipe-writing/cli/wdiff.py` both computed the word-level diff
+        with difflib, and on 260802 they produced byte-identical output on
+        every case tried, which is agreement by luck rather than by
+        construction: the next edit to either one splits them silently, and the
+        `> ✎` record is a durable review trail.
+
+        It is looked up rather than imported, because every unit in this family
+        must stay deletable from every other. If `haipipe-writing` is not
+        installed the local computation below still answers, and
+        `tests/test_change_diff.py` fails the moment the two stop matching.
+        """
+        import importlib.util
+        f = (pathlib.Path(__file__).resolve().parent.parent.parent
+             / "haipipe-writing" / "cli" / "wdiff.py")
+        if not f.exists():
+            f = f.parent.parent.parent.parent / "writing" / "haipipe-writing" / "cli" / "wdiff.py"
+        if not f.exists():
+            return None
+        try:
+            spec = importlib.util.spec_from_file_location("_hw_wdiff", f)
+            m = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(m)
+            return getattr(m, "wdiff", None)
+        except Exception:
+            return None
+
+    @classmethod
+    def _change_diff(cls, before, after):
         """Whole post-edit sentence, with only changed word runs marked."""
+        shared = cls._wdiff()
+        if shared:
+            try:
+                return shared(before, after, host="board")
+            except Exception:
+                pass                      # fall through to the local copy
         old, new = before.split(), after.split()
         out = []
         for op, a0, a1, b0, b1 in difflib.SequenceMatcher(a=old, b=new).get_opcodes():

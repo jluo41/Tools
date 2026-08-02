@@ -6,7 +6,8 @@ method: state MISQ's own desk signals and one-sentence test, and record what thi
 
 ## Opening
 
-MISQ is the most method-permissive desk in this tree and the least contribution-permissive. Survey, archival, qualitative, interpretive, design science: all fine. A better classifier: not a paper. So what is it actually buying?
+MISQ takes any method. Survey, archival, qualitative, interpretive, design science all pass, and no desk in this tree is more open. It is also the strictest here about what counts as a contribution: a paper whose contribution is a method is refused. A better classifier is not a MISQ paper. So what is this desk actually buying?
+> ✎ MISQ ~is the most method-permissive desk in this tree and the least contribution-permissive.~ *takes any method.* Survey, archival, qualitative, interpretive, design ~science:~ *science* all ~fine.~ *pass, and no desk in this tree is more open. It is also the strictest here about what counts as a contribution: a paper whose contribution is a method is refused.* A better ~classifier:~ *classifier is* not a *MISQ* paper. So what is ~it~ *this desk* actually buying? · CC · 260802 1535
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-utd-is/MISQ/`.
@@ -100,7 +101,8 @@ The same result therefore needs different Discussion language at the two desks, 
   📚 15 exemplars behind the section norms
 ```
 
-🧩 Establishes the arrival cost as structural plus argumentative, which is why a retarget into MISQ is decided early.
+🧩 Establishes the arrival cost: a section to write, and a claim to re-argue. A retarget into MISQ is therefore decided early.
+> ✎ 🧩 Establishes the arrival ~cost as structural plus argumentative, which is why~ *cost:* a *section to write, and a claim to re-argue. A* retarget into MISQ is *therefore* decided early. · CC · 260802 1535
 
 ### 3 · Which sibling outlet a paper leans to, and what pins it here
 
@@ -145,8 +147,14 @@ The theory bar is highest at MISQ and the method is the most pluralistic: survey
 
 #### 3.2 · What the pin costs downstream
 (pinning a venue is not a label, it re-runs work)
-A MISQ Research Article runs 40-50 published pages, and its hero display is the research model figure, constructs plus hypothesized relationships, tied to the primary theory claim; a design science paper adds an artifact figure and a design-principles table [playbook-utd-is/README.md, Minimap and Display per-journal notes].
-Positioning is itself a desk signal: engaging adjacent management, economics, or CS journals while missing key IS papers is a named rejection reason, and foundational IS work (DeLone and McLean, Venkatesh, Orlikowski, Walsham) must appear where relevant [playbook-utd-is/README.md, Citation candidates].
+A MISQ Research Article runs 40-50 published pages.
+> ✎ A MISQ Research Article runs 40-50 published ~pages, and its~ *pages. Its* hero display is the research model ~figure,~ *figure:* constructs plus hypothesized relationships, tied to the primary theory ~claim; a~ *claim. A* design science paper adds an artifact figure and a design-principles table [playbook-utd-is/README.md, Minimap and Display per-journal notes]. · CC · 260802 1535
+Its hero display is the research model figure: constructs plus hypothesized relationships, tied to the primary theory claim.
+A design science paper adds an artifact figure and a design-principles table [playbook-utd-is/README.md, Minimap and Display per-journal notes].
+Positioning is itself a desk signal.
+> ✎ Positioning is itself a desk ~signal: engaging~ *signal. Engaging* adjacent management, economics, or CS journals while missing key IS papers is a named rejection ~reason, and foundational~ *reason. Core* IS work (DeLone and McLean, Venkatesh, Orlikowski, Walsham) must appear where relevant [playbook-utd-is/README.md, Citation candidates]. · CC · 260802 1535
+Engaging adjacent management, economics, or CS journals while missing key IS papers is a named rejection reason.
+Core IS work (DeLone and McLean, Venkatesh, Orlikowski, Walsham) must appear where relevant [playbook-utd-is/README.md, Citation candidates].
 
 ### 4 · Abstract: one unstructured paragraph, question forward
 
@@ -196,7 +204,9 @@ The design science variant swaps the arc for problem, artifact NAME, design prin
 (each is a named anti-pattern, not a preference)
 Do not lead with the method, and do not end on it [MISQ-abstract/style.md lines 54-55].
 Do not use structured or labeled fields; MISQ runs a single unstructured paragraph [line 56].
-A behavioral paper reports no raw coefficients or p-values, only constructs and directions [line 57], and that rule is softened only for healthcare and policy papers where the number itself is the finding [line 101].
+A behavioral paper reports no raw coefficients or p-values, only constructs and directions [line 57].
+> ✎ A behavioral paper reports no raw coefficients or p-values, only constructs and directions [line ~57], and that~ *57]. That* rule is softened ~only~ for healthcare and policy papers *only,* where the number itself is the finding [line 101]. · CC · 260802 1535
+That rule is softened for healthcare and policy papers only, where the number itself is the finding [line 101].
 Do not exceed ~160 words, and treat ~185 as the ceiling only a complex multi-study paper reaches [lines 58, 102].
 
 #### 4.3 · Format values
@@ -220,7 +230,8 @@ Six words, a phenomenon, no method: this is the opening §4.1 renders as its mov
 "This enables analyses to reveal the role of personality traits in review helpfulness." [Liu 2021]
 The method arrives as a subordinate enabling clause rather than the headline, which is the move-2 slot [style.md line 28].
 "higher review helpfulness is related to higher openness, conscientiousness, extraversion, and agreeableness and to lower emotional stability." [Liu 2021]
-A behavioral finding names constructs and directions and no coefficient, which is what §4.2 refuses [style.md line 35].
+A behavioral finding names constructs and directions and no coefficient. §4.2 states that as a refusal [style.md line 35].
+> ✎ A behavioral finding names constructs and directions and no ~coefficient, which is what~ *coefficient.* §4.2 ~refuses~ *states that as a refusal* [style.md line 35]. · CC · 260802 1535
 "when a hospital's intra-hospital EHR single-sourcing rate increases from 80% to 90%, claim denial probability is reduced from 1.18% to 1.03%" [Ayabakan 2025]
 The healthcare exception, where the number itself is the finding and the behavioral refusal is lifted [style.md line 87].
 "Theoretical and practical implications are discussed." [Liu 2021]
@@ -391,7 +402,8 @@ A theory section that only surveys and never derives a prediction is a desk-reje
 #### 6.4 · The language, in the papers' own words
 (the sentences behind the §6.1 slots, one move each)
 "We hypothesize relationships between reviewer personality and review helpfulness through three mechanisms: (1) knowledge sharing, (2) reviewer persuasiveness, and (3) opinion leadership." [Liu 2021]
-The streams are named before any construct is routed through them, which is what makes the section derivation and not survey [MISQ-theory/style.md line 52].
+The streams are named before any construct is routed through them. That is what makes the section derivation and not survey [MISQ-theory/style.md line 52].
+> ✎ The streams are named before any construct is routed through ~them, which~ *them. That* is what makes the section derivation and not survey [MISQ-theory/style.md line 52]. · CC · 260802 1535
 "Agreeableness is associated with characteristics such as cooperation, likeability, forgivingness, kindness, sympathy, and trust (McCrae and Costa 2003)." [Liu 2021]
 A construct definition carrying its canonical citation, the sentence type that drives 0.67 citations per sentence [style.md line 58].
 "Applied to the current setting, therefore, review writers experiencing anxiety can be expected to devote more cognitive effort to the review task." [Yin 2014]
@@ -588,7 +600,8 @@ The descriptive preview that establishes the pattern informally before the regre
 "As Table 4 shows, we found positive coefficients for openness, conscientiousness, extraversion, and agreeableness and a negative coefficient for emotional stability." [Liu 2021]
 Direction is reported before significance, which is the sentence pattern §8.1 turns into a slot [style.md line 34].
 "Thus, the results support all our hypotheses (H1-H5)." [Liu 2021]
-The verdict stated against the hypotheses by name, which is what organizing by H rather than by table means [style.md line 56].
+The verdict is stated against the hypotheses by name. That is what organizing by H rather than by table means [style.md line 56].
+> ✎ The verdict *is* stated against the hypotheses by ~name, which~ *name. That* is what organizing by H rather than by table means [style.md line 56]. · CC · 260802 1535
 "A 10-point increase in Physician Quality (measured on a 100 point scale) leads to a 0.466 point increase in the Online Rating" [Gao 2015]
 The coefficient translated into interpretable units, the step §8.2 refuses to let significance replace [style.md line 61].
 "As for the controls, most are significant and have expected signs." [Liu 2021]
@@ -683,7 +696,8 @@ The numbered theoretical contribution, which all six enrichment exemplars use [s
 "policymakers might consider introducing policies for greater interoperability and data/interface standardization of EHR applications from different vendors" [Ayabakan 2025]
 Practice guidance addressed to a lever a named actor can pull, not to a sentiment [style.md line 123].
 "We acknowledge this unique context of Maryland as a limitation potentially impacting generalizability." [Ayabakan 2025]
-A limitation named specifically enough to be checkable, which is what §9.2 demands instead of a generic hedge [style.md line 138].
+A limitation named specifically enough that a reader can check it. §9.2 demands that, and refuses a generic hedge [style.md line 138].
+> ✎ A limitation named specifically enough ~to be checkable, which is what~ *that a reader can check it.* §9.2 demands ~instead of~ *that, and refuses* a generic hedge [style.md line 138]. · CC · 260802 1535
 "We hope our work will stimulate more research on the use of data and theory via these routes." [Liu 2021]
 The forward close of the concluding paragraph, three to five sentences and not a second abstract [style.md lines 71, 79].
 
@@ -746,7 +760,9 @@ Those pointers are written into the Results and Methods drafts, not into the app
 #### 10.3 · What this pack cannot answer
 (a thin-source caveat, carried on purpose)
 The appendix guide was distilled from two exemplars only, so its labeling and lettering are "what 2 papers show, not a journal-wide rule" [MISQ-appendix/style.md line 11].
-Whether a MISQ paper of a given type gets an online tier, and what that tier is called, has to be verified against the target issue rather than read off this pack [line 11].
+This pack cannot say whether a MISQ paper of a given type gets an online tier, or what that tier would be called.
+> ✎ ~Whether~ *This pack cannot say whether* a MISQ paper of a given type gets an online tier, ~and~ *or* what that tier ~is called, has~ *would be called. Both have* to be verified against the target issue ~rather than read off this pack~ [line 11]. · CC · 260802 1535
+Both have to be verified against the target issue [line 11].
 The Weng 2026 section and page counts describe the published article, not the stored PDF, which ends after Appendix A [lines 71, 101].
 
 #### 10.4 · Format values
@@ -890,7 +906,7 @@ The same heading shape at its shortest, from the pack's only other appendix exem
 
 📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `_tools/sync-exemplars.py`
 
-Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered `S-Main-<n>` pages plus `S-Appendix-<letter>`.
+`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
 
 - `S-Main-0` · abstract
 - `S-Main-1` · introduction
@@ -900,7 +916,10 @@ Each kind is one unit `section-edit` runs on, and one page it writes: 6 numbered
 - `S-Main-5` · discussion
 - `S-Appendix-A` · appendix
 
-A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may split one kind across several numbered Main pages (this repo's own MISQ paper runs to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift is the ORDER, which is this venue's reader order and not a house default.
+A kind is the SMALLEST unit a paper gets here, not a ceiling.
+One kind can spread across several numbered Main pages.
+This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
+The ORDER does not move. It is this venue's reading order, not a house default.
 
 <!-- kinds:end -->
 
@@ -914,8 +933,8 @@ A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may sp
 
 ## Law
 
-At MISQ the method enables the contribution and is never it, so a paper whose claim is its technique has no route to this desk that does not re-argue the claim.
-An associational posture is acceptable here only when it is stated as one.
+- At MISQ the method enables the contribution and is never it, so a paper whose claim is its technique has no route to this desk that does not re-argue the claim.
+  An associational posture is acceptable here only when it is stated as one.
 
 ## Glossary
 
@@ -923,8 +942,12 @@ An associational posture is acceptable here only when it is stated as one.
 
 ## Log
 
-260802 · Settled against the desk, in the pack's favour and against it. CONFIRMED verbatim: the 55-page Research Article maximum counts text, tables, figures, references AND appendices as one number, and supplementary material is generally discouraged with anything outside the limit unreviewed, which closes `10.3` and `A10.2` against an online tier at this venue. CONTRADICTED: the pack's "40-50 pp" is an observation of published pages, not the submission cap, and the pack records no reference style at all where MISQ requires APA 7th.
+260802 · Settled against the desk, in the pack's favour and against it. CONFIRMED verbatim: the 55-page Research Article maximum counts text, tables, figures, references AND appendices as one number. Supplementary material is generally discouraged, and anything outside the limit goes unreviewed. That closes `10.3` and `A10.2` against an online tier at this venue. CONTRADICTED: the pack's "40-50 pp" is an observation of published pages, not the submission cap. The pack also records no reference style at all, where MISQ requires APA 7th.
+> ✎ 260802 · Settled against the desk, in the pack's favour and against it. CONFIRMED verbatim: the 55-page Research Article maximum counts text, tables, figures, references AND appendices as one ~number, and supplementary~ *number. Supplementary* material is generally ~discouraged with~ *discouraged, and* anything outside the limit ~unreviewed, which~ *goes unreviewed. That* closes `10.3` and `A10.2` against an online tier at this venue. CONTRADICTED: the pack's "40-50 pp" is an observation of published pages, not the submission ~cap, and the~ *cap. The* pack *also* records no reference style at ~all~ *all,* where MISQ requires APA 7th. · CC · 260802 1535
 260802 · Opened with the QBv outlet pages, from `playbook-utd-is/MISQ` at `Venue-Paper@fe25a88`.
-260802 · Added §3 to §10: the family lean-signal matrix and outlet delta folded in from the retired `playbook-utd-is/README.md` page, then one division per section kind (abstract, introduction, theory, methods, results, discussion, appendix), each carrying its arc, its measured budget and paragraph counts with the source named inline, its signature moves as slot patterns, and the anti-patterns the pack names; the Writing Style bullet on transcription was relaxed to match.
-260802 · Added two subsubsections to each of the seven section divisions: a Format values fence carrying words, citation density, value density and displays with the recording line named inline, and a quotation block of 5-6 attributed exemplar sentences showing one move each. Value density is recorded by no section of this pack, and none of its 7 style.md files carries a numeric-values-per-sentence figure; the appendix additionally records its prose micro-norms as N/A, so it has no citation-density figure either, and every attributed sentence in `MISQ-appendix/style.md` is a body-text pointer rather than appendix prose.
-260802 · Authority sub-block added at the end of Files, from MISQ's own submission guidelines rather than from the pack; both template downloads were fetched and are real archives. Two things land against the pack. The category maximum, 55 pages for a Research Article and 30 for a Research Note, counts text, tables, figures, references AND appendices toward one number, and supplementary materials are generally discouraged with anything outside the limit left unreviewed: that answers §10.3 and A10.2 against an online tier, which the pack said it could not settle from two exemplars. The 40-50 pp in the family README is an observation about published pages and not the desk's ceiling, and the pack records no reference style in any of its seven section folders where MISQ requires APA 7th.
+260802 · Added §3 to §10. §3 folds in the family lean-signal matrix and outlet delta from the retired `playbook-utd-is/README.md` page. §4 to §10 give one division per section kind: abstract, introduction, theory, methods, results, discussion, appendix. Each carries its arc, its measured budget and paragraph counts with the source named inline, its signature moves as slot patterns, and the anti-patterns the pack names. The Writing Style bullet on transcription was relaxed to match.
+> ✎ 260802 · Added §3 to ~§10:~ *§10. §3 folds in* the family lean-signal matrix and outlet delta ~folded in~ from the retired `playbook-utd-is/README.md` ~page, then~ *page. §4 to §10 give* one division per section ~kind (abstract,~ *kind: abstract,* introduction, theory, methods, results, discussion, ~appendix), each carrying~ *appendix. Each carries* its arc, its measured budget and paragraph counts with the source named inline, its signature moves as slot patterns, and the anti-patterns the pack ~names; the~ *names. The* Writing Style bullet on transcription was relaxed to match. · CC · 260802 1535
+260802 · Added two subsubsections to each of the seven section divisions. The first is a Format values fence carrying words, citation density, value density and displays, with the recording line named inline. The second is a quotation block of 5-6 attributed exemplar sentences showing one move each. Value density is recorded by no section of this pack, and none of its 7 style.md files carries a numeric-values-per-sentence figure. The appendix also records its prose micro-norms as N/A, so it has no citation-density figure either. Every attributed sentence in `MISQ-appendix/style.md` is a body-text pointer rather than appendix prose.
+> ✎ 260802 · Added two subsubsections to each of the seven section ~divisions:~ *divisions. The first is* a Format values fence carrying words, citation density, value density and ~displays~ *displays,* with the recording line named ~inline, and~ *inline. The second is* a quotation block of 5-6 attributed exemplar sentences showing one move each. Value density is recorded by no section of this pack, and none of its 7 style.md files carries a numeric-values-per-sentence ~figure; the~ *figure. The* appendix ~additionally~ *also* records its prose micro-norms as N/A, so it has no citation-density figure ~either, and every~ *either. Every* attributed sentence in `MISQ-appendix/style.md` is a body-text pointer rather than appendix prose. · CC · 260802 1535
+260802 · Authority sub-block added at the end of Files, from MISQ's own submission guidelines rather than from the pack. Both template downloads were fetched and are real archives. Two things land against the pack. First, the category maximum, 55 pages for a Research Article and 30 for a Research Note, counts text, tables, figures, references AND appendices toward one number. Supplementary materials are generally discouraged, and anything outside the limit is left unreviewed. That answers §10.3 and A10.2 against an online tier, which the pack said it could not settle from two exemplars. Second, the 40-50 pp in the family README is an observation about published pages and not the desk's ceiling. The pack also records no reference style in any of its seven section folders, where MISQ requires APA 7th.
+> ✎ 260802 · Authority sub-block added at the end of Files, from MISQ's own submission guidelines rather than from the ~pack; both~ *pack. Both* template downloads were fetched and are real archives. Two things land against the pack. ~The~ *First, the* category maximum, 55 pages for a Research Article and 30 for a Research Note, counts text, tables, figures, references AND appendices toward one ~number, and supplementary~ *number. Supplementary* materials are generally ~discouraged with~ *discouraged, and* anything outside the limit *is* left ~unreviewed: that~ *unreviewed. That* answers §10.3 and A10.2 against an online tier, which the pack said it could not settle from two exemplars. ~The~ *Second, the* 40-50 pp in the family README is an observation about published pages and not the desk's ~ceiling, and the~ *ceiling. The* pack *also* records no reference style in any of its seven section ~folders~ *folders,* where MISQ requires APA 7th. · CC · 260802 1535
