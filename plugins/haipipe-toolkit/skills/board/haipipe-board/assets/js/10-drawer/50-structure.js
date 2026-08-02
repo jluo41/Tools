@@ -126,7 +126,7 @@
     var qs = document.querySelectorAll('section.q');
     return qs.length === 1 ? qs[0] : null;
   }
-  // The rail needs the same answer and must not compute it a second way.
+  // The sidebar needs the same answer and must not compute it a second way.
   window.__boardDocPage = docPage;
   /* A GROUP file (board/QA.html) holds no page section and its own h1 IS the
      group title, in board.md's `### QA · Design` grammar. That title is exactly

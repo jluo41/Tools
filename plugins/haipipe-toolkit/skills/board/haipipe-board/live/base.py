@@ -149,7 +149,7 @@ class BaseMixin:
         return (r.stdout or r.stderr).strip()
 
     # ── the wire (QD5 C2 P5, 260802) ─────────────────────────────────────
-    # A board page is 163 KB and 67% of it is the rail repeated on every page;
+    # A board page is 163 KB and 67% of it is the sidebar repeated on every page;
     # the index is 244 KB and the largest page 451 KB. None of it was ever
     # compressed, and the reader is usually on the far end of a VS Code or ssh
     # forward, where bytes are the whole cost — the server itself answers in
@@ -249,7 +249,7 @@ class BaseMixin:
         # `no-store` was the sledgehammer for that, and the tree changed the
         # arithmetic (JL 260801: "why does it take a long time to navigate").
         # A board is no longer one file you open once: every click fetches a
-        # page, 82% of whose bytes are the rail the router then throws away.
+        # page, 82% of whose bytes are the sidebar the router then throws away.
         # `no-cache` keeps the guarantee that mattered, because it means
         # REVALIDATE BEFORE USE, not "may be stale": the browser still asks the
         # server on every navigation, and an unchanged page comes back as a

@@ -3,7 +3,7 @@ name: haipipe-board-sentence
 description: >-
   The SENTENCE contract of a board, as a loadable spec: the sentence as the board's atomic unit, its dotted address, the > comment lanes and who may write one, the evidence card, editing, per-location chat focus, and the lifecycle of attached records (archive, never delete). Load this when an agent must write ONE line that reads like the board without operating the whole board: a routed log line, a comment into a lane, a chat focus packet, or the paper family's evidence card. Trigger: sentence contract, comment lane, > lane, evidence card, sentence address, apparatus, /haipipe-board-sentence.
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   last_updated: "2026-08-02"
   summary: "The lane figure and the lane rules teach `> Comment WHO`, the only comment form to write since 260802, and mark ## Discussion's thread grammar as unaffected."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -91,4 +91,4 @@ haipipe-board-sentence/
 ```
 
 Reads `haipipe-board/ref/board-form.md` §5 as the authority; owns no scripts at 0.1.0.
-The named next step (QC6 §7): the drawer's lane instructions in `serve.py` become this contract's consumer instead of a second prose copy.
+The named next step (QC1b §1): the drawer's lane instructions in `live/chat.py` become this contract's consumer instead of a second prose copy.

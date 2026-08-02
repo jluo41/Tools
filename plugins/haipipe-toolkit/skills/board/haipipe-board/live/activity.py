@@ -199,16 +199,54 @@ class ActivityMixin:
         self._log_cache[str(board)] = (stamp, out)
         return out
 
+    # what cannot contain a board.md, so the walk never enters it
+    SKIP_DIRS = {".git", ".venv", "node_modules", "__pycache__", "_archive",
+                 "board", "_WorkSpace", "site-packages", ".pytest_cache",
+                 "dist", "build"}
+    _boards_cache = (0.0, None)
+    _boards_lock = threading.Lock()
+
     def log_boards(self):
-        """Every board under --root, so the across-boards ranking is real."""
-        found = []
-        for bmd in sorted(self.root.rglob("board.md")):
-            rel = bmd.parent.relative_to(self.root).as_posix()
-            if any(s.startswith((".", "_")) or s == "node_modules"
-                   for s in rel.split("/")):
-                continue
-            found.append((rel, bmd.parent))
-        return found
+        """Every board under --root, so the across-boards ranking is real.
+
+        PRUNE IN PLACE, AND CACHE THE ANSWER (260802). `rglob` descends
+        everywhere and the skip list was applied to the RESULTS, so finding ten
+        `board.md` files walked the whole repository: 366,951 entries through
+        `.venv`, `node_modules`, `.git`, `_WorkSpace` and the generated `board/`
+        tree under every board. `/boards` was fixed this way earlier the same
+        day; this copy of the same walk was missed, and it is on a far hotter
+        path — every page in every pane posts `op=stats` as it loads.
+
+        What that cost is not "slow": measured here, `POST /_board/activity`
+        never returned inside 60 s, so each one held one of the browser's SIX
+        connections per origin until it gave up. With a few tabs open every
+        socket was held by a walk, and JL's next CLICK sat in Chrome's queue
+        showing "Provisional headers are shown" for one to two minutes. The
+        page was never slow to serve; it never got a socket to be served on.
+
+        The cache is the second half. Ten tabs loading at once asked ten times
+        for an answer that changes when a board is created, which is rarely, so
+        one walk is shared for two seconds and the rest are free.
+        """
+        now = time.monotonic()
+        stamp, cached = ActivityMixin._boards_cache
+        if cached is not None and now - stamp < 2.0:
+            return cached
+        with ActivityMixin._boards_lock:
+            stamp, cached = ActivityMixin._boards_cache
+            if cached is not None and time.monotonic() - stamp < 2.0:
+                return cached
+            found = []
+            for dirpath, dirnames, filenames in os.walk(self.root):
+                dirnames[:] = [d for d in dirnames
+                               if d not in self.SKIP_DIRS and not d.startswith((".", "_"))]
+                if "board.md" not in filenames:
+                    continue
+                here = Path(dirpath)
+                found.append((here.relative_to(self.root).as_posix(), here))
+            found.sort()
+            ActivityMixin._boards_cache = (time.monotonic(), found)
+            return found
 
     def board_title(self, path):
         try:

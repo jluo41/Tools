@@ -124,10 +124,17 @@ class Browser:
 
 
 def tree_url(base, board, root, page):
-    """The built page for one source file, in the board/ tree."""
+    """The built page for one source file, in the board/ tree.
+
+    `?pane=page` asks for the PAGE, not the shell around it. Without it the
+    server answers with the three-pane frame and the real document loads in an
+    iframe, so `Runtime.evaluate` reads the shell's window, finds no reader and
+    reports every page unreadable. That is what it did on 260802: 55 of 55
+    pages SKIPPED, which looks exactly like a run nobody bothered to read.
+    """
     rel = page.relative_to(board)
     group = rel.parts[0].split("-", 1)[0] if len(rel.parts) > 1 else ""
-    name = rel.stem + ".html"
+    name = rel.stem + ".html?pane=page"
     stem = board.resolve().relative_to(root.resolve()).as_posix()
     return f"{base}/{stem}/board/{group}/{name}" if group else f"{base}/{stem}/board/{name}"
 

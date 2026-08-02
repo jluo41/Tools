@@ -20,6 +20,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from src.parse import parse_dir  # noqa: E402
+from live.home import board_slug  # noqa: E402  (QE2 owns the slug; one copy)
 
 
 MODES = ("discussion", "sourcing", "implementation", "review", "status")
@@ -152,17 +153,40 @@ def board_url(board, root, base_url, anchor):
     path = urllib.parse.quote(relative.as_posix(), safe="/")
     base = f"{base_url.rstrip('/')}/{path}"
     site = board / "board"
-    if site.is_dir() and (site / "index.html").exists():
-        # anchor is a page id (QD2), a group code (QD), or an index anchor
-        if anchor and anchor not in ("top", "qlist", "all"):
-            for html in sorted(site.glob("*/*.html")):
-                if html.stem.split("-")[0] == anchor:
-                    return f"{base}/board/{html.parent.name}/{html.name}"
-            grp = site / f"{anchor}.html"
-            if grp.exists():
-                return f"{base}/board/{anchor}.html"
-        return f"{base}/board/index.html"
-    return f"{base}/{'board.html'}#{anchor}"
+    if not (site.is_dir() and (site / "index.html").exists()):
+        return f"{base}/{'board.html'}#{anchor}"
+
+    # anchor is a page id (QD2), a group code (QD), or an index anchor
+    tail = anchor if anchor and anchor not in ("top", "qlist", "all") else ""
+
+    long_url = f"{base}/board/index.html"
+    resolved = not tail
+    if tail:
+        for html in sorted(site.glob("*/*.html")):
+            if html.stem.split("-")[0] == tail:
+                long_url = f"{base}/board/{html.parent.name}/{html.name}"
+                resolved = True
+                break
+        else:
+            if (site / f"{tail}.html").exists():
+                long_url = f"{base}/board/{tail}.html"
+                resolved = True
+
+    # QE2 · the short route, and it is the DEFAULT once the generated site is
+    # there. 78 of the 131 characters JL measured on 260802 were the path from
+    # the SPACE root down to the board folder, and a chat surface expands
+    # `[label](url)` back into `label (url)`, so a person reads that length no
+    # matter what the strip does. `/b/<slug>[/<page>]` is a 302 from
+    # `live/home.py`, which owns the slug so the route and the printed label
+    # can never disagree about what a board is called.
+    #
+    # An anchor that resolves to no generated file keeps the long URL, because
+    # the route answers 404 there: a long working link beats a short dead one.
+    if resolved:
+        slug = urllib.parse.quote(board_slug(board.name), safe="")
+        short = f"{base_url.rstrip('/')}/b/{slug}"
+        return f"{short}/{urllib.parse.quote(tail, safe='')}" if tail else short
+    return long_url
 
 
 def render(board, focus="board", mode="status", status="ready", next_action="",

@@ -1,4 +1,4 @@
-# haipipe-board-routing · v0.3.0
+# haipipe-board-routing · v0.6.1
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -12,12 +12,12 @@ Its result determines whether the Board stays current without silent page creati
 It is healthy when every input lands, becomes an explicit proposal, or is reported to the outside owner.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 556b67e8391bbf56 board/haipipe-board-routing -->
+<!-- haipipe:skill:tree:start 609036cd9d948960 board/haipipe-board-routing -->
 
 ```
 haipipe-board-routing/
-  CHANGELOG.md          50 ln  haipipe-board-routing · Changelog
-  SKILL.md              95 ln  /haipipe-board-routing · one input, one owning page, one anchored write
+  CHANGELOG.md          78 ln  haipipe-board-routing · Changelog
+  SKILL.md             101 ln  /haipipe-board-routing · one input, one owning page, one anchored write
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -30,13 +30,13 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 556b67e8391bbf56 board/haipipe-board-routing -->
+<!-- haipipe:skill:body:start 609036cd9d948960 board/haipipe-board-routing -->
 
-**haipipe-board-routing** · `0.3.0` · last shipped 2026-07-31
+**haipipe-board-routing** · `0.6.1` · last shipped 2026-08-02
 
 - folder   `board/haipipe-board-routing/`
 - tools    not declared
-- summary  The footer ends with a Next: line, the one action the user should take now (JL 260731).
+- summary  Routes current facts into States, reserves Decision Now and page-level gates for the human, and has the reply list its pending decisions in brief.
 
 ### SKILL.md
 
@@ -44,7 +44,7 @@ above is the whole story.
 
 
 `haipipe-board`'s sync verb already states the order: claim which question first, then do the work, then write back in the same round.
-Routing automates the claim (QC6 §9), which makes two existing failure modes machine-speed, so the rules here exist to keep them impossible rather than unlikely.
+Routing automates the claim (QC1b §4), which makes two existing failure modes machine-speed, so the rules here exist to keep them impossible rather than unlikely.
 
 **The boundary:**
 
@@ -52,8 +52,9 @@ Routing automates the claim (QC6 §9), which makes two existing failure modes ma
 haipipe-board-routing            what it loads          what it never does
 ─────────────────────            ─────────────────      ─────────────────────
 find the owning location         haipipe-board-page     render, serve, check
-append the anchored write        haipipe-board-sentence tick a box, flip state:
-propose a page when none fits                           create a page silently
+append the anchored write        haipipe-board-sentence tick a human decision
+propose a page when none fits                           change a human page gate
+                                                        create a page silently
 ```
 
 Digest (a session transcript, many inputs) is this verb FANNED OUT: it calls routing per input and never reimplements it.
@@ -63,7 +64,7 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
 - 1 · 🗺 The route, five steps
       ```
       1  READ the input        what happened · what kind of record it deserves
-                               (a Log line · a Where-we-are entry · a lane reply ·
+                               (a Log line · a State entry · a lane reply ·
                                 a Files row · a Decision Now row); a derived view,
                                 aggregated from state the pages already hold,
                                 deserves NO write, because a copy drifts
@@ -86,10 +87,13 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       ```
 
 - 2 · ⚖️ The two write laws, inherited not invented
-      **The tick law (QC6 §10).**
-      Routing reads claims; it cannot verify them.
-      It may append Log lines and Where-we-are prose and may write `PROPOSED:` before a tick it believes is earned; it may not close a checkbox or change a `state:` line.
-      Every proposal lands as a row under the owning page's `### Decision Now`, inside `## Where we are` (JL 260731: never make the decision in chat); the human ticks.
+      **The human-decision law (QC1b §5).**
+      Routing may append Log lines and factual State rows. When it has inspected the
+      evidence, it may move an Aim among the allowed State statuses and records the
+      reason in Log. It may not close a `### Decision Now` checkbox or change a
+      page-level human gate. Every proposal lands under the owning page's
+      `### Decision Now`, inside `## States` (JL 260731: never make the decision in
+      chat); the human ticks.
       **The cross-board law (QB1 §4).**
       Mechanical writes carry no judgement and are always allowed.
       Editorial writes are never ours on a board that is neither the skill set nor the board being worked: there, the output is a report addressed to that board's owner, not an edit.
@@ -107,7 +111,9 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       ```
       **The reply contract (JL 260731).**
       Whatever the end state, the reply closes with the routing footer: one line per write, `page id · ## section`, so the human sees where every record landed without hunting.
-      Decisions are pointed at, never re-listed: the footer names the page and its Decision Now row count, and the rows themselves live only on the page.
+      Decisions are LISTED IN BRIEF and never re-argued (JL 260802, amending the count-only rule of 260731): the reply gives one line per Decision Now row, the ask plus the recommended option, so the human can see what is waiting on them without opening the page.
+      The full row lives only on the page, with its `Part`, `Why now`, the options and what each commits you to, `Blocks`, and the default; the reply never reproduces those.
+      A bare count was too thin to act on, because a number tells the human that something waits and not whether it is worth opening the page now.
       The footer's last line is `Next: <the one action the user should take now>` (JL 260731: "add a new line like Next:xxxx suggest what user to do next"): one concrete, immediately doable step (open this page, tick these rows, hard-refresh and click this button), never a list and never CC's own next task.
 
 - 4 · 📂 Files
@@ -130,10 +136,30 @@ Page generated 260731 1117. Nothing ruled yet.
 ## Log
 260731 1117 · page generated from `board/haipipe-board-routing/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 556b67e8391bbf56 board/haipipe-board-routing -->
+<!-- haipipe:skill:log:start 609036cd9d948960 board/haipipe-board-routing -->
 
-Converted from the skill's own `CHANGELOG.md`: 3 releases.
+Converted from the skill's own `CHANGELOG.md`: 7 releases.
 
+260802 · `0.6.1`
+      - Repointed the two inherited write laws and the claim-automation citation after `QC1b`'s
+        260802 Content rebuild: `QC6 §9` is now `QC1b §4` and `QC6 §10` is now `QC1b §5`.
+260802 · `0.6.0`
+      - The reply LISTS its Decision Now rows in brief instead of naming a count
+        (JL 260802: "I think you can also briefly list the 5 decisions here as well").
+        One line per row, the ask plus the recommended option; the full row, with its
+        `Part`, `Why now`, options, `Blocks` and default, still lives only on the page.
+        This amends the count-only rule of 260731, which was too thin to act on: a
+        number says something waits, not whether it is worth opening the page now.
+      - Note for the reader: `0.5.0` is in `SKILL.md` frontmatter with no entry below.
+        It was not written by this change and its content is unknown here.
+260801 · `0.4.1`
+      - Routes current records into the canonical plural `## States` section while
+        retaining singular State as an individual record name.
+260801 · `0.4.0`
+      - Routes current facts into `## State` and may update an Aim status only from
+        inspected evidence, recording the transition reason in Log.
+      - Keeps `### Decision Now` checkboxes and page-level human gates human-owned.
+      - Replaced active `Where we are` instructions with the canonical State name.
 260731 · `0.3.0`
       - The footer ends with a `Next:` line. JL, reading a bare routing footer: "what
         should I do? ... you can add a new line like Next:xxxx suggest what user to

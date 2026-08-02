@@ -26,6 +26,13 @@ class PaneRecognitionTest(unittest.TestCase):
     def test_every_pane_kind_has_a_stylesheet(self):
         self.assertEqual(set(PANE_CSS), {"index", "page", "chat"})
 
+    def test_only_wrap_fragment_is_recognized(self):
+        self.assertEqual(
+            ShellMixin.fragment_of("/x/board/QD/QD5-y.html?fragment=wrap"), "wrap")
+        self.assertIsNone(
+            ShellMixin.fragment_of("/x/board/QD/QD5-y.html?fragment=sidebar"))
+        self.assertIsNone(ShellMixin.fragment_of("/x/board/QD/QD5-y.html"))
+
 
 class SplitDoorTest(unittest.TestCase):
     """ONE URL PER PAGE, and the split is what a browser tab gets.

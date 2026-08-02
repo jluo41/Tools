@@ -1,4 +1,4 @@
-# haipipe-board-sentence · v0.1.0
+# haipipe-board-sentence · v0.1.2
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -12,12 +12,12 @@ Routing and the live drawer depend on the same grammar so their writes land and 
 It is healthy when every consumer uses one address and lifecycle without silently deleting or inventing records.
 
 ## Diagram
-<!-- haipipe:skill:tree:start f5e312722743a0b5 board/haipipe-board-sentence -->
+<!-- haipipe:skill:tree:start 2de6b0217a674318 board/haipipe-board-sentence -->
 
 ```
 haipipe-board-sentence/
-  CHANGELOG.md          22 ln  haipipe-board-sentence · Changelog
-  SKILL.md              89 ln  /haipipe-board-sentence · the sentence, as a contract you can load
+  CHANGELOG.md          39 ln  haipipe-board-sentence · Changelog
+  SKILL.md              94 ln  /haipipe-board-sentence · the sentence, as a contract you can load
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -30,13 +30,13 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start f5e312722743a0b5 board/haipipe-board-sentence -->
+<!-- haipipe:skill:body:start 2de6b0217a674318 board/haipipe-board-sentence -->
 
-**haipipe-board-sentence** · `0.1.0` · last shipped 2026-07-31
+**haipipe-board-sentence** · `0.1.2` · last shipped 2026-08-02
 
 - folder   `board/haipipe-board-sentence/`
 - tools    not declared
-- summary  First cut, contract-first (QC6 §8: the second SPEC the routing and digest verbs LOAD): the atomic unit, the lanes, the card, and the record lifecycle. No code moved.
+- summary  The lane figure and the lane rules teach `> Comment WHO`, the only comment form to write since 260802, and mark ## Discussion's thread grammar as unaffected.
 
 ### SKILL.md
 
@@ -74,13 +74,18 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
 - 2 · 💬 The lanes
       A `>` line under a sentence is a LANE: a signed, dated remark that belongs to the sentence above it.
       ```
-      > JL: the human's lane · decisions and corrections live here
+      > Comment JL …   the human's lane · decisions and corrections live here
+      > ✎ ~old~ *new* · WHO · YYMMDD HHMM   the change record
+      > Citation: · > Value: · > Display: …  the typed lanes, named by what they attach
       >> CC{MMDD}: the worker's dated reply lane, nested under what it answers
       ```
       Lane rules a machine must hold:
       ```
       · a lane is APPENDED, never edited in place; the record is the point
-      · never delete a signed `> WHO:` or `> ✎` line (ref/writing-rules.md: they are the durable review trail)
+      · a person's remark is `> Comment WHO …`, the only form to write (JL 260802);
+        the older `> JL:` still renders and check.py warns on it inside Content
+      · `## Discussion` is NOT affected: it keeps `> JL:` + `>> CC0726:`, a THREAD
+      · never delete a signed comment or `> ✎` line (ref/writing-rules.md: they are the durable review trail)
       · a reply nests one level under what it answers, dated
       · a lane without a signature is not a lane, it is unclaimed prose
       ```
@@ -106,7 +111,7 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
       └── CHANGELOG.md        version history
       ```
       Reads `haipipe-board/ref/board-form.md` §5 as the authority; owns no scripts at 0.1.0.
-      The named next step (QC6 §7): the drawer's lane instructions in `serve.py` become this contract's consumer instead of a second prose copy.
+      The named next step (QC1b §1): the drawer's lane instructions in `live/chat.py` become this contract's consumer instead of a second prose copy.
 <!-- haipipe:skill:body:end -->
 
 ## Aims
@@ -119,10 +124,23 @@ Page generated 260731 1116. Nothing ruled yet.
 ## Log
 260731 1116 · page generated from `board/haipipe-board-sentence/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start f5e312722743a0b5 board/haipipe-board-sentence -->
+<!-- haipipe:skill:log:start 2de6b0217a674318 board/haipipe-board-sentence -->
 
-Converted from the skill's own `CHANGELOG.md`: 1 releases.
+Converted from the skill's own `CHANGELOG.md`: 3 releases.
 
+260802 · `0.1.2`
+      - Repointed the door test from `QC6 §7` to `QC1b §1` after that page's 260802 Content rebuild,
+        and corrected the named next step: the drawer's lane instructions live in `live/chat.py`, not
+        in `cli/serve.py`, since the `QC2c` live-layer split.
+260802 · `0.1.1`
+      - The lane figure taught `> JL: the human's lane`, which QB4 §3.3.3 retired on
+        260802: a person's remark is `> Comment WHO …`, the older form still renders,
+        and `check.py` warns on it inside Content. The figure now shows the three
+        kinds that hang under a sentence (comment, `✎` change record, typed lane).
+      - The never-delete rule said `> WHO:`; it names the comment form instead.
+      - `## Discussion` is called out as NOT affected: it keeps `> JL:` with nested
+        `>>` replies, which is a thread and a different grammar in a different
+        section.
 260731 · `0.1.0`
       - First cut, created on JL's order alongside `haipipe-board-page` and
         `haipipe-board-routing`, from QC6 §8's settled shape: one door, two SPECS, two

@@ -39,21 +39,26 @@
     busy = true;
     try {
       /* `no-store` re-downloaded the whole page on every visit, and 82% of a
-         page's bytes are the rail, which this swap then throws away because the
-         rail lives outside div.wrap. `no-cache` still REVALIDATES every time, so
+         page's bytes are the sidebar, which this swap then throws away because the
+         sidebar lives outside div.wrap. `no-cache` still REVALIDATES every time, so
          a rebuilt page is never served stale, but an unchanged one comes back as
          a 0-byte 304 instead of 136 KB (JL 260801: "why does it take a long time
          to navigate"). Correctness is unchanged; only the wire is. */
       /* A HUNG FETCH MUST NOT WEDGE THE ROUTER. `busy` guards against two
          clicks racing, and its only release is this function finishing, so a
          request that never settles left every later click queued forever and
-         the rail simply stopped working (measured 260802, after the swap was
+         the sidebar simply stopped working (measured 260802, after the swap was
          put back in the page pane). Five seconds, then fall back to an ordinary
          navigation, which is slower but always arrives. */
       var ctl = new AbortController();
       var bell = setTimeout(function () { ctl.abort(); }, 5000);
       var r;
-      try { r = await fetch(url, { cache: 'no-cache', signal: ctl.signal }); }
+      /* The sidebar is repeated in every generated page. Navigation only replaces
+         `.wrap`, so ask the live server for that fragment directly. A static
+         server that ignores the query still returns the full page as fallback. */
+      var fragmentUrl = new URL(url, location.href);
+      fragmentUrl.searchParams.set('fragment', 'wrap');
+      try { r = await fetch(fragmentUrl.href, { cache: 'no-cache', signal: ctl.signal }); }
       finally { clearTimeout(bell); }
       var doc = new DOMParser().parseFromString(await r.text(), 'text/html');
       var nw = doc.querySelector('div.wrap'), old = document.querySelector('div.wrap');
@@ -97,10 +102,10 @@
   window.__boardGo = go;
 })();
 
-/* Rail drag-to-resize (JL 260731: "can the left panel be dragged, it feels
+/* Sidebar drag-to-resize (JL 260731: "can the left panel be dragged, it feels
    fixed"). Same shape the chat drawer uses for --chatw: one CSS variable, a
    handle on the edge that sets it, and the width remembered per machine.
-   Pure enhancement, so with scripts off the rail keeps its default width. */
+   Pure enhancement, so with scripts off the sidebar keeps its default width. */
 (function () {
   var KEY = 'board-sidebar-width';
   function setW(px) {

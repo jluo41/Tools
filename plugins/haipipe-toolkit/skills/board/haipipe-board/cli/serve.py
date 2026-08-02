@@ -180,6 +180,9 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
     def do_GET(self):
         if self.is_home_request():
             return self.serve_home()
+        short = self.short_request()
+        if short:
+            return self.serve_short(*short)
         # QD5 · the operating shell. Three routes, and they sit at the very top
         # because two of them are ordinary board URLs wearing a query string:
         # a pane must be recognised BEFORE the static handler serves the file.
@@ -190,6 +193,8 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
         pane = self.pane_of(self.path)
         if pane:
             return self.serve_pane(pane)
+        if self.fragment_of(self.path):
+            return self.serve_fragment()
         split = self.split_of(self.path)
         if split:
             return self.serve_shell(split)
@@ -228,6 +233,9 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
     def do_HEAD(self):
         if self.is_home_request():
             return self.serve_home()
+        short = self.short_request()
+        if short:
+            return self.serve_short(*short)
         if self.pane_of(self.path):
             return self.head_pane()
         if self.path.startswith("/_term/"):

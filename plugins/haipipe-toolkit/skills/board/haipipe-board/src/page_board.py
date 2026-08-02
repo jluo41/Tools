@@ -431,7 +431,7 @@ def index_rows(meta, qs, href_for=None, group_href=None):
 
 
 def sidebar_rows(qs, href_for=None, group_href=None):
-    """The rail's rows: group links, page links, and each page's section
+    """The sidebar's rows: group links, page links, and each page's section
     outline. ONE implementation for the canonical site and legacy renderer."""
     href_for = href_for or (lambda q: "#" + q["id"])
     group_href = group_href or (lambda tok: "#group-" + tok)
@@ -447,7 +447,7 @@ def sidebar_rows(qs, href_for=None, group_href=None):
                       f'{inline(sbcur)}</a>')
         chev = ('' if q.get("kind") == "doc"
                 else '<span class="sb-x" title="sections">▸</span>')
-        # `data-page` is what the rail matches the open page against. The href
+        # `data-page` is what the sidebar matches the open page against. The href
         # cannot serve: it is `#QB5c` in the one-file board and
         # `QB/QB5c-editing.html` in the tree, and mark() used to compare it to
         # `location.hash`, which a tree page does not have. So no row was ever
@@ -458,12 +458,12 @@ def sidebar_rows(qs, href_for=None, group_href=None):
                   f'<span class="i">{esc(q["id"])}</span>'
                   f'<span class="t">{inline(q["title"])}</span>{chev}</a>')
         # The per-page outline (QB2a, JL 260731): the Structure rows again,
-        # so the rail and the Opening drawer can never disagree. Hidden until
+        # so the sidebar and the Opening drawer can never disagree. Hidden until
         # this page is the open one — only ONE page's sections show at a time.
         if q.get("kind") != "doc":
             out = []
             # 同一份 Content 切分：抬走的那块（legacy `### Stage Record`）在这里
-            # 也得抬走，不然 rail 比正文多一节，而 `data-div` 是按顺序编号的，
+            # 也得抬走，不然 sidebar 比正文多一节，而 `data-div` 是按顺序编号的，
             # 于是那一页每一个 division 链接都错开一格（JL 260801 统一命名时发现）。
             _, csecs = split_stage_record(
                 q.get("kind"), parse_content_sections(sec(q["sec"], "Content")))
@@ -522,7 +522,7 @@ def render(meta, qs):
     rows = index_rows(meta, qs)
     idx = "\n".join(rows)
 
-    # Pages sidebar (JL 260731): the .idx listing compressed to a fixed rail,
+    # Pages sidebar (JL 260731): the .idx listing compressed to a fixed sidebar,
     # Index → group → page, so a reader can jump from anywhere. It lives
     # OUTSIDE .wrap, so the :target show/hide rules never touch it; a group
     # link re-targets #group-… which also brings the index back on stage.
@@ -807,9 +807,9 @@ def tree_reroot(html, up):
 
 
 def tree_sidebar(meta, qs, root):
-    """The left rail for the tree.
+    """The left sidebar for the tree.
 
-    Reuses `sidebar_rows()`, the SAME builder the single file uses, so the rail
+    Reuses `sidebar_rows()`, the SAME builder the single file uses, so the sidebar
     keeps its per-page section outline (`.sb-out` / `.sb-s` / `.sb-ss`). A first
     version hand-rolled a flat list and silently dropped that outline, which is
     the third time this file's own law caught its author (JL 260731).

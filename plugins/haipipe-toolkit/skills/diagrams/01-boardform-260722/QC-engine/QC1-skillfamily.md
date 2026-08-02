@@ -26,17 +26,27 @@ It succeeds when a newcomer can name each shipped unit and find every settled ru
 
 ## Content
 ### §1 The two ends of one question
+
+**Two faces, one deliverable**: what each face rules, and where its answer lands.
+
+```
+📜 QC1a  what SKILL.md says   ──▶  the cut line to ref/    ──▶  SKILL.md
+🧱 QC1b  which units exist    ──▶  the roster + one test   ──▶  skills/board/
+🪞 Skill-* · Agent-*          ──▶  one synced mirror page per shipped unit
+```
+📌 Both faces answer "what does this family ship", one from inside a unit and one from above the set.
+
 `QC1a` rules what SKILL.md says and what it leaves to `ref/`: the cut line needs a rule, not a feel, because SKILL.md is the skill's entry point and its only graduation channel.
 `QC1b` names every subskill candidate and applies one test to each: is it its own door, or a section of the manual?
 The roster took its shape on 260731: one door, the board+group altitude, two loadable SPECs, and the write-back VERB; `digest` is named and unshipped.
 
 ## Aims
 - [ ] 🧠 SKILL.md's cut line is written as a rule (QC1a)
-- [x] 🧱 the roster ruled: four of six units shipped (QC1b, JL 260731)
+- [x] 🧱 the roster ruled: five of six units ship, digest is named and unbuilt (QC1b, JL 260731)
 - [ ] ⚠️ resolve the overlap: does the subskill roster live here (QC1b) or in the Skill-* pages?
 
 ## States
-The roster is ruled and four units ship; SKILL.md's cut line is still described more by feel than by rule; and the roster page overlaps the Skill-* roster it points at, which is the open item.
+The roster is ruled and five of its six units ship (`haipipe-board` 0.104.0, `-index` 0.2.1, `-page` 0.6.0, `-sentence` 0.1.1, `-routing` 0.6.0; `-digest` is named and unbuilt); SKILL.md's cut line is still described more by feel than by rule; and the roster page overlaps the Skill-* roster it points at, which is the open item.
 
 ### Decision Now
 - [ ] ⚠️ JL rules whether QC1b (the roster argument) and the Skill-* pages (the roster itself) should stay separate or merge

@@ -7,7 +7,39 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
-## 0.6.0 - 2026-08-01
+## 0.10.0 - 2026-08-02
+
+- `working on an existing page` gains steps 7 and 8: ONE page is the deliverable,
+  a write outside it is allowed only when the page cannot be made correct without
+  it and must be named in the report, and a sibling page's CONTENT is never
+  rewritten. Step 5 sends an agent to other files on purpose; nothing bounded it.
+- The verb now states the measurement that produced the rule. Three fresh agents
+  were each given one sentence and nothing else on 260802. All three found this
+  skill unaided (at tool calls #5, #6, #5) and drove their page to zero findings,
+  including the one whose wording matches no trigger in the description. They then
+  disagreed completely about reach: 1 file versus 15, the wide one touching four
+  shipped `SKILL.md`, four `CHANGELOG.md`, six sibling pages and `board.md`.
+  Neither was wrong on the merits, which is exactly why the bound had to be written
+  rather than left to judgment.
+
+## 0.9.0 - 2026-08-02
+
+- A machine now CLOSES a `### Decision Now` row once the person has answered it,
+  recording which option, who ruled, when, and the words they used (JL 260802:
+  "I think you should close it automatically, please go ahead and do it").
+  It still may not close a row nobody answered, and may not flip a page-level
+  human gate; a machine's own recommendation is never an answer. Before this a
+  row answered in chat and acted on within the hour still rendered as pending,
+  so the page reported work as waiting that had already shipped.
+
+## 0.8.1 - 2026-08-02
+
+- Repointed every design-board citation after `QC1b`'s 260802 Content rebuild: the door test
+  moved from `QC6 §7` to `QC1b §1`, the anchored-write rule from `QC6 §9` to `QC1b §4`, and the
+  human-decision rule from `QC6 §10` to `QC1b §5`.
+- Corrected the named next step. The rule strings it must replace are not in `cli/serve.py` and
+  there are not one of them: they moved to `live/chat.py` in the `QC2c` live-layer split, and
+  there are four (`CHAT_RULES`, `FULL_RULES`, `BOARD_CHAT_RULES`, `BOARD_FULL_RULES`).
 
 ## 0.8.0 — 260802
 

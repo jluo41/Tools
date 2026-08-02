@@ -77,7 +77,7 @@ Its open state is what A2.3 promises to carry across a refresh.
 </details>
 """
 
-Q2 = """# A second page, so the rail has somewhere to go
+Q2 = """# A second page, so the sidebar has somewhere to go
 
 state: 🟡 fixture
 owner: CC

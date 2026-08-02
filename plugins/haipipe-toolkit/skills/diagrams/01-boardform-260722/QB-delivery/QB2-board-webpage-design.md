@@ -18,7 +18,7 @@ This page owns the first. `QB4` owns the second.
 **Where this page sits**: The board walks down one ladder: Board, Group, Page, Section, Sentence.
 `QB1` owns the board's folder on disk, and `QB3` puts a page's file beside the work it describes.
 This page takes the rung a reader meets first: the Index, plus the visual language every view shares.
-`QB2a` carries the sidebar rail that travels with it.
+`QB2a` carries the sidebar sidebar that travels with it.
 
 **What is settled elsewhere**: Whether a page's prose is well written, and the mechanical checks run after any change, belong to `QA9`.
 Paper and venue writing style belongs to the Paper lifecycle.
@@ -700,7 +700,7 @@ The dated implementation history below is the record of how it got here; each Ai
 
 - 260731 CC · 🗂 RELATED FOLDERS shipped (0.87.0, depth B)
   A third Index fold, peer to the Board Map and Section Matrix, opens the folders this board touches (the shipping engine, and the board folder itself); clicking a folder then a file reads it inline.
-  Built as a build-time EMBED rather than JL's literal "serve.py serves content live", because a live fetch breaks the script-stripped/static-host Law (QE3): `related_folders()` reads each listed file at build, refuses paths outside the repo root, inlines only `.md`/`.txt` under 120 KB, and shows every failure as a visible box. Renders in both `board.html` and the `board/` tree; the rail gained a 🗂 Related Folders row. Verified: order Board Map → Related Folders → Section Matrix, four files embedded, zero failures, body survives JS stripping. QC8's live endpoint is deferred for oversized folders.
+  Built as a build-time EMBED rather than JL's literal "serve.py serves content live", because a live fetch breaks the script-stripped/static-host Law (QE3): `related_folders()` reads each listed file at build, refuses paths outside the repo root, inlines only `.md`/`.txt` under 120 KB, and shows every failure as a visible box. Renders in both `board.html` and the `board/` tree; the sidebar gained a 🗂 Related Folders row. Verified: order Board Map → Related Folders → Section Matrix, four files embedded, zero failures, body survives JS stripping. QC8's live endpoint is deferred for oversized folders.
 
 - 260731 JL · 🗂 RELATED FOLDERS depth ruled: B, the clickable browser
   JL: "do the B level." The fold opens to a real file's content on click (for example `SKILL.md`), not just a static tree.
@@ -712,8 +712,8 @@ The dated implementation history below is the record of how it got here; each Ai
 - 260731 JL · 🧹 Topic, Pipeline, and Board-Structure left the Index
   JL, quoting the three disclosure headings: "I want to just remove this."
   The renderer no longer emits the three `ctx` disclosures; `board.md` keeps `## Topic`, `## Pipeline`, and `## Board Structure` as source-only documentation, and nothing else read them.
-  The Index now reads spine → Board Map → Section Matrix → ALL PAGES → Activity, and the rail's Index outline lists exactly those components.
-- 260731 JL · 📇 The Index row unfolds in the rail
+  The Index now reads spine → Board Map → Section Matrix → ALL PAGES → Activity, and the sidebar's Index outline lists exactly those components.
+- 260731 JL · 📇 The Index row unfolds in the sidebar
   JL: "for the left panel headings, what should be the index's section content? Please add them as well."
   The `🗂 Index` row now carries the same chevron and outline as a page row: 🗺 Board Map, 🩺 Section Matrix (with its page × column count), 📄 All Pages (with the page count), 📈 Activity, each present only when the board has it, each scrolling the Index to that component.
   It unfolds by default when the board opens, since the Index is the open "page" at load.
@@ -724,7 +724,7 @@ The dated implementation history below is the record of how it got here; each Ai
   A cell is a link: click it and the page opens scrolled to that section; amber marks incomplete, accent marks waiting-on-JL, muted marks absent.
 - 260731 JL · 📑 The webpage gained a hideable pages sidebar
   JL: "I also think to added the sidebar so I can choose the pages more easier ... like the side bar, and then index, QA, QA1, QA2, etc ... and that sidebar can be hidden as well."
-  Shipped in haipipe-board 0.61.0: a fixed left rail listing Index, then every group with its pages (state emoji, id, title), rendered server-side from the same listing as the index rows so it needs no script to exist.
+  Shipped in haipipe-board 0.61.0: a fixed left sidebar listing Index, then every group with its pages (state emoji, id, title), rendered server-side from the same listing as the index rows so it needs no script to exist.
   It lives outside `.wrap`, so the `:target` show/hide rules never touch it and it stays up in both the Index view and an open page; a group link re-targets `#group-…`, which also brings the Index back on stage.
   The ☰ toggle hides or shows it, the choice persists per board in localStorage, and with no saved choice it defaults open on wide screens and hidden on narrow ones; a jump on a narrow screen closes the overlay without persisting.
 - 260730 JL · 🅰 The Board Map became ASCII, and a disclosure
@@ -808,11 +808,11 @@ The dated implementation history below is the record of how it got here; each Ai
 
 - 260731 JL · 🔁 The tree index was a THIRD reimplementation, and JL caught it by comparing
   JL: "the ASCII here has not become real ASCII", and "compare your configuration with the original .md one, there are big differences, look carefully."
-  He was right on both counts and the cause was one thing: the tree's index and rail had been hand-written instead of reusing the builders `render()` already had.
+  He was right on both counts and the cause was one thing: the tree's index and sidebar had been hand-written instead of reusing the builders `render()` already had.
   What that silently dropped: every `.gi` group-intro block, every `.gib` body, and all six `.gidia` figures, which are the per-group lane diagrams, so the ASCII was not rendering as ASCII because it was not being rendered at all.
-  The rail lost its per-page section outline the same way, 54 `.sb-out` blocks and 298 `.sb-s` rows.
-  Fixed structurally rather than patched: the index loop became `index_rows()` and the rail loop became `sidebar_rows()`, each taking an href function, and both packagings now call the same one.
-  A class-by-class diff of the two indexes is the check: the only remaining differences are the progress bar and the ALL PAGES hint, both deliberate, and one rail row, because the tree's Index is its own document rather than a fragment.
+  The sidebar lost its per-page section outline the same way, 54 `.sb-out` blocks and 298 `.sb-s` rows.
+  Fixed structurally rather than patched: the index loop became `index_rows()` and the sidebar loop became `sidebar_rows()`, each taking an href function, and both packagings now call the same one.
+  A class-by-class diff of the two indexes is the check: the only remaining differences are the progress bar and the ALL PAGES hint, both deliberate, and one sidebar row, because the tree's Index is its own document rather than a fragment.
   Third time this family's "one grammar, never two implementations" law has caught its author in one day, which is itself the argument for the law.
 
 - 260731 JL · 🗂 A group is the one altitude with no template, and now it has half of one
@@ -892,7 +892,7 @@ The dated implementation history below is the record of how it got here; each Ai
   He ruled depth B, the clickable browser, over A, a static folder tree that only shows structure, and over C, recording the design and shipping neither depth.
   It shipped in haipipe-board 0.87.0 as a build-time EMBED rather than the live fetch B first proposed: `related_folders()` in `src/page_board.py` reads each named file at build and inlines it, so the fold still opens with scripts stripped and on a static host, which `QE3`'s Law requires. This page owns the fold and its render; `QA0` owns which folders are related and which files each opens; a live `serve.py` endpoint (`QC8`) is deferred and is needed only for folders too big to inline, above 120 KB.
 - 🗂 **Index stays as it is**: the Index does not roll up open `Decision Now` rows; a reader goes to a page's States to find them (JL 260802).
-  Chosen over a roll-up block on the Index and over a per-page 🗣 badge in the rail.
+  Chosen over a roll-up block on the Index and over a per-page 🗣 badge in the sidebar.
   The rows already live where they are owned, and a second surface listing them is a second thing that can disagree with the first. The cost is real and accepted: finding what is waiting means opening pages.
 
 ## Log
@@ -902,14 +902,14 @@ The dated implementation history below is the record of how it got here; each Ai
 260731 1945 · RELATED FOLDERS shipped as haipipe-board 0.87.0: build-time-embed fold (related_folders() in src/page_board.py + `## Related Folders` grammar in parse.py + board.md + board.css), rendering in board.html and the board/ tree; 2 folders / 4 files embedded, order Board Map → Related Folders → Section Matrix verified, body survives JS strip; QC8 live endpoint deferred. Also fixed the Board Map header typo "placement is not one." → "placement is not."
 260731 1930 · RELATED FOLDERS depth ruled B (clickable browser) on JL's "do the B level"; split across QB2 (fold + page_board.py render), QA0 (folder list + contents), QC8 (serve.py content endpoint)
 260731 1905 · RELATED FOLDERS Index fold requested (JL): a third fold beside the Board Map and Section Matrix, opening the folders this board touches (the shipping engine + what a board folder looks like), sourced from QA0 + ## Links; recorded as Content §16, an Items row, and a Decision Now depth ruling (static tree vs clickable browser). Renderer is src/page_board.py, so wiring needs an engine change
-260731 · index_rows() and sidebar_rows() extracted so the tree and the single file share one implementation; restored the 6 group-intro ascii figures and the rail's 54 section outlines the hand-written version had dropped (haipipe-board 0.84.0)
+260731 · index_rows() and sidebar_rows() extracted so the tree and the single file share one implementation; restored the 6 group-intro ascii figures and the sidebar's 54 section outlines the hand-written version had dropped (haipipe-board 0.84.0)
 260731 · Board Map header restyled to match the Section Matrix (one line, one triangle); two stray disclosure triangles removed, one a list-item marker and one a specificity tie (haipipe-board 0.82.0)
 260731 · Two JL questions opened as Decision Now rows: a page of its own for each group (the QB ladder's Group rung has no face), and whether board.html stays one file (2.02 MB, 10% shared, 34 KB per page, 0.38s build)
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · Topic, Pipeline, and Board-Structure removed from the rendered Index on JL's ruling; board.md keeps the sections as source-only documentation (0.78.0)
-260731 · The Index row unfolds in the rail on JL's ask: Board Map, Section Matrix, All Pages, Activity, present-only, each scrolling the Index to its component (0.78.0)
+260731 · The Index row unfolds in the sidebar on JL's ask: Board Map, Section Matrix, All Pages, Activity, present-only, each scrolling the Index to its component (0.78.0)
 260731 · Shipped the SECTION MATRIX on JL's dashboard ask: one row per page, one column per section, cells computed at build and linking into their section; columns and default posture wait in Decision Now (0.75.0)
-260731 · Shipped the hideable pages sidebar (Index → group → page) on JL's ask; server-rendered rail, ☰ toggle, per-board persistence, active-row highlight
+260731 · Shipped the hideable pages sidebar (Index → group → page) on JL's ask; server-rendered sidebar, ☰ toggle, per-board persistence, active-row highlight
 260730 · Board Map became an ASCII `## Board Map` figure rendered as a shuttable disclosure, winning over both canvas sources
 260730 · Rewrote `board.md ## Board Structure` around the reader's three views: Board-Folder is the source, Board-Webpage-Index is the orientation view with the Board Map, and Board-Webpage-Page is the focused Q/S view; the map is inside the Index, not a third peer object
 260730 · Added the Board Map to the Board-Webpage-Index: the top view now embeds the declared shared Excalidraw canvas below progress for static Tailscale readers; arrows stay authored rather than inferred from page order

@@ -255,7 +255,7 @@ These are the calls only JL can make; CC ticks nothing here.
 - 260801 JL · 🔬 A THIRD instrument exists, and this face's two were green through every failure it catches
   `QF3` opened on 260801 after a browser run passed 36 of 36 assertions.
   What it changes here is the claim this face makes: the two instruments named above are a mechanical checker and a zero-background reader, and BOTH of them read text.
-  Six failures shipped on 260731 with this face's checker green and a reader who would have found nothing: the index rendering as inline links because invented class names matched no CSS, the left rail missing from a template, six ASCII figures never emitted, every write from a tree page failing silently, a CSS fix that never reached the page for want of cache-busting, and a stray triangle that survived two fixes on a specificity tie.
+  Six failures shipped on 260731 with this face's checker green and a reader who would have found nothing: the index rendering as inline links because invented class names matched no CSS, the left sidebar missing from a template, six ASCII figures never emitted, every write from a tree page failing silently, a CSS fix that never reached the page for want of cache-busting, and a stray triangle that survived two fixes on a specificity tie.
   Every one lived in what the BROWSER did with text that was itself correct, which is the boundary between this face and `QF3`.
   The shared trigger argument in §"Why they share a trigger anyway" now covers three instruments rather than two.
 

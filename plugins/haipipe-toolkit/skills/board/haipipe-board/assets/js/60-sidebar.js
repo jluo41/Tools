@@ -18,7 +18,7 @@
     apply(state);
     try { localStorage.setItem(key, state); } catch (e) {}
   });
-  /* On narrow screens the rail overlays the text: a jump closes it (not
+  /* On narrow screens the sidebar overlays the text: a jump closes it (not
      persisted, so a wide screen later still opens by default). */
   sb.addEventListener('click', function (e) {
     var x = e.target.closest('.sb-x');
@@ -50,12 +50,12 @@
   function mark() {
     /* WHERE AM I, asked of the DOCUMENT rather than of the URL.
 
-       The rail was written for the one-file board, where every page is a
+       The sidebar was written for the one-file board, where every page is a
        section and `location.hash` names the open one. In the tree a page is
        its own file with no hash at all and the row hrefs are file paths, so
        the comparison matched nothing: no row was highlighted and no section
        outline ever opened (JL 260801). That is the same assumption QC9 took
-       out of the drawer; the rail kept it.
+       out of the drawer; the sidebar kept it.
 
        Three kinds of file, answered in order, because a wrong order lets the
        Index row win on a group page:

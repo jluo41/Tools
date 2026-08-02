@@ -7,6 +7,21 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.7.0 - 2026-08-02
+
+- A machine now CLOSES a `### Decision Now` row once the person has answered it,
+  recording which option, who ruled, when, and the words they used (JL 260802:
+  "I think you should close it automatically, please go ahead and do it").
+  It still may not close a row nobody answered, and may not flip a page-level
+  human gate; a machine's own recommendation is never an answer. Before this a
+  row answered in chat and acted on within the hour still rendered as pending,
+  so the page reported work as waiting that had already shipped.
+
+## 0.6.1 - 2026-08-02
+
+- Repointed the two inherited write laws and the claim-automation citation after `QC1b`'s
+  260802 Content rebuild: `QC6 §9` is now `QC1b §4` and `QC6 §10` is now `QC1b §5`.
+
 ## 0.6.0 - 2026-08-02
 
 - The reply LISTS its Decision Now rows in brief instead of naming a count

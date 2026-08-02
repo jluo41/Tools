@@ -39,7 +39,7 @@ Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py
   27 JS files now, none over 365 lines, and 9 CSS files.
   The assembly rule is the dumbest one that can work, concatenate every part in sorted path order, so a new part is a new filename and there is no manifest to keep in sync.
   What makes that safe is not care but a gate: these parts are FRAGMENTS of shared closures, `40-sentence.js` began mid-function with `if (!b) return;`, so a rename out of order silently breaks the whole file. `assets.py verify()` parses the assembled text with node on every build and fails the BUILD rather than the browser; renaming one part in a scratch copy produced `SyntaxError: Single function literal required`, which is the proof it is not decorative.
-  Parsing is not running, though, so the split was also driven in a real browser afterwards: chat drawer, chat fab, comment dock, comment fab, rail, rail handle, `boardPath()`, and a discussion write that reached the `.md`, all green.
+  Parsing is not running, though, so the split was also driven in a real browser afterwards: chat drawer, chat fab, comment dock, comment fab, sidebar, sidebar handle, `boardPath()`, and a discussion write that reached the `.md`, all green.
 
 ## Files
 - `cli/build.py`
