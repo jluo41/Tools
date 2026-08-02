@@ -247,7 +247,20 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
     # The one-row version merged place and status and lost the shape: these are
     # three different things a reader looks for in three different moments, and
     # the link belongs on the name because the name is what it points at.
-    where = f"🧭 [{attachment}]({url})" if url else f"🧭 {attachment}"
+    # The address rides INSIDE the name, on whichever surface this lands on
+    # (JL 260802: "embed this to the haipipe-paper · QA").
+    #
+    # A terminal has a real hyperlink escape, OSC 8, so the label is clickable
+    # with the URL never drawn. A chat reply renders markdown, where `[a](b)`
+    # does the same job. The wrong one on either surface shows the raw address,
+    # which is the thing being removed, so pick by whether stdout is a TTY.
+    if url:
+        if sys.stdout.isatty():
+            where = f"🧭 \033]8;;{url}\033\\{attachment}\033]8;;\033\\"
+        else:
+            where = f"🧭 [{attachment}]({url})"
+    else:
+        where = f"🧭 {attachment}"
     return "\n".join([
         where + "  ",
         f"{marker} {status} · {mode}  ",
