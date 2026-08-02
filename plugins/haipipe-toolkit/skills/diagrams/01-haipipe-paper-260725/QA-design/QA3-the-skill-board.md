@@ -4,7 +4,8 @@ owner: JL
 method: keep the reasoning here, copy only the ruling out, and never let runtime depend on either
 
 ## Opening
-What belongs on the design board for a skill, and what happens to a question once it is answered? This is the folder you are reading, and it is the easiest of the eight to get wrong, because it looks like documentation and is not: documentation is what a worker follows, and this is the argument that produced it.
+What belongs on the design board for a skill, and what happens to a question once it is answered?
+This is the folder you are reading, and it is the easiest of the eight to get wrong, because it looks like documentation and is not: documentation is what a worker follows, and this is the argument that produced it.
 
 This is the folder you are reading. It is the easiest of the eight to get wrong, because it looks like documentation and is not: documentation is what a worker follows, and this is the argument that produced it. The failure mode is that it becomes a second manual, drifts from the first, and a fresh agent cannot tell which one binds.
 
@@ -120,7 +121,7 @@ No skill may import from here, read a Q face at runtime, or require one to exist
 ```
 The asymmetry is the point: one edge out, none in, and everything else forbidden. That is what makes this folder deletable, and being deletable is how you know a design record has not quietly become a runtime dependency.
 
-## Items to Finish
+## Aims
 - [x] 📚 A design board is a record, not a manual
       Q faces hold the argument; the skill holds the instruction.
 - [x] 🎓 Graduation is a copy of the Law
@@ -134,7 +135,7 @@ The asymmetry is the point: one edge out, none in, and everything else forbidden
 - [ ] 🧪 Prove the no-dependency rule
       Nothing has ever checked that no runtime skill references a Q page. `QA1` owes the same check from the other side.
 
-## Where we are
+## States
 The record-versus-manual distinction and the graduation rule are ruled and in use. The `state:` vocabulary was pinned on 260726.
 
 The gap is graduation itself: most settled faces have no `## Law` to copy, so the mechanism is ruled and mostly unexercised. The board's own close condition depends on it.

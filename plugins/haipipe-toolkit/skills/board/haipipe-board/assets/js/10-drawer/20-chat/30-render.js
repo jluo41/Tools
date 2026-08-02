@@ -70,13 +70,83 @@
     flush();
     return out.join('');
   }
+  /* Autoscroll must FOLLOW, never YANK (JL 260801: "我想 scroll up 去看看之前的
+     聊天内容,为啥它就不行 ... 每一次都是一下子给我弄到最下面去了"). Every
+     streamed event called scrollTop = 1e9 unconditionally, so reading back
+     through a LIVE turn was impossible: each token dragged the reader down
+     again. A scroll listener now remembers whether the reader has left the
+     bottom, and the stream stops chasing them until they come back down.
+     Programmatic jumps land AT the bottom, so they clear the flag themselves.
+     Deliberate jumps (opening, replaying, sending) still use bdJump. */
+  var BD_SLACK = 48;                    // "close enough to the bottom" in px
+  var bdAway = false;                   // the reader scrolled up; do not chase
+  (function () {
+    var bd = chat.querySelector('.bd');
+    if (!bd) return;
+    bd.addEventListener('scroll', function () {
+      bdAway = (bd.scrollHeight - bd.scrollTop - bd.clientHeight) > BD_SLACK;
+    }, { passive: true });
+  })();
+  function bdAuto() {                   // follow the stream, only if not reading back
+    if (bdAway) return;
+    var bd = chat.querySelector('.bd');
+    if (bd) bd.scrollTop = bd.scrollHeight;
+  }
+  function bdJump() {                   // deliberate: open, replay, your own message
+    bdAway = false;
+    var bd = chat.querySelector('.bd');
+    if (bd) bd.scrollTop = bd.scrollHeight;
+  }
+  /* A REPLAY SHOULD READ LIKE THE THING IT REPLAYS (JL 260801: "我重新打开一个
+     过去的 session，打开之后，它这个 content 和界面都非常差").
+     A live turn ends with a meta line saying how long it took and when it
+     finished. A replay had nothing: no times, no turn boundaries, just a flat
+     run of bubbles, so a long session read as one undifferentiated wall. The
+     jsonl carries a timestamp on every message, so a replay can at least mark
+     where each turn began and when. Same separator, whatever the source. */
+  function turnMark(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return null;
+    var z = function (n) { return String(n).padStart(2, '0'); };
+    var el = document.createElement('div');
+    el.className = 'turnsep';
+    el.textContent = String(d.getFullYear()).slice(2) + z(d.getMonth() + 1)
+                   + z(d.getDate()) + ' ' + z(d.getHours()) + ':' + z(d.getMinutes());
+    chat.querySelector('.bd').appendChild(el);
+    return el;
+  }
+  /* Draw one row of a REPLAYED transcript. The live path has three shapes on
+     screen (a bubble, a tool card, a turn separator) and the replay only had
+     one, which is most of why an old session looked nothing like the turn it
+     was a recording of. Tools now come back from the server, so they get the
+     same compact card, marked done because it already is. */
+  function replayRow(m) {
+    if (!m) return;
+    if (m.k === 'you' && m.ts) turnMark(m.ts);
+    if (m.k !== 'tool') { bubble(m.k, m.t); return; }
+    var d = document.createElement('details');
+    d.className = 'tool done';
+    d.innerHTML = '<summary><span class="tn"></span><span class="tb"></span>' +
+                  '<span class="ts">done</span></summary>';
+    d.querySelector('.tn').textContent = m.name || '?';
+    d.querySelector('.tb').textContent = (m.t || '').replace((m.name || '') + '  ', '');
+    chat.querySelector('.bd').appendChild(d);
+    bdAuto();
+  }
   function bubble(kind, text) {
+    /* The live path bubbles an answer as 'cc'; the server's session-log
+       (live/chat.py) returns the very same thing as 'ai'. Only 'cc' got
+       md2html and only '.m.cc' has a style, so a REPLAYED answer arrived as
+       raw text in an unstyled box while the identical live answer rendered
+       (JL 260801: "History content 没有 Markdown render 的模式").
+       One word apart, two symptoms; normalize here so old servers work too. */
+    if (kind === 'ai') kind = 'cc';
     var d = document.createElement('div');
     d.className = 'm ' + kind;
     if (kind === 'cc') { d.classList.add('md'); d.innerHTML = md2html(text); }
     else { d.textContent = text; }
     chat.querySelector('.bd').appendChild(d);
-    chat.querySelector('.bd').scrollTop = 1e9;
+    bdAuto();
     return d;
   }
   /* 思考过程：一个可折叠块。默认展开着让你看它边想，答案一到就自动收起；
@@ -116,8 +186,10 @@
     return d;
   }
   function traceScroll() {
-    if (traceEl) traceEl.scrollTop = 1e9;
-    var bd = chat.querySelector('.bd'); if (bd) bd.scrollTop = 1e9;
+    /* the trace is its own small scroller and always shows its newest row;
+       the transcript behind it only follows when the reader is at the bottom */
+    if (traceEl) traceEl.scrollTop = traceEl.scrollHeight;
+    bdAuto();
   }
   function traceEnd(meta) {             /* keep it, labelled and re-openable */
     if (!traceEl) return;

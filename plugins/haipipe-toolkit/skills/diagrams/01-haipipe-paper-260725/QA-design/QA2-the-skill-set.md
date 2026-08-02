@@ -4,7 +4,8 @@ owner: JL
 method: one responsibility per layer, one direction of control, progressive disclosure inside each skill
 
 ## Opening
-What is in the reusable skill package, what runs at each stage, and what does it put into the other folders? This is the one folder written once and used by every paper: the 35-skill baseline plus the new `haipipe-paper-project` runtime, each of them a promise that some stage worker will follow. The work here is ownership, not layout.
+What is in the reusable skill package, what runs at each stage, and what does it put into the other folders?
+This is the one folder written once and used by every paper: the 35-skill baseline plus the new `haipipe-paper-project` runtime, each of them a promise that some stage worker will follow. The work here is ownership, not layout.
 
 This is one of three folders written once and used by every paper, `③` being the other. Everything in it is a promise: a contract a stage worker will follow, a script that will run, a template that will be filled. Nothing in it is about any particular paper, and the moment something here mentions one, it has stopped being reusable.
 
@@ -12,7 +13,7 @@ The folder is already close to the right architecture, so the useful work is not
 
 What is genuinely missing is the second half of the question above. A reader can see which layers exist and cannot see what a stage RUN actually does: which workers it dispatches, what it writes, where it writes it, and what appears in the paper as a result. That is the part this face now carries, because it is also the map of how `①` touches `⑦` and `⑧`.
 
-Scope: This page covers The layers, the direction of control, the anatomy of one callable skill, what each of the eight stages runs and produces, and what crosses this folder's edges. Neighbouring pages cover Which folder this is among the four is `QA1`; the design board that rules it is `QA3`; the paper it writes into is `QA6` and that paper's board is `QA7`; the contract form itself is `QF2`; the Display split is `QB5c`.
+Scope: This page covers The layers, the direction of control, the anatomy of one callable skill, what each of the eight stages runs and produces, and what crosses this folder's edges. Neighbouring pages cover Which folder this is among the eleven is `QA1`; the design board that rules it is `QA3`; the paper it writes into is `QA6` and that paper's board is `QA7`; the contract form itself is `QF2`; the Display split is `QB13a`.
 
 ## Diagram
 ```
@@ -259,6 +260,8 @@ This is the `② ──graduates──▶ ①` edge, made addressable. Every gro
                                stages/5-section-edit/template.md
                                haipipe-board/src/body.py (the chips)
  QD   the display              display/ (the reusable family)             🟡
+ QA10 the prose verb           writing/haipipe-writing/                   🔴
+       ⑪, the first family whose board is ② rather than one of its own
                                0-lifecycle/3-display/
                                3-deliver/ renderers
  QE   shipping                 stages/index.yml . stages/CONTRACT.md      🟡
@@ -300,7 +303,7 @@ Three things fall out of reading it as a column.
  never     anything naming one paper                            that is ⑦ or ⑧
 ```
 
-## Items to Finish
+## Aims
 - [x] 🗂 Keep the numbered family spine
       The existing top-level organization remains useful and avoids a migration with no user benefit.
 - [x] ✂️ Choose progressive disclosure
@@ -330,7 +333,7 @@ Three things fall out of reading it as a column.
 - [ ] 🧪 Trace one request through the layers
       A fresh session should move from Board to stage runner to worker to the same page without another orchestrator.
 
-## Where we are
+## States
 The ownership map, the anatomy, and the per-stage run map are recorded, and on 260726 a large slice of it was finally APPLIED rather than only argued. Sixteen of the 35 skills were rewritten against `QA6`'s layout ruling in one pass, ordered by which held a live binding rather than by how many stale mentions each had: the four `1-build/` skills first (with `conform` first of those, because it is read-only and once correct it becomes the pass/fail test the other three are written against), then the eight stage contracts, the console, the router and the phase tail. The shared spec `2-phase/REF/paper-folder-anatomy.md` went with them, and it mattered most: its prefix table asserted the exact inverse of the delete test, which is why the family had drifted at all.
 
 The front door was applied too. `haipipe-paper` is now the single thing a human types, and it calls `③` and `⑤` rather than sitting beside them (`QA4`).

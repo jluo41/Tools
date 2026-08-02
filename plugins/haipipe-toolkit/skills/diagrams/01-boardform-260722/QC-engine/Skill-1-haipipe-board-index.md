@@ -5,10 +5,12 @@ method: three managed spans sync from the skill folder; everything else is writt
 session: dff70bd0-2dc2-425e-882b-bdcd25df0013
 
 ## Opening
-haipipe-board-index is a shipped skill: what does it still owe, and is it healthy?
+Does `haipipe-board-index` define a clear path from a raw topic to an approved Board and group structure?
 
-Write here what this skill is for in one paragraph a stranger could follow, why it exists as its own skill rather than as part of its neighbour, and what would have to be true for it to be considered finished.
-The generated sections answer what it IS; only this one can answer whether it is any good.
+This skill owns the view above individual pages: the spine, close condition, groups, relationships, and Index reading path.
+The hard part is showing how groups connect without copying the page roster or taking over page-level decisions.
+Its choices shape how every newcomer enters the Board and understands where work belongs.
+It is healthy when an approved proposal can be materialized and refreshed without losing human-written group meaning.
 
 ## Diagram
 <!-- haipipe:skill:tree:start fc83db2b18aea7b1 board/haipipe-board-index -->

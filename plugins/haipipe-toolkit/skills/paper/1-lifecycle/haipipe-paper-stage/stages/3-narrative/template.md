@@ -118,8 +118,8 @@ The cross-cutting ledger. Reviewer-flagged gaps thread back into the beats above
 
 Q-consumer
 ----------
-<!-- RULE: logical source for Board `## Items to Finish`: every question the arc raises becomes
-     one `- [ ] 🔎 Q-Narrative-<n>` checklist record there.
+<!-- RULE: logical source for Board `## Aims`: every question the arc raises becomes
+     one `- P<n> · Q-Narrative-<n>` Aim record there.
      · STAGE-PREFIXED ID — `Q-Narrative-<n>`. Each stage owns its own index (Q-Seed-<n>, Q-Claim-<n>, …) so a cited id is never ambiguous across stages. The id in the heading and the id in the inline anchor are THE SAME TOKEN.
      · ANCHORED, not detached — every question spot-checks a SPECIFIC beat above; cite its id inline in the beat(s) it hangs on, e.g. [Q-Narrative-1]. One question may be cited from several beats.
      · A BEAT THAT EXPOSES AN EVIDENCE GAP RAISES A QUESTION HERE — it never gathers the evidence inline. The arc COMPOSES; it does not collect.
@@ -127,8 +127,9 @@ Q-consumer
      · Description = what the question wants to know. Reason = every beat it is cited from + what happens to the arc if that beat's assumption is wrong. Answer = empty in DRAFT; PROBE fills it from the answering QA file.
      · The loop closes at REVISE: the answer is woven back into every beat citing [Q-Narrative-<n>], the readiness tag is re-evaluated, and the bracket is discharged. -->
 
-- [ ] 🔎 Q-Narrative-<n> · <question title>
-      **Description:** <what the question wants to know — one sentence per line>
-      **Reason:** <which beat(s) above cite this id, and what happens to the arc if that beat's assumption is wrong>
-      **Probe:** not opened yet
-      **Answer:** <empty in DRAFT — PROBE fills it from the answering QA file, anchored [source: PPnn]>
+- P<n> · Q-Narrative-<n> · <question title>
+  **Done when:** The answer has landed, been interpreted, and been woven into Content.
+  **Description:** <what the question wants to know — one sentence per line>
+  **Reason:** <which beat(s) above cite this id, and what happens to the arc if that beat's assumption is wrong>
+  **Probe:** not opened yet
+  **Answer:** <empty in DRAFT — PROBE fills it from the answering QA file, anchored [source: PPnn]>

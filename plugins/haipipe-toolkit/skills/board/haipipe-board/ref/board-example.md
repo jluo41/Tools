@@ -58,17 +58,23 @@ all claims records  1,240,000 people
       ▼       31,500   ← analysis cohort
 ```
 
-## Items to Finish
-- [x] all four conditions written as checks that run
-      Each one translates into a single SQL statement or a short block of code, not into "roughly".
-- [ ] a head count for each condition
-      Report how many people survive each screen, layer by layer, as in the figure above.
-- [ ] a stated reason for each condition
-      This is exactly what a reviewer will ask about.
+## Aims
+### P · Page-level cohort definition
+- P1 · All four conditions exist as executable checks.
+  **Done when:** Each translates into one SQL statement or a short code block, not "roughly".
+- P2 · Every condition has a head count.
+  **Done when:** The page reports how many people survive each screen, layer by layer.
+- P3 · Every condition has a stated reason.
+  **Done when:** A reviewer can see why each screen belongs.
 
-## Where we are
+## States
 The four conditions are written down and the head counts have been run (31,500).
 The code list for condition ④ (pre-existing contraindication) is still unsettled: what we run today is a list copied from elsewhere that nobody has checked.
+
+### P · Page-level cohort definition
+- ✅ P1 · Met; all four checks run.
+- ✅ P2 · Met; the layer-by-layer counts are reported.
+- 🟠 P3 · Waiting for the contraindication list to be checked.
 
 ## Glossary
 observation window: the stretch of time in which the data can see this person's records, so anyone whose window is too short has an incomplete prescription history and cannot be counted.
@@ -97,15 +103,20 @@ QA1's four conditions leave 31,500 people, so how do we know the screen was righ
 A head count on its own carries no credibility, and a reviewer will press on whether these people really satisfy the entry rules.
 Until QA1's condition ④ is settled, any validation result is unstable too.
 
-## Items to Finish
-- [ ] demographics line up with a published cohort
-      Age, sex, and region are the three dimensions; a large gap on any of them means the screen is wrong.
-- [ ] 50 people checked by hand
-      Read the raw records one at a time and confirm each of those people belongs in the cohort.
+## Aims
+### P · Page-level validation
+- P1 · Demographics line up with a published cohort.
+  **Done when:** Age, sex, and region show no unexplained large gap.
+- P2 · Fifty people pass manual review.
+  **Done when:** Raw-record review confirms each sampled person belongs in the cohort.
 
-## Where we are
+## States
 Not a single step has been done.
 It becomes meaningful only once QA1's condition ④ is settled.
+
+### P · Page-level validation
+- 🟠 P1 · Waiting for QA1 condition ④.
+- 🟠 P2 · Waiting for QA1 condition ④.
 
 ## Discussion
 

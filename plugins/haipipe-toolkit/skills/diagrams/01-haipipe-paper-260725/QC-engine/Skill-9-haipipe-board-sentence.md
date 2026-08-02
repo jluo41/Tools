@@ -106,11 +106,11 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
       The named next step (QC6 §7): the drawer's lane instructions in `serve.py` become this contract's consumer instead of a second prose copy.
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
-## Where we are
+## States
 Mirrored into the Engine roster to make the generic sentence contract discoverable from the Paper Board. The Paper-specific section, paragraph, sentence, and evidence requirements remain exclusively on `QC5`.
 
 ## Log

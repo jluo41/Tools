@@ -85,7 +85,7 @@ Live page ids now match their current group: `QA` Design, `QB` Delivery, `QC` En
 Old ids without a collision remain aliases in `board.md`'s `## Links`.
 The former Engine `QB*` and `QC*` names collided with the new Delivery/Engine series, so all live references have been migrated to their current `QC*` or `QB*` ids rather than leaving an ambiguous alias.
 
-## Items to Finish
+## Aims
 - [x] Adopt Delivery → Engine → Execute as the Board's three reading layers.
 - [x] Put Venue inside Opening.
 - [x] Order Opening → Work → Literature → Value → Display.
@@ -107,7 +107,7 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery/Engine se
       Present and Round stay visible as delivery gaps until they have a callable route and a bounded execution.
 - [ ] 🧭 Cold-read the reorganized Board with a fresh agent.
 
-## Where we are
+## States
 The registry now reads the Skill-Board core: Design, then Delivery, then skill-first Engine, then Execute evidence.
 `QC1` and `QF1` establish the crosswalk and execution-record shapes; they do not assert that every Delivery route is implemented.
 The existing MISQ Main-1 candidate is the first concrete Execute record: G0-G3 pass, G4 is baseline-blocked by one active Display input, and G5 was not run.

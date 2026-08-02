@@ -42,7 +42,7 @@ argument_hint: "<section> [draft|probe|revise|check] [paper-path]"
 
 needs_paper: true
 on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
-                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # lane, `state:`, `## States`, a settled State row, a GATE row in
                          # `## Log`. Everything else: compute the change, SHOW it, ask.
                          # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_aligned: true       # rewritten on retarget to another journal
@@ -102,11 +102,11 @@ venue_fallback: "venue/ packs directly, only when S-Venue-0-venue.md is absent"
 
 exit_when: "writing exposes missing evidence -> 1-claims"
 
-sections:                 # logical parts; Q-consumer adapts to Board Items to Finish
+sections:                 # logical parts; Q-consumer adapts to Board Aims
   - Title + venue header
   - Structure overview
   - Paragraph blocks
-  - Q-consumer                          # mandatory checklist records under Items to Finish
+  - Q-consumer                          # mandatory Aim records under Aims
 
 prose_rule: |
   The .md holds REAL prose — complete academic sentences the user can read as a paper, one
@@ -123,8 +123,8 @@ prose_rule: |
   .bib) and never for a VALUE.
 
 formatting:
-  headings: "direct `###` divisions and `####` paragraphs under Board Content; checklist records
-             under `## Items to Finish` per Q-consumer"
+  headings: "direct `###` divisions and `####` paragraphs under Board Content; Aim records
+             under `## Aims` per Q-consumer"
   line_breaks: "one sentence per line, blank line between; never prefix a sentence with S1./S2."
   preview: "one short line per paragraph (~80-120 chars) — a scan hook, not a mini-abstract"
   latex: "citation commands are the ONLY LaTeX allowed in the .md; no %% markers"
@@ -147,7 +147,7 @@ display_split: |          # BINDING, owned by ../4-display/stage.md (`display_sp
 display_gate: "the section's display axis cannot pass CHECK until the DR row is `done` and the
                unit is linked"
 
-q_id_pattern: "- [ ] 🔎 Q-Sec<unit><Slug>-<n> · <title>"
+q_id_pattern: "- P<n> · Q-Sec<unit><Slug>-<n> · <title>"
                                             # and the inline anchor are THE SAME TOKEN.
                                             # THE STAGE TOKEN IS THIS UNIT, not the word
                                             # "Section" (JL 2026-07-27). This stage
@@ -187,8 +187,8 @@ done_criteria:
      prose with neither is unverifiable and reports NOTHING on the board, which is worse than a
      placeholder because it looks finished. Measured on MISQ 260727: S-Main-0's headline 12.90
      had been placed with its bracket discharged and the whole page reported 0 markers"
-  - "the Q-consumer records live only in the S page's `## Items to Finish`, in the unified
-     `- [ ] 🔎 Q-Sec<unit><Slug>-<n>` + Description/Reason/Probe/Answer shape; they never duplicate
+  - "the Q-consumer records live only in the S page's `## Aims`, in the unified
+     `- P<n> · Q-Sec<unit><Slug>-<n>` + Done when/Description/Reason/Probe/Answer shape; they never duplicate
      themselves under Content"
   - "every display need is a DR row that came back `done` with its unit linked"
   - "6-axis CHECK gate PASSes: structure · citation · values · display · venue · proof"

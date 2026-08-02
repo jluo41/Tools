@@ -4,18 +4,12 @@ owner: JL
 method: mirror `stage.py`: generate the page once, keep one managed block in sync, never touch what a human wrote
 
 ## Question
-A skill is a folder with a `SKILL.md` and a `CHANGELOG.md`, and there are 141 of them in this plugin.
-How does one skill folder become one Q page, so that a group of Q pages is a roster of skills that can be ranked, commented on, and watched changing over time?
+How should one independently versioned skill become a Board page that stays current and is still useful to discuss?
 
-The board has never generated a page from something outside itself.
-Every page here was typed by a person, and the one mechanism that comes close, `stage.py`, generates a page for a lifecycle stage that has no independent existence: the S page IS the stage.
-A skill is different because it exists on disk whether or not a board mentions it, it already carries its own version and its own history, and it is a deliverable that ships to other people.
-So the question is not "can we write a script" but "what may the generated page own, and what must it keep pointing at", and getting that wrong in either direction is expensive.
-Copy too much and the board becomes a second, stale copy of 141 skills, which is the exact failure `![[...]]` was built to prevent.
-Copy too little and the page is a bookmark: nothing to rank, nothing to comment on, nothing that answers "which skill is being worked on".
-
-It matters now because the ACTIVITY dashboard counts one update per dated `## Log` line per page.
-One page per skill turns that dashboard into a ranking of which skills are changing, which is a question nobody can answer today without reading 141 changelogs.
+A bare link gives the reader nothing to assess, while a full copy starts drifting as soon as the skill changes.
+The page must expose the live skill and its release history without surrendering its human-owned health judgment.
+That makes skill activity visible beside the questions and decisions that affect it.
+It succeeds when a resync updates every derived span and preserves every authored line byte for byte.
 
 
 ## Boundary

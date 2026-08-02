@@ -3,9 +3,9 @@ name: haipipe-paper-stage
 description: "One door for every paper lifecycle stage: seed · resource · claims · venue · pitch · narrative · display · section-edit. Reads stages/index.yml, loads ONLY the requested stage's contract, and drives its declared phases. Trigger: 写 seed, 立项, resource, 我们有什么, claims, 主张, H1, venue, 选刊, 投哪个期刊, pitch, 卖点, hook, narrative, 叙事, 大纲, display, 图表, figure, table, section edit, 写某一节, /haipipe-paper-stage."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.8.8"
-  last_updated: "2026-07-27"
-  summary: "Board-first stage router: Paper is the public page creator; Board owns the shell, filename, pages, and optional inherited contracts."
+  version: "0.9.1"
+  last_updated: "2026-08-01"
+  summary: "Board-first stage router: unfinished work is expressed as Content-linked Aims with a separate factual row in States per Aim."
   # version history: ./CHANGELOG.md
 ---
 
@@ -51,14 +51,14 @@ filename. If the page is absent, create its Board shell and stage-specific Conte
 python3 create-page.py <stage-key> <paper-root>
 ```
 
-`create-page.py` selects the stage template, then calls `haipipe-board/stage.py new` for the
+`create-page.py` selects the stage template, then calls `haipipe-board/cli/stage.py new` for the
 filename, face grammar, listing under Pages, and managed Stage Contract. It does not draft the
 research substance. For a dynamic `runs: per-unit` page, pass the resolved identity and directory
 with `--family`, `--unit`, `--slug`, and `--directory`; Section-edit also requires
 `--section-kind`, which resolves the exact template from the Venue page's `Section Styles`
 record (or its declared generic fallback). `--template` is an explicit repair/testing override,
 not the normal routing path. Do not create a sidecar request or handoff file; unfinished work
-stays in that page's `## Items to Finish`.
+stays in that page's `## Aims`, with its current fact in `## States`.
 
 **Step 3 — read the loop, once.**
 The declared phase loop, the gates, and the phase-transition contract are NOT restated per stage.
@@ -100,8 +100,8 @@ Board tooling owns the filename and resolves it from that identity. These fields
 stage execution order and do not replace `artifact:`. The actual run still follows
 `stages/index.yml`, `upstream`, and `downstream`; for example Narrative is followed by the
 independent Display family before manuscript sections consume its assets. After any phase changes
-the artifact, sync the resolved S face in the same turn: update its `state:`,
-`## Items to Finish`, and `## Where we are`, then rebuild the board. When the S face embeds the
+the artifact, sync the resolved S face in the same turn: update its page-level
+`state:`, `## Aims`, `## States`, and `## Log`, then rebuild the board. When the S face embeds the
 artifact, do not copy its Content. Submission and revision are downstream board rounds, not extra
 router stages here.
 
@@ -112,7 +112,7 @@ dependency declaration and names upstream outputs this page must honor,
 downstream handoff. A stage contract may carry `read_order:` as optional craft guidance for the
 sequence in which DRAFT opens material; it is not a second dependency graph. Create or refresh the
 managed `## Stage Contract` block with
-`haipipe-board/stage.py`; never copy whole upstream Content, and never let `build.py` edit
+`haipipe-board/cli/stage.py`; never copy whole upstream Content, and never let `build.py` edit
 Markdown. If the board reports a stale contract after an upstream change, run explicit
 `stage.py sync` before CHECK.
 
@@ -182,10 +182,10 @@ a picture of a paper that no longer exists.
 ```text
    a stage run writes S-<Family>-<n>-<slug>.md
         │
-        ├─ DRAFT   → ## Content + Q-consumer records in ## Items to Finish
+        ├─ DRAFT   → ## Content + Content-linked Q-consumer records in ## Aims
         ├─ PROBE   → the entry pointers
         ├─ REVISE  → the same page + %% why-comments, when declared
-        ├─ CHECK   → state: ✅   (a HUMAN writes this)
+        ├─ CHECK   → page-level state: ✅   (a HUMAN writes this)
         │
         └─ then ALWAYS: call ③ haipipe-board build on 0-lifecycle/
                         and put the deep link in the closing block

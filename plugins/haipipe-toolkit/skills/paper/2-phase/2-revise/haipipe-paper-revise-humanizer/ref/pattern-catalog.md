@@ -40,20 +40,15 @@ verb is stronger than its evidence.**
 
 ---
 
-## Layer 1: General AI-tell catalog
-Scan for and fix the general patterns, subject to the academic exceptions in Layer 3:
-inflated significance ("marking a pivotal moment"); superficial "-ing" tails that fake depth
-("..., highlighting..."); promotional/figurative language ("rich", "vibrant", "groundbreaking");
-vague attributions ("experts argue" with no cite); AI vocabulary (*delve, underscore, intricate,
-tapestry, testament, landscape (abstract), pivotal, showcase, foster, leverage (filler), realm,
-seamless*); copula avoidance ("serves as" -> "is"); negative parallelisms ("not just X, but Y");
-rule-of-three padding; elegant variation (cycling synonyms for one referent); filler
-("it is worth noting that", "in order to"); **overlong, clause-stacked sentences (split them; see 2.11)**;
-and **em-dashes (remove entirely; recast with commas, colons, parentheses, or separate sentences)**.
+## Layer 1: General AI-tell catalog — MOVED
 
-**Before:** *Additionally, an enduring testament to the method's value is its ability to delve into
-intricate dependencies, showcasing a seamless integration that underscores its pivotal role.*
-**After:** *The method also captures higher-order dependencies, which the baselines miss (Table 2).*
+Layer 1 now lives at `skills/writing/haipipe-writing/ref/ai-tells.md` (JL 260801).
+
+It describes how a machine writes in ANY register, so it was the one layer here
+that no paper needed to own, and it was reachable only by loading a paper skill.
+Load that file for Layer 1, then apply the academic exceptions in Layer 3 below.
+Layers 2 to 6 stay here: they are about over-claiming, citation discipline, venue
+voice, and proposal register, and none of those generalize.
 
 ---
 

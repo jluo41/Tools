@@ -114,5 +114,10 @@
     // fold PROSE is a sentence like any other (JL 260731); what stays excluded
     // is rendered apparatus/comments, which serve.py refuses to anchor on anyway.
     if (!a || a !== b || a.closest('.sapp,.cmb,.cmt,.change')) return '';
-    return a.textContent.replace(/\s+/g, ' ').trim();
+    // Through the shared reader, not textContent: a sentence that already
+    // carries apparatus ends with its ⚑ badge inside the <p>, and posting that
+    // makes the anchor miss every time (JL 260801). Looked up at call time
+    // because this module is bundled before the one that defines it.
+    return window.__boardSentenceText ? window.__boardSentenceText(a)
+                                      : a.textContent.replace(/\s+/g, ' ').trim();
   }

@@ -93,13 +93,14 @@ Next Evidence Move
 
 Q-consumer
 ----------
-<!-- RULE: logical source for Board `## Items to Finish`: each pitch-fit question becomes one
-     `- [ ] 🔎 Q-Pitch-<n>` checklist record there, with Description / Reason / Probe / Answer.
+<!-- RULE: logical source for Board `## Aims`: each pitch-fit question becomes one
+     `- P<n> · Q-Pitch-<n>` Aim record there, with Done when / Description / Reason / Probe / Answer.
      ANSWERABLE + SPECIFIC — a concrete framing/competition/editor-chair check, never a vague
      "is the pitch good?". -->
 
-- [ ] 🔎 Q-Pitch-<n> · <question title>
-      **Description:** <the specific check — one sentence per line>
-      **Reason:** <which pitch element it bears on, and why it matters if wrong>
-      **Probe:** not opened yet
-      **Answer:** <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>
+- P<n> · Q-Pitch-<n> · <question title>
+  **Done when:** The answer has landed, been interpreted, and been woven into Content.
+  **Description:** <the specific check — one sentence per line>
+  **Reason:** <which pitch element it bears on, and why it matters if wrong>
+  **Probe:** not opened yet
+  **Answer:** <empty in DRAFT — PROBE fills it: the finding + [source: PP<nn>]>

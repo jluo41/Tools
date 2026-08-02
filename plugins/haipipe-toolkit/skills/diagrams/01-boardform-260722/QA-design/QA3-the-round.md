@@ -4,13 +4,12 @@ owner: JL
 method: name the gate between finishing work and handing it back, make every condition machine-runnable, and cite the reply's shape where it already lives
 
 ## Opening
-When may an agent stop working and reply, and what must the reply say?
-Half of this is settled: `haipipe-board-routing` 0.2.0 already rules that every board-writing reply closes with a `page id · ## section` footer and that decisions are pointed at rather than re-listed.
-The other half is not written anywhere.
-Nothing says an agent must have written its work back, rebuilt the board, and run the checker before it claims to be done, so a reply can arrive while `board.html` is stale or the checker is red, and the human opens a board that does not match what the reply promised.
+What must be true before an agent can hand a Board work round back to the user?
 
-JL 260731 stated the missing half directly: an agent should "work and test themself, and reply when the board is ready for the user to check".
-This face owns that gate.
+This page defines the gate between finishing the work and claiming that the Board is ready to check.
+The reply format already points to recorded work, but no rule yet guarantees that the source, generated page, and checker agree.
+Without that gate, done can still mean stale HTML, missing write-back, or a red check.
+A round is ready only when the work is recorded, rebuilt, checked, reachable, and reported with its evidence.
 
 
 ## Diagram

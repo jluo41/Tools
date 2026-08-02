@@ -5,13 +5,12 @@ owner: JL
 method: separate the shared-source default from the per-machine override and keep every personal address out of shared source
 
 ## Question
-When the person reading a board is not sitting at the machine that generates it, which address should `serve.py` bind to, and where should that setting live once the code is shared with other people?
+Which address should the live board bind to when its reader may be on another machine?
 
-`serve.py` defaults to `127.0.0.1`, while this machine launches it on `<tailscale-ip>`; either bind has no authentication of any kind, so the chosen address is not a convenience setting: it is the entire access control, and `/_term/` behind it is a real shell.
-That makes the question awkward in both directions.
-Keep it on loopback and anyone working over SSH sees nothing at all until they hand-forward the port, which they must redo every time the server restarts, and which fails silently in a way that looks exactly like a broken board.
-Open it wider and every device that can reach the new address can run commands as the owner, on a codebase that ships to other people who will not read the flag before using it.
-The reader-facing URL now lives in `env.sh`, but the listener still receives a separate flag, so the two settings do not yet share one home and a personal address must never become the shared-source default.
+The listener has no built-in authentication, and it fronts both file writes and a real shell.
+Loopback is safe but fragile for remote readers, while a wider bind turns a convenience setting into an access decision.
+The chosen address and its machine-specific override must agree without leaking personal network details into shared source.
+It succeeds when the intended reader reaches the board and everyone else does not.
 
 
 ## Boundary

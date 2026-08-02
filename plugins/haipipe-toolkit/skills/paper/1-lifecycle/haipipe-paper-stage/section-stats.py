@@ -37,6 +37,20 @@ QREF = re.compile(r"\[Q-[A-Za-z0-9]+-\d+\]")
 CITE = re.compile(r"\\cite[tp]?\*?\{([^}]*)\}")
 BEGIN, END = "# --- form:begin (generated) ---", "# --- form:end ---"
 SKIP_H = ("stage record",)          # bookkeeping, not prose
+CONTENT_STOPS = ("Aims", "Items to Finish", "States", "State", "Where we are", "Now", "Files")
+
+
+def content_body(text):
+    """Return Content only, accepting canonical Aims/States and legacy aliases."""
+    if "## Content" not in text:
+        return ""
+    body = text.split("## Content", 1)[1]
+    stop = re.search(
+        rf"^## (?:{'|'.join(re.escape(name) for name in CONTENT_STOPS)})\s*$",
+        body,
+        re.M,
+    )
+    return body[:stop.start()] if stop else body
 
 
 def words(line):
@@ -47,10 +61,7 @@ def parse(text):
     """-> [(subsection|None, [(pnum_and_job, [sentence, ...]), ...]), ...]"""
     if "## Content" not in text:
         return []
-    body = text.split("## Content", 1)[1]
-    for stop in ("## Items to Finish", "## Where we are", "## Files"):
-        if stop in body:
-            body = body.split(stop, 1)[0]
+    body = content_body(text)
     subs, sub, para, job, sents = [], None, None, "", []
 
     def flush_para():
@@ -162,7 +173,7 @@ QIDRX = re.compile(r"\[(Q-[A-Za-z0-9]+-\d+)\]")
 
 
 def prose_lines(text):
-    body = text.split("## Content", 1)[1].split("## Items to Finish")[0]
+    body = content_body(text)
     return [l.strip() for l in body.split("\n")
             if l.strip() and not l.strip().startswith((">", "(", "#", "|", "`"))]
 
@@ -227,7 +238,7 @@ def dashboard(main_dir, date):
         # WHAT the defect is, not just how many. A count tells you where to look
         # and nothing about what to do; these lines name the sentence.
         issues, para = [], ""
-        for raw in text.split("## Content", 1)[1].split("## Items to Finish")[0].split("\n"):
+        for raw in content_body(text).split("\n"):
             s = raw.strip()
             if s.startswith("#### "):
                 para = s[5:].split(".")[0]
@@ -266,7 +277,7 @@ def dashboard(main_dir, date):
           "  %d prose words across the section set" % tot_w,
           "  %d REAL defects in PROSE SENTENCES: %d owed citation(s), %d Q-id(s) that no"
           % (tot_def, owed, noq),
-          "     probe entry declares. A marker inside an Items record or a Log entry is a",
+          "     probe entry declares. A marker inside an Aim record or a Log entry is a",
           "     defect being REPORTED, not committed, and is not counted here.",
           "  displays: %d of %d units are named by some section's prose"
           % (len(placed), len(units)),

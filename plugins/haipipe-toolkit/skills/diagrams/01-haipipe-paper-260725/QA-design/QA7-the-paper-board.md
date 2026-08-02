@@ -4,7 +4,8 @@ owner: JL
 method: one S page per independently gated unit, state read off the pages, and no second pointer anywhere
 
 ## Opening
-What is on a paper's own board, and how is it not a design board? It uses the same tool, the same face grammar and the same four state values, which makes the two look identical. They are opposites: a design board empties as its rulings graduate out, and a paper board never empties, because its Content IS the paper.
+What is on a paper's own board, and how is it not a design board?
+It uses the same tool, the same face grammar and the same four state values, which makes the two look identical. They are opposites: a design board empties as its rulings graduate out, and a paper board never empties, because its Content IS the paper.
 
 `0-lifecycle/` uses the same tool, the same face grammar and the same four `state:` values as the board you are reading, which makes the two look like one kind of thing. They are opposites, and confusing them produces a specific error: applying the graduation rule and expecting a gated S page to empty into the manuscript. It does not. The page IS the manuscript.
 
@@ -116,7 +117,7 @@ Delete `②` and the skill still runs. Delete `⑧` and the paper loses its fron
 ```
 Every edge here runs through a page. That is the whole design: there is no path by which work reaches the paper without a page recording that it happened, which is what makes the frontier readable and the history real.
 
-## Items to Finish
+## Aims
 - [x] 🏛 One S page per independently gated unit
       Display and Section have many pages because their units gate separately; single-artifact stages have one.
 - [x] 🧭 The frontier is derived, not stored
@@ -134,7 +135,7 @@ Every edge here runs through a page. That is the whole design: there is no path 
 - [ ] 🧪 Cold-read one paper board
       Give a fresh agent `0-lifecycle/` alone and check it can name the frontier and the next action without being told.
 
-## Where we are
+## States
 Ruled, live, and as of 260726 also EXERCISED. The MISQ paper carries 40 S faces across the eight families, and the derive-from-disk frontier was run end to end against them for the first time: every stage predicate resolves, and the frontier lands on `S-Seed-0-seed.md` 🟡 (REVISE complete, awaiting human CHECK), which is correct. The board itself builds all 40 pages; the only two `.md` files it excludes are `_`-prefixed non-S files, so nothing on that board is invisible.
 
 That run also found the one predicate that did NOT resolve, and it was a defect introduced the same day rather than an old one: the venue pin had been specified as a `venue:` frontmatter key the board's grammar cannot parse. Corrected to read the venue page's `state:` line, where the pin already was. See `QA4`.

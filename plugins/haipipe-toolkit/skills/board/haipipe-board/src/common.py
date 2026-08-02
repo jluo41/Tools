@@ -11,6 +11,8 @@ STN = {k.replace("️", ""): v for k, v in ST.items()}
 # 段落名用英文（两边都认：新板写英文，老板写中文照样能读）
 # 一个槽位可以有多个段名：规范名 -> [别名…]。中文老名字一直认（老板子不用改就能重新生成），
 # 260723 改版又加了两个新名：Done when -> 「Items to Finish」、Now -> 「Where we are」。
+# 260801 JL 把这两个读者角色定成 Aims / States。旧名字永久保留为别名，
+# 因为一个旧 Board 必须能在零迁移的情况下重新生成。
 # "Opening" is the CANON for the lead section (JL 260731: "just one single
 # Opening, Remove all the Question things from the skills"). Every existing
 # page written as `## Question` keeps parsing through the alias, forever.
@@ -18,8 +20,8 @@ ALIAS = {"Opening": ["Question", "问题"], "Boundary": ["边界"], "Diagram": [
          "Stage Contract": ["Inherited Requirements", "阶段契约"],
          "Content": ["内容"],
          "Files": ["文件"],
-         "Done when": ["完成线", "Items to Finish"],
-         "Now": ["现在什么样", "Where we are"],
+         "Done when": ["完成线", "Items to Finish", "Aims"],
+         "Now": ["现在什么样", "Where we are", "State", "States"],
          "Why here": ["为什么在这块板"],
          "Glossary": ["名词"], "Discussion": ["讨论"],
          "Law": ["规矩"], "Lesson": ["教训"], "Log": ["日志"],
@@ -35,6 +37,82 @@ def sec(d, key):
         if d.get(a):
             return d[a]
     return ""
+
+
+# New Aims are durable target records, not tasks. Their state lives in the
+# separate States section. A0.1 points at a Content division; P1 is the explicit
+# page-level escape hatch for a target that crosses divisions. Old checkbox
+# pages remain a first-class input and are counted by the same helper.
+AIM_ID = r"(?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*)"
+AIM_RE = re.compile(rf"(?m)^\s*[-*]\s+({AIM_ID})\s+·\s+\S")
+# An Aim row's status glyph. 🔨 / 🧠 / ❄️ replaced 🟡 / 🟠 / ⏸️ on 260802,
+# because the old set carried two of its five meanings in HUE ALONE: 🟡 and 🟠
+# are one shape in two colours, indistinguishable in greyscale and to a
+# colour-blind reader, and nothing about orange says "a person must answer".
+# The new three say their meaning by shape: 🔨 work in progress, 🧠 waiting on
+# the person who decides (the same glyph the `owner:` line already uses for
+# JL), ❄️ on ice, deliberately held and thawable. The OLD three still parse,
+# because 42 rows across the boards use them.
+# This is the AIM row vocabulary only. The page `state:` line keeps its own
+# ✅ / 🟡 / 🔴 / ⏸️ set, which means something different and is checked apart.
+# Values are stored WITHOUT the variation selector, because the parser strips
+# it: `❄️` arrives as `❄`, and a count against the selector form would silently
+# read zero. Every canonical value below is the bare codepoint.
+AIM_STATUS_ALIAS = {"🟡": "🔨", "🟠": "🧠", "⏸": "❄", "⏸️": "❄", "❄️": "❄"}
+AIM_STATE_RE = re.compile(
+    rf"(?m)^\s*[-*]\s*(⬜|🔨|🧠|✅|❄️?|🟡|🟠|⏸️?)\s+({AIM_ID})\s+·\s+\S"
+)
+
+
+def aim_ids(text):
+    """Stable Aim ids in authored order, without duplicates."""
+    return list(dict.fromkeys(AIM_RE.findall(text or "")))
+
+
+def aim_progress(aims, state=""):
+    """Return one progress record for canonical Aims or a legacy checklist.
+
+    Canonical Aim completion is read only from States. Legacy pages keep their
+    checkbox semantics so changing the reader vocabulary never falsifies an
+    old Board's progress bar.
+    """
+    boxes = re.findall(r"(?m)^\s*[-*]\s*\[([ xX])\]", aims or "")
+    if boxes:
+        met = sum(1 for value in boxes if value.lower() == "x")
+        return dict(mode="legacy", total=len(boxes), met=met, hold=0,
+                    active=0, waiting=0, open=len(boxes) - met,
+                    closed=met, ids=[])
+
+    ids = aim_ids(aims)
+    states = {}
+    for emoji, aim_id in AIM_STATE_RE.findall(state or ""):
+        e = emoji.replace("️", "")
+        states[aim_id] = AIM_STATUS_ALIAS.get(e, e)
+    values = [states.get(aim_id, "⬜") for aim_id in ids]
+    met = values.count("✅")
+    hold = values.count("❄")
+    active = values.count("🔨")
+    waiting = values.count("🧠")
+    open_ = len(values) - met - hold - active - waiting
+    return dict(mode="aims", total=len(ids), met=met, hold=hold,
+                active=active, waiting=waiting, open=open_,
+                closed=met + hold, ids=ids)
+
+
+def aim_summary(aims, state=""):
+    """Compact reader-facing States summary for a section row or sidebar."""
+    progress = aim_progress(aims, state)
+    if not progress["total"]:
+        return "no aims"
+    if progress["mode"] == "legacy":
+        return f'{progress["met"]} met · {progress["open"]} open'
+    parts = []
+    for key, label in (("met", "met"), ("active", "active"),
+                       ("waiting", "waiting"), ("open", "not started"),
+                       ("hold", "on hold")):
+        if progress[key]:
+            parts.append(f'{progress[key]} {label}')
+    return " · ".join(parts)
 
 
 def stinfo(state):

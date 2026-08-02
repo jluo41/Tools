@@ -56,8 +56,8 @@ any of them is incomplete.
 `sections:` describes the stage's LOGICAL product.
 On a Board-first paper S page, every ordinary section becomes a direct `###`
 division under `## Content`, while the logical `Q-consumer` section is adapted
-into recognizable `- [ ] 🔎 Q-<Stage>-<n>` records under
-`## Items to Finish`.
+into recognizable `- P<n> · Q-<Stage>-<n>` Aim records under
+`## Aims`.
 It is never emitted as a second `## Q-consumer` content block.
 `create-page.py` enforces this adapter.
 
@@ -83,8 +83,8 @@ survives it will contradict it later, so remove it rather than leave it.**
  ① PROTECTED — a re-run may not rewrite these AT ALL
       > <ACTOR>:                any comment lane, whoever wrote it
       state:                    a value a human set at a gate
-      ## Where we are           written after that gate, about that gate
-      - [x] a ticked box        in ## Items to Finish
+      ## States                 written after that gate, about that gate
+      a settled State row       in ## States
       a GATE row in ## Log      the one thing on the page that CANNOT be
                                 re-derived from disk if it is overwritten
 

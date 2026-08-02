@@ -160,7 +160,7 @@ The seven mechanical criteria are worth naming as the shape of the answer rather
 ### The exit nobody has described
 `exit_when` is how a stage says the work failed backwards: the arc does not hold, the claim cannot be supported, the writing exposed missing evidence. It is declared in all eight contracts, it can only be taken at CHECK, and it has never appeared on this board. A lifecycle with no described failure exit reads as though stages only ever succeed.
 
-## Items to Finish
+## Aims
 - [x] 🚦 One gate per stage, at CHECK
       `gates: [check]` in all eight contracts, verified 260727; `closed_when` and `exit_when` are likewise 8 of 8.
 - [x] 📐 The stand-in is designed rather than tolerated
@@ -184,7 +184,7 @@ The seven mechanical criteria are worth naming as the shape of the answer rather
 - [ ] 🧠 Rule what a surviving placeholder means at a gate
       `sections/` carries 89 `\cite{TOADD}` and 56 `{VAL:?}` today. Two options: any survivor at CHECK is a blocking defect; or it is accepted debt, allowed only while its owing `[Q-…]` bracket sits beside it and the page records the ceiling that would release it. Judged case by case now, which is how 89 accumulated.
 
-## Where we are
+## States
 One gate per stage is implemented and honoured, and both approval modes work as documented. The safety argument holds: nothing before CHECK can spend, so nothing before CHECK needs a person.
 
 The record moved to the right place on 260726 and has arrived. `QA6` retired `STATUS.md` and put the Gate Ledger in each S page's `## Log`; nine `GATE ·` rows now sit on six live S pages, and the one gate an agent approved is distinguishable from the four a human passed without opening the Log at all, because that page's `state:` still says it is awaiting human CHECK. There is no `gate_mode` field to have two homes: the mode is an invocation choice, and the two files that describe it agree.

@@ -4,7 +4,8 @@ owner: JL
 method: one seam at a time, each ruled for its own reason
 
 ## Opening
-Two skills write one markdown file. Which regions belong to which, and what happens at every seam between them? Five seams were ruled separately and each for its own reason: who may write which section, which dependency declaration binds, where a paper's state lives, who brings a page into being, and how far the board may go in running paper-specific code.
+Two skills write one markdown file. Which regions belong to which, and what happens at every seam between them?
+Five seams were ruled separately and each for its own reason: who may write which section, which dependency declaration binds, where a paper's state lives, who brings a page into being, and how far the board may go in running paper-specific code.
 
 `QA4` draws the collaboration: `①` owns the substance, `③` owns the shell, the render and the write-back, and they never contend for the same lines. This face is that ownership line in detail, seam by seam, because each seam was ruled separately and each was ruled for a different reason.
 
@@ -210,7 +211,7 @@ Turning it on was measured first, not assumed: every marker already written on t
 
 One consequence, stated rather than discovered later: the delete-test needs a board that declares NO dialect, and this board is no longer one. It runs against `01-boardform-260722`.
 
-## Items to Finish
+## Aims
 - [x] 📄 One file, not two
       The stage artifact and the board page are the same markdown; no adapter exists.
 - [x] 📚 Separate Content from Board furniture
@@ -260,7 +261,7 @@ One consequence, stated rather than discovered later: the delete-test needs a bo
 - [ ] 🧠 Decide the trigger for revisiting shape B
       Name the condition, most likely a second dialect, so the choice is not re-argued from scratch each time.
 
-## Where we are
+## States
 Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Every division, item and Law below is the original's, unchanged; only the framing above is new.
 
 ## Files

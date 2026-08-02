@@ -5,13 +5,12 @@ method: settle the levels, the read/write permissions, and where conversations g
 session: e4ac2dc0-af0d-46cc-972c-c19582f2ba62
 
 ## Question
-Give every Q on the board its own conversation, but first the thing itself must be spelled out: what does the board level own vs. the question level?
-How far can a question-level session read and write?
-Where does the conversation itself live?
+How should a board, group, or page get its own Claude Code conversation without two windows colliding on the same work?
 
-The hard part is that one conversation per question forces an answer to whether the same session can be open in two windows at once: get it wrong and, mildly, they overwrite each other, or badly, Claude Code forks a second history on its own.
-This is the one question on this board that **changes how we work**, because until it is settled the loop stays "you comment on the page → I read it elsewhere → I edit the md", always one relay in between.
-It is also the shared foundation of `QD2` (drawer) and `QD3` (terminal): change that LAW and both follow.
+A scoped conversation keeps context close to the work it owns.
+The hard part is deciding what it may change and which session is current.
+If two live windows share one session, histories can fork and file edits can collide.
+This page succeeds when every conversation has a clear scope, a resumable history, and one safe live window.
 
 
 ## Boundary

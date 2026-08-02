@@ -59,7 +59,18 @@
            lives in __boardTermReopen so a reload never SPAWNS one. */
         if (st.term && window.__boardTermReopen) {
           Promise.resolve(opened).then(function () {
-            try { window.__boardTermReopen(); } catch (e) {}
+            try {
+              Promise.resolve(window.__boardTermReopen()).then(function () {
+                /* and give the caret back, so an automatic reload costs you a
+                   moment rather than a click (JL 260801) */
+                var want = '';
+                try { want = sessionStorage.getItem('board-refocus') || ''; } catch (e) {}
+                if (want === 'term' && window.__boardTermFocus) {
+                  setTimeout(window.__boardTermFocus, 400);
+                  setTimeout(window.__boardTermFocus, 1500);
+                }
+              });
+            } catch (e) {}
           });
         }
       } catch (e) {}

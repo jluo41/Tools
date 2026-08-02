@@ -4,7 +4,8 @@ owner: JL
 method: rule whether a template is a skeleton to copy or a spec to parse, then make it one of them
 
 ## Opening
-What is `template.md`, and who reads it? Eight of them exist, 754 lines in total, and no page on this board has ever described one. That silence is expensive, because the file is read twice by two different things that believe two different stories about it, and only one of those stories is written down anywhere.
+What is `template.md`, and who reads it?
+Eight of them exist, 754 lines in total, and no page on this board has ever described one. That silence is expensive, because the file is read twice by two different things that believe two different stories about it, and only one of those stories is written down anywhere.
 
 Seven of the eight open with a variant of "TEMPLATE (follow, don't ship)": a skeleton whose `<…>` slots get replaced and whose `<!-- RULE: … -->` comments are guidance to follow then delete. That is the story an agent reads. But `create-page.py` does not copy the file at all. It PARSES it, and it parses THREE different forms of it, in a fixed order: a whole S page whose `### ` headings under `## Content` become the divisions, a Setext file whose `-{3,}` underlines do, or an ATX file whose `## ` headings do. Each division's job line is the first `<!-- RULE -->` in that section, compacted to 220 characters. Under that story the underlines are load-bearing syntax and the RULE comments are machine input.
 
@@ -171,7 +172,7 @@ Which FORM a new template should be written in. Three are accepted, their preced
 
 And whether `sections:` in the contract and the divisions in the template must agree, and which one wins if they do not. Today both exist, `check-contracts.py` requires `sections:` to be present, the parser reads only the template, and nothing compares them.
 
-## Items to Finish
+## Aims
 - [x] 🔧 Two of five stale `Fill` lines already repaired
       `1a-resource/template.md:1` names `S-Work-0-resources.md` and `2a-venue/template.md:1` names `S-Venue-0-venue.md`, each matching its contract's `artifact:` exactly. The headline count on this face is 3, not 5.
 - [ ] 🧠 Rule what a template IS, given three forms
@@ -193,7 +194,7 @@ And whether `sections:` in the contract and the divisions in the template must a
 - [ ] 🧪 Add a ninth stage's template, read the result
       The acceptance test for this face: write only `stages/9-<key>/template.md` plus its `stage.md`, run `create-page.py <key> <paper-root>`, and check the divisions, the job lines, the Items scaffold and the Q-consumer without opening `create-page.py`.
 
-## Where we are
+## States
 Eight stage templates and 95 venue templates exist and are in daily use, and the mechanism works: all 103 parse, all 103 carry a Q-consumer division, and pages get created with the right divisions and job lines. Nothing here is broken in a way that fails loudly, which is exactly why it has gone undescribed for so long.
 
 Nothing is ruled. This face is 🔴 because the central question, what the file IS, has never been asked. Measuring it on 260727 made the question harder rather than easier: there are three accepted forms rather than two competing readings of one form, and `4-display/template.md` has already answered it in the "copy a whole page" direction without any ruling.

@@ -30,10 +30,32 @@ from .base import HERE, HOLD, RING_CAP, TERMS, TERM_DIR
 from .chat import prime_context
 
 
-def term_key(f):
-    """一个终端的全局唯一 id：Q 文件绝对路径的 sha1 前 12 位。
-    跨所有板唯一（不同板的同名 QD3 路径不同 → key 不同），文件名安全、URL 安全。"""
-    return hashlib.sha1(str(Path(f).resolve()).encode()).hexdigest()[:12]
+def term_key(f, sid=""):
+    """A terminal's globally unique id: sha1 of the page path, plus the SESSION.
+
+    Keying on the page alone allowed exactly one PTY per page, and asking for a
+    different session KILLED the running one (JL 260801: "could you make it that
+    I can select multiple sessions attached to this page?"). Different sessions
+    write different .jsonl files, so nothing forces them to share one terminal.
+
+    Passing no `sid` keeps the historical page-only key, which is what the
+    parked-terminal lookups and the legacy one-per-page callers still use.
+    """
+    base = str(Path(f).resolve())
+    if sid:
+        base = base + "\0" + str(sid)
+    return hashlib.sha1(base.encode()).hexdigest()[:12]
+
+
+def terms_for(f):
+    """Every live terminal belonging to one page, newest first."""
+    want = str(Path(f).resolve())
+    out = []
+    for key, t in list(TERMS.items()):
+        if str(Path(t.get("file", "")).resolve()) == want:
+            out.append((key, t))
+    out.sort(key=lambda kt: kt[1].get("born", 0), reverse=True)
+    return out
 
 
 # release 之后紧接着的重开会撞上还没死透的旧 claude：同一段 session 被两个进程
@@ -119,7 +141,16 @@ def spawn_pty(cmd, cwd):
     import termios
     master, slave = ptymod.openpty()
     fcntl.ioctl(master, termios.TIOCSWINSZ, st.pack("HHHH", 30, 100, 0, 0))
-    env = dict(os.environ, TERM="xterm-256color", COLORTERM="truecolor")
+    # FORCE_COLOR is deliberate, not belt-and-braces: serve.py is usually
+    # restarted from a shell that has NO_COLOR set (a tmux/agent session), and
+    # NO_COLOR is the standard opt-out every colour library honours, Claude
+    # Code's included. Inherited, it made the board's terminal render the real
+    # CLI in monochrome while TERM and COLORTERM both claimed truecolor
+    # (JL 260801: "why the TUI is black and white, not colored?"). The parent's
+    # preference is about the parent's stdout; this PTY is a browser window.
+    env = dict(os.environ, TERM="xterm-256color", COLORTERM="truecolor",
+               FORCE_COLOR="3")
+    env.pop("NO_COLOR", None)
     # serve.py 常常是从某个 Claude Code 会话的 shell 里重启的，会把「我是子会话」
     # 的标记传下来 —— 板上开的 claude 一看见 CLAUDE_CODE_CHILD_SESSION 就把
     # transcript 落盘关了（260731 停靠测试的屏幕上抓到的警告）：resume、拣选器、
@@ -380,6 +411,49 @@ class TermMixin:
         HOLD[str(f)] = (who, None)
         return None
 
+    def local_cmd(self, f, p):
+        """POST /_board/local-cmd {path, file, session} -> the commands that put
+        THIS session in a terminal, wherever the reader actually is.
+
+        JL 260801 asked for a button that opens a terminal on their own machine.
+        The first attempt had the server run `osascript`, which is wrong twice
+        over, and the second reason only became clear when JL said "我是 SSH 到
+        你这个桌面上的，我是在另外一台电脑上":
+
+          · a GUI window opened by this server appears on THIS Mac's screen,
+            which is not the screen the reader is sitting at;
+          · and it cannot even do that: from an SSH session there is no Aqua
+            session to talk to, and the call BLOCKS rather than failing, which
+            would have tied up a server thread on every click.
+
+        A browser cannot start a program on the machine that is merely viewing a
+        page, and no amount of server-side effort changes that. What the server
+        CAN do is know exactly which command lands in this session, including
+        the ssh hop back to itself, so one paste in any terminal on any machine
+        gets there. That is the honest primitive; the copy button is the door.
+        """
+        import getpass
+        import shlex
+        import socket
+
+        sid = (p.get("session") or "").strip() or self.session_of(f)
+        if not sid:
+            return None, "这一题还没有 session：先说一句话，或者开一次终端。"
+        root = str(Path(self.root).resolve())
+        here = f"cd {shlex.quote(root)} && claude --resume {shlex.quote(sid)}"
+
+        # the address this server is reachable on, so the ssh line is copy-ready
+        host = _base.BIND_HOST or ""
+        if host in ("", "0.0.0.0", "127.0.0.1", "localhost"):
+            try:
+                host = socket.gethostname()
+            except Exception:
+                host = "localhost"
+        user = getpass.getuser()
+        remote = f"ssh -t {user}@{host} {shlex.quote(here)}"
+        return {"session": sid, "here": here, "remote": remote,
+                "host": host, "user": user}, None
+
     def term_probe(self, f):
         """POST /_board/term-probe {path, file} -> is THIS target's PTY still there?
 
@@ -393,11 +467,35 @@ class TermMixin:
         A PARKED terminal counts as there: parking is what a reload does, and
         the whole point is to come back to it.
         """
-        t = TERMS.get(term_key(f))
-        if not t or not self.alive(t["pid"]):
-            return {"live": False}, None
-        return {"live": True, "parked": bool(t.get("parked")),
-                "key": term_key(f)}, None
+        live = [(k, x) for k, x in terms_for(f) if self.alive(x["pid"])]
+        if not live:
+            return {"live": False, "terminals": []}, None
+        def winsize(x):
+            """The PTY's ACTUAL window size, read back from the kernel.
+
+            The browser's grid and this number MUST be equal. When they drift,
+            the app wraps at one width while xterm lays out at another and every
+            redraw lands in the wrong cells, which is the shredded screen JL
+            sent on 260801. Reporting it here makes that a number a test can
+            assert instead of a screenshot someone has to judge.
+            """
+            try:
+                import fcntl
+                import struct as _st
+                import termios
+                buf = fcntl.ioctl(x["fd"], termios.TIOCGWINSZ, b"\0" * 8)
+                rows, cols = _st.unpack("HHHH", buf)[:2]
+                return {"cols": cols, "rows": rows}
+            except Exception:
+                return None
+
+        k0, t0 = live[0]
+        return {"live": True, "parked": bool(t0.get("parked")), "key": k0,
+                "winsize": winsize(t0),
+                "terminals": [{"key": k, "session": x["sid"],
+                               "name": x.get("name") or "",
+                               "parked": bool(x.get("parked")),
+                               "born": x.get("born", 0)} for k, x in live]}, None
 
     def park(self, f):
         """宽限停靠：进程和 pump 不动，收掉 WS 窗口、放 HOLD、记 deadline。
@@ -437,13 +535,21 @@ class TermMixin:
                 _CHAT_HOST.evict(str(f))
         except Exception:
             pass
-        key = term_key(f)
-        # 拣选器（QD1 Law 260731）：点名要某段历史或要新的 → 正跑着的旧终端先收掉再开
+        # Resolve WHICH session this terminal is for before keying on it, so a
+        # page can hold several at once and asking for another no longer kills
+        # the one you are using (JL 260801).
         want = (p.get("session") or "").strip()
+        if want and want != "new":
+            target_sid = want
+        elif want == "new":
+            target_sid = ""                      # a fresh id is minted below
+        else:
+            target_sid = self.session_of(f) or ""
+        key = term_key(f, target_sid) if target_sid else term_key(f)
         cur = TERMS.get(key)
         if cur and self.alive(cur["pid"]):
-            if want and want != cur["sid"]:
-                self.kill_term(f)
+            if False:                            # never kill a sibling terminal
+                pass
             else:
                 # 复用（含从停靠中接回）：HOLD 要重新拿 —— park 的时候放掉了
                 err = self.hold(f, "terminal")
@@ -469,6 +575,11 @@ class TermMixin:
         use_resume = bool(sid) and self.session_landed(sid)
         if not sid:
             sid = str(uuid.uuid4())
+        # The key was provisional while the session was still unknown (a "new"
+        # request has no id until here). Re-key on the real session, or a second
+        # terminal would land on the first one's key and take its place.
+        key = term_key(f, sid)
+        base = f"/_term/{key}"
         # 开哪段，哪段就是 current（修正后的 Law）：头部跟着换，旧的进登记表
         if sid != self.session_of(f):
             self.remember_session(f, sid, name=p.get("name"))
@@ -507,7 +618,8 @@ class TermMixin:
             (TERM_DIR / f"{key}.pid").write_text(str(proc.pid))
             TERMS[key] = {"kind": "pty", "pid": proc.pid, "sid": sid, "fd": master,
                           "ring": bytearray(), "clients": [], "lock": threading.Lock(),
-                          "file": str(Path(f).resolve()), "board": str(board), "ttl": ttl}
+                          "file": str(Path(f).resolve()), "board": str(board), "ttl": ttl,
+                          "born": time.time(), "name": (p.get("name") or "")}
             threading.Thread(target=pty_pump, args=(key,), daemon=True).start()
             return {"url": base + "/", "key": key, "session": sid,
                     "reused": False, "note": note}, None
@@ -558,6 +670,7 @@ class TermMixin:
         self.connection.sendall((head + "\r\n").encode())
         self.close_connection = True
         client = {"conn": self.connection, "lock": threading.Lock()}
+        first_size_done = [False]      # per connection: nudge once, on attach
         with t["lock"]:
             ring = bytes(t["ring"])
             t["clients"].append(client)
@@ -575,7 +688,35 @@ class TermMixin:
                     try:
                         o = json.loads(msg)
                         if "columns" in o:
-                            pty_resize(t, o["columns"], o["rows"])
+                            # THE FIRST size message follows a ring replay whose
+                            # bytes were drawn at whatever width the LAST viewer
+                            # had. Absolute cursor moves in those bytes land in
+                            # the wrong cells of this viewer's grid, which is the
+                            # shredded screen JL kept hitting on 260801 after
+                            # every reload. Resizing to the same size is not
+                            # enough: a full-screen app repaints on a CHANGE, so
+                            # an identical size leaves the garbage on screen.
+                            # Nudge the width by one and back, which is a real
+                            # change either way, and the app repaints its whole
+                            # screen at the size this browser actually has.
+                            cols, rows = int(o["columns"]), int(o["rows"])
+                            if not first_size_done[0]:
+                                first_size_done[0] = True
+                                # The nudge below repaints the SCREEN, but the
+                                # ring we just replayed also went into xterm's
+                                # SCROLLBACK, laid out at whatever width the
+                                # previous viewer had. That history stays
+                                # shredded above the repainted screen, which is
+                                # what still read as "messy after a refresh"
+                                # (JL 260801, after the first fix). Wipe screen
+                                # AND scrollback first, so the only thing on
+                                # screen is what the app draws for THIS size.
+                                # A full-screen CLI owns its own transcript and
+                                # redraws it, so nothing real is lost.
+                                ws_send(client, b"0" + b"\x1b[H\x1b[2J\x1b[3J")
+                                pty_resize(t, max(2, cols - 1), rows)
+                                time.sleep(0.06)
+                            pty_resize(t, cols, rows)
                     except Exception:
                         pass
                 elif c == b"0":                # 输入
@@ -677,6 +818,10 @@ class TermMixin:
                 continue
             out.append({"key": key, "session": t["sid"],
                         "file": Path(t["file"]).name,
+                        "path": str(t["file"]),          # to match a page exactly
+                        "name": t.get("name") or "",
+                        "born": t.get("born", 0),
+                        "parked": bool(t.get("parked")),
                         "board": Path(t["board"]).name,
                         "url": f"/_term/{key}/"})
         return out
@@ -692,8 +837,20 @@ class TermMixin:
             return self.send_error(404, "asset missing (vendor xterm not installed)")
         data = p.read_bytes()
         ctype = "text/javascript" if name.endswith(".js") else "text/css"
+        # xterm.min.js is 477 KB and this route bypasses `try_gzip`, which only
+        # covers files that exist under --root; vendored assets do not. So the
+        # single largest thing this server hands out was the one thing crossing
+        # the forward uncompressed, on every cold open of a chat (QD5 C2 P5,
+        # measured 260802 — it gzips better than 3 to 1).
+        enc = None
+        if len(data) > 1024 and "gzip" in (self.headers.get("Accept-Encoding") or "").lower():
+            import gzip as _gzip
+            data, enc = _gzip.compress(data, 6), "gzip"
         self.send_response(200)
         self.send_header("Content-Type", ctype + "; charset=utf-8")
+        if enc:
+            self.send_header("Content-Encoding", enc)
+            self.send_header("Vary", "Accept-Encoding")
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", "max-age=86400")
         self.end_headers()

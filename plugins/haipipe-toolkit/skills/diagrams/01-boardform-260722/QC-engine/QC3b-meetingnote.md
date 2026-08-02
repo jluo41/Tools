@@ -5,13 +5,12 @@ owner: JL
 method: separate the artifact from its consequences: give the note a home, and route what it decided into the Qs that own it
 
 ## Opening
-A meeting produces two different things, and a board wants them in two different places.
-It produces an artifact, one long file with a recording, a transcript, and a summary, and it produces consequences, the handful of decisions that change what some Q page says.
-`meeting/260723-meeting.md` has been sitting in this board folder since 260723 and the board has never shown it, because page discovery matches a file NAME (`Q*`, `S*`, `Agent*`) and that file is named after a date.
+How should a meeting enter the Board so its record stays citable and its decisions reach the pages they change?
 
-The note is not hypothetical and neither is its size: 8,573 words, a 1,045-line transcript folded into one Obsidian `[!quote]-` callout, an embedded `.webm`, and `source: echo-meeting` in its frontmatter.
-That source is `jluo41/echo-meeting`, an Obsidian plugin that records, transcribes, and summarizes a meeting into a vault, with `jluo41/echo-capture` supplying the macOS system-audio tap.
-So the producing end already exists and is JL's own; nothing here needs a recorder, a transcriber, or a summarizer.
+A meeting leaves both a long source artifact and a small set of consequences.
+Keeping only the note makes an archive, while routing only the decisions removes their evidence and context.
+The split affects how readers revisit the meeting and how later pages explain why they changed.
+It succeeds when the note has one readable page and each consequence points to its owning page.
 
 ## Boundary
 - ✅ Covered here

@@ -4,7 +4,7 @@
 
 Date: YYYY-MM-DD
 Status: DRAFT
-Venue-FREE. Exactly two logical outputs: Resource Description in Board Content and Q-consumer records in Items to Finish. No sidecars.
+Venue-FREE. Exactly two logical outputs: Resource Description in Board Content and Q-consumer records in Aims. No sidecars.
 
 
 Resource Description
@@ -31,16 +31,17 @@ Resource Description
 
 Q-consumer
 ----------
-<!-- RULE: logical source for Board `## Items to Finish`: what we still need to KNOW about the
-     resources becomes one `- [ ] 🔎 Q-Resource-<n>` checklist record per question there,
-     with Description / Reason / Probe / Answer.
+<!-- RULE: logical source for Board `## Aims`: what we still need to KNOW about the
+     resources becomes one `- P<n> · Q-Resource-<n>` Aim record per question there,
+     with Done when / Description / Reason / Probe / Answer.
      · Cite the question inline in the `### Serves & carries` (or topic) line it tests, e.g. [Q-Resource-1] (forward link); `Reason` names the resource + `H<n>` it bears on (back link).
      · Description = the existence-or-fitness question. Reason = which resource + `H<n>` it bears on + why a bad answer matters. Answer = empty in DRAFT; PROBE fills it from the answering QA file.
      · RESOURCE DISCIPLINE for the Answer: it states existence AND fitness AND what it KILLS. A woolly Answer ("probably fine") is a DEFECT, not an answer. A BUILD question's Answer records: COMMISSIONED · owner · eta · blocks `H<n>` · cross-project · what it yields and what it does NOT fix.
      · The `-> PP<NN>` probe binding is written by the PROBE WORKER, not this stage; it surfaces as the Answer's `[source: PP<NN>]`. -->
 
-- [ ] 🔎 Q-Resource-<n> · <question title>
-      **Description:** <does the resource exist / can it CARRY the hypothesis it serves? — one sentence per line>
-      **Reason:** <which resource + `H<n>` it bears on, and what a bad answer KILLS>
-      **Probe:** not opened yet
-      **Answer:** <empty in DRAFT — PROBE fills it: existence AND fitness AND what it KILLS, with [source: PP<NN>]>
+- P<n> · Q-Resource-<n> · <question title>
+  **Done when:** The answer has landed, been interpreted, and been woven into Content.
+  **Description:** <does the resource exist and can it carry the hypothesis it serves?>
+  **Reason:** <which resource and H<n> it bears on, and what a bad answer kills>
+  **Probe:** not opened yet
+  **Answer:** <empty in DRAFT; PROBE fills it with existence, fitness, what it kills, and [source: PP<NN>]>

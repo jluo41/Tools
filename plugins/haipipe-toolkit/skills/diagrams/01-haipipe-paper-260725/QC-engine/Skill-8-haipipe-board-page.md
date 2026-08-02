@@ -52,11 +52,11 @@ haipipe-board-page               haipipe-board
 what a page IS                   rendering it (src/page_question.py)
 the section contract             serving and write-back (serve.py)
 where a write may land           the checker (check.py)
-the base/variant model           the template file itself (ref/q-template.md)
+the base/variant model           the template file itself (ref/page-template.md)
 ```
 
 This skill NEVER renders, serves, or checks.
-The authoritative template stays `haipipe-board/ref/q-template.md`; this contract cites it and must never fork it.
+The authoritative template stays `haipipe-board/ref/page-template.md`; this contract cites it and must never fork it.
 
 
 - 1 · 🧬 Three page kinds, one base
@@ -109,7 +109,7 @@ The authoritative template stays `haipipe-board/ref/q-template.md`; this contrac
 - 3 · 🏷 Addressing
       ```
       page        QB4            #QB4
-      face        QB4a           a page whose id carries its parent's number
+      face        QB12b           a page whose id carries its parent's number
       group       #group-QB      scrolls the index, opens nothing
       sentence    QB5's grammar  haipipe-board-sentence owns everything below the section
       ```
@@ -121,15 +121,15 @@ The authoritative template stays `haipipe-board/ref/q-template.md`; this contrac
       ├── SKILL.md            this contract
       └── CHANGELOG.md        version history
       ```
-      Reads `haipipe-board/ref/q-template.md` and `ref/board-form.md` §4 (the section mapping and requiredness) and §8 (on-stage order) as the authority; owns no scripts.
+      Reads `haipipe-board/ref/page-template.md` and `ref/board-form.md` §4 (the section mapping and requiredness) and §8 (on-stage order) as the authority; owns no scripts.
       The named next step (QC6 §7): `serve.py`'s hand-rolled `CHAT_RULES` string becomes this contract's consumer instead of restating it, which kills the copy that has already rotted once.
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [ ] 🧠 Rule this skill's health
       `state:` is a judgment, not a version number: stable, in flux, needs work, or parked.
 
-## Where we are
+## States
 Mirrored into the Engine roster as the generic page contract used by every route. `QC3` is the bridge to Paper-specific page meaning; the Board card itself remains a reusable specification rather than a second Paper authoring contract.
 
 ## Log
@@ -166,6 +166,6 @@ Converted from the skill's own `CHANGELOG.md`: 2 releases.
         (QC6 §10, because reporting a claim is not verifying it).
       - Names its own next step from QC6 §7: `serve.py`'s `CHAT_RULES` becomes a consumer
         of this contract instead of a hand-rolled copy, which has already rotted once
-        (QB5d caught it describing a page shape that no longer existed).
+        (QB13b caught it describing a page shape that no longer existed).
 
 <!-- haipipe:skill:log:end -->

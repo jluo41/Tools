@@ -5,13 +5,13 @@ method: three managed spans sync from the vault note; what it changed on this bo
 
 ## Opening
 <!-- haipipe:meeting:head:start ca5ca8269c8c4fd2 meeting/260723-meeting.md -->
-会议围绕一个新开发的 skill(haipipe-workflow / board 系统)展开:作者提出团队在使用 Claude Code 过程中普遍存在 topic 漂移、context 丢失、任务难以交接的问题,并演示了以 HTML board 承载多个 question(每 question 一个可交互 slide,含 now/downwind/discussion/comments/log)作为"操作台"的解决方案。与会者认可思路,讨论了完善方向(question 边界与完成条件定义、英文化、时间戳/署名、link 相关文件、link Excalidraw/session summary、Excalidraw 单独 board 分离),并决定作者先 push 模板,大家试用并收集 feedback。
+Which decisions from the first team demo explain why this board became a shared work surface rather than a private project note?
 
-`2026-07-23T20:01` · 1045 transcript lines · 14 chapters · recorded by `echo-meeting`
+The meeting tested whether a board could keep AI-assisted work focused, readable, and transferable between people.
+The hard part was not generating pages but defining questions, completion conditions, ownership, and evidence clearly enough for someone else to continue.
+Its decisions shaped the page format, English writing rule, linked files, per-page conversations, and separate visual canvases.
+This record matters when a current design choice needs to be traced back to the problem the team was trying to solve.
 <!-- haipipe:meeting:head:end -->
-
-Write here why this meeting matters to THIS BOARD, which is the one thing the note cannot say about itself.
-What it settled, what it reopened, and which pages should not be read without it.
 
 ## Diagram
 <!-- haipipe:meeting:diagram:start ca5ca8269c8c4fd2 -->

@@ -29,7 +29,7 @@ provides: <what a downstream section may rely on, one line>
 <!-- RULE: `state:` begins with one of the Board's FOUR values: 🔴 OPEN · 🟡 PARTIAL ·
      ✅ SETTLED (its human gate passed) · ⏸️ ON HOLD. A short readable detail may follow the emoji
      (for example, `🔴 rendered but REVISE-blocked`); the evidence and full explanation belong in
-     `## Where we are`, not in the state line. -->
+     `## States`, not in the state line. -->
 
 ## Question
 Does <this display> carry <claim CN> for the reader, and is it built from evidence rather than assertion?
@@ -145,22 +145,33 @@ placement: <t | b | htbp, or "pending">
      re-run does not silently leave two of the three stale. -->
 <one or two record lines>
 
-## Items to Finish
-<!-- RULE: this is the page's Q-consumer adapter AND its known-work queue. Use a Q record only
-     for an unresolved semantic or evidence question. A known render/edit/promote step is a normal
-     work item. Numbers come from the bank, never from the agent: a value the agent typed is a
-     defect, not a draft. Route the uncertainty through PROBE. -->
-- [ ] 🔎 Q-Display<unit>-<n> · <question title>
-      **Description:** <what this asset needs to know>
-      **Reason:** <which Spec / Wrapper / caption / reader assertion depends on the answer, and what breaks>
-      **Probe:** not opened yet
-      **Answer:** <empty until PROBE or a documented human ruling>
-- [ ] 📈 <build, render, or promote step>
-- [ ] 🧠 Close this unit's gate
-      JL confirms the unit is built, captioned, correctly labeled, and placed.
+## Aims
+<!-- RULE: Aims names the intended outcomes for this one display. Use a P record only for an
+     unresolved semantic or evidence question. Known build work and the human gate are ordinary
+     Aim records. Numbers come from the bank, never from the agent: a value the agent typed is a
+     defect, not a draft. Route uncertainty through PROBE. -->
 
-## Where we are
-<the actual state in one or two sentences, with numbers where there are numbers>
+### Display output
+- A1.1 · Build, render, and promote the declared display artifact.
+  **Done when:** The approved artifact exists, is rebuildable from its declared provenance, and is selected by `float.tex`.
+- A1.2 · Pass this display unit's human gate.
+  **Done when:** JL confirms the unit is built, captioned, correctly labeled, and placed.
+
+### P · Stage questions
+- P<n> · Q-Display<unit>-<n> · <question title>
+  **Done when:** The answer has landed, been interpreted, and been woven into Content.
+  **Description:** <what this asset needs to know>
+  **Reason:** <which Spec / Wrapper / caption / reader assertion depends on the answer, and what breaks>
+  **Probe:** not opened yet
+  **Answer:** <empty until PROBE or a documented human ruling>
+
+## States
+### Display output
+- ⬜ A1.1 · Not started; the display artifact has not yet been built and promoted.
+- ⬜ A1.2 · Not started; no human gate ruling has been recorded.
+
+### P · Stage questions
+- ⬜ P<n> · Not started; Q-Display<unit>-<n> has not been organized into a probe entry.
 
 ## Files
 <!-- RULE: name the ARTIFACTS, not the folder. "the unit folder" is not a way to reach anything.

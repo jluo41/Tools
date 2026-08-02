@@ -4,12 +4,12 @@ owner: CC
 method: mechanical move first under a byte-identical gate, features second; module names by what they render (JL 260724)
 
 ## Question
-How does the board's Python stay manageable now that build.py and serve.py have both crossed 40KB and features keep landing?
-The working answer is a `src/` split organized by what each module RENDERS, so the files are named for pages rather than for layers.
-What that buys is a seat for a feature before it is written, instead of one more branch inside a function nobody wants to open.
+How should the renderer's Python be divided so a new feature has an obvious home before it is written?
 
-QC2 already moved CSS/JS into `assets/`; the Python side was next.
-JL named the organizing principle: modules named for what they render (`page_question.py`, `page_stage.py`), which also gave the embed feature a clean seat before it was written.
+One large module hid page-specific behavior inside shared functions and made unrelated changes touch the same file.
+The hard part was moving code without changing either the HTML or the parsed data.
+Names based on what a module renders give future work a stable place and keep shared helpers singular.
+It succeeds when the split is byte-identical and consumers stop carrying private copies of the same logic.
 
 
 ## Boundary

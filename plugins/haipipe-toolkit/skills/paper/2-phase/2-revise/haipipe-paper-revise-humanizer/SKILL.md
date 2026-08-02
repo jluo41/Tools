@@ -90,6 +90,10 @@ Before applying any language edit, enforce the four gates in `ref/venue-sciwrite
 Examples teach the shape of a move, never wording to copy. A candidate that fails any gate is not proposed.
 
 When the author selected candidate-diff mode in `haipipe-paper-revise`, do not change prose directly. Emit the complete candidate in an adjacent `> Note:` lane using the required `~~removed~~` and `**inserted**` notation, model/date suffix, and no-TeX-sync rule defined by that hub.
+
+COMPUTE the diff, never write it by hand: `python3 <skills>/writing/haipipe-writing/cli/wdiff.py record --host paper --old … --new … --when "<YYYY-MM-DD>"` returns the word-level marks already in this host's notation, and `check` audits them (JL 260801, `--host` added 260802). A model asked to show a diff writes a whole-sentence swap, because that is what a diff feels like from the inside. The marks differ between the two hosts (`~old~ *new*` on a board, `~~removed~~ **inserted**` here) and the tool emits both, so pass `--host paper` and convert nothing yourself.
+
+Layer 1 of the pattern catalog now lives at `<skills>/writing/haipipe-writing/ref/ai-tells.md`. It describes how a machine writes in any register, so no paper owns it; Layers 2 to 6 stay in `ref/pattern-catalog.md`.
 ```
 
 ## Key rules from the reference

@@ -579,7 +579,7 @@ fn/probes.md       192 ln  Probe files (paper)
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [x] 🧭 Establish the entry boundary
       The public command resolves intent and a paper root, then dispatches to
       a named owner.  Its purpose is routing, not content generation.
@@ -591,7 +591,7 @@ fn/probes.md       192 ln  Probe files (paper)
       A fresh-agent run should prove that the chooser, paper-root detection,
       and venue ambiguity all stop at the intended boundary.
 
-## Where we are
+## States
 The route and its ownership boundary are now visible on the Board.
 What has not yet been independently exercised here is the front door's difficult negative behavior: declining to guess an ambiguous venue or bypass a stage.
 

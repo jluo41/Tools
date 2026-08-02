@@ -116,7 +116,7 @@ The run-time rule is already good: announce the boundary, log the verdict, mark 
 ### What per-unit does to all of this
 For a per-unit stage the phase list runs once per unit, and the router says that much out loud at its Step 4. What follows from it and is nowhere stated is that both kinds of skip become per-unit too: a section that needs no probe, a display asset already revised. `5-section-edit` is the only contract that declares `runs: per-unit`, so it is the stage where this comes up first.
 
-## Items to Finish
+## Aims
 - [x] 📐 Declared per stage, and the list ends with `check`
       Re-checked all eight `stages/*/stage.md` on 260727: eight `phases:` lists, eight ending with `check`, eight `gates: [check]`. `stages/CONTRACT.md:29` states ends-with-`check` as the field's only constraint.
 - [x] 📐 A run-time skip must be announced and logged
@@ -132,7 +132,7 @@ For a per-unit stage the phase list runs once per unit, and the router says that
 - [ ] 📐 State what a skip means for a per-unit stage
       The router's Step 4 says the whole list runs once per unit; nothing extends that to a skip. `stages/5-section-edit/stage.md:29` is the only `runs: per-unit` contract, so it meets this first.
 
-## Where we are
+## States
 The dispatch works and is uniform across all eight stages. The invariant holds: every list ends with `check`, and every stage declares its gates the same way it declares its phases.
 
 What is open is no longer a ruling. Re-checking this face on 260727 found the short-list question already answered in three files, so what remains is one mechanical assertion nobody has written, three worker skills with no pointer to the rule that binds them, and two decisions that are made but recorded where a contract author will not meet them.

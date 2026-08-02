@@ -527,7 +527,7 @@ feedback/README.md                   9 ln  haipipe-paper-lifecycle — Feedback 
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [x] 🧱 Make the lifecycle boundary explicit
       The lifecycle router selects a structural owner.  It does not draft the
       narrative, decide a claim, render Board HTML, or call a phase worker as a
@@ -543,7 +543,7 @@ feedback/README.md                   9 ln  haipipe-paper-lifecycle — Feedback 
       Verify that a failed build or browser push is reported as partial rather
       than being mistaken for a successful lifecycle update.
 
-## Where we are
+## States
 The page now records the lifecycle's two non-negotiable joins: the venue boundary controls what must be rewritten, and every S-page write refreshes the Board the human is reading.
 The failure-reporting branch remains to be exercised independently.
 

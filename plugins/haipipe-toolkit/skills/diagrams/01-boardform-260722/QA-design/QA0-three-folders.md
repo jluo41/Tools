@@ -3,33 +3,13 @@ state: 🟡 PARTIAL
 owner: JL
 method: name the family folder, the board folder, and the rendered output; nest every subskill inside the family; then allow only the movements that keep the board deletable
 
-## Question
-Where does a new rule, file, or page belong?
-Three folders exist, and they are three KINDS of truth: `①` what SHIPS, `②` what is ARGUED, `③` what is RENDERED.
-Put something in the wrong one and it either binds nothing, because no runtime reads it, or it becomes wrong for every other board.
+## Opening
+How do we keep shipped rules, design decisions, and generated Board output from being mistaken for one another?
 
-A subskill is not a fourth kind.
-`haipipe-board`, `haipipe-board-index` and the reviewer agent all live inside `①` because they all ship, they all version, and they are all deletable from one another.
-Numbering them separately says they are peers of the board folder, which is the one thing they are not.
-
-The word "board" names four different things at once.
-There is a reusable family that ships.
-There is a design board that argues about that family.
-There is the generated `board.html` a reader opens.
-And there are the consumer boards the family renders for papers, tasks, and other skills.
-Each holds a different kind of truth and each has a different lifetime, but all four get called "the board" in conversation, so nothing stops a file from landing in the wrong one.
-
-The failures are not symmetric.
-A rule written into this design board binds nothing, because no runtime reads a Q page.
-Design history written into a `SKILL.md` makes the shipped family unshippable without its own past.
-A consumer board that keeps its own copy of the board form drifts from it silently, because nothing compares the two.
-And anything hand-written into `board.html` is destroyed by the next build without a warning.
-
-This is the first face in QA because every later ownership question assumes it is answered.
-`QC1` can only say where a board folder lives once it is settled which tree the folder is in.
-`QC4` can only place a page inside its home folder once it is settled which folders exist.
-`QC6` can only decide what the family ships once it is settled which folder is shippable at all.
-A reader who cannot place a thing cannot rule on it.
+This page gives every new file a clear home among the skill family, this design Board, and the output the family renders.
+The distinction is hard because all three are casually called the Board even though each carries a different kind of truth.
+Putting a file in the wrong layer can leave a decision nonbinding, make working history ship as law, or lose an edit on the next build.
+The model succeeds when a reader can place any new rule, page, or artifact without guessing where it belongs.
 
 
 ## Boundary
@@ -53,7 +33,7 @@ A reader who cannot place a thing cannot rule on it.
        │     SKILL.md          what an agent is told
        │     src/              parse · body · page_board · page_question
        │     assets/           board.css · board.js  (inlined at build)
-       │     ref/              board-form.md · q-template.md
+       │     ref/              board-form.md · page-template.md
        │     build.py check.py serve.py watch.py
        │     xcal.py regroup.py skillpage.py stage.py status.py
        ├── haipipe-board-index/               board + group altitude

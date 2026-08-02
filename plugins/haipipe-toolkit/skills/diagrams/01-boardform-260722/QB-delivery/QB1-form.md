@@ -3,16 +3,13 @@ state: 🟡 PARTIAL · the map is written and unapproved; the folder-internal de
 owner: JL
 method: two folders, what lives inside each, what may cross between them, and what we may write into a board that is neither
 session: c8603c47-0cd5-4a52-b708-37c617e82dd8
-## Question
-Where does a new rule, file, page or drawing belong? Two folders exist. One ships and binds every agent on every board, and one argues and binds nothing until a decision graduates out of it. Put something in the wrong one and it either binds nothing, because no runtime reads a face, or it becomes wrong for every board there will ever be.
+## Opening
+Where should a Board artifact live, and when may the Board tools write into a Board they do not own?
 
-The word "board" names five different things at once, and nothing in the vocabulary separates them. There is the skill set that ships (`skills/board/`). There is the skill you invoke (`haipipe-board`). There is one topic's folder (`01-boardform-260722/`). There is the source file that orders its pages (`board.md`). And there is the generated page you look at (`board.html`). "Page" names three things the same way: a Q or S markdown file, one section of the rendered html, and the whole html document. "Section" names two: a `##` heading inside a page, and a group on the index.
-
-The failures are not symmetric. A rule written onto a face binds nothing, because no runtime reads a face. Working state written into `SKILL.md` becomes wrong for every other board. A design argument that a script starts depending on means the skill can no longer ship without its own history. And a fix written into a board this family merely renders is a write nobody authorized, which is the one failure the other three cannot warn you about, because it looks like helpfulness.
-
-One of these happened on 260729, in the session that opened this map. Three dead references on two other projects' boards, a `pages-ghost` row and two `dead-link` rows, were repaired rather than reported. The repair looked mechanical and was not: choosing `S-Display-4al5` over the missing `S-Display-4a` is a decision about that paper's display registry, and that registry belongs to the paper.
-
-This is the first face on the board because every later ownership question assumes it is answered. `QA2` can only propose a topic's pages and groups once it is settled which folder they land in. `QA9` can only say what is checked after a change once it is settled whose change it was. A reader who cannot place a thing cannot decide anything about it.
+This page maps the shipping `skills/board/` family against the design Board that argues its rules.
+The difficult case is a tool finding a defect in another project's Board, because a mechanical repair and an editorial decision can look identical in a diff.
+Wrong placement can leave a decision nonbinding, make working history ship as law, or let a local judgment affect every Board.
+The map succeeds when every file and every cross-Board write has one clear owner before anything changes.
 
 
 ## Boundary
@@ -34,7 +31,7 @@ This is the first face on the board because every later ownership question assum
   │
   ├── 🤖 haipipe-board/                 the skill you invoke
   │   ├── 📖 SKILL.md                   the operating manual, kept shortest
-  │   ├── 📐 ref/            4 specs     board-form · q-template · writing-rules · board-example
+  │   ├── 📐 ref/            4 specs     board-form · page-template · writing-rules · board-example
   │   ├── ⚙️  10 scripts                build · check · serve · watch · status · stage · skillpage · regroup · xcal · refs
   │   ├── 🧩 src/           9 modules    the parser, split by page topic  (QC2b)
   │   ├── 🎨 assets/                    css · js · board-mark.svg          (QC2)
@@ -296,7 +293,7 @@ It also removes the question entirely from every future board, which is the real
 - [ ] 🧪 Check for reverse dependencies
       No script may require an open face, and no rendered board's state may be read off this board. This has never been checked.
 - [ ] 🔤 Retire the word "ruling" in favour of "decision"
-      JL 260729: "I think we use the decision for it." This face is converted; `SKILL.md` has 9, `ref/board-form.md` 2, the reviewer agent 2, `ref/q-template.md` 1, and page prose across the ten boards has 999.
+      JL 260729: "I think we use the decision for it." This face is converted; `SKILL.md` has 9, `ref/board-form.md` 2, the reviewer agent 2, `ref/page-template.md` 1, and page prose across the ten boards has 999.
       Most of that 999 sits on boards this family renders and does not own, so under §4 it needs each owner told rather than a silent rewrite.
 (What a Q file looks like inside is the QAa group's business, and what the words mean is `QA1a`'s, so neither is handled here.)
 

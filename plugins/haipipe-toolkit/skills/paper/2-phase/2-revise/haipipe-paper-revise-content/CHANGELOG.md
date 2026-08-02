@@ -1,3 +1,11 @@
+## 2026-08-01
+
+- `ref/weaving.md` moved to `skills/writing/haipipe-writing/ref/weaving.md` (JL).
+  Paragraph arc, hinges and rhythm are prose craft, not academic craft. This
+  worker still owns when the weave step runs and what it may touch; only the
+  method left. `ref/write-principles.md`, `ref/content-edit.md` and
+  `ref/example-intro-logic-flow.txt` stay: they are LaTeX- and paper-specific.
+
 haipipe-paper-revise-content — Changelog
 ========================================
 

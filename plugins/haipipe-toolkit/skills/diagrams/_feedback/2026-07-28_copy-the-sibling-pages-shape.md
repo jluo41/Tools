@@ -5,7 +5,7 @@ updated: 2026-07-28
 occurrences: 2
 kind: preference
 context: authoring
-lands_in: "ref/q-template.md"
+lands_in: "ref/page-template.md"
 session: "the 2026-07-27 MISQ §3 Theory + display session (board: examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle)"
 fixed_in: ""
 regressed: ""

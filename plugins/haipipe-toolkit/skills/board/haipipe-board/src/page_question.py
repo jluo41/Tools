@@ -1,11 +1,12 @@
 """One question -> one <section class="slide q"> card (QB5: the card chunk of
 the old render(), moved verbatim). page_stage.py owns embedded source content;
-this file owns the q-template anatomy on stage."""
+this file owns the page-template anatomy on stage."""
 import re
 
 from . import body as _bd
-from .body import body, flat_rows, inline, note_body, render_apparatus, sort_log
-from .common import esc, sec, stinfo
+from .body import (body, flat_rows, inline, note_body, render_apparatus,
+                   render_thread, sort_log)
+from .common import aim_progress, aim_summary, esc, sec, stinfo
 
 STAGE_LABELS = {
     "seed": "SEED PAGE",
@@ -37,11 +38,19 @@ def chead(label, inner, tag="div"):
     return f'<{tag} class="ch"><span class="chl">{label}</span>{tog}</{tag}>'
 
 
-def sect(label, inner, cls="", open_=True):
+def sect(label, inner, cls="", open_=False):
     """A whole page section that folds from its own heading (JL 260725), by the
     same native-details mechanism Diagram already uses. Shut, the section keeps
     its text in the DOM, so the zero-script invariant, Ctrl-F, and the section
-    ⧉ copy button all keep working."""
+    ⧉ copy button all keep working.
+
+    Every section now starts SHUT (JL 260801). The 260725 default was open,
+    for a reason that has since expired: back then the page had no sidebar, so
+    a reader who never clicked had to be able to read straight down. QB2a's
+    rail now carries the map, and a page like QB4 has grown past 6000 words of
+    Content, where "open by default" means the reader meets a wall instead of a
+    page. Shut, the page opens as what it actually is: a title, the paragraph
+    on stage, and seven section names you can take in at a glance."""
     if not inner:
         return ""
     o = " open" if open_ else ""
@@ -105,6 +114,27 @@ def render_diagram(txt):
             '</details>')
 
 
+def split_stage_record(kind, content_sections):
+    """-> (legacy_record_markdown, remaining_sections).
+
+    A stage declares its obligations under ONE name, `## Stage Contract`
+    (JL 260801: "stage contract, no stage protocol"). Old stage pages still
+    carry a hand-written `### Stage Record` under Content; it is pulled out
+    here, because Content holds the stage's product and nothing else, and it
+    is then printed as the contract's opening lines so no wording is lost.
+
+    Both the page render and the sidebar outline call this, or they disagree:
+    the outline counts Content's divisions and addresses them BY ORDER
+    (`data-div`), so a section the page dropped and the rail kept shifted
+    every division link on that page by one."""
+    if kind != "stage":
+        return "", content_sections
+    for i, (heading, md) in enumerate(content_sections):
+        if re.sub(r"\s+", " ", heading).strip().casefold() == "stage record":
+            return md, content_sections[:i] + content_sections[i + 1:]
+    return "", content_sections
+
+
 def structure_rows(d, content_sections):
     """The DATA half of the page's Structure map: (key, label, value, subs)
     per section that exists, where key is the stable machine name the sidebar
@@ -124,20 +154,20 @@ def structure_rows(d, content_sections):
         v = (f"{len(divs)} division{'s' if len(divs) != 1 else ''}" if divs
              else "one flat body")
         rows.append(("content", "📚 Content", v, divs))
-    itxt = sec(d, "Items to Finish")
-    done = len(re.findall(r"(?m)^\s*[-*] \[[xX]\]", itxt))
-    todo = len(re.findall(r"(?m)^\s*[-*] \[ \]", itxt))
-    if done or todo:
+    aims = sec(d, "Done when")
+    state = sec(d, "Now").strip()
+    progress = aim_progress(aims, state)
+    if aims.strip():
         isubs = []
-        for h, b in parse_content_sections(itxt):
+        for h, b in parse_content_sections(aims):
             if not h:
                 continue
-            bx = re.findall(r"^\s*[-*]\s*\[([ xX])\]", b, re.M)
-            dn = sum(1 for x in bx if x.lower() == "x")
-            isubs.append((f"{h} · {dn}/{len(bx)}" if bx else h, h))
-        rows.append(("items", "🎯 Items to Finish",
-                     f"{done} done · {todo} open", isubs))
-    w = sec(d, "Where we are").strip()
+            group = aim_progress(b, state)
+            label = (f'{h} · {group["closed"]}/{group["total"]}'
+                     if group["total"] else h)
+            isubs.append((label, h))
+        rows.append(("items", "🎯 Aims", aim_summary(aims, state), isubs))
+    w = state
     if w:
         dated = len(re.findall(r"(?m)^- ?\d{6}", w))
         # Its ### subsections are jump targets too (JL 260731: "unfold the
@@ -149,7 +179,7 @@ def structure_rows(d, content_sections):
                 continue
             owed = len(re.findall(r"(?m)^\s*[-*] \[ \]", b))
             wsubs.append((f"{h} · {owed} to tick" if owed else h, h))
-        rows.append(("now", "📍 Where we are",
+        rows.append(("now", "📍 States",
                      f"{dated} dated entr{'ies' if dated != 1 else 'y'}"
                      if dated else "the present state", wsubs))
     ftxt = sec(d, "Files")
@@ -161,25 +191,68 @@ def structure_rows(d, content_sections):
     return rows
 
 
-def render_items(goal):
-    """Items to Finish with optional ### topic groups (QB4d, JL 260731: "each
-    aim subsection should be categorized into different subsection topics").
-    Each group heading carries its own done/total count; the section heading
-    keeps the overall count; an empty group is omitted rather than rendered
-    as a zero-row box."""
+AIM_ROW = re.compile(r"(?m)^(\s*[-*]\s*)((?:A\d+\.\d+|P\d+)\s*·)")
+
+
+def stamp_aim_states(aims, state):
+    """Put each Aim's CURRENT status emoji on its own row (JL 260802).
+
+    An Aim row carried no marker at all, because status is States' job and an
+    Aim must not claim progress. That rule is about the SOURCE: the markdown
+    stays free of checkboxes, so there is still exactly one place a status is
+    written. The render is free to show what States already says, the way the
+    section count has always been derived rather than stored, and without it a
+    reader had to hold two lists side by side to learn whether A1.1 was done.
+    """
+    if not state or re.search(r"(?m)^\s*[-*]\s*\[[ xX]\]", aims or ""):
+        return aims                      # legacy checklists keep their boxes
+    from .common import AIM_STATE_RE, AIM_STATUS_ALIAS
+    seen = {}
+    for emoji, aim_id in AIM_STATE_RE.findall(state):
+        e = emoji.replace("\ufe0f", "")
+        seen[aim_id] = AIM_STATUS_ALIAS.get(e, e)
+
+    def mark(m):
+        aim_id = m.group(2).split("·")[0].strip()
+        return "%s%s %s" % (m.group(1), seen.get(aim_id, "⬜"), m.group(2))
+    return AIM_ROW.sub(mark, aims or "")
+
+
+def render_aims(aims, state=""):
+    """Aims with optional Content-linked groups and progress derived from States.
+
+    Canonical Aims are durable target records whose current emoji lives in
+    States. Legacy checklists retain their checkbox count through aim_progress.
+    """
     parts = []
-    for title, b in parse_content_sections(goal):
+    for title, b in parse_content_sections(aims):
         if not title:
             if b.strip():
                 parts.append(body(b))
             continue
         if not b.strip():
             continue
-        bx = re.findall(r"^\s*[-*]\s*\[([ xX])\]", b, re.M)
-        cnt = (f'<span class="shc">{sum(1 for x in bx if x.lower() == "x")}'
-               f'/{len(bx)}</span>' if bx else "")
-        parts.append(f'<div class="sh">{inline(title)}{cnt}</div>{body(b)}')
+        group = aim_progress(b, state)
+        cnt = (f'<span class="shc">{group["closed"]}/{group["total"]}</span>'
+               if group["total"] else "")
+        # A group FOLDS, exactly like a Content division (JL 260802: "I want the
+        # division in the Aims to be collapsed as what we have in the Content,
+        # and of the same format"). It was a flat `.sh` row, which made Aims the
+        # one section a reader could not collapse down to its group names, and
+        # since 260801 every other section on the page starts shut.
+        # The item opens with its group (JL 260802: "you can show the hidden
+        # text out"). `Done when` IS the Aim's substance: an Aim you cannot
+        # check is not one, so hiding the check behind a second click made the
+        # row a title with nothing under it. The GROUP is still shut, so the
+        # page still collapses to its group names.
+        parts.append(f'<details class="csec"><summary>{inline(title)} {cnt}'
+                     f'</summary><div class="cbody aims-open">'
+                     f'{body(stamp_aim_states(b, state))}</div></details>')
     return "".join(parts)
+
+
+# Internal compatibility for extensions that imported the old helper name.
+render_items = render_aims
 
 
 def render_structure(d, content_sections):
@@ -221,17 +294,70 @@ def parse_content_sections(txt):
     return sections
 
 
-def render_subsections(sections, open_first=True, flat=False):
+def merge_prose_lines(md):
+    """Join consecutive prose lines into one paragraph. Opening only (JL 260801).
+
+    The board writes one sentence per source line so a single sentence can be
+    quoted, commented on, and diffed on its own. Rendered literally that gives a
+    column of one-sentence paragraphs, and JL read Opening's drawer as a list of
+    fragments rather than as prose, and asked for those lines to be merged
+    into one paragraph.
+    So inside the Opening drawer the lines are rejoined and a BLANK LINE still
+    starts a new paragraph, which is ordinary markdown behaviour. The source is
+    untouched, so the sentence remains the unit a comment anchors to (QB5).
+    Everywhere else the one-line-per-sentence render is unchanged, which is why
+    this runs in the flat branch alone.
+    """
+    out, buf = [], []
+    fence = False
+
+    def flush():
+        if buf:
+            out.append(" ".join(buf))
+            buf.clear()
+
+    for ln in md.splitlines():
+        s = ln.strip()
+        if s.startswith("```"):
+            flush()
+            fence = not fence
+            out.append(ln)
+        elif fence:
+            out.append(ln)
+        elif not s:
+            flush()
+            out.append("")
+        elif re.match(r"(#{1,6}\s|[-*+]\s|\d+[.)]\s|>|\||<!--)", s):
+            # a heading, list item, apparatus lane, table row or marker is its
+            # own line by construction; merging one into a paragraph would
+            # destroy the very thing that makes it that kind of line.
+            flush()
+            out.append(ln)
+        else:
+            buf.append(s)
+    flush()
+    return "\n".join(out)
+
+
+def render_subsections(sections, open_first=False, flat=False):
     """Render named markdown chunks as native disclosure rows.
+
+    open_first was True until JL 260801 ("I always find the first subsection of
+    the Content is opened, I don't like it"). One open division among nine shut
+    ones reads as a state someone left behind rather than as a deliberate entry
+    point, and it makes the first division look privileged when the numbering
+    already says it is simply first.
 
     flat=True drops the disclosure entirely and emits a plain `.fh` heading plus
     its body. Opening uses it (JL 260725: "I don't want to have >"): behind the
     lead question everything is simply shown, the way Boundary already was, so no
-    second layer of ▸ rows hides the stage style, venue section, or writing style."""
+    second layer of ▸ rows hides the stage style, venue section, or writing style.
+    It also merges one-sentence source lines back into paragraphs (JL 260801),
+    since flat is the Opening-only branch."""
     out = []
     for i, (heading, md) in enumerate(sections):
         # #### 不再压成 **…**（那会套上组标题的 🔹）；body() 现在自己渲染段落标题。
-        rendered = body(md)
+        rendered = body(merge_prose_lines(md) if flat else md)
         if heading and flat:
             out.append(f'<div class="fh">{inline(heading)}</div>'
                        f'<div class="cbody flat">{rendered}</div>')
@@ -257,14 +383,16 @@ def render_content(sections, q=None, leading=""):
     On S pages the heading NAMES the stage ("Content · Main 7 Results") instead of
     counting subsections (JL 260725): an S page's Content is the stage's own
     substance, so the label should say which substance, not how many boxes.
-    Q pages keep the count, where it is a scanning aid rather than an identity."""
+
+    A Q page's heading is just "📚 Content" (JL 260801: "we will not add this,
+    just call it Content should be ok"). The "· 9 sections" suffix it used to
+    carry was a scanning aid, but the divisions are listed right underneath and
+    the sidebar already counts them, so it only made the heading longer."""
     if not sections and not leading:
         return ""
     inner = leading + render_subsections(sections)
     name = face_name(q) if q else ""
-    n = len(sections)
-    lab = (f"📚 Content · {esc(name)}" if name
-           else f"📚 Content · {n} section" + ("s" if n != 1 else ""))
+    lab = f"📚 Content · {esc(name)}" if name else "📚 Content"
     return sect(lab, inner, cls="content")
 
 
@@ -470,16 +598,23 @@ def render_display_preview(q):
             + _display_folder(unit))
 
 
-def render_contract(sections):
+def render_contract(sections, lead=""):
     """Stage Contract renders INSIDE Opening (JL 260725), never its own section.
 
     It is shown outright behind the lead question, so Required Inputs, Writing
     Style and the venue section are read rather than hunted for. Its heading is a
     plain word like every other heading in that drawer (JL 260725: the drawer had
-    two iconed headings and five bare ones, which is what read as inconsistent)."""
-    if not sections:
+    two iconed headings and five bare ones, which is what read as inconsistent).
+
+    `lead` carries a legacy `### Stage Record` block (JL 260801: "只统一叫一个吧,
+    就叫 stage contract"). A stage page declares its obligations ONCE, under one
+    name; the old block's text is kept word for word and simply reads as the
+    contract's opening lines, because deleting someone else's writing on read
+    would be a silent loss."""
+    if not sections and not lead:
         return ""
     return ('<div class="fh">Stage Contract</div>'
+            + (body(lead) if lead else "")
             + render_subsections(sections, flat=True))
 
 
@@ -491,19 +626,18 @@ def render_question(q, prv, nxt):
            + '</div>')
     tok, cls, lab = stinfo(q["state"])
     who = "🧠 JL decides" if q["owner"] == "JL" else ("🔧 " + q["owner"] if q["owner"] else "")
-    # 顺序（JL 260723 改版）：先「什么算做完」，再「现在到哪了」。
-    # 原来 Now 在上，零背景的人先撞上一堵实现细节，还没搞懂目标就淹了 ——
-    # 先给意图（目标），再给状态（进度）。
+    # Intent first, then the factual present (JL 260801): Aims are durable
+    # target states; States owns progress, decisions, and verification.
     now, goal = sec(q["sec"], "Now"), sec(q["sec"], "Done when")
-    boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", goal, re.M)
-    cnt = (f'<span class="cnt">{sum(1 for b in boxes if b.lower()=="x")}/{len(boxes)}</span>'
-           if boxes else "")
+    progress = aim_progress(goal, now)
+    cnt = (f'<span class="cnt">{progress["closed"]}/{progress["total"]}</span>'
+           if progress["total"] else "")
     fs = ""
     if now or goal:
-        nb, gb = body(now), render_items(goal)
+        nb, gb = render_aims(now), render_aims(goal, now)
         fs += ('<div class="cmp">'
-               + sect(f"🎯 Items to Finish{cnt}", gb, cls="col goal")
-               + sect("📍 Where we are", nb, cls="col now")
+               + sect(f"🎯 Aims{cnt}", gb, cls="col goal")
+               + sect("📍 States", nb, cls="col now")
                + '</div>')
     # 「Why here」不再单独占台面：它该讲的（为什么难 / 不定会怎样）并进 ## Question
     # 的要点里，光读第一节就 orient。老板子里还写着这段的，收进底部折叠区，内容不丢。
@@ -527,61 +661,75 @@ def render_question(q, prv, nxt):
     lead_lines = [x for x in _parts[0].splitlines()
                   if not (x.lstrip().startswith("<!--") and "haipipe:" in x)]
     qlead = inline(" ".join(x.strip() for x in lead_lines if not x.lstrip().startswith(">")))
-    lead_app, lead_heads, lead_show = render_apparatus(
+    lead_app, lead_heads, lead_kind = render_apparatus(
         [x for x in lead_lines if x.lstrip().startswith(">")]
     )
     qrest = _parts[1].strip() if len(_parts) > 1 else ""
     content_sections = parse_content_sections(sec(q["sec"], "Content"))
     contract_md = re.sub(r"<!--.*?-->", "", sec(q["sec"], "Stage Contract"), flags=re.S)
     contract_sections = parse_content_sections(contract_md)
-    stage_record = ""
     is_stage = q.get("kind") == "stage"
-    if is_stage:
-        for i, (heading, md) in enumerate(content_sections):
-            if re.sub(r"\s+", " ", heading).strip().casefold() == "stage record":
-                stage_record = md
-                del content_sections[i]
-                break
+    legacy_record, content_sections = split_stage_record(
+        q.get("kind"), content_sections)
     opening_sections = []
     # Why this matters lives in Opening for BOTH kinds (JL 260729: it explains
     # the lead, so it belongs behind the lead). Until then Q carried it as
     # Content's first subsection; Content now holds only what the author wrote.
+    # The row is labelled "More details" (JL 260801). "Why this matters" named the
+    # rhetorical job the paragraph was supposed to do, and that framing is what
+    # produced the mad-lib openings the 260801 rewrite banned; the drawer now just
+    # says what it is, which is the rest of the Opening.
     if qrest:
-        opening_sections.append(("Why this matters", qrest))
-    if is_stage and stage_record:
-        opening_sections.append(("Stage Record", stage_record))
+        opening_sections.append(("More details", qrest))
+    # Boundary 排在 Why this matters 之后（JL 260801）。这翻掉了 260729 的顺序，
+    # 当时 Why this matters 被放在 Boundary「just below」。理由是读者的顺序：
+    # pitch 给出承诺 → Why this matters 说明为什么值得在意 → 这时才轮到「哪些不归这页」。
+    # 「不管什么」是个限定语，限定语要落在被限定的东西已经站住之后才有意义。
+    btxt = sec(q["sec"], "Boundary").strip()
+    if btxt:
+        opening_sections.append(("Boundary", btxt))
+    # Writing Style 是「页」的元素，不是 S 的（JL 260801：「here is not about S, or
+    # Q ... it is just about the Page」）。它原来长在 S 的 Stage Contract 里，跟
+    # Required Inputs、Venue 并列；但「这一页该怎么写」每一页都得有 —— 没有它，
+    # 下一个人就没法照着改。所以它跟 Why this matters 一样收在领句后面：解释这一页
+    # 该怎么被对待，而不是这一页的实质内容。
+    wstyle = sec(q["sec"], "Writing Style").strip()
+    if wstyle:
+        opening_sections.append(("Writing Style", wstyle))
     # Stage Contract joins Opening's collapsed rows (JL 260725: "within the
-    # Opening, not a separate section"), after Why this matters / Stage Record.
+    # Opening, not a separate section"), after Why this matters / Writing Style.
     # Boundary was retired on JL's ruling (260731, said twice): a page's scope is
     # the Opening's job. Old boards that still carry the section keep rendering
     # it, because deleting someone else's text on read would be a silent loss.
-    btxt = sec(q["sec"], "Boundary").strip()
-    # Structure leads the drawer (JL 260729): the page's own map, computed at
-    # build from the parsed page, so it can never go stale.
+    # Structure 从抽屉里撤掉（JL 260801：「WE ALREADY HAVE THE LEFT PANEL INDEX.
+    # SO WE CAN DROP THE STRUCTURE」）。它 260729 进来时是「这一页自己的地图」，
+    # 那会儿还没有左侧栏；侧栏一上线，这一行就是同一张地图的第二份。
+    # render_structure() 留着不删：它是纯函数，没有调用者时不产出任何东西，
+    # 万一要回退，接回来就是这一行。
     inner = (f'<div class="sapp">{lead_app}</div>' if lead_app else "")
-    inner += render_structure(q["sec"], content_sections)
-    if btxt:
-        inner += f'<div class="fh">Boundary</div>{flat_rows(btxt)}'
-    # 抽屉里全是平的：Boundary 一直就是这样，Why this matters / Stage Record /
+    # 抽屉里全是平的：Boundary 一直就是这样，Why this matters / Writing Style /
     # Stage Contract 现在跟它一致（JL 260725：「I don't want to have >」，以及
     # 「why other information are gone」—— 它们没丢，是被第二层 ▸ 关起来了）。
     inner += render_subsections(opening_sections, flat=True)
     if is_stage:
-        inner += render_contract(contract_sections)
+        inner += render_contract(contract_sections, lead=legacy_record)
     # Opening 本身不折（JL 260725：「no > in the Opening, it will always be there」）：
     # 🧭 Opening 这一行和领句永远在台面上。可点的是【领句】—— 点开它，Boundary、
-    # Why this matters、Stage Record、Stage Contract 全在这一个抽屉里，用来解释这句问句。
+    # Why this matters、Writing Style、Stage Contract 全在这一个抽屉里，用来解释这句问句。
     # 中间那版把折叠挂在 🧭 Opening 上，于是节名本身成了一个只写着「Opening」的 ▸ 行，
     # 读者看不出里头有 Boundary —— 正是 260724 那条 Law 要防的（fold 生效且不可见）。
     # 领句的排版跟原版一模一样：<summary> 里仍然是那个 <p class="qlead">，
     # 所以 `.q p` 的 serif 和 `.ask>p:first-of-type` 的字号都照旧命中（JL 260725：
     # 「I want the original font size and font type」—— 把 class 挪到 summary 上就丢了这两条）。
     lead_p = (f'<p class="qlead"><span class="qt">{qlead}</span>'
-              + (f'<span class="sbadge">⚑ {lead_heads}</span>' if lead_heads else "")
+              + (f'<span class="sbadge">{lead_kind} {lead_heads}</span>' if lead_heads else "")
               + '<span class="cv"></span></p>')
     opening_head = '<div class="ch opening-head"><span class="chl">🧭 Opening</span></div>'
     qblock = (
-        f'<details class="it row qd{" open" if lead_show else ""}"><summary>{lead_p}</summary>'
+        # The Opening drawer stays shut even when the lead carries a comment
+        # (JL 260801: everything collapsed). The ⚑/💬 badge on the lead says it
+        # is there, which is the same contract every other sentence now keeps.
+        f'<details class="it row qd"><summary>{lead_p}</summary>'
         f'<div class="bd qbd">{inner}</div></details>'
         if inner else
         f'<p class="qlead"><span class="qt">{qlead}</span></p>'
@@ -591,7 +739,11 @@ def render_question(q, prv, nxt):
     # 📁 Files（JL 260723 新增，选填）：这题牵动哪些文件。读懂之后知道去哪儿动手；
     # 反过来改了哪个文件，也知道该回写哪一题。路径写反引号里，board.md 的
     # ## Links 声明过的会自动变成可点链接。
-    flb = body(sec(q["sec"], "Files"))
+    # Files groups FOLD, like Content parts and the Aims/States groups
+    # (JL 260802). Files was the last section rendering its `###` groups as
+    # flat rows, so a long action map could not be collapsed to its group
+    # names while every other section on the page could.
+    flb = render_subsections(parse_content_sections(sec(q["sec"], "Files")))
     fls = sect("📁 Files", flb, cls="fls")
     dia_txt = sec(q["sec"], "Diagram")
     dia = render_diagram(dia_txt) if dia_txt else ""
@@ -606,17 +758,20 @@ def render_question(q, prv, nxt):
             f'<textarea placeholder="Write a thought into the discussion…"></textarea>'
             f'<div class="row"><select></select>'
             f'<button class="dsave" type="button">➕ Add to discussion</button></div></div>')
+    # The form comes FIRST, above the thread (JL 260802): it is the one thing
+    # in this fold a reader can act on, and the newest exchange is right under
+    # it, so writing a reply never means scrolling past the whole history.
     folds = det(f"💬 Discussion ({ndisc})",
-                (body(disc, apparatus=False) if disc else
+                dadd +
+                (render_thread(disc) if disc else
                  f'<p class="mut">No discussion yet — add a line under '
                  f'<code>## Discussion</code> in {q["file"]}: '
-                 f'<code>&gt; JL: …</code></p>')
-                + dadd)
+                 f'<code>&gt; Comment JL …</code></p>'))
     # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
     folds += det("💡 Why here", body(why, apparatus=False))
-    folds += det("⚖️ Law", body(sec(q["sec"], "Law"), apparatus=False))
-    folds += det("🧠 Lesson", body(sec(q["sec"], "Lesson"), apparatus=False))
-    folds += det("📖 Glossary", body(sec(q["sec"], "Glossary"), apparatus=False))
+    folds += det("⚖️ Law", body(sec(q["sec"], "Law"), apparatus=False, show_lead=True))
+    folds += det("🧠 Lesson", body(sec(q["sec"], "Lesson"), apparatus=False, show_lead=True))
+    folds += det("📖 Glossary", body(sec(q["sec"], "Glossary"), apparatus=False, show_lead=True))
     log = sort_log(sec(q["sec"], "Log").strip())
     nlog = len(re.findall(r"^(?:[-*]\s+)?\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
     folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))

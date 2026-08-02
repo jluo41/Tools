@@ -1,4 +1,15 @@
 haipipe-paper-revise — Changelog
+## 2026-08-01
+
+- Candidate-diff mode COMPUTES its word-level marks with
+  `writing/haipipe-writing/cli/wdiff.py` instead of writing them by hand (JL).
+  Hand-written, the diff comes out as a whole-sentence swap, which hides what
+  SURVIVED the edit; that is the one thing a candidate lane exists to show.
+- The worker roster names where the migrated methods now live: the weave method
+  at `writing/haipipe-writing/ref/weaving.md`, the general AI-tell catalogue at
+  `writing/haipipe-writing/ref/ai-tells.md`. Both left `paper/` on 260801
+  because neither is academic; everything venue-owned stayed.
+
 ================================
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.

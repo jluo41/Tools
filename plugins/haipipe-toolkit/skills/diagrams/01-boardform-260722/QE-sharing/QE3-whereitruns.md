@@ -5,13 +5,12 @@ owner: JL
 method: decide whether the static half survives first: that one answer determines everything else
 
 ## Question
-The board runs inside `serve.py` today, a 976-line Python `SimpleHTTPRequestHandler` bound to `127.0.0.1`, single user.
-JL wants to make it a real thing and asked whether to move to a mature stack such as Node.
-The decision that actually matters is not the language: it is which process the board moves into, and whether `build.py` producing a static page stays an invariant.
+Which process should own the board's static pages and live actions without creating a second implementation of its Markdown grammar?
 
-The board has two halves with opposite requirements: the static half (`build.py` → `board.html`) is valuable precisely because it has zero dependencies, so you can give a colleague one file, project it in a meeting, or read it offline, while the live half (comment write-back, chat, terminal) must run on the machine the files are on, and moving into a service makes it very easy to kill the static half by accident.
-Leave it undecided and both `QE2` (the SPACE layer) and `QE4` (in-page editing) are stuck: they need to know which codebase they are written in before anyone can start, so until this is settled those two can only be speculated about.
-Downstream it settles which of the two repos the code lives in, whether to branch, the fate of `build.py`'s ~490-line parser, and whether the board can be embedded in a HAI-Chat thread.
+The board needs a portable HTML artifact and a service that can mount SPACEs, write comments, and embed the result in the console.
+Moving everything into a new stack could ease deployment while quietly breaking offline reading or duplicating the parser.
+That choice determines where the code lives and which later sharing features can be built safely.
+The design works when both surfaces use one grammar and each degrades honestly when the live half is unavailable.
 
 
 ## Boundary

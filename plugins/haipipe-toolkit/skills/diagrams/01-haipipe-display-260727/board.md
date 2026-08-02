@@ -120,7 +120,7 @@ paper-adapter           ../../paper/1-lifecycle/4-display/ref/paper-adapter.md
 paper-display-stage     ../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/stage.md
 display-task            ../../task/7_display/haipipe-task-for-display/SKILL.md
 paper-board             ../01-haipipe-paper-260725/
-QB2b@paper              ../01-haipipe-paper-260725/QB-engine-stage-contract/QB2b-its-name.md
+QB2b@paper              ../01-haipipe-paper-260725/QC-engine/QC3b-page-name.md
 task-board              ../01-haipipe-task-260726/
 probe-board             ../01-probe-qa-260726/
 boardform-board         ../01-boardform-260722/

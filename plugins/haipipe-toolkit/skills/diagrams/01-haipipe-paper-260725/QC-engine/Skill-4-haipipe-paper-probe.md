@@ -287,7 +287,7 @@ ref/per-stage-dispatch.md     160 ln  Per-stage dispatch reference (haipipe-pape
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [x] 🧭 Preserve the five-step bridge
       PROBE, not DRAFT, creates and maintains the entry.  It organizes the
       consumer question, matches before spending, dispatches through the
@@ -308,7 +308,7 @@ ref/per-stage-dispatch.md     160 ln  Per-stage dispatch reference (haipipe-pape
       A fresh-agent run should show one proof for each step and prove that an
       answered target is harvested rather than left commissioned.
 
-## Where we are
+## States
 The paper-to-bank handoff is now visible as a path-bound five-step loop, with separate ownership for the question, the fact, and the paper's interpretation.
 The remaining acceptance test is a mixed-depth campaign that exercises all four outcomes: local/reuse, dispatch, defer, and harvest.
 

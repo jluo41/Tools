@@ -3,14 +3,16 @@ CJK scrub, JSON emission — moved verbatim from build.py)."""
 import base64
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 from urllib.parse import quote
 
 from . import body as bd
 from .body import body, inline
-from .common import esc, sec, stinfo
-from .page_question import parse_content_sections, render_question, structure_rows
+from .common import aim_progress, esc, sec, stinfo
+from .page_question import (parse_content_sections, render_question,
+                            split_stage_record, structure_rows)
 from .page_stage import render_doc_slide
 
 
@@ -47,7 +49,10 @@ def board_map(meta):
     ascii_map = (meta.get("map") or "").strip()
     if ascii_map:
         return (
-            '<details class="board-map board-map-ascii" open>'
+            # Shut by default (JL 260801: "默认的话我们还是把它合起来吧，每次
+            # 打开的话非常难看"). The map is orientation, not the first thing to
+            # read: open, it pushes the page roster off the first screen.
+            '<details class="board-map board-map-ascii">'
             f'<summary>{MAP_HEAD}</summary>'
             f'<div class="board-map-body">{body(ascii_map, fold_code=False)}</div>'
             '</details>'
@@ -100,28 +105,30 @@ def board_map(meta):
     )
 
 
-RELATED_MAX = 120_000  # a single embedded file cap; a larger file shows a note
+RELATED_MAX_DEPTH = 4      # how deep the walk descends
+RELATED_MAX_ENTRIES = 300  # per folder, so one huge directory cannot flood the page
+RELATED_SKIP = {"__pycache__", ".git", ".DS_Store", "node_modules",
+                ".haipipe-board", ".pytest_cache", ".ruff_cache", ".venv"}
 
 
-def related_folders(meta):
-    """The RELATED FOLDERS fold (QB2, JL 260731: "add ... related folders ... I
-    can click open this folder, and see ... the skill ... and what this board
-    folder should look like"). QA0 owns which folders are related and which of
-    their files a reader may open; this only renders them.
+def related_folders(meta, base=None):
+    """The RELATED FOLDERS fold (QB2, JL 260731/260801).
 
-    Depth is B, the clickable browser (JL "do the B level"), done at BUILD by
-    EMBEDDING each named file, not by a live serve.py fetch: a build-time embed
-    keeps the fold working with scripts stripped and on a static host, which is
-    QE3's Law and the same reason `## Board Map` is ASCII rather than an iframe.
-    QC8 may later add a live endpoint for folders too big to inline.
+    A plain DIRECTORY BROWSER, not a reader: "what I want is the pure folder
+    that can be opened, don't need to put the content here. It is just like the
+    folder hosted in the browser, I can open and navigate." The first version
+    embedded each declared file's text, which answered a question JL had not
+    asked and buried the structure it was supposed to show.
 
-    The `## Related Folders` grammar in board.md:
-        intro line(s)
+    So this walks the real folder and renders its tree: a subfolder is a nested
+    <details> that opens to its own children, a file is a row with its size.
+    The walk happens at BUILD and the tree ships collapsed, so navigating costs
+    no request and works with scripts stripped and on a static host (QE3's Law).
+
+    The `## Related Folders` grammar in board.md is one line per root:
         @ <folder path, board-relative> | <label>
-        - <file path, inside that folder>
-        @ <next folder> | <label>
-    A path is resolved under the board dir and must stay inside the repo root;
-    only `.md`/`.txt` inline; every failure is a visible box, never empty.
+    QA0 owns which roots are listed. Everything below a root is discovered, not
+    declared, because the point is to show what is actually there.
     """
     text = (meta.get("related") or "").strip()
     if not text:
@@ -129,63 +136,108 @@ def related_folders(meta):
     board_dir = Path(meta.get("dir") or "")
     root = next((p for p in (board_dir, *board_dir.parents)
                  if (p / "pyproject.toml").is_file()), None)
+    # A file row links to the real file (JL 260801: "I cannot click the files
+    # if I want?"). The href is relative to the BOARD SOURCE folder, which is
+    # the same convention every authored relative path on a board uses:
+    # `tree_reroot()` re-sites it for `board/`, so this must NOT pre-apply the
+    # output offset or the path ends up one level too high.
+    html_dir = Path(base) if base else board_dir
 
-    intro, folders, cur = [], [], None
+    intro, roots = [], []
     for ln in text.split("\n"):
         s = ln.strip()
         if s.startswith("@ "):
             path, _, label = s[2:].partition("|")
-            cur = {"path": path.strip(), "label": label.strip() or path.strip(), "files": []}
-            folders.append(cur)
-        elif s.startswith("- ") and cur is not None:
-            cur["files"].append(s[2:].strip())
-        elif s and cur is None:
+            roots.append({"path": path.strip(), "label": label.strip() or path.strip()})
+        elif s.startswith("- "):
+            continue  # legacy per-file lines: the whole folder is browsable now
+        elif s and not roots:
             intro.append(s)
 
-    def read_file(base, rel):
-        if not rel.lower().endswith((".md", ".txt")):
-            return f'<div class="rf-miss">⛔ <code>{esc(rel)}</code> — only .md/.txt inline</div>'
+    def size_of(n):
+        return f"{n / 1024:.0f} KB" if n >= 1024 else f"{n} B"
+
+    def walk(d, depth):
+        """One folder's children as HTML: subfolders first, then files."""
+        if depth > RELATED_MAX_DEPTH:
+            return '<div class="rf-more">deeper levels not shown</div>'
         try:
-            fp = (base / rel).resolve()
+            kids = sorted(d.iterdir(), key=lambda p: (p.is_file(), p.name.lower()))
         except OSError:
-            return f'<div class="rf-miss">⛔ <code>{esc(rel)}</code> — bad path</div>'
-        if root is not None and root not in (fp, *fp.parents):
-            return f'<div class="rf-miss">⛔ <code>{esc(rel)}</code> — outside the repo root</div>'
-        if not fp.is_file():
-            return f'<div class="rf-miss">⛔ <code>{esc(rel)}</code> — not found</div>'
-        raw = fp.read_text(encoding="utf-8", errors="replace")
-        if len(raw) > RELATED_MAX:
-            return (f'<div class="rf-miss">📄 <code>{esc(rel)}</code> — {len(raw) // 1000} KB, '
-                    'too large to inline; open it in the repo</div>')
-        return f'<div class="rf-content">{body(raw)}</div>'
+            return '<div class="rf-miss">unreadable</div>'
+        kids = [k for k in kids if k.name not in RELATED_SKIP
+                and not k.name.endswith(".pyc")]
+        clipped = len(kids) > RELATED_MAX_ENTRIES
+        rows = []
+        for k in kids[:RELATED_MAX_ENTRIES]:
+            if k.is_dir():
+                try:
+                    n = len([x for x in k.iterdir() if x.name not in RELATED_SKIP])
+                except OSError:
+                    n = 0
+                rows.append(
+                    f'<details class="rf-dir"><summary><span class="rf-n">{esc(k.name)}/</span>'
+                    f'<span class="rf-c">{n}</span></summary>'
+                    f'<div class="rf-kids">{walk(k, depth + 1)}</div></details>')
+            else:
+                try:
+                    sz = size_of(k.stat().st_size)
+                except OSError:
+                    sz = ""
+                try:
+                    href = quote(os.path.relpath(k, html_dir).replace(os.sep, "/"))
+                except (OSError, ValueError):
+                    href = ""
+                if href:
+                    rows.append(f'<a class="rf-f" href="{esc(href)}" target="_blank" '
+                                f'rel="noopener"><span class="rf-n">{esc(k.name)}</span>'
+                                f'<span class="rf-c">{esc(sz)}</span></a>')
+                else:
+                    rows.append(f'<div class="rf-f"><span class="rf-n">{esc(k.name)}</span>'
+                                f'<span class="rf-c">{esc(sz)}</span></div>')
+        if clipped:
+            rows.append(f'<div class="rf-more">+{len(kids) - RELATED_MAX_ENTRIES} more</div>')
+        return "".join(rows) or '<div class="rf-more">empty</div>'
 
     blocks = []
-    for fo in folders:
+    for fo in roots:
         try:
             base = (board_dir / fo["path"]).resolve()
         except OSError:
             base = None
         if base is None or not base.is_dir():
-            listing = f'<div class="rf-miss">⛔ <code>{esc(fo["path"])}</code> — folder not found</div>'
+            blocks.append('<div class="rf-miss">\u26d4 <code>'
+                          f'{esc(fo["path"])}</code> \u2014 folder not found</div>')
+            continue
+        if root is not None and root not in (base, *base.parents):
+            blocks.append('<div class="rf-miss">\u26d4 <code>'
+                          f'{esc(fo["path"])}</code> \u2014 outside the repo root</div>')
+            continue
+        try:
+            shown = base.relative_to(root).as_posix() if root else fo["path"]
+        except ValueError:
             shown = fo["path"]
-        else:
-            items = []
-            for rel in fo["files"]:
-                items.append(f'<details class="rf-file"><summary>📄 <code>{esc(rel)}</code></summary>'
-                             f'{read_file(base, rel)}</details>')
-            listing = "".join(items) or '<div class="rf-miss">no files listed</div>'
-            try:
-                shown = base.relative_to(root).as_posix() if root else fo["path"]
-            except ValueError:
-                shown = fo["path"]
+        # The full path used to sit in the header as raw text (JL 260801: "这些
+        # 路径 URL 能不能别露出来 ... 做成 clickable 的"). A repo path is long,
+        # it is not what a reader is scanning for, and printed in full it makes
+        # every folder row look the same. It is now one ↗ that OPENS the folder
+        # — the server answers a directory with a real listing — and the path
+        # itself survives as the hover title for anyone who wants it.
+        try:
+            fhref = quote(os.path.relpath(base, board_dir).replace(os.sep, "/")) + "/"
+        except (OSError, ValueError):
+            fhref = ""
+        open_link = (f'<a class="rf-open" href="{esc(fhref)}" target="_blank" rel="noopener" '
+                     f'title="{esc(shown)}" aria-label="Open {esc(shown)}">↗</a>'
+                     ) if fhref else ""
         blocks.append(
-            f'<details class="rf-folder"><summary>{inline(fo["label"])} '
-            f'<code class="rf-path">{esc(shown)}</code></summary>'
-            f'<div class="rf-files">{listing}</div></details>')
+            f'<details class="rf-folder"><summary title="{esc(shown)}">'
+            f'{inline(fo["label"])}{open_link}</summary>'
+            f'<div class="rf-files">{walk(base, 1)}</div></details>')
 
     intro_html = f'<p class="rf-intro">{inline(" ".join(intro))}</p>' if intro else ""
     return ('<details class="board-status related-folders">'
-            '<summary>RELATED FOLDERS · open a folder, read a file inside it</summary>'
+            '<summary>RELATED FOLDERS \u00b7 open a folder and navigate it</summary>'
             f'{intro_html}{"".join(blocks)}</details>')
 
 
@@ -231,22 +283,21 @@ def board_status(qs):
             cells.append(cell("content", "ok", "flat"))
         else:
             cells.append(cell("content", "no", "—"))
-        itxt = sec(d, "Items to Finish")
-        dn_i = len(re.findall(r"(?m)^\s*[-*] \[[xX]\]", itxt))
-        td_i = dn_i + len(re.findall(r"(?m)^\s*[-*] \[ \]", itxt))
-        if td_i:
-            cells.append(cell("items", "ok" if dn_i == td_i else "warn",
-                              f"{dn_i}/{td_i}"))
+        aims = sec(d, "Done when")
+        state = sec(d, "Now")
+        progress = aim_progress(aims, state)
+        if progress["total"]:
+            cells.append(cell("items", "ok" if progress["closed"] == progress["total"] else "warn",
+                              f'{progress["closed"]}/{progress["total"]}'))
         else:
             cells.append(cell("items", "no", "—"))
-        w = sec(d, "Where we are")
         owed = sum(len(re.findall(r"(?m)^\s*[-*] \[ \]", b))
-                   for h, b in parse_content_sections(w)
+                   for h, b in parse_content_sections(state)
                    if h and "Decision Now" in h)
         if owed:
             cells.append(cell("now", "dn", f"DN·{owed}"))
-        elif w.strip():
-            dated = len(re.findall(r"(?m)^- ?\d{6}", w))
+        elif state.strip():
+            dated = len(re.findall(r"(?m)^- ?\d{6}", state))
             cells.append(cell("now", "ok", f"e{dated}" if dated else "✓"))
         else:
             cells.append(cell("now", "no", "—"))
@@ -266,7 +317,7 @@ def board_status(qs):
     head = ("<tr><th>page</th><th>🧭</th><th>🖼</th><th>📚</th>"
             "<th>🎯</th><th>📍</th><th>📎</th><th>🗄</th></tr>")
     legend = ('📚 <code>n÷·m🖼</code> divisions · with face diagram &nbsp;·&nbsp; '
-              '🎯 <code>done/total</code> &nbsp;·&nbsp; '
+              '🎯 <code>met/total</code> aims &nbsp;·&nbsp; '
               '📍 <code>DN·k</code> Decision Now ticks owed, <code>e</code> dated entries '
               '&nbsp;·&nbsp; 📎 <code>n·gg</code> files · groups &nbsp;·&nbsp; '
               '🗄 <code>Ln</code> Log lines &nbsp;·&nbsp; a cell opens its section')
@@ -329,11 +380,10 @@ def index_rows(meta, qs, href_for=None, group_href=None):
         return stinfo(q["state"])
 
     def frac_done(q):
-        boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]",
-                           q.get("sec", {}).get("Items to Finish", ""), re.M)
-        if not boxes:
-            return 0.0
-        return sum(1 for b in boxes if b.lower() == "x") / len(boxes)
+        progress = aim_progress(sec(q.get("sec", {}), "Done when"),
+                                sec(q.get("sec", {}), "Now"))
+        return (progress["closed"] / progress["total"]
+                if progress["total"] else 0.0)
 
     ginfo = meta.get("groups") or {}
     rows, cur = [], None
@@ -397,7 +447,13 @@ def sidebar_rows(qs, href_for=None, group_href=None):
                       f'{inline(sbcur)}</a>')
         chev = ('' if q.get("kind") == "doc"
                 else '<span class="sb-x" title="sections">▸</span>')
-        sb.append(f'<a class="sb-p" href="{href_for(q)}">'
+        # `data-page` is what the rail matches the open page against. The href
+        # cannot serve: it is `#QB5c` in the one-file board and
+        # `QB/QB5c-editing.html` in the tree, and mark() used to compare it to
+        # `location.hash`, which a tree page does not have. So no row was ever
+        # marked and no outline ever opened there (JL 260801). The id is the
+        # same in both packagings, and `.sb-out` already keys on it.
+        sb.append(f'<a class="sb-p" data-page="{esc(q["id"])}" href="{href_for(q)}">'
                   f'<span class="s">{"📄" if q.get("kind") == "doc" else st(q)[0]}</span>'
                   f'<span class="i">{esc(q["id"])}</span>'
                   f'<span class="t">{inline(q["title"])}</span>{chev}</a>')
@@ -406,8 +462,12 @@ def sidebar_rows(qs, href_for=None, group_href=None):
         # this page is the open one — only ONE page's sections show at a time.
         if q.get("kind") != "doc":
             out = []
-            for key, label, val, subs in structure_rows(
-                    q["sec"], parse_content_sections(sec(q["sec"], "Content"))):
+            # 同一份 Content 切分：抬走的那块（legacy `### Stage Record`）在这里
+            # 也得抬走，不然 rail 比正文多一节，而 `data-div` 是按顺序编号的，
+            # 于是那一页每一个 division 链接都错开一格（JL 260801 统一命名时发现）。
+            _, csecs = split_stage_record(
+                q.get("kind"), parse_content_sections(sec(q["sec"], "Content")))
+            for key, label, val, subs in structure_rows(q["sec"], csecs):
                 out.append(f'<a class="sb-s" data-k="{key}" href="{href_for(q)}">'
                            f'<span class="t">{esc(label)}</span>'
                            f'<span class="m">{esc(val)}</span></a>')
@@ -451,14 +511,13 @@ def render(meta, qs):
         return stinfo(q["state"])
 
     def frac_done(q):
-        """完成度 0..1：Done when 勾了几条。✅ 一律满格，⏸️ 当作定了也满格。"""
+        """Completion 0..1 from Aim State; settled/held pages stay full."""
         s = q["state"]
         if s.startswith("✅") or s.startswith("⏸"):
             return 1.0
-        boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", sec(q["sec"], "Done when"), re.M)
-        if not boxes:
-            return 0.0
-        return sum(1 for b in boxes if b.lower() == "x") / len(boxes)
+        progress = aim_progress(sec(q["sec"], "Done when"), sec(q["sec"], "Now"))
+        return (progress["closed"] / progress["total"]
+                if progress["total"] else 0.0)
 
     rows = index_rows(meta, qs)
     idx = "\n".join(rows)
@@ -492,7 +551,7 @@ def render(meta, qs):
     sidebar = ('<button type="button" id="sbtoggle" class="sbtoggle" '
                'aria-label="Toggle the pages sidebar">☰</button>'
                '<div class="sbrz" title="Drag to resize"></div><nav class="sidebar" id="sidebar" aria-label="Pages">'
-               '<a class="sb-top" href="#top">🗂 Index'
+               '<a class="sb-top" data-page="top" href="#top">🗂 Index'
                '<span class="sb-x" title="sections">▸</span></a>'
                f'<div class="sb-out" data-out="top">{"".join(ix)}</div>'
                + "".join(sb) + '</nav>')
@@ -523,7 +582,7 @@ def render(meta, qs):
                       index=idx,
                       sidebar=sidebar,
                       cards="\n".join(cards), js=JS, css=CSS,
-                      assets_stamp=ASSETS_STAMP,
+                      assets_stamp=ASSETS_STAMP, css_stamp=CSS_STAMP, js_stamp=JS_STAMP,
                       mark=MARK_SVG, favicon=MARK_FAVICON,
                       # chip panels last: they are top-layer, so DOM position
                       # is free, and out here they are never inside a <summary>
@@ -550,6 +609,13 @@ CSS = _assets.css().rstrip("\n")
 # keeps the JS/CSS it was opened with. This stamp lets tick() detect that the
 # assets changed under it and do the one full reload that heals a stale tab
 # (JL 260731: dead ➕ buttons after a day of shipping under an open tab).
+# ONE stamp for both files meant a CSS-only change looked like a JS change, and
+# a JS change is the only thing that can force a full reload. Stamp them apart
+# so the page can take new CSS by swapping a <link> and never reload for it
+# (JL 260801: "我一旦改了之后，我想看到这个变化是 immediate 的变化" and
+# "只更新这个配置的一小部分").
+CSS_STAMP = hashlib.md5(CSS.encode("utf-8")).hexdigest()[:12]
+JS_STAMP = hashlib.md5(JS.encode("utf-8")).hexdigest()[:12]
 ASSETS_STAMP = hashlib.md5((JS + CSS).encode("utf-8")).hexdigest()[:12]
 MARK_SVG = (HERE / "assets" / "board-mark.svg").read_text(encoding="utf-8").strip()
 MARK_FAVICON = ("data:image/svg+xml;base64,"
@@ -568,6 +634,8 @@ TPL = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="board-assets" content="{assets_stamp}">
+<meta name="board-css" content="{css_stamp}">
+<meta name="board-js" content="{js_stamp}">
 <title>{title}</title>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
 <style>
@@ -635,7 +703,7 @@ def to_json(meta, qs, warn):
     two render paths). Emits the same data the HTML is built from, plus the
     derived numbers the index shows, so JSON and HTML cannot disagree."""
     def q_json(q):
-        boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", sec(q["sec"], "Done when"), re.M)
+        progress = aim_progress(sec(q["sec"], "Done when"), sec(q["sec"], "Now"))
         tok, cls, lab = stinfo(q["state"])
         return dict(id=q["id"], title=q["title"], group=q["group"], file=q["file"],
                     state=q["state"], state_token=tok, state_label=lab,
@@ -646,7 +714,9 @@ def to_json(meta, qs, warn):
                     provides=q.get("provides", ""),
                     contract_source_hash=q.get("contract_source_hash", ""),
                     files=q.get("files", []),
-                    done=sum(1 for b in boxes if b.lower() == "x"), total=len(boxes),
+                    done=progress["closed"], total=progress["total"],
+                    aims={k: progress[k] for k in
+                          ("mode", "met", "active", "waiting", "open", "hold")},
                     sections={k: v for k, v in q["sec"].items()})
     return json.dumps({"meta": meta, "questions": [q_json(q) for q in qs],
                        "warnings": warn}, ensure_ascii=False, indent=1)
@@ -664,14 +734,16 @@ TREE_TPL = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="board-assets" content="{assets_stamp}">
+<meta name="board-css" content="{css_stamp}">
+<meta name="board-js" content="{js_stamp}">
 <title>{title}</title>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
-<link rel="stylesheet" href="{root}_assets/board.css?v={assets_stamp}">
+<link rel="stylesheet" href="{root}_assets/board.css?v={css_stamp}">
 </head><body class="single split" data-board="{boarddir}" data-board-root="{root}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
-<nav class="sitebar"><a href="/boards">🏠 Boards</a><a href="{root}index.html">🗂 Index</a>{crumb}</nav>
+<nav class="sitebar" aria-label="Breadcrumb"><a href="/boards">🏠 Boards</a><span class="sb-sep">›</span><a href="{root}index.html">🗂 Index</a>{crumb}</nav>
 {body}
 </div>{popcards}
-<script src="{root}_assets/board.js?v={assets_stamp}"></script></body></html>
+<script src="{root}_assets/board.js?v={js_stamp}"></script></body></html>
 """
 
 
@@ -748,7 +820,7 @@ def tree_sidebar(meta, qs, root):
     return ('<button type="button" id="sbtoggle" class="sbtoggle" '
             'aria-label="pages">☰</button>'
             '<div class="sbrz" title="Drag to resize"></div><nav class="sidebar" id="sidebar" aria-label="Pages">'
-            f'<a class="sb-top" href="{root}index.html">🗂 Index</a>'
+            f'<a class="sb-top" data-page="top" href="{root}index.html">🗂 Index</a>'
             + "".join(sidebar_rows(qs, href_for=_href,
                                    group_href=lambda tok: f"{root}{tok}.html"))
             + '</nav>')
@@ -782,10 +854,10 @@ def tree_row(q, href):
 
 def frac_done_of(q):
     """The same completion fraction render() colours its rows with."""
-    boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", q.get("sec", {}).get("Items to Finish", ""), re.M)
-    if not boxes:
-        boxes = re.findall(r"^\s*[-*]\s*\[([ xX])\]", "\n".join(q.get("sec", {}).values()), re.M)
-    return (sum(1 for b in boxes if b.lower() == "x") / len(boxes)) if boxes else 0.0
+    progress = aim_progress(sec(q.get("sec", {}), "Done when"),
+                            sec(q.get("sec", {}), "Now"))
+    return (progress["closed"] / progress["total"]
+            if progress["total"] else 0.0)
 
 
 def tree_page_name(q):
@@ -819,7 +891,7 @@ def render_tree(meta, qs, out_dir, only=None):
         return TREE_TPL.format(
             title=esc(title), body=body, root=root, crumb=crumb,
             sidebar=sidebar, popcards=popcards,
-            assets_stamp=ASSETS_STAMP, favicon=MARK_FAVICON,
+            assets_stamp=ASSETS_STAMP, css_stamp=CSS_STAMP, js_stamp=JS_STAMP, favicon=MARK_FAVICON,
             boarddir=esc(meta.get("dir", "")), bsession=esc(meta.get("session", "")))
 
     # one file per page, inside its group's folder.
@@ -847,7 +919,11 @@ def render_tree(meta, qs, out_dir, only=None):
         crumb = (f' <span class="sb-sep">›</span> '
                  f'<a href="../{gtok}.html">{esc(gtok)}</a>'
                  f' <span class="sb-sep">›</span> <b>{esc(q["id"])}</b>')
-        f.write_text(scrub_cjk_comments(shell(q["title"], card, "../", crumb,
+        # The tab carries the ID first (JL 260801). A browser tab shows maybe
+        # 20 characters, and with a dozen board tabs open the titles all begin
+        # with the same kind of phrase; the id is the one token that tells them
+        # apart, and it is what JL says out loud when naming a page.
+        f.write_text(scrub_cjk_comments(shell(f'{q["id"]} · {q["title"]}', card, "../", crumb,
                                       tree_sidebar(meta, qs, "../"))),
                      encoding="utf-8")
         written.append(f)

@@ -10,7 +10,7 @@ That contribution is prose plus a marked hole. `\citep{key}` only when the key a
 
 What is unresolved is the two cases the grammar cannot see. A `\cite{TOADD}` written with no bracket beside it is worse than an empty sentence: a hole no question will ever fill, and nothing executable detects one, though three separate files say in prose that it is a defect. And a gap the drafter cannot even phrase as an answerable question has no marker in the prose at all, which makes it the case most likely to become a quiet assertion. There is one sanctioned exit for it, and its location is the tell: the words "explicitly declined in the S page's `## Log`" appear only inside the text of a prompt the drafter hands to its review subagent, and in no rule the drafter itself is bound by.
 
-Scope: This page covers What a draft must satisfy, which contract owns which region of the page, what DRAFT refuses to write, and the marked hole it writes instead. Neighbouring pages cover The board's shell and the ownership line inside a shared page are `QA8`; what a template IS is `QC3a`; the sentence formats are `QC5` to `QB5b` and their delivery is `QB9a`/`QB9b`; where the raised question goes next is `QC4b`; who discharges the placeholder is `QC4c`.
+Scope: This page covers What a draft must satisfy, which contract owns which region of the page, what DRAFT refuses to write, and the marked hole it writes instead. Neighbouring pages cover The board's shell and the ownership line inside a shared page are `QA8`; what a template IS is `QC3a`; the sentence formats are `QC5` to `QB12d` and their delivery is `QB11a`/`QB11b`; where the raised question goes next is `QC4b`; who discharges the placeholder is `QC4c`.
 
 ## Diagram
 ```
@@ -52,7 +52,7 @@ Scope: This page covers What a draft must satisfy, which contract owns which reg
          a hole no question will ever fill. THREE files call it a
          defect in prose; nothing EXECUTABLE detects it.
       ⚠️ a bare numeral typed straight into prose
-         invisible by construction: nothing to hang a marker on. → QB4a
+         invisible by construction: nothing to hang a marker on. → QB12b
 
    ── WHO READS THESE FIELDS, AND HOW THEY FAIL ────────────────────
       fields   template · sections · formatting · q_anchor ·
@@ -84,7 +84,7 @@ DRAFT stops at the record. It writes `- [ ] 🔎 Q-<Stage>-<n>` in `## Items to 
 ### Why unattended is safe here
 DRAFT runs without a human because it cannot spend and cannot assert. Those two limits are what make it safe to leave alone, and the same two limits make its output incomplete by design.
 
-## Items to Finish
+## Aims
 - [x] 📐 The refusal rule is stated
       `2-phase/0-draft/haipipe-paper-draft/SKILL.md:32-33`: grep the paper's `.bib` first, `\citep{key}` only for a key that greps, and "a key that does not grep is invented".
 - [x] 📐 Typed placeholders exist, each naming its owing question
@@ -101,7 +101,7 @@ DRAFT runs without a human because it cannot spend and cannot assert. Those two 
 - [ ] 🧠 Rule what DRAFT does with a gap it cannot phrase
       Two live options. (a) Promote the escape hatch that already exists in the text of the review-subagent prompt at `SKILL.md:234-235`, "explicitly declined in the S page's `## Log`", into a rule the hub itself is bound by; cheap and already half-written, but it hands the drafter a sanctioned way to write nothing, and a decline is invisible to any regex over the prose. (b) Require a coarse Q-consumer record even when the gap can only be phrased vaguely; nothing goes unowned and the existing bracket check covers it, at the price of a queue carrying questions PROBE cannot route.
 
-## Where we are
+## States
 The grammar is implemented and in daily use on the MISQ paper. A stage calls DRAFT, DRAFT writes prose into `## Content` and one `- [ ] 🔎 Q-<Stage>-<n>` record per hole into `## Items to Finish`, and every claim it cannot source leaves a typed placeholder carrying the id of the question that will settle it. The refusals hold too: no bibtex, no unverified key, no number it did not read from a landed answer, and no answer to its own question. The self-review that runs before handoff has a real bound rather than a disposition, at most two rounds, with a third-round residual handed to CHECK instead of being quietly dropped.
 
 Two things about the lanes are worth stating precisely, because this face got them wrong until 260727. Of the three finders, two hold no pen at all and one does: `draft-display` can write, and what it may write is a DR row in its own display inbox, never the manuscript, the S page or `1-probes/`. The hub remains the single writer of everything a reader will see.

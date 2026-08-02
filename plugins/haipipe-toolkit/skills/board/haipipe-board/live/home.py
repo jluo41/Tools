@@ -8,6 +8,7 @@ reader one stable place from which to enter them.
 from __future__ import annotations
 
 import html
+import os
 import re
 from pathlib import Path
 from urllib.parse import quote, urlsplit
@@ -15,7 +16,10 @@ from urllib.parse import quote, urlsplit
 from src.common import page_files
 
 
-SKIP_PARTS = {".git", ".venv", "node_modules", "__pycache__", "_archive", "board"}
+# Folders that cannot contain a board and are expensive to walk. `board` is the
+# GENERATED tree under every board; `_WorkSpace` is the gitignored data store.
+SKIP_PARTS = {".git", ".venv", "node_modules", "__pycache__", "_archive", "board",
+              "_WorkSpace", "site-packages", ".pytest_cache", "dist", "build"}
 TITLE = re.compile(r"^#\s+(.+?)\s*$", re.M)
 SPINE = re.compile(r"^spine:\s*(.+?)\s*$", re.M)
 STATE = re.compile(r"^state:\s*(✅|🟡|🔴|⏸️)", re.M)
@@ -47,11 +51,28 @@ def board_kind(board: Path, root: Path) -> tuple[str, str]:
     return "Task Board", "📋"
 
 
+def _manifests(root: Path):
+    """Every `board.md` below root, WITHOUT walking into what cannot hold one.
+
+    `rglob` descends everywhere and the skip list was applied to the results, so
+    the home page walked 366,951 entries — `.venv`, `node_modules`, `.git`,
+    `_WorkSpace`, and the generated `board/` tree under every board — to find
+    ten files. Warm that is 2.7 s; on a cold filesystem cache it was measured at
+    95 s (260802), which is not "slow", it is a page JL could not open at all.
+    Pruning in place is the whole fix: the same ten files, without the walk.
+    """
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames
+                       if d not in SKIP_PARTS and not d.startswith(".")]
+        if "board.md" in filenames:
+            yield Path(dirpath) / "board.md"
+
+
 def discover_boards(root: Path) -> list[dict[str, object]]:
     """Read lightweight metadata from every real Board source folder."""
     root = root.resolve()
     cards = []
-    for manifest in root.rglob("board.md"):
+    for manifest in _manifests(root):
         board = manifest.parent
         if _skip(board, root):
             continue
@@ -88,7 +109,14 @@ def render_home(root: Path) -> str:
             path = html.escape(str(card["path"]))
             progress = f'{card["settled"]}/{card["pages"]} pages settled'
             if card["ready"]:
-                action = f'<a class="open" href="{html.escape(str(card["href"]), quote=True)}">Open board →</a>'
+                # Two doors, because they are two different jobs: reading the
+                # board is one document, OPERATING it (QD5) is three panes with
+                # a chat beside the page. Same board either way.
+                # The split is what a board opens as now, so it is the plain
+                # link; `?plain` is the opt-out back to the one-document board.
+                action = (f'<a class="split" href="{html.escape(str(card["href"]), quote=True)}?plain"'
+                          f' title="The one-document board: rail, page and drawer in a single page">↗ plain</a>'
+                          f'<a class="open" href="{html.escape(str(card["href"]), quote=True)}">Open board →</a>')
             else:
                 action = '<span class="build">Build needed</span>'
             items.append(f'''<article class="card"><p class="path">{path}</p><h2>{title}</h2>
@@ -106,7 +134,8 @@ def render_home(root: Path) -> str:
 main{{max-width:1060px;margin:0 auto;padding:clamp(22px,5vw,56px) clamp(16px,4vw,36px)}}
 h1{{font-size:clamp(28px,5vw,46px);letter-spacing:-.04em;margin:0 0 6px}}.lead{{margin:0 0 28px;color:var(--mut)}}
 .board-kind{{margin:32px 0 0}}.board-kind>header{{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}}.board-kind>header h2{{margin:0;font-size:20px;letter-spacing:-.02em}}.board-kind>header span{{border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--mut);font-size:12px;font-weight:700}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}}.card{{display:flex;min-height:210px;flex-direction:column;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:0 1px 2px #00000008}}
-.path{{margin:0;color:var(--mut);font:12px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}}.card h2{{font-size:18px;line-height:1.25;margin:12px 0 8px}}.spine{{margin:0;color:#40444b;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}footer{{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:18px;color:var(--mut);font-size:12px}}.kind{{border-radius:999px;background:#f3f4f6;padding:3px 7px;white-space:nowrap}}.open{{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap;margin-left:auto}}.open:hover{{text-decoration:underline}}.build{{color:#a05a00;font-weight:700}}.empty{{padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--mut)}}
+.path{{margin:0;color:var(--mut);font:12px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}}.card h2{{font-size:18px;line-height:1.25;margin:12px 0 8px}}.spine{{margin:0;color:#40444b;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}footer{{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:18px;color:var(--mut);font-size:12px}}.kind{{border-radius:999px;background:#f3f4f6;padding:3px 7px;white-space:nowrap}}.open{{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap;margin-left:auto}}.open:hover{{text-decoration:underline}}
+.split{{color:var(--mut);font-weight:700;text-decoration:none;white-space:nowrap;margin-left:auto;border:1px solid var(--line);border-radius:999px;padding:3px 9px}}.split:hover{{color:var(--accent);border-color:var(--accent)}}.split+.open{{margin-left:0}}.build{{color:#a05a00;font-weight:700}}.empty{{padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--mut)}}
 </style></head><body><main><h1>🏠 SPACE Boards</h1><p class="lead">{len(cards)} boards discovered in this SPACE. This home is a read-only map; each card opens that Board's own Index.</p><section class="grid">{body}</section></main></body></html>'''
 
 

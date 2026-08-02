@@ -4,22 +4,17 @@ owner: CC
 method: two instruments cover four failure classes on one planned trigger: a mechanical checker tests structure and detectable interaction/status contradictions; a zero-background reviewer tests readability and visible staleness
 
 ## Question
-After anything on a board changes, how do we find out that the page has stopped delivering what it promised, in structure or in prose, without waiting for JL to notice it?
+How should every board change trigger the checks that catch broken structure, unreadable prose, and stale or contradictory claims before the round closes?
 
-A Board is worth exactly what a second person can get out of it, so this page tracks four failure classes: broken structure, unusable interaction, unreadable prose, and stale status or prose.
-Two instruments divide that work.
-The mechanical checker tests rendered structure plus contradictions it can detect from HTML, CSS, states, and checkboxes; the fresh-context reviewer judges readability and whether the Board still describes the visible evidence.
-All four failures can be invisible to the author, who reads the page with the intended result and the missing context already in mind.
-They have all happened and were first caught by a person noticing, which does not scale.
-For example, a broad CSS selector matched both images and hidden chip panels; its `display:block` rule forced five invisible panels to cover the page and swallow mouse clicks even though the build passed.
-The second cold read also found one incomprehensible page and five half-understood pages while their structural checks passed.
-JL's rule sits above all four: if it is not easy to read, writing that much is rubbish, and unreadable equals unwritten.
-The instruments must stay distinct, but they answer to one planned trigger because the recurring defect is that review is not dispatched reliably after a change.
+Authors miss these failures because they carry the intended result and missing context in their heads.
+A mechanical checker and a fresh reader see different evidence, so neither can replace the other.
+The hard part is making both run at the right scope and deciding what a red result stops.
+This page succeeds when every change produces a clear, repeatable review instead of waiting for a reader to notice the damage.
 
 
 ## Boundary
 - ✅ Covered here: the mechanical checker, the fresh reviewer, their four failure classes, their shared trigger, and the report produced when either instrument is red.
-- ↪ Covered elsewhere: `QAa0` owns the page layout and, since the QA2 merge (260729), the source template; each QAa face owns its section in both projections; `QF2` owns first-time handover from `SKILL.md`.
+- ↪ Covered elsewhere: `QB4` owns the page template and one Content division per section; `QF2` owns the separate fresh-agent usability acceptance for a revised skill; `QF3` owns browser behavior.
 
 ## Diagram
 
@@ -80,7 +75,7 @@ The instruments must stay distinct, but they answer to one planned trigger becau
 The structural check asks a question with a fact for an answer, and the prose check asks one that requires judgment.
 Whether `####` produced `div.ph` is decidable by a regex in milliseconds and is either true or false.
 Whether a sentence packs three things into one is decidable only by a reader who does not already know which three, which is why it needs a fresh context and cannot be a pattern match.
-Their inputs differ for the same reason: the structural check uses `ref/q-template.md` as a fixed test input and also checks the live Board, while the prose check reads the actual changed pages, because prose is only unreadable or stale in the specific words someone wrote.
+Their inputs differ for the same reason: the structural check uses `ref/page-template.md` as a fixed test input and also checks the live Board, while the prose check reads the actual changed pages, because prose is only unreadable or stale in the specific words someone wrote.
 Merging them into one instrument would lose the more valuable one, since a structural pass is compatible with a page nobody can read, and that combination is exactly what the second cold read found.
 
 ### Why they share a trigger anyway
@@ -99,7 +94,7 @@ It is also the cheapest possible fixed test input because the file already exist
   The fix belongs in `src/` or `assets/board.css`, and the report should name the construct in words rather than a selector, because the useful sentence is "the job line stopped rendering".
 - The template has a hole
   The documentation names a construct that the template never demonstrates, so a new page inherits no example of it and the check has nothing to assert.
-  The fix belongs in `ref/q-template.md`, and this half is the reason to run against the template at all, since a renderer-only test would pass while the hole stayed open.
+  The fix belongs in `ref/page-template.md`, and this half is the reason to run against the template at all, since a renderer-only test would pass while the hole stayed open.
 
 ### "After every change" is scoped to the SPACE, not to the board you edited
 The live layer runs one server per repo root and serves every board beneath it, which `QA0` argues in full.
@@ -123,7 +118,7 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
 ## Items to Finish
 ### The template fixture
 - [x] 🧪 The shared template exercises both Q and S renderer modes
-      Copying `ref/q-template.md` twice and renaming the copies must be enough to exercise one Q render path and one S render path before the author replaces the guide prose.
+      Copying `ref/page-template.md` twice and renaming the copies must be enough to exercise one Q render path and one S render path before the author replaces the guide prose.
       The two paths have broken independently, so checking one proves little about the other: Stage Contract exists only on S, Why this matters moves between Opening and Content depending on the kind, and the Content heading names the stage on S while counting subsections on Q.
       This fixture checks renderer placement, not whether an author finished the source or generated a synchronized S contract.
       Ticked 260726: `check.py` copies the template into a temp board twice, once as `QT1-template.md` and once as `S-Main-1-template.md`, and builds both without hand editing.
@@ -143,7 +138,7 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
 
 ### The mechanical checker
 - [ ] 🔎 `check.py` verifies a 🧩 Skills landed row
-      A row claiming `ref/board-form.md §1 · landed` is checkable by grep, so rot becomes a warning instead of a silent lie; owned with `QAa5`.
+      A row claiming `ref/board-form.md §1 · landed` is checkable by grep, so rot becomes a warning instead of a silent lie; the current Files/action-map convention is owned by `QB4` §6.
 - [x] 🥀 A page that stopped describing its own work is reported
       An additional failure turned up on 260726: a page can render perfectly and read well while saying something that is no longer true.
       `QA4a` carried `state: 🔴 OPEN` and "nothing is built and nothing is decided" on the day its whole route was built, wired into 28 pages, and running, because the session did the work from chat and never went back to the page that owned it.
@@ -167,7 +162,7 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       `check.py` currently detects that Q-board variant by pattern-matching the sentence the design Board happens to use to say so, which works and is fragile.
       This closes when a board can state its own variant in `board.md` rather than having it guessed from prose.
 - [ ] 🔎 A 🧩 Skills row that claims "landed" is verifiable by the checker
-      `QAa5`'s convention (260729): a face's Where we are may carry a 🧩 Skills item whose rows name the skill file or section the face governs, each with a landed / NOT landed verdict.
+      `QB4` §6 carries the current convention: a page's Files action map may name the skill file or section it governs, each with a landed / NOT landed verdict when verification matters.
       A landed claim is greppable, so `check.py` can warn when the named section no longer exists or the claim rots; until it does, the convention has no mechanical half.
 
 ### The fresh reviewer and the cold read
@@ -278,7 +273,7 @@ These are the calls only JL can make; CC ticks nothing here.
 ### The standards and fixed inputs they read
 - `ref/writing-rules.md`
   The prose check's deliverable and its standard: the hard writing rules, the zero-background review prompt, and the convergence criterion.
-- `ref/q-template.md`
+- `ref/page-template.md`
   The structural check's fixed test input and subject: the file copied for every new page, and the one whose promises the check verifies.
 - `ref/board-form.md`
   The syntax table the structural assertions should be derived from, section 5 for the body grammar and section 4 for the section mapping.
@@ -299,7 +294,7 @@ These are the calls only JL can make; CC ticks nothing here.
 zero-background reader: someone who has never touched this project, played by a freshly started agent because it genuinely does not know, while the author knows too much unwritten context to test anything themselves.
 subagent: a separately started Claude that sees only the files it is handed, not the conversation that produced them.
 construct: one grammar element the documentation promises, such as a paragraph heading or a job line, together with the class it must render as.
-fixed test input: a small, maintained file whose expected output is known in advance; here it is `ref/q-template.md`.
+fixed test input: a small, maintained file whose expected output is known in advance; here it is `ref/page-template.md`.
 Opening: the always-visible opening section that states a page's question and scope before any collapsible detail.
 
 ## Discussion

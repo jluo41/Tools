@@ -34,7 +34,7 @@ def _slugify(t):
     return "-".join(s.split("-")[:5])[:48] or "question"
 
 
-# The skeleton the ＋ button writes. Opening, Items to Finish, and Where we are
+# The skeleton the ＋ button writes. Opening, Writing Style, Aims, and States
 # are required; Files is optional but strongly advised; everything else is
 # optional. There is no separate Boundary section: Opening states the scope.
 #
@@ -53,9 +53,12 @@ owner: JL
 Then one paragraph on what this page covers, why it is hard, what breaks while it stays open, and which neighbouring page owns anything excluded. This file is a stub from the index page's ＋ button;
 writing standard: ref/writing-rules.md (English only, no em-dashes).
 
+## Writing Style
+English only. One sentence per source line. Use plain declaratives, name evidence, and keep each section within the role defined by the page contract.
+
 <!-- Optional sections, in the order they render. Uncomment the ones this page
      earns and delete this comment; empty beats wrong, so leave out what you
-     cannot fill (grammar: ref/q-template.md, layout: QA4).
+     cannot fill (grammar: ref/page-template.md, layout: QA4).
 
 ## Diagram      one ascii figure of the shape or flow, collapsed on the page.
                 An excalidraw share URL alone on a line embeds as a canvas.
@@ -66,12 +69,15 @@ writing standard: ref/writing-rules.md (English only, no em-dashes).
 ## Discussion   loose threads, `> JL:` and `>> CC0726:`.
 -->
 
-## Items to Finish
-- [ ] 🎯 Name what counts as done
-      One sentence saying exactly how this line is judged met.
+## Aims
+### C1 · First Content division
+- A1.1 · Name the durable target this page is trying to establish.
+  **Done when:** One sentence saying exactly how this Aim is judged met.
+  **Plan:** Optional next move; delete this line when the Aim needs no plan.
 
-## Where we are
-Nothing yet: the question was just opened.
+## States
+### C1 · First Content division
+- ⬜ A1.1 · Not started; the question was just opened.
 
 ## Files
 - `path/to/thing`
@@ -262,4 +268,3 @@ def structure_op(board, p):
         return {"group": heading}, None
 
     return None, f"unknown op: {op or '(empty)'}"
-

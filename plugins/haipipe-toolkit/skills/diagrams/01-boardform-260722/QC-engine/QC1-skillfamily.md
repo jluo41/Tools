@@ -5,12 +5,12 @@ owner: JL
 method: SKILL.md stays as short as possible and is the only export channel for settled rules; the roster is ruled by JL, and a shipped unit follows settled decisions, never precedes them
 
 ## Question
-`skills/board/` ships more than one thing, and a reader who types `/haipipe-board` meets only the door.
-What does this family ship, and how does what it learned on this board leave this conversation so a future agent with no memory can follow it?
-This face is the family's front door; the two mechanisms live on its sibling faces.
+What should the Board family ship, and how should its settled decisions reach a future agent with no memory of this work?
 
-It is hard because SKILL.md enters the context on every invocation, so shorter is better, yet too short and nothing is explained; and because a subskill is a unit INSIDE the family, a peer of the engine, deletable from every other, not a folder beside the board.
-Both mechanisms decide the same thing from two ends: what the family exports, and what counts as a unit worth its own door.
+The family needs one clear public door without hiding the contracts that make it usable.
+The hard part is separating essential operating guidance from units that deserve their own entry points.
+That choice controls what every Board session loads and which parts can evolve independently.
+It succeeds when a newcomer can name each shipped unit and find every settled rule once.
 
 ## Boundary
 - ✅ Covered here

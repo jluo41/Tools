@@ -723,7 +723,8 @@ def render_change(text):
 def render_apparatus(lines):
     """一句话的随行装置（QA8，JL 260725）：typed `> Kind:` 行 + `> WHO:` 讨论，
     折叠在它们讨论的那一句下面。返回 (html, 头行数)。"""
-    rows, heads, in_note, show = [], 0, False, False
+    rows, heads, in_note = [], 0, False
+    has_cmt = has_chg = False
     for ln in lines:
         m = re.match(r"^>+\s*✎\s*(.*?)\s*·\s*([A-Z]{1,4})\s*·\s*"
                      r"(\d{6}(?:\s+\d{3,4})?)\s*$", ln)
@@ -733,7 +734,7 @@ def render_apparatus(lines):
                         '</span></div>')
             heads += 1
             in_note = True
-            show = True
+            has_chg = True
             continue
         m = LANE.match(ln)
         if m:
@@ -744,13 +745,28 @@ def render_apparatus(lines):
             heads += 1
             in_note = False           # a typed evidence lane: chips ON
             continue
+        # `> Comment JL …` is the canonical form (JL 260802). It reads like the
+        # typed lanes beside it (`> Citation:`, `> Value:`) instead of relying on
+        # a bare pair of initials, which told a newcomer nothing about what the
+        # row WAS. The colon after the name is optional, and the 98 existing
+        # `> JL:` rows across the boards keep working through the two matches
+        # below: renaming a grammar must never break what is already written.
+        m = re.match(r"^>+\s*Comment\s+([A-Z]{1,4}\d{0,4})\s*[:：]?\s*(.*)$",
+                     ln, re.I)
+        if m:
+            rows.append(f'<div class="cmt {who_class(m.group(1))}">'
+                        f'<b>{esc(m.group(1))}</b> {note(m.group(2))}</div>')
+            heads += 1
+            in_note = True
+            has_cmt = True
+            continue
         m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*[「\"]([^」\"]+)[」\"]\s*[:：]\s*(.*)$", ln)
         if m:
             rows.append(f'<div class="cmt {who_class(m.group(2))}"><b>{esc(m.group(2))}</b>'
                         f'<span class="qt">「{note(m.group(3))}」</span> {note(m.group(4))}</div>')
             heads += 1
             in_note = True            # a person talking: chips OFF
-            show = True
+            has_cmt = True
             continue
         m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*(\[[^\]]+\])?\s*[:：]\s*(.*)$", ln)
         if m:
@@ -758,12 +774,16 @@ def render_apparatus(lines):
                         f'{note(m.group(4))}</div>')
             heads += 1
             in_note = True
-            show = True
+            has_cmt = True
             continue
         # a continuation line inherits the mode of the lane it continues
         render = note if in_note else inline
         rows.append(f'<div class="lane-cont">{render(ln.lstrip(">").strip())}</div>')
-    return "".join(rows), heads, show
+    # The badge names the kind, and a person waiting outranks a record
+    # (JL 260801). ✎ used to report itself as 💬, which said someone was owed
+    # an answer when the row was only an edit note.
+    kind = "💬" if has_cmt else ("✎" if has_chg else "⚑")
+    return "".join(rows), heads, kind
 
 
 DIAGRAM_MAX_LINES = 40   # a fence this long or shorter, in one of these
@@ -816,11 +836,11 @@ def pad_emoji(html):
     return EMOJI.sub(lambda m: f'<span class="eu">{m.group(0)}</span>', html)
 
 
-def body(txt, fold_code=True, apparatus=True):
+def body(txt, fold_code=True, apparatus=True, show_lead=False):
     """paragraphs + ``` blocks + comment lanes + topic/explanation bullets -> html
 
     An `<!-- ... -->` block is dropped, everywhere, not rendered as escaped text.
-    `ref/q-template.md` has always told authors a comment "is dropped at
+    `ref/page-template.md` has always told authors a comment "is dropped at
     generation either way", and that was only true where nobody looked: the sole
     strip lived in the Stage Contract path, and the template's own comments
     happen to sit outside any rendered section. Written anywhere else the comment
@@ -856,7 +876,13 @@ def body(txt, fold_code=True, apparatus=True):
         stamp, title = split_stamp(top)
         # 标题开头写个 emoji 就当图标（跟组标题一个规矩，作者写、机器不猜）。
         im = GT_ICON.match(title)
-        icon = f'<span class="ti">{im.group(1)}</span>' if im else ""
+        # The trailing space is DOM, not CSS (JL 260802: "there is no space
+        # between the emoji and the index"). `.bt.nof` already sets `gap:9px`,
+        # so the row looks right on screen, but a flex gap contributes no
+        # whitespace when the row is COPIED, and these rows get pasted into
+        # chat constantly: `✅A5.1` is what arrived. A real space fixes the
+        # paste and is invisible next to the gap.
+        icon = f'<span class="ti">{im.group(1)}</span> ' if im else ""
         if im:
             title = im.group(2).strip()
         if det:
@@ -866,17 +892,27 @@ def body(txt, fold_code=True, apparatus=True):
             head = (f'<div class="{name_cls} nof">{icon}'
                     f'<span class="ttl">{inline(title)}</span>'
                     f'{stamp}<span class="cv"></span></div>')
-            parts, lead = [], True
+            parts, lead, lead_html = [], True, ""
             for x in det:
                 if isinstance(x, tuple):   # ("pre", lines): 折叠区里的 ascii 图
                     parts.append('<pre class="ip">'
                                  f'{pad_emoji(link_faces(esc(chr(10).join(x[1]))))}</pre>')
                 elif lead:
-                    parts.append(f'<p class="ld">{inline(x)}</p>')
+                    lead_html = f'<p class="ld">{inline(x)}</p>'
                     lead = False
                 else:
                     parts.append(f'<p>{inline(x)}</p>')
-            exp = "".join(parts)
+            # The first explanation line rides in the SUMMARY, so a Law, Lesson
+            # or Glossary row shows its VALUE without a click (JL 260802: "I
+            # want to show the values of Law Lesson and Glossary, just like
+            # Discussion and Log"). A name with nothing under it is a row you
+            # have to open to find out whether you wanted it, which is the same
+            # complaint that moved Discussion's first line into its summary.
+            # The rest still folds, so a long rule stays scannable.
+            if show_lead and lead_html:
+                head += lead_html
+                lead_html = ""
+            exp = lead_html + "".join(parts)
             item = (f'<details class="it row"><summary>{head}</summary>'
                     f'<div class="bd">{exp}</div></details>')
         else:
@@ -1036,7 +1072,7 @@ def body(txt, fold_code=True, apparatus=True):
             last_p = None
             continue
         # ### inside a NON-Content section = a subsection heading (`### Decision
-        # Now` in Where we are is the canonical case, JL 260731). Content never
+        # Decision Now in State is the canonical case, JL 260731). Content never
         # reaches here at this level: its ### lines were split into divisions
         # before body() ran. Without this rule the line rendered as literal
         # "### …" prose. `.sh` is also the anchor the sidebar outline scrolls to.
@@ -1079,15 +1115,40 @@ def body(txt, fold_code=True, apparatus=True):
         if m:
             who = m.group(2)
             k = who_class(who)
-            out.append(f'<div class="cmt {k}"><b>{esc(who)}</b>'
-                       f'<span class="qt">「{note(m.group(3))}」</span> {note(m.group(4))}</div>')
+            out.append(f'<div class="cmt {k}" data-d="{min(len(m.group(1)), 4)}">'
+                       f'<div class="cwho"><b>{esc(who)}</b>'
+                       f'<span class="qt">「{note(m.group(3))}」</span></div>'
+                       f'<div class="ctext">{note(m.group(4))}</div></div>')
             last_p = None
             continue
-        m = re.match(r"^(>+)\s*([A-Z]{1,4}\d{0,4})\s*(\[[^\]]+\])?\s*[:：]\s*(.*)$", ln)
-        if m:
-            who = m.group(2)
-            k = who_class(who)
-            out.append(f'<div class="cmt {k}"><b>{esc(who)}</b> {note(m.group(4))}</div>')
+        # A THREAD line. Depth is the run of `>`, so a reply reads as a reply
+        # instead of a sibling (JL 260802: "like reddit, with dot, and thread").
+        #
+        # The author is OPTIONAL now. It used to be required, and 5 of this
+        # page's 34 discussion lines fell through to raw text because of it:
+        # `>> CC0726 (proposal, JL's to accept): …` puts a parenthetical before
+        # the colon, and `> Open: how does a record attach …` opens a thread
+        # with no author at all. Both are legitimate things to write, and both
+        # rendered with their `>` markers showing, which is the failure a
+        # reader actually sees.
+        m = re.match(r"^(>+)\s*(?:Comment\s+)?([A-Z]{1,4}\d{0,4})?"
+                     r"\s*(\([^)]*\))?\s*[:：]?\s*(.*)$", ln)
+        if m and (m.group(2) or m.group(4).strip()):
+            who = m.group(2) or ""
+            k = who_class(who) if who else "anon"
+            d = min(len(m.group(1)), 4)
+            lead = f'<b>{esc(who)}</b>' if who else ""
+            # the leading space is DOM, not CSS: a margin looks right and
+            # copies wrong, which is the bug JL caught on the Aims rows
+            qual = f' <i class="cq">{esc(m.group(3))}</i>' if m.group(3) else ""
+            # Reddit/Discord shape (JL 260802): the author is a HEADER ROW,
+            # not a word glued to the front of the sentence, and the body sits
+            # under it. Inline `JL some text` reads as a chat log; a thread
+            # needs the speaker to be scannable on its own line so a reader can
+            # find who said what without reading the sentences.
+            out.append(f'<div class="cmt {k}" data-d="{d}">'
+                       f'<div class="cwho">{lead}{qual}</div>'
+                       f'<div class="ctext">{note(m.group(4))}</div></div>')
             last_p = None
         else:
             out.append(f"<p>{inline(ln)}</p>")
@@ -1095,13 +1156,25 @@ def body(txt, fold_code=True, apparatus=True):
     flush()
     # 把收集到的装置行折进各自的句子（native <details>，零脚本不变量成立）
     for idx, lines in appar.items():
-        inner, heads, show = render_apparatus(lines)
+        inner, heads, kind = render_apparatus(lines)
         # 句尾挂 ⚑N：徽标塞进一个 0 宽的行内块（.sbz），断行时当它不存在，
         # 因此永远不可能被推到下一行（JL 260731 两次：先是徽标单独落一行，
         # 后是「词 + 徽标」整团落一行，同样扎眼）。它挂在句末最后一个字符右侧，
         # 该行已满时越界画进右侧留白，读起来仍然是句尾。
-        summary = _hang_badge(out[idx], f'<span class="sbadge">⚑ {heads}</span>')
-        out[idx] = ('<details class="sent"' + (' open' if show else '') + '><summary>' + summary
+        # SHUT, always (JL 260801). A person's comment used to auto-open, on the
+        # 260724 rule that an invisible fold is a broken fold. The badge is what
+        # answers that rule now: it hangs at the sentence end and says how many
+        # rows are underneath, which is the visible `[more details]` control the
+        # 260724 ruling actually asked for. With every section shut, one burst
+        # -open comment block was the only loud thing on a calm page.
+        #
+        # What the badge could NOT say was WHICH kind is underneath, and that is
+        # the half that mattered: `⚑ 2` reads the same whether two citations are
+        # filed or two people are waiting on an answer. So `show`, which already
+        # means "a person is talking here" rather than "a lane is filed here",
+        # now picks the icon instead of forcing the fold open.
+        summary = _hang_badge(out[idx], f'<span class="sbadge">{kind} {heads}</span>')
+        out[idx] = ('<details class="sent"><summary>' + summary
                     + '</summary>'
                     f'<div class="sapp">{inner}</div></details>')
     return "\n".join(out)
@@ -1119,3 +1192,103 @@ def _hang_badge(p_html, badge):
     if p_html.startswith("<p>") and p_html.endswith("</p>"):
         return "<p>" + p_html[3:-4].rstrip() + hung + "</p>"
     return p_html.rstrip() + hung
+
+# ── 💬 Discussion as a real THREAD (JL 260802) ─────────────────────────────
+# The screenshot JL sent is Reddit: an avatar, the author bold on its own row
+# with muted meta beside it, the body indented to align under the NAME rather
+# than the avatar, a rail that spans the whole subtree, and a ⊖ that collapses
+# it. The flat `>`/`>>` divs this replaced had none of that: a reply was a
+# sibling with a left border, which is a chat log with indentation.
+#
+# The nesting is real DOM, built from the run of `>` in the source, so the
+# markdown stays something a person types and the rail can span children.
+# `<details>` gives the collapse with no script, which the board requires.
+# The author is optional, but when present it must be FOLLOWED BY A COLON.
+# Without that the initials group matched the first letter of any capitalised
+# word: `> Open: how does a record attach…` parsed as author `O` saying
+# `pen: how does…`, which is what reversing the thread order made visible.
+THREAD_RE = re.compile(
+    r"^(>+)\s*(?:(?:Comment\s+)?([A-Z]{1,4}\d{0,4})\s*(\([^)]*\))?\s*[:：]\s*)?(.*)$")
+
+
+def _thread_nodes(md):
+    """-> [(depth, who, qualifier, [body lines])], one per entry."""
+    nodes = []
+    for ln in md.split("\n"):
+        if not ln.strip():
+            continue
+        m = THREAD_RE.match(ln)
+        if m and (m.group(2) or m.group(4).strip()):
+            nodes.append([len(m.group(1)), m.group(2) or "", m.group(3) or "",
+                          [m.group(4)]])
+        elif nodes:
+            nodes[-1][3].append(ln.lstrip("> ").rstrip())
+        else:
+            nodes.append([1, "", "", [ln]])
+    return nodes
+
+
+def _thread_html(nodes, i=0, depth=1):
+    """Nest by depth. Returns (html, next index)."""
+    out = []
+    while i < len(nodes):
+        d, who, qual, text = nodes[i]
+        if d < depth:
+            break
+        if d > depth:
+            kids, i = _thread_html(nodes, i, d)
+            if out:
+                out[-1] = out[-1].replace("</details>",
+                                          f'<div class="tkids">{kids}</div></details>')
+            continue
+        i += 1
+        kids, i = _thread_html(nodes, i, depth + 1) if (
+            i < len(nodes) and nodes[i][0] > depth) else ("", i)
+        who_cls = who_class(who) if who else "anon"
+        initials = esc(who[:2].upper()) if who else "•"
+        meta = f' <i class="tq">{esc(qual)}</i>' if qual else ""
+        name = f'<b>{esc(who)}</b>' if who else '<b class="mut">thread</b>'
+        # The name sits ON THE SAME LINE as what was said (JL 260802: "could
+        # you make User and the comments to be the same line? So we can read
+        # what the user said about it"). A name on its own row costs a line per
+        # entry and makes a thread of one-sentence replies unreadable, and it
+        # also means a COLLAPSED entry shows only who spoke, never what about.
+        # So the first paragraph rides in the summary and the rest folds.
+        para = [x for x in text if x.strip()]
+        head, rest = (para[0] if para else ""), para[1:]
+        body_html = note("\n".join(rest)) if rest else ""
+        inner = (f'<div class="tbody">{body_html}</div>' if body_html else "")
+        kid = f'<div class="tkids">{kids}</div>' if kids else ""
+        out.append(
+            f'<details class="thr {who_cls}" open><summary>'
+            f'<span class="tav">{initials}</span>{name}{meta}'
+            f'<span class="tsay">{note(head)}</span></summary>'
+            f'{inner}{kid}</details>')
+    return "".join(out), i
+
+
+def render_thread(md):
+    """`## Discussion` as a nested, collapsible thread, NEWEST THREAD FIRST.
+
+    The source stays chronological, because that is how a person appends to a
+    file: you add at the bottom. The RENDER reverses the top level (JL 260802),
+    so the newest exchange is the first thing a reader meets, which is the same
+    reason `## Log` runs newest first.
+
+    Only the TOP level reverses. Inside one thread a reply still follows what it
+    answers, because reversing there would make an answer precede its question.
+    """
+    nodes = _thread_nodes(md or "")
+    if not nodes:
+        return ""
+    tops, cur = [], []
+    for n in nodes:
+        if n[0] == 1 and cur:
+            tops.append(cur)
+            cur = []
+        cur.append(n)
+    if cur:
+        tops.append(cur)
+    html = "".join(_thread_html(t)[0] for t in reversed(tops))
+    return f'<div class="thread">{html}</div>'
+

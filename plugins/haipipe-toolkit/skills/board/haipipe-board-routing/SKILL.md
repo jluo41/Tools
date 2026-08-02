@@ -1,11 +1,11 @@
 ---
 name: haipipe-board-routing
 description: >-
-  The routing VERB of the board family: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write. It loads the page and sentence specs, reads board.md's ## Pages as the only registry, proposes rather than creates when nothing fits, and may never tick a box or flip a state. Use when work happened and the board must record it: route this to the board, write it back, which page owns this, claim the question. Trigger: route, write back, owning page, land this on the board, update the log, /haipipe-board-routing.
+  The routing VERB of the board family: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write. It loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. It may update an Aim State from inspected evidence, but may never tick a human decision or change a page-level human gate. Use when work happened and the board must record it: route this to the board, write it back, which page owns this, claim the question. Trigger: route, write back, owning page, land this on the board, update the log, /haipipe-board-routing.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-07-31"
-  summary: "The footer ends with a Next: line, the one action the user should take now (JL 260731)."
+  version: "0.4.1"
+  last_updated: "2026-08-01"
+  summary: "Routes current facts into States and reserves Decision Now and page-level gates for the human."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -20,8 +20,9 @@ Routing automates the claim (QC6 §9), which makes two existing failure modes ma
 haipipe-board-routing            what it loads          what it never does
 ─────────────────────            ─────────────────      ─────────────────────
 find the owning location         haipipe-board-page     render, serve, check
-append the anchored write        haipipe-board-sentence tick a box, flip state:
-propose a page when none fits                           create a page silently
+append the anchored write        haipipe-board-sentence tick a human decision
+propose a page when none fits                           change a human page gate
+                                                        create a page silently
 ```
 
 Digest (a session transcript, many inputs) is this verb FANNED OUT: it calls routing per input and never reimplements it.
@@ -31,7 +32,7 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
 
 ```
 1  READ the input        what happened · what kind of record it deserves
-                         (a Log line · a Where-we-are entry · a lane reply ·
+                         (a Log line · a State entry · a lane reply ·
                           a Files row · a Decision Now row); a derived view,
                           aggregated from state the pages already hold,
                           deserves NO write, because a copy drifts
@@ -55,10 +56,13 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
 
 ## ⚖️ The two write laws, inherited not invented
 
-**The tick law (QC6 §10).**
-Routing reads claims; it cannot verify them.
-It may append Log lines and Where-we-are prose and may write `PROPOSED:` before a tick it believes is earned; it may not close a checkbox or change a `state:` line.
-Every proposal lands as a row under the owning page's `### Decision Now`, inside `## Where we are` (JL 260731: never make the decision in chat); the human ticks.
+**The human-decision law (QC6 §10).**
+Routing may append Log lines and factual State rows. When it has inspected the
+evidence, it may move an Aim among the allowed State statuses and records the
+reason in Log. It may not close a `### Decision Now` checkbox or change a
+page-level human gate. Every proposal lands under the owning page's
+`### Decision Now`, inside `## States` (JL 260731: never make the decision in
+chat); the human ticks.
 
 **The cross-board law (QB1 §4).**
 Mechanical writes carry no judgement and are always allowed.

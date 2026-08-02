@@ -5,14 +5,12 @@ owner: CC
 method: copy the multi-store registry `console_api.py` already proved out (`_datasets()` / `?dataset=`)
 
 ## Question
-A SPACE is a repo root (`Physician-SPACE`, `WellDoc-SPACE`).
-What JL wants is to mount a SPACE onto the service, then see "which boards live in this SPACE", walk into one, and open a new one.
-Today `serve.py --root <repo root>` already IS "one SPACE mounted", but the layer above it is missing: no page tells you which boards exist, so you have to already know the URL to open anything.
+How should a service mount a research SPACE, discover every board inside it, and give people one place to open them?
 
-It is not technically hard; the unclear part is how many at once.
-`serve.py` takes a single `--root`, so mounting `Physician-SPACE` and `WellDoc-SPACE` together means choosing between running two processes, raising `--root` to their shared parent, or introducing a SPACE registry.
-Leave it and boards can only ever be opened by someone passing you a URL, which is where half of QE1's "the second person cannot open it" really lives: not that they cannot open it, but that they do not know what is there to open.
-Downstream it decides what the board list page looks like (the same visual problem as QC2's index design, one level up), whether a new board can be created from the web, and what the URLs look like.
+People should not need to know a board's full path before they can find it.
+The hard part is supporting several SPACEs while exposing only the files each board is allowed to read or change.
+A careless mount either hides linked work or exposes far more of the repository than intended.
+This page succeeds when a reader can choose a SPACE, find any valid board, and open it through a deliberately bounded mount.
 
 
 ## Boundary

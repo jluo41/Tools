@@ -207,7 +207,7 @@ feedback/README.md                   4 ln  haipipe-paper-revise -- Feedback Inbo
 
 <!-- haipipe:skill:body:end -->
 
-## Items to Finish
+## Aims
 - [x] 🧬 Separate the three revision layers
       Evidence revision binds only landed values, displays, and citations.
       Paragraph revision makes the warrant and sequence explicit.  Sentence
@@ -236,7 +236,7 @@ feedback/README.md                   4 ln  haipipe-paper-revise -- Feedback Inbo
       provenance and syncs only accepted prose, while candidate mode produces
       legible diffs without altering claims or the manuscript.
 
-## Where we are
+## States
 The revision page now makes a substantive distinction that generic "humanize" tools miss: prose quality comes after evidence integrity and paragraph logic, not instead of them.
 The remaining acceptance test compares both modes on the same source section and verifies that candidate notes never leak into TeX.
 

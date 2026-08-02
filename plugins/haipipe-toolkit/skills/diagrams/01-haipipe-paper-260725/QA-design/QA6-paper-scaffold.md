@@ -4,7 +4,8 @@ owner: JL
 method: test the accepted submission-cut and three-role projection model against the copy-only packaging rule
 
 ## Opening
-What is in one paper's folder, and how can a reader tell at a glance which parts are the manuscript and which are the machinery that produced it? A mature paper accumulates a board, a probe pool, generated LaTeX, display units, build scripts, archives and a compiled PDF, all in one directory. Without a rule that directory becomes a place where you check three things before daring to delete anything.
+What is in one paper's folder, and how can a reader tell at a glance which parts are the manuscript and which are the machinery that produced it?
+A mature paper accumulates a board, a probe pool, generated LaTeX, display units, build scripts, archives and a compiled PDF, all in one directory. Without a rule that directory becomes a place where you check three things before daring to delete anything.
 
 The accepted replacement rule treats the prefix as a packaging boundary rather than a taste: numbered paths stay out of the journal submission cut, while the unnumbered tree must still compile and submit by itself.
 The old `rm -rf 0-* 1-* 2-*` wording described running that test on a copy; it never meant that `0-lifecycle/`, which holds the authoritative S pages, was safe to erase from the working repository.
@@ -12,7 +13,7 @@ The live paper now also has `3-dist/`, so the fixed claim that there are three n
 
 The second rule is that nothing exists before it is needed. A new paper gets a control plane and one runnable page; every other page arrives when its unit is allocated, and the LaTeX toolchain arrives at the Display or section frontier and not before. What we want is a folder where every file present is a file somebody asked for, so an absence is information rather than an oversight.
 
-Scope: This page covers What a paper folder contains, the numbered and unnumbered split, what exists at creation versus later, and what crosses this folder's edges. Neighbouring pages cover What is on the board inside it is `QA7`; how a question leaves it is `QA5`; markdown versus tex authority is `QC3d`; who creates a page is `QA8`; what a display unit contains is `QB5a` and `QB5c`. What a STAGE is as an object, and what it takes to make one work, is the whole `QB` group, anchored at `QC2`; this face owns only which stages exist and which folder each one fills.
+Scope: This page covers What a paper folder contains, the numbered and unnumbered split, what exists at creation versus later, and what crosses this folder's edges. Neighbouring pages cover What is on the board inside it is `QA7`; how a question leaves it is `QA5`; markdown versus tex authority is `QC3d`; who creates a page is `QA8`; what a display unit contains is `QB12c` and `QB13a`. What a STAGE is as an object, and what it takes to make one work, is the whole `QB` group, anchored at `QC2`; this face owns only which stages exist and which folder each one fills.
 
 ## Diagram
 ```
@@ -292,7 +293,7 @@ The checked files are staged together, the pre-check target hashes are verified 
 `run_id` is the SHA-256 of the canonical manifest, selected Content, and dependency-set digests; the separate candidate digest is computed after generation over normalized output paths and bytes.
 
 The runtime owner is the callable `haipipe-paper-project` 0.1.3 skill at `3-deliver/1-build/haipipe-paper-project/`, with `project.py validate`, `generate`, `check`, and `promote`.
-Its renderer follows the QB9a boundary; `md2tex.py` remains a separate adapter and never receives a submission-write flag.
+Its renderer follows the QB11a boundary; `md2tex.py` remains a separate adapter and never receives a submission-write flag.
 
 Generate, check, blocked-check, and promotion receipts are append-only JSON records under `2-src/projection-receipts/`.
 They use SHA-256 over canonical paper-relative paths plus file bytes:
@@ -419,7 +420,7 @@ The folder is also PURE. Every file in it is an S page or the board's own index,
 ```
 Almost nothing here is authored in place. The prose arrives from `⑧`, the numbers and citations across the wall, the LaTeX is generated. What this folder genuinely owns is the SHAPE: which containers exist, and which are allowed to be empty.
 
-## Items to Finish
+## Aims
 - [ ] 🗃 `.board-refs.bbl` is machinery sitting in the unnumbered half
       `refs.py` writes it into the paper root: the rendered bibliography a citation chip's panel prints, 62 KB on MISQ.
       A journal does not receive it, so the accepted submission-cut rule places it behind a numbered path, probably under `2-src/`.
@@ -476,7 +477,7 @@ Almost nothing here is authored in place. The prose arrives from `⑧`, the numb
 - [ ] 🧪 Create one paper and enter it
       A fresh agent should open its Board and work Seed without adding or guessing another control file.
 
-## Where we are
+## States
 JL accepted the submission-cut and three-role model and authorized implementation.
 The paper has four numbered non-submission work areas: `0-lifecycle/`, `1-probes/`, `2-src/`, and `3-dist/`.
 S pages are source authority, `3-dist/` holds isolated candidates/handoffs, and the unnumbered tree is the journal submission projection.
@@ -504,8 +505,8 @@ The display unit's working/shipping split is now explicit. The remaining trial g
 - `README.md`
   The family map, which still describes the older complete-folder shape.
 - `3-deliver/4-ship/haipipe-paper-to-word/md2tex.py`
-  The QB9a format adapter; it is not allowed to perform implicit submission promotion.
-- `QB-delivery/QB9a-sentence-to-latex.md`
+  The QB11a format adapter; it is not allowed to perform implicit submission promotion.
+- `QB-delivery/QB11a-section-to-latex.md`
   Owns conversion semantics and evidence extraction; QA6 owns only where candidates land and how they may be promoted.
 - `2-src/projection.yaml`
   Live MISQ wiring manifest; G0 validated.

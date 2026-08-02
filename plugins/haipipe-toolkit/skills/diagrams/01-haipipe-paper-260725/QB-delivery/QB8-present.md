@@ -25,11 +25,11 @@ accepted paper argument + displays → slides
 | Gate | A human accepts audience fit and verifies no slide/poster claim exceeds the paper. |
 | Open gaps | Present needs concrete skill pages when its first cross-paper contract is tested. |
 
-## Items to Finish
+## Aims
 - [x] Include slides under Present.
 - [x] Keep poster in the same projection family.
 
-## Where we are
+## States
 JL confirmed that Present may include slides; no separate slide group is needed.
 
 ## Files

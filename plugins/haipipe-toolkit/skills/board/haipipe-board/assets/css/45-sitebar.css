@@ -1,0 +1,44 @@
+/* The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
+   this UI is not good, how to make it more beautiful?").
+
+   It had NO rule in any stylesheet, so `🏠 Boards` / `🗂 Index` / the crumb
+   rendered as browser-default anchors: underlined, link-blue turning visited
+   purple, and butted together with no separator. That is the whole defect —
+   the markup was fine and the page simply had no styling to apply.
+
+   The voice is the rail's, not a new one: muted chrome type, the accent only
+   on hover, `--line` hairlines, and no colour that competes with a page's
+   state emoji. */
+.sitebar{display:flex;align-items:center;flex-wrap:wrap;gap:2px;
+ margin:-4px 0 18px;padding:0 0 10px;
+ border-bottom:1px solid var(--line);
+ font:500 11.5px/1.6 ui-sans-serif,system-ui,sans-serif;
+ color:var(--mut)}
+
+/* Links read as quiet chrome until pointed at, when they take the accent and
+   a soft pill — the same feedback the rail rows and the ☰ toggle already use. */
+.sitebar a{display:inline-flex;align-items:center;gap:5px;
+ padding:3px 8px;border-radius:var(--radius-control);
+ color:var(--mut);text-decoration:none;
+ white-space:nowrap;transition:background .12s,color .12s}
+.sitebar a:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.sitebar a:visited{color:var(--mut)}
+.sitebar a:visited:hover{color:var(--accent)}
+
+/* The last crumb is where you ARE: a <b>, never a link, so it is the one
+   element here allowed full-strength text. */
+.sitebar b{padding:3px 8px;color:var(--fg);font-weight:650;
+ font-family:ui-monospace,Menlo,monospace;font-size:11px;
+ letter-spacing:.02em;white-space:nowrap}
+
+.sitebar .sb-sep{color:var(--line);font-size:12px;
+ padding:0 1px;user-select:none;flex:none}
+
+/* The ☰ toggle is position:fixed at left:10px, so with the rail hidden it
+   would sit on top of the first crumb. Yield exactly its width plus air. */
+body:not(.sbon) .sitebar{padding-left:34px}
+
+@media (max-width:640px){
+  .sitebar{gap:0;margin-bottom:14px;font-size:11px}
+  .sitebar a{padding:3px 6px}
+}

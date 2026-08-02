@@ -142,7 +142,7 @@ Every proposed wording change must pass four gates: preserve meaning, scope, cau
 
 The default remains direct REVISE with `%% {CC-*}` why-comments. When the author explicitly requests original-preserving review, REVISE switches to candidate-diff mode: it leaves source prose and TeX unchanged, and attaches one full `> Note:` candidate beneath the source sentence. The diff uses `~~removed~~` and `**inserted**`, followed by a verified model label and date. The Board renders the first as a deletion line and the second in bold. A candidate is not an applied revision and cannot close REVISE.
 
-## Items to Finish
+## Aims
 - [x] 📐 The four workers exist, and the chain orders them
       `place · content · humanizer · results` under `2-phase/2-revise/`, dispatched by the `haipipe-paper-revise` chain (`SKILL.md:43-46`, `:90`).
 - [x] 📐 `place` runs first, and the order is called binding
@@ -169,7 +169,7 @@ The default remains direct REVISE with `%% {CC-*}` why-comments. When the author
 - [ ] 🧪 Read one revised section from its comments alone
       `sections/04_personality_extraction.tex` is the only real test on disk: 13 of the paper's 17 comments are in that one file. Can a human accept or reject each change without opening the previous version?
 
-## Where we are
+## States
 The four workers exist, the chain order is implemented with `place` first, and the why-comment convention is used on the MISQ paper. The language worker now resolves venue style before clarity and anti-AI edits, rather than treating academic prose as a generic paraphrase problem.
 
 Candidate-diff mode has been exercised on the MISQ Abstract and Introduction. Its deletion and addition markup renders in the Board, but does not enter TeX. Two gaps remain about trust rather than mechanism: nothing checks that an edit carried a comment, and nothing says what happens when a landed answer makes its own sentence wrong.

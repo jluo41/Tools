@@ -4,7 +4,8 @@ owner: JL
 method: draw one stage whole, give every part a reader and a ruling face, and treat a field nobody reads as decoration
 
 ## Opening
-What is a stage, considered on its own? Not which stages this skill happens to have, and not why the lifecycle is cut where it is cut: those belong to `QA6`, which owns what a paper contains. This face is about the OBJECT. One stage, drawn whole, so that every other face in this group can be read as a ruling about one of its parts.
+What is a stage, considered on its own?
+Not which stages this skill happens to have, and not why the lifecycle is cut where it is cut: those belong to `QA6`, which owns what a paper contains. This face is about the OBJECT. One stage, drawn whole, so that every other face in this group can be read as a ruling about one of its parts.
 
 A stage is not an object anywhere in the code. Nothing constructs one. A router reads a small index, loads exactly one file, and acts on its fields, so a stage IS its `stage.md` frontmatter: twenty-four required fields in seven blocks, plus a conditional set. That is worth saying plainly because it decides what a ruling on this board means. Settling a grain question is a change to `runs:`. Settling a spending ceiling is a change to `probe_depth:`. A face here that cannot name the field it would change has not finished its work.
 
@@ -175,7 +176,7 @@ Scope: This page covers What a stage is made of, which of the three readers cons
 
    ── AND WORD? IT DOES NOT EXIST ──────────────────────────────────
       no pandoc, no python-docx, no converter in any `.py` or `.sh`
-      in the whole family. Word is a PROPOSED projection on `QB9b`, and the many-consumer rule is `QC3@display`
+      in the whole family. Word is a PROPOSED projection on `QB11b`, and the many-consumer rule is `QC3@display`
       and nothing more. Its adapter diagram is a design, not a
       shipped path, and the same is true of HTML except for the
       board's own rendering.
@@ -271,7 +272,7 @@ So the GRAPH block is orientation for a person, sitting in the same frontmatter,
                                          frontmatter, never a field
 ```
 
-## Items to Finish
+## Aims
 - [x] 📐 State the fields by measurement rather than by inference
       `stages/CONTRACT.md` names 24 required fields in 7 blocks, and all eight `stage.md` files carry all 24, checked field by field. `check-contracts.py`'s `REQUIRED` list is the same 24, so the document and the checker cannot disagree.
 - [x] 📐 Declaring a stage costs four files and no more
@@ -297,7 +298,7 @@ So the GRAPH block is orientation for a person, sitting in the same frontmatter,
 - [ ] 🧪 Write a ninth contract from the documentation alone
       Author `stages/9-<key>/stage.md` and its `template.md` from `stages/CONTRACT.md` and `SKILL.md:230` only, run `check-contracts.py`, and count what it rejects. This tests the CONTRACT; `QF3` tests running an existing stage and `QC3a` tests the template alone, so the three do not overlap.
 
-## Where we are
+## States
 The object is measured rather than inferred, and the loud half is in good shape. The router and the creator both refuse malformed contracts, and every declared path now either resolves or carries `blocked_on:` with a reason.
 
 The silent half is the work, and it is what the rest of this group is for. Seventeen of twenty-four required fields are read by an agent as prose, every measured defect sits among them, and two of the three blocks involved will never become programs. So the remaining question is not how to check more; it is how to stop an advisory field from looking binding.

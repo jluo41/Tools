@@ -42,5 +42,5 @@ the Board files.
 - Operational workflow: `haipipe-board/SKILL.md`
 - Source and rendering grammar: `haipipe-board/ref/board-form.md`
 - Readability standard: `haipipe-board/ref/writing-rules.md`
-- Page template: `haipipe-board/ref/q-template.md`
+- Page template: `haipipe-board/ref/page-template.md`
 - Settled and unsettled design history: `../diagrams/01-boardform-260722/`

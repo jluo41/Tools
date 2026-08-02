@@ -208,7 +208,17 @@ authors the bank binding, and runs the five-step loop. Asking is cheap; the
 
 Verify mechanically that every `\cite{TOADD}` and `{VAL:?}` has a
 `[Q-<Stage>-<n>]` owner and every owner resolves to a Q-consumer block in the S
-page. Do not run the probe-entry checker yet: no entries should exist from this
+page. RUN IT, do not eyeball it (JL 260801):
+
+```text
+python3 <skills>/writing/haipipe-writing/cli/holes.py <stage-doc> --dialect paper
+```
+
+It checks both directions, and the second one is the one a reader misses: a hole
+carrying `[Q-Main-9]` when no `Q-Main-9` exists LOOKS owned, so nobody ever goes
+looking for it. The discipline behind the check is
+`writing/haipipe-writing/ref/holes.md`; the notation, the `.bib` grep, and the
+`1-probes/` boundary stay here, because none of those generalize. Do not run the probe-entry checker yet: no entries should exist from this
 phase. The sub-agent's job is semantic judgment — whether the draft says
 something, follows the stage contract, and raises answerable questions.
 

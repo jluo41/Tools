@@ -36,7 +36,23 @@ body.nav-open{padding-left:var(--sbw,238px)}
 @media(max-width:1149px){body.nav-open{padding-left:0}}
 body.nav-closed .sidebar{transform:translateX(-100%)}
 body.nav-closed{padding-left:0}
-@media print{.sidebar,.sbtoggle{display:none}}
+/* The rail's drag handle. FIXED rather than absolute inside the rail: the rail
+   is `overflow-y:auto`, which clips anything on its edge, so an absolute handle
+   was invisible to the pointer (elementFromPoint returned BODY).
+
+   It also has to APPEAR exactly when the rail appears. It did not: it is
+   positioned off `--sbw` alone, so with the rail collapsed it stood 238px into
+   the page as a bar across the text, tinting on hover because that is what a
+   handle does (JL 260801, with a screenshot of the QD group). The two rules
+   below mirror the rail's own two, so there is one condition, written twice
+   because a handle cannot be a child of what it resizes. It lives beside the
+   rail now instead of at the end of the matrix file. */
+.sbrz{display:none;position:fixed;left:calc(var(--sbw,238px) - 3px);top:0;bottom:0;
+ width:7px;cursor:col-resize;background:transparent;z-index:31}
+.sbrz:hover,.sbrz:active{background:var(--accent);opacity:.35}
+body.nav-open .sbrz{display:block}
+@media(min-width:1150px){body:not(.nav-closed) .sbrz{display:block}}
+@media print{.sidebar,.sbtoggle,.sbrz{display:none}}
 
 /* ── Sidebar section outline (QB2a, JL 260731): the Structure rows under the
    ACTIVE page only — one page's sections and subsections open at a time. ── */
@@ -104,7 +120,7 @@ body.nav-closed{padding-left:0}
 @keyframes busypulse{0%,100%{opacity:.35}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){#chat .bd .busy .g{animation:none;opacity:.8}}
 
-/* Per-group count on an Items to Finish ### heading (QB4d, JL 260731). */
+/* Per-group count on an Aims ### heading, derived from State. */
 .sh .shc{margin-left:8px;font:600 11px ui-monospace,Menlo,monospace;color:var(--mut)}
 
 /* The hidden ▸ at a page row's end (JL 260731): click toggles that page's

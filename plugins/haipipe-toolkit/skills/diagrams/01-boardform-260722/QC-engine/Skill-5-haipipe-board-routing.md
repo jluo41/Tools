@@ -4,10 +4,12 @@ owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-haipipe-board-routing is a shipped skill: what does it still owe, and is it healthy?
+Does `haipipe-board-routing` place one incoming update on the page and section that truly own it?
 
-Write here what this skill is for in one paragraph a stranger could follow, why it exists as its own skill rather than as part of its neighbour, and what would have to be true for it to be considered finished.
-The generated sections answer what it IS; only this one can answer whether it is any good.
+This verb turns an unstructured message into one anchored Board record rather than another fact left in chat.
+The difficult cases are ambiguous ownership, missing pages, human decisions, and work that belongs to another Board.
+Its result determines whether the Board stays current without silent page creation, ticks, or unsafe editorial writes.
+It is healthy when every input lands, becomes an explicit proposal, or is reported to the outside owner.
 
 ## Diagram
 <!-- haipipe:skill:tree:start 556b67e8391bbf56 board/haipipe-board-routing -->

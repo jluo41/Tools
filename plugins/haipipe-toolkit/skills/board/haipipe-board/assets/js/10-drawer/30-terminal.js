@@ -23,7 +23,7 @@
      终端后端仍是 serve.py 起的 ttyd；这里我们自己拿 xterm 连它的 WebSocket，
      省掉 iframe 那层（CSP、加载慢、控制不了）。ttyd 的 WS 子协议：
        连接子协议 'tty'；开场发 JSON auth；输入 '0'+data；输出帧首字节 '0'。 */
-  var termT = null, termWS = null, xtermP = null;
+  var termT = null, termWS = null, xtermP = null, termSubs = null;
   function loadXterm() {
     if (xtermP) return xtermP;
     xtermP = new Promise(function (res, rej) {
@@ -78,6 +78,10 @@
     if (termPing) { clearInterval(termPing); termPing = null; }
     try { if (termWS) termWS.close(); } catch (e) {}
     try { if (termT) termT.dispose(); } catch (e) {}
+    if (termSubs) {
+      termSubs.forEach(function (d) { try { d.dispose(); } catch (e) {} });
+      termSubs = null;
+    }
     termWS = null; termT = null; termKey = null; termRetry = 0;
     var host = chat.querySelector('.tm'); if (host) host.innerHTML = '';
   }
@@ -140,10 +144,29 @@
         if (!termClosing && termOn && termT && termKey === key) connectWS(key);
       }, wait);
     };
-    termT.onData(function (s) { if (ws.readyState === 1) ws.send('0' + s); });
-    termT.onResize(function (sz) {
-      if (ws.readyState === 1) ws.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
-    });
+    /* Bind input ONCE per terminal, not once per socket (JL 260801: "I enter
+       one letter, it types two letters").
+
+       `connectWS` runs again on every reconnect, and the Terminal instance
+       survives that, so each reconnect used to add ANOTHER onData listener to
+       the same xterm. xterm fires all of them, so one keystroke was written
+       twice after the first drop, three times after the second, and so on:
+       `what happened?` arrived as `wwhhaatt hhaappppeenneedd??`. The listeners
+       are disposables, so drop the previous pair before adding the next, and
+       always send through the CURRENT socket rather than the one captured when
+       the listener was created. */
+    if (termSubs) {
+      termSubs.forEach(function (d) { try { d.dispose(); } catch (e) {} });
+    }
+    termSubs = [
+      termT.onData(function (s) {
+        if (termWS && termWS.readyState === 1) termWS.send('0' + s);
+      }),
+      termT.onResize(function (sz) {
+        if (termWS && termWS.readyState === 1)
+          termWS.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
+      })
+    ];
   }
   async function mountTerm(key) {
     await loadXterm();
@@ -185,6 +208,18 @@
     setTimeout(function () { termT && termT.focus(); }, 50);
   }
   window.addEventListener('resize', function () { if (termOn) fitTerm(); });
+  /* Anything that changes the pane's box must refit, not just a window resize:
+     the strip appearing, the drawer being dragged, a font swap. One observer on
+     the pane covers every cause, including ones not invented yet. */
+  (function () {
+    var host = chat.querySelector('.tm');
+    if (!host || !window.ResizeObserver) return;
+    var t = null;
+    new ResizeObserver(function () {
+      clearTimeout(t);
+      t = setTimeout(function () { if (termOn) fitTerm(); }, 60);
+    }).observe(host);
+  })();
   // fit when the drawer pane itself changes size, not only the window (debounced)
   (function () {
     var host = chat.querySelector('.tm'), t = null;
@@ -223,6 +258,13 @@
     fr.readAsDataURL(blob);
   }, true);
 
+  /* A release that nobody waits for is still a release the NEXT open must not
+     overtake. Flipping the view before the round trip made the click instant
+     and made this race possible: switch to the chat and straight back, and the
+     open reached the server first, so the park landed on the terminal that had
+     just been attached and the pane stayed empty (measured 260802). Whoever
+     starts a terminal waits for the hand-back to finish first. */
+  var releasing = null;
   async function termRelease(file, g) {
     disposeTerm();
     if (!file) return;
@@ -245,21 +287,60 @@
                  { type: 'application/json' }));
     }
   });
-  async function termOpen(quiet) {
+  /* Which terminal is on screen, and which sessions have one running. The
+     PICKER owns choosing (JL 260801: "为什么不把这个 session 放到那个 session
+     的选择那里去"), so this file only tracks state and attaches; a second
+     chooser above the pane was one UI too many, and it stole rows from the
+     terminal every time it rendered. */
+  var termKeyNow = null, termLive = [];
+  async function loadTermList() {
+    if (!cq || !cq.file) return [];
+    try {
+      var r = await fetch('/_board/term-probe', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file,
+                               group: (cq && cq.group) || undefined }) });
+      var j = await r.json();
+      termLive = (j && j.terminals) || [];
+    } catch (e) { termLive = []; }
+    return termLive;
+  }
+  window.__boardTermLive = function () { return termLive; };
+  window.__boardTermKeyNow = function () { return termKeyNow; };
+  window.__boardTermAttach = function (sid) { return termOpen(true, sid); };
+
+  async function termOpen(quiet, wantSession) {
     if (!cq) return false;
+    /* ...but awaited HERE, and never for long. A hand-back that hangs must not
+       be able to stop a terminal from opening: the race this closes is a few
+       hundred milliseconds wide, so a second is already generous, and the
+       failure mode of waiting forever is a drawer that says "Starting a
+       terminal…" and never does (measured 260802, one edit after the race). */
+    if (releasing) {
+      try {
+        await Promise.race([releasing, new Promise(function (r) { setTimeout(r, 1000); })]);
+      } catch (e) {}
+    }
     if (!quiet) say('Starting a terminal for this question…');
     try {
       var r = await fetch('/_board/term', { method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: boardPath(), file: cq.file,
                                group: (cq && cq.group) || undefined,
-                               session: chatSid, name: sessName }) });
+                               session: (wantSession !== undefined && wantSession !== null)
+                                        ? wantSession : chatSid,
+                               name: sessName }) });
       var j = await r.json();
       if (!j.ok) { say('⚠ ' + j.err); return false; }
       // 拣选的那段（或新开的）从这一刻起就是 current —— 状态归位、清单重拉
+      // 抽屉那半边也得跟着换：终端和聊天共用一个 session，
+      // 只把 chatSid 归零会让聊天框还停在上一段的抬头和记录上
+      if (j.session && j.session !== activeSid) { activeSid = j.session; paintSid(activeSid); }
       if (chatSid) { chatSid = ''; sessName = ''; loadSessions(); }
+      termKeyNow = j.key;
       termView(true);
       await mountTerm(j.key);
+      loadTermList();                 // so the picker can mark what is running
       if (!quiet) say(j.reused ? 'Reattached to the terminal already running'
                                : (j.note || 'Terminal ready'));
       return true;
@@ -276,6 +357,74 @@
      "when I come back it became the GUI again, in truth the TUI is running").
      The reload-restore block at the end of board.js needs to see and redo this,
      and it lives outside this closure. */
+  /* TUI FIRST (JL 260801: "make the TUI to be the default version").
+     Opening the drawer now goes straight to the terminal, because the TUI is
+     the real CLI and the SDK chat is the rebuilt one. `.term` still toggles
+     back, and the choice is remembered per machine so a reader who prefers the
+     chat box is not overruled on every page. */
+  var TUIDEF = 'board-tui-default';
+  function tuiIsDefault() {
+    try { return localStorage.getItem(TUIDEF) !== '0'; } catch (e) { return true; }
+  }
+  window.__boardTuiDefault = tuiIsDefault;
+  window.__boardOpenDefaultView = async function () {
+    if (!tuiIsDefault() || termOn || !cq) return false;
+    return await termOpen(true);
+  };
+
+  /* Putting the caret BACK. A live update swaps div.wrap and then re-resolves
+     the URL fragment, and setting location.hash moves focus to the target
+     element, so a reader who was typing in the terminal lost the caret on every
+     board update and had to click the pane again (JL 260801: "我正在打字，然后
+     它突然更新了，我就打不了字了"). xterm owns a hidden textarea, so ask xterm
+     rather than poking at the DOM. */
+  /* Type a prompt INTO the running CLI. Quick actions and "add to chat" used to
+     call the SDK path only, so in the TUI they did nothing at all (JL 260801:
+     "add to chat 以及一些 quick question ... 在 TUI work 不了").
+
+     The text is typed but NOT submitted: in a chat box the send is the whole
+     gesture, while in a terminal the prompt is a draft you may want to extend
+     before pressing Enter, and a button that silently runs something in a real
+     CLI is worse than one that does nothing. Newlines become the CLI's own
+     continuation sequence so a multi-line prompt does not submit halfway. */
+  window.__boardTermType = function (text, opts) {
+    if (!termOn || !termWS || termWS.readyState !== 1) return false;
+    var s = String(text || '').replace(/\r?\n/g, '\\\r');
+    /* CLEAR THE PROMPT FIRST. Typing blindly appends to whatever draft is
+       already sitting there, so a quick action ran together with the reader's
+       half-written sentence into one unreadable run-on line: "hello
+       worldAnswer only, do not edit any file: …" (JL 260801: "这个字跟我的
+       input message 叠到了一块儿"). Escape is the CLI's own "clear the input",
+       so the prompt starts empty and what lands is exactly what was asked for.
+       Pass {append:true} to add to a draft on purpose. */
+    if (!(opts && opts.append)) {
+      /* A lone ESC does NOT clear it: the app waits to see whether more bytes
+         follow, so ESC + text arrives as Alt+<key> and the draft survives.
+         Measured 260801, and the prompt then read
+         "hello worldAnswer only…immediatelyMYDRAFTAnswer only…".
+         Backspace has no such ambiguity and is a no-op on an empty prompt, so
+         send a generous run of it: deterministic, and it costs 2KB. */
+      var ws0 = termWS;
+      ws0.send('0' + new Array(2001).join('\u007f'));
+      setTimeout(function () {
+        if (ws0 && ws0.readyState === 1) ws0.send('0' + s);
+        window.__boardTermFocus();
+      }, 140);
+      return true;
+    }
+    termWS.send('0' + s);
+    window.__boardTermFocus();
+    return true;
+  };
+
+  window.__boardTermFocused = function () {
+    var host = chat.querySelector('.tm');
+    return !!(termOn && host && host.contains(document.activeElement));
+  };
+  window.__boardTermFocus = function () {
+    try { if (termT) termT.focus(); } catch (e) {}
+  };
+
   window.__boardTermOn = function () { return !!termOn; };
   window.__boardTermReopen = async function () {
     if (!cq || termOn) return false;
@@ -295,10 +444,26 @@
   chat.querySelector('.term').onclick = async function () {
     if (!cq) return;
     if (termOn) {                                  // 切回抽屉 = 交回 session
-      await termRelease(cq.file, cq.group);
+      try { localStorage.setItem(TUIDEF, '0'); } catch (e) {}   // you chose chat
+      /* SWAP THE VIEW FIRST, HAND THE SESSION BACK AFTER. The release is a
+         POST, and awaiting it before flipping the panel meant the click showed
+         nothing for a round trip — a third of a second of the old view, which
+         is exactly what reads as "not smooth" (JL 260802, measured at 284 ms).
+         Nothing downstream depends on the order: the park is idempotent and the
+         drawer it reveals does not touch the PTY. */
       termView(false);
       say('Terminal closed, session handed back');
+      releasing = termRelease(cq.file, cq.group)   // not awaited HERE...
+        .catch(function () {})
+        .then(function () { releasing = null; });
       return;
     }
+    try { localStorage.setItem(TUIDEF, '1'); } catch (e) {}     // you chose TUI
+    /* THE OTHER DIRECTION MUST NOT CHEAT. Revealing the terminal panel before
+       the server names the PTY was tried and reverted the same minute: when the
+       open then fails — a 409 because something else holds the session, say —
+       it leaves a black empty panel with nothing on the way, which is worse
+       than the wait it saved. `termOpen` reveals it only once it has a key.
+       Measured: the pane sat at rows=0 for the whole 2.5 s film. */
     await termOpen(false);
   };

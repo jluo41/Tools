@@ -68,7 +68,7 @@ writes into them, never in advance:
 ```
 
 The folder name IS the S family name, and a page's name places it: `S-Main-7-results.md` is in
-`4-main/`, and nothing else could be. `haipipe-board/stage.py resolve` owns that filename rule; do
+`4-main/`, and nothing else could be. `haipipe-board/cli/stage.py resolve` owns that filename rule; do
 not reimplement it here.
 
 **The board is CONTROL-PLANE FIRST.** Every family holds S pages and its

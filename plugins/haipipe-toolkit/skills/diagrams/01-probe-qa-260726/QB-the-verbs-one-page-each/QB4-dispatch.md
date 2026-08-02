@@ -92,7 +92,7 @@ So an application entry can sit `deferred` with no depth-and-cost line and pass 
       This closes when the constitution states it, since both families need it.
 - [ ] 🍴 `deferred-undeclared` is ported to the application fork, and fixed in the paper one
       Held with `QA4`'s fork ruling and `QC2`'s bug; noted here because this is the step the rule guards.
-- [x] 🧊 The ceiling gate stops a cold reader, unprompted
+- [x] ❄️ The ceiling gate stops a cold reader, unprompted
       The `QD2` run on 260726 read the stage contract nobody had mentioned, found `probe_depth: 0`, mapped `bank: new` onto depth 3, declined to dispatch, and wrote a declared deferral naming the command that would release it.
 
 ## Where we are

@@ -1,25 +1,37 @@
-# SDK chat version: the chat box
+# The SDK chat version: a chat box drawn in the page, given what a terminal inherits
 state: 🟡 PARTIAL
 owner: CC
 method: claude_agent_sdk + serve.py's /_board/chat; three selectable permission tiers (restricted / full·ask / full·auto)
-session: ccda0c28-ef7e-47e0-a7e1-c13abc4f4cea
+session: 8c9903ba-dadb-4f00-bdd1-823986cac937
 ## Opening
-The SDK chat version is a chat box this board REBUILDS, so everything the CLI shows for free is something this page has to earn.
-What must it show, and what must survive, before it is as usable as the thing it imitates?
+What makes a chat interface that lives inside a page actually good to use?
 
-Permission was the original question here and it is answered: three selectable tiers ship, and the top one is the CLI's own.
-What replaced it is harder to see and was found only by using the board: a turn that renders perfectly can still be attached to the wrong page, lose its transcript to a reload, or report a server refusal as an empty answer.
-So the open work is no longer what the drawer is ALLOWED to do; it is whether a reader can trust what the drawer SHOWS.
-It and `QD3` are two forms of one need and the split is no longer safe versus unsafe: it is a difference of form, so each is settled on its own and neither is bent to fit the other.
+This board has one, on the right of every page: it reads the page and edits it while you watch.
+Because the Agent SDK gives it events instead of a terminal screen, every part of it is ours to design.
+A terminal inherits its behaviour; a drawn interface has to be given all of it, and the parts nobody designed are the ones that break.
+The test: you can work in it all day without wishing you were in the terminal instead.
+
+**Why this matters**: Permission was the original question here and it is closed, with three selectable tiers shipped.
+What is left is not a safety problem but a design one, and it does not show up in a design document, only in daily use.
+The drawer scrolled the page instead of itself, opened at the top of the transcript, lost a reply when you looked away, and had nowhere to pick a session from.
+None of those is exotic; each is one piece of behaviour a terminal never had to be given, and this page is the list of what still has to be.
 
 
-## Boundary
-- ✅ Covered here
-  **The web-drawer implementation**: the three permission tiers, streaming, markdown rendering, cost, and how it obeys `QD1`'s LAW.
-- ↪ Covered elsewhere
-  The rules themselves (levels, boundaries): that is `QD1`.
-  Nor the real terminal: that is `QD3`.
-  Whether a reader can TRUST what the drawer shows, tested along BINDING · TURN · CONTINUITY · HANDOVER · INTERRUPTION: that is `QF4`.
+## Writing Style
+How this page must be written. Read it before editing, and edit to it.
+
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules all come from `QB4-overall.md` and are not restated here.
+Read `QB4 § Writing Style` first; everything below is what this page adds on top of it.
+
+**The axis is GUI against TUI (JL 260801)**: this page is about a chat box DRAWN in a browser, and `QD3` is the terminal.
+Never argue from the CLI as if this were an imitation of it ("我们强调的不是 SDK 吗？…应该是 Graph UI 吧").
+The terminal appears here only as the contrast, never as the definition.
+
+**Every defect is written as a fact about where state lives**: a complaint arrives as a feeling about the interface, and this page's job is to say which code owns it.
+"The drawer feels janky" is not a record; "`chatOpen` rebuilt every bubble from storage when the scope had not changed" is.
+
+**Quote JL in the language he used**: a report keeps its original words, Chinese or English, because the wording is evidence of what was actually experienced.
+Translating it into the page's own vocabulary loses the thing that made it a report.
 
 ## Diagram
 
@@ -70,6 +82,11 @@ The extension carries a copy so it still works for someone who never installed t
 The spawn line is fixed and short, then one flag per set option:
 `claude --output-format stream-json --verbose --input-format stream-json`.
 Everything else is mechanical translation, the same table our options would produce: `--model`, `--effort`, `--thinking adaptive|disabled`, `--max-turns`, `--max-budget-usd`, `--setting-sources=…`, `--allowedTools`, `--disallowedTools`, `--permission-mode`, `--mcp-config`, `--resume=<sid>`, `--session-id=<sid>`, `--fork-session`, `--include-partial-messages`.
+
+This page owns the DRAWER and nothing else: the three permission tiers, streaming, rendering, cost, its session handling, and every part of it a reader touches.
+The rules it obeys about who may hold a session are `QD1`'s, the real terminal is `QD3` and its form on a small screen is `QD4`, and the shell that puts the drawer in its own frame is `QD5`.
+Whether a reader can TRUST what the drawer shows, along BINDING · TURN · CONTINUITY · HANDOVER · INTERRUPTION, is tested by `QF4`, which is also where "were these fixes ever clicked in a browser" belongs.
+How well this page is WRITTEN is `QB4`'s grammar and `QF1`'s checker, recorded here 260801 only because JL asked it on this page ("为什么你不 follow 我们现在的 guideline 呢… 这是哪个 Q 要管的事儿啊") and the answer is that it is not this page's to own.
 
 ### 2 · The protocol on that pipe
 ```
@@ -179,13 +196,18 @@ The decisive point: the slowness is not Python against JS, it is that we drop th
 
 ### 6 · The goal, stated properly: migrate the plugin ONTO the board (JL 260731)
 ```
-   🧩 VS Code plugin                       🗒️ this board
-   ───────────────────────────────────     ───────────────────────────────────
-   🖼️ webview/index.js   the chat UI  ─▶   board.html's drawer
-   🖥️ extension.js       the host     ─▶   serve.py
-   🔌 vscode.postMessage the wire     ─▶   POST /_board/chat + NDJSON
-   🤖 bundled Agent SDK  the engine   ─▶   claude_agent_sdk  (same SDK)
-   ⌨️ the claude binary               ─▶   the same binary, from PATH
+   🧩 VS Code plugin                       🗒️ this board                      state
+   ───────────────────────────────────     ─────────────────────────────────  ─────
+   🖼️ webview/index.js   the chat UI  ─▶   board.html's drawer                  ✅
+   🖥️ extension.js       the host     ─▶   serve.py                             ✅
+   🔌 vscode.postMessage the wire     ─▶   POST /_board/chat + NDJSON           ✅
+   🤖 bundled Agent SDK  the engine   ─▶   claude_agent_sdk  (same SDK)         ✅
+   ⌨️ the claude binary               ─▶   the same binary, from PATH           ✅
+   🏛️ the workbench      one long-    ─▶   QD5's shell: the chat frame is its   ✅
+                         lived UI          own document, and it docks              260802
+   🔁 the RETAINED       a hidden     ─▶   the ring: a turn survives its         🟡
+      webview            panel keeps       reader, and a returning reader           A9.1
+                         its state         re-attaches at a cursor
    🌉 IDE bridge (WebSocket)          ─▶   ❓ nothing yet, and this is the interesting one
 ```
 The frame is not "make the drawer more like the plugin".
@@ -208,209 +230,222 @@ The IDE bridge is the one piece we cannot copy, because it exists to put things 
 The drawer answers the same need in its own surface and already ships the important half, the diff preview at the permission gate.
 So "exactly the same" is exact at the engine and protocol layer, and deliberately different at the surface layer, which is the alignment line this page already holds.
 
-## Items to Finish
-### 🚀 It runs, resumes, and pays its way
-- [x] Starts a session, reads board files, answers correctly
-      `claude-agent-sdk 0.2.126`, verified.
-- [x] No separate auth work
-      The SDK drives the machine's `claude` CLI and inherits the logged-in OAuth (`~/.claude/.credentials.json`).
-      Same as `haichat-inlab`; read its source: zero special OAuth handling.
-- [x] Sessions resume, and visibly so
-      `session:` sits in the Q file header, beside `state:` / `owner:`.
-- [x] Cost squeezed to acceptable
-      Default $0.92 → **$0.24** after narrowing; a follow-up message **$0.012**.
+### 8 · What a drawn interface has to be given
+```
+🎛 FOUR things nobody gave the drawer          22 defects · ✅12 🟡2 ❌8
+   🪟 THE VIEWPORT IS BORROWED      it is fixed OVER a page it does not control
+   🔁 THE VIEW IS REGENERATED       build.py bakes it into every page, so it dies with each
+   ✍️ THE RECORD IS WRITTEN ONCE    at `done`, the last thing the stream ever sends
+   🎛 THE CONTROLS WERE NEVER GIVEN a terminal has them for free; a drawn surface does not
+   ⚠️ not four UI complaints: state a reader can see has to be PUT somewhere, and
+      three of these four rows are one mechanism away from each other (§9)
+```
+JL asked twice on 260801 whether the day's problems should become a division named for the surface, something like Mobile Usage or UI Experience, and the first answer here was no, on the grounds that filing them under UI would file architecture under taste.
+That answer was half right: the grouping by OWNER stands, because every defect arrived as a feeling about the interface and turned out to be a fact about where state lives, but the NAME was a metaphor that told a cold reader nothing.
+The subject is the interface, and the Opening already names why it needs one: a terminal inherits its behaviour, a drawn interface has to be given all of it, and this section is the list of what nobody gave it.
+The fourth row is new and is what the rename makes room for: rows one to three are state a reader can lose, row four is an affordance a reader never had, and both are things a drawn surface has to be handed.
 
-### 🚦 The permission gate is real
-- [x] Three permission tiers, default "full·ask" (JL 260723)
-      A dropdown at the drawer's bottom: restricted-to-this-Q / full·ask / full·auto.
-      Full tiers use setting_sources=["user","project","local"] → **the Skill tool is available; ~150 skills visible in practice**.
-      "full·ask" prompts per tool call (= CLI default behavior), "full·auto" = bypassPermissions, zero prompts.
-- [x] The restricted tier actually restrains
-      can_use_tool is not reliably invoked for Bash in default mode (verified: Bash slipped through), so the restricted tier hard-disables Bash/Task/Skill/Web via `disallowed_tools`, an SDK-level blacklist, no callback involved.
-      Verified: forcing Bash in restricted mode reports "Bash exists but is not enabled in this context".
-- [x] The hard gate has been genuinely triggered
-      Forced a real `Edit` against `board.md`; the tool layer blocked it: `denied: ['Edit -> …/board.md']`, `board.md` untouched.
-      The check compares **resolved absolute paths**, not name strings.
+Scope, corrected on JL's ask 260801 ("focus on the SDK GUI version… the problems for QD2 only"): everything below is the DRAWER's own behaviour.
+Two classes that were briefly filed here have gone back to their owners, and the Boundary now names both: how well this page is WRITTEN is `QB4`'s grammar and `QF1`'s checker, and whether the drawer's fixes were ever clicked in a browser is `QF4`, which already exists as "Driving the talk layer: the SDK chat version and the TUI chat version".
 
-### 💬 The drawer is a usable surface
-- [x] Compact shortcut and settings menus (260731)
-      The drawer now starts with only two small buttons: `✨ Quick actions` and `⚙ Settings`.
-      The first reveals one-click, read-only prompts — Quality Check, Where are we?, What next?, Clarify aim, and the page/board-specific missing-item prompt. The second reveals model, effort, permission tier, session controls, and cost. Only one panel opens at a time, and starting a turn closes it again.
-- [x] An entry on the page
-      A `💬 Chat` per card; a full right-side drawer (modeled on haichat-inlab's drawer).
-- [x] Character-level streaming
-      `include_partial_messages` → `content_block_delta`, NDJSON as-it-comes.
-      Measured: first text at 8.1s.
-- [x] Model and effort selectable
-      Opus 4.8 / Sonnet 5 / Haiku 4.5 × low→max, default **opus + high**.
-- [x] Stoppable mid-run
-      ⏹ → `/_board/stop` raises a flag (wraps up at the next message boundary) + browser `AbortController`.
-- [x] Acts on comments
-      Opening the drawer first syncs unsaved comments, then one button "🔧 handle N open comments" sends a ready-made prompt.
-- [x] Markdown renders inside replies
-      The drawer carries a small renderer (headings / lists / code blocks / inline code / bold-italic), escape-then-render, no third-party library.
-      Rendered even while streaming.
-- [x] System language defaults to English
-      CHAT_RULES / FULL_RULES both say "Answer in English by default"; the drawer UI is fully English.
-- [x] The drawer works through the console too (260724)
-      `haichat-inlab`'s `boards_api.py` relays `/_board/chat` (NDJSON stream), `/_board/answer`, `/_board/stop` to the workstation serve.py; verified end to end: a "Reply with exactly: RELAY OK" turn streamed `delta`/`done` lines through port 8093.
-      One implementation; the console is only a pipe (`QE3`'s Law).
-- [x] The drawer header is a clean utility bar (JL 260725)
-      The heavy blue banner became a neutral 56px header with a small mono page id, a single-line title that ellipsizes only when space runs out, and two compact square controls.
-      The terminal control uses stable `>_` text instead of a tiny platform-dependent keyboard emoji; both controls have hover, keyboard-focus, tooltip, and accessible labels.
+Every row below is a thing JL hit, read off both session transcripts rather than from memory (`ccda0c28-ef7e-47e0-a7e1-c13abc4f4cea` + `8c9903ba-dadb-4f00-bdd1-823986cac937`, 98 user messages, 260723 14:36 → 260801 20:43).
 
-### 🧩 Match the VS Code extension
-The target is JL 260724, "I want to duplicate it"; the engine underneath is already the same local claude runtime, so each row below is ONE affordance a reader can judge on its own.
-- [ ] ① The permission prompt shows the proposed edit as a diff
-      BUILT 260724: the ask event carries `detail` (Edit: old/new; Write: current-file vs proposed; MultiEdit: per-edit pairs; Bash: the command), and the drawer renders − red / + green blocks above Allow/Deny; the emitted JS is node-checked.
-      Not ticked because the live gate-pop is still owed: the full-tier E2E boots ~150 skills and outran the test window, the turn was stopped cleanly, and board.md was verified untouched.
-- [ ] ② Typing `@` pulls a repo file into the message
-      Ours to build, not the SDK's: a picker over the repo plus the chosen path injected into the outgoing message (Content §4 M4).
-- [ ] ③ A plan-mode toggle runs a read-only planning turn before any edit
-      It is `--permission-mode plan`, reached through M2's `set_permission_mode()`, so it lands free once M1 does.
-- [ ] ④ One `claude` process serves every turn of a session
-      Specified as Content §4 M1, the session-host thread; the 260731 teardown proved this is the ONLY engine-layer gap and named its blocker: a client cannot cross async runtime contexts, and serve.py runs a fresh `anyio.run` per POST.
-- [ ] ⑤ A turn can be rewound to an earlier checkpoint
-      UNPARKED 260731: it is `rewind_files()` (M3), and it stopped fighting the LAW when JL amended `QD1` to many sessions per question.
-      It needs `enable_file_checkpointing=True` plus `replay-user-messages`, both option flips.
+```
+🪟 THE VIEWPORT IS BORROWED                                    4 · ✅3 🟡1
+   ✅ a wheel over the drawer scrolled the PAGE behind it
+   ✅ opening landed at the oldest message, not the newest
+   ✅ scrolling up during a live turn snapped the reader back down
+   🟡 below 820px it overlays instead of docking; ⇤ Page shipped, R3 owed
+      └ the phone is the usage mode, not the edge case (JL 20:16)
 
-### 🔭 Owed beyond the extension
-- [ ] A ten-minute turn completes without hitting the HTTP timeout
-      Today one HTTP request waits start to finish, so a long job dies on the timeout.
-      (NOT the same root as the old "writes hang" issue; that one was diagnosed and fixed, see Lesson.)
-- [ ] The drawer accepts and sends a heading-focus packet
-      Accept the generated heading path from `QAb3`, display it in the existing Focus card, and send page id, section/subsection names, source file, and visible block with the next user message.
+🔁 THE VIEW IS REGENERATED PER PAGE                            7 · ✅3 🟡1 ❌3
+   ✅ close → reopen rebuilt every bubble; the flash read as janky
+   ✅ reopening mid-turn did nothing: the guard returned above `.on`
+   ✅ a reload rebuilt the chat box while the terminal held the session
+   🟡 a replayed session does not paint like a live one
+      └ markdown · tool cards · timestamps landed; gate diffs + 💭 thinking owed
+   ❌ starting a new session leaves the page unchanged, with no switch
+   ❌ history has no selectable turn boundary, so two turns cannot be compared
+   ❌ the drawer is generated into every page at all              → §9 R2
 
-## Where we are
-Usable.
-The `🤖 Chat` you click on the page is this.
+✍️ THE RECORD IS WRITTEN AT EXACTLY ONE MOMENT                 6 · ✅4 ❌2
+   ✅ the reply appeared only after sending the NEXT message
+   ✅ the drawer never re-asked the server: syncFromServer had one caller
+   ✅ a cut-short turn dropped the text that had already arrived
+   ✅ a group's history was written under `<id>` and read under `G:<id>`
+   ❌ an in-flight turn dies with the HTTP response that carries it → §9 R1
+      └ navigate away · switch a setting · let it run long
+   ❌ a ten-minute turn hits the HTTP timeout                     → §9 R1
 
-- The control surface is compact by default (JL 260731)
-      Configuration no longer occupies permanent vertical space in the drawer. A user chooses either Quick actions or Settings when needed; action chips are hidden again as soon as a message starts. Quality Check remains server-enforced read-only even if Settings previously selected full auto.
+🎛 THE CONTROLS WERE NEVER GIVEN                               5 · ✅2 ❌3
+   ✅ 🗂 Sessions, as a composer tab rather than a fold
+   ✅ the context-usage meter: ctx 38% (62k/200k)
+   ❌ typing `@` does not pull a repo file into the message
+   ❌ no plan-mode toggle for a read-only planning turn
+   ❌ two named sessions on one page cannot be live at once
+      └ blocked on a `QD1` ruling: HOLD keys on the SCOPE
+```
+Read down the ❌ column and the shape is not eight separate builds.
+Five of the eight are `QD1`-blocked or closed by §9's R1 and R2, one is R3, and only two are genuinely their own work: `@`-mentions and plan mode, which are the two the page has always called chrome.
 
-- Reading the extension named the real gap, and a fourth architecture with it (JL 260731)
-      JL: "I feel the current SDK chatbot is somehow not that good?"
-      The engine is not the gap.
-      `claude_agent_sdk` spawns the same binary over the same stream-JSON protocol the extension drives, so SDK and CLI are one engine wearing two harnesses, and no capability is missing by construction.
-      The gap is that serve.py boots a `claude` per POST while the extension holds one per session, and that single fact is the root of both symptoms: first text at 8.1s and a full-tier message near $0.9, because every message reloads the ~150-skill registry.
-      The code already says so out loud, in the stage line it emits while you wait ("booting claude, the full tier loads the whole skill registry, the first message is the slow one").
-      The consequence is larger than item ④ was written to be.
-      If serve.py holds `claude --input-format stream-json --output-format stream-json` open per question and writes into its stdin, it gets a live structured event stream with no boot cost, no screen to repaint, and the permission channel intact.
-      That is `QD3m` route B without the jsonl tail: myrlin reads the transcript off disk because it does not own the process, and we do own it.
-      So this page and `QD3m` may be converging on one build instead of two.
+#### The viewport is borrowed
+The drawer is `position:fixed` over a page it does not control, so anything it declines to handle, the page handles instead.
+A wheel it cannot use scrolls the page behind it, and `overscroll-behavior` cannot fix that half alone, because the property governs a scroller that has REACHED its edge and not one that never overflowed.
+Below 820px the drawer stops docking and covers the page outright, so "go back to the page" stops existing as an action and only "close the chat" remains.
+The VS Code panel docks at every width, and that one difference is what makes it read as part of the editor rather than as a thing on top of it.
+Read from the transcript 260801 and correcting how this was filed: below-820px is not an edge case to rule on later, it is the machine JL was holding when he hit the last five defects of the day ("我他妈我现在在手机上操作，我咋按这个键啊", 20:16).
+The phone is a usage mode, so docking at every width is a requirement rather than a fork.
 
-- Section/subsection focus is designed, not implemented (JL 260730)
-      `QAb3` now defines one generated breadcrumb per visible heading plus Copy and Chat actions.
-      This drawer remains the one engine and one page session; it only needs to accept the new heading-focus packet alongside the existing sentence-focus packet.
+#### The view is regenerated per page
+`build.py` embeds the chat into every self-contained board page, so the view is re-instantiated on each one and dies with it.
+That is the shared root of three separate-looking bugs: the drawer opened at the top because the replay ran while it was still `display:none`, a reload rebuilt it as the chat box while the terminal held the session, and navigating away aborted the turn.
+It is also why a fix does not reach the reader until the page is reloaded, which is the same coupling seen from the maintenance side.
+The VS Code split is the target and half of it is already ours: the extension host is a separate process that never touches the DOM, and M1's SessionHost is exactly that.
 
-- The chat header is now quiet and scannable (JL 260725)
-      The screenshot showed four competing shapes in one bright strip: a muted pill, oversized title, tiny keyboard glyph inside a large button, and a circular close button.
-      The revised header uses one neutral surface and one control shape; id is metadata, title owns the remaining width, and terminal/close sit as a consistent pair.
+#### The record is written at exactly one moment
+The transcript is saved when a turn reaches `done`, and `done` is the last thing the stream ever sends, so it is precisely what a cut connection loses.
+A turn that ends any other way leaves the question saved and the reply gone, which is why an answer seemed to arrive only after the next message was sent.
+The same fragility appears in the small: the send path wrote the log under a bare id while the load path read a group under `G:<id>`, so a group's history was written to one key and looked for under another.
+Both carry one lesson, which is that a record with a single writing moment has a single moment in which to be lost.
+Corrected 260801 from the transcript: this page dates the defect to 260801 and to having been found "by USING it", and it is a day older than that.
+On 260731 between 14:34 and 15:45 the same four probes were sent fourteen times, seven of them the identical "Narrate one short sentence before each step" and three the identical "Reply with exactly: HELLO", with no complaint attached to any of them.
+The re-sends WERE the symptom and nobody read them as one, which is the strongest argument on this page for the repeatable check: a defect that only shows up as a person quietly retrying is invisible to every method except driving it.
 
-- The drawer also opens from the index page (JL 260725: "just add a chatbot in the index page")
-      The bottom-right 🤖 button on the index opens this same drawer with `file=board.md`: the orientation block carries the index's view (spine, close, every page's state and open comments), the restricted tier's "own files" widens to any `.md` inside the board folder (verified 260725: an in-board Write passed, a /tmp Write was denied), and the session id sits in `board.md`'s header (`session:` under `close:`), resuming like any question's.
-      Everything else is unchanged: three tiers, streaming, the gate, ⌨ to the `QD3` terminal.
-      No second engine.
+#### The controls were never given
+The first three rows are state a reader can LOSE; this one is a control a reader never HAD, and it is the row that most directly answers why a terminal felt better.
+A terminal hands you scrollback, a session list and a status line for free because the emulator has always had them, while every one of those is a thing the drawer must be handed one at a time.
+The evidence is that each arrived only when JL asked for it by name: the session picker on 260801 17:35 ("我怎么能加一个新的 button，叫 Sessions"), the context meter at 17:46 ("我怎么看到我现在这个 context 的 usage，就是用了百分之几"), and both took an afternoon each.
+What is still missing is `@`-mentions and plan mode, and they stay last on purpose, because they are affordances on top of a harness whose state problems are the thing actually felt.
 
-- Three permission tiers, dropdown at the drawer bottom (JL ruled 260723, default "full·ask")
-      · restricted-to-this-Q: setting_sources=[], read + edit this question's files only, Bash/Task/Skill/Web hard-off, cheap ($0.24, no skills) · full·ask: all tools + all skills; touching anything else prompts allow-once / always / deny (= CLI default) · full·auto: permission_mode=bypassPermissions, zero prompts (= --dangerously-skip-permissions) Switching to "full" loads the skill registry; a message climbs back to ~$0.9; the restricted tier skips that bill.
-- Skills are callable now
-      Full tiers with setting_sources=["user","project","local"] → the Skill tool appears; it counted ~150 skills, can invoke diagram-ascii, haipipe-paper and the like by name.
-      Exactly the "open like the CLI" goal.
-- The three tiers restrain differently
-      Restricted: `disallowed_tools` hard-off for dangerous tools (can_use_tool is not reliably called for Bash; the blacklist is the solid way). full·ask: permission_mode=default + can_use_tool, per-call prompts (writing allowed_tools or switching mode bypasses the callback, the inlab pitfall). full·auto: permission_mode=bypassPermissions, no callback at all.
-- Knows its question the moment it opens (JL 260723)
-      The system_prompt carries a `prime_context` block: board + question id + title + what it asks + open comment count + file path.
-      So the first thing you type, it already has the background.
-      Verified: restricted tier, no context given, asked "which question are you on", answered QF2 · Fresh-agent acceptance test.
-- Sessions open at the SPACE root, not the board folder (JL 260723)
-      `ClaudeAgentOptions(cwd=...)` now points at the whole repo, matching the QD3 terminal: a session must read the code it discusses; the board folder alone is too narrow.
-      The system prompt hands out repo-root-relative paths, not bare file names.
-      The restricted tier still edits only this question's files (can_use_tool compares absolute paths); full tiers open up.
-      Same Lesson as QD3: changing cwd strands old sessions; every question restarted under root.
-- Python comes from the repo's own venv
-      The SDK needs 3.10+; system `python3` is 3.9.6.
-      The repo `.venv` is 3.13.14, fine; it has no pip because **uv manages it**: `uv pip install --python .venv/bin/python claude-agent-sdk`.
-- The three-step usage (JL's)
-      ① open the drawer, unsaved comments sync first → ② click "🔧 handle N open comments" → ③ "↻ reload the page to see the result".
-      The server regenerates the html after editing the md, so a reload suffices.
+### 9 · The one build that closes them, and it already exists next door
+```
+🖥️ QD3 terminal — already right              💬 QD2 chat — the gap
+   PTY master fd                                claude_agent_sdk
+        │ one reader thread  term.py:195             │ one HTTP handler
+        ▼                                            ▼
+   🔁 ring bytearray  ≤256KB                     ✂️ self.wfile.write()  chat.py:637
+      RING_CAP  base.py:65                          the response socket ITSELF
+        ├──▶ 🧑 client A                            ❌ no ring
+        ├──▶ 🧑 client B                            ❌ no client list
+        └──▶ 🧑 client C                            ❌ no replay
+   🔌 reconnect → ws_send(b"0"+ring)  term.py:679   🚪 reader leaves → emit() fails
+   ⏳ grace deadline → 秒接, 进程根本没死过            → stop.set() → the turn DIES
+```
+The target is not a new architecture, it is the one QD3 shipped: a terminal survives a reload because its bytes go to a RING that clients attach to, and chat's bytes go straight down the socket of whoever happened to ask.
+That single asymmetry is the mechanism under three of the five rows above, and it is why the VS Code panel feels different rather than merely nicer.
 
-**🧩 How the Claude Code VS Code extension relates (JL asked 260724; "duplicate it" is the goal)**
+- R1 · the ring, ported from `term.py` — 🟡 BUILT 260801, server half proven, one client defect open
+  `live/turnring.py` is the module: one `Turn` per question key, events carrying a monotonic `n`, a 1MB/20k cap that trims from the front and reports a `gap` rather than a silently short stream, and a 600s grace window. `emit()` now pushes into it and `chat()` spawns a runner thread, so the request is no longer the turn's owner but its FIRST READER; `POST /_board/attach {file, cursor}` is how the second one joins.
+  Proven by `checks/ring_e2e.py`, which is shaped like the complaint rather than like the code: start a turn, hang up the socket the way navigating does, re-attach at the cursor, and demand the rest. It gets it — 117 events and an 11k-character answer that the original reader never saw.
+  Two defects the wire test could not see and a real browser did, which is the rule working: a FINISHED ring was re-attached on every 25s heartbeat and repainted its answer each time (fixed: attach declines a finished turn, because once it ends the transcript is the right source), and the cursor was keyed on `logKey()`, which folds in a session id that CHANGES mid-turn (fixed).
+  STILL OPEN, and it is why this row is 🟡 rather than ✅: after a real reload the drawer does attach — `REJOIN at cursor 2` appears in its own diagnostics — but at a cursor near zero rather than where the reader left off, so it replays instead of resuming. The mechanism is live; carrying the reader's place across the reload is not.
+  `emit()` writes into a per-session outbox with a monotonic cursor and fans out to every attached client, instead of writing to one `wfile`.
+  A departed reader stops being an event: no `stop.set()` at chat.py:628, no `fut.cancel()` + `host().evict()` in the `finally`, and `gate()` keeps answering permission requests for the life of the TURN rather than the life of the request.
+  Closes: the turn dying on navigate, reload, config switch or timeout; the ten-minute turn; and `这一题当前没有在跑的对话`.
+- R2 · the retained view — ↪ RETIRED 260801 to `QD5`, which had already built it
+  The plan was to stop the drawer being rebuilt per page by making it a retained view attached to the ring by cursor, VS Code's webview answer to "打开、关了、又打开，它就没有那么丝滑了".
+  Reading `QD5`'s shell rather than its summary closed the row: the chat frame's src IS `<page>.html?pane=chat`, so the drawer is ALREADY its own document and no page navigation can reach it.
+  That is the same outcome one layer up, and a better one, because it removes the rebuild instead of recovering from it.
+  What survives here is only the half `QD5` does not touch, which is that a replayed session still paints in a poorer format than a live one; that stays in §8's second row as its own item.
+- R3 · dock at every width — ↪ RETIRED 260801 to `QD5`, same reading
+  `shell.py`'s own stylesheet already does it: `@media(max-width:820px)` switches the grid to `grid-template-rows:1fr 5px 1fr` and hides only the rail, so page and chat are both visible on a phone.
+  The fork this page carried, overlay-with-a-way-back against collapse-to-a-tab, is answered by neither: the shell simply stacks them.
 
-- Its backend, anatomically (inferred 260724, read from disk 260731 at v2.1.220)
-      The extension does NOT implement an agent.
-      `resources/native-binary/claude` is a 245MB copy of the CLI that the extension SHIPS and spawns itself, so it never depends on the `claude` on your PATH.
-      `extension.js` talks to that subprocess in stream-JSON over stdin and stdout, the exact protocol `claude_agent_sdk` wraps; the bundle's flag surface includes `--input-format`, `--output-format`, `--include-partial-messages`, `--fork-session`, `--no-session-persistence`, `--max-turns`, `--max-budget-usd`, `--effort`, and `--model`.
-      Permissions come back as control messages on that channel (what our `can_use_tool` receives); one process stays alive across the turns of a session; sessions land in the same `~/.claude/projects/<cwd>/<sid>.jsonl`; auth is the CLI's own login.
-      `webview/index.js` is a 5MB chat UI: web chat, never a terminal.
-      The IDE bridge runs the opposite way from how it reads: the EXTENSION listens on a WebSocket and the CLI dials OUT to it, discovering it through `~/.claude/ide/<pid>.lock` (`{"pid":…,"workspaceFolders":[…],"ideName":"Visual Studio Code","transport":"ws","authToken":…}`, two live on this machine right now).
-      That bridge is what carries the editor-native affordances: the diff view, selection context, diagnostics.
-- So the drawer already IS the duplicate, at the engine layer
-      serve.py's `chat()` = ClaudeSDKClient = the same subprocess + protocol + session store + permission channel.
-      What differs is the shell around it: the extension holds ONE live process per session (instant follow-ups), and its gate shows the proposed edit.
-      The first is item ④ above; the second shipped today (①).
-- What the drawer already matches
-      allow-once / always / deny prompts (= the extension's permission dialog) · character streaming with a collapsible thinking block · model + effort pickers · per-turn cost · resumable sessions.
-- What the extension has that the drawer lacks
-      @-file mentions · plan mode · checkpoints/rewind (parked: it fights the one-window rule) · ONE live process per session (item ④, the real architectural delta).
-      Two former gaps have closed since this list was written: the diff preview at the permission prompt (① BUILT 260724), and the session picker, which flipped from "deliberately NOT wanted" to SHIPPED on 260731 when JL amended `QD1`'s Law to one Q, many sessions (the drawer's 🗂 Session strip).
-- The alignment line to hold
-      adopt affordances, never a second engine: everything stays `serve.py` + `claude_agent_sdk`; the drawer copies the extension's UX where it makes the gate more informed (diff preview first).
-      Holding the process ourselves does not cross that line: it is the same binary and the same protocol the SDK already drives, with the subprocess kept instead of dropped.
+So §9 is ONE build, not three, and the two that left were not descoped but already delivered next door.
+R1 stands alone because the turn dying with its HTTP response is a SERVER fact, three sites in `live/chat.py`, and no arrangement of frames reaches it.
+The blocker is named and is not technical: `QD1`'s HOLD keys on the SCOPE path while the Law's stated reason is the shared jsonl, and a resumable channel redefines "one live window", so two named sessions on one page cannot be live together until that Law is re-ruled.
 
-- 260801 CC · 🔌 The drawer became a VIEW of the session rather than its owner
-  JL: "when it is reloaded the chat box UI is just gone... should I make chat detached from page html?"
-  Measured first: a turn started before a reload finishes on the SessionHost and lands in the .jsonl whether or not a browser is watching, so the session was already detached and only the RENDER was not.
-  The drawer replayed a log kept per page in localStorage, which is why a reload showed whatever this tab last saved instead of the conversation.
-  It now paints from localStorage instantly, then adopts the server's transcript when the server knows more; verified by reloading mid-turn and watching the rebuilt drawer recover an answer it never saw stream.
-  A reload now costs the live trace of an in-flight turn and nothing else.
+CORRECTION, 260801, mine to make: this page briefly warned that R1's held `/_board/attach` would compete with `QD5`'s `/_events` for the browser's six connections per origin.
+That was written from `QD5`'s prose and is wrong. `/_events` holds nothing: it is one small JSON ask every 400 ms on a pooled connection, and `shell.py`'s own docstring explains that a held stream was built FIRST and removed precisely because it cost a connection.
+The budget question is still real but smaller and differently shaped: the held connections are the terminal's WebSocket and R1's own two, the turn stream and an attach.
 
-- 260801 JL · 🎛 Opus 5 is the default, and a finished turn carries its date
-  `MODELS["opus"]` is `claude-opus-5` and the picker leads with it; `opus48` stays selectable because a resumed session was created under its own model.
-  The meta line reads `finished 260801 00:48` rather than `finished 00:48`, since a bare time is ambiguous the next morning.
+## Aims
 
-- 260801 JL · 🕘 Picking a session shows that session's real history
-  New `POST /_board/session-log` reads the session's `.jsonl` and returns user and assistant text in order, skipping tool traffic, reminder blocks and the board's own priming message, keeping the last 120.
-  Before this, picking a session showed only the priming line, because the drawer had no transcript for a session it did not create in this browser.
+### C4 · What "exactly the same as the extension" costs, in milestones
+- A4.1 · One `claude` process serves every turn of a session, instead of one booted per POST.
+  **Done when:** a follow-up message reaches its first token without reloading the skill registry, and costs a fraction of the first.
+- A4.2 · The streaming-mode verbs are reachable from a live session.
+  **Done when:** `interrupt()`, `set_model()`, `set_permission_mode()` and `get_context_usage()` all work mid-conversation with no reconnect.
+- A4.3 · A turn can be rewound to an earlier checkpoint.
+  **Done when:** `rewind_files(user_message_id)` restores the files a turn changed.
+- A4.4 · Typing `@` pulls a repo file into the message.
+  **Done when:** a picker over the repo inserts a path the model then reads without being told where to look.
+- A4.5 · A plan-mode toggle runs a read-only planning turn before any edit.
+  **Done when:** the drawer enters `--permission-mode plan` mid-conversation and leaves it again.
 
-- 260801 JL · 🏷 Renamed and re-cut around what is still open
-  JL: "We can call it SDK chat version, and TUI chat version" and "could you rethink about the Q in QD?"
-  The Opening asked how much permission the drawer should get, which shipped as three selectable tiers; it now asks whether a reader can trust what the drawer shows, which is where every 260731 failure lived.
-  `QF4` is the face that tests this one, and it names BINDING, TURN, CONTINUITY, HANDOVER and INTERRUPTION as the axes.
+### C8 · What a drawn interface has to be given
+- A8.1 · The drawer never moves the page behind it.
+  **Done when:** a wheel anywhere over the drawer scrolls the drawer or nothing, at every transcript length.
+- A8.2 · A reader can see the page and the chat at once, at any width.
+  **Done when:** a phone-width reader reads the page and the chat without closing either.
+- A8.3 · Reopening the drawer costs a repaint, not a rebuild.
+  **Done when:** closing and reopening the same scope produces no flash and no re-parse, however often it is done.
+- A8.4 · A replayed session paints exactly like the live turn it is a recording of.
+  **Done when:** a session picked from 🗂 carries the same markdown, tool cards, gate diffs and 💭 thinking a live turn carries.
+- A8.5 · Two named sessions on one page are live at the same time.
+  **Done when:** `QD2-type-1` and `QD2-type-2` both run, and neither takes the other's HOLD.
+- A8.6 · One history turn can be compared against another.
+  **Done when:** a reader selects two turns and sees them diffed with the same − / + renderer the permission gate already uses.
+- A8.7 · Whatever a turn produced survives every way a reader can leave.
+  **Done when:** navigating away, reloading, switching a setting, locking a phone and waiting ten minutes each leave the answer readable afterwards.
+- A8.8 · The drawer has the controls a terminal gets for free.
+  **Done when:** a session list and a context meter are reachable from the composer without leaving the page.
+- A8.9 · A reader chooses which chat they are opening, and sees what is already running before they commit.
+  **Done when:** the bottom-right button offers GUI-Chat and TUI-Chat as a list, each row reporting whether a turn is live or a terminal is parked, with the last choice marked.
+
+### C9 · The one build that closes them
+- A9.1 · A turn outlives the request that started it, and a returning reader rejoins it where it stopped.
+  **Done when:** hanging up mid-turn and re-attaching delivers the rest of that turn from the reader's own cursor.
+  **Plan:** R1, the ring ported from `term.py`. R2 and R3 are retired into `QD5`, which had already built both.
+
+### P · Page-level
+- P1 · The drawer runs, resumes, and pays its way.
+  **Done when:** a session starts, answers, resumes by id, and a follow-up message costs cents.
+- P2 · Each permission tier restrains exactly what it says it restrains.
+  **Done when:** the restricted tier's blocked tools are refused at the tool layer, and the ask tier prompts for everything else.
+- P3 · The drawer's own behaviour is covered by a repeatable check.
+  **Done when:** a browser-driven suite asserts the scroll, dock, replay and session-list behaviours, and is run before any fix here is claimed.
+
+## States
+
+### C4 · What "exactly the same as the extension" costs, in milestones
+- ✅ A4.1 · Built 260731 as M1: a daemon thread owns one asyncio loop for the process's life and `SESSIONS[question] -> {client, inbox, outbox}`, so the browser protocol did not change at all. The blocker it had to clear was that the SDK forbids a client crossing async runtime contexts while `serve.py` ran a fresh `anyio.run()` per request.
+- 🔨 A4.2 · One of four landed. `get_context_usage()` ships and is read once per turn on the existing `done` event, so it costs no extra call and degrades to absent rather than wrong; it is shown as `ctx 38% (62k/200k)`. `interrupt`, `set_model` and `set_permission_mode` are reachable now that the client is held and are not wired.
+- ⬜ A4.3 · Unparked 260731 when JL amended `QD1` to one question, many sessions, so rewind no longer forks a second history. It needs `enable_file_checkpointing=True` plus `replay-user-messages`, both option flips.
+- ⬜ A4.4 · Ours to build rather than the SDK's: a picker over the repo plus the chosen path injected into the outgoing message.
+- ⬜ A4.5 · Free once A4.2 lands, since it is `--permission-mode plan` reached through `set_permission_mode()`.
+
+### C8 · What a drawn interface has to be given
+- ✅ A8.1 · Fixed 260801 in two parts, because `overscroll-behavior` governs a scroller that has REACHED its edge and not one that never overflowed: `contain` on every inner scroller, plus a `wheel` handler that walks up from the pointer and keeps the event when nothing inside can take the delta. A nearly empty transcript was the case with nothing to scroll, which is why it seemed to heal after the first message (JL: "感觉还是背后的那个 page 页面在滑动").
+- 🔨 A8.2 · A labelled `⇤ Page` button ships and appears exactly at the width where the drawer stops docking. ↪ Answered inside `QD5`'s shell, whose `@media(max-width:820px)` stacks page over chat and hides only the rail; this row stays open only for a drawer on a page opened alone, which is the packaging `QB2` requires.
+- ✅ A8.3 · Fixed 260801: when the same scope is already painted and no turn is running, the drawer is shown again rather than torn down and rebuilt from storage. `chatOpen` had re-parsed markdown for every bubble and then sometimes rebuilt a second time when the server answered, and the flash between the two is what read as janky (JL: "打开、关了、又打开，它就没有那么丝滑了").
+- 🔨 A8.4 · Half. `session_log` now carries each message's `timestamp` and every `tool_use`, one `replayRow()` draws bubbles, tool cards and dated turn separators, and the tail cap rose from 120 to 300. Still owed for parity: the gate diffs, the 💭 thinking block, and a load-earlier control instead of a hard cap.
+- 🧠 A8.5 · Blocked on a `QD1` ruling, not on this page. HOLD keys on the SCOPE path while the Law's stated reason is that "two front ends on the same jsonl still fork histories"; two named sessions are two different jsonls, so the key is stricter than the rule that justifies it.
+- ⬜ A8.6 · Not started. The replay is one flat text list with no turn boundary a reader can select, so there is nothing to compare yet.
+- 🔨 A8.7 · Most ways closed, one open. Closed 260801: `emit()` no longer calls `stop.set()` when a write to a departed browser fails, so leaving the page loses the view and not the work; a cut-short turn saves what streamed, marked `partial`, and the sync adopts whenever anything provisional is present; `syncFromServer` retries at 1.5s, 4s, 9s and 20s, re-asks on tab and window focus, and keeps a 25s heartbeat, after having had exactly one caller; and one `logKey()` helper owns both halves of the group-chat store, which used to write under `<id>` and read under `G:<id>`. Open: the live trace of a running turn, and the ten-minute turn against the HTTP timeout, both of which are A9.1.
+- ✅ A8.9 · Shipped 260802 on JL's ask ("could we make it a list that I can choose GUI-Chat or TUI-Chat"). The board had two chats and one button, so which one you got was decided by a `board-tui-default` preference you could not see, and the only way to switch was the `>_` in the drawer header, which is hard to find on a phone. `#chatpick` is two rows on the FAB only: the per-card `🤖 Chat` still goes straight to the last-used view, because its reader has already decided what they want and twelve choosers would be noise. Each row reports what no surface reported before, which is whether something is already running: `POST /_board/attach {probe:1}` answers for a turn without joining its queue, and `term-probe` answers for a parked PTY. Verified by clicking it: the menu drew both rows, the TUI row read `🟢 a session is parked here` and carried the last-used dot, the drawer stayed shut until a row was chosen, and choosing GUI opened the drawer with `termon` off and the preference flipped to `0`; zero JS exceptions.
+- ✅ A8.8 · Both shipped 260801 on JL's ask, each after he named it. `🗂 Sessions` became the middle composer tab between `✨ Quick actions` and `⚙ Settings`, with the picker element moved unchanged so its loader needed no edit; the context meter rides the turn's own `done` event.
+
+### C9 · The one build that closes them
+- 🔨 A9.1 · Server half proven, client half short of the target. `live/turnring.py` holds one `Turn` per question key with events carrying a monotonic `n`, a 1MB/20k cap that trims from the front and reports a `gap` rather than a short stream, and a 600s grace window; `emit()` pushes into it and the request became the turn's FIRST READER rather than its owner, with `POST /_board/attach {file, cursor}` for the next one. `checks/ring_e2e.py` hangs up mid-turn and re-attaches, and gets 117 events and an 11k-character answer the first reader never saw. Driving a real browser then caught two defects the wire test could not: a finished ring was re-attached on every 25s heartbeat and repainted its answer, and the cursor was keyed on `logKey()`, which folds in a session id that changes mid-turn. Both fixed. Still wrong: after a reload the drawer attaches but at a cursor near zero, so it replays instead of resuming. Nothing has reached the live board; the change is in `live/chat.py` and needs a server restart.
+
+### P · Page-level
+- ✅ P1 · `claude-agent-sdk 0.2.126` starts a session, reads board files and answers; auth needs no work of its own because the SDK drives the machine's `claude` CLI and inherits the logged-in OAuth. `session:` sits in the page header beside `state:` and `owner:`. Cost went from a $0.92 default to $0.24 by narrowing, and a follow-up message is $0.012.
+- ✅ P2 · Three tiers ship, default full·ask (JL ruled 260723). The restricted tier hard-disables Bash, Task, Skill and Web through `disallowed_tools`, because `can_use_tool` is not reliably invoked for Bash and a blacklist is the solid way; verified by forcing Bash and getting "Bash exists but is not enabled in this context". The gate has genuinely fired: a forced `Edit` against `board.md` was blocked at the tool layer with `denied: ['Edit -> …/board.md']` and the file was untouched, comparing resolved absolute paths rather than name strings.
+- 🔨 P3 · `checks/chatui.mjs` exists and has never been run. Nine drawer defects were fixed on 260801 and not one was clicked in a browser, which is exactly what JL's own rule forbids ("did you clicked it yourself?"); `checks/ring_e2e.py` was written the same way the complaint reads and immediately earned its keep. ↪ The axis this belongs to is `QF4`.
 
 ### Decision Now
-These are the calls only JL can make; CC ticks nothing here.
+The calls only JL can make. CC ticks nothing here, and every row names the Aim it unblocks.
 
-- [ ] 🐍 Rule the language, before M1 is written (JL 260731: "can I change it to the js version, using the extension.js?")
-      `extension.js` itself cannot be reused at all (it loads `require("vscode")`), so the real question is Python SDK against the npm TypeScript SDK, and Content §5 checked parity rather than assuming it: 47 Python options cover every flag the extension emits, plus `extra_args`.
-      A · stay Python inside serve.py; the slowness root (dropped client, not language) gets fixed by M1 in the same codebase.
-      B · a second Node service sits beside serve.py and is proxied; the server splits across two runtimes and manages two dependency chains for the same SDK.
-      C · serve.py is rewritten in Node; the entire ~2600-line server moves to a different runtime, affecting all twenty other endpoints, not just chat.
-      → CC's proposal: A; the two SDKs are the same SDK, the slowness is the dropped client and not the language, and B or C splits a ~2600-line server that owns twenty other endpoints across two runtimes for zero capability gained.
-- [ ] 🧊 Rule how a held session is reaped
-      A held client is a live `claude` process per question, so something must end it: idle timeout, page close, or explicit release.
-      A · a held client dies on idle timeout plus the existing pagehide beacon; reaping mirrors QD3's terminal reaping and requires no new user gesture.
-      B · a held client requires explicit release only; the user must manually close the session and timeout is not checked.
-      C · a held client dies on timeout only; pagehide beacon is not used, so a closed page does not free the process.
-      → CC's proposal: A; it matches how `QD3`'s terminals already die and needs no new gesture from you.
-- [ ] 🔀 Rule whether QD2 and QD3m are one build or two
-      A held stream-JSON process would serve both this drawer and `QD3m`'s smooth view, which were designed as separate front ends.
-      A · QD2 and QD3m merge into one held-process view with the raw ⌨ pane beside it, unified by one child process; the merge becomes coherent once the process is held per the row above.
-      B · QD2 (SDK drawer) and QD3m (smooth view) stay as distinct faces, each potentially with its own process management, because merging them conflicts with the current architecture.
-      → CC's proposal: A, but only after the row above is ticked; the merge is only coherent if the process is held.
-- [ ] 🧲 Pick which remaining extension affordance comes next
-      A · @-file mentions are built next; they add a UI feature on top of the slow boot, leaving the cost untouched.
-      B · plan mode is built next; it adds another UI feature but does not fix the boot cost that is the real pain point.
-      C · neither @-mentions nor plan mode are built this round; the effort goes to fixing the engine (M1) because the boot cost is what you actually feel.
-      → CC's proposal: C; both are chrome on a harness whose boot cost is the thing you actually feel.
-
-### Decisions taken
-- 260731 JL · 🔌 The session host, M1, is approved and built
-      JL: "make the chatbot sdk version exactly the same to the vscode claude code plugin version".
-      The teardown said exactly-the-same is reachable because the extension runs the SAME SDK we already run; the only engine-layer gap was that it holds the client and we drop it every POST (Content §3).
-      Chosen A: one daemon thread owning a long-lived event loop plus a per-question client registry, with the browser protocol unchanged.
-      B (warm a pool, cache the registry) was rejected because it treats the symptom and still cannot reach `interrupt`, `set_model`, `set_permission_mode`, `get_context_usage`, or `rewind_files`, which are streaming-mode only; C was to leave it as it was.
-      BUILT and measured the same day; the numbers and the correction they force are in the records above.
+- [ ] ❄️ A4.1 · Rule how a held session is reaped
+      A held client is a live `claude` process per question, so something must end it. Today it is a partial C: `SessionHost._reaper(idle_s=1800, every=120)` evicts after thirty idle minutes and nothing frees a client when the page closes, which is what JL was looking at on 260802 when two held clients sat there four minutes after a restart.
+      A · idle timeout plus the existing pagehide beacon; reaping mirrors how `QD3` already reaps terminals and needs no new gesture from you.
+      B · explicit release only; you close a session by hand and no timer runs.
+      C · timeout only; a closed page does not free the process, which is today's behaviour.
+      → CC's proposal: A. It matches `QD3` and needs nothing new from you. One hole in C is worth naming whichever way you rule: `reap()` skips a session whose turn lock is held, so a turn that HANGS pins its client past any timeout.
+- [ ] 🔒 A8.5 · Ask `QD1` to re-rule one-window-per-scope
+      Not this page's Law to change, and it blocks the only 🟠 Aim here. HOLD keys on the SCOPE path while the Law's stated reason is that two front ends on one jsonl fork histories; two named sessions are two different jsonls, so the key is stricter than its own justification.
+      → CC's proposal: carry it to `QD1` rather than work around it here.
 
 ## Files
 ### The host
@@ -461,6 +496,29 @@ Every tool use asks it for allow/deny first. effort: how much thinking the model
 >> CC0725: simplified it into a neutral utility bar. The id is quiet metadata, the full title uses available width with ellipsis, and `>_` plus `×` are matching compact controls with accessible labels.
 
 ## Log
+260802 · The bottom-right button became a CHOICE on JL's ask, and the tap pays for itself. Two rows, `#chatpick`, GUI-Chat against TUI-Chat, on the FAB only: a per-card `🤖 Chat` means talk about THIS card and its reader has already decided, so twelve choosers would be noise. What the board had before was two chats behind one button, arbitrated by a `board-tui-default` key nobody can see, with the `>_` header toggle as the only way to switch and no way at all to find it on a phone. Each row also answers the question nothing on the board answered: is something already running here. `POST /_board/attach {probe:1}` is new and deliberately narrow, because a plain attach would answer by PARKING on the ring until the turn ended, which is the opposite of a question; `term-probe` already answered the terminal half. Clicked it rather than claimed it: both rows drew, the TUI row read `🟢 a session is parked here` with the last-used dot, the drawer stayed shut until a row was picked, choosing GUI opened it with `termon` off and the preference flipped, and the narrow window proved the `@media(max-width:820px)` rule by going full width. Recorded as A8.9
+260802 · Migrated onto `QB4`'s page grammar, which this page had recorded as a finding on 260801 and DEFERRED on JL's call. Four changes and one of them is the whole job: `## Boundary` is gone, because the protocol has no such section, and its routing became the placing paragraph that now closes Content §1, the way `QD5`'s C1 does it; `## Items to Finish` became `## Aims`, forty checkboxes rewritten as seventeen durable targets grouped by the Content division they serve, each with a testable `Done when` and no checkbox anywhere, per QB4 §4.5 which says Aims are not a work history; `## Where we are` became `## States`, one row per Aim in the five statuses, carrying the evidence the checkboxes used to hold; and `## Writing Style` was added, which QB4 §8.6 requires and which only QB4 itself had. The title also changed, since §8.3 asks a title to say what a page is FOR: "SDK chat version: the chat box" named a subject only. Three Decision Now rows were overtaken by events and moved here rather than left standing beside live ones (below); the `### Decisions taken` subsection went the same way, because §5.3 makes Decision Now the ONE reserved subsection of States and §5.4 puts history in Log. Worth recording for whoever migrates the next page: 51 of 53 pages still carry Items to Finish and Where we are, and 36 still carry a Boundary, so this is the third page on the board to obey its own contract
+260802 · Three Decision Now rows retired as overtaken by events, kept here so the reasoning survives. 🐍 the language ruling (Python against the npm TypeScript SDK) is settled by what was built: M1 landed in Python inside serve.py, which was option A, and Content §5 had already checked parity at 47 options rather than assuming it. 🔀 whether QD2 and QD3m are one build or two is moot, since `QD3m-smooth-terminal.md` is archived. 🧲 which extension affordance comes next was answered the same way as 🐍, by the effort going to the engine rather than to `@`-mentions or plan mode, which was option C. What is left standing is ❄️ the reaping rule and a pointer at `QD1` for the one 🟠 Aim
+260731 JL · 🔌 The session host, M1, approved and built. JL: "make the chatbot sdk version exactly the same to the vscode claude code plugin version". The teardown said exactly-the-same is reachable because the extension runs the SAME SDK we already run, and the only engine-layer gap was that it holds the client while we dropped it every POST. Chosen A: one daemon thread owning a long-lived event loop plus a per-question client registry, with the browser protocol unchanged. B, warming a pool and caching the registry, was rejected because it treats the symptom and still cannot reach `interrupt`, `set_model`, `set_permission_mode`, `get_context_usage` or `rewind_files`, all of which are streaming-mode only; C was to leave it. Moved out of a `### Decisions taken` subsection on 260802, because QB4 §5.4 puts history in Log
+260801 · §9 collapsed from three builds to one after reading `QD5`'s `live/shell.py` instead of its page. R2 and R3 are RETIRED into `QD5` rather than descoped: the split shell's chat frame is `<page>.html?pane=chat`, so the drawer is already its own document and no navigation rebuilds it, and `shell.py`'s own `@media(max-width:820px)` already stacks page over chat on a phone, which answers the docking fork by making it moot. Both Items rows keep their place but now say ↪ ANSWERED BY QD5, scoped to the one case the shell does not cover, a drawer on a page opened alone, which is the packaging `QB2` requires. R1 survives alone because a turn dying with its HTTP response is a server fact that no arrangement of frames reaches. One correction of my own recorded in §9: the warning that R1's attach would compete with `/_events` for the six connections per origin was written from QD5's prose and is wrong, since `/_events` holds nothing and is one 400 ms ask on a pooled connection. Three writers were live in this area tonight (this session, QD2's own drawer, and a Codex companion inside `shell.py`); nothing collided, and the near-miss is why the QD5 findings went over as an append-only Log line instead of edits to its Content
+260801 · R1 built and left HONESTLY half-ticked. `live/turnring.py` gives chat what `term.py` has had all along: one ring per question key, events carrying a monotonic `n`, a front-trimming cap that reports a `gap` instead of a short stream, and a grace window; `emit()` pushes into it, `chat()` spawns a runner thread, and the request becomes the turn's FIRST READER rather than its owner, with `POST /_board/attach {file, cursor}` for the second. `checks/ring_e2e.py` proves the server half by doing what JL does — start a turn, hang up the socket, come back — and gets 117 events and an 11k answer the first reader never saw. The rule about clicking it yourself then earned its keep twice: a real browser showed a FINISHED ring being re-attached on every 25s heartbeat and repainting its answer each time (fixed by declining a finished turn, since the transcript is the right source once it ends), and showed the cursor keyed on `logKey()`, which folds in a session id that changes mid-turn (fixed). What is still broken and why the row is 🟡: after a reload the drawer DOES attach, its own diagnostics say `REJOIN at cursor 2`, but the cursor is near zero rather than where the reader stopped, so it replays instead of resuming. Server restart owed before any of this reaches the live board, since it is in `live/chat.py`
+260801 · §8 re-scoped to QD2 ONLY on JL's ask ("if we focus on the SDK GUI version… could you specific the problems for the QD2 only?"), and the correction was mine to make: the same-day expansion to five rows had put two classes here that belong to other faces. The page's own writing went back to `QB4` (page grammar) and `QF1` (the checker), and whether a fix was ever clicked in a browser went to `QF4`, which already exists as "Driving the talk layer: the SDK chat version and the TUI chat version"; both are now ↪ lines in Boundary rather than divisions here. In their place a fourth row that IS the drawer's own, 🎛 the controls were never given, which is what the rename made room for: rows one to three are state a reader can lose, row four is an affordance a reader never had, and its evidence is that the session picker and the context meter each arrived only when JL named them and each cost an afternoon. §8 now carries the full enumerated list instead of three sample symptoms: 22 defects, ✅12 🟡2 ❌8, each one a thing JL actually hit, and the ❌ column collapses rather than fanning out, since five of the eight are `QD1`-blocked or closed by §9's R1/R2, one is R3, and only `@`-mentions and plan mode are their own work
+260801 · Both session transcripts read off disk on JL's ask ("read the content there and understand what are the problems I encountered along the time"), 98 user messages from 260723 14:36 to 260801 20:43, and §8 rewritten against them. Renamed from "The bill the CLI never sends you" to "What a drawn interface has to be given", which is the Opening's own sentence, so the section stops being a metaphor and becomes the Opening's evidence; JL had proposed a surface name (UI/UX experience) and the earlier refusal was half right, since the grouping by OWNER stands but the NAME and the COUNT did not. Three corrections the transcript forced: the lost-reply defect is a day older than this page says, evidenced by fourteen sends of four identical probes on 260731 14:34-15:45 with no complaint attached, so the re-sends were the symptom nobody read; the below-820px overlay stops being a fork because JL was on a PHONE for the last five defects of 260801; and two owners were missing entirely, the page's own prose (four Opening rejections, and "which Q owns quality check" still unassigned) and the fixes themselves (nine claimed unclicked, then one unclosed comment took the bundle down). Added Content §9, which names the build: QD3's terminal already survives a reload because its bytes go to a RING that clients attach to (`term.py:195`, `RING_CAP` at `base.py:65`, replay at `term.py:679`) while chat writes straight to `self.wfile` at `chat.py:637`, and that one asymmetry is the mechanism under three of the five rows. R1 the ring, R2 the retained view attached by cursor (which is what 丝滑 names, and it closes replay fidelity for free), R3 dock at every width; order forced because R2 has nothing to re-attach to without R1, and blocked on a `QD1` re-ruling since HOLD keys on the SCOPE
+260801 · A replayed session now reads like the turn it is a recording of, which it did not: the server kept assistant TEXT only, so a turn that ran ten tools replayed as one bare paragraph, and there were no times and no turn boundaries in a flat wall of bubbles. Three changes, one idea, which is that the live view and the replay should not disagree about what happened: `session_log` carries each message's `timestamp` and every `tool_use` call, the drawer draws replayed rows through one `replayRow()` that knows all three shapes (bubble, tool card, dated turn separator), and the tail cap rose from 120 to 300 because tool rows eat the budget. Still owed for full parity: the gate diffs and the 💭 thinking block, plus a load-earlier control instead of a hard cap
+260801 · Reopening the drawer stopped rebuilding it, which is the answer to why it felt worse every time it was closed and opened. `chatOpen` tore down the transcript and re-created every bubble from storage even when the scope had not changed, and the discarded transcript was identical to the one it built; the flash between them is what read as janky. VS Code retains its webview so showing a hidden panel costs one repaint, and the drawer now does the same when the scope matches and nothing is running. Same root as Content §8's second row, now visible in the one place a reader feels it
+260801 · JL threw out the framing, not the wording: "这跟 Trust 有个蛋的关系？我们这不是在说怎么设计这个 GUI 的界面的吗". He is right, and the frame was inherited rather than examined. Trust arrived at the 260801 rename and every later pass, mine included, polished it instead of questioning it, while the actual work on this page all day was interface design: scrolling, docking, tabs, a session list, a context meter, diff cards, and whether the drawer should stop being generated into each page. The Opening now asks what makes a chat interface inside a page good to USE, and its one idea is that a terminal inherits its behaviour while a drawn interface has to be given every part of it, so the parts nobody designed are the ones that break. The lost-reply failure keeps its place as one of those parts rather than as the page's thesis
+260801 · The root of "I only see your reply after sending a new one" removed at the server: `emit()` called `stop.set()` when a write to a departed browser failed, so leaving the page did not lose the view, it ENDED the work, and the answer never reached the `.jsonl` for any later sync to find. A failed write now marks the turn detached and lets it finish; ⏹ still stops a turn, because that is a person deciding rather than a socket closing. Caught while doing it: my own two 260801 fixes were fighting, because the abort-save left a cut-short reply that made the local log the same LENGTH as the server's, and the sync adopts only when the server knows MORE, so a fragment could never be upgraded; cut-short entries are now marked `partial` and the sync asks whether the server knows BETTER. Server half needs a restart, client half needs a hard reload
+260801 · JL diagnosed the one that had beaten me twice, and he was right: the drawer never checks for session updates on its own. `syncFromServer` had exactly one caller, `chatOpen`, so it asked the server the instant the drawer opened and never again, and coming back mid-turn is precisely when the answer has not reached the `.jsonl` yet. That also explains the tell, that sending a new message seemed to reveal the previous reply: reopening the drawer was silently firing the one retry. A second guard made it stick, since the sync refused to adopt while `body.chatbusy` was set and an aborted turn leaves that class behind. It now retries with backoff after opening, re-asks on tab and window focus, and keeps a 25s idle heartbeat, all gated on a genuinely live turn rather than on a class that can go stale
+260801 · The Opening re-aimed at THIS page's identity after JL caught it borrowing the sibling's: it argued from the CLI ("rebuilt rather than borrowed"), which makes the SDK version read as an imitation of the TUI version and hands `QD3` the framing. The axis is GUI against TUI, and the reason a GUI is possible at all is that the SDK yields structured events rather than a painted screen; that trade is now the pitch's ONE idea, with what it buys (a diff at the gate, tool cards, the session picker, the context meter) set against what it costs (a terminal shows its own state for free, a drawn surface has to be told and can look right while being wrong). The terminal now appears only as the contrast, never as the definition
+260801 · The lead question rewritten once more on JL's ask: the previous one asked what "a chat box" must earn, which is true of any chat box anywhere and told a cold reader nothing about THIS one. It now names the thing before it asks about it (a chat box on every page that reads the page and rewrites it, rebuilt in a browser rather than borrowed from the CLI), so the question arrives with its subject already standing, and the second line says why the stake is high, which is that the lightest door is the one people actually use
+260801 · Opening rewritten AGAIN, this time against QB4 §1 read line by line after JL rejected the first attempt: one real question on stage, a three-line pitch carrying ONE idea (a rebuilt chat box pays for what the CLI gives away) and closing on a test that is checkable (if you cannot tell a finished answer from a killed one, nothing else here counts), then Why this matters as a single drawer row. The first attempt failed three of the seven rules: four ideas instead of one, implementation detail in the pitch (reload, ten-minute turn), and three `**Item**:` rows where the contract lists one. Two structural findings recorded and DEFERRED on JL's call (option B, this page's Opening only): q-template says there is NO `## Boundary` section, and 46 pages including this one still carry one, and the canonical section names are now `## Aims` and `## State` where this page still says Items to Finish and Where we are. Both are board-wide migrations and belong to their own Q, not to today's debugging
+260801 · Opening rewritten to QB4's contract after JL called it badly written, and it was: QB4 asks for a PITCH (one question, then three or four lines that promise an outcome and close on a test) and what stood there was a summary with the lead split across two sentences. It now opens on what a chat box owes a reader, and the rationale moved into three `**Item**: prose` rows the way QB4's own Opening does. Also added Content §8, which is JL's ask to organize the day's problems: he proposed a surface-shaped division such as Mobile Usage or UI Experience, and the answer is no, because every defect arrived as a feeling about the interface and turned out to be a fact about where state lives, so the division groups them by OWNER instead (the viewport is borrowed · the view is regenerated per page · the record is written at exactly one moment) under one property, the durability of shown state
+260801 · The context meter shipped on JL's ask ("用了百分之几"): `get_context_usage()` is read once per turn and rides the existing `done` event, so it costs no extra call, and it degrades to absent rather than wrong. It is the FIRST M2 verb to land, which makes the M1 decision concrete: this is streaming-mode only and was unreachable while the client was dropped every POST. Needs a serve.py restart, since the change is in `live/chat.py` and not in the page bundle. Recorded honestly alongside it: none of the day's nine drawer fixes has been clicked in a real browser, so `checks/chatui.mjs` is now an open item, shaped after `checks/termnav.mjs`
+260801 · Wheel containment fixed: the drawer sits fixed OVER the page, so a wheel it could not use chained to the document and scrolled the page behind, which an almost-empty transcript guarantees and which is why it appeared to heal after the first message. Two parts, because `overscroll-behavior` only governs a scroller that has reached its edge and not one that never overflowed: `contain` on every inner scroller, plus a `wheel` handler that walks up from the pointer and keeps the event when nothing inside can take the delta
+260801 · Four more drawer defects fixed from JL's live use, three of them one root: the transcript is only as durable as the moment it happens to be written. A cut-short turn dropped its reply because the save lived at `done` alone (now the abort path keeps what streamed, marked); a GROUP chat wrote its log under the bare id and read it under `G:<id>`, so its history never returned (now one `logKey()` helper owns both halves); reopening mid-turn did nothing because `chatOpen`'s same-target guard returned above the line that adds `.on` (now it shows the drawer first). Separately, `🗂 Sessions` became the middle utility tab on JL's ask, with the picker element moved unchanged so its loader needed no edit, and the two-way tab logic generalized to a table
+260801 · Autoscroll separated into FOLLOW and JUMP after JL corrected the diagnosis (the complaint was never "it does not reach the bottom", it was "it will not let me leave it"): a scroll listener on `.bd` remembers when the reader has scrolled up, `bdAuto()` declines to chase them, and `bdJump()` is kept for opening, replaying and sending; the permission gate keeps its jump because it is waiting for an answer. Six raw `scrollTop = 1e9` sites across four files converted, all node-checked and rebuilt
+260801 · A labelled `⇤ Page` button shipped in the drawer header, shown at exactly the width where the drawer stops docking and starts covering the page; the docking question itself stays open as a fork. Same round, the in-flight-turn item stopped being a symptom and became a spec: the three sites in `live/chat.py` that deliberately kill a detached turn are named (`emit()` 628 sets stop on a failed write, the `finally` 928-937 also cancels the future and EVICTS the held client, and `gate()` 804-808 denies every tool with "这一题当前没有在跑的对话" once TURN_GATE is empty, which is the string this page's own session hit twice). Not built: swapping the turn engine while JL is talking through it would take away the only channel he has to tell me it broke
+260801 · Seven problems JL hit in one sitting were inventoried and two were fixed at the root. FIXED: the drawer opened at the top because `chatOpen` replayed the log while `#chat` was still `display:none`, so every `scrollTop` was clamped to 0 and the one rescue path early-returns when the local log is current (now a `requestAnimationFrame` scroll after `add('on')`); replayed history showed no markdown and no bubble styling because `session_log` emits `k:"ai"` while the renderer and the CSS only know `cc` (now normalized in `bubble()`). Both node-checked, rebuilt, and confirmed present in `board/_assets/board.js`. OPENED as items: history has no selectable turn boundary so it cannot be compared; the drawer overlays instead of docking below 820px, leaving only a 32px `×` as the way back; two named sessions of one page cannot be live together because HOLD keys on the SCOPE while the Law's reason is the shared jsonl; an in-flight turn dies with the HTTP response that carries it; and the drawer is generated into every page instead of living beside a long-lived host, which is the shared root of most of the above
 260801 · Face diagrams added on JL's ask, closing the QB4c §1 gap the quality check named: all 7 Content divisions now open with a fenced ascii figure as their FIRST line (verified 7/7); §1-§5 and §7 are new high-level figures drawn with /diagram-ascii, and §6's existing plugin→board mapping was MOVED up to the heading and given emoji rather than duplicated; no prose changed
 260801 · Quality-check fixes applied: the ticked 🔌 M1 row left Decision Now for a new `### Decisions taken` record (QB4e §2 says a made decision moves out, and the section's own "CC ticks nothing here" line contradicted it); the ①-⑤ mega-checkbox split into five judgeable rows plus a new `### 🔭 Owed beyond the extension` group (QB4d §1: a box must be judgeable true or false); Boundary now redirects the trust axes to `QF4`. STILL OPEN for JL: Content §1-§7 answers the retired permission/engine question, not the trust question the 260801 Opening now asks, and no Content division opens with its face diagram (QB4c §1)
 260731 1934 · "💬 answers a turn" became a STANDING check (`checks/run.py`, 0.89.0, home on `QC8`): smoke asks the live server's own interpreter for the SDK through `GET /_board/health` (the 3.9 restart trap: pages 200 while every chat turn dies), and the full tier runs one real scoped SDK turn (CHATOK) on a throwaway fixture

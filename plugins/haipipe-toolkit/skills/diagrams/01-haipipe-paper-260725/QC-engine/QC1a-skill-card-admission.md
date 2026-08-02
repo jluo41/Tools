@@ -55,7 +55,7 @@ A skill earns a dedicated page when a fresh agent must make a different kind of 
 ### What does not get a new page yet
 `haipipe-board` owns sentence apparatus, including `~~deleted~~` and `**added**` rendering, on Boardform's Q-Skill pages. The MISQ and UTD-IS venue files are style sources, not executable skills; the six pages above link to them rather than duplicate them. `check`, `check-evidence`, and the REVISE child workers remain inside the REVISE page until a separate contract question emerges.
 
-## Items to Finish
+## Aims
 - [x] 🗺️ Identify the first cohort
       Six skills now follow the real route from a user request to evidence-aware scientific revision: entry, lifecycle, stage, draft, probe, revise.
 - [x] 📄 Create the main-entry page
@@ -67,7 +67,7 @@ A skill earns a dedicated page when a fresh agent must make a different kind of 
 - [x] 📄 Create the REVISE page
       `Skill-5` now brings evidence integrity, paragraph logic, SciWrite, and candidate diffs under one revision contract.
 
-## Where we are
+## States
 The first cohort is now rendered as six named skill pages. It follows the Paper control path and treats Board rendering and evidence routing as first-class parts of writing, rather than adding a generic style tool after drafting.
 
 - 260727 GPT-5 · JL reordered the cohort around the real control path: `haipipe-paper` → lifecycle → stage → draft → probe → revise. REVISE now owns the three writing layers in the map rather than splitting its child workers into premature top-level pages.

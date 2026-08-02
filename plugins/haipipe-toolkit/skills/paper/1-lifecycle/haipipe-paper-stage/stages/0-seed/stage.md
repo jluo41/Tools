@@ -27,7 +27,7 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
 runs: once
 needs_paper: true
 on_rerun: diff-and-ask   # QB2c, ruled 260727. Protected on a re-run: any `> <ACTOR>:`
-                         # lane, `state:`, `## Where we are`, a ticked box, a GATE row in
+                         # lane, `state:`, `## States`, a settled State row, a GATE row in
                          # `## Log`. Everything else: compute the change, SHOW it, ask.
                          # Never silently overwrite. Full rule: ../CONTRACT.md.
 venue_free: true          # does not change when retargeting to another journal
@@ -42,7 +42,7 @@ template: template.md
 
 exit_when: "not viable -> drop the paper"   # the stage's own failure exit
 
-sections:                 # logical order; Q-consumer adapts to Board Items to Finish
+sections:                 # logical order; Q-consumer adapts to Board Aims
   - Seed Question
   - Motivations
   - Landscape
@@ -52,11 +52,11 @@ sections:                 # logical order; Q-consumer adapts to Board Items to F
 formatting:
   title_rule: "====="
   section_rule: "-----"
-  headings: "direct `###` divisions under Board `## Content`; Q-consumer records are checklist
-             items under `## Items to Finish`, never Content headings"
+  headings: "direct `###` divisions under Board `## Content`; Q-consumer records are Aim
+             records under `## Aims`, never Content headings"
   line_breaks: "one sentence per line (semantic line breaks); no dense paragraphs"
 
-q_id_pattern: "- [ ] 🔎 Q-Seed-<n> · <title>"
+q_id_pattern: "- P<n> · Q-Seed-<n> · <title>"
 q_anchor: "[Q-Seed-<n>] cited inline in every sentence the question hangs on"
 closed_when: "REVISE weaves the Answer back in and discharges the [Q-Seed-<n>] bracket"
 
@@ -68,7 +68,7 @@ defer_to: resource        # anything else: keep the Q block, `Answer: deferred -
 
 done_criteria:
   - "all four Content divisions plus the Q-consumer records carry real content; every <!-- RULE --> comment deleted"
-  - "every question the draft hangs on is a Q-consumer checklist record, anchored to a draft assertion"
+  - "every question the draft hangs on is a Q-consumer Aim record, anchored to a draft assertion"
   - "each Q marked DISPATCHED (an entry in 1-probes/) or DEFERRED (no entry, forward pointer)"
   - "no bare \\cite{TOADD} — the citation command and its [Q-Seed-<n>] bracket sit side by side"
   - "the S page's ## Log records phase history and the gate row"

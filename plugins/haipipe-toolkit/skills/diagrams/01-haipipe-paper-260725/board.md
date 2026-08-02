@@ -9,8 +9,8 @@ close: Every Delivery target has an owning Engine route and Execute evidence or 
 
 This is a **Skill-Board** for the Paper family, organized like the `/haipipe-board` Skill-Board.
 
-- **QA · Design** defines the Paper system, its folders, and ownership boundaries.
-- **QB · Delivery** defines what the paper must give readers and collaborators, in the paper-facing order below.
+- **QA · Design** defines the Paper system, its eleven folders, and ownership boundaries, including the four shared families the paper calls and owns none of.
+- **QB · Delivery** defines what the paper must give readers and collaborators, in the paper-facing order below, and then the three series that say what each delivery rule applies to: a whole section, one sentence, or one float.
 - **QC · Engine** defines the reusable skills and contracts that can produce those deliveries.
 - **QF · Execute** records bounded runs, checks, receipts, and fresh-agent evidence.
 
@@ -25,6 +25,10 @@ QA · DESIGN     what the Paper system is and who owns its boundaries
 QB · DELIVERY   what readers and collaborators receive
        Opening → Work → Literature → Value → Display → Main → Appendix
        → Present → Build → Round
+       │
+       ├─ QB11 Delivery-Section    the rule applies to a whole ## Content
+       ├─ QB12 Delivery-Sentence   the rule applies to one sentence
+       └─ QB13 Delivery-Display    the rule applies to one float
        │ served by
        ▼
 QC · ENGINE     which reusable Paper / Probe / Display route may produce each delivery,
@@ -43,9 +47,11 @@ Delivery order is the reader-facing concern order. It does not replace Engine de
           what the Paper system IS       what the reader GETS       how it is MADE
           ┌───────────────────────┐     ┌────────────────────────┐ ┌──────────────────────┐
           │ QA · Design           │────▶│ QB · Delivery          │◀│ QC · Engine          │
-          │ folders · ownership   │     │ Opening → … → Round    │ │ skill routes ·       │
-          │ Paper / Board / Probe │     │ 20 working records     │ │ Paper/Probe/Display  │
-          │ boundaries            │     │                        │ │ + Board substrate    │
+          │ 11 folders · 6 pairs  │     │ QB1–QB10  the concerns │ │ skill routes ·       │
+          │ Paper · Board · Probe │     │ QB11 section series    │ │ Paper/Probe/Display  │
+          │ Display · Writing     │     │ QB12 sentence series   │ │ + Board substrate    │
+          │                       │     │ QB13 float series      │ │                      │
+          │                       │     │ 23 working records     │ │                      │
           └───────────────────────┘     └───────────┬────────────┘ └──────────┬───────────┘
                                                       │                         │
                                                       └───────────┬─────────────┘
@@ -56,10 +62,15 @@ Delivery order is the reader-facing concern order. It does not replace Engine de
                                                      │ failure → reopen owner │
                                                      └────────────────────────┘
 
-QB1   Opening includes Seed, Venue, Pitch, and Narrative.
-QB2   Work grows the discovery and task banks through explicit probes.
+QA1   Eleven folders in six pairs. A board may serve two things; ② serves ① the paper skill and ⑪ the prose verb.
+QA10  The prose verb is argued HERE because it owns no artifact kind and therefore has no board of its own.
+QB1   Opening includes Seed, Venue, and Pitch.
+QB2   Work grows the discovery and task banks through explicit probes, and owns the Narrative arc built from the claim ledger.
 QB9   Build includes projection, diffusion/distribution, compile, and promotion.
 QB10  Round contains one review/rebuttal/revision/resubmission batch.
+QB11  Section series: a rule here cannot be checked one sentence at a time, because a section is a sequence.
+QB12  Sentence series: four attachment types, one marker grammar, differing only in who may complete one.
+QB13  Float series: what Paper owns about a display between the render and the sentence that points at it.
 QC1 names the four-part Engine: Paper, Probe, Display, and the Board substrate. QC5 is where the Paper Board adds its manuscript-specific writing dialect above Board's generic page and sentence grammar.
 QF1–QF3 prove or block a Delivery × Engine route; they never become a second authoring tree.
 ```
@@ -115,9 +126,12 @@ What the Paper system is before a delivery is produced: folder law, boundaries, 
 ─────────────────────────      ───────────────────────────────────    ────────────────────────
 ?                          ◀── QA0–QA9  system map, boundaries, and  ──▶  Paper/Board/Probe law
 ?                          ◀── QA6      paper scaffold and folder law ──▶  paper folder
+?                          ◀── QA10     the prose verb, argued here    ──▶  writing/ · the only
+                                        because it has no board          shared family whose
+                                        of its own                       board is this board
 ```
 QA0-the-board-map.md
-QA1-eight-folders.md
+QA1-the-folder-map.md
 QA2-the-skill-set.md
 QA3-the-skill-board.md
 QA4-the-board-tool.md
@@ -126,35 +140,43 @@ QA6-paper-scaffold.md
 QA7-the-paper-board.md
 QA8-owning-the-shared-page.md
 QA9-driving-work-from-a-page.md
+QA10-the-writing-layer.md
 
 ### QB · Delivery
-What one paper must give its reader or collaborator. The group page supplies the delivery overview; its pages carry the ten reader-facing concerns in order.
+What one paper must give its reader or collaborator, read in two passes. QB1 through QB10 are the ten reader-facing concerns, in reader order and uninterrupted. QB11, QB12, and QB13 are three series heads, each owning the rules whose unit is a whole section, one sentence, or one float; their faces sort under them.
+A concern says what the reader GETS. A series says what a rule APPLIES TO. Reading QB1 to QB10 top to bottom is the paper; dropping into a series head is how you find the rule that governs a unit.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record          📂 FOLDER
 ─────────────────────────      ───────────────────────────────────    ────────────────────────
-skill routes                ◀── QB1–QB10  paper-facing delivery      ──▶  paper artifacts
+skill routes                ◀── QB1–QB10   the ten concerns, in order ──▶  paper artifacts
+adapters                    ◀── QB11a–c    unit = a whole section     ──▶  sections/*.tex · docx
+probe + evidence            ◀── QB12a–d    unit = one sentence        ──▶  markers and chips
+Display layer               ◀── QB13a–c    unit = one float           ──▶  displays/<unit>/
 ```
 QB1-opening.md
 QB2-work.md
 QB3-literature.md
-QB3a-sentence-citation.md
 QB4-value.md
-QB4a-sentence-value.md
 QB5-display.md
-QB5a-sentence-display-table.md
-QB5b-sentence-display-figure.md
-QB5c-display-folder.md
-QB5d-requested-display.md
-QB5e-display-caption.md
-QB5f-display-placement.md
 QB6-main.md
 QB7-appendix.md
 QB8-present.md
 QB9-build.md
-QB9a-sentence-to-latex.md
-QB9b-sentence-to-word.md
 QB10-round.md
+QB11-delivery-section.md
+QB11a-section-to-latex.md
+QB11b-section-to-word.md
+QB11c-display-placement.md
+QB12-delivery-sentence.md
+QB12a-sentence-citation.md
+QB12b-sentence-value.md
+QB12c-sentence-display-table.md
+QB12d-sentence-display-figure.md
+QB13-delivery-display.md
+QB13a-display-folder.md
+QB13b-requested-display.md
+QB13c-display-caption.md
 
 ### QC · Engine
 How reusable Paper, Probe, and Display routes serve Delivery on a shared Board substrate. The Engine map, mirrored skill pages, stage/page contracts, and Paper-specific sentence/evidence dialect stay here; Board supplies generic structure but never manuscript truth.
@@ -190,6 +212,7 @@ QC4b-probe.md
 QC4c-revise.md
 QC4d-check.md
 QC5-sentence-evidence-contract.md
+Skill-11-haipipe-writing.md
 
 ### QF · Execute
 What actually ran. Each record names its Delivery target, Engine route, fixture, observable gate, non-write boundary, receipt, and failure-to-reopen path.
@@ -217,10 +240,10 @@ QP0                QB-delivery/QB10-round.md
 QS0                QC-engine/QC1-delivery-skill-map.md
 QS4                QC-engine/QC1a-skill-card-admission.md
 QC0                QC-engine/QC5-sentence-evidence-contract.md
-QD1                QB-delivery/QB5c-display-folder.md
-QD2                QB-delivery/QB5d-requested-display.md
-QD3                QB-delivery/QB5e-display-caption.md
-QD4                QB-delivery/QB5f-display-placement.md
+QD1                QB-delivery/QB13a-display-folder.md
+QD2                QB-delivery/QB13b-requested-display.md
+QD3                QB-delivery/QB13c-display-caption.md
+QD4                QB-delivery/QB11c-display-placement.md
 QE0                QF-execute/QF1-execution-map.md
 QE1                QF-execute/QF2-contract-run.md
 QE2                QF-execute/QF3-fresh-agent-run.md
@@ -235,6 +258,7 @@ Q-Skill-haipipe-board-index    QC-engine/Skill-7-haipipe-board-index.md
 Q-Skill-haipipe-board-page     QC-engine/Skill-8-haipipe-board-page.md
 Q-Skill-haipipe-board-sentence QC-engine/Skill-9-haipipe-board-sentence.md
 Q-Skill-haipipe-board-routing  QC-engine/Skill-10-haipipe-board-routing.md
+Q-Skill-haipipe-writing        QC-engine/Skill-11-haipipe-writing.md
 Legacy-QB1          QC-engine/QC2-stage-contract.md
 Legacy-QB2          QC-engine/QC3-page-contract.md
 Legacy-QB2a         QC-engine/QC3a-page-template.md
@@ -246,12 +270,22 @@ Legacy-QB3a         QC-engine/QC4a-draft.md
 Legacy-QB3b         QC-engine/QC4b-probe.md
 Legacy-QB3c         QC-engine/QC4c-revise.md
 Legacy-QB3d         QC-engine/QC4d-check.md
-Legacy-QC1          QB-delivery/QB3a-sentence-citation.md
-Legacy-QC2          QB-delivery/QB4a-sentence-value.md
-Legacy-QC3          QB-delivery/QB5a-sentence-display-table.md
-Legacy-QC4          QB-delivery/QB5b-sentence-display-figure.md
-Legacy-QC5          QB-delivery/QB9a-sentence-to-latex.md
-Legacy-QC6          QB-delivery/QB9b-sentence-to-word.md
+Legacy-QC1          QB-delivery/QB12a-sentence-citation.md
+Legacy-QC2          QB-delivery/QB12b-sentence-value.md
+Legacy-QC3          QB-delivery/QB12c-sentence-display-table.md
+Legacy-QC4          QB-delivery/QB12d-sentence-display-figure.md
+Legacy-QC5          QB-delivery/QB11a-section-to-latex.md
+Legacy-QC6          QB-delivery/QB11b-section-to-word.md
+QB3a                QB-delivery/QB12a-sentence-citation.md
+QB4a                QB-delivery/QB12b-sentence-value.md
+QB5a                QB-delivery/QB12c-sentence-display-table.md
+QB5b                QB-delivery/QB12d-sentence-display-figure.md
+QB5c                QB-delivery/QB13a-display-folder.md
+QB5d                QB-delivery/QB13b-requested-display.md
+QB5e                QB-delivery/QB13c-display-caption.md
+QB5f                QB-delivery/QB11c-display-placement.md
+QB9a                QB-delivery/QB11a-section-to-latex.md
+QB9b                QB-delivery/QB11b-section-to-word.md
 PHILOSOPHY.md      ../../paper/PHILOSOPHY.md
 README.md          ../../paper/README.md
 stages/            ../../paper/1-lifecycle/haipipe-paper-stage/stages/
@@ -259,6 +293,9 @@ index.yml          ../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml
 CONTRACT.md        ../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md
 venue/             ../../paper/venue/
 haipipe-probe/     ../../probe/haipipe-probe/
+haipipe-writing/   ../../writing/haipipe-writing/
+writing/           ../../writing/
+haipipe-display/   ../../display/
 haipipe-board/     ../../board/haipipe-board/
 haipipe-board-index/ ../../board/haipipe-board-index/
 haipipe-board-page/ ../../board/haipipe-board-page/
@@ -290,6 +327,7 @@ QB1@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB1-the-orde
 QB3@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB3-match.md
 QC1@probe          ../01-probe-qa-260726/QC-the-contract/QC1-qa-state-line.md
 QB6@probe          ../01-probe-qa-260726/QB-the-verbs-one-page-each/QB6-interpret.md
+QB4@boardform      ../01-boardform-260722/QB-delivery/QB4-overall.md
 QA8@boardform      ../01-boardform-260722/QB-delivery/QB5a-evidence-card.md
 QA8a@boardform     ../01-boardform-260722/QB-delivery/QB5d-agent-visibility.md
 QA1@display        ../01-haipipe-display-260727/QA-where-display-lives/QA1-display-map.md

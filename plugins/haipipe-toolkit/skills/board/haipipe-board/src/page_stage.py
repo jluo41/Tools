@@ -1,7 +1,7 @@
 """Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
 `![[path#Section]]` embed and the generic markdown renderer behind it.
 
-A page stays q-template; whatever it embeds is shown VERBATIM-generically —
+A page stays page-template; whatever it embeds is shown VERBATIM-generically —
 headings (atx AND setext), fences, lists, quotes, record lines, paragraphs —
 with ZERO knowledge of the source's dialect. Content is read fresh at every
 build, so an embed can never drift from its source. A missing target renders

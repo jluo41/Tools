@@ -3,15 +3,13 @@ state: 🟡 PARTIAL
 owner: JL
 method: ttyd spawns the process + serve.py reverse-proxies through 5599; claude opens at the SPACE root, one session per question
 session: d650c47e-0d7d-464d-8405-a98a545fe552
-
 ## Opening
-The TUI chat version is the real Claude Code, verbatim, inside the page rather than imitated by it.
-What does the board still owe a process it does not render and cannot restyle?
+What does the board need to provide around a real Claude Code terminal so the session stays usable, recoverable, and safe?
 
-The original question was whether this could exist at all, and it does: one PTY per page, running where the files are, reaching the browser through the single port already forwarded.
-What is open now is everything the board wraps around that process rather than inside it.
-It shares one session per page with `QD2`, which is `QD1`'s Law, and 260731 showed the seam is where this breaks: a TUI chat that died left a hold that refused the SDK chat, and the refusal reached the reader as an empty answer.
-The split with `QD2` is not safe versus unsafe, since the SDK chat version can open up fully too; it is a difference of FORM, and the SDK chat is a rebuilt chat box while the TUI chat is the CLI itself.
+The TUI gives the page the full CLI without rebuilding its interface.
+That also means the board cannot restyle or infer what happens inside the process.
+The difficult parts live at the wrapper seams: session handover, reconnects, process lifecycle, and access to a real shell.
+This page succeeds when the process can be opened, resumed, released, and handed back to the SDK chat without surprise.
 
 
 ## Boundary
@@ -20,6 +18,7 @@ The split with `QD2` is not safe versus unsafe, since the SDK chat version can o
   Since 260801 also **the smooth pane**: rendering this same session as web chat beside the raw TTY (absorbed from `QD3m`, whose full myrlin analysis is archived at `_archive/QD3m-smooth-terminal.md`).
 - ↪ Covered elsewhere
   The rules themselves: that is `QD1`; nor the web drawer: that is `QD2` — and the session host the smooth pane rides on is `QD2` M1.
+  Since 260801 the FORM is `QD4`: where typing happens, what the pane shows when 80 columns will not fit, and what the page owes a reader who switches away and returns. A defect in the process is this page; a defect in the form is that one.
 
 ## Diagram
 
@@ -68,6 +67,12 @@ The split with `QD2` is not safe versus unsafe, since the SDK chat version can o
 - [x] Processes reap themselves, no orphans
       Startup sweeps TERM_DIR and kills last round's leftovers (not relying on exit signals, most reliable); exit reaps best-effort again; `/_board/killall` closes everything; closing the board page sends a `pagehide` beacon to release.
       Verified: planted a stale ttyd → started serve.py → it was killed and its socket removed.
+- [ ] 🔑 Finish the (page, session) re-key: four lookups still use the page-only key
+      260801 re-keyed terminals by (page, session) so that attaching one stops killing another, and `terminal()` registers under `term_key(f, sid)` at `live/term.py:538`. Four lookups were never moved and still ask for `term_key(f)`, which cannot match a registry entry that has a session in its hash.
+      `hold()` at 398 and 408, `park()` at 460, `kill_term()` at 734. `term_probe()` is fine because it resolves by FILE through `terms_for(f)`, and that asymmetry is the signature: the page can SEE the terminal and cannot ACT on it.
+      Consequences, worst first: `hold()` finds no terminal, rules the terminal's claim void, drops the HOLD and lets the drawer open an SDK session on the SAME `.jsonl` a live PTY is writing, which is QD1's Law broken and loses transcript state; `park()` returns `parked:false` and silently neither parks nor releases; `kill_term()` can never close a terminal.
+      Proven arithmetically rather than by argument: the live QB4 terminal is registered as `47d8ca068ee1` while `sha1(path)[:12]` for that same page is `f891ba932470`, so the lookups miss by construction. Observed directly too: `/_board/release` returned `{"closed": false}` for a terminal `/_board/terms` was listing as alive.
+      The fix is to resolve by file (`terms_for(f)`) rather than by page key; `park` and `kill_term` additionally need a ruling on WHICH terminal they mean now that a page may hold several.
 - [x] The terminal works through the console too (260724)
       `boards_api.py` relays `POST /_board/term|release` and, the real pipe, `WS /_term/{key}/ws` (message-level, 'tty' subprotocol preserved) plus `GET /_board/asset/*` for the vendored xterm.js.
       Verified end to end through port 8093: term started (reused QD3's own session id), ttyd's stream arrived (the first frames carried the title op and the `claude --append-system-prompt` orientation line), release cleaned up.
@@ -88,6 +93,9 @@ The split with `QD2` is not safe versus unsafe, since the SDK chat version can o
       Deliberately NOT pre-starting ttyd: POST /_board/term takes HOLD, and a hover that never becomes a click would lock the question (see the HOLD Lesson). ⑤ grace-period release: closing the tab keeps ttyd alive ~10 min before reaping (pagehide kills it instantly today; --resume makes reopening lossless, this would make it fast).
       Open. ⑥ optional: vendored xterm WebGL addon for big-scrollback rendering.
       Open.
+- [ ] 📱 Moved to `QD4` on 260801: the phone is a FORM question, not an engine one
+      This item read as one focus bug, and JL's 260801 phone session showed it is four failures with a shared shape (doubled keystrokes, shredded frames, a keyboard that will not open, and a frozen drawer after switching away), none of which is fixed by adjusting the grid.
+      `QD4` now owns it, including the original focus diagnosis: `focus()` runs only after the async terminal-start returns, which iPhone Safari need not regard as the user's tap.
 - [ ] The security boundary written down in black and white
       "Written down" means: who may connect, what they may touch, how auth works, all explicit and fixed, nothing vague in someone's head.
       The guardrails got stronger: ttyd listens only on unix socket files (no TCP port at all), reachable only through the 5599 proxy, keys must be registered 12-hex values.
@@ -96,6 +104,34 @@ The split with `QD2` is not safe versus unsafe, since the SDK chat version can o
 
 ## Where we are
 Built, and it lives in the page. ⌨ in the drawer header enters the terminal; clicking again (💬) hands the session back.
+
+- 260801 JL · 🩹 The shredded screen was the ring replay, painted at the previous viewer's width
+  JL: "整个页面都是乱的，我不知道为什么会非常非常乱."
+  A new client is sent the whole ring buffer the moment it attaches, and only AFTERWARDS does it say how big it is, so bytes drawn for the last viewer's geometry land in this viewer's grid and every absolute cursor move is off.
+  Resizing to the correct size does not repair it, because a full-screen app repaints on a CHANGE and the size it is handed is usually the size it already has, so the garbage stays until something else forces a redraw.
+  The attach now nudges the width by one column and back on the first size message, which is a real change either way, and the app repaints its whole screen at the size this browser actually has.
+  Verified the hard way: attach at 54 columns, shrink the window, reload so the replay is definitely at the wrong width, and read the reattached screen back: 87x29 grid against an 87x29 PTY, zero escape debris, zero over-wide lines, and the screenshot is clean.
+  Two earlier fixes belong to the same symptom and are not the whole story on their own: the tab strip stole rows above the pane after the fit had run, and a `ResizeObserver` now refits on any pane change.
+
+- 260801 JL · 🧭 One chooser, not two
+  JL: "你为什么不把这个 session 放到那个 session 的选择那里去?"
+  The tab strip added a second place to pick a session when the picker already existed, and it was also what stole rows from the pane, so it is gone entirely.
+  The session picker now owns it: a session with a live terminal is marked `⌨` and reads `terminal running` or `terminal parked`, clicking one attaches that terminal immediately rather than promising to next time, and `＋ New session` starts another straight away.
+  Terminals are keyed by (page, session) on the server since this round, so attaching one no longer kills the other; the old key was per page, which is why switching used to end the terminal you were in.
+
+- 260801 JL · 🎨 The TUI was monochrome because the parent's `NO_COLOR` was inherited
+  JL: "why the TUI is black and white? not colored?"
+  The spawn already forced `TERM=xterm-256color` and `COLORTERM=truecolor`, so the terminal claimed truecolor while rendering none, which is why this looked like an xterm theme problem rather than an environment one.
+  `serve.py` is usually restarted from a tmux or agent shell that sets `NO_COLOR=1`, and `NO_COLOR` is the standard opt-out every colour library honours, Claude Code's included; it outranks `TERM` and was inherited straight into the PTY.
+  The spawn now drops `NO_COLOR` and sets `FORCE_COLOR=3`, in the same block that already strips the `CLAUDE_CODE_*` child-session markers and for the same reason: the parent's preference is about the parent's stdout, and this PTY is a browser window.
+  Verified by hooking the terminal WebSocket and scanning the incoming bytes for colour SGR codes, with the server deliberately started under `NO_COLOR=1` so the code fix alone was on trial: 43 colour codes including Claude's own `38;2;255;153;0` orange.
+
+- 260801 JL · ⌨⌨ One keystroke typed two letters, because input was bound per SOCKET
+  JL: "why for the CLI, I enter the one letter, it will type two letters?" with `what happened?` arriving as `wwhhaatt hhaappppeenneedd??`.
+  `connectWS()` registered `termT.onData(...)` every time it ran, and it runs again on every reconnect while the xterm instance survives, so a dropped connection left two live listeners on one terminal and every keystroke was sent twice.
+  A second drop would have made it three, which is why the doubling appeared only after the terminal had been open a while rather than immediately.
+  The listeners are disposables, so the previous pair is now disposed before the next is bound, they send through the CURRENT socket rather than the one captured when they were created, and teardown drops them too.
+  Verified by hooking `WebSocket` before page scripts ran, forcing one reconnect, and counting sends per keypress: sockets went 1 to 2, sends stayed at 1.
 
 - 260801 JL · ⌨ The same fix, done properly, after JL reported it still broken
   The first attempt above was verified on ONE path and shipped as if it were general, which it was not.
@@ -118,13 +154,17 @@ Built, and it lives in the page. ⌨ in the drawer header enters the terminal; c
   The Opening asked whether a real terminal per page could exist at all, which it does; it now asks what the board owes a process it wraps but does not render, which is the seam that failed on 260731.
   Nothing in `QF4` tests this version yet, and that gap is the reason its state stays 🟡.
 
+- 260801 CC · 📱 Phone input diagnosis recorded; no behavior changed yet
+  Chat gets a native textarea and specific phone layout. The raw TUI gets neither: `termOpen()` waits for `POST /_board/term` and xterm loading before `termT.focus()` runs, so focus occurs after the initiating touch. That is a known iOS soft-keyboard boundary, not evidence that the PTY or WebSocket lost the typed bytes. The next change should make the reader perform one obvious tap on the live terminal to claim focus, and should couple xterm's fit to the visual viewport; it needs a real-phone verification before it is called fixed.
+
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
-- [ ] 🧭 Rule where board-level work lives, now that a chat can attach at three levels
-      `QD1` settled that a chat attaches to a board, a group, or a page, and board chat and group chat both ship.
-      `QD7` was opened when chat was pinned to one question and asks for a board-level agent, so part of its premise is now answered by `QD1`.
-      → CC's proposal: `QD1` keeps ATTACHMENT (what a chat is bound to and how many sessions it may hold) and `QD7` narrows to a DISPATCHED agent that runs without a reader watching, which no level of chat covers.
+- [x] 🧭 Ruled 260801: board-level work lives in `QD1`'s attachment levels, and `QD7` is archived
+      JL: "你把那个 Q board 的 agent 给删掉，我们不再需要了."
+      CC had proposed narrowing `QD7` to a DISPATCHED agent that runs with no reader watching; JL ruled the simpler way and retired the page instead.
+      `QD1` settled that a chat attaches to a board, a group, or a page, and board chat and group chat both ship, which answers the need `QD7` was opened to raise back when chat was pinned to one question.
+      The page is readable at `_archive/QD7-boardagent.md` and `QD7` still resolves there through `## Links`.
 
 - 260801 JL+CC · 📦 QD3m folded back into this page; one terminal page again
   JL: "the QD3 and QD3m, should we just keep one of them?" — yes, this one. QD3m's engine half (§8 own-PTY) had already shipped INTO this page as 0.64.0, its picker and paste items were built and ticked, and its still-open smooth view rides `QD2` M1's session host, so a separate page held only a decision list. The open work moved up into the 🪄 smooth-pane items with CC's proposals adopted as plan of record (route D · toggle standing A), the file is archived at `_archive/QD3m-smooth-terminal.md` with the full myrlin analysis intact, and `checks/pty_e2e.py`'s default target repointed here.
@@ -260,6 +300,9 @@ Fine to use as a standalone tool; constraints bite when you copy it into somethi
 >> CC0723: read its source: the discovery path matches ours exactly. But it is a whole application, too heavy; ended with ttyd + serve.py's own proxy embedded instead.
 
 ## Log
+260801 · JL: "他已经在跑了，为什么我看不到？我切完之后，他那个状态全都没了" Root cause found and it is an ENGINE defect, not a form one: the 260801 (page, session) re-key changed where terminals are REGISTERED (`term_key(f, sid)`, term.py:538) and left four lookups on the old page-only key (`hold` 398/408, `park` 460, `kill_term` 734), so they cannot match by construction. `hold()` therefore rules a live terminal's claim void and lets the drawer open a second writer on the same `.jsonl`, which is how switching loses the state. Proven by key arithmetic (live `47d8ca068ee1` vs page-only `f891ba932470` for the same page) and by `/_board/release` returning `closed:false` on a terminal `/_board/terms` listed as alive. Fix drafted, not applied: it needs a serve.py restart, which ends every running terminal, so JL picks the moment
+260801 · JL retired `QD7` (the board-level agent): its premise expired when `QD1` settled three attachment levels, so the page is archived rather than narrowed as CC had proposed. Closes this page's 🧭 Decision Now item
+260801 · Design half split out as `QD4` after JL's phone session: this page keeps the engine, QD4 takes the form. The 📱 item handed over, Boundary now names the seam. Three diagnoses recorded there, all read from code and none yet confirmed on a device: the doubled keystroke on a phone is a THIRD cause (the IME's composition path, not the twice-fixed listener duplication), a correct repaint at ~46 columns is still unreadable, and the freeze after switching away is `pagehide` registered in three files with `pageshow` in none
 260801 0020 · QD3m merged in on JL's ask: smooth-pane items absorbed (route D adopted per the no-decisions rule), the file archived under `_archive/`, board.md's lane and map updated, pty_e2e default target repointed (0.91.1)
 260731 1934 · ⌨'s hard items became STANDING checks (`checks/run.py --full`, 0.89.0, home on `QC8`): the own-PTY engine and ⑤ park/reattach are re-proven on every run — a real CLI turn through the PTY (pty_e2e ①–⑦), park-not-held on tree navigation (termnav T9c/T9d `reused:true`), paste on a tree URL — all on a throwaway fixture, never a real page
 260731 1905 · ⌨ follows the tree router (0.86.0): `follow()`'s split-page/group branches had no terminal hand-over, so tree navigation switched the drawer label while the OLD page's claude kept the screen and its PTY stayed unparked; both branches now park-rebind-reopen like the hash branch, and all three `termRelease` sites pass the group (a group PTY was parking the wrong scope). Found by reading SDK-Talk's navtest coverage on JL's ask — their suite never opens ⌨ — and proven with `termnav.mjs` (same CDP harness): 12/12, parked-not-held shown by `reused:true` reopens, paste re-proven on a tree URL

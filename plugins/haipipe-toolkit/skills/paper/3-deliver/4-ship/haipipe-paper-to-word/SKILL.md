@@ -90,7 +90,7 @@ the whole reason there is no second bibliography to keep true.
                               `\bibitem[{Wang et~al.(2022)Wang, Luo, …}]{key}`
                               packs both forms: SHORT(YEAR)FULL. Only the part
                               up to the year is the in-text call.
-                              Written by haipipe-board/refs.py with the
+                              Written by haipipe-board/cli/refs.py with the
                               paper's OWN .bst.
  displays/<unit>/float.tex    the \label and the unit's kind. Kind is never
                               guessed from the label prefix.

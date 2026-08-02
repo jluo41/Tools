@@ -4,6 +4,8 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
 
 ## 1. Folders
 
+**Where a board folder lives**: the two homes, by who owns the board.
+
 ```
 <owner-unit>/diagram/<NN>-<topic>-<YYMMDD>/       # task / project / paper
 <plugin>/skills/diagrams/<NN>-<topic>-<YYMMDD>/   # plugin skill-design Board
@@ -57,6 +59,8 @@ SKILL.md is the shortest operating instructions; this file is where you look up 
 
 **A page moves into a folder for only two reasons, and they are the same rule** (QA1 + QC3, JL 260726):
 
+**Three folder meanings**: what a board folder can stand for.
+
 ```
 GROUP folder     the folder IS this Q group                  a flat design board that grew up
 SUBJECT folder   the folder IS what this question discusses  a board sitting on an existing tree
@@ -74,7 +78,7 @@ The folder is named `Q<group-letter>-<group-title-slug>` (`QA-defining-a-board/`
 Only Board-level source and derived artifacts stay at the Board root: `board.md`, optional `board.excalidraw`, `fig/`, `_archive/`, and generated `board/`.
 `## Pages` does not change a single character; it still lists only bare filenames.
 A page's ＋Q writes into the folder its group already lives in; a new group with no page yet opens a named folder on the spot, from its first page's `### Q<letter> · <title>`.
-To move a whole board, use `python3 <skill>/regroup.py <board-dir> --apply` (omit `--apply` for a dry run, `--all <root>` scans the whole repo).
+To move a whole board, use `python3 <skill>/cli/regroup.py <board-dir> --apply` (omit `--apply` for a dry run, `--all <root>` scans the whole repo).
 
 **Do not rename a board that is already split into folders under this rule.**
 A paper's `0-lifecycle/` is exactly that case: `0-seed/`, `1-work/`, `3-display/` are each both a subject folder and an S family, so it already satisfies the one-folder-per-group rule, and its numbering additionally carries the lifecycle order, which letters cannot carry.
@@ -89,6 +93,8 @@ The checker reports these as `dead-link` / `dead-href`, so `check.py` must run o
 ## 2. Numbering and kind
 
 The filename prefix IS this question's id: `Q` + group letter + sequence number within the group.
+
+**Ids carry the grouping**: the letter is the group, the number is the page.
 
 ```
 QA1  QA2  QA3      group QA
@@ -113,10 +119,12 @@ Old boards' `S0` / `SM0` / `SA0` naming still parses, but a new paper board no l
 **S's `state:` uses the same set of four machine states as Q**, and the machine reads only the first emoji: `🔴` not started · `🟡` in progress · `✅` = **this stage's human gate has passed** (the `N/M` count the index shows for a family is exactly the ✅ count across that family's S pages) · `⏸️` explicitly on hold.
 A human-readable note can follow the emoji, for example `✅ SETTLED`, `✅ PINNED · MISQ 2026`, `🟡 rendered · awaiting gate`; the suffix is not a fifth state, and it must not change what the first emoji means.
 A newly opened S, like a newly opened Q, is always `🔴 OPEN`.
-The only difference is **what earns the flip to ✅**: a Q needs every checkbox closed, an S needs its own human gate to have passed.
+The only difference is **what earns the flip to ✅**: a Q needs every Aim met or explicitly held, while an S needs its own human gate to have passed.
 
 **An S page in `## Pages` follows the same convention as a Q file**: one bare filename per line (`S-Main-2-introduction.md`), grouped under whichever `### ` heading it sits below.
 An ordinary board's group title is free text; **a paper lifecycle board groups by named family by default**:
+
+**A group block in board.md**: the heading plus its one-line intro.
 
 ```markdown
 ### QB · Work Group
@@ -140,6 +148,8 @@ The title still opens with one unique Q family (such as `QD`, `QBa`), so the pag
 An unregistered one still displays, filed under the ⚠️ group.
 
 ## 3. board.md
+
+**board.md's head**: the fields that define the board itself.
 
 ```markdown
 # Board title: one sentence stating what this board is for
@@ -199,7 +209,7 @@ It is kept only for backward compatibility with old boards; a lifecycle stage th
 **Group intro (QC2, 260724)**: plain lines between a `### ` heading and that group's first `.md` line are the group's intro.
 Line 1 is always visible under the header on the index page; any further lines open on click (rendered as a native `<details>`, so the no-script invariant holds).
 Intro lines must not end in `.md`.
-The index page's ＋Q / ＋Group / 🗄 buttons write exactly this grammar through `POST /_board/structure` (`structure_op()` in serve.py, imported by the console): `add_question {group, title}` seeds a stub Q file and lists it under its group; `add_group {title, letter?, hook?, body?}` appends a `### QX · title` heading (letter auto-picked); `archive_question {q}` moves that file to `_archive/` inside the board folder (never deletes; since QC3 build.py DOES glob subfolders, so it is the `_` prefix that hides `_archive/` from discovery, and archived files leave the page for that reason); `archive_group {group}` removes a group only when it lists no questions.
+The index page's ＋Q / ＋Group / 🗄 buttons write exactly this grammar through `POST /_board/structure` (`structure_op()` in `live/structure.py`, imported by the console): `add_question {group, title}` seeds a stub Q file and lists it under its group; `add_group {title, letter?, hook?, body?}` appends a `### QX · title` heading (letter auto-picked); `archive_question {q}` moves that file to `_archive/` inside the board folder (never deletes; since QC3 build.py DOES glob subfolders, so it is the `_` prefix that hides `_archive/` from discovery, and archived files leave the page for that reason); `archive_group {group}` removes a group only when it lists no questions.
 Over HTTP the payload also carries `path` (the page's own location.pathname); called directly it is `structure_op(board_dir, payload)`, and importing serve.py is side-effect free (`serve_forever` sits behind `__main__`).
 
 **Required**: `# title`, `spine:`, `close:`, `## Topic`, `## Pipeline`, `## Pages`.
@@ -211,17 +221,19 @@ Board Structure is Board-level source documentation. It does not count toward a 
 
 Section names correspond one-to-one with where they render on the page:
 
+**Source field to rendered element**: which line becomes which part of the page.
+
 ```
 # short title   → .h2         38px when focused, with the id hung in front
 state:          → .pill       first token is ✅ / 🟡 / 🔴 / ⏸️; a human-readable note can follow
 owner:          → status bar  JL shows 🧠 ruled, others show 🔧
 method:         → status bar  one sentence on how it is done
 requires:       → contract    explicit upstream S ids / paths, comma-separated (S only)
-style-from:     → contract    explicit writing-contract sources (S only)
+style-from:     → contract    explicit venue/style sources; rules materialize in Writing Style (S only)
 provides:       → contract    a short delivery note this page gives downstream (S only)
 
 ## Opening         → .opening .ask + kind routing  the first question sentence lives in Opening; the explanatory paragraph is described below
-## Stage Contract  → a collapsed row .csec.contract inside Opening  S's inherited inputs + writing style (JL 260725: folded into Opening, no longer its own section)
+## Stage Contract  → a collapsed row .csec.contract inside Opening  S's inherited inputs + Venue (folded into Opening, no longer its own visible section)
 ## Diagram         → .diagram-section > .dia  its own section, collapsed by default
                      splits into two sub-sections inside (JL 260726): `details.dsub.dsub-a` (▧ ASCII, `open`)
                      and `details.dsub.dsub-x` (✏️ Excalidraw, shut). **The source writes only one
@@ -230,9 +242,9 @@ provides:       → contract    a short delivery note this page gives downstream
                      When there is no canvas, that section still renders (writing "No canvas attached yet"),
                      because the 🖌 attach-canvas button has to live somewhere.
 ## Content         → .content / .opening-context  required on S, optional on Q; see below
-                     S carries only what this stage itself produces (JL 260725): the venue/writing contract
-                     belongs in `## Stage Contract`, settled corrections belong in `## Where we are`, and
-                     what is still owed belongs in `## Items to Finish`. On S the section title displays the
+                     S carries only what this stage itself produces (JL 260725): Required Inputs and Venue
+                     belong in `## Stage Contract`, prose rules in `## Writing Style`, settled corrections in `## States`, and
+                     intended outcomes belong in `## Aims`. On S the section title displays the
                      stage's name (`📚 Content · Main 7 §6 Results`, derived from `# short title`, so when
                      the artifact's own numbering does not line up with the board index, title the page
                      `S Main 7 · §6 Results` to state both numbers at once), and it no longer counts
@@ -247,10 +259,10 @@ provides:       → contract    a short delivery note this page gives downstream
                      box that is empty on click. The payoff is that it is checkable: the count of dotted `###`
                      headings IS the subsection count, checkable against the venue blueprint without reading
                      the prose.
-## Items to Finish → .col.goal   green border, the column header auto-counts out `5/6`
-## Where we are    → .col.now    yellow border
+## Aims           → .col.goal   green border, the column header derives `met/total` from States
+## States         → .col.now    yellow border; one current emoji row per Aim
 ## Files           → .fls        which files this question touches, blue border (paths auto-become clickable links)
-## Why here        → .folds      collapsed (retired, see below)
+## Why here        → .folds      legacy only; collapsed when an old page still has it
 ## Discussion      → .folds      collapsed
 ## Law             → .folds      collapsed · the rules this question settled
 ## Lesson          → .folds      collapsed · the pitfalls this question hit
@@ -258,33 +270,33 @@ provides:       → contract    a short delivery note this page gives downstream
 ## Log             → .folds      collapsed
 ```
 
-**Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Items to Finish`, `## Where we are`.
+**Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Writing Style`, `## Aims`, `## States`.
 S additionally requires `## Stage Contract` and `## Content`; Q deletes Stage Contract and may omit Content.
 `## Files` is optional but **strongly recommended**; everything else (`method:`, `## Diagram`, and all the folded sections) is **optional**, so delete the whole section when it is not used.
 There is no `## Boundary` section. Opening itself states the scope, and a page points at the neighbouring page that owns excluded work.
-The order of the folded sections on the page is fixed by `build.py` (Why here · Discussion · Law · Lesson · Glossary · Log), independent of the order they were written in the file.
+The order of the canonical folded sections is fixed by `build.py` (Discussion · Law · Lesson · Glossary · Log), independent of the order they were written in the file; a legacy Why here is collected ahead of them when an old page still has it.
 
 **The on-stage order is fixed**:
-Q is `Opening → Diagram → Content → Items to Finish → Where we are`;
+Q is `Opening → Diagram → Content → Aims → States`;
 S is the same: Stage Contract is folded inside Opening and no longer occupies its own section (JL 260725)
 (Files follows after the state).
-Opening is the question lead plus one paragraph stating scope and why it matters; the first row of the drawer is the build-generated Structure map of the page (JL 260729, pure rendering, nothing to author); the optional Diagram is its own section, collapsed by default, and expands only when the section name is clicked.
-The Opening explanatory paragraph of both Q and S goes into the Why this matters row of that page's own drawer (JL 260729; before that, a Q's explanatory paragraph automatically became Content's first subsection).
-If an S page's explicit Content holds a direct `### Stage Record`, that is lifted into Opening too and collapsed by default, while the remaining subsections stay in Content.
+Opening is the question lead plus one paragraph stating what the question's own words mean, why that is hard, and what this page decides (JL 260801); the fixed sidebar already carries the page structure, so the drawer does not duplicate it. The optional Diagram is its own section, collapsed by default, and expands only when the section name is clicked.
+Everything after `## Opening`'s FIRST BLANK LINE, on both Q and S, goes into the More details row of that page's own drawer (JL 260729; the row was labelled "Why this matters" until JL renamed it on 260801, and before 260729 a Q's explanatory paragraph automatically became Content's first subsection).
+A stage has exactly one contract section and it is `## Stage Contract` (JL 260801). There is no Stage Record: an old page that still holds a direct `### Stage Record` under Content has it lifted into that contract verbatim, as its opening lines, and the remaining subsections stay in Content.
 A Q's explicit Content can be omitted.
 Intent comes first (what is being asked, the boundary, what counts as done), then the state (where things stand now).
-Before the redesign, Now sat above Done when, so a zero-background reader hit a wall of implementation detail and drowned before understanding the goal.
+An Aim is intent; its State is fact. The paired section labels are plural: `Aims` and `States`. A Plan, when needed, is optional text inside an Aim and never a third fixed top-level section.
 
 **`## Why here` is retired.**
-Its job (why this is hard, what happens if it stays unsettled) is merged into `## Opening`'s explanatory paragraph and rendered as "Why this matters": both Q and S put it in Opening's drawer, **collapsed by default** (JL 260729; before that Q put it in Content's first subsection) (JL 260725: inside Opening, every row other than the question sentence itself is shut).
+Its job (why this is hard, what happens if it stays unsettled) is merged into `## Opening` below its first blank line and rendered as "More details" (JL 260801, renamed from "Why this matters"): both Q and S put it in Opening's drawer, which is **shut until the visible paragraph is clicked** (JL 260729; before that Q put it in Content's first subsection) and then shows every row FLAT (JL 260725: one door, and nothing behind it folds a second time).
 The old section on an old board is still collected into the folded area at the bottom.
 
-**Every old section name is still recognized**, so an old board can be regenerated without being edited: `## Question` can also stand in for `## Opening` (`## Opening` is the canon, `## Question` the legacy alias, JL 260731), as can the Chinese names (`## 问题` `## 现在什么样` …) and the pre-rename `## Done when` (= `## Items to Finish`) and `## Now` (= `## Where we are`).
+**Every old section name is still recognized**, so an old board can be regenerated without being edited: `## Question` can also stand in for `## Opening` (`## Opening` is the canon, `## Question` the legacy alias, JL 260731), as can the Chinese names and the historical `## Done when` / `## Items to Finish` (= `## Aims`) and `## State` / `## Now` / `## Where we are` (= `## States`).
 
 **The Q-consumer rule on an S page**: do not open a top-level `## Q-consumer`.
-Each consumer is a checklist item inside `## Items to Finish`, its heading keeps `Q-<Stage>-<n>`, and its folded detail keeps Description / Reason / Probe / Answer.
-Tick `[x]` only once the Answer has landed, been explained, and been woven back into Content; a deferred one closes only when a forward pointer has been written down.
-`## Where we are` only summarizes the stage; it does not restate each consumer answer.
+Each consumer is an Aim inside `## Aims`; its heading keeps both a stable Aim id and `Q-<Stage>-<n>`, while its detail keeps Description / Reason / Probe / Done when.
+Mark it `✅` in `## States` only once the Answer has landed, been explained, and been woven back into Content; a deferred one closes only when a forward pointer has been written down.
+`## States` only summarizes the stage; it does not restate each consumer answer.
 
 **The Stage Contract rule on an S page**: dependencies are read from the top-level metadata only, never guessed from Pages order or from a number in a filename:
 
@@ -293,31 +305,38 @@ requires: S-Work-1, S-Main-0, S-Display-0
 style-from: S-Venue-1, STYLE.md
 provides: reader-facing results section
 
+## Writing Style
+<!-- haipipe:style:start sha256=... -->
+**Inherited requirements from `S-Venue-1`**: ...the resolved page prose rules...
+<!-- haipipe:style:end -->
+
 ## Stage Contract
 <!-- haipipe:contract:start sha256=... -->
 ### Required Inputs
 ...a short summary of the upstream `### Provides`, its path, and its gate state...
-### Writing Style
-...the short contract of the writing source...
+### Venue
+...the explicit venue/style source; its prose rules are materialized in `## Writing Style`...
 <!-- haipipe:contract:end -->
 
 ### Provides
 The downstream delivery note this page's author owns; sync does not overwrite it.
 ```
 
-`python3 stage.py new` creates the page, `stage.py sync` updates only what sits between the markers, `stage.py sync --all` refreshes in the topological order of the explicit dependency graph (it does not look at Pages order), and `stage.py check` verifies the source hash.
+`python3 <skill>/cli/stage.py new` creates the page, `stage.py sync` updates the marked Stage Contract and inherited block in `## Writing Style`, `stage.py sync --all` refreshes in the topological order of the explicit dependency graph (it does not look at Pages order), and `stage.py check` verifies the source hash.
 `build.py` also puts a missing or stale contract into its warnings, but it never modifies the Markdown.
-The upstream full text stays upstream; the contract carries only acceptance conditions, writing rules, and links.
+The upstream full text stays upstream; Stage Contract carries acceptance conditions and Venue links, while the page's own Writing Style carries the resolved prose rules.
 
 ## 4b. `## Links`: the wire between the board and its artifacts
 
 What a board discusses usually does not live in the board's folder.
 Declare it in `board.md`:
 
+**A Links block**: how a board declares the paths its pages may cite.
+
 ```markdown
 ## Links
 SKILL.md            ../../haipipe-board/SKILL.md
-ref/q-template.md   ../../haipipe-board/ref/q-template.md
+ref/page-template.md   ../../haipipe-board/ref/page-template.md
 haipipe-board/      ../../haipipe-board/
 ```
 
@@ -339,14 +358,14 @@ After that, every `` `SKILL.md` `` becomes a clickable link.
 | a whole-line `(…)` directly after a `####` | **the job** this paragraph does (`.pj`): grey italic, left on stage as a scan hook, never folded (folded, it cannot be scanned). Only the line immediately after the heading is read this way, and per the venue template its length is about 80 to 120 characters |
 | `**a whole bold line**` (alone on a line) | group title: slightly larger, leading a run of items below it. Start it with an emoji (`**🎨 Layout landed**`) and that emoji is used as its mark; without one the default 🔹 is used. **Use it only when it really does lead a run of items**; a single paragraph takes `####` |
 | `- heading` plus an explanation line indented two spaces | item block: a ▸ bold heading plus a grey explanation |
-| `- [ ]` / `- [x]` plus an indented explanation | a checklist, the column header auto-counting out `3/5`; an S page's Q-consumer uses this same line form |
+| `- [ ]` / `- [x]` plus an indented explanation | a checklist for an explicit human decision or legacy page; canonical Aims use stable ids without checkboxes, and progress derives from their matching State rows |
 | a ` ``` ` fence | verbatim `<pre>` output (ascii figures, code, folder trees). **Never draw two trees side by side**: the column boundary is whitespace, it disappears the moment anyone copies it, and the right column then reads as branches of the left one; a board exists to be pasted into chat and email. To compare, stack them vertically, one complete tree at a time |
 | an **indented** ` ``` ` fence inside an item's explanation lines | goes into **that item's folded area** (it is not flushed out as a sibling block): dedented, then verbatim `<pre>`, and it can go wherever you put it (after the summary, between body paragraphs). A top-level fence is a sibling block as before (JL 260724, first used on the QC10 CABG board) |
 | a line holding only `![[path]]` / `![[path#Section]]` / `![[path#Section\|source]]` | **embed** (QF1): pulls another file (whole, or one section) into this question by reference, read live at generation time. The path is relative to the board root, and when not found it is searched upward level by level (up to 8 levels); only `.md`/`.txt` are accepted; `#Section` recognizes a `##` heading **and** a setext (underlined) heading; a file that cannot be embedded, or a section that cannot be found, produces a red warning in place and never silently goes blank; an `![[…]]` written inside embedded content is not expanded (loop guard). A sentence comment is written only into the Markdown of the page carrying it; the embed source itself is not modified. A trailing `\|source` = the same file spread into a `<pre>` **byte for byte** (not rendered, no chip), for the kind of page that gives the source first and the rendered result after: both blocks are the same file read twice at generation time, so they cannot disagree. Any other mode is an in-place red error |
 | an excalidraw share link alone on a line | embedded as an interactive canvas (iframe) plus a fallback "↗ open in Excalidraw" link |
 | a bare `https://…` | becomes a clickable link automatically (a URL already inside an `href=` is not wrapped a second time) |
 | `` `code` `` `**bold**`, plus the image form `!` `[` `]` `(fig/NAME.png)` and the same with `.pdf` | inline code / bold / image / readable PDF (with a fallback open link). The image form is spelled out here rather than written literally: the renderer resolves image syntax before inline code, so a literal example embeds a real (and dead) file. |
-| `> JL: text · 260729 1502` | **sentence comment**: sits tight under the sentence above it, colored by signature; only when there is no preceding sentence is it an ordinary discussion line |
+| `> Comment JL text · 260729 1502` | **sentence comment**: sits tight under the sentence above it, colored by signature; only when there is no preceding sentence is it an ordinary discussion line. `> Comment WHO` is the only form to write (JL 260802), because beside `> Citation:` and `> Value:` a bare pair of initials said nothing about what the row was; the older `> JL: text` still renders and `check.py` warns on it inside `## Content`. `## Discussion` is NOT affected and keeps `> JL:` with its nested `>>` replies, which is a thread and a different grammar |
 | `> ✎ The whole sentence with ~removed~ *added* words · JL · 260729 1502` | **edit record**: the sentence above has already been updated to its final text; this line repeats the whole sentence and marks only the removed and added words |
 | `>> CC0723: text` | a reply |
 | `> JL 「the quoted sentence」: text` | a discussion line, plus the sentence inside 「」 is highlighted in the body |
@@ -367,12 +386,14 @@ These addresses are never written back into the Markdown; renumbering is allowed
 
 ## 6. Generating
 
-`build.py` / `watch.py` both live in the skill folder, not in the board folder.
+`build.py` / `watch.py` both live in the skill folder's `cli/`, not in the board folder.
 Call them with a path; do not `cd` into the board folder and run `build.py .`:
 
+**Build once, or watch**: the two ways to regenerate the site.
+
 ```bash
-python3 <skill>/build.py <board-dir>     # generate once (<skill> = .../board/haipipe-board)
-python3 <skill>/watch.py <board-dir>     # watch it: any .md change regenerates automatically
+python3 <skill>/cli/build.py <board-dir>     # generate once (<skill> = .../board/haipipe-board)
+python3 <skill>/cli/watch.py <board-dir>     # watch it: any .md change regenerates automatically
 ```
 
 **Do not hand-edit the generated `board/` tree**: the next generation overwrites it.
@@ -396,18 +417,19 @@ The Index shows it at 42px and a focused page presses it down to 24px, so the ti
 
 **What goes on stage and what is shut when focused** (settled by QA4):
 
-- **On stage** (top to bottom): the title → `🧭 Opening` (this row does not fold, it is always there) → the lead sentence (always there, and **clickable**: open it, and in the drawer, scope plus S's Why this matters / Stage Record / Stage Contract (Required Inputs · Writing Style · venue), are all **flat**, seen in one go, with no second ▸ level nested inside.
+- **On stage** (top to bottom): the title → `🧭 Opening` (this row does not fold, it is always there) → the lead sentence (always there, and **clickable**: open it, and in the drawer, More details / Writing Style plus S's Stage Contract (Required Inputs · venue), are all **flat**, seen in one go, with no second ▸ level nested inside.
   Every subheading in the drawer is **a bare word carrying no icon**: previously only 2 of 7 had an icon, and that is the inconsistency JL named, JL 260725) →
   `🖼 Diagram` (optional; only the section name is on stage, the content is collapsed by default; open it and ▧ ASCII is seen first, while ✏️ Excalidraw takes one more click, JL 260726) →
   `📚 Content` (only the subsections the author wrote explicitly; since 260729 a Q's explanatory paragraph also goes into Opening) →
-  `🎯 Items to Finish` → `📍 Where we are` → `📁 Files`.
+  `🎯 Aims` → `📍 States` → `📁 Files`.
 - **Three levels of hierarchy**: section heading (🧭/📚/🎯/📍, with a rule under it) > **group title** (a whole bold line → 🔹 by default, or the emoji it starts with, leading a run of items) > the item's name (`▸`).
-- **Shut by default** (revealed by clicking the name, or the `expand all` to the right of the section heading): the whole `## Diagram`, an item's explanation (collected into a native `<details>`), and a code block in the body (collapsed into one line, `</> code · N lines`).
+- **Shut by default** (revealed by clicking the name, or the `expand all` to the right of the section heading): EVERY section and every Content division, including the first one (JL 260801, reversing the 260725 open-by-default rule now that the sidebar carries the map), the whole `## Diagram`, an item's explanation (collected into a native `<details>`), a sentence's own apparatus, and a code block in the body (collapsed into one line, `</> code · N lines`).
+  Opening is the one section that does not fold from its heading, because a page whose first section can be shut can open showing nothing; its visible paragraph carries the fold instead.
   Diagram carries one more layer of ordering: open the section and ▧ ASCII is there while ✏️ Excalidraw is still shut, because a shut `<details>` is not displayed, so a `loading="lazy"` iframe inside it does not load, and a board with 28 canvases no longer starts 28 of them at load time.
-- **Sunk into the folded area at the bottom**: Why here · Discussion · Law · Lesson · Glossary · Log.
+- **Sunk into the folded area at the bottom**: Discussion · Law · Lesson · Glossary · Log; a legacy Why here is preserved ahead of them when present but is never authored on a new page.
 - The first look at a screen = one clean column of section names and item names; Diagram is opened by hand, and `expand all` spreads out the items / code of the other sections in one click (pure enhancement: with the scripts stripped, every row still opens on its own).
 
-**Other things that are fixed**: Where we are against Items to Finish are **stacked vertically**, not split into left and right columns (side by side, unequal lengths leave half a column empty); a long question **scrolls**, and is never truncated or split across screens; **no 16:9 lock**, the height follows the window (locking the aspect ratio belongs to a projection deck); a **real space** is left after the id in the big title, so copying it does not glue it into `QA4Single…`.
+**Other things that are fixed**: Aims and States are **stacked vertically**, not split into left and right columns (side by side, unequal lengths leave half a column empty); a long question **scrolls**, and is never truncated or split across screens; **no 16:9 lock**, the height follows the window (locking the aspect ratio belongs to a projection deck); a **real space** is left after the id in the big title, so copying it does not glue it into `QA4Single…`.
 
 **Invariant: delete every `<script>` in the page, and every question and all of the body text is still there.**
 `build.py` asserts this on every generation.

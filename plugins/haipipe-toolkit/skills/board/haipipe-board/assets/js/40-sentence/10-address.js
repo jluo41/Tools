@@ -9,12 +9,8 @@
        QAb3.C1.P2.S1    sentence in the second paragraph of C1
 
      These are render-local focus addresses, not durable Markdown identity. */
-  function sentenceText(p) {
-    var c = p.cloneNode(true);
-    c.querySelectorAll('.sbadge,.cv,.schatbar,button,input,select,textarea')
-      .forEach(function (x) { x.remove(); });
-    return c.textContent.replace(/\s+/g, ' ').trim();
-  }
+  // Defined in 00-apparatus.js, which runs first: one grammar, never two.
+  var sentenceText = window.__boardSentenceText;
   function apparatusText(p) {
     var box = null;
     var sent = p.closest('details.sent');
