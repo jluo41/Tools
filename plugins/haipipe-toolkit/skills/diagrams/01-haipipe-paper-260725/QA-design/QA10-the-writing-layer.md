@@ -16,6 +16,21 @@ The prose that produced it was this board's. Every rule in `ref/plain-rules.md` 
 
 Scope: This page covers Where the prose verb sits, what it owns against `①` and `③`, why it has no board of its own, and what is still owed at the seam. Neighbouring pages cover Which folder this is among the eleven is `QA1`; what ships and whether it is well is `Skill-11`; the lane contract the `✎` record lives inside is `Skill-9`; the paper's own venue-bound revision chain is `Skill-5`.
 
+## Writing Style
+
+How this page must be written. Read it before editing, and edit to it.
+
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+
+**Never restate the lane contract**: the ten kinds, the badge and the archive lifecycle belong to `③`.
+Releases 0.1.0 through 0.3.0 of the skill made exactly that mistake and created a second authority, so this page cites and does not repeat.
+
+**Say what the skill owns by naming the READER, not the file type**: its consumer is a person whose English is weak, on any host.
+A sentence describing it by where the prose lives has already lost the reason it is a family of its own.
+
+**A claim about the skill carries the version that made it true**: this unit shipped five releases in two days.
+An undated claim here is a claim about a release nobody can identify.
+
 ## Diagram
 
 ```
@@ -63,7 +78,28 @@ Scope: This page covers Where the prose verb sits, what it owns against `①` an
 
 ## Content
 
-### What `⑪` owns, and what we own
+### 1 · What the prose verb owns
+
+**One lane out of ten**: what this family decides, and what it only writes into.
+
+```text
+ ✍️ ⑪ OWNS                        🚫 ⑪ DOES NOT OWN
+ ────────────────────────         ──────────────────────────────
+ the plain-English rules          the lane contract          ← ③
+ the ✎ diff, computed             the badge and the counts   ← ③
+ where the record is placed       the archive lifecycle      ← ③
+ the AI-tell catalogue            venue voice, claim         ← ①
+ the weaving method               strength, citation rules
+ the hole discipline              the %% grammar LaTeX needs
+
+ 🔑 the consumer is a PERSON whose English is weak, on ANY host
+ ⚖️ 0.4.0 repaired the first version of this page's own mistake:
+    ref/change-record.md had RESTATED ③'s contract instead of citing it
+```
+
+✍️ Establishes what this family decides for itself, and the two neighbours it writes into without ruling.
+
+#### 1.1 · What it owns against the paper family
 
 ```
  ⑪ /haipipe-writing   the plain-English rules and the ruling behind each ·
@@ -80,13 +116,36 @@ Scope: This page covers Where the prose verb sits, what it owns against `①` an
 
 The division is the skill's own and it is stated in one line there: they share machinery, they do not share judgment. `ref/change-record.md` §3 holds both host dialects side by side so they cannot drift into two ideas.
 
-### It owns one lane out of ten, and none of the machinery around it
+#### 1.2 · It owns one lane out of ten, and none of the machinery around it
 
 The `✎` record is not a grammar this family invented. `③` owns the lane contract, `Skill-9` mirrors it here, and `QB4@boardform §3.3.3` names the ten kinds: eight `⚑` typed lanes, one `💬` comment, and the `✎` change record `⑪` writes. Three of those rules bind it directly and `cli/wdiff.py apply` enforces all three: a lane is appended and never edited in place, a signed `> WHO:` or `> ✎` line is never erased, and a lane with no signature is not a lane.
 
 That is the healthy shape of a dependency, and it was got wrong first. Releases 0.1.0 through 0.3.0 described `✎` as a standalone grammar, which created a second authority on something `③` already owned. JL caught it on 260802 and 0.4.0 rewrote the reference to CITE the owning contract rather than restate it.
 
-### Why the record lives here and not in a board of its own
+### 2 · Why its record lives here
+
+**The artifact-kind test**: one question decides whether a family earns a board.
+
+```text
+      does the family own a KIND of artifact?
+            │
+      ┌─────┴─────┐
+     YES          NO
+      │            │
+      ▼            ▼
+ 📋 it has a    🏠 it is argued where its prose already lives
+    subject to
+    argue       ✍️ ⑪ writing/  ━▶ ②, this board, at QA10
+                🖼 ⑨ display/  ━▶ ⑩, its own board  (owns the float)
+                🔎 ⑤ probe/    ━▶ ⑥, its own board  (owns the QA file)
+                👁 ③ board/    ━▶ ④, its own board  (owns the page)
+
+ 🔑 this makes ② the board of TWO things, and it is the only such case
+```
+
+🏠 Establishes why this family has no board of its own, and that the reason is structural rather than convenient.
+
+#### 2.1 · Opening a board for it would create a record with no subject
 
 ```
                         a board of its own          this board
@@ -102,7 +161,27 @@ Opening a board for `⑪` would create a record with no subject of its own to ar
 
 This makes `②` the board of two things, which `QA1`'s Law now states, and it is the only case on the map.
 
-### The seam, verified 260802
+### 3 · The seam, and what checking it produced
+
+**One afternoon**: a claim verified, two defects repaired, and one checker built.
+
+```text
+ 🔍 VERIFIED   the humanizer really calls wdiff.py, wired in TWO SKILL.md
+               instructions, and paper/ carries no second diff
+ 🔧 REPAIRED   a path that resolved only from the plugin root
+ 🔧 REPAIRED   frontmatter 0.1.0 against a changelog at 0.4.0
+ 🎚 BUILT      --host {board,paper}: one computation, two notations
+ 🧯 FOUND      apply and check had disagreed since 0.1.0, invisible because
+               the validating corpus has no sentence carrying two lanes
+ 🧪 BUILT      cli/agree.py + tests/test_roundtrip.py
+
+ ⚖️ all three defects were ONE shape: two halves of a contract, stating one
+    fact, disagreeing, with nothing that compares them
+```
+
+🔗 Establishes what the seam with the paper family actually is, and what checking it turned up that nobody had asked about.
+
+#### 3.1 · The call is real, and wired twice
 
 The call is real, and it is wired in two places rather than the one that was claimed. Both are instructions in a `SKILL.md`, not notes in a changelog, so a worker following either one reaches `cli/wdiff.py`.
 
@@ -121,7 +200,7 @@ The humanizer cited `skills/writing/haipipe-writing/cli/wdiff.py`, a bare relati
 
 `SKILL.md` declared `0.1.0` against a `CHANGELOG.md` that had shipped `0.4.0`, so `Skill-11`'s derived header understated the unit by three releases. The frontmatter now reads `0.4.0`.
 
-### The host became a flag, 0.5.0
+#### 3.2 · The host became a flag, 0.5.0
 
 The verification found one hand step nobody had asked about, and JL ruled it out the same day. `wdiff.py record` emitted the board notation only, so `haipipe-paper-revise/SKILL.md:70` had instructed its caller to "double the tildes and turn `*new*` into `**inserted**` for this host". That put a hand step inside the one tool whose whole design case is that this class of hand step gets done wrong: the computation was in one place and the OUTPUT was not, so the last transformation before marks reached a manuscript was performed by the reader the skill exists to protect.
 
@@ -134,7 +213,7 @@ The verification found one hand step nobody had asked about, and JL ruled it out
 
 Both paper callers pass `--host paper` and convert nothing. An unknown host is refused by `argparse` rather than silently defaulting, so a third notation has to be added deliberately.
 
-### The flag uncovered an older contradiction
+#### 3.3 · The flag uncovered an older contradiction
 
 Testing `--host paper` on a sentence that already carried a lane exposed a defect present since 0.1.0, in code this change never touched.
 
@@ -152,7 +231,7 @@ Nothing had caught it because the corpus it was validated against, `QB4-overall.
 
 This is the third instance today of one shape: two halves of one contract disagreeing, with nothing that compares them. The humanizer's path against its hub's path, the frontmatter version against the changelog, and now `apply` against `check`.
 
-### Something now compares them, 0.6.0
+#### 3.4 · Something now compares them, 0.6.0
 
 `cli/agree.py` checks the two disagreements that are STATIC, and `tests/test_roundtrip.py` covers the one that is not.
 
@@ -173,53 +252,82 @@ The checker got its own job wrong twice before it worked, and both are recorded 
 
 ## Aims
 
-- [x] 🗺 Place the prose verb on the map
-      `⑪` on `QA1`, the fourth shared family, and the first whose board is `②` (JL 260802).
-- [x] 📐 State the test that decides whether a family needs its own board
-      Does it own a KIND of artifact? `⑨` does and keeps `⑩`; `⑪` does not and is argued here.
-- [x] 🧾 Record that it owns one lane out of ten
-      `③` owns the lane contract; `⑪` writes the `✎` record inside it and redefines none of the machinery.
-- [x] 🔍 Verify the humanizer actually calls `cli/wdiff.py`
-      Verified 260802. Wired in TWO SKILL.md instructions, `haipipe-paper-revise:70` and `haipipe-paper-revise-humanizer:94`, and no second diff implementation exists in `paper/`. Two defects repaired in the same pass: the humanizer's path was unresolvable from the repository root, and it omitted the required `--when`.
-- [x] 🎚 Give `wdiff.py record` a host flag, or rule that the hand conversion stays
-      JL ruled it built (260802). `--host {board,paper}` ships in 0.5.0, both paper callers pass `--host paper`, and no caller converts marks by hand.
-- [x] 🧯 Make `apply` and `check` agree about where a record may sit
-      Found while testing the flag and present since 0.1.0: `apply` appends after the lane run, `check` demanded prose one line up, so any sentence with an existing lane produced a record the tool wrote and then rejected. `check` now walks the run back.
-- [x] 🔁 Find the next disagreeing pair before a reader does
-      `cli/agree.py` and `tests/test_roundtrip.py` ship in 0.6.0 and cover all three shapes that bit today. The sweep over 152 skill folders returns 2 version disagreements and 57 path findings.
-- [ ] 🧾 Clear what the first sweep found
-      57 path findings and 2 version disagreements are recorded and not repaired. One of them is this board's own stale id, `QO-delivery-build/QC6-sentence-to-word.md`. Reporting them is not fixing them.
-- [ ] 🚦 Decide whether `agree.py` runs on its own
-      Nothing calls it. A checker a person has to remember to run is a checker with the same failure mode as the defects it catches.
-- [ ] 🧠 Rule which prose on a PAPER is `⑪`'s and which is `①`'s
-      The machinery/judgment split is stated and is not yet checkable. A section draft that is merely unreadable, with no venue question in it, has no ruled owner today.
-- [ ] 🔗 Rule what happens when `③`'s lane contract changes
-      `⑪` binds to it and `QA8` has the same open question for the Board grammar. Nothing says who migrates the writer when the lane spec moves.
+### A1 · ✍️ What the prose verb owns
+- A1.1 · This family writes one lane and redefines none of the machinery around it.
+  **Done when:** no reference here restates `③`'s lane contract, and `cli/wdiff.py apply` enforces the three lane rules it binds.
+
+### A2 · 🏠 Why its record lives here
+- A2.1 · The prose verb is on the folder map as a shared family the paper calls.
+  **Done when:** `QA1` names it, and no page cites it as an authority the map does not contain.
+- A2.2 · The test for whether a family needs its own board is written down and applies without exception.
+  **Done when:** each of the six pairs on `QA1` can be justified by the artifact-kind test alone.
+
+### A3 · 🔗 The seam, and what checking it produced
+- A3.1 · The paper family computes its diffs here rather than keeping its own.
+  **Done when:** no diff implementation exists in `paper/`, and every caller passes `--host paper`.
+- A3.2 · One computation emits both host notations, and no caller converts marks by hand.
+  **Done when:** `record` and `apply` take `--host`, and no `SKILL.md` instructs a caller to change the marks itself.
+- A3.3 · What `apply` writes, `check` accepts.
+  **Done when:** a record written under a sentence that already carries a lane passes `check`, and a test asserts it.
+- A3.4 · Two statements of one fact are compared by something other than a person reading.
+  **Done when:** a checker covers the version and path shapes, and a test covers the round trip.
+- A3.5 · The findings that checker produced are cleared, not merely recorded.
+  **Done when:** the version disagreements and path findings from the first sweep are each repaired or ruled acceptable.
+- A3.6 · Something CALLS the checker.
+  **Done when:** `agree.py` runs without a person remembering to run it.
+- A3.7 · Which prose on a PAPER belongs to this family and which to the paper's own chain is ruled.
+  **Done when:** a section draft that is merely unreadable, with no venue question in it, has a named owner.
+
+### P · 🏁 Page-level
+- P1 · The lane contract this family binds has a named migration path.
+  **Done when:** something says who updates the writer when `③`'s lane spec moves, and `QA8` records the same answer for the board grammar.
 
 ## States
 
-The layer ships, is in daily use on this board's own pages, and is now on the map. What is new here is placement, not mechanism: `cli/wdiff.py` wrote 31 records on `QB4@boardform` on 260801 and nothing on this board said where the skill that wrote them belonged.
+### A1 · ✍️ What the prose verb owns
+- ✅ A1.1 · Repaired in 0.4.0. Releases 0.1.0 through 0.3.0 had described `✎` as a standalone grammar, creating a second authority on something `③` already owned.
 
-The seam with `①` is the part that is only argued. The machinery moved and the judgment stayed, which is the right split, and there is still no test that tells a writer which of the two they are doing when a manuscript paragraph is simply hard to read.
+### A2 · 🏠 Why its record lives here
+- ✅ A2.1 · Placed by JL on 260802, together with `⑨ display/`, which the map had been citing eleven times without naming.
+- ✅ A2.2 · Stated in `QA1`'s Law. `writing/README.md` supplies the reason in the family's own words: every other family owns a kind of artifact and this one owns none.
 
-Both unverified claims were closed on 260802 and both moved in the direction the page did not assume: the humanizer call is real and wired twice, and the version drift was repaired at its source rather than annotated here.
+### A3 · 🔗 The seam, and what checking it produced
+- ✅ A3.1 · Verified 260802, and it held. Wired in two `SKILL.md` instructions rather than the one that was claimed, and `paper/` carries no second implementation.
+- ✅ A3.2 · Shipped as 0.5.0. Both paper callers pass `--host paper`, and an unknown host is refused rather than silently defaulted.
+- ✅ A3.3 · Repaired in 0.5.0 and locked by `tests/test_roundtrip.py`, which was verified to FAIL against the pre-0.5.0 `check`.
+- ✅ A3.4 · Shipped as 0.6.0. `cli/agree.py` covers the two static shapes; the round trip is a test because no grep can see it.
+- ⬜ A3.5 · Recorded, not cleared. The first sweep over 152 skill folders returned version disagreements and path findings, one of which is this board's own retired id.
+- 🔨 A3.6 · Nothing calls it. A checker a person must remember to run has the same failure mode as the defects it catches, and this is the item that decides whether any of it holds.
+- 🧠 A3.7 · Waiting on a ruling. The machinery moved and the judgment stayed, which is the right split, and there is still no test telling a writer which of the two they are doing.
 
-The check then turned up a question nobody had asked, JL ruled on it, and `--host` shipped as 0.5.0 the same day. Testing that flag exposed an older defect underneath it: `apply` and `check` had disagreed about where a record may sit since 0.1.0, invisibly, because the corpus that validated the tool has no sentence carrying two lanes.
-
-The pattern worth keeping is not any of the three defects. It is that all three are one shape, two halves of a contract that nobody compares, and that each was found by a person looking rather than by anything that checks.
-
-Something checks now, and the honest reading of it is narrow. `agree.py` covers the two static shapes and a test covers the round trip, so a fourth instance of any of those three should surface without a person noticing. Nothing yet RUNS it, so the tool has the same failure mode as the defects until something calls it, and its first sweep produced 59 findings that are recorded rather than repaired.
+### P · 🏁 Page-level
+- 🧠 P1 · Waiting. `QA8` has the same open question for the board grammar, and neither has an owner.
 
 ## Files
 
-- `writing/haipipe-writing/`
-  `⑪` itself: the rules, the diff engine, the hole checker, the catalogues.
-- `writing/README.md`
+### ⚙️ Engines · what RUNS this subject
+- `../../writing/haipipe-writing/cli/wdiff.py`
+  Computes the word-level diff and anchors the record by position. `record`, `apply`, `check`, and since 0.5.0 `--host`.
+- `../../writing/haipipe-writing/cli/agree.py`
+  Compares a declared version against its changelog and a cross-skill citation against the disk.
+
+### 📋 Contracts · what CARRIES a rule to other pages
+- `../../writing/haipipe-writing/`
+  `⑪` itself: the plain-English rules, the change-record grammar, the AI-tell catalogue, the weaving method, the hole discipline.
+- `../../writing/README.md`
   Where the no-artifact-kind argument is stated by the family in its own words.
-- `board/haipipe-board-sentence/`
+- `../../board/haipipe-board-sentence/`
   `③`'s lane contract, which owns the shape the `✎` record lives in.
-- `paper/2-phase/2-revise/haipipe-paper-revise-humanizer/`
-  The venue half, and the unverified call to `cli/wdiff.py`.
+- `../../paper/2-phase/2-revise/haipipe-paper-revise-humanizer/`
+  The venue half, and one of the two verified callers.
+
+### 🧪 Checks · what CATCHES a page breaking a rule
+- `../../writing/haipipe-writing/tests/test_roundtrip.py`
+  Asserts that what `apply` writes, `check` accepts, over five shapes including a paper-host call beside a board record.
+
+### 📤 Output files · what a BUILD writes
+- `../board/QA/QA10-the-writing-layer.html`
+  ⚠️ Generated by `cli/build.py`. Never hand-edit.
 
 ## Law
 
@@ -245,3 +353,5 @@ A change record is APPENDED, is never erased once signed, and is placed by posit
 260802 · Aim 5 ruled and built: `--host {board,paper}` ships in `haipipe-writing` 0.5.0 and both paper callers convert nothing by hand. Testing it exposed a 0.1.0 contradiction between `apply` and `check` about where a record may sit, now repaired. Opened one aim that is not about any of the three defects but about the shape they share.
 
 260802 · Aim 7 built: `cli/agree.py` compares a declared version against its changelog and a cross-skill citation against the disk, and `tests/test_roundtrip.py` covers the round trip no grep can see. Both shipped in 0.6.0. The checker got its own job wrong twice first, and both wrong turns are in the changelog rather than tidied away. Two aims opened in its wake: the 59 findings are recorded and not cleared, and nothing calls the checker.
+
+260802 · Migrated to the `QB4` page contract: Writing Style added, seven flat Content headings folded into three numbered divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action and four dead paths repaired.

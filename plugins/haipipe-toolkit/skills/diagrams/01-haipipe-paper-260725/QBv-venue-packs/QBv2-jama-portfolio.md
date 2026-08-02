@@ -1,6 +1,6 @@
 # JAMA portfolio: one house style, three acceptance bars, and a ladder you can fall down on purpose
 
-state: 🟡 PARTIAL · 3 outlets · 39 exemplars · jama-netopen has section norms and zero exemplars
+state: 🟡 PARTIAL · 3 outlets · 36 exemplars · jama-netopen has section norms and zero exemplars
 owner: JL
 method: state what the three JAMA desks share, what separates them, and why this is the one pack a paper can descend without a rewrite
 

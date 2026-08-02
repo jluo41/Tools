@@ -2,6 +2,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import sys
+from pathlib import Path as _P
+sys.path.insert(0, str(_P(__file__).resolve().parent.parent))
+sys.path.insert(0, str(_P(__file__).resolve().parent.parent / "cli"))
+
 from stage import render_block, render_style_block, sync_face
 from src.stage_contract import replace_managed, replace_managed_style
 

@@ -112,6 +112,26 @@ body.pane-page #chat,body.pane-page #chatfab{display:none !important}
 # which is where a reader asks the question (JL 260802: "what I want for the chat
 # is choose the GUI or TUI when I click the chat button").
 PANE_BOOT = {
+    "index": """
+/* A RAIL CLICK IS A SWAP, NOT A NAVIGATION (JL 260802: "really slow to click and
+   go to a new page"). `target="page"` loads a whole new document into the page
+   frame, which parses 400 KB of html and re-executes the bundle every time. The
+   page pane still owns a router that can replace one column instead, so ask it.
+   The `target` stays on every link as the fallback: with scripts off, or if the
+   page pane has not booted yet, the browser does the ordinary thing. */
+document.addEventListener('click', function (e) {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+  var a = e.target.closest && e.target.closest('a');
+  if (!a) return;
+  var href = a.getAttribute('href') || '';
+  if (!href || href[0] === '#' || /^[a-z]+:/i.test(href) || !/\.html/.test(href)) return;
+  var go = null;
+  try { go = parent.frames.page && parent.frames.page.__boardGo; } catch (err) { return; }
+  if (typeof go !== 'function') return;          // fall through to target="page"
+  e.preventDefault();
+  go(new URL(a.href, location.href).href.replace(/\?pane=page/, '') + '?pane=page', true);
+});
+""",
     "chat": """
 window.addEventListener('load', function () {
   if (window.__boardDrawerReopen) { try { window.__boardDrawerReopen(); } catch (e) {} }
@@ -300,6 +320,8 @@ def _shell_doc(page_url, index_url):
     try { return fp.contentWindow.location.pathname; } catch (e) { return shown || ''; }
   }
   fp.addEventListener('load', mirror);
+  /* the page pane calls this after a router SWAP, which fires no load event */
+  window.__boardMirror = mirror;
   mirror();
 
   /* ④ THE TOGGLES. Same two gestures as the one-document board — ☰ hides the

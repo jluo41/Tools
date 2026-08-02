@@ -1,6 +1,6 @@
 # Nature portfolio: five journals that reject the same paper for five different reasons
 
-state: 🟡 PARTIAL · the reference shape at 5 outlets and 100 exemplars; the routing table is read by hand and recorded nowhere
+state: 🟡 PARTIAL · the reference shape at 5 outlets and 95 exemplars; the routing table is read by hand and recorded nowhere
 owner: JL
 method: state what each of the five Nature desks calls a contribution, and record the two structural features this pack has that no other pack in the tree does
 

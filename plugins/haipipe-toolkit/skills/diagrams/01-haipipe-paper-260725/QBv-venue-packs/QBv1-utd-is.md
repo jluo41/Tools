@@ -1,6 +1,6 @@
 # UTD-IS: four desks that all want theory, and disagree about what counts as evidence for it
 
-state: 🟡 PARTIAL · fully stocked at 4 outlets and 54 exemplars; nothing outside the pack reads its routing matrix yet
+state: 🟡 PARTIAL · fully stocked at 4 outlets and 46 exemplars; nothing outside the pack reads its routing matrix yet
 owner: JL
 method: state what separates the four UTD-IS desks from one another, and which of this paper system's stages the difference actually changes
 
