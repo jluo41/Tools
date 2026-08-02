@@ -1,4 +1,4 @@
-# haipipe-board-page · v0.8.1
+# haipipe-board-page · v0.10.0
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -12,12 +12,12 @@ Routing, page creation, quick checks, and fresh review all depend on this contra
 It is healthy when those consumers resolve the same requirements and reach evidence-based verdicts without private copies.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 5570acf0c185dcb1 board/haipipe-board-page -->
+<!-- haipipe:skill:tree:start 372a94b2e00ec17f board/haipipe-board-page -->
 
 ```
 haipipe-board-page/
-  CHANGELOG.md         126 ln  haipipe-board-page · Changelog
-  SKILL.md             285 ln  /haipipe-board-page · the page, as a contract you can load
+  CHANGELOG.md         151 ln  haipipe-board-page · Changelog
+  SKILL.md             295 ln  /haipipe-board-page · the page, as a contract you can load
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -30,9 +30,9 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 5570acf0c185dcb1 board/haipipe-board-page -->
+<!-- haipipe:skill:body:start 372a94b2e00ec17f board/haipipe-board-page -->
 
-**haipipe-board-page** · `0.8.1` · last shipped 2026-08-02
+**haipipe-board-page** · `0.10.0` · last shipped 2026-08-02
 
 - folder   `board/haipipe-board-page/`
 - tools    not declared
@@ -88,7 +88,7 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       2   Diagram            the figure; ids in it are links      nothing without the human
       3   Content            the substance, ### divisions         nothing without the human
       4   Aims               durable Content-linked targets       revise only when intent changes
-      5   States             one factual current State per Aim    update with evidence; human decisions stay human
+      5   States             one factual current State per Aim    update with evidence; a decision is closed only once answered
       6   Files              the action map, grouped by ACTION     append a row
       7   folds              Discussion · Law · Lesson · Glossary · Log  append a Log or > lane line
       ```
@@ -130,12 +130,15 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       8. Build, check, and read the RENDER. Report the page's finding count, not the fact that you finished.
 
 - 3.2 · 🔧 working on an existing page
+      Scope is the one thing this verb got wrong when it was measured. On 260802 three fresh agents were each given one sentence and nothing else, and all three found this skill unaided and drove their page to zero findings. They then disagreed completely about how far to reach: one wrote to a single file, its own page; another wrote to fifteen, including four shipped `SKILL.md` files, four `CHANGELOG.md` files, six sibling pages and the shared `board.md`. Neither was wrong on the merits, and the wide one was fixing citations a renumbering really had broken. The skill simply never said where to stop, so steps 7 and 8 below now do.
       1. Read the whole target file first, including Content, Aims, States, Files and the settled folds.
       2. Run the checker on it and work its list. Every finding names the rule it breaks and the part it is in, so nothing has to be read to know what to do.
       3. Fix the MECHANICAL findings first, in bulk: dead `## Files` paths, a part with no figure, a figure with no caption, a group name that drifted. None needs judgment.
       4. Then read for what no checker reaches: the weak-English axis, whether each part still answers one question, whether the Opening's visible paragraph says anything the title did not.
       5. If a fix reveals a rule nobody wrote down, write it in three places: the owning page, `haipipe-board/ref/page-template.md`, and this file. A repair that stops at one page will be needed again next week.
       6. Build, check, read the render, and report the before and after counts.
+      7. ONE page is the deliverable. Step 5 sends you to other files on purpose, and this step bounds it: a write outside the target page is allowed only when the page CANNOT be made correct without it, and every such write is named in the report, with the reason, file by file.
+      8. Never rewrite a sibling page's content. Repointing a citation your own renumbering broke is repair; rewriting the page that citation lands in is a second job, and it belongs to that page's own turn.
       The engine both verbs call, so nobody has to remember it:
       ```bash
       python3 <toolkit>/skills/board/haipipe-board/cli/build.py <board-folder>
@@ -231,7 +234,12 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       Appending under a named `## ` heading is safe; inserting by offset is how that damage reproduces at scale.
       **The human-decision rule (QC1b §5).**
       A verb reading a transcript can report what the transcript CLAIMS, not verify it.
-      So a machine may update an Aim's State only from evidence it can inspect, and may propose a human ruling as a `### Decision Now` row; it may not close that decision checkbox or flip a human-gated page to settled.
+      So a machine may update an Aim's State only from evidence it can inspect, and may propose a human ruling as a `### Decision Now` row.
+      **Closing a row (JL 260802, amending the never-tick rule).**
+      A machine CLOSES a `### Decision Now` row once the human has answered it, and records the answer in the same write: which option, who ruled, when, and the words they used.
+      What it may never do is close a row nobody answered, or flip a page-level human gate.
+      The old rule left every answered row open, so a page showed decisions as pending that had been made hours earlier and acted on, which is the same drift the board exists to prevent.
+      Answered means the human said it: in chat, in a comment lane, or by ticking. A machine's own recommendation is not an answer, however confident it is.
 
 - 6 · 🏷 Addressing
       **How a location is addressed**: what each level of the board is called, and how it is written.
@@ -264,10 +272,31 @@ Page generated 260731 1115. Nothing ruled yet.
 ## Log
 260731 1115 · page generated from `board/haipipe-board-page/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 5570acf0c185dcb1 board/haipipe-board-page -->
+<!-- haipipe:skill:log:start 372a94b2e00ec17f board/haipipe-board-page -->
 
-Converted from the skill's own `CHANGELOG.md`: 8 releases.
+Converted from the skill's own `CHANGELOG.md`: 10 releases.
 
+260802 · `0.10.0`
+      - `working on an existing page` gains steps 7 and 8: ONE page is the deliverable,
+        a write outside it is allowed only when the page cannot be made correct without
+        it and must be named in the report, and a sibling page's CONTENT is never
+        rewritten. Step 5 sends an agent to other files on purpose; nothing bounded it.
+      - The verb now states the measurement that produced the rule. Three fresh agents
+        were each given one sentence and nothing else on 260802. All three found this
+        skill unaided (at tool calls #5, #6, #5) and drove their page to zero findings,
+        including the one whose wording matches no trigger in the description. They then
+        disagreed completely about reach: 1 file versus 15, the wide one touching four
+        shipped `SKILL.md`, four `CHANGELOG.md`, six sibling pages and `board.md`.
+        Neither was wrong on the merits, which is exactly why the bound had to be written
+        rather than left to judgment.
+260802 · `0.9.0`
+      - A machine now CLOSES a `### Decision Now` row once the person has answered it,
+        recording which option, who ruled, when, and the words they used (JL 260802:
+        "I think you should close it automatically, please go ahead and do it").
+        It still may not close a row nobody answered, and may not flip a page-level
+        human gate; a machine's own recommendation is never an answer. Before this a
+        row answered in chat and acted on within the hour still rendered as pending,
+        so the page reported work as waiting that had already shipped.
 260802 · `0.8.1`
       - Repointed every design-board citation after `QC1b`'s 260802 Content rebuild: the door test
         moved from `QC6 §7` to `QC1b §1`, the anchored-write rule from `QC6 §9` to `QC1b §4`, and the
