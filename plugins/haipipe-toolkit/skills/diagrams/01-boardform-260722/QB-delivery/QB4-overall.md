@@ -1,5 +1,5 @@
 # The page template: one grammar every page kind obeys
-state: 🟡 PARTIAL · zero findings and the contract is written; 6 of 14 Aims are still open (2 in progress, 3 waiting on JL, 1 untouched)
+state: ✅ SETTLED · JL closed it 260802. 11 of 14 Aims met; 3 explicitly HELD with the reason on each row, which is what the contract asks of a closed page
 owner: CC
 method: one page grammar, one fixed on-stage order; each section's own rules live in this page's matching Content division
 session: 67eb4e34-029f-4986-9d6e-645e16f23267
@@ -1503,10 +1503,10 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 - ✅ A0.1 · Implemented across the live renderer, skill contract, and canonical template.
 
 ### A1 · 🧭 Opening
-- 🔨 A1.1 · The rule is written into `### 1`, `## Writing Style`, `## Law`, `ref/page-template.md` and `haipipe-board-page`, and `check.py` now measures the on-stage paragraph. This page obeys it. Whether other pages do has not been checked.
+- ✅ A1.1 · Met 260802. `ref/page-template.md` was carrying the blank-line split and nothing else of this Aim; the size ceiling, the plain-English rule and the no-growing-roster rule were in `haipipe-board-page` only. All four now sit in both files, which is what the Done when asked for.
 
 ### A2 · 🖼 Diagram
-- 🧠 A2.1 · This page passes 10 of 10. The first run of the new check over the board found 94 parts with no figure and 24 with a figure and no caption, so the rule holds here and nowhere else yet.
+- ❄️ A2.1 · HELD 260802 on JL's close. This page passes, and the board does not: `check.py` reports 78 `division-no-figure` and 32 `division-no-caption` across the other pages. The Done when is board-wide, so it closes when those pages are worked, not by anything QB4 can do to itself.
 
 ### A3 · 📚 Content
 - ✅ A3.1 · The page spec now treats Stage Contract, Aims, and States as fixed base extension points that a kind may populate but never redefine.
@@ -1524,13 +1524,13 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 ### A9 · 🧪 Evaluation
 - ✅ A9.1 · Implemented in the canonical page spec, Quality Check prompt, and fresh reviewer contract; the final fresh-context acceptance returned PASS.
 
-- 🔨 A9.2 · Running. `haipipe-board-page` was brought to 0.7.0 by hand on 260802 after four stale statements were found in it, and a fresh-context agent is auditing the remaining nine files.
+- ❄️ A9.2 · HELD 260802 on JL's close. The Done when asks for a FRESH-CONTEXT audit of the template, the writing rules, the board form, four `SKILL.md` files and the two agents. Three fresh agents ran against `haipipe-board-page` on 260802 and found the scope gap, but that tested one file and one verb, not the set this Aim names.
 
 ### P · 🏁 Page-level validation
 - ✅ P1 · The final fresh-context reviewer found the Opening, ownership boundaries, extension points, evaluation rubric, and Aims/States coherent after the conflict repairs.
-- 🧠 P2 · Waiting for the existing Decision Now ruling below.
+- ✅ P2 · Met 260802 by JL's ruling A. The Excalidraw history moved to `QB8 ### 4`; the group-title half named `QD4` as its target, which was a slip, since `QD4` never mentions the marker and `QB4 ### 3` already carries the contract in 19 places. Routed and recorded, which is exactly what the Done when allows.
 - ✅ P3 · `Folds` is the settled name. JL ruled it on 260801 in one sentence, "let's make this to be 'Folds', why 'fold', very bad", choosing the plural over the singular. CC read the second half as an objection to the word, recommended `Memory`, and left a Decision Now row open for a day; JL closed it on 260802 by asking whether that rename was seriously intended.
-- ⬜ P4 · Not started. The rules exist and were applied by hand all evening; nothing automates them, and the three failure modes that recurred (a record attached to the wrong sentence, a whole-sentence diff, a heading naming its mechanism) are each mechanical enough to be enforced. The roster ruling sits on QC1b.
+- ❄️ P4 · HELD 260802 on JL's close. Not started. `haipipe-writing` does not exist yet; the rules in `### 9` were applied by hand all evening, which is the evidence that they are followed and also the evidence that nothing automates them.
 The canonical Aims/States model is independently validated across the source contract, renderer, and public generation paths.
 The section-by-section evaluation path is implemented and independently validated.
 Two rulings wait on JL and remain explicit below.
@@ -1879,6 +1879,7 @@ The dated implementation history lives in Log, so this section stays a current s
 >> CC0801: left alone deliberately. `P3` in Decision Now may retire the word entirely in favour of `Memory`, so recapitalizing it now is work that a ruling could throw away. It is recorded here so the inconsistency is known rather than missed.
 
 ## Log
+ 260802 1900 · QB4 SETTLED (JL: "I will close it for now"). Two Aims were checked against their own Done when rather than closed by assertion, and both turned out to be genuinely met once one gap was fixed: `A1.1` required the size ceiling, the plain-English rule and the no-growing-roster rule in BOTH `ref/page-template.md` and `haipipe-board-page`, and the template carried only the blank-line split, so the three missing rules were written into it; `P2` was met by JL's own ruling A earlier the same evening. The other three are HELD, not met, each with its reason on the row: `A2.1` is board-wide and 110 figure and caption findings sit on other pages, `A9.2` wants a fresh-context audit of a file set wider than the one the 260802 agents tested, and `P4` waits on `haipipe-writing`, which does not exist. The contract closes a Q page when every Aim is met OR EXPLICITLY HELD, so a held Aim is a closed page's normal furniture and not a loose end
  260802 1830 · JL answered the last three rows and they are executed. A: the canvas half of `_archive/QB4b` §1-§4 moved to `QB8` as its `### 4`, 123 lines; the group-title half named `QD4` as its target, which was a slip, since `QD4` never mentions the marker and `QB4 ### 3` already carries the contract in 19 places, so nothing moved and the marker stays where it was. B: the dead `frame=` links on `QB8`, `QC1a`, `QC2a` and `QF2` are gone, each replaced by the reason, and the moved block brought a fifth (`frame=QA4a`) that went the same way; `dead-canvas-frame` is now 0. A: all four sibling boards swept, 172 renames and 45 `## Boundary` sections retired across probe-qa, task, display and paper, with the collision check run first on each and `_archive/` left alone; every board reports 0 `retired-section` and 0 errors
  260802 1800 · `Folds` stays, and the row asking about it is gone (JL: "so you mean, you want to update the Folds into Memories, right?"). JL had already ruled the name on 260801 in a single sentence, "let's make this to be 'Folds', why 'fold', very bad": the objection was to the SINGULAR, and the plural was the instruction. CC split that sentence in two, treated the second half as a live objection to the word, recommended `Memory`, and carried the row for a day. P3 is met, one of the three Aims that were waiting on JL, and a Law now says to read the whole quote before raising a row from it
  260802 1730 · QB4 was flipped to SETTLED and flipped straight back. CC had reported "14/14 Aims met" from a grep that counted ✅ glyphs anywhere in `## States` rather than one state per Aim id. `aim_progress()` reads it correctly: 8 met, 2 🔨, 3 🧠, 1 ⬜, so 6 of 14 are open and the page does not meet its own closing bar. `check.py` caught the flip within one build with `settled-with-open-aims`, which is the check earning its place

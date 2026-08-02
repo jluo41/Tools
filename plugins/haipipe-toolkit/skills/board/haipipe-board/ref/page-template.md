@@ -69,6 +69,13 @@ provides: one compact phrase naming the downstream handoff
      seen in one go and no row inside the drawer folds a second time (JL 260725). Stage Contract
      is therefore not a section of its own on the page. Optional Diagram is its own collapsed section and opens only when its heading
      is clicked. On Q and S pages, everything after the FIRST BLANK LINE becomes the collapsed "More
+       The visible paragraph is 5-6 lines and about 450 characters, 520 at the ceiling; past that a
+       reader stops before the question is answered.
+       Write it in PLAIN ENGLISH for a weak English reader: short sentences, ordinary words, and
+       every term the page invents defined the first time it appears, on stage rather than in the drawer.
+       Do NOT enumerate a growing roster in the Opening (the page kinds, the sections, the skills):
+       a list that grows needs editing on every addition, and the paragraph is the one place that must
+       stay true without maintenance. Name the rule, not the members.
      details" row in the Opening drawer. Explicit Content is optional for Q and required
      for S. When creating S Content, use the stage template as the base blueprint, overlay the venue
      template's reader/section/style constraints, then add accepted and unresolved requirements
