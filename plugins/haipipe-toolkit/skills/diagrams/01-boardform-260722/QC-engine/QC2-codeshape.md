@@ -4,7 +4,7 @@ state: 🟡 PARTIAL · two files split, the folder's shape settled, the live lay
 owner: JL
 method: every split is a mechanical move under an output-identical gate, features second; a module is named for what it renders or serves, never for its layer (JL 260724)
 session: 83eefb3a-b51d-4ef6-9383-05b7e994f893
-## Question
+## Opening
 How should the Board code be split as it grows without changing what it produces or how consumers use it?
 
 Large files make each new feature harder to place, review, and test.
@@ -12,12 +12,7 @@ The risky part is preserving one parser and the same static output while code mo
 The answer governs the renderer, browser assets, and live server rather than any single refactor.
 It succeeds when each split is mechanically provable and every module has one recognizable job.
 
-## Boundary
-- ✅ Covered here
-  The shared Law: what a split may and may not change, and why the three files are one question.
-- ↪ Covered elsewhere
-  `build.py` → `assets/`: `QC2a`. The `src/` render split: `QC2b`. `serve.py` → `live/`: `QC2c`.
-  What SKILL.md exports about all this: `QC1`. The round trip the split files sit inside: `QC4`.
+**Covered elsewhere**: `build.py` → `assets/`: `QC2a`. The `src/` render split: `QC2b`. `serve.py` → `live/`: `QC2c`. What SKILL.md exports about all this: `QC1`. The round trip the split files sit inside: `QC4`.
 
 ## Diagram
 
@@ -46,7 +41,7 @@ That reasoning was wrong, and correcting it is the useful part. A reference coun
 One file is exempt and the exemption is external: `status.py` is invoked by the reply-footer automation with an absolute path, so it stays at the top level.
 What no test could have caught, and `check.py` did: the board's own `## Links` still named the old paths, so 96 rendered hrefs went dead the moment the files moved. That is the argument for running the checker after a move, not just the suite.
 
-## Items to Finish
+## Aims
 - [x] 🧪 build.py's template split out under a byte-identical gate (QC2a)
 - [x] 🧪 the src/ render split, modules named by what they render (QC2b)
 - [ ] 🧠 the live layer's last sequencing item (QC2c) closes before this topic is done
@@ -56,7 +51,7 @@ What no test could have caught, and `check.py` did: the board's own `## Links` s
       The top level is now `SKILL.md`, `CHANGELOG.md`, `status.py`, and folders. `status.py` stays because the reply-footer automation invokes it by absolute path.
       The first costing was wrong and is worth keeping as the lesson: 73/64/51/50 counted PROSE mentions on board pages. What decides a migration is how many places EXECUTE a path, and that was 15, in 6 `SKILL.md` files.
 
-## Where we are
+## States
 Two of three files are split and settled; the live layer split is built and serving, with one sequencing item left because QD2's chat is about to be rewritten as a session host.
 The folder's own shape is settled: 25 top-level `.py` → 1. The engine now presents `SKILL.md`, `CHANGELOG.md`, `status.py`, and folders (`cli/ src/ live/ tests/ checks/ assets/ ref/ vendor/`).
 

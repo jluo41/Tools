@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: CC
 method: copy Paper's mandatory Closing Block pattern, but derive Board, queue, and page ownership from Board files instead of maintaining a second status ledger
 session: 7035d975-4bf2-4082-8f03-426099f07b6c
-## Question
+## Opening
 How can every reply show exactly which board scope and task the current session is working on?
 
 A visible status strip lets a reader verify attachment without relying on hidden agent context.
@@ -11,14 +11,8 @@ The hard part is keeping it current without creating another shared status file 
 Board and page files already hold the durable facts, so only the live mode and next action belong in the reply.
 The design works when three short lines identify the scope, state, and next move every time.
 
+**Covered elsewhere**: The index's activity dashboard, which counts updates rather than time, is `QC2 §8`. The session id and one-window rule remain `QD1`. How a topic becomes well-named pages and groups remains `QA2`. Everything in the reply ABOVE these three lines is `QA3`: the outcome, the gate that had to pass before an agent could write it, the reply's body, and the routing footer. `QA3 §5` carries the map of which owner holds which part. This page owns the last three lines and nothing above them. How LONG the address inside the label is, and whether a short route can replace the path from the repo root down to the board folder, is `QE2`: this page owns the FORM the link takes on each surface, never its length.
 
-## Boundary
-- ✅ Covered here
-  The reply-ending status strip, attachment resolution, queue derivation, focus and mode vocabulary, and the deterministic renderer that keeps every agent's shape consistent.
-- ↪ Covered elsewhere
-  The index's activity dashboard, which counts updates rather than time, is `QC2 §8`.
-  The session id and one-window rule remain `QD1`.
-  How a topic becomes well-named pages and groups remains `QA2`.
 
 ## Content
 ### One visible contract
@@ -42,7 +36,7 @@ The closed vocabulary is `discussion | sourcing | implementation | review | stat
 The mode describes this turn and never changes a page's `state:` by itself.
 Substantive work still follows `sync`: update the owning page in the same round, then rebuild.
 
-## Items to Finish
+## Aims
 - [x] 🧭 Define the visible fields and ownership model
       Board, queue, focus, mode, next, and deep link are the complete strip.
 - [x] 🧮 Add a deterministic renderer
@@ -52,9 +46,9 @@ Substantive work still follows `sync`: update the owning page in the same round,
 - [x] 🧪 Forward-test with no design context
       A fresh agent attached to a page must end its answer with the right Board, queue, page, and mode without being shown the intended output.
 - [x] ✂️ Keep the visible attachment concise
-      The complete direct-session block is exactly three Markdown lines; the deep link wraps the first line, and repeated labels, page title, source file, separators, and raw URL are omitted.
+      The complete direct-session block is exactly three Markdown lines; the link is embedded in the board-page name on line 1, and repeated labels, page title, source file, separators, and any visible raw URL are omitted.
 
-## Where we are
+## States
 JL ruled that attachment must be visible in every reply, including when the session is working on a page, a page group, or sourcing for one of them.
 `status.py` now renders the strip from Board files, and both SKILL.md and the launcher prime require it.
 A fresh agent given only the skill, Board path, and QD6 attachment correctly derived the QD queue, QD6 focus, live mode, deep link, and owning file, then placed the strip last.
@@ -77,14 +71,17 @@ All five items are complete and the ruling is settled.
   Owns the page-to-group mapping from which queue is derived.
 
 ### The precedent
-- `haipipe-paper/SKILL.md`
+- `../../paper/haipipe-paper/SKILL.md`
   The precedent: Paper's Closing Block makes live session state visible at the end of every reply.
 
 ## Law
 Every user-visible reply from a Board-attached session ends with the complete three-line Markdown block emitted by `status.py`, with no prose after it.
 The page's `## Pages` group owns the queue; focus is board, group, or page; mode and next action describe only the live turn.
 Line 1 is the linked `Board · Queue/Focus`; line 2 is `status · mode`; line 3 is the next action.
-The linked label carries a SHORT board name (leading `NN-` ordinal and trailing `-YYMMDD` date stripped, so `01-boardform-260722` reads as `boardform`); the long served URL stays behind the link and never shows as text.
+The linked label carries the board's OWN name, taken from `board.md`'s first heading, so `01-boardform-260722` reads as `haipipe-board` (JL 260802: of `boardform · QB/QB4`, "I think it should be haipipe-board · QB4"). A board whose title is a sentence rather than a name falls back to the folder name with its `NN-` ordinal and `-YYMMDD` date stripped.
+The group prefix is dropped when the page id already carries it, so `QB/QB4` reads `QB4`.
+The address rides INSIDE the name on whichever surface the strip lands on (JL 260802). A terminal gets an OSC 8 hyperlink, so the label is clickable and the URL is never drawn; a chat reply gets `[label](url)`, which does the same job where markdown renders. Neither form is right on both, so it picks by whether stdout is a TTY, and `--no-url` still opts out entirely.
+That is why 260801 had dropped the link: with one form, hiding the address meant having no link at all.
 The first two lines end with Markdown hard breaks so all three remain visibly separate without blank lines.
 Do not repeat labels, page title, source file, separators, or the visible raw URL.
 Launcher attachment wins, followed by an explicit request, the nearest `board.md`, and the attachment already established in the conversation.
@@ -96,6 +93,8 @@ No shared status file is written: durable decisions, comments, and logs continue
 > JL: The first status strip is too long; make it concise, preferably only a few lines.
 
 ## Log
+260802 · JL asked which Q owns the strip and whether it belongs in the QA series. Kept here: this page's substance is session state (attachment resolution, queue derivation, the mode and status vocabulary), which is QD's one responsibility, while QA holds what the Board system IS before any of it is built. What was actually missing is the boundary, so Covered elsewhere now points at `QA3 §5` for every part of the reply above these three lines.
+260802 1300 · Four rulings from JL landed in `status.py` and are recorded here rather than left in the session. The label now comes from `board.md`'s own first heading instead of the folder name, since the folder is an accident of the day it was created and the board calls itself something; the group prefix is dropped when the page id already carries it; and the address rides inside the name, as an OSC 8 hyperlink on a terminal and as `[label](url)` when piped, chosen by whether stdout is a TTY. That last one is why 260801 had removed the link: with one form, hiding the raw address meant having no link. JL also asked for and then reversed a one-row version, so the block stays three rows: the place, the status, and the next action are three things a reader looks for in three different moments
 260801 · Title → "Status strip: which board and page this session is on" (JL: the old one was hard to read); status.py's clickable label now shows a short board name (ordinal + date stripped) so the long URL never appears as text (JL: "make the result clickable, not just the full url")
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260726 · Fresh-context acceptance invoked status.py and received exactly three lines

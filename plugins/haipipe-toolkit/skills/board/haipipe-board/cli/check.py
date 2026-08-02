@@ -36,6 +36,7 @@ defaults to the harmless side and the ruling stays open.
 """
 import argparse
 import os
+import json
 import re
 import subprocess
 import sys
@@ -63,7 +64,7 @@ REQUIRED = ["Opening", "Done when", "Now"]
 CONSTRUCTS = [
     ("lead is the door",     "details.it.row.qd",  r'<details class="it row qd"', r"^## (?:Opening|Question)\s*$"),
     ("Opening never folds",  "div.ch.opening-head", r'class="ch opening-head"',   r"^## (?:Opening|Question)\s*$"),
-    ("drawer is flat",       "div.fh",             r'<div class="fh"',            r"^## (?:Boundary|Stage Contract)\s*$"),
+    ("drawer is flat",       "div.fh",             r'<div class="fh"',            r"^## Stage Contract\s*$"),
     ("division",             "details.csec",       r'<details class="csec"',      r"^### "),
     ("paragraph heading",    "div.ph",             r'<div class="ph"',            r"^#### "),
     ("job line",             "div.pj",             r'<div class="pj"',            r"^\([^)]+\)\s*$"),
@@ -374,6 +375,9 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_division_figures(text, name, rep)
     check_comment_form(text, name, rep)
     check_file_paths(text, name, rep, path.parent)
+    check_canvas_frames(text, name, rep, path.parent)
+    check_duplicate_sections(text, name, rep)
+    check_retired_sections(text, name, rep)
 
 
 # QB4 §1 states seven rules for the Opening and NOT ONE of them was checked, so
@@ -458,6 +462,114 @@ def check_opening(text, name, rep):
                         "split it, the Opening is read cold")
 
 
+RETIRED_SECTIONS = {
+    # section name -> why it went, and what does the job now
+    "Boundary": "JL 260731; what a page covers is the Opening's job",
+    "Question": "renamed to `## Opening` (260731)",
+    "Items to Finish": "renamed to `## Aims` (260731)",
+    "Where we are": "renamed to `## States` (260731)",
+}
+
+
+def check_retired_sections(text, name, rep):
+    """A section JL retired must not come back, and must not merely be ALIASED.
+
+    `src/common.py` still maps the old names so old pages keep rendering. That
+    kindness is exactly why 45 of 55 pages sat on the pre-260731 vocabulary for
+    two days while a skill claimed they had all been converted: the render
+    looked right, so nothing ever said otherwise. A rename the renderer forgives
+    is a rename no one finishes. This check is what makes it finishable.
+    """
+    for i, line in enumerate(text.split("\n"), 1):
+        head = line.strip()
+        if not head.startswith("## "):
+            continue
+        why = RETIRED_SECTIONS.get(head[3:].strip())
+        if why:
+            # WARN, not ERROR: ERROR is reserved for silent DATA LOSS
+            # (`duplicate-section`). This is visible drift, and four sibling
+            # boards carry 217 rows of it that are not this sweep's to fix.
+            rep.add(WARN, "retired-section", f"{name}:{i}",
+                    f"`{head}` was retired: {why}")
+
+
+def check_duplicate_sections(text, name, rep):
+    """A repeated `## ` heading SILENTLY DISCARDS everything under the first.
+
+    `split_sections` in `src/parse.py` builds a dict, so the later block wins
+    and the earlier one never reaches the render. Nothing reported it: the
+    page looks whole in the editor and is short on the page. QB2a carried two
+    `## Where we are` headings for two days, and roughly 4.6 KB of dated
+    post-mortems under the first had never been seen by anyone (found by a
+    fresh-context agent on 260802, not by any check).
+
+    This is an ERROR rather than a warning because it is silent data loss.
+    """
+    seen, fence = {}, False
+    for i, ln in enumerate(text.split("\n"), 1):
+        if ln.lstrip().startswith("```"):
+            fence = not fence
+            continue
+        if fence:
+            continue
+        m = re.match(r"^##\s+(\S.*?)\s*$", ln)
+        if not m:
+            continue
+        head = m.group(1)
+        if head in seen:
+            rep.add(ERROR, "duplicate-section", f"{name}:{i}",
+                    f"`## {head}` also at line {seen[head]}; the render keeps "
+                    "only the LAST one and silently drops everything under the "
+                    "first (QB4 §8.2.2)")
+        else:
+            seen[head] = i
+
+
+_FRAMES = {}
+
+
+def _canvas_frames(board_dir):
+    """Frame names in the board's own `board.excalidraw`, cached per board."""
+    root = Path(board_dir)
+    for _ in range(4):                      # a page sits in a group folder
+        scene = root / "board.excalidraw"
+        if scene.exists():
+            break
+        root = root.parent
+    else:
+        return None
+    key = str(scene)
+    if key not in _FRAMES:
+        try:
+            data = json.loads(scene.read_text(encoding="utf-8"))
+            _FRAMES[key] = {e.get("name", "") for e in data.get("elements", [])
+                            if e.get("type") == "frame"}
+        except Exception:
+            _FRAMES[key] = None
+    return _FRAMES[key]
+
+
+def check_canvas_frames(text, name, rep, board_dir=None):
+    """A `&frame=<id>` that names no frame in `board.excalidraw` links to nothing.
+
+    `serve_frame()` 404s, but the page still LOOKS like it has a drawing, so the
+    gap only shows when someone clicks. Three fresh-context agents hit this on
+    260802 from three different pages, which is how it got measured at all.
+    """
+    frames = _canvas_frames(board_dir)
+    if not frames:
+        return
+    for i, line in enumerate(text.split("\n"), 1):
+        if line.lstrip().startswith(("#", ">")):
+            continue
+        for m in re.finditer(r"[&?]frame=([A-Za-z0-9_-]+)", line):
+            fid = m.group(1)
+            if fid not in frames:
+                rep.add(WARN, "dead-canvas-frame", f"{name}:{i}",
+                        f"`frame={fid}` names no frame in `board.excalidraw`, "
+                        "so the link 404s (QB4 §2.7)")
+
+
 def check_file_paths(text, name, rep, board_dir=None):
     """Every backticked path in `## Files` must resolve (JL 260802).
 
@@ -481,23 +593,27 @@ def check_file_paths(text, name, rep, board_dir=None):
                      if (p / "pyproject.toml").is_file()), None)
         if root:
             roots.append(root)
-    for m in re.finditer(r"(?m)^\s*[-*]\s+`([^`]+)`", block):
-        raw = m.group(1).strip()
-        for cand in raw.split(" · "):
-            cand = cand.strip().strip("`")
-            if not cand or " " in cand or not re.search(r"[./]", cand):
-                continue
-            if any((r / cand).exists() for r in roots):
-                continue
-            if "*" in cand or "<" in cand or ">" in cand:
-                # a glob (assets/css/*.css) or an angle-bracketed placeholder
-                # (<path/to/thing.py>) names a shape, not a file. The template
-                # is copied for every new page, so its example rows must not
-                # arrive pre-broken (JL 260802).
-                continue
-            rep.add(WARN, "dead-file-path", f"{name} · Files",
-                    f"`{cand}` does not resolve from the engine, the board, "
-                    "or the repo root (QB4 §6.3.1)")
+    # EVERY backticked path in the row, not only the first. A row written
+    # `- `a.py` · `b.py`` had its second path silently unchecked, which is how
+    # QB5 reported one dead path while carrying five (260802).
+    for row in re.finditer(r"(?m)^\s*[-*]\s+(`[^`]+`(?:\s*[·,]\s*`[^`]+`)*)", block):
+        for m in re.finditer(r"`([^`]+)`", row.group(1)):
+            raw = m.group(1).strip()
+            for cand in raw.split(" · "):
+                cand = cand.strip().strip("`")
+                if not cand or " " in cand or not re.search(r"[./]", cand):
+                    continue
+                if any((r / cand).exists() for r in roots):
+                    continue
+                if "*" in cand or "<" in cand or ">" in cand:
+                    # a glob (assets/css/*.css) or an angle-bracketed placeholder
+                    # (<path/to/thing.py>) names a shape, not a file. The template
+                    # is copied for every new page, so its example rows must not
+                    # arrive pre-broken (JL 260802).
+                    continue
+                rep.add(WARN, "dead-file-path", f"{name} · Files",
+                        f"`{cand}` does not resolve from the engine, the board, "
+                        "or the repo root (QB4 §6.3.1)")
 
 
 def check_comment_form(text, name, rep):
@@ -535,7 +651,11 @@ def check_division_figures(text, name, rep):
     division, and neither failure reports itself at render.
     """
     content = section_text(text, "Content") or ""
-    parts = re.split(r"(?m)^### (\d+) · (.+)$", content)
+    # `### §1 Demonstration` and `### 6.1 · x` are divisions too. Matching only
+    # `### <digit> · ` made every §-numbered part INVISIBLE to this check, so
+    # the board's figure count was understated (found by a fresh-context agent
+    # on QB5, 260802, not by any check).
+    parts = re.split(r"(?m)^### §?([\d.]+)(?: · | )(.+)$", content)
     for k in range(1, len(parts), 3):
         num, title, body_ = parts[k], parts[k + 1], parts[k + 2]
         lines = [l for l in body_.split("\n")]

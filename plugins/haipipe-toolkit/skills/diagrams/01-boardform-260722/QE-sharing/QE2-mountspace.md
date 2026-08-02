@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: CC
 method: copy the multi-store registry `console_api.py` already proved out (`_datasets()` / `?dataset=`)
 
-## Question
+## Opening
 How should a service mount a research SPACE, discover every board inside it, and give people one place to open them?
 
 People should not need to know a board's full path before they can find it.
@@ -12,14 +12,8 @@ The hard part is supporting several SPACEs while exposing only the files each bo
 A careless mount either hides linked work or exposes far more of the repository than intended.
 This page succeeds when a reader can choose a SPACE, find any valid board, and open it through a deliberately bounded mount.
 
+**Covered elsewhere**: Whether the board is served locally or from a server, and whether it needs a login: that is `QE1`. Nor the Board-Webpage-Index **inside** one Board: that is `QB2`. Nor which process the code runs in: that is `QE3`.
 
-## Boundary
-- ✅ Covered here
-  **The layer above a board**: how a SPACE is mounted, how many at once, how the boards in a SPACE are discovered, what the board list page shows, whether a new board can be created from the page.
-- ↪ Covered elsewhere
-  Whether the board is served locally or from a server, and whether it needs a login: that is `QE1`.
-  Nor the Board-Webpage-Index **inside** one Board: that is `QA2b`.
-  Nor which process the code runs in: that is `QE3`.
 
 ## Diagram
 
@@ -43,7 +37,7 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE2
 
-## Items to Finish
+## Aims
 ### The mount: how many SPACEs, and how narrow
 - [x] Decide how many SPACEs one service mounts
       One service mounts N (the `console_api.py` registry pattern, as planned): `INLAB_SPACES` (json) > `INLAB_SPACE_STORE` (parent dir) > `INLAB_SPACE_ROOT` (single) > walking up from the service collecting `*-SPACE` dirs.
@@ -87,7 +81,7 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
       Not built.
       Today `open` remains a skill action from the CLI.
 
-## Where we are
+## States
 **v1 shipped in `haichat-inlab` (`boards_api.py` + the Boards view), verified end to end on 260724.**
 
 - Direct Board service home, shipped 260801
@@ -120,6 +114,14 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
   trust the code less.
 
 ### Decision Now
+- [ ] 🗣 How does a board's URL get short enough to sit in a reply?
+      📍 `Part` the mount layer this page owns; `/Tools/plugins/haipipe-toolkit/skills/diagrams/…` is the long half
+      🔔 `Why now` JL 260802, of the strip's link: "I feel the URL here is too long". Today's page URL is 131 characters and 78 of them are the path from the repo root down to the board folder. `QD6`'s Law already hides the address behind the label, but a chat renderer expands `[label](url)` back into `label (url)`, so on that surface the length shows no matter what the strip does. This page's own Opening says people should not need to know a board's full path.
+      ⭐ `A ·` a short redirect route, `/b/<board-slug>/<page-id>`, answering 302 with the real file. 42 characters, a 68% cut. `live/home.py` already discovers every board folder and `status.py` already computes a short board name, so this is a lookup against a list that exists rather than a new registry.
+      `B ·` a shorter host: the tailnet MagicDNS name in place of the raw IP. 123 characters, a 6% cut. Nearly free, and on its own it fixes nothing.
+      `C ·` mount the diagrams tree at a short prefix, `/boards/<board-folder>/board/…`. 92 characters, a 30% cut. No redirect indirection to keep honest, but it needs a mount table maintained and still carries the whole `board/QD/QD6-session-status-strip.html` tail.
+      🛑 `Blocks` nothing; the strip works at any length.
+      🤖 `If nobody answers` A takes effect, with B applied alongside it when MagicDNS is available, which together give 34 characters.
 - [ ] 🗺 Choose the mount shape for the Docker service
       A single board-folder mount reverses the 260724 page-serving widening and 404s a question's `## Files` drill-through links; a SKELETON mount (the board folder `rw`, the drill-through subtrees `ro` at their true relative depths) keeps every allowed `../` link resolving.
       The reconciliation this page records is the skeleton mount; a tick here also closes the 🗺 row in Items to Finish.
@@ -150,6 +152,7 @@ SPACE: JL's term for the root of one research repo, e.g. `Physician-SPACE`, `Wel
 One SPACE holds several boards.
 
 ## Log
+260802 · JL: "I feel the URL here is too long" of the status strip's link. The strip is `QD6`'s and the path shape is this page's, so the row landed here: 131 characters today, 78 of them the path from the repo root to the board folder, with a short redirect route measured at 42 and recommended
 260801 · Added the Space Home taxonomy JL proposed: Task Board by default, then Paper Board, then Skill Board. Classification is inferred from the owning path, with Skill taking precedence over a topic word such as “paper”; `/boards` now shows grouped cards, and focused discovery/rendering tests cover all three kinds.
 260801 · JL ruled that the SPACE-level human route is `/boards`; `/_board/*` remains the private live-API namespace, while each Board keeps its own generated `board/` folder. Shipped `live/home.py` discovery + cards and the `🏠 Boards` return link on every generated Board page; local discovery/escaping/navigation tests passed.
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

@@ -29,14 +29,7 @@ The doubled keystroke was diagnosed and fixed twice on `QD3` as duplicated liste
 
 **How it is judged**: Someone completes and resumes a turn on the device in hand, and never has to know which form they were given.
 
-## Boundary
-- ✅ Covered here
-  The terminal's FORM as the reader meets it: where typing happens, what the pane shows when the device cannot fit 80 columns, which gestures exist without a pointer, and what the page owes a reader who leaves and returns.
-  The phone is the forcing case, but the ruling is per device, and the desktop form is inside this question too.
-- ↪ Covered elsewhere
-  The engine is `QD3`: the PTY, the 5599 proxy, keys, HOLD, reaping, the security line. A defect in the process is that page; a defect in the form is this one.
-  Rendering the session as chat rather than as a screen is `QD3`'s 🪄 smooth pane (route D), and it may turn out to BE the answer here, which is why this page must not decide it alone.
-  The SDK chat box is `QD2`; the session rules are `QD1`; whether the board becomes panes at all is `QD5`.
+**Covered elsewhere**: The engine is `QD3`: the PTY, the 5599 proxy, keys, HOLD, reaping, the security line. A defect in the process is that page; a defect in the form is this one. Rendering the session as chat rather than as a screen is `QD3`'s 🪄 smooth pane (route D), and it may turn out to BE the answer here, which is why this page must not decide it alone. The SDK chat box is `QD2`; the session rules are `QD1`; whether the board becomes panes at all is `QD5`.
 
 ## Diagram
 
@@ -144,7 +137,7 @@ Images proved it: `/_board/image` was already device-agnostic and both entry poi
 That one is now closed, and the shape of the fix is the general one: the browser re-encodes before posting, because `live/write.py` caps at 8MB and rejects HEIC, so the gesture must respect the endpoint's constraints rather than the endpoint loosening for the device.
 The audit also corrected an assumption: the session picker was believed hidden in terminal view and is not, which is recorded in `## Where we are` because being wrong in that direction is worth keeping.
 
-## Items to Finish
+## Aims
 - [ ] 🧹 The pane becomes ONE surface instead of three colour zones
       White header, black body, white footer with the Quick actions and Settings pills, none of them sharing a frame, radius or padding.
       Cheap, true under every option in the ruling below, and the single biggest reason the pane reads as unfinished beside the drawer.
@@ -188,7 +181,7 @@ The audit also corrected an assumption: the session picker was believed hidden i
       Acceptance is JL typing a full turn on his own phone without a doubled character, without a shredded frame, without chasing the keyboard, and switching away and back mid-turn without the drawer freezing.
       CC cannot close this item: no phone here, and every earlier round of the doubling bug was called fixed on a desktop and was not.
 
-## Where we are
+## States
 **Nothing built. This page was opened on 260801 from JL's report that the terminal is hard to use on a phone.**
 
 - 260801 JL · 🎨 On the DESKTOP the pane is uglier than the SDK drawer, and the gap is structural rather than cosmetic

@@ -81,7 +81,7 @@ Worse, the harness can be steered: a sibling session running `open <board url>` 
 
 So the run pins its own tab and re-navigates if it drifts, it waits on conditions rather than clocks, and any assertion about a model's answer allows minutes rather than seconds.
 
-## Items to Finish
+## Aims
 ### Making the run exist as a thing
 - [ ] 🧰 Make it one command
       Three `.mjs` files in a scratchpad today, which means they protect only the rounds where someone remembers them; they should be files in the skill that take a board folder and exit non-zero.
@@ -96,7 +96,7 @@ So the run pins its own tab and re-navigates if it drifts, it waits on condition
 - [ ] 🧪 Prove it catches a real regression
       Break the router listener on purpose and watch `navtest.mjs` go red, the same way `assets.py`'s `verify()` was proven.
 
-## Where we are
+## States
 The SDK chat version has three suites and real numbers; the TUI chat version has nothing, and none of it is a command anyone can run without being told.
 
 - 260801 CC · 🔬 Opened from a session that fixed four talk failures and built the suites while doing it

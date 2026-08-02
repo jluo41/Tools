@@ -12,12 +12,8 @@ Page-bottom queues force the reader to reconstruct context and become fragile wh
 Adjacency keeps the comment visible and writable without a second page-level lifecycle.
 The design succeeds when a saved comment appears under the exact source sentence and survives every rebuild.
 
+**Covered elsewhere**: Typed evidence lanes are `QB5a`; tracked sentence edits are `QB5c`; sentence-specific agent context is `QB5d`.
 
-## Boundary
-- ✅ Covered here
-  Selecting a sentence, server-side write-back, and the sentence-local source syntax.
-- ↪ Covered elsewhere
-  Typed evidence lanes are `QAb1`; tracked sentence edits are `QAb2`; sentence-specific agent context is `QAb3`.
 
 ## Diagram
 
@@ -32,13 +28,13 @@ select one sentence → 💬 Comment → POST /_board/comment
                                rebuild board.html
 ```
 
-## Items to Finish
+## Aims
 - [x] Select one sentence and save a comment directly beneath it
 - [x] Accept arbitrary initials and preserve the author/date
 - [x] Keep the adjacent comment visible without relying on JavaScript
 - [x] Delete the old page-bottom comment queue and its status lifecycle
 
-## Where we are
+## States
 
 - 260801 JL · ↩️ A comment longer than one line lost everything after the first
   JL: "what if I enter multiple lines as the comment? you will just keep sentence 1 and make sentence 2 and 3 to be outside of the comment."

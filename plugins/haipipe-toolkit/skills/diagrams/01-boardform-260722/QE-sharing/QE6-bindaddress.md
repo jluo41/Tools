@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: separate the shared-source default from the per-machine override and keep every personal address out of shared source
 
-## Question
+## Opening
 Which address should the live board bind to when its reader may be on another machine?
 
 The listener has no built-in authentication, and it fronts both file writes and a real shell.
@@ -12,15 +12,8 @@ Loopback is safe but fragile for remote readers, while a wider bind turns a conv
 The chosen address and its machine-specific override must agree without leaking personal network details into shared source.
 It succeeds when the intended reader reaches the board and everyone else does not.
 
+**Covered elsewhere**: Whether the board goes on a real server, with login and remote writes: that is `QE1`, and this question only owns the local machine's socket. Which process and repo the code runs in: that is `QE3`. What two people editing at once does: that is `QE4`.
 
-## Boundary
-- ✅ Covered here
-  **Which address `serve.py` listens on**, what the shipped default is for someone who clones `Tools`, and where a per-machine override lives.
-  Who can consequently reach the unauthenticated write and terminal endpoints, since that follows directly from the address.
-- ↪ Covered elsewhere
-  Whether the board goes on a real server, with login and remote writes: that is `QE1`, and this question only owns the local machine's socket.
-  Which process and repo the code runs in: that is `QE3`.
-  What two people editing at once does: that is `QE4`.
 
 ## Diagram
 
@@ -69,7 +62,7 @@ The question in the title is not only about the owner's own reading.
 A colleague opening the same board needs a URL that resolves for them, and today every option except a wide bind requires them to have an account on the machine or an editor already attached to it.
 That is the same wall `QE1` describes from the hosting side, and this question is the local half of it: what the single machine's socket does, before any decision about a real server.
 
-## Items to Finish
+## Aims
 ### The committed --host flag
 - [x] 🔧 `serve.py` takes an explicit host and still defaults to loopback
       A `--host` flag exists, defaults to `127.0.0.1`, and the startup banner prints a warning line whenever the bind is not loopback.
@@ -109,7 +102,7 @@ That is the same wall `QE1` describes from the hosting side, and this question i
       This is the acceptance test for the whole question, and it is currently failed by every option that preserves the loopback model.
       It may well be answered by `QE1` instead, in which case this line closes by pointing there.
 
-## Where we are
+## States
 The committed flag exists and works, its shared-source default is unchanged, and this machine keeps its reader-facing tailnet URL in the gitignored `env.sh`.
 JL has chosen the per-machine reader URL, and both link emitters now consume it without requiring the calling shell to source `env.sh`.
 The shared-source listener default and whether one setting should also control the bind remain open.

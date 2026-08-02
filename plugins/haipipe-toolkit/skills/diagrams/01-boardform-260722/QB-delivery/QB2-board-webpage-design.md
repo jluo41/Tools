@@ -1,120 +1,195 @@
-# Board-Webpage design
+# Board-Webpage design: what the Index shows, and how the shared surface looks
 state: 🟡 PARTIAL
 owner: JL
 method: distinguish the Board-Webpage-Index from an opened Board-Webpage-Page, then settle what the Index must answer and how the shared surface makes it legible
 session: d2199106-8b6a-499d-8c24-9db3658486b5
 
 ## Opening
-How should the Board index help a reader choose the right page within three seconds?
+How should the Board Index help a reader pick the right page in three seconds?
+The Index is the top of `board.html`: the list you land on before you open anything.
+One row on it is one page, and that row has to show enough to choose without opening it.
+That is hard because state, owner, progress, and how the pages relate all want the same thin strip of screen.
+This page rules what the Index shows, and how the surface every page shares should look.
 
-This page defines the Index information hierarchy and the visual language shared across the Board webpage.
-The hard part is showing groups, state, ownership, progress, and relationships without turning the Index into a wall of detail.
-If those signals are poorly balanced, only the author can tell what is stuck or whose move comes next.
-The design succeeds when a cold reader can point to the next actionable page within three seconds.
+**What the two names mean**: A Board-Webpage-Index is the view before any page is open: board name, spine, close condition, progress, Board Map, Related Folders, Section Matrix, grouped page rows, Activity.
+A Board-Webpage-Page is the focused view of one page inside the same site, such as this one.
+This page owns the first. `QB4` owns the second.
 
+**Where this page sits**: The board walks down one ladder: Board, Group, Page, Section, Sentence.
+`QB1` owns the board's folder on disk, and `QB3` puts a page's file beside the work it describes.
+This page takes the rung a reader meets first: the Index, plus the visual language every view shares.
+`QB2a` carries the sidebar rail that travels with it.
 
-## Boundary
-- ✅ Covered here
-  **The Board-Webpage-Index**: Board-level Topic, Pipeline, Board-Structure, group headers, what each row shows, the visuals of state and completion, sort rules, the structure controls, the Board chat entry, the ACTIVITY block, and how "see at a glance what to act on" is achieved.
-  **The board's visual design read**: density and motion settings, typography and surface consistency, accessibility checks, and the audit-first adoption protocol that governs any of it changing.
-- ↪ Covered elsewhere
-  The **Board-Webpage-Page** after the click: `QAa0` and the QAa faces, one per section.
-  Whether each question's **prose is well written**, and the mechanical checks after any change: `QA9`.
-  Automatic **group-title emoji** selection: `QAa3`, which carries the group-title marker (absorbed from QD4 on 260726, moved 260729).
-  Which folder the board **lives in**: `QB1` (which absorbed QC1 on 260729).
-  Paper and venue **writing style**: the Paper lifecycle.
+**What is settled elsewhere**: Whether a page's prose is well written, and the mechanical checks run after any change, belong to `QA9`.
+Paper and venue writing style belongs to the Paper lifecycle.
+
+**Why it matters**: A reader who cannot see what is stuck, or whose move it is, has to open every page to find out.
+This board has 55 of them, and 51 of those have nothing waiting on anyone.
 
 ## Diagram
 
+**The Index on screen**: what a reader meets at the top of the board, before any page is open.
+
 ```
-Board-Webpage-Index (top of board.html; no page opened yet)
 ┌──────────────────────────────────────────────┐
 │ board name · 🦴 spine · 🏁 close condition    │
 │ ▓▓▓▓▓░░░░░  N/M settled                      │  progress bar
 ├──────────────────────────────────────────────┤
 │ 🗺 Board Map                                  │
-│ ┌──── QB1 ────┐   owns    ┌──── QAa0 ────┐   │  one canvas,
+│ ┌──── QB1 ────┐   owns    ┌──── QB4 ─────┐   │  one figure,
 │ │ folder form │ ────────► │ page contract│   │  one box per page;
 │ └─────────────┘           └──────┬───────┘   │  arrows are authored
 │                                  owns          │  relationships only
 │                           ┌──────▼───────┐   │
-│                           │ QAb0 sentence│   │
+│                           │ QB5 sentence │   │
 │                           └──────────────┘   │
-│ [read-only · pan/zoom]  [✏️ Edit map]         │
 ├──────────────────────────────────────────────┤
-│ QA · Defining a board            [＋Q] [🗄]  │  group header (hover controls)
-│ ▸ Pin down the thing itself; nothing …       │  ← group intro: one sentence,
-│   (click ▸ → expands: what / why this group) │    click to expand the why
-│  ✅ QB1  Board folder shape        🔧 CC      │  ← what does each row show?
-│  🟡 QAa0 Page overall: shared layout  🔧 CC  7/9 │     how is completion colored?
-│  🔴 QAa3 group-title icons        🗄 🔧 CC  0/4 │     hover 🗄 = archive (2-click)
+│ 🗂 Related Folders   🩺 Section Matrix        │  two more folds, shut
+├──────────────────────────────────────────────┤
+│ QB · Delivering a board          [＋Q] [🗄]  │  group header, hover controls
+│ ▸ one always-visible sentence                │  ← group intro
+│   click ▸ → what this group is for, and why  │
+│  ✅ QB1  Board folder shape        🔧 CC      │  ← what does a row show?
+│  🟡 QB4  The page template     🔧 CC     9/20 │  ← how is completion coloured?
+│  🔴 QB2a Pages sidebar         🗄 🔧 CC   0/4 │  ← hover 🗄, archive, 2 clicks
 │  …                                            │
 │  [＋ Group]                                   │
 ├──────────────────────────────────────────────┤
-│  … all the page cards …                      │
+│  … all the page rows …                       │
 ├──────────────────────────────────────────────┤
-│ ACTIVITY   (absorbed from QE2, 260726)       │
+│ 📈 ACTIVITY                                   │
 │  WHEN  14 days   ▁▁▁▂▇▄▅▅  outer = all boards│
 │                            inner = this one  │
 │  WHERE Board → Group → Page, one count each  │
 │  the unit is ONE UPDATE = one dated ## Log   │
 │  line, so it reads every tool, not a tab     │
 └──────────────────────────────────────────────┘
-         ↑ within three seconds: "which question do I act on?"
+         ↑ in three seconds: "which page do I act on?"
 
   every button is only a writer into board.md:
-  ＋Q       creates QXN-slug.md from the house stub + lists it under its group
-  ＋Group   appends "### QX · title" (+ intro line) to ## Pages, letter auto
-  🗄        moves the file to _archive/ (question) or removes an EMPTY group;
-            nothing is ever deleted, and the md stays the single source of truth
+  ＋Q       a new QXN-slug.md, listed under its group
+  ＋Group   a new "### QX · title" in ## Pages, letter auto
+  🗄        the file moves to _archive/, or an EMPTY group is removed
 ```
+
+**How a visual change is allowed to happen**: the path from an outside taste rule to a board rule, or to a recorded rejection.
 
 ```text
-how a visual change is allowed to happen
-
-external taste rules
-        |
-        v
-scope filter: research control plane, not marketing page
-        |
-        v
-read-only audit of index, page, chat, mobile, dark, and no-JS
-        |
-        v
-at most three isolated prototypes
-        |
-        v
-human comparison
-   | adopt                 | reject
-   v                       v
-board specification      this face records
-and QA9 checks           why it does not fit
+🎨 outside taste rule
+        ▼
+🔍 scope filter    research control plane, not a marketing page
+        ▼
+📋 read-only audit index · page · chat · mobile · dark · no-JS
+        ▼
+🧪 prototypes      at most three, isolated
+        ▼
+👁 human comparison
+   ✅ adopt ──▶ 📐 board specification + QA9 checks
+   ❌ reject ─▶ 📝 this page, with the reason it does not fit
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QA10
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QA2b
 
 ## Content
 ### 1 · Board-Webpage-Index and Board-Webpage-Page
+**One site, two reader views**: what a reader gets before opening a page, and what they get after.
+
+```text
+🌐 the generated Board-Webpage
+   │
+   ├─ 🗂 BOARD-WEBPAGE-INDEX          👀 nothing open yet
+   │     🦴 spine · 🏁 close condition · ▓▓▓░░ progress
+   │     🗺 Board Map · 🗂 Related Folders · 🩺 Section Matrix
+   │     📄 grouped page rows · 📈 Activity
+   │                                        ⬅ QB2 owns this
+   │        🖱 click one row
+   └─ 📄 BOARD-WEBPAGE-PAGE           🔎 one page, focused
+         🧭 Opening · 🖼 Diagram · 📚 Content
+         🎯 Aims · 📍 States · 📎 Files
+                                            ⬅ QB4 owns this
+```
+📌 Names the two views, so every later part can say which one it is talking about.
+
 The Board-Webpage is one generated `board.html` with two reader views.
-The Board-Webpage-Index is `#top`: it gives the Board name, Spine, Close condition, progress, its Board Map, the Section Matrix, grouped page rows, and Activity before showing any individual page.
+The Board-Webpage-Index is the view a reader lands on: it gives the Board name, Spine, Close condition, progress, the Board Map, Related Folders, the Section Matrix, the grouped page rows, and Activity, all before any individual page is shown.
 Topic, Pipeline, and Board-Structure left the rendered Index on 260731 (JL: "I want to just remove this"); their `board.md` sections remain source-only documentation, because the spine, the Board Map, and the matrix already orient a reader.
-A Board-Webpage-Page is a focused `#<page-id>` view inside the same document.
-This face owns the Index and shared visual language; the QAa faces own the opened Page's sections.
+A Board-Webpage-Page is the focused view of one page inside the same site.
+This page owns the Index and the shared visual language; `QB4` owns the opened page's sections.
 
 ### 2 · Overall progress, show how far the board has moved
+**Two counters, never one**: what the progress area reports, and what it refuses to mix.
+
+```text
+🎯 SETTLED Q     ▓▓▓▓▓░░░░░   decisions closed
+🏁 PASSED S      ▓▓▓░░░░░░░   stage gates passed
+────────────────────────────────────────────────
+🚫 never added into one number
+🚫 ⏸️ parked never counts as done
+❓ answers      how far along is this board?
+```
+📌 Settles that a lifecycle stage may never inflate the question count, and a pause may never read as done.
+
 The global progress area reports settled Q decisions and passed S gates as separate workflow signals.
 It answers "how far along is this board?" without implying that a paused page is complete or allowing lifecycle stages to inflate question settlement.
 
 ### 3 · Group, explain why these pages belong together
+**A group header, opened**: the one sentence on stage, and what the click reveals.
+
+```text
+📁 QA · Defining a board                         [＋Q] [🗄]
+   ▸ 📖 one sentence            👁 always visible
+        🖱 click ──▶ 📜 what this group is for, and why it exists
+   📄 QA0 · QA1 · QA2 · QA3
+──────────────────────────────────────────────────────────
+✍️ source    board.md ## Pages, plain lines under the ### heading
+🥇 line 1    the visible sentence
+📚 the rest  the drawer
+```
+📌 Settles that a group explains itself, so its members do not have to be opened to learn why they are together.
+
 Each group header names one coherent part of the board and carries a short, always-visible introduction.
 Opening the introduction reveals what the group is for and why it exists.
 Group controls add a Q or archive an empty group, but the explanation remains the primary reading signal.
 
 ### 4 · Page row, identify the next action
+**One row, six signals**: everything a reader gets before deciding whether to open a page.
+
+```text
+📄 ONE ROW ON THE INDEX
+   🚦 state      ✅ settled · 🟡 partial · 🔴 open · ⏸️ parked
+   🏷 id         QB1
+   📛 title      Board folder shape
+   💬 comments   a badge, only when a comment is open
+   👤 owner      🧠 JL decides · 🔧 CC works
+   📊 finish     7/9, row tinted white ▸ green by ratio
+──────────────────────────────────────────────────────────
+❓ it must answer   whose move is it, and is this one stuck?
+🚫 nothing else earns a place in the row
+```
+📌 Settles that a row carries only what a reader needs to choose, and names the question the row exists to answer.
+
 Each row exposes only the evidence needed to choose whether to open it: workflow state, id, title, open-comment signal, owner, and finish ratio.
 Its most important eventual job is to make "which page needs action, and whose action is it?" answerable within three seconds.
 
 ### 5 · Ordering, make priority legible
+**Two orders, one still open**: what decides the sequence today, and what nobody has ruled.
+
+```text
+📚 ORDINARY BOARD
+   ✍️ hand-written in board.md ## Pages
+   ❓ whether state, unfinished work, owner or open comments
+      should reorder it is UNRULED
+
+📄 PAPER LIFECYCLE BOARD
+   🌱 Seed ▸ 🔨 Work ▸ 🏛 Venue ▸ 🖼 Display
+        ▸ 📖 Main ▸ 📎 Appendix ▸ 📮 Submission
+   🔒 stable ownership order, NOT a claim that work is linear
+   🎯 one S page per row · its blocking Q sits right after it
+──────────────────────────────────────────────────────────
+⚖️ any automatic sort must be explainable and must never rewrite the source
+```
+📌 Settles the lifecycle grouping and keeps ordinary-board sorting explicitly open.
+
 Group order and row order tell the reader what to scan first.
 Today they follow the hand-written Pages; the open design decision is whether state, unfinished work, owner, or open comments should influence that order.
 Any automatic sort must remain explainable and must not silently rewrite the source.
@@ -127,49 +202,113 @@ Seed includes S Seed and S Literature; Main and Appendix expose every reader-fac
 A paper-level decision may sit before Seed only when it genuinely governs the full lifecycle.
 
 ### 6 · Structure controls, edit without hiding the source
+**Three buttons, one writer**: what each control does to the markdown behind the page.
+
+```text
+🖱 ＋Q       ──▶ 📄 a new QXN-slug.md, listed under its group
+🖱 ＋Group   ──▶ 📁 a new "### QX · title" in board.md ## Pages
+🖱 🗄        ──▶ 📦 the file moves to _archive/
+                    an EMPTY group is removed
+                          ▼
+              ✍️ POST /_board/structure   the ONE writer
+                          ▼
+              📝 board.md and the page files stay the source of truth
+──────────────────────────────────────────────────────────────
+🚫 nothing is ever deleted · every op is two-click confirmed
+```
+📌 Settles that the buttons only WRITE the markdown, so the page never becomes a second source of truth.
+
 `＋Q`, `＋Group`, and archive controls are page-side writers into `board.md` and the page files.
 They make the index operational while preserving markdown as the single source of truth; archive moves material rather than deleting it.
 
 ### 7 · Board chat, discuss the board as a whole
+**Chat beside the Index, never instead of it**: what a conversation adds, and what it cannot replace.
+
+```text
+🤖 BOARD CHAT                    👁 THE INDEX ITSELF
+   🗣 "how should we work?"         🚦 which page needs action
+   🗣 "which page next?"            👤 and whose action is it
+   📎 attached to board.md          📄 read straight off the rows
+   ⏱ minutes                       ⏱ three seconds
+──────────────────────────────────────────────────────────
+⚖️ chat is deliberation; the three-second visual answer is still owed
+```
+📌 Settles that the chat entry is an addition to the Index, and never the way a reader finds the next action.
+
 Board chat is the place to ask how the work should proceed or which page to examine next before opening one.
 It supports deliberation, but it cannot replace the index's visual three-second answer because a reader should not need a conversation to discover the next action.
 
 ### 8 · Activity, count what changed, and where
-(absorbed from QE2 on 260726; the index closes on the measure of itself)
+**Two questions, two blocks**: when the work happened, and where it went.
+
+```text
+📈 ACTIVITY · renders BELOW the page cards
+   ⏱ WHEN     14 days   ▁▁▁▂▇▄▅▅
+                ▉ outer bar = every board
+                ▏inner bar = this board
+   📍 WHERE    🗂 Board ▸ 📁 Group ▸ 📄 Page, one count each
+──────────────────────────────────────────────────────────
+🧮 the unit    ONE UPDATE = one dated line in one page's ## Log
+🚫 not read    ## States, which is status prose, not a change record
+```
+📌 Settles what the dashboard counts and where it sits, so the board's content leads and its measurement closes.
+
 The ACTIVITY block sits below the page cards, so the board's content leads and the measurement of that content closes.
 It answers two questions in that order: WHEN did the work happen, as a fourteen-day strip, and WHERE did it go, as Board → Group → Page.
 
-#### The unit is one update, not one minute
+#### 8.1 · The unit is one update, not one minute
 (JL 260726: "I don't care about the time. What I care is about the numbers of updates.")
 One update is one dated line in one page's `## Log`.
 The first version of this measured focus time from the browser: visible non-idle spans, five-minute idle stops, per-day allocation at local midnight.
 It was exact and it was measuring the wrong thing, because the timer could only ever see a browser and most work on these boards arrives through Claude Code or an editor.
 A Log line is written by whoever did the work in whatever tool, and it already carries its own date, so counting them is a record rather than an observation.
 That difference is why the switch recovered days of history the timer could not have: a timer cannot observe a session that already ended, while the Logs were there the whole time.
-Nothing else is read, and in particular not `## Where we are`, which also carries dated lines but is status prose rather than a change record; counting both would count one change twice.
+Nothing else is read, and in particular not `## States`, which also carries dated lines but is status prose rather than a change record; counting both would count one change twice.
 
-#### What the ranking is for
+#### 8.2 · What the ranking is for
 (a count per page is only useful if it can be compared with its neighbours)
 Board rows share one scale and the current board's Group and Page rows share a second, so a short page stays legible when another board dominates.
 Indentation carries ownership and bar length carries the count, which is the same grammar the index itself uses.
 The strip's outer bar is every board and the inner bar is this one, so a day answers "was the work here or elsewhere" without a second chart.
 
 ### 9 · The board's design read, and its dials
+**The design read and its three dials**: what kind of surface this is, and how far each quality may be turned up.
+
+```text
+🎛 WHAT THIS SURFACE IS
+   📚 an expert research control plane, for long-form reading
+   🚦 fast state scanning · 🤝 durable collaboration
+   🎓 calm, exact, academic
+   🚫 not cinematic · 🚫 not promotional
+   ⚙️ still useful with JavaScript removed
+
+🎚 THE DIALS · proposed, not yet board law
+   🎨 DESIGN_VARIANCE    3 to 4   stable hierarchy, limited asymmetry
+   🌀 MOTION_INTENSITY   1 to 2   feedback and state transitions only
+   📦 VISUAL_DENSITY     7 to 8   compact controls, readable prose
+──────────────────────────────────────────────────────────────
+⚖️ visual variation may never hide state, owner, dependency or completion
+```
+📌 Settles the kind of surface this is, and puts three numbered dials in front of JL to accept or revise.
+
 Read this as an expert research control plane for long-form reading, fast state scanning, and durable collaboration.
 The visual language should feel calm, exact, and academic rather than cinematic or promotional.
 The interface must remain useful with JavaScript removed, and visual variation must never obscure state, ownership, dependencies, or completion.
-
-The proposed starting dials are:
-
-```text
-DESIGN_VARIANCE   3 to 4   stable hierarchy with limited asymmetry
-MOTION_INTENSITY  1 to 2   feedback and state transitions only
-VISUAL_DENSITY    7 to 8   compact control plane with readable prose
-```
-
-These are a proposal for JL to settle, not current board law.
+The three dials above are a proposal for JL to settle, not current board law.
 
 ### 10 · What the current surface already gets right
+**Six things already right**: what the audit found working, so no prototype spends effort on it.
+
+```text
+🎨 colour     1 blue accent for links · 🔴🟠🟢⚪ reserved for state
+🌗 themes     light and dark share ONE hierarchy
+📏 surface    820px reading column
+🔤 voices     serif prose · sans UI chrome · mono identifiers
+🌀 motion     short hover and disclosure feedback only
+⚙️ no-JS      generated HTML stays readable with scripts stripped
+```
+📌 Records the baseline a prototype must not regress, so effort goes to the gaps in §11 instead.
+
 - One blue accent carries links and interaction while red, amber, green, and gray keep semantic state roles.
 - Light and dark palettes use the same hierarchy rather than changing visual language halfway through the page.
 - The 820px reading surface, serif prose, sans UI chrome, and monospace identifiers give content and control different voices.
@@ -177,24 +316,50 @@ These are a proposal for JL to settle, not current board law.
 - Generated HTML stays readable when all scripts are removed.
 
 ### 11 · Initial audit signals
-- `board.css` had a narrow `:focus-visible` rule for two chat-header buttons, but no shared
-  treatment for links, disclosures, form fields, or the rest of the controls.
-  Keyboard location was therefore not yet a consistent design primitive.
-- It has no `prefers-reduced-motion` rule.
-  Existing transitions are short, but the rule should exist before richer live controls arrive.
-- Rounded bordered surfaces appear at many nested levels: spine, context, index row, slide, boundary, files, comparison column, chat, and comments.
-  The focused page and its major inner sections already remove these frames, preserving QAa0's
-  unframed reading intent; the index and all-page views still need visual comparison before
-  any further surface reduction is justified.
-- Radius values range across several unrelated numbers and full pills.
-  A small semantic radius system may make the interface more coherent without flattening useful distinctions.
-- Metadata commonly falls between 10.5px and 12.5px.
-  Density is intentional, but keyboard labels, state text, and secondary controls still need a legibility check.
-- Color contrast is designed by eye and has not been recorded as a mechanical acceptance check.
+**Six findings, three already closed**: what the first read of the stylesheet turned up, and what the pilot fixed.
+
+```text
+⌨️ focus      :focus-visible on 2 chat buttons only     ✅ fixed 260726
+🌀 motion     no prefers-reduced-motion rule            ✅ fixed 260726
+📐 radius     several unrelated numbers and full pills  ✅ 4 tokens added
+🔲 surfaces   rounded frames nested many levels deep    ⚠️ still open
+🔡 metadata   10.5px to 12.5px, never legibility-tested ⚠️ still open
+🌈 contrast   designed by eye, no mechanical check      ⚠️ still open
+──────────────────────────────────────────────────────────────
+📄 a SOURCE-level first pass, not a finished visual or accessibility audit
+```
+📌 Names the concrete gaps the pilot in §13 had to aim at, and which three of them it closed.
+
+The stylesheet carried a narrow `:focus-visible` rule for two chat-header buttons and nothing for links, disclosures, form fields, or the rest of the controls, so keyboard location was not a design primitive at all.
+It carried no `prefers-reduced-motion` rule either, and its radius values ranged across several unrelated numbers and full pills.
+The pilot in §13 closed all three: one shared focus ring, one reduced-motion fallback, and four semantic radius tokens.
+
+Three findings are still open.
+Rounded bordered surfaces appear at many nested levels: spine, context, index row, files, comparison column, chat, and comments.
+The focused page and its major inner sections already remove these frames, which preserves the unframed reading intent `QB4` owns; the index and all-page views still need a visual comparison before any further surface reduction is justified.
+Metadata commonly falls between 10.5px and 12.5px, and that density is intentional, but keyboard labels, state text, and secondary controls have never been legibility-tested.
+Colour contrast is designed by eye and has not been recorded as a mechanical acceptance check.
 
 This is a source-level first pass, not a completed visual or accessibility audit.
 
 ### 12 · Rules worth borrowing, and rules that do not fit
+**One outside skill, split in two**: which of its rules may enter the board audit, and which stay out.
+
+```text
+🌍 taste-skill, an outside skill written for marketing pages
+      │
+      ├─ ✅ BORROW · the DISCIPLINE
+      │     🔍 audit before editing · 🎨 one small vocabulary
+      │     🧪 check every state · 👁 compare a real before and after
+      │
+      └─ ❌ REJECT · the MARKETING DEFAULTS
+            🎬 hero + CTA · 🌀 cinematic motion · 🎚 8/6/4 dials
+            📦 new dependencies · 🕳 hidden JS to read the page
+──────────────────────────────────────────────────────────────
+⚖️ it says of itself that it is NOT for dashboards or data tables
+```
+📌 Splits an outside skill into the part this board adopts and the part it permanently refuses, with the reason on each side.
+
 Worth borrowing:
 - Infer the page kind, audience, and constraints before changing visual style.
 - Audit before editing and preserve existing interaction behavior.
@@ -207,8 +372,7 @@ Does not fit this board:
 - No AIDA page structure, hero section, pricing CTA, image-first composition, or marketing-page storytelling.
 - No mandatory GSAP, scroll pinning, cinematic motion, or randomized layout selection.
 - No default `8 / 6 / 4` dial settings.
-- No blanket emoji ban.
-  Board icons carry authored information and are already governed by the page grammar.
+- No blanket emoji ban, because board icons carry authored information and are already governed by the page grammar.
 - No new font, framework, icon, motion, or design-system dependency merely to satisfy an aesthetic preference.
 - No change that makes hidden JavaScript necessary for reading the complete board.
 
@@ -220,6 +384,26 @@ The redesign variant is the closer model because it begins with scan, diagnose, 
 [redesign skill](https://github.com/Leonxlnx/taste-skill/blob/main/skills/redesign-skill/SKILL.md)
 
 ### 13 · The pilot, and what it verified
+**The pilot, start to finish**: what was captured, what was changed, and what the check found.
+
+```text
+📸 CAPTURE   index · one dense page · chat drawer · 390px · dark mode
+      ▼
+🧪 CHANGE    at most three, CSS only
+             ⌨️ one shared high-contrast :focus-visible ring
+             📐 4 radius tokens: inline · control · surface · pill
+             🌀 a prefers-reduced-motion fallback
+      ▼
+👁 VERIFY    ✅ desktop width 1440/1440 · ✅ 390px, no page h-scroll
+             ✅ 3px focus ring at rgb(7,95,189), 3px offset
+             ✅ motion cut to 0.01ms · ✅ 7 boards rebuilt, JS-strippable
+      ▼
+🎯 KEEP IT   only if state scans faster AND every old boundary still reads
+──────────────────────────────────────────────────────────────────
+⚠️ still owed   chat and comment interaction states
+```
+📌 Records the protocol the pilot ran and the measurements it produced, so a later change can be held to the same bar.
+
 Run the first pilot on this board itself.
 Capture the index, one dense Q page, the chat drawer, mobile width, and dark mode before changing CSS.
 Prototype no more than three changes in one pass: visible keyboard focus, a semantic radius vocabulary, and a reduced-motion fallback.
@@ -227,113 +411,292 @@ Do not change content structure or interaction behavior during the visual compar
 Keep a change only if a fresh reader scans state faster, reads the page comfortably, and can still identify every boundary the old styling communicated.
 
 Verified 260726:
-- Desktop computed width remained `1440 / 1440`; the focused page kept `border: none`,
-  `border-radius: 0`, and a transparent background.
-- At `390px`, document and body scroll width both remained `390px`.
-  Only preformatted diagrams were wider, and they retain their intentional local horizontal scroll.
-- One Tab from the page start landed on the Topic disclosure with a solid `3px` focus ring,
-  `3px` offset, and the dedicated light-mode focus color `rgb(7, 95, 189)`.
-- Emulated reduced motion matched successfully and reduced both transition and animation duration
-  to `0.01ms`.
+- Desktop computed width remained `1440 / 1440`, and the focused page kept `border: none`, `border-radius: 0`, and a transparent background.
+- At `390px`, document and body scroll width both remained `390px`; only preformatted diagrams were wider, and they retain their intentional local horizontal scroll.
+- One Tab from the page start landed on the Topic disclosure, which the Index still carried that day, with a solid `3px` focus ring, `3px` offset, and the dedicated light-mode focus colour `rgb(7, 95, 189)`.
+- Emulated reduced motion matched successfully and cut both transition and animation duration to `0.01ms`.
 - Light, dark, focused-page, index, and mobile screenshots rendered without visible regression.
-- All seven active boards rebuilt successfully, and every build reported that its body survives
-  with JavaScript stripped.
+- All seven active boards rebuilt successfully, and every build reported that its body survives with JavaScript stripped.
 
 The broader baseline audit remains open because chat and comment interaction states have not yet received the same full visual comparison.
 
 ### 14 · After a page opens
-This face stops at the index and at the shared surface.
-`QAa0` owns the opened Q/S webpage's order, and since 260729 each section has its own QAa face: Opening (`QAa1`), Diagram (`QAa2`), Content (`QAa3`), Items to Finish (`QAa4`), Where we are (`QAa5`), and the folds (`QAa6`).
-The two specifications use the same principle without mixing their responsibilities.
+**Where this page stops**: the rung it owns, and the page that owns the next one down.
+
+```text
+🗂 INDEX          ⬅ QB2 · this page
+   🖱 click a row
+      ▼
+📄 PAGE           ⬅ QB4 · the page template
+   🧭 Opening · 🖼 Diagram · 📚 Content
+   🎯 Aims · 📍 States · 📎 Files
+      ▼
+✏️ SENTENCE       ⬅ QB5 · comments, edits, evidence cards
+──────────────────────────────────────────────────────
+⚖️ one principle, three owners; none of them restates another
+```
+📌 Draws the ownership line, so a rule about an opened page is never written twice.
+
+This page stops at the Index and at the surface every view shares.
+`QB4` owns the opened Q or S page: the order its sections keep, and what each one owes a reader.
+Its seven per-section faces were folded into it on 260802, so there is one page to read instead of eight, and the older `QAa1` to `QAa6` ids still resolve through `board.md`'s `## Links`.
+`QB5` carries the same ladder on into the section and the sentence.
+The specifications use the same principle without mixing their responsibilities.
 
 ### 15 · Board Map, see relationships before scanning rows
-The Board-Webpage-Index shows the Board's declared Board Map canvas directly below progress and above the text folds and page rows.
-Each box represents one actual Q or S page; the canvas is the visual map of those pages, not a second page registry.
-An arrow means a relationship someone deliberately drew and labelled: for example, *defines*, *governs*, *requires*, or *ships*. Nearby boxes and index order mean nothing by themselves.
+**The map above the list**: what the canvas answers that a list of rows cannot.
 
-The Index uses its local `board.excalidraw` scene by default when served through the live Board server. A Board on a static host may instead declare a shared `board-map:` URL; this Board uses its shared Excalidraw canvas so the map is available through the Tailscale reader URL. The Index still has its text list underneath: it remains the accessible, searchable, action-oriented entry point; the canvas answers a different first question, “how do these pages relate?”
+```text
+🗺 BOARD MAP · below progress, above the page rows
 
-This first surface deliberately does not infer arrows from `## Pages` or `## Pipeline`, and it does not make a frame click open a page. Both would require a settled relationship grammar and interaction contract rather than a visual guess.
+   ┌── QB1 ──┐   owns    ┌── QB4 ──┐
+   │ folder  │ ────────▶ │ page    │
+   └─────────┘           └────┬────┘
+                           owns
+                         ┌────▼────┐
+                         │  QB5    │
+                         └─────────┘
+
+   🖊 an arrow = a relationship someone DREW and LABELLED
+   🚫 boxes drawn near each other mean nothing
+   🚫 the order of ## Pages means nothing
+──────────────────────────────────────────────────────
+📄 the text list stays underneath: searchable and action-oriented
+❓ arrow vocabulary and click-to-open are UNRULED
+```
+📌 Settles that the map answers "how do these pages relate?", a different first question from the list's "which one do I open?".
+
+The Board-Webpage-Index shows the Board Map directly below progress and above the text folds and page rows.
+Each box is one actual Q or S page, so the map is a picture of those pages and never a second page registry.
+An arrow means a relationship someone deliberately drew and labelled, for example *defines*, *governs*, *requires*, or *ships*.
+Boxes that happen to sit near each other, and the order of `## Pages`, mean nothing by themselves.
+
+Three sources were possible and one wins.
+A board that declares a `## Board Map` section holding one figure uses that figure, and it beats both canvas sources (260730).
+The reason is reach: a figure draws on a static host with no Excalidraw endpoint, it survives with scripts off, and since haipipe-board 0.53.0 every page id inside a figure is a real link, so a figure is the only map a reader can travel on.
+A board with no `## Board Map` keeps the older behaviour: the local `board.excalidraw` scene when served through the live Board server, or a declared shared `board-map:` URL on a static host.
+The text list stays underneath the map either way, because the list is the accessible, searchable, action-oriented entry point while the map answers a different first question, "how do these pages relate?".
+
+This first surface deliberately does not infer arrows from `## Pages` or `## Pipeline`, and it does not make a box click open a page.
+Both would need a settled relationship grammar and a settled interaction contract rather than a visual guess.
 
 ### 16 · Related Folders, open a related folder from the Index
+**The third Index fold**: which folders it opens, and how far a click goes.
+
+```text
+🗂 RELATED FOLDERS · peer to 🗺 Board Map and 🩺 Section Matrix
+
+   📁 skills/board/haipipe-board/   the engine that ships the board
+        SKILL.md · src/ · assets/ · ref/
+   📁 01-boardform-260722/          what a board folder looks like
+        board.md · group folders · board.excalidraw · fig/ · board.html
+
+   🖱 click a folder ▸ 🖱 click a file ▸ 📖 its content, inline
+──────────────────────────────────────────────────────────────
+🏗 built at BUILD time, so it opens with scripts stripped and on a static host
+✍️ authored, never inferred: QA0 and board.md ## Links decide the list
+```
+📌 Settles that the Index can show the folders around the board, not only the pages inside it.
+
 A third Index fold, peer to the Board Map and the Section Matrix, lists the folders this board TOUCHES rather than the pages it contains, so a reader can see the engine that ships the board and what a board folder itself looks like without leaving the Index.
 It surfaces `QA0`'s three-folder argument as a working panel: the skill family that renders the board (`skills/board/haipipe-board/`, with `SKILL.md src/ assets/ ref/`), this board's own folder (`01-boardform-260722/`, with `board.md`, its group folders, `board.excalidraw`, `fig/`, and the generated `board.html`), and the sibling boards the same engine renders.
-Two depths are possible and unruled: a static folder tree that only shows structure, or a browser whose folders open to reveal a file's content such as `SKILL.md`. The Decision Now row settles which.
+Two depths were possible: a static folder tree that only shows structure, or a browser whose folders open to reveal a file's content such as `SKILL.md`.
+JL ruled the browser on 260731, and it shipped in haipipe-board 0.87.0 as a build-time embed rather than a live fetch, so the fold still opens with scripts stripped and on a static host.
 The panel is authored, not inferred: which folders count as related and what each contains comes from `QA0` and `board.md`'s `## Links`, never from guessing.
 
-## Items to Finish
-### The Index's components, from group intros to the Board Map
-- [x] 📖 Each group introduces itself on the index
-      A short sentence always visible under the group header; clicking it expands the "what this group is for and why it is here" body.
-      Grammar (260724): in `## Pages`, plain lines between a `### ` heading and its first `.md` line are the intro; line 1 is the sentence, the rest is the expandable body.
-      Rendered as a native `<details>`, so the strip-scripts invariant holds; every group on this board carries one now.
-- [x] 🧱 Groups and questions can be added and archived from the page
-      JL 260724: "add and delete question groups, and add and delete question items."
-      Shipped as one writer, `POST /_board/structure` (ops `add_group` / `add_question` / `archive_question` / `archive_group`) living in serve.py and imported by the console (QE3 Law). ＋Q seeds a stub Q file and lists it under its group; ＋Group appends a `### QX · title` heading with its intro; archive MOVES a question to `_archive/` and only removes a group once it lists nothing.
-      Verified 260724: full add to archive round trip leaves board.md byte-identical, refusal paths clean over HTTP on 5599 and through the console on 8093.
-- [x] 📚 Every index component explains its purpose
-      Content now describes the eventual reader outcome for board orientation, overall progress, groups, page rows, ordering, structure controls, and board chat.
-      The opened-page section meanings stay with the QAa faces so this face remains an index specification.
-- [x] 🗺 The Index opens with the Board Map canvas
-      The top view embeds the Board's declared canvas below progress and above the textual index. Each box is one Q/S page. A live Board server uses the local `board.excalidraw` scene; this static Tailscale Board uses its declared shared Excalidraw canvas.
-      This is intentionally not an automatically inferred dependency graph: arrows are authored, labelled relationships, while proximity and `## Pages` order carry no relationship meaning.
-- [x] 🗂 A RELATED FOLDERS fold, peer to the Board Map and Section Matrix — shipped 0.87.0
-      Opens the folders this board touches, not the pages it contains: the shipping engine `skills/board/haipipe-board/` and this board's own folder shape, sourced from `QA0` and the new `## Related Folders` grammar in `board.md`.
-      Shipped as a build-time embed (`related_folders()` in `src/page_board.py`), so clicking a folder then a file reads it inline with scripts stripped and on a static host; renders in both `board.html` and the `board/` tree; two folders, four files embedded on this board.
-### The Index's reading design: order, rows, coloring, the three-second answer
-- [ ] 🔗 Settle the Board Map's arrow vocabulary and page-opening interaction
-      Decide the small stable set of relationship labels (for example `defines`, `governs`, `requires`, `ships`) and whether a frame should open its Q/S webpage. Until that is settled, the map remains a readable relationship surface and the text index remains the action navigator.
-- [ ] Settle the questions the front page must answer
-      At least three: what is this board doing · how far along is it · **which question do I act on now**.
-      The third is the hardest and the one that matters.
-- [ ] Settle what each row shows
-      Today: state · id · title · open-comment badge · owner · completion coloring.
-      Enough?
-      Too much?
-- [x] Settle lifecycle grouping; keep ordinary-board sorting open
-      Paper lifecycle boards use seven full-name families: Seed, Work, Venue, Display, Main, Appendix, and Submission.
-      Display owns the evidence-presentation layer consumed by Main and Appendix.
-      Each S is one page; its blocking Q follows it.
-      Ordinary boards still use hand-written Pages groups, and automatic priority sorting remains undecided.
-- [ ] Settle how completion coloring reads
-      Today white to green by tick ratio. ⏸️ ON HOLD also renders full, easily misread as "done".
-- [ ] A zero-background person points at the right question within three seconds
-      Same acceptance as `QAa0`: a fresh agent sees only the front page, is asked "which question to act on", and must answer correctly.
+## Aims
+### A1 · 🗂 Board-Webpage-Index and Board-Webpage-Page
+- A1.1 · Every component of the Index says what a reader eventually gets from it.
+  **Done when:** Content names the reader outcome for orientation, progress, groups, page rows, ordering, structure controls, chat, activity, the map, and related folders, and the opened page's sections stay with `QB4`.
+- A1.2 · The Index answers three questions with no click: what is this board doing, how far along is it, and which page do I act on now.
+  **Done when:** All three are answerable from the Index alone, and the third is answered by looking rather than by reading every row.
 
-### 📊 Activity (absorbed from QE2, 260726)
-- [x] 📅 The strip answers WHEN, the tree answers WHERE
-      Fourteen days across the top, then Board → Group → Page beneath, which are two different questions and therefore two blocks rather than one clever chart.
-- [x] 🧮 The unit is an update, counted from `## Log`
-      One dated Log line is one update; nothing else is read, so a change is never counted twice.
-      Measured 260726 across the whole repo: 509 updates on 8 boards over 129 pages, with this board at 300 across 5 days.
-- [x] 🕰 The days before the dashboard existed are not empty
-      This was the failure the timer could not fix: it began on 260726 1915 and 245 dated Log lines from 260722 to 260725 were invisible to it.
-      Counting Logs recovers all of them, which is the argument for the unit, not a side benefit of it.
-- [x] 🧭 Activity closes the index rather than opening it
-      It renders after the page cards, so the board's content leads.
-- [ ] 🧠 JL rules what happens to the timing recorder
-      `serve.py` still records browser spans into `.haipipe-board/activity.sqlite3` and nothing reads them any more.
-      Three ways out: delete the recorder and its schema, keep it silently for a later "who is looking at this board right now", or keep it and show it as a secondary readout.
-      Recommend deleting: a measurement nobody reads is a maintenance cost that looks like a feature, and the six regression tests now protect a number the page does not print.
+### A3 · 📖 Group, explain why these pages belong together
+- A3.1 · Each group introduces itself on the Index.
+  **Done when:** Every group header carries one always-visible sentence, clicking it opens the longer "what this group is for" body, and the whole thing survives with scripts stripped.
 
-### 🎨 Visual design (the former QA10 half)
-- [ ] 🎛 Set the board design read and dials
-      JL accepts or revises the proposed `3 to 4 / 1 to 2 / 7 to 8` starting point.
-- [ ] 📋 Freeze the borrow and reject lists
-      Decide which external taste rules may enter the board audit and which remain permanently out of scope.
-- [ ] 🔍 Complete the baseline audit
-      Inspect index, focused page, chat, comments, mobile, dark mode, keyboard flow, and the script-stripped page with screenshots and concrete findings.
-- [x] 🧪 Prototype at most three changes
-      Added one shared high-contrast `:focus-visible` ring, four radius tokens
-      (`inline`, `control`, `surface`, `pill`), and a `prefers-reduced-motion` fallback.
-      No markup, information architecture, or dependency changed.
-- [ ] 👁 Compare with fresh readers
-      Ask one fresh reader to locate the next open item and explain one dense page before and after, then record what improved and what regressed.
-- [ ] 📐 Graduate or reject each rule
-      Adopted display rules move to `ref/board-form.md`; mechanical acceptance checks move to `QA9`; rejected rules remain recorded here with their reason.
+### A4 · 📄 Page row, identify the next action
+- A4.1 · What a row shows is settled, so nothing is on it by habit.
+  **Done when:** JL has ruled the six signals in `### 4` in or out, and the row carries exactly what survived.
+- A4.2 · Completion colouring cannot be misread.
+  **Done when:** A parked page no longer renders the same full green as a finished one, and a cold reader tested on the Index never calls a parked page done.
 
-## Where we are
-**The Board-Webpage-Index is now a place you can WORK and understand, not only view: its Content subsections explain what every component is eventually for; the Board Map canvas now appears before the page rows to make page relationships visible; paper lifecycles use seven readable S-family groups; the structure itself is editable from the page; and the Index carries its own chat. Board-Structure now appears after Pipeline rather than consuming a Q webpage. The reading design questions (arrow vocabulary, sort, coloring, the three-second test) stay open, and so does the visual baseline audit.**
+### A5 · 🔢 Ordering, make priority legible
+- A5.1 · Lifecycle grouping is settled and ordinary-board sorting stays explicitly open.
+  **Done when:** Paper boards group by the seven named S families with each blocking Q after its S page, ordinary boards keep hand-written `## Pages` order, and any automatic sort that arrives is explainable and never rewrites the source.
+
+### A6 · 🧱 Structure controls, edit without hiding the source
+- A6.1 · Groups and pages can be added and archived from the page without the markdown stopping being the source of truth.
+  **Done when:** One writer handles every op, a full add-to-archive round trip leaves `board.md` byte-identical, and nothing is ever deleted.
+
+### A8 · 📈 Activity, count what changed, and where
+- A8.1 · The dashboard answers WHEN and WHERE as two separate blocks, and closes the Index rather than opening it.
+  **Done when:** A fourteen-day strip sits above a Board to Group to Page tree, both render after the page cards, and neither tries to be one clever chart.
+- A8.2 · The unit is one update, counted from `## Log`, so every tool is read and no change is counted twice.
+  **Done when:** Only dated `## Log` lines are counted, work done outside the browser appears, and days before the dashboard existed are counted too.
+- A8.3 · The browser-span recorder has a ruled fate rather than running unread.
+  **Done when:** JL has ruled delete, keep silently, or show as a secondary readout, and the code matches the ruling.
+
+### A9 · 🎨 The board's design read, and its dials
+- A9.1 · The design read and its three dials are set by JL rather than proposed by CC.
+  **Done when:** JL has accepted or revised `3 to 4 / 1 to 2 / 7 to 8`, and the settled numbers are what any later prototype is measured against.
+
+### A11 · 🔍 Initial audit signals
+- A11.1 · The baseline audit covers every surface, not only the stylesheet source.
+  **Done when:** Index, focused page, chat, comments, mobile width, dark mode, keyboard flow, and the script-stripped page each have screenshots and concrete findings.
+
+### A12 · 📋 Rules worth borrowing, and rules that do not fit
+- A12.1 · The borrow and reject lists are frozen rather than reopened per change.
+  **Done when:** JL has ruled which outside taste rules may enter a board audit and which stay permanently out of scope.
+- A12.2 · Every rule this page tries either graduates or is recorded as rejected.
+  **Done when:** Adopted display rules live in `ref/board-form.md`, mechanical checks live in `QA9`, and every rejected rule keeps its reason on this page.
+
+### A13 · 🧪 The pilot, and what it verified
+- A13.1 · At most three reversible visual changes are prototyped and verified before anything is kept.
+  **Done when:** The changes are CSS only, and desktop, 390px, keyboard flow, reduced motion, dark mode, and the script-stripped build are all re-measured after them.
+- A13.2 · A fresh reader, not the author, decides whether the pilot helped.
+  **Done when:** One fresh reader locates the next open item and explains one dense page before and after, and what improved and what regressed is written down.
+
+### A15 · 🗺 Board Map, see relationships before scanning rows
+- A15.1 · The Index shows page relationships before the page rows.
+  **Done when:** The declared map renders below progress and above the rows, every box is one real page, and no arrow is inferred from `## Pages` order.
+- A15.2 · The map's arrow vocabulary and click behaviour are settled.
+  **Done when:** A small stable set of relationship labels is ruled, and whether a box opens its page is ruled with it.
+
+### A16 · 🗂 Related Folders, open a related folder from the Index
+- A16.1 · A reader can see the engine that ships the board, and what a board folder looks like, without leaving the Index.
+  **Done when:** The fold lists the authored folders, a click opens a real file's content inline, and it still works with scripts stripped and on a static host.
+
+### P · 🏁 Page-level validation
+- P1 · A zero-background person points at the right page within three seconds.
+  **Done when:** A fresh agent that sees only the Index, and is asked which page to act on, answers correctly.
+
+## States
+### Decision Now
+
+- [ ] 🗣 Rule whether a group gets a SOURCE FILE, and therefore a real template
+      📍 `Part` `### 3 · Group, explain why these pages belong together`
+      🔔 `Why now` The group page now shows purpose, why, progress and members, all derived from `board.md`. That is the ceiling of what derivation can give: a group still cannot hold a decision, an open item, or a state of its own.
+      ⭐ `A ·` a group gets its own markdown file with the page sections that make sense at group altitude (Opening, Aims, States with Decision Now), rendered as the group page, with the member list appended by the generator. CC recommends it, because a group is already the unit you click, a session attaches to, and a lane block describes, and the only thing it cannot do is close.
+      `B ·` the group stays derived, and anything a group needs to decide is written on whichever member page is closest.
+      `C ·` extend the `board.md` intro grammar instead, so a group can carry more without a new file.
+      🛑 `Blocks` A3.1 only if a group is expected to close; nothing else stops today.
+      🤖 `If nobody answers` B takes effect, which is today's behaviour.
+      💰 `What A costs` `src/parse.py`'s Q pattern requires a number, so `QA-index.md` is discovered and then fails to parse; the existing named-Q form `Q-<Name>-<slug>` already parses and is the cheapest slot. Worth ruling in the same breath: if a group can close, does the board's settled count start counting groups, or stay pages only.
+- [ ] 🗣 Rule whether a page group gets a PAGE of its own
+      📍 `Part` `### 3 · Group, explain why these pages belong together`
+      🔔 `Why now` JL 260731: "for the Q group, we might have a QXX-index.md as well, but this is for the whole group, not the single page, and we can click the Group and open that page if we want." This board demonstrates the gap: the QB group intro declares the ladder Board to Group to Page to Section to Sentence, then lists faces for Board, Page, and Sentence only, because the GROUP rung has no face.
+      ⭐ `A ·` a real page per group, so a group closes, carries its own Aims and Decision Now, and takes comments like any page. CC recommends it, because everything on that list except closing is already built.
+      `B ·` keep the intro and grow it, adding the missing affordances to the group heading itself without minting a page.
+      `C ·` leave it as is, and let group-level decisions live on whichever member page is closest.
+      🛑 `Blocks` nothing today.
+      🤖 `If nobody answers` C takes effect.
+      💰 `What A costs` a group owns four things today and none of them is a page: an intro, an anchor `#group-<token>`, a lane block, and a chat session. It lacks the three affordances that retired the `doc:` line in 260726: no `state:`, no item counts, and no place for a comment to land. `src/parse.py` needs a parser slot, not just a filename convention, and the tidiest fit is the existing named-Q form `Q-<Name>-<slug>`.
+- [ ] 🗣 Rule whether board.html stays one file
+      📍 `Part` `### 1 · Board-Webpage-Index and Board-Webpage-Page`
+      🔔 `Why now` JL 260731: "for the board.html, all the things are in the same .html, will that be ok? Could we make it like each page, we have each html? will that be much quicker and smoother?" Measured on this board: 2.02 MB total, of which shared JS and CSS are 0.20 MB (10%) and page content is 1.78 MB across 53 pages, so one page averages 34 KB and a reader downloads roughly nine times what the page they opened actually needs. The MISQ lifecycle board is 3.12 MB. A full rebuild is 0.38s, so the build is not the cost; the browser parsing 2 to 3 MB on every load and on every live swap is.
+      `A ·` one HTML file per page plus an index, which is what the question proposes.
+      ⭐ `B ·` keep one file as the shareable artifact, and give the LIVE server a per-page fragment path so an update ships one page instead of the whole board. CC recommends it, and against A on its own merits rather than only on the law: page SWITCHING today is a pure CSS `:target` change with no network at all, so splitting into files would make the instant thing slower (a round trip plus a full document load plus re-running the scripts) to speed up the once-per-session thing, and it would destroy the chat drawer and terminal on every navigation, which is the entire point of `QD4`'s swap. B is also the only option that keeps `QE3`'s Law intact, that the static half stays one self-contained file a colleague can be handed and a projector can open offline.
+      `C ·` leave it, and accept the parse cost.
+      🛑 `Blocks` nothing; every option leaves the board readable today.
+      🤖 `If nobody answers` C takes effect.
+- [ ] 🗣 Confirm the SECTION MATRIX columns and cell vocabulary
+      📍 `Part` `### 1 · Board-Webpage-Index and Board-Webpage-Page`
+      🔔 `Why now` The matrix shipped in haipipe-board 0.75.0 and its columns have never been ruled, so they are one session's proposal that everyone now reads as a spec.
+      ⭐ `A ·` confirm the seven columns as proposed (🧭 🖼 📚 🎯 📍 📎 🗄) with the cell codes recorded in the 260731 matrix entry below. Cheapest, and every cell is derived, so a column can still be changed or dropped later without touching any page.
+      `B ·` change the column set now, before anyone learns to read it.
+      🛑 `Blocks` nothing; the matrix renders under either answer.
+      🤖 `If nobody answers` A takes effect.
+- [ ] 🗣 Rule the matrix's default posture
+      📍 `Part` `### 1 · Board-Webpage-Index and Board-Webpage-Page`
+      🔔 `Why now` The matrix is shut by default today and nobody decided that; it was the safe choice while it was new.
+      ⭐ `A ·` shut by default. The Index already opens with the progress bar and the Board Map, and the matrix is a diagnostic view rather than an orientation one.
+      `B ·` open by default, so status is the first thing a reader sees and nobody has to know the fold exists.
+      🛑 `Blocks` nothing.
+      🤖 `If nobody answers` A takes effect, which is today's behaviour.
+- [ ] 🗣 Rule what happens to the timing recorder
+      📍 `Part` `### 8 · Activity, count what changed, and where`
+      🔔 `Why now` `serve.py` still records browser spans into `.haipipe-board/activity.sqlite3` and nothing reads them any more, and six regression tests protect a number the page does not print.
+      ⭐ `A ·` delete the recorder and its schema. CC recommends it, because a measurement nobody reads is a maintenance cost that looks like a feature.
+      `B ·` keep it silently, for a later "who is looking at this board right now".
+      `C ·` keep it and show it as a secondary readout beside the update counts.
+      🛑 `Blocks` A8.3.
+      🤖 `If nobody answers` B takes effect, which is today's behaviour.
+- [ ] 🗣 Set the board design read and dials
+      📍 `Part` `### 9 · The board's design read, and its dials`
+      🔔 `Why now` Every later visual prototype is measured against these numbers, and they are currently CC's proposal rather than anyone's ruling.
+      ⭐ `A ·` accept `3 to 4 / 1 to 2 / 7 to 8` for variance, motion, and density as drawn in `### 9`.
+      `B ·` revise the numbers, which changes what a prototype is allowed to try before it is compared.
+      🛑 `Blocks` A9.1, and through it the graduation of any display rule.
+      🤖 `If nobody answers` A takes effect.
+- [ ] 🗣 Rule how far an ascii figure may stop looking like a terminal
+      📍 `Part` `### 9 · The board's design read, and its dials`
+      🔔 `Why now` JL 260731, of `QB4`'s head figure: "very hard to read ... could you make it more modern?" Half of it was a defect and is fixed board-wide: emoji are not monospace, so figures arrived bent, and `body.pad_emoji` plus `pre .eu` now pin each emoji to `2ch`. The rest is taste, and taste on this surface is this page's call under the audit-first protocol in `### 9`.
+      `A ·` leave `pre.asc` as it is. One flat grey code surface, 12.5px, no hierarchy. Cheapest, and it keeps a figure looking exactly like the text an author typed.
+      ⭐ `B ·` give `pre.asc` typographic hierarchy only. The first line reads as a title, `═══` and `───` runs render as real hairlines, and the block gets a card surface instead of the code grey; still one `<pre>`, still copy-safe, one CSS rule and one build-time pass. CC recommends it, because it is the only option that answers "more modern" without spending the copy-survives property, and it is reversible in one rule.
+      `C ·` render figures as real HTML. Cards or a grid, genuinely modern, and it costs the thing every figure rule on this board is built on: a drawing that survives being pasted into chat or mail, plus a new authoring syntax on 53 pages.
+      🛑 `Blocks` nothing.
+      🤖 `If nobody answers` B takes effect.
+
+### A1 · 🗂 Board-Webpage-Index and Board-Webpage-Page
+- ✅ A1.1 · Content now names the reader outcome for all ten Index components, and the opened page's sections stay with `QB4`.
+- 🧠 A1.2 · The first two are answered today by the spine and the progress bar. The third is not: a reader still scans 55 rows, and the three-second visual answer is what `P1` tests.
+
+### A3 · 📖 Group, explain why these pages belong together
+- ✅ A3.1 · Shipped 260724. Every group on this board carries an intro, rendered as a native `<details>`, so the strip-scripts invariant holds.
+
+### A4 · 📄 Page row, identify the next action
+- 🧠 A4.1 · Waiting on JL. The row shows state, id, title, open-comment badge, owner, and completion colouring; nobody has ruled whether that is enough or too much.
+- ⬜ A4.2 · Not started. ⏸️ ON HOLD still renders the same full green as ✅, which reads as "done".
+
+### A5 · 🔢 Ordering, make priority legible
+- ✅ A5.1 · Settled 260725. Paper boards use the seven named families with Display owning the evidence-presentation layer; ordinary boards keep hand-written `## Pages` order, and automatic priority sorting remains deliberately undecided.
+
+### A6 · 🧱 Structure controls, edit without hiding the source
+- ✅ A6.1 · Shipped 260724 as one writer, `POST /_board/structure`, with ops `add_group`, `add_question`, `archive_question`, and `archive_group`. A full add-to-archive round trip leaves `board.md` byte-identical, and refusal paths were verified over HTTP on 5599 and through the console on 8093.
+
+### A8 · 📈 Activity, count what changed, and where
+- ✅ A8.1 · Shipped 260726. Fourteen days across the top, Board to Group to Page beneath, both rendered after the page cards.
+- ✅ A8.2 · Shipped 260726. Measured across the whole repo the same day: 509 updates, 8 boards, 129 pages, this board at 300 over 5 days. The 245 dated Log lines from 260722 to 260725 that the browser timer never saw are all counted.
+- 🧠 A8.3 · Waiting on JL. The recorder still writes spans and nothing reads them.
+
+### A9 · 🎨 The board's design read, and its dials
+- 🧠 A9.1 · Waiting on JL. `3 to 4 / 1 to 2 / 7 to 8` is a proposal, not board law.
+
+### A11 · 🔍 Initial audit signals
+- 🔨 A11.1 · Partly done. Desktop, 390px, keyboard flow, reduced motion, dark mode, and the script-stripped build were all measured on 260726. Chat and comment interaction states have never had the same comparison.
+
+### A12 · 📋 Rules worth borrowing, and rules that do not fit
+- 🧠 A12.1 · Waiting on JL. The two lists are written in `### 12` and neither has been ruled in.
+- ⬜ A12.2 · Not started. Nothing has graduated to `ref/board-form.md` or to `QA9` yet.
+
+### A13 · 🧪 The pilot, and what it verified
+- ✅ A13.1 · Ran 260726. One shared `:focus-visible` ring, four radius tokens, and a `prefers-reduced-motion` fallback; no markup, information architecture, or dependency changed.
+- ⬜ A13.2 · Not started. No fresh reader has compared before and after.
+
+### A15 · 🗺 Board Map, see relationships before scanning rows
+- ✅ A15.1 · Shipped 260730. The map became an ASCII `## Board Map` figure rendered as a shuttable disclosure, which wins over both canvas sources because a figure draws on a static host and survives with scripts off.
+- ⬜ A15.2 · Not started. The relationship labels and click behaviour are both unruled, so the map stays a reading surface and the text list stays the action navigator.
+
+### A16 · 🗂 Related Folders, open a related folder from the Index
+- ✅ A16.1 · Shipped 260731 as haipipe-board 0.87.0, depth B. Two folders and four files are embedded on this board, order Board Map, Related Folders, Section Matrix verified, and the body survives JavaScript stripping.
+
+### P · 🏁 Page-level validation
+- ⬜ P1 · Not started. Nothing has tested a cold reader against the Index.
+
+The Index is now a place you can work and understand, not only view: every component says what it is for, the Board Map appears before the page rows, paper lifecycles use seven named S-family groups, the structure is editable from the page, and the Index carries its own chat.
+What stays open is the reading design: the arrow vocabulary, automatic sorting, completion colouring, and the three-second test, plus the half of the visual baseline audit that chat and comment states still owe.
+The dated implementation history below is the record of how it got here; each Aim's row above is the snapshot.
+
+- What the Index looks like today
+  Board name, spine, close condition, progress bar, the Board Map, the Related Folders fold, the Section Matrix, then the grouped list in `## Pages` order with each group led by its intro, and Activity last.
+
+- What each row has today
+  State badge · id · title · open-comment badge · owner · row tinted white to green by completion (`--fill`, percentage in `title`) · hover archive.
+
+- Known defects
+  ⏸️ ON HOLD renders as full green like ✅, so it reads as "done"; with 55 pages the list is one long strip with no visible priority; group order is entirely hand-maintained in `## Pages`.
+  No external skill has been installed and no dependency has been added.
 
 - 260731 CC · 🗂 RELATED FOLDERS shipped (0.87.0, depth B)
   A third Index fold, peer to the Board Map and Section Matrix, opens the folders this board touches (the shipping engine, and the board folder itself); clicking a folder then a file reads it inline.
@@ -343,7 +706,7 @@ The panel is authored, not inferred: which folders count as related and what eac
   JL: "do the B level." The fold opens to a real file's content on click (for example `SKILL.md`), not just a static tree.
 
 - 260731 JL · 🗂 A RELATED FOLDERS fold requested for the Index
-  JL, with a screenshot of the Board Map and Section Matrix folds: add a third fold, "related folders", that opens the folders this board touches so a reader can "看到 skill board 的那个东西，也可以看到这个 board folder 该长什么样子" (see the shipping skill, and what a board folder itself looks like).
+  JL, with a screenshot of the Board Map and Section Matrix folds: add a third fold, "related folders", that opens the folders this board touches, so a reader can see the shipping skill and see what a board folder itself should look like.
   Recorded as Content §16, an Items row, and a Decision Now depth ruling: a fold peer to the Board Map and Section Matrix, sourced from `QA0`'s three folders and `## Links`. The depth (static tree vs clickable browser) is unruled; the render lives in `src/page_board.py`, so wiring it needs an engine change beyond a board-folder-only edit.
 
 - 260731 JL · 🧹 Topic, Pipeline, and Board-Structure left the Index
@@ -434,16 +797,6 @@ The panel is authored, not inferred: which folders count as related and what eac
 - 260724 CC · 📖 Group intros landed with a new Pages grammar
   Intro lines sit directly under each `### ` heading in `## Pages`; the per-group paragraphs that used to live in `## Pipeline` moved there (Pipeline keeps only the overall narrative), so nothing is said twice.
 
-- What the index looks like today
-  Board name + spine + close condition + progress bar + two global fold-outs (what is this board / how are the Qs ordered) + the grouped list in `## Pages` order, each group led by its intro.
-
-- What each row has today
-  State badge · id · title · open-comment badge · owner · row tinted white to green by completion (`--fill`, percentage in `title`) · hover archive.
-
-- Known defects
-  ⏸️ ON HOLD renders as full green like ✅, reads as "done"; with many questions it is one long strip with no visible priority; group order is entirely hand-maintained in the Pages.
-  No external skill has been installed and no dependency has been added.
-
 - 260731 JL · 🎨 The Board Map header now matches the Section Matrix header
   JL: "could you make this cleaner? this is so ugly", then "make these two styles consistent", with a screenshot of the two sitting one above the other and looking nothing alike.
   The map's header was a two-column flex with a large title on the left and its blurb stranded right-aligned on the right, wrapping onto two lines; the matrix's was one compact line.
@@ -469,96 +822,48 @@ The panel is authored, not inferred: which folders count as related and what eac
   Shipped now, from data that already existed: the group page renders its intro as a PURPOSE line, the remaining intro lines as a "why this group exists" drawer, and the group's own settled count. The intro was in `board.md` all along and the group page simply never read it.
   Not shipped, because it needs a source file and a parser slot rather than a render change: a group with its own `## Items to Finish`, its own `### Decision Now`, and a `state:` that can close.
 
-### Decision Now
-
-- [ ] 🗂 Rule whether a group gets a SOURCE FILE, and therefore a real template
-      The group page now shows purpose, why, progress and members, all derived from `board.md`. That is the ceiling of what derivation can give: a group still cannot hold a decision, an open item, or a state of its own.
-      A · a group gets its own markdown file with the page sections that make sense at group altitude (Opening, Items to Finish, Where we are with Decision Now), rendered as the group page, with the member list appended by the generator.
-      B · the group stays derived, and anything a group needs to decide is written on whichever member page is closest.
-      C · extend the `board.md` intro grammar instead, so a group can carry more without a new file.
-      → CC recommends A, because a group is already the unit you click, a session attaches to, and a lane block describes, and the only thing it cannot do is close. Note what it costs: `src/parse.py`'s Q pattern requires a number, so `QA-index.md` is discovered and then fails to parse; the existing named-Q form `Q-<Name>-<slug>` already parses and is the cheapest slot.
-      Also worth ruling in the same breath: if a group can close, does the board's settled count start counting groups, or stay pages only.
-- [ ] 🗂 Rule whether a page group gets a PAGE of its own
-      JL 260731: "for the Q group, we might have a QXX-index.md as well, but this is for the whole group, not the single page, and we can click the Group and open that page if we want."
-      The gap is real and this board demonstrates it: the QB group intro declares the ladder Board to Group to Page to Section to Sentence, and then lists faces for Board, Page, and Sentence only, because the GROUP rung has no face.
-      A group today owns four things and none of them is a page: an intro (plain lines under its `### ` heading), an anchor `#group-<token>`, a lane block, and since 0.77.0 a chat session.
-      What it lacks is exactly the three affordances that retired the `doc:` line in 260726: no `state:`, no item counts, and no place for a comment to land.
-      A · a real page per group, so a group closes, carries its own Items and Decision Now, and takes comments like any page.
-      B · keep the intro and grow it, adding the missing affordances to the group heading itself without minting a page.
-      C · leave it as is, and let group-level decisions live on whichever member page is closest.
-      → CC recommends A, because a group is already the unit a reader clicks, a session attaches to, and a lane block describes, and everything on that list except closing is already built.
-      One technical note that decides the naming, not the ruling: `src/parse.py`'s Q pattern requires a number, so `QA-index.md` is DISCOVERED by `page_files()` and then fails to parse into a group and id, landing in the ⚠️ group. A group page therefore needs a parser slot, not just a filename convention. The tidiest fit is the existing named-Q form `Q-<Name>-<slug>`, which already parses today.
-- [ ] 🌐 Rule whether board.html stays one file
-      JL 260731: "for the board.html, all the things are in the same .html, will that be ok? Could we make it like each page, we have each html? will that be much quicker and smoother?"
-      Measured on this board: 2.02 MB total, of which shared JS and CSS are 0.20 MB (10%) and page content is 1.78 MB across 53 pages, so one page averages 34 KB and a reader downloads roughly nine times what the page they opened actually needs. The MISQ lifecycle board is 3.12 MB. A full rebuild is 0.38s, so the build is not the cost; the browser parsing 2 to 3 MB on every load and on every live swap is.
-      A · one HTML file per page plus an index, which is what the question proposes.
-      B · keep one file as the shareable artifact, and give the LIVE server a per-page fragment path so an update ships one page instead of the whole board.
-      C · leave it, and accept the parse cost.
-      → CC recommends B, and against A on its own merits rather than only on the law: page SWITCHING today is a pure CSS `:target` change with no network at all, so splitting into files would make the instant thing slower (a round trip plus a full document load plus re-running the scripts) to speed up the once-per-session thing, and it would destroy the chat drawer and terminal on every navigation, which is the entire point of `QD4`'s swap.
-      B is also the only option that keeps `QE3`'s Law intact, that the static half stays one self-contained file a colleague can be handed and a projector can open offline.
-      This is the page I proposed as `QC9` (the unit of change) and it is still unruled on `QA2`; JL asking it independently is the argument for opening it.
-- [ ] 🩺 Confirm the SECTION MATRIX columns and cell vocabulary
-      PROPOSED: seven columns (🧭 🖼 📚 🎯 📍 📎 🗄) with the cell codes recorded in the 260731 matrix entry above; a column can be changed or dropped without touching any page, since every cell is derived.
-- [ ] 📌 Rule the matrix's default posture
-      Recommended: shut by default, since the Index already opens with the bar and the Board Map and the matrix is a diagnostic view; the alternative is open by default so status is the first thing a reader sees.
-- [ ] 🧠 Rule what happens to the timing recorder
-      Three ways out: delete the recorder and its schema, keep it silently for a later "who is looking at this board right now", or keep it and show it as a secondary readout; the recommendation on the Items row is deleting.
-      A tick here also closes the same row in Items to Finish.
-- [ ] 🎛 Set the board design read and dials
-      PROPOSED in Content §9: `3 to 4 / 1 to 2 / 7 to 8` for variance, motion, and density, to accept or revise.
-      A tick here also closes the same row in Items to Finish.
-- [ ] 🖼 Rule how far an ascii figure is allowed to stop looking like a terminal
-      JL 260731, of `QB4f`'s head figure: "very hard to read ... could you make it more modern?"
-      Half of it was a defect and is fixed board-wide: emoji are not monospace, so figures arrived bent; `body.pad_emoji` plus `pre .eu` now pin each emoji to `2ch`. The rest is taste, and taste on this surface is this face's call under the audit-first protocol in §9.
-      A · leave `pre.asc` as it is. One flat grey code surface, 12.5px, no hierarchy. Cheapest, and it keeps a figure looking exactly like the text an author typed.
-      B · give `pre.asc` typographic hierarchy only. The first line reads as a title, `═══` and `───` runs render as real hairlines, and the block gets a card surface instead of the code grey; still one `<pre>`, still copy-safe, one CSS rule and one build-time pass.
-      C · render figures as real HTML. Cards or a grid, genuinely modern, and it costs the thing every figure rule on this board is built on: a drawing that survives being pasted into chat or mail (`QB4b` §0), plus a new authoring syntax on 53 pages.
-      → CC recommends B, because it is the only option that answers "more modern" without spending the copy-survives property, and it is reversible in one rule.
-- [x] 🗂 Rule the RELATED FOLDERS fold's depth — JL ruled B (260731)
-      JL 260731 asked for a third Index fold, beside the Board Map and Section Matrix, that opens the folders this board touches: the shipping skill engine and "what a board folder should look like", sourced from `QA0`'s three folders.
-      A · static folder tree only. Each related folder shows its structure as a rendered tree; authorable in `board.md` today, smallest engine change.
-      B · a clickable browser. Each folder opens to reveal a file's content (for example `SKILL.md`); needs `src/page_board.py` to render the fold and `serve.py` to serve the content live.
-      C · record the design only for now, ship neither depth until ruled.
-      → JL ruled **B** (260731): the clickable browser. SHIPPED 0.87.0 as a build-time EMBED, not a live fetch: `related_folders()` in `src/page_board.py` reads each named file at build and inlines it, so the fold opens script-stripped and on a static host (QE3's Law). `QB2` owns the fold + render, `QA0` owns which folders are related and which files each opens. A live `serve.py` endpoint (`QC8`) is deferred, needed only for folders too big to inline (>120 KB).
-
 ## Files
-### Engines
+### ⚙️ Engines · what RUNS the Index
 - `src/page_board.py`
-  Builds the Board Map panel from a declared `board-map:` share URL when one exists; otherwise it uses the local scene through the Board server's Excalidraw proxy. The explicit URL supports static Tailscale hosting without changing the Board's page registry.
-- `assets/css/10-focus.css`
-  Holds the responsive Board Map surface. The iframe stays on `#top` only; a focused Q/S page hides it with the rest of the index.
+  The Index itself: the Board Map panel, `related_folders()` for the Related Folders fold, the Section Matrix, and the static ACTIVITY shell emitted after the page cards.
+  Runtime activity data stays an enhancement, so with no server the section reads as a sentence and the board is still complete.
 - `cli/build.py`
-  The index-rendering pass (`rows` / `frac_done` / the `.ir` CSS family), now also the Pages-intro parse (`gintro`) and the `details.gi` render.
-  Changing the index half of this question starts here.
+  The index-rendering pass: `rows`, `frac_done`, the `.ir` CSS family, the `## Pages` intro parse (`gintro`), and the `details.gi` render.
+  Changing what the Index SHOWS starts here.
 - `cli/serve.py`
-  `structure_op()`: the one writer for add_group / add_question / archive_question / archive_group; `POST /_board/structure`.
-  The console imports it, never reimplements.
-- `assets/js/00-header.js` + `assets/css/10-focus.css`
-  The page-side controls (＋Q, ＋Group, 🗄 with two-click confirm, inline mini form) and the intro styling; wired into `__boardRewire` so they survive live swaps.
-  Also the ACTIVITY render: `sampleData` / `rowHtml` / `render`, and the `.act-*` styles.
-  `board.css` additionally holds the palette, typography, density, surfaces, interaction feedback, dark mode, and responsive rules that the visual half audits.
-- `cli/serve.py` · `log_counts` / `log_boards` / `activity_stats`
-  The update counter. `log_counts` reads only `## Log`, caches on file mtime, and `activity_stats` joins it to `## Pages` for group ownership.
-- `src/page_board.py`
-  The static ACTIVITY shell, emitted after the page cards. Runtime data stays an enhancement: with no server the section reads as a sentence and the board is still complete.
-### Input files
+  Two things this page owns. `structure_op()` is the one writer for add_group, add_question, archive_question and archive_group behind `POST /_board/structure`, imported by the console and never reimplemented.
+  `log_counts`, `log_boards` and `activity_stats` are the update counter: `log_counts` reads only `## Log` and caches on file mtime, and `activity_stats` joins it to `## Pages` for group ownership.
+- `assets/js/00-header.js`
+  The page-side controls: ＋Q, ＋Group, 🗄 with its two-click confirm, and the inline mini form, wired into `__boardRewire` so they survive a live swap.
+  Also the ACTIVITY render: `sampleData`, `rowHtml`, `render`, and the `.act-*` styles.
+- `assets/css/10-focus.css`
+  The responsive Board Map surface and the group-intro styling. The map stays on the Index only; a focused page hides it with the rest of the index.
+  The stylesheet set also holds the palette, typography, density, surfaces, interaction feedback, dark mode, and responsive rules that `### 11` audits.
+
+### 📥 Input files · what the render READS
+- `board.md`
+  `## Pages` decides grouping, order, AND each group's intro: plain lines under the `### ` heading, line 1 being the visible sentence.
+  `## Related Folders` decides which folders the Index fold opens. If sorting ever becomes automatic, `## Pages`'s role must be redefined too.
 - `board.excalidraw`
   The one canonical scene: its generated frames are pages, while authors draw and label the relationships between them. It is not a separate page registry.
-- `board.md`
-  `## Pages` decides grouping, order, AND each group's intro (plain lines under the `### ` heading; line 1 = the visible sentence).
-  If sorting ever becomes automatic, this section's role must be redefined too.
-### The span recorder, written and unread
-- `tests/test_activity.py`
-  Regression tests for the span recorder, which nothing displays any more (see the open item).
-- `.haipipe-board/activity.sqlite3`
-  Local runtime spans, gitignored. Written, and currently unread.
-### Graduation target and neighbouring faces
+
+### 📋 Contracts · what CARRIES a rule to other pages
 - `ref/board-form.md`
-  Settled display rules graduate here only after the pilot and a human decision.
-- `../QB-delivery/QB4-overall.md`
-  Owns the existing shared page hierarchy and the unframed reading intent this audit must preserve, and owns automatic icon assignment; this face does not reopen the semantic role of authored icons.
-- `QA9-acceptance.md`
-  Owns repeatable post-change checks once a visual rule becomes mechanical.
+  Where a settled display rule graduates, and only after the pilot and a human ruling.
+- `QB-delivery/QB4-overall.md`
+  Owns the opened page: its section order, the unframed reading intent this audit must preserve, and automatic icon assignment. This page does not reopen the semantic role of authored icons.
+
+### 🧪 Checks · what CATCHES a page breaking a rule
+- `QF-execute/QF1-acceptance.md`
+  Owns the repeatable post-change checks a visual rule graduates into once it becomes mechanical.
+- `tests/test_activity.py`
+  Six regression tests protecting the browser-span recorder, which nothing displays any more. They go or stay with the Decision Now ruling on the recorder.
+
+### 📤 Output files · what a BUILD writes
+- `board/QB/QB2-board-webpage-design.html`
+  ⚠️ Generated by `cli/build.py`. Never hand-edit.
+- `.haipipe-board/activity.sqlite3`
+  ⚠️ Written by `cli/serve.py`, gitignored, and currently read by nothing.
 
 ## Discussion
 > JL: QC2 Index page design 我们在这个地方需要能够添加和删除板块，也就是说，既能添加和删除 question group，也能添加和删除 question item。 另外，在 question group 之间，也需要有一个非常短的句子来介绍一下这个 group。我想的是这样的：比如你有一个 question group（像 QC、QA 这种），下面配一个简单的介绍（sentence）。当我们点击它的时候，它就会向下展开，弹出一个下拉的介绍。 这个介绍主要用来解释这个 group 是干嘛的，以及我们为什么要在这里使用它。大概就是这样的一个意思。
@@ -582,11 +887,16 @@ The panel is authored, not inferred: which folders count as related and what eac
 > JL: 🦴 Topic — what this board is about 🔄 Pipeline — how these Qs are ordered 🧭 Board-Structure — Board-Folder and Board-Webpage I want to remove them,just keep the Map is ok.
 
 ## Law
+- 🗂 **Related Folders opens a real file**: the Index fold is a clickable browser, not a static tree (JL 260731).
+  JL asked for a third Index fold, beside the Board Map and Section Matrix, that opens the folders this board touches: the shipping skill engine, and what a board folder should look like.
+  He ruled depth B, the clickable browser, over A, a static folder tree that only shows structure, and over C, recording the design and shipping neither depth.
+  It shipped in haipipe-board 0.87.0 as a build-time EMBED rather than the live fetch B first proposed: `related_folders()` in `src/page_board.py` reads each named file at build and inlines it, so the fold still opens with scripts stripped and on a static host, which `QE3`'s Law requires. This page owns the fold and its render; `QA0` owns which folders are related and which files each opens; a live `serve.py` endpoint (`QC8`) is deferred and is needed only for folders too big to inline, above 120 KB.
 - 🗂 **Index stays as it is**: the Index does not roll up open `Decision Now` rows; a reader goes to a page's States to find them (JL 260802).
   Chosen over a roll-up block on the Index and over a per-page 🗣 badge in the rail.
   The rows already live where they are owned, and a second surface listing them is a second thing that can disagree with the first. The cost is real and accepted: finding what is waiting means opening pages.
 
 ## Log
+260802 1600 · Brought up to the QB4 page contract. Title now states the page's purpose; the Opening was rewritten to the blank-line split with a visible paragraph under 450 chars and a labelled `More details`; `## Boundary` was deleted on JL's 260731 ruling and its pointers moved into the Opening drawer; all 16 Content parts gained a face figure and a caption, and §8's two paragraphs were numbered 8.1 and 8.2; `## Items to Finish` became `## Aims` with 20 Aims in 13 Content-linked groups plus P1, and `## Where we are` became `## States` with Decision Now first and one state row per Aim; `## Files` was regrouped by ACTION and three dead or duplicated rows were repaired (`QA9-acceptance.md` → `QF-execute/QF1-acceptance.md`); the RELATED FOLDERS depth ruling left Decision Now for `## Law`, per QB4 §5.2.7; the excalidraw anchor moved off the non-existent `QA10` frame to `QA2b`; stale text corrected in §11 (three audit findings the pilot had already closed), §14 (the QAa faces were folded into QB4 on 260802), and §16 (the depth was ruled and shipped)
 260802 1150 · JL ruled option C on the Index roll-up, the same day it was raised: the Index stays as it is and a reader goes to States to find an open row. Recorded in Law and removed from Decision Now, per QB4 §5.2.7, which says an answered decision leaves States entirely rather than moving down the page
 260802 1130 · An Index roll-up of every open `Decision Now` row was proposed and recorded here rather than left in a chat session (JL 260802: "don't put the decision in the claude code session"). It came out of JL asking whether a human could check Decision Now and nothing else: it is the only thing that requires them, but finding the rows today means opening 53 pages to learn that 51 have nothing waiting
 260731 1945 · RELATED FOLDERS shipped as haipipe-board 0.87.0: build-time-embed fold (related_folders() in src/page_board.py + `## Related Folders` grammar in parse.py + board.md + board.css), rendering in board.html and the board/ tree; 2 folders / 4 files embedded, order Board Map → Related Folders → Section Matrix verified, body survives JS strip; QC8 live endpoint deferred. Also fixed the Board Map header typo "placement is not one." → "placement is not."

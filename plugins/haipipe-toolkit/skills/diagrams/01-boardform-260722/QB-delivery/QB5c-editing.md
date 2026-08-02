@@ -11,13 +11,8 @@ The hard part is matching the intended sentence without touching a duplicate or 
 A careless replacement can silently move evidence, comments, or history away from the claim they belong to.
 The edit succeeds when one source line changes and one adjacent record shows who changed what and when.
 
+**Covered elsewhere**: Locks, concurrency, and whole-body editing: `QE4`. Typed evidence lanes: `QB5a`. Human comments that sit under the same sentence: `QB5b`.
 
-## Boundary
-- ✅ Covered here
-  Whether and how one sentence's text is changed from the page, and what happens to its adjacent apparatus and edit record.
-- ↪ Covered elsewhere
-  Locks, concurrency, and whole-body editing: `QE4`. Typed evidence lanes: `QAb1`.
-  Human comments that sit under the same sentence: `QA6`.
 
 ## Content
 ### 1 · The one-write result
@@ -30,12 +25,12 @@ The coefficient is 0.42 in the clustered pooled model.
 
 The old sentence is not stored a second time and there is no History section. Every further edit adds one more row. A comment or evidence lane already below the sentence stays below it; adjacency survives the replacement.
 
-## Items to Finish
+## Aims
 - [x] 🧠 JL rules the scope: sentence text is editable from the page
 - [x] 🔨 The mechanism replaces one plain source line and writes one adjacent whole-sentence diff
 - [ ] 🔗 The `QE4` boundary is honored: locks and multi-writer stay there
 
-## Where we are
+## States
 
 - 260801 JL · ✂️ Editing a sentence that had apparatus never wrote anything
   JL, with a screenshot: the edit form open on a sentence carrying one comment, and the server answering that the sentence is not in the source file.

@@ -11,14 +11,8 @@ That also means the board cannot restyle or infer what happens inside the proces
 The difficult parts live at the wrapper seams: session handover, reconnects, process lifecycle, and access to a real shell.
 This page succeeds when the process can be opened, resumed, released, and handed back to the SDK chat without surprise.
 
+**Covered elsewhere**: The rules themselves: that is `QD1`; nor the web drawer: that is `QD2` — and the session host the smooth pane rides on is `QD2` M1. Since 260801 the FORM is `QD4`: where typing happens, what the pane shows when 80 columns will not fit, and what the page owes a reader who switches away and returns. A defect in the process is this page; a defect in the form is that one.
 
-## Boundary
-- ✅ Covered here
-  **The real-terminal form**: how it starts, how it passes through one port, how multiple boards and questions avoid collisions, how processes get reaped.
-  Since 260801 also **the smooth pane**: rendering this same session as web chat beside the raw TTY (absorbed from `QD3m`, whose full myrlin analysis is archived at `_archive/QD3m-smooth-terminal.md`).
-- ↪ Covered elsewhere
-  The rules themselves: that is `QD1`; nor the web drawer: that is `QD2` — and the session host the smooth pane rides on is `QD2` M1.
-  Since 260801 the FORM is `QD4`: where typing happens, what the pane shows when 80 columns will not fit, and what the page owes a reader who switches away and returns. A defect in the process is this page; a defect in the form is that one.
 
 ## Diagram
 
@@ -42,7 +36,7 @@ This page succeeds when the process can be opened, resumed, released, and handed
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD3
 
-## Items to Finish
+## Aims
 ### ⌨ The entry and its session
 - [x] A ⌨ entry on every Q card
       A ⌨ in the drawer header; switching turns the whole drawer into this question's real terminal.
@@ -102,7 +96,7 @@ This page succeeds when the process can be opened, resumed, released, and handed
       Still unsettled: ttyd itself does no auth; whoever reaches 5599 can use it; before any outside exposure, auth must come first.
       The console relay widens the audience the day inlab is exposed (`QE1`): auth lands there first.
 
-## Where we are
+## States
 Built, and it lives in the page. ⌨ in the drawer header enters the terminal; clicking again (💬) hands the session back.
 
 - 260801 JL · 🩹 The shredded screen was the ring replay, painted at the previous viewer's width

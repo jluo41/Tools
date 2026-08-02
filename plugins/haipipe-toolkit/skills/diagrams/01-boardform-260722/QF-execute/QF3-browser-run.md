@@ -66,7 +66,7 @@ Earlier the same day a live-update test reported a failure that was a race in th
 
 So the run's first assertion is deliberately `page actually loaded`, and any group that goes wholly red is treated as a harness fault until proven otherwise.
 
-## Items to Finish
+## Aims
 ### Making the run repeatable
 - [ ] 🧰 Make it one command
       It is a script pasted into a shell today. It should be a file in the skill that takes a board folder and exits non-zero on a red assertion.
@@ -79,7 +79,7 @@ So the run's first assertion is deliberately `page actually loaded`, and any gro
 - [ ] 🧪 Prove it catches a real regression
       The `verify()` gate in `assets.py` was proven by breaking a filename on purpose and watching it fail. This run deserves the same proof, on one of the six failures in §1.
 
-## Where we are
+## States
 The run exists and passes 36 of 36 on 260801, on the boardform board.
 It is not yet a file, nothing dispatches it, and its dependencies are undeclared, so today it protects only the rounds where someone remembers to type it.
 

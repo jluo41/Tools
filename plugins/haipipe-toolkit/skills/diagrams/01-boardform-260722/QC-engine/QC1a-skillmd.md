@@ -3,7 +3,7 @@ state: 🟡 PARTIAL
 owner: CC
 method: SKILL.md stays as short as possible; details live in the ref/ files
 
-## Question
+## Opening
 What must `SKILL.md` explain, and what detail should it leave to `ref/`?
 
 This file is the first thing every Board session reads, so each extra line has a recurring cost.
@@ -11,12 +11,8 @@ Cut too much and a newcomer cannot operate the tools or recover the rules this B
 The split determines whether the manual stays both usable and small as the system grows.
 It succeeds when a fresh agent can run the workflow and knows exactly where deeper specifications live.
 
+**Covered elsewhere**: How to **verify it suffices** once written: that is `QF2` (fresh-agent cold read).
 
-## Boundary
-- ✅ Covered here
-  **What goes into SKILL.md**: which actions, how long, what belongs in the body vs. in `ref/`, and how it stays in sync with the board (graduation).
-- ↪ Covered elsewhere
-  How to **verify it suffices** once written: that is `QF2` (fresh-agent cold read).
 
 ## Diagram
 
@@ -42,7 +38,7 @@ user types  /haipipe-board
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC1
 
-## Items to Finish
+## Aims
 ### The manual's operating answers
 - [x] SKILL.md written
       Shape · actions (view/open/add/build/sync/link/close + serve/comment) · the sections of one Q/S page · writing rules · prohibitions · ref/ index.
@@ -74,7 +70,7 @@ user types  /haipipe-board
       The build section also names the interpreter split (build/watch on any `python3`, `serve.py` on the venv for the SDK).
 
 
-## Where we are
+## States
 **Written, validated by QF2, and kept current through the 0.15.x series; the live layer stays pointer-only until the QD group settles.**
 
 - 260731 JL · 🔍 Three fresh reviewers audited the family's contracts: 55 findings

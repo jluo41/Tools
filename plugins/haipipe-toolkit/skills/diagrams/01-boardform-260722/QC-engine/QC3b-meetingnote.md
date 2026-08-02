@@ -12,14 +12,7 @@ Keeping only the note makes an archive, while routing only the decisions removes
 The split affects how readers revisit the meeting and how later pages explain why they changed.
 It succeeds when the note has one readable page and each consequence points to its owning page.
 
-## Boundary
-- ✅ Covered here
-  How a meeting note enters a board: whether it becomes a page, what page kind it is, what its managed half holds, and how its decisions reach the Q pages they belong to.
-- ↪ Covered elsewhere
-  How a folder is mirrored into a page at all: `QC3a`, which already does exactly this for a skill folder.
-  How one input becomes one anchored write: `Skill-5-haipipe-board-routing`.
-  The Related Folders fold that can open the file today without any of this: `QB2`.
-  What a page's sections must contain once it exists: `QB4`.
+**Covered elsewhere**: How a folder is mirrored into a page at all: `QC3a`, which already does exactly this for a skill folder. How one input becomes one anchored write: `Skill-5-haipipe-board-routing`. The Related Folders fold that can open the file today without any of this: `QB2`. What a page's sections must contain once it exists: `QB4`.
 
 ## Diagram
 
@@ -188,7 +181,7 @@ So routing a meeting is not natural-language interpretation, it is a mapping bet
 It does not route, summarize, transcribe, or judge.
 Routing is `Skill-5-haipipe-board-routing`'s verb, summarizing already happened in the vault, and a generator that started interpreting the meeting would be a second summarizer to keep in step with the first.
 
-## Items to Finish
+## Aims
 ### The decision this face owes
 - [ ] 🧠 Rule how a meeting note enters the board
       The options and their costs are in `Where we are`; nothing below can start before this.
@@ -219,7 +212,7 @@ Routing is `Skill-5-haipipe-board-routing`'s verb, summarizing already happened 
 - [ ] 📐 Write the routing rules down
       What a routable line looks like in a summary, and what happens to a decision whose Q does not exist yet.
 
-## Where we are
+## States
 Opened 260731 when JL asked how meeting notes could go on the board, and the artifact half shipped the same evening.
 
 - 260731 JL · 🗂 `Meeting-<n>` is a page kind, and it fits the base page exactly

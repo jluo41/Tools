@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: CC
 method: mechanical move first under a byte-identical gate, features second; module names by what they render (JL 260724)
 
-## Question
+## Opening
 How should the renderer's Python be divided so a new feature has an obvious home before it is written?
 
 One large module hid page-specific behavior inside shared functions and made unrelated changes touch the same file.
@@ -11,18 +11,14 @@ The hard part was moving code without changing either the HTML or the parsed dat
 Names based on what a module renders give future work a stable place and keep shared helpers singular.
 It succeeds when the split is byte-identical and consumers stop carrying private copies of the same logic.
 
+**Covered elsewhere**: Moving CSS and JS out to `assets/` is `QC2`; what those modules actually render is `QB4`'s page layout; the live server's own behavior belongs to the `QD` group.
 
-## Boundary
-- ✅ Covered here
-  How the generator's Python is divided into `src/` modules, what each one is named for, and the byte-identical gate that proved the move changed no output.
-- ↪ Covered elsewhere
-  Moving CSS and JS out to `assets/` is `QC2`; what those modules actually render is `QAa0`'s page layout; the live server's own behavior belongs to the `QD` group.
 
 ## Diagram
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC3
 
-## Items to Finish
+## Aims
 - [x] 📦 Six modules under src/
       `common` (shared with serve.py) · `parse` · `body` (the §5 grammar) · `page_board` (cover + shell) · `page_question` (the card) · `page_stage` (embeds + generic renderer).
 - [x] 🔬 Byte-identical regression
@@ -33,7 +29,8 @@ It succeeds when the split is byte-identical and consumers stop carrying private
       Found BY the byte-identical gate: old render() reused `lab`, so any question with comments wore the comments count in its state pill instead of SETTLED/PARTIAL.
       Reproduced first to prove the move pure, then fixed deliberately.
 
-## Where we are
+## States
+Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py keeps the live layer and imports the shared helpers; the QD-group live layer was deliberately NOT refactored while it is still forming.
 
 - 260731 JL · 🧩 The browser assets split by topic, then split again
   JL: "do we write everything into one board.js? can we split it like live, by topic, otherwise it is too long and touching one thing shakes everything."
@@ -43,9 +40,6 @@ It succeeds when the split is byte-identical and consumers stop carrying private
   The assembly rule is the dumbest one that can work, concatenate every part in sorted path order, so a new part is a new filename and there is no manifest to keep in sync.
   What makes that safe is not care but a gate: these parts are FRAGMENTS of shared closures, `40-sentence.js` began mid-function with `if (!b) return;`, so a rename out of order silently breaks the whole file. `assets.py verify()` parses the assembled text with node on every build and fails the BUILD rather than the browser; renaming one part in a scratch copy produced `SyntaxError: Single function literal required`, which is the proof it is not decorative.
   Parsing is not running, though, so the split was also driven in a real browser afterwards: chat drawer, chat fab, comment dock, comment fab, rail, rail handle, `boardPath()`, and a discussion write that reached the `.md`, all green.
-
-## Where we are
-Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py keeps the live layer and imports the shared helpers; the QD-group live layer was deliberately NOT refactored while it is still forming.
 
 ## Files
 - `cli/build.py`
@@ -64,6 +58,7 @@ Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py
 - The byte-identical gate caught a real user-visible bug on its first run (the state pill clobber). A refactor without that gate would have shipped the same bytes and nobody would have looked.
 
 ## Log
+260802 · A second `## Where we are` heading was silently discarding everything under the first: `split_sections` builds a dict, so the later block won and 1643 bytes of dated records had never rendered. The two are merged and the duplicate heading is gone; `check.py` gained a `duplicate-section` ERROR the same day, because nothing reported this.
 260801 0130 · Reindexed QC3 -> QC2b under the new QC2 code-shape parent (JL 260801)
 260731 · Browser assets split by topic (27 js + 9 css, none over 365 lines), gated by assets.py verify() which parses the assembled file with node; verified functionally in a real browser (haipipe-board 0.87.0)
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

@@ -4,7 +4,7 @@ state: ✅ SETTLED
 owner: JL
 method: decide whether the static half survives first: that one answer determines everything else
 
-## Question
+## Opening
 Which process should own the board's static pages and live actions without creating a second implementation of its Markdown grammar?
 
 The board needs a portable HTML artifact and a service that can mount SPACEs, write comments, and embed the result in the console.
@@ -12,14 +12,8 @@ Moving everything into a new stack could ease deployment while quietly breaking 
 That choice determines where the code lives and which later sharing features can be built safely.
 The design works when both surfaces use one grammar and each degrades honestly when the live half is unavailable.
 
+**Covered elsewhere**: Who may access it and whether it needs a login: that is `QE1`. Nor how a SPACE is mounted and what the board list looks like: that is `QE2`. Nor whether the body text is editable in the page: that is `QE4`.
 
-## Boundary
-- ✅ Covered here
-  **Which process and which repo the board's code runs in**: stay in `serve.py`, or move into `haichat-inlab` as a fifth router; whether the front end should reuse the `haichat-inlab/web/` React SPA; whether `build.py` producing a static page remains an invariant.
-- ↪ Covered elsewhere
-  Who may access it and whether it needs a login: that is `QE1`.
-  Nor how a SPACE is mounted and what the board list looks like: that is `QE2`.
-  Nor whether the body text is editable in the page: that is `QE4`.
 
 ## Diagram
 
@@ -51,7 +45,7 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE3
 
-## Items to Finish
+## Aims
 ### The rulings JL approved on 260724
 - [x] Decide: does `build.py` producing a static page stay an invariant?
       **Kept** (JL 260724, approving the discussed plan: "as we discussed, don't stop to ask me").
@@ -69,7 +63,7 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
 - [x] Verify once: for the same board, the API's JSON and the static HTML agree
       Verified 260724 on this board: 22 question ids match the HTML sections exactly; comment counts match (`QB1 0 open / 7`); the console's `/api/board/q` returns byte-identical JSON because it calls the same `to_json`.
 
-## Where we are
+## States
 Settled 260724: JL approved the discussed plan ("you just go ahead… as we discussed"), and v1 is built, verified, and committed on `feat/haichat-board`.
 
 **🐍 This half today (`serve.py`, Tools repo)**

@@ -11,18 +11,14 @@ The hard part is that discovery, ordering, and server writes originally assumed 
 That flat-only rule forces lifecycle trees to be copied and kept in step by hand.
 The design succeeds when a nested page is discovered, ordered, and edited safely while flat Boards behave exactly as before.
 
+**Covered elsewhere**: Where the Board-Folder itself belongs and what it is named is `QB1` (which absorbed QC1 on 260729); how the Board-Webpage-Index orders and groups the pages it finds is `QB2` (which absorbed QC2 as QB2 on 260729); showing a folder's own documents without a page wrapper was the former QF group's doc-line ruling (QF2 of that era, retired 260726; the id belongs to Execute's newcomer page today): embed them into a real page with `![[path]]` instead (`ref/board-form.md` §5).
 
-## Boundary
-- ✅ Covered here
-  Where a page file may physically live: recursive discovery under the board folder, which path segments are excluded, and how comment write-back stays safe once a path rather than a bare filename is in play.
-- ↪ Covered elsewhere
-  Where the Board-Folder itself belongs and what it is named is `QB1` (which absorbed QC1 on 260729); how the Board-Webpage-Index orders and groups the pages it finds is `QA2b` (which absorbed QC2 as QA10 on 260729); showing a folder's own documents without a page wrapper was the former QF group's doc-line ruling (QF2 of that era, retired 260726; the id belongs to Execute's newcomer page today): embed them into a real page with `![[path]]` instead (`ref/board-form.md` §5).
 
 ## Diagram
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QB3
 
-## Items to Finish
+## Aims
 - [x] 🔍 Recursive discovery shipped
       `q_files()` in `src/common.py`: `rglob("Q*.md")`, skipping path segments that start with `_` or `.` and `fig/`.
 - [x] 💬 Comment plumbing carries the relative path
@@ -34,7 +30,7 @@ The design succeeds when a nested page is discovered, ordered, and edited safely
 - [x] 🎴 First consumer live
       The MISQ `0-lifecycle/` board: 22 questions, pages inside stage folders down to depth 2.
 
-## Where we are
+## States
 Shipped 260724.
 Flat boards are untouched; nested pages work end to end including comment write-back (smoke-tested against `4-display/QD2-d01-iv-reporting.md`).
 

@@ -3,7 +3,7 @@ state: 🟡 PARTIAL · roster ruled 260731, four of six shipped
 owner: JL
 method: name every candidate and apply one test to each, then let JL rule the set; a shipped skill follows settled decisions, never precedes them
 
-## Question
+## Opening
 Which Board capabilities need their own loadable unit, and which should remain inside the main manual?
 
 A separate unit is useful only when a consumer needs its rules without loading the whole Board workflow.
@@ -11,14 +11,8 @@ The difficult seam is between reusable contracts, actions that consume them, and
 Getting the roster wrong either duplicates rules or hides a capability that another workflow must load directly.
 It succeeds when every shipped unit has a distinct consumer, owner, and reason to exist.
 
+**Covered elsewhere**: What the page contract IS: the `QAa` group. What the sentence contract IS: the `QAb` group. What SKILL.md must say, and the rule that specs go to `ref/`: `QC1`. Where a write is allowed to land on somebody else's board: `QB1` §4.
 
-## Boundary
-- ✅ Covered here
-  The shipping decision: which units exist, what each owns, and what the split costs.
-- ↪ Covered elsewhere
-  What the page contract IS: the `QAa` group. What the sentence contract IS: the `QAb` group.
-  What SKILL.md must say, and the rule that specs go to `ref/`: `QC1`.
-  Where a write is allowed to land on somebody else's board: `QB1` §4.
 
 ## Diagram
 
@@ -177,7 +171,7 @@ Until that consumer exists, splitting it would add a door without adding a workf
 `QAa5` owns the visible `🧩 Skills` support record on a Page.
 `QA2` owns the proposal reviewed before the Index writes the structure, while `QA2b` and `QAa2` own the rendered top view and relationship canvas.
 
-## Items to Finish
+## Aims
 ### The survey behind the roster
 - [x] 🗺 The candidate roster is surveyed, with the test applied to each seam
       260729: every seam in `skills/board/` was walked. Stage argues for a clean script and already ships as a door under `paper/`, live and canvas are runtime, the checker and status and regroup are verbs of the manual.
@@ -205,7 +199,7 @@ Until that consumer exists, splitting it would add a door without adding a workf
 - [ ] 🧹 `serve.py`'s two rule strings stop being copies
       `CHAT_RULES` and `BOARD_CHAT_RULES` read `ref/` instead of restating it. This is worth doing whether or not the page door ships.
 
-## Where we are
+## States
 - 260802 CC · ✍️ `haipipe-writing` ships, and it is its own unit
   It exists on disk with three verbs, `score` ranks what is worth rewriting, `rewrite` changes prose and anchors a `✎` record per sentence, `check` audits the records, and two of the three are deterministic code rather than judgment.
   Named `haipipe-writing` rather than `haipipe-write` because every family folder in the toolkit is a noun and the verbs are its sub-skills.
