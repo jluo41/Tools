@@ -15,6 +15,11 @@
     var e = document.createElement(tag); e.id = id; e.innerHTML = html || ''; return e;
   }
   var btn = mk('button', 'cbtn', '\u{1F4AC} Comment');
+  // 🪪 the SECOND thing a selection can become (JL 260802, QB5 option D):
+  // a comment goes UNDER the line, a card goes ON these exact words. Two
+  // buttons rather than one with a mode, because the reader has already made
+  // the choice by the time they let go of the mouse.
+  var cbtn = mk('button', 'ccard', '\u{1FAAA} Card');
   var box = mk('div', 'cbox',
     '<div class="qq"></div><textarea placeholder="Write a comment…"></textarea>' +
     '<div class="row"><select></select><span style="flex:1"></span>' +
@@ -23,7 +28,7 @@
   var dock = mk('button', 'cdock', '');
   var panel = mk('div', 'cpanel', '');
   var toast = mk('div', 'ctoast', '');
-  [btn, box, dock, panel, toast].forEach(function (e) { document.body.appendChild(e); });
+  [btn, cbtn, box, dock, panel, toast].forEach(function (e) { document.body.appendChild(e); });
 
   function save() { localStorage.setItem(KEY, JSON.stringify(db)); marks(); paint(); }
   function say(m) {

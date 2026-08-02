@@ -72,6 +72,48 @@ class WriteMixin:
         f.write_text("\n".join(lines), encoding="utf-8")
         return None, None
 
+    def add_card(self, f, p):
+        """🪪 a card on a SPAN of words (JL 260802, ruled on QB5 as option D).
+
+        Writes `> Card <the words>: <text>` under the sentence, which is the
+        same line an author types by hand. The record carries its own span, so
+        the PROSE never gains a marker: a card is the only thing on a board
+        that points INTO a sentence, and it still costs the sentence nothing.
+
+        Two gates, both refusing rather than guessing. The sentence must be
+        found exactly once, through the one shared matcher every writer here
+        uses. And the span must actually occur in that source line: a card
+        written against words that are not there would render as a loud miss,
+        so it is cheaper to refuse at the keyboard than to ship a broken row.
+        """
+        span = " ".join((p.get("span") or "").split())
+        text = " ".join((p.get("text") or "").split())
+        sent = " ".join((p.get("sentence") or "").split())
+        if not span or not text:
+            return None, "span or text is empty"
+        if ":" in span or "：" in span:
+            # The grammar splits the record on its FIRST colon, so a span
+            # holding one would be cut in half and silently point at a
+            # different run of words.
+            return None, "a card's words may not contain a colon"
+
+        lines = f.read_text(encoding="utf-8").split("\n")
+        hit, err = self._sentence_line(lines, sent)
+        if hit is None:
+            return None, err
+        if span not in lines[hit] and span not in self._plain_sentence(lines[hit]):
+            return None, f"“{span}” is not in that source line — nothing written"
+
+        j = self._apparatus_end(lines, hit)
+        rows = self._record_lines(f"> Card {span}: ", text)
+        if not rows:
+            return None, "内容是空的"
+        if rows == lines[j - len(rows):j]:
+            return None, "这张卡片已经在这句话下面了—— 没重复写入"
+        lines[j:j] = rows
+        f.write_text("\n".join(lines), encoding="utf-8")
+        return None, None
+
     # Everything the RENDERER consumes has to be undone here, or the posted
     # string and the source line describe the same sentence and still differ.
     # Two rules, and which one applies depends on what the browser ends up with:

@@ -4,7 +4,7 @@ state: ✅ SETTLED
 owner: JL
 method: define each state by what a reader would find, and require opening the file
 
-## Question
+## Opening
 How does anyone know what state a probe entry is in?
 State is DERIVED, never stored: it is computed by resolving the entry's target and opening what is there.
 What turns on it is that a stored state is a claim about an agent, and an agent that crashed leaves a claim that looks exactly like success.
@@ -14,11 +14,7 @@ The rule that makes this work is small and easy to skip, which is why it is stat
 A target can exist and be `working`, or exist and be superseded, and both look identical to a listing.
 That is exactly why two of the checker's FAIL conditions are `read-target-working` and `read-target-superseded`: the entry says it harvested an answer that was not there to harvest.
 
-## Boundary
-- ✅ Covered here
-  The six entry states, how each is derived, and the rule that the file must be opened.
-- ↪ Covered elsewhere
-  The QA file's own state line is `QC1`; the checker conditions are `QC2`.
+**Covered elsewhere**: The QA file's own state line is `QC1`; the checker conditions are `QC2`.
 
 ## Diagram
 ```
@@ -34,7 +30,7 @@ That is exactly why two of the checker's FAIL conditions are `read-target-workin
       a target can exist and be `working`, or exist and be superseded.
 ```
 
-## Items to Finish
+## Aims
 - [x] 🔎 Six states, each defined by what is found on disk
 - [x] 📂 The open-the-file rule is stated, and two FAIL conditions enforce it
 - [x] 🚫 No stored state anywhere; `/haipipe-probe status` derives on every run
@@ -42,7 +38,7 @@ That is exactly why two of the checker's FAIL conditions are `read-target-workin
       260726, MISQ paper, 17 entries across 5 topic folders: **10 read, 5 planned (NEW), 2 with no target**.
       Every target that names a path resolves, and every resolved QA file carries a state line, so nothing is dangling.
 
-## Where we are
+## States
 Ruled, implemented in the `status` verb, and backed by two of the checker's conditions.
 This is the strongest page on the board, in the sense that it is the one where the rule, the derivation and the check all agree.
 

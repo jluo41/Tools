@@ -174,7 +174,7 @@ tailnet: the private mesh network Tailscale gives one owner's devices, addressed
 >> CC0726: put the server back on loopback the same turn. The flag stays in place and defaults to loopback, so nothing changes for anyone who clones Tools, and this question now owns the ruling rather than the running server.
 
 ## Log
-260802 · The short route `/b/<slug>/<page-id>` is now live on the same 5599 listener as the long `/Tools/...` paths, so the address ruled on here serves both shapes from one bind and one port; checked at 302 on the tailnet address and on loopback, and the route's own design stays `QE2`'s
+260802 · The short route `/b/<slug>/<page-id>` now answers on port 5599 alongside the long `/Tools/...` paths, across both listeners this machine serves, checked at 302 on the tailnet address and on loopback. It ships inside `live/home.py` and `cli/serve.py`, so every clone gets the route while `--host` still defaults to loopback: nobody's access surface widened, and nothing new reaches `/_term/`. The URL shape and the mount that resolves it are `QE2`'s.
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Redacted the machine-specific Tailscale IP from tracked Board history; the real reader URL remains only in gitignored env.sh
 260729 · Reader-facing domain now resolves to this machine's Tailscale IP without requiring `source env.sh`: status.py reads only HAIPIPE_BOARD_URL from root env.sh, and the skill's browser-push command consumes the same setting; loopback remains the shared fallback

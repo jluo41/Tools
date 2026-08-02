@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: inventory the folder, separate what it defines from what it delegates, and name the one thing it holds that it cannot run
 
-## Question
+## Opening
 What is in `probe/haipipe-probe/`, and what does the rest of the layer take from it?
 Four files and a fixture, defining the anatomy, the loop, the ladder, the QA contract, the two laws, the derived states and the FAIL codes.
 Everything else in the layer copies from here and says so in its own first lines.
@@ -13,12 +13,7 @@ The folder is the constitution and it holds no runtime.
 Nothing in it dispatches, checks, or writes a probe file, so a reader looking for the enforcement will not find it here, and a reader who changes a word here has changed nothing until five other files are edited by hand.
 That is the shape worth stating plainly, because the folder's name suggests it is the layer and it is the layer's dictionary.
 
-## Boundary
-- ✅ Covered here
-  What is in the folder, what it defines, what it delegates, and the one artifact it holds for code it does not contain.
-- ↪ Covered elsewhere
-  Which file wins on a conflict and what strings must be propagated is `QD1`.
-  The adapters that hold the runtime are `QA4`; the agent is `QA3`; each rule's own page is the rest of this board.
+**Covered elsewhere**: Which file wins on a conflict and what strings must be propagated is `QD1`. The adapters that hold the runtime are `QA4`; the agent is `QA3`; each rule's own page is the rest of this board.
 
 ## Diagram
 ```
@@ -75,7 +70,7 @@ Nothing compares the copies, so a rename is invisible until a checker passes on 
 `run-checker-tests.sh` then runs `check-probe-cards.sh`, which is in `③` and `④` and forked between them.
 So the shared half owns the test and neither fork owns it, and nothing in the harness records which fork it ran, which means a green test proves one of the two is healthy without saying which.
 
-## Items to Finish
+## Aims
 - [x] 📚 The folder's contents are inventoried, with what each file is for
       Four files and a fixture, measured 260726: 353 + 143 lines plus a synthetic project covering five QX states.
 - [x] 🪧 What it defines is separated from what it delegates
@@ -93,7 +88,7 @@ So the shared half owns the test and neither fork owns it, and nothing in the ha
       The fixture covers five states as test inputs; the prose shows one filled entry and no others.
       A reader learning the layer reads the prose, not the fixture.
 
-## Where we are
+## States
 The constitution is well placed and unusually explicit about its own limits: it names its copiers, it names what it does not own, and it says which file wins.
 
 Two gaps, both about the gap between defining and running.

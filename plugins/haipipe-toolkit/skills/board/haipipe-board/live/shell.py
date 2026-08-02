@@ -143,7 +143,7 @@ window.addEventListener('load', function () {
      the pane then booted with the DRAWER's own preference, which defaults to
      the TUI. Reproduced from a cleared localStorage: `board-split-mode` read
      `gui`, `board-tui-default` was null, the pane opened `termon`, and the
-     shell repainted `>_ TUI` as the lit one.
+     shell repainted `>_ TUI Chat` as the lit one.
      So the shell's radio is the source of truth and the drawer's own key is
      DERIVED from it, here, before the drawer is told to open. */
   try {
@@ -267,11 +267,11 @@ def _shell_doc(page_url, index_url):
 <body>
 <div id="bar">
   <a href="/boards" target="_top" title="every board in this SPACE">🏠</a>
-  <button id="ti" type="button" title="Show or hide the pages sidebar (☰ on the old board)">☰ Index</button>
+  <button id="ti" type="button" title="Show or hide the page list (☰ on the old board)">☰ Pages</button>
   <button id="mtui" type="button" data-mode="tui"
-    title="The real CLI in a terminal. Click again to put the chat away.">&gt;_ TUI</button>
+    title="The real CLI in a terminal. Click again to put the chat away.">&gt;_ TUI Chat</button>
   <button id="mgui" type="button" data-mode="gui"
-    title="The SDK chat box. Click again to put the chat away.">💬 GUI</button>
+    title="The SDK chat box. Click again to put the chat away.">💬 GUI Chat</button>
   <span class="sep">·</span>
   <span id="where">board</span>
   <span class="sep">·</span>
@@ -388,7 +388,7 @@ def _shell_doc(page_url, index_url):
   var sidebar = pane('hi', 'board-split-index', sidebarBtn);
   sidebarBtn.addEventListener('click', function () { sidebar.set(sidebar.hidden()); });
 
-  /* THE CHAT IS TWO BUTTONS. `>_ TUI` and `💬 GUI` are one radio with an off
+  /* THE CHAT IS TWO BUTTONS. `>_ TUI Chat` and `💬 GUI Chat` are one radio with an off
      position: the lit one is the mode you are in, clicking the other switches,
      clicking the lit one hides the pane, and neither lit means there is no chat
      on screen. The pane is only ever COLLAPSED, never unloaded, so a terminal

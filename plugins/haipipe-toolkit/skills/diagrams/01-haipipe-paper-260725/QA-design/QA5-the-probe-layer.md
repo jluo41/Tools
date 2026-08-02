@@ -9,7 +9,7 @@ method: one file per question inside the paper, bound BY PATH to an answer the p
 A paper may not run code and may not read the literature, so where does a question live between being raised and being answered?
 It lives in a file inside the paper: `1-probes/PP03_results-values/QX1_slug.md` holds it and points by path at the answer.
 The answer is written by an executor that never learns which claim it settles, because a clean context IS the wall.
-This page rules the paper's half of that crossing, never the model.
+The paper's half of that crossing is ruled here; the model itself stays the layer's.
 
 **Where this page sits**: `QA1` names `⑤ /haipipe-probe` as one of the shared families the paper calls and owns none of.
 This page is the near side of one of them: the file that holds the question, the words it is written in, and the wall it is asked across.

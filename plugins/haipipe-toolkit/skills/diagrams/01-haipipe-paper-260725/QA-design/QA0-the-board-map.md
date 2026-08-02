@@ -10,7 +10,7 @@ How do you read this board?
 Four groups, and each owns one question.
 `QB5` says a paper owes its reader a figure, `QC1` says which skill makes one, `QF1` records the run that did.
 Start in the wrong one and every answer reads as an opinion, because the page that owns the fact is elsewhere.
-This page fixes the order and says what each group owns.
+Design, Delivery, Engine, Execute, and no group may answer another's question.
 
 **Where this page sits**: This is the entry face, and it is the only page whose subject is the board itself rather than the paper.
 `QA1` takes over at the next question, which is where a given file belongs among the folders.

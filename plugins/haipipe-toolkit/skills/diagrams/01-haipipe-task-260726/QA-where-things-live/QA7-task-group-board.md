@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: one page per independently gated unit, state derived from disk, and a page that describes code rather than being it
 
-## Question
+## Opening
 If a task-group opens a board, what are its pages? The group's own state is the sum of its children's states, so the answer that falls straight out is one page per task-folder: twelve folders, twelve pages, and the board index IS the status table that `02-tasks.txt` was supposed to be and is not.
 
 That is the easy half. The hard half is that this board would be a third kind of board, and the two kinds that already exist do not tell us how to run it. A design board like this one EMPTIES: a ruling reaches ✅ and its Law graduates into the skill, so the page is scaffolding. A paper board never empties, because its pages ARE the manuscript: the Content on the page is the prose that gets generated into LaTeX. A task board is neither. Its page cannot be the artifact, because the artifact is a `.py` file, a config and a directory of results, and none of those are markdown.
 
 So a task board's page DESCRIBES something it does not contain, and that is a failure mode neither existing board has. A design board cannot drift from its skill without a human noticing, because the skill is the only reader. A paper board cannot drift from the paper at all, because it is the source. A page that narrates a folder of code can be wrong about that folder from the moment the next commit lands, and nothing would say so.
 
-## Boundary
-- ✅ Covered here
-  What pages a task-group's board holds, what a page's `state:` means, what its Content is when the artifact is code, and the drift this shape creates.
-- ↪ Covered elsewhere
-  What the folder being described contains is `QA6`; what makes a child a task-folder at all is `QB1`; the two gates whose passing a `state:` would report are `QB3` and `QB5`; who calls the board and when is `QA4`. What a board IS belongs to `01-boardform-260722` and is not ruled here. The opposite object, a board whose pages are the artifact, is `QA7@paper`.
+**Covered elsewhere**: What the folder being described contains is `QA6`; what makes a child a task-folder at all is `QB1`; the two gates whose passing a `state:` would report are `QB3` and `QB5`; who calls the board and when is `QA4`. What a board IS belongs to `01-boardform-260722` and is not ruled here. The opposite object, a board whose pages are the artifact, is `QA7@paper`.
 
 ## Diagram
 ```
@@ -136,7 +132,7 @@ family.
 The first is probably right for that reason: a group that would benefit from the second is a
 group that should have been two groups.
 
-## Items to Finish
+## Aims
 - [ ] 📄 Rule one page per task-folder
       The mapping itself. Everything else on this page assumes it.
 - [ ] 🏷 Rule the family name
@@ -150,7 +146,7 @@ group that should have been two groups.
 - [ ] 🧪 Lay a board over one real group and read it cold
       A group with several children, a board built, and a fresh agent asked what state the group is in without being told. That is the whole proposition, tested once.
 
-## Where we are
+## States
 Nothing exists. No task-group on disk carries a board, and the S-page shape above has not been
 written even once, so every claim here is a proposal rather than a report.
 

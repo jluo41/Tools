@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: name every folder, allow one entry and one exit, and treat the consumers as a wall rather than a room
 
-## Question
+## Opening
 Where does a new rule, file, or page belong, and what may reach this layer from outside it? Seven folders exist, and the two that matter most are a task-group on disk and the board that should be laid over it. Put something in the wrong one and it either binds nothing, because no runtime reads it, or it becomes wrong for every other project.
 
 The word "task" names several different things at once, and they sit in two different repositories. There is a reusable skill package that ships. There is a design board arguing about that package. There are 67 task-groups holding 107 runnable folders across real projects. And there is the control plane those folders should be worked from, which today does not exist. Each holds a different kind of truth and each has a different lifetime, but all four are called "the task work" in conversation, so nothing stops a file from landing in the wrong one.
 
 The asymmetry with `/haipipe-paper` is the thing to get right, because the two look like mirror images and are not. A paper is a CONSUMER: it owns neither channel out of itself, and its design is mostly a boundary it must not cross. This layer is an EXECUTOR: it may run anything, and its discipline runs the other way. It must never learn who asked. So the wall the paper board draws from outside is the same wall drawn here from inside, and `⑤` is not a door we go out through; it is the door a question comes in through, and it is one verb wide.
 
-## Boundary
-- ✅ Covered here
-  The seven folders, which kind of truth each holds, the one entry and the one exit, and the crossings that are forbidden.
-- ↪ Covered elsewhere
-  What is inside the skill set is `QA2`; what is on this board is `QA3`; the human channel is `QA4`; the wall as a mechanism is `QA5`; what a task-group holds is `QA6` and what its board would hold is `QA7`. The probe layer's own model is `01-probe-qa-260726`, which we consult and never rule.
+**Covered elsewhere**: What is inside the skill set is `QA2`; what is on this board is `QA3`; the human channel is `QA4`; the wall as a mechanism is `QA5`; what a task-group holds is `QA6` and what its board would hold is `QA7`. The probe layer's own model is `01-probe-qa-260726`, which we consult and never rule.
 
 ## Diagram
 ```
@@ -122,7 +118,7 @@ The distinction matters most for `③`. This board is about to rule that `/haipi
 tool's format, its filename rule, its build and its write-back are `④`'s, and a page here that
 starts specifying what a board IS has crossed into a folder we do not own.
 
-## Items to Finish
+## Aims
 - [ ] 🗺 Settle the seven-folder map itself
       That these are the folders, that `⑤` is consulted and never called, and that `⑧` is the empty cell this board exists to fill.
 - [ ] 🚪 Rule the one door in and the one door out
@@ -132,7 +128,7 @@ starts specifying what a board IS has crossed into a folder we do not own.
 - [ ] 🔗 Point at the two boards we consult without restating them
       `QA8@paper` owns the shared-page seam; `QC1@probe` owns the QA state line. A copy here would drift within the week.
 
-## Where we are
+## States
 The map is drawn and nothing is ruled. Seven folders exist on disk with the counts above, and the
 eighth cell is genuinely empty: no task-group anywhere carries a board.
 

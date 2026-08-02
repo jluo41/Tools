@@ -7,6 +7,13 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.8.0 - 2026-08-02
+
+- Carries QA3's five-condition gate that runs BEFORE the reply, with `cli/gate.py`
+  as its one command. ③ compares warnings PER PAGE so a concurrent session cannot
+  fail your round; ① and ④ are reported as not tested rather than assumed. A round
+  that changed prose also owes a cold read; a mechanics-only round does not.
+
 ## 0.7.0 - 2026-08-02
 
 - A machine now CLOSES a `### Decision Now` row once the person has answered it,

@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: three copies, each anchored to the one before, so a copy can never drift or be invented
 
-## Question
+## Opening
 An answer returns from the bank; where does it end up, and how do we know a later copy is honest?
 Three stations, each a more integrated form of the same fact and each anchored to the one before it.
 What turns on it is traceability: you can walk prose back to a-consumer, to a-executor, to the QA file, and see where an error entered.
@@ -13,12 +13,7 @@ Copying is normally how facts rot, and the reason it does not here is the anchor
 Station ② carries `[source: PPnn]` pointing at ①, and ① carries the target QA path pointing at the bank, so no station is free-standing and a fabricated number has nowhere to hide.
 The stake never enters this chain at any station; it stays in the stage-doc Q-consumer where it belongs.
 
-## Boundary
-- ✅ Covered here
-  The three places an answer lands, what form it takes at each, the anchors between them, and the precondition for harvesting at all.
-- ↪ Covered elsewhere
-  The read that establishes whether harvesting is legal is `QB5`; the folders the stations live in are `QA7` and `QA6`.
-  Weaving the answer into prose and discharging the citation is the consumer's REVISE phase, on the paper board.
+**Covered elsewhere**: The read that establishes whether harvesting is legal is `QB5`; the folders the stations live in are `QA7` and `QA6`. Weaving the answer into prose and discharging the citation is the consumer's REVISE phase, on the paper board.
 
 ## Diagram
 ```
@@ -51,7 +46,7 @@ Nothing checks that a station ② `Answer:` still matches the `### a-executor` i
 A hand-edited number at station ② passes every check the layer has, and the anchor makes the error findable only if someone goes looking.
 That is the same shape as the board tool's own anchor-lost problem, and it is the last unchecked hop in the chain.
 
-## Items to Finish
+## Aims
 - [x] 🔗 Three stations defined, each anchored to the previous
 - [x] 📌 Station ② carries a `[source: PPnn]` anchor
 - [x] 🚦 Harvesting is legal only against an `answered`, non-superseded target
@@ -59,7 +54,7 @@ That is the same shape as the board tool's own anchor-lost problem, and it is th
       Nothing today checks that a station ② `Answer:` still matches the `### a-executor` it cites, so a hand-edited number would pass.
       This closes when the walk is checkable, which is the same shape as the board's own anchor-lost problem.
 
-## Where we are
+## States
 Defined and in use across paper and application alike.
 The chain is walkable by a human; it is not yet verifiable by a machine, so a copy edited in place would go unnoticed.
 

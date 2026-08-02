@@ -36,29 +36,43 @@ KINDS_YML = (BOARD / ".." / ".." / "paper" / "1-lifecycle" / "haipipe-paper-stag
 # Appendix and takes a LETTER unit; every other kind is a numbered Main unit.
 # The families and unit shapes are haipipe-board/src/parse.py's S grammar.
 APPENDIX_KINDS = {"appendix"}
+# `letter` is a whole ARTICLE FORMAT, not a section of the main article: a JAMA
+# research letter is a short standalone paper. Numbering it into the Main
+# sequence put it AFTER the appendix, which is not a reader order at all.
+STANDALONE_KINDS = {"letter"}
 PAPER_SUFFIX = (".pdf", ".md", ".xml")
 MANIFEST = re.compile(r"^(INDEX|.*_RESULTS)$", re.I)
+# A `.md` that opens `# Exemplar: ...` is a NOTE ABOUT a paper, not the paper.
+# Verified 260802: burns-2024-…md is 303 words and carries no article text, while
+# schroeder-2019-…md sits beside its own .pdf and collapses onto that stem anyway.
+NOTE_HEAD = re.compile(r"^#\s*Exemplar:", re.I)
+
+
+def is_note(p):
+    if p.suffix.lower() != ".md":
+        return False
+    return bool(NOTE_HEAD.match(p.read_text(encoding="utf-8", errors="replace")[:200].lstrip()))
 
 # One QBv outlet page per venue outlet. `examples_owner` is set only when the
 # exemplars do NOT sit under the outlet: the single-outlet and non-journal packs
-# keep examples/ at family level, which is QBv0 A3.1.
+# keep examples/ at family level, which is the group intro on the Index.
 OUTLETS = [
-    ("QBv1a-misq.md",                   "playbook-utd-is/MISQ",                            None),
-    ("QBv1b-isr.md",                    "playbook-utd-is/ISR",                             None),
-    ("QBv1c-ms-is.md",                  "playbook-utd-is/MS-IS",                           None),
-    ("QBv1d-ms-marketing.md",           "playbook-utd-is/MS-Marketing",                    None),
-    ("QBv2a-jama-flagship.md",          "playbook-jama-portfolio/jama-flagship",           None),
-    ("QBv2b-jama-im.md",                "playbook-jama-portfolio/jama-im",                 None),
-    ("QBv2c-jama-netopen.md",           "playbook-jama-portfolio/jama-netopen",            None),
-    ("QBv3a-npj-digital-medicine.md",   "playbook-nature-portfolio/npj-digital-medicine",  None),
-    ("QBv3b-nature-medicine.md",        "playbook-nature-portfolio/nature-medicine",       None),
-    ("QBv3c-nature-communications.md",  "playbook-nature-portfolio/nature-communications", None),
-    ("QBv3d-nature-human-behaviour.md", "playbook-nature-portfolio/nature-human-behaviour", None),
-    ("QBv3e-nmi.md",                    "playbook-nature-portfolio/NMI",                   None),
-    ("QBv4a-pnas.md",                   "playbook-pnas/pnas",                              "playbook-pnas"),
-    ("QBv5a-diabetes-care.md",          "playbook-medical-journals/diabetes-care",         None),
-    ("QBv6-grant.md",                   "playbook-grant",                                  "playbook-grant"),
-    ("QBv7-patent.md",                  "playbook-patent",                                 "playbook-patent"),
+    ("QBv1-misq.md",                   "playbook-utd-is/MISQ",                            None),
+    ("QBv2-isr.md",                    "playbook-utd-is/ISR",                             None),
+    ("QBv3-ms-is.md",                  "playbook-utd-is/MS-IS",                           None),
+    ("QBv4-ms-marketing.md",           "playbook-utd-is/MS-Marketing",                    None),
+    ("QBv5-jama.md",          "playbook-jama-portfolio/jama-flagship",           None),
+    ("QBv6-jama-im.md",                "playbook-jama-portfolio/jama-im",                 None),
+    ("QBv7-jama-network-open.md",           "playbook-jama-portfolio/jama-netopen",            None),
+    ("QBv8-npj-digital-medicine.md",   "playbook-nature-portfolio/npj-digital-medicine",  None),
+    ("QBv9-nature-medicine.md",        "playbook-nature-portfolio/nature-medicine",       None),
+    ("QBv10-nature-communications.md",  "playbook-nature-portfolio/nature-communications", None),
+    ("QBv11-nature-human-behaviour.md", "playbook-nature-portfolio/nature-human-behaviour", None),
+    ("QBv12-nature-machine-intelligence.md",                    "playbook-nature-portfolio/NMI",                   None),
+    ("QBv13-pnas.md",                   "playbook-pnas/pnas",                              "playbook-pnas"),
+    ("QBv14-diabetes-care.md",          "playbook-medical-journals/diabetes-care",         None),
+    ("QBv15-grant.md",                   "playbook-grant",                                  "playbook-grant"),
+    ("QBv16-patent.md",                  "playbook-patent",                                 "playbook-patent"),
 ]
 
 YEAR = re.compile(r"^(.+?)-((?:19|20)\d\d)(?:-|$)")
@@ -127,11 +141,50 @@ def kinds_block(outlet_dir):
             "Each kind is one unit `section-edit` runs on, and one page it writes: "
             f"{len(main)} numbered `S-Main-<n>` page{'' if len(main)==1 else 's'}"
             + (f" plus `S-Appendix-<letter>`" if app else ", and no Appendix family") + ".", ""]
+    # The unit is the READER-ORDER position, so the number is the venue's own.
+    # Verified against a real paper in this repo: S-Main-0-abstract.md,
+    # S-Main-1-introduction.md ... S-Main-8-conclusion.md.
+    n_main, n_app = 0, 0
     for k in ks:
-        fam = "S-Appendix-<letter>" if k in APPENDIX_KINDS else "S-Main-<n>"
-        out.append(f"- `{k}` · `{fam}`")
+        if k in STANDALONE_KINDS:
+            out.append(f"- `S-Main-0` of its OWN paper · {k}, a standalone article format "
+                       "rather than a section of this one")
+            continue
+        if k in APPENDIX_KINDS:
+            unit = f"S-Appendix-{chr(ord('A') + n_app)}"; n_app += 1
+        else:
+            unit = f"S-Main-{n_main}"; n_main += 1
+        out.append(f"- `{unit}` · {k}")
+    out += ["",
+            "A kind is the MINIMUM unit a paper here gets, not a ceiling: a real paper may "
+            "split one kind across several numbered Main pages (this repo's own MISQ paper runs "
+            "to `S-Main-8-conclusion`), and the numbers above shift with it. What does not shift "
+            "is the ORDER, which is this venue's reader order and not a house default."]
     out += ["", KEND]
     return "\n".join(out)
+
+
+MINED = re.compile(r"Extracted from\s+(?:(\d+)\s+of\s+the\s+)?(\d+)", re.I)
+
+
+def mined_base(outlet_dir):
+    """How many papers the outlet's style guides were actually MINED from.
+
+    NOT the same number as the folder count, and the gap is the point: Nature
+    Medicine stores 24 papers and every `natmed-<kind>/style.md` says it was
+    extracted from 14. A norm inherits the authority of the papers behind it,
+    so a page may legitimately say "3 exemplars" about a guide while 16 sit on
+    disk. Returns the distinct bases seen across that outlet's guides.
+    """
+    d = VENUE / outlet_dir
+    if not d.is_dir():
+        return set()
+    seen = set()
+    for f in sorted(d.glob("*/style.md")):
+        m = MINED.search(f.read_text(encoding="utf-8", errors="replace")[:600])
+        if m:
+            seen.add(int(m.group(1) or m.group(2)))
+    return seen
 
 
 def scan(owner):
@@ -143,7 +196,15 @@ def scan(owner):
     for p in sorted(ex.iterdir()):
         if p.suffix.lower() not in PAPER_SUFFIX or p.name.startswith("."):
             continue
-        (manifests if MANIFEST.match(p.stem) else papers[p.stem]).append(p.name)
+        if MANIFEST.match(p.stem):
+            manifests.append(p.name)
+        else:
+            papers[p.stem].append(p.name)
+    # A stem whose ONLY file is an `# Exemplar:` note has no paper behind it.
+    notes = [k for k, v in papers.items()
+             if all(is_note(ex / n) for n in v)]
+    for k in notes:
+        manifests.append(f"{papers.pop(k)[0]}  (a note about the paper, no article text on disk)")
     return dict(papers), manifests, ""
 
 
@@ -152,12 +213,23 @@ def block_for(outlet_dir, examples_owner):
     papers, manifests, err = scan(owner)
     n = len(papers)
 
+    mined = mined_base(outlet_dir)
+    gap = ""
+    if mined:
+        lo, hi = min(mined), max(mined)
+        span = f"{lo}" if lo == hi else f"{lo} to {hi}"
+        if hi < n:
+            gap = (f" · the section guides were mined from {span} of them, "
+                   f"so {n - hi} stored paper{'' if n - hi == 1 else 's'} "
+                   f"back no norm")
+        else:
+            gap = f" · the section guides were mined from {span}"
     out = [BEGIN, "",
-           f"📚 **Exemplars** · {n} paper{'' if n == 1 else 's'} on disk, "
+           f"📚 **Exemplars** · {n} paper{'' if n == 1 else 's'} on disk{gap}, "
            f"regenerated by `_tools/sync-exemplars.py`"]
     if examples_owner:
         out += ["", f"Filed at FAMILY level under `{REL}/{owner}/examples/`, "
-                    f"not under the outlet (QBv0 A3.1)."]
+                    f"not under the outlet (the group intro on the Index)."]
     if err:
         out += ["", f"- none. {err[0].upper()}{err[1:]}, so this outlet states "
                     "section norms with no exemplar behind them."]
@@ -188,16 +260,17 @@ def apply(page, text, new):
     return text[:m.start(1)] + m.group(1).rstrip("\n") + "\n\n" + new + "\n\n" + text[m.end(1):]
 
 
-def count_claims(text, n):
+def count_claims(text, allowed):
     """Every OTHER place the page states an exemplar count, and whether it agrees.
 
-    A page that says `21 exemplars` on its state line while its generated block
-    says 20 contradicts itself in one screen, which is the exact failure this
-    script exists to prevent.
+    A page that says `21 exemplars` while the folder holds 20 and no style guide
+    was mined from 21 contradicts itself in one screen, which is the exact
+    failure this script exists to prevent. A count that matches EITHER the
+    folder or a guide's own mined base is legitimate and passes.
     """
     bad = []
     for m in re.finditer(r"(\d+)\s+exemplars?\b", text):
-        if m.group(0).startswith(str(n) + " "):
+        if int(m.group(1)) in allowed:      # the folder count, or a real mined base
             continue
         if "paper" in text[max(0, m.start() - 40):m.start()]:
             continue                       # the generated block's own wording
@@ -215,6 +288,7 @@ def main():
         page = BOARD / "QBv-venue-packs" / name
         text = page.read_text(encoding="utf-8")
         new, n = block_for(outlet_dir, owner)
+        allowed = {n} | mined_base(outlet_dir)
         total += n
         after = apply(name, text, new)
         kb = kinds_block(outlet_dir)
@@ -228,7 +302,7 @@ def main():
             if not args.check:
                 page.write_text(after, encoding="utf-8")
                 after = page.read_text(encoding="utf-8")
-        for claim in count_claims(after, n):
+        for claim in count_claims(after, allowed):
             drift.append(f"{name}: says '{claim}', folder has {n}")
 
     for s in stale:

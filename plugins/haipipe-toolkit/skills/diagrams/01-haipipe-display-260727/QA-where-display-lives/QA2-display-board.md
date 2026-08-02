@@ -3,16 +3,11 @@ state: ✅ SETTLED
 owner: JL
 method: give layer design and one paper unit different Boards because they answer different questions
 
-## Question
+## Opening
 Which Board holds Display work?
 
 The Display design Board holds reusable rules for the family.
 A paper lifecycle Board holds the live decision for one concrete display unit.
-
-## Boundary
-- ✅ This Board owns the reusable Display model, renderer taxonomy, and shared contracts.
-- ✅ A paper's `S-Display-N` page owns one concrete visual argument and its human gate.
-- 🚫 This Board does not duplicate a paper's claims, caption text, candidate choice, or data values.
 
 ## Diagram
 ```text
@@ -33,13 +28,13 @@ It is the place to change a reusable rule deliberately.
 The paper page records the display's brief, provenance chain, exact wrapper, open work, and review decision.
 It is where a human reviews the specific visual rather than the generic mechanism.
 
-## Items to Finish
+## Aims
 - [x] 🧩 Keep the reusable Board outside individual papers
       It lives beside the Display skills under `skills/diagrams/`.
 - [x] 📄 Make the paper's `S-Display-N` page the unit-level control surface
       The Paper adapter and stage template name it as the unit's human gate.
 
-## Where we are
+## States
 The two Boards are complementary rather than nested copies.
 
 ## Files

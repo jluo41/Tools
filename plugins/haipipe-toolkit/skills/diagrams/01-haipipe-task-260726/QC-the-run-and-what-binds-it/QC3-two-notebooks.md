@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: the .py is the source, both notebooks are build artifacts, and only one of them holds what happened
 
-## Question
+## Opening
 A task-folder holds two kinds of `.ipynb`. Which is the record of what happened, and which is disposable? One sits at the task root beside the `.py`; the other sits in `notebooks/`, one per run. They have the same extension, they open in the same editor, and they mean entirely different things.
 
 Getting it backwards is easy and costs the run record. The template at the root is regenerated from the `.py` on every single run, so anything typed into it is destroyed by the next execution. The one in `notebooks/` is papermill's output: it carries the injected parameters, the stdout, the errors and the figures, and it IS what happened. Editing the first loses work silently; trusting the first as evidence means reading a file with no execution state at all.
 
 Underneath both is one rule that removes most of the confusion: the `.py` is the source of truth and both notebooks are build artifacts. The template exists so an author can READ the cell flow during review, not so anyone can edit it.
 
-## Boundary
-- ✅ Covered here
-  The two notebooks, which is the record, why the template exists at all, and the retention policy.
-- ↪ Covered elsewhere
-  The token that pairs `notebooks/<run>.ipynb` with its runner is `QC1`; what else a run writes is `QC2`; who starts the run is `QB4`.
+**Covered elsewhere**: The token that pairs `notebooks/<run>.ipynb` with its runner is `QC1`; what else a run writes is `QC2`; who starts the run is `QB4`.
 
 ## Diagram
 ```
@@ -79,7 +75,7 @@ Template A tees a log because there is no notebook to hold it. Template B does n
 notebook holds it. Mixing them in one task produces a folder where some runs are logged and others
 are recorded, and no single place tells you which.
 
-## Items to Finish
+## Aims
 - [ ] 💾 Rule what happens to the record of a run that matters
       `notebooks/` is gitignored by default, so a published number's execution record is local-only. Either that is accepted and said out loud, or runs that feed a claim need a retention exception.
 - [ ] 🚫 Check that no task mixes Template A and Template B
@@ -87,7 +83,7 @@ are recorded, and no single place tells you which.
 - [ ] 📌 State the edit rule where an editor would see it
       The template is regenerated on every run. Nothing in the template says so, so the first person to edit one loses their work and learns the rule the expensive way.
 
-## Where we are
+## States
 Both notebooks are produced correctly by the run script, and the conceptual split is documented in
 `hierarchy.md` and `task-structure.md`.
 

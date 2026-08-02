@@ -133,6 +133,8 @@ The record that made those words clickable is `> Card SPAN of words: …`, writt
 Clicking the words opens the card in place, over the prose, and clicking away shuts it again.
 It carries the thing itself: the reference as the paper's own style prints it, the rows of a table, or both pictures of a figure.
 One span holds one card, because the words name one thing and there is only one right answer for them.
+> Card one right answer: Written from the browser: dragged across these words, clicked the Card button, typed this. The sentence itself gained nothing. The record under it names these words and the renderer finds them.
+> Card the words name one thing: A second card on the same sentence, to prove one line can carry more than one.
 
 #### 2.2 · What the card can do today, and what it cannot
 (a marker the build already resolves becomes a card; a span a reader picks does not)
@@ -153,6 +155,7 @@ The list is open on purpose: a new kind is a new first word in `src/body.py`'s `
 #### 2.4 · Why they stay two things and not one
 (merging them would either bury the reference or force a remark to claim words it is not about)
 The card answers what a phrase IS, and the lanes answer what is known about the LINE.
+> Card what a phrase IS: Auto-refresh check: saved from the browser, and the frame repainted on its own.
 Put the reference in the drawer and it sits under twelve unrelated rows, so the reader stops opening it.
 Put a remark on a span and the writer has to pick words for a thought that was about the whole claim.
 So the anchor differs by design: the card takes the words, the lanes take the line, and neither one has to pretend to be the other.

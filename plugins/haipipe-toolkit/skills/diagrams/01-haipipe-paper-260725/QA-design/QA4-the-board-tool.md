@@ -15,20 +15,7 @@ The map is four pairs, each a thing and the board that governs it (`QA1`). This 
 
 That earns it a place on the map, and it earns the number by the same test that excluded the evidence banks. We rule nothing about what is inside `tasks/`, so the banks are a wall rather than a room. We rule a great deal about `haipipe-board`: who composes an S filename, who creates a page, what `## Items to Finish` means, what a `>` lane binds to, and how a citation chip resolves. Nine faces on this board already rule its behaviour. A thing you rule that much is not outside the map.
 
-## Aims
-- [x] 🚪 Rule the door
-      `①` is the single thing a human types; `③` is called, never typed, for a board inside a paper (JL 260726). `/haipipe-board` stays a real door for the five boards that are not inside a paper.
-- [x] 🔁 Rule the three moments
-      ENTER, after every write to `⑧`, and before `①` acts. The middle one is what a naive reading misses, and without it the human reads a stale board.
-- [x] 🛠 Implement it
-      `haipipe-paper-enter` gained an `## Open the Board` step and lost its 152-line duplicate renderer; `haipipe-paper-stage` gained the rebuild-after-write rule; the router's Closing Block carries a deep-linked board URL instead of a stage strip.
-- [ ] 🧪 Prove the door with a fresh agent
-      One `/haipipe-paper enter <new-path>` by an agent that did not write these skills: it should end up looking at a board without being told the word `haipipe-board`.
-- [ ] 🔌 Make the push failure loud in code, not just in prose
-      The rule is written in three places and enforced nowhere. A build that succeeds while the push fails currently looks identical to success.
-
 The danger it creates is specific and it has already happened twice today. A ruling here can be applied to the paper skill and quietly not reach the tool, or shipped in the tool and never reflected here. Both directions were observed on 2026-07-26.
-
 Scope: This page covers What `haipipe-board` is to this skill, which of its behaviours this board may rule, the `dialect: paper` seam, and how a ruling reaches both halves. Neighbouring pages cover What a board IS, its face grammar, where it lives on disk, and its live layer are ruled on `④`, the board tool's OWN board at `diagrams/01-boardform-260722/`, 27 faces. `③` and `④` are a thing/board pair exactly as `①` and `②` are, which is why this face may rule the contract between us and never what a board is. The two boards it renders for us are `QA3` and `QA7`. Who owns a shared page is the `QA8` group; how work is driven from a page is `QA9`. Both are now under this face, as `QA8` and `QA9`.
 
 ## Diagram
@@ -243,6 +230,16 @@ The line is ownership, not politeness. A rule about the paper dialect stated onl
 It does not, today. That is the open item. A Law that graduates from `②` lands in a paper skill file by the map on `QA2`, and nothing carries it across into `③` or checks that it arrived. Both failures on 2026-07-26 were found by hand, one of them by nearly overwriting the other session's work.
 
 ## Aims
+- [x] 🚪 Rule the door
+      `①` is the single thing a human types; `③` is called, never typed, for a board inside a paper (JL 260726). `/haipipe-board` stays a real door for the five boards that are not inside a paper.
+- [x] 🔁 Rule the three moments
+      ENTER, after every write to `⑧`, and before `①` acts. The middle one is what a naive reading misses, and without it the human reads a stale board.
+- [x] 🛠 Implement it
+      `haipipe-paper-enter` gained an `## Open the Board` step and lost its 152-line duplicate renderer; `haipipe-paper-stage` gained the rebuild-after-write rule; the router's Closing Block carries a deep-linked board URL instead of a stage strip.
+- [ ] 🧪 Prove the door with a fresh agent
+      One `/haipipe-paper enter <new-path>` by an agent that did not write these skills: it should end up looking at a board without being told the word `haipipe-board`.
+- [ ] 🔌 Make the push failure loud in code, not just in prose
+      The rule is written in three places and enforced nowhere. A build that succeeds while the push fails currently looks identical to success.
 - [x] 🖐 Name it as the fifth thing
       Not a folder beside the four: the tool the whole board column is made of (JL 260726).
 - [x] 🚪 The seam is one declared line

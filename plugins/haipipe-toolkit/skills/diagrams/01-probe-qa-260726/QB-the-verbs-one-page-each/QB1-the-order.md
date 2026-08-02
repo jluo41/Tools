@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: fix the order first, then say which phase owns the steps and which steps a correct run legitimately never reaches
 
-## Question
+## Opening
 Five steps run in one order; what does the order buy, and which of them may a correct run skip?
 ② before ③ is the whole ruling, because it makes an existing answer free and a new one the only thing that costs.
 Three of the five are skippable and one of them is skipped on most questions, which is the ladder working rather than a shortcut.
@@ -13,12 +13,7 @@ The order carries the ruling, not the list.
 Any arrangement that dispatched before matching would work correctly and waste an agent on every question the bank has already answered, which in a healthy project is most of them.
 The phase assignment was also wrong once and got fixed: steps ① and ② used to run at DRAFT so that one human gate could review draft and probe plan together, and when stages moved to `gates: [check]` that reason evaporated and the steps went back to PROBE.
 
-## Boundary
-- ✅ Covered here
-  The five steps, their order, which phase owns them, the gate between planning and spending, and which steps a correct run may never reach.
-- ↪ Covered elsewhere
-  Each step has its own page: `QB2` through `QB6`, in order.
-  What a paper's stage does with all of this is `QB9@paper`.
+**Covered elsewhere**: Each step has its own page: `QB2` through `QB6`, in order. What a paper's stage does with all of this is `QB9@paper`.
 
 ## Diagram
 ```
@@ -55,7 +50,7 @@ The human APPROVE gate is after ② and before ③, which is the only place it c
 That is also why the ①② move back to PROBE was safe rather than a regression.
 The gate reviews a plan that is complete, with every entry's route, bank verdict and target already decided, so approving is a decision about spend rather than about wording.
 
-## Items to Finish
+## Aims
 - [x] 🔢 Five steps, fixed order, ② before ③
 - [x] 🏗 All five belong to PROBE; DRAFT raises questions and stops
 - [x] 🚪 A human APPROVE gate sits between planning and spending
@@ -69,7 +64,7 @@ The gate reviews a plan that is complete, with every entry's route, bank verdict
       The rule is stated and nothing checks it, so the old behaviour would pass unnoticed.
       A grep for `### q-executor` in a stage doc's own commit range would close it crudely.
 
-## Where we are
+## States
 Ruled and running. The order is the part that matters and it is stated as such.
 
 The phase boundary is stated twice in the same file and the two statements disagree: the warning box at line 81 forbids what the DRAFT checklist at line 249 instructs.

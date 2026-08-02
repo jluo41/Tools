@@ -30,7 +30,7 @@ Acceptance means the agent opens a valid board, respects every gate, and leaves 
        └─ mismatch  → fix SKILL.md, run again  ⟲
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QF2
+No canvas frame is linked here. `board.excalidraw` holds no frame named `QF2`, and JL ruled on 260802 that a page shows no link rather than one that 404s; the link returns when someone draws the frame.
 
 ## Aims
 - [x] Start an agent with no memory of this conversation; give it only SKILL.md + ref/ and one real topic

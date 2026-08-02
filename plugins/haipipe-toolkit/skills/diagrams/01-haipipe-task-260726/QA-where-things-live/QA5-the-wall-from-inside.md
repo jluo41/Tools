@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: one door in, general language only, and never learn who asked
 
-## Question
+## Opening
 What may reach this layer from a consumer, and what must this layer never learn? A paper or an application cannot run code, so it sends a question here. The rule that makes the whole arrangement worth having is that the question arrives stripped: no claim id, no paper name, no reason. This layer answers it and never finds out who asked or why.
 
 That looks like a politeness and it is an economic rule. A question carrying its stake, "does WellDoc have a cycle column, because my claim C6 dies if it does", invites an answer shaped around C6. Such an answer is worth something to exactly one consumer. The same question asked plainly produces an answer the next consumer inherits for free, and a bank of those compounds while a bank of the first kind does not.
 
 What makes it hard from this side is that the discipline is entirely negative. There is nothing to build: the rule is that certain words never appear anywhere under `tasks/`, and nothing checks for them. The layer is consumer-unaware by convention, and a convention with no checker is a hope.
 
-## Boundary
-- ✅ Covered here
-  What arrives, what must not, what goes back, and how this layer stays consumer-unaware.
-- ↪ Covered elsewhere
-  What the digest itself contains is `QD1`, and what may not leave besides it is `QD2`. The probe layer's own model, the five-step loop and the QA-file contract belong to `01-probe-qa-260726`: `QA8@probe` is the same wall written from the consumer's side, and this page must not disagree with it.
+**Covered elsewhere**: What the digest itself contains is `QD1`, and what may not leave besides it is `QD2`. The probe layer's own model, the five-step loop and the QA-file contract belong to `01-probe-qa-260726`: `QA8@probe` is the same wall written from the consumer's side, and this page must not disagree with it.
 
 ## Diagram
 ```
@@ -86,7 +82,7 @@ enter through `qa` and none gets a special path. The reason is narrow: a special
 which the stripping is optional, and a rule about what must never cross cannot have an exception
 without ceasing to be one.
 
-## Items to Finish
+## Aims
 - [ ] 🔍 Write the grep that makes consumer-unaware checkable
       A pattern for claim ids, probe ids, `PP\d\d`, and consumer nouns, run over every `.md`, `.yaml` and `.py` under `tasks/`. The rule is stated in three places and enforced in none.
 - [ ] 🚪 State that the door applies to files, not only to answers
@@ -96,7 +92,7 @@ without ceasing to be one.
 - [ ] 🔗 Point at `QA8@probe` rather than restating it
       The same wall from the consumer's side. Two statements of one rule will drift; this face should hold only the executor's half.
 
-## Where we are
+## States
 The rule is stated and unenforced. `SKILL.md` and `fn/qa.md` describe the door, the three callers
 and the vocabulary ban; no checker exists for any of it, and the one measurement available is that
 1 of 107 task-folders has a `QA/` at all, so the door has been used rarely enough that a leak would

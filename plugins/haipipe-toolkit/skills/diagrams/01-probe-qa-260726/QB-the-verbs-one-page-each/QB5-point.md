@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: a path to a FILE, opened and read rather than listed, with the entry's state derived from what the file says
 
-## Question
+## Opening
 An answer exists somewhere; what does the entry write down, and what stops that pointer from lying?
 A path to the answering QA FILE, never to its folder, and the file must be OPENED and its state line read before the entry believes anything.
 An `ls` is not enough, which is the whole ruling: a target that exists and a target that answers are different facts.
@@ -13,12 +13,7 @@ This step has never had a page and it carries more of the checker than any other
 Five of the FAIL codes are about targets, and two of the three failure kinds found on real data were target-state disagreements.
 The reason is structural: `target` is the only field that points across the wall, so it is the only field whose truth depends on a file the consumer does not own and cannot fix.
 
-## Boundary
-- ✅ Covered here
-  What `target` is, its three unresolved forms, the read that must happen, and why state is derived rather than asserted.
-- ↪ Covered elsewhere
-  The QA state line being pointed at is `QC1`; the derived entry states and how `status` computes them are `QC3`.
-  The rule that decides whether ③ ran before this step is `QB4`; harvesting what the target says is `QB6`.
+**Covered elsewhere**: The QA state line being pointed at is `QC1`; the derived entry states and how `status` computes them are `QC3`. The rule that decides whether ③ ran before this step is `QB4`; harvesting what the target says is `QB6`.
 
 ## Diagram
 ```
@@ -77,7 +72,7 @@ Guessing produces a `workspace-target` or an `unresolved-target` that looks deci
 The agent that performs ③ and ④ is permitted to write the `target` field and never the stake, and its state is derived rather than set.
 So the write is a single field, and everything else about the entry is either frozen from ① or computed from disk.
 
-## Items to Finish
+## Aims
 - [x] 📍 `target` is a path to the answering FILE, never to a folder
 - [x] 👁 The target must be OPENED and its state line read; an `ls` is not enough
 - [x] 🧮 The entry's state is derived from that read, never asserted
@@ -92,7 +87,7 @@ So the write is a single field, and everything else about the entry is either fr
       The model says follow the chain to the live answer and says nothing about whether the entry re-points itself, or whether the old answer stays valid for a consumer that already harvested it.
       A paper that cited the superseded answer has a real problem and no stated procedure.
 
-## Where we are
+## States
 Newly separated on 260726, and it was the step most worth separating: it had no page, it owns five of the checker's codes, and after the `QD2` run struck five false failures, **every one of the 7 real failures on the MISQ paper is its**.
 
 The rules themselves are sound and stated. What is missing is any moment before the gate at which a stale pointer is noticed, and any procedure for the case where a harvested answer is later superseded.

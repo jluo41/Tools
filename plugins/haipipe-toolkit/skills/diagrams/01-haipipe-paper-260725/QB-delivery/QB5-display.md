@@ -25,6 +25,9 @@ How this page must be written. Read it before editing, and edit to it.
 
 **Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
 
+**This page DESIGNS; the paper board SHOWS**: the design division states what a paper must carry for this concern, not what one paper happens to have today.
+Where the MISQ paper differs, say so as a gap with an owner, never as the definition.
+
 **This page holds the seam and nothing else**: the six detail pages left for QB11, QB12, and QB13 on 260802, and they must not drift back.
 A sentence about what a unit folder contains, or how a caption is worded, belongs on a face and not here.
 
@@ -85,6 +88,38 @@ Half the pair alone reads as a land grab by whichever side is named.
 (a reader can approve the argument and still reject the picture that makes it)
 The gate names the argument and the exact promoted render separately, because they fail separately.
 A figure can say the right thing from the wrong data, and it can say the right thing badly, and only one of those is fixed by re-rendering.
+
+### 2 · What we want on the paper board
+
+**The group we are designing**: a control page, then one page per display unit.
+
+```text
+  🎯 WHAT WE WANT a paper to carry for this concern
+  ### Delivery · Display
+        🗂 S-Display-Dash.md          controls the SET
+        📄 S-Display-1a-hero-concept   ┐
+        📄 S-Display-1b-research-design│ one page per UNIT,
+        📄 S-Display-2a … 4c           │ each controlling one display
+                                       ┘
+
+  ⚡ the display stage declares `runs: once` and the MISQ paper carries
+     THIRTEEN unit pages plus the dash ── the contract does not match
+  🔑 the count follows the paper's evidence, never the template
+  🔗 the three series below the concern: QB12 the pointer · QB13 the
+     float · QB11 where it lands
+```
+
+🎯 Establishes what a paper board must show for this concern, and the contract defect the count exposes.
+
+#### 2.1 · A dash controls the set and a unit page controls one display
+(two altitudes, and mixing them is how a set-level rule ends up on one figure's page)
+`S-Display-Dash.md` answers which units this paper has and which are promoted.
+Each unit page answers what one display argues and whether that render is accepted, which is the question QB5's gate asks.
+
+#### 2.2 · `runs: once` is wrong for this stage, and the paper proves it
+(one invocation, thirteen pages, and a contract that says the stage runs a single time)
+Seven of the eight stages are `runs: once` and mean it. Display declares the same and produces a page per unit.
+That is the same per-unit shape section-edit declares honestly with `runs: per-unit`, so the display contract is the one that has not caught up, and `4-display`'s already-blocked `artifact:` is the visible symptom.
 
 ## Aims
 

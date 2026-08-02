@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: hand a clean-context agent one stage doc and watch what it does, not what it produces
 
-## Question
+## Opening
 Can someone with no background read this skill and run one probe without breaking either law?
 Yes, measured 260726: a clean-context agent given only `SKILL.md` and a stage doc passed all eight watched behaviours, including the one most likely to fail.
 It also found two defects nobody on this board had found, one in the constitution and one in the checker.
@@ -13,12 +13,7 @@ The test watches HOW the agent worked rather than what it produced, because a co
 So the record below is disk evidence rather than self-report: the bank was checksummed before and after, the created files were read, and both of the agent's claims about defects were reproduced independently before being written down.
 The repo already makes this the gate for skill work, and an untested skill is an unfinished one however good it looks to its author.
 
-## Boundary
-- ✅ Covered here
-  The acceptance test for the layer, the 260726 run, and what counts as passing.
-- ↪ Covered elsewhere
-  The checker defect the run found is `QC2`; the constitution defect is `QB1`.
-  Whether any single page's prose is well written is a writing question, not this one.
+**Covered elsewhere**: The checker defect the run found is `QC2`; the constitution defect is `QB1`. Whether any single page's prose is well written is a writing question, not this one.
 
 ## Diagram
 ```
@@ -92,7 +87,7 @@ The agent wrote `Status:` and `Evidence:` lines onto claims C4 and C7 in the sta
 Reading "never in the probe file" as permission to write it in the stage doc is a defensible reading, and it is the reading that lets a probe judge a claim.
 That is the exact scope creep `QA7`'s carrying-is-not-judging rule exists to prevent, reached by following the words rather than by ignoring them.
 
-## Items to Finish
+## Aims
 - [x] 🧪 One fresh agent runs one probe, end to end, and is watched
       260726, clean context, `SKILL.md` only, two real Q-consumers, no coaching.
       Eight of eight watched behaviours passed, verified from disk: bank byte-identical by md5, both q-executors stake-free, both bank verdicts rooted by reading a specific candidate, the deferral declared with depth and cost.
@@ -105,7 +100,7 @@ That is the exact scope creep `QA7`'s carrying-is-not-judging rule exists to pre
       This run never reached ③, because the correct behaviour at `probe_depth: 0` is to stop.
       DISPATCH, POINT against a fresh target, and INTERPRET against a newly written QA file are therefore still unexercised by a cold reader.
 
-## Where we are
+## States
 Passed, on 260726, on the first attempt, and the failure the page predicted did not happen.
 
 The value was not the pass. It was that a reader with no context found two defects in one sitting that this board had not found in a week of writing about the same files: the constitution instructing DRAFT to do what it forbids DRAFT to do, and a checker that fails correct work depending on where you stand when you run it. The second of those corrected a measurement this board had already published.

@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: keep the run a human act by default, and make the record of it automatic
 
-## Question
+## Opening
 Who starts a run, and why is the default not the agent? EXECUTE is the only phase with no creator and no reviewer. It is one line, `bash runs/<run>.sh`, and by default a human types it. Every other phase in this lifecycle is agent work with a review loop, so the asymmetry needs a reason or it is just friction.
 
 The reason is cost and irreversibility, and those are the two properties nothing else in the lifecycle has. A plan can be rewritten, code can be revised, a report can be corrected. A run spends GPU hours, writes into `_WorkSpace/`, and on a shared cluster takes a slot from someone else. It is the one phase where being wrong costs something that cannot be undone by editing a file.
 
 What that argument does not settle is `autoExecute`, which exists and defaults to false. If the reasoning above is right, the flag is a deliberate override of a safety property and should be recorded when used. If it is wrong, the default is wrong. Nothing states which.
 
-## Boundary
-- ✅ Covered here
-  Who runs, why the default is a human, what the run records automatically, and what `autoExecute` means.
-- ↪ Covered elsewhere
-  What a run script contains is `QC1`; where its outputs land is `QC2`; the notebook it produces is `QC3`; the audit of its results is `QB5`.
+**Covered elsewhere**: What a run script contains is `QC1`; where its outputs land is `QC2`; the notebook it produces is `QC3`; the audit of its results is `QB5`.
 
 ## Diagram
 ```
@@ -78,7 +74,7 @@ log. `ref/task-structure.md` states that the two must never be mixed within one 
 reason is that mixing them produces a run whose log and whose notebook each contain half the
 story.
 
-## Items to Finish
+## Aims
 - [x] 👤 The human default is implemented
       `autoExecute: false` in the lifecycle workflow; the run is one atomic script with no arguments.
 - [x] 🧾 The record is automatic on success and on failure
@@ -88,7 +84,7 @@ story.
 - [ ] 🚦 Rule when an agent MAY run without asking
       A no-op rerun, a cached-result check and a five-second script are not the case this rule was written for. Either state the exemptions or accept that the rule is routinely and correctly ignored.
 
-## Where we are
+## States
 Implemented and in daily use across the bank. The human default holds, the automatic record works
 including on failure, and the two open items are both about the override rather than the rule.
 

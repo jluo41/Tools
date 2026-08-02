@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: let Paper accept a display request, allocate a unit, bind its Intake, and gate the selected visual
 
-## Question
+## Opening
 What does Paper Display do before it commissions a renderer?
 
 It decides why the reader needs the display and whether a suitable approved input exists.
@@ -18,13 +18,13 @@ Paper Display advances it through `requested → accepted → intake-ready → d
 When a verified aggregate already exists, start with Paper Display.
 Call the display-input task only when the aggregate is missing or must change.
 
-## Items to Finish
+## Aims
 - [x] 📝 Extend Display Requests with Intake source and consumer deliverable
       A request now names both sides of the handoff.
 - [x] 🧭 Publish the explicit per-unit S-page creation route
       The Paper adapter uses `create-page.py display ... --family Display --unit <N>` while `QB2b@paper` remains open.
 
-## Where we are
+## States
 The Paper adapter gives a fresh agent an executable route from a verified aggregate to an independently gated unit.
 
 ## Files

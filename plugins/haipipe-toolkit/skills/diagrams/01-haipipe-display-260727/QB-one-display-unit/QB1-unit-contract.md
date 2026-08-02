@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: make one directory an inspectable bundle with stable ownership for inputs, rebuilds, candidates, and selected output
 
-## Question
+## Opening
 What must every new Display unit contain?
 
 A unit contains one approved input boundary, one rebuild path, reversible alternatives, and one selected asset.
@@ -32,13 +32,13 @@ displayNN-<slug>/
 New units use this split shape.
 An existing `source/` folder remains valid only as a documented compatibility case.
 
-## Items to Finish
+## Aims
 - [x] 📦 Publish one generic output contract
       All renderers use the same new-unit layout.
 - [x] 🧹 Preserve legacy compatibility without mixing layouts
       A new unit never creates both `source/` and `intake/recipe/`.
 
-## Where we are
+## States
 The generic output contract is shared by table, figure, diagram, and illustration renderers.
 
 ## Files

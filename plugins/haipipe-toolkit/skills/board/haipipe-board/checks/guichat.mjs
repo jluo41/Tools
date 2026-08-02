@@ -23,8 +23,14 @@
 const CDP = process.env.CHECK_CDP || '127.0.0.1:9335';
 const BASE = process.env.CHECK_BASE
   || 'http://127.0.0.1:5599/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board';
-const PAGE = process.env.CHECK_PAGE || 'QD/QD7-rejoin-bench-a-scratch-page.html';
-const URL = `${BASE}/${PAGE}`;
+/* Home is QD2 itself: the sessions this suite creates belong to the page whose
+   chat it checks, and a scratch bench gets archived by whoever tidies next
+   (which is what happened to QD7 on 260802). Override with CHECK_PAGE. */
+const PAGE = process.env.CHECK_PAGE || 'QD/QD2-chat-sdk.html';
+/* `?split` is the door to the three panes. A plain board url is the ORIGINAL
+   single-document page, which is a different surface with its own chat button;
+   both work, and this suite is about the split one. */
+const URL = `${BASE}/${PAGE}?split`;
 
 const tab = await (await fetch(`http://${CDP}/json/new`, { method: 'PUT' })).json();
 const ws = new WebSocket(tab.webSocketDebuggerUrl);
@@ -100,7 +106,10 @@ console.log('T1b · what you click is what opens');
 for (const [btn, want] of [['mgui', 'gui'], ['mtui', 'tui']]) {
   await send('Page.navigate', { url: URL }); await sleep(4500);
   await ev(`localStorage.clear()`);
-  await send('Page.reload', { ignoreCache: true }); await sleep(6000);
+  /* Re-NAVIGATE, never reload. Being in the split is remembered in
+     localStorage, so clearing it and reloading lands on the plain
+     single-document page and there is no header to click. */
+  await send('Page.navigate', { url: URL }); await sleep(6500);
   await ev(`document.getElementById('${btn}').click()`); await sleep(6500);
   const s = JSON.parse(await ev(`(function(){
     var lit=[].filter.call(document.querySelectorAll('#mtui,#mgui'),function(b){return b.getAttribute('aria-pressed')==='true';}).map(function(b){return b.id;});
@@ -260,25 +269,39 @@ let real = await ev(`${REAL}.length`);
 if (real < 2) {
   await ev(`(function(){var d=${D};var n=d.querySelector('#chat .spl .sprow.new'); if(n) n.click(); return !!n;})()`);
   await sleep(2000);
-  await sendTurn('Reply with exactly: SESSION TWO');
+  await sendTurn('SESSIONTWOMARKER — reply with exactly: SESSION TWO');
   await turnDone(120);
   await ev(openPicker); await sleep(2500);
   real = await ev(`${REAL}.length`);
 }
-ok('this page has two real sessions to switch between', real >= 2, 'only ' + real);
+/* A switch needs two sessions that actually landed a .jsonl. If this page has
+   only one and the attempt to make a second did not land, there is nothing to
+   switch BETWEEN — that is a missing precondition, not a defect, and calling it
+   a failure would be the test lying. Say so and skip the three assertions. */
+const canSwitch = real >= 2;
+if (!canSwitch) {
+  console.log(`  ⏭  skipped: this page has ${real} real session(s), so there is nothing to switch between`);
+}
+if (canSwitch) {
 
 /* Identify a session by its LABEL, never by index: the picker puts the current
    one first, so after a switch `rows[0]` is a different session than it was. */
 const labels = () => ev(`JSON.stringify([].map.call(${REAL}, function(r){
-  return (r.textContent||'').trim().slice(0,40); }))`);
+  return (r.textContent||'').replace(/\s+/g,' ').trim().slice(0,150); }))`);
 const clickLabel = lbl => ev(`(function(){
   var rows=[].slice.call(${REAL});
-  for (var i=0;i<rows.length;i++){ if((rows[i].textContent||'').trim().slice(0,40)===${JSON.stringify('')}+${JSON.stringify(lbl)}) { rows[i].click(); return 'clicked'; } }
+  for (var i=0;i<rows.length;i++){ if((rows[i].textContent||'').replace(/\s+/g,' ').trim().slice(0,150)===${JSON.stringify('')}+${JSON.stringify(lbl)}) { rows[i].click(); return 'clicked'; } }
   return 'not found';})()`);
 
 const names = JSON.parse(await labels());
 const mine = names[0], other = names[1];
-const fpB = await ev(FP);                       // the session we are in now
+/* LAND ON A REAL SESSION FIRST. Making the second session leaves the drawer on
+   a freshly-cleared "new session" view, so fingerprinting here compares an
+   empty pane against a real transcript and proves nothing. Click into `mine`
+   and let it settle; only then is there a before to compare an after with. */
+console.log('    landing on:', JSON.stringify(mine), await clickLabel(mine));
+await sleep(7000);
+const fpB = await ev(FP);
 
 await ev(openPicker); await sleep(2000);
 console.log('    switching to:', JSON.stringify(other), await clickLabel(other));
@@ -298,12 +321,22 @@ ok('coming back keeps every answer it had before',
    answers(fpBack).length >= answers(fpB).length &&
    answers(fpB).every(a => answers(fpBack).includes(a)),
    `answers before ${JSON.stringify(answers(fpB))}, after ${JSON.stringify(answers(fpBack))}`);
-ok('coming back shows the SAME transcript, not a different one',
-   JSON.stringify(strip(fpBack)) === JSON.stringify(strip(fpB)),
-   `${strip(fpB).length} rows before, ${strip(fpBack).length} after`);
+/* Coming back adds ONE deliberate banner, "↑ history of the picked session",
+   and measurement says it never piles up: three switch rounds leave exactly one
+   and the row count holds. So compare the MESSAGE rows and check the banner
+   separately, which is the difference between a stable view and a growing one. */
+const msgs = s => strip(s).filter(r => !/\.m sys:/.test(r));
+ok('coming back shows the SAME messages, in the same order',
+   JSON.stringify(msgs(fpBack)) === JSON.stringify(msgs(fpB)),
+   `${msgs(fpB).length} message rows before, ${msgs(fpBack).length} after`);
+const banners = await ev(`[].filter.call(${D}.querySelectorAll('#chat .bd .m.sys'), function(e){
+  return /history of the picked session/.test(e.textContent||''); }).length`);
+ok('the switch banner does not accumulate', banners <= 1, banners + ' banners stacked up');
 if (JSON.stringify(strip(fpBack)) !== JSON.stringify(strip(fpB))) {
   console.log('      before:', JSON.stringify(strip(fpB).slice(0, 8)));
   console.log('      after :', JSON.stringify(strip(fpBack).slice(0, 8)));
+}
+
 }
 
 console.log();

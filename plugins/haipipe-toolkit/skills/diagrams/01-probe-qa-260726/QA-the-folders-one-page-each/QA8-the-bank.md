@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: define the bank by what is absent from it, so the property is checkable by looking
 
-## Question
+## Opening
 Why may nothing under `tasks/` or `discoveries/` mention that a probe exists?
 Because an answer written for a specific asker is worth less to everyone else, so the bank writes for its own reasons.
 The rule is stated as an absence, no mailbox and no back-reference, because an absence is checkable by looking and a rule about intent is not.
@@ -13,12 +13,7 @@ The asymmetry is the whole design and it is easy to erode by being helpful.
 A consumer session that writes a QA digest itself, or a task folder that grows an `_ASK/` inbox, has quietly made the bank probe-aware, and from then on the answers are shaped by who asked.
 An absence is checkable by looking, which a positive rule about intent would not be, and 260726 was the first day anyone actually looked.
 
-## Boundary
-- ✅ Covered here
-  What the bank may not contain, LAW 2's surface, who is allowed to write a QA file, and what the asymmetry costs the consumer.
-- ↪ Covered elsewhere
-  The law that forbids a consumer session from writing bank files is `QA6`; the QA file's state line and its contract are `QC1`; the checker is `QC2`.
-  The consumer side of the wall is `QA7`.
+**Covered elsewhere**: The law that forbids a consumer session from writing bank files is `QA6`; the QA file's state line and its contract are `QC1`; the checker is `QC2`. The consumer side of the wall is `QA7`.
 
 ## Diagram
 ```
@@ -76,7 +71,7 @@ So the ban is on the act rather than on the content, and it is stated for creati
 Because the answer was not written for this asker, the consumer has to read it and decide whether it answers the question.
 That is `QB3`'s rule that a hit counts only if the file literally answers, and topic similarity is not evidence.
 
-## Items to Finish
+## Aims
 - [x] 🚧 The property is stated as an absence and is checkable by looking
 - [x] 🔍 The absence is measured rather than assumed
       260726, across every project: zero `_ASK/` or `_ANS/` folders, 10 QA files, zero LAW 2 hits inside them.
@@ -91,7 +86,7 @@ That is `QB3`'s rule that a hit counts only if the file literally answers, and t
       "No probe id anywhere under a bank" and "QA files carry no consumer vocabulary" are two different rules, and only the narrower one is enforced.
       The one live violation is exactly in the gap between them, which is why the width matters rather than being a technicality.
 
-## Where we are
+## States
 The rule is ruled, the current skills honour it, and as of 260726 the bank surface has actually been looked at rather than assumed.
 
 What the look found is better than expected on the watched surface and worse than expected off it.

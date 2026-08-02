@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: stop a renderer before it guesses a source, extracts raw data, or makes unsupported facts look visual
 
-## Question
+## Opening
 When must a renderer refuse to proceed?
 
 It refuses whenever the source boundary, snapshot integrity, visual brief, or safety condition is incomplete.
@@ -21,7 +21,7 @@ It must refuse any requested real count, percentage, or estimate that lacks a va
 An Intake snapshot must be display-safe.
 Raw or PHI-bearing data remains in the task environment even when the renderer runs locally.
 
-## Items to Finish
+## Aims
 - [x] 🛑 State source and hash refusal rules
       The Intake contract requires an auditable numeric source.
 - [x] 🔐 State the aggregate-only privacy boundary
@@ -29,7 +29,7 @@ Raw or PHI-bearing data remains in the task environment even when the renderer r
 - [x] 🚫 Prohibit invented facts in illustrations and diagrams
       Real numbers are values inputs regardless of visual form.
 
-## Where we are
+## States
 Fresh-context validation confirmed that the figure renderer stops before a verified Intake exists.
 
 ## Files

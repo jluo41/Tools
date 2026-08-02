@@ -3,18 +3,14 @@ state: ✅ SETTLED
 owner: JL
 method: separate evidence production, visual rendering, and reader-facing meaning before a renderer runs
 
-## Question
+## Opening
 Where does Display sit, and what does it own?
 
 Display is the reusable visual-production layer.
 It receives an approved input package and produces a reproducible visual bundle.
 It is not a task executor and not a paper author.
 
-## Boundary
-- ✅ Display owns the transform from approved Intake to recipe, candidate, selected asset, preview, and renderer receipt.
-- ↪ Task owns the canonical aggregate and its provenance.
-- ↪ Paper owns the claim, visual argument, wrapper semantics, placement, and human approval.
-- ↪ Section Edit owns the sentence that cites the selected display.
+**Covered elsewhere**: - ↪ Task owns the canonical aggregate and its provenance. - ↪ Paper owns the claim, visual argument, wrapper semantics, placement, and human approval. - ↪ Section Edit owns the sentence that cites the selected display.
 
 ## Diagram
 ```text
@@ -36,13 +32,13 @@ Display turns one already-approved input package into a visual that can be inspe
 The unit is `displays/displayNN-<slug>/` for a paper consumer.
 The same unit contract can serve another consumer through an adapter without moving the evidence into that consumer.
 
-## Items to Finish
+## Aims
 - [x] 🧭 Define Display as a reusable rendering layer
       The generic output contract describes its folder and renderer boundary.
 - [x] 🔒 Keep evidence and argument ownership outside Display
       Task and Paper responsibilities are explicit in the Intake contract and Paper adapter.
 
-## Where we are
+## States
 The ownership split is implemented and used by all four paper renderers.
 
 ## Files

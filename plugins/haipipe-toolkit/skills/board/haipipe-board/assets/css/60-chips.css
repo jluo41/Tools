@@ -199,3 +199,29 @@ object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12p
 .xadd-row[hidden]{display:none}
 .xcal .xurl{display:block;margin-top:4px;font-size:11.5px;color:var(--mut);
  word-break:break-all;user-select:all}
+
+/* ── 🪪 a card on a SPAN of words (JL 260802, ruled on QB5) ──────────────────
+   A `\citep{smith2019}` chip REPLACES a marker nobody wanted to read, so it is
+   allowed to look like a control. A span card sits on words the AUTHOR wrote
+   and the reader is in the middle of reading, so it is not: a box around them
+   would turn a paragraph into a row of buttons and cost more attention than
+   the card is worth.
+
+   So it keeps the text's own font, colour and weight, and takes one hint: a
+   dotted accent underline that says "there is more here" without leaving the
+   prose. The hover deepens the hint rather than the text, the same axis every
+   other chip on this page gives ground on. */
+.chip.card.span{background:transparent;border:0;padding:0;max-width:none;
+  color:inherit;font:inherit;cursor:pointer;
+  text-decoration:underline dotted color-mix(in srgb,var(--acc,#1565c0) 65%,transparent);
+  text-underline-offset:3px;text-decoration-thickness:2px}
+.chip.card.span:hover,.chip.card.span:focus-visible{border:0;
+  background:color-mix(in srgb,var(--acc,#1565c0) 11%,transparent);
+  text-decoration-color:var(--acc,#1565c0)}
+.chipcard.card.span{border-left-color:var(--accent)}
+/* A span that is not in its sentence is a BROKEN binding, and the whole write
+   layer's rule is that a miss the reader cannot see is the one failure this
+   grammar may not have. So it renders loud, in the drawer, where a chip would
+   have been. */
+.lane.cardmiss{color:var(--todo)}
+.lane.cardmiss code{color:inherit}

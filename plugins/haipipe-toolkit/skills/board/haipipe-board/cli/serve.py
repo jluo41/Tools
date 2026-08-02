@@ -14,6 +14,7 @@ regenerates board/ so a plain reload shows the rendered comment.
 
     POST /_board/comment   {path, file, who, sentence, text} -> append directly under sentence
     POST /_board/edit-sentence {path, file, sentence, replacement, who}
+    POST /_board/card      {path, file, sentence, span, text} -> `> Card <span>: text`
                                                       -> replace one sentence + append its diff
     POST /_board/resolve   {path, quote, done}        -> flip - [ ] <-> - [x]
     POST /_board/chat      {path, file, message, model, effort}
@@ -379,6 +380,7 @@ class Handler(BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMi
                 "/_board/resolve": self.resolve,
                 "/_board/discuss": self.add_discuss,
                 "/_board/sentence": self.add_sentence,
+                "/_board/card": self.add_card,
                 "/_board/diagram": self.add_diagram,
                 "/_board/excalidraw": self.new_excalidraw,
                 "/_board/chat": None}

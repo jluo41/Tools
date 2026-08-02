@@ -903,6 +903,12 @@ def render_tree(meta, qs, out_dir, only=None):
         if only and Path(q.get("file") or "").name not in only:
             continue
         prv, nxt = (qs[i - 1] if i else None), (qs[i + 1] if i + 1 < n else None)
+        # One page, one card buffer. `_chip()` appends to the module-global
+        # `bd.CARDS` and shell() dumps all of it, so without this reset a page
+        # inherits every earlier page's panels as orphans: a <div popover> whose
+        # `popovertarget` button lives in a different document and can never open it.
+        bd.CARDS.clear()
+        bd.CHIP_N = 0
         card = (render_doc_slide(q, prv, nxt) if q.get("kind") == "doc"
                 else render_question(q, prv, nxt))
         # The shared page renderer emits fragment navigation because that is
@@ -936,6 +942,8 @@ def render_tree(meta, qs, out_dir, only=None):
             continue
         if only and not any(Path(m.get("file") or "").name in only for m in members):
             continue
+        bd.CARDS.clear()
+        bd.CHIP_N = 0
         gtok = bd.group_token(g)
         rows = []
         for q in members:
@@ -977,6 +985,8 @@ def render_tree(meta, qs, out_dir, only=None):
     def _href(q):
         gt = bd.group_token(q.get("group") or "") or "_ungrouped"
         return f"{gt}/{tree_page_name(q)}"
+    bd.CARDS.clear()
+    bd.CHIP_N = 0
     rows = index_rows(meta, qs, href_for=_href,
                       group_href=lambda tok: f"{tok}.html")
     # JL 260731 ruled exactly three board-level components onto this index:

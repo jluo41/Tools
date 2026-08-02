@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: keep evidence and rendering reusable while letting each consumer own its own surrounding semantics
 
-## Question
+## Opening
 Can the same Display unit serve Paper, slides, posters, and HTML?
 
 Yes, after one asset is selected.
@@ -28,13 +28,13 @@ Caption, numbering, placement, and nearby explanation belong to the consumer tha
 A slide or poster may crop, resize, or arrange an asset.
 It must not silently create a different data subset or a new untracked numerical result.
 
-## Items to Finish
+## Aims
 - [x] 🔁 State the one-content-many-projections model
       The generic unit contract is source-agnostic and consumer adapters own placement.
 - [x] 🧱 Keep consumer wrappers separate
       Paper wrapper semantics remain Paper-owned even when another consumer reuses the asset.
 
-## Where we are
+## States
 The content-plan specification gives non-paper consumers a shared bundle vocabulary.
 
 ## Files

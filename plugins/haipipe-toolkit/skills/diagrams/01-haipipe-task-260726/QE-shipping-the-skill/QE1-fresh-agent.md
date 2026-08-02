@@ -3,18 +3,14 @@ state: 🔴 OPEN
 owner: JL
 method: give a new agent only the shipped docs and one real group, and watch where it stops
 
-## Question
+## Opening
 Can someone who was not here enter a task-group and run a task-folder without us? That is the only test of everything on this board, and it is deliberately last, because every other page is an opinion until this one passes.
 
 The test has to run on the shipped surface and nothing else: `SKILL.md`, `ref/`, `fn/`, and a real task-group on disk. Not this board, which the runtime may never depend on, and not a conversation. If a fresh agent needs something that exists only in a design page or in somebody's memory, the package is incomplete and the specific missing thing is the finding.
 
 What makes this worth its own face rather than a checkbox is that the interesting output is not pass or fail. It is WHERE the agent stops. A run that gets to Build and cannot name a config is telling us something different from one that cannot decide whether a directory is a task-folder, and each stopping point maps to a page on this board.
 
-## Boundary
-- ✅ Covered here
-  What the acceptance run is, what it may read, what counts as passing, and how a failure routes back.
-- ↪ Covered elsewhere
-  Every page on this board is a candidate stopping point. The paper family's version of this test is `QE2@paper`.
+**Covered elsewhere**: Every page on this board is a candidate stopping point. The paper family's version of this test is `QE2@paper`.
 
 ## Diagram
 ```
@@ -68,7 +64,7 @@ thing `QA4` exists to change. So this face is blocked on `QA4` in a way the othe
 rest of the run could be exercised now, but the first step would be testing the behaviour we have
 already decided to replace.
 
-## Items to Finish
+## Aims
 - [ ] 🚪 Wait for `QA4`
       Step 1 tests what a human sees on entering a group. Running it before the entry ruling lands measures the thing we are removing.
 - [ ] 🧪 Run the test once, on a real group
@@ -78,7 +74,7 @@ already decided to replace.
 - [ ] 🔁 Rule what a failure costs
       Whether a stopping point blocks the board's `close:` or is recorded as an open item on the page it names. The second is more honest and the first is what a close condition usually means.
 
-## Where we are
+## States
 Not run. It cannot be run until `QA4` settles the entry, and nothing else on this board has
 graduated yet, so a run today would stop at step 1 and report the one thing already known.
 

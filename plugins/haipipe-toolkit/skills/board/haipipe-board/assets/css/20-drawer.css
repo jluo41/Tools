@@ -410,3 +410,9 @@ body.split .q .secall{font-size:12px;padding:2px 11px}
    line beneath it, and the rest behind the click (JL 260802) */
 .fb details.it.row>summary>.ld{margin:.15em 0 .35em;padding-left:2px;
   color:var(--fg);opacity:.9}
+/* 🪪 the card button sits beside 💬 Comment and reads as the quieter of the
+   two: a comment is a person speaking, a card is a fact being filed. */
+#ccard{position:absolute;z-index:40;display:none;background:var(--card);
+ color:var(--accent);border:1px solid var(--accent);border-radius:var(--radius-control);
+ padding:5px 11px;font-size:13px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+#ccard:hover{background:color-mix(in srgb,var(--accent) 12%,var(--card))}

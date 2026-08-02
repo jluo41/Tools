@@ -3,18 +3,14 @@ state: 🟡 PARTIAL
 owner: JL
 method: one router, nine domains, one specialist per type, and no engine specifics above the specialist
 
-## Question
+## Opening
 What is in the reusable package, and which of its 44 skills does a human ever type? This is the folder written once and used by every project: 44 `SKILL.md` files, 7,134 lines, nine numbered domains, and one router that is supposed to be the only entry point to all of it.
 
 The number is the problem worth stating first. 44 skills is not obviously wrong for nine domains, but it is far past the point where a human can hold the roster, so the routing has to be perfect or the package is unusable. `SKILL.md` already carries an eight-branch scope cascade and a four-level type-inference cascade before it dispatches, which is the shape of a router doing too much thinking at the door.
 
 What makes it hard is that the domains are not peers. `1_data`, `2_nn`, `3_end` and `4_individual` are whole skill families with their own routers, moved under `task/` because data, NN, endpoint and individual inference are all execution domains. `5_fit` through `9_agent` are a single specialist each. So one folder holds both a family and a leaf at the same level, and nothing in the naming says which is which.
 
-## Boundary
-- ✅ Covered here
-  The layers, the direction of control, what a `haipipe-task-for-<type>` specialist owns, and what crosses this folder's edges.
-- ↪ Covered elsewhere
-  Which folder this is among the seven is `QA1`; the board that rules it is `QA3`; the group it writes into is `QA6`; the four phases it runs are the `QB` group; the acceptance test is `QE1`.
+**Covered elsewhere**: Which folder this is among the seven is `QA1`; the board that rules it is `QA3`; the group it writes into is `QA6`; the four phases it runs are the `QB` group; the acceptance test is `QE1`.
 
 ## Diagram
 ```
@@ -87,7 +83,7 @@ Plan, Build, Execute, Report; every type produces four sister files bound by one
 writes light artifacts to `results/` and heavy ones to `_WorkSpace/`. A specialist that needed a
 fifth phase would be a different skill family, not a new type.
 
-## Items to Finish
+## Aims
 - [ ] 🧭 Rule whether a family and a leaf may share a naming level
       `3_end/` holds 14 skills and `5_fit/` holds 1, at the same depth with the same kind of name. Either that is fine and should be said out loud, or the families should be marked.
 - [ ] ✂️ Rule how much thinking the door may do
@@ -97,7 +93,7 @@ fifth phase would be a different skill family, not a new type.
 - [ ] 📏 State what the router is allowed to keep
       "Engine-agnostic invariants" names three ref files today. Whether that list is closed, and what a tenth domain would be allowed to add, is not written.
 
-## Where we are
+## States
 The package runs and is in daily use across 67 groups. The routing rule is stated and Stata is a
 clean instance of it. Nothing about the board entry exists.
 

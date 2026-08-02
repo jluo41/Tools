@@ -3,7 +3,7 @@ state: ✅ SETTLED
 owner: JL
 method: check source lineage, unit integrity, wrapper ownership, and reader connection as distinct conditions
 
-## Question
+## Opening
 What must be verified before a Display unit is complete?
 
 A visually plausible file is not enough.
@@ -26,13 +26,13 @@ The recipe must read only declared inputs.
 A human decides whether the selected candidate supports the reader's argument.
 The Paper gate verifies that caption, label, placement, and sentence usage match the approved unit.
 
-## Items to Finish
+## Aims
 - [x] ✅ Define unit-level structural checks
       The Display stage checklist covers Intake, recipe, selected asset, preview, and wrapper.
 - [x] 🧠 Keep semantic approval human-owned
       Candidate promotion and Paper placement require a visible gate.
 
-## Where we are
+## States
 The generic contracts define refusal and integrity checks while Paper retains the final semantic decision.
 
 ## Files

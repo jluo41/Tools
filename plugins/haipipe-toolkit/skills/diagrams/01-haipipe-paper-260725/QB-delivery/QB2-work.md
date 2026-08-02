@@ -32,6 +32,9 @@ How discovery searches, or how a task computes, belongs to those layers; a sente
 **Say "grows the bank", not "gets an answer"**: the phrasing carries the point that the bank is permanent and the paper is one consumer of it.
 "Gets an answer" makes the bank sound like a service call and hides the reuse that justifies the whole arrangement.
 
+**A Decision Now row is read once, by a person in a hurry**: short sentences, plain words, real numbers.
+Any option a reader has to re-read has already failed, whatever it says.
+
 **The arc is an ORDER, not prose**: narrative here means which claim is revealed when, and the section list that follows from it.
 Wording belongs to QB6 Main and to section-edit; a sentence about phrasing has left this page.
 
@@ -307,18 +310,6 @@ So the reader's rule is the one in `§1.3`: the filename says which family wrote
 
 ## States
 
-### Decision Now
-
-- [ ] 🗣 Does the MISQ paper's narrative page move into `Delivery · Work` now?
-
-      📍 `Part` `### 5 · What the paper board shows`
-      🔔 `Why now` You ruled narrative into Work on 260802. This board says Work owns the arc, and the MISQ paper still lists `S-Venue-2-narrative.md` under `Delivery · Opening`, so the two disagree and the paper is the stale one.
-      ⭐ `A ·` Move it: one line in the paper's `0-lifecycle/board.md` `## Pages`, no rename and no file move, because the family and filename do not change. Recommended: it makes the live paper obey a ruling that is already made, and it is reversible in one line.
-      `B ·` Leave it and reopen the 260802 ruling, so narrative goes back to Opening on both boards. Costs nothing on the paper and undoes today's decision.
-      `C ·` Leave it and let paper boards lag the design board by policy, deciding the two need not agree. Cheapest today, and it means a reader cannot trust either board about where a stage lives.
-      🛑 `Blocks` nothing. Both boards render, and the paper compiles either way.
-      🤖 `If nobody answers` A takes effect, recorded in Log as CC's ruling and overturnable like any other.
-
 ### A1 · 📜 The delivery contract
 - ✅ A1.1 · JL ruled Opening then Work on 260729, and `## Pages` carries that order.
 - ✅ A1.2 · Both banks are named as peers here and in the Law, and the two evidence concerns describe returned answers rather than commissioning.
@@ -336,7 +327,7 @@ So the reader's rule is the one in `§1.3`: the filename says which family wrote
 - 🔨 A4.2 · Written into `§4.3`. The readiness legend is the template's first section, so the tags exist; no check reports an untagged beat.
 
 ### A5 · 📋 What the paper board shows
-- 🧠 A5.1 · Waiting on JL. Two of three pages are in place; the narrative page is one `## Pages` line away, and the choice is the first row in Decision Now above.
+- ❄️ A5.1 · Ruled and held. JL answered A on 260802, so the move is decided and recorded in `## Law`; the edit itself is parked while we work the Paper Skill-Board, and it thaws when we turn to the MISQ paper.
 
 ### P · 🏁 Page-level
 - ❄️ P1 · Held. Cross-project bank reuse needs a page of its own and no paper has demanded one yet, so this concern is ruled without it and P1 thaws when a second paper reaches for the first paper's evidence.
@@ -362,6 +353,10 @@ Work records the need and grows the owning bank through probes.
 Narrative is Work's: the arc is built from the claim ledger, never from the promise (JL 260802: "I think the narrative should go to the Work as well").
 Hypotheses stay venue-neutral on the claims page; the venue-specific reframing belongs to pitch.
 
+**The MISQ paper's narrative page moves into this group** (JL 260802, answering Decision Now with "A": "yes, we will do").
+It is one line in the paper's `0-lifecycle/board.md`, with no rename and no file move.
+Rejected: taking back the 260802 narrative ruling, and letting paper boards lag this board by policy, which would leave a reader unable to trust either board about where a stage lives.
+
 ## Glossary
 
 - **Bank**: a store of evidence outside the paper, one for discovery and one for tasks, shared across papers.
@@ -371,6 +366,8 @@ Hypotheses stay venue-neutral on the claims page; the venue-specific reframing b
 
 ## Log
 
+260802 · JL ruled option A: the narrative page moves into this group on the MISQ paper. The ruling is in `## Law` with its rejected options; the edit is parked, because JL asked to stay on the Paper Skill-Board, so A5.1 is ❄️ held rather than done.
+260802 · JL: the decision row was hard to read in one pass. Rewritten in short sentences, with the disagreement stated as two facts rather than one long clause.
 260802 · JL: a decision belongs in `### Decision Now` where he can tick it, not in a chat reply. States gained its first Decision Now row, on whether the MISQ narrative page moves into this group, and A5.1 now points at it instead of describing it.
 260802 · JL: say what the paper board is expected to show. `### 5` added, measured against the MISQ paper's `0-lifecycle/board.md`: `Delivery · Work` carries two of this concern's three pages, and the narrative page is still listed under `Delivery · Opening`. A5.1 carries that gap, which is a `## Pages` edit on the paper rather than a file move.
 260802 · Content restructured to one division per stage, following QB1: `### 2 · Stage Resource`, `### 3 · Stage Claims`, and `### 4 · Stage Narrative`, each written from its own `template.md`. Two facts came out of it. The division COUNT is not fixed at four: resource carries one per resource, claims carries two, narrative carries one per manuscript section, which is QB4 §3.2.2 deciding by artifact rather than by template. And narrative keeps `board_family: Venue` unit 2 from JL's 260725 ruling, so this concern's three stages land in two families and there is no `S-Work-2`.

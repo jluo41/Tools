@@ -4,7 +4,7 @@ state: 🟡 PARTIAL
 owner: JL
 method: one fixed payload block, copied rather than composed, and a ceiling gate that runs before any of it
 
-## Question
+## Opening
 This is the single point where the wall is crossed; what is allowed through, and what decides whether the crossing happens at all?
 The `### q-executor` text verbatim and nothing else, after a ceiling gate compares the entry's depth against what the run is authorized to spend.
 The payload is a block to copy rather than a message to write, because a composed message is where helpfulness leaks a stake.
@@ -13,12 +13,7 @@ The failure mode here is not malice, it is consideration.
 Sending "a bit of context" reads as helpful and is exactly what makes the answer unreusable, so the defence is that there is nothing to compose.
 One block, copied, so a reviewer can compare what was sent against one known string instead of judging whether a paraphrase leaked.
 
-## Boundary
-- ✅ Covered here
-  The payload, the ceiling gate that precedes it, what deferring means, and the division of labour with the executor.
-- ↪ Covered elsewhere
-  The agent that receives the payload is `QA3`; the verdict this step consumes is `QB3`'s; where the returned path lands is `QB5`.
-  What a paper may authorize, and who raises it, is `QB9@paper`.
+**Covered elsewhere**: The agent that receives the payload is `QA3`; the verdict this step consumes is `QB3`'s; where the returned path lands is `QB5`. What a paper may authorize, and who raises it, is `QB9@paper`.
 
 ## Diagram
 ```
@@ -79,7 +74,7 @@ An application worker following only the shared model has to derive it, and the 
 The constitution states the deferral rule for the layer, the paper checker enforces it, and the application checker does not emit the code at all.
 So an application entry can sit `deferred` with no depth-and-cost line and pass a gate that would red the identical entry in a paper.
 
-## Items to Finish
+## Aims
 - [x] 📦 One copyable dispatch block; variants are not to be invented
 - [x] 🎯 The executor returns a PATH to the answering QA file
 - [x] 🚧 The ceiling gate runs before any dispatch, and deferring is a declared outcome
@@ -95,7 +90,7 @@ So an application entry can sit `deferred` with no depth-and-cost line and pass 
 - [x] ❄️ The ceiling gate stops a cold reader, unprompted
       The `QD2` run on 260726 read the stage contract nobody had mentioned, found `probe_depth: 0`, mapped `bank: new` onto depth 3, declined to dispatch, and wrote a declared deferral naming the command that would release it.
 
-## Where we are
+## States
 Built and running, with the payload rule doing the work it was designed to do: there is nothing to compose, so there is nothing to leak.
 
 Splitting this step onto its own page found two rules that bind at the crossing and live in only one of the two adapters.
