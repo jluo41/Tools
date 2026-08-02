@@ -5,6 +5,26 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.107.0 - 2026-08-02
+
+- A hidden `⧉` on every `Decision Now` row (JL: "could you give a hidden copy
+  button so I can copy the decision easier?"). A decision row is the one block a
+  person routinely moves OFF the board, into a chat or a message, and copying it
+  by hand meant dragging across ten wrapped lines and collecting the checkbox
+  glyph with them. `assets/js/45-decision-copy.js` + `.dcopy` in `10-focus.css`.
+- Hidden at rest, revealed on `:hover` and `:focus-within` so the keyboard
+  reaches it, and always visible on coarse pointers. Scoped to rows under a
+  `Decision Now` summary; the board's other checkbox rows are legacy checklists
+  nobody moves anywhere.
+- Two defects found by CLICKING it, neither visible in the markup:
+  the first version looked for the heading in `previousElementSibling`, but a
+  `###` inside States renders as `details.csec > summary`, so nothing ever
+  matched and no button appeared; and `rowText` used `innerText`, which reads
+  LAID-OUT text, so with the rows inside shut `<details>` it returned '' and the
+  button flashed ✓ while handing the clipboard an empty string. It now walks a
+  detached clone with `textContent`. Verified over CDP: 1412 chars, 10 lines,
+  checkbox stripped, 8/8 rows on QB2 and 5/5 on QA3 and QC1b.
+
 ## 0.106.0 - 2026-08-02
 
 - The live `mode` now decides the shape of a reply's BODY (QA3 §6, JL 260802):
