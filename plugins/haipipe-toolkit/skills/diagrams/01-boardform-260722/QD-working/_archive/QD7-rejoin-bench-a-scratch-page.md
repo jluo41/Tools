@@ -1,5 +1,13 @@
 # Rejoin bench: a scratch page for driving the drawer
-state: 🔴 OPEN
+state: ⏸️ ARCHIVED · never written, and the topic was already owned
+
+ARCHIVED 260802 (JL: "why we have the QD7, what does that mean? I thought it should go into the QD2").
+He was right on both halves. This file was a stub from the index page's `＋` button and never got a
+sentence of its own; every placeholder below is still the template's. And rejoin is `QD2`'s: the code
+is `assets/js/10-drawer/20-chat/10-sessions.js`, the Aim is `QD2` A9.1, "a turn outlives the request
+that started it, and a returning reader rejoins it where it stopped", and that Aim was proven in a
+real browser on 260802. So this page was a duplicate of finished work. Its number went to
+`QD7-pagecost` because this lane closes its gaps.
 owner: JL
 
 ## Opening

@@ -230,11 +230,11 @@ Agent-1-haipipe-board-reviewer-agent.md
 Agent-2-haipipe-board-creator-agent.md
 ### QD · Working with Chat
 How people and agents work on a live board.
-QD1 a session per question, QD2 the SDK chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, QD6 the status strip, and QD8 what a page costs to open and what we spend to make it less.
+QD1 a session per question, QD2 the GUI chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, QD6 the status strip, and QD7 what a page costs to open and what we spend to make it less.
 Numbers in this lane are POSITIONS, and the lane is renumbered to close its gaps (JL 260801: "为啥不按序号来排?").
 The earlier rule was the opposite, that a number is a permanent address and a retired page leaves a hole, which is how six live pages came to be numbered up to QD14; the holes were doing more damage than the renumbering they were meant to prevent, because a reader cannot tell a gap from a missing page.
 Renumbered 260801: QD14 (the terminal's form) became QD4 so it sits beside the engine it designs, and QD13 (the split workspace) became QD5; QD1, QD2, QD3 and QD6 did not move.
-QD8 arrived from `QC` on 260802 (JL: "move it"): what a page costs to open was opened in the engine lane because every lever is engine code, and moved here because WAITING is what stops the work and this lane is where the work happens. The rule it sets for the next page like it is that a lane is chosen by where a cost is FELT, not by which file holds its fix.
+QD7 arrived from `QC` on 260802 (JL: "move it") and took the `QD7` position on 260802 when the empty `QD7-rejoin-bench` stub was archived, because this lane closes its gaps: what a page costs to open was opened in the engine lane because every lever is engine code, and moved here because WAITING is what stops the work and this lane is where the work happens. The rule it sets for the next page like it is that a lane is chosen by where a cost is FELT, not by which file holds its fix.
 What the retired pages took with them is recorded here rather than in a gap: QD4 (live pages) was archived 260801 and its file keeps its own name, `_archive/QD4-liveupdate.md`; the drawing-attach page moved to QB as `QB8`; the board-level agent was archived once QD1 settled that a chat attaches at three levels; and the 260731 split into QE · Sharing carried off five more.
 QD4 is QD3's design half, split out on 260801 when the terminal proved hard to use on a phone: QD3 owns the engine and QD4 owns the FORM, meaning where typing happens, what the pane shows when 80 columns will not fit, and what the page owes a reader who switches away and comes back.
 QD5 asks whether the board should be operated as three side-by-side panes (index · page · chat) rather than as one html document that swaps its own middle; it measured the four causes of the unsmooth refresh, ruled the mechanism as three same-origin iframes in one shell page on 260801, and is the successor to the archived live-update page's in-place-swap approach.
@@ -243,12 +243,12 @@ QD5 asks whether the board should be operated as three side-by-side panes (index
 ⚙️ ENGINE                      📋 PAGES · the working record         📂 FOLDER
 ─────────────────────────      ─────────────────────────────────    ────────────────────────
 serve.py                   ◀── QD1   a session per question        ──▶  session: in board.md
-assets/board.js #chat      ◀── QD2   SDK · the chat box            ──▶  live replies
+assets/board.js #chat      ◀── QD2   GUI · the chat box            ──▶  live replies
 serve.py                   ◀── QD3   terminal · raw + smooth panes ──▶  a real CLI session
 30-terminal.js             ◀── QD4   the terminal's FORM per device──▶  phone · desktop
 serve.py build.py          ◀── QD5   each pane refreshes on its own──▶  index · page · chat
 serve.py                   ◀── QD6   the reply status strip        ──▶  every reply's footer
-serve.py live/activity.py  ◀── QD8   what a page COSTS to open     ──▶  bytes · lanes · the browser
+serve.py live/activity.py  ◀── QD7   what a page COSTS to open     ──▶  bytes · lanes · the browser
 ```
 QD1-chat-per-question.md
 QD2-chat-sdk.md
@@ -256,8 +256,7 @@ QD3-chat-terminal.md
 QD4-terminal-design.md
 QD5-split-workspace.md
 QD6-session-status-strip.md
-QD7-rejoin-bench-a-scratch-page.md
-QD8-pagecost.md
+QD7-pagecost.md
 ### QE · Sharing
 How a board is hosted, mounted, and opened by someone who is not its author.
 
@@ -319,7 +318,8 @@ QDa4                QD-working/_archive/QD4-liveupdate.md
 QD4-liveupdate      QD-working/_archive/QD4-liveupdate.md
 QDa5                QB-delivery/QB8-diagramattach.md
 QD13                QD-working/QD5-split-workspace.md
-QC5-pagecost        QD-working/QD8-pagecost.md
+QC5-pagecost        QD-working/QD7-pagecost.md
+QD8-pagecost        QD-working/QD7-pagecost.md
 QD14                QD-working/QD4-terminal-design.md
 QDa6                QD-working/QD6-session-status-strip.md
 QDa7                QD-working/_archive/QD7-boardagent.md

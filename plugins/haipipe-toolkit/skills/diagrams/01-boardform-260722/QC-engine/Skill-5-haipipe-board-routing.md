@@ -1,4 +1,4 @@
-# haipipe-board-routing · v0.6.1
+# haipipe-board-routing · v0.8.0
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -12,12 +12,12 @@ Its result determines whether the Board stays current without silent page creati
 It is healthy when every input lands, becomes an explicit proposal, or is reported to the outside owner.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 609036cd9d948960 board/haipipe-board-routing -->
+<!-- haipipe:skill:tree:start ead627d66d7dae7a board/haipipe-board-routing -->
 
 ```
 haipipe-board-routing/
-  CHANGELOG.md          78 ln  haipipe-board-routing · Changelog
-  SKILL.md             101 ln  /haipipe-board-routing · one input, one owning page, one anchored write
+  CHANGELOG.md          95 ln  haipipe-board-routing · Changelog
+  SKILL.md             118 ln  /haipipe-board-routing · one input, one owning page, one anchored write
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -30,9 +30,9 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 609036cd9d948960 board/haipipe-board-routing -->
+<!-- haipipe:skill:body:start ead627d66d7dae7a board/haipipe-board-routing -->
 
-**haipipe-board-routing** · `0.6.1` · last shipped 2026-08-02
+**haipipe-board-routing** · `0.8.0` · last shipped 2026-08-02
 
 - folder   `board/haipipe-board-routing/`
 - tools    not declared
@@ -93,7 +93,7 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       reason in Log. It may not close a `### Decision Now` checkbox or change a
       page-level human gate. Every proposal lands under the owning page's
       `### Decision Now`, inside `## States` (JL 260731: never make the decision in
-      chat); the human ticks.
+      chat); a row the human has answered is closed with the answer recorded, and a row nobody answered waits for them.
       **The cross-board law (QB1 §4).**
       Mechanical writes carry no judgement and are always allowed.
       Editorial writes are never ours on a board that is neither the skill set nor the board being worked: there, the output is a report addressed to that board's owner, not an edit.
@@ -109,6 +109,20 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
                  Decision Now rather than staying in chat
       REPORTED   the owner is another family's board: a report, not an edit
       ```
+      **The gate before the reply (QA3, JL 260802).**
+      Five conditions hold before an agent may tell a person a round is done, and `cli/gate.py` runs the two that are mechanical:
+      ```
+      ①  WRITTEN BACK   every change has a record on the page that owns it
+      ②  REBUILT        board.html came from the .md as it stands now
+      ③  CHECKED        0 errors, and no page this round touched gained a warning
+      ④  REACHABLE      the tab the person opens can run what shipped
+      ⑤  STATED         the reply names which of ①-④ ran, with ③'s numbers
+      ```
+      Run `python3 cli/gate.py <board> --start` before the work and `cli/gate.py <board>` after it.
+      ③ compares PER PAGE, never the board's total, because a second session writing the same board moves the total underneath you: it went 304 to 276 during one round on 260802. A warning the round introduced blocks the handback; the board's standing warnings are out of scope.
+      ① and ④ are printed as not tested, because whether a change was substantive and whether the person's own tab has the new assets are judgments the command cannot make. A gate that reports a condition it did not test is worse than no gate.
+      A round that changed PROSE also owes a cold read by `haipipe-board-reviewer-agent`; a round that changed only mechanics does not, since there is nothing for a reader to judge.
+      A failed gate is reported, never hidden. "The checker is red and here is why" is worth more than "done" and wrong.
       **The reply contract (JL 260731).**
       Whatever the end state, the reply closes with the routing footer: one line per write, `page id · ## section`, so the human sees where every record landed without hunting.
       Decisions are LISTED IN BRIEF and never re-argued (JL 260802, amending the count-only rule of 260731): the reply gives one line per Decision Now row, the ask plus the recommended option, so the human can see what is waiting on them without opening the page.
@@ -136,10 +150,23 @@ Page generated 260731 1117. Nothing ruled yet.
 ## Log
 260731 1117 · page generated from `board/haipipe-board-routing/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 609036cd9d948960 board/haipipe-board-routing -->
+<!-- haipipe:skill:log:start ead627d66d7dae7a board/haipipe-board-routing -->
 
-Converted from the skill's own `CHANGELOG.md`: 7 releases.
+Converted from the skill's own `CHANGELOG.md`: 9 releases.
 
+260802 · `0.8.0`
+      - Carries QA3's five-condition gate that runs BEFORE the reply, with `cli/gate.py`
+        as its one command. ③ compares warnings PER PAGE so a concurrent session cannot
+        fail your round; ① and ④ are reported as not tested rather than assumed. A round
+        that changed prose also owes a cold read; a mechanics-only round does not.
+260802 · `0.7.0`
+      - A machine now CLOSES a `### Decision Now` row once the person has answered it,
+        recording which option, who ruled, when, and the words they used (JL 260802:
+        "I think you should close it automatically, please go ahead and do it").
+        It still may not close a row nobody answered, and may not flip a page-level
+        human gate; a machine's own recommendation is never an answer. Before this a
+        row answered in chat and acted on within the hour still rendered as pending,
+        so the page reported work as waiting that had already shipped.
 260802 · `0.6.1`
       - Repointed the two inherited write laws and the claim-automation citation after `QC1b`'s
         260802 Content rebuild: `QC6 §9` is now `QC1b §4` and `QC6 §10` is now `QC1b §5`.

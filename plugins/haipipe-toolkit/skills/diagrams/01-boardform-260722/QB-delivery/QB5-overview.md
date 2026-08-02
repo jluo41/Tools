@@ -5,18 +5,19 @@ method: one sentence per source line; everything that attaches to a sentence get
 
 ## Opening
 What is the smallest unit a board can address, and what attaches to it?
-A board writes one sentence per source line, so that line is the anchor a reader clicks.
-What attaches is a `>` line written straight under it: a citation, a remark, a record of an edit.
-Nothing is stored to link them, so a record belongs to the sentence above it and to nothing else.
+A board writes one sentence per source line, and that line is what a reader clicks.
+Two things hang off it: a card on a few marked words, and `>` lines under the whole line, which take a citation, a remark, or an edit.
+Nothing is stored to link either one, so position alone decides what belongs to what.
 This page settles the sentence as that unit and hands each attachment to its own page.
 
 **Where this page sits**: `QB4` takes the whole page and the order its sections keep, and it stops there.
 This page is the next rung down the same ladder: Board, Group, Page, Section, Sentence.
 The sentence is where a reader's finger actually lands, so it is the last rung and nothing sits below it.
 
-**What "attaches" means here**: a record written on its own line, starting with `>`, directly beneath a sentence.
-`> Citation: Smith 2019` is one, and `> Comment JL this number moved · 260802 0110` is another.
-The sentence keeps its own words on stage; its records sit under it and stay shut until someone clicks.
+**What "attaches" means here**: two things, and they do not attach the same way.
+A lane is a record on its own line, starting with `>`, written straight beneath the sentence: `> Citation: Smith 2019`, or `> Comment JL this number moved · 260802 0110`.
+A card is attached to a few words INSIDE the sentence, such as the `\citep{smith2019}` sitting in it, and clicking those words shows the reference over the line.
+The sentence keeps its own words on stage; the card and the lanes both stay shut until someone clicks.
 
 **Why it matters**: a claim and its evidence are read together or they are not read at all.
 Push the evidence to the bottom of the page and the reader has to work out which sentence it came from.
@@ -37,21 +38,26 @@ The badge is `💬`, `✎`, or `⚑`, and a wrong glyph here teaches a reader to
 
 ## Diagram
 
-**The sentence and its five faces**: one source line, and the page that rules each thing hanging off it.
+**The sentence and its two surfaces**: where a reader clicks, what opens there, and which face rules it.
 
 ```
-📄 ONE SOURCE LINE = 🎯 ONE ANCHOR · everything else hangs off it
+✏️ ONE SOURCE LINE · TWO PLACES A READER CAN CLICK
 
-   ✏️ "The coefficient is 0.42 in the pooled model."      💬 3
-        │
-        ├── 💬 a person's remark    > Comment JL …         QB5b
-        ├── ⚑ a typed lane         > Citation: …          QB5a
-        ├── ✎ a change record      > ✎ ~old~ *new*        QB5c
-        ├── 🤖 what an agent is told the focus packet       QB5d
-        └── 🧹 clean up             filter · archive        QB5e
+   "The coefficient is 0.42 in the pooled model \citep{smith2019}."  ⚑ 3
+    └─────────────── ② the whole line ───────────┘ └─ ① the words ─┘
+                    │                                      │
+                    ▼                                      ▼
+   📎 the lanes · a drawer under the line     🪪 the card · opens over the line
+      ⚑ > Citation: · > Value: …    QB5a         the reference as printed
+      💬 > Comment JL …             QB5b         the rows of a table
+      ✎ > ✎ ~old~ *new*            QB5c         both pictures of a figure
+      🤖 the packet an agent gets   QB5d
+      🧹 filter · resolve · archive QB5e
 
-   🏷 binding   adjacency alone · no id · no sidecar file
-   🔒 default   SHUT · one click opens
+   🏷 anchor    ① the marked words          ② the whole sentence
+   🔢 how many  ① one thing                 ② any number, any kind
+   🚦 built     ① markers only              ② yes
+   🔒 default   both SHUT · one click opens
    🎖 badge     💬 person waiting ▸ ✎ change ▸ ⚑ lane
 ```
 
@@ -79,7 +85,7 @@ The badge is `💬`, `✎`, or `⚑`, and a wrong glyph here teaches a reader to
 This sentence carries three typed lanes, and none of them is stored anywhere but on the lines below it.
 > Citation: `QB5a` rules what may attach to a sentence and how the drawer renders it.
 > Value: 3 lanes are attached here, which is the number the badge counts.
-> Display: the figure in `## Diagram` draws the same five branches.
+> Display: the figure in `## Diagram` draws these lanes as the second of the sentence's two surfaces.
 
 #### 1.2 · A sentence a person is waiting on
 (one remark is written under this sentence, so its badge reads 💬 1 and outranks any record)
@@ -99,7 +105,59 @@ Double-click it to edit the source sentence, which is what wrote the `✎` recor
 On touch there is no hover, so `⋯` opens the same Comment, Chat, and Edit actions.
 Filtering, resolving, archiving, and restoring these records is designed on `QB5e` and is not built yet.
 
-### 2 · Why adjacency, and not new syntax
+### 2 · Two surfaces: the card on the words, the lanes under the line
+**What each surface is for**: the thing it holds, how many it holds, and what it costs the sentence.
+
+```
+🪪 THE CARD                      📎 THE LANES
+──────────────────────────────   ──────────────────────────────
+anchored on   a few words        anchored on   the whole line
+opens         over the prose     opens         a drawer below it
+holds         one thing          holds         any number
+answers       "what is this?"    answers       "what do we know
+                                                about this line?"
+kinds         a reference · a    kinds         Citation · Value ·
+              table's rows · a                 Display · Check ·
+              figure's pictures                Q-consumer · Link ·
+                                               Source · Note ·
+                                               Comment · ✎ edit
+who rules it  QB5a               who rules it  QB5a QB5b QB5c
+```
+📌 Establishes the split JL asked for on 260802: two surfaces, two anchors, and one of them is not built yet.
+
+#### 2.1 · The card: click the words, see the thing
+(a reader checking a claim gets its source without leaving the line)
+A card belongs to a SPAN of words inside the sentence, not to the line as a whole.
+> Card SPAN of words: The words are underlined, not boxed. You clicked them and this opened over the prose, which is the whole of what a card does. The line below is the record that put it here, and it is one line anyone could have typed.
+The record that made those words clickable is `> Card SPAN of words: …`, written under this sentence like every other lane.
+Clicking the words opens the card in place, over the prose, and clicking away shuts it again.
+It carries the thing itself: the reference as the paper's own style prints it, the rows of a table, or both pictures of a figure.
+One span holds one card, because the words name one thing and there is only one right answer for them.
+
+#### 2.2 · What the card can do today, and what it cannot
+(a marker the build already resolves becomes a card; a span a reader picks does not)
+Today the words have to be a marker the build knows how to look up.
+`\citep{}`, `\cite{TOADD}`, `{VAL:? …}`, `[Q-X-n]`, `displayNN`, and `\ref{tab:|fig:}` each become a clickable chip, resolved against the paper's `.bib`, its `1-probes/`, and its `displays/`.
+That is 258 cards on the MISQ board, and it stays script-free, because `popovertarget` alone opens the panel.
+What is missing is the general case: pick any words on the rendered page, attach a card to them, and reopen it with the same click.
+`QB5a` owns that gap, and the `### Decision Now` row below asks how the binding gets written.
+
+#### 2.3 · The lanes: one line each, and any kind at all
+(the sentence's own record, which takes whatever the work produces)
+A lane is one `>` line written directly under the sentence, and it stays shut until the sentence is clicked.
+> Card stays shut: Shut is the default for every attached record (JL 260802). The badge at the end of the line is what tells you something is under there.
+The first word names the kind: `> Citation:` 📚 · `> Value:` 🔢 · `> Display:` 🖼 · `> Check:` ⚠️ · `> Q-consumer:` 🔎 · `> Link:` 🔗 · `> Source:` 📄 · `> Note:` 📝.
+A person's remark is `> Comment WHO …` and an edit is `> ✎ ~old~ *new* · WHO · time`, so evidence, discussion, and history all ride the same grammar.
+The list is open on purpose: a new kind is a new first word in `src/body.py`'s `LANE` pattern, and nothing else changes.
+
+#### 2.4 · Why they stay two things and not one
+(merging them would either bury the reference or force a remark to claim words it is not about)
+The card answers what a phrase IS, and the lanes answer what is known about the LINE.
+Put the reference in the drawer and it sits under twelve unrelated rows, so the reader stops opening it.
+Put a remark on a span and the writer has to pick words for a thought that was about the whole claim.
+So the anchor differs by design: the card takes the words, the lanes take the line, and neither one has to pretend to be the other.
+
+### 3 · Why adjacency, and not new syntax
 **Three ways to link a record to a sentence**: what each costs, and what breaks it.
 
 ```
@@ -121,32 +179,32 @@ Filtering, resolving, archiving, and restoring these records is designed on `QB5
 ```
 📌 Establishes why nothing new was invented: the files already carried `>` runs under the sentences they discussed.
 
-#### 2.1 · The convention was already there
+#### 3.1 · The convention was already there
 (the paper unit docs wrote review threads under a sentence long before a board rendered them)
 The paper unit docs already write review threads and `> Check:` blocks under the sentence they discuss.
 Those files gained the behavior with zero edits the first time their board rebuilt.
 That is the test this page keeps: every attached record is one line an author could have typed by hand.
 
-#### 2.2 · Adjacency is a real binding, not a habit
+#### 3.2 · Adjacency is a real binding, not a habit
 (a lane placed after a paragraph attaches to the last sentence of it, which is not the one it is about)
 A `>` line attaches to the sentence above it and to nothing else: no marker, no id, no sidecar file.
 The MISQ rollout found the failure this creates.
 A lane sat after a paragraph while its own prose said "the sentence above", so it had silently attached to the wrong sentence and had to be moved.
 A concern that belongs to the whole page has no sentence to attach to, and it belongs in `## Aims`, or in that Aim's `Plan` when the move is temporary.
 
-#### 2.3 · One lane is one source line
+#### 3.3 · One lane is one source line
 (a wrapped lane becomes its own row on the page and captures every lane below it)
 A lane is one source line, however long it runs.
 Wrap it and the second half becomes its own sentence row, takes its own badge, and captures every lane written beneath it.
 The markdown looks fine and only the rendered page shows the broken row, which is the same one-sentence-per-line rule the prose already obeys.
 
-### 3 · The family, one page each
+### 4 · The family, one page each
 **Who rules what**: the five faces, and the one thing each of them owns.
 
 ```
 🗺 FIVE FACES · one question each · QB5 is the front door
 
-  QB5a  evidence card       typed lanes · ⚑ badge · the drawer
+  QB5a  evidence card       BOTH surfaces · the card AND the typed lanes
   QB5b  comments            > Comment WHO · the write-back
   QB5c  editing             one line replaced · one ✎ record
   QB5d  chat                the address · what an agent is handed
@@ -156,20 +214,21 @@ The markdown looks fine and only the rendered page shows the broken row, which i
 ```
 📌 Establishes the map: every question about a sentence has exactly one owning face, and this page is not it.
 
-#### 3.1 · The card, and what may attach
-(QB5a rules the typed lanes and the drawer they open in)
-`QB5a` renders the sentence clean and shows its records on click.
-It owns the typed lanes: Citation, Value, Display, Check, Q-consumer, Link, Source, and Note.
-It also owns the ⚑ badge, the click-to-add form, and the inline-marker chips that a paper board resolves at build time.
+#### 4.1 · The card, and what may attach
+(QB5a is the only face holding both surfaces, so it is where the split from `### 2` has to land)
+`QB5a` renders the sentence clean and shows what belongs to it on click.
+On the lane side it owns the typed kinds, Citation, Value, Display, Check, Q-consumer, Link, Source, and Note, plus the ⚑ badge and the click-to-add form.
+On the card side it owns the inline markers a paper board resolves at build time, and the open question of letting a reader mark a span by hand.
+Its own title still says "click a sentence", which was true when the card and the lane were one thing, and A2.1 tracks the repair.
 
-#### 3.2 · The remark, and the edit
+#### 4.2 · The remark, and the edit
 (QB5b writes what a person says; QB5c replaces the sentence and records the change)
 `QB5b` writes one remark directly under the sentence a reader selected, and the form to write is `> Comment WHO …`.
 The older `> JL:` form still renders, so nothing already written breaks, and `check.py` warns on it inside Content.
 `## Discussion` is a different thing and is untouched: it keeps `> JL:` with `>> CC0726:` replies, because that is a thread with nested answers rather than a note on one sentence.
 `QB5c` replaces one plain source line and writes one `> ✎` record beside it, so the old wording is never stored a second time.
 
-#### 3.3 · The address, and the lifecycle
+#### 4.3 · The address, and the lifecycle
 (QB5d hands one location to an agent; QB5e keeps the records from piling up forever)
 `QB5d` gives every heading and every Content sentence a generated address, and rules what an agent acting on that location is handed.
 `QB5e` rules what happens as records pile up: typed views, record states, previewed cleanup, archive, restore, and purge.
@@ -180,37 +239,61 @@ The older `> JL:` form still renders, so nothing already written breaks, and `ch
 - A1.1 · A reader meets the sentence by using one, before the page explains it.
   **Done when:** `### 1` carries one live row per badge kind, and each row's records, address, and chat action can be reached on the rendered page.
 
-### A2 · 🔗 Why adjacency, and not new syntax
-- A2.1 · Adjacency stays the only binding between a sentence and its records.
+### A2 · 🪪 Two surfaces: the card on the words, the lanes under the line
+- A2.1 · The two surfaces stay apart: a card anchors to marked words, a lane anchors to the whole line.
+  **Done when:** Every face states which of the two it rules, and none of them describes a card as a thing a sentence click opens.
+- A2.2 · A reader can put a card on any words they pick, not only on a marker the build already resolves.
+  **Done when:** A span selected on a rendered page gains a card, the write lands in the markdown, and the same click reopens it after a rebuild.
+- A2.3 · The lane's kinds stay an open list, so new work costs a first word and nothing else.
+  **Done when:** Every kind named in `### 2.3` renders with its own glyph, and adding one touches only `src/body.py`'s `LANE` pattern.
+
+### A3 · 🔗 Why adjacency, and not new syntax
+- A3.1 · Adjacency stays the only binding between a sentence and its records.
   **Done when:** Every attached record on this board is one line an author could have typed, with no id in the prose and no second file.
 
-### A3 · 🗺 The family, one page each
-- A3.1 · Every question about a sentence has exactly one owning face.
+### A4 · 🗺 The family, one page each
+- A4.1 · Every question about a sentence has exactly one owning face.
   **Done when:** JL confirms the map, and `QB5a` through `QB5e` each name the one attachment they rule.
 
 ## States
 ### Decision Now
+- [ ] 🗣 How do a few words carry a card, when adjacency can only bind a whole line?
+      📍 `Part` `### 2.2 · What the card can do today, and what it cannot`
+      🔔 `Why now` JL asked on 260802 for a card a reader reaches by clicking the words themselves; today only a marker the build already resolves becomes one, so nobody can attach a card by hand.
+      `A ·` the words must already be a marker, as they are today, which keeps board-invented ids out of the prose and leaves the paper dialect as the only source of cards.
+      ⭐ `B ·` a reader may mark any span, and the write puts a plain marker into the prose, which buys the general case and costs one visible token inside the sentence.
+      `C ·` a reader may mark any span, and the binding is stored outside the prose by character offset, which keeps the sentence clean and breaks the first time anyone edits the line.
+      🛑 `Blocks` A2.2, and with it every card on a sentence that carries no paper marker.
+      🤖 `If nobody answers` nothing takes effect, because this row blocks; C is recorded only so the option that `### 3` already rejected is not proposed again.
+
 - [ ] 🗣 Is the sentence family carved into the right five faces?
-      📍 `Part` `### 3 · The family, one page each`
+      📍 `Part` `### 4 · The family, one page each`
       🔔 `Why now` The faces were carved on 260729 and renamed `QB5a` to `QB5e` on 260731; nobody has confirmed the split since.
       ⭐ `A ·` accept the five as drawn, which fixes where every future sentence rule gets written.
       `B ·` name a face that is missing, or two that should merge, which reopens the ids and every line pointing at them.
       🛑 `Blocks` nothing; all five pages render and are being worked.
-      🤖 `If nobody answers` A takes effect, and the map stands as `### 3` states it.
+      🤖 `If nobody answers` A takes effect, and the map stands as `### 4` states it.
 
 ### A1 · 🧪 Try it on this row
 - ✅ A1.1 · `### 1` carries three live rows, one per badge kind. All three are shut on the rendered page and each badge names its own kind.
 
-### A2 · 🔗 Why adjacency, and not new syntax
-- ✅ A2.1 · Settled and live on every board. `src/body.py` binds a `>` run to the plain sentence above it and reads nothing else.
+### A2 · 🪪 Two surfaces: the card on the words, the lanes under the line
+- 🔨 A2.1 · `### 2` and the `## Diagram` figure now split the two anchors. `QB5a` still opens with "click a sentence, see its apparatus", which is the lane gesture and not the card's, so that title is the line left to repair.
+- ⬜ A2.2 · Not started. A card exists only where a marker does: `\citep{}`, `\cite{TOADD}`, `{VAL:? …}`, `[Q-X-n]`, `displayNN`, `\ref{}`, measured at 258 cards on the MISQ board. Selecting arbitrary words attaches nothing, and the Decision Now row above is what unblocks it.
+- ✅ A2.3 · Eight typed kinds plus `> Comment WHO` and `> ✎` all render from their first word, through the single `LANE` pattern at `src/body.py:704`.
 
-### A3 · 🗺 The family, one page each
-- 🧠 A3.1 · The five faces exist and each names the attachment it rules. The map itself waits on the Decision Now row above.
+### A3 · 🔗 Why adjacency, and not new syntax
+- ✅ A3.1 · Settled and live on every board. `src/body.py` binds a `>` run to the plain sentence above it and reads nothing else.
+
+### A4 · 🗺 The family, one page each
+- 🧠 A4.1 · The five faces exist and each names the attachment it rules. The map itself waits on its Decision Now row above.
 
 ## Files
 ### ⚙️ Engines · what RUNS this subject
 - `src/body.py`
-  RENDER. One sentence per source line, the adjacency walk that folds a `>` run under the sentence above it, and the badge that names which kind is underneath.
+  RENDER, both surfaces. The `LANE` pattern and the adjacency walk that folds a `>` run under the sentence above it, the badge that names which kind is underneath, and `_chip`, which turns a marked span into a button and its card into a `popover` panel.
+- `src/dialect_paper.py`
+  RESOLVE. What a marked span is looked up against before it can become a card: the paper's `.bib`, its `1-probes/`, and its `displays/`.
 - `cli/serve.py`
   WRITE. The routes that add a remark, add a typed lane, or replace one sentence, each anchored on an exact source line.
 - `assets/js/40-sentence/00-apparatus.js`
@@ -236,13 +319,16 @@ The older `> JL:` form still renders, so nothing already written breaks, and `ch
 
 ## Glossary
 - ✏️ **sentence**: one source line of prose, and the smallest thing on a board a person can point at, comment on, or edit.
+- 🪪 **card**: the panel that opens over the prose when a reader clicks a marked span of words, such as the reference behind a `\citep{}`.
 - 📎 **attached record**: a line starting with `>` written directly under a sentence, which belongs to that sentence and to no other.
+- 🖱 **span**: a few words inside a sentence, taken together, which is what a card is anchored to and what a lane is not.
 - ⚑ **typed lane**: an attached record whose first word names its kind, such as `> Citation:` or `> Value:`.
 - 🗂 **apparatus**: the technical name for all the records attached beneath one sentence; the panel a reader opens is called Sentence details.
 - 🔗 **adjacency**: the rule that position alone binds a record to its sentence, with no id in the prose and no second file.
 - 🪞 **face**: a page carrying one part of a subject, whose id is its parent's id plus a letter, as `QB5a` is a face of `QB5`.
 
 ## Log
+260802 · JL split the sentence into TWO surfaces: a card reached by clicking the marked words, and the lanes reached by clicking the whole line, taking a citation, a comment, or any other kind. Written as the new `### 2`, with the Opening, the `## Diagram` figure, and `### 4.1` brought to it; old `### 2` and `### 3` became `### 3` and `### 4`, and Aims and States gained `A2` and renumbered to match. One Decision Now row opened: how a span carries a card when adjacency can only bind a whole line
 260802 · Rebuilt to the page contract: `Boundary` deleted with its pointers moved into the Opening's More details, `Items to Finish` and `Where we are` became `Aims` and `States` with three groups mirroring Content, Content renumbered `### 1` to `### 3` with a captioned face figure each, `Files` regrouped and its five dead face paths repaired, and a Writing Style plus a Glossary added. The 260801 JL record moved verbatim from the old `Where we are` into `## Lesson`
 260802 · Comment and badge wording brought to the 260802 rulings: a person's remark is written `> Comment WHO …` (the bare `> JL:` still renders, and `check.py` warns on it inside Content), attached records start SHUT, and the badge names which kind is under the sentence, `💬` a person waiting over `✎` a change over `⚑` a typed lane. The demonstration was split into one live row per badge kind so all three can be clicked
 260802 · Legacy ids `QAb0`-`QAb4` and `QA6` replaced by `QB5` and `QB5a`-`QB5e` throughout the prose and Files; the alias map in `board.md` still resolves the old ones, so nothing already written breaks

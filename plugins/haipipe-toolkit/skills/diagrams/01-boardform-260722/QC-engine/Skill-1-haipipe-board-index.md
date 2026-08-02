@@ -99,7 +99,7 @@ That is `haipipe-board-page`, whose canonical design page is `QB4`.
       B5  All Pages          h3#qlist + .idx     ## Pages
       B6  Activity           section.activity    every page's ## Log
       ```
-      Opening a page navigates to `board/<GROUP>/<page>.html`; the page list is the shared chrome that keeps the Index and sibling pages reachable.
+      Opening a page navigates to `board/<GROUP>/<page>.html`; the sidebar is the shared chrome that keeps the Index and sibling pages reachable.
       A group anchors at `#group-<token>` (`QA · Design` → `#group-QA`).
       A group is **not** a page: the anchor scrolls the index, it never opens a card, and it never enters the settled count.
 
