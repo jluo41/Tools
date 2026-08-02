@@ -3,16 +3,32 @@
 state: 🟡 PARTIAL
 owner: CC
 method: copy the multi-store registry `console_api.py` already proved out (`_datasets()` / `?dataset=`)
-
+session: 9d892e06-11a4-4808-b251-c36157d20d61
 ## Opening
-How should a service mount a research SPACE, discover every board inside it, and give people one place to open them?
+How should one service mount a research SPACE, find every board inside it, and give people one place to open them?
+A SPACE is the root folder of one research repo, such as `Physician-SPACE`; to mount one is to hand the service that folder to read and write in.
+The hard part is that a board's links reach files outside its own folder, so a mount narrow enough to be safe can break them.
+This page decides how wide the mount is and how boards are found.
 
-People should not need to know a board's full path before they can find it.
-The hard part is supporting several SPACEs while exposing only the files each board is allowed to read or change.
-A careless mount either hides linked work or exposes far more of the repository than intended.
-This page succeeds when a reader can choose a SPACE, find any valid board, and open it through a deliberately bounded mount.
+**Why it matters**: Nobody should have to know a board's path before they can find it.
+This board sits 78 characters below the repo root, which is not something a person types from memory or pastes into a reply.
+So the service has to be the part that knows where boards are, and the person only picks one.
 
-**Covered elsewhere**: Whether the board is served locally or from a server, and whether it needs a login: that is `QE1`. Nor the Board-Webpage-Index **inside** one Board: that is `QB2`. Nor which process the code runs in: that is `QE3`.
+**Why the mount is the hard half**: A board folder is not self-contained.
+A question's `## Files` list points at real code elsewhere in the repo, and on 260724 page serving was widened to the whole SPACE root so those links would open.
+A mount that carries only the board folder takes that back and answers 404.
+The shape this page keeps returning to is a skeleton mount: the board folder writable, the few drill-through subtrees read-only at their true depths, and nothing else present in the filesystem at all.
+
+**How boards are found**: The service walks the mounted SPACE looking for a `board.md`, rather than reading a registry someone has to keep up to date.
+A registry drifts the moment a board is added or moved; a walk cannot.
+What the walk is allowed to match is still open, because today it only matches a folder named `diagram`, and a paper lifecycle tree is named whatever it is named.
+
+**What a good answer produces**: A reader picks a SPACE, sees every board in it with its progress, and opens one.
+The files that board is allowed to reach still open, and nothing else in the repo is visible to the process at all.
+
+**Covered elsewhere**: Whether the board is served locally or from a server, and whether it needs a login: that is `QE1`.
+Nor the Board-Webpage-Index **inside** one Board: that is `QB2`.
+Nor which process the code runs in: that is `QE3`.
 
 
 ## Diagram
@@ -84,6 +100,13 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 ## States
 **v1 shipped in `haichat-inlab` (`boards_api.py` + the Boards view), verified end to end on 260724.**
 
+- The short route is BUILT, and option A of the URL-length row is what was built
+  JL said go ahead on 260802 rather than tick, so the row below stays open for his mark while the work is done and tested. `/b/<slug>[/<page-id>]` answers 302 with the real generated file, and the strip's link went from 131 characters to 42.
+  `live/home.py` owns it: `board_slug()` strips the `NN-` ordinal and the `-YYMMDD` date, and `resolve_short()` walks the same `_manifests()` discovery the Home page already uses, so there is no second registry. `HomeMixin.short_request()` matches only `/b/<slug>` and `/b/<slug>/<id>`, and `serve_short()` redirects rather than serving the bytes, so the address bar lands on the canonical URL and every relative asset and write-back path inside the page keeps working.
+  `status.py` prints the short form whenever the anchor resolves to a generated file, and keeps the long URL when it does not, because the route answers 404 there and a long working link beats a short dead one. It imports `board_slug` rather than copying the rule.
+  Driven on a second server on port 5601, leaving the live one untouched: `/b/boardform` → the Index, `/b/boardform/QE2` and `/b/boardform/QD6` → their pages, `/b/boardform/QE` → the group page, and following the redirect ends on a 200. `/b/boardform/NOPE` and `/b/nosuchboard/QE2` both 404 rather than redirecting somewhere plausible. All 10 boards in this SPACE produce distinct slugs, so nothing is ambiguous today. 5 new tests in `tests/test_home.py`; the suite is 87 green.
+  ⚠️ Not yet live: the server on 5599 is still running the old code, and picking this up needs a restart, which SIGTERMs every attached terminal (`live/term.py`'s `kill_all_terms`, registered `atexit`). Three `claude` sessions were attached when this was built.
+
 - Direct Board service home, shipped 260801
   One mounted SPACE now has a lightweight, read-only `/boards` entry page in `serve.py`: 10 current Board source folders are discovered by `live/home.py`, grouped into Task Boards (the default), Paper Boards (paper lifecycle trees), and Skill Boards (`plugins/*/skills/diagrams/`). Each card opens its own generated Board Index. This is not another Board and writes no registry or `board.md`; it is a fresh discovery view. It does not solve multi-SPACE mounting, which remains this page's open design work.
 
@@ -127,6 +150,16 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
       The reconciliation this page records is the skeleton mount; a tick here also closes the 🗺 row in Items to Finish.
 
 ## Files
+### The short route, shipped 260802
+- `live/home.py`
+  `board_slug()`, `resolve_short()`, and the `HomeMixin.short_request()` / `serve_short()` pair. The single owner of what a board is called in a URL.
+- `cli/serve.py`
+  Two lines, in `do_GET` and `do_HEAD`, placed above the static handler so `/b/...` is recognised before anything tries to read it off disk.
+- `status.py`
+  `board_url()` prints the short form; it imports `board_slug` rather than restating the rule.
+- `tests/test_home.py`
+  `ShortRouteTest`: the slug rule, index/page/group resolution, the full folder name as an alias, misses that stay misses, and the route matcher's shape.
+
 ### The shipped service
 - `boards_api.py`
   The shipped layer: `_spaces()` registry, `_find_boards()` discovery, board rows, page serving, write-back relay.
@@ -152,6 +185,8 @@ SPACE: JL's term for the root of one research repo, e.g. `Physician-SPACE`, `Wel
 One SPACE holds several boards.
 
 ## Log
+260802 1410 · Opening rewritten to the `/haipipe-board-page` contract: the four visible sentences now sit above the first blank line (they were below it, so the page rendered as one bare question), the question's own words `SPACE` and `mount` are defined in it with a real example, and the drawer became labelled parts (Why it matters · Why the mount is the hard half · How boards are found · What a good answer produces · Covered elsewhere) instead of a prose wall
+260802 · Built option A the same round, after JL said go ahead: `/b/<slug>[/<page-id>]` as a 302 in `live/home.py`, routed from `cli/serve.py`, printed by `status.py`, 131 characters down to 42. Driven on a spare port so the live server kept its attached terminals; 6 routes checked including both 404 cases, 10 boards with no slug collision, 5 tests added, suite 87 green. The running 5599 still needs a restart to serve it
 260802 · JL: "I feel the URL here is too long" of the status strip's link. The strip is `QD6`'s and the path shape is this page's, so the row landed here: 131 characters today, 78 of them the path from the repo root to the board folder, with a short redirect route measured at 42 and recommended
 260801 · Added the Space Home taxonomy JL proposed: Task Board by default, then Paper Board, then Skill Board. Classification is inferred from the owning path, with Skill taking precedence over a topic word such as “paper”; `/boards` now shows grouped cards, and focused discovery/rendering tests cover all three kinds.
 260801 · JL ruled that the SPACE-level human route is `/boards`; `/_board/*` remains the private live-API namespace, while each Board keeps its own generated `board/` folder. Shipped `live/home.py` discovery + cards and the `🏠 Boards` return link on every generated Board page; local discovery/escaping/navigation tests passed.
