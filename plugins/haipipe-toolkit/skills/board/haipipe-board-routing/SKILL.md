@@ -1,9 +1,9 @@
 ---
 name: haipipe-board-routing
 description: >-
-  The routing VERB of the board family: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write. It loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. It may update an Aim State from inspected evidence, but may never tick a human decision or change a page-level human gate. Use when work happened and the board must record it: route this to the board, write it back, which page owns this, claim the question. A DECISION is its most common input: the moment a ruling is made, or a question needs one, call this to find the owning page and write the row or the record, because a decision that stays in the session cannot be seen, carries no Blocks or Default, and leaves no trace of the options weighed. Trigger: route, write back, owning page, land this on the board, update the log, we decided, you ruled, JL said, record this decision, add a Decision Now, needs a ruling, which page owns this, put this on the board, /haipipe-board-routing.
+  The routing VERB of the board family: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write. It loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. It may update an Aim State from inspected evidence, and closes a Decision Now row the human has already answered while never ticking one nobody answered and never changing a page-level human gate. Use when work happened and the board must record it: route this to the board, write it back, which page owns this, claim the question. A DECISION is its most common input: the moment a ruling is made, or a question needs one, call this to find the owning page and write the row or the record, because a decision that stays in the session cannot be seen, carries no Blocks or Default, and leaves no trace of the options weighed. Trigger: route, write back, owning page, land this on the board, update the log, we decided, you ruled, JL said, record this decision, add a Decision Now, needs a ruling, which page owns this, put this on the board, /haipipe-board-routing.
 metadata:
-  version: "0.6.0"
+  version: "0.7.0"
   last_updated: "2026-08-02"
   summary: "Routes current facts into States, reserves Decision Now and page-level gates for the human, and has the reply list its pending decisions in brief."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -12,7 +12,7 @@ metadata:
 # /haipipe-board-routing · one input, one owning page, one anchored write
 
 `haipipe-board`'s sync verb already states the order: claim which question first, then do the work, then write back in the same round.
-Routing automates the claim (QC6 §9), which makes two existing failure modes machine-speed, so the rules here exist to keep them impossible rather than unlikely.
+Routing automates the claim (QC1b §4), which makes two existing failure modes machine-speed, so the rules here exist to keep them impossible rather than unlikely.
 
 **The boundary:**
 
@@ -56,13 +56,13 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
 
 ## ⚖️ The two write laws, inherited not invented
 
-**The human-decision law (QC6 §10).**
+**The human-decision law (QC1b §5).**
 Routing may append Log lines and factual State rows. When it has inspected the
 evidence, it may move an Aim among the allowed State statuses and records the
 reason in Log. It may not close a `### Decision Now` checkbox or change a
 page-level human gate. Every proposal lands under the owning page's
 `### Decision Now`, inside `## States` (JL 260731: never make the decision in
-chat); the human ticks.
+chat); a row the human has answered is closed with the answer recorded, and a row nobody answered waits for them.
 
 **The cross-board law (QB1 §4).**
 Mechanical writes carry no judgement and are always allowed.

@@ -95,6 +95,64 @@ def discover_boards(root: Path) -> list[dict[str, object]]:
     return sorted(cards, key=lambda c: str(c["path"]).lower())
 
 
+def board_slug(name: str) -> str:
+    """The name a person says out loud for a board folder.
+
+    `01-boardform-260722` becomes `boardform`: the `NN-` ordinal orders a topic
+    series and the `-YYMMDD` records the day it was opened, and neither is
+    something anyone says. Same rule as `status.py`'s fallback label, kept here
+    because the ROUTE has to resolve it and `status.py` only has to print it.
+    """
+    trimmed = re.sub(r"^\d+[-_]", "", name)
+    trimmed = re.sub(r"[-_]\d{6}$", "", trimmed)
+    return (trimmed or name).lower()
+
+
+def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
+    """QE2 · `/b/<slug>[/<page-id>]` -> the path of the real generated file.
+
+    The long half of a board URL is the path from the SPACE root down to the
+    board folder: 78 of the 131 characters JL measured on 260802, and the part
+    that says nothing to the person reading the strip. This resolves the slug
+    against the boards already discovered for the Home page, so there is no
+    second registry to keep honest.
+
+    `anchor` is a page id (`QE2`), a group code (`QE`), or empty for the Index.
+    An unknown board or an unknown page is None, and the caller sends 404
+    rather than guessing: a redirect to the wrong board is worse than a miss.
+    """
+    root = root.resolve()
+    folded = (slug or "").strip().lower()
+    if not folded:
+        return None
+    board = None
+    for manifest in _manifests(root):
+        candidate = manifest.parent
+        if _skip(candidate, root):
+            continue
+        if folded in (board_slug(candidate.name), candidate.name.lower()):
+            board = candidate
+            break
+    if board is None:
+        return None
+
+    site = board / "board"
+    rel = board.relative_to(root).as_posix()
+    if not (site / "index.html").is_file():
+        return None
+    anchor = (anchor or "").strip().strip("/")
+    if anchor:
+        for page in sorted(site.glob("*/*.html")):
+            if page.stem.split("-")[0].lower() == anchor.lower():
+                return "/" + quote(f"{rel}/board/{page.parent.name}/{page.name}",
+                                   safe="/")
+        group = site / f"{anchor}.html"
+        if group.is_file():
+            return "/" + quote(f"{rel}/board/{anchor}.html", safe="/")
+        return None
+    return "/" + quote(f"{rel}/board/index.html", safe="/")
+
+
 def render_home(root: Path) -> str:
     cards = discover_boards(root)
     sections = []
@@ -115,7 +173,7 @@ def render_home(root: Path) -> str:
                 # The split is what a board opens as now, so it is the plain
                 # link; `?plain` is the opt-out back to the one-document board.
                 action = (f'<a class="split" href="{html.escape(str(card["href"]), quote=True)}?plain"'
-                          f' title="The one-document board: rail, page and drawer in a single page">↗ plain</a>'
+                          f' title="The one-document board: sidebar, page and drawer in a single page">↗ plain</a>'
                           f'<a class="open" href="{html.escape(str(card["href"]), quote=True)}">Open board →</a>')
             else:
                 action = '<span class="build">Build needed</span>'
@@ -152,3 +210,29 @@ class HomeMixin:
 
     def is_home_request(self):
         return urlsplit(self.path).path.rstrip("/") == "/boards"
+
+    def short_request(self):
+        """`/b/<slug>` or `/b/<slug>/<page-id>`, or None for anything else."""
+        path = urlsplit(self.path).path.rstrip("/")
+        m = re.match(r"^/b/([^/]+)(?:/([^/]+))?$", path)
+        return (m.group(1), m.group(2) or "") if m else None
+
+    def serve_short(self, slug, anchor):
+        """302 to the real generated file, keeping the query string.
+
+        A redirect rather than serving the bytes here, so the address bar ends
+        up on the canonical URL: every relative link, asset and write-back path
+        inside the page is written against that location, and serving the file
+        from `/b/...` would break all of them.
+        """
+        target = resolve_short(self.root, slug, anchor)
+        if target is None:
+            return self.send_error(404, "no such board or page")
+        query = urlsplit(self.path).query
+        if query:
+            target = f"{target}?{query}"
+        self.send_response(302)
+        self.send_header("Location", target)
+        self.send_header("Cache-Control", "no-store, must-revalidate")
+        self.send_header("Content-Length", "0")
+        self.end_headers()

@@ -185,11 +185,11 @@ const panes = await ev(`JSON.stringify({
           return e ? getComputedStyle(e).display : 'MISSING'})()
 })`);
 const P = JSON.parse(panes);
-console.log('T2 · every pane is marked, and the rail is open in its own frame');
+console.log('T2 · every pane is marked, and the sidebar is open in its own frame');
 ok('__boardPane set in all three', P.kinds.join(',') === 'index,page,chat', P.kinds);
 ok('index frame carries <base target="page">', P.base === 'page', P.base);
 ok('page frame body carries pane-page', /pane-page/.test(P.cls), P.cls);
-ok('rail is untranslated (visible) in the index pane', P.rail !== 'matrix(1, 0, 0, 1, -238, 0)', P.rail);
+ok('sidebar is untranslated (visible) in the index pane', P.rail !== 'matrix(1, 0, 0, 1, -238, 0)', P.rail);
 ok('page pane still renders its wrap', P.wrap !== 'none', P.wrap);
 
 // ── T3 · a click in the index pane moves ONLY the page frame ───────────────

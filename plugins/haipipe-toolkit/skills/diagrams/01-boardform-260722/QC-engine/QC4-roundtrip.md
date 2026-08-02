@@ -107,10 +107,10 @@ A single Markdown target may still render one HTML file for compatibility; that 
 
 ## States
 
-- 260801 JL · 🐢 Navigation was re-downloading a rail it throws away
+- 260801 JL · 🐢 Navigation was re-downloading a sidebar it throws away
   JL: "why I feel it will have a long time to navigate to different pages?"
   Measured rather than guessed, and the answer was not the renderer: the server answers in 8ms, wiring a swapped page costs 4ms, and the fetch itself was the whole cost.
-  Every page file carries the complete rail, 112 KB of it, and the router swaps only `div.wrap`, so on a median 136 KB page 82% of the bytes are discarded on arrival; across the tree that is 7.10 MB of 9.40 MB spent on 65 copies of one rail.
+  Every page file carries the complete sidebar, 112 KB of it, and the router swaps only `div.wrap`, so on a median 136 KB page 82% of the bytes are discarded on arrival; across the tree that is 7.10 MB of 9.40 MB spent on 65 copies of one sidebar.
   The fetch also asked for `cache: 'no-store'` and the server sent `Cache-Control: no-store`, so those bytes were re-downloaded on every single visit.
   `no-store` was the wrong instrument for the guarantee it was written to protect (JL 260726, "why now I cannot open them"): the requirement is never serve a page from before the last build, and that is `no-cache`, which means REVALIDATE BEFORE USE rather than may-be-stale.
   Both sides now say `no-cache`, and a revisit costs 0.3 KB instead of 119 KB, with the body still arriving from cache.
@@ -155,11 +155,11 @@ The return path still has one implementation and one anchoring rule; the forward
 SSE remains open because the four-second notification poll is the only hop still larger than the changed page.
 
 ### Decision Now
-- [ ] 🪞 Rule what to do about the rail in every page file
-      112 KB of every page is the rail, the router discards it on arrival, and it is 76% of the whole tree on disk; revalidation now hides that cost on revisits but a FIRST visit still pays it.
-      A · leave it, now that a revisit costs 0.3 KB: the waste is only paid once per page per build, and the rail is what makes the tree navigable with scripts off.
-      B · serve a fragment when a server is present: the router asks for `div.wrap` only, the file on disk keeps its rail, and a static host is unaffected.
-      C · stop emitting the rail in page files and let the Index carry navigation: smallest files, but a page opened with scripts off can then only go back to the Index.
+- [ ] 🪞 Rule what to do about the sidebar in every page file
+      112 KB of every page is the sidebar, the router discards it on arrival, and it is 76% of the whole tree on disk; revalidation now hides that cost on revisits but a FIRST visit still pays it.
+      A · leave it, now that a revisit costs 0.3 KB: the waste is only paid once per page per build, and the sidebar is what makes the tree navigable with scripts off.
+      B · serve a fragment when a server is present: the router asks for `div.wrap` only, the file on disk keeps its sidebar, and a static host is unaffected.
+      C · stop emitting the sidebar in page files and let the Index carry navigation: smallest files, but a page opened with scripts off can then only go back to the Index.
       → CC recommends B, because it is the only one that makes a FIRST visit cheap without taking anything away from the no-JS reader; A is a fair answer if the tree is only ever read over localhost.
 These are the calls only JL can make; CC ticks nothing here.
 
@@ -208,7 +208,7 @@ These are the calls only JL can make; CC ticks nothing here.
   How the browser learns and what it replaces, including the three symptoms this face's unit argument explains.
 
 ## Log
-260801 · Navigation cost measured and halved at the wire: `no-store` became `no-cache` on both the router's fetch and the server's header, so a revisited page costs 0.3 KB instead of 119 KB; staleness re-tested by editing a page on disk. The 112 KB rail duplicated into every page file is recorded as an open decision
+260801 · Navigation cost measured and halved at the wire: `no-store` became `no-cache` on both the router's fetch and the server's header, so a revisited page costs 0.3 KB instead of 119 KB; staleness re-tested by editing a page on disk. The 112 KB sidebar duplicated into every page file is recorded as an open decision
 260801 0920 · Canonicalized the board/ tree across contract, engine, checker, and both design/Paper Board structure blocks; fixed href/src/data rerooting exposed by 749 Paper Board failures
 260801 0140 · Full renumber QC7 -> QC4 (JL forced 260801); write-path face QC7a -> QC4a
 260801 0130 · Reindexed QC9 -> QC7: the round trip becomes the parent, with the write path (old QC7) as its face QC7a (JL 260801)

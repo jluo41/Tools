@@ -13,7 +13,7 @@ Four routes, and nothing else:
                                     to choose how it is shown.
     GET /_shell?p=<page url>        the same thing by another name, kept
                                     because links to it exist
-    GET <any board page>?pane=index the rail alone, links retargeted at `page`
+    GET <any board page>?pane=index the sidebar alone, links retargeted at `page`
     GET <any board page>?pane=chat  the drawer alone, opened on this page
     GET /_events?poll=1&p=<page url>  when did this board's pages last move
 
@@ -64,7 +64,7 @@ _LINK = re.compile(r'href="(?!https?:|#|/)([^"#?]+\.html)(#[^"]*)?"')
 # the same injection that sets `window.__boardPane`.
 PANE_CSS = {
     "index": """
-/* QD5 index pane: the rail, alone, permanently open. */
+/* QD5 index pane: the sidebar, alone, permanently open. */
 body.pane-index{padding:0 !important;overflow:hidden}
 body.pane-index .wrap,body.pane-index #chat,body.pane-index #chatfab,
 body.pane-index .sbtoggle,body.pane-index .sbrz,body.pane-index #cbtn,
@@ -94,7 +94,7 @@ body.pane-chat #chat .hd .x{display:none !important}
 body.pane-chat #chat .hd .term{display:none !important}
 """,
     "page": """
-/* QD5 page pane: the page, alone. The rail is the index pane's job now, and the
+/* QD5 page pane: the page, alone. The sidebar is the index pane's job now, and the
    chat is the chat pane's, so neither is drawn here even though both still ship
    in the file (A2.2 is what deletes the bytes; this only stops drawing them). */
 body.pane-page{padding:0 !important}
@@ -113,7 +113,7 @@ body.pane-page #chat,body.pane-page #chatfab{display:none !important}
 # is choose the GUI or TUI when I click the chat button").
 PANE_BOOT = {
     "index": """
-/* A RAIL CLICK IS A SWAP, NOT A NAVIGATION (JL 260802: "really slow to click and
+/* A SIDEBAR CLICK IS A SWAP, NOT A NAVIGATION (JL 260802: "really slow to click and
    go to a new page"). `target="page"` loads a whole new document into the page
    frame, which parses 400 KB of html and re-executes the bundle every time. The
    page pane still owns a router that can replace one column instead, so ask it.
@@ -134,7 +134,35 @@ document.addEventListener('click', function (e) {
 """,
     "chat": """
 window.addEventListener('load', function () {
+  /* HONOUR THE BUTTON THAT OPENED THIS PANE (JL 260802: "when I click the GUI,
+     but it is the TUI selected and opened, why?").
+     The shell asks for a mode by calling `frames.chat.__paneMode(mode)` — but
+     on the FIRST click the frame has not loaded yet, because the shell loads it
+     lazily inside its own paint() which runs after that call. The request was
+     therefore made to a window with no such function, swallowed by the try, and
+     the pane then booted with the DRAWER's own preference, which defaults to
+     the TUI. Reproduced from a cleared localStorage: `board-split-mode` read
+     `gui`, `board-tui-default` was null, the pane opened `termon`, and the
+     shell repainted `>_ TUI` as the lit one.
+     So the shell's radio is the source of truth and the drawer's own key is
+     DERIVED from it, here, before the drawer is told to open. */
+  try {
+    var m = localStorage.getItem('board-split-mode');
+    if (m === 'gui' || m === 'tui') {
+      localStorage.setItem('board-tui-default', m === 'gui' ? '0' : '1');
+    }
+  } catch (e) {}
   if (window.__boardDrawerReopen) { try { window.__boardDrawerReopen(); } catch (e) {} }
+  /* Belt and braces for the race the other way: if the drawer had already
+     opened in the other mode before this ran, switch it with the one control
+     that owns the handover. */
+  setTimeout(function () {
+    try {
+      var m = localStorage.getItem('board-split-mode');
+      if ((m === 'gui' || m === 'tui') && window.__paneModeNow
+          && window.__paneModeNow() !== m) window.__paneMode(m);
+    } catch (e) {}
+  }, 300);
   /* The drawer's own `.term` button still DOES the switch: handing a session
      between the chat box and the CLI is QD1's one-window Law and keeps exactly
      one implementation. This only gives the shell a handle on it. */
@@ -166,7 +194,7 @@ def _shell_doc(page_url, index_url):
   /* THE SAME SURFACE AS THE BOARD. The shell shipped in its own dark chrome and
      read as three windows in a black frame (JL 260802: "I don't want the black
      boundary for the three split... make it the same style like the old
-     version"). The one-document board separates its rail, page and drawer with
+     version"). The one-document board separates its sidebar, page and drawer with
      a single hairline on a shared background, so the split does the same: these
      are the board's own variables, values and dark query copied, because the
      shell is a separate document and cannot inherit them. */
@@ -228,7 +256,7 @@ def _shell_doc(page_url, index_url):
   }
   iframe{border:0;width:100%;height:100%;display:block;background:var(--bg)}
   /* A HAIRLINE, not a bar. The 5px is the grab area a drag needs; what the eye
-     sees is one 1px line in the board's own --line, the same separator the rail
+     sees is one 1px line in the board's own --line, the same separator the sidebar
      and the drawer draw on the one-document board. */
   .gr{background:var(--bg);border-left:1px solid var(--line);
     cursor:col-resize;touch-action:none}
@@ -239,7 +267,7 @@ def _shell_doc(page_url, index_url):
 <body>
 <div id="bar">
   <a href="/boards" target="_top" title="every board in this SPACE">🏠</a>
-  <button id="ti" type="button" title="Show or hide the pages rail (☰ on the old board)">☰ Index</button>
+  <button id="ti" type="button" title="Show or hide the pages sidebar (☰ on the old board)">☰ Index</button>
   <button id="mtui" type="button" data-mode="tui"
     title="The real CLI in a terminal. Click again to put the chat away.">&gt;_ TUI</button>
   <button id="mgui" type="button" data-mode="gui"
@@ -325,7 +353,7 @@ def _shell_doc(page_url, index_url):
   mirror();
 
   /* ④ THE TOGGLES. Same two gestures as the one-document board — ☰ hides the
-     rail, 💬 hides the chat — and each remembers itself per machine, the way
+     sidebar, 💬 hides the chat — and each remembers itself per machine, the way
      `--iw` and `--cw` already do. Hiding is a zero-width COLUMN, never an
      unloaded frame: a terminal mid-command must survive being put away. */
   var split = document.getElementById('split');
@@ -356,9 +384,9 @@ def _shell_doc(page_url, index_url):
       }
     };
   }
-  var railBtn = document.getElementById('ti');
-  var rail = pane('hi', 'board-split-index', railBtn);
-  railBtn.addEventListener('click', function () { rail.set(rail.hidden()); });
+  var sidebarBtn = document.getElementById('ti');
+  var sidebar = pane('hi', 'board-split-index', sidebarBtn);
+  sidebarBtn.addEventListener('click', function () { sidebar.set(sidebar.hidden()); });
 
   /* THE CHAT IS TWO BUTTONS. `>_ TUI` and `💬 GUI` are one radio with an off
      position: the lit one is the mode you are in, clicking the other switches,
@@ -511,6 +539,15 @@ class ShellMixin:
         kind = (urllib.parse.parse_qs(query).get("pane") or [""])[0]
         return kind if kind in PANE_CSS else None
 
+    @staticmethod
+    def fragment_of(path):
+        """Recognize the small body fragment used by in-place navigation."""
+        head, _, query = path.partition("?")
+        if not head.endswith(".html") or not query:
+            return None
+        fragment = (urllib.parse.parse_qs(query).get("fragment") or [""])[0]
+        return fragment if fragment == "wrap" else None
+
     def _shell_file(self, url):
         """A board URL -> the file on disk, or None if it leaves --root."""
         rel = urllib.parse.unquote((url or "").split("?", 1)[0]).lstrip("/")
@@ -536,7 +573,7 @@ class ShellMixin:
     def _send_html(self, html, mtime=None, etag=None):
         raw = html.encode("utf-8")
         enc = None
-        # A pane carries the whole page, rail included, so it is the biggest
+        # A pane carries the whole page, sidebar included, so it is the biggest
         # single thing this server hands out and it does not come from the
         # static handler that `try_gzip` covers (QD5 C2 P5).
         if len(raw) > 1024 and "gzip" in (self.headers.get("Accept-Encoding") or "").lower():
@@ -601,8 +638,8 @@ class ShellMixin:
                 "<style>" + PANE_CSS.get(kind, "") + "</style>")
         if kind in ("index", "page"):
             # A LINK OUT OF A PANE MUST LAND IN A PANE. `target="page"` sends the
-            # href as written, so a rail click used to load the plain page into
-            # the page frame: rail inside rail, drawer inside drawer, and the
+            # href as written, so a sidebar click used to load the plain page into
+            # the page frame: sidebar inside sidebar, drawer inside drawer, and the
             # router switched back on because nothing told that document it was
             # in a frame. Carrying `?pane=page` on the way out is what keeps the
             # frame a frame, and it is the same query a reader can delete to get
@@ -630,6 +667,22 @@ class ShellMixin:
                             + ";</script></head>", 1)
         html = html.replace("<body class=\"", "<body class=\"pane-" + kind + " ", 1)
         return self._send_html(html, st.st_mtime, tag)
+
+    def serve_fragment(self):
+        """Serve only the generated page body used by in-place navigation."""
+        u = urllib.parse.urlparse(self.path)
+        f = self._shell_file(u.path)
+        if f is None or not f.is_file():
+            return self.send_error(404)
+        html = f.read_text(encoding="utf-8")
+        start = html.find('<div class="wrap"')
+        end = html.rfind("</div>")
+        if start < 0 or end < start:
+            return self.send_error(404, "page has no wrap fragment")
+        fragment = html[start:end + len("</div>")]
+        st = f.stat()
+        tag = '"%d"' % st.st_mtime_ns
+        return self._send_html(fragment, st.st_mtime, tag)
 
     # ---- HEAD <board page>?pane=… ------------------------------------
     def head_pane(self):

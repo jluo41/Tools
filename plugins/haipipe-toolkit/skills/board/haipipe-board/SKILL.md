@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.103.0"
+  version: "0.105.0"
   last_updated: "2026-08-02"
-  summary: "Stale-statement sweep against QB4's rewritten contract: Aim statuses ⬜ 🔨 🧠 ✅ ❄️, A<n> groups, > Comment WHO, the cli/ paths, numbered Content, everything shut, and Files as a menu of actions."
+  summary: "sentencerun.py asks the server for ?pane=page: the live shell had moved every page into an iframe, so the anchor-parity sweep read the shell's window and reported all 55 pages unreadable."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,7 +25,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
 - You know when you can stop.
   That rests on `close` (the closing condition) and each page's `## Aims` plus `## States`.
 
-## 👪 The family: one door, three specs, one verb (QC6 §8, shipped 260731)
+## 👪 The family: one door, three specs, one verb (QC1b §2, shipped 260731)
 
 This skill is the DOOR: you invoke it to run a board.
 The rest of `skills/board/` is what other agents LOAD or CALL without opening the door, and this skill routes to them rather than restating them:
@@ -40,7 +40,7 @@ haipipe-board-page       SPEC · what a page IS: three kinds over one base,
 haipipe-board-sentence   SPEC · the atomic unit: lanes, evidence card,
                          addresses, the archive-never-delete lifecycle
 haipipe-board-routing    VERB · one input → owning page → anchored write;
-                         proposes, never creates; never ticks
+                         proposes, never creates; closes only answered rows
 haipipe-board-creator-agent    AGENT · writes ONE page in a fresh context;
                          designed to fan out N of them, keep every shared write here
 haipipe-board-reviewer-agent   AGENT · the read-only fresh-context reviewer
@@ -204,7 +204,7 @@ When discussion changes a decision, item, comment, or log, still run the normal 
 
 Never ask for a ruling only in chat (JL 260802: "don't put the decision in the claude code session"). Write the row FIRST, in the owning page's `States › Decision Now`, then say in chat which page and which row. The chat line is a pointer; the page is the decision.
 
-**Do not go looking for the page by hand.** `haipipe-board-routing` exists for exactly this: give it the decision and it reads `board.md`'s `## Pages` as the only registry, finds the owning page and section, and appends an anchored write. It proposes rather than creates when nothing fits, and it may never tick a human decision, which is the line that keeps the ruling yours.
+**Do not go looking for the page by hand.** `haipipe-board-routing` exists for exactly this: give it the decision and it reads `board.md`'s `## Pages` as the only registry, finds the owning page and section, and appends an anchored write. It proposes rather than creates when nothing fits, and it closes a Decision Now row only once you have answered it, recording which option and the words you used (JL 260802). A row you have not answered still waits for you, which is the line that keeps the ruling yours.
 
 A decision left in a session cannot be seen by anyone else, carries no `Blocks:` and no `Default:` so it evaporates instead of resolving itself, and leaves no record of the options weighed, which is what the next person to reopen it needs.
 

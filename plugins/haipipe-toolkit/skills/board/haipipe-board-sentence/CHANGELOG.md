@@ -7,6 +7,12 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.1.2 - 2026-08-02
+
+- Repointed the door test from `QC6 §7` to `QC1b §1` after that page's 260802 Content rebuild,
+  and corrected the named next step: the drawer's lane instructions live in `live/chat.py`, not
+  in `cli/serve.py`, since the `QC2c` live-layer split.
+
 ## 0.1.1 - 2026-08-02
 
 - The lane figure taught `> JL: the human's lane`, which QB4 §3.3.3 retired on

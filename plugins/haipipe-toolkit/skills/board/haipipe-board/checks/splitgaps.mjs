@@ -81,7 +81,7 @@ await sleep(1500);
 ok('there was a link to click', !!href, href);
 ok('the router swapped instead of navigating (window survived)',
    await ev(`!!window.__alive`) === true);
-/* any internal link proves the point; which one the rail offers first is not
+/* any internal link proves the point; which one the sidebar offers first is not
    this check's business */
 const moved = await ev(`location.pathname`);
 ok('and the url moved anyway (pushState)', moved !== PAGE, moved);
@@ -218,10 +218,10 @@ for (let i = 0; i < 60; i++) {          // the reload we just detected is still 
 ok('and the comment is visible in the pane', shows === true);
 ok('the CHAT frame was not touched by that write — the whole point',
    await ev(`!!frames.chat.__mark`) === true);
-/* The index frame SHOULD refresh: a rebuild rewrites index.html, the rail's
-   state markers move with it, and a stale rail is the thing A2.2 complains
+/* The index frame SHOULD refresh: a rebuild rewrites index.html, the sidebar's
+   state markers move with it, and a stale sidebar is the thing A2.2 complains
    about. This asserts it happened, not that it was spared. */
-ok('the index frame refreshed too, because the rail changed as well',
+ok('the index frame refreshed too, because the sidebar changed as well',
    await ev(`!!frames.index.__mark`) === false);
 
 console.log(`\n${fail ? '❌' : '✅'} ${pass} passed · ${fail} failed`);

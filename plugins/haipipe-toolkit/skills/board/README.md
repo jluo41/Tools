@@ -16,7 +16,7 @@ reviewable set of question pages or lifecycle stages.
   the evidence card, and the archive-never-delete record lifecycle.
 - `haipipe-board-routing/` is a VERB: one input, find the owning page and
   section, append an anchored write; it proposes rather than creates, and it
-  never ticks a box. (`haipipe-board-digest`, the transcript-scale fan-out, is
+  closes only the boxes you have already answered. (`haipipe-board-digest`, the transcript-scale fan-out, is
   named on the roster and not yet shipped.)
 - `agents/haipipe-board-creator-agent.md` writes exactly ONE page in a fresh
   context, from an assignment packet rather than from the board, so N of them

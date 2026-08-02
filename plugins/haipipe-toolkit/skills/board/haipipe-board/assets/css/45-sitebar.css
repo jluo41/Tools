@@ -6,7 +6,7 @@
    purple, and butted together with no separator. That is the whole defect —
    the markup was fine and the page simply had no styling to apply.
 
-   The voice is the rail's, not a new one: muted chrome type, the accent only
+   The voice is the sidebar's, not a new one: muted chrome type, the accent only
    on hover, `--line` hairlines, and no colour that competes with a page's
    state emoji. */
 .sitebar{display:flex;align-items:center;flex-wrap:wrap;gap:2px;
@@ -16,7 +16,7 @@
  color:var(--mut)}
 
 /* Links read as quiet chrome until pointed at, when they take the accent and
-   a soft pill — the same feedback the rail rows and the ☰ toggle already use. */
+   a soft pill — the same feedback the sidebar rows and the ☰ toggle already use. */
 .sitebar a{display:inline-flex;align-items:center;gap:5px;
  padding:3px 8px;border-radius:var(--radius-control);
  color:var(--mut);text-decoration:none;
@@ -34,7 +34,7 @@
 .sitebar .sb-sep{color:var(--line);font-size:12px;
  padding:0 1px;user-select:none;flex:none}
 
-/* The ☰ toggle is position:fixed at left:10px, so with the rail hidden it
+/* The ☰ toggle is position:fixed at left:10px, so with the sidebar hidden it
    would sit on top of the first crumb. Yield exactly its width plus air. */
 body:not(.sbon) .sitebar{padding-left:34px}
 

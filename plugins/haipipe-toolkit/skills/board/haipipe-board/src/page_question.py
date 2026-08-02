@@ -47,7 +47,7 @@ def sect(label, inner, cls="", open_=False):
     Every section now starts SHUT (JL 260801). The 260725 default was open,
     for a reason that has since expired: back then the page had no sidebar, so
     a reader who never clicked had to be able to read straight down. QB2a's
-    rail now carries the map, and a page like QB4 has grown past 6000 words of
+    sidebar now carries the map, and a page like QB4 has grown past 6000 words of
     Content, where "open by default" means the reader meets a wall instead of a
     page. Shut, the page opens as what it actually is: a title, the paragraph
     on stage, and seven section names you can take in at a glance."""
@@ -125,7 +125,7 @@ def split_stage_record(kind, content_sections):
 
     Both the page render and the sidebar outline call this, or they disagree:
     the outline counts Content's divisions and addresses them BY ORDER
-    (`data-div`), so a section the page dropped and the rail kept shifted
+    (`data-div`), so a section the page dropped and the sidebar kept shifted
     every division link on that page by one."""
     if kind != "stage":
         return "", content_sections

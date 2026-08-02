@@ -282,7 +282,7 @@ Do not put future work here; that is either an Aim or its Plan. Record why a Sta
 
 If the page holds decisions only a person can make, add one `### Decision Now` subsection
 (JL 260731), and put it FIRST, above the per-Aim groups below (JL 260802): everything else in
-States is a report, and this is the one part that asks the reader to do something. One `- [ ]` row per pending decision. The machine writes the rows; only the human ticks. Its shape and the rule for what earns a row are stated under the example groups.
+States is a report, and this is the one part that asks the reader to do something. One `- [ ]` row per pending decision. The machine writes the rows and closes one once the human has answered it, recording which option, who ruled and when; a row nobody has answered waits for them (JL 260802). Its shape and the rule for what earns a row are stated under the example groups.
 
 ### A1 · First content subsection
 - 🔨 A1.1 · Active; the first cold read is scheduled and the current wording is ready.

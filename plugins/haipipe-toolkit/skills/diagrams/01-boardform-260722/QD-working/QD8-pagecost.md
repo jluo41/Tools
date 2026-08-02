@@ -53,10 +53,10 @@ A lane is the row that was missing until 260802, and it is the only one whose co
 
 ```
   page html            163,415 B raw          30,741 B gzipped
-    the rail           110,651 B   67%        the same 53 blocks on all 53 pages
+    the sidebar        110,651 B   67%        the same 53 blocks on all 53 pages
     the page itself     52,764 B   33%        what the reader came for
   ────────────────────────────────────────────────────────────────────────
-  the rail is the single largest thing a board sends and the only one
+  the sidebar is the single largest thing a board sends and the only one
   that is identical on every page it is sent with          A2.4 is this row
 ```
 
@@ -85,7 +85,7 @@ A lane is the row that was missing until 260802, and it is the only one whose co
   gzip on vendored xterm  477 KB → 118 KB    /_board/asset/ bypassed the first pass
   immutable on ?v= assets 114 KB → 0         per navigation, after the first
   prune the /boards walk   95 s → 0.12 s     366,951 entries → 11,670
-  swap instead of navigate  7 req → 1 req    a rail click in the split
+  swap instead of navigate  7 req → 1 req    a sidebar click in the split
 ```
 
 ## Content
@@ -133,7 +133,7 @@ The instrument that does see it is CDP or devtools, and the question it has to b
   first page of a session    html 20-49 KB  +  js 82 KB  +  css 33 KB
   every page after           html 20-49 KB     cached       cached
   ────────────────────────────────────────────────────────────────────
-  of that html, 67% is the rail, identical on all 53 pages     A2.4
+  of that html, 67% is the sidebar, identical on all 53 pages A2.4
 ```
 
 #### 2.1 · The assets are cached, and the version hash is why
@@ -167,9 +167,9 @@ The three commands behind those numbers, so the claim can be re-derived:
 
 The symptom to recognise next time is not a timing at all: it is devtools showing "Provisional headers are shown" with "0 B transferred", which means Chrome never sent the request, and the count of ESTABLISHED connections from one client sitting at exactly six.
 
-#### 2.4 · The rail is what is left
+#### 2.4 · The sidebar is what is left
 
-67% of a page's bytes are the navigation rail, the same 53 blocks on all 53 pages, and gzip does not remove it: it makes a repeated thing cheap to send, not absent.
+67% of a page's bytes are the navigation sidebar, the same 53 blocks on all 53 pages, and gzip does not remove it: it makes a repeated thing cheap to send, not absent.
 Deleting it from the shipped page is `A2.2` on `QD5`, and it is the only remaining lever of that size.
 It is not free: a page opened on its own would lose its navigation, so what replaces it has to be decided before it is taken away.
 
@@ -214,7 +214,7 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 - A2.3 · No request holds a connection longer than it needs.
   **Done when:** after a page settles, nothing is still pending, and every board endpoint answers in well under a second under concurrent load.
 - A2.4 · A page does not carry the whole board.
-  **Done when:** a page's own bytes are the majority of what it ships.
+  **Done when:** a page's own bytes are the majority of what it ships, and a page opened on its own still has a way to get to the rest of the board.
 
 ### A3 · 🧠 The browser half
 - A3.1 · Moving between pages does not rebuild the page from nothing.
@@ -232,7 +232,7 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 - ✅ A2.1 · `serve.py` answers a `?v=` request with `public, max-age=31536000, immutable`; a second page in a session fetches only its own html, measured at 1 request and 29 KB.
 - ✅ A2.2 · `try_gzip` covers static text and `serve_asset` covers the vendored bundle; 304 revalidation, `HEAD` and the `.md` links were each checked by hand afterwards.
 - ✅ A2.3 · `log_boards` prunes in place and caches for two seconds. `POST /_board/activity` went from over 60 s with no answer to 43 ms, ten concurrent to 0.88 s, and a headless load of `QB1-form.html?pane=page` finished all 8 requests with nothing pending.
-- 🧠 A2.4 · The rail is still 67% of every page. This is `QD5`'s A2.2 and it waits on a person: taking it out changes what a standalone page can do.
+- 🧠 A2.4 · The sidebar is still 67% of every page, on BOTH doors. Handed here from `QD5` A2.2 when that page closed on 260802, because it is not a pane question: `?plain` ships the same 53 `sb-out` blocks. It waits on one ruling from a person, which is what a page opened on its own should offer instead of a sidebar; until that exists, deleting the blocks would strip navigation from a standalone page.
 
 ### A3 · 🧠 The browser half
 - ✅ A3.1 · The one-document board always swapped; the split now does too, after a regression that made every click a full document load. 7 requests to 1.
@@ -248,7 +248,7 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 - `live/base.py`
   `try_gzip` and the shared header rules every response passes through.
 - `cli/build.py`
-  Decides what a page CONTAINS, which is where the rail's 67% is added.
+  Decides what a page CONTAINS, which is where the sidebar's 67% is added.
 - `assets/js/70-router.js`
   The swap that keeps a navigation from rebuilding the document.
 

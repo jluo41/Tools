@@ -3,7 +3,7 @@ name: haipipe-board-page
 description: >-
   The PAGE contract of a board, as a loadable spec: the base every page kind varies from (Q decision, S stage, Skill mirror), the seven on-stage sections in their fixed order (Opening, Diagram, Content, Aims, States, Files, folds), what each section owes a reader, how to write or revise one page or Opening, where a machine may write, and how to evaluate page units against resolved requirements. TWO VERBS, and this skill is the door for both: `create a new page on <topic>` scaffolds one from the template and registers it, and `working on <page>` brings an existing page up to the contract, starting from the checker's findings. It owns the contract and CALLS haipipe-board's engine rather than containing it. Also loadable as a pure spec by an agent with no board open: routing an input to a section, priming a per-page chat session, authoring a page-kind variant, or running a section evaluation. Trigger: create a page, new page, make a page, working on a page, update a page, fix a page, bring a page up to standard, page contract, page grammar, page sections, rewrite Opening, Opening quality, section evaluation, quality check, which section, base page, page kind, /haipipe-board-page.
 metadata:
-  version: "0.8.0"
+  version: "0.10.0"
   last_updated: "2026-08-02"
   summary: "Two verbs, create and working-on, drive one page end to end; the skill owns the contract and calls haipipe-board's engine rather than containing it."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -13,7 +13,7 @@ metadata:
 
 `haipipe-board` is the door you walk through to RUN a board.
 This skill is the door for ONE PAGE, and the spec that page is measured against. Say `create a new page on <topic>` or `working on <page>` and it runs; load it with no board open and it is a pure contract.
-QC6 §7 on the design board states the test it passes: a consumer needs these rules with no board open, and the consumers exist: the routing verb deciding "which page, which section", the chat drawer priming a per-page session, and the variant authors in other families.
+QC1b §1 on the design board states the test it passes: a consumer needs these rules with no board open, and the consumers exist: the routing verb deciding "which page, which section", the chat drawer priming a per-page session, and the variant authors in other families.
 
 **The boundary, and it is a hard one:**
 
@@ -61,7 +61,7 @@ This skill owns the BASE those variants extend.
 2   Diagram            the figure; ids in it are links      nothing without the human
 3   Content            the substance, ### divisions         nothing without the human
 4   Aims               durable Content-linked targets       revise only when intent changes
-5   States             one factual current State per Aim    update with evidence; human decisions stay human
+5   States             one factual current State per Aim    update with evidence; a decision is closed only once answered
 6   Files              the action map, grouped by ACTION     append a row
 7   folds              Discussion · Law · Lesson · Glossary · Log  append a Log or > lane line
 ```
@@ -115,12 +115,16 @@ Say either of these and this skill runs it. You never call the engine yourself.
 
 ### 🔧 working on an existing page
 
+Scope is the one thing this verb got wrong when it was measured. On 260802 three fresh agents were each given one sentence and nothing else, and all three found this skill unaided and drove their page to zero findings. They then disagreed completely about how far to reach: one wrote to a single file, its own page; another wrote to fifteen, including four shipped `SKILL.md` files, four `CHANGELOG.md` files, six sibling pages and the shared `board.md`. Neither was wrong on the merits, and the wide one was fixing citations a renumbering really had broken. The skill simply never said where to stop, so steps 7 and 8 below now do.
+
 1. Read the whole target file first, including Content, Aims, States, Files and the settled folds.
 2. Run the checker on it and work its list. Every finding names the rule it breaks and the part it is in, so nothing has to be read to know what to do.
 3. Fix the MECHANICAL findings first, in bulk: dead `## Files` paths, a part with no figure, a figure with no caption, a group name that drifted. None needs judgment.
 4. Then read for what no checker reaches: the weak-English axis, whether each part still answers one question, whether the Opening's visible paragraph says anything the title did not.
 5. If a fix reveals a rule nobody wrote down, write it in three places: the owning page, `haipipe-board/ref/page-template.md`, and this file. A repair that stops at one page will be needed again next week.
 6. Build, check, read the render, and report the before and after counts.
+7. ONE page is the deliverable. Step 5 sends you to other files on purpose, and this step bounds it: a write outside the target page is allowed only when the page CANNOT be made correct without it, and every such write is named in the report, with the reason, file by file.
+8. Never rewrite a sibling page's content. Repointing a citation your own renumbering broke is repair; rewriting the page that citation lands in is a second job, and it belongs to that page's own turn.
 
 The engine both verbs call, so nobody has to remember it:
 
@@ -250,13 +254,19 @@ The recommendation is its own line, naming the letter and why it beats the other
       → CC recommends B, because <the reason it beats A>.
 ```
 
-**The write anchor rule (QC6 §9, from a real casualty).**
+**The write anchor rule (QC1b §4, from a real casualty).**
 A machine write lands at a SECTION BOUNDARY, never at a byte offset: on 260730 a concurrent session spliced a `###` block into the middle of another page's `## Opening` sentence.
 Appending under a named `## ` heading is safe; inserting by offset is how that damage reproduces at scale.
 
-**The human-decision rule (QC6 §10).**
+**The human-decision rule (QC1b §5).**
 A verb reading a transcript can report what the transcript CLAIMS, not verify it.
-So a machine may update an Aim's State only from evidence it can inspect, and may propose a human ruling as a `### Decision Now` row; it may not close that decision checkbox or flip a human-gated page to settled.
+So a machine may update an Aim's State only from evidence it can inspect, and may propose a human ruling as a `### Decision Now` row.
+
+**Closing a row (JL 260802, amending the never-tick rule).**
+A machine CLOSES a `### Decision Now` row once the human has answered it, and records the answer in the same write: which option, who ruled, when, and the words they used.
+What it may never do is close a row nobody answered, or flip a page-level human gate.
+The old rule left every answered row open, so a page showed decisions as pending that had been made hours earlier and acted on, which is the same drift the board exists to prevent.
+Answered means the human said it: in chat, in a comment lane, or by ticking. A machine's own recommendation is not an answer, however confident it is.
 
 ## 🏷 Addressing
 
@@ -282,4 +292,4 @@ haipipe-board-page/
 ```
 
 Reads `haipipe-board/ref/page-template.md` and `ref/board-form.md` §4 (the section mapping and requiredness) and §8 (on-stage order) as the authority; owns no scripts.
-The named next step (QC6 §7): `serve.py`'s hand-rolled `CHAT_RULES` string becomes this contract's consumer instead of restating it, which kills the copy that has already rotted once.
+The named next step (QC1b §1): `live/chat.py`'s four hand-rolled rule strings (`CHAT_RULES`, `FULL_RULES`, `BOARD_CHAT_RULES`, `BOARD_FULL_RULES`) become this contract's consumers instead of restating it, which kills the copies, one of which has already rotted once.

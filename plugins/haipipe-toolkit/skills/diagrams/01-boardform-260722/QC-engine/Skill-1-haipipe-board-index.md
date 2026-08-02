@@ -1,4 +1,4 @@
-# haipipe-board-index · v0.1.0
+# haipipe-board-index · v0.2.1
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -13,14 +13,14 @@ Its choices shape how every newcomer enters the Board and understands where work
 It is healthy when an approved proposal can be materialized and refreshed without losing human-written group meaning.
 
 ## Diagram
-<!-- haipipe:skill:tree:start fc83db2b18aea7b1 board/haipipe-board-index -->
+<!-- haipipe:skill:tree:start 96be3be0a789127f board/haipipe-board-index -->
 
 ```
 haipipe-board-index/
   src/
     lanes.py           253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane block per group, in board.md.
-  CHANGELOG.md          27 ln  haipipe-board-index · Changelog
-  SKILL.md             159 ln  /haipipe-board-index · the board and the group, before the page
+  CHANGELOG.md          40 ln  haipipe-board-index · Changelog
+  SKILL.md             153 ln  /haipipe-board-index · the board and the group, before the page
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -33,13 +33,13 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start fc83db2b18aea7b1 board/haipipe-board-index -->
+<!-- haipipe:skill:body:start 96be3be0a789127f board/haipipe-board-index -->
 
-**haipipe-board-index** · `0.1.0` · last shipped 2026-07-30
+**haipipe-board-index** · `0.2.1` · last shipped 2026-08-02
 
 - folder   `board/haipipe-board-index/`
 - tools    not declared
-- summary  First cut: the two canvas altitudes (JL 260730), the B0-B9 index anatomy, and src/lanes.py round-tripping one lane block per group.
+- summary  Points one-page-section work at haipipe-board-page, which now exists, instead of the archived QAa face group.
 
 ### SKILL.md
 
@@ -54,7 +54,7 @@ This skill decides **what that board is made of**: its groups, which pages sit i
 ```
 haipipe-board-index          haipipe-board
 ─────────────────────        ──────────────────────────────
-board.md's shape             build.py · board.html
+board.md's shape             build.py · board/ site
 groups + their order         page rendering · sentence
 how groups connect           serve · comments · chat
 the index's own sections     the checker
@@ -62,7 +62,7 @@ proposing a NEW board        (this skill never emits HTML)
 ```
 
 If a change is about ONE page's sections, it is not this skill.
-That is `QAa`, and it will move to `haipipe-board-page`.
+That is `haipipe-board-page`, whose canonical design page is `QB4`.
 
 
 - 1 · 🧭 Two canvases, two altitudes
@@ -75,8 +75,8 @@ That is `QAa`, and it will move to `haipipe-board-page`.
          ships, plus the handful of real cross-group page edges.
          One ``` figure, rendered as a shuttable disclosure at the very top
          of the index. NOT a second copy of the index.
-         `## Board Structure` is a different section: the source-to-webpage
-         shape, in prose, further down.
+         `## Board Structure` is different: source-only documentation of the
+         Board-Folder to Board-Webpage shape, not another rendered canvas.
 
       📋 GROUP level · in each ### group's intro, inside ## Pages
          one row per page:  ⚙️ engine  ◀──  📋 page  ──▶  📂 folder
@@ -85,27 +85,21 @@ That is `QAa`, and it will move to `haipipe-board-page`.
       A page is a **working record**, not merely an undecided question, so the middle lane is labelled `📋 PAGES · the working record`.
       Both canvases are ASCII inside a fence, which means every id in them is a real link: `haipipe-board` 0.53.0 wraps any page or group id inside a figure as an anchor, alignment untouched, working with scripts off.
 
-- 2 · 🏷 What the index is made of
-      Nine sections, in render order.
-      Five survive when a page is open, because they are the board's chrome; the rest are index-only.
+- 2 · 🏷 What the generated Index is made of
+      Seven sections, in render order.
+      Topic, Pipeline, and Board Structure remain required or optional source documentation in `board.md`; since haipipe-board 0.78.0 they do not render on the Index.
       ```
-      #   section            element             source in board.md    at #<page-id>
-      ────────────────────────────────────────────────────────────────────────────────
-      B0  Heading            .board-heading      `# ` title            ✅ stays
-      B1  Spine              .spine              spine: · close:       ✅ stays
-      B2  Progress           p.bar               derived               ❌ hidden
-      B3  Board Map          .board-map          ## Board Map (ASCII)  ❌ hidden
-                             details, shuttable   or board-map: · scene
-      B4  Topic              details.ctx         ## Topic              ✅ stays
-      B5  Pipeline           details.ctx         ## Pipeline           ✅ stays
-      B6  Board-Structure    details.ctx         ## Board Structure    ✅ stays
-      B7  All Pages          h3#qlist + .idx     ## Pages              ❌ hidden
-      B8  Activity           section.activity    every page's ## Log   ❌ hidden
-      B9  Foot               p.foot              generated             ❌ hidden
+      #   section            element             source
+      ────────────────────────────────────────────────────────────────────────────
+      B0  Heading            .board-heading      `# ` title
+      B1  Spine              .spine              spine: · close:
+      B2  Board Map          .board-map          optional ## Board Map
+      B3  Related Folders    .related-folders    optional ## Related Folders
+      B4  Section Matrix     .board-status       derived from every page
+      B5  All Pages          h3#qlist + .idx     ## Pages
+      B6  Activity           section.activity    every page's ## Log
       ```
-      Hiding is one rule in `assets/board.css`: `body:has(.q:target)` hides `.idx .bar .board-map .activity h3.sec .foot`.
-      Everything absent from that list stays, restyled small and muted.
-      Change the list, not individual sections.
+      Opening a page navigates to `board/<GROUP>/<page>.html`; the sidebar is the shared chrome that keeps the Index and sibling pages reachable.
       A group anchors at `#group-<token>` (`QA · Design` → `#group-QA`).
       A group is **not** a page: the anchor scrolls the index, it never opens a card, and it never enters the settled count.
 
@@ -126,7 +120,7 @@ That is `QAa`, and it will move to `haipipe-board-page`.
       The group letters chosen here are cited by every future page, so a rename later is a migration, not an edit.
 
 - 3.2 · `materialize` · after approval
-      `board.md` (title · spine · close · `## Topic` · `## Pipeline` · `## Board Structure` · `## Pages`), one folder per group, one page file per listed page, then hand off to `haipipe-board` to build.
+      `board.md` (title · spine · close · `## Topic` · `## Pipeline` · `## Pages`, plus `## Board Structure` when the Board must explain its source and webpage shape), one descriptive folder per group, one page file per listed page, then hand off to `haipipe-board` to build the generated `board/` site.
 
 - 3.3 · `lanes` · refresh the per-group blocks
       ```bash
@@ -144,10 +138,10 @@ That is `QAa`, and it will move to `haipipe-board-page`.
       A page's `# ` title only SEEDS a new row's name; the column is 29 characters and a real title rarely fits it.
 
 - 3.4 · `regroup` · move pages into one folder per group
-      Wraps `haipipe-board/regroup.py`, which is the migration tool for any group rename or split:
+      Wraps `haipipe-board/cli/regroup.py`, which is the migration tool for any group rename or split:
       ```bash
-      python3 ../haipipe-board/regroup.py <board-dir>            # plan
-      python3 ../haipipe-board/regroup.py <board-dir> --apply    # git mv
+      python3 ../haipipe-board/cli/regroup.py <board-dir>            # plan
+      python3 ../haipipe-board/cli/regroup.py <board-dir> --apply    # git mv
       ```
       Renaming a group letter is a THREE-part change and all three must land together: `git mv` the folder and files, keep the old id as a declared alias so existing citations resolve, then grep the repo for the old id and fix every hit.
 
@@ -158,7 +152,7 @@ That is `QAa`, and it will move to `haipipe-board-page`.
       · every id inside a figure resolves            (an unlinked token is dead text)
       · the board canvas is not a copy of the index
       ```
-      Page-level and sentence-level checks belong to `haipipe-board/check.py`.
+      Page-level and sentence-level checks belong to `haipipe-board/cli/check.py`.
 
 - 4 · 📂 Files
       ```
@@ -168,7 +162,7 @@ That is `QAa`, and it will move to `haipipe-board-page`.
       └── src/lanes.py        the per-group lane block, round-tripped
       ```
       Reads and writes `board.md` only.
-      Never touches `board.html`, never touches a page file, never imports `haipipe-board/src/`.
+      Never touches the generated `board/` site, never touches a page file, never imports `haipipe-board/src/`.
       A board's `## Pages` plus each page's `# ` line is the whole input, so the two skills ship on their own clocks.
 ### The other files
 
@@ -193,10 +187,19 @@ Worth knowing before trusting a green `check`: `skillpage.py check` hashes the f
 260801 0107 · verified the three managed spans against `board/haipipe-board-index/`: tree, body and log all regenerate byte-identical, no SKILL.md line missing. Noted that `check`'s hash covers frontmatter only.
 260730 1720 · page generated from `board/haipipe-board-index/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start fc83db2b18aea7b1 board/haipipe-board-index -->
+<!-- haipipe:skill:log:start 96be3be0a789127f board/haipipe-board-index -->
 
-Converted from the skill's own `CHANGELOG.md`: 1 releases.
+Converted from the skill's own `CHANGELOG.md`: 3 releases.
 
+260802 · `0.2.1`
+      - The boundary line sending one-page-section work elsewhere named `QAa` and said
+        it "will move to `haipipe-board-page`". That skill shipped, and the QAa face
+        group was folded into QB4 and archived on 260801, so the pointer named a page
+        that no longer exists and a move that already happened.
+260801 · `0.2.0`
+      - Aligns the Index contract with the canonical generated `board/` site rather than the retired `board.html` packaging.
+      - Replaces the stale B0-B9 monolith anatomy with the generated Index that actually ships: Heading, Spine, Board Map, optional Related Folders, Section Matrix, All Pages, and Activity.
+      - Makes Topic, Pipeline, and Board Structure explicitly source-only documentation. Board Structure now records Board-Folder versus the Index, group, and page routes under Board-Webpage.
 260730 · `0.1.0`
       - First cut, extracted from `haipipe-board` at JL's request ("did you build the haipipe-board-index? please do it now").
         It owns the BOARD and GROUP altitude: proposing a board's structure before any file exists, materializing it, and the two canvases the index carries.

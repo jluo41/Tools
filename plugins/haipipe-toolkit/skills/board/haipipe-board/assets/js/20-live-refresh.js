@@ -189,7 +189,7 @@
      can even observe it.
 
      It asks about ITSELF, which is the whole difference from the 4000 ms poll
-     this replaces: that one ran in a document carrying the rail, the page and
+     this replaces: that one ran in a document carrying the sidebar, the page and
      the chat, so its answer had to be surgery. Here a HEAD on our own URL is the
      complete question, so it can be asked often and answered by reloading.
 

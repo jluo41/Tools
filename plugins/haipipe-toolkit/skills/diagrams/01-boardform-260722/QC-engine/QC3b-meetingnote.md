@@ -224,7 +224,7 @@ Opened 260731 when JL asked how meeting notes could go on the board, and the art
 
 - 260801 JL · 🗂 Meetings became the seventh group
   JL: "we might have a new QG named Meeting, and we can make the meeting session, about different meetings we have."
-  `QG · Meeting` now holds `Meeting-1`, and the board renders it as a real group: an Index block, a rail section, and its own `board/QG/` folder in the tree.
+  `QG · Meeting` now holds `Meeting-1`, and the board renders it as a real group: an Index block, a sidebar section, and its own `board/QG/` folder in the tree.
   The argument for a group rather than a few rows inside another one is accumulation: `Skill-N` and `Agent-N` are a roster with a natural size, and a history of meetings has none.
   A first attempt also moved this face to `QD8`, which JL reversed on the spot: the machinery of importing a note is engine work, so the question stays in `QC` and only the meetings themselves live in `QG`.
 
@@ -282,7 +282,7 @@ Opened 260731 when JL asked how meeting notes could go on the board, and the art
 ## Log
 260801 0140 · Full renumber QC5b -> QC3b (JL forced 260801)
 260801 0130 · Reindexed QC10 -> QC5b under the new QC5 generator parent (JL 260801)
-260801 · `QG · Meeting` opened as the board's seventh group and `Meeting-1` moved into it; the group renders on the Index, in the rail, and as its own `board/QG/` folder in the tree. This face stays in QC. `meetingpage.py --group` defaults to QG
+260801 · `QG · Meeting` opened as the board's seventh group and `Meeting-1` moved into it; the group renders on the Index, in the sidebar, and as its own `board/QG/` folder in the tree. This face stays in QC. `meetingpage.py --group` defaults to QG
 260731 2205 · `Meeting-<n>` page kind SHIPPED: `meetingpage.py new|sync`, three managed spans, Items and Decision Now seeded once; `common.py` + `parse.py` learned the prefix, `check.py` learned the filename and exempts a meeting from English-only, and `page_question.py` stopped printing a managed marker as the lead sentence. Meeting-1 generated from the 260723 note: 6 sections, 18 divisions, 15 sentence drawers, 0 warnings
 260731 2130 · Read the producing end's source (`main.ts` 1,657 lines + 5 python modules): §4 records the pipeline, the section-boundary write discipline it shares with QC7, and the finding that the summarizer's prompt FIXES six sections, so Decisions / Action Items / Open Questions / Diagram map onto board constructs without interpretation
 260731 · Opened when JL asked how meeting notes get onto the board; `meeting/260723-meeting.md` has been on disk since 260723 and invisible to `page_files()` the whole time. `jluo41/echo-meeting` + `jluo41/echo-capture` identified as the producing end

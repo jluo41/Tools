@@ -182,7 +182,7 @@ QB8-diagramattach.md
 How the delivery is produced and shipped.
 QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
 One synced Skill page per shipped unit.
-The family took QC1b §8's shape on 260731: one door (Skill-0 haipipe-board), the board+group altitude (Skill-1 index), two loadable SPECS (Skill-3 page, Skill-4 sentence), and the write-back VERB (Skill-5 routing); digest is named on the roster and unshipped.
+The family took QC1b §2's shape on 260731: one door (Skill-0 haipipe-board), the board+group altitude (Skill-1 index), two loadable SPECS (Skill-3 page, Skill-4 sentence), and the write-back VERB (Skill-5 routing); digest is named on the roster and unshipped.
 An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer and Agent-2 the page creator, one page each so N run at once.
 260801: renumbered contiguous QC1-QC4 (JL forced); the former QC5/QC7 generators and round-trip topics are now QC3/QC4, and every retired id resolves through the Links table.
 

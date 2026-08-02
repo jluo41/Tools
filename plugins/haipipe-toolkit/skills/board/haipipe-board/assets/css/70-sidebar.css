@@ -1,5 +1,5 @@
 /* ── Pages sidebar (JL 260731): Index → group → page, hideable ──────────
-   Fixed rail outside .wrap, so the :target show/hide rules never touch it.
+   Fixed sidebar outside .wrap, so the :target show/hide rules never touch it.
    Default: open on wide screens via the media query, hidden below; the JS
    toggle sets body.nav-open/.nav-closed and persists per board. */
 .sbtoggle{position:fixed;left:10px;top:10px;z-index:31;width:30px;height:28px;
@@ -7,7 +7,7 @@
  border:1px solid var(--line);border-radius:var(--radius-pill);cursor:pointer;
  font:14px/1 sans-serif}
 .sbtoggle:hover{color:var(--accent);border-color:var(--accent)}
-/* Width is one variable so the rail can be dragged (JL 260731), the same
+/* Width is one variable so the sidebar can be dragged (JL 260731), the same
    shape the chat drawer already uses for --chatw: a handle on the edge
    sets it, and the browser remembers it per machine. */
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sbw,238px);z-index:30;
@@ -24,8 +24,8 @@
 .sidebar .sb-p .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sidebar a.on{background:color-mix(in srgb,var(--accent) 14%,transparent)}
 body.nav-open .sidebar{transform:none}
-/* The page yields exactly as much as the rail takes. This was hard-coded at
-   238px while the rail's own width became `--sbw`, so dragging the rail moved
+/* The page yields exactly as much as the sidebar takes. This was hard-coded at
+   238px while the sidebar's own width became `--sbw`, so dragging the sidebar moved
    it over the text instead of pushing the text along (JL 260731). One variable
    now drives both, the way `--chatw` already drives the drawer and the body. */
 body.nav-open{padding-left:var(--sbw,238px)}
@@ -36,17 +36,17 @@ body.nav-open{padding-left:var(--sbw,238px)}
 @media(max-width:1149px){body.nav-open{padding-left:0}}
 body.nav-closed .sidebar{transform:translateX(-100%)}
 body.nav-closed{padding-left:0}
-/* The rail's drag handle. FIXED rather than absolute inside the rail: the rail
+/* The sidebar's drag handle. FIXED rather than absolute inside the sidebar: the sidebar
    is `overflow-y:auto`, which clips anything on its edge, so an absolute handle
    was invisible to the pointer (elementFromPoint returned BODY).
 
-   It also has to APPEAR exactly when the rail appears. It did not: it is
-   positioned off `--sbw` alone, so with the rail collapsed it stood 238px into
+   It also has to APPEAR exactly when the sidebar appears. It did not: it is
+   positioned off `--sbw` alone, so with the sidebar collapsed it stood 238px into
    the page as a bar across the text, tinting on hover because that is what a
    handle does (JL 260801, with a screenshot of the QD group). The two rules
-   below mirror the rail's own two, so there is one condition, written twice
+   below mirror the sidebar's own two, so there is one condition, written twice
    because a handle cannot be a child of what it resizes. It lives beside the
-   rail now instead of at the end of the matrix file. */
+   sidebar now instead of at the end of the matrix file. */
 .sbrz{display:none;position:fixed;left:calc(var(--sbw,238px) - 3px);top:0;bottom:0;
  width:7px;cursor:col-resize;background:transparent;z-index:31}
 .sbrz:hover,.sbrz:active{background:var(--accent);opacity:.35}

@@ -231,7 +231,7 @@ The older `> JL:` form still renders, so nothing already written breaks, and `ch
 ## Lesson
 - 260801 JL · 🧪 The family's operations now have a run of their own
   JL: "I feel the sentences part is almost crash", after three separate sentence defects reached him in a week.
-  `QF5` owns the answer: sixteen shapes a sentence can take, crossed with the six operations that read one, and five assertions per cell.
+  `QF5` owns the answer: seventeen shapes a sentence can take, crossed with the six operations that read one, and five assertions per cell.
   Its first tier is written and was red on its first run, which is the only evidence a test is worth keeping.
 
 ## Glossary

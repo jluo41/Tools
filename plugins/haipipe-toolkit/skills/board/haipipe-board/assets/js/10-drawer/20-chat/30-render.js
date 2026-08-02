@@ -122,6 +122,15 @@
      same compact card, marked done because it already is. */
   function replayRow(m) {
     if (!m) return;
+    /* A ROW WITH NOTHING IN IT IS A LINE ACROSS THE SCREEN, and eighteen of
+       them look like the drawer broke (JL 260802, screenshot: "the thinking
+       process become lines"). An entry can arrive empty from an older saved
+       log or from a server that returned a message carrying only thinking, and
+       every one of those used to become a bordered row with no text in it.
+       Draw nothing instead: an absent row reads as absent, a blank one reads
+       as a fault. */
+    var body = ((m.t || '') + (m.name || '')).trim();
+    if (!body) return;
     if (m.k === 'you' && m.ts) turnMark(m.ts);
     if (m.k !== 'tool') { bubble(m.k, m.t); return; }
     var d = document.createElement('details');

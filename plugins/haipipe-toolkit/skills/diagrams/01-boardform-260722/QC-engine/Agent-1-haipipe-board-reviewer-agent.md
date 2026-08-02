@@ -1,4 +1,4 @@
-# haipipe-board-reviewer-agent · v0.3.0
+# haipipe-board-reviewer-agent · v0.4.0
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -13,7 +13,7 @@ Writers depend on its findings to know whether a revision stands on its own afte
 It is healthy when every verdict cites visible evidence and returns the smallest useful fix without changing a file.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 683ed2b588a5a9b6 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:tree:start f5c507835e2499e9 board/agents/haipipe-board-reviewer-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
@@ -25,13 +25,13 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 683ed2b588a5a9b6 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:body:start f5c507835e2499e9 board/agents/haipipe-board-reviewer-agent.md -->
 
-**haipipe-board-reviewer-agent** · `0.3.0` · last shipped 2026-08-01
+**haipipe-board-reviewer-agent** · `0.4.0` · last shipped 2026-08-01
 
 - folder   `board/agents/haipipe-board-reviewer-agent.md/`
 - tools    not declared
-- summary  The independent judge now resolves requirements and returns one evidence-bearing verdict per page section and Content unit.
+- summary  The independent judge reviews each page locally and changed Openings together in Board order, so individually clear but templated prose still fails.
 
 ### haipipe-board-reviewer-agent.md
 
@@ -40,7 +40,9 @@ above is the whole story.
 
 Review one Board in a fresh context. Judge; do not repair.
 
-Read these canonical sources before reviewing:
+Read these canonical sources before reviewing. LOAD them; never restate their
+rules here. This file is a procedure, not a second copy of the contract, and a
+copy is exactly what goes a night out of date while the contract moves:
 
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
 2. `../haipipe-board-page/SKILL.md` for the base page and evaluation contract.
@@ -59,6 +61,8 @@ Read these canonical sources before reviewing:
       - Requirement resolution and one conformance verdict per present section,
         direct Content division, and locally specified paragraph job.
       - Readability of the changed Q/S pages in the context supplied by `board.md`.
+      - Voice and page-specificity of changed Openings when read consecutively in
+        Board order.
       - Consistency among the page-level `state:`, `## Aims`, `## States`, and `## Log`.
       - Stale or contradictory claims visible in the Board and the files it links.
       - Page and group ownership clarity when `board.md` changed.
@@ -79,9 +83,14 @@ Read these canonical sources before reviewing:
          page.
       4. Run the read-only mechanical check:
          ```bash
-         python3 <toolkit>/skills/board/haipipe-board/check.py <board-folder> --strict
+         python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> --strict
+         python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> --summary
          ```
          Preserve its ERROR, WARN, and GAP levels. Do not rebuild to make it pass.
+         `--summary` scores the board instead of listing it: findings per rule, the
+         worst pages, and how many pages are clean. Report that score, because a
+         list of findings says nothing about whether the board is improving, and a
+         page at zero is the one the others should be made to look like.
       5. Cold-read the scoped pages using `ref/writing-rules.md`. Quote unreadable
          sentences, list undefined terms at first use, and name missing premises.
       6. Resolve applicable requirements in the order defined by
@@ -102,11 +111,19 @@ Read these canonical sources before reviewing:
          the evidence is unavailable, say `not verifiable` instead of guessing.
       9. When `board.md` changed, verify that each page title distinguishes its
          ownership and that each group intro states one reason shared by its members.
-      10. Return the contract below. Do not write a review file.
+      10. Extract the Opening from every changed page, preserve `board.md` order, and
+         read the Openings consecutively as one batch. Look for repeated sentence
+         stems, a repeated rhetorical sequence, cosmetic synonym swaps, and
+         paragraphs that remain plausible when their subject noun is replaced with a
+         sibling page's subject. The page skill's review questions are probes, not a
+         required order. A page may be clear alone and still fail this batch voice
+         gate when it reads like a form letter beside the others.
+      11. Return the contract below. Do not write a review file.
 
 - 3 · Verdict
       - `pass`: no mechanical ERROR and no actionable readability, ownership, or
-        staleness finding in the reviewed scope.
+        staleness finding in the reviewed scope, and no interchangeable Opening in
+        the batch voice gate.
       - `revise`: at least one actionable defect has file-and-line evidence.
       - `blocked`: the Board, canonical rules, or required target files cannot be
         read, so judgment would be invented.
@@ -131,6 +148,11 @@ Read these canonical sources before reviewing:
         unreadable_sentences: <quoted findings or none>
         undefined_terms: <terms and first-use locations or none>
         missing_premises: <findings or none>
+      batch_voice:
+        order: <page ids in the order read>
+        repeated_scaffolds: <stems or rhetorical sequences with page ids, or none>
+        interchangeable_openings: <noun-substitution findings with page ids, or none>
+        verdict: pass | revise | not applicable
       consistency:
         stale_or_contradictory: <file:line findings or none>
       structure:
@@ -149,10 +171,23 @@ Page generated 260727 0017. Nothing ruled yet.
 ## Log
 260727 0017 · page generated from `board/agents/haipipe-board-reviewer-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 683ed2b588a5a9b6 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:log:start f5c507835e2499e9 board/agents/haipipe-board-reviewer-agent.md -->
 
-Converted from the skill's own `CHANGELOG.md`: 7 releases.
+Converted from the skill's own `CHANGELOG.md`: 9 releases.
 
+260801 · `0.4.0` · haipipe-board-reviewer-agent
+      - Adds a Board-order batch voice gate after page-local review.
+      - Detects repeated sentence stems, repeated rhetorical sequences, cosmetic
+        synonym swaps, and Openings that survive a sibling-subject substitution.
+      - Allows a locally clear page to fail when the changed batch reads like a form
+        letter.
+260801 · `0.3.0` · haipipe-board-creator-agent
+      - Adds explicit `create-page` and `revise-opening` operations while preserving
+        the one-agent, one-page write boundary.
+      - Makes the creator load `haipipe-board-page` directly, read a revision target
+        completely, edit only Opening, and self-check without approving its own work.
+      - Keeps prose requirements in the canonical skill and reference instead of
+        copying a sentence formula into each assignment packet.
 260801 · `0.3.0` · haipipe-board-reviewer-agent
       - Loads the canonical page evaluation contract and resolves base, variant,
         page-local, Stage Contract, division, and paragraph-job requirements.

@@ -5,6 +5,81 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.105.0 - 2026-08-02
+
+- A machine now CLOSES a `### Decision Now` row once the person has answered it,
+  recording which option, who ruled, when, and the words they used (JL 260802:
+  "I think you should close it automatically, please go ahead and do it").
+  It still may not close a row nobody answered, and may not flip a page-level
+  human gate; a machine's own recommendation is never an answer. Before this a
+  row answered in chat and acted on within the hour still rendered as pending,
+  so the page reported work as waiting that had already shipped.
+
+## 0.104.2 - 2026-08-02
+
+- **THE SWEEP THAT REPORTED AN EMPTY BOARD.** `cli/sentencerun.py` navigated to a page
+  URL and evaluated `window.__boardSentenceText` in the top frame. The live shell answers
+  a page URL with a three-pane frame whose real document loads in an iframe, so the run
+  read the shell's window, found no reader, and printed
+  `SKIP … this page has no __boardSentenceText` for all 55 pages of the design board.
+  A run that reports nothing looks exactly like a run that found nothing.
+  `tree_url` now appends `?pane=page`, which asks the server for the page rather than
+  the shell around it.
+- The first honest sweep after the fix: 55 pages, 5069 writable sentences, 0 unreadable,
+  3067 unanchored, and not one of them the ①→② drift the run was built to catch. They
+  split 2724 indented item explanations, 215 paragraphs joined from several source lines,
+  68 generated placeholders, 56 markdown table rows and 4 duplicate sentences. Recorded on
+  `QF5` with the two repairs it now asks for: stop offering a control that cannot succeed,
+  and stop printing a correct refusal as `FAIL`.
+
+## 0.104.1 - 2026-08-02
+
+- The family heading cited `QC6 §8`. That page was reindexed to `QC1b` on 260801 and its
+  Content was rebuilt into 8 parts on 260802, so the roster shape now lives at `QC1b §2`.
+
+## 0.104.0 — 260802
+
+- **THE SIX-LANE BUG.** `POST /_board/activity` never returned. Every board
+  page posts `op=stats` to it as it loads, and `log_boards()` answered by
+  running an unpruned `rglob` over the whole repository root: 366,951 entries
+  to find ten `board.md` files, measured here at over 60 s with no response at
+  all.
+
+  A browser allows SIX connections per origin, SHARED ACROSS EVERY TAB, and a
+  request that has not finished is still holding one. So a few open pages held
+  every lane and the next CLICK never left Chrome's queue. Devtools reports
+  that as "Provisional headers are shown" with "0 B transferred", and a reader
+  experiences it as one to two minutes of a spinner. JL reported it for eight
+  days as "why is it so slow"; every measurement taken in that time said the
+  server answered in 20 to 70 ms, and every one of them was correct.
+
+  `log_boards()` now prunes in place, the same fix `live/home.py` got that
+  morning and this second copy did not, plus a two-second cache so ten tabs
+  loading at once pay for one walk.
+
+  | | before | after |
+  |---|---|---|
+  | `POST /_board/activity` | 60 s+, no reply | 43 ms |
+  | ten concurrent | never finished | 0.88 s |
+  | requests pending after a page settles | 1, forever | 0 of 8 |
+  | click QB1 → QB2 | queued 1-2 min | 53 ms |
+  | server threads | 178 | 12 |
+  | ESTABLISHED from one laptop | 6 of 6 | 1 |
+
+- **`checks/pending.mjs`** (new). Opens a page in headless Chrome and fails if
+  ANYTHING is still pending once it settles, or if ten concurrent
+  `/_board/activity` posts take over 5 s. Every existing check asked "did the
+  page load" and every one passed throughout, because the page did load. The
+  question that finds a held connection is "did everything finish", and it has
+  to be asked of a real browser: a request Chrome never sent appears in no
+  server log. Skips cleanly without Chrome or `ws`.
+
+- Lessons recorded on `QD8-pagecost` (boardform board; opened as `QC5`, moved to the QD lane the same day on JL's call): a fast server plus a
+  fast link is not a fast page, because the third term is whether a lane was
+  free and `curl` cannot see it, since curl always gets its own connection;
+  when a bad walk is fixed in one place, grep for its other sites the same
+  hour; and a check that asks "did it work" will not find a resource leak.
+
 ## 0.101.0 - 2026-08-02
 
 ## 0.102.0 — 260802
