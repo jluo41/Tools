@@ -47,28 +47,26 @@ If a number cannot be read off disk, do not write one.
 
 ```text
   📁 <paper>/0-lifecycle/ ── the board is a FOLDER, not one file
-     board.md is only its registry; the pages live in the subfolders
+     board.md is its registry · the pages live in one subfolder per
+     FAMILY, so the folder never tells you which group owns a page
   ════════════════════════════════════════════════════════════════
   🎯 WHAT WE EXPECT a paper to carry, group by group
   ### Delivery · Opening                            ◀ ruled by QB1
-      📁 0-seed/ + 2-venue/
       🌱 S-Seed-0-seed
       🎯 S-Venue-0-venue
       📣 S-Venue-1-pitch
   ### Delivery · Work                               ◀ QB2
-      📁 1-work/ + 2-venue/
       📦 S-Work-0-resources
       🎯 S-Work-1-claims
       🧵 S-Venue-2-narrative                        ← family Venue
   ### Delivery · Literature                         ◀ QB3
-      📁 0-seed/ + 4-main/
-      🗺 S-Seed-1-literature                        ← family Seed
+      🗂 S-Literature-Dash                          ⚠️ family missing
+      📄 S-Literature-1-<topic>                     ⚠️ family missing
+      📄 S-Literature-2-<topic>                     ⚠️ family missing
       📖 S-Main-2-literature                        ← family Main
   ### Delivery · Value                              ◀ QB4
-      📁 delivery-value/
       📄 QV0-value-delivery                         ← a Q page, no S page
   ### Delivery · Display                            ◀ QB5
-      📁 3-display/
       🗂 S-Display-Dash                             the control page
       📄 S-Display-1a-hero-concept
       📄 S-Display-1b-research-design
@@ -83,7 +81,6 @@ If a number cannot be read off disk, do not write one.
       📄 S-Display-4b-context-regression
       📄 S-Display-4c-discretion-gradient
   ### Delivery · Main                               ◀ QB6
-      📁 4-main/
       🗂 S-Main-Dash                                the control page
       📄 S-Main-0-abstract
       📄 S-Main-1-introduction
@@ -94,7 +91,6 @@ If a number cannot be read off disk, do not write one.
       📄 S-Main-7-discussion
       📄 S-Main-8-conclusion
   ### Delivery · Appendix                           ◀ QB7
-      📁 5-appendix/
       🗂 S-Appendix-0-control                       the control page
       📄 S-Appendix-A-prompts
       📄 S-Appendix-B-validation
@@ -103,18 +99,15 @@ If a number cannot be read off disk, do not write one.
       📄 S-Appendix-E-robustness
       📄 S-Appendix-F-bigfive
   ### Delivery · Present                            ◀ QB8
-      📁 delivery-present/
       📄 QP0-present-delivery                       ← a Q page, no S page
   ### Delivery · Build                              ◀ QB9
-      📁 6-submission/
       📄 S-Submission-0-reconcile
       📄 S-Submission-1-compile
       📄 S-Submission-2-review
       📄 S-Submission-3-submit
   ### Delivery · Round                              ◀ QB10
-      📁 7-round/
       📄 QR0-round-delivery
-      ⚠️ one S-Round per batch, once Round is a family
+      ⚠️ one S-Round-<n> per batch                    ⚠️ family missing
 
   🔤 S-<Family>-<unit>-<slug>.md
      the FAMILY says who wrote it · the GROUP says who owns the rule
@@ -264,6 +257,7 @@ It is also why narrative stays one page, because a paper has one arc and there i
 
 ## Law
 
+- 🧬 **TWO families are owed: `Literature` and `Round`.** The list is closed in three files, `cli/stage.py:27`, `check-contracts.py:40` and `src/parse.py:247`, and until all three admit a name no page in that family can be resolved, composed, or parsed.
 - 🔠 **A capital plus digits is a per-unit member of a lettered series** (JL 260802). `S-Work-R` is the control page and `S-Work-R1` is one unit. In the read regex it must lead `[A-Z]`, which would otherwise consume the `R` and leave the page silently unparseable rather than rejected.
 - 🔤 **A filename names the FAMILY that wrote a page; a group names the CONCERN that owns its rule.** They disagree in three places on purpose, and a reader must never infer one from the other.
 - 🗂 **Every stage makes a page, and not every page comes from a stage.** A family control page has no stage and is not missing one.
@@ -278,6 +272,8 @@ It is also why narrative stays one page, because a paper has one arc and there i
 
 ## Log
 
+260802 · The Literature group redrawn to the dash-plus-topics shape JL ruled, and the two families the board is missing, `Literature` and `Round`, are now one Law entry naming the three files that close the list rather than two separate notes.
+260802 · JL asked what the per-group `📁` line meant, and the honest answer is that it repeated the family: `Delivery · Display` said `3-display/`, which the filenames already said. Ten such lines removed. The header now states the folder rule in one place and `§2.3` argues it once, which is where it belongs.
 260802 · JL: the paper board is a FOLDER, not just a `board.md`, and these groups are what we EXPECT rather than a report. The figure header now names the folder and says so, each group carries the subfolder its pages live in, and `§2.3` states the rule that came out of checking it: the folder follows the FAMILY exactly, so the group is the only cut that differs. Found while checking: `QV0` and `QP0` sit in folders named after the concern while `QR0` sits in one named after the family slot, and nobody has ruled that.
 260802 · JL: one page, one line. The Opening, Work, Literature and Build rows had been packing two or three page names onto a line, and Display, Main and Appendix had been collapsed to a count. Every page a paper carries is now its own row, 45 of them, and the Writing Style carries the rule.
 260802 · JL: the figures were skill-board led, with QB ids down the left edge and the paper's pages on the right, and the two edges did not line up. Redrawn with the PAPER board as the spine: each line starts with the group a paper carries and the QB id annotates it on the right. A Writing Style rule now holds it that way.
