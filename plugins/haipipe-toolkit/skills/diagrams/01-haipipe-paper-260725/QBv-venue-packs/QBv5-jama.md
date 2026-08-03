@@ -12,6 +12,13 @@ It is the shortest bar any venue on this board sets, and the hardest to fake.
 Every other thing the desk asks for follows from that one question.
 So which papers clear it, and which ones does it throw out?
 
+**How to read this page**: almost everything here is a REFERENCE, not a rulebook, and this desk makes the exception larger than an IS desk does.
+The arcs, the per-section budgets, the moves and the refusals below describe what published JAMA papers do, measured from the exemplars on disk.
+A paper that departs from one of those is off-pattern, which is a thing to do on purpose and not a violation.
+The exception: JAMA publishes a text word cap, a display cap and a reference cap for every article type it prints, so at this desk many lengths ARE binding rules, unlike at `QBv1` where the desk publishes almost no length at all.
+Those live in the `Submission-Rules` figure and in the `Authority` group, and a manuscript that breaks one of them can be returned unreviewed.
+Every length on the page says which of the two it is.
+
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-jama-portfolio/jama-flagship/`.
 
@@ -33,6 +40,65 @@ How this page must be written. Read it before editing, and edit to it.
 **State the bar as an action, not as a quality**: this desk's own test is behavioural and paraphrasing it as importance loses the test.
 
 ✅ `will a clinician change what they do Monday`  ❌ `is the finding important`
+
+**The shape of this page is a contract, not a local habit** (JL 260803). It is `../../board/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A rule changed here is changed in that file in the same pass.
+
+```text
+  🖼 THREE FIGURES IN `## Diagram`, IN THIS ORDER
+     ① desk taste         what counts as the contribution · what is desk-rejected ·
+                          the desk's own test, quoted
+     ② Venue-Structure    the sections in READING order, each with its budget and
+                          what it owes · the ceiling over all of them
+     ③ Submission-Rules   category and cap · manuscript format · references · system ·
+                          anonymity · disclosures · odds, clock and money · an open
+                          row for what is NOT on record · the desk's own URLs
+
+  📎 FIVE FILES GROUPS, IN THIS ORDER
+     ⚙️ Engines           what REGENERATES this page
+     📋 Contracts         the venue-page contract, the base it extends, and the
+                          reference implementation · a loadable spec is a Contract
+                          and never an Engine
+     📥 Input files       the pack files this page READS
+     🔗 Authority         what the DESK publishes, read directly and never through
+                          the pack · opens with a provenance line · holds the desk's
+                          URLs and every place the desk contradicts the pack
+     📤 Generated         what a tool WRITES into this page, between markers
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX
+     ### 3 · Sec-0-Abstract: the structured abstract, and the Key Points box beside it
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, so the index IS the number of the
+         │           S-Main page it becomes · the supplement takes Sec-A
+         └── the Content division number, which counts §1 and §2 as well
+     ### A3 · 🧾 Sec-0-Abstract: the structured abstract, and the Key Points box beside it
+              ▲  the emoji lives HERE and on the division's closing line, never on
+                 the division heading: check.py strips it from an Aims group name
+                 and not from a division, so a heading-side emoji reads as
+                 group-name-drift on every section at once
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK (JL 260803)
+     the pack-derived arcs, budgets, moves and refusals are suggestions drawn from
+     published papers · only the desk's own published rules bind, and they live in
+     the Submission-Rules figure and the Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never sounds
+     like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS (JL 260803)
+     a DESK RULE is published by the venue and binding · a PACK OBSERVATION is a
+     measurement of papers the pack read, and breaking it is off-pattern rather
+     than a violation
+     ⚠️ THE DIFFERENCE FROM `QBv1`: at an IS desk almost every length is a pack
+        observation · at this clinical desk the TOTALS are the desk's own published
+        rules (3000 words of text, 350-word abstract, 5 displays, the per-type
+        reference caps) and only the PER-SECTION budgets are the pack's
+
+  📏 A NUMBER CARRIES ITS SOURCE   inline, always: a style.md line, an exemplar, or
+     the desk's own page, and never as this page's own claim
+  ❓ AN UNKNOWN IS PRINTED         a slot neither source can fill is written as an
+     open row, never left off the figure
+```
+
+**What the pack knows and what the desk says are two different sources**, and where they disagree the desk wins and the disagreement is written down. The pack is READ and never written by this plugin, so a correction lands here, not in `paper/venue/`.
 
 ## Diagram
 
@@ -839,7 +905,7 @@ An Original Investigation gives limitations a titled subsection; the letter form
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 19 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 19 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-jama-portfolio/jama-flagship/examples/article2338266-2015-jama-medical-marijuana-for-treatment-of-chronic-pain-and-other-medical-and-psychiatric.pdf`
 - `../../paper/venue/playbook-jama-portfolio/jama-flagship/examples/article2503508-2016-jama-cdc-guideline-for-prescribing-opioids-for-chronic-pain-united-states-2016.pdf`
@@ -868,22 +934,7 @@ An Original Investigation gives limitations a titled subsection; the letter form
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · methods
-- `S-Main-3` · results
-- `S-Main-4` · discussion
-- `S-Appendix-A` · appendix
-- `S-Main-0` of its OWN paper · letter, a standalone article format rather than a section of this one
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 

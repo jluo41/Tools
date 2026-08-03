@@ -274,8 +274,8 @@ What is left is splitting two live pages into nine, and A2.1 holds it.
 📚 Establishes that Literature owns no family and no stage, that it holds the board's only live family-against-group trap, and that it is the one group two QB pages currently describe differently.
 
 #### 3.1 · A topic is the unit here because no stage is available to be one
-(unit: a topic · `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` declares eight stages and none of them is literature)
-Opening and Work can run one page per stage because `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` gives them seed, venue, pitch, resource, claims and narrative.
+(unit: a topic · `../../paper/route/haipipe-paper-stage/stages/index.yml` declares eight stages and none of them is literature)
+Opening and Work can run one page per stage because `../../paper/route/haipipe-paper-stage/stages/index.yml` gives them seed, venue, pitch, resource, claims and narrative.
 It declares nothing for this concern, so both live pages here were written by a stage another group owns: `seed` wrote one and `section-edit` wrote the other.
 `§14.3` holds the test a unit has to pass, and `§11.2` files this group with the four others that split by unit rather than by stage.
 
@@ -333,7 +333,7 @@ A6.1 is the ruling, and until someone makes it the two QB pages stay in disagree
 
 #### 4.1 · Value and Present look identical from outside, and only one is finished
 (the two facts a reader reaches for do not separate them)
-`../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` declares eight stages, and none of them is `value` or `present`, so neither group owns a stage.
+`../../paper/route/haipipe-paper-stage/stages/index.yml` declares eight stages, and none of them is `value` or `present`, so neither group owns a stage.
 No manuscript section belongs to either, because a Value number is printed inside Main or a caption and a deck is not a section at all.
 Both facts are true of both groups, so a reader who stops there reads Value's row in `§11` as settled when it is not.
 `§14.3` is the cut that works: Value's work splits into units that can be approved one at a time, and Present's does not, which `§8` argues on its own page.
@@ -579,7 +579,7 @@ The two answers still cost different things: `Dash` is a change to `§13`'s comp
      QP0-present-delivery    ✅    QP0-present-delivery
 
   ❓ why no S page at all, now or ever
-     `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` declares 8 stages and none is `present`
+     `../../paper/route/haipipe-paper-stage/stages/index.yml` declares 8 stages and none is `present`
      no manuscript section belongs to it
      the work it causes happens in Display and Main
      `Present` is not one of the three families the board owes
@@ -594,8 +594,8 @@ The two answers still cost different things: `Dash` is a change to `§13`'s comp
 📣 Establishes that Present is the one group finished at a single Q page, and separates it from the two groups that show one Q page for entirely different reasons.
 
 #### 8.1 · Present is the only group that owes no S page, now or ever
-(unit: none, and `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` names 8 stages with no `present` among them)
-`../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` declares seed, resource, claims, venue, pitch, narrative, display and section-edit, and that is the whole list.
+(unit: none, and `../../paper/route/haipipe-paper-stage/stages/index.yml` names 8 stages with no `present` among them)
+`../../paper/route/haipipe-paper-stage/stages/index.yml` declares seed, resource, claims, venue, pitch, narrative, display and section-edit, and that is the whole list.
 No manuscript section belongs to Present either, so there is no per-unit thing an S page could hold.
 The board owes three families, `Literature`, `Value` and `Round`, and `Present` is not one of them, because no S page will ever ask for one.
 
@@ -969,7 +969,7 @@ A group holding a page from another family owes the reader one sentence saying s
      4al2    composer ✅              chat.py 🚫 → S-Display-4, blocked
 
   🧩 5 of the 6 sit in  board/haipipe-board/
-     the 6th sits in      paper/1-lifecycle/haipipe-paper-stage/
+     the 6th sits in      paper/route/haipipe-paper-stage/
      and its bridge is BROKEN today: it imports
      board/haipipe-board/stage.py, which is now cli/stage.py
 
@@ -981,7 +981,7 @@ A group holding a page from another family owes the reader one sentence saying s
 
 #### 13.1 · A filename is composed from three declared fields, and nothing on disk holds the result
 (each stage's own `stage.md` declares three fields, and one function joins them)
-Each of the eight stage folders declares `board_family`, `board_unit` and `board_slug` in its own `stages/<dir>/stage.md` frontmatter, and `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` carries none of the three, only `key`, `order`, `dir`, `migrated` and `triggers`.
+Each of the eight stage folders declares `board_family`, `board_unit` and `board_slug` in its own `stages/<dir>/stage.md` frontmatter, and `../../paper/route/haipipe-paper-stage/stages/index.yml` carries none of the three, only `key`, `order`, `dir`, `migrated` and `triggers`.
 `resolve_filename()` at `cli/stage.py:260` is the one function that joins them into `S-<Family>-<unit>-<slug>.md`, and this page used to pin that function to line 27, which is where the `FAMILIES` tuple sits rather than the composer.
 So `§12`'s grammar describes what the composer produces, and is not a rule written down anywhere for the composer to follow.
 A page written by hand can carry a name the composer would never produce, and nothing compares the two.
@@ -1008,7 +1008,7 @@ The other direction is worse, because `live/chat.py:201` stops the unit at `\d+`
 None of those three is a page id, and `S-Display-4al2` is a name the composer itself produces, so the write side and the read side already disagree on a page the MISQ paper carries today.
 
 #### 13.5 · The sixth file is in another skill, and the bridge between the two skills is broken
-(five lists in `board/haipipe-board/`, one in `paper/1-lifecycle/haipipe-paper-stage/`)
+(five lists in `board/haipipe-board/`, one in `paper/route/haipipe-paper-stage/`)
 Someone adding a family works inside the board engine, finds five lists there, and has no reason to open the paper skill, which is why the Law names paths instead of saying "five places".
 The paper skill reaches back by hard path, and `check-contracts.py:26` names `board/haipipe-board/stage.py`, a file that now lives at `cli/stage.py`, so running the checker on 260803 ends in a traceback before it reads a single contract.
 So the only file that reports an unknown family does not run at all today, which is why nothing has told anyone about the `Dash` gap or the chat truncation.
@@ -1016,7 +1016,7 @@ Three more places restate the seven names and enforce nothing: `stages/index.yml
 
 #### 13.6 · Which is why the three owed families are a code change, held by A13.1 and A13.2
 (`Literature`, `Value` and `Round`, the groups `§3`, `§4` and `§10` mark family missing)
-A13.1 asks for one declaration every file reads, which means the six lists become one exported constant plus five uses of it: `src/parse.py` building both its regex and its sort order from it, `src/page_board.py` building its Index sections, `live/chat.py` building its id regex, and `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` importing it instead of spelling its own set.
+A13.1 asks for one declaration every file reads, which means the six lists become one exported constant plus five uses of it: `src/parse.py` building both its regex and its sort order from it, `src/page_board.py` building its Index sections, `live/chat.py` building its id regex, and `../../paper/route/haipipe-paper-stage/check-contracts.py` importing it instead of spelling its own set.
 A13.2 landed on 260803 by editing all six by hand, and both boards were rebuilt and their page lists diffed to prove nothing existing moved.
 Before that, an `S-Literature-1-<topic>.md` file would not have been a page, would have had no place on the Index, and would have made its own chat session report blocked.
 Writing a group heading into `board.md` still costs nothing and still admits no family, which is why A13.1 is the one that matters: six hand-edited lists is the same defect waiting to happen again.
@@ -1066,8 +1066,8 @@ Writing a group heading into `board.md` still costs nothing and still admits no 
 🗂 Establishes the three kinds of S page a group may hold, the Q page that is not one of them, and the five live pages that fit no kind at all.
 
 #### 14.1 · Every stage makes a page, and twelve live pages come from no stage
-(counted off `board.md`'s `## Pages` against `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` on 260803)
-`../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` declares eight stages, and the six that run once each name exactly one live page, from `S-Seed-0-seed` through `S-Venue-2-narrative`.
+(counted off `board.md`'s `## Pages` against `../../paper/route/haipipe-paper-stage/stages/index.yml` on 260803)
+`../../paper/route/haipipe-paper-stage/stages/index.yml` declares eight stages, and the six that run once each name exactly one live page, from `S-Seed-0-seed` through `S-Venue-2-narrative`.
 Twelve of the forty-five live pages answer to no stage: three control pages, three Q pages, the four `S-Submission` pages, `S-Seed-1-literature`, and `S-Venue-3-decisions`.
 A control page is not a stage page that went missing, because it answers what a unit page cannot: which units this paper has, and which are gated.
 The write side agrees with that: `resolve_filename()` refuses the unit `Dash` at `cli/stage.py:286`, so the composer `§13` describes cannot produce `S-Main-Dash` even if someone asked it to.
@@ -1153,7 +1153,7 @@ Its other entries are settled history, D11, D15 and D16, and a `Decision Now` ro
 - A13.2 · The three owed families are admitted in every place at once.
   **Done when:** `Literature`, `Value` and `Round` are in all six lists, and a rebuild shows one page of each parsing, sorting on the Index, and linking in chat.
 - A13.3 · The one file that reports an unknown family runs again.
-  **Done when:** `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` imports the composer from the path it lives at today and finishes a real check instead of a traceback.
+  **Done when:** `../../paper/route/haipipe-paper-stage/check-contracts.py` imports the composer from the path it lives at today and finishes a real check instead of a traceback.
 - A13.4 · Every unit token a live page carries is readable by every layer that reads a name.
   **Done when:** `live/chat.py` resolves `S-Display-4al2`, `S-Work-R1` and `S-Main-Dash` to their whole page ids, and `resolve_filename()` composes the unit `Dash`.
 
@@ -1209,19 +1209,19 @@ Its other entries are settled history, D11, D15 and D16, and a `Decision Now` ro
 
 📥 **Input files** · what the work reads
 
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` · declares which stages exist, and therefore which concerns own one
+- `../../paper/route/haipipe-paper-stage/stages/index.yml` · declares which stages exist, and therefore which concerns own one
 - `../../board/haipipe-board/src/parse.py` · owns the filename grammar this page describes
 - `../../board/haipipe-board/cli/stage.py` · composes a filename from a stage's three declared fields
 - `../../board/haipipe-board/src/page_board.py` · holds the family order the Index sorts by
 - `../../board/haipipe-board/live/chat.py` · turns a page id into a link, and drops the ones it does not know
-- `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` · the only file that reports an unknown family
+- `../../paper/route/haipipe-paper-stage/check-contracts.py` · the only file that reports an unknown family
 - `QC-engine/QC3b-page-name.md` · owns the per-unit test and the naming Law
 
 ## Law
 
 - 🧱 **ONE GROUP IS ONE `###` DIVISION** (JL 260803). `§1` to `§10` are the ten Delivery groups in board order and each opens with its own designed-against-live page list; `§11` to `§14` hold what is true across them. This overrides the 260802 rule that a group was a `####` paragraph, which had been argued from `check.py` requiring a figure per division. A group's figure is not a slice of the whole-board figure: it is that group's own pages, what it owes against what the live paper carries.
-- 🧬 **The family list is closed in SIX places, and the three families once owed were admitted on 260803.** The rule that survives is the count and the paths, not the shortage: `cli/stage.py:27` composes, `src/parse.py:247` decides whether a file is a page, `src/parse.py:301` decides where it sorts, `src/page_board.py` orders the Index sections, `live/chat.py:201` matches ids in the chat layer, and `check-contracts.py:40` checks the declaration. FIVE of those live in `board/haipipe-board/` and the sixth in `paper/1-lifecycle/haipipe-paper-stage/`, so a person working inside the board engine can find every list there and still miss one. A name admitted to five of the six is a page that parses and then sorts into the wrong place, and a name missing from `src/parse.py:301` stops the whole build with a `KeyError`. Three more places restate the names and enforce nothing: `stages/index.yml:7`, `stages/CONTRACT.md:26`, and `SKILL.md:95`, which had already drifted by dropping `Submission`. `§13` argues how the write side and the read side come apart.
-- 🛠 **A NAME THE COMPOSER COULD NOT WRITE AND A NAME THE CHAT LAYER COULD NOT READ WERE BOTH LIVE** (found and fixed 260803). `resolve_filename()` raised on the unit `Dash` that `S-Main-Dash` and `S-Display-Dash` both use, and `live/chat.py:201` truncated `S-Display-4al2-main-regression` to `S-Display-4`, which is not a page id. Nothing reported either, because `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` had not run since its import path moved. All three closed the same day, and the lesson is the one A13.1 still holds: a rule spelled out in six files is a rule nothing enforces.
+- 🧬 **The family list is closed in SIX places, and the three families once owed were admitted on 260803.** The rule that survives is the count and the paths, not the shortage: `cli/stage.py:27` composes, `src/parse.py:247` decides whether a file is a page, `src/parse.py:301` decides where it sorts, `src/page_board.py` orders the Index sections, `live/chat.py:201` matches ids in the chat layer, and `check-contracts.py:40` checks the declaration. FIVE of those live in `board/haipipe-board/` and the sixth in `paper/route/haipipe-paper-stage/`, so a person working inside the board engine can find every list there and still miss one. A name admitted to five of the six is a page that parses and then sorts into the wrong place, and a name missing from `src/parse.py:301` stops the whole build with a `KeyError`. Three more places restate the names and enforce nothing: `stages/index.yml:7`, `stages/CONTRACT.md:26`, and `SKILL.md:95`, which had already drifted by dropping `Submission`. `§13` argues how the write side and the read side come apart.
+- 🛠 **A NAME THE COMPOSER COULD NOT WRITE AND A NAME THE CHAT LAYER COULD NOT READ WERE BOTH LIVE** (found and fixed 260803). `resolve_filename()` raised on the unit `Dash` that `S-Main-Dash` and `S-Display-Dash` both use, and `live/chat.py:201` truncated `S-Display-4al2-main-regression` to `S-Display-4`, which is not a page id. Nothing reported either, because `../../paper/route/haipipe-paper-stage/check-contracts.py` had not run since its import path moved. All three closed the same day, and the lesson is the one A13.1 still holds: a rule spelled out in six files is a rule nothing enforces.
 - 🔠 **A capital plus digits is a per-unit member of a lettered series** (JL 260802). `S-Work-R` is the control page and `S-Work-R1` is one unit. In the read regex it must lead `[A-Z]`, which would otherwise consume the `R` and leave the page silently unparseable rather than rejected.
 - 🔤 **A filename names the FAMILY that wrote a page; a group names the CONCERN that owns its rule.** A reader must never infer one from the other, and NO PAGE STATES A COUNT OF "JOINS" (JL 260802), because three unlike things were being added together: a family no group is named after, which is normal; a family that is also another group's name, which is the trap; and a disagreement kept on purpose, which is narrative. Naming the case beats counting the cases.
 - 🗂 **Every stage makes a page, and not every page comes from a stage.** A family control page has no stage and is not missing one.
@@ -1254,7 +1254,7 @@ Its other entries are settled history, D11, D15 and D16, and a `Decision Now` ro
 260803 · A4.1 was found already met rather than done. QB4 `§2` has been drawn to the dash-plus-topics shape since 260802 and its State here said the opposite for a day. Same shape as the join count and the page count before it, so P1 now names three stale claims and still has nothing checking them.
 260803 · Three defects found while checking the restructure, all on this page and all fixed. The Opening said family and group "disagree on purpose in three places", which is exactly the bare join count this page's own Law forbids and `§12.4` killed on 260802; it now says the cases come apart in more than one way and points at `§12`. The Opening also claimed every concern page carries a `What we want on the paper board` division, and QB1 and QB2 call theirs `What the paper board shows`, so the Opening now names the split, 8 against 2. The Writing Style still declared a three-part scope written before `§3` and `§4` existed, and now names all fourteen divisions. Historical `§` references in this Log were left as written and annotated with where each lives now, because a Log is a dated record and repointing it would erase what was true then.
 260803 · JL: ONE GROUP IS ONE `###` DIVISION, not a `####` paragraph. He ruled it against a Decision Now row offering three shapes and took none of them: "we will have a lot of divisions, `### Delivery · Opening` <--- this will be a division, and `### Delivery · Work` and `### Delivery · Literature`". That row is closed and removed. Content went from four divisions to fourteen: `§1` to `§10` are the ten Delivery groups in board order, and `§11` to `§14` hold the cross-cutting facts, which are the at-a-glance table with the three shapes, what a filename says, how a filename is made, and the three page kinds. Every group division opens with its own designed-against-live page list, which answers the 260802 objection that ten figures would be ten slices of the whole-board figure: they are not slices, they are one group's own pages. Aims and States were regrouped to match, `A1` to `A14`, and two gaps that A11.1 had found with nobody holding them finally got an owner: A1.1 for Opening's two extra pages, and A6.1 for the `S-Main-2` borrow. The old `A2.1` and `A3.1` moved to the group that actually owns the work, Literature and Work.
-260803 · `§13` opened, and was `§4` for one build, because the Law said a family is admitted in five files and no Content division argued it, so this page described a naming grammar without ever saying where a name comes from. It splits the write side, three declared fields joined by `cli/stage.py resolve_filename()`, from the read side, four files that each hold the family list on their own and fail in four different silent ways. Every path and line number was read off disk on 260803. Two things surfaced while doing it: four of the five files live in `board/haipipe-board/` and the fifth in `paper/1-lifecycle/haipipe-paper-stage/`, which the Law now says, and `stages/index.yml:7` restates the list in a comment that enforces nothing. A13 opened with two Aims, neither started.
+260803 · `§13` opened, and was `§4` for one build, because the Law said a family is admitted in five files and no Content division argued it, so this page described a naming grammar without ever saying where a name comes from. It splits the write side, three declared fields joined by `cli/stage.py resolve_filename()`, from the read side, four files that each hold the family list on their own and fail in four different silent ways. Every path and line number was read off disk on 260803. Two things surfaced while doing it: four of the five files live in `board/haipipe-board/` and the fifth in `paper/route/haipipe-paper-stage/`, which the Law now says, and `stages/index.yml:7` restates the list in a comment that enforces nothing. A13 opened with two Aims, neither started.
 260803 · The Diagram lists 48 page names plus one `S-Round-<n>` placeholder, and the 260802 Log had said 45. Corrected. This is the second count on this page to drift with nothing checking it, so P1's State now names both.
 260802 · JL: one Question Group is one unit of Content. `§1` was three cross-cutting essays whose spine did not match the figure's, so a reader could see ten groups drawn and then not look one up. It now walks the ten in board order, `§1.1` to `§1.10`, each naming that group's unit, shape and gap, with the three-shapes figure and its two paragraphs kept below as `§1.11` and `§1.12`. Those became `§1` to `§10` and `§11.1` to `§11.2` on 260803. Written as `####` rather than `###` because `check.py:657` requires a figure under every division, and ten per-group figures would be ten slices of the figure this page already draws; the Writing Style now carries that reason. Aim ids did not move.
 260802 · The join count is dead as a number. This page had said four in the Diagram legend, three in the Law, one in `§2.3`, and had a ✅ State claiming `§2` named all three when `§2` showed one arrow. The cause was three unlike things counted together, separated in what was then `§2.4` and is now `§12.4`: a family no group is named after, a family that is also another group's name, and a disagreement kept on purpose. Only the middle one is a trap and only `S-Main-2-literature` is live. A2.1 reopened, because it had been closed on the false claim.

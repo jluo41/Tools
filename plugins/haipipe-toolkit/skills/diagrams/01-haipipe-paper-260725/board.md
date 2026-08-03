@@ -208,7 +208,7 @@ QBe3-content-latex-word-display.md
 One page per VENUE TARGET, and nothing above it. A page is a specific journal, agency, or patent office: what that desk accepts, what it desk-rejects, and what it requires of every section and of the appendix. `QB1` ruled on 260729 that the venue DECISION lives inside Opening and that ruling stands: this group is not an eleventh Delivery concern, it is the catalog Opening reads to make that decision and that four other concerns read afterwards.
 A venue cuts across Delivery, which is why it cannot be filed under any single concern. Every `playbook-*/README.md` carries four stage maps: rewards land on QB4 Value, display conventions on QB5 Display, the section arc on QB6 Main, and the language profile on QBe3 §3.
 
-**The law this group runs on**, absorbed from the retired `QBv0` on 260802: a venue pack is READ and never written by this plugin. The packs are their own repository, `jluo41/Venue-Paper`, pinned as a submodule at `paper/venue/`, so every paper stage is a reader by construction. A pack answers at two levels, family and outlet, and a file missing from either level is a missing answer rather than a missing folder. Two files sit at different levels depending on the pack: `taste.md` and `examples/` are per-outlet for the eleven multi-outlet journals and per-family for PNAS, grant, and patent, and that split is declared nowhere. `../../paper/1-lifecycle/haipipe-paper-stage/stages/section-kinds.yml` is the reader-side resolver: it maps outlet to section kinds, aliases `theory-model` to `theory`, rules that a pack path is reached by GLOB and never by concatenation, and declares grant and patent blueprint-only by design.
+**The law this group runs on**, absorbed from the retired `QBv0` on 260802: a venue pack is READ and never written by this plugin. The packs are their own repository, `jluo41/Venue-Paper`, pinned as a submodule at `paper/venue/`, so every paper stage is a reader by construction. A pack answers at two levels, family and outlet, and a file missing from either level is a missing answer rather than a missing folder. Two files sit at different levels depending on the pack: `taste.md` and `examples/` are per-outlet for the eleven multi-outlet journals and per-family for PNAS, grant, and patent, and that split is declared nowhere. `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml` is the reader-side resolver: it maps outlet to section kinds, aliases `theory-model` to `theory`, rules that a pack path is reached by GLOB and never by concatenation, and declares grant and patent blueprint-only by design.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record          📂 FOLDER
@@ -374,9 +374,9 @@ QB13b               _archive/QBe2b-requested-display.md
 QB13c               _archive/QBe2c-display-caption.md
 PHILOSOPHY.md      ../../paper/PHILOSOPHY.md
 README.md          ../../paper/README.md
-stages/            ../../paper/1-lifecycle/haipipe-paper-stage/stages/
-index.yml          ../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml
-CONTRACT.md        ../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md
+stages/            ../../paper/route/haipipe-paper-stage/stages/
+index.yml          ../../paper/route/haipipe-paper-stage/stages/index.yml
+CONTRACT.md        ../../paper/route/haipipe-paper-stage/stages/CONTRACT.md
 venue/             ../../paper/venue/
 haipipe-probe/     ../../probe/haipipe-probe/
 haipipe-writing/   ../../writing/haipipe-writing/
@@ -388,24 +388,24 @@ haipipe-board-page/ ../../board/haipipe-board-page/
 haipipe-board-sentence/ ../../board/haipipe-board-sentence/
 haipipe-board-routing/ ../../board/haipipe-board-routing/
 dialect_paper.py   ../../board/haipipe-board/src/dialect_paper.py
-haipipe-paper-probe          ../../paper/2-phase/1-probe/haipipe-paper-probe/
+haipipe-paper-probe          ../../paper/phase/1-probe/haipipe-paper-probe/
 haipipe-paper                ../../paper/haipipe-paper/
-haipipe-paper-lifecycle      ../../paper/1-lifecycle/haipipe-paper-lifecycle/
-haipipe-paper-stage          ../../paper/1-lifecycle/haipipe-paper-stage/
-haipipe-paper-draft          ../../paper/2-phase/0-draft/haipipe-paper-draft/
-haipipe-paper-revise         ../../paper/2-phase/2-revise/haipipe-paper-revise/
-haipipe-paper-revise-place   ../../paper/2-phase/2-revise/haipipe-paper-revise-place/
-haipipe-paper-revise-results ../../paper/2-phase/2-revise/haipipe-paper-revise-results/
-haipipe-paper-revise-content ../../paper/2-phase/2-revise/haipipe-paper-revise-content/
-haipipe-paper-revise-humanizer ../../paper/2-phase/2-revise/haipipe-paper-revise-humanizer/
-haipipe-paper-check          ../../paper/2-phase/3-check/haipipe-paper-check/
-haipipe-paper-check-evidence ../../paper/2-phase/3-check/haipipe-paper-check-evidence/
-haipipe-paper-project        ../../paper/3-deliver/1-build/haipipe-paper-project/
-paper-folder/      ../../paper/3-deliver/1-build/haipipe-paper-folder/
-paper-conform/     ../../paper/3-deliver/1-build/haipipe-paper-conform/
-paper-compile/     ../../paper/3-deliver/4-ship/haipipe-paper-compile/
-5-section-edit/    ../../paper/1-lifecycle/haipipe-paper-stage/stages/5-section-edit/
-4-display/         ../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/
+haipipe-paper-lifecycle      ../../paper/route/haipipe-paper-lifecycle/
+haipipe-paper-stage          ../../paper/route/haipipe-paper-stage/
+haipipe-paper-draft          ../../paper/phase/0-draft/haipipe-paper-draft/
+haipipe-paper-revise         ../../paper/phase/2-revise/haipipe-paper-revise/
+haipipe-paper-revise-place   ../../paper/phase/2-revise/haipipe-paper-revise-place/
+haipipe-paper-revise-results ../../paper/phase/2-revise/haipipe-paper-revise-results/
+haipipe-paper-revise-content ../../paper/phase/2-revise/haipipe-paper-revise-content/
+haipipe-paper-revise-humanizer ../../paper/phase/2-revise/haipipe-paper-revise-humanizer/
+haipipe-paper-check          ../../paper/phase/3-check/haipipe-paper-check/
+haipipe-paper-check-evidence ../../paper/phase/3-check/haipipe-paper-check-evidence/
+haipipe-paper-project        ../../paper/S09-build/haipipe-paper-project/
+paper-folder/      ../../paper/container/haipipe-paper-folder/
+paper-conform/     ../../paper/container/haipipe-paper-conform/
+paper-compile/     ../../paper/S09-build/haipipe-paper-compile/
+5-section-edit/    ../../paper/S06-main/section-edit/
+4-display/         ../../paper/S05-display/display/
 boardform-board/   ../01-boardform-260722/
 probe-board/       ../01-probe-qa-260726/
 display-board/     ../01-haipipe-display-260727/

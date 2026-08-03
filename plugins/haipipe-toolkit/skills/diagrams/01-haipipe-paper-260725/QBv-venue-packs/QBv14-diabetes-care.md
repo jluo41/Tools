@@ -12,6 +12,14 @@ Every other outlet page in this group ends in a judgement a person has to make. 
 The abstract headings are fixed. So is the name of the methods section. A machine can compare those words against a manuscript and answer yes or no.
 This page writes the eight down, and records that nothing in the lifecycle reads them.
 
+**How to read this page**: most of it is a REFERENCE, not a rulebook.
+The arcs, the paragraph shapes, the moves and the pack's refusals below describe what published Diabetes Care papers do, measured from the exemplars on disk.
+A paper that departs from one of those is off-pattern, which is a thing to do on purpose and not a violation.
+Two parts are different, and both bind.
+The `Submission-Rules` figure carries the desk's own published rules, and a manuscript that breaks one of those is returned unreviewed.
+And this desk, unlike the IS desks elsewhere in this group, publishes its own word counts: the 4,000-word body and the 250-word abstract are the ADA's numbers rather than anybody's measurement.
+Every length on this page says which of the two it is.
+
 **Where this page sits**: it is one venue target in `QBv`, and the only one in its pack.
 This page owns only what is true of `playbook-medical-journals/diabetes-care/`.
 
@@ -33,6 +41,66 @@ How this page must be written. Read it before editing, and edit to it.
 **Split the checkable from the judged**: this page's value is the boundary between them, and mixing the two loses it.
 
 ✅ `the abstract headings are ADA, not JAMA`  ❌ `the paper should follow ADA conventions`
+
+**The shape of this page is not this page's own** (260803). It comes from `../../board/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`, and a rule changed here is changed in that contract in the same pass:
+
+```text
+  🖼 THREE FIGURES IN `## Diagram`, IN THIS ORDER
+     ① desk taste         what counts as the contribution · what is
+                          desk-rejected · the desk's own test
+     ② Venue-Structure    the sections in the venue's reading order, the
+                          budget each carries, and the ceiling over all of them
+     ③ Submission-Rules   category and cap · manuscript format · reference
+                          style · the portal · blinding · the disclosures ·
+                          the odds, the clock and the money · an open row for
+                          what is NOT on record · the desk's own URLs
+
+  📎 FIVE FILES GROUPS, IN THIS ORDER
+     ⚙️ Engines           what regenerates this page
+     📋 Contracts         the venue-page contract and the base it extends ·
+                          a loadable spec is a Contract and never an Engine
+     📥 Input files       the pack files this page reads
+     🔗 Authority         what the DESK publishes, read directly and never
+                          through the pack · opens with a provenance line ·
+                          carries every place the desk contradicts the pack
+     📤 Generated         what a tool WRITES between markers
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK
+     the pack-derived arcs, shapes, moves and refusals are measurements of
+     published papers, and departing from one is a choice · only the desk's
+     own published rules bind, and they live in the Submission-Rules figure
+     and the Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never
+     sounds like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS
+     a DESK RULE is published by the ADA and binding · a PACK OBSERVATION is
+     a measurement of papers the pack read, and breaking it is off-pattern
+     💉 AND THIS DESK IS NOT LIKE THE IS DESKS: at MISQ every word budget is
+        the pack's, because the desk publishes none · here the body word
+        count, the abstract cap, the reference count and the display count
+        are all the ADA's own numbers, and only the PER-SECTION splits
+        are the pack's
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX
+     ### 3 · Sec-0-Abstract: four ADA labels and a four-bullet Highlights box
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, so the index IS the number of
+         │           the S-Main page it becomes · the appendix takes Sec-A
+         └── the Content division number, which counts §1 and §2 as well
+     ### A3 · 📋 Sec-0-Abstract: four ADA labels and a four-bullet Highlights box
+              ▲  the emoji lives HERE and on the division's closing line,
+                 never on the division heading: check.py strips it from an
+                 Aims group name and not from a division, so a heading-side
+                 emoji reads as group-name-drift on every section at once
+
+  📏 A NUMBER CARRIES ITS SOURCE   inline, always: a style.md heading, an
+     exemplar name, or the desk's own page, and never as this page's own claim
+  ❓ AN UNKNOWN IS PRINTED         a slot neither source can fill is written
+     as an open row, never left off the figure
+```
+
+**The pack and the desk are two sources, and the desk wins**: where they disagree the disagreement is written down rather than resolved, because the pack is READ and never written by this plugin and a correction cannot land in `paper/venue/`.
 
 ## Diagram
 
@@ -69,6 +137,184 @@ How this page must be written. Read it before editing, and edit to it.
 
   📊 25 exemplars · 6 sections
 ```
+
+**Venue-Structure**: the sections a Diabetes Care paper is written in, in the desk's own published manuscript order, and what each one costs.
+
+```text
+  🏗 VENUE-STRUCTURE ── every per-section budget below is stated with its source
+     inline in the §3 to §8 division that owns it, and §9 is the desk's own gate
+
+  index         §    page           words                       what the section owes
+  ─────────────   ──   ────────────   ─────────────────────────   ────────────────────────────────
+  📋 Sec-0      §3   S-Main-0       ⚖️ DESK ≤250 w Original      four ADA labels in fixed order
+                                    Article · ≤150 w Brief      and no fifth · 0 citation
+                                    Report · none on a Letter   markers · Highlights follow it
+  🧭 Sec-1      §4   S-Main-1       📦 PACK 250-1000 w OA ·      no heading is printed at all ·
+                                    70-300 w BR                 one adversative pivot carries it
+  🔬 Sec-2      §5   S-Main-2       📦 PACK 1500-2500 w OA ·     the heading string RESEARCH
+                                    500-800 w BR                DESIGN AND METHODS · Data and
+                                                                Resource Availability, terminal
+  📊 Sec-3      §6   S-Main-3       📦 PACK 1000-2000 w OA ·     one result per sentence · 0
+                                    400-700 w BR                citations · it commissions every
+                                                                display in the manuscript
+  🧾 Sec-4      §7   S-Main-4       📦 PACK 1200-2500 w OA ·     printed under CONCLUSIONS, never
+                                    400-800 w BR                DISCUSSION · closes forward
+  📎 Sec-A      §8   S-Appendix-A   no prose budget, by the     Online-Only Supplemental
+                                    pack's own statement        Material · counted, never capped
+
+  🔢 THE INDEX AND THE PAGE ARE THE SAME NUMBER   Sec-<n> counts from 0, so
+     Sec-2-Methods becomes S-Main-2 and nobody converts anything · § is a third
+     number and belongs to this page only: it counts the judgment divisions
+     §1 and §2 ahead of the sections
+
+  ⚖️ RULE vs OBSERVATION ── AND THIS DESK IS NOT LIKE THE IS DESKS
+     at MISQ every word budget on the page is the pack's, because that desk
+     publishes none · here the abstract cap, the body word count, the reference
+     count and the display count are all published by the ADA and binding
+     what the ADA does NOT publish is how the body splits between the four body
+     sections, so every per-section w figure in the column above, and only those,
+     is the pack's measurement of papers it read
+
+  📏 ONE CEILING OVER ALL OF IT   ⚖️ 4,000 body words for an Original Article,
+     excluding tables, table legends, figure legends, title page, acknowledgments
+     and references · 1,500 for a Brief Report, excluding its 150-word abstract ·
+     500 for a comment or a response · 750 for an Observation
+     [diabetesjournals.org instructions for authors, fetched 260802]
+
+  💥 THE PACK'S BUDGETS DO NOT FIT UNDER THE DESK'S CEILING
+     add the four per-section ranges above: 3,950 w with every section at its
+     floor, 8,000 w with every section at its top, against a published 4,000
+     so the desk's cap sits at the very BOTTOM of the pack's combined range, and
+     that is arithmetic on this page's own numbers rather than a new measurement
+
+  ➕ A KIND IS A FLOOR, NOT A CEILING
+     one kind may spread across several numbered Main pages
+     the ORDER does not move, and it is the desk's own published manuscript order:
+     title page · structured abstract · introduction, with NO heading · Research
+     Design and Methods · Results · Conclusions · Acknowledgments · References ·
+     tables · figure legends
+
+  📦 THERE IS AN ONLINE TIER HERE, AND IT IS REVIEWED
+     Online-Only Supplemental Material is peer reviewed and never typeset, and
+     ADA production staff put it on Figshare · overflow has somewhere to go at
+     this desk, which is not true at every desk in this group
+```
+
+**Submission-Rules**: the desk's own mechanics, most of which the pack does not record and no section division owns.
+
+```text
+  🧾 SUBMISSION-RULES ── ⚖️ THE ONE BINDING FIGURE ON THIS PAGE
+     every row below is the ADA's own published rule, from diabetesjournals.org,
+     and almost none of it is in the pack's six section folders
+     everything else on this page is a reference; these are enforced
+     ⚠️ the instructions for authors were fetched and verified 260802 · every row
+        added 260803 was read through search summaries only, because the site
+        answers a direct fetch with HTTP 403 · re-read the desk before submitting
+
+  📁 CATEGORY & CAP    Original Article   4,000 w body · 250 w abstract ·
+                                          40 refs · 4 tables and/or figures
+                       Brief Report       1,500 w body · 150 w abstract ·
+                                          20 refs · 4 tables and/or figures
+                       Letter, comment    500 w · no abstract · 5 refs
+                         or response
+                       Observation        750 w · no abstract · 5 refs
+                       Review             40 refs · 4 tables and/or figures
+                                          ❓ no word cap surfaced
+                       also published     Images and Reports · Perspectives in
+                                          Care ❓ no word cap surfaced
+                       the body count EXCLUDES tables, table legends, figure
+                       legends, the title page, acknowledgments and references
+
+  📄 MANUSCRIPT        the published order is title page · structured abstract ·
+                       introduction, with NO heading · Research Design and
+                       Methods · Results · Conclusions · Acknowledgments ·
+                       References · tables · figure legends
+                       figure legends sit in their own section after the
+                       references, and the desk states no separator form there
+                       Article Highlights sit immediately after the abstract, at
+                       75 to 130 words or fewer INCLUDING the four questions, on
+                       Original Articles, Brief Reports, Images and Reports,
+                       Reviews and Perspectives in Care
+
+  📚 REFERENCES        numbered in order of appearance · every author listed by
+                       first initials and last name, none dropped to et al. ·
+                       inclusive page numbers · journal titles abbreviated per
+                       the NLM List of Journals Indexed for MEDLINE, and an
+                       unlisted journal carries its complete title
+
+  🖥 SYSTEM            ScholarOne Manuscripts
+
+  🕶 BLINDING          SINGLE-blinded, and the direction is the thing: the
+                       AUTHORS are blinded to the editors and the reviewers, and
+                       not the other way round · so the title page stays in and
+                       nothing is stripped out of the manuscript for anonymity
+
+  🩺 REGISTRATION      an ICMJE-approved registry, BEFORE patient enrollment ·
+                       the trial number, the registry name and the URL all go on
+                       the title page
+
+  📋 CHECKLISTS        CONSORT for a randomized trial, filed as an online-only
+                       supplemental file so that it does not eat the word count ·
+                       STROBE required at submission for an observational, a
+                       nonrandomized, or a human interventional study
+
+  🤖 DISCLOSURE        AI, language-model or machine-learning use is reported in
+                       Acknowledgments, or in Methods when it IS the study
+                       design, naming the content created or edited, the tool,
+                       its version and extension numbers, the manufacturer, and
+                       the query or prompt used · an image generated entirely by
+                       AI is not permitted at all
+                       conflict of interest goes in BOTH the comments to the
+                       editors at submission and the Acknowledgments · the ICMJE
+                       Uniform Disclosure Form is encouraged · a third-party
+                       sponsor's role in design, analysis, writing and the
+                       decision to submit is described
+                       the guarantor sentence closes Author Contributions, and a
+                       modified or generic version is not accepted
+                       Data and Resource Availability closes RESEARCH DESIGN AND
+                       METHODS and does not sit in the back matter
+                       ADA journals follow ICMJE, WAME and COPE
+
+  🕐 THE CLOCK         an accepted paper appears online ahead of print 5 to 6
+                       weeks after acceptance, after copyediting, composition
+                       and proofreading
+
+  💵 MONEY             Open Choice is optional and costs an ADDITIONAL
+                       article-processing charge of $250 PER PAGE, after which
+                       the ADA deposits the final version into PubMed Central ·
+                       discounts and waivers are requested on an online form,
+                       and neither payment nor a waiver touches the editorial
+                       decision
+
+  ❓ STILL NOT ON RECORD
+     ACCEPTANCE RATE   the ADA publishes none for this journal · third-party
+                       aggregators print estimates that disagree with each other
+                       and none is confirmed by the ADA, so no number goes here
+     FIRST DECISION    no current desk figure surfaced · a roughly 25-day average
+                       appeared in a search summary and could not be tied to a
+                       live ADA page, so it is not recorded as a fact
+     REVIEW ROUNDS     the desk publishes no average number of rounds and no
+                       cycle length
+     BASE PAGE CHARGE  $250 per page is described as an ADDITIONAL charge, and no
+                       base per-page rate for the subscription route was found
+                       either way
+     WORD CAPS         Review · Perspectives in Care · Images and Reports: the
+                       reference and display limits surfaced, the word limits
+                       did not
+     ORCID             whether an ORCID iD is mandatory at submission is
+                       asserted by a third-party blog and by no ADA page read
+
+  🔗 THE DESK ITSELF   diabetesjournals.org/care/pages/instructions-for-authors
+                       diabetesjournals.org/journals/pages/ada-journal-policies
+                       diabetesjournals.org/care/pages/about-the-journal
+                       diabetesjournals.org/journals/pages/reviewers
+                       diabetesjournals.org/journals/pages/license
+                       diabetesjournals.org/journals/pages/ahead-of-print
+                       diabetesjournals.figshare.com/Care
+```
+
+**Open the desk**: [instructions for authors](https://diabetesjournals.org/care/pages/instructions-for-authors) · [ADA journal policies](https://diabetesjournals.org/journals/pages/ada-journal-policies) · [about the journal](https://diabetesjournals.org/care/pages/about-the-journal) · [information for reviewers](https://diabetesjournals.org/journals/pages/reviewers) · [reuse, licensing and public access](https://diabetesjournals.org/journals/pages/license) · [online ahead of print](https://diabetesjournals.org/journals/pages/ahead-of-print) · [the supplemental-material archive](https://diabetesjournals.figshare.com/Care) · [the desk's own pre-submission checklist](https://diabetesjournals.org/DocumentLibrary/Care/DCARE%20submission%20checklist%20Final.docx).
+A row inside a figure is plain text by design, because the renderer never runs the inline markdown pass over a fence, so the same links are repeated here as real ones.
 
 ## Content
 
@@ -911,7 +1157,7 @@ So the quotations stop at three, and nothing may be attributed to a paper the pa
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 25 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 25 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-medical-journals/diabetes-care/examples/ajjan-2026-diabcare-gdac-cgm-hba1c-alignment.pdf` · Ajjan 2026
 - `../../paper/venue/playbook-medical-journals/diabetes-care/examples/belfort-2026-diabcare-cgm-metrics-insulin-resistance-obesity.pdf` · Belfort 2026
@@ -945,21 +1191,7 @@ So the quotations stop at three, and nothing may be attributed to a paper the pa
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 6 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 5 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · methods
-- `S-Main-3` · results
-- `S-Main-4` · discussion
-- `S-Appendix-A` · appendix
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 

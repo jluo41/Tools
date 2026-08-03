@@ -181,7 +181,7 @@ Candidate-diff mode has been exercised on the MISQ Abstract and Introduction. It
   The substitution worker that runs first and refuses to do anything else.
 - `2-phase/2-revise/haipipe-paper-revise-content/`
   Section, paragraph, weave, sentence; its siblings are `-humanizer` and `-results`.
-- `../../paper/2-phase/2-revise/haipipe-paper-revise-humanizer/ref/venue-sciwrite.md`
+- `../../paper/phase/2-revise/haipipe-paper-revise-humanizer/ref/venue-sciwrite.md`
   The four language gates and the candidate-diff grammar.
 - `venue/playbook-utd-is/`
   The per-section `template.md` and `style.md`, plus the pack-wide `style-profile.md` and MISQ taste signals.

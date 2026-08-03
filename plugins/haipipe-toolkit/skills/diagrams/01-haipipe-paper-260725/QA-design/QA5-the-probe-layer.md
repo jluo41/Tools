@@ -214,7 +214,7 @@ On the MISQ board that is 215 chips over eighteen probe files.
 ### 📋 Contracts · what CARRIES a rule to other pages
 - `../../probe/haipipe-probe/`
   `⑤` itself: the anatomy, the loop, the cost ladder, the QA state-line contract, and the two LAWS. Consulted, never written from here.
-- `../../paper/2-phase/1-probe/haipipe-paper-probe/`
+- `../../paper/phase/1-probe/haipipe-paper-probe/`
   The paper-side deltas, which say so in their own summary.
 - `../01-probe-qa-260726/`
   `⑥`, the layer's own board. Read-only from here.

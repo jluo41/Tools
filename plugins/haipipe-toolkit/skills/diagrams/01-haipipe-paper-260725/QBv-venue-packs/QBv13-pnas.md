@@ -9,6 +9,12 @@ method: state what the PNAS desk asks of a paper and record the doubled folder n
 PNAS is the only journal in this tree with a section folder of its own for the Significance Statement. The test that decides whether a paper can carry one at all sits a level up, in `playbook-pnas/taste.md`. The rules for writing it sit in `playbook-pnas/pnas/pnas-significance/style.md`. Neither file names the other, so a writer who opens one never learns the second exists. Which one comes first?
 > ✎ ~This outlet has~ *PNAS is the only journal in this tree with* a section folder *of its own* for *the Significance Statement. The test that decides whether* a ~component no other journal~ *paper can carry one at all sits a level up,* in *`playbook-pnas/taste.md`. The rules for writing it sit in `playbook-pnas/pnas/pnas-significance/style.md`. Neither file names* the ~tree has, and its readiness test lives~ *other, so a writer who opens* one ~directory above it.~ *never learns the second exists.* Which one ~does a writer actually read~ *comes* first? · CC · 260802 1543
 
+**How to read this page**: everything here is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and refusals below describe what published PNAS papers do, measured from the 34 exemplars on disk.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is returned unreviewed.
+Every length on the page says which of the two it is.
+
 **Where this page sits**: it is one venue target in `QBv`, and the only one in its pack.
 This page owns only what is true of `playbook-pnas/pnas/`.
 
@@ -32,6 +38,63 @@ How this page must be written. Read it before editing, and edit to it.
 **Write the doubled path in full every time**: `playbook-pnas/pnas/pnas-significance/` is the real shape, and abbreviating it is how a path written from memory goes wrong.
 
 ✅ `playbook-pnas/pnas/pnas-significance/style.md`  ❌ `the significance style guide`
+
+**The venue-page contract is a file, and this page obeys it**: it is `../../board/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A rule below is stated here only so a writer editing this page meets it; the contract is what carries it.
+
+```text
+  🖼 THREE FIGURES IN `## Diagram`, IN THIS ORDER
+     ① desk taste         what counts as the contribution · what is
+                          desk-rejected · the desk's own test, quoted
+     ② Venue-Structure    the sections in the venue's READING ORDER, each with
+                          its budget, and the one ceiling over all of them
+     ③ Submission-Rules   category and cap · manuscript format · references ·
+                          the portal · anonymity · disclosures · the odds, the
+                          clock and the money · an open row for what is NOT on
+                          record · the desk's own URLs
+
+  📎 FIVE FILES GROUPS, IN THIS ORDER
+     ⚙️ Engines           what REGENERATES this page
+     📋 Contracts         the venue-page contract, and the base it extends ·
+                          a loadable spec is a Contract and never an Engine
+     📥 Input files       the pack files this page READS
+     🔗 Authority         what the DESK itself PUBLISHES, read directly and
+                          never through the pack · opens with the provenance
+                          stamp · holds every place the desk contradicts the pack
+     📤 Generated         what `sync-exemplars.py` WRITES between markers
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX
+     ### 4 · Sec-1-Abstract: the second read, and it may not echo the first
+         ▲       ▲
+         │       └── Sec-<i>, counting from 0 in the venue's READING ORDER ·
+         │           only an appendix takes a letter, and PNAS declares none
+         └── the Content division number, which counts §1 and §2 as well
+     ### A4 · 📄 Sec-1-Abstract: the second read, and it may not echo the first
+              ▲  the emoji lives HERE and on the division's closing line, never
+                 on the division heading: `check.py` strips it from an Aims or
+                 States group name and not from a Content division, so a
+                 heading-side emoji reads as group-name-drift on every section
+                 at once
+     ⚠️ AT THIS OUTLET Sec-<i> IS NOT THE S-Main NUMBER, and that is a real
+        disagreement rather than a slip · `Venue-Structure` prints both
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK
+     the pack-derived arcs, budgets, moves and refusals are suggestions drawn
+     from published papers · only the desk's own published rules bind, and they
+     live in the `Submission-Rules` figure and the `Authority` group
+     write "the pack refuses X" rather than "do not do X", so the page never
+     sounds like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS
+     a DESK RULE is published by the venue and binding · a PACK OBSERVATION is
+     a measurement of papers the pack read, and breaking it is off-pattern
+     rather than a violation · a budget printed with neither label reads as a
+     rule, which is how this page's 6,970-word section sum was being read
+
+  ❓ AN UNKNOWN IS PRINTED    a slot neither source can fill is written as an
+     open row in `Submission-Rules`, never left off the figure
+```
+
+**What the pack knows and what the desk says are two different sources**, and where they disagree the desk wins and the disagreement is written down. The pack is READ and never written by this plugin, so a correction lands here, not in `paper/venue/`.
 
 ## Diagram
 
@@ -64,6 +127,177 @@ How this page must be written. Read it before editing, and edit to it.
      no significance statement · purely descriptive with no
      mechanism or policy implication
 ```
+
+**Venue-Structure**: the sections a PNAS paper is written in, in the order the desk reads them, and what each one costs.
+
+```text
+  🏗 VENUE-STRUCTURE ── every budget below is stated with its source inline in
+     the §3 to §8 division that owns it, and §10 is the desk's own gate
+
+  index                       §    S-Main page   budget                  what the section owes
+  ───────────────────────────   ──   ───────────   ─────────────────────   ──────────────────────────────
+  🚦 Sec-0-Significance       §3   S-Main-1      <=120w DESK RULE ·      1 ¶, 6-7 sentences, 0 citations,
+     Significance                   110-120 observed        4 slots, lay-legible throughout
+  📄 Sec-1-Abstract           §4   S-Main-0      <=250w DESK RULE ·      1 unstructured ¶, 6 slots, same
+     Abstract                       154-240w observed       framing as Sec-0 and none of its
+                                                                         sentences
+  🪝 Sec-2-Introduction       §5   S-Main-2      ~600-1,200w PACK        the unlabelled entrance, the
+     Introduction                                           question posed as a question,
+                                                                         and ~0.65 citations/sentence
+  📊 Sec-3-Results            §6   S-Main-4      ~1,300-2,600w PACK      the largest section · carries its
+     Results                                                own design context, because
+                                                                         Methods is printed after it
+  🏔 Sec-4-Discussion         §7   S-Main-5      ~700-1,400w PACK        argument, not summary · one late
+     Discussion                                             limitations ¶, never last
+  🔬 Sec-5-Methods            §8   S-Main-3      ~600-1,400w PACK        MAIN-TEXT methods only · bolded
+     Methods                        of main-text methods    run-in blocks · names every SI
+                                                                         item it hands off
+  📦 no Sec-A    §9   none          not recorded            the SI Appendix, real and unowned:
+                                                                         `section-kinds.yml` declares NO
+                                                                         appendix kind for this outlet
+
+  ⚠️ HERE THE INDEX AND THE PAGE NUMBER DISAGREE, unlike every other outlet
+     Sec-<i> counts from 0 in the DESK's reading order: the Significance box is
+     read first and Materials and Methods is printed last · `section-kinds.yml`
+     resolves a different order (abstract 0, significance 1, methods 3), so
+     Sec-0-Significance becomes S-Main-1 and Sec-5-Methods becomes S-Main-3
+     nobody should convert this from memory · the column above is the conversion
+     § is a third number and belongs to this page only: it counts §1 and §2, the
+     two judgment divisions, ahead of the sections
+
+  ⚖️ RULE vs OBSERVATION   the two front-block caps and the page ceiling are the
+     DESK's, published and binding · every other word range above is the PACK's
+     measurement of three exemplars, and the desk publishes no per-section limit
+     a paper over a budget is off-pattern · a paper over the ceiling is cut
+
+  📏 ONE CEILING OVER ALL OF IT   6 pages PREFERRED, 12 pages MAXIMUM
+     the desk converts it itself: a standard 6-page article is about 4,000 words,
+     50 references and 4 medium-size graphical elements
+     [pnas.org author center, read 260803 through search summaries]
+     💥 the six PACK ranges above sum to about 6,970 words, roughly 74% past the
+        desk's own 4,000-word conversion · §8.1 carries that arithmetic, and the
+        pack performs the sum nowhere
+     ⚠️ the pack's "~50,000 characters" appears in NO desk instruction this page
+        has read, and no pack file records the 12-page maximum at all
+
+  ➕ A KIND IS A FLOOR, NOT A CEILING
+     one kind may spread across several numbered Main pages
+     the ORDER does not move: it is this venue's reading order
+```
+
+**Submission-Rules**: the desk's own mechanics, which the pack does not record and no section division owns.
+
+```text
+  🧾 SUBMISSION-RULES ── ⚖️ THE ONE BINDING FIGURE ON THIS PAGE
+     every row below is the DESK's own published rule, and none of it is in the
+     pack's six section folders · everything else on this page is a reference
+     ⚠️ read 260803 through SEARCH SUMMARIES ONLY: www.pnas.org and
+        www.pnascentral.org both answer a direct fetch with HTTP 403 · the
+        260802 rows in the Authority group were fetched directly that day ·
+        RE-READ THE DESK BEFORE SUBMITTING
+
+  🚪 TRACKS            Direct Submission ── the standard route, editor-run peer
+                       review, and the only route this page can assume
+                       Contributed ── the desk publishes a live
+                       "Member Contributed Submissions" page saying an NAS
+                       member may contribute up to 2 research manuscripts a
+                       year, in their own area, with a direct significant role
+                       ⚔️ UNRESOLVED: secondary summaries read on 260803 claim
+                          the Contributed track was ELIMINATED in 2022, while
+                          the desk's own page for it is still up · both readings
+                          are recorded and NEITHER is adopted
+                       Prearranged Editor ── discontinued 2014-10-01
+
+  📁 CATEGORY & CAP    Research Article 6 pages preferred, 12 pages maximum ·
+                       a standard 6-page article is ~4,000 words, 50 references
+                       and 4 medium-size graphical elements
+                       Brief Report 3 pages, ~1,600 words counting text, title
+                       page, abstract and figure legends, 15 references · its SI
+                       takes extended methods, essential datasets and videos
+                       only, and NO additional tables or figures
+                       Letter 500 words, 2 graphical elements, 10 references
+                       the cap follows the category, so pick it first
+
+  ✍️ FRONT BLOCKS      Significance Statement <=120 words, MANDATORY, filed by
+                       the desk as "Direct and Contributed Submissions only"
+                       Abstract <=250 words, unstructured narrative
+                       ⚠️ search summaries add that the Significance Statement
+                          must avoid citations, numbers and abbreviations · the
+                          pack's own anti-pattern list says the same, and this
+                          page could not confirm the DESK's exact wording
+
+  🖼 DISPLAYS          ~4 medium-size graphical elements in a standard article ·
+                       anything past the page budget moves to the SI Appendix ·
+                       the desk publishes no separate figure or table COUNT that
+                       this page could verify, only the page budget
+
+  📚 REFERENCES        PNAS style · numbered in the order they appear in the
+                       text · in-text numerals in parentheses "(1, 2)", NOT
+                       superscript · ~50 for a standard 6-page article
+                       SI references are a SEPARATE stream: a writer may not
+                       cite main-text references in the SI or the reverse
+
+  📎 SI APPENDIX       ONE PDF combining text, figures, tables, movie legends
+                       and SI references · published as provided, never edited
+                       or typeset · numbered S1, S2, ... · the main text must
+                       stand on its own without it · frozen at acceptance
+                       templates published in Word AND official Overleaf LaTeX
+
+  🖥 SYSTEM            PNAS Central, on eJournalPress, at pnascentral.org
+
+  🕶 ANONYMITY         SINGLE-blind on the Direct track: reviewers see the
+                       authors · the EDITOR's name stays anonymous to the author
+                       until acceptance
+                       ⚠️ the opposite of MISQ at `QBv1`, so a manuscript
+                          stripped for a double-anonymous desk is not stripped
+                          for this one
+
+  📋 DISCLOSURES       author contributions, MANDATORY · competing interests,
+                       declared on the submission form · all funding sources
+                       acknowledged · data availability · the ethics and
+                       publication-ethics policies sit on their own desk page
+
+  🤖 AI POLICY         AI or generative-AI use during the research process is
+                       disclosed in Materials and Methods, or in Acknowledgments
+                       where there is no Methods section, naming the specific
+                       tool AND its model or version · AI may NOT be listed as
+                       an author · AI-generated images or graphics are NOT
+                       allowed unless the software is itself the subject
+
+  🎲 ODDS & CLOCK      ~16% of Direct Submissions accepted · ~54% desk-rejected
+                       at initial screening · median 18 days to first decision ·
+                       ~38-46 days to a post-review decision
+                       ⚠️ these came from THIRD-PARTY summaries on 260803, not
+                          from a desk page · they are reported statistics rather
+                          than a promise, and the weakest provenance here
+
+  💵 MONEY             open access $4,975 with a site licence, $5,475 without ·
+                       delayed open access $2,575 · institutional agreements cut
+                       it, and a University of California author pays $3,355
+                       ⚠️ amounts from search summaries of the desk's own
+                          publication-charges page, which answers 403 · VERIFY
+                          THE CURRENT AMOUNT BEFORE BUDGETING
+
+  ❓ STILL NOT ON RECORD
+     whether a SUBMISSION fee exists separately from the publication charges
+     whether the Contributed track is open today ── see the ⚔️ row above
+     any per-section word limit ── the desk publishes none, so all six budgets
+       in Venue-Structure are the pack's
+     the desk's exact wording on what a Significance Statement may not contain
+     a published target time to first decision, as opposed to a reported median
+     a figure or table COUNT distinct from the page budget
+
+  🔗 THE DESK ITSELF   pnas.org/author-center/submitting-your-manuscript
+                       pnas.org/author-center/editorial-and-journal-policies
+                       pnas.org/author-center/publication-charges
+                       pnas.org/author-center/member-contributed-submissions
+                       pnas.org/author-center/publication-ethics-process
+                       pnas.org/post/update/pnas-policy-for-chatgpt-generative-ai
+                       pnascentral.org
+```
+
+**Open the desk**: [submitting your manuscript](https://www.pnas.org/author-center/submitting-your-manuscript) · [editorial and journal policies](https://www.pnas.org/author-center/editorial-and-journal-policies) · [publication charges](https://www.pnas.org/author-center/publication-charges) · [member contributed submissions](https://www.pnas.org/author-center/member-contributed-submissions) · [publication ethics process](https://www.pnas.org/author-center/publication-ethics-process) · [the ChatGPT and generative-AI policy](https://www.pnas.org/post/update/pnas-policy-for-chatgpt-generative-ai) · [PNAS Central, the portal](https://www.pnascentral.org/).
+A row inside a figure is plain text by design, because the renderer runs the figure linker over a fence and never the inline markdown pass, so the same links are repeated here as real ones.
 
 ## Content
 
@@ -118,7 +352,7 @@ Every other desk's signals need a design or a result before they can be scored.
 ➖ Establishes PNAS as the tree's only subtractive retarget, so its cost lands on the claim ledger rather than on prose.
 > ✎ ➖ Establishes PNAS as the tree's only subtractive retarget, ~which is why~ *so* its cost lands on the claim ledger rather than on prose. · CC · 260802 1543
 
-### 3 · Significance Statement: the gate you pass before the section you write
+### 3 · Sec-0-Significance: the gate you pass before the section you write
 
 **One block, two jobs**: `taste.md` uses it to decide whether the paper should exist, and `pnas-significance/style.md` uses it to decide how the paragraph runs.
 
@@ -224,7 +458,7 @@ The finding, slot 3, declarative and carrying no statistic: this is the sentence
 "The findings underscore the critical need to address psychological biases in healthcare settings to ensure fair and efficient treatment for all." [Guzikevits 2024]
 The policy close, slot 4, and the source of the figure's "The findings underscore the critical need to <act> to ensure <goal> for all."
 
-### 4 · Abstract: the second read, and it may not echo the first
+### 4 · Sec-1-Abstract: the second read, and it may not echo the first
 
 **Same topic, forbidden sentences**: the desk reads the Significance Statement first, so the Abstract has to say the same thing without repeating it.
 
@@ -321,7 +555,7 @@ The headline finding, slot 4, stated before any texture or robustness clause rea
 "We argue that GPT and other LLMs help democratize automated text analysis..." [Rathje 2024]
 The interpretive close, slot 6, and the sentence most at risk of repeating the Significance Statement's own close.
 
-### 5 · Introduction: unlabelled, question-shaped, and where every citation lives
+### 5 · Sec-2-Introduction: unlabelled, question-shaped, and where every citation lives
 
 **The section with no heading**: PNAS prints the introduction without a label, so its first three words carry the whole entrance.
 
@@ -427,7 +661,7 @@ The inconclusive-prior-evidence move, the figure's `prior` slot: prior work ente
 "The main goal of the present work is to conduct a rigorous examination of pain management decisions by patients' sex." [Guzikevits 2024]
 The contribution pivot, the figure's `pivot` slot, landed in paragraph 4 of 4 in the psychology variant.
 
-### 6 · Results: the largest section, and every claim arrives fully armed
+### 6 · Sec-3-Results: the largest section, and every claim arrives fully armed
 
 **Finding, slice, control, replicate**: each subsection escalates the same claim's robustness instead of starting a new topic.
 
@@ -550,7 +784,7 @@ The hand-off, the figure's `hand-off` slot, and the pointer convention that divi
 The one-sentence interpretive summary that closes a subsection, and the reason the anti-pattern list forbids ending one on a number.
 > ✎ The *one-sentence* interpretive ~micro-summary~ *summary* that closes a subsection, ~which is why~ *and the reason* the anti-pattern list forbids ending one on a number. · CC · 260802 1543
 
-### 7 · Discussion: it opens above the findings and closes higher still
+### 7 · Sec-4-Discussion: it opens above the findings and closes higher still
 
 **Altitude, not summary**: the first paragraph re-enters the finding at societal or historical height, and the last one leaves it higher.
 
@@ -656,7 +890,7 @@ The limitation, the figure's `limit` slot, marked explicitly, concentrated in on
 "To conclude, the present research provides robust evidence for healthcare providers' sex bias against female patients in pain management..." [Guzikevits 2024]
 The close, the figure's `close` slot, and the reason the limitation above it can never be the last paragraph.
 
-### 8 · Materials and Methods: printed last, and half of it lives somewhere else
+### 8 · Sec-5-Methods: Materials and Methods, printed last, and half of it lives somewhere else
 
 **The SI split is the section**: the main text keeps only what a reader needs to trust the headline analyses, and names by hand every item it hands off.
 
@@ -871,27 +1105,27 @@ So those four gaps are a transcription this pack has not done, not a rule nobody
 - A2.1 · The subtraction is quantified before a retarget into PNAS is accepted.
   **Done when:** retargeting here names how many claims and floats have to come out.
 
-### A3 · 🚦 Significance Statement: the gate you pass before the section you write
+### A3 · 🚦 Sec-0-Significance: the gate you pass before the section you write
 - A3.1 · The 120-word cap is settled by a recount rather than by eye.
   **Done when:** a Significance Statement leaves the stage with its word count stated and inside the 110 to 120 band.
 
-### A4 · 📄 Abstract: the second read, and it may not echo the first
+### A4 · 📄 Sec-1-Abstract: the second read, and it may not echo the first
 - A4.1 · The Abstract and the Significance Statement are compared as a pair before submission.
   **Done when:** the comparison for shared sentences and shared order is recorded somewhere, not left for a reviewer to find.
 
-### A5 · 🪝 Introduction: unlabelled, question-shaped, and where every citation lives
+### A5 · 🪝 Sec-2-Introduction: unlabelled, question-shaped, and where every citation lives
 - A5.1 · The introduction variant is chosen before drafting, since it fixes the paragraph count.
   **Done when:** the paper names one of the three house-legal variants and its paragraph budget follows from that pick.
 
-### A6 · 📊 Results: the largest section, and every claim arrives fully armed
+### A6 · 📊 Sec-3-Results: the largest section, and every claim arrives fully armed
 - A6.1 · Every inferential claim carries its stat block, and every callout has a display unit behind it.
   **Done when:** no Results sentence states a primary claim without test, N, P and effect size, and every figure, table and SI pointer resolves.
 
-### A7 · 🏔 Discussion: it opens above the findings and closes higher still
+### A7 · 🏔 Sec-4-Discussion: it opens above the findings and closes higher still
 - A7.1 · Limitations sit in exactly one late paragraph and the section does not end there.
   **Done when:** the last paragraph is the significance close and every limitation carries a future-research redirect.
 
-### A8 · 🔬 Materials and Methods: printed last, and half of it lives somewhere else
+### A8 · 🔬 Sec-5-Methods: Materials and Methods, printed last, and half of it lives somewhere else
 - A8.1 · Every exported item is named from the main text and the four compliance sentences are present.
   **Done when:** each SI item has a main-text pointer, and IRB or consent, preregistration, software versions and the availability statement all appear.
 
@@ -907,22 +1141,22 @@ So those four gaps are a transcription this pack has not done, not a rule nobody
 ### A2 · ➖ What the ceiling removes
 - ⬜ A2.1 · Not started. The `-> Claims` and `-> Display` maps carry the reason and no retarget reads them.
 
-### A3 · 🚦 Significance Statement: the gate you pass before the section you write
+### A3 · 🚦 Sec-0-Significance: the gate you pass before the section you write
 - ⬜ A3.1 · Not started. `pnas-significance/template.md` asks for a recount at draft and after revise, and nothing performs one.
 
-### A4 · 📄 Abstract: the second read, and it may not echo the first
+### A4 · 📄 Sec-1-Abstract: the second read, and it may not echo the first
 - ⬜ A4.1 · Not started. Both style files forbid parallelism and neither names who compares the two blocks.
 
-### A5 · 🪝 Introduction: unlabelled, question-shaped, and where every citation lives
+### A5 · 🪝 Sec-2-Introduction: unlabelled, question-shaped, and where every citation lives
 - ⬜ A5.1 · Not started. The three variants live in `pnas-introduction/template.md` and no stage records which one a paper picked.
 
-### A6 · 📊 Results: the largest section, and every claim arrives fully armed
+### A6 · 📊 Sec-3-Results: the largest section, and every claim arrives fully armed
 - ⬜ A6.1 · Not started. The display dependency is declared in `pnas-results/template.md` as display-request rows and is audited nowhere on this page.
 
-### A7 · 🏔 Discussion: it opens above the findings and closes higher still
+### A7 · 🏔 Sec-4-Discussion: it opens above the findings and closes higher still
 - ⬜ A7.1 · Not started. The ordering rule sits in the `pnas-discussion/style.md` anti-patterns list and nothing enforces it.
 
-### A8 · 🔬 Materials and Methods: printed last, and half of it lives somewhere else
+### A8 · 🔬 Sec-5-Methods: Materials and Methods, printed last, and half of it lives somewhere else
 - ⬜ A8.1 · Not started. `pnas-methods/style.md` calls all four mandatory furniture and no check counts them.
 
 ### A9 · 📦 There is no appendix kind, and the SI Appendix is why
@@ -935,7 +1169,7 @@ So those four gaps are a transcription this pack has not done, not a rule nobody
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 34 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 34 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 Filed at FAMILY level under `../../paper/venue/playbook-pnas/examples/`, not under the outlet (the group intro on the Index).
 
@@ -980,21 +1214,7 @@ Filed at FAMILY level under `../../paper/venue/playbook-pnas/examples/`, not und
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 6 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, and no Appendix family.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · significance
-- `S-Main-2` · introduction
-- `S-Main-3` · methods
-- `S-Main-4` · results
-- `S-Main-5` · discussion
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 

@@ -86,6 +86,11 @@ The provenance is what lets a later reader check whether it really generalizes, 
    an agent closing a ❓ citation by writing the bibtex entry itself
    a value chip printing a number with no answering run behind it
    any state a person has to remember to set
+📥 OR DOWNLOAD THE EVIDENCE ITSELF · every chip above resolves against these
+   _fixture/misq-slice.bib                      2.2 KB   the 6 entries a citation chip reads
+   _fixture/.board-refs.bbl                     1.8 KB   the SAME entries as the .bst prints them
+   _fixture/1-probes/PP01_seed-feasibility/QX1_novelty.md    the question an owed chip is waiting on
+   _fixture/1-probes/PP03_results-values/QX1_opioid-reg-estimates.md   the run a value chip checks against
 ```
 
 🧪 Establishes every rule below as something to click rather than read, which is the only test that catches a rule that sounds right and was never built.

@@ -17,7 +17,7 @@ import argparse, base64, json, pathlib, re, shutil, subprocess, sys, tempfile, t
 BOARD = pathlib.Path(__file__).resolve().parent.parent
 SKILLS = BOARD.parent.parent
 ENGINE = SKILLS / "board/haipipe-board"
-WORD = SKILLS / "paper/3-deliver/4-ship/haipipe-paper-to-word"
+WORD = SKILLS / "paper/S09-build/haipipe-paper-to-word"
 PAPER = (SKILLS.parents[3] /
          "examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026")
 # the paper regrouped 0-lifecycle into S01..S10 on 260803; find the page rather

@@ -3,11 +3,18 @@
 state: 🟡 PARTIAL · 15 exemplars · 7 sections · taste ✓ · the one-sentence test is unread by any skill
 owner: JL
 method: state MISQ's own desk signals and one-sentence test, and record what this outlet costs a paper arriving from a clinical or ML venue
+session: 963ec9df-5037-4856-9a3b-27df36e3bbce
 
 ## Opening
 
 MISQ takes any method. Survey, archival, qualitative, interpretive, design science all pass, and no desk in this tree is more open. It is also the strictest here about what counts as a contribution: a paper whose contribution is a method is refused. A better classifier is not a MISQ paper. So what is this desk actually buying?
 > ✎ MISQ ~is the most method-permissive desk in this tree and the least contribution-permissive.~ *takes any method.* Survey, archival, qualitative, interpretive, design ~science:~ *science* all ~fine.~ *pass, and no desk in this tree is more open. It is also the strictest here about what counts as a contribution: a paper whose contribution is a method is refused.* A better ~classifier:~ *classifier is* not a *MISQ* paper. So what is ~it~ *this desk* actually buying? · CC · 260802 1535
+
+**How to read this page**: everything here is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and refusals below describe what published MISQ papers do, measured from the exemplars on disk.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is returned unreviewed.
+Every length on the page says which of the two it is.
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-utd-is/MISQ/`.
@@ -27,6 +34,61 @@ How this page must be written. Read it before editing, and edit to it.
 **Say what the desk refuses, not what it prefers**: a preference does not decide a submission.
 
 ✅ `a better classifier is not a MISQ paper`  ❌ `MISQ values theory highly`
+
+**This page is the TEMPLATE for the other fifteen** (JL 260803). A venue page carries three figures in `## Diagram`, in this order, and a Files section in these four groups:
+
+```text
+  🖼 THREE FIGURES        what each one answers
+     ① desk taste         what counts as the contribution · what is desk-rejected · the test
+     ② Venue-Structure    which sections, in reading order, and the budget each carries
+     ③ Submission-Rules   category and cap · manuscript format · references · system ·
+                          anonymity · disclosures · the desk's own URLs
+
+  📎 FOUR FILES GROUPS
+     ⚙️ Engines           what regenerates this page
+     📋 Contracts         the venue-page contract, and the base it extends ·
+                          a loadable spec is a Contract and never an Engine
+     📥 Input files       the pack files this page reads
+     🔗 Authority         what the DESK publishes, read directly and never through the pack
+     📤 Generated         what a tool WRITES into this page, between markers
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK (JL 260803)
+     the pack-derived arcs, budgets, moves and refusals are suggestions
+     drawn from published papers · only the desk's own published rules bind,
+     and they live in the Submission-Rules figure and the Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never
+     sounds like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS (JL 260803)
+     a DESK RULE is published by the venue and binding · a PACK OBSERVATION is
+     a measurement of papers the pack read, and breaking it is off-pattern
+     rather than a violation · a budget printed with neither label reads as a
+     rule, which is how 120-160w for the abstract was being read
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX (JL 260803)
+     ### 4 · Sec-0-Abstract: one unstructured paragraph, question forward
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, so the index IS the number of
+         │           the S-Main page it becomes · the appendix takes Sec-A
+         └── the Content division number, which counts §1 to §3 as well
+     ### A4 · 📝 Sec-0-Abstract: one unstructured paragraph, question forward
+              ▲  the emoji lives HERE and on the division's closing line,
+                 never on the division heading: check.py strips it from an
+                 Aims group name and not from a division, so a heading-side
+                 emoji reads as group-name-drift on every section at once
+     🔢 the index counts from ZERO, not one, and the `Sec-` prefix is what
+        makes that readable: a bare `0-Abstract` looks like a typo, and a
+        1-based index would sit one off the S-Main page forever
+     🔤 only the appendix takes a letter, because this venue letters its own
+        appendix sections (Appendix A, Table A1) and Sec-A matches them
+
+  📏 A NUMBER CARRIES ITS SOURCE   inline, always: a style.md line, an exemplar,
+     or the desk's own page, and never as this page's own claim
+  ❓ AN UNKNOWN IS PRINTED         a slot the pack cannot fill is written as an
+     open row, never left off the figure
+```
+
+**What the pack knows and what the desk says are two different sources**, and where they disagree the desk wins and the disagreement is written down. The pack is READ and never written by this plugin, so a correction lands here, not in `paper/venue/`.
 
 ## Diagram
 
@@ -57,6 +119,115 @@ How this page must be written. Read it before editing, and edit to it.
   📊 15 exemplars · 7 sections incl. MISQ-theory/
 ```
 
+**Venue-Structure**: the sections a MISQ paper is written in, in reading order, and what each one costs.
+
+```text
+  🏗 VENUE-STRUCTURE ── every budget below is stated with its source
+     inline in the §4 to §11 division that owns it, and §12 is the desk's own gate
+
+  index                        §     page           words                   what the section owes
+  ────────────────────────────   ───   ────────────   ─────────────────────   ─────────────────────────────
+  📝 Sec-0-Abstract            §4    S-Main-0       120-160w observed, no   1 ¶, question forward, 0 citations
+                                                    desk cap · ~250w ruled
+                                                    acceptable JL 260803
+  📖 Sec-1-Introduction        §5    S-Main-1       2,000-4,000w            the named gap + numbered contributions
+  🧠 Sec-2-Theory              §6    S-Main-2       ~2,900-6,000w           one prediction per derivation ⭐ signature
+  🔬 Sec-3-Methods             §7    S-Main-3       2,000-4,000w            5 owed displays, method as enabler
+  📊 Sec-4-Results             §8    S-Main-4       1,500-3,400w            an H-by-H verdict walk
+  🗣 Sec-5-Discussion          §9    S-Main-5       ~2,300-5,000w           contribution first, limitations paired
+  🏁 Sec-6-Conclusion          §10   S-Main-8 here  1 ¶, 3-5 sentences      forward close, never a second abstract
+                                                    ⚠️ the DESK has no titled Conclusion: Concluding
+                                                    Remarks ends the discussion arc, the pack has no
+                                                    conclusion folder, and section-kinds.yml declares
+                                                    no conclusion kind · a paper drafts it as its own
+                                                    page anyway, which is why it is indexed here
+  📎 Sec-A-Appendix            §11   S-Appendix-A   15-35% of the article   lettered, Table A1, tables only
+
+  🔢 THE INDEX AND THE PAGE ARE THE SAME NUMBER   Sec-<n> counts from 0, so
+     Sec-3-Methods becomes S-Main-3 and nobody converts anything · § is a third
+     number and belongs to this page only: it counts the judgment divisions
+     §1 to §3 ahead of the sections
+
+  ⚖️ RULE vs OBSERVATION   the 55 pp cap is the DESK's, published and binding ·
+     every word budget in the column above is the PACK's measurement of papers
+     it read, and the desk publishes no per-section limit at all
+     a paper over a budget is off-pattern · a paper over the cap is unreviewed
+
+  📏 ONE CEILING OVER ALL OF IT   55 pp Research Article · 30 pp Research Note
+     counts text, tables, figures, references AND appendices as ONE number
+     [misq.umn.edu submission guidelines, verified 260802]
+
+  ➕ A KIND IS A FLOOR, NOT A CEILING
+     one kind may spread across several numbered Main pages, and this
+     repo's own MISQ paper runs to S-Main-8-conclusion
+     the ORDER does not move: it is this venue's reading order
+
+  ❌ NO ONLINE TIER   settled 260802 · material outside the limit is not reviewed
+```
+
+**Submission-Rules**: the desk's own mechanics, which the pack does not record and no section division owns.
+
+```text
+  🧾 SUBMISSION-RULES ── ⚖️ THE ONE BINDING FIGURE ON THIS PAGE
+     every row below is the DESK's own published rule, from misq.umn.edu,
+     and none of it is in the pack's seven section folders
+     everything else on this page is a reference; these are enforced
+     ⚠️ fetched 260802 · re-checked 260803 through search only, because the
+        site answers a direct fetch with 403 · re-read it before submitting
+
+  📁 CATEGORY & CAP    Research Article 55 pp · Research Note 30 pp
+                       one number counts text + tables + figures +
+                       references + appendices
+                       over the cap may be returned or rejected unreviewed
+                       also published: Issues and Opinions · Theory and Review
+
+  📄 MANUSCRIPT        Times New Roman 12 pt · double-spaced ·
+                       left-justified only · 1-inch margins · 8.5 x 11
+                       templates: a LaTeX .zip and a Word .docx, both
+                       published by the desk, both downloaded and real
+
+  📚 REFERENCES        APA 7th · alphabetical · single-spaced ·
+                       left hanging indent · in-text opens on the
+                       information cited, not on the author name
+
+  🖥 SYSTEM            ScholarOne · cover letter may carry links to
+                       transparency material · a transparency declaration
+                       is required at submission
+
+  🕶 ANONYMITY         double-anonymous · the manuscript carries no
+                       identifying information · editor and staff see both
+
+  🤖 DISCLOSURE        generative-AI use states how attribution of the
+                       underlying ideas is ensured · AIS Code of Research
+                       Conduct · authors certify the legal right to the data
+
+  🎲 ODDS & CLOCK      ~15% accepted · ~4.5 review rounds before acceptance ·
+                       a review cycle averages 67 days round 1, 89 days round 2 ·
+                       First Look published within a month of acceptance
+                       these are the editor's reported statistics, not a promise
+
+  💵 MONEY             no submission fee · open access is optional and costs
+                       $5,000 USD, under the authors' preferred CC licence
+
+  🧪 REGISTERED REPORTS  ran ONCE as a special issue, submissions due 230701,
+                       explicitly an experiment to learn whether the model
+                       should become ongoing · NOT a standing track today
+
+  ❓ STILL NOT ON RECORD  no abstract cap and no per-section word limit is
+                       published: the 55 pp total is the only length rule
+                       the desk states no target time to FIRST decision, only
+                       the average cycle length above
+
+  🔗 THE DESK ITSELF    misq.umn.edu/pages/submission_guidelines
+                       misq.umn.edu/categories-lengths
+                       misq.umn.edu/pages/publication_policies
+                       misq.umn.edu/review-process
+                       misq.umn.edu/manuscripts
+```
+
+**Open the desk**: [submission guidelines](https://misq.umn.edu/pages/submission_guidelines) · [categories and lengths](https://misq.umn.edu/categories-lengths) · [publication policies](https://misq.umn.edu/pages/publication_policies) · [review process](https://misq.umn.edu/review-process) · [ScholarOne upload](https://misq.umn.edu/manuscripts) · [LaTeX template](https://misq.umn.edu/DocumentLibrary/SubmissionTemplates/MISQ_Submission_Template_LaTeX.zip.zip) · [Word template](https://misq.umn.edu/DocumentLibrary/SubmissionTemplates/MISQ_Submission_Template_Word.docx).
+A row inside a figure is plain text by design, so the same links are repeated here as real ones.
+
 ## Content
 
 ### 1 · What the desk buys, and what it will not
@@ -81,7 +252,10 @@ How this page must be written. Read it before editing, and edit to it.
 
 #### 1.1 · Honest associational framing is accepted here and punished elsewhere
 (so the identification posture is a venue decision, not a methods one)
-MISQ accepts an associational claim stated as one; ISR rewards identification more.
+MISQ accepts an associational claim stated as one: "honest identification posture: associational with strong controls is fine if stated clearly", and what it desk-rejects is "overclaimed causality from observational data" [MISQ/taste.md lines 12, 19].
+ISR asks for more: its rewarded shape is a "tight theory -> hypotheses -> evidence chain with strong causal identification", and its dominant method is "causal-identification archival (DiD/IV/RD/matching)" [playbook-utd-is/README.md lines 206-207, the outlets delta table].
+> Comment JL · are you sure? what is the evidence you have?
+> Comment CC 260803 · answering the line above. Both halves are now quoted, from the pack rather than from inference: MISQ's own taste file states the associational allowance and names the overclaim as the reject, and the family delta table is where ISR's identification bar is written. What is NOT evidenced is any claim about how the two desks weigh a borderline case against each other, so the sentence claims only what those two lines say.
 The same result therefore needs different Discussion language at the two desks, and the choice is made at venue, not at revision.
 
 ### 2 · What arriving here costs
@@ -156,7 +330,7 @@ Positioning is itself a desk signal.
 Engaging adjacent management, economics, or CS journals while missing key IS papers is a named rejection reason.
 Core IS work (DeLone and McLean, Venkatesh, Orlikowski, Walsham) must appear where relevant [playbook-utd-is/README.md, Citation candidates].
 
-### 4 · Abstract: one unstructured paragraph, question forward
+### 4 · Sec-0-Abstract: one unstructured paragraph, question forward
 
 **The abstract is question-forward and method-light**: the method enters mid-paragraph as a subordinate clause, and the last sentence points forward to the contribution.
 
@@ -168,11 +342,14 @@ Core IS work (DeLone and McLean, Venkatesh, Orlikowski, Walsham) must appear whe
        → key findings: directional, named constructs
        → contribution / implication close
 
-  📏 BUDGET   120-160 words, do NOT exceed ~185
+  📏 BUDGET   120-160 words is a PACK OBSERVATION, not a desk rule
      [MISQ-abstract/style.md line 7 · line 102]
+     ⚖️ THE DESK PUBLISHES NO ABSTRACT WORD CAP on anything we have read,
+        so a longer abstract breaks no published rule · JL 260803 ruled
+        ~250w acceptable · the 55-page cap is the only length the desk sets
      measured   Yin 2014 ~120w · Liu 2021 ~125w · Liu-HMM 2025 ~140w
                 Raimi 2025 ~145w · Ayabakan 2025 ~155w · Zhang 2025 ~175w
-                Weng 2026 ~185w, the outlier ceiling
+                Weng 2026 ~185w, the largest in the published set
      artifact   Gao 2015 ~240w in the stored AISel pre-typeset copy,
                 a version artifact and NOT a norm  [line 131]
 
@@ -207,7 +384,7 @@ Do not use structured or labeled fields; MISQ runs a single unstructured paragra
 A behavioral paper reports no raw coefficients or p-values, only constructs and directions [line 57].
 > ✎ A behavioral paper reports no raw coefficients or p-values, only constructs and directions [line ~57], and that~ *57]. That* rule is softened ~only~ for healthcare and policy papers *only,* where the number itself is the finding [line 101]. · CC · 260802 1535
 That rule is softened for healthcare and policy papers only, where the number itself is the finding [line 101].
-Do not exceed ~160 words, and treat ~185 as the ceiling only a complex multi-study paper reaches [lines 58, 102].
+The pack refuses more than ~160 words and treats ~185 as the ceiling only a complex multi-study paper reaches [lines 58, 102]; that is its own reading of eight abstracts, and JL relaxed it to ~250w on 260803 because the desk publishes no abstract cap to break.
 
 #### 4.3 · Format values
 (every number here is the pack's own, carried with the line that records it)
@@ -237,7 +414,7 @@ The healthcare exception, where the number itself is the finding and the behavio
 "Theoretical and practical implications are discussed." [Liu 2021]
 The minimal forward close, pointing at contribution instead of back at the technique [style.md line 31].
 
-### 5 · Introduction: the long section that names the gap and declares the contribution
+### 5 · Sec-1-Introduction: the long section that names the gap and declares the contribution
 
 **One MISQ introduction absorbs three sections elsewhere**: Introduction, Related Work, and Research Overview arrive here as one flat block or as two to four titled subsections.
 
@@ -323,7 +500,7 @@ The hedge a surprising result gets in the findings preview, before Theory opens 
 "The research presented here makes several important contributions." [Gao 2015]
 The contribution declaration, visible inside the introduction and not deferred to Discussion [style.md line 58].
 
-### 6 · Theory: the signature section, where every prediction is earned
+### 6 · Sec-2-Theory: the signature section, where every prediction is earned
 
 **This is the section reviewers scrutinize hardest**: it is the longest, the densest cited, and its job is derivation rather than survey.
 
@@ -415,7 +592,7 @@ The hedge a genuinely ambiguous theory gets, stated rather than forced into one 
 "DR1: The proposed ML automation solution for data extraction should require minimal labeling effort." [Liu-EBM 2025]
 The design science swap, where a requirement replaces the hypothesis and the two formats never mix [style.md line 177].
 
-### 7 · Methods: detailed, and subordinate to the theory
+### 7 · Sec-3-Methods: detailed, and subordinate to the theory
 
 **Methods exist to convince a reader the predictions were tested fairly**: they carry the shortest paragraphs in the paper and cite only at choices.
 
@@ -512,7 +689,7 @@ The endogeneity threat named in plain words, before any mitigation is offered [s
 "We further used a coarsened exact matching (CEM) approach with k2k restrictions to construct comparable physicians across the treated and control groups." [Zhang 2025]
 The matching sentence, stating its restriction as part of the design rather than as a footnote [style.md line 166].
 
-### 8 · Results: organized by hypothesis, never by table
+### 8 · Sec-4-Results: organized by hypothesis, never by table
 
 **Results walk hypotheses, not tables**: every coefficient connects back to the hypothesis it tests, and every reported effect is translated into an interpretable size.
 
@@ -609,7 +786,7 @@ The whole control set disposed of in one line, set as a footnote in the publishe
 "The terms in Model (1) for the periods before the policy are all non-significant (p-value > 0.10), indicating the parallel trends of our quantity estimation." [Zhang 2025]
 The parallel-trends check reported in the main text rather than deferred to an appendix [style.md line 118].
 
-### 9 · Discussion: contribution first, limitations named, close forward
+### 9 · Sec-5-Discussion: contribution first, limitations named, close forward
 
 **A MISQ discussion is substantial, not a two-paragraph afterthought**: it opens on what was accomplished and never on hedging.
 
@@ -701,7 +878,61 @@ A limitation named specifically enough that a reader can check it. §9.2 demands
 "We hope our work will stimulate more research on the use of data and theory via these routes." [Liu 2021]
 The forward close of the concluding paragraph, three to five sentences and not a second abstract [style.md lines 71, 79].
 
-### 10 · Appendix: lettered sections whose payload is tables
+### 10 · Sec-6-Conclusion: one forward-looking paragraph, and no titled section
+
+**The desk expects it inside the discussion, and a paper may still give it a page**: Concluding Remarks is where the discussion arc ends, and this repo's own MISQ paper promotes that paragraph to `S-Main-8-conclusion`.
+
+```text
+  📐 ARC   the LAST subsection of the discussion arc
+     [MISQ-discussion/style.md lines 16-24, 84-91]
+     summary → implications for research → implications for practice
+       → limitations and future research → ➡️ CONCLUDING REMARKS, and it ends
+
+  📏 BUDGET   1 ¶ · 3-5 forward-looking sentences
+     [lines 84-91 · move 7, Liu 2021]
+     no budget of its own: it is counted inside the discussion's
+     ~2,300-5,000w  [line 9]
+
+  🚫 THE ONE REFUSAL   it may not become a second abstract  [line 79]
+
+  📦 WHERE IT LIVES   the pack has NO conclusion folder, and
+     stages/section-kinds.yml declares no conclusion kind for this outlet,
+     so nothing downstream will ask for one
+     a paper that wants the page writes it anyway: S-Main-8-conclusion here
+```
+
+🏁 Establishes the conclusion as one forward-looking paragraph, indexed as a section here because a paper drafts it as one, while the desk expects to read it inside Discussion.
+
+#### 10.1 · The moves, as slots
+(the pack records exactly one move for this paragraph)
+Close forward: `We hope our work will stimulate more research on [the direction].` [move 7, Liu 2021].
+The register is the same measured one the rest of the discussion uses: we did this, here is what it means, here is what we could not do, here is where the field should go [MISQ-discussion/style.md lines 93-95].
+
+#### 10.2 · What the pack refuses
+(one refusal, and it is the reason the paragraph stays short)
+The concluding paragraph may not become a second abstract [MISQ-discussion/style.md line 79].
+A conclusion promoted to its own page is the same paragraph on a page of its own, and not a licence to restate the findings a third time.
+
+#### 10.3 · Format values
+(counted inside the discussion, because the pack files it there)
+
+```text
+  📏 WORDS            no separate budget · 1 ¶ · 3-5 sentences, inside the
+                      discussion's ~2,300-5,000w Research Article range
+                      [MISQ-discussion/style.md lines 9, 84-91]
+  📚 CITATION DENSITY not recorded apart · the discussion runs 0.24 per sentence
+                      Liu 2021 and 0.18 Gao 2015, and its closing paragraphs run
+                      nearly citation-free  [lines 202, 204]
+  🔢 VALUE DENSITY    not recorded by the pack
+  📊 DISPLAYS         none
+```
+
+#### 10.4 · The language, in the papers' own words
+(the one sentence the pack quotes from a concluding paragraph)
+"We hope our work will stimulate more research on the use of data and theory via these routes." [Liu 2021]
+The forward close: it points at the direction rather than back at the findings, which is what keeps it from being a second abstract [MISQ-discussion/style.md lines 71, 79].
+
+### 11 · Sec-A-Appendix: lettered sections whose payload is tables
 
 **The appendix is where a skeptical reviewer verifies the body**: it is lettered, tables-only in both stored exemplars, and printed inside the same PDF.
 
@@ -743,21 +974,21 @@ The forward close of the concluding paragraph, three to five sentences and not a
 
 📎 Establishes the appendix as a lettered, table-first tier whose online status this pack cannot settle from two exemplars.
 
-#### 10.1 · The shape of one appendix section
+#### 11.1 · The shape of one appendix section
 (minimum prose, maximum tables)
 Each section is a bold "Appendix [Letter]" heading, a bold descriptive subtitle, one to three paragraphs of explanatory prose, and one or more tables [MISQ-appendix/style.md lines 59-66].
 A short appendix such as an alternative DV or an alternative matching strategy may run only 2-4 sentences plus a single table, while a measurement appendix may span 2-3 pages of tables [line 66].
 Prose micro-norms are recorded as N/A for this section by design, so the pack counts sections and tables instead of paragraphs and sentences [line 92].
 An empirical paper with causal identification runs long here because robustness multiplies, and a survey paper runs short and centres on the measurement instrument [line 73].
 
-#### 10.2 · How the body points at it
+#### 11.2 · How the body points at it
 (a pointer, never a reproduction)
 The pointer is parenthetical and short, at the end of the clause it serves: `see Appendix [X] for more details` or `We discuss [the comparison] in more detail in Appendix [X].` [MISQ-appendix/style.md lines 46-53].
 A specific exhibit is named in full, as `Appendix Table [X1] presents the results`, with the word Appendix capitalized [lines 51, 55].
 The body never reproduces appendix content: it states the finding in one sentence and points [line 55].
 Those pointers are written into the Results and Methods drafts, not into the appendix draft [MISQ-appendix/template.md line 62].
 
-#### 10.3 · What this pack cannot answer
+#### 11.3 · What this pack cannot answer
 (a thin-source caveat, carried on purpose)
 The appendix guide was distilled from two exemplars only, so its labeling and lettering are "what 2 papers show, not a journal-wide rule" [MISQ-appendix/style.md line 11].
 This pack cannot say whether a MISQ paper of a given type gets an online tier, or what that tier would be called.
@@ -765,7 +996,7 @@ This pack cannot say whether a MISQ paper of a given type gets an online tier, o
 Both have to be verified against the target issue [line 11].
 The Weng 2026 section and page counts describe the published article, not the stored PDF, which ends after Appendix A [lines 71, 101].
 
-#### 10.4 · Format values
+#### 11.4 · Format values
 (counted in sections, tables and pages, because the prose norms are recorded N/A here)
 
 ```text
@@ -781,7 +1012,7 @@ The Weng 2026 section and page counts describe the published article, not the st
                       [MISQ-appendix/style.md lines 96-98]
 ```
 
-#### 10.5 · The language, in the papers' own words
+#### 11.5 · The language, in the papers' own words
 (what this pack quotes here is body-text pointers, never appendix prose)
 "see Appendix A for more details" [Zhang 2025]
 The shortest pointer form, parenthetical and sitting at the end of the clause it serves [MISQ-appendix/style.md line 48].
@@ -794,6 +1025,52 @@ The section heading itself: a letter plus a descriptive subtitle saying what is 
 "Appendix A: Measurement" [Weng 2026]
 The same heading shape at its shortest, from the pack's only other appendix exemplar [style.md line 11].
 `MISQ-appendix/style.md` carries no sentence quoted from inside an appendix section, so how that prose itself reads is unrecorded.
+
+### 12 · Before you upload: the binding rules as a list you can run
+
+**Everything here is enforced by the desk, not by us**: it is the `Submission-Rules` figure turned into an order of operations, and it is the only part of this page that can cost a submission.
+
+```text
+  ✅ BEFORE YOU UPLOAD ── run top to bottom, on the FINAL file
+
+  ① COUNT THE PAGES        double-spaced · 12 pt Times New Roman · 1-inch
+                           margins · 8.5 x 11 · count text + tables + figures
+                           + references + appendices as ONE number
+                           ≤ 55 Research Article · ≤ 30 Research Note
+                           ⚠️ THE TRAP: 55 submission pages is NOT 50 published
+                              pages · a robustness appendix eats body text
+
+  ② PICK THE CATEGORY      Research Article · Research Note · Issues and
+                           Opinions · Theory and Review
+                           the cap follows the category, so pick it first
+
+  ③ STRIP YOURSELF OUT     double-anonymous: no author names, no
+                           acknowledgements, no "our earlier work at [place]",
+                           no identifying file metadata
+
+  ④ FIX THE REFERENCES     APA 7th · alphabetical · single-spaced · left
+                           hanging indent · in-text opens on the information
+
+  ⑤ MOVE NOTHING OUTSIDE   supplementary material is generally discouraged and
+                           anything outside the limit is NOT reviewed: every
+                           primary claim and its evidence sit inside the count
+
+  ⑥ WRITE THE DISCLOSURES  transparency declaration · AIS Code of Research
+                           Conduct · legal right to the data · if generative AI
+                           was used, how attribution of the ideas is ensured
+
+  ⑦ UPLOAD                 ScholarOne · the cover letter may link transparency
+                           material, which is not reviewed and does signal
+```
+
+✅ Establishes the desk's own gate as a seven-step list, so the binding rules are executed once at the end rather than remembered while drafting.
+
+#### 12.1 · The page count is the step that actually fails
+(it is the only rule here that a finished paper cannot fix in an afternoon)
+The other six steps are minutes of work on a file that already exists; the count is a content decision made months earlier.
+A paper written to the pack's per-section budgets lands near 12,000 words of body text before displays, references and appendix, which is already close to the cap once it is set double-spaced.
+The appendix is the pressure valve everywhere else and is not one here, because it counts.
+So a MISQ paper decides early what will NOT be in it, and `Sec-A-Appendix`'s triage rule is the tool for that decision rather than a formatting step at the end.
 
 ## Aims
 
@@ -809,35 +1086,50 @@ The same heading shape at its shortest, from the pack's only other appendix exem
 - A3.1 · The family lean-signal matrix and the tie-break order decide the outlet, instead of a human recalling them.
   **Done when:** a venue recommendation names the signals that leaned MISQ and the sibling it beat.
 
-### A4 · 📝 Abstract: one unstructured paragraph, question forward
+### A4 · 📝 Sec-0-Abstract: one unstructured paragraph, question forward
 - A4.1 · The abstract variant (behavioral, healthcare-policy, design science) is chosen before drafting, since it decides whether a number may appear.
-  **Done when:** an abstract draft records its variant and its measured word count against the 120-160 budget.
+  **Done when:** an abstract draft records its variant and its measured word count, against the pack's observed 120-160 and JL's ~250 ceiling, and says which of the two it is answering to.
 
-### A5 · 📖 Introduction: the long section that names the gap and declares the contribution
+### A5 · 📖 Sec-1-Introduction: the long section that names the gap and declares the contribution
 - A5.1 · The Research Article and Research Note budgets stop being interchangeable in drafting.
   **Done when:** an introduction draft states which variant it is writing and counts its paragraphs against 7-12 flat or up to 16 subsectioned.
 
-### A6 · 🧠 Theory: the signature section, where every prediction is earned
+### A6 · 🧠 Sec-2-Theory: the signature section, where every prediction is earned
 - A6.1 · Every prediction arrives at the end of the subsection that derived it, in one chosen format.
   **Done when:** a theory draft shows one prediction format only, and no hypothesis stated outside its derivation.
 
-### A7 · 🔬 Methods: detailed, and subordinate to the theory
+### A7 · 🔬 Sec-3-Methods: detailed, and subordinate to the theory
 - A7.1 · The five displays this section owes are filed as display requests at draft time, not discovered at check.
   **Done when:** a methods draft files the operationalization table and the model equation before its gate.
 
-### A8 · 📊 Results: organized by hypothesis, never by table
+### A8 · 📊 Sec-4-Results: organized by hypothesis, never by table
 - A8.1 · Every reported coefficient carries its hypothesis verdict and its interpretable magnitude.
   **Done when:** a results draft has no coefficient sentence without both.
 
-### A9 · 🗣 Discussion: contribution first, limitations named, close forward
+### A9 · 🗣 Sec-5-Discussion: contribution first, limitations named, close forward
 - A9.1 · The desk's one-sentence test is answered in the numbered theoretical contributions.
   **Done when:** a discussion draft's first numbered contribution states what an IS reader now understands that they did not before.
 
-### A10 · 📎 Appendix: lettered sections whose payload is tables
-- A10.1 · The body-versus-appendix triage and the Table A1 numbering are applied before the appendix is drafted.
+### A10 · 🏁 Sec-6-Conclusion: one forward-looking paragraph, and no titled section
+- A10.1 · A conclusion that gets its own page still closes as one paragraph, rather than growing into a section the desk never asked for.
+  **Done when:** an `S-Main-8-conclusion` draft is three to five forward-looking sentences and repeats no finding the abstract already states.
+- A10.2 · The gap between this page and the resolver is closed one way or the other: either `section-kinds.yml` gains a conclusion kind for this outlet, or this division records that it deliberately indexes a section the resolver does not declare.
+  **Done when:** the generated kinds block and this division agree, or the division names the disagreement as intentional.
+
+### A11 · 📎 Sec-A-Appendix: lettered sections whose payload is tables
+- A11.1 · The body-versus-appendix triage and the Table A1 numbering are applied before the appendix is drafted.
   **Done when:** an appendix draft lists its sections by letter with each exhibit named in the letter-plus-number form.
-- A10.2 · The online-tier question is settled against the target issue rather than left to the pack.
+- A11.2 · The online-tier question is settled against the target issue rather than left to the pack.
   **Done when:** a MISQ paper records whether its appendix is same-PDF or an online supplement, and names where that was verified.
+
+### P · 🧾 Targets that belong to no single section
+
+- P1 · The desk's own submission mechanics are checked before a manuscript is uploaded, rather than discovered at the portal.
+  **Done when:** a deliver run walks §12's seven steps and records the result of each, with the page count measured on the final double-spaced file.
+- P3 · The cost of this desk is known before a paper commits to it, not after the first decision.
+  **Done when:** a venue decision for this paper names the ~15% acceptance rate, the ~4.5 rounds, and the 67-to-89-day cycle it is signing up for.
+- P2 · Every other venue page carries this page's three figures and four Files groups.
+  **Done when:** `QBv2` to `QBv16` each show a Venue-Structure figure, a Submission-Rules figure, and an Authority group with the desk's own URLs.
 
 ## States
 
@@ -850,36 +1142,95 @@ The same heading shape at its shortest, from the pack's only other appendix exem
 ### A3 · 🧭 Which sibling outlet a paper leans to, and what pins it here
 - ⬜ A3.1 · Not started. The matrix is now on this page, having been folded in from the family README, and no run reads it.
 
-### A4 · 📝 Abstract: one unstructured paragraph, question forward
+### A4 · 📝 Sec-0-Abstract: one unstructured paragraph, question forward
 - ⬜ A4.1 · Not started. The three variants are declared in the pack template and nothing picks one.
 
-### A5 · 📖 Introduction: the long section that names the gap and declares the contribution
+### A5 · 📖 Sec-1-Introduction: the long section that names the gap and declares the contribution
 - ⬜ A5.1 · Not started. Both budgets are recorded; no draft states which one it is under.
 
-### A6 · 🧠 Theory: the signature section, where every prediction is earned
+### A6 · 🧠 Sec-2-Theory: the signature section, where every prediction is earned
 - ⬜ A6.1 · Not started. The three prediction formats are declared and the no-mixing rule is unenforced.
 
-### A7 · 🔬 Methods: detailed, and subordinate to the theory
+### A7 · 🔬 Sec-3-Methods: detailed, and subordinate to the theory
 - ⬜ A7.1 · Not started. The pack names five owed displays and nothing files them.
 
-### A8 · 📊 Results: organized by hypothesis, never by table
+### A8 · 📊 Sec-4-Results: organized by hypothesis, never by table
 - ⬜ A8.1 · Not started.
 
-### A9 · 🗣 Discussion: contribution first, limitations named, close forward
+### A9 · 🗣 Sec-5-Discussion: contribution first, limitations named, close forward
 - ⬜ A9.1 · Not started, and it is the same one-sentence test that A1.1 leaves unread.
 
-### A10 · 📎 Appendix: lettered sections whose payload is tables
-- ⬜ A10.1 · Not started.
-- ⬜ A10.2 · Not started, and the pack cannot answer it: two exemplars, both same-PDF, no label either way.
+### A10 · 🏁 Sec-6-Conclusion: one forward-looking paragraph, and no titled section
+- ⬜ A10.1 · Not started. This repo's MISQ paper already carries an `S-Main-8-conclusion` page and nothing holds it to one paragraph.
+- ⬜ A10.2 · Not started, and it is a real disagreement: this page now indexes Sec-6-Conclusion while `section-kinds.yml` declares seven kinds and no conclusion.
+
+### A11 · 📎 Sec-A-Appendix: lettered sections whose payload is tables
+- ⬜ A11.1 · Not started.
+- ✅ A11.2 · Met 260802, against the desk rather than the pack. The 55-page cap counts appendices, supplementary material is generally discouraged, and anything outside the limit goes unreviewed, so a MISQ appendix is same-PDF and there is no online tier to choose. Evidence: the Authority group in `## Files`.
+
+### P · 🧾 Targets that belong to no single section
+- ⬜ P1 · Not started. The mechanics are on this page as of 260803, now as a runnable list in §12, and no deliver run reads them.
+- ⬜ P3 · Not started. The odds and the clock landed 260803; nothing in the venue decision cites them.
+- 🧠 P2 · Waiting on JL. This page carries all three figures and all four groups; the other fifteen carry the first figure only.
+
+### Decision Now
+
+- [ ] 🗣 Do the other fifteen venue pages get rebuilt to this template now, or one at a time as each venue is actually targeted?
+      Today `QBv1` has three figures and four Files groups; `QBv2` to `QBv16` have one figure and a flat file list. Only `QBv1` is the venue `ProjB-PhyTrait-OpioidRx` targets.
+      A · rebuild all fifteen now, in one pass, so the group is uniform and any retarget lands on a finished page. Costs fifteen pages of desk-fetching, and most of it is for venues nobody has picked.
+      B · rebuild on demand, when a paper targets that venue, and leave the template recorded here. Keeps the work where the value is, and leaves the group visibly uneven until then.
+      C · rebuild the three UTD-IS siblings only (`QBv2` ISR, `QBv3` MS-IS, `QBv4` MS-Marketing), because §3's tie-break is argued against exactly those and a reader comparing them needs the same rows on each.
+      → CC recommends C, because the tie-break in §3 is the one place this page sends a reader to a sibling, and a sibling with no Submission-Rules figure cannot answer what it costs to go there. B leaves that specific comparison broken; A pays for twelve pages nobody is reading.
 
 ## Files
 
-- `../../paper/venue/playbook-utd-is/MISQ/taste.md` · the desk signals and the one-sentence test
-- `../../paper/venue/playbook-utd-is/MISQ/MISQ-theory/style.md` · the section no other pack requires
+### ⚙️ Engines · what RUNS this page's subject
+
+- `_tools/sync-exemplars.py`
+  Rewrites both generated blocks below, from the pack folder and from `section-kinds.yml`. ⚠️ Never hand-edit between the markers: the next run overwrites it.
+
+### 📋 Contracts · what CARRIES a rule to other pages
+
+- `../../board/haipipe-board-page-for-venue/SKILL.md`
+  The venue-page contract, lifted out of this page on 260803: the three figures, the `Sec-<n>` index, the two-source rule, these Files groups. This page is its reference implementation, so a rule changed here is changed there in the same pass, and the other fifteen outlet pages read it rather than reading this page.
+- `../../board/haipipe-board-page/SKILL.md`
+  The base frame that contract extends. Load it first; it owns the seven sections and their order.
+
+### 📥 Input files · what this page READS
+
+- `../../paper/venue/playbook-utd-is/MISQ/taste.md`
+  The desk signals and the one-sentence test. Start here when what MISQ buys is the question.
+- `../../paper/venue/playbook-utd-is/MISQ/MISQ-theory/style.md`
+  The section no other pack in this tree requires, and the one §6 is built from.
+- `../../paper/venue/playbook-utd-is/README.md`
+  The family delta and the lean-signal matrix that §3 folds in, covering all four UTD-IS outlets at once.
+- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml`
+  The reader-side resolver: outlet ▸ section kinds. It is what the generated kinds block below is built from.
+
+### 🔗 Authority · what the DESK itself PUBLISHES, read directly and never through the pack
+
+⚠️ Provenance: the guideline pages were fetched and verified 260802. On 260803 the site answered a direct fetch with HTTP 403, so that day's additions come from search summaries of those same pages. Re-read the desk before a real submission.
+
+- [Author / submission instructions](https://misq.umn.edu/pages/submission_guidelines) · the desk's own six-step guide, governing eligibility, the submission category and its page maximum, manuscript formatting, the ScholarOne upload, the revision response, and the templates.
+- [Categories and lengths](https://misq.umn.edu/categories-lengths) · the category roster and the cap each one carries.
+- [Publication policies](https://misq.umn.edu/pages/publication_policies) · double-anonymous review, the research-transparency declaration, the AIS Code of Research Conduct, the data-rights certification, and the generative-AI attribution rule.
+- [Review process](https://misq.umn.edu/review-process) · who sees an author's identity, and who does not.
+- [ScholarOne guide](https://misq.umn.edu/manuscripts) · the upload itself.
+- [FAQs](https://misq.umn.edu/pages/faqs) · where the desk answers cost and process questions its guideline pages do not.
+- [Copyright and open access](https://misq.umn.edu/copyright) · the licence, and the open-access charge.
+- [Registered Reports special issue](https://misq.umn.edu/call_for_papers/registered-reports) · the one-off experiment, not a standing submission track.
+- The odds, the clock, and the money, none of it in the pack: roughly 15% of submissions are accepted; a paper takes about 4.5 review rounds to get there; a review cycle averages 67 days in round 1 and 89 in round 2; First Look appears within a month of acceptance. Submission is free, and open access is optional at $5,000 USD under the authors' preferred Creative Commons licence. The Registered Reports track ran once, with submissions due 230701, as an explicit experiment to decide whether the model should continue. ⚠️ These came from search summaries of the desk's own FAQ, review-process, copyright and call-for-papers pages on 260803, not from a direct read, and the review statistics are the editor's reported averages rather than a commitment.
+- [LaTeX manuscript template](https://misq.umn.edu/DocumentLibrary/SubmissionTemplates/MISQ_Submission_Template_LaTeX.zip.zip) · MISQ publishes one, and a [Word manuscript template](https://misq.umn.edu/DocumentLibrary/SubmissionTemplates/MISQ_Submission_Template_Word.docx) beside it, so this desk takes both formats; each URL was downloaded and is a real archive.
+- The rule the pack does not record: the category maximum is 55 pages for a Research Article and 30 for a Research Note, and it counts text, tables, figures, references AND appendices toward that one number, which is confirmed verbatim ("Maximum lengths include ALL content: text, tables, figures, references, and appendices"). Supplementary materials are "generally discouraged", all primary evidence and main claims must sit inside the page limit, and material referenced outside it "will not be reviewed", which settles §11.3's open online-tier question against an online tier.
+- CONTRADICTS the pack on length: `../../paper/venue/playbook-utd-is/README.md` records "Research Article, typical 40-50 pp", which is an observation about published pages, while the desk's own ceiling is 55 submission pages set double-spaced in 12-point Times New Roman with 1-inch margins.
+- The pack records no reference style anywhere in its seven section folders; MISQ requires APA 7th edition, listed alphabetically, single-spaced with a left hanging indent, and in-text citations that open on the information cited rather than on the author name.
+- The pack records none of the submission mechanics either: the ScholarOne portal, the required transparency declaration, the double-anonymous rule that the manuscript itself carry no identifying information, or the generative-AI rule that a paper using such tools state how attribution of the underlying ideas is ensured.
+
+### 📤 Generated · what `sync-exemplars.py` WRITES into this page
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 15 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 15 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-utd-is/MISQ/examples/EBSCO-FullText-06_25_2026.pdf`
 - `../../paper/venue/playbook-utd-is/MISQ/examples/EBSCO-FullText-06_25_2026 (1).pdf`
@@ -904,35 +1255,19 @@ The same heading shape at its shortest, from the pack's only other appendix exem
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · theory
-- `S-Main-3` · methods
-- `S-Main-4` · results
-- `S-Main-5` · discussion
-- `S-Appendix-A` · appendix
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 
-🔗 **Authority** · the venue's own instructions, fetched and verified 260802
-
-- [Author / submission instructions](https://misq.umn.edu/pages/submission_guidelines) · the desk's own six-step guide, governing eligibility, the submission category and its page maximum, manuscript formatting, the ScholarOne upload, the revision response, and the templates.
-- [LaTeX manuscript template](https://misq.umn.edu/DocumentLibrary/SubmissionTemplates/MISQ_Submission_Template_LaTeX.zip.zip) · MISQ publishes one, and a [Word manuscript template](https://misq.umn.edu/DocumentLibrary/SubmissionTemplates/MISQ_Submission_Template_Word.docx) beside it, so this desk takes both formats; each URL was downloaded and is a real archive.
-- The rule the pack does not record: the category maximum is 55 pages for a Research Article and 30 for a Research Note, and it counts text, tables, figures, references AND appendices toward that one number, which is confirmed verbatim ("Maximum lengths include ALL content: text, tables, figures, references, and appendices"). Supplementary materials are "generally discouraged", all primary evidence and main claims must sit inside the page limit, and material referenced outside it "will not be reviewed", which settles §10.3's open online-tier question against an online tier.
-- CONTRADICTS the pack on length: `../../paper/venue/playbook-utd-is/README.md` records "Research Article, typical 40-50 pp", which is an observation about published pages, while the desk's own ceiling is 55 submission pages set double-spaced in 12-point Times New Roman with 1-inch margins.
-- The pack records no reference style anywhere in its seven section folders; MISQ requires APA 7th edition, listed alphabetically, single-spaced with a left hanging indent, and in-text citations that open on the information cited rather than on the author name.
-
 ## Law
 
+- 260803 JL · 📖 This page is a reference, not a rulebook
+      Everything on it is a suggestion drawn from what published papers at this desk actually do, and a drafter may depart from any of it deliberately.
+      The single exception is the desk's own published rules, which sit in the `Submission-Rules` figure and in the `Authority` group: those are enforced by the desk itself, and a manuscript breaking one is returned unreviewed.
+      This was written down because a page full of measured numbers reads as a specification, and a drafter who treats a measurement as a cap writes to the middle of the distribution instead of to the paper.
+- 260803 JL · ⚖️ A length on this page says whose it is, or it is read as a rule
+      The desk publishes one length: 55 pages for a Research Article, 30 for a Research Note, counting everything.
+      Every other number on this page, including every per-section word budget, is the pack's measurement of papers it read. JL ruled an abstract of about 250 words acceptable, because there is no published abstract cap to break, and the pack's 120-160 had been sitting on the page in a shape that read as one. A pack observation is worth following and is not a rule, and the page now labels which is which.
 - At MISQ the method enables the contribution and is never it, so a paper whose claim is its technique has no route to this desk that does not re-argue the claim.
   An associational posture is acceptable here only when it is stated as one.
 
@@ -942,6 +1277,18 @@ The ORDER does not move. It is this venue's reading order, not a house default.
 
 ## Log
 
+260803 · The whole page is a REFERENCE and not a rulebook (JL). Everything on it describes what published MISQ papers do and may be departed from on purpose; only the desk's own published rules bind, and they sit in the `Submission-Rules` figure and the `Authority` group. Written into the Opening drawer where a reader meets it first, into the figure's own header, into Writing Style, and as a Law entry, because a page full of measured numbers reads as a specification.
+260803 · The four things Submission-Rules printed as unknown are now known, and a fifth division was added to use them. The desk accepts about 15% of submissions, a paper takes about 4.5 review rounds, a cycle averages 67 days in round 1 and 89 in round 2, First Look appears within a month of acceptance, submission is free, open access is optional at $5,000 USD, and Registered Reports ran once as an experiment rather than as a standing track. `P3` now asks that a venue decision cite the odds and the clock it is signing up for, because those decide whether a desk is worth a year and no pack records them. What remains unknown shrank to two rows and is still printed. Provenance is stamped: search summaries of the desk's FAQ, review-process, copyright and call-for-papers pages, not a direct read.
+260803 · `§12 · Before you upload` turns the binding figure into a seven-step list run once on the final file, since a rule remembered while drafting is a rule half-applied. `§12.1` names the one step a finished paper cannot fix in an afternoon: the page count, because 55 double-spaced submission pages is not 50 published pages and the appendix counts against the same number. `P1` now points at the list rather than at a description of it.
+260803 · `## Files` gained a 📋 Contracts group holding `haipipe-board-page-for-venue` and the base it extends (JL asked whether the contract belonged under Engines). It does not: the base menu calls an Engine something you RUN and open to change behavior, and a loadable spec that never executes is a Contract, which is where a template or a spec that carries a rule to other pages is filed. The row states that the link runs both ways, since this page is that contract's reference implementation.
+260803 · The conclusion became a SECTION (JL: "I think we should have the Section of Conclusion"). It arrived earlier the same day as `§9.5`, a subsubsection of Discussion, which is what the pack says it is; JL ruled it a section of its own, so it is now `§10 · Sec-6-Conclusion` with the same four subsubsections every section division carries, and the appendix moved from `§10` to `§11`, taking `A10` to `A11` with it. This page therefore indexes a section the desk does not title and `section-kinds.yml` does not declare, which is a real disagreement rather than an oversight: `A10.2` holds it open until the resolver gains the kind or the division records the difference as intended. Log lines above this one still say `§10.3` and `A10.2` meaning the appendix, because a Log line records what was true when it was written.
+260803 · Inline code was invisible. `--pre` is `#f4f4f0` on a `#fbfbf9` page, four points of luminance apart, which a fenced block survives and a five-character span does not (JL: "hard to distinguish from the overall background"). Inline code now has its own `--code-bg` and `--code-line` pair in `assets/css/00-base.css`, cooler than the page and carrying a hairline, in both the light and dark palettes. The fence background is untouched. This is an engine-wide change and every board gets it on its next build.
+260803 · The abstract budget was reading as a rule and is not one. 120-160 words is the pack's measurement of eight abstracts; the desk publishes no abstract cap at all, and its only length rule is the 55-page total. JL ruled about 250 words acceptable. The page now labels every length as a DESK RULE or a PACK OBSERVATION, in §4's fence, in Venue-Structure, in Submission-Rules' open row, in `A4.1`, and as a Law entry, because a number printed with neither label is read as binding.
+260803 · The section index became `Sec-<n>`, counting from ZERO (JL). `### 4 · 1-Abstract` is now `### 4 · Sec-0-Abstract`, and the index is no longer a second number a reader has to convert: `Sec-3-Methods` becomes `S-Main-3`. The prefix earns its place, because a bare `0-Abstract` reads as a typo. Only the appendix keeps a letter, `Sec-A`, matching the desk's own Appendix A. The conclusion is not indexed at all, since it is not a section here.
+260803 · JL asked whether the section index should be a letter, or the section emoji instead. Both were tried and both lost. A letter collides with the venue's own appendix lettering, where Appendix A already means something. The emoji on the division heading was written, built, and reverted inside one pass: `check.py` strips the emoji from an Aims or States group name and not from a Content division, so ten divisions produced twenty `group-name-drift` warnings at once. The emoji keeps the two homes it already had, the Aims and States groups and each division's closing line, and the index stays a number.
+260803 · Every section division now shows the venue's own reading index in front of its name, so `### 4 · Abstract` became `### 4 · Sec-0-Abstract` and the appendix took the letter it is lettered with at the desk (JL 260803, "I want to see the index"). The Aims and States groups carry the same name behind their emoji, which keeps the three sections lining up by eye. Venue-Structure now prints all three numbers a section has, because they disagree on purpose: the venue index counts from 1, the Content division counts §1 to §3 as well, and the lifecycle page `S-Main-<n>` counts from 0.
+260803 · JL ruled this page the TEMPLATE for the other fifteen venue pages, and three things followed. A third figure, Submission-Rules, carries the desk's own mechanics: the category cap, the manuscript format, the reference style, ScholarOne, double-anonymous review, the AI and transparency disclosures, and the desk's URLs, with a printed row for the four things still not on record. `## Files` was regrouped into Engines, Input files, Authority, and Generated, which is the action menu `QB4-overall.md` §6 declares and this page was not using. `## Writing Style` now states the template itself, so a sibling page has something to copy. Provenance is honest and stated in the Authority group: 260802's facts were fetched, and today's additions come from search summaries because the site answers a direct fetch with 403. A10.2 moved to ✅, which the 260802 Log already justified and the State had not caught up with.
+260803 · Added a second Diagram figure, Venue-Structure, showing the seven section kinds in this venue's reading order with the budget each carries and the 55-page ceiling over all of them. The first figure says what the desk buys; this one says what a paper is built out of, so the whole shape is visible before §4 to §10 are read. Every number in it is carried by the division that names its source.
 260802 · Settled against the desk, in the pack's favour and against it. CONFIRMED verbatim: the 55-page Research Article maximum counts text, tables, figures, references AND appendices as one number. Supplementary material is generally discouraged, and anything outside the limit goes unreviewed. That closes `10.3` and `A10.2` against an online tier at this venue. CONTRADICTED: the pack's "40-50 pp" is an observation of published pages, not the submission cap. The pack also records no reference style at all, where MISQ requires APA 7th.
 > ✎ 260802 · Settled against the desk, in the pack's favour and against it. CONFIRMED verbatim: the 55-page Research Article maximum counts text, tables, figures, references AND appendices as one ~number, and supplementary~ *number. Supplementary* material is generally ~discouraged with~ *discouraged, and* anything outside the limit ~unreviewed, which~ *goes unreviewed. That* closes `10.3` and `A10.2` against an online tier at this venue. CONTRADICTED: the pack's "40-50 pp" is an observation of published pages, not the submission ~cap, and the~ *cap. The* pack *also* records no reference style at ~all~ *all,* where MISQ requires APA 7th. · CC · 260802 1535
 260802 · Opened with the QBv outlet pages, from `playbook-utd-is/MISQ` at `Venue-Paper@fe25a88`.

@@ -9,6 +9,12 @@ method: state what npj Digital Medicine requires of a digital tool, and record t
 npj Digital Medicine is the obvious home for a digital-health paper. It is also where such a paper is most often rejected, and it is rejected for the part its authors were proudest of. A better score on a benchmark is usually that part. So what separates a tool this desk wants from a benchmark it refuses?
 > ✎ ~This desk~ *npj Digital Medicine* is ~where~ *the obvious home for* a digital-health ~paper is supposed to land, and it~ *paper. It* is also where such a paper is most often *rejected, and it is* rejected for the ~reason it thought was~ *part* its ~strength. What~ *authors were proudest of. A better score on a benchmark is usually that part. So what* separates a tool this desk wants from a benchmark it refuses? · CC · 260802 1540
 
+**How to read this page**: everything here is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and refusals below describe what published npj Digital Medicine papers do, measured by the pack from the exemplars on disk.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is sent back at the technical check or never reaches a referee.
+Every length on the page says which of the two it is.
+
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-nature-portfolio/npj-digital-medicine/`.
 
@@ -28,6 +34,57 @@ How this page must be written. Read it before editing, and edit to it.
 **Say what the tool lets a clinician do**: this desk's test is about clinical capability, and performance language reproduces the failure it names.
 
 ✅ `changes what a clinician can know, measure, or do`  ❌ `achieves higher accuracy`
+
+**The venue-page contract this page obeys** is `../../board/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. Neither is restated here; what follows is the shape a reader should expect to find.
+
+```text
+  🖼 THREE FIGURES        what each one answers
+     ① desk taste         what counts as the contribution · what is desk-rejected · the test
+     ② Venue-Structure    which sections, in the DESK's reading order, and the budget each carries
+     ③ Submission-Rules   category and cap · manuscript format · references · system ·
+                          anonymity · disclosures · odds, clock and money · the desk's own URLs
+
+  📎 FIVE FILES GROUPS
+     ⚙️ Engines           what regenerates this page
+     📋 Contracts         the venue-page contract, the base it extends, and the reference
+                          page · a loadable spec is a Contract and never an Engine
+     📥 Input files       the pack files this page reads
+     🔗 Authority         what the DESK publishes, read directly and never through the pack,
+                          opening with a provenance line and holding every pack-vs-desk clash
+     📤 Generated         what a tool WRITES into this page, between markers
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX
+     ### 4 · Sec-0-Abstract: one unstructured paragraph that opens on a patient
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, in the DESK's published reading order ·
+         │           the appendix takes Sec-A
+         └── the Content division number, which counts §1 to §3 as well
+     ### A4 · 📄 Sec-0-Abstract: one unstructured paragraph that opens on a patient
+              ▲  the emoji lives HERE and on the division's closing line, never on the
+                 division heading: check.py strips it from an Aims group name and not
+                 from a division, so a heading-side emoji reads as group-name-drift on
+                 every section at once
+     ⚠️ AT THIS OUTLET Sec-<n> IS NOT S-Main-<n>, and the Venue-Structure figure says why
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK (JL 260803)
+     the pack-derived arcs, budgets, moves and refusals are suggestions drawn from
+     published papers · only the desk's own published rules bind, and they live in the
+     Submission-Rules figure and the Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never sounds
+     like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS (JL 260803)
+     a DESK RULE is published by the venue and binding · a PACK OBSERVATION is a
+     measurement of papers the pack read, and breaking it is off-pattern rather than a
+     violation · a budget printed with neither label reads as a rule
+
+  📏 A NUMBER CARRIES ITS SOURCE   inline, always: a style.md line, an exemplar, or the
+     desk's own page, and never as this page's own claim
+  ❓ AN UNKNOWN IS PRINTED         a slot neither source can fill is written as an open
+     row, never left off the figure
+```
+
+**What the pack knows and what the desk says are two different sources**, and where they disagree the desk wins and the disagreement is written down. The pack is READ and never written by this plugin, so a correction lands here, not in `paper/venue/`.
 
 ## Diagram
 
@@ -1034,7 +1091,7 @@ Its structure block at line 12 caps the abstract at 200 words, while `npjdm-abst
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 20 papers on disk · the section guides were mined from 9 of them, so 11 stored papers back no norm, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 20 papers on disk · the section guides were mined from 9 of them, so 11 stored papers back no norm, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-nature-portfolio/npj-digital-medicine/examples/etkin-2026-npjdm-ai-liability-prescribing-advice.pdf` · Etkin 2026
 - `../../paper/venue/playbook-nature-portfolio/npj-digital-medicine/examples/everhart-2026-npjdm-fda-digital-medical-devices-trends.pdf` · Everhart 2026
@@ -1063,22 +1120,7 @@ Its structure block at line 12 caps the abstract at 200 words, while `npjdm-abst
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · related-work
-- `S-Main-3` · methods
-- `S-Main-4` · results
-- `S-Main-5` · discussion
-- `S-Appendix-A` · appendix
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 

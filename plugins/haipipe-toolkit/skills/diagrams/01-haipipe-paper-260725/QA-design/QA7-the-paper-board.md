@@ -237,7 +237,7 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
 ### 📋 Contracts · what CARRIES a rule to other pages
 - `../../board/haipipe-board/SKILL.md`
   The S-family grammar a paper board follows, owned by `③` and consulted here.
-- `../../paper/1-lifecycle/haipipe-paper-stage/`
+- `../../paper/route/haipipe-paper-stage/`
   The stage runner and its eight contracts, which is where `A1.3` must land for a worker to see it.
 
 ### 🧪 Checks · what CATCHES a page breaking a rule

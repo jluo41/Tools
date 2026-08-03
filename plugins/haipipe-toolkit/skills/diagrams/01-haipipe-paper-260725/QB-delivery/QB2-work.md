@@ -366,9 +366,9 @@ So the reader's rule is the one in `§1.3`: the filename says which family wrote
 
 📥 **Input files** · what the work reads
 
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/1a-resource/stage.md` · the resource contract, and `1a-resource/template.md` beside it
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/1b-claims/stage.md` · the claims contract, and `1b-claims/template.md` beside it
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/3-narrative/stage.md` · the narrative contract, and `3-narrative/template.md` beside it
+- `../../paper/S02-work/resource/stage.md` · the resource contract, and `1a-resource/template.md` beside it
+- `../../paper/S02-work/claims/stage.md` · the claims contract, and `1b-claims/template.md` beside it
+- `../../paper/S02-work/narrative/stage.md` · the narrative contract, and `3-narrative/template.md` beside it
 
 ## Law
 

@@ -10,7 +10,7 @@ This page examines the DRAFT phase's two outputs: real first-pass Content and re
 Its central boundary is that it asks a question but never plans, routes, or executes the evidence work.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 9bd3490d630514a6 paper/2-phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:tree:start 9bd3490d630514a6 paper/phase/0-draft/haipipe-paper-draft -->
 
 ```
 haipipe-paper-draft/
@@ -41,11 +41,11 @@ adjacent > lanes attach to sentence  ▲ same id anchors any unresolved sentence
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 9bd3490d630514a6 paper/2-phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:body:start 9bd3490d630514a6 paper/phase/0-draft/haipipe-paper-draft -->
 
 **haipipe-paper-draft** · `0.6.2` · last shipped 2026-07-26
 
-- folder   `paper/2-phase/0-draft/haipipe-paper-draft/`
+- folder   `paper/phase/0-draft/haipipe-paper-draft/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
 - summary  DRAFT writes two things on the owning S page: first-pass Content and Q-consumer questions. Citation/value/display lanes report holes; this hub is the single writer that makes each hole FILLED or OWNED. PROBE alone authors entries and runs the five-step evidence loop. History: ./CHANGELOG.md.
 
@@ -109,7 +109,7 @@ Users invoke stage skills:
       template.md   the canonical skeleton — section order, placeholders, inline <!-- RULE --> comments
       ```
       This skill carries NO templates of its own — the stage owns its format.
-      Resolve the folder from `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`, which maps a
+      Resolve the folder from `../../paper/route/haipipe-paper-stage/stages/index.yml`, which maps a
       stage key to its `dir`. Do NOT hardcode the mapping here; that index is the one enumerating file.
       ```text
       seed          -> stages/0-seed/
@@ -122,8 +122,8 @@ Users invoke stage skills:
       section-edit  -> stages/5-section-edit/     (a section NAME, e.g. `introduction`, routes here)
       ```
       Some stages carry EXTRA support files in the same folder; read them when the contract's
-      `support:` field names them. They are NOT uniform — `../../paper/1-lifecycle/haipipe-paper-stage/stages/2b-pitch/readability.md`,
-      `../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/figure-logic.md` + `../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/checklist.md`. section-edit has none — its template is its own rulebook. Never assume a
+      `support:` field names them. They are NOT uniform — `../../paper/S01-opening/pitch/readability.md`,
+      `../../paper/S05-display/display/figure-logic.md` + `../../paper/S05-display/display/checklist.md`. section-edit has none — its template is its own rulebook. Never assume a
       file exists because a sibling stage has one.
       ⚠️ The `phases:` field in `stage.md` is AUTHORITATIVE and is not always four. `venue` declares
       `[draft, probe, check]` — it has no REVISE. Run what the stage declares.
@@ -271,7 +271,7 @@ Users invoke stage skills:
 - 4.1 · seed
       - Output: `0-lifecycle/0-seed/S-Seed-0-seed.md`
       - WebSearch-to-orient: see Step 4 (the one normative home).
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/0-seed/stage.md` -> its `dispatch_scope:` + the craft body (the stage owns its own list; this file never restates it).
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S01-opening/seed/stage.md` -> its `dispatch_scope:` + the craft body (the stage owns its own list; this file never restates it).
         Profiling OUR OWN data is RESOURCE-stage task work; register it as a `[FORWARD -> RESOURCE]` pointer in the Seed S page's `## Log`, do not raise it in seed.
         The RESOURCE stage is the SOLE CONSUMER of these pointers and takes them at its open (reader clause in the resource stage contract) -- an unconsumed pointer fails the RESOURCE done-criteria, not claims'.
       - Short document, FIVE sections: Seed Question + Motivations + Landscape + Tentative Claim Shape + Q-consumer (Landscape and Q-consumer are not optional — the `[Q-Seed-<n>]` anchor loop hangs on Q-consumer)
@@ -291,7 +291,7 @@ Users invoke stage skills:
         A CLAIM-STATUS pointer is not ours — leave it for claims and say so.
       - The stage ASKS; it never mints a PP id, never picks a probe type or topic, and never executes (no `/haipipe-data`, `/haipipe-nn`, `/haipipe-task`, no inline store scan).
         WebSearch/glob to ORIENT is legal DRAFT fuel per Step 4 — it never lands in an `A`.
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/1a-resource/stage.md` -> its `probe_lanes:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S02-work/resource/stage.md` -> its `probe_lanes:` + the craft body.
       - PROBE (resource): one `Skill("haipipe-paper-probe", ...)` call. The worker
         authors/matches entries, dispatches only within `--depth`, and lands each Q's
         `A`. There is no DRAFT gate or `_LOG` sidecar.
@@ -303,24 +303,24 @@ Users invoke stage skills:
         Q-consumer.
       - Reads `S-Work-0-resources.md`: ingredients are settled there; training and
         evaluation belong to Claims.
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/1b-claims/stage.md` -> its `dispatch_scope:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S02-work/claims/stage.md` -> its `dispatch_scope:` + the craft body.
       - Hypotheses are venue-neutral (H1, H2, H3)
 
 - 4.4 · pitch
       - Output: `0-lifecycle/2-venue/S-Venue-1-pitch.md`
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/2b-pitch/stage.md` -> its `dispatch_scope:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S01-opening/pitch/stage.md` -> its `dispatch_scope:` + the craft body.
       - Venue-ALIGNED: reads `S-Venue-0-venue.md` (pack fallback per the venue guard)
 
 - 4.5 · narrative
       - Output: `0-lifecycle/2-venue/S-Venue-2-narrative.md`
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/3-narrative/stage.md` -> its `dispatch_scope:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S02-work/narrative/stage.md` -> its `dispatch_scope:` + the craft body.
       - Section-mirrored story with readiness tags
 
 - 4.6 · display
-      - Resolve the current output from `stages/4-display/stage.md`; do not invent a replacement while its declared `blocked_on` remains open.
+      - Resolve the current output from `../../paper/S05-display/display/stage.md`; do not invent a replacement while its declared `blocked_on` remains open.
       - DRAFT runs the stage's step-0 reconcile first (legacy probes/preview/tex-comments merge), then authors the md: Venue Set, Display Map, PROBE PLAN (S0/En/Rn rows, ▶ ready / ✋ gated-on-thread), one block per display with method candidates + ASCII sketch
       - Open threads stay inline for CHECK; DRAFT proposes and PROBE executes within its ceiling.
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/4-display/stage.md` -> its `dispatch_scope:` + the craft body (the cross-stage coverage sweep is DRAFT's, not PROBE's)
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S05-display/display/stage.md` -> its `dispatch_scope:` + the craft body (the cross-stage coverage sweep is DRAFT's, not PROBE's)
       - PROBE: evidence lane (tasks) + render lane (renderer skills, candidate mode) over the approved plan rows
 
 - 4.7 · section-edit
@@ -328,7 +328,7 @@ Users invoke stage skills:
       - Format: REAL prose per `stages/5-section-edit/template.md` (shape + rules in one file)
       - Ends with the Q-consumer block: every placeholder has an owning question.
         DRAFT proposes; PROBE later binds each one to an answer.
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/5-section-edit/stage.md` -> its `dispatch_scope:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S06-main/section-edit/stage.md` -> its `dispatch_scope:` + the craft body.
         (citation / values / display are DRAFT's Step 4a lanes, not PROBE tracks.)
       - Reads section-type norms and `S-Venue-0-venue.md`'s per-section blueprint block for style
 
@@ -339,7 +339,7 @@ Users invoke stage skills:
       |---|---|---|
       | Venue style, word budget, arc | `0-lifecycle/2-venue/S-Venue-0-venue.md` (compiled from `venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
       | Per-section structure norms | the paper's `S-Venue-0-venue.md` blueprint block (BINDING), deep dive `paper/venue/playbook-*/<journal>/<journal>-<kind>/style.md` (reference) | DRAFT (structure) |
-      | Prose quality rules | `../../paper/2-phase/REF/prose-quality.md` | REVISE |
+      | Prose quality rules | `../../paper/phase/REF/prose-quality.md` | REVISE |
       Old venue LaTeX templates and the write-conference/scientific/systems style skills were archived to the paper-root `_archive/` (venue knowledge belongs in `venue/` packs).
 
 - 6 · Relation to other phases
@@ -429,10 +429,10 @@ The remaining test is a full section run in which every placeholder either reach
 
 ## Log
 260727 · Audited against `board.md`'s decision-only rule, which says `state:` is about the DECISION and that implementation does not gate this board. Every open item here is implementation or a test, not an undecided question, so the page was reporting itself as open because code was missing. Flipped with no ruling made.
-260727 1445 · Created the DRAFT skill page from `paper/2-phase/0-draft/haipipe-paper-draft/`.
+260727 1445 · Created the DRAFT skill page from `paper/phase/0-draft/haipipe-paper-draft/`.
 The authored record distinguishes sentence apparatus, Q-consumer ownership, and Display Requests so they cannot be conflated in later writing work.
 
-<!-- haipipe:skill:log:start 9bd3490d630514a6 paper/2-phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:log:start 9bd3490d630514a6 paper/phase/0-draft/haipipe-paper-draft -->
 
 Converted from the skill's own `CHANGELOG.md`: 27 releases.
 

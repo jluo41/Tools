@@ -57,7 +57,7 @@ Scope: This page covers What a stage authors, what is generated from it, the dir
          reads it. `output:` is the only `output:` in the eight, which
          is literally true and hid the other two declarations of the
          same rule for a day.
-      ⚠️ one law, three field names, and `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` lists
+      ⚠️ one law, three field names, and `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` lists
          them as unrelated stage-specific fields.
       📍 `sections/` is UNNUMBERED now (QA6's delete test), so a
          generated file ships and its source does not. The direction
@@ -132,15 +132,15 @@ That is the two-manuscript failure in its literal form: prose that exists only a
 - [~] ↪ MOVED to `QBe3 §4` · rule the external edit
       A coauthor edits the `.tex` or the Word file. The ruling belongs where the Word file is made, because that is the only reason the edit happens.
 - [x] 📐 One direction only, declared where a machine reads it
-      `stages/5-section-edit/stage.md:53`: `output: sections/*.tex  # GENERATED from the .md by sync; NEVER hand-authored`. Measured 260727: the same law is also declared at `4-display/stage.md:36-37` as `generated:` and `compiled:`, so it is on two of the eight stages, not one.
+      `../../paper/S06-main/section-edit/stage.md:53`: `output: sections/*.tex  # GENERATED from the .md by sync; NEVER hand-authored`. Measured 260727: the same law is also declared at `4-display/stage.md:36-37` as `generated:` and `compiled:`, so it is on two of the eight stages, not one.
 - [ ] 🧠 Rule what an orphan `.tex` means
       `appendices/D_extended_literature_review.tex` is 38 lines of prose that exists only as a build product, which this face's Law forbids and the repository already contains; `appendices/B_robustness_tables.tex` is the same at 7 lines. Three answers: write the missing S page and regenerate, delete the file as abandoned, or declare that `appendices/` may carry hand-authored material and give up the direction for that folder. Nothing on disk says which, and both files are uncompiled, so the choice is free today and irreversible once somebody wants the text back.
 - [ ] 🔍 Assert every delivered `.tex` resolves to an S page
-      Measured 260727: the MISQ master `\input`s 9 section wrappers and 6 appendix wrappers and all 15 pair to a page in `0-lifecycle/4-main/` or `5-appendix/`; the two `.tex` files it does not `\input` are exactly the two with no page. `../../paper/3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh` already walks both trees (section G, and the `\input`-count pass at line 199), so this is one added assertion to an existing script, and it fails today.
+      Measured 260727: the MISQ master `\input`s 9 section wrappers and 6 appendix wrappers and all 15 pair to a page in `0-lifecycle/4-main/` or `5-appendix/`; the two `.tex` files it does not `\input` are exactly the two with no page. `../../paper/container/haipipe-paper-conform/scripts/check_structure.sh` already walks both trees (section G, and the `\input`-count pass at line 199), so this is one added assertion to an existing script, and it fails today.
 - [ ] 🔧 Give pitch and narrative a field for their `.tex`
-      `0-lifecycle/2-venue/2b-pitch.tex` (173 lines, standalone `\documentclass`) and `3-narrative.tex` (211 lines) sit beside `S-Venue-1-pitch.md` and `S-Venue-2-narrative.md`, both written 2026-07-18 against pages written 2026-07-26. Neither `stages/2b-pitch/stage.md` nor `stages/3-narrative/stage.md` declares any output field, so 384 lines of `.tex` are governed by nothing.
+      `0-lifecycle/2-venue/2b-pitch.tex` (173 lines, standalone `\documentclass`) and `3-narrative.tex` (211 lines) sit beside `S-Venue-1-pitch.md` and `S-Venue-2-narrative.md`, both written 2026-07-18 against pages written 2026-07-26. Neither `../../paper/S01-opening/pitch/stage.md` nor `../../paper/S02-work/narrative/stage.md` declares any output field, so 384 lines of `.tex` are governed by nothing.
 - [ ] 📐 Declare the direction under ONE field name
-      `output:` at `5-section-edit/stage.md:53`, `generated:` and `compiled:` at `4-display/stage.md:36-37`. One law, three names, listed in `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` as unrelated stage-specific fields. Pick one and record it there, or the next stage that generates something invents a fourth.
+      `output:` at `5-section-edit/stage.md:53`, `generated:` and `compiled:` at `4-display/stage.md:36-37`. One law, three names, listed in `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` as unrelated stage-specific fields. Pick one and record it there, or the next stage that generates something invents a fourth.
 
 ## States
 The rule holds and is stated with its reason, on two contracts under three field names. It is unexecuted, because nothing performs the step; that is `QBe3 §3`'s to close and is not restated here.
@@ -150,15 +150,15 @@ What changed on 260727 is that "respected in practice on the MISQ paper" turned 
 The two stages the rule does not reach are pitch and narrative, each with an undeclared standalone `.tex` beside its page. Display is covered and says so itself.
 
 ## Files
-- `stages/5-section-edit/stage.md`
+- `../../paper/S06-main/section-edit/stage.md`
   Line 53 carries the law as `output:`, with the reason in the comment beside it.
-- `stages/4-display/stage.md`
+- `../../paper/S05-display/display/stage.md`
   Lines 36 and 37, `generated:` and `compiled:`. The second stage that declares the direction, under two other names.
-- `stages/2b-pitch/stage.md` · `stages/3-narrative/stage.md`
+- `../../paper/S01-opening/pitch/stage.md` · `../../paper/S02-work/narrative/stage.md`
   The two contracts with no output field, whose pages each have a standalone `.tex` beside them.
 - `appendices/D_extended_literature_review.tex` · `appendices/B_robustness_tables.tex`
   The two counterexamples: prose in a `.tex` with no S page, and neither one `\input` by the master.
-- `../../paper/3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh`
+- `../../paper/container/haipipe-paper-conform/scripts/check_structure.sh`
   Already walks `sections/`, `appendices/` and `0-lifecycle/`. Where the pairing assertion goes.
 
 ## Law
@@ -179,6 +179,6 @@ The two stages the rule does not reach are pitch and narrative, each with an und
 
 260726 · The move to `QB9a`/`QB9b` completed on this side. The pointers had been added while the four originals stayed open, so each item sat in two queues at once; the originals are gone and the pointers remain. What is left here is the stage-level half: the DIRECTION law, which governs all eight stages, and the one gap it does not cover, the two stages whose product is not prose. The mechanism (extraction, the missing generator, the round trip, the external edit) belongs to the sentence layer and is no longer restated here.
 
-260727 · Measured against disk, and two claims moved. First, the direction is declared on TWO stages under THREE field names: `output:` at `5-section-edit/stage.md:53`, and `generated:` plus `compiled:` at `4-display/stage.md:36-37`, whose comment already reads "rebuilt wholesale by sync; hand-editing is a defect". So `output:` is the only `output:` and not the only declaration, and display is the covered stage rather than an uncovered one; its computed asset is `QD6`'s. What is uncovered is pitch AND narrative: `0-lifecycle/2-venue/2b-pitch.tex` (173 lines) and `3-narrative.tex` (211 lines) are standalone documents beside their S pages, written 2026-07-18 against pages written 2026-07-26, and no field on either contract names them. Second, and this is the finding, the Law is already broken on disk. The MISQ master `\input`s 9 section wrappers and 6 appendix wrappers and all 15 pair to an S page; the two `.tex` files it does not `\input` are exactly the two with no page, and `appendices/D_extended_literature_review.tex` is 38 lines of authored prose whose heading and sentences appear nowhere in `0-lifecycle/`. That turned an abstract "restate the rule" item into a ruling over named files, and it makes the pairing assertion the cheapest useful thing on this face: `../../paper/3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh` already walks both trees and would fail today.
+260727 · Measured against disk, and two claims moved. First, the direction is declared on TWO stages under THREE field names: `output:` at `5-section-edit/stage.md:53`, and `generated:` plus `compiled:` at `4-display/stage.md:36-37`, whose comment already reads "rebuilt wholesale by sync; hand-editing is a defect". So `output:` is the only `output:` and not the only declaration, and display is the covered stage rather than an uncovered one; its computed asset is `QD6`'s. What is uncovered is pitch AND narrative: `0-lifecycle/2-venue/2b-pitch.tex` (173 lines) and `3-narrative.tex` (211 lines) are standalone documents beside their S pages, written 2026-07-18 against pages written 2026-07-26, and no field on either contract names them. Second, and this is the finding, the Law is already broken on disk. The MISQ master `\input`s 9 section wrappers and 6 appendix wrappers and all 15 pair to an S page; the two `.tex` files it does not `\input` are exactly the two with no page, and `appendices/D_extended_literature_review.tex` is 38 lines of authored prose whose heading and sentences appear nowhere in `0-lifecycle/`. That turned an abstract "restate the rule" item into a ruling over named files, and it makes the pairing assertion the cheapest useful thing on this face: `../../paper/container/haipipe-paper-conform/scripts/check_structure.sh` already walks both trees and would fail today.
 
 260727 · Cut what `QB9a` and `QB9b` own. The missing-generator block left the Diagram and `## Where we are`, which now point at `QB9a`; the coauthor-edits-the-output paragraph left `## Content`, which now points at `QB9b` with `QB9b`'s own reason; and the Law's extraction sentence is kept as a constraint the direction imposes but hands the ruling to `QB9a`. Deleted the display half of "restate the rule for non-prose artifacts": `4-display` already declares `generated:` and `compiled:`, so that half was asking for something the contract does. What was left of the item is the pitch-and-narrative gap, which is now its own item with line counts and dates.
