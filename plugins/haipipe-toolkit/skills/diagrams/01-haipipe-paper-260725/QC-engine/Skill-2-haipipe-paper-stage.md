@@ -99,7 +99,7 @@ no longer exist — every stage comes through here, stage key first.
 
 - 1 · Procedure
       **Step 1 — resolve the stage.**
-      Read `stages/index.yml`. This is the ONLY file that enumerates all stages, and it is deliberately
+      Read `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`. This is the ONLY file that enumerates all stages, and it is deliberately
       small. Match `$1` against each row's `key`; if `$1` is not a key, match the user's phrasing against
       `triggers`. Ambiguous or absent → list the keys and ask; never guess a stage.
       **Step 2 — load exactly ONE stage.**
@@ -158,7 +158,7 @@ no longer exist — every stage comes through here, stage key first.
       ```
       Board tooling owns the filename and resolves it from that identity. These fields do not change
       stage execution order and do not replace `artifact:`. The actual run still follows
-      `stages/index.yml`, `upstream`, and `downstream`; for example Narrative is followed by the
+      `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`, `upstream`, and `downstream`; for example Narrative is followed by the
       independent Display family before manuscript sections consume its assets. After any phase changes
       the artifact, sync the resolved S face in the same turn: update its page-level
       `state:`, `## Aims`, `## States`, and `## Log`, then rebuild the board. When the S face embeds the
@@ -267,7 +267,7 @@ no longer exist — every stage comes through here, stage key first.
                                      from the venue packs. Never assume a file exists because
                                      another stage has one.
       ```
-      Adding a stage = one folder + one row in `index.yml`. No new skill, no version bump, no
+      Adding a stage = one folder + one row in `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`. No new skill, no version bump, no
       `description` edit.
 
 - 4 · Status — all 8 stages live, Board-first creation ready
@@ -276,8 +276,8 @@ no longer exist — every stage comes through here, stage key first.
       ```
       The 8 legacy stage skills are GONE — unregistered and retired to `../_old/`, which is treated as
       DELETED, not as a rollback. Everything a live path needs was salvaged out of it first:
-      every `*-template.md`, `pitch-readability.md`, `figure-logic.md`, `CHECKLIST.md`,
-      the shared `display-unit-output-contract.md`.
+      every `*-template.md`, `pitch-readability.md`, `../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/figure-logic.md`, `CHECKLIST.md`,
+      the shared `../../display/ref/display-unit-output-contract.md`.
       Nothing under `../_old/` may be referenced by a live file.
       Wired to this skill, all verified 2026-07-20:
       ```text
@@ -326,7 +326,7 @@ stages/section-kinds.yml            90 ln
 
 ## Aims
 - [x] 📜 Make the contract the source of stage behavior
-      The stage key is resolved in `index.yml`; the executor reads only that
+      The stage key is resolved in `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`; the executor reads only that
       stage's `stage.md`, never all eight contracts and never an invented phase.
 - [x] 🧩 Make S-page identity explicit
       `board_family` plus `board_unit` identifies the Board page.  Board owns
@@ -361,7 +361,7 @@ Converted from the skill's own `CHANGELOG.md`: 16 releases.
         records (`P<n>`) with a Done-when condition, while retaining old headings as
         read-only parser aliases.
       - Updates `create-page.py` to replace the canonical Board shell sections and
-        emit one matching State row for each generated Aim; `section-stats.py` now
+        emit one matching State row for each generated Aim; `../../paper/1-lifecycle/haipipe-paper-stage/section-stats.py` now
         stops Content at either canonical headings or legacy aliases.
 260801 · `0.9.0` · Stage work uses Aims and State
       - Replaced active `Items to Finish` and `Where we are` instructions with
@@ -404,7 +404,7 @@ Converted from the skill's own `CHANGELOG.md`: 16 releases.
         an id, so a shared id let a DEFERRED question inherit an ANSWERED one's state. On the MISQ
         paper `Q-Section-1` named three different questions on three pages, and nine chips read
         `ok`/`ready` against pages whose own records read DEFERRED or no-live-probe.
-      - `template.md` and `TEMPLATES.md` updated; `TEMPLATES.md`'s "section-edit id scoping" open
+      - `template.md` and `../../paper/1-lifecycle/TEMPLATES.md` updated; `../../paper/1-lifecycle/TEMPLATES.md`'s "section-edit id scoping" open
         question is closed.
 260727 · `0.8.4` · Display Intake and wrapper handoff
       - The Display-stage template now makes the Paper-owned `### Wrapper` explicit: literal caption, stable label, and placement.
@@ -451,12 +451,12 @@ Converted from the skill's own `CHANGELOG.md`: 16 releases.
       - **`handoff:` rewritten on all six gated contracts.** Was `update STATUS.md (current_layer, maturity: X)`. Now `append the gate row to this stage's S page ## Log`. The Gate Ledger was the one part of `STATUS.md` that is HISTORY and cannot be derived from disk, so it needed a home rather than a deletion; it now sits on the page whose gate it was, where a reader is already standing.
       - **`0-seed`'s loopback warning dissolved rather than reworded.** It spent four lines protecting a stored `current_layer` from being demoted by a re-run. With no stored frontier there is nothing to demote: a loopback records its gate and changes nothing else.
       - **The venue pin moved.** `2a-venue`'s `pins: STATUS.md` is now `pins: 0-lifecycle/2-venue/S-Venue-0-venue.md`, into that page's own frontmatter. One page owns the venue contract; a second copy could only disagree with it.
-      - **`stages/CONTRACT.md` gained two sections**: the paper-folder paths a contract may name (and the four it must never name), and why `STATUS.md` is retired with where each of its four parts went.
-      - Verified: `check-contracts.py` `form ok` across all eight, and every `artifact:` path resolves on `Paper-Personality2Opioid-MISQ2026` except the two already known (`4-display`, blocked on QB2; `5-section-edit`, which is per-unit by design).
+      - **`../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` gained two sections**: the paper-folder paths a contract may name (and the four it must never name), and why `STATUS.md` is retired with where each of its four parts went.
+      - Verified: `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` `form ok` across all eight, and every `artifact:` path resolves on `Paper-Personality2Opioid-MISQ2026` except the two already known (`4-display`, blocked on QB2; `5-section-edit`, which is per-unit by design).
       - Pre-existing and NOT introduced here: `2a-venue/stage.md`'s frontmatter does not parse under a strict YAML loader. It fails identically at `HEAD`. Untouched.
 260725 · `0.6.0`
       **Paper Stage now has one Board-first page-creation path.**
-      - `create-page.py` is the public creator: it resolves one stage through `index.yml`, calls the
+      - `create-page.py` is the public creator: it resolves one stage through `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`, calls the
         Board's `stage.py new` primitive, and composes the selected stage template into Content jobs.
       - Stage contracts identify pages with `board_family` + `board_unit`; Board tooling owns literal
         filenames.
@@ -474,7 +474,7 @@ Converted from the skill's own `CHANGELOG.md`: 16 releases.
 260725 · `0.4.1`
       **Stage contracts now map explicitly onto lifecycle-board S faces.**
       - Every stage declared `board_family`, `board_unit`, and (at that version) `board_face`.
-      - The mapping is informational: stage execution still follows `index.yml`, `upstream`, and
+      - The mapping is informational: stage execution still follows `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`, `upstream`, and
         `downstream`, so a stable board family does not falsely redefine execution order.
       - After a phase changes its artifact, the mapped S face receives same-turn state, finish-item,
         and current-status synchronization. Embedded Content is not copied.

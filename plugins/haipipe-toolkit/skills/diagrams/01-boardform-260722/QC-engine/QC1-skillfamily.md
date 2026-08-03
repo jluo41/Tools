@@ -46,7 +46,7 @@ The roster took its shape on 260731: one door, the board+group altitude, two loa
 - [ ] ⚠️ resolve the overlap: does the subskill roster live here (QC1b) or in the Skill-* pages?
 
 ## States
-The roster is ruled and five of its six units ship (`haipipe-board` 0.104.0, `-index` 0.2.1, `-page` 0.6.0, `-sentence` 0.1.1, `-routing` 0.6.0; `-digest` is named and unbuilt); SKILL.md's cut line is still described more by feel than by rule; and the roster page overlaps the Skill-* roster it points at, which is the open item.
+The roster is ruled and five of its six units ship (`haipipe-board` 0.104.0, `-index` 0.2.1, `-page` 0.6.0, `-sentence` 0.1.1, `-routing` 0.6.0; `-digest` is named and unbuilt); SKILL.md's cut line is still described more by feel than by rule; and the skill page overlaps the Skill-* roster it points at, which is the open item.
 
 ### Decision Now
 - [ ] ⚠️ JL rules whether QC1b (the roster argument) and the Skill-* pages (the roster itself) should stay separate or merge

@@ -9,9 +9,9 @@ Not which stages this skill happens to have, and not why the lifecycle is cut wh
 
 A stage is not an object anywhere in the code. Nothing constructs one. A router reads a small index, loads exactly one file, and acts on its fields, so a stage IS its `stage.md` frontmatter: twenty-four required fields in seven blocks, plus a conditional set. That is worth saying plainly because it decides what a ruling on this board means. Settling a grain question is a change to `runs:`. Settling a spending ceiling is a change to `probe_depth:`. A face here that cannot name the field it would change has not finished its work.
 
-Making one work is therefore a concrete question about those fields, and specifically about who reads each one. There are exactly three readers. The ROUTER picks which stage is meant. The CREATOR makes its page. The EXECUTOR does the work. Only the first two are programs: `stages/index.yml` gives the router five fields, and `create-page.py` reads eleven contract fields, of which eight belong to the required twenty-four. The other sixteen required fields are read by an agent, as prose.
+Making one work is therefore a concrete question about those fields, and specifically about who reads each one. There are exactly three readers. The ROUTER picks which stage is meant. The CREATOR makes its page. The EXECUTOR does the work. Only the first two are programs: `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` gives the router five fields, and `create-page.py` reads eleven contract fields, of which eight belong to the required twenty-four. The other sixteen required fields are read by an agent, as prose.
 
-That asymmetry is the whole of this face, because it is where a stage half-works. A field a program reads fails loudly, at run time, in front of somebody. A field an agent reads fails silently, and the symptom arrives later as prose nobody can trace back. Every defect measured across the live contracts sits in the silent group and not one sits in the loud one: a `runs:` that does not match the shape of the work, twenty-two declared paths resolving to nothing, five templates naming a retired filename, ten done-criteria with no machine check, a stage-specific field census in `CONTRACT.md` that no longer reproduces.
+That asymmetry is the whole of this face, because it is where a stage half-works. A field a program reads fails loudly, at run time, in front of somebody. A field an agent reads fails silently, and the symptom arrives later as prose nobody can trace back. Every defect measured across the live contracts sits in the silent group and not one sits in the loud one: a `runs:` that does not match the shape of the work, twenty-two declared paths resolving to nothing, five templates naming a retired filename, ten done-criteria with no machine check, a stage-specific field census in `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` that no longer reproduces.
 
 This is the first face of the group because every other one rules a part of the object drawn here. `QC3b` can only say which page a stage writes once it is settled that the BOARD block is what addresses it. `QC4` can only ask whether a phase may be skipped once `phases:` is known to be a list rather than a type. A reader who cannot see the stage whole cannot tell which face they want.
 
@@ -176,7 +176,7 @@ Scope: This page covers What a stage is made of, which of the three readers cons
 
    ── AND WORD? IT DOES NOT EXIST ──────────────────────────────────
       no pandoc, no python-docx, no converter in any `.py` or `.sh`
-      in the whole family. Word is a PROPOSED projection on `QB11b`, and the many-consumer rule is `QC3@display`
+      in the whole family. Word is a PROPOSED projection on `QBe3 §4`, and the many-consumer rule is `QC3@display`
       and nothing more. Its adapter diagram is a design, not a
       shipped path, and the same is true of HTML except for the
       board's own rendering.
@@ -239,7 +239,7 @@ Scope: This page covers What a stage is made of, which of the three readers cons
 
 ## Content
 ### A stage is its frontmatter
-Nothing in the code constructs a stage. `stages/index.yml` is read on every invocation, including ones that turn out to be about something else, so it holds only what is needed to RESOLVE which stage is meant. The chosen `stage.md` is loaded only then, and it holds everything else. That difference in read rate is the entire constraint on what may live where, and it is why the index has stayed readable while the contracts grew to twenty-four required fields and forty-three stage-specific ones.
+Nothing in the code constructs a stage. `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` is read on every invocation, including ones that turn out to be about something else, so it holds only what is needed to RESOLVE which stage is meant. The chosen `stage.md` is loaded only then, and it holds everything else. That difference in read rate is the entire constraint on what may live where, and it is why the index has stayed readable while the contracts grew to twenty-four required fields and forty-three stage-specific ones.
 
 The practical consequence is that this group argues about fields rather than about ideas. Every face below names the block it would change, and a face that cannot has not finished.
 
@@ -249,7 +249,7 @@ The practical consequence is that this group argues about fields rather than abo
 `③` is an agent reading prose and it has no refusal at all. A wrong `probe_depth` does not raise; it changes what gets commissioned. A wrong `runs` does not raise; it produces a gate nobody can answer. A `done_criteria` list that cannot be checked does not raise; it produces a gate somebody passes anyway. So sixteen twenty-fourths of every contract is enforced by attention, and attention is exactly what a lifecycle of unattended phases is trying not to spend.
 
 ### What "make one stage work" means
-It means closing the gap for the silent sixteen, and there are only three ways to close it. Move the field to a program, which is what `check-contracts.py` did for every declared path. Move it to a human at a moment they are already looking, which is what `done_criteria` does at CHECK. Or delete it, which is what happened to `log:` and `inputs:`.
+It means closing the gap for the silent sixteen, and there are only three ways to close it. Move the field to a program, which is what `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` did for every declared path. Move it to a human at a moment they are already looking, which is what `done_criteria` does at CHECK. Or delete it, which is what happened to `log:` and `inputs:`.
 
 A field that is none of those three is decoration that looks like a contract, and decoration is worse than absence, because a reader trusts it.
 
@@ -274,11 +274,11 @@ So the GRAPH block is orientation for a person, sitting in the same frontmatter,
 
 ## Aims
 - [x] 📐 State the fields by measurement rather than by inference
-      `stages/CONTRACT.md` names 24 required fields in 7 blocks, and all eight `stage.md` files carry all 24, checked field by field. `check-contracts.py`'s `REQUIRED` list is the same 24, so the document and the checker cannot disagree.
+      `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` names 24 required fields in 7 blocks, and all eight `stage.md` files carry all 24, checked field by field. `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py`'s `REQUIRED` list is the same 24, so the document and the checker cannot disagree.
 - [x] 📐 Declaring a stage costs four files and no more
-      One `stages/index.yml` row, one `stages/<order>-<key>/` folder, its `stage.md`, its `template.md`. No new skill, no version bump, no router edit.
+      One `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` row, one `stages/<order>-<key>/` folder, its `stage.md`, its `template.md`. No new skill, no version bump, no router edit.
 - [x] 🔧 Move every declared PATH into a program
-      `check-contracts.py` resolves them all; 22 of 31 were dead the first time it ran. The eight contracts declare 28 such paths today, and exactly one carries `blocked_on:`, at `4-display/stage.md:30`.
+      `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` resolves them all; 22 of 31 were dead the first time it ran. The eight contracts declare 28 such paths today, and exactly one carries `blocked_on:`, at `4-display/stage.md:30`.
 - [x] 🔍 Classify every face in this group by reader
       Done 260726 across `QC3b`-`QC4d`. Four shapes: loud whole-block (`QC3b` only), split path-loud content-silent (`QC3a`, `QC3d`), silent (`QC3b`, `QC4`, `QC4a`, `QC4b`, `QC4d`), and no field at all (`QC3c`, `QC4c`).
 - [x] 🔧 Correct the reader counts this face was built on
@@ -286,17 +286,17 @@ So the GRAPH block is orientation for a person, sitting in the same frontmatter,
 - [~] ↪ MOVED to `QC3c` and `QC4c` · the field a field-less behaviour needs
       The finding stays here, because it came out of laying the ten faces side by side: a behaviour with no field has nowhere to be declared. The ruling is theirs. Neither the re-run nor REVISE's why-comment rule appears among the 71 distinct top-level frontmatter keys the eight contracts use, and `QC3c` already offers Ⓐ-Ⓓ for the first while `QC4c` asks whether `place`-first belongs in the contract at all.
 - [ ] 🧠 Give every silent required field a named reader
-      The 16 are `order phases gates probe_depth runs needs_paper sections formatting probes q_anchor upstream downstream handoff done_criteria closed_when exit_when`. Each must end up checked by a program, read by a human at a named moment, or deleted. Two live ways to get there: rule all 16 one at a time, or rule the three GRAPH fields below and declare the remaining 13 craft prose by default. `order:` is the free one: it is copied from the `stages/index.yml` row and nothing reads it out of `stage.md`.
+      The 16 are `order phases gates probe_depth runs needs_paper sections formatting probes q_anchor upstream downstream handoff done_criteria closed_when exit_when`. Each must end up checked by a program, read by a human at a named moment, or deleted. Two live ways to get there: rule all 16 one at a time, or rule the three GRAPH fields below and declare the remaining 13 craft prose by default. `order:` is the free one: it is copied from the `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` row and nothing reads it out of `stage.md`.
 - [ ] 📐 Mark the advisory fields advisory in the file itself
-      `upstream`, `downstream` and `handoff` do not bind, `stages/CONTRACT.md` already says so in prose, and all eight contracts still carry them in the same syntax as the fields that decide behaviour. The decision is made, so write it 24 times: one inline comment beside each of the three fields in each of the eight `stage.md` files.
-- [ ] 🔧 Recount the stage-specific field census in `CONTRACT.md`
+      `upstream`, `downstream` and `handoff` do not bind, `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` already says so in prose, and all eight contracts still carry them in the same syntax as the fields that decide behaviour. The decision is made, so write it 24 times: one inline comment beside each of the three fields in each of the eight `stage.md` files.
+- [ ] 🔧 Recount the stage-specific field census in `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md`
       It says "Forty-three such fields are in use today across the eight contracts". Counting top-level frontmatter keys gives 71 distinct, of which 36 are neither in the required 24 nor in the conditional block. Either state the counting rule or fix the number, because the measurement argument this whole face rests on currently fails to reproduce on its own headline figure.
 - [ ] 🔍 Give the four cheap assertions a host script
-      `QC3b`, `QC4`, `QC4a` and `QC4c` each own one unwritten one-line assertion. What none of them can own is where it RUNS: `check-contracts.py` reads contract form and declared paths only, and the whole paper family holds 2 `.py` and 5 `.sh` files, none of which reads an S page's `## Log` or greps a placeholder. Name the host before four faces each invent their own. Note where the evidence actually is: `log:` and its `_LOG_<stage>.md` were retired 2026-07-26 and no live paper ever carried one, so a phase entry lands in the owning S page's `## Log` per `ref/08-stage-gate.md:86-93`. Where CONTRACT-FORM checking lives is `QF2`'s open ruling, not this one.
+      `QC3b`, `QC4`, `QC4a` and `QC4c` each own one unwritten one-line assertion. What none of them can own is where it RUNS: `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` reads contract form and declared paths only, and the whole paper family holds 2 `.py` and 5 `.sh` files, none of which reads an S page's `## Log` or greps a placeholder. Name the host before four faces each invent their own. Note where the evidence actually is: `log:` and its `_LOG_<stage>.md` were retired 2026-07-26 and no live paper ever carried one, so a phase entry lands in the owning S page's `## Log` per `ref/08-stage-gate.md:86-93`. Where CONTRACT-FORM checking lives is `QF2`'s open ruling, not this one.
 - [ ] 📐 Put the declaration procedure where an author looks
-      Four files, seven blocks, three readers, in one place. Today it is `SKILL.md:230`, one line that names a folder and an index row and never mentions `stage.md` or `template.md`, plus a field list in `stages/CONTRACT.md` that never states the procedure.
+      Four files, seven blocks, three readers, in one place. Today it is `SKILL.md:230`, one line that names a folder and an index row and never mentions `stage.md` or `template.md`, plus a field list in `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` that never states the procedure.
 - [ ] 🧪 Write a ninth contract from the documentation alone
-      Author `stages/9-<key>/stage.md` and its `template.md` from `stages/CONTRACT.md` and `SKILL.md:230` only, run `check-contracts.py`, and count what it rejects. This tests the CONTRACT; `QF3` tests running an existing stage and `QC3a` tests the template alone, so the three do not overlap.
+      Author `stages/9-<key>/stage.md` and its `template.md` from `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` and `SKILL.md:230` only, run `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py`, and count what it rejects. This tests the CONTRACT; `QF3` tests running an existing stage and `QC3a` tests the template alone, so the three do not overlap.
 
 ## States
 The object is measured rather than inferred, and the loud half is in good shape. The router and the creator both refuse malformed contracts, and every declared path now either resolves or carries `blocked_on:` with a reason.
@@ -304,17 +304,17 @@ The object is measured rather than inferred, and the loud half is in good shape.
 The silent half is the work, and it is what the rest of this group is for. Seventeen of twenty-four required fields are read by an agent as prose, every measured defect sits among them, and two of the three blocks involved will never become programs. So the remaining question is not how to check more; it is how to stop an advisory field from looking binding.
 
 ## Files
-- `stages/CONTRACT.md`
+- `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md`
   The required core, measured across all eight, plus the conditional and retired fields.
-- `stages/index.yml`
+- `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`
   Reader `①`. Its header states why it must stay small: it is read on every invocation.
-- `haipipe-paper-stage/create-page.py`
+- `create-page.py`
   Reader `②`. Eleven contract fields over ten `values.get()` call sites, and seventeen `raise SystemExit` refusals.
-- `haipipe-paper-stage/check-contracts.py`
+- `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py`
   The one thing that has moved a field out of the silent group.
 - `haipipe-paper-stage/SKILL.md`
   Line 230 is the entire current declaration procedure, and it names one folder and one index row rather than four files.
-- `stages/section-kinds.yml`
+- `../../paper/1-lifecycle/haipipe-paper-stage/stages/section-kinds.yml`
   The closed set of section kinds, measured per outlet; what `section_kind:` may be.
 - `venue/`
   The second template source: 504 files, `playbook-<family>/<VENUE>/<VENUE>-<kind>/template.md`. A pinned submodule, consulted and never in the chain of command.
@@ -324,10 +324,10 @@ The silent half is the work, and it is what the rest of this group is for. Seven
 ## Law
 
 - A stage is not an object. It IS its `stage.md` frontmatter: twenty-four required fields in seven blocks, plus a conditional set. A ruling on this board is a change to a named field, and a face that cannot name the field it would change has not finished its work.
-- Every field answers to a named reader. The ROUTER reads `stages/index.yml` on every invocation, so that file holds only what is needed to CHOOSE. The CREATOR reads eleven contract fields to make the page, eight of them from the required twenty-four. The EXECUTOR reads the remaining sixteen, as prose, and cannot refuse anything.
+- Every field answers to a named reader. The ROUTER reads `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` on every invocation, so that file holds only what is needed to CHOOSE. The CREATOR reads eleven contract fields to make the page, eight of them from the required twenty-four. The EXECUTOR reads the remaining sixteen, as prose, and cannot refuse anything.
 - A field must be checked by a program, read by a human at a named moment, or deleted. A field that is none of the three is decoration that looks like a contract, and a reader will trust it.
 - `upstream`, `downstream` and `handoff` are craft orientation and do not bind. The authoritative dependency is the S page's own `requires:`, because it carries the upstream page's live gate state and cannot go stale.
-- Declaring a stage costs four files and nothing else: one row in `stages/index.yml`, one folder at `stages/<order>-<key>/`, its `stage.md`, its `template.md`. No new skill, no version bump, no router edit.
+- Declaring a stage costs four files and nothing else: one row in `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`, one folder at `stages/<order>-<key>/`, its `stage.md`, its `template.md`. No new skill, no version bump, no router edit.
 - A declared path that cannot resolve carries `blocked_on: <Q page>` with the reason. A dangling path with no `blocked_on` is a defect, and nothing may report it as green.
 
 ## Discussion
@@ -345,7 +345,7 @@ The silent half is the work, and it is what the rest of this group is for. Seven
 
 260726 · Move 1 of the QB plan: the reader model applied to all ten sibling faces, each now declaring which reader consumes its block, whether it fails loud or silent, and what would make it loud. Laying the ten side by side produced a shape nobody had seen: two faces, `QC3c` and `QC4c`, have NO contract field at all, and those are exactly the two whose rules are scattered across six files and three worker contracts. A behaviour with no field has nowhere to be declared. It also surfaced four assertions that are cheap today and unwritten.
 
-260727 · A verification pass corrected the numbers this face is built on. `create-page.py` reads eleven contract fields over ten `values.get()` call sites, not seven: the seven named here missed `q_id_pattern`, which is in the required twenty-four, and `board_slug`, `venue_contract` and `fallback_template`, which are not. Eight of the twenty-four are therefore read by a program and sixteen by an agent, so the Question, the reader table, the Content and the Law all moved from 7/17 to 8/16. Three further repairs. `gate_mode` left the defect list, because it is not a field anywhere in `skills/paper/` or `skills/board/` and its two supposed homes now say the same thing. The declaration procedure is `SKILL.md:230`, not `:193`. And the defect that replaced `gate_mode` is a real one found while counting: `stages/CONTRACT.md` claims forty-three stage-specific fields where the eight contracts carry thirty-six. The Items queue was then regrounded on counts read off disk (28 declared paths with one `blocked_on:`, 71 distinct top-level frontmatter keys, 8 `stage.md` files, 2 `.py` and 5 `.sh` files in the family), the aggregate assertion item was narrowed to the one thing no sibling can own, which is where those assertions would RUN, and the field-for-a-field-less-behaviour item became a pointer to `QC3c` and `QC4c`, which already carry that ruling with its options.
+260727 · A verification pass corrected the numbers this face is built on. `create-page.py` reads eleven contract fields over ten `values.get()` call sites, not seven: the seven named here missed `q_id_pattern`, which is in the required twenty-four, and `board_slug`, `venue_contract` and `fallback_template`, which are not. Eight of the twenty-four are therefore read by a program and sixteen by an agent, so the Question, the reader table, the Content and the Law all moved from 7/17 to 8/16. Three further repairs. `gate_mode` left the defect list, because it is not a field anywhere in `skills/paper/` or `skills/board/` and its two supposed homes now say the same thing. The declaration procedure is `SKILL.md:230`, not `:193`. And the defect that replaced `gate_mode` is a real one found while counting: `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` claims forty-three stage-specific fields where the eight contracts carry thirty-six. The Items queue was then regrounded on counts read off disk (28 declared paths with one `blocked_on:`, 71 distinct top-level frontmatter keys, 8 `stage.md` files, 2 `.py` and 5 `.sh` files in the family), the aggregate assertion item was narrowed to the one thing no sibling can own, which is where those assertions would RUN, and the field-for-a-field-less-behaviour item became a pointer to `QC3c` and `QC4c`, which already carry that ruling with its options.
 
 260727 · One more stale target, caught from the main session and verified. This face said the cheap `QC4` assertion would count `[PHASE]` lines in `_LOG`. There is no `_LOG`. The `log:` field was retired 2026-07-26 precisely because it declared `_LOG_<stage>.md` on all eight stages and no live paper ever carried one, per `stages/CONTRACT.md:114` and `ref/04-lifecycle-map.md:107`, and the phase entry has always landed in the owning S page's `## Log`, per `ref/08-stage-gate.md:86-93`. Both mentions on this face now name the S page. This one is worth recording rather than quietly fixing, because it is the exact failure the Law describes from the other direction: an assertion written against the retired wording would have grepped a file that does not exist, reported nothing, and passed. `QC4` was corrected in the same pass; `QC4b` still names `_LOG` as the destination in two prose lines and is not this face's to edit.
 

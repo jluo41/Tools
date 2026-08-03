@@ -314,7 +314,15 @@ class WriteMixin:
         hit, err = self._sentence_line(lines, sentence)
         if err:
             return None, err
-        rows = self._record_lines(f"> Comment {who} ", text, when)
+        # Carry the words the person actually selected (JL 260802). They are
+        # kept only when they really occur in the sentence, so a selection that
+        # crossed two lines records nothing rather than something wrong; the
+        # comment itself is never blocked by this, because a remark must land.
+        quote = " ".join((p.get("quote") or "").split())
+        head = f"> Comment {who} "
+        if quote and quote != sentence and quote in self._plain_sentence(lines[hit]):
+            head = f"> Comment {who} 「{quote}」: "
+        rows = self._record_lines(head, text, when)
         if not rows:
             return None, "评论是空的"
         at = self._apparatus_end(lines, hit)

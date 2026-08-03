@@ -461,7 +461,14 @@
 
   window.__boardTermOn = function () { return !!termOn; };
   window.__boardTermReopen = async function () {
-    if (!cq || termOn) return false;
+    /* RESTORE MUST NOT OVERRULE THE READER. `80-restore.js` calls this when the
+       saved drawer state says a terminal was open, which is right after a plain
+       reload and WRONG right after someone clicked 💬 GUI: the click set the
+       mode, the pane came up correctly in GUI, and then this reattached the
+       parked terminal a second later and put the strip back on >_ TUI. That is
+       the whole of "I click GUI and get TUI" (JL 260802), measured at +1.5s
+       correct and +2.5s flipped. The chosen mode is the authority. */
+    if (!cq || termOn || !tuiIsDefault()) return false;
     /* only reattach to a terminal that is genuinely still there; starting a new
        one on a reload would spawn a process nobody asked for */
     try {

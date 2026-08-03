@@ -11,7 +11,7 @@ The Board is the control plane and a coding session is an ephemeral worker, so e
 
 Four questions follow from that one stance: what the control plane is, what the queue is, where a finished item's result lives, and what the runner does when the Board hands it an item.
 
-Scope: This page covers The Board as control plane, the executable queue, where a completed item's handoff lives, and the page-first runner. Neighbouring pages cover Who may write which region is `QA8`; the collaboration as a whole is `QA4`. The live layer's mechanism, one session per question, the drawer, the terminal and in-page locking, is ruled on the tool's own board at `../01-boardform-260722/` (`QB13a`-`QB13c`, `QE4` THERE, not here).
+Scope: This page covers The Board as control plane, the executable queue, where a completed item's handoff lives, and the page-first runner. Neighbouring pages cover Who may write which region is `QA8`; the collaboration as a whole is `QA4`. The live layer's mechanism, one session per question, the drawer, the terminal and in-page locking, is ruled on the tool's own board at `../01-boardform-260722/` (`QBe2 §3`-`QBe2 §5`, `QE4` THERE, not here).
 
 ## Diagram
 ```
@@ -65,7 +65,7 @@ Scope: This page covers The Board as control plane, the executable queue, where 
 
  WHAT THIS FACE DOES NOT DECIDE
     one session per question · the drawer · the real CLI · locking
-    ⤷ all ruled on the BOARDFORM board at QB13a-QB13c and QE4.
+    ⤷ all ruled on the BOARDFORM board at QBe2 §3-QBe2 §5 and QE4.
 ```
 
 ## Content
@@ -219,7 +219,7 @@ Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Ever
 - `haipipe-paper-draft-display/SKILL.md`
   Still files Display request rows.
   The runner to narrow.
-- `stages/index.yml`
+- `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`
   The stage registry.
 - `stages/*/stage.md`
   The permitted worker routes and stop conditions.

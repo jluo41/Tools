@@ -1,4 +1,4 @@
-# haipipe-board-reviewer-agent · v0.5.0
+# haipipe-board-reviewer-agent · v0.6.0
 state: 🟡 in question · existence unruled since 260729, never yet dispatched
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -22,7 +22,7 @@ It runs `check.py --strict` and `--summary` itself, so the mechanical findings a
 Whether this unit stays at all is a decision row on `QC1b`, and this page's Aims carry what the unit still owes.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 54448f8dca49403c board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:tree:start 0cc451fad22069bb board/agents/haipipe-board-reviewer-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
@@ -40,6 +40,8 @@ WORKFLOW  one file, no write tools, and the reason it must be a stranger
         ├─▶ LOADS, never restates:
         │     haipipe-board/SKILL.md        actions, states, sync
         │     haipipe-board-page/SKILL.md   the base page contract
+        │     haipipe-board-page-for-skill/  the SKILL-PAGE variant, when the
+        │                                    page under review is Skill-/Agent-
         │     ref/writing-rules.md          the cold-read standard
         │     the target board.md           topic, groups, links, order
         │
@@ -61,13 +63,13 @@ WORKFLOW  one file, no write tools, and the reason it must be a stranger
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 54448f8dca49403c board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:body:start 0cc451fad22069bb board/agents/haipipe-board-reviewer-agent.md -->
 
-**haipipe-board-reviewer-agent** · `0.5.0` · last shipped 2026-08-01
+**haipipe-board-reviewer-agent** · `0.6.0` · last shipped 2026-08-01
 
 - folder   `board/agents/haipipe-board-reviewer-agent.md/`
 - tools    not declared
-- summary  Loads haipipe-board-page-for-skill whenever a page under review is a Skill or Agent roster page, whose Opening rule inverts the base's.
+- summary  Loads haipipe-board-page-for-skill whenever a page under review is a Skill or Agent skill page, whose Opening rule inverts the base's.
 
 ### haipipe-board-reviewer-agent.md
 
@@ -83,10 +85,10 @@ copy is exactly what goes a night out of date while the contract moves:
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
 2. `../haipipe-board-page/SKILL.md` for the base page and evaluation contract.
 3. `../haipipe-board-page-for-skill/SKILL.md` WHENEVER a page under review is a
-   `Skill-<n>` or `Agent-<n>` roster page. It is the variant those two kinds are
+   `Skill-<n>` or `Agent-<n>` skill page. It is the variant those two kinds are
    judged against, and its Opening rule is the OPPOSITE of the base's: a roster
    page mirrors a unit that ships elsewhere and decides nothing, so it must
-   INTRODUCE that unit and may never open with a question. Judging a roster page
+   INTRODUCE that unit and may never open with a question. Judging a skill page
    by the base alone marks correct prose as wrong and passes the form letter this
    variant exists to catch.
 4. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
@@ -149,7 +151,7 @@ copy is exactly what goes a night out of date while the contract moves:
          is never a pass, and every `MEETS` row names visible evidence.
       8. Compare each scoped page's page-level state, Aim list, current State rows,
          Log, links, and directly cited artifacts. Verify that Aim ids and State ids
-         form a one-to-one map, and distinguish a page gate from an individual Aim
+         form a one-to-one map ON A Q OR S PAGE, and distinguish a page gate from an individual Aim
          status. Report contradictions or claims made stale by the visible files. If
          the evidence is unavailable, say `not verifiable` instead of guessing.
       9. When `board.md` changed, verify that each page title distinguishes its
@@ -207,14 +209,14 @@ copy is exactly what goes a night out of date while the contract moves:
 ## Aims
 - [ ] 🤖 Whether "don't need to have the review agent" retired the unit is ruled
       It was said on 260729 while one dispatch was running, so it may mean that run or the whole agent.
-      Three written things go stale together if it meant the unit: `haipipe-board`'s writing rule 3, `QF1`'s acceptance half, and this page's own roster row.
+      Three written things go stale together if it meant the unit: `haipipe-board`'s writing rule 3, `QF1`'s acceptance half, and this page's own skill page.
       The row is on `QC1b`'s Decision Now and nothing here restates its options.
 - [ ] 🧑‍⚖️ It reads the eight roster Openings consecutively
       That pass is the reason 0.4.0 exists, it has never run on a real batch, and there is now a real batch waiting: eight roster Openings rewritten on 260802, seven of them the same afternoon.
       This is the one check `haipipe-board-page-for-skill` names as decisive and says the author cannot perform.
-- [x] 📚 It knows to reach past the base contract for a roster page
+- [x] 📚 It knows to reach past the base contract for a skill page
       0.5.0 added `haipipe-board-page-for-skill` as source 3, loaded whenever a page under review is a `Skill-<n>` or `Agent-<n>`.
-      Without it this agent would have judged roster pages by the base, whose Opening rule is the opposite one, marking correct prose wrong and passing the form letter the variant was written to catch.
+      Without it this agent would have judged skill and agent pages by the base, whose Opening rule is the opposite one, marking correct prose wrong and passing the form letter the variant was written to catch.
 - [x] 🛡 The read-only promise is enforced rather than trusted
       Its frontmatter grants `Read`, `Grep`, `Glob`, `Bash` and `Skill` and no write tool at all, so "never edits" is a property of the dispatch rather than an instruction it could disobey.
 - [x] 🔗 It loads the contracts instead of carrying a copy of them
@@ -227,7 +229,7 @@ What is unsettled is not its quality but its existence, and that has been unsett
 It reached 0.5.0 on 260802 and has still never been dispatched on this board, so every claim about what its review catches is a claim about a procedure rather than a result.
 
 - 260802 CC · 📚 It did not know about a contract that had shipped hours earlier
-  `haipipe-board-page-for-skill` shipped on 260802 and this agent's source list was not updated with it, so it would have judged the eight roster pages by the base contract whose Opening rule is the opposite one.
+  `haipipe-board-page-for-skill` shipped on 260802 and this agent's source list was not updated with it, so it would have judged the eight skill and agent pages by the base contract whose Opening rule is the opposite one.
   JL found it by asking whether these agents call any skills, which is the kind of question a source list never answers on its own.
   Fixed at 0.5.0. The general lesson is on the agents' changelog: shipping a variant is finished when every agent that loads the base knows when to reach past it, not when the variant exists.
 - 260802 CC · 🤖 The 260731 ruling argues against the retirement reading
@@ -239,11 +241,11 @@ It reached 0.5.0 on 260802 and has still never been dispatched on this board, so
   That is precisely the input 0.4.0's consecutive-Openings pass was added to judge, and the session limit is the only reason it has not run.
 
 ## Log
-260802 2100 · Synced to 0.5.0 and the authored half updated: the agent now loads `haipipe-board-page-for-skill` for a roster page, which it did not when that variant shipped hours earlier. Two Aims closed, one opened for the consecutive read of the eight roster Openings that is now waiting on it
+260802 2100 · Synced to 0.5.0 and the authored half updated: the agent now loads `haipipe-board-page-for-skill` for a skill page, which it did not when that variant shipped hours earlier. Two Aims closed, one opened for the consecutive read of the eight roster Openings that is now waiting on it
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the dispatch, the four loaded contracts, the three-step review and the empty write-tool list, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in question. Recorded that the 260731 skill-versus-agent ruling argues against the retirement reading of JL's 260729 remark
 260727 0017 · page generated from `board/agents/haipipe-board-reviewer-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 54448f8dca49403c board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:log:start 0cc451fad22069bb board/agents/haipipe-board-reviewer-agent.md -->
 
 Converted from the skill's own `CHANGELOG.md`: 9 releases.
 

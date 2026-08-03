@@ -1,5 +1,5 @@
 # Sub-skills: what else this family ships
-state: 🟡 PARTIAL · roster ruled 260731, index merged out and the roster variant added 260802
+state: 🟡 PARTIAL · roster ruled 260731, index merged out and the skill-page variant added 260802
 owner: JL
 method: name every candidate and apply one test to each, then let JL rule the set; a shipped skill follows settled decisions, never precedes them
 
@@ -100,7 +100,7 @@ The door test passes on evidence, and what failed instead was scope: the same th
 🚪 haipipe-board          the operating manual you invoke to run a board
 📄 haipipe-board-page     SPEC · what one page is · and a door for 2 verbs
 🪞 haipipe-board-page-for-skill
-                          SPEC · the VARIANT for the two roster kinds
+                          SPEC · the VARIANT for the two skill and agent page kinds
 ✒️ haipipe-board-sentence SPEC · what one sentence carries · and a door
                                  for 3 verbs since 260802 (comment · edit · card)
 🧭 haipipe-board-routing  VERB · every write onto a board, at BOTH altitudes
@@ -140,7 +140,7 @@ The split also gives every page and sentence rule a graduation target that is no
 Page and Sentence began as contracts that other skills consume, while Routing and Digest are actions that consume those contracts.
 The split has now been wrong twice, in opposite directions, which is worth more than either instance.
 Index was filed as a CONTRACT on 260730 and was five verbs with no contract in it, and on 260802 both Page and Sentence grew verbs of their own and became doors as well, so the column they sit in is half true.
-A unit is better described by what a reader DOES with it than by which column it was filed in, and every roster row now names both when both apply.
+A unit is better described by what a reader DOES with it than by which column it was filed in, and every skill page now names both when both apply.
 That is why the two halves are named differently and versioned separately: a contract changes when the form changes, and an action changes when the workflow changes.
 That misfiling is why the duplication in `2.4` went two days without being seen, because a unit shelved as a contract is not compared against an action's verb list.
 The second failure runs the other way and cost nothing yet: `haipipe-board-sentence` reached 0.3.0 on 260802 with three verbs of its own, and this roster still called it a pure SPEC until its mirror page was rewritten the same evening.
@@ -160,7 +160,7 @@ One unit owning both altitudes settles that by construction, which is why the ro
 ```
 🚪 haipipe-board                  0.112.0   the DOOR · 14 cli · 11 src · live/
 📄 haipipe-board-page             0.11.0    295 lines
-🪞 haipipe-board-page-for-skill   0.1.0     the roster-page VARIANT, new 260802
+🪞 haipipe-board-page-for-skill   0.1.0     the skill-page VARIANT, new 260802
 ✒️ haipipe-board-sentence         0.3.0     191 lines · ⚠️ changelog stops at 0.2.0
 🧭 haipipe-board-routing          0.9.0     both altitudes · src/lanes.py
 🤖 haipipe-board-reviewer-agent   0.4.0     read only, no write tools
@@ -306,7 +306,7 @@ Until that consumer exists, splitting it would add a door without adding a workf
 #### 8.1 · The reviewer agent's status
 
 JL said "don't need to have the review agent, stop it" on 260729, while one dispatch was running, so it may mean that run only or the unit.
-If it means the unit, three written things go stale at once: `SKILL.md` writing rule 3, which names the agent as the cold-read instrument, `QF1`'s acceptance half, where the agent is the fresh-context runner paired with `check.py`, and the `Agent-1` roster row.
+If it means the unit, three written things go stale at once: `SKILL.md` writing rule 3, which names the agent as the cold-read instrument, `QF1`'s acceptance half, where the agent is the fresh-context runner paired with `check.py`, and the `Agent-1` skill page.
 Nothing has been changed on that reading, and the 260731 ruling that separated agents from skills argues the other way: a skill is LOADED and an agent is DISPATCHED, which is a distinction that only matters if the agent exists.
 
 #### 8.2 · The caller's half of the creator agent
@@ -389,7 +389,7 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 
 - [ ] 🤖 Did "don't need to have the review agent" retire the unit, or only that run?
       📍 `Part` `### 8 · What is still open`, `8.1`
-      🔔 `Why now` It was said on 260729 while one dispatch was running, and three written things depend on the reading: `SKILL.md` writing rule 3, `QF1`'s acceptance half, and the `Agent-1` roster row.
+      🔔 `Why now` It was said on 260729 while one dispatch was running, and three written things depend on the reading: `SKILL.md` writing rule 3, `QF1`'s acceptance half, and the `Agent-1` skill page.
       ⭐ `A ·` that run only, so the unit stays. The 260731 ruling that a skill is LOADED and an agent is DISPATCHED gave agents their own page kind, which is a distinction that only matters if the agent exists.
       `B ·` the unit, so `Agent-1` retires and all three dependent statements are rewritten in the same edit.
       🛑 `Blocks` nothing today; the agent is not dispatched automatically.
@@ -490,7 +490,7 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 260802 1610 · The renumber carried through to everything citing it. Four shipped skills pointed at `QC6 §7/§8/§9/§10` for the door test, the roster shape, the anchored write and the two write laws; all now read `QC1b §1/§2/§4/§5`, and `haipipe-board` 0.104.1, `-page` 0.8.1, `-routing` 0.6.1 and `-sentence` 0.1.2 record why. `board.md`'s QC group intro and `QC1`'s "four of six" both corrected in the same pass
 260802 1600 · Content rebuilt from 13 divisions to 8, each with a face diagram: the roster layers of 260729, 260730 and 260731 merged into `### 2`, the withdrawn defer reading moved to `## Law`, and the stale count in `### 3` replaced with the 260802 figures (five skills, two agents, 152 plugin skills). Aims and States converted to the `A<n>` groups keyed to Content parts, Files regrouped onto the action menu, and the dead `QB1-skillmd.md` and `QA1-form.md` rows repointed at `QC1a-skillmd.md` and `QB1-form.md`
 260802 1600 · `serve.py` lines 297 and 357 corrected to `live/chat.py` lines 297 to 378: the rule strings moved in the `QC2c` live-layer split and there are four of them, not two, so the de-duplication is the same defect at twice the size
-260802 1230 · The `haipipe-writing` roster row closed: the skill exists on disk with three verbs, so the question was answerable, and it stays its own unit because its consumer is any authored prose rather than any board. Recorded in States and removed from Decision Now, per QB4 §5.2.7
+260802 1230 · The `haipipe-writing` skill page closed: the skill exists on disk with three verbs, so the question was answerable, and it stays its own unit because its consumer is any authored prose rather than any board. Recorded in States and removed from Decision Now, per QB4 §5.2.7
 260802 0000 · The candidate gained the design question it has to answer before it can ship: how a change record attaches when one sentence becomes six. The `✎` grammar assumes one record per sentence, splitting is the main move in this kind of rewrite, and the same misplacement happened twice by hand on 260801 because a record appended after a rewritten block silently attaches to the last new sentence rather than the one it describes
 260801 2340 · `haipipe-write` added to the roster as a candidate awaiting JL's ruling, after an evening spent hand-rewriting QB4's `### 1` for a weak English reader and recording each edit in the `✎` lane
 260801 0130 · Reindexed QC6 -> QC1b under the new QC1 skill-family parent; QC1b-vs-Skill-* overlap flagged on QC1 (JL 260801)

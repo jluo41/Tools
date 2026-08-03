@@ -1,6 +1,6 @@
 # Delivery Value: a number that still knows which run produced it
 
-state: ✅ RULED
+state: 🟡 PARTIAL · the run-binding Law is ruled; the dash-plus-topics shape is ruled and not built
 owner: JL
 method: carry task-produced quantitative evidence into exact sentence-level values with provenance
 
@@ -10,7 +10,7 @@ How does a number enter the paper without losing the run that produced it?
 
 A value is a quantity stated in a sentence, such as a coefficient or a sample size. A run is the one execution of a task that computed it. Binding means the sentence points at that run, not at a file that happens to contain the same digits.
 
-**Where this page sits**: QB2 Work commissions the computation, and QB12b specifies the value marker and its evidence card.
+**Where this page sits**: QB2 Work commissions the computation, and QBe1 §5 specifies the value marker and its evidence card.
 QB5 Display takes the numbers that are better shown than stated.
 This page owns what makes a stated number trustworthy at all.
 
@@ -25,7 +25,7 @@ They do not yet compare value bindings, so today the rule is stated and only par
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Say "run", never "result file"**: the whole rule is the difference between those two, so the word choice is the argument.
 A sentence that says a value comes from a file has already conceded the point.
@@ -78,7 +78,7 @@ Where the MISQ paper differs, say so as a gap with an owner, never as the defini
 | Lifecycle | After Literature and before Display. |
 | Authority | The task result plus its bound sentence attachment. |
 | Projects to | Inline values and the evidence card that exposes their provenance. |
-| Skills | Probe, value checks, QB12b adapter behavior. |
+| Skills | Probe, value checks, QBe1 §5 adapter behavior. |
 | Consumes | Accepted task outputs; never a number copied from an unbound file. |
 | Gate | Value, definition, sample, specification, and run all match the sentence. |
 | Open gaps | Projection checks need to compare value bindings, not counts alone. |
@@ -90,51 +90,58 @@ That is why the gate names all five: the four besides the digits are where a re-
 
 ### 2 · What we want on the paper board
 
-**The group we are designing**: one Q page, no S page, and a rule that binds every sentence stating a number.
+**The group we are designing**: a dash plus one page per topic, the same shape as Literature.
 
 ```text
-  🎯 WHAT WE WANT a paper to carry for this concern
-  ### Delivery · Value
-        📄 QV0-value-delivery.md    a Q page: the binding rule for THIS paper
-        🚫 no S page                nothing is authored per-unit here
+  🎯 WHAT WE EXPECT a paper to carry for this concern
+  ### Delivery · Value                              ◀ ruled by QB4
+      🗂 S-Value-Dash             the control page: which topics exist
+      📄 S-Value-1-<topic>        one page per TOPIC of values
+      📄 S-Value-2-<topic>
+      ⚠️ `Value` is NOT a family yet, so none of these names resolve
 
+  🔗 the same shape as Literature and Display, deliberately
+     Literature  🗂 Dash + one page per TOPIC
+     Value       🗂 Dash + one page per TOPIC
   ⚡ this concern owns NO STAGE and produces NO manuscript text
-  🔑 it binds work done elsewhere: a number stated in S-Main-6 must
-     resolve to the task run that computed it
   📍 the value MARKER lives in the citing sentence, on whatever page
-     states the number ── QB12b specifies it
+     states the number ── QBe1 §5 specifies it
 ```
 
-🎯 Establishes what a paper board must show for this concern, and why it is the one concern with no S page at all.
+🎯 Establishes what a paper board must show for this concern, and the one thing that stops it working today.
 
-#### 2.1 · A concern with no S page is still a real concern
-(it owns a rule, and a rule needs a page even when it produces no prose)
-`index.yml` declares no `value` stage, and no manuscript section belongs to this concern.
+#### 2.1 · A concern with no stage is still a real concern
+(it owns a rule, and a rule needs pages even when it produces no prose)
+`../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` declares no `value` stage, and no manuscript section belongs to this concern.
 Every number a paper states is written on some other page, in Results or Methods or a display caption.
-What this concern owns is the binding: that number resolves to a run, and `QV0-value-delivery.md` is where a paper records how its own values are bound.
+What this concern owns is the binding: that number resolves to a run, and its pages are where a paper records how its own values are bound.
 
-#### 2.2 · The Q page is per-paper, not per-unit
-(one page for the whole paper, because the rule does not vary by section)
-A paper does not need a value page per section, because the five things that must agree are the same in every section.
-So the group holds one Q page and grows no further, which is why it looks thin next to Display's fourteen.
-Thin is correct here: the work this concern causes happens inside other pages' sentences.
+#### 2.2 · Values have topics, so the concern splits by topic
+(JL 260802: the same shape as Literature, because different values belong to different topics)
+The five things that must agree are the same for every value, and which values belong together is not.
+A topic collects the values one question produced, such as the main effect or the robustness set, so a topic can be settled while another is still being computed.
+That is QC3b's per-unit test, and it is why this concern grows a dash plus one page per topic rather than staying one page.
 
 #### 2.3 · Where the MISQ paper stands against this
-(the page exists and the enforcement does not)
-`QV0-value-delivery.md` is on the MISQ board under `Delivery · Value`, so the group is built as designed.
-What is missing is machine enforcement: the projection check compares markers and counts and does not yet compare value bindings, which is QB9's deferred G3 extension.
+(one Q page today, and the family that would carry topic pages does not exist)
+`Delivery · Value` holds `QV0-value-delivery.md` and no S page.
+`Value` is not in the family list, which is closed in SIX places and not three: `cli/stage.py:27` composes, `src/parse.py:247` decides whether a file is a page, `src/parse.py:301` decides where it sorts, `src/page_board.py:497` orders the Index sections, `live/chat.py:201` matches ids in chat, and `check-contracts.py:40` checks the declaration.
+So `S-Value-Dash` cannot be resolved, composed, or parsed, and a name admitted to five of the six still sorts nowhere; `QB0 §13` argues why the list comes apart.
+Machine enforcement is missing too: the projection check compares markers and counts and not value bindings, which is QB9's deferred G3 extension.
 
 ## Aims
 
 ### A1 · 📜 The delivery contract
 - A1.1 · Every stated value binds to a producing run rather than to a file.
   **Done when:** every inline value on a paper resolves to a run id through its evidence card, and a value with only a file behind it renders as visibly owed.
-- A1.2 · The detailed value contract stays on QB12b rather than being restated here.
-  **Done when:** this page names no marker syntax, and QB12b is the only page specifying the value chip and its bracket.
+- A1.2 · The detailed value contract stays on QBe1 §5 rather than being restated here.
+  **Done when:** this page names no marker syntax, and QBe1 §5 is the only page specifying the value chip and its bracket.
 
 ### A2 · 🎯 What we want on the paper board
-- A2.1 · A paper board shows this concern as one group holding one Q page.
-  **Done when:** `Delivery · Value` lists a value-delivery Q page, and no S page is created for a concern that authors no prose.
+- A2.1 · `Value` is a first-class family, so a topic page can exist.
+  **Done when:** `cli/stage.py`, `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` and `src/parse.py` all admit `Value`, and `stage.py resolve` composes `S-Value-1-<topic>.md`.
+- A2.2 · The concern carries one page per topic under a dash.
+  **Done when:** a paper's `Delivery · Value` lists a dash plus one page per value topic.
 
 ### P · 🏁 Page-level
 - P1 · The binding is machine-checked, not only stated.
@@ -144,22 +151,24 @@ What is missing is machine enforcement: the projection check compares markers an
 
 ### A1 · 📜 The delivery contract
 - ✅ A1.1 · Ruled and carried in the Law: a value binds to a producing run, not to a file containing the same digits.
-- ✅ A1.2 · Held. The Scope paragraph hands the marker to QB12b, and no marker syntax appears on this page.
+- ✅ A1.2 · Held. The Scope paragraph hands the marker to QBe1 §5, and no marker syntax appears on this page.
 
 ### A2 · 🎯 What we want on the paper board
-- ✅ A2.1 · Built as designed on the MISQ paper: `Delivery · Value` holds `QV0-value-delivery.md` and no S page.
+- ⬜ A2.1 · Not started, and it blocks A2.2. The family list is closed in SIX places and none names Value; the count was corrected from three on 260803, and `QB0 §13.2` names all six.
+- ⬜ A2.2 · Not started, and blocked on A2.1. The MISQ group holds one Q page today.
 
 ### P · 🏁 Page-level
 - ❄️ P1 · Held, pending QB9 A2.2. The rule is ruled and stated; enforcing it is the G3 extension the 260730 trial deferred, which QB9 owns, so P1 thaws when that check ships.
 
 ## Files
 
-- `QB12b-sentence-value.md` · the value marker, its bracket, and the evidence card
+- `_archive/QBe1b-sentence-value.md` · the value marker, its bracket, and the evidence card
 - `QB9-build.md` · where the G3 extension that would enforce this has to land
 
 ## Law
 
-- A manuscript value binds to a producing run, not merely to a file containing the same digits.
+- - 🔢 A manuscript value binds to a producing run, not merely to a file containing the same digits.
+- 🗂 **Value is cut by TOPIC, and takes the Literature shape: a dash plus one page per topic** (JL 260802). Which values must agree is fixed for every value; which values belong together is not, and that is what a topic collects.
 
 ## Glossary
 
@@ -168,6 +177,8 @@ What is missing is machine enforcement: the projection check compares markers an
 
 ## Log
 
-260802 · `### 2 · What we want on the paper board` added. This is the one Delivery concern with NO S page: `index.yml` declares no `value` stage and no manuscript section belongs to it, so the group holds a single Q page and the work it causes happens inside other pages' sentences. Thin is the correct shape here, and the page now says so rather than leaving a reader to wonder what is missing.
+260803 · The family-list count on this page was wrong in three places: `§2.3`, A2.1's State and the 260802 Log entry all said three files and named three. It is SIX. The omitted ones were `src/parse.py:301`, `src/page_board.py:497` and `live/chat.py:201`, and two of those three fail with no message at all. `§2.3` and the State are corrected; the Log entry below is left as written, because it records what was believed then. This is the same undercount `QB3-literature.md` carried until the same day, which is the evidence `QB0 §13.2` cites for declaring the list once.
+260802 · JL: Value takes the same shape as Literature, a dash plus one page per topic, because different values belong to different topics. `§2` redrawn, the state dropped from ✅ to 🟡 because the shape is ruled and not built, and A2.1 opened on the blocker: `Value` is not a family, and the list is closed in three files.
+260802 · `### 2 · What we want on the paper board` added. This is the one Delivery concern with NO S page: `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` declares no `value` stage and no manuscript section belongs to it, so the group holds a single Q page and the work it causes happens inside other pages' sentences. Thin is the correct shape here, and the page now says so rather than leaving a reader to wonder what is missing.
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered with a face figure and caption, Aims regrouped as A1/P with `Done when`, States mirrored per Aim.
 260730 · Project trial recorded the structured-value comparison as a later G3 extension.

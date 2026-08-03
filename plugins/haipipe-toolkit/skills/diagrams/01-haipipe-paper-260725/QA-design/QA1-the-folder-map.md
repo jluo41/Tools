@@ -3,6 +3,7 @@
 state: 🟡 PARTIAL · the map and the crossings are ruled; the paper family README still does not carry them
 owner: JL
 method: every THING has a board; name all eleven, allow four crossings, and treat the banks as a wall rather than a room
+session: 28293c58-4cae-45db-93c3-41d754817af1
 
 ## Opening
 
@@ -29,7 +30,7 @@ How a question actually crosses the evidence wall, and what it may cost, is `QC4
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Never put a count in the title or the lead**: it has gone wrong twice, four to eight on 260726 and eight to eleven on 260802, and each time the title outlived the fact.
 Name what the page is FOR, and let the number live in Content where it can be corrected without a rename.
@@ -191,7 +192,7 @@ Both are stated in `## Law` and neither is mechanical, so a skill could acquire 
  ③ ⑤   paper-side seam is    ✅ yes         QA4 · QA8 · QA9   and   QA5
         ruled here
  ⑨     seam ruled in QB      🚫 not in QA   it is a DELIVERY seam: QB5 owns
-                                            the line, QB13 heads the series
+                                            the line, QBe2 heads the series
  ⑪     its BOARD is ②        ✅ yes         QA10. there is nowhere else the
                                             argument could go
 ```

@@ -198,7 +198,7 @@ def prime_context(f, board, root):
         rel = f.name
     txt = Path(f).read_text(encoding="utf-8", errors="ignore")
     m = re.match(
-        r"((?:Q[A-Za-z0-9]+|S-(?:Seed|Work|Venue|Display|Main|Appendix|Submission)-(?:\d+|[A-Z])|S(?:M|A)?\d+[a-z]?))",
+        r"((?:Q[A-Za-z0-9]+|S-(?:Open|Seed|Work|Venue|Literature|Value|Display|Main|Appendix|Submission|Round)-(?:\d+[a-z][a-z0-9]+|\d+[a-z]?|[A-Z]\d+|[A-Z][a-z]+|[A-Z])|S(?:M|A)?\d+[a-z]?))",
         f.name,
         re.I,
     )

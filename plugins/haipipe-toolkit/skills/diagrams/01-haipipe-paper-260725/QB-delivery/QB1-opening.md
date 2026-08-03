@@ -21,7 +21,7 @@ QB6 Main owns the manuscript Introduction; this page is lifecycle control, never
 Filing it as its own Delivery group made the paper look as though it chose a journal after deciding what it argued, which is backwards.
 
 **What the 260802 `QBv` group did NOT take from this page**: the decision.
-`QBv` holds what each venue KNOWS, one page per venue TARGET, because a venue's rewards reach QB4, QB5, QB6, and QB11a at once and can be filed under none of them.
+`QBv` holds what each venue KNOWS, one page per venue TARGET, because a venue's rewards reach QB4, QB5, QB6, and QBe3 §3 at once and can be filed under none of them.
 This page still owns which venue this paper picked and where that pin lives; the QBv group intro states the split and cites this ruling rather than reopening it.
 
 **What this grouping does not do**: it does not renumber stages and it does not replace the explicit dependency graph.
@@ -31,7 +31,7 @@ Delivery order is reading order; execution order is declared by each stage contr
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Never let this page drift into Introduction advice**: the boundary against QB6 is the one this page loses most often.
 A sentence about how to phrase the paper's first paragraph belongs on Main. A sentence about whether the paper has decided its promise belongs here.
@@ -118,7 +118,7 @@ Reopening is then a transition with a date rather than a failure of the gate.
 
 #### 1.2 · Work sits in the middle of this group, on purpose
 (the stages run 0, then 1a and 1b, then 2a and 2b, so this concern has a hole in it)
-`stages/index.yml` runs seed 0, resource 1a, claims 1b, venue 2a, pitch 2b, narrative 3.
+`../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` runs seed 0, resource 1a, claims 1b, venue 2a, pitch 2b, narrative 3.
 This concern holds 0, 2a, and 2b, so Work's two stages sit inside its span.
 That is the price of grouping by what a reader asks rather than by when the machine runs, and the Law below is what keeps the two apart.
 
@@ -167,7 +167,7 @@ Venue-free is what makes it survivable: the seed is the answer a retarget must n
 #### 2.2 · Motivations answers three things in order, and names its audiences
 (puzzle or gap or surprise, then why now, then who cares and why)
 One sentence per line, and a sentence that rests on an open question carries the join bracket plus a typed lane beneath it, which together render as the sentence's evidence card.
-QB12 owns that grammar and this page does not restate it: the bracket is the join key and never fuses into a marker, the lane names what it attaches, and the chip shows the state of both.
+QBe1 owns that grammar and this page does not restate it: the bracket is the join key and never fuses into a marker, the lane names what it attaches, and the chip shows the state of both.
 Naming the audience is the part most often skipped, and it is what a later pitch reuses.
 
 #### 2.3 · Landscape frames the questions and is not a related-work section
@@ -187,12 +187,12 @@ A sentence that rests on something unproven carries a `> Q-consumer:` lane and t
 No division is privileged: a hedged H-line and a landscape gap claim raise questions the same way, and a division that raises none simply has no group, which is what QB4 §4.2.1 already allows.
 So `Q-consumer` names no section at all: it is the behaviour of raising a question, and the record lives under the division that raised it.
 
-#### 2.6 · Three parts carry a question, not one, and QB12 owns all three
+#### 2.6 · Three parts carry a question, not one, and QBe1 owns all three
 (the bracket alone is bookkeeping; the lane is where the provenance actually lives)
 In the sentence sits the marker and, beside it and never fused to it, the `[Q-Seed-<n>]` join bracket.
 Under the sentence sits a typed lane, `> Q-consumer:` for a question and `> Citation:` or `> Value:` once an answer lands, and the pair renders as the evidence card with its state chip.
 A placeholder with no bracket is a hole no question will ever fill, which is why the bracket is required rather than decorative.
-This page names the parts so a stage page is not written bracket-only; the grammar itself is QB12's, and QB12a is where it is specified.
+This page names the parts so a stage page is not written bracket-only; the grammar itself is QBe1's, and QBe1 §4 is where it is specified.
 
 #### 2.7 · The group number and the question number are two different counters
 (one says where the question came from, the other says which question it is on this page)
@@ -387,7 +387,7 @@ That leaves one live gap in the Opening group, `S-Venue-2-narrative.md`, which m
   **Done when:** no H-line on a seed page is phrased as a finding, and CHECK can say so without judgement.
 - A2.3 · Each stage template numbers its sections as Content divisions, and records a raised question under the matching Aims group.
 - A2.4 · A sentence resting on an open question carries the lane and the card, not the bracket alone.
-  **Done when:** the three templates ask for a typed lane beneath the sentence as well as the join bracket, and QB12a stays the only page specifying that grammar.
+  **Done when:** the three templates ask for a typed lane beneath the sentence as well as the join bracket, and QBe1 §4 stays the only page specifying that grammar.
   **Done when:** the three templates write `### 1` to `### 4` for their sections and `A<n>.<m>` for a question raised in division `n`, retiring the flat `Q-consumer` list and reserving `P` for a target that spans the page.
 
 ### A3 · 🎯 Stage Venue
@@ -452,7 +452,7 @@ That leaves one live gap in the Opening group, `S-Venue-2-narrative.md`, which m
 
 - `board.md` · the `## Pages` order and the Board Map row naming Seed, Venue, and Pitch; changing what this concern holds means editing it
 - `QB2-work.md` · the concern that took the arc, and the only other page that has to agree with this one
-- `../QBv-venue-packs/QBv1-misq.md` · the venue KNOWLEDGE group opened 260802, one page per venue target; it cites this page's ruling and owns no part of the decision
+- `QBv-venue-packs/QBv1-misq.md` · the venue KNOWLEDGE group opened 260802, one page per venue target; it cites this page's ruling and owns no part of the decision
 
 📥 **Input files** · what the work reads
 
@@ -460,7 +460,7 @@ That leaves one live gap in the Opening group, `S-Venue-2-narrative.md`, which m
 - `../../paper/1-lifecycle/haipipe-paper-stage/stages/0-seed/stage.md` · the seed contract, and `0-seed/template.md` beside it, which fixes that page's sections
 - `../../paper/1-lifecycle/haipipe-paper-stage/stages/2a-venue/stage.md` · the venue contract, and `2a-venue/template.md` beside it
 - `../../paper/1-lifecycle/haipipe-paper-stage/stages/2b-pitch/stage.md` · the pitch contract, and `2b-pitch/template.md` beside it
-- `../QC-engine/QC2-stage-contract.md` · owns what a stage IS; `### 2` here only records what these three declare
+- `QC-engine/QC2-stage-contract.md` · owns what a stage IS; `### 2` here only records what these three declare
 
 ## Law
 
@@ -499,7 +499,7 @@ That leaves one live gap in the Opening group, `S-Venue-2-narrative.md`, which m
 
 260802 · The `QBv · Venue Packs` group opened, and this page kept the decision. The split is knowledge against decision: a pack's `-> Claims`, `-> Display`, `-> Minimap`, and `-> Write/Edit` maps reach four other Delivery concerns, so the knowledge sits outside all of them, while the pin stays on `S-Venue-0` and stays this page's. The 260729 ruling is cited by the QBv group intro, not reopened.
 260802 · JL: say what the paper board is expected to show. `### 5` added, measured against the MISQ paper's `0-lifecycle/board.md`: the concern is the GROUP there, three stage pages are expected in it, and two more are present that this concern does not own. It also records the four kinds of page a group can hold, since "one stage, one page" holds only in the stage-to-page direction. A5.1 and A5.2 carry the two live gaps.
-260802 · JL: the bracket is not the whole story, check the QB12 series. `§2.2` said a sentence carries its question id in a trailing bracket and stopped there, which is half the grammar: QB12a specifies marker plus join bracket IN the sentence and a typed lane UNDER it, rendering together as the evidence card. New `§2.6` names the three parts and points at QB12 rather than restating it, and A2.4 opens on the templates, which ask for the bracket alone.
+260802 · JL: the bracket is not the whole story, check the QBe1 series. `§2.2` said a sentence carries its question id in a trailing bracket and stopped there, which is half the grammar: QBe1 §4 specifies marker plus join bracket IN the sentence and a typed lane UNDER it, rendering together as the evidence card. New `§2.6` names the three parts and points at QBe1 rather than restating it, and A2.4 opens on the templates, which ask for the bracket alone.
 260802 · Corrected a claim this page made and QB2 disproved: `§1.3` said there was no `S-Venue-2`, but narrative declares `board_family: Venue` and `board_unit: 2`, so unit 2 exists and belongs to Work.
 260802 · QB1's own `## Diagram` brought onto the same logic. It still showed the pre-restructure three-box view and said nothing about the structure `§2` to `§4` now establish, so it draws the three pages side by side with their divisions mirrored into Aims groups. The shape is stated ONCE at the top, which is what lets each stage division below talk about what is true only of it.
 260802 · Venue and Pitch brought onto the same logic as Seed: each figure now maps its four sections to `### 1`-`### 4` of that page's Content and to the mirrored `A<n>` groups, with `Q-Venue-<n>` and `Q-Pitch-<n>` able to come from any of them. Two division-specific facts came out of drawing them: venue's `### 2 · Relevant Files` raises nothing and is the concrete case of a part with no group, and a venue change reopens pitch's `### 3` alone rather than the whole page.
@@ -508,8 +508,8 @@ That leaves one live gap in the Opening group, `S-Venue-2-narrative.md`, which m
 260802 · JL: Q-consumer belongs in Aims. `§2`'s figure listed it as a fifth Content section of the seed page, which is exactly what `0-seed/template.md` forbids and what QB4's Log records moving out of Content on 260725. The figure now shows the four Content parts feeding `## Aims`, `§2.5` states the rule, and `§2.6` keeps the raise-and-dispatch behaviour. A2.3 opened for a conflict the alignment exposed: the template's `P<n>` id form contradicts QB4 §4.2.1.
 260802 · Content restructured on JL's correction: one division PER STAGE, not one division holding all three. `### 2 · Stage Seed`, `### 3 · Stage Venue`, and `### 4 · Stage Pitch` each say what that stage's page is expected to contain, written from its own `template.md` rules; the mechanical facts the three share collapsed into `#### 1.3`. Aims and States gained mirrored A2, A3, and A4 groups, and the drift risk moved to P2.
 260802 · Added a per-stage division on JL's ask: per stage, the one question it asks, the S page it resolves to, its phases, and the sections its template requires. Three facts came out of writing it, none of which was stated anywhere on the board: the three stages land in TWO families, venue alone has no REVISE because it produces a contract rather than prose, and all three run at `probe_depth: 0`, which is why one gate at CHECK is enough. A2.3 records the drift risk, since the table restates four template files and nothing compares them.
-260802 · Rewritten against `QB4-overall.md` as of 02:28. Law now carries each ruling with its person, date, JL's own words, and the option rejected (§5.2.6, §7.1.2); Files regrouped by action into Contracts and Input files and repointed at what an editor would actually touch (§6.1.1, §6.2.2); `#### 1.2`'s heading rewritten for the weak-English test; a good/bad pair given its own line in Writing Style; the on-stage paragraph rewritten to the question-terms-difficulty-decision shape.
+260802 · Rewritten against `../01-boardform-260722/QB-delivery/QB4-overall.md` as of 02:28. Law now carries each ruling with its person, date, JL's own words, and the option rejected (§5.2.6, §7.1.2); Files regrouped by action into Contracts and Input files and repointed at what an editor would actually touch (§6.1.1, §6.2.2); `#### 1.2`'s heading rewritten for the weak-English test; a good/bad pair given its own line in Writing Style; the on-stage paragraph rewritten to the question-terms-difficulty-decision shape.
 260802 · JL ruled narrative into Work. This concern is now Seed plus Venue plus Pitch, and the Law, the Diagram, the contract table, and A1.3 record the move.
-260802 · Brought onto `QB4-overall.md`'s current requirements: `### Decision Now` moved to the top of States in the six-field shape, and P1 changed from ❄️ to 🧠, because waiting on QA6 is waiting on something outside this page.
+260802 · Brought onto `../01-boardform-260722/QB-delivery/QB4-overall.md`'s current requirements: `### Decision Now` moved to the top of States in the six-field shape, and P1 changed from ❄️ to 🧠, because waiting on QA6 is waiting on something outside this page.
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered with a face figure and caption, Aims regrouped as A1/P with `Done when`, States mirrored per Aim.
 260729 · JL placed Venue inside Opening.

@@ -7,6 +7,13 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.9.1 - 2026-08-03
+
+**Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
+
+- **A documented command could not run from any directory.** `Run python3 cli/gate.py` — this skill has no `cli/`, and its own Files block says so two sections later. It now uses the `<board-skill>/cli/gate.py` form the rest of the family uses, and says which script this skill actually ships.
+- `src/lanes.py` was a bare relative path that worked from exactly one working directory; it now carries `<this-skill>/`.
+
 ## 0.9.0 - 2026-08-02
 
 - **`haipipe-board-index` is merged into this skill and retired** (JL 260802: "maybe

@@ -180,8 +180,10 @@ body.split .q code{overflow-wrap:anywhere}
 .mut{color:var(--mut)}
 a.fp{text-decoration:none;border-bottom:1px dashed var(--accent)}
 a.fp code{color:var(--accent);cursor:pointer}
-a.fp:hover code{background:var(--accent);color:var(--bg)}
-code{background:var(--pre);padding:1px 5px;border-radius:var(--radius-inline);font:13px ui-monospace,Menlo,monospace}
+a.fp:hover code{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+code{background:var(--code-bg);border:1px solid var(--code-line);padding:0 4px;
+ border-radius:var(--radius-inline);font:13px ui-monospace,Menlo,monospace}
+pre code{background:none;border:0;padding:0}
 pre{background:var(--pre);border:1px solid var(--line);border-radius:var(--radius-control);padding:11px 13px;
  margin:8px 0;overflow-x:auto;font:12.5px/1.6 ui-monospace,Menlo,monospace;white-space:pre}
 img{max-width:100%;border:1px solid var(--line);border-radius:var(--radius-control)}

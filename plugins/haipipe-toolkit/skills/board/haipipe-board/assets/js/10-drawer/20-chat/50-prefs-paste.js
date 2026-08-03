@@ -314,6 +314,12 @@
        rejoined turn has to paint exactly like the live one it is a continuation
        of, which is the whole difference between this and the transcript
        replay it replaces. */
+    /* ⚠️ DEAD PATH. `chatRejoin` calls `chatAttach` now, so nothing passes
+       `{attach:true}` any more and every `attach` branch below is unreachable.
+       It is left in place rather than surgically removed from a 250-line
+       function at the end of a long session, but DO NOT FIX BUGS IN IT: that
+       is exactly how the same rejoin defect got patched twice and missed a
+       third branch (260802). The live rejoin is `chatAttach`, above. */
     var attach = !!(opts && opts.attach);
     var ta = chat.querySelector('textarea'), btn = chat.querySelector('.send');
     if (inflight) return attach ? false : chatStop();   // 正在跑 → 这一下是「停」

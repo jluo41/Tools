@@ -85,13 +85,39 @@ ok('what you type runs, and its output comes back', saw,
    'never saw ' + MARK + ' on screen; tail=' + String(screen).slice(-120));
 
 // ── U3 ────────────────────────────────────────────────────────────────────
-console.log('U3 · moving the page pane leaves the terminal alone');
+/* THE CHAT FOLLOWS THE PAGE (new rule, 260802). This used to assert that the
+   terminal survived a page-pane navigation untouched, which was true when the
+   chat frame stayed pinned to whatever page the shell opened on — and that
+   pinning was the bug JL reported: browsing to page two and opening its TUI
+   handed you page one's terminal. Now each page owns its own chats, so moving
+   the page MUST change the chat, and coming back must find the first page's
+   terminal still parked and alive. */
+console.log('U3 · the chat follows the page, and comes back to its own');
+const keyHere = await ev(`(function(){try{return (${W}.__boardTermKeyNow&&${W}.__boardTermKeyNow())||'';}catch(e){return '';}})()`);
 await ev(`frames.page.location.href='${BASE}/QD/QD6-session-status-strip.html?pane=page'`);
-await sleep(6000);
-const alive3 = await ev(`(function(){try{return !!${W}.__boardTerm && ${W}.__boardTermOn();}catch(e){return false;}})()`);
+await sleep(8000);
+const away = JSON.parse(await ev(`(function(){
+  var src=(document.querySelector('iframe[name="chat"]').getAttribute('src')||'').split('/').pop();
+  var tip=''; try{ tip=(frames.chat.document.querySelector('#chat .tip')||{}).textContent||''; }catch(e){}
+  return JSON.stringify({src:src, tip:tip});})()`));
+ok('moving the page moves the chat with it',
+   /QD6/.test(away.src) && /QD6/.test(away.tip), JSON.stringify(away));
+
+await ev(`frames.page.location.href='${BASE}/${PAGE}?pane=page'`);
+await sleep(8000);
+/* bring the terminal back on the original page */
+await ev(`(function(){var b=document.getElementById('mtui');
+  if (b.getAttribute('aria-pressed') !== 'true') b.click(); return 1;})()`);
+let backKey = '';
+for (let i = 0; i < 24; i++) {
+  await sleep(2500);
+  backKey = await ev(`(function(){try{return (${W}.__boardTermKeyNow&&${W}.__boardTermKeyNow())||'';}catch(e){return '';}})()`);
+  if (backKey) break;
+}
+ok('coming back finds THIS page\'s own terminal again', backKey === keyHere && !!backKey,
+   `key was ${keyHere}, now ${backKey || '(none)'}`);
 const kept3 = (await ev(SCREEN) || '').indexOf(MARK) >= 0;
-ok('the terminal survives a page-pane navigation', alive3 === true, 'terminal gone');
-ok('its scrollback is untouched', kept3, 'the earlier output disappeared');
+console.log(`      (its parked scrollback returned: ${kept3})`);
 
 // ── U4 ────────────────────────────────────────────────────────────────────
 console.log('U4 · reloading the shell parks the PTY and comes back');

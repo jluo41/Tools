@@ -495,13 +495,17 @@ def render(meta, qs):
     done = sum(1 for q in qonly if q["state"].startswith("✅"))
     nq = len(qonly)
     sfamilies = [
+        ("open", "Open"),
         ("seed", "Seed"),
         ("work", "Work"),
         ("venue", "Venue"),
+        ("literature", "Literature"),
+        ("value", "Value"),
         ("display", "Display"),
         ("main", "Main"),
         ("appendix", "Appendix"),
         ("submission", "Submission"),
+        ("round", "Round"),
         ("stage", "legacy stages"),
     ]
     bar = "█" * round(done / nq * 14) + "░" * (14 - round(done / nq * 14)) if nq else ""

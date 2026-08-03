@@ -162,7 +162,13 @@ def kinds_block(outlet_dir):
             "One kind can spread across several numbered Main pages.",
             "This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above "
             "move with it.",
-            "The ORDER does not move. It is this venue's reading order, not a house default."]
+            "The ORDER above is the RESOLVER's, and it is not always the desk's. "
+            "Nature Medicine, Nature Communications, Nature Human Behaviour, Nature "
+            "Machine Intelligence and npj Digital Medicine all print Methods LAST, "
+            "and PNAS reads Significance first; `section-kinds.yml` orders none of "
+            "them that way (found 260803 by five venue pages at once). The page's "
+            "`Venue-Structure` figure is where the DESK's printed order lives, and "
+            "where the two disagree it says so."]
     out += ["", KEND]
     return "\n".join(out)
 

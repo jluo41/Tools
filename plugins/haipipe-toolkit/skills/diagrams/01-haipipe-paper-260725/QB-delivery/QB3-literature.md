@@ -10,7 +10,7 @@ How does literature travel from the bank into a sentence and into the delivered 
 
 A source arrives from the discovery bank as an answer to a question QB2 Work asked. A binding is the path that ties it to the exact sentence it supports. A bibliography key is the short name the manuscript cites it by, and that key is the one thing on this path a machine may never mint.
 
-**Where this page sits**: QB2 Work commissioned the discovery, and QB12a specifies the citation marker and the evidence card themselves.
+**Where this page sits**: QB2 Work commissioned the discovery, and QBe1 §4 specifies the citation marker and the evidence card themselves.
 This page owns the stretch between them: what has to be true for a returned source to become a citation a reviewer can follow.
 
 **Why the key is the hard part**: everything else on this path can be checked automatically.
@@ -24,9 +24,9 @@ The LaTeX path has a real bibliography and the Word path does not, so the same b
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
-**Never specify the marker**: `\cite{TOADD}`, the chip, and the evidence card belong to QB12a.
+**Never specify the marker**: `\cite{TOADD}`, the chip, and the evidence card belong to QBe1 §4.
 This page says a citation must be bound and human-keyed; it does not say what the binding looks like on screen.
 
 **Always separate searching from writing**: the Law turns on that distinction, so a sentence that blurs "find" and "record" weakens the one rule this page exists to hold.
@@ -97,11 +97,12 @@ The gate is whether it supports the sentence it was attached to, which no checke
       📄 S-Literature-1-<topic>     one page per TOPIC
       📄 S-Literature-2-<topic>
       📄 S-Literature-3-<topic>
-      📖 S-Main-2-literature        ← family Main: the section that SHIPS
 
   🔗 the same shape as Display, deliberately
-     Display   🗂 Dash + one page per UNIT   ━▶ float.tex ships
-     Literature 🗂 Dash + one page per TOPIC ━▶ S-Main-2 ships
+     Display     🗂 Dash + one page per UNIT
+     Literature  🗂 Dash + one page per TOPIC
+  🚫 the manuscript's Literature Review is NOT here: it is a Main
+     section and lives under Delivery · Main (JL 260802)
   ⚠️ `Literature` is NOT a family yet, so none of these names resolve
 ```
 
@@ -119,24 +120,33 @@ The map answers which topics this paper stands on and where each one stands.
 Splitting it means a settled topic stops being re-read every time an unsettled one changes, which is the whole reason Display grew a dash.
 `S-Seed-1` is still written at seed and refreshed after Work; under this shape it becomes the dash rather than the only page.
 
-#### 2.3 · `S-Main-2` stays, and it is the thing that ships
-(the topic pages are working record; the manuscript section is the deliverable)
-This is the exact split Display already runs: unit pages are board authority and `float.tex` is what the journal receives.
-Here the topic pages hold the lineage and `S-Main-2-literature` is the standalone section a reader of the paper actually reads, so it keeps its Main family and its place in this group.
+#### 2.3 · The manuscript's Literature Review is not this concern's page
+(JL 260802: drop it from here; it is a Main section like any other)
+`S-Main-2-literature` is prose a reader of the paper reads, so it is a numbered Main section and sits under `Delivery · Main`.
+This concern owns the lineage behind it, topic by topic, and stops at the point where that lineage becomes manuscript prose.
+That keeps one page under one concern and removes the join that used to put a Main-family page in this group.
 
 #### 2.4 · Where the MISQ paper stands against this
-(two pages today, and the family that would carry the new ones does not exist)
-`Delivery · Literature` holds `S-Seed-1-literature.md` and `S-Main-2-literature.md`.
-`Literature` is not in the family list, which is closed in three places: `cli/stage.py:27`, `check-contracts.py:40`, and the read regex in `src/parse.py:247`.
-Until all three admit it, `S-Literature-Dash` cannot be resolved, composed, or parsed, so this is the same blocker QB10 Round carries.
+(two pages today, both borrowed, and the family now exists to carry the new ones)
+`Delivery · Literature` holds `S-Seed-1-literature.md` and `S-Main-2-literature.md`, and it still holds the second one.
+This paragraph said until 260803 that `S-Main-2` had gone back to `Delivery · Main`, which QB6 denied and the live `board.md` never did; that sentence was wrong and is withdrawn.
+`Literature` was admitted to all six lists on 260803, so `S-Literature-Dash.md` composes and parses today, and what is left is authoring the control page and the topic pages.
+`QB0 §13.2` names the six and argues why a list spelled out six times is a list nothing enforces.
+
+#### 2.5 · `S-Main-2-literature` keeps its Main filename and stays in this group
+(ruled 260803, and reversible: it is one line in `board.md`)
+The page is a numbered manuscript section, so its family is `Main` and its file stays in `4-main/`, and it is the lineage this concern owns, so its group is `Delivery · Literature`.
+Now that `Literature` is a real family someone could rename the file into it, and `QB0 §12.5` is the reason not to: a group is one line a person moves inside `board.md`, while a family renames the file, moves it between folders, and breaks every id that cites it.
+So the cheap cut gives way and the expensive one does not, which leaves the board's one live family-against-group trap in place on purpose.
+`QB0 §12.4` names it where a reader meets it, and this page names it here, which is what closes that half of the disagreement.
 
 ## Aims
 
 ### A1 · 📜 The delivery contract
 - A1.1 · A bibliography entry never enters the paper without a person approving its key.
   **Done when:** no bibliography key on any paper reaches the manuscript without a recorded human approval, and an unapproved one renders as visibly owed.
-- A1.2 · The detailed citation contract stays on QB12a rather than being restated here.
-  **Done when:** this page names no marker syntax, and QB12a is the only page specifying the chip and the evidence card.
+- A1.2 · The detailed citation contract stays on QBe1 §4 rather than being restated here.
+  **Done when:** this page names no marker syntax, and QBe1 §4 is the only page specifying the chip and the evidence card.
 
 ### A2 · 🎯 What we want on the paper board
 - A2.1 · A paper board shows this concern as one group holding the map and the review.
@@ -144,7 +154,7 @@ Until all three admit it, `S-Literature-Dash` cannot be resolved, composed, or p
 - A2.2 · The map is refreshed after Work rather than left at its first pass.
   **Done when:** a paper's literature dash names the discovery answers it was rewritten against.
 - A2.3 · `Literature` is a first-class family, so a topic page can exist.
-  **Done when:** `cli/stage.py`, `check-contracts.py` and `src/parse.py` all admit `Literature`, and `stage.py resolve` composes `S-Literature-1-<topic>.md`.
+  **Done when:** `cli/stage.py`, `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` and `src/parse.py` all admit `Literature`, and `stage.py resolve` composes `S-Literature-1-<topic>.md`.
 - A2.4 · The concern carries one page per topic under a dash.
   **Done when:** a paper's `Delivery · Literature` lists a dash plus one page per topic, and no single page carries the whole map.
 
@@ -156,7 +166,7 @@ Until all three admit it, `S-Literature-Dash` cannot be resolved, composed, or p
 
 ### A1 · 📜 The delivery contract
 - ✅ A1.1 · Ruled and stated in the Law: an agent may search and verify, never invent or silently write.
-- ✅ A1.2 · Held. The Scope paragraph hands the marker to QB12a, and no marker syntax appears on this page.
+- ✅ A1.2 · Held. The Scope paragraph hands the marker to QBe1 §4, and no marker syntax appears on this page.
 
 ### A2 · 🎯 What we want on the paper board
 - 🔨 A2.1 · Partly. Both pages sit under `Delivery · Literature`, but the group is two pages rather than a dash plus topics, which is what JL ruled on 260802.
@@ -165,12 +175,12 @@ Until all three admit it, `S-Literature-Dash` cannot be resolved, composed, or p
 - ⬜ A2.4 · Not started, and blocked on A2.3.
 
 ### P · 🏁 Page-level
-- ❄️ P1 · Held, pending QB11b. This concern's rule is ruled without it: QB11b owns the Word adapter and has not yet decided how a citation survives with no `.bib`, so P1 thaws when that adapter rules.
+- ❄️ P1 · Held, pending QBe3 §4. This concern's rule is ruled without it: QBe3 §4 owns the Word adapter and has not yet decided how a citation survives with no `.bib`, so P1 thaws when that adapter rules.
 
 ## Files
 
-- `QB12a-sentence-citation.md` · the marker, the chip, and the evidence card
-- `QB11b-section-to-word.md` · the adapter where the no-bibliography gap has to be closed
+- `_archive/QBe1a-sentence-citation.md` · the marker, the chip, and the evidence card
+- `_archive/QBe3b-section-to-word.md` · the adapter where the no-bibliography gap has to be closed
 
 ## Law
 
@@ -183,8 +193,11 @@ Until all three admit it, `S-Literature-Dash` cannot be resolved, composed, or p
 
 ## Log
 
+260803 · The `S-Main-2-literature` disagreement is closed, in favour of the live board. This page had said the page "has gone back to `Delivery · Main`"; QB6 said it stays under `Delivery · Literature`; the MISQ `board.md` has listed it under Literature the whole time. Two against one, so the sentence here was the wrong one and is withdrawn. `§2.5` is new and states the ruling with its reason, which is `QB0 §12.5`: a group is one line inside `board.md` and a family is a rename plus a folder move plus every citation, so the group is the cut that gives way. This is reversible by moving one line, and nothing was renamed.
+260803 · `Literature` was admitted to all six family lists, so this concern is no longer blocked. `§2.4` rewritten: the count on this page went three, then five, then six inside two days, which is `QB0 A13.1`'s whole argument.
+260803 · The family-list count on this page was wrong: `§2.4` said the list is closed in three places and named three. It is FIVE. The two it omitted are `src/page_board.py:497` and `live/chat.py:201`, which are exactly the two that fail with no message, so a person following this page would have admitted `Literature` to three of five and got a page that parses, sorts nowhere, and cannot be linked. Corrected in `§2.4`; the 260802 Log entry below is left as written, because it records what was believed then. `QB0 §13` now argues the write side against the read side, and `QB0`'s Law names all five paths.
 260802 · State dropped from ✅ to 🟡. The concern's Law is still ruled, but JL ruled a new shape the same day and nothing carries it, so three Aims are open and `settled-with-open-aims` caught the mismatch.
 260802 · JL: literature should look like Display and be cut by TOPIC, with a dash plus `S-Literature-1`, `-2`, `-3`. `§2` redrawn to that shape, and QC3b's per-unit test backs it: one topic settles while another is still being searched. A2.3 opened on the blocker, which is the same one Round carries: `Literature` is not a family, and the list is closed in `cli/stage.py:27`, `check-contracts.py:40` and `src/parse.py:247`.
-260802 · `### 2 · What we want on the paper board` added. This concern turned out to own NO stage: `index.yml` has no `literature` key, so its two pages are written by seed and by section-edit, and what the concern owns is the Law rather than a stage. That is a second kind of Delivery concern, and QB1 and QB2 read as though every concern grouped stages.
+260802 · `### 2 · What we want on the paper board` added. This concern turned out to own NO stage: `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` has no `literature` key, so its two pages are written by seed and by section-edit, and what the concern owns is the Law rather than a stage. That is a second kind of Delivery concern, and QB1 and QB2 read as though every concern grouped stages.
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered with a face figure and caption, Aims regrouped as A1/P with `Done when`, States mirrored per Aim.
 260729 · Literature placed after Work in the accepted Delivery order.

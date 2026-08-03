@@ -153,7 +153,7 @@ The route rule holds now and has been broken once. The last step of the loop is 
   `probe_depth:` and `probes:`; the ladder quoted in each contract.
 - `2-phase/1-probe/haipipe-paper-probe/`
   The worker that owns the loop; the only exit for evidence work.
-- `1-lifecycle/ref/08-stage-gate.md`
+- `../../paper/1-lifecycle/ref/08-stage-gate.md`
   The one-route rule, the project-local rule, and the audit incident that produced both.
 - `haipipe-probe/`
   The shared layer. The loop, the stake split and the QA state contract live there, not here.

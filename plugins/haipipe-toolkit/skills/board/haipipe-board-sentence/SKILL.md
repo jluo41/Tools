@@ -3,8 +3,8 @@ name: haipipe-board-sentence
 description: >-
   The SENTENCE contract of a board, as a loadable spec: the sentence as the board's atomic unit, its dotted address, the > comment lanes and who may write one, the evidence card on a span of words, editing, per-location chat focus, and the lifecycle of attached records (archive, never delete). Load this when an agent must write ONE line that reads like the board without operating the whole board: a routed log line, a comment into a lane, a chat focus packet, or the paper family's evidence card. TWO USES, and this skill is the door for both: RUN a verb on one sentence (comment on it, edit it, put a card on its words) or LOAD it as a pure contract with no board open. Trigger: comment on this sentence, edit this sentence, card on these words, sentence contract, comment lane, > lane, evidence card, sentence address, apparatus, /haipipe-board-sentence.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-02"
+  version: "0.3.1"
+  last_updated: "2026-08-03"
   summary: "Became the DOOR for one sentence, not only its spec: comment, edit and card are its three verbs, migrated out of haipipe-board's SKILL.md on the haipipe-board-page precedent."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -187,5 +187,5 @@ haipipe-board-sentence/
 └── CHANGELOG.md        version history
 ```
 
-Reads `haipipe-board/ref/board-form.md` §5 as the authority; owns no scripts at 0.1.0.
+Reads `haipipe-board/ref/board-form.md` §5 as the authority; owns no scripts.
 The named next step (QC1b §1): the drawer's lane instructions in `live/chat.py` become this contract's consumer instead of a second prose copy.

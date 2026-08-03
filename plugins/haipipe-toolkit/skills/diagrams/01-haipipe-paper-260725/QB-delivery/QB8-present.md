@@ -23,7 +23,7 @@ That second half is the one a person has to check, because no build can compare 
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **This page DESIGNS; the paper board SHOWS**: `### 2` states what a paper must carry for this concern, not what one paper happens to have today.
 Where the MISQ paper differs, say so as a gap with an owner, never as the definition.
@@ -89,7 +89,7 @@ The half that needs the gate is whether every claim on a slide is one the paper 
         📄 QP0-present-delivery.md   a Q page: how THIS paper projects
         🚫 no S page                 nothing is authored per-unit here
 
-  ⚡ this concern owns NO STAGE ── `index.yml` has no `present` key
+  ⚡ this concern owns NO STAGE ── `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` has no `present` key
   🔑 the artifacts live OUTSIDE 0-lifecycle/
      5-present/paper-slides/ · 5-present/paper-poster/
   🔗 same shape as QB4 Value: one Q page, a rule, no prose of its own

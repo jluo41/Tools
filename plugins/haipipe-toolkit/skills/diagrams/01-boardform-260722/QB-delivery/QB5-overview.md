@@ -67,54 +67,124 @@ The badge is `💬`, `✎`, or `⚑`, and a wrong glyph here teaches a reader to
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QB5
 
 ## Content
-### 1 · Try it on this row
-**Both surfaces, live**: one sentence per badge kind and one carrying a card, so every rule on this page can be clicked instead of read.
+### 1 · Try it yourself: every feature, live on this page
+**The test sheet**: one row per feature, what you do, and what should happen if it works.
 
 ```
-🧪 FOUR ROWS · three badge kinds, plus a card · all shut until clicked
+🖱 CLICK THESE · they are already here, in 1.1
+   the underlined words in a sentence   a panel opens OVER the prose
+   a sentence carrying a badge          a drawer opens UNDER the line
+   a badge that reads ⚠️                 a loud row saying what is broken
 
-   💬 a person is waiting     > Comment WHO …
-   ✎ a change was recorded   > ✎ ~old~ *new* · WHO · time
-   ⚑ typed lanes are filed   > Citation: · > Value: · > Display:
-   🪪 a card sits in the words > Card the words: what to show
+✍️ DO THESE YOURSELF · on the practice line in 1.2
+   select words  ▸ 💬 Comment    a > Comment row appears under the line
+   select words  ▸ 🪪 Card       those words become underlined and clickable
+   hover ▸ ＋     ▸ pick a kind   a typed lane appears in the drawer
+   double-click  ▸ change ▸ Save  the line changes, a ✎ record appears
 
-🖱 hover      the address · ＋ Comment · 💬 Chat
-🖱 dblclick   edit this sentence
-📱 touch      ⋯ opens the same three
+🎯 HOVER FOR THESE · 1.3
+   a sentence   C1.P1.S1 · ＋ · 💬      its address, comment, chat
+   a heading    breadcrumb · ⧉ · 🤖     its path, copy, chat
+   on a phone   one ⋯ holds all of it
+
+🚫 THESE MUST REFUSE YOU · 1.4
+   a sentence written twice on one page · words that are not in the line
+   the same card twice · and the composer keeps what you typed
+
+👀 WATCH WHILE IT SAVES · 1.4
+   the page must NOT jump · sections must stay open · about 0.4s
 ```
-📌 Establishes what a sentence does before the page explains it: click a real row, on either surface, and the page answers.
+📌 Establishes every gesture the page rules, as something to click rather than read. Everything below is live: the rows in 1.1 already carry records, and 1.2 is yours to write on.
 
-#### 1.1 · A sentence with typed lanes
-(three typed lanes are filed under this sentence, so its badge reads ⚑ 3)
+**1.1 · 🖱 Click these, they are already here**
+
+#### 1.1.1 · 🪪 A card on three of its words
+(click the underlined words; the panel opens over the prose and clicking away shuts it)
+A card belongs to a SPAN of words inside the sentence, not to the line as a whole.
+> Card SPAN of words: You clicked the words and this opened over the prose, which is the whole of what a card does. The words kept the paragraph's own font, colour and weight and took one dotted underline: no box, because a box would turn a paragraph into a row of buttons.
+The record that made those words clickable is `> Card SPAN of words: …`, written under this sentence like every other lane.
+
+#### 1.1.2 · ⚑ A sentence carrying three typed lanes
+(click anywhere on the sentence; the drawer opens under it and the badge said how many were there)
 This sentence carries three typed lanes, and none of them is stored anywhere but on the lines below it.
 > Citation: `### 4` rules what may attach to a sentence and how the drawer renders it.
 > Value: 3 lanes are attached here, which is the number the badge counts.
 > Display: the figure in `## Diagram` draws these lanes as the second of the sentence's two surfaces.
 
-#### 1.2 · A sentence a person is waiting on
-(one remark is written under this sentence, so its badge reads 💬 1 and outranks any record)
+#### 1.1.3 · 💬 A sentence someone is waiting on
+(the badge reads 💬 rather than ⚑, because a person waiting outranks a filed record)
 A person's remark is written `> Comment WHO …`, and the badge turns 💬 because someone is owed an answer.
 > Comment CC this row exists so the 💬 badge has something real to count · 260802 1400
 
-#### 1.3 · A sentence that was changed
-(one change record is written under this sentence, so its badge reads ✎ 1)
+#### 1.1.4 · ✎ A sentence that was changed
+(one line replaced, one record of what moved, and the old wording stored nowhere)
 An edit replaces the source line and leaves one record of what moved, which is why the old wording is never stored a second time.
 > ✎ An edit replaces the source line and leaves one record of ~the change~ *what moved*, which is why the old wording is never stored a second time. · CC · 260802 1400
 
-#### 1.4 · What each gesture does
-(one gesture per thing a reader may want, and one page rules each of them)
-Click a sentence to open its records: they start shut, and the badge says which kind is under it.
-Hover it, or reach it by keyboard, to see its generated address, its `＋` Comment action, and its `💬` Chat action.
-Double-click it to edit the source sentence, which is what wrote the `✎` record above.
-On touch there is no hover, so `⋯` opens the same Comment, Chat, and Edit actions.
-Filtering, resolving, archiving, and restoring these records is designed on `QB5e` and is not built yet.
+#### 1.1.5 · ⚠️ A card whose words are not in its sentence
+(deliberately broken, because a miss the reader cannot see is the one failure this grammar may not have)
+Nothing in this line matches what the record below claims to point at, so open the drawer and it says so.
+> Card a phrase that is not here: This card names words the sentence above does not contain. Instead of disappearing, it renders as this row and turns that sentence's badge into ⚠️.
 
-#### 1.5 · A sentence carrying a card on three of its words
-(the other surface, so "try it on this row" covers both and not only the lanes)
-A card belongs to a SPAN of words inside the sentence, and clicking those words opens it over the prose.
-> Card SPAN of words: The words are underlined, not boxed. You clicked them and this opened over the prose, which is the whole of what a card does. The line below is the record that put it here, and it is one line anyone could have typed.
-The record that made those words clickable is `> Card SPAN of words: …`, written under this sentence like every other lane.
-One span holds one card, because the words name one thing and there is only one right answer for them.
+**1.2 · ✍️ Do these yourself, on the practice line**
+
+#### 1.2.1 · 💬 Write a comment
+(select any words inside a sentence, then use the floating button that appears)
+Select a few words with the mouse and a 💬 Comment button appears just below them.
+Click it, pick or type your initials, write the comment, and press Save.
+A `> Comment WHO 「the words you selected」: …` row lands directly under that sentence, and the page repaints in about 0.4 seconds without you touching reload.
+The words you picked are kept in the record, so a remark about three words in a long line says which three; select nothing in particular and the row is written without the quote.
+
+#### 1.2.2 · 🪪 Put a card on a few words
+(the same selection, the other button; it is offered only when the words are really in the sentence)
+With words selected, click 🪪 Card instead, type what should open, and press Save.
+Those exact words become underlined on the page and clicking them opens your panel.
+If 🪪 Card does not appear, the selection crosses two sentences or sits inside a figure, and a card there could only ever fail.
+
+#### 1.2.3 · ⚑ Add a typed lane
+(hover the sentence, click the ＋ in the rail on its right, and choose the kind)
+Hovering a sentence reveals `C1.P1.S1 ＋ 💬` on the right; the `＋` opens a small form.
+Pick a kind from the dropdown, which starts on `JL` and must be changed to `Citation`, `Value`, `Note` or another kind if you want a typed lane rather than a remark.
+Type the text and Save, and the row appears in that sentence's drawer.
+
+#### 1.2.4 · ✎ Edit the sentence
+(double-click it, change the words, Save; a single click stays free for selecting and copying)
+Double-click any sentence and an editor opens with the current wording already in it.
+Change what you like, put your initials in the small box, and Save.
+The source line is replaced and one `> ✎` record appears beside it showing only the words that moved.
+
+#### 1.2.5 · 🧪 The practice line, which is here to be written on
+(nothing on this line matters, so comment on it, card it, lane it, and edit it freely)
+The pooled estimate settled near the middle of the range during the second half of the study period.
+> Comment JL 「settled near the middle」: This remark was written by selecting only these four words, and the record kept them, so a reader knows which part of the line is being questioned · 260802 1738
+
+**1.3 · 🎯 Hover for these**
+
+#### 1.3.1 · The sentence rail and the heading rail
+(both stay invisible until the pointer is on them, so they never sit on the prose)
+Hovering a sentence shows its generated address, a `＋` for a comment, and a `💬` that focuses this page's chat on that exact line.
+Hovering a `##` or `###` heading shows its breadcrumb, a `⧉` that copies the section as clean plain text, and a `🤖` that focuses the chat on the heading instead.
+Clicking `💬` or `🤖` costs no model turn: it fills a focus card, and the location travels with your next message.
+
+#### 1.3.2 · On a phone there is no hover
+(one quiet `⋯` holds everything the rail would have shown)
+A touch device shows a single `⋯` beside the sentence, which expands to the full address plus Comment, Chat and Edit.
+Nothing is lost and nothing sits permanently on top of the prose.
+
+**1.4 · 🚫 What must refuse you, and what to watch while it saves**
+
+#### 1.4.1 · Three refusals worth trying on purpose
+(each one answers with a reason and leaves what you typed in the box)
+Write a card on words that are not in the sentence and the server refuses, because it matches the exact source line.
+Write the same card on the same words twice and it refuses rather than filing a duplicate.
+Act on a sentence that appears twice on one page and every writer refuses, rather than guessing which copy you meant.
+
+#### 1.4.2 · What a good save looks like
+(the reader's place is the thing most easily lost, so it is the thing to watch)
+When you press Save the page must not jump: the scroll position holds and every section you opened stays open.
+The new row or card appears on its own in about 0.4 seconds, and you should never need to press reload.
+If the whole page flashes and returns you to the top, that is the defect this page fixed on 260802 and it has come back.
+
 
 ### 2 · Two surfaces: the card on the words, the lanes under the line
 **What each surface is for**: the thing it holds, how many it holds, and what it costs the sentence.
@@ -248,6 +318,8 @@ Copy is section-level rather than per-sentence: every section heading carries a 
 A remark is written directly beneath the words it addresses, and nothing is stored to link them.
 A queue at the foot of the page forces the reader to work out which sentence each entry came from, and it goes stale the moment the prose moves.
 `> Comment WHO …` is the form to write, because beside `> Citation:` and `> Value:` a bare pair of initials said nothing about what the row was.
+A remark made by selecting part of a line keeps those words: `> Comment JL 「the words」: …` renders them quoted ahead of the text (JL 260802, who asked whether a selection was recorded anywhere; it was not, and the words were thrown away after the highlight).
+Selecting words does NOT make a card: a card answers what a phrase IS and holds one thing, while a remark is a person talking about the line, so the two stay apart and 🪪 Card is the button that makes the other one.
 The older `> JL: …` still renders so nothing already written breaks, and `check.py` warns on it inside Content.
 
 #### 5.2 · `## Discussion` is a different grammar and is untouched
@@ -367,9 +439,11 @@ A render address says where a record appears in the current render, so archive a
 
 
 ## Aims
-### A1 · 🧪 Try it on this row
-- A1.1 · A reader meets the sentence by using one, before the page explains it.
-  **Done when:** `### 1` carries one live row per badge kind and one carrying a card, and each row's records, address, and chat action can be reached on the rendered page.
+### A1 · 🧪 Try it yourself: every feature, live on this page
+- A1.1 · A reader can exercise every gesture this page rules without reading the rest of it.
+  **Done when:** `### 1` carries one live row per thing that can be clicked and one written instruction per thing a person does themselves, and every one of them works on the rendered page.
+- A1.2 · A reader has somewhere safe to practise.
+  **Done when:** `### 1.2.5` is a sentence that carries nothing and says it is there to be written on.
 
 ### A2 · 🪪 Two surfaces: the card on the words, the lanes under the line
 - A2.1 · The two surfaces stay apart: a card anchors to marked words, a lane anchors to the whole line.
@@ -418,8 +492,9 @@ A render address says where a record appears in the current render, so archive a
   **Done when:** `QB5a` `QB5b` `QB5c` are folded in and archived, `QB5d` lives in the working lane, `QB5e` stands alone, and every old id still resolves.
 
 ## States
-### A1 · 🧪 Try it on this row
-- ✅ A1.1 · `### 1` carries four live rows: one per badge kind, plus a sentence whose words carry a card. The records are shut on the rendered page, each badge names its own kind, and the card opens on a click.
+### A1 · 🧪 Try it yourself: every feature, live on this page
+- ✅ A1.1 · Rebuilt 260802 on JL's ask for a showcase and a test sheet in one. Five live rows to click (card, three lanes, a remark, a change, a broken card), four written procedures (comment, card, lane, edit), the hover rails and the touch menu, three refusals worth trying, and what a good save looks like.
+- ✅ A1.2 · `### 1.2.5` is a bare sentence that says on its face that nothing on it matters.
 
 ### A2 · 🪪 Two surfaces: the card on the words, the lanes under the line
 - ✅ A2.1 · `### 2` and the `## Diagram` figure split the two anchors, and `### 3` and `### 4` now rule one each. The face that owned both, and mis-titled itself "click a sentence", was archived when the family folded on 260802, so nothing describes a card as a thing a sentence click opens.
@@ -518,6 +593,8 @@ A render address says where a record appears in the current render, so archive a
 - 🪞 **face**: a page carrying one part of a subject, whose id is its parent's id plus a letter, as `QB2a` is a face of `QB2`. This page had five until 260802; a face is folded back in once it stops carrying a subject of its own.
 
 ## Log
+260802 2200 · JL moved the decorated-sentence ruling here from `QC4a`, where CC had put it by anchoring to `live/write.py` instead of to the page that owns the gesture. `### 8` already claimed `§6 the edit` for this page. The misplacement had hidden that this page went ✅ SETTLED while `### 6`'s figure recorded the refusal as a fact, and it covers 44.8% of the board; whether the ✅ survives is part of the row
+260802 · 🧪 `### 1` rebuilt as a showcase AND a test sheet, on JL's ask for a showcase of every feature that also instructs the reader how to try each one. It opens with one figure listing every gesture, then four groups: rows that are already live and only need clicking, procedures a person carries out themselves on a practice line that exists for the purpose, the controls that appear only on hover and what replaces them on a phone, and the three refusals worth triggering on purpose plus what a good save looks like. A deliberately broken card was added so the ⚠️ badge and its loud row can be seen rather than described
 260802 · 🔎 A fresh reviewer read the folded page cold and returned `revise` with 28 findings; 26 were real and are fixed. The three that mattered were contradictions the fold created and nobody had reread for: the Opening's last sentence still said this page "hands each attachment to its own page", which is the pre-fold model and the one paragraph a reader gets without clicking; `### 6.1` still described the `✎` diff as two implementations agreeing by luck, hours after `A6.2` recorded it wired; and a live pointer aimed at a `### Decision Now` row whose heading was left behind empty, which the render drops entirely. `### 2` was also a compressed copy of `### 3` and `### 4` in nine places, so its mechanism paragraphs went and it is now the contrast alone; the card demonstration moved into `### 1`, where "try it on this row" had been covering only the lanes. Four 📌 lines advertising which archived face each division came from are gone, since that belongs here. Also added: the canonical `**Covered elsewhere**` part the `## Boundary` ruling requires, Glossary rows for `badge`, `chip` and `paper board`, and first-use definitions for the MISQ board and the drive. One finding did NOT survive: it asked for the section emoji to move onto the `###` division headings, which `check.py` reports as `group-name-drift` on all sixteen Aims and States groups, so only its real half was taken, that `A2` and `A3` had both been using 🪪
 260802 · ✅ SETTLED. JL moved the state line after the five faces folded, the card shipped, all four write paths were proven to repaint without a manual reload, and the `✎` diff became one computation. Sixteen Aims across eight divisions, all closed
 260802 · 🔗 One computation for the `✎` record. The board's `_change_diff` and `haipipe-writing`'s `cli/wdiff.py` had both computed it with difflib and agreed byte for byte, which is luck rather than construction. The board now calls `wdiff(host="board")`, found by path so the two units stay deletable from each other, and keeps its own copy as the fallback that answers when `haipipe-writing` is absent. `tests/test_change_diff.py` compares the fallback against the shared function over ten pairs, including an empty side and a full replacement, so drift is a red test rather than a silently different review trail

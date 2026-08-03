@@ -231,7 +231,7 @@ from the active stage's `phases:` list is `--`, not pending. Probe entries carry
 their own evidence type; the closing block never revives retired
 `cite`/`val`/`disp` sub-tracks. EXACTLY one 🔥, never zero.
 
-Gate-aware: closing a stage and advancing to the next requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../1-lifecycle/ref/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once the S page carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
+Gate-aware: closing a stage and advancing to the next requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../../paper/1-lifecycle/ref/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once the S page carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
 
 
 Comment lifecycle
@@ -641,7 +641,7 @@ Converted from the skill's own `CHANGELOG.md`: 35 releases.
       - Removed remaining `STATUS` references from delivery routing; open needs and resumable state live on Board/S pages, the claim ledger, probe entries, and their target files.
 260726 · `0.4.0` · the Closing Block carries the board URL, not a stage strip
       Implements the single-door ruling (design board `skills/diagrams/01-haipipe-paper-260725`, faces `QA1` + `QA4`, JL 2026-07-26): **`/haipipe-paper` is the single thing a human types**, and it CALLS `haipipe-board` to build and open the paper's `0-lifecycle/`. `haipipe-board` remains its own door for boards that are not inside a paper. Calling is not owning: `haipipe-board` still owns the format, the build, the filename rule, the html and the write-back.
-      - **The `stage:` line and `stage-strip.sh` are RETIRED.** The strip was specified in the 260622 feedback as reading `STATUS.md current_layer`, with the stated precondition that a stale value would make it lie. `STATUS.md` is retired and the board renders the spine, so the strip has neither a source nor a job. It was a worse copy of something the human already has open.
+      - **The `stage:` line and `../../application/haipipe-application/stage-strip.sh` are RETIRED.** The strip was specified in the 260622 feedback as reading `STATUS.md current_layer`, with the stated precondition that a stale value would make it lie. `STATUS.md` is retired and the board renders the spine, so the strip has neither a source nor a job. It was a worse copy of something the human already has open.
       - **A deep-linked `board:` line replaces it**, pointing at the page this session is working, so one click lands on it.
       - **The `phase:` line survives, and the reason is stated.** It is the only thing in the closing block the board does NOT show: a page's `state:` is its gate status, not the live DPRC progress of a run in flight. The stage line was derivable from the board and therefore redundant; the phase line is not.
 260724 · `0.3.2`

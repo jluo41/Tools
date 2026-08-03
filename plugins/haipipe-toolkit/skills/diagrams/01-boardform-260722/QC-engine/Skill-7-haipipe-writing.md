@@ -6,12 +6,14 @@ method: three managed spans sync from the skill folder; everything else is writt
 ## Opening
 `haipipe-writing` takes prose somebody already wrote and makes it readable to a person whose English is weak, then records every word it changed under the sentence it changed.
 Load it when the problem is the PROSE, whatever file holds it; every other unit on this roster is about the board, and this one is about writing and works on a README or a paper section just as well.
-It is the only unit here that lives outside `skills/board/`, and it is on this board because the board is one of its hosts: `ref/writing-rules.md` is the standard every page is judged against.
-Two of its three verbs are deterministic code, so a model never computes a diff and never places a record; the judgment is one step and only one step.
+Two of its verbs are code, so a model never computes a diff and never places a record.
 
-**What the three verbs are**: `score` reads prose and ranks what is worth rewriting, and changes nothing.
+**Why it is on a board about boards**: It is the only unit here that lives outside `skills/board/`, and it is on this board because the board is one of its hosts: `ref/writing-rules.md` is the standard every page is judged against.
+
+**What the verbs are, and why the count is confusing**: `score` reads prose and ranks what is worth rewriting, and changes nothing.
 `rewrite` is the only step a model does, and it produces new prose beside the old.
 `apply` then computes the word-level diff in code and anchors a `✎` record under the sentence it changed, and `check` audits that every record is well formed and attached to something.
+That is four steps under three named verbs, because `apply` and `check` are both `wdiff.py`; the unit's own summary says three and its own figure numbers four.
 A `✎` record reads `> ✎ the sentence with ~removed~ *added* words · WHO · 260802 1720`, which is the same lane grammar `haipipe-board-sentence` owns.
 
 **Why it is not part of this family**: the test on `QC1b` §1 asks whether some consumer needs a unit's rules with no board open, and `haipipe-writing` passes it too easily.
@@ -268,7 +270,7 @@ tests/test_roundtrip.py     114 ln  What `apply` writes, `check` must accept. Ru
       `haipipe-board-sentence` 0.3.0 added an `edit` verb that writes a change record, and `cli/wdiff.py apply` here writes one too.
       One grammar with two independent implementations is the shape `cli/agree.py` was built for, and it has never been pointed at this pair.
 - [ ] 📊 One `score` run picks what this board rewrites next
-      The verb ranks prose against the weak-English test and it has never been pointed at this board's 51 pages.
+      The verb ranks prose against the weak-English test and it has never been pointed at this board's 52 pages.
       Today's roster rewrite was chosen by JL reading Openings by eye, which is exactly the work `score` exists to replace.
 - [ ] 🪞 The roster's scope beyond `skills/board/` is settled, not just widened
       `QC3a` ruled on 260727 that this roster covers `skills/board/` and nothing else, and JL widened it on 260802 by asking for this page.
@@ -291,7 +293,7 @@ Its `🟡 in flux` is about position rather than quality, because it absorbed th
 
 ## Log
 260802 2100 · Corrected one claim after `haipipe-board-sentence` reached 0.3.0: this page said that skill owns what a `✎` line IS while this one owns when it gets written, and its new `edit` verb now writes one too. Two producers of one record is a new Aim, and `cli/agree.py` is the obvious instrument since it already compares two statements of one fact
-260802 2000 · Page opened at JL's request to add `skills/writing` to the roster, and written to `haipipe-board-page-for-skill` 0.1.0. It is the first roster row for a unit outside `skills/board/`, which widens `QC3a`'s 260727 scope ruling; the open question of where the new line falls is an Aim here and a Decision Now row on `QC3a`
+260802 2000 · Page opened at JL's request to add `skills/writing` to the roster, and written to `haipipe-board-page-for-skill` 0.1.0. It is the first skill page for a unit outside `skills/board/`, which widens `QC3a`'s 260727 scope ruling; the open question of where the new line falls is an Aim here and a Decision Now row on `QC3a`
 260802 2000 · page generated from `writing/haipipe-writing/` by `skillpage.py new`
 
 <!-- haipipe:skill:log:start f230e8df4faea9c7 writing/haipipe-writing -->

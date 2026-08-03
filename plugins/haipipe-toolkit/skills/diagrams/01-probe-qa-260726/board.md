@@ -111,4 +111,4 @@ boardform-board/    ../01-boardform-260722/
 QA1@paper           ../01-haipipe-paper-260725/QA-design/QA1-the-folder-map.md
 QA5@paper           ../01-haipipe-paper-260725/QA-design/QA5-the-probe-layer.md
 QB9@paper           ../01-haipipe-paper-260725/QC-engine/QC4b-probe.md
-QC1@paper           ../01-haipipe-paper-260725/QB-delivery/QB12a-sentence-citation.md
+QC1@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1a-sentence-citation.md

@@ -72,6 +72,23 @@ SKIP = {"__pycache__", ".git", "node_modules"}
 DOC = {".md", ".txt"}
 
 
+def _span_at_line_start(text, marker):
+    """Index of `marker` where it BEGINS A LINE, or -1.
+
+    A skill's own SKILL.md may quote these markers, in prose or inside a figure
+    that draws the page anatomy. Such a quote is indented or mid-line, and only
+    a line-anchored search can tell it from the real span.
+    """
+    at = 0
+    while True:
+        i = text.find(marker, at)
+        if i < 0:
+            return -1
+        if i == 0 or text[i - 1] == "\n":
+            return i
+        at = i + 1
+
+
 def has_block(page):
     return bool(MARKER.search(page.read_text(encoding="utf-8")))
 
@@ -516,7 +533,7 @@ method: three managed spans sync from the skill folder; everything else is writt
 ## Opening
 REPLACE THIS PARAGRAPH. Load `haipipe-board-page-for-skill` and write the three slots it names, in its order, in plain words: ❶ what `{name}` is and what it is FOR, ❷ when you reach for it rather than the ONE sibling you would otherwise pick, named, ❸ where it stands, meaning the one thing to know before trusting it.
 
-NEVER open a roster page with a question. This stub used to seed `{{name}} is a shipped unit: what does it still owe, and is it healthy?`, and on 260802 five pages generated from it all opened with the same rhetorical question in the same four-slot shape, because a roster page DECIDES NOTHING and so has nothing to ask.
+NEVER open a skill page with a question. This stub used to seed `{{name}} is a shipped unit: what does it still owe, and is it healthy?`, and on 260802 five pages generated from it all opened with the same rhetorical question in the same four-slot shape, because a skill page DECIDES NOTHING and so has nothing to ask.
 Delete these instructions once the paragraph is written; the FIRST BLANK LINE above is the split, and everything below it is the `More details` drawer, written as labelled parts.
 `Opening` is the lead section's ONE name on every page kind (JL 260731: "just one single Opening"); `Question` survives only as a legacy alias for pages written before the rename.
 
@@ -694,7 +711,16 @@ def cmd_sync(a):
         new, missing = text, []
         for part in PARTS:
             a, b = start_of(part), end_of(part)
-            i, j = new.find(a), new.find(b)
+            # A MARKER ONLY COUNTS AT THE START OF A LINE, and this loop used a
+            # plain `find()` that did not. `has_block` was fixed for exactly this
+            # in 260726 and this path was not, so the bug sat here until a skill
+            # whose own SKILL.md DRAWS the page anatomy was mirrored on 260803:
+            # the figure quoted `<!-- haipipe:skill:log:start …` inside a fence,
+            # that text landed in the generated Content span, `find()` matched
+            # the QUOTE instead of the real marker, and the splice deleted the
+            # page's authored Aims, States and Log. Silently, and only on the
+            # page most likely to document the mechanism.
+            i, j = _span_at_line_start(new, a), _span_at_line_start(new, b)
             if i < 0 or j < 0:
                 missing.append(part)
                 continue

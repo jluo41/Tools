@@ -1,7 +1,7 @@
 board: Agent Roster
 ====================
 
-The Board family owns one live agent:
+The Board family owns two live agents:
 `haipipe-board-reviewer-agent`, a read-only, zero-background reviewer.
 
 The main session and `haipipe-board` skill are the writers. They identify the
@@ -41,7 +41,7 @@ Agents are thin. Rules live in:
 Board operations and synchronization  → ../haipipe-board/SKILL.md
 Board source and rendering grammar    → ../haipipe-board/ref/board-form.md
 Cold-read rules and prompt            → ../haipipe-board/ref/writing-rules.md
-Mechanical checks                     → ../haipipe-board/check.py
+Mechanical checks                     → ../haipipe-board/cli/check.py
 Design rulings                        → ../../diagrams/01-boardform-260722/
 ```
 

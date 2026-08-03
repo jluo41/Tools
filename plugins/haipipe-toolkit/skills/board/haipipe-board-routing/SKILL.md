@@ -3,8 +3,8 @@ name: haipipe-board-routing
 description: >-
   The WRITE verb of the board family, at BOTH altitudes. Page altitude: take ONE input (a decision made in chat, a finding, a correction, a status change) and land it on the board, by finding the owning page and section and appending an anchored write; it loads the page and sentence specs, reads board.md's ## Pages as the only registry, and proposes rather than creates when nothing fits. Board and group altitude (absorbed from haipipe-board-index on 260802): propose a board's structure with the human before any file exists, materialize it after approval, keep each group's engine-pages-folder lane block current with src/lanes.py, and move pages when a group is renamed or split. It may update an Aim State from inspected evidence, and closes a Decision Now row the human has already answered while never ticking one nobody answered and never changing a page-level human gate. Use when work happened and the board must record it, and when the board's own structure is what changed: route this to the board, write it back, which page owns this, claim the question, board structure, page group, group map, lanes, regroup, propose a board. A DECISION is its most common input: the moment a ruling is made, or a question needs one, call this to find the owning page and write the row or the record, because a decision that stays in the session cannot be seen, carries no Blocks or Default, and leaves no trace of the options weighed. It does NOT render HTML: haipipe-board owns build, serve, page and sentence. Trigger: route, write back, owning page, land this on the board, update the log, we decided, you ruled, JL said, record this decision, add a Decision Now, needs a ruling, which page owns this, put this on the board, board structure, board index, page group, group map, lanes, regroup, /haipipe-board-routing.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-08-02"
+  version: "0.9.1"
+  last_updated: "2026-08-03"
   summary: "Absorbs haipipe-board-index: one WRITE verb now owns both altitudes, so a group-altitude input finally has somewhere to land."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -79,8 +79,8 @@ The door keeps that description because a person opening their first board shoul
 ### `lanes` · refresh the per-group blocks
 
 ```bash
-python3 src/lanes.py <board-dir>            # dry run: what would change
-python3 src/lanes.py <board-dir> --apply    # write board.md
+python3 <this-skill>/src/lanes.py <board-dir>            # dry run: what would change
+python3 <this-skill>/src/lanes.py <board-dir> --apply    # write board.md
 ```
 
 It ROUND-TRIPS.
@@ -198,7 +198,7 @@ Five conditions hold before an agent may tell a person a round is done, and `cli
 ⑤  STATED         the reply names which of ①-④ ran, with ③'s numbers
 ```
 
-Run `python3 cli/gate.py <board> --start` before the work and `cli/gate.py <board>` after it.
+Run `python3 <board-skill>/cli/gate.py <board> --start` before the work and the same command without `--start` after it. The script lives in `haipipe-board/cli/`, not here: this skill ships one script and it is `src/lanes.py`.
 ③ compares PER PAGE, never the board's total, because a second session writing the same board moves the total underneath you: it went 304 to 276 during one round on 260802. A warning the round introduced blocks the handback; the board's standing warnings are out of scope.
 ① and ④ are printed as not tested, because whether a change was substantive and whether the person's own tab has the new assets are judgments the command cannot make. A gate that reports a condition it did not test is worse than no gate.
 A round that changed PROSE also owes a cold read by `haipipe-board-reviewer-agent`; a round that changed only mechanics does not, since there is nothing for a reader to judge.

@@ -4,13 +4,14 @@ spine: A paper is a delivery system. Design first fixes what the Paper system is
 dialect: paper
 paper-root: _fixture
 close: Every Delivery target has an owning Engine route and Execute evidence or an explicit open gap; every design question is ruled or deliberately parked; fresh-agent evidence validates completed skill work.
-
+session: 8d4c966d-8db2-443b-9194-8dcb8a14b600
 ## Topic
 
 This is a **Skill-Board** for the Paper family, organized like the `/haipipe-board` Skill-Board.
 
 - **QA · Design** defines the Paper system, its eleven folders, and ownership boundaries, including the four shared families the paper calls and owns none of.
-- **QB · Delivery** defines what the paper must give readers and collaborators, in the paper-facing order below, and then the three series that say what each delivery rule applies to: a whole section, one sentence, or one float.
+- **QB · Delivery** defines what the paper must give readers and collaborators, in the paper-facing order below, and nothing else: ten concerns read top to bottom, plus the one page that draws the whole paper board at once.
+- **QBe · Delivery Element** holds the rules whose unit is smaller than a concern, one series per unit, numbered from the smallest up: one sentence, one float, one whole section. It is not an eleventh Delivery concern either: a concern says what the reader GETS, and a series says what a rule APPLIES TO, which is why it is entered by dropping into a series head rather than by reading it through.
 - **QBv · Delivery Venue** holds what each venue KNOWS, one page per venue TARGET: 14 journals plus grant and patent. It is not an eleventh Delivery concern: `QB1` still owns which venue this paper picked, and this group owns what that venue rewards, desk-rejects, and requires of every section.
 - **QC · Engine** defines the reusable skills and contracts that can produce those deliveries.
 - **QF · Execute** records bounded runs, checks, receipts, and fresh-agent evidence.
@@ -27,9 +28,9 @@ QB · DELIVERY   what readers and collaborators receive
        Opening → Work → Literature → Value → Display → Main → Appendix
        → Present → Build → Round
        │
-       ├─ QB11 Delivery-Section    the rule applies to a whole ## Content
-       ├─ QB12 Delivery-Sentence   the rule applies to one sentence
-       └─ QB13 Delivery-Display    the rule applies to one float
+       │ ◀── governed by ── QBe · DELIVERY ELEMENT  one series per UNIT,
+       │              smallest first: QBe1 one sentence · QBe2 one float
+       │              QBe3 a whole ## Content · a concern GETS, a series APPLIES TO
        │
        │ ◀── reads ── QBv · DELIVERY VENUE  one page per TARGET
        │              QB1 picks the venue · QBv holds its rewards,
@@ -52,11 +53,11 @@ Delivery order is the reader-facing concern order. It does not replace Engine de
           what the Paper system IS       what the reader GETS       how it is MADE
           ┌───────────────────────┐     ┌────────────────────────┐ ┌──────────────────────┐
           │ QA · Design           │────▶│ QB · Delivery          │◀│ QC · Engine          │
-          │ 11 folders · 6 pairs  │     │ QB1–QB10  the concerns │ │ skill routes ·       │
-          │ Paper · Board · Probe │     │ QB11 section series    │ │ Paper/Probe/Display  │
-          │ Display · Writing     │     │ QB12 sentence series   │ │ + Board substrate    │
-          │                       │     │ QB13 float series      │ │                      │
-          │                       │     │ 23 working records     │ │                      │
+          │ 11 folders · 6 pairs  │     │ QB0   the whole layout │ │ skill routes ·       │
+          │ Paper · Board · Probe │     │ QB1–QB10 the concerns, │ │ Paper/Probe/Display  │
+          │ Display · Writing     │     │   in reader order      │ │ + Board substrate    │
+          │                       │     │ read with QBe by UNIT  │ │                      │
+          │                       │     │ and QBv by TARGET      │ │                      │
           └───────────────────────┘     └───────────┬────────────┘ └──────────┬───────────┘
                                                       │                         │
                                                       └───────────┬─────────────┘
@@ -73,9 +74,12 @@ QB1   Opening includes Seed, Venue, and Pitch.
 QB2   Work grows the discovery and task banks through explicit probes, and owns the Narrative arc built from the claim ledger.
 QB9   Build includes projection, diffusion/distribution, compile, and promotion.
 QB10  Round contains one review/rebuttal/revision/resubmission batch.
-QB11  Section series: a rule here cannot be checked one sentence at a time, because a section is a sequence.
-QB12  Sentence series: four attachment types, one marker grammar, differing only in who may complete one.
-QB13  Float series: what Paper owns about a display between the render and the sentence that points at it.
+QBe   Split out of Delivery on 260803 (JL: "divide the QB11 to QB13c as a new Question Group"), then numbered by unit size the same day (JL: sentence, display, section). QB's own copy had admitted the seam for a round, saying the group was "read in two passes", and thirteen of its twenty-four pages were in the second one.
+QBe1  Sentence series: four attachment types, one marker grammar, differing only in who may complete one.
+QBe2  Float series: what Paper owns about a display between the render and the sentence that points at it. It is numbered second because that is where it sits, between the sentence and the section.
+QBe3  Section series: a rule here cannot be checked one sentence at a time, and it fails that check in
+      two ways. A SEQUENCE rule is about order, and the paragraphs cannot be shuffled. An AGGREGATE rule
+      is about amount, survives the shuffle, and is the venue's `## Word budget` (JL 260803).
 QBv1  A venue cuts across Delivery: its README maps to Claims, Display, Minimap, and Write/Edit at once, so it can be filed under no single concern. The packs are their own repository and this plugin reads them and never writes them. One page per TARGET, with no pack-head layer above it (JL 260802).
 QC1 names the four-part Engine: Paper, Probe, Display, and the Board substrate. QC5 is where the Paper Board adds its manuscript-specific writing dialect above Board's generic page and sentence grammar.
 QF1–QF3 prove or block a Delivery × Engine route; they never become a second authoring tree.
@@ -92,6 +96,7 @@ This Board has one editable Board-Folder and one generated Board-Webpage site. T
 ├── board.md                         Board-level source and page registry
 ├── QA-design/                        Design pages and paper-boundary records
 ├── QB-delivery/                      reader-facing paper delivery pages
+├── QBe-delivery-element/             the three series, smallest unit first: sentence · float · section
 ├── QBv-venue-packs/                  one page per venue target: 14 journals + grant + patent
 ├── QC-engine/                        skills and their contracts
 ├── QF-execute/                       bounded execution records
@@ -150,17 +155,16 @@ QA9-driving-work-from-a-page.md
 QA10-the-writing-layer.md
 
 ### QB · Delivery
-What one paper must give its reader or collaborator, read in two passes. QB1 through QB10 are the ten reader-facing concerns, in reader order and uninterrupted. QB11, QB12, and QB13 are three series heads, each owning the rules whose unit is a whole section, one sentence, or one float; their faces sort under them.
+What one paper must give its reader or collaborator, in reader order and uninterrupted. QB1 through QB10 are the ten concerns, and reading them top to bottom is the paper.
 QB0 sits before all of them and draws the whole paper board at once, which is the one thing no single concern can show.
-A concern says what the reader GETS. A series says what a rule APPLIES TO. Reading QB1 to QB10 top to bottom is the paper; dropping into a series head is how you find the rule that governs a unit.
+A concern says what the reader GETS, and that is the only thing this group holds. What a rule APPLIES TO is `QBe`, and what a desk REWARDS is `QBv`; both are read while a concern is being worked and neither is a concern itself.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record          📂 FOLDER
 ─────────────────────────      ───────────────────────────────────    ────────────────────────
 skill routes                ◀── QB1–QB10   the ten concerns, in order ──▶  paper artifacts
-adapters                    ◀── QB11a–c    unit = a whole section     ──▶  sections/*.tex · docx
-probe + evidence            ◀── QB12a–d    unit = one sentence        ──▶  markers and chips
-Display layer               ◀── QB13a–c    unit = one float           ──▶  displays/<unit>/
+the whole board at once     ◀── QB0        the layout every group is ──▶  <paper>/0-lifecycle/
+                                           a slice of
 ```
 QB0-paper-board-layout.md
 QB1-opening.md
@@ -173,32 +177,45 @@ QB7-appendix.md
 QB8-present.md
 QB9-build.md
 QB10-round.md
-QB11-delivery-section.md
-QB11a-section-to-latex.md
-QB11b-section-to-word.md
-QB11c-display-placement.md
-QB12-delivery-sentence.md
-QB12a-sentence-citation.md
-QB12b-sentence-value.md
-QB12c-sentence-display-table.md
-QB12d-sentence-display-figure.md
-QB13-delivery-display.md
-QB13a-display-folder.md
-QB13b-requested-display.md
-QB13c-display-caption.md
+
+### QBe · Delivery Element
+One series per UNIT a delivery rule can apply to, numbered from the smallest unit up: one sentence, then one float, then a whole section. Split out of `QB` on 260803, after that group's own copy had spent a round telling readers it was "read in two passes" while thirteen of its twenty-four pages sat in the second one.
+The order is the ruling (JL 260803). A float is the unit that sits between the other two, larger than the sentence that points at it and smaller than the section it lands in, and the numbers now say so: `QBe1` sentence, `QBe2` float, `QBe3` section.
+A concern is entered by reading it through; a series is entered by dropping in, because you arrive already holding a unit and needing the rule that governs it. The question that files a rule is what you must hold in your hand to check it: one sentence alone, one float as an object, or the whole `## Content` in order.
+Each series reads from the paper's own stage folder, which is where the evidence is produced: `QBe1`'s three types from `S03-literature`, `S04-value` and `S05-display`, `QBe2` from `S05-display`, and `QBe3` from `S06-main` and `S07-appendix` (JL 260803, after the MISQ paper regrouped its lifecycle into `S01` to `S10`).
+This group is not an eleventh Delivery concern, for the same reason `QBv` is not: it gives the reader nothing directly, and every rule in it is spent on something `QB1`–`QB10` deliver.
+
+Each series is ONE page, and its filename names what it holds (JL 260803). The ten faces became numbered divisions of their series on 260803, following `QB5-overview` on the boardform board; they are archived rather than deleted and every retired id still resolves through `## Links`.
+
+```text
+⚙️ ENGINE                      📋 PAGES · the working record          📂 FOLDER
+─────────────────────────      ───────────────────────────────────    ────────────────────────
+probe + evidence            ◀── QBe1  cite · value · display        ──▶  markers and chips
+                                      unit = one sentence · §4–§7
+Display layer               ◀── QBe2  folder · render · caption      ──▶  displays/<unit>/
+                                      unit = one float · §4–§6
+adapters                    ◀── QBe3  content · latex · word ·       ──▶  sections/*.tex · docx
+                                      display · unit = one ## Content · §3–§5
+
+🔑 each name is UNIT then PARTS, and `display` appears in all three: a sentence
+   POINTS at one, QBe2 IS one, a section PLACES one (JL 260803)
+```
+QBe1-sentence-cite-value-display.md
+QBe2-display-folder-render-caption.md
+QBe3-content-latex-word-display.md
 
 ### QBv · Delivery Venue
 One page per VENUE TARGET, and nothing above it. A page is a specific journal, agency, or patent office: what that desk accepts, what it desk-rejects, and what it requires of every section and of the appendix. `QB1` ruled on 260729 that the venue DECISION lives inside Opening and that ruling stands: this group is not an eleventh Delivery concern, it is the catalog Opening reads to make that decision and that four other concerns read afterwards.
-A venue cuts across Delivery, which is why it cannot be filed under any single concern. Every `playbook-*/README.md` carries four stage maps: rewards land on QB4 Value, display conventions on QB5 Display, the section arc on QB6 Main, and the language profile on QB11a.
+A venue cuts across Delivery, which is why it cannot be filed under any single concern. Every `playbook-*/README.md` carries four stage maps: rewards land on QB4 Value, display conventions on QB5 Display, the section arc on QB6 Main, and the language profile on QBe3 §3.
 
-**The law this group runs on**, absorbed from the retired `QBv0` on 260802: a venue pack is READ and never written by this plugin. The packs are their own repository, `jluo41/Venue-Paper`, pinned as a submodule at `paper/venue/`, so every paper stage is a reader by construction. A pack answers at two levels, family and outlet, and a file missing from either level is a missing answer rather than a missing folder. Two files sit at different levels depending on the pack: `taste.md` and `examples/` are per-outlet for the eleven multi-outlet journals and per-family for PNAS, grant, and patent, and that split is declared nowhere. `stages/section-kinds.yml` is the reader-side resolver: it maps outlet to section kinds, aliases `theory-model` to `theory`, rules that a pack path is reached by GLOB and never by concatenation, and declares grant and patent blueprint-only by design.
+**The law this group runs on**, absorbed from the retired `QBv0` on 260802: a venue pack is READ and never written by this plugin. The packs are their own repository, `jluo41/Venue-Paper`, pinned as a submodule at `paper/venue/`, so every paper stage is a reader by construction. A pack answers at two levels, family and outlet, and a file missing from either level is a missing answer rather than a missing folder. Two files sit at different levels depending on the pack: `taste.md` and `examples/` are per-outlet for the eleven multi-outlet journals and per-family for PNAS, grant, and patent, and that split is declared nowhere. `../../paper/1-lifecycle/haipipe-paper-stage/stages/section-kinds.yml` is the reader-side resolver: it maps outlet to section kinds, aliases `theory-model` to `theory`, rules that a pack path is reached by GLOB and never by concatenation, and declares grant and patent blueprint-only by design.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record          📂 FOLDER
 ─────────────────────────      ───────────────────────────────────    ────────────────────────
 2a-venue reads packs:       ◀── QBv1–QBv4   the UTD-IS desks         ──▶  playbook-utd-is/
 QB1 owns the DECISION       ◀── QBv5–QBv7   the JAMA portfolio       ──▶  playbook-jama-portfolio/
-QB4·QB5·QB6·QB11a read it   ◀── QBv8–QBv12  the Nature portfolio     ──▶  playbook-nature-portfolio/
+QB4·QB5·QB6·QBe3 §3 read it   ◀── QBv8–QBv12  the Nature portfolio     ──▶  playbook-nature-portfolio/
 section-kinds.yml resolves  ◀── QBv13–QBv14 PNAS · Diabetes Care     ──▶  playbook-pnas · -medical-journals
   outlet ▶ section kinds    ◀── QBv15–QBv16 grant · patent, the two  ──▶  README delta tables
                                             non-journal targets
@@ -253,6 +270,7 @@ QC4b-probe.md
 QC4c-revise.md
 QC4d-check.md
 QC5-sentence-evidence-contract.md
+QC6-paper-skill-folder.md
 Skill-11-haipipe-writing.md
 
 ### QF · Execute
@@ -281,10 +299,10 @@ QP0                QB-delivery/QB10-round.md
 QS0                QC-engine/QC1-delivery-skill-map.md
 QS4                QC-engine/QC1a-skill-card-admission.md
 QC0                QC-engine/QC5-sentence-evidence-contract.md
-QD1                QB-delivery/QB13a-display-folder.md
-QD2                QB-delivery/QB13b-requested-display.md
-QD3                QB-delivery/QB13c-display-caption.md
-QD4                QB-delivery/QB11c-display-placement.md
+QD1                _archive/QBe2a-display-folder.md
+QD2                _archive/QBe2b-requested-display.md
+QD3                _archive/QBe2c-display-caption.md
+QD4                _archive/QBe3c-display-placement.md
 QE0                QF-execute/QF1-execution-map.md
 QE1                QF-execute/QF2-contract-run.md
 QE2                QF-execute/QF3-fresh-agent-run.md
@@ -312,25 +330,48 @@ Legacy-QB3a         QC-engine/QC4a-draft.md
 Legacy-QB3b         QC-engine/QC4b-probe.md
 Legacy-QB3c         QC-engine/QC4c-revise.md
 Legacy-QB3d         QC-engine/QC4d-check.md
-Legacy-QC1          QB-delivery/QB12a-sentence-citation.md
-Legacy-QC2          QB-delivery/QB12b-sentence-value.md
-Legacy-QC3          QB-delivery/QB12c-sentence-display-table.md
-Legacy-QC4          QB-delivery/QB12d-sentence-display-figure.md
-Legacy-QC5          QB-delivery/QB11a-section-to-latex.md
-Legacy-QC6          QB-delivery/QB11b-section-to-word.md
-QV0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/delivery-value/QV0-value-delivery.md
-QP0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/delivery-present/QP0-present-delivery.md
-QR0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/7-round/QR0-round-delivery.md
-QB3a                QB-delivery/QB12a-sentence-citation.md
-QB4a                QB-delivery/QB12b-sentence-value.md
-QB5a                QB-delivery/QB12c-sentence-display-table.md
-QB5b                QB-delivery/QB12d-sentence-display-figure.md
-QB5c                QB-delivery/QB13a-display-folder.md
-QB5d                QB-delivery/QB13b-requested-display.md
-QB5e                QB-delivery/QB13c-display-caption.md
-QB5f                QB-delivery/QB11c-display-placement.md
-QB9a                QB-delivery/QB11a-section-to-latex.md
-QB9b                QB-delivery/QB11b-section-to-word.md
+Legacy-QC1          _archive/QBe1a-sentence-citation.md
+Legacy-QC2          _archive/QBe1b-sentence-value.md
+Legacy-QC3          _archive/QBe1c-sentence-display-table.md
+Legacy-QC4          _archive/QBe1d-sentence-display-figure.md
+Legacy-QC5          _archive/QBe3a-section-to-latex.md
+Legacy-QC6          _archive/QBe3b-section-to-word.md
+QV0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/S04-value/QV0-value-delivery.md
+QP0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/S08-present/QP0-present-delivery.md
+QR0                 ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/S10-round/QR0-round-delivery.md
+QB3a                _archive/QBe1a-sentence-citation.md
+QB4a                _archive/QBe1b-sentence-value.md
+QB5a                _archive/QBe1c-sentence-display-table.md
+QB5b                _archive/QBe1d-sentence-display-figure.md
+QB5c                _archive/QBe2a-display-folder.md
+QB5d                _archive/QBe2b-requested-display.md
+QB5e                _archive/QBe2c-display-caption.md
+QB5f                _archive/QBe3c-display-placement.md
+QB9a                _archive/QBe3a-section-to-latex.md
+QB9b                _archive/QBe3b-section-to-word.md
+QBe1a               _archive/QBe1a-sentence-citation.md
+QBe1b               _archive/QBe1b-sentence-value.md
+QBe1c               _archive/QBe1c-sentence-display-table.md
+QBe1d               _archive/QBe1d-sentence-display-figure.md
+QBe2a               _archive/QBe2a-display-folder.md
+QBe2b               _archive/QBe2b-requested-display.md
+QBe2c               _archive/QBe2c-display-caption.md
+QBe3a               _archive/QBe3a-section-to-latex.md
+QBe3b               _archive/QBe3b-section-to-word.md
+QBe3c               _archive/QBe3c-display-placement.md
+QB11                QBe-delivery-element/QBe3-content-latex-word-display.md
+QB11a               _archive/QBe3a-section-to-latex.md
+QB11b               _archive/QBe3b-section-to-word.md
+QB11c               _archive/QBe3c-display-placement.md
+QB12                QBe-delivery-element/QBe1-sentence-cite-value-display.md
+QB12a               _archive/QBe1a-sentence-citation.md
+QB12b               _archive/QBe1b-sentence-value.md
+QB12c               _archive/QBe1c-sentence-display-table.md
+QB12d               _archive/QBe1d-sentence-display-figure.md
+QB13                QBe-delivery-element/QBe2-display-folder-render-caption.md
+QB13a               _archive/QBe2a-display-folder.md
+QB13b               _archive/QBe2b-requested-display.md
+QB13c               _archive/QBe2c-display-caption.md
 PHILOSOPHY.md      ../../paper/PHILOSOPHY.md
 README.md          ../../paper/README.md
 stages/            ../../paper/1-lifecycle/haipipe-paper-stage/stages/

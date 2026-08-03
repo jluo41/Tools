@@ -3,6 +3,7 @@
 state: 🟡 PARTIAL · the crossing and the vocabulary are ruled; which half of the contract this board may rule is not yet checkable
 owner: JL
 method: one file per question inside the paper, bound BY PATH to an answer the paper may not produce
+session: 822af3ea-7685-49dd-9ee0-7d0ee2eea8ec
 
 ## Opening
 
@@ -14,7 +15,7 @@ The paper's half of that crossing is ruled here; the model itself stays the laye
 **Where this page sits**: `QA1` names `⑤ /haipipe-probe` as one of the shared families the paper calls and owns none of.
 This page is the near side of one of them: the file that holds the question, the words it is written in, and the wall it is asked across.
 What the LAYER guarantees is the probe board's, at `QB1@probe`, `QB3@probe` and `QB6@probe`.
-What the STAGE declares and consumes is `QC4b`; how a landed value renders on a sentence is `QB12b`.
+What the STAGE declares and consumes is `QC4b`; how a landed value renders on a sentence is `QBe1 §5`.
 
 **Why it matters that the stake never crosses**: the bank must not know which answer would be convenient.
 Strip the stake and what comes back is evidence; leave it in and what comes back is a request wearing evidence's clothes.
@@ -24,7 +25,7 @@ Every number and every citation in the manuscript arrives through this one door,
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Never restate the probe-file anatomy**: the four sections, the QA state line and the two LAWS belong to `⑤` and are not this board's to change.
 Cite them; a copy here becomes a second authority the day the layer moves.
@@ -164,7 +165,7 @@ A probe file cannot, because it is topic-scoped across stages and its four-secti
 
 #### 3.2 · The layer is visible from the board without living in it
 (which is the outcome moving it would have been trying to buy)
-An S page's Q-consumer names its questions, and the sentence chips on `QB12a` and `QB12b` resolve their states onto the sentences that owe them.
+An S page's Q-consumer names its questions, and the sentence chips on `QBe1 §4` and `QBe1 §5` resolve their states onto the sentences that owe them.
 On the MISQ board that is 215 chips over eighteen probe files.
 
 ## Aims

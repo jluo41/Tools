@@ -10,7 +10,7 @@ That contribution is prose plus a marked hole. `\citep{key}` only when the key a
 
 What is unresolved is the two cases the grammar cannot see. A `\cite{TOADD}` written with no bracket beside it is worse than an empty sentence: a hole no question will ever fill, and nothing executable detects one, though three separate files say in prose that it is a defect. And a gap the drafter cannot even phrase as an answerable question has no marker in the prose at all, which makes it the case most likely to become a quiet assertion. There is one sanctioned exit for it, and its location is the tell: the words "explicitly declined in the S page's `## Log`" appear only inside the text of a prompt the drafter hands to its review subagent, and in no rule the drafter itself is bound by.
 
-Scope: This page covers What a draft must satisfy, which contract owns which region of the page, what DRAFT refuses to write, and the marked hole it writes instead. Neighbouring pages cover The board's shell and the ownership line inside a shared page are `QA8`; what a template IS is `QC3a`; the sentence formats are `QC5` to `QB12d` and their delivery is `QB11a`/`QB11b`; where the raised question goes next is `QC4b`; who discharges the placeholder is `QC4c`.
+Scope: This page covers What a draft must satisfy, which contract owns which region of the page, what DRAFT refuses to write, and the marked hole it writes instead. Neighbouring pages cover The board's shell and the ownership line inside a shared page are `QA8`; what a template IS is `QC3a`; the sentence formats are `QC5` to `QBe1 §7` and their delivery is `QBe3 §3`/`QBe3 §4`; where the raised question goes next is `QC4b`; who discharges the placeholder is `QC4c`.
 
 ## Diagram
 ```
@@ -52,7 +52,7 @@ Scope: This page covers What a draft must satisfy, which contract owns which reg
          a hole no question will ever fill. THREE files call it a
          defect in prose; nothing EXECUTABLE detects it.
       ⚠️ a bare numeral typed straight into prose
-         invisible by construction: nothing to hang a marker on. → QB12b
+         invisible by construction: nothing to hang a marker on. → QBe1 §5
 
    ── WHO READS THESE FIELDS, AND HOW THEY FAIL ────────────────────
       fields   template · sections · formatting · q_anchor ·
@@ -117,7 +117,7 @@ One ruling is genuinely live, and it is the gap that cannot be phrased as an ans
   The value finder. READ-ONLY at its own `:27`, in the same words, and it never re-derives a number.
 - `2-phase/0-draft/haipipe-paper-draft-display/SKILL.md`
   The one lane that holds a pen. Its `allowed-tools` carries `Write` and `Edit`, and it files a DR row; the hub scopes that pen to the display inbox at `haipipe-paper-draft/SKILL.md:189-190`.
-- `1-lifecycle/ref/08-stage-gate.md`
+- `../../paper/1-lifecycle/ref/08-stage-gate.md`
   `:199`, where the bracket rule reappears as an exit criterion: every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]`. One of the three prose homes the unwritten regex would replace.
 
 ## Law

@@ -89,6 +89,10 @@ class ShortRouteTest(unittest.TestCase):
     def test_slug_drops_the_ordinal_and_the_date(self):
         self.assertEqual(board_slug("01-boardform-260722"), "boardform")
         self.assertEqual(board_slug("0-lifecycle"), "lifecycle")
+        self.assertEqual(
+            board_slug("0-lifecycle", "Paper-Personality2Opioid-MISQ2026"),
+            "personality2opioid-misq2026-lifecycle")
+        self.assertEqual(board_slug("01-boardform-260722", "diagrams"), "boardform")
         self.assertEqual(board_slug("plain"), "plain")
 
     def test_resolves_index_page_and_group(self):

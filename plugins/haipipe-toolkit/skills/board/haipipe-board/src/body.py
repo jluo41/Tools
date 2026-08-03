@@ -834,11 +834,20 @@ def render_apparatus(lines):
         # row WAS. The colon after the name is optional, and the 98 existing
         # `> JL:` rows across the boards keep working through the two matches
         # below: renaming a grammar must never break what is already written.
-        m = re.match(r"^>+\s*Comment\s+([A-Z]{1,4}\d{0,4})\s*[:：]?\s*(.*)$",
-                     ln, re.I)
+        # THE QUOTE IS OPTIONAL AND COMES FIRST (JL 260802, who asked whether
+        # commenting on a few selected words records those words). It did not:
+        # the selection was used for a local highlight and then thrown away, so
+        # a remark about three words in a long sentence arrived saying nothing
+        # about which three. The renderer already had a `「…」` form, but only
+        # for the bare-initials shape below, and this branch runs first, so
+        # `> Comment JL 「words」: text` printed its brackets as prose.
+        m = re.match(r"^>+\s*Comment\s+([A-Z]{1,4}\d{0,4})\s*"
+                     r"(?:[「\"]([^」\"]+)[」\"])?\s*[:：]?\s*(.*)$", ln, re.I)
         if m:
+            quote = (f'<span class="qt">「{note(m.group(2))}」</span> '
+                     if m.group(2) else "")
             rows.append(f'<div class="cmt {who_class(m.group(1))}">'
-                        f'<b>{esc(m.group(1))}</b> {note(m.group(2))}</div>')
+                        f'<b>{esc(m.group(1))}</b> {quote}{note(m.group(3))}</div>')
             heads += 1
             in_note = True
             has_cmt = True

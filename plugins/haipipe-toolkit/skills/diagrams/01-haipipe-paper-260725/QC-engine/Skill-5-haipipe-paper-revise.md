@@ -100,7 +100,7 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
       Apply the four workers to the source `.md`, leave `%% {CC-*}:` why-comments for non-trivial edits, then sync the accepted source to TeX. This is the normal autonomous REVISE path.
 
 - 2.2 · Candidate-diff mode
-      Use this mode only after an explicit author request for reviewable alternatives. Read `haipipe-paper-revise-humanizer/ref/venue-sciwrite.md` before proposing any change, and `writing/haipipe-writing/ref/ai-tells.md` for the general catalogue (Layer 1 moved there on 260801).
+      Use this mode only after an explicit author request for reviewable alternatives. Read `../../paper/2-phase/2-revise/haipipe-paper-revise-humanizer/ref/venue-sciwrite.md` before proposing any change, and `../../writing/haipipe-writing/ref/ai-tells.md` for the general catalogue (Layer 1 moved there on 260801).
       1. Keep the source sentence, its citations, values, display lanes, and user comments byte-intact.
       2. Put one complete proposed sentence in an adjacent `> Note:` lane. Mark removed text as `~~removed~~` and inserted or replacement text as `**inserted**`.
          COMPUTE those marks, do not write them: `python3 <skills>/writing/haipipe-writing/cli/wdiff.py record --host paper --old "<source sentence>" --new "<proposal>" --when "<YYYY-MM-DD>"` (JL 260801, `--host` added 260802). `--host paper` emits this host's `~~removed~~` / `**inserted**` marks directly, so convert nothing by hand. Written by hand the diff comes out as a whole-sentence swap, which shows the reviewer nothing that SURVIVED, and that is the one thing a candidate lane exists to show.
@@ -110,7 +110,7 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
       6. Do not sync candidate Notes to TeX, call the source revised, or mark REVISE complete. Promote only author-accepted candidates in a later direct REVISE or CHECK action.
 
 - 3 · Universal rules
-      All revise workers read and enforce `../../REF/prose-quality.md`. Installed skills flatten the tree (symlinks under `~/.claude/skills/`), so that relative path is NOT reliable — locate it layout-agnostically:
+      All revise workers read and enforce `../../paper/2-phase/REF/prose-quality.md`. Installed skills flatten the tree (symlinks under `~/.claude/skills/`), so that relative path is NOT reliable — locate it layout-agnostically:
       `PQ=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in the S page's `## Log`).
       The rules:
       - One idea per sentence

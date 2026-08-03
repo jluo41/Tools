@@ -24,7 +24,7 @@ A blocked run that does not name the Delivery or Engine page responsible for the
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **A record names all six fields or it is not a record**: Delivery target, Engine route, fixture, evidence, non-write boundary, reopen path.
 A run written up without its non-write boundary reads as though nothing was at risk, which is the one thing a reader most needs to know.

@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.112.0"
-  last_updated: "2026-08-02"
-  summary: "The family block names haipipe-board-page-for-skill, the roster-page variant for Skill and Agent mirror pages."
+  version: "0.114.0"
+  last_updated: "2026-08-03"
+  summary: "The family block names haipipe-board-page-for-skill, the skill-page variant for Skill and Agent mirror pages."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -33,11 +33,15 @@ The rest of `skills/board/` is what other agents LOAD or CALL without opening th
 **The board's sub-skills**: which altitude each one works at.
 
 ```
-haipipe-board-page       SPEC · what a page IS: three kinds over one base,
-                         the seven sections, where a machine may write
+haipipe-board-page       SPEC · what a page IS: the base every kind varies
+                         from, its sections in their fixed order, where a
+                         machine may write
 haipipe-board-page-for-skill
-                         SPEC · the VARIANT for Skill-<n> and Agent-<n> roster
-                         pages, which decide nothing and so ask nothing
+                         SPEC · the VARIANT for Skill-<n> and Agent-<n> pages,
+                         which decide nothing and so ask nothing
+haipipe-board-page-for-venue
+                         SPEC · the VARIANT for QBv<n> venue pages, one per
+                         place a paper is submitted to
 haipipe-board-sentence   DOOR + SPEC · one sentence: comment, edit, card;
                          lanes, addresses, the archive-never-delete lifecycle
 haipipe-board-routing    VERB · every write onto a board, at BOTH altitudes:
@@ -67,7 +71,26 @@ Writer self-checks are local evidence, never approval. A fresh
 `haipipe-board-reviewer-agent` then judges each changed page and reads all
 changed Openings consecutively in Board order; interchangeable or form-letter
 prose fails even when every page is locally clear.
-A page-kind VARIANT ships under its consumer family (`haipipe-paper-stage` is the first), never here, except for `Skill-<n>-<slug>` and `Agent-<n>-<slug>`, which DO ship here (`cli/skillpage.py`, `src/parse.py`, `src/common.py`; the page-kind list is under the `open` verb below).
+A page-kind VARIANT ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803).
+`haipipe-board-page-for-skill` and `haipipe-board-page-for-venue` are maintained here and ship here; `haipipe-paper-stage` is maintained by the paper family and ships there.
+The earlier rule read "ships under its CONSUMER, never here", and it broke the day a second variant landed: venue pages are consumed by the paper family and maintained here, so they satisfied neither that rule nor its Skill-and-Agent exception.
+Who maintains it is the line that held twice; who consumes it never did.
+
+**The page kinds, and how each one is CREATED**: six prefixes, two procedures.
+
+```
+kind      filename                     created by
+──────────────────────────────────────────────────────────────────────
+Q         Q<group><n>-<slug>.md        copy ref/page-template.md
+S         S-<Family>-<unit>-<slug>.md  copy, or cli/stage.py new
+QBv       QBv<n>-<slug>.md             copy QBv1-misq.md as the shape
+Skill     Skill-<n>-<slug>.md          cli/skillpage.py new   ← GENERATED
+Agent     Agent-<n>-<slug>.md          cli/skillpage.py new   ← GENERATED
+Meeting   Meeting-<n>-<slug>.md        cli/meetingpage.py     ← GENERATED
+```
+
+A GENERATED kind is never copied from the template: the generator writes it from its own stub, owns managed spans inside it, and registers it in `board.md` itself.
+`Meeting-<n>` had an engine and no contract in any SKILL.md until 260803; it is listed here so the kind is discoverable, and a contract for it is still owed.
 
 ## 🗂 Shape
 
@@ -85,8 +108,8 @@ A page-kind VARIANT ships under its consumer family (`haipipe-paper-stage` is th
   QB-<group-title-slug>/
     QB1-<slug>.md
     S-Seed-0-<slug>.md        a named lifecycle page (only when there is a lifecycle)
-    Skill-1-<slug>.md         a skill roster page
-    Agent-1-<slug>.md         an agent roster page
+    Skill-1-<slug>.md         a skill skill page
+    Agent-1-<slug>.md         an agent skill page
   board/                      ← generated by build.py, never hand-edit
     index.html                Board-Webpage-Index
     QA.html                   one Board-Webpage-Group
@@ -117,7 +140,7 @@ The descriptive source folder (`QA-<group-title-slug>/`) and the compact generat
 - **The date is the day the board was opened, and it never changes afterward.**
   One folder, one topic; later discussion is appended into it, never split into a new one.
 - **Membership on a board is decided by path.**
-  Every `Q*.md` / `S*.md` anywhere in the board folder's **whole tree** is a page of this board (except segments starting with `_` or `.`, and `fig/`).
+  Every `Q*`, `S*`, `Agent-*` and `Meeting-*` `.md` anywhere in the board folder's **whole tree** is a page of this board (except segments starting with `_` or `.`, and `fig/`). Those four prefixes are what `page_files()` in `src/common.py` globs; a `Skill-` page rides the `S` glob, which is why it is not a fifth prefix.
   `## Pages` only controls ordering and grouping (and still only writes filenames); an unregistered page still shows up (filed under the ⚠️ group) and the command line flags it.
   **Missing registration only makes it ugly, it never loses the question.**
 - **A Q/S file can live inside the folder it is about.**
@@ -201,7 +224,7 @@ Its complete shape is deliberately only three lines:
 **The closing block**: the three lines every reply ends on.
 
 ```markdown
-🧭 [BOARD · QUEUE/FOCUS](deep-link)
+🧭 BOARD · QUEUE/FOCUS (deep-link)
 ✅ done · implementation
 → one concrete next action
 ```
@@ -306,9 +329,11 @@ This needs `serve.py` running on 5599 (start it first if it is not, see the serv
    If this board has to show its own shape to a zero-background reader, write `## Board Structure` after Pipeline.
    Since 0.78.0 it is board.md source-only documentation rather than a block on the rendered Board Index, and it is never opened as a Q page; inside it, keep `Board-Folder` (the source and the generated output on disk) separate from `Board-Webpage` (`Board-Webpage-Index` and the pages you reach after opening).
    An old board without this section still generates normally.
-4. Every page copies the same `ref/page-template.md`, and the rename decides which kind it is: a decision becomes `Q<group-letter><n>-<slug>.md`; a paper lifecycle page becomes `S-<Family>-<unit>-<slug>.md`, where Family is `Seed|Work|Venue|Display|Main|Appendix|Submission` (for example `S-Seed-1-literature.md`, `S-Main-3-theory.md`, `S-Appendix-A-prompts.md`).
-   A skill roster page becomes `Skill-<n>-<slug>.md` and an agent roster page becomes `Agent-<n>-<slug>.md`: the S grammar minus the family, where the number orders the roster and the slug says which unit the page mirrors (`src/parse.py`, JL 260731: a skill is LOADED into a context, an agent is DISPATCHED into a fresh one).
+4. A Q or S page copies `ref/page-template.md`, and the rename decides which kind it is (a Skill, Agent or Meeting page does NOT: see step 4b): a decision becomes `Q<group-letter><n>-<slug>.md`; a paper lifecycle page becomes `S-<Family>-<unit>-<slug>.md`, where Family is `Seed|Work|Venue|Display|Main|Appendix|Submission` (for example `S-Seed-1-literature.md`, `S-Main-3-theory.md`, `S-Appendix-A-prompts.md`).
+   A skill skill page becomes `Skill-<n>-<slug>.md` and an agent skill page becomes `Agent-<n>-<slug>.md`: the S grammar minus the family, where the number orders the roster and the slug says which unit the page mirrors (`src/parse.py`, JL 260731: a skill is LOADED into a context, an agent is DISPATCHED into a fresh one).
    The `S0-<slug>.md` of a plain old board stays compatible.
+
+4b. A `Skill-`, `Agent-` or `Meeting-` page is GENERATED, never copied. `cli/skillpage.py new` writes the first two from its own stub and `cli/meetingpage.py` writes the third, and each registers the page in `board.md` itself. Copying `ref/page-template.md` for one of these produces a page with no managed spans, which `skillpage.py check` then reports as `no managed block` forever. Load `haipipe-board-page-for-skill` before writing the authored half of a Skill or Agent page.
    `<slug>` uses short lowercase English (`access`, `scheduling`), matching `ref/board-example.md`.
    A newly opened page is always `state: 🔴 OPEN` (Q and S use the same set of four states, see "One page" below).
    Give the owner by nature: whatever needs a ruling or an authorization goes to JL, hands-on work goes to the responsible colleague's initials or to CC.
@@ -325,6 +350,7 @@ This needs `serve.py` running on 5599 (start it first if it is not, see the serv
 ### add · add a question
 
 Copy `ref/page-template.md` → new filename → write it into `board.md`'s `## Pages` → rebuild.
+That is the Q and S path. A `Skill-`, `Agent-` or `Meeting-` page is generated instead, by `cli/skillpage.py new` or `cli/meetingpage.py`, which register it themselves (step 4b above).
 Forgetting to write it into Pages does not lose it; it only lands in the ⚠️ group.
 A folder question (QC3): put the new file into the folder it is about; Pages still writes the filename only, and filenames must be unique across the whole board.
 The ＋Q on the page always generates the file at the **board root**: if it should live in a folder, move it there yourself (the Pages line needs no edit).
@@ -578,7 +604,7 @@ An S page's Opening also holds the whole `## Stage Contract`, which is the stage
 The rest of an S's Content still lives in `📚 Content`, and the section title shows the stage name (`📚 Content · Main 7 §6 Results`) instead of counting subsections; a Q's explicit Content is optional and its title still shows the count.
 That title is derived from `# Short title`, so when the artifact's own numbering does not line up with the board's index, write the title as `S Main 7 · §6 Results`, putting both numbers on display.
 **An S's `## Content` holds only what this stage itself produces** (JL 260725): Required Inputs and Venue belong in `## Stage Contract`; prose rules belong in `## Writing Style`; a correction already decided belongs in `## States`; and the intended outcome belongs in `## Aims`.
-A new board writes `## Opening`; the `## Question` written by old boards stays a permanently recognized legacy alias.
+A new board writes `## Opening`. The `## Question` written by old boards still PARSES, so no old page breaks, but it is retired: `check.py` reports it as `retired-section` and a page being worked on should be renamed.
 
 **One layout, two workflows:**
 
@@ -671,7 +697,7 @@ Operating rules go into SKILL.md's prose, and **specifications** such as display
 
 | File | What you read it for |
 |---|---|
-| `ref/page-template.md` | The one file every new page is copied from, whatever its kind (renamed from `ref/q-template.md` on 260801) |
+| `ref/page-template.md` | The file a Q or S page is copied from (renamed from `ref/q-template.md` on 260801). A Skill, Agent or Meeting page is generated from its own stub instead and never copies this |
 | `ref/board-form.md` | The full specification: folders, numbering, section ↔ page correspondence, the syntax table, `## Links` |
 | `ref/writing-rules.md` | How to write it in plain language, plus the zero-background review prompt and its convergence criteria |
 | `ref/board-example.md` | A minimal example board with two questions |
@@ -684,14 +710,14 @@ The scripts and packages in the skill root:
 | `cli/build.py` | Read the Board Markdown and generate the canonical `board/` site; standard library only |
 | `cli/watch.py` | Watch the board folder and re-run `build.py` on any `.md` change |
 | `cli/check.py` | The structural self-check (the machine half of `QA9`): sections, state, references, the rendered html, template coverage |
-| `cli/serve.py` | The live server, about 398 lines: argument parsing, the request router, and the shared setup; everything with a feature in it now lives in `live/` |
-| `live/base.py` | 154 lines: the shared request base the other live modules mix in |
-| `live/structure.py` | 274 lines: `structure_op`, behind `POST /_board/structure` (＋Q / ＋Group / 🗄) |
-| `live/write.py` | 259 lines: the sentence write path, the comment and edit writes under an anchor sentence |
+| `cli/serve.py` | The live server, 496 lines: argument parsing, the request router, and the shared setup; everything with a feature in it now lives in `live/` |
+| `live/base.py` | 260 lines: the shared request base the other live modules mix in |
+| `live/structure.py` | 270 lines: `structure_op`, behind `POST /_board/structure` (＋Q / ＋Group / 🗄) |
+| `live/write.py` | 426 lines: the sentence write path, the comment and edit writes under an anchor sentence |
 | `live/xcal.py` | 468 lines: `serve_frame()`, the `assets/xcal-boot.js` injection, and the image pointer ↔ dataURL restore |
-| `live/activity.py` | 408 lines: focus-time spans and the aggregates behind the Activity component |
-| `live/chat.py` | 1064 lines: the chat drawer, its sessions, and the `claude_agent_sdk` turn |
-| `live/term.py` | 670 lines: the `/_term/` PTY, parking, and reattachment |
+| `live/activity.py` | 446 lines: focus-time spans and the aggregates behind the Activity component |
+| `live/chat.py` | 1332 lines: the chat drawer, its sessions, and the `claude_agent_sdk` turn |
+| `live/term.py` | 857 lines: the `/_term/` PTY, parking, and reattachment |
 | `src/` | The build's code split by topic: `common · parse · body · page_board · page_question · page_stage · dialect_paper · stage_contract`; `build.py` and `serve.py` stay thin entries (QB5) |
 | `cli/stage.py` | Explicitly create and sync an S page's inherited requirements, Venue links, and page Writing Style inheritance |
 | `cli/skillpage.py` | One skill folder → one `Skill-<n>-<slug>` page (`new` / `sync` / `check`); the same split as `stage.py`, the derived header only, never the authored sections |
@@ -703,7 +729,7 @@ The scripts and packages in the skill root:
 | `assets/board-mark.svg` | The Board's shared SVG mark; inlined into the title at build time and reused as the favicon |
 | `assets/css/`, `assets/js/` | The page's real CSS and JS parts, assembled by `build.py` into `board/_assets/board.css` and `board/_assets/board.js` |
 | `assets/xcal-boot.js` | The script `live/xcal.py` injects into the proxied Excalidraw so that drawings save back to the repository |
-| `tests/` | The skill's own tests, all 11 of them (`python3 -m pytest tests/`): activity, aims state, board structure, hold, home, quality check, sentence chat, sentence editing, stage style, status, tree reroot. Moved out of the top level 260801; `tests/conftest.py` puts the engine dir on `sys.path` |
+| `tests/` | The skill's own tests, all 14 of them (`python3 -m pytest tests/`): activity, aims state, board structure, hold, home, quality check, sentence chat, sentence editing, stage style, status, tree reroot. Moved out of the top level 260801; `tests/conftest.py` puts the engine dir on `sys.path` |
 
 The independent judge: `../agents/haipipe-board-reviewer-agent.md`.
 It has no write tools; after the author has fixed things, start another new reviewer.

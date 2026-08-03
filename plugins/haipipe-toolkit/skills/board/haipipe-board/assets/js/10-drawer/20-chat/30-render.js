@@ -120,6 +120,7 @@
      one, which is most of why an old session looked nothing like the turn it
      was a recording of. Tools now come back from the server, so they get the
      same compact card, marked done because it already is. */
+  var replayTrace = null;      // the box consecutive replayed tool rows collect into
   function replayRow(m) {
     if (!m) return;
     /* A ROW WITH NOTHING IN IT IS A LINE ACROSS THE SCREEN, and eighteen of
@@ -132,14 +133,35 @@
     var body = ((m.t || '') + (m.name || '')).trim();
     if (!body) return;
     if (m.k === 'you' && m.ts) turnMark(m.ts);
-    if (m.k !== 'tool') { bubble(m.k, m.t); return; }
+    /* A REPLAYED TURN GETS THE SAME BOX A LIVE ONE GETS (JL 260803: "I want the
+       box like this to host the old thinking process"). A live turn folds its
+       tool calls into one bounded `.trace`, which scrolls inside itself; the
+       replay appended each card straight into the transcript, so a turn that
+       ran 35 tools became 35 rows a reader had to scroll past to reach the
+       answer. Consecutive tool rows now collect into one `.trace done`, and
+       any other row closes it — the shape of the recording matches the shape
+       of the thing it recorded. */
+    if (replayTrace && !replayTrace.parentNode) replayTrace = null;  // .bd was cleared
+    if (m.k !== 'tool') {
+      replayTrace = null;
+      bubble(m.k, m.t);
+      return;
+    }
+    if (!replayTrace) {
+      replayTrace = document.createElement('div');
+      replayTrace.className = 'trace done';
+      replayTrace.dataset.n = '';
+      chat.querySelector('.bd').appendChild(replayTrace);
+    }
     var d = document.createElement('details');
     d.className = 'tool done';
     d.innerHTML = '<summary><span class="tn"></span><span class="tb"></span>' +
                   '<span class="ts">done</span></summary>';
     d.querySelector('.tn').textContent = m.name || '?';
     d.querySelector('.tb').textContent = (m.t || '').replace((m.name || '') + '  ', '');
-    chat.querySelector('.bd').appendChild(d);
+    replayTrace.appendChild(d);
+    var n = replayTrace.querySelectorAll('.tool').length;
+    replayTrace.dataset.n = n + (n === 1 ? ' tool call' : ' tool calls');
     bdAuto();
   }
   function bubble(kind, text) {

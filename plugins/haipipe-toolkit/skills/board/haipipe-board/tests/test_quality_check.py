@@ -45,7 +45,12 @@ class QualityCheckContractTest(unittest.TestCase):
         self.assertEqual(chat_scope({"quality_check": True, "scope": "bypass"}), "scoped")
         self.assertEqual(chat_scope({"quality_check": True, "scope": "full"}), "scoped")
         self.assertEqual(chat_scope({"scope": "bypass"}), "bypass")
-        self.assertEqual(chat_scope({}), "full")
+        # A browser that names no tier gets Full · no ask (JL 260802). The old
+        # default was `full`, which prompts per tool call; this test asserted
+        # that older default until 260803. The ESCALATION GUARD above is what
+        # this test exists for and it is unchanged: quality_check forces
+        # `scoped` no matter what the client asks for.
+        self.assertEqual(chat_scope({}), "bypass")
 
     def test_quality_check_tool_allowlist_is_evidence_only(self):
         self.assertEqual(QUALITY_READONLY, {"Read", "Glob", "Grep", "NotebookRead"})

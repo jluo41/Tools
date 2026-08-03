@@ -203,7 +203,7 @@ def parse_dir(d):
     for p in page_files(d):
         qm = re.match(r"Q([0-9][a-z]|[A-Z]*[a-z]?)(\d+)([a-z]?)", p.stem)
         # A NAMED Q family (JL 260727): `Q-Skill-haipipe-board.md`. Same idea as
-        # the named S families, and for the same reason: a roster row is
+        # the named S families, and for the same reason: a skill page is
         # identified by WHAT IT IS, not by a position in a numbered queue.
         # `QS1` would say a skill page is the first of a list; `Q-Skill-<name>`
         # says which skill it is, which is the only thing a reader wants from
@@ -211,7 +211,7 @@ def parse_dir(d):
         named_qm = re.match(r"Q-([A-Z][A-Za-z]*)-(.+)$", p.stem)
         # A SKILL page is its own kind (JL 260731: "could we just remove Q, from
         # Q-Skill to be Skill ... Like Skill will be a special Page"). It is not a
-        # decision, so the `Q` prefix was a lie: a roster row mirrors a shipped
+        # decision, so the `Q` prefix was a lie: a skill page mirrors a shipped
         # unit and closes when that unit ships, never by a checkbox reaching zero.
         # The grammar is the S grammar minus the family, `Skill-<unit>-<slug>`, so
         # the unit orders the roster and the slug still says which skill it is.
@@ -244,7 +244,7 @@ def parse_dir(d):
             # exposure. It leads the alternation because `\d+[a-z]?` would
             # otherwise consume `4a` and then fail the `-|$` that follows,
             # which made such a page silently unparseable rather than rejected.
-            r"S-(Seed|Work|Venue|Display|Main|Appendix|Submission)-"
+            r"S-(Open|Seed|Work|Venue|Literature|Value|Display|Main|Appendix|Submission|Round)-"
             # A CAPITAL PLUS DIGITS is a per-unit member of a lettered series
             # (JL 2026-08-02, choosing option A): in Work the letter says the
             # STAGE and the number says the UNIT, so `S-Work-R` is the resources
@@ -289,15 +289,33 @@ def parse_dir(d):
                 family = ""
             elif full_sm:
                 family = full_sm.group(1).lower()
-                unit = full_sm.group(2).upper()
+                # NORMALISE THE UNIT THE WAY THE COMPOSER DOES, and no other way
+                # (260803). A bare `.upper()` turned `Dash` into `DASH` and the
+                # Display block+member `2a` into `2A`, so every id a person wrote
+                # in prose missed the page it names and rendered as a dead
+                # same-page fragment. `cli/stage.py resolve_filename()` is the one
+                # place a name is MADE; the reader has to agree with it or the two
+                # sides disagree about a page that already exists on disk.
+                unit = full_sm.group(2)
+                if re.fullmatch(r"[A-Za-z]", unit):
+                    unit = unit.upper()                      # S-Appendix-C
+                elif re.fullmatch(r"[A-Za-z]\d+", unit):
+                    unit = unit[0].upper() + unit[1:]        # S-Work-R1
+                elif re.fullmatch(r"[A-Za-z][a-z]+", unit):
+                    unit = unit[0].upper() + unit[1:].lower()  # S-Main-Dash
+                # a number, or a block+member like `4a` / `4al2`, keeps its case
                 family_order = {
+                    "open": 0,
                     "seed": 0,
                     "work": 1,
                     "venue": 2,
-                    "display": 3,
-                    "main": 4,
-                    "appendix": 5,
-                    "submission": 6,
+                    "literature": 3,
+                    "value": 4,
+                    "display": 5,
+                    "main": 6,
+                    "appendix": 7,
+                    "submission": 8,
+                    "round": 9,
                 }[family]
                 unit_key = (0, int(unit)) if unit.isdigit() else (1, unit)
                 key = (1, family_order, *unit_key)

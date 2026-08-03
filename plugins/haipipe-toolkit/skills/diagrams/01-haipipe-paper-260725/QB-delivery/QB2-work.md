@@ -24,7 +24,7 @@ The banks are shared across papers, so the hop is also what lets a second paper 
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Never describe how a bank does its work**: this page owns the boundary, the probe binding, and the arc, and nothing on the other side of it.
 How discovery searches, or how a task computes, belongs to those layers; a sentence here that explains their internals has crossed the line this page exists to draw.

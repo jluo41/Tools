@@ -1,4 +1,4 @@
-# haipipe-board-creator-agent · v0.4.0
+# haipipe-board-creator-agent · v0.5.0
 state: 🟡 in flux · first real fan-out 260802, 3 of 6 died on a limit
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -13,19 +13,19 @@ It had never run until today, when six were fanned out by hand to revise six ros
 The caller is whoever holds `haipipe-board` in the session that dispatches the batch, and it stays a single context precisely because the writes it keeps are the ones two writers would collide on.
 
 **Why the boundary is drawn by collision and not by subject**: Every other unit in this family is bounded by what it is about, the way `haipipe-board-page` owns one page and `haipipe-board-sentence` owns everything below a section.
-This one is bounded by what it touches, because N copies of it are awake at the same moment (JL 260731).
+This one is bounded by what it touches, because N copies of it are awake at the same moment.
 So its limits are structural rather than advisory: it carries no Bash tool and cannot run `build.py`, `board.md` is out of scope so the one file every writer would collide on stays with the caller, and it may not read a sibling page, whose bytes may be mid-flight.
 
 **Covered elsewhere**: `Agent-1` is the other half of the pair and judges what this one produced; it is read-only and does hold Bash, so it runs the mechanical checker this agent cannot.
 `haipipe-board` keeps every shared write: registering the page in `board.md` `## Pages`, the lane block, one rebuild, one check.
-The prose standard travels in neither, since each writer loads `haipipe-board-page` itself and a roster page also loads `haipipe-board-page-for-skill`, which is what keeps a copied checklist in the packet from drifting away from the skill.
+The prose standard travels in neither, since each writer loads `haipipe-board-page` itself and a skill page also loads `haipipe-board-page-for-skill`, which is what keeps a copied checklist in the packet from drifting away from the skill.
 
 **What the first run does not yet settle**: Those six packets were assembled by hand.
 `haipipe-board`'s family section now states the dispatch policy, but its `open` and `add` actions still copy `ref/page-template.md` and write the page in the calling session, and nothing turns an approved page list into N packets.
 Whether the fan-out pays at every batch size is also unmeasured; both are Aims below.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 3bf6e48a5b887620 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:tree:start 35595af35318ac25 board/agents/haipipe-board-creator-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
@@ -63,13 +63,13 @@ The two halves are divided by one test: does the write touch a file another writ
 One page's `.md` fails that test and so it fans out; `board.md`, the lane block, `board.html`, and the checker all pass it and so they stay with the caller.
 
 ## Content
-<!-- haipipe:skill:body:start 3bf6e48a5b887620 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:body:start 35595af35318ac25 board/agents/haipipe-board-creator-agent.md -->
 
-**haipipe-board-creator-agent** · `0.4.0` · last shipped 2026-08-01
+**haipipe-board-creator-agent** · `0.5.0` · last shipped 2026-08-01
 
 - folder   `board/agents/haipipe-board-creator-agent.md/`
 - tools    not declared
-- summary  Checks the target filename first and loads haipipe-board-page-for-skill for a Skill or Agent roster page, whose Opening rule inverts the base's.
+- summary  Checks the target filename first and loads haipipe-board-page-for-skill for a Skill or Agent skill page, whose Opening rule inverts the base's.
 
 ### haipipe-board-creator-agent.md
 
@@ -85,13 +85,13 @@ Use the `Skill` tool to load `haipipe-board-page`, then follow the canonical
 sources it routes to. Do not accept a copied checklist of prose requirements in
 the assignment packet as a substitute for loading the skill. At minimum, read:
 
-1. `../haipipe-board-page/SKILL.md` for what a page is: the three kinds, the one
+1. `../haipipe-board-page/SKILL.md` for what a page is: the six kinds, the one
    base, the fixed page spine, and which state a machine may write.
 2. `../haipipe-board-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
-   `Agent-<n>` roster page. Check the filename before you write a word. That
-   variant inverts the base's Opening rule: a roster page mirrors a unit that
+   `Agent-<n>` skill page. Check the filename before you write a word. That
+   variant inverts the base's Opening rule: a skill page mirrors a unit that
    ships elsewhere and DECIDES NOTHING, so it introduces that unit and never
-   opens with a question. Five roster pages were written from the base alone on
+   opens with a question. Five skill and agent pages were written from the base alone on
    260802 and came out as one form letter with the nouns swapped.
 3. `../haipipe-board-sentence/SKILL.md` for how a line must read.
 4. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
@@ -106,7 +106,8 @@ duplicating each other's judgment.
 - 1 · Scope and boundary
       ```text
       input:   one assignment packet (below) for exactly ONE page and one operation
-      output:  one new Q/S page, or an Opening-only revision to one existing Q/S page
+      output:  one new Q/S/QBv page, or an Opening-only revision to one existing
+                     page of ANY kind, including Skill-<n> and Agent-<n>
       role:    producer; the reviewer agent judges, the caller integrates
       ```
       Own when `operation: create-page`:
@@ -122,7 +123,9 @@ duplicating each other's judgment.
         makes sense in the context of the Content, Aims, States, evidence, and open
         decision already present.
       - Preserving every other byte-level section boundary and all content outside
-        the Opening body. A legacy `## Question` heading is an Opening alias and may
+        the Opening body. A legacy `## Question` heading still parses, but `check.py` reports it as
+              `retired-section`; renaming it is out of scope here, so leave it and NAME it in
+              your report. It may
         remain as-is; this operation does not rename it.
       Do not:
       - Touch `board.md`. Its `## Pages` listing is the registry and the one file
@@ -200,7 +203,7 @@ duplicating each other's judgment.
       - Real citations. A file path in `## Files` is a file you read, and every row
         says what that file does for this page.
       - The page's own words, not coined labels. Use the board's existing vocabulary.
-      - Canonical Aims use stable ids (`A3.1`, `P1`) and no checkbox. Every Aim has
+      - ON A Q OR S PAGE, canonical Aims use stable ids (`A3.1`, `P1`) and no checkbox. Every Aim has
         exactly one matching State row with the same id and one allowed status emoji.
 
 - 5 · Return contract
@@ -241,9 +244,9 @@ duplicating each other's judgment.
       Six pages was six contexts reading the same four contracts, and each cost roughly 70,000 tokens.
       Whether that is worth it at every size, or only above some count, is still unmeasured.
 - [x] 🧪 Run it on a real multi-page board
-      Met 260802: six agents fanned out over six roster pages of `01-boardform-260722`, one page each, and every one of them respected its scope.
+      Met 260802: six agents fanned out over six skill and agent pages of `01-boardform-260722`, one page each, and every one of them respected its scope.
       No two writers touched the same file, no agent edited `board.md`, and each returned a contract naming what it read and what it left alone.
-- [x] 📚 It knows to reach past the base contract for a roster page
+- [x] 📚 It knows to reach past the base contract for a skill page
       0.4.0 added `haipipe-board-page-for-skill` as source 2, with an instruction to check the target filename before writing a word.
       On 260802 the six writers only used that variant because the caller named it by hand in every packet, which is exactly the copied-checklist dependency this agent's own contract forbids.
 
@@ -264,11 +267,12 @@ Its health is `🟡 in flux` because that first run also exposed two gaps it had
   Fixed at 0.4.0. JL found it by asking whether these agents call any skills.
 
 ## Log
+260731 · The concurrency boundary was JL's ruling that day: the test is not whether a unit has its own trigger but whether a write touches a file another writer also touches
 260802 2100 · Synced to 0.4.0 and the authored half updated after its first real fan-out: six writers, six pages, no scope collision, three killed by a session limit after writing. The agent now loads `haipipe-board-page-for-skill` itself instead of depending on the caller naming it in the packet, which its own contract forbids
 260802 1720 · Health ruled from evidence rather than left as a placeholder Aim: `state:` moved from 🔴 to 🟡 in flux, because the unit is written and registered at 0.3.0 and has never been dispatched. The `🧠 Rule this skill's health` row was removed, since the three Aims below it are the real work
 260731 1530 · page generated from `board/agents/haipipe-board-creator-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 3bf6e48a5b887620 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:log:start 35595af35318ac25 board/agents/haipipe-board-creator-agent.md -->
 
 Converted from the skill's own `CHANGELOG.md`: 9 releases.
 
