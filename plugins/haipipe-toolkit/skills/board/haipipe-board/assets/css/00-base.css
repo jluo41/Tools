@@ -1,13 +1,20 @@
 /* palette + type follow html-ppt's academic-report; layout is body.single
    (base.css's own no-JS mode) so every section is visible without any script. */
-:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
+/* Inline `code` has its own pair, separate from --pre (JL 260803). --pre is
+   #f4f4f0 against a #fbfbf9 page: four points of luminance, so a backticked
+   term was invisible in a paragraph. A fenced block is a whole surface and
+   reads fine at that contrast; a five-character span does not, so the span
+   gets a cooler tint plus a hairline, and the fences stay calm. */
+:root{--code-bg:#ecf0f6;--code-line:#d5dceb;
+ --bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
  --accent:#1f5aa8;--focus:#075fbd;--todo:#c23b3b;--wip:#b45309;--done:#15803d;--hold:#8a8a8a;
  --board-mark-top-a:#2947d6;--board-mark-top-b:#1d35b5;
  --board-mark-left-a:#b394f6;--board-mark-left-b:#9569ee;
  --board-mark-right-a:#1678ff;--board-mark-right-b:#0862ee;
  --board-mark-bottom-a:#082965;--board-mark-bottom-b:#011a4a;
  --radius-inline:4px;--radius-control:7px;--radius-surface:10px;--radius-pill:999px}
-@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+@media(prefers-color-scheme:dark){:root{--code-bg:#22262e;--code-line:#333a47;
+ --bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
  --line:#2c2e33;--card:#1d1f23;--pre:#111214;--accent:#6ea8f0;--focus:#9dc8ff;
  --todo:#e0736e;--wip:#e0a458;--done:#5fc98a}}
 *{box-sizing:border-box}

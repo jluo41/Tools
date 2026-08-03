@@ -95,17 +95,38 @@ def discover_boards(root: Path) -> list[dict[str, object]]:
     return sorted(cards, key=lambda c: str(c["path"]).lower())
 
 
-def board_slug(name: str) -> str:
+# A folder name that says what KIND of board it is rather than WHICH one.
+# Every paper carries a `0-lifecycle/`, so trimming the ordinal leaves every
+# paper on this SPACE claiming `/b/lifecycle` (JL 260803: "the lifecycle is not
+# good, I prefer it to be misq-xxxx-lifecycle"). These names take the owning
+# folder as a prefix; every other board keeps the slug it already had.
+GENERIC_BOARD_NAMES = {"lifecycle", "board", "boards", "diagram", "diagrams"}
+
+
+def board_slug(name: str, parent: str = "") -> str:
     """The name a person says out loud for a board folder.
 
     `01-boardform-260722` becomes `boardform`: the `NN-` ordinal orders a topic
     series and the `-YYMMDD` records the day it was opened, and neither is
     something anyone says. Same rule as `status.py`'s fallback label, kept here
     because the ROUTE has to resolve it and `status.py` only has to print it.
+
+    A GENERIC folder name is qualified by its parent, because it names a kind
+    and not a board: `0-lifecycle` inside `Paper-Personality2Opioid-MISQ2026`
+    is `personality2opioid-misq2026-lifecycle`, and the second paper on this
+    SPACE would otherwise answer to the same URL as the first. The `Paper-` and
+    `Project-` prefixes are dropped for the same reason the `NN-` ordinal is:
+    they say what the folder IS, which the reader already knows.
     """
     trimmed = re.sub(r"^\d+[-_]", "", name)
     trimmed = re.sub(r"[-_]\d{6}$", "", trimmed)
-    return (trimmed or name).lower()
+    trimmed = (trimmed or name).lower()
+    if trimmed in GENERIC_BOARD_NAMES and parent:
+        owner = re.sub(r"^(?:Paper|Project|Proj[A-Z])[-_]", "", parent)
+        owner = re.sub(r"[^A-Za-z0-9]+", "-", owner).strip("-").lower()
+        if owner:
+            return f"{owner}-{trimmed}"
+    return trimmed
 
 
 def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
@@ -130,7 +151,8 @@ def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
         candidate = manifest.parent
         if _skip(candidate, root):
             continue
-        if folded in (board_slug(candidate.name), candidate.name.lower()):
+        if folded in (board_slug(candidate.name, candidate.parent.name),
+                      candidate.name.lower()):
             board = candidate
             break
     if board is None:

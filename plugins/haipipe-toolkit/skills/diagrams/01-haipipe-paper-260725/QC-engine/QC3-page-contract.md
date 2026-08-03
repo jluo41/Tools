@@ -12,7 +12,7 @@ This face is the anchor for four questions that are all about this same object, 
 
 What is unsettled sits at the seams rather than in the middle. One rule is declared twice, in a stage's `formatting:` and again by `QC5`. One region is machine-managed and sha256-digested, and nothing tells a writer to stay out of it. And when the venue's Structural Blueprint, the stage template and the page's own `style_from:` all describe one paragraph, only a single stage's contract says which wins.
 
-Scope: This page covers What a stage page is, its four regions and their owners, why the contracts layer instead of competing, and the seams where they can still disagree. Neighbouring pages cover What the contract declares is `QC2`; the four sub-questions are `QC3a` to `QC3d`; the flow that modifies the page is `QC4`; the board's own face grammar and the ①/③ ownership line are `QA8`; what a line inside a division may be is `QC5` to `QB12d`.
+Scope: This page covers What a stage page is, its four regions and their owners, why the contracts layer instead of competing, and the seams where they can still disagree. Neighbouring pages cover What the contract declares is `QC2`; the four sub-questions are `QC3a` to `QC3d`; the flow that modifies the page is `QC4`; the board's own face grammar and the ①/③ ownership line are `QA8`; what a line inside a division may be is `QC5` to `QBe1 §7`.
 
 ## Diagram
 ```
@@ -57,7 +57,7 @@ Scope: This page covers What a stage page is, its four regions and their owners,
                                 │
                                 ▼
       🅲 the sentence layer ▶ what a LINE inside a division may be
-                                              → QC5 QB12a QB12b QB12c QB12d
+                                              → QC5 QBe1 §4 QBe1 §5 QBe1 §6 QBe1 §7
 
       ⇒ the stage template is NOT a file a phase opens and copies.
         It was already turned into this page's skeleton before any
@@ -141,7 +141,7 @@ This Paper Board supplies that second layer without changing Board grammar.
 - [ ] 🔍 Assert the managed block still matches its generated form
       The existing digest cannot do this. `src/stage_contract.py`'s `contract_digest()` hashes only the pages named by `requires:` and `style-from:`, and its docstring says so: never the destination page. So `stage.py check` reports a stale SOURCE and is blind to a hand-edit. The assertion is to re-render the block for each page and compare bytes, over 39 pages that already exist.
 - [ ] 📐 Name the frontmatter whitelist as a closed set
-      `haipipe-board/src/parse.py:145` accepts exactly `state owner method session requires style-from provides contract-source-hash` and drops everything else in silence. `stages/CONTRACT.md` already had to rule out a `venue:` key for this reason. This face draws the frontmatter as one region of the page and never says the set of legal keys is fixed.
+      `haipipe-board/src/parse.py:145` accepts exactly `state owner method session requires style-from provides contract-source-hash` and drops everything else in silence. `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md` already had to rule out a `venue:` key for this reason. This face draws the frontmatter as one region of the page and never says the set of legal keys is fixed.
 - [ ] 🧪 Hand-edit a managed block, then run `stage.py sync`
       The acceptance test for the protected region. Copy one of the 39 pages, write a line inside the block, sync, and confirm the line is gone and nothing warned. The reversion is stated in `stage.py:142` and has never been watched happen.
 
@@ -159,7 +159,7 @@ What is open is all at the seams. One rule has two homes, one region is protecte
   Where the digest rule actually lives. `contract_digest()` hashes the SOURCE pages and never the destination, and `contract_status()` is what turns that into the one warning `stage.py check` prints.
 - `board/haipipe-board/src/parse.py`
   Line 145 is the closed frontmatter whitelist. A key outside it is dropped without a word.
-- `haipipe-paper-stage/create-page.py`
+- `create-page.py`
   `template_divisions()`: where a stage template becomes this page's Content divisions and job lines, with `compact_rule()` truncating each job line at 220 characters.
 - `stages/5-section-edit/stage.md`
   The one contract that states a precedence when the blueprint and the pack disagree: line 76 declares the blueprint BINDING, lines 89-91 make a pack row REFERENCE ONLY, and lines 184-186 say the blueprint wins on numbers.

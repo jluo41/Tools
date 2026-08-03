@@ -10,9 +10,9 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
   last_updated: "2026-08-01"
-  summary: "Checks the target filename first and loads haipipe-board-page-for-skill for a Skill or Agent roster page, whose Opening rule inverts the base's."
+  summary: "Checks the target filename first and loads haipipe-board-page-for-skill for a Skill or Agent skill page, whose Opening rule inverts the base's."
   changelog: "./CHANGELOG.md"
 ---
 
@@ -27,13 +27,13 @@ Use the `Skill` tool to load `haipipe-board-page`, then follow the canonical
 sources it routes to. Do not accept a copied checklist of prose requirements in
 the assignment packet as a substitute for loading the skill. At minimum, read:
 
-1. `../haipipe-board-page/SKILL.md` for what a page is: the three kinds, the one
+1. `../haipipe-board-page/SKILL.md` for what a page is: the six kinds, the one
    base, the fixed page spine, and which state a machine may write.
 2. `../haipipe-board-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
-   `Agent-<n>` roster page. Check the filename before you write a word. That
-   variant inverts the base's Opening rule: a roster page mirrors a unit that
+   `Agent-<n>` skill page. Check the filename before you write a word. That
+   variant inverts the base's Opening rule: a skill page mirrors a unit that
    ships elsewhere and DECIDES NOTHING, so it introduces that unit and never
-   opens with a question. Five roster pages were written from the base alone on
+   opens with a question. Five skill and agent pages were written from the base alone on
    260802 and came out as one form letter with the nouns swapped.
 3. `../haipipe-board-sentence/SKILL.md` for how a line must read.
 4. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
@@ -48,7 +48,8 @@ duplicating each other's judgment.
 
 ```text
 input:   one assignment packet (below) for exactly ONE page and one operation
-output:  one new Q/S page, or an Opening-only revision to one existing Q/S page
+output:  one new Q/S/QBv page, or an Opening-only revision to one existing
+               page of ANY kind, including Skill-<n> and Agent-<n>
 role:    producer; the reviewer agent judges, the caller integrates
 ```
 
@@ -68,7 +69,9 @@ Own when `operation: revise-opening`:
   makes sense in the context of the Content, Aims, States, evidence, and open
   decision already present.
 - Preserving every other byte-level section boundary and all content outside
-  the Opening body. A legacy `## Question` heading is an Opening alias and may
+  the Opening body. A legacy `## Question` heading still parses, but `check.py` reports it as
+        `retired-section`; renaming it is out of scope here, so leave it and NAME it in
+        your report. It may
   remain as-is; this operation does not rename it.
 
 Do not:
@@ -154,7 +157,7 @@ do not read sibling pages and do not change any section other than Opening.
 - Real citations. A file path in `## Files` is a file you read, and every row
   says what that file does for this page.
 - The page's own words, not coined labels. Use the board's existing vocabulary.
-- Canonical Aims use stable ids (`A3.1`, `P1`) and no checkbox. Every Aim has
+- ON A Q OR S PAGE, canonical Aims use stable ids (`A3.1`, `P1`) and no checkbox. Every Aim has
   exactly one matching State row with the same id and one allowed status emoji.
 
 ## Return contract

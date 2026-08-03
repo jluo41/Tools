@@ -281,7 +281,7 @@ Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Ever
   The disciplinary half of what a new page needs.
 - `haipipe-board/stage.py`
   The board half, currently writing a generic stub.
-- `haipipe-paper-stage/create-page.py`
+- `create-page.py`
   The public composition path; Board shell first, selected stage scaffold second.
 - `haipipe-board/src/dialect_paper.py`
   The only paper-aware module in the Board.

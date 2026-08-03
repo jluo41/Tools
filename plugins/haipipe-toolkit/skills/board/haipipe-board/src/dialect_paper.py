@@ -429,7 +429,15 @@ class Paper:
         #   legacy:               displays/display<NN><a>-<slug>/ was the source
         # A unit folder now shares its NAME with the S-Display page that owns
         # it, which is what retires the derived join in `_sdisplay_read` below.
-        ws = self.root / "0-lifecycle" / "3-display" / "workspace"
+        # FIND the workspace by SHAPE, never by a fixed folder name (260803).
+        # This was pinned to `0-lifecycle/3-display/`, and the day the board's
+        # folders were renamed after their GROUP, `S05-display/`, the pin missed
+        # and every display page silently fell back to the legacy `displays/`
+        # tree, which rendered nine preview images at an href that resolves
+        # nowhere. A group folder may be renamed again; `*/workspace` may not.
+        lc = self.root / "0-lifecycle"
+        ws = next((d / "workspace" for d in sorted(lc.glob("*display*"))
+                   if (d / "workspace").is_dir()), lc / "3-display" / "workspace")
         if ws.is_dir():
             self.disp_dir, self.disp_glob = ws, "S-Display-*"
         else:

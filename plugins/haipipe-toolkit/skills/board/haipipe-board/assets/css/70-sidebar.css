@@ -104,6 +104,14 @@ body.nav-open .sbrz{display:block}
  color:var(--mut);font:10px ui-monospace,Menlo,monospace;letter-spacing:.04em;
  position:sticky;top:0;background:var(--bg)}
 #chat .bd .trace .tr{display:flex;gap:7px;padding:3px 10px;align-items:baseline}
+/* AN EMPTY TRACE ROW IS A BARE LINE ACROSS THE DRAWER, and a long turn draws
+   dozens of them: a row is created at every segment boundary and only filled
+   when text for that segment arrives, so a turn that thinks and calls tools
+   without narrating leaves them blank (JL 260803, screenshot: "the thinking
+   part is like this", ~40 empty rules mid-turn at 33% done). The same fault as
+   the replay one fixed the same day, on the LIVE path instead. A row with no
+   text does not draw; it starts drawing the moment it has any. */
+#chat .bd .trace .tr:has(.x:empty){display:none}
 #chat .bd .trace .tr .i{flex:0 0 auto;opacity:.75}
 #chat .bd .trace .tr .x{flex:1;min-width:0;white-space:pre-wrap;word-break:break-word;
  color:var(--mut)}

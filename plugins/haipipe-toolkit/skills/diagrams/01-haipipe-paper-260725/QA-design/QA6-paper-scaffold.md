@@ -13,7 +13,7 @@ The live paper now also has `3-dist/`, so the fixed claim that there are three n
 
 The second rule is that nothing exists before it is needed. A new paper gets a control plane and one runnable page; every other page arrives when its unit is allocated, and the LaTeX toolchain arrives at the Display or section frontier and not before. What we want is a folder where every file present is a file somebody asked for, so an absence is information rather than an oversight.
 
-Scope: This page covers What a paper folder contains, the numbered and unnumbered split, what exists at creation versus later, and what crosses this folder's edges. Neighbouring pages cover What is on the board inside it is `QA7`; how a question leaves it is `QA5`; markdown versus tex authority is `QC3d`; who creates a page is `QA8`; what a display unit contains is `QB12c` and `QB13a`. What a STAGE is as an object, and what it takes to make one work, is the whole `QB` group, anchored at `QC2`; this face owns only which stages exist and which folder each one fills.
+Scope: This page covers What a paper folder contains, the numbered and unnumbered split, what exists at creation versus later, and what crosses this folder's edges. Neighbouring pages cover What is on the board inside it is `QA7`; how a question leaves it is `QA5`; markdown versus tex authority is `QC3d`; who creates a page is `QA8`; what a display unit contains is `QBe1 §6` and `QBe2 §3`. What a STAGE is as an object, and what it takes to make one work, is the whole `QB` group, anchored at `QC2`; this face owns only which stages exist and which folder each one fills.
 
 ## Diagram
 ```
@@ -293,7 +293,7 @@ The checked files are staged together, the pre-check target hashes are verified 
 `run_id` is the SHA-256 of the canonical manifest, selected Content, and dependency-set digests; the separate candidate digest is computed after generation over normalized output paths and bytes.
 
 The runtime owner is the callable `haipipe-paper-project` 0.1.3 skill at `3-deliver/1-build/haipipe-paper-project/`, with `project.py validate`, `generate`, `check`, and `promote`.
-Its renderer follows the QB11a boundary; `md2tex.py` remains a separate adapter and never receives a submission-write flag.
+Its renderer follows the QBe3 §3 boundary; `../../paper/3-deliver/4-ship/haipipe-paper-to-word/md2tex.py` remains a separate adapter and never receives a submission-write flag.
 
 Generate, check, blocked-check, and promotion receipts are append-only JSON records under `2-src/projection-receipts/`.
 They use SHA-256 over canonical paper-relative paths plus file bytes:
@@ -398,7 +398,7 @@ A stage also declares whether it SURVIVES a change of journal, and that split is
 ```
 Evidence is venue-free. A retarget may rewrite how a paper is told and may not reopen what it found. What retargeting concretely does to each aligned stage has never been run end to end, so it is design rather than practice.
 
-The set of stages is OPEN, and deliberately so. Adding one costs a row in `stages/index.yml`, a folder, and two files: no new skill, no version bump. Compiling, submitting and answering reviewers all sit outside the eight today and none of those exclusions was ever argued in writing, so if one should become a stage the argument is available rather than blocked. Rounds went the other way on 260726: ruled a family rather than a stage, so `7-round/` exists outside the stage contracts. The live folder still has only `_archive/` and zero `S-Round` pages because the family remains unimplemented.
+The set of stages is OPEN, and deliberately so. Adding one costs a row in `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`, a folder, and two files: no new skill, no version bump. Compiling, submitting and answering reviewers all sit outside the eight today and none of those exclusions was ever argued in writing, so if one should become a stage the argument is available rather than blocked. Rounds went the other way on 260726: ruled a family rather than a stage, so `7-round/` exists outside the stage contracts. The live folder still has only `_archive/` and zero `S-Round` pages because the family remains unimplemented.
 
 The folder is also PURE. Every file in it is an S page or the board's own index, never a `.tex`, an asset or a scratch note. The moment something else lands there the board stops being a control plane and becomes a folder that happens to contain some pages.
 
@@ -469,7 +469,7 @@ Almost nothing here is authored in place. The prose arrives from `⑧`, the numb
       Done 260726. `conform` 0.2.0 was rewritten around the delete test as an executable check (block J) plus board purity (block D); at the pre-migration baseline it failed the MISQ paper with 56 findings. `folder` 0.5.0 scaffolds Board-first with one runnable Seed page and creates no `STATUS.md`. `scaffold` 0.2.0 reframed as the manuscript upgrade, with its six templates rewritten, not just its prose. `restructure` 0.2.0 migrates INTO the new shape and gained the delete test as a third non-negotiable gate.
 - [x] 🧹 Align the remaining skills with this layout
       Done 260726, in four phases ordered by BINDING rather than by mention count. ① `haipipe-paper-stage` 0.7.0: eight `stages/*/stage.md` contracts, whose `artifact:`/`probes:`/`units:`/`output:` resolve at run time, so a stale one does not read wrong, it WRITES to the wrong place. ② `haipipe-paper-enter` 0.5.0, the console. ③ `haipipe-paper-lifecycle` 0.4.0, the router. ④ the tail: `probe` 0.7.0, `draft-display` 0.2.0, `diffpdf` 0.2.0, `compile` 0.2.0, `revise` 0.2.0.
-      Two things the plan had not counted, both found by measuring directories instead of `SKILL.md`: `2-phase/REF/paper-folder-anatomy.md`, the shared spec every build skill cites, whose prefix table asserted the OPPOSITE rule and is the reason the family drifted; and 90 venue templates carrying one identical stale line.
+      Two things the plan had not counted, both found by measuring directories instead of `SKILL.md`: `../../paper/2-phase/REF/paper-folder-anatomy.md`, the shared spec every build skill cites, whose prefix table asserted the OPPOSITE rule and is the reason the family drifted; and 90 venue templates carrying one identical stale line.
 - [x] 📍 Rule STATUS.md out of existence
       Adopted 260726 on JL's proposal, with the Gate Ledger landing in each S page's `## Log`, one row on the page whose gate it was. That was the only blocker: it is the one part of the file that is history and cannot be re-derived. `current_layer`/`maturity` are derived from disk; the `venue:` pin moved to `S-Venue-0-venue.md` frontmatter. `folder` no longer creates the file, `conform` warns when one exists, `restructure` migrates its rows out before removing it, and `DRIFT` was retired with it: it named the gap between a stored frontier and disk, and there is no stored frontier. What replaced it is narrower and real, `STALE`, an S page whose own `state:` over-claims about itself.
 - [x] 🧨 Make the MISQ paper pass its own test
@@ -494,7 +494,7 @@ Disposable runtime tests pass deterministic reuse, path-escape refusal, no submi
 The display unit's working/shipping split is now explicit. The remaining trial gap is owned by the one active stale Display input.
 
 ## Files
-- `3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh`
+- `../../paper/3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh`
   THE machine test for this face. Blocks A to K; block J is the delete test, block D is board purity and one-family-one-folder. Exit 0 conforms, 1 findings, 2 not a paper folder.
 - `3-deliver/1-build/`
   The other three: `haipipe-paper-folder` (Board-first minimal scaffold), `-scaffold` (the manuscript upgrade), `-restructure` (migrate an existing paper in). All four rewritten 260726.
@@ -504,9 +504,9 @@ The display unit's working/shipping split is now explicit. The remaining trial g
   The router that names paths on the way through; 6 mentions.
 - `README.md`
   The family map, which still describes the older complete-folder shape.
-- `3-deliver/4-ship/haipipe-paper-to-word/md2tex.py`
-  The QB11a format adapter; it is not allowed to perform implicit submission promotion.
-- `QB-delivery/QB11a-section-to-latex.md`
+- `../../paper/3-deliver/4-ship/haipipe-paper-to-word/md2tex.py`
+  The QBe3 §3 format adapter; it is not allowed to perform implicit submission promotion.
+- `_archive/QBe3a-section-to-latex.md`
   Owns conversion semantics and evidence extraction; QA6 owns only where candidates land and how they may be promoted.
 - `2-src/projection.yaml`
   Live MISQ wiring manifest; G0 validated.
@@ -573,7 +573,7 @@ The display unit's working/shipping split is now explicit. The remaining trial g
 
 260726 · JL asked the Diagram to say which skills this rule changes and whether they are done. `WHO WRITES WHAT` gained an UPDATED column with per-skill counts, split into old-path debt and `STATUS.md` debt, and a second block saying what each of the four rewrites actually was. The measurement moved the priority: `haipipe-paper-stage` (22 old-path, 12 `STATUS.md`, across eight run-time stage contracts) is worse than `enter`, which the earlier `SKILL.md`-only count had put first.
 
-260726 · The four `1-build/` skills rewritten against this face, on JL's go. `conform` 0.2.0 is the one that matters: the delete test stopped being a convention and became block J of `check_structure.sh`, which resolves every target a master reaches and asserts none sits behind a number. It fails the MISQ paper with 56 findings. `folder` 0.5.0, `scaffold` 0.2.0 (six templates rewritten, not just prose) and `restructure` 0.2.0 followed. `conform` first was deliberate: it is read-only, so it could not break anything, and once correct it is the pass/fail check the other three are written against.
+260726 · The four `1-build/` skills rewritten against this face, on JL's go. `conform` 0.2.0 is the one that matters: the delete test stopped being a convention and became block J of `../../paper/3-deliver/1-build/haipipe-paper-conform/scripts/check_structure.sh`, which resolves every target a master reaches and asserts none sits behind a number. It fails the MISQ paper with 56 findings. `folder` 0.5.0, `scaffold` 0.2.0 (six templates rewritten, not just prose) and `restructure` 0.2.0 followed. `conform` first was deliberate: it is read-only, so it could not break anything, and once correct it is the pass/fail check the other three are written against.
 
 260726 · JL asked what separates `displays/` from `figures/`. Nothing does, and that was an error in this diagram carried over from the pre-unit npjDM2025 layout: `figures/` on the MISQ paper holds 5 orphan PNGs no `\includegraphics` points at. `figures/` deleted from the layout, and the unit expanded to show its real 8 members and which 2 ship. Same turn, JL proposed retiring `STATUS.md` and the stage strip; the argument and the one blocker are in Discussion.
 

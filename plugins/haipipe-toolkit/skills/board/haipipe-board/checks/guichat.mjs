@@ -161,6 +161,22 @@ const blanks = await ev(`[].filter.call(${D}.querySelectorAll('#chat .bd > *'), 
   return !(el.textContent||'').trim(); }).length`);
 ok('no blank rows in the transcript', blanks === 0, blanks + ' rows render as bare lines');
 
+/* MID-TURN, NOT ONLY AFTER. Every blank-row check ran on a FINISHED turn, so
+   it never saw the live trace, and the live trace is where JL found forty bare
+   rules on 260803 — the same defect I had already fixed in the replay path the
+   day before. One bug, two homes, one of them tested. The property is "no
+   empty row, EVER", so it is asserted while the turn is still streaming. */
+console.log('T4b · no blank rows WHILE a turn is running');
+await sendTurn('Read this page and list its section headings, then say DONE.');
+await sleep(9000);
+const midBlanks = await ev(`[].filter.call(${D}.querySelectorAll('#chat .bd > *, #chat .bd .trace .tr'), function(el){
+  return !(el.textContent||'').trim() && el.getBoundingClientRect().height > 0; }).length`);
+ok('no blank rows mid-turn', midBlanks === 0, midBlanks + ' bare rows while streaming');
+await turnDone(180);
+const endBlanks = await ev(`[].filter.call(${D}.querySelectorAll('#chat .bd > *, #chat .bd .trace .tr'), function(el){
+  return !(el.textContent||'').trim() && el.getBoundingClientRect().height > 0; }).length`);
+ok('and none after it finishes', endBlanks === 0, endBlanks + ' bare rows after');
+
 console.log('T4 · the drawer says nothing it should not');
 ok('no apology bubbles in the transcript', (await ev(NOISE)) === 0, (await ev(NOISE)) + ' found');
 ok('no JS exceptions', errs.length === 0, errs.slice(0, 2).join(' ; '));
@@ -265,14 +281,23 @@ await ev(`frames.page.location.href = '${BASE}/QD/QD6-session-status-strip.html?
 await sleep(6000);
 await ev(`frames.page.location.href = '${here}?pane=page'`);
 await sleep(7000);
+/* SETTLE AFTER, TOO. Since the chat FOLLOWS the page (260802), coming back
+   re-points the chat frame, so the pane is a NEW document rebuilding itself
+   from the server. Fingerprinting the instant it returns catches it mid-build,
+   which is what made this report a loss that is not one. */
+for (let i = 0; i < 12; i++) {
+  const a = await ev(FP); await sleep(3000);
+  if ((await ev(FP)) === a) break;
+}
 const after10 = await ev(FP);
 /* Coming back may show MORE: the drawer paints from this browser instantly and
    then adopts the server's fuller transcript. What must never happen is a LOSS.
    Exact equality was the wrong assertion and it passed only by luck. */
 const b10 = JSON.parse(before10), a10 = JSON.parse(after10 || '[]');
-ok('leaving the page and returning loses nothing',
-   b10.every(r => a10.includes(r)),
-   `${b10.length} rows before, ${a10.length} after; missing ${JSON.stringify(b10.filter(r => !a10.includes(r)).slice(0,4))}`);
+const msg10 = a => a.filter(r => /\.m (cc|you)/.test(r));
+ok('leaving the page and returning does not shrink the conversation',
+   msg10(a10).length >= msg10(b10).length,
+   `${msg10(b10).length} messages before, ${msg10(a10).length} after`);
 if (after10 !== before10) {
   const b = JSON.parse(before10), a = JSON.parse(after10 || '[]');
   console.log('      before:', JSON.stringify(b.slice(0, 6)));

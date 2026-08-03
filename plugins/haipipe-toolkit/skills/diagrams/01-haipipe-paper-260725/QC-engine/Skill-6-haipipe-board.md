@@ -723,7 +723,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       | `cli/watch.py` | Watch the board folder and re-run `build.py` on any `.md` change |
       | `cli/check.py` | The structural self-check (the machine half of `QA9`): sections, state, references, the rendered html, template coverage |
       | `cli/serve.py` | The live server, about 398 lines: argument parsing, the request router, and the shared setup; everything with a feature in it now lives in `live/` |
-      | `live/base.py` | 154 lines: the shared request base the other live modules mix in |
+      | `../../0_utils/diagram-excalidraw/references/.venv/lib/python3.11/site-packages/pyee/base.py` | 154 lines: the shared request base the other live modules mix in |
       | `live/structure.py` | 274 lines: `structure_op`, behind `POST /_board/structure` (＋Q / ＋Group / 🗄) |
       | `live/write.py` | 259 lines: the sentence write path, the comment and edit writes under an anchor sentence |
       | `live/xcal.py` | 468 lines: `serve_frame()`, the `assets/xcal-boot.js` injection, and the image pointer ↔ dataURL restore |
@@ -742,7 +742,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       | `assets/css/`, `assets/js/` | The page's real CSS and JS parts, assembled by `build.py` into `board/_assets/board.css` and `board/_assets/board.js` |
       | `assets/xcal-boot.js` | The script `live/xcal.py` injects into the proxied Excalidraw so that drawings save back to the repository |
       | `tests/` | The skill's own tests, all 11 of them (`python3 -m pytest tests/`): activity, aims state, board structure, hold, home, quality check, sentence chat, sentence editing, stage style, status, tree reroot. Moved out of the top level 260801; `tests/conftest.py` puts the engine dir on `sys.path` |
-      The independent judge: `../agents/haipipe-board-reviewer-agent.md`.
+      The independent judge: `../../../agents/haipipe-board-reviewer-agent.md`.
       It has no write tools; after the author has fixed things, start another new reviewer.
       A live example: `Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/`, this skill's own board (the flat form).
       A live example of the nested form (Q decisions + S stages): `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`.
@@ -1016,7 +1016,7 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
 260801 · `0.92.0`
       **A group intro's figure renders as a figure on the group page.** `index_rows` and the group page built the same intro body two ways: the index turned a ``` fence into `<pre class="gidia">`, while the group page flattened every fence line into `<p>` prose, which is how a group's ladder arrived mangled inside "why this group exists" (JL 260801). Both paths now share `page_board._gi_body()`, and `.gwhy-b .gidia` joins the `.gib .gidia` CSS rule so the figure is styled there too. Board-side, on the design board: the QB group intro redrawn as the section-protocol ladder (one reader question per section), and the seven QB4a-QB4g faces each open with the five-row protocol (conveys · holds · source · rules · omit), master view on QB4 §0. JL ruled the graduation (option A) the same day: the template's How-to-use comment now carries the reader-question ladder + the misplaced-sentence rule, and `haipipe-board-page` 0.3.0 carries the five-row contract.
 260801 · `0.91.1`
-      **checks/ follows the QD3m→QD3 merge.** JL ruled the design board's QD3m (the myrlin smooth-view page) folds back into QD3 — its engine half had already shipped into QD3 as 0.64.0, and its open smooth-view work now rides QD2 M1 — so the page moved to the board's `_archive/`. `checks/pty_e2e.py`'s default spawn target pointed at the archived path and would have 400'd on the next full-tier run; it now defaults to `QD-working/QD3-chat-terminal.md`. Board-side records on QD3 (Where we are + Log) and board.md's QD lane/map/Pages rows.
+      **checks/ follows the QD3m→QD3 merge.** JL ruled the design board's QD3m (the myrlin smooth-view page) folds back into QD3 — its engine half had already shipped into QD3 as 0.64.0, and its open smooth-view work now rides QD2 M1 — so the page moved to the board's `_archive/`. `checks/pty_e2e.py`'s default spawn target pointed at the archived path and would have 400'd on the next full-tier run; it now defaults to `../01-boardform-260722/QD-working/QD3-chat-terminal.md`. Board-side records on QD3 (Where we are + Log) and board.md's QD lane/map/Pages rows.
 260731 · `0.91.0`
       **`Meeting-<n>` is a page kind, and a vault note becomes a board page.** JL: "the MEETING-page should be a special page like SKILL, but still fit the Basic page structure." It does, and the reason it fits is what reading `jluo41/echo-meeting` turned up: its summarizer's system prompt FIXES six headings, so the mapping is a lookup rather than an interpretation. `### TL;DR` becomes the Opening, `### Diagram` is already the emoji ASCII figure this board asks every page for, `### Key Points` and `### Decisions` and the `## Conversation` chapters become Content divisions, the transcript is the last division, and an Obsidian `> [!quote]-` callout becomes exactly this board's sentence apparatus, so clicking a chapter's summary line opens the words that produced it. Three managed spans (`head`, `diagram`, `body`) resync from the note; Items to Finish and Decision Now are SEEDED ONCE from `### Action Items` and `### Open Questions` and never touched again, because you tick those and a resync that rewrote them would eat your state. New `meetingpage.py` (`new` / `sync`); `src/common.py` and `src/parse.py` learned the prefix and a `meeting` kind that sorts after Agent; `check.py` learned the filename in `## Pages`. Generated `Meeting-1` from the real 260723 note: six base sections, 18 Content divisions, 15 sentence drawers, zero warnings. Recorded on QC10.
       **A meeting page is exempt from English-only, deliberately.** The imported note is 8,573 Chinese words, and JL's 260724 rule is about the prose this team writes, not about a meeting held in the language it was held in; "fixing" a quotation falsifies the record. Managed spans were already skipped by `strip_fences(prose_only=True)`, but the two seeded lists sit outside them by design, so `check.py` now exempts `Meeting-<n>` pages from the CJK and em-dash rules: 26 warnings became 0.
@@ -1280,8 +1280,8 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
       - **`4a-l2` is not available, on a mechanical ground.** The page-id regex stops at the first hyphen, so a hyphenated tail parses as `S-Display-4A` and collides with its own parent. The tail runs on: `4al2`.
       - **Verified on the MISQ board:** 42 pages, the new page ordered between `S-Display-4A` and `S-Display-4B`, 0 stale-contract warnings, every other page id unchanged, and `build-displays.py` shipping 11 units.
 260728 · `0.44.0` · measure the master the paper SHIPS
-      - **A paper may have two tex trees, and 0.43.0 measured the wrong one.** On the MISQ board `3-dist/tex/paper.tex` is the live deliverable, generated one-way from the S-Main pages by `md2tex.py`, while a root master over hand-written `sections/` still builds beside it. `_input_closure()` globbed the ROOT for `\begin{document}`, so it saw only the legacy tree and reported `??` for nine displays that were in the shipped PDF all along. It now prefers `3-dist/tex/paper.tex` when present.
-      - **An `\input` resolves against the file's own directory OR the paper root.** `md2tex.py` compiles with `TEXINPUTS=".:<paper root>:"`, which is how `\input{S-Main-3-theory}` and `\input{displays/S-Display-1a-hero-concept/float}` both work from inside `3-dist/tex/`. A walker trying only one base silently loses half the tree.
+      - **A paper may have two tex trees, and 0.43.0 measured the wrong one.** On the MISQ board `3-dist/tex/paper.tex` is the live deliverable, generated one-way from the S-Main pages by `../../paper/3-deliver/4-ship/haipipe-paper-to-word/md2tex.py`, while a root master over hand-written `sections/` still builds beside it. `_input_closure()` globbed the ROOT for `\begin{document}`, so it saw only the legacy tree and reported `??` for nine displays that were in the shipped PDF all along. It now prefers `3-dist/tex/paper.tex` when present.
+      - **An `\input` resolves against the file's own directory OR the paper root.** `../../paper/3-deliver/4-ship/haipipe-paper-to-word/md2tex.py` compiles with `TEXINPUTS=".:<paper root>:"`, which is how `\input{S-Main-3-theory}` and `\input{displays/S-Display-1a-hero-concept/float}` both work from inside `3-dist/tex/`. A walker trying only one base silently loses half the tree.
       - **Net effect on that board:** one `\ref` chip still reports `??`, `fig:llm-measurement`, whose unit is deliberately folded. Verified by regenerating: `paper.pdf` at 47 pages, nine unit labels in `paper.aux`, zero undefined references.
       - **The lesson worth keeping:** "a label exists on disk" (0.42.0), "a label reaches the master" (0.43.0), and "which master" (this one) are three different questions, and only the third makes the second mean anything.
 260728 · `0.43.0` · a label on disk is not a label in the document
@@ -1372,7 +1372,7 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
         link the paper board had renamed again.
 260727 · `0.41.1` · agents are shipped units too, and every section folds
       - `skillpage.py` accepts a single definition `.md` as well as a skill folder, so
-        `agents/haipipe-board-reviewer-agent.md` gets a page. Both carry identical
+        `../../../agents/haipipe-board-reviewer-agent.md` gets a page. Both carry identical
         frontmatter, so one generator covers both rather than a second that would
         drift. A single-file unit emits the tree span EMPTY rather than omitting it:
         `sync` replaces spans it can find, and a missing one would report as an older
@@ -1645,7 +1645,7 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
         unit's `diagram/`; plugin skill-design Boards share the plugin's
         `skills/diagrams/`. `NN` sequences one topic series, so unrelated topics may
         each start at `01`.
-      - Added `../agents/haipipe-board-reviewer-agent.md`, a read-only packaging of
+      - Added `../../../agents/haipipe-board-reviewer-agent.md`, a read-only packaging of
         the existing `check.py` plus zero-background cold-read workflow. The original
         session remains the writer and fixes every finding.
 260726 · `0.29.0` · warn when a board writes markers and declares no dialect

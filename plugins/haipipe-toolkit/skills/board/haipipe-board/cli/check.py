@@ -431,8 +431,23 @@ def check_opening(text, name, rep):
         return
 
     # 1 · the lead is an actual question, and it is the first thing on stage
+    #
+    # ...EXCEPT on a skill page. `Skill-<n>` and `Agent-<n>` mirror a unit that
+    # ships elsewhere and DECIDE NOTHING, so `haipipe-board-page-for-skill` rules
+    # the opposite: their Opening INTRODUCES the unit and may never open with a
+    # question. Without this exemption the seven pages that obeyed that contract
+    # each carried a WARN telling them to put the question back, and a writer
+    # working the checker's list would have regressed every one of them. Found by
+    # the first real dispatch of haipipe-board-reviewer-agent, 260802.
     lead = prose[0].strip()
-    if not lead.endswith("?"):
+    roster = name.startswith(("Skill-", "Agent-"))
+    if roster:
+        if lead.endswith("?"):
+            rep.add(WARN, "skillpage-opening-is-a-question", f"{name}:1",
+                    "a skill page decides nothing, so its Opening INTRODUCES "
+                    "the unit and never asks (haipipe-board-page-for-skill); "
+                    f"it reads {lead[:60]!r}")
+    elif not lead.endswith("?"):
         rep.add(WARN, "opening-lead-not-a-question", f"{name}:1",
                 "the Opening lead must be one actual question (QB4 §1); "
                 f"it reads {lead[:60]!r}")

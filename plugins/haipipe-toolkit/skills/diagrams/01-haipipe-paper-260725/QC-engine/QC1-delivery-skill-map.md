@@ -96,7 +96,7 @@ No Delivery authority moved into this page.
   Own the delivery-side links.
 - `Skill-0*.md`
   Existing initial skill cohort that will gain route fields.
-- `QF1-execution-map.md`
+- `QF-execute/QF1-execution-map.md`
   Owns actual run evidence.
 
 ## Law

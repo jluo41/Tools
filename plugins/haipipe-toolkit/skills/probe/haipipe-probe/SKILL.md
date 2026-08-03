@@ -8,6 +8,16 @@ metadata:
   summary: "The probe layer, operational form. Board-first Q-consumers are Content-linked Aims with separate rows in States; PROBE owns ORGANIZE→MATCH→DISPATCH→POINT→INTERPRET."
 ---
 
+> **WHERE AN ENTRY LIVES IS THE CONSUMER'S CHOICE, not this model's** (JL 260803).
+> This skill owns the entry's ANATOMY, its state contract and its two LAWS; it does
+> not own the path. A paper now keeps each entry as a PAGE in its own board, in the
+> group that matches the entry's route: `0-lifecycle/8-literature/` for
+> `route: discovery` and `0-lifecycle/9-value/` for `route: task`, because those two
+> groups ARE the paper's outside-evidence and inside-evidence concerns. The older
+> `1-probes/PPNN_<topic>/QXn_<slug>.md` layout is retired for papers and archived
+> under the paper's `_archive/`; an application still uses its own path until it
+> makes the same move.
+
 Skill: haipipe-probe — the probe layer
 ======================================
 

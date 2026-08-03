@@ -1,13 +1,12 @@
-# haipipe-board-sentence · v0.3.0
+# haipipe-board-sentence · v0.3.1
 state: 🟡 in flux · became a door 260802; three releases that day, all now in the changelog
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-What does an agent need to know to write ONE line that reads like the board?
-It needs the board's smallest addressable thing: one source line, which renders as one row a reader can click.
-It needs the two ways something attaches to that line, because they are not the same: a card takes a few marked WORDS and renders inside the sentence, and a `>` lane takes the whole line and renders under it.
-This unit is that contract, and since 260802 it is also the door that runs it.
+`haipipe-board-sentence` is the contract for one source line, the board's smallest addressable thing, and since 260802 it is also the door that runs three verbs on one.
+A line renders as one row a reader can click.
+Two things attach to that line and they are not the same: a card takes a few marked WORDS and renders inside the sentence, and a `>` lane takes the whole line and renders under it.
 
 **Since when it is a door**: say `comment on "<the sentence>"`, `edit "<the sentence>"` or `card on "<the words>"` and this skill runs that verb.
 `haipipe-board-page` is what you reach for when the question is which SECTION a write belongs in rather than which line.
@@ -26,16 +25,16 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5, which this spe
 
 **Where it stands**: 0.1.0 to 0.3.0 in two days, and the door half is one day old with nothing measured against it.
 Its three named consumers are still only named: `live/chat.py`, whose duplicated lane rules justified cutting this spec out in the first place, still teaches the grammar from its own Python prose.
-And `cli/agree.py` reports the plainest kind of drift on it right now, a `SKILL.md` declaring 0.3.0 against a changelog whose newest entry is 0.2.0, so the release that made it a door was never written down.
+The release that made it a door shipped with no changelog entry and `cli/agree.py` caught it; the entry was reconstructed from the shipped file on 260802 and the tool now reports clean.
 
 ## Diagram
-<!-- haipipe:skill:tree:start da4abcb009149bd0 board/haipipe-board-sentence -->
+<!-- haipipe:skill:tree:start f458d05475e3651a board/haipipe-board-sentence -->
 
 **What `haipipe-board-sentence` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-board-sentence/
-  CHANGELOG.md          61 ln  haipipe-board-sentence · Changelog
+  CHANGELOG.md          80 ln  haipipe-board-sentence · Changelog
   SKILL.md             191 ln  /haipipe-board-sentence · the sentence, as a contract you can load
 ```
 
@@ -83,9 +82,9 @@ WORKFLOW  one line, two anchors, and the three verbs that write to it
 ```
 
 ## Content
-<!-- haipipe:skill:body:start da4abcb009149bd0 board/haipipe-board-sentence -->
+<!-- haipipe:skill:body:start f458d05475e3651a board/haipipe-board-sentence -->
 
-**haipipe-board-sentence** · `0.3.0` · last shipped 2026-08-02
+**haipipe-board-sentence** · `0.3.1` · last shipped 2026-08-03
 
 - folder   `board/haipipe-board-sentence/`
 - tools    not declared
@@ -239,14 +238,15 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
       ├── SKILL.md            this contract
       └── CHANGELOG.md        version history
       ```
-      Reads `haipipe-board/ref/board-form.md` §5 as the authority; owns no scripts at 0.1.0.
+      Reads `haipipe-board/ref/board-form.md` §5 as the authority; owns no scripts.
       The named next step (QC1b §1): the drawer's lane instructions in `live/chat.py` become this contract's consumer instead of a second prose copy.
 <!-- haipipe:skill:body:end -->
 
 ## Aims
-- [ ] 📓 The release that made it a door is written down
-      `cli/agree.py` reports `SKILL.md says 0.3.0 · CHANGELOG.md shipped 0.2.0`, so the three verbs shipped with no changelog entry.
-      The entry belongs to whoever shipped 0.3.0, not to this page; this row is the report, and the finding came from `Skill-7`'s own tool pointed at the family.
+- [x] 📓 The release that made it a door is written down
+      `cli/agree.py` reported `SKILL.md says 0.3.0 · CHANGELOG.md shipped 0.2.0`, so the three verbs shipped with no changelog entry at all.
+      Reconstructed from the shipped file on 260802 and marked as reconstructed, since it was written after the fact rather than at release time; the tool now reports clean.
+      The finding came from `Skill-7`'s own tool pointed at this family, which is the first time one skill page checked another.
 - [ ] 🧪 Something is measured against the door half
       It gained three verbs on 260802 and nothing has exercised them from this contract: no run, no fresh agent choosing this door, no check that the exact-match anchor fails visibly the way the page says it does.
       Its two shared rules read as scars from real incidents, which is a good sign about their origin and no evidence at all about their current state.
@@ -259,14 +259,14 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
 
 ## States
 The ground moved under this page on 260802: `QB5` closed with all 16 Aims met, and this unit went from a 94-line contract an agent loads to a 191-line door a person runs, across three releases in two days.
-Its health is `🟡 in flux` for two separate reasons now, one good and one not: the door half is a day old and untested, and the release that introduced it was never written into the changelog.
+Its health is `🟡 in flux` for one reason now: the door half is a day old and nothing has been measured against it.
 
 - 260802 JL · 🚪 It stopped being only a SPEC
   `QB5` settled the sentence as the board's atomic unit and handed each attachment its own page, and the skill followed by taking three verbs: comment, edit, card.
   The roster on `QC1b` had it filed as a pure SPEC beside `haipipe-board-page`, which is now half true, and the same misfiling is what hid `haipipe-board-index`'s duplication for two days.
 - 260802 CC · 📓 A tool built one page over found the drift on this one
   `Skill-7`'s `cli/agree.py` compares two statements of one fact and reported this unit's `SKILL.md` at 0.3.0 against a changelog shipping 0.2.0.
-  That is the first time a roster row was checked by another roster row's engine rather than by a person reading it, which is worth more than the defect it found.
+  That is the first time a skill page was checked by another skill page's engine rather than by a person reading it, which is worth more than the defect it found.
 - 260802 CC · ⚠️ This page contradicted itself for several hours
   The derived Content span carried `Three verbs, and this skill is the door for all of them` while the authored fence directly above it still read `loaded, never run`.
   A sync updates the derived half and cannot touch the authored one, so a page can be green on `skillpage.py check` and self-contradictory on screen, which is the sharpest example yet of why that check covers frontmatter only.
@@ -276,10 +276,13 @@ Its health is `🟡 in flux` for two separate reasons now, one good and one not:
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the address, the three consumers and the boundary, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. Recorded plainly that this unit's consumers are declared rather than measured, and that `live/chat.py`, the consumer that justified cutting it out, still carries its own copy
 260731 1116 · page generated from `board/haipipe-board-sentence/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start da4abcb009149bd0 board/haipipe-board-sentence -->
+<!-- haipipe:skill:log:start f458d05475e3651a board/haipipe-board-sentence -->
 
-Converted from the skill's own `CHANGELOG.md`: 5 releases.
+Converted from the skill's own `CHANGELOG.md`: 7 releases.
 
+260803 · `0.3.1`
+      **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
+      - The Files block said "owns no scripts at 0.1.0", a version string frozen three releases back.
 260802 · `0.3.0`
       **🚪 Became the DOOR for one sentence, not only its spec** (JL 260802: "if we want to put sentence things, we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?").
       The `haipipe-board-page` precedent is precise about what migrates: that skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. This unit had it the other way round, with the operating detail living in `haipipe-board`'s SKILL.md while this file was 94 lines of spec carrying no verbs at all.
@@ -288,6 +291,14 @@ Converted from the skill's own `CHANGELOG.md`: 5 releases.
       - **The reader's controls**: hover rail, double-click to edit, one `⋯` on touch, every record shut by default.
       - **What every verb must hold**: the anchor is an exact match and a miss fails visibly; a form CLOSES before it asks for the repaint, because the live swap will not run while a textarea inside `div.wrap` holds text.
       192 lines, against the page skill's 299.
+260802 · `0.3.0`
+      ⚠️ **Entry reconstructed on 260802 from the shipped file, not written at release time.**
+      `cli/agree.py` reported `SKILL.md says 0.3.0 · CHANGELOG.md shipped 0.2.0`, so the release that changed what this unit IS went unrecorded. What follows is read off the committed `SKILL.md`; if the author of 0.3.0 meant more by it, this entry is the floor and not the ceiling.
+      **This skill stopped being only a contract and became a DOOR.** Its `description` now opens "TWO USES, and this skill is the door for both: RUN a verb on one sentence or LOAD it as a pure contract."
+      - `## 🚪 Three verbs, and this skill is the door for all of them` is new: `comment` on a sentence, `edit` one line and leave one record, and `card` on a few words. Say any of them and this skill runs it; the caller never touches the engine.
+      - `### What every verb must hold` is new, and every line of it is a scar: the anchor is an EXACT match on the source line and a miss FAILS VISIBLY; a form CLOSES before it asks for the repaint, or the swap refuses it, which is what stops a rebuild eating a half-written comment; a write needs `serve.py` and with it down the page keeps a pending line rather than growing a comment area at its foot; and the badge names WHICH KIND is underneath.
+      - `## 🏷 The reader's controls` is new: hover for the address plus Comment and Chat, double-click to edit, one quiet `⋯` on touch, every attached record SHUT by default, and a single click on the body left unclaimed so selecting and copying still work.
+      **Two consequences nobody recorded either.** The roster on the design board's `QC1b` filed this unit as a pure SPEC beside `haipipe-board-page`, which stopped being true here; and `### What every verb must hold` restates the addressing law that `QC4a` owns, which is a second copy of a rule rather than a citation of it.
 260802 · `0.2.0`
       **Two surfaces, two anchors.** The spec knew about lanes under the line and about markers, but not that a card can be attached to a few WORDS by a record that quotes them. An agent loading this to write one line could not have produced `> Card the words: what to show`, and would not have known that a card and a lane anchor differently.
       - `## 💬 The lanes` — `> Card the words: what to show` joins the lane figure, marked as the one lane that renders INSIDE the sentence rather than under it.

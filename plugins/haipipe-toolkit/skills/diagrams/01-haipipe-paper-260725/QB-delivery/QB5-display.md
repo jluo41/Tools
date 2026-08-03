@@ -11,7 +11,7 @@ What does Paper own when a task or discovery result becomes a figure or table?
 Four things, and only four: why the display exists, what it argues, where it lands, and whether it is accepted. Making it is somebody else's job. The Display layer at `/haipipe-display` owns the recipe, the renderer, the candidates, and promotion.
 
 **Where this page sits**: QB4 Value hands over numbers that are better shown than stated.
-This page is the seam itself, and the three series below it hold the detail: QB12 the sentence that points at a display, QB13 the float as an object, QB11 where the float lands in a section.
+This page is the seam itself, and the three series below it hold the detail: QBe1 the sentence that points at a display, QBe2 the float as an object, QBe3 where the float lands in a section.
 
 **Why the seam needs its own page**: without it the paper board slowly reimplements the display layer.
 Every question about a figure looks like a paper question from inside a paper, so rendering rules drift onto this board one reasonable page at a time, and then two boards specify the same thing differently.
@@ -23,12 +23,12 @@ Paper may reject a render it does not like, and the Display layer may not decide
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **This page DESIGNS; the paper board SHOWS**: the design division states what a paper must carry for this concern, not what one paper happens to have today.
 Where the MISQ paper differs, say so as a gap with an owner, never as the definition.
 
-**This page holds the seam and nothing else**: the six detail pages left for QB11, QB12, and QB13 on 260802, and they must not drift back.
+**This page holds the seam and nothing else**: the six detail pages left for QBe1, QBe2, and QBe3 on 260802, and they must not drift back.
 A sentence about what a unit folder contains, or how a caption is worded, belongs on a face and not here.
 
 **State ownership as a pair, always**: write what Paper owns AND what the Display layer owns in the same breath.
@@ -50,7 +50,7 @@ Half the pair alone reads as a land grab by whichever side is named.
                               │
       ┌───────────────────────┼───────────────────────┐
       ▼                       ▼                       ▼
-  📊 QB12                 🖼 QB13                 📐 QB11
+  📊 QBe1                 🖼 QBe2                 📐 QBe3
   the sentence that       the float as            where the float
   POINTS at it            an object               lands in a section
 
@@ -105,8 +105,8 @@ A figure can say the right thing from the wrong data, and it can say the right t
   ⚡ the display stage declares `runs: once` and the MISQ paper carries
      THIRTEEN unit pages plus the dash ── the contract does not match
   🔑 the count follows the paper's evidence, never the template
-  🔗 the three series below the concern: QB12 the pointer · QB13 the
-     float · QB11 where it lands
+  🔗 the three series below the concern: QBe1 the pointer · QBe2 the
+     float · QBe3 where it lands
 ```
 
 🎯 Establishes what a paper board must show for this concern, and the contract defect the count exposes.
@@ -127,28 +127,28 @@ That is the same per-unit shape section-edit declares honestly with `runs: per-u
 - A1.1 · The paper board specifies the seam and never the rendering.
   **Done when:** no page in the QB group states a recipe, a renderer, or a promotion rule, and the display board is the only place those appear.
 - A1.2 · The six detail pages sit under the series that owns their unit.
-  **Done when:** QB12 holds the two pointer pages, QB13 holds the three float pages, QB11 holds placement, and this page lists no detail page of its own.
+  **Done when:** QBe1 holds the two pointer pages, QBe2 holds the three float pages, QBe3 holds placement, and this page lists no detail page of its own.
 
 ### P · 🏁 Page-level
 - P1 · The shipping and working halves of a display unit are separated.
-  **Done when:** QA6 rules the split, and QB13a states which files are numbered board authority and which enter the unnumbered submission half.
+  **Done when:** QA6 rules the split, and QBe2 §3 states which files are numbered board authority and which enter the unnumbered submission half.
 
 ## States
 
 ### A1 · 📜 The delivery contract
-- 🔨 A1.1 · Ruled and unaudited. The seam is stated in the Law, but QB13 records that QB13a and QB13b may be restating the display board, and only their titles have been compared.
+- 🔨 A1.1 · Ruled and unaudited. The seam is stated in the Law, but QBe2 records that QBe2 §3 and QBe2 §4 may be restating the display board, and only their titles have been compared.
 - ✅ A1.2 · Done 260802. The six pages were re-filed by unit, and this page keeps the seam alone.
 
 ### P · 🏁 Page-level
-- 🧠 P1 · Waiting on QA6, which owns the shipping and working split. QB13a already carries the two-filesystem-roles ruling, so this thaws as soon as QA6 decides.
+- 🧠 P1 · Waiting on QA6, which owns the shipping and working split. QBe2 §3 already carries the two-filesystem-roles ruling, so this thaws as soon as QA6 decides.
 
 ## Files
 
 The six detail pages left this concern for the series that owns their unit, and Display keeps the ownership seam only.
 
-- the pointer to a display: `QB12c-sentence-display-table.md`, `QB12d-sentence-display-figure.md`, under QB12
-- the float itself: `QB13a-display-folder.md`, `QB13b-requested-display.md`, `QB13c-display-caption.md`, under QB13
-- where the float lands: `QB11c-display-placement.md`, under QB11, because the first citing section decides it
+- the pointer to a display: `_archive/QBe1c-sentence-display-table.md`, `_archive/QBe1d-sentence-display-figure.md`, under QBe1
+- the float itself: `_archive/QBe2a-display-folder.md`, `_archive/QBe2b-requested-display.md`, `_archive/QBe2c-display-caption.md`, under QBe2
+- where the float lands: `_archive/QBe3c-display-placement.md`, under QBe3, because the first citing section decides it
 
 ## Law
 
@@ -162,5 +162,5 @@ The six detail pages left this concern for the series that owns their unit, and 
 ## Log
 
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered with a face figure and caption, Aims regrouped as A1/P with `Done when`, States mirrored per Aim.
-260802 · The six detail pages re-filed by unit onto QB11, QB12, and QB13; Display keeps the Paper/Display ownership seam and nothing else.
+260802 · The six detail pages re-filed by unit onto the three series; Display keeps the Paper/Display ownership seam and nothing else.
 260729 · Display kept as one Delivery group after Literature and Value.

@@ -24,7 +24,8 @@ from src.stage_contract import (END, START, STYLE_END, STYLE_START,  # noqa: E40
                                 managed_span, refs, replace_managed,
                                 replace_managed_style)
 
-FAMILIES = ("Seed", "Work", "Venue", "Display", "Main", "Appendix", "Submission")
+FAMILIES = ("Open", "Seed", "Work", "Venue", "Literature", "Value", "Display", "Main",
+            "Appendix", "Submission", "Round")
 
 
 def compact(text, limit=520):
@@ -274,6 +275,20 @@ def resolve_filename(family, unit, slug):
         unit = unit.upper()          # an appendix letter: S-Appendix-C
     elif re.fullmatch(r"[A-Za-z]\d+", unit):
         unit = unit[0].upper() + unit[1:]   # a lettered series member: S-Work-R1
+    elif re.fullmatch(r"[A-Za-z][a-z]+", unit):
+        # A CAPITALISED WORD is a family CONTROL page, not a unit at all (JL 260727,
+        # extended to the composer 260803). `src/parse.py` has read this form since
+        # `S-Main-Dash` was created, and the composer refused it, so two live control
+        # pages existed that the one tool owning the name could not reproduce.
+        unit = unit[0].upper() + unit[1:].lower()
+        # A control page carries NO slug: the live pages are `S-Main-Dash.md` and
+        # `S-Display-Dash.md`, so requiring one here would compose a third spelling
+        # of a name that already exists twice on disk.
+        # The slug is DROPPED, not appended (260803). A capitalised word unit IS
+        # the page's name: `S-Main-Dash` and `S-Open-Seed` carry no slug on disk,
+        # and a stage declaring `board_slug: seed` beside `board_unit: Seed` would
+        # otherwise compose `S-Open-Seed-seed.md`, a name no board has ever held.
+        return f"S-{family}-{unit}.md", family, unit, ""
     elif not re.fullmatch(r"\d+|\d+[a-z][a-z0-9]*", unit):
         # A BLOCK + MEMBER id is the Display family's grammar (JL 260727): the number
         # is the narrative block a unit serves and the lowercase letter is its position
@@ -286,7 +301,8 @@ def resolve_filename(family, unit, slug):
         raise SystemExit(
             "unit must be a number (S-Main-6), one letter (S-Appendix-C), "
             "a lettered series member (S-Work-R1), a block+member id "
-            "(S-Display-4a), or a variant of one (S-Display-4al2)")
+            "(S-Display-4a), a variant of one (S-Display-4al2), or a "
+            "control-page name (S-Main-Dash)")
     slug = re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
     if not slug:
         raise SystemExit("slug must contain at least one letter or number")

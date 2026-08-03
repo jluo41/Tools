@@ -244,6 +244,20 @@ Seven decisions or implementations remain open: the two template examples, a ful
   It found two things on its first outing that a person had missed for a day, and two of its own rules were wrong in ways only a real run exposes: it counted `<details>` inside CSS comments, and it applied this Board's settled-items rule to a Board that had ruled otherwise.
   Both are fixed, and both are the argument for running the checker rather than describing it.
 
+- 260802 CC · 🔴 The suite is RED, and it went red without anyone noticing
+  `python3 -m pytest tests/` in `haipipe-board` reports 4 failed, 87 passed on 260802.
+  Three are `test_status.py`, all the same cause: the tests assert the strip's markdown-link form `🧭 [test · QA](url)`, while `status.py` now emits an OSC-8 terminal hyperlink, or `🧭 test · QA (url)` when the terminal cannot take one.
+  `SKILL.md`'s closing-block spec at line 204 still shows the markdown form, so the code, the spec and the tests are three different answers to one question, and only the tests say so out loud.
+  The fourth is `test_quality_check.py`, where `chat_scope({})` returns `bypass` and the test asserts `full`. That one is a PERMISSION default, and `QD1` has already had a permission rule overturned once for being written off the cuff, so it is the more serious of the two.
+  Not repaired here: another session was editing `status.py` and `SKILL.md` during this run, and repairing a test under an active writer would race them. Reported instead, per the cross-board law.
+- 260802 CC · 🟢 Everything else deterministic passes
+  `check.py` on this board: 52 pages, 0 error, 0 gap. `skillpage.py check`: all 8 skill and agent pages current. `haipipe-writing`'s `tests/test_roundtrip.py`: all round trips hold.
+  `cli/agree.py` reported one real defect, `haipipe-board-sentence` declaring 0.3.0 against a changelog stopping at 0.2.0, which was written up and now reports clean.
+- 260802 CC · 🟡 `agree.py` cannot tell an illustrative path from a dead one
+  It reported 7 dead or non-resolving paths in `haipipe-board`'s `SKILL.md` and `ref/`, and the three checkable ones, `board/_assets/board.css`, `board/_assets/board.js` and `board/QA/`, all EXIST inside a real board folder.
+  They are illustrative paths describing what a generated board contains, resolved by the tool against the skill directory instead.
+  So its path check is not yet trustworthy on any document that describes a directory layout, which is most of this family; its version check, by contrast, found a true defect the same run.
+
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
 
@@ -300,6 +314,7 @@ Opening: the always-visible opening section that states a page's question and sc
 > JL: Board should be a first-class family, and it should have a reviewer agent.
 
 ## Log
+260802 2230 · First full deterministic sweep of the shipped family recorded: pytest 4 failed / 87 passed, and the 4 are one strip-format disagreement across code, spec and tests plus one permission default. `check.py`, `skillpage.py check` and the writing round-trip all pass. `agree.py` found one true version drift and 3 false dead paths
 260802 · A second `## Where we are` heading was silently discarding everything under the first: `split_sections` builds a dict, so the later block won and 1023 bytes of dated records had never rendered. The two are merged and the duplicate heading is gone; `check.py` gained a `duplicate-section` ERROR the same day, because nothing reported this.
 260801 · QF3 opened as the third instrument: a browser run, because this face's two instruments both read text and six 260731 failures lived in what the browser did with it
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

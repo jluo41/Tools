@@ -109,7 +109,7 @@ Users invoke stage skills:
       template.md   the canonical skeleton — section order, placeholders, inline <!-- RULE --> comments
       ```
       This skill carries NO templates of its own — the stage owns its format.
-      Resolve the folder from `../../../1-lifecycle/haipipe-paper-stage/stages/index.yml`, which maps a
+      Resolve the folder from `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`, which maps a
       stage key to its `dir`. Do NOT hardcode the mapping here; that index is the one enumerating file.
       ```text
       seed          -> stages/0-seed/
@@ -122,8 +122,8 @@ Users invoke stage skills:
       section-edit  -> stages/5-section-edit/     (a section NAME, e.g. `introduction`, routes here)
       ```
       Some stages carry EXTRA support files in the same folder; read them when the contract's
-      `support:` field names them. They are NOT uniform — `2b-pitch/readability.md`,
-      `4-display/figure-logic.md` + `checklist.md`. section-edit has none — its template is its own rulebook. Never assume a
+      `support:` field names them. They are NOT uniform — `../../paper/1-lifecycle/haipipe-paper-stage/stages/2b-pitch/readability.md`,
+      `../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/figure-logic.md` + `../../paper/1-lifecycle/haipipe-paper-stage/stages/4-display/checklist.md`. section-edit has none — its template is its own rulebook. Never assume a
       file exists because a sibling stage has one.
       ⚠️ The `phases:` field in `stage.md` is AUTHORITATIVE and is not always four. `venue` declares
       `[draft, probe, check]` — it has no REVISE. Run what the stage declares.
@@ -226,7 +226,7 @@ Users invoke stage skills:
       It checks both directions, and the second one is the one a reader misses: a hole
       carrying `[Q-Main-9]` when no `Q-Main-9` exists LOOKS owned, so nobody ever goes
       looking for it. The discipline behind the check is
-      `writing/haipipe-writing/ref/holes.md`; the notation, the `.bib` grep, and the
+      `../../writing/haipipe-writing/ref/holes.md`; the notation, the `.bib` grep, and the
       `1-probes/` boundary stay here, because none of those generalize. Do not run the probe-entry checker yet: no entries should exist from this
       phase. The sub-agent's job is semantic judgment — whether the draft says
       something, follows the stage contract, and raises answerable questions.
@@ -339,7 +339,7 @@ Users invoke stage skills:
       |---|---|---|
       | Venue style, word budget, arc | `0-lifecycle/2-venue/S-Venue-0-venue.md` (compiled from `venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
       | Per-section structure norms | the paper's `S-Venue-0-venue.md` blueprint block (BINDING), deep dive `paper/venue/playbook-*/<journal>/<journal>-<kind>/style.md` (reference) | DRAFT (structure) |
-      | Prose quality rules | `../../REF/prose-quality.md` | REVISE |
+      | Prose quality rules | `../../paper/2-phase/REF/prose-quality.md` | REVISE |
       Old venue LaTeX templates and the write-conference/scientific/systems style skills were archived to the paper-root `_archive/` (venue knowledge belongs in `venue/` packs).
 
 - 6 · Relation to other phases
@@ -508,7 +508,7 @@ Converted from the skill's own `CHANGELOG.md`: 27 releases.
       ### Changed — the Rules block
       The citation rule and the sidecar rule collapse into one: EVERY HOLE IS FILLED OR OWNED, EVERY STAGE. `1-probes/` is the only consumer-side source of truth; `_LOG_<stage>.md` is the only sidecar.
       ### Changed — the seed artifact is FIVE sections, not three
-      This file described `0-seed.md` as three sections in three places (Step 3, the seed stage note, and the caller table), omitting Landscape and Q-consumer. Q-consumer is where every `[Q-Seed-<n>]` anchor lives, so an agent following the old Step 3 would present a 3-section plan and fail the seed skill's own done-criterion 1.
+      This file described `../../probe/haipipe-probe/test/fixture/proj/papers/Paper-Fx/0-lifecycle/0-seed/0-seed.md` as three sections in three places (Step 3, the seed stage note, and the caller table), omitting Landscape and Q-consumer. Q-consumer is where every `[Q-Seed-<n>]` anchor lives, so an agent following the old Step 3 would present a 3-section plan and fail the seed skill's own done-criterion 1.
 260719 · `4.4.0` · sync to probe constitution v9.5.0 (Q-executor-entry probe-file format) + archaeology strip
       Rewrote every probe-file-anatomy reference to the new v9.5.0 shape: a probe entry is now `## QX<n>` (topic-local) with four `###` subsections — `### q-executor` (+ `Deliverable:` / `Accepted:` lines), `### q-consumer` (one bullet per Q-consumer, its stage-doc id + original question), `### bank binding` (`route` / `bank` / `target` / `state`), and `### a-executor` (the harvested copy of the QA answer). Field renames applied across the Rules block, Step 4 (probe plan), Step 4b self-review Surface B, the summary, and the frontmatter: `route:`→`route`, `match: EXISTS·<f> / NONE→NEW`→`bank: reuse | run | code | new`, `target:`→`target`, `state:`→`state`, and the probe-file `a-consumer:` (the answer copied INTO the probe file)→`### a-executor`; the `## Why` field is DROPPED — the stake stays in the stage-doc Q-consumer. Unchanged (deliberately): the stage-doc `Q-<Stage>-<n>` Q-consumer id and its `Answer:`/a-consumer (station ②) — only the probe-file entry heading and fields moved. Retired the `_VALUES_*`/`_CITATION_*` consumer-side sidecars from the T1 LOCAL registry list (1-probes/ is the only consumer-side source of truth; `_LOG` is the only kept sidecar); the `.bib`/`\citep{}`/`\cite{TOADD}`/`{VAL:?}` citation rules are untouched. Archaeology strip: dropped the dated ruling citation from the resource-stage "cut" note.
 260719 · `4.3.0` · RULES block (points at haipipe-probe's DRAFT phase rules + paper deltas)

@@ -11,7 +11,7 @@ The page must expose the live skill and its release history without surrendering
 That makes skill activity visible beside the questions and decisions that affect it.
 It succeeds when a resync updates every derived span and preserves every authored line byte for byte.
 
-**Covered elsewhere**: What a Q source file contains and which sections are recognized: `QB4` and the QAa faces (QA2 merged into them 260729). How that page renders once it exists: `QB4`. The `![[path]]` embed grammar itself: `ref/board-form.md` §5. How groups are proposed and named: `QA2`. Where the pages sit on disk: `QB1`. Whether the board should host skills at all, rather than how: that is this page's Question, and it is JL's. The skill pages this mechanism PRODUCES are the `Q-Skill` group; each is a roster row, not a ruling.
+**Covered elsewhere**: What a Q source file contains and which sections are recognized: `QB4` and the QAa faces (QA2 merged into them 260729). How that page renders once it exists: `QB4`. The `![[path]]` embed grammar itself: `ref/board-form.md` §5. How groups are proposed and named: `QA2`. Where the pages sit on disk: `QB1`. Whether the board should host skills at all, rather than how: that is this page's Question, and it is JL's. The skill pages this mechanism PRODUCES are the `Q-Skill` group; each is a skill page, not a ruling.
 
 
 ## Diagram
@@ -110,7 +110,7 @@ Every board in the repo was rebuilt on the fix and none regressed.
 (JL 260727: "could you add the version after haipipe-board as well?")
 The title reads `haipipe-board · v0.41.0`, which is what the index row prints, so the shipped version is legible from the front page without opening anything.
 An earlier pass put it after the `state:` emoji, and that was wrong for a reason worth keeping: `state:` holds a health judgment a person makes, so a derived value beside it makes a machine number and a human one compete for the same line.
-The FILENAME never carries the version, because a name that changed on every release would break every link to the page, and links to a roster row are exactly what other pages will write.
+The FILENAME never carries the version, because a name that changed on every release would break every link to the page, and links to a skill page are exactly what other pages will write.
 
 #### A sub-sub section is an ITEM, because items fold and headings do not
 (JL 260727: "for its subsubsection, could we make it collapse as well")
@@ -172,7 +172,7 @@ Today that question needs 141 changelogs read by hand; after this it is one stri
 ## Aims
 ### Rulings awaiting JL
 - [ ] 🧠 JL rules whether the board hosts skills at all
-      A board's pages have always been questions somebody owns, and a skill page is a different kind of thing: a roster row.
+      A board's pages have always been questions somebody owns, and a skill page is a different kind of thing: a skill page.
       This closes either way, including "no, a roster is not a board".
 - [ ] 🗂 The grouping is decided before 35 files land in one folder
       A single flat group would mean 35 pages in one folder, which is the wall `QB1` just removed.
@@ -187,7 +187,7 @@ Today that question needs 141 changelogs read by hand; after this it is one stri
 - [x] 🏷 The generated pages get their own named family and group
       Ruled 260727: a skill page is `Q-Skill-<skill-name>.md` in a `Q-Skill/` group, not a numbered id.
       A numbered id says a skill page is the first of a queue; `Q-Skill-haipipe-board` says which skill it is, which is the only thing a reader wants from the id, and it stays greppable across the repo.
-      This is the same shape as the named S families and closes for the same reason: a roster row is identified by WHAT IT IS, never by a position.
+      This is the same shape as the named S families and closes for the same reason: a skill page is identified by WHAT IT IS, never by a position.
       `parse.py` now recognizes `Q-<Family>-<rest>` as a named Q page, so the id and the page title agree without a number in between.
 - [x] 🔨 `skillpage.py` with `new` / `sync` / `check`
       Built 260726 and proven on `haipipe-board` itself as `QB6`, which is the right first subject: if the tool cannot describe the skill that generated it, it describes nothing.
@@ -260,7 +260,7 @@ These are the calls only JL can make; CC ticks nothing here.
 
 ## Glossary
 managed block: a span between `<!-- haipipe:...:start -->` and `:end` that a generator owns; everything outside it belongs to whoever typed it.
-roster page: a page whose subject exists independently of the board, unlike a ruling, which exists only as the question it asks.
+skill page: a page whose subject exists independently of the board, unlike a ruling, which exists only as the question it asks.
 
 ## Log
 260802 2000 · JL widened the 260727 scope ruling by asking to add `skills/writing` to the roster, and `Skill-7-haipipe-writing` is the first row outside `skills/board/`. It is a sound widening because that unit owns the prose standard every page here is judged against, but no rule states where the line now falls, so a Decision Now row carries the three options with `units this board depends on` recommended

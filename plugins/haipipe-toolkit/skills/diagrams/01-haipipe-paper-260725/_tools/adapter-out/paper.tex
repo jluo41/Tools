@@ -1,0 +1,56 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% MISQ Submission — Research Article (55 pages max, ALL content)
+%% Using misqdoc.cls (Times New Roman, 12pt, double-spaced, 1-inch margins)
+%% Compile with: xelatex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{misqdoc}
+
+\shorttitle{Patient-Perceived Agreeableness and Opioid Prescribing}
+
+% ---- References (MISQ bibliography style) ----
+\usepackage{natbib}
+\bibliographystyle{misq}
+\bibpunct[, ]{(}{)}{;}{a}{}{,}
+
+% ---- Additional packages ----
+\usepackage{booktabs}
+% \usepackage{tabularx}  % removed: breaks tabular in misqdoc.cls + TL2026
+% \usepackage{longtable}  % removed: same conflict family
+% \usepackage{array}  % removed: same conflict family
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+
+% ---- Appendix environment ----
+\newenvironment{APPENDICES}{%
+  \newpage
+  \appendix
+  \renewcommand{\thesection}{\Alph{section}}%
+  \setcounter{secnumdepth}{1}%
+}{}
+
+% ---- Compatibility macros for old INFORMS commands ----
+\newcommand{\TITLE}[1]{}
+\newcommand{\RUNTITLE}[1]{}
+\newcommand{\ARTICLEAUTHORS}[1]{}
+\newcommand{\AUTHOR}[1]{}
+\newcommand{\AFF}[1]{}
+\newcommand{\EMAIL}[1]{}
+\newcommand{\URL}[1]{}
+\newcommand{\ABSTRACT}[1]{}
+\newcommand{\KEYWORDS}[1]{}
+\newcommand{\RUNAUTHOR}[1]{}
+\newcommand{\HISTORY}[1]{}
+\newcommand{\ACKNOWLEDGMENT}[1]{}
+\let\oldmaketitle\maketitle
+\renewcommand{\maketitle}{}
+
+%%%%%%%%%%%%%%%%
+\begin{document}
+\input{S-Main-4-measurement}
+\bibliographystyle{misq}
+\bibliography{Personality-Opioid-MISQ2026}
+\end{document}

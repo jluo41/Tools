@@ -22,7 +22,7 @@ If a skill ever needs a Q page in order to run, something has been filed in the 
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Never state how many pairs or folders there are**: that number is `QA1`'s and it has changed twice.
 This page carried "the easiest of the eight" and "there are four such pairs" long after both were wrong, because a count restated away from its owner is a count nobody revisits.

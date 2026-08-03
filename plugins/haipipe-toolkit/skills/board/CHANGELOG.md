@@ -4,21 +4,33 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## [0.6.0] — 2026-08-03
+
+**A full diagnose-first review of the bucket** (`/haipipe-skill-diagnose`), 27 findings across 6 skills and 2 agents, all fixed in one round.
+
+One root cause produced most of them: **the specs were changed this week and the changes were not carried back to the door, the agents, or the READMEs.** The door still taught the old page-creation procedure, both agents still enforced the pre-override Aim form, and both READMEs still drew a folder layout that moved on 260801.
+
+Two rulings were taken rather than asked (JL: "go ahead to solve yourself, dont ask me"):
+- A page-kind VARIANT ships **where the board family MAINTAINS it**, replacing "under its consumer, never here", which no longer described either variant.
+- The status strip follows the CODE, not the older spec; `SKILL.md` and three tests were the leftovers.
+
+Also: `skills/_console/` did not exist, though `/haipipe-skill-diagnose` has written its ledgers there since v1.3.0. Created, with a README. The test suite went from 4 failed / 87 passed to **91 passed**.
+
 ## [0.5.0] — 2026-08-02
 
 - **New unit: `haipipe-board-page-for-skill/`**, the VARIANT of `haipipe-board-page`
-  for the two roster kinds, `Skill-<n>` and `Agent-<n>`. It loads the base and never
-  restates it, then adds what a roster page needs: an Opening that introduces a unit
+  for the two skill and agent page kinds, `Skill-<n>` and `Agent-<n>`. It loads the base and never
+  restates it, then adds what a skill page needs: an Opening that introduces a unit
   instead of asking a rhetorical question, the derived-versus-authored split across
   the three managed spans, `state:` as a health judgment rather than a version, Aims
   as the unit's own open work including defects other pages route in, and the
   retirement procedure.
 - It ships BESIDE the base rather than under a consumer family, which is the declared
   exception to the variant rule: for these two kinds the consumer IS the board family.
-- Opened because five roster pages on `01-boardform-260722` had Openings from one
+- Opened because five skill and agent pages on `01-boardform-260722` had Openings from one
   template and JL caught it by eye. The base could not have prevented it: its
   noun-substitution test was already on the books, but its Opening shape asks what the
-  page decides, and a roster page decides nothing.
+  page decides, and a skill page decides nothing.
 - Versions: `haipipe-board` 0.110.0, `haipipe-board-page` 0.11.0,
   `haipipe-board-page-for-skill` 0.1.0.
 

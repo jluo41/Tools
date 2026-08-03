@@ -3,6 +3,7 @@
 state: 🟡 PARTIAL · the four layers and the delivery order are ruled; five routing gaps are open and the cold read has never run
 owner: JL
 method: start from the required delivery, map it through skill-first Engine routes, then record bounded executions as evidence
+session: 8c876e73-8134-46ec-90ac-f1a34318c99a
 
 ## Opening
 
@@ -28,7 +29,7 @@ This page states the reading order and stops; a fact stated twice drifts.
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Name a group by what it ANSWERS, never by its letter alone**: a bare group letter means nothing to a reader who arrived from one link.
 Write "Delivery, what the reader gets" the first time in any division.
@@ -123,7 +124,7 @@ Response became Round because the unit is a batch rather than a single reply.
 
 #### 2.2 · Three series sit below the ten, and they are not concerns
 (they say what a delivery rule APPLIES TO, which is a different axis)
-`QB11` holds rules whose unit is a whole section, `QB12` one sentence, and `QB13` one float.
+`QBe3` holds rules whose unit is a whole section, `QBe1` one sentence, and `QBe2` one float.
 A concern says what the reader gets; a series says what a rule is about, so the two never compete for the same page.
 
 ### 3 · Source and generated
@@ -184,7 +185,7 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 - 🔨 A1.2 · Stated in `## Law` and practised by the one real record: the MISQ Main-1 candidate names its blocker. Whether every future record will is not enforced.
 
 ### A2 · 📦 The delivery order, and who ruled it
-- ✅ A2.1 · Ruled by JL on 260729 and applied. `QB11` through `QB13` were added on 260802 as series rather than concerns, which left the ten untouched.
+- ✅ A2.1 · Ruled by JL on 260729 and applied. `QBe3` through `QBe2` were added on 260802 as series rather than concerns, which left the ten untouched.
 - ⬜ A2.2 · Not started. Do it one group at a time, so no page claims a route or run that does not exist.
 - ⬜ A2.3 · Not started. The initial skill cards become the first Engine route, never a new authority layer.
 - ⬜ A2.4 · Not started.
@@ -237,7 +238,7 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 
 ## Log
 
-260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into three divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Two stale facts corrected in the pass: the board is 63 pages rather than 53, and `QB11`-`QB13` were added to `### 2` as series rather than being silently absent.
+260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into three divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Two stale facts corrected in the pass: the board is 63 pages rather than 53, and `QBe3`-`QBe2` were added to `### 2` as series rather than being silently absent.
 
 260801 · Consolidated 16 historical groups into QA Design, QB Delivery, QC Engine, and QF Execute; migrated page ids to their live group, retained non-conflicting aliases, and reserved QD/QE for future Paper-specific Working/Sharing content.
 

@@ -8,10 +8,14 @@ reviewable set of question pages or lifecycle stages.
 - `haipipe-board/` is the callable skill and owns the Board format, actions,
   renderer, local service, write-back, checks, and the reply-ending session
   status strip. It is the family's one DOOR.
-- `haipipe-board-page/` is a loadable SPEC: what a page is, its three kinds over
-  one base, the seven sections, and where a machine may write into one.
+- `haipipe-board-page/` is a loadable SPEC: what a page is, its six kinds over
+  one base, its sections in their fixed order, and where a machine may write.
+- `haipipe-board-page-for-venue/` is the loadable VARIANT of that base for
+  `QBv<n>` venue pages, one per place a paper is submitted to. Its pages live on
+  the paper board, and the board family maintains the contract, which is why it
+  ships here.
 - `haipipe-board-page-for-skill/` is the loadable VARIANT of that base for the
-  two roster kinds, `Skill-<n>` and `Agent-<n>`. A roster page mirrors a unit
+  two skill and agent page kinds, `Skill-<n>` and `Agent-<n>`. A skill page mirrors a unit
   that ships elsewhere and decides nothing, so its Opening introduces the unit
   instead of asking a question.
 - `haipipe-board-sentence/` is a loadable SPEC: the atomic unit, the `>` lanes,
@@ -49,23 +53,22 @@ board/
 │   └── haipipe-board-reviewer-agent.md
 ├── haipipe-board-page/
 ├── haipipe-board-page-for-skill/
+├── haipipe-board-page-for-venue/
 ├── haipipe-board-sentence/
 ├── haipipe-board-routing/
 │   └── src/lanes.py
 └── haipipe-board/
     ├── SKILL.md
     ├── CHANGELOG.md
+    ├── status.py        ← the ONLY script at the top level
+    ├── cli/             ← every other runnable script lives here
+    ├── src/
+    ├── live/
     ├── ref/
     ├── assets/
-    ├── src/
-    ├── vendor/
-    ├── build.py
-    ├── check.py
-    ├── serve.py
-    ├── stage.py
-    ├── status.py
-    ├── watch.py
-    └── xcal.py
+    ├── checks/
+    ├── tests/
+    └── vendor/
 ```
 
 The design Board remains a working artifact at

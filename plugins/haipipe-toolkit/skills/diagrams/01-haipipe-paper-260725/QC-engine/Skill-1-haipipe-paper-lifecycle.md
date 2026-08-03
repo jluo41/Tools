@@ -60,7 +60,7 @@ Skill: haipipe-paper-lifecycle (orchestrator)
 ==============================================
 
 User-facing entry for **paper structural work** -- everything that decides *what the paper is* before prose exists, or when the argument needs rethinking.
-This is the **Plan cycle** in the paper mental model (see `paper/README.md`, `../ref/03-paper-lifecycle.md`, and `../ref/04-lifecycle-map.md`).
+This is the **Plan cycle** in the paper mental model (see `paper/README.md`, `../../paper/1-lifecycle/ref/03-paper-lifecycle.md`, and `../../paper/1-lifecycle/ref/04-lifecycle-map.md`).
 
 The lifecycle has a **venue-free / venue-aligned boundary**.
 Seed, resource and claims are venue-FREE (they don't change when you retarget to a different journal -- what a paper NEEDS to exist does not depend on where you send it).
@@ -114,7 +114,7 @@ Phase dispatch is each stage skill's internal business.
 If a request sounds like a phase ("gather citations for §3", "polish the intro"), route to the owning stage skill (usually section-edit) and let it dispatch.
 
 Stage artifacts are markdown S pages (`S-<Family>-<n>-<slug>.md`, one family one folder) for every stage except display, which also compiles to `.tex` + PDF (you need to SEE rendered figures/tables).
-Stage gates and the illuminate loop are shared conventions: `../ref/08-stage-gate.md`, `../ref/09-stage-illuminate.md`.
+Stage gates and the illuminate loop are shared conventions: `../../paper/1-lifecycle/ref/08-stage-gate.md`, `../../paper/1-lifecycle/ref/09-stage-illuminate.md`.
 
 ---
 
@@ -609,11 +609,11 @@ Converted from the skill's own `CHANGELOG.md`: 20 releases.
       JL ruling on the removal style, 2026-07-19: "不需要留退役告示，直接抹除任何痕迹" / "follow this rule to do all the following changes."
       Changed (SKILL.md)
       - The section-edit specialist line described the per-section folder as "outline .md, _LOG changelog, _CITATION_ map, _VALUES_ registry" → "outline .md and _LOG changelog".
-      Changed (`../ref/04-lifecycle-map.md`)
+      Changed (`../../paper/1-lifecycle/ref/04-lifecycle-map.md`)
       - `1-claims` Writes — `+ _LOG + _EVIDENCE_` → `+ _LOG`.
       - `3-narrative` Writes — `+ _LOG + _DISPLAY_` → `+ _LOG`, plus the DR rows it files in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage owns that file and its statuses).
       - `5-section-edit` Writes — `(outline .md, _LOG, _CITATION_, _VALUES_)` → `(outline .md, _LOG)`.
-      Changed (`../ref/08-stage-gate.md`)
+      Changed (`../../paper/1-lifecycle/ref/08-stage-gate.md`)
       - The section-edit exit question no longer requires a scaffold containing `_CITATION_ + _VALUES_`; it asks for `outline + _LOG`, and adds the check that actually matters now — every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]` anchor bracket.
       Untouched (deliberately)
       - Every `mode: light | full` reference — deferred to a separate review.
@@ -625,7 +625,7 @@ Converted from the skill's own `CHANGELOG.md`: 20 releases.
       Added (JL resource ruling 2026-07-14; pairs with haipipe-paper-resource 1.0.0 + haipipe-paper 2.11.0)
       - RESOURCE registered as a lifecycle stage everywhere this router enumerates stages: the verbs block (`resource <args>` -> `0-lifecycle/1a-resource/1a-resource.md`), the Specialists list (`haipipe-paper-resource  RESOURCE (1)`), the Natural Pipeline Order, the Routing Logic stage set, the Function Keyword Map + positional aliases, the no-arg dashboard, and the parent-orchestrator diagram.
       - Venue boundary prose now reads seed + resource + claims as venue-FREE (what a paper NEEDS to exist does not depend on where you send it); the Retarget rule says the same.
-      - resource SHARES the number 1 with claims, deliberately -- precedented on disk by 2a-venue/ and 2b-pitch/. No other stage renumbers; `stage-strip.sh` strips the digit and keys on the bare name `resource`.
+      - resource SHARES the number 1 with claims, deliberately -- precedented on disk by 2a-venue/ and 2b-pitch/. No other stage renumbers; `../../application/haipipe-application/stage-strip.sh` strips the digit and keys on the bare name `resource`.
 260711 · `2.3.0`
       Added (JL cross-stage ruling 2026-07-11; pairs with haipipe-probe 7.5.0 + haipipe-paper 2.8.0)
       - "Global-pass mode (breadth-first — the whole-paper cycle)" section after the Natural Pipeline Order: ① DRAFT SWEEP all stages (placeholders/GAPs fine; venue still pins before the ALIGNED drafts) → ② PROBE-PLAN (`/haipipe-paper probe plan`, campaign consolidation, HUMAN GATE) → ③ HANDOFF BATCH per the DAG → ④ RUN (task/discovery sessions — often a separate concurrent session) → ⑤ HARVEST (query-once) then REVISE/CHECK per stage. Depth-first per-stage cycles remain valid for single-stage work; stage gates unchanged.

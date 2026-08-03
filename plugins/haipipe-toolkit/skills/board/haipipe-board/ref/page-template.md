@@ -249,7 +249,7 @@ Delete the `####` heading and the `(…)` line together in a division that is a 
 ## Aims
 required · Durable target states, not a task list. Every Aim has a stable id and names the result this page is trying to make true.
 
-Group Aims under the Content division they serve: the group is `### A<n> · <name>`, carrying that division's number, its name and its emoji, and the States group is written exactly the same way
+Group Aims under the Content division they serve: the group is `### A<n> · <emoji> <name>`, carrying that division's number and name, and an emoji that lives on the GROUP and never on the division heading (`check.py` strips an emoji from a group name and not from a division, so an emoji on the heading fires `group-name-drift`), and the States group is written exactly the same way
 (JL 260801, the letter fixed to `A` on 260802; `C<n>` still resolves for older boards).
 One Content division may have zero, one, or several Aims. Use `P1`, `P2`, and so on only for a page-level Aim that genuinely crosses divisions.
 The section heading derives its `met/total` count from `## States`; Aims themselves never carry checkboxes.
@@ -335,7 +335,7 @@ pages: a template, a loadable spec), `Checks` (what CATCHES a page breaking one)
 opened to check and never to edit). Engines comes first because Files is ordered by what a reader opens first, not by how the data flows.
 
 Which group a file goes in is decided by what YOU do to it, not by what it is: edit it to change behavior -> Engines; read it, or an engine reads it -> Input files; a build wrote it
--> Output files. So a governing spec that never executes is an Input, and a script whose
+-> Output files. So a governing spec that never executes goes in **Contracts** when it carries a rule to other pages, and in Input files only when this page merely reads it, and a script whose
 rules are code is an Engine. A page may add a name, and the test is that it states an ACTION, in the page's own words: a group named after a SUBJECT rots the moment that subject leaves the page. Stay flat under about three rows; omit an empty group and never invent a row to fill one.
 
 ## Law

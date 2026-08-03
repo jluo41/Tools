@@ -170,12 +170,23 @@ window.addEventListener('load', function () {
   var settle = 0;
   var settleT = setInterval(function () {
     settle += 1;
+    /* BOUNDED. Two of the branches below `return` without clearing, so a pane
+       that never boots, or one holding a terminal, left this polling every
+       500 ms for the life of the shell. A fallback that never gives up is a
+       leak, and this one had two ways to reach it (found by re-reading the
+       diff, 260803). Thirty ticks is fifteen seconds, far past any boot. */
+    if (settle > 30) { clearInterval(settleT); return; }
     try {
       var m = localStorage.getItem('board-split-mode');
       if (m !== 'gui' && m !== 'tui') { clearInterval(settleT); return; }
       if (!window.__paneModeNow) return;                 // not booted yet
       if (window.__paneModeNow() === m) { clearInterval(settleT); return; }
-      if (window.__boardTermOn && window.__boardTermOn()) return;  // on its way
+      /* Stand down while a terminal is coming up: `__paneMode` toggles, and
+         toggling against an in-flight open just fights it. Removing this guard
+         was tried on 260802 and made the switch WORSE, from one failure in four
+         to two in four and deterministic, because the fallback then clicked
+         repeatedly against the drawer's own opener. */
+      if (window.__boardTermOn && window.__boardTermOn()) return;
       if (settle < 6) return;                            // ~3s of quiet first
       clearInterval(settleT);
       window.__paneMode(m);
@@ -327,6 +338,42 @@ def _shell_doc(page_url, index_url):
     shown = p;
     /* the page's own url, bare: the split is what that address opens as now */
     history.replaceState(null, '', p);
+    /* THE CHAT FOLLOWS THE PAGE (JL 260802: "in different webpages, I open the
+       TUI or GUI for each of them, things are mixed... TUI in Page 1 and Page 2
+       are the same"). He is right and it was worse than mixed: the chat frame
+       bound to whatever page the shell was OPENED on and never moved again, so
+       browsing to a second page and opening its chat handed you the FIRST
+       page's session — same drawer, same terminal key, same transcript.
+       Measured: page frame QD2 → QD6 → QB4 while the chat stayed on QD2
+       throughout. One chat per page is the rule; a page keeps its own sessions
+       and may have several, which is QD1's Law and needs the chat to be bound
+       to the page a reader is actually looking at.
+       Never mid-turn: a running conversation is not something to navigate out
+       from under, so a busy chat keeps its page until the turn ends. */
+    (function () {
+      var fc = document.getElementById('fc');
+      if (!fc) return;
+      var wantSrc = p + '?pane=chat';
+      if ((fc.getAttribute('src') || '') === wantSrc) return;
+      /* AN UNLOADED FRAME STILL HAS A STALE PLAN. `load()` lazily assigns
+         `fr.dataset.src`, which was baked when the SHELL was rendered — the
+         page it was first opened on. So navigating the page pane and only THEN
+         clicking 💬 GUI opened the chat on the ORIGINAL page: JL's screenshot
+         shows the page pane on QA2 and the chat header on QB0 (260803). This
+         morning's fix skipped an unloaded frame on the assumption that the
+         lazy load would use the current page. It does not. Re-aim the PLAN as
+         well as the live src. */
+      if (!fc.getAttribute('src')) { fc.dataset.src = wantSrc; return; }
+      try {
+        var w = fc.contentWindow;
+        if (w && w.__chatProbe && w.__chatProbe.inflight()) return;   // a turn is running
+        if (w && w.__boardTermOn && w.__boardTermOn()) {
+          /* a live terminal is a running process, not a view: park it politely
+             by letting the pane reload, which the PTY grace window covers */
+        }
+      } catch (e) {}
+      fc.setAttribute('src', wantSrc);
+    })();
     var t = '';
     try { t = fp.contentDocument.title || ''; } catch (e) {}
     document.title = t || 'board · split';
@@ -436,6 +483,13 @@ def _shell_doc(page_url, index_url):
     try {
       localStorage.setItem('board-split-chat', hidden ? '0' : '1');
       localStorage.setItem('board-split-mode', wanted);
+      /* THE SHELL OWNS THE MODE, so it writes the drawer's key ITSELF rather
+         than hoping the pane derives it. `__paneMode` above only lands when the
+         frame is already loaded, and the pane's boot-time derivation only lands
+         when the frame is COLD — between them sat the case that kept failing
+         (JL 260802: clicking 💬 GUI left the strip lit on >_ TUI). One writer,
+         here, on every click, covers both. */
+      localStorage.setItem('board-tui-default', wanted === 'tui' ? '1' : '0');
     } catch (e) {}
     paint();
     setTimeout(paint, 1400);        // the switch releases a session; re-read after

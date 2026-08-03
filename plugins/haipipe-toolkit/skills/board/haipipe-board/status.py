@@ -68,19 +68,24 @@ def configured_base_url(root, explicit=None):
     if value:
         return value.rstrip("/")
 
-    env_file = Path(root).resolve() / "env.sh"
-    try:
-        lines = env_file.read_text(encoding="utf-8").splitlines()
-    except (OSError, UnicodeError):
-        lines = []
-    for line in lines:
-        match = re.match(
-            r"^\s*(?:export\s+)?HAIPIPE_BOARD_URL\s*=\s*"
-            r"([\"']?)(https?://[^\"'\s#]+)\1\s*(?:#.*)?$",
-            line,
-        )
-        if match:
-            return match.group(2).rstrip("/")
+    # WALK UP for env.sh (JL 260803). `--root` defaults to cwd, and a person
+    # running this from inside a board folder got the loopback URL even with a
+    # tailnet address configured one or six directories above. The SPACE root
+    # is where env.sh lives; every board is somewhere beneath it.
+    start = Path(root).resolve()
+    for candidate in [start, *start.parents]:
+        try:
+            lines = (candidate / "env.sh").read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeError):
+            continue
+        for line in lines:
+            match = re.match(
+                r"^\s*(?:export\s+)?HAIPIPE_BOARD_URL\s*=\s*"
+                r"([\"']?)(https?://[^\"'\s#]+)\1\s*(?:#.*)?$",
+                line,
+            )
+            if match:
+                return match.group(2).rstrip("/")
     return LOOPBACK_URL
 
 
@@ -183,7 +188,7 @@ def board_url(board, root, base_url, anchor):
     # An anchor that resolves to no generated file keeps the long URL, because
     # the route answers 404 there: a long working link beats a short dead one.
     if resolved:
-        slug = urllib.parse.quote(board_slug(board.name), safe="")
+        slug = urllib.parse.quote(board_slug(board.name, board.parent.name), safe="")
         short = f"{base_url.rstrip('/')}/b/{slug}"
         return f"{short}/{urllib.parse.quote(tail, safe='')}" if tail else short
     return long_url

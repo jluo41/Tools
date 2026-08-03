@@ -1,4 +1,4 @@
-# haipipe-board-routing · v0.9.0
+# haipipe-board-routing · v0.9.1
 state: 🟡 in flux · absorbed haipipe-board-index 260802
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -7,7 +7,6 @@ method: three managed spans sync from the skill folder; everything else is writt
 `haipipe-board-routing` is the board family's only verb that writes: one thing that happened becomes one dated record on the page that owns it.
 Since 260802 it also proposes a board's groups and pages, then creates those files once a person approves.
 `haipipe-board` renders, serves and checks the board; reach here when something that happened must be kept on it.
-The merge is one day old, no group finding has landed through the new rule yet, and one unit now holds two approval rules that only the contract keeps apart.
 
 **What one anchored write is**: the input is whatever happened outside the board, such as JL ruling a question in chat, an audit finding, a correction, or a status that changed.
 Routing finds the owning page in `board.md`'s `## Pages`, then appends under a named `##` heading rather than at a byte offset, because a blind offset cut `QB4d`'s Opening sentence in half on 260730.
@@ -22,12 +21,13 @@ Content part 1 states that separation, and `## Aims` carries it as the one open 
 `haipipe-board`'s `open` action still describes propose and materialize too, which Content 2.2 declares on purpose, so those two descriptions have to be corrected together.
 `haipipe-board-index` held the board altitude until 260802; its folder is deleted and its page sits in `_archive/`.
 
-**Where it stands**: 10 releases shipped between 260731 and 260802, ending with the merge, which is what `🟡 in flux` on the `state:` line is reporting.
+**Where it stands**: the merge is one day old and one unit now holds two approval rules that only the contract keeps apart.
+10 releases shipped between 260731 and 260802, ending with that merge, which is what `🟡 in flux` on the `state:` line is reporting.
 No group-altitude finding has been written through the new landing rule, no fresh agent has been measured choosing this door, and `haipipe-board-digest` is named on the roster and not on disk.
 Each of those is an open row in `## Aims`.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 909a02c37e3ea486 board/haipipe-board-routing -->
+<!-- haipipe:skill:tree:start ce19445e76ba2ef0 board/haipipe-board-routing -->
 
 **What `haipipe-board-routing` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -35,7 +35,7 @@ Each of those is an open row in `## Aims`.
 haipipe-board-routing/
   src/
     lanes.py           253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane block per group, in board.md.
-  CHANGELOG.md         129 ln  haipipe-board-routing · Changelog
+  CHANGELOG.md         136 ln  haipipe-board-routing · Changelog
   SKILL.md             226 ln  /haipipe-board-routing · every write onto a board, at both altitudes
 ```
 
@@ -109,9 +109,9 @@ WORKFLOW  two altitudes since 260802, two approval rules, one unit
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 909a02c37e3ea486 board/haipipe-board-routing -->
+<!-- haipipe:skill:body:start ce19445e76ba2ef0 board/haipipe-board-routing -->
 
-**haipipe-board-routing** · `0.9.0` · last shipped 2026-08-02
+**haipipe-board-routing** · `0.9.1` · last shipped 2026-08-03
 
 - folder   `board/haipipe-board-routing/`
 - tools    not declared
@@ -182,8 +182,8 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
 
 - 2.3 · `lanes` · refresh the per-group blocks
       ```bash
-      python3 src/lanes.py <board-dir>            # dry run: what would change
-      python3 src/lanes.py <board-dir> --apply    # write board.md
+      python3 <this-skill>/src/lanes.py <board-dir>            # dry run: what would change
+      python3 <this-skill>/src/lanes.py <board-dir> --apply    # write board.md
       ```
       It ROUND-TRIPS.
       The page roster is generated from `## Pages` so it can never disagree with the index, but every cell a person typed is kept:
@@ -281,7 +281,7 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       ④  REACHABLE      the tab the person opens can run what shipped
       ⑤  STATED         the reply names which of ①-④ ran, with ③'s numbers
       ```
-      Run `python3 cli/gate.py <board> --start` before the work and `cli/gate.py <board>` after it.
+      Run `python3 <board-skill>/cli/gate.py <board> --start` before the work and the same command without `--start` after it. The script lives in `haipipe-board/cli/`, not here: this skill ships one script and it is `src/lanes.py`.
       ③ compares PER PAGE, never the board's total, because a second session writing the same board moves the total underneath you: it went 304 to 276 during one round on 260802. A warning the round introduced blocks the handback; the board's standing warnings are out of scope.
       ① and ④ are printed as not tested, because whether a change was substantive and whether the person's own tab has the new assets are judgments the command cannot make. A gate that reports a condition it did not test is worse than no gate.
       A round that changed PROSE also owes a cold read by `haipipe-board-reviewer-agent`; a round that changed only mechanics does not, since there is nothing for a reader to judge.
@@ -355,10 +355,14 @@ Both failure modes its page-altitude rules exist to prevent had already happened
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the five-step route, the three end states and the never-list, five real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux on the release evidence. JL's merge proposal recorded as a State record pointing at `QC1b`'s row rather than restating its options
 260731 1117 · page generated from `board/haipipe-board-routing/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 909a02c37e3ea486 board/haipipe-board-routing -->
+<!-- haipipe:skill:log:start ce19445e76ba2ef0 board/haipipe-board-routing -->
 
-Converted from the skill's own `CHANGELOG.md`: 10 releases.
+Converted from the skill's own `CHANGELOG.md`: 11 releases.
 
+260803 · `0.9.1`
+      **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
+      - **A documented command could not run from any directory.** `Run python3 cli/gate.py` — this skill has no `cli/`, and its own Files block says so two sections later. It now uses the `<board-skill>/cli/gate.py` form the rest of the family uses, and says which script this skill actually ships.
+      - `src/lanes.py` was a bare relative path that worked from exactly one working directory; it now carries `<this-skill>/`.
 260802 · `0.9.0`
       - **`haipipe-board-index` is merged into this skill and retired** (JL 260802: "maybe
         merge, I will do B"). This verb now owns BOTH altitudes: `board.md`'s structure and

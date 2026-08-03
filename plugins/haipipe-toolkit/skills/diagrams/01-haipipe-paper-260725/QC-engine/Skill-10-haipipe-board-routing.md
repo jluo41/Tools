@@ -324,7 +324,7 @@ Converted from the skill's own `CHANGELOG.md`: 10 releases.
 260731 · `0.2.0`
       - Proposals land in Decision Now: whatever routing wants the human to decide
         (a PROPOSED tick, a drafted page, an open fork) is written as a row under the
-        owning page's `## Where we are` `### Decision Now`, never left in chat
+        owning page's `## Where we are `### Decision Now`, never left in chat
         (JL 260731: "don't make the decision here").
       - The reply contract: every reply closes with the routing footer, one line per
         write, `page id · ## section`, so the human sees where each record landed

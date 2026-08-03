@@ -263,7 +263,7 @@ What is still missing is the mechanism connecting the two halves in the other di
   The tool: `build.py`, `stage.py`, `serve.py`, `src/` ×9.
 - `../01-boardform-260722/`
   Its own board, which owns what a board IS.
-- `1-lifecycle/haipipe-paper-stage/create-page.py`
+- `create-page.py`
   The one place this family reaches into it.
 
 ## Law

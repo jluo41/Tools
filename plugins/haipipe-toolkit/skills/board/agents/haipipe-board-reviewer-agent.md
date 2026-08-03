@@ -9,9 +9,9 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.5.0"
+  version: "0.6.0"
   last_updated: "2026-08-01"
-  summary: "Loads haipipe-board-page-for-skill whenever a page under review is a Skill or Agent roster page, whose Opening rule inverts the base's."
+  summary: "Loads haipipe-board-page-for-skill whenever a page under review is a Skill or Agent skill page, whose Opening rule inverts the base's."
   changelog: "./CHANGELOG.md"
 ---
 
@@ -26,10 +26,10 @@ copy is exactly what goes a night out of date while the contract moves:
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
 2. `../haipipe-board-page/SKILL.md` for the base page and evaluation contract.
 3. `../haipipe-board-page-for-skill/SKILL.md` WHENEVER a page under review is a
-   `Skill-<n>` or `Agent-<n>` roster page. It is the variant those two kinds are
+   `Skill-<n>` or `Agent-<n>` skill page. It is the variant those two kinds are
    judged against, and its Opening rule is the OPPOSITE of the base's: a roster
    page mirrors a unit that ships elsewhere and decides nothing, so it must
-   INTRODUCE that unit and may never open with a question. Judging a roster page
+   INTRODUCE that unit and may never open with a question. Judging a skill page
    by the base alone marks correct prose as wrong and passes the form letter this
    variant exists to catch.
 4. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
@@ -102,7 +102,7 @@ The writer owns every repair and may ask for another fresh review afterward.
    is never a pass, and every `MEETS` row names visible evidence.
 8. Compare each scoped page's page-level state, Aim list, current State rows,
    Log, links, and directly cited artifacts. Verify that Aim ids and State ids
-   form a one-to-one map, and distinguish a page gate from an individual Aim
+   form a one-to-one map ON A Q OR S PAGE, and distinguish a page gate from an individual Aim
    status. Report contradictions or claims made stale by the visible files. If
    the evidence is unavailable, say `not verifiable` instead of guessing.
 9. When `board.md` changed, verify that each page title distinguishes its

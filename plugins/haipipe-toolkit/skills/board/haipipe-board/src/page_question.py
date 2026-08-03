@@ -793,7 +793,7 @@ def render_question(q, prv, nxt):
             f'<span class="kind">'
             f'{esc(STAGE_LABELS.get(q.get("family"), "STAGE"))}</span>'
             if q.get("kind") == "stage" else
-            # the skill kind wears its own badge (JL 260731): a roster row is a
+            # the skill kind wears its own badge (JL 260731): a skill page is a
             # synced mirror, and the head should say so before the prose does
             ('<span class="kind">SKILL</span>' if q.get("kind") == "skill" else
              ('<span class="kind">AGENT</span>' if q.get("kind") == "agent" else ""))

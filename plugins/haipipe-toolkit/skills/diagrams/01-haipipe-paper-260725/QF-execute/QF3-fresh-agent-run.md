@@ -25,7 +25,7 @@ On the MISQ paper an agent wrote the line saying a gate had passed, which is exa
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Never report an artifact as evidence here**: this page's currency is what an agent did.
 "It produced a valid Seed page" is a QF1 mechanical record; "it stopped before DRAFT" is behavioural evidence and belongs here.
@@ -177,7 +177,7 @@ It is written here with what it did NOT exercise, so a later reader cannot mista
 - `../../../../CLAUDE.md` · the repository's fresh-subagent validation rule
 - `stages/5-section-edit/stage.md` · the hardest stage, and therefore the right one to test
 - `QF1-execution-map.md` · owns the record this run's observations become
-- `QC4d-check.md` · owns the gate-line item this test would most likely fail on
+- `QC-engine/QC4d-check.md` · owns the gate-line item this test would most likely fail on
 
 ## Law
 

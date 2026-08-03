@@ -16,7 +16,7 @@
     try {
       var j = await post('/_board/comment',
         { file: c.file, who: c.who, sentence: c.sentence, text: c.text,
-          when: c.when || stamp() });
+          quote: c.quote, when: c.when || stamp() });
       if (!j) return null;
       return j.ok ? true : j.err;
     } catch (e) { srvOK = false; return null; }

@@ -23,7 +23,7 @@ That is why every stage run now ends by rebuilding: a board nobody chose to open
 
 How this page must be written. Read it before editing, and edit to it.
 
-**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `QB4-overall.md` and are not restated here.
+**Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
 **Say which board a sentence is about, every time**: this page and `QA3` describe two objects that share a tool, a grammar and a glyph set.
 An unqualified "the board" here is the defect the page exists to prevent.

@@ -31,7 +31,7 @@ Every id here is a link: a group token opens the index at that group, a page id 
        ├── haipipe-board/           the DOOR · SKILL.md src/ assets/ ref/ + 9 scripts
        ├── haipipe-board-page/      SPEC · what a page is
        ├── haipipe-board-page-for-skill/
-       │                            SPEC · the VARIANT for roster pages
+       │                            SPEC · the VARIANT for skill and agent pages
        ├── haipipe-board-sentence/  SPEC + DOOR · one line · 3 verbs (260802)
        ├── haipipe-board-routing/   VERB · BOTH altitudes · src/lanes.py
        │                            board.md structure + one anchored write
@@ -182,9 +182,10 @@ QB8-diagramattach.md
 How the delivery is produced and shipped.
 QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
 One synced Skill page per shipped unit.
-The family took QC1b §2's shape on 260731, lost a unit on 260802 and gained one the same day: one door (Skill-0 haipipe-board), three loadable SPECS (Skill-3 page, Skill-4 sentence, Skill-6 the roster-page variant), and the write VERB (Skill-5 routing), which absorbed the board and group altitude when JL ruled the index merged into it; the retired Skill-1 is in `_archive/` and its id still resolves, and digest is named on the roster and unshipped.
+The family took QC1b §2's shape on 260731, lost a unit on 260802 and gained one the same day: one door (Skill-0 haipipe-board), two loadable SPECS (Skill-3 page, Skill-6 the skill-page variant), the sentence which became a DOOR + SPEC on 260802 (Skill-4), and the write VERB (Skill-5 routing), which absorbed the board and group altitude when JL ruled the index merged into it; the retired Skill-1 is in `_archive/` and its id still resolves, and digest is named on the roster and unshipped.
 Skill-6 is `haipipe-board-page-for-skill`, opened because five roster Openings came out of one template: a Skill or Agent page mirrors a unit that ships elsewhere and DECIDES NOTHING, so the base Opening shape, which ends in what the page decides, left it with no question to ask.
 Skill-7 is `haipipe-writing`, the roster's first row for a unit OUTSIDE `skills/board/` (JL 260802), which widens QC3a's 260727 scope ruling; it belongs because it owns `ref/writing-rules.md`, the prose standard every page here is judged against, and where the new line falls is a Decision Now row on QC3a.
+Skill-8 is `haipipe-board-page-for-venue`, the SECOND variant of Skill-3 and the roster's second unit born by lifting a rule off the page that carried it (JL 260803, one day after Skill-6 was born the same way); it governs the QBv pages on the paper board, so it is the first roster row whose consumer is another board, and whether a variant of the base may ship beside the base when its consumer is elsewhere is the same open QC3a scope row that Skill-7 widened.
 An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer and Agent-2 the page creator, one page each so N run at once.
 260801: renumbered contiguous QC1-QC4 (JL forced); the former QC5/QC7 generators and round-trip topics are now QC3/QC4, and every retired id resolves through the Links table.
 
@@ -204,7 +205,8 @@ meetingpage.py              ◀── QC3b     a meeting note on the board   ─
 build.py + live/write.py    ◀── QC4      the whole round trip          ──▶  board/ tree + the .md
 serve.py _sentence_line     ◀── QC4a     the write path's anchor       ──▶  one line in one .md
 skillpage.py sync           ◀── Skill-0  haipipe-board · the engine    ──▶  SKILL.md snapshot
-skillpage.py new/sync       ◀── Skill-6  the ROSTER-PAGE variant      ──▶  every Skill-* · Agent-*
+skillpage.py new/sync       ◀── Skill-6  the SKILL-PAGE variant      ──▶  every Skill-* · Agent-*
+skillpage.py sync           ◀── Skill-8  the VENUE-PAGE variant       ──▶  QBv-* on the PAPER board
 skillpage.py sync           ◀── Skill-7  haipipe-writing · NEIGHBOUR  ──▶  skills/writing/, not board/
 skillpage.py sync           ◀── Skill-3  the page SPEC                 ──▶  its SKILL.md snapshot
 skillpage.py sync           ◀── Skill-4  the sentence SPEC             ──▶  its SKILL.md snapshot
@@ -232,6 +234,7 @@ Agent-1-haipipe-board-reviewer-agent.md
 Agent-2-haipipe-board-creator-agent.md
 Skill-6-haipipe-board-page-for-skill.md
 Skill-7-haipipe-writing.md
+Skill-8-haipipe-board-page-for-venue.md
 ### QD · Working with Chat
 How people and agents work on a live board.
 QD1 a session per question, QD2 the GUI chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, QD6 the status strip, QD7 what a page costs to open and what we spend to make it less, and QD8 the generated address and what an agent acting on one is handed.
@@ -398,10 +401,10 @@ haipipe-board-reviewer-agent.md ../../board/agents/haipipe-board-reviewer-agent.
 env.sh              ../../../../../../env.sh
 paper-board/        ../01-haipipe-paper-260725/
 QC0@paper           ../01-haipipe-paper-260725/QC-engine/QC5-sentence-evidence-contract.md
-QC1@paper           ../01-haipipe-paper-260725/QB-delivery/QB12a-sentence-citation.md
-QC2@paper           ../01-haipipe-paper-260725/QB-delivery/QB12b-sentence-value.md
-QC3@paper           ../01-haipipe-paper-260725/QB-delivery/QB12c-sentence-display-table.md
-QC4@paper           ../01-haipipe-paper-260725/QB-delivery/QB12d-sentence-display-figure.md
+QC1@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1-sentence-cite-value-display.md
+QC2@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1-sentence-cite-value-display.md
+QC3@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1-sentence-cite-value-display.md
+QC4@paper           ../01-haipipe-paper-260725/QBe-delivery-element/QBe1-sentence-cite-value-display.md
 QA1@paper           ../01-haipipe-paper-260725/QA-design/QA1-the-folder-map.md
 QA4@paper           ../01-haipipe-paper-260725/QA-design/QA4-the-board-tool.md
 src/dialect_paper.py ../../board/haipipe-board/src/dialect_paper.py

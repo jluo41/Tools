@@ -181,7 +181,7 @@ Scope: This page covers How many pages a stage writes, which page each addresses
         that turned out to be missing.
       to bind  the REOPENED half has no field at all. "a family with no
                stage" is an ABSENCE, and nothing can read an absence.
-               It becomes checkable only by diffing `index.yml`'s
+               It becomes checkable only by diffing `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`'s
                families against FAMILIES and against the folders in
                `0-lifecycle/`. That diff is what would have caught
                Round, which is a folder no resolver can name.
@@ -189,7 +189,7 @@ Scope: This page covers How many pages a stage writes, which page each addresses
 
 ## Content
 ### Why the name and the count are one question
-This page holds two halves because the code holds them in one field group. `runs:` does not only say how many pages a stage writes; it decides WHICH identity fields the stage must carry. `check-contracts.py` branches on it: under `runs: once` a stage owes a `board_slug` and its `artifact:` filename must equal what `resolve_filename()` composes, and under `runs: per-unit` it owes `unit` and `units_from` instead, while its slug becomes a per-unit fact rather than a per-stage one. `CONTRACT.md:89-91` states the same pairing in words.
+This page holds two halves because the code holds them in one field group. `runs:` does not only say how many pages a stage writes; it decides WHICH identity fields the stage must carry. `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` branches on it: under `runs: once` a stage owes a `board_slug` and its `artifact:` filename must equal what `resolve_filename()` composes, and under `runs: per-unit` it owes `unit` and `units_from` instead, while its slug becomes a per-unit fact rather than a per-stage one. `CONTRACT.md:89-91` states the same pairing in words.
 
 So there is no seam to weld here. Asking how many pages exist and asking what each is called are two readings of one block, and a stage that gets the grain wrong cannot get the name right: `4-display` declares `once`, therefore owes a slug, has none, and its `artifact:` names a file that was archived when the split shipped. One wrong field, three visible symptoms.
 
@@ -199,7 +199,7 @@ A skill that stores another skill's filenames inherits every rename that skill m
 ### The two taxonomies, and why the difference is real work
 A STAGE is a unit of running: one question, one gate, one contract, one router row. A FAMILY is a unit of reading: where a page sits on the board so a person can find it. Those are different jobs and they were never going to line up, which is fine. What is not fine is that only one of them names the folders, so the folder tree answers "where do I read this" and says nothing about "what produced it".
 
-The family with no stage is the sharp end, and it is one family, not two. Submission holds four pages (`S-Submission-0-reconcile` through `-3-submit`), is a real member of `FAMILIES`, and is written by nothing in `stages/index.yml`. So either the lifecycle is not the only thing that writes to the board, or Submission is a stage that was never declared.
+The family with no stage is the sharp end, and it is one family, not two. Submission holds four pages (`S-Submission-0-reconcile` through `-3-submit`), is a real member of `FAMILIES`, and is written by nothing in `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`. So either the lifecycle is not the only thing that writes to the board, or Submission is a stage that was never declared.
 
 Round is a different problem wearing the same coat. `QA6` records it as an eighth family made deliberately, but neither program agrees: `FAMILIES` has seven names, `resolve_filename()` refuses anything else, the MISQ `board.md` lists no `S-Round` group, and `7-round/` currently holds only the archived `1-rounds/`. So Round is a folder with no naming rule and no pages, which is not the same as a family with no stage, and merging the two cases is what hid that.
 
@@ -232,7 +232,7 @@ Papers that predate the S-face restructure carry their stage file under the old 
 - [ ] 🔍 Assert that `units:` implies `runs: per-unit`
       One line beside `check-contracts.py:114`. `units:` is in neither `REQUIRED` (`:31-39`) nor any reader, so `4-display` declaring units under `runs: once` passes every check today. This is the one direction of the grain rule that no program holds.
 - [ ] 🧠 Rule what a family with no stage means
-      `Submission` is a real family with four pages on disk (`S-Submission-0-reconcile` through `-3-submit`) and no row in `stages/index.yml`. Either the lifecycle is not the only writer to the board, or Submission is an undeclared stage. Round is not a second instance of this; it is the item above.
+      `Submission` is a real family with four pages on disk (`S-Submission-0-reconcile` through `-3-submit`) and no row in `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`. Either the lifecycle is not the only writer to the board, or Submission is an undeclared stage. Round is not a second instance of this; it is the item above.
 - [ ] 📐 Document the dynamic-family run
       `create-page.py:283-286` refuses a `board_family` containing " or " and a `board_unit` containing a space, demanding `--family` and `--unit` per run. Correct behaviour, stated in two error strings and nowhere else, and `5-section-edit` is the only stage it applies to.
 
@@ -246,11 +246,11 @@ Addressing is where this page reopened. `QA6`'s one-family-one-folder ruling lan
 ## Files
 - `stages/*/stage.md`
   All eight carry `board_family` and `board_unit`, none carries `board_face`. Six carry `board_slug`: `4-display` and `5-section-edit` do not.
-- `haipipe-paper-stage/create-page.py`
+- `create-page.py`
   Resolves the contract, strips `0-lifecycle/` off `artifact:` for the directory, and calls the Board's naming primitive. Refuses a non-literal family (:283) and a spaced unit (:286); falls back silently to `key` for the slug (:295).
 - `haipipe-board/stage.py`
   `resolve_filename(family, unit, slug)` at :219-237 and the `resolve` verb: the one home of the rule. `FAMILIES` at :25 is the closed set of seven.
-- `haipipe-paper-stage/check-contracts.py`
+- `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py`
   :101-117, where `runs:` decides which identity fields are owed, and :102-103, where `blocked_on:` suppresses all of it.
 - `stages/4-display/stage.md`
   The one contract with a pre-restructure `artifact:` (:29), no `board_slug`, and `units:` under `runs: once`.

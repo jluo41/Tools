@@ -1,18 +1,18 @@
 ---
 name: haipipe-board-page-for-skill
 description: >-
-  The VARIANT contract for a Board's roster pages: Skill-<n>-<slug>, which mirrors one shipped skill folder, and Agent-<n>-<slug>, which mirrors one shipped agent file. It loads haipipe-board-page for the base frame and never restates it, then adds only what a roster page needs and a decision page does not: an Opening that INTRODUCES a unit instead of asking a rhetorical question, the derived-versus-authored split across the three managed spans, state: as a health judgment rather than a version, Aims as the unit's own open work including defects other pages route here, and the rule that Content is the unit's own bytes and is never authored. Use when writing or fixing a Skill or Agent page, when a roster page's Opening reads like every other one, when a new unit ships and needs a page, or when a retired unit's page must be archived. Trigger: skill page, agent page, roster page, Skill-0, Agent-1, mirror page, skillpage, skill page Opening, roster row, working on a skill page, /haipipe-board-page-for-skill.
+  The VARIANT contract for a Board's skill and agent pages: Skill-<n>-<slug>, which mirrors one shipped skill folder, and Agent-<n>-<slug>, which mirrors one shipped agent file. It loads haipipe-board-page for the base frame and never restates it, then adds only what a skill page needs and a decision page does not: an Opening that INTRODUCES a unit instead of asking a rhetorical question, the derived-versus-authored split across the three managed spans, state: as a health judgment rather than a version, Aims as the unit's own open work including defects other pages route here, and the rule that Content is the unit's own bytes and is never authored. Use when writing or fixing a Skill or Agent page, when a skill page's Opening reads like every other one, when a new unit ships and needs a page, or when a retired unit's page must be archived. Trigger: skill page, agent page, Skill-0, Agent-1, mirror page, skillpage, skill page Opening, working on a skill page, /haipipe-board-page-for-skill.
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-08-02"
-  summary: "First cut: the roster-page variant, opened because five Skill Openings came out of one template and the base could not have prevented it."
+  version: "0.4.1"
+  last_updated: "2026-08-03"
+  summary: "Opens with the whole page in one picture, marking every slot machine-written or person-written, and merges the two Aims sections that had drifted apart."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-board-page-for-skill · a roster page is not a decision page
+# /haipipe-board-page-for-skill · a skill page is not a decision page
 
-**LOAD `haipipe-board-page` FIRST.** It owns the base: the seven sections, their fixed order, the five rows that define each one, the title rule, the numbering, and the evaluation contract.
-This file adds only what a roster page needs and a decision page does not.
+**LOAD `haipipe-board-page` FIRST.** It owns the base: the sections and their fixed order, the five rows that define each one, the title rule, the numbering, and the evaluation contract.
+This file adds only what a skill page needs and a decision page does not.
 It never repeats a base rule, because a copied rule is the thing that goes a night out of date while the contract moves.
 
 **The two kinds this variant covers**: both mirror something that ships elsewhere.
@@ -28,10 +28,63 @@ Agent   Agent-<n>-<slug>.md   one agent FILE   · <name>.md   the unit ships
 `<n>` orders the roster and never carries the version, because a filename that changed every release would break every link to the page.
 A skill is LOADED into a context and an agent is DISPATCHED into a fresh one (JL 260731), which is why they are two kinds and not one.
 
-## 🪞 What makes a roster page different
+## 📄 The whole page, in one picture
+
+Every rule in this file lands in one of these slots. Read this figure first; the sections below only say WHY.
+
+```
+# haipipe-board-page · v0.11.1          ← 🤖 title · the version is DERIVED
+state: 🟡 in flux · door test passed    ← 🧑 HEALTH + the evidence for it
+owner: JL                               ← 🧑 who rules on this unit
+method: three managed spans sync…       ← 🧑 one line, how the page is kept
+
+## Opening                              ← 🧑 YOURS. the three slots:
+  ❶ what is it, what FOR                     ONE visible paragraph, then a
+  ❷ when, vs ONE NAMED sibling               BLANK LINE, then More details
+  ❸ where it stands, with evidence           as **Label**: prose parts
+  🚫 the lead sentence never ends in ?
+
+## Writing Style                        ← 🧑 OPTIONAL, delete if unused
+
+## Diagram
+  <!-- skill:tree:start … -->   ← 🤖 the folder, one purpose line
+  **What `x` ships**: …  ```tree```          per file · caption is generated
+  <!-- …:end -->                             an AGENT's tree is EMPTY: kept
+  **How `x` is used**: …               ← 🧑 YOURS. caption, then ONE figure
+  ```text  WORKFLOW … ```                    drawing how the unit is used
+
+## Content
+  <!-- skill:body:start … -->   ← 🤖 the unit's SKILL.md, its own
+  … the whole file …                         bytes. NEVER write in here.
+  <!-- …:end -->
+
+## Aims                                 ← 🧑 the UNIT's open work
+  - [ ] 🔧 <what it still owes>               checkboxes, no A<n> ids
+        <why, indented>
+
+## States                               ← 🧑 dated records, newest first
+  <one plain paragraph: where it stands>
+  - 260802 CC · 🔎 <title>
+    <what happened, indented>
+
+## Files                                ← ❌ OMITTED. the tree above already
+                                             lists every file it ships
+
+## Log
+  260802 2100 · <what changed by hand>  ← 🧑 your lines go ON TOP
+  <!-- skill:log:start … -->    ← 🤖 the unit's CHANGELOG, converted
+  <!-- …:end -->                             into dated Log lines
+```
+
+(the markers above are shortened on purpose: a literal one inside this figure reaches every mirror page's Content span, and on 260803 that fed `sync` a fake marker and cost one page its Aims, States and Log.)
+
+🤖 = `skillpage.py` writes it and `sync` rewrites it. Touching it is pointless: the next `sync` erases you.
+🧑 = a person writes it and no script may touch it. This is the half that makes the page worth more than an `ls`.
+
+## 🪞 What makes a skill page different
 
 A Q page asks a question and closes when its Aims are met. An S page closes when its human gate passes.
-A roster page **decides nothing**. Its subject exists on disk before the board mentions it, ships to other people, carries its own version and its own changelog, and closes only when the unit ships.
+A skill page **decides nothing**. Its subject exists on disk before the board mentions it, ships to other people, carries its own version and its own changelog, and closes only when the unit ships.
 
 Three consequences, and every rule below comes from one of them:
 
@@ -41,9 +94,9 @@ Three consequences, and every rule below comes from one of them:
 3  it has a HEALTH          →  state: is a judgment about the unit, not a version
 ```
 
-## 🧭 The Opening a roster page owes (the rule this skill was opened for)
+## 🧭 The Opening a skill page owes (the rule this skill was opened for)
 
-**The failure, measured 260802.** Five roster pages on `01-boardform-260722` had Openings in one shape:
+**The failure, measured 260802.** Five skill and agent pages on `01-boardform-260722` had Openings in one shape:
 
 ```
 line 1   Does `<name>` <verb> one <noun> for <consumers>?
@@ -57,7 +110,7 @@ Read alone each is clear. Read consecutively they are one letter with the nouns 
 
 **The base could not have prevented it, and that is why this file exists.**
 The base already carries the noun-substitution test, so the rule was on the books and five writers broke it anyway.
-The cause is upstream of the test: the base's Opening shape is `the question, what its words mean, why that is hard, what this page decides`, and a roster page **decides nothing**.
+The cause is upstream of the test: the base's Opening shape is `the question, what its words mean, why that is hard, what this page decides`, and a skill page **decides nothing**.
 A writer obliged to produce a question about a unit that decides nothing can only manufacture a rhetorical one, and "Does X do X well?" has exactly one answer, "that is what it is for", which carries no information.
 Give five writers the same impossible slot and they will fill it the same way. The slot was the defect, not the writers.
 
@@ -80,13 +133,21 @@ Keep the base's physical shape unchanged: one visible paragraph, the FIRST BLANK
 **Four things a roster Opening may never do:**
 
 ```
-🚫 open with a rhetorical question          it decides nothing, so it asks nothing
+🚫 THE LEAD SENTENCE NEVER ENDS IN `?`      mechanical, so nobody has to judge
+                                            "rhetorical". check.py enforces it
+                                            as `skillpage-opening-is-a-question`
 🚫 paraphrase the unit's own description:   Content already carries those bytes;
                                             a paraphrase is a lossy second copy
 🚫 use the own · hard-part · depend ·       four slots produce four filler
    healthy scaffold                         sentences and one form letter
 🚫 claim health the page cannot show        ❸ names evidence or says it is missing
 ```
+
+**❶❷❸ is CONTENT, not a template.** The three slots say what the paragraph must ANSWER; they do not fix the order of your sentences or hand you an opening move. This matters because the base forbids a reusable scaffold, and a rule that names three slots is one keystroke away from becoming the next form letter.
+
+The first batch written to this contract already showed the pull: 7 of 8 put a second-person pick-me line second ("Load it when...", "Reach for it when...", "Dispatch it rather than..."), and 6 of 8 closed by confessing what has not happened yet. It survived review only because each slot carried a DIFFERENT checkable fact: 155 releases, 15-1-2 files, a one-day-old merge, never dispatched, three writers died on a limit. Answer all three; do not reach for the same sentence shape to do it.
+
+**The checker agrees with this contract, and did not always.** Until 260802 `check.py` warned `opening-lead-not-a-question` on every page whose lead was not a question, with no page-kind exemption, so the seven pages that obeyed THIS contract each carried a warning telling them to put the question back. A writer working the checker's list would have regressed all seven. The exemption shipped the same day the first reviewer dispatch found it. If you meet a checker rule that contradicts something here, that is a defect in one of them and not a thing to work around silently.
 
 **The test, and it is not the author's to pass.** Read the changed Openings CONSECUTIVELY in board order, not one at a time. A page that is clear alone still fails if its Opening would introduce its sibling after a noun swap. Dispatch `haipipe-board-reviewer-agent`; the writer's own read cannot see this, because the writer knows which unit they meant.
 
@@ -119,9 +180,53 @@ python3 <board-skill>/cli/skillpage.py check <board>
 An AGENT is one file, so its tree span renders EMPTY rather than being omitted: `sync` replaces spans it can find, and a missing one reports forever as an older page needing repair.
 The WORKFLOW fence carries the whole picture on an agent page, because there is no tree to carry it.
 
+## 🏗 A skill page is GENERATED, never copied from the template
+
+**Do not follow the base's `create a new page` steps for these two kinds.** The base tells you to copy `ref/page-template.md` and then register the page in `board.md` yourself. Both are wrong here, and following them literally produces a hand-typed page with no managed spans, which `skillpage.py check` then reports as `no managed block` forever.
+
+```bash
+# 1 · GENERATE. This writes the page AND registers it in board.md ## Pages.
+python3 <board-skill>/cli/skillpage.py new <board> <skill-or-agent-path> \
+        --group <GROUP-KEY> --stamp "YYMMDD HHMM"
+        #      ▲ the KEY only, `QC`, never the full heading `QC · Engine`
+# 2 · WRITE the authored half by hand: Opening, the WORKFLOW fence, Aims, States, state:
+# 3 · lanes / build / check, then dispatch the reviewer for the consecutive read
+```
+
+The `<n>` in `Skill-<n>` is the PAGE NUMBER, not the unit. `new` takes `max(existing) + 1`, and an archived page in `_archive/` does not count, so a retired `Skill-1` leaves its number spent rather than free. The base writes this slot as `Skill-<unit>-<slug>`, where "unit" means the shipped thing everywhere else in this family; read it as the ordinal here.
+
+### Which base sections a skill page carries
+
+```
+🧭 Opening        REQUIRED · authored · the three slots above
+✍️ Writing Style  optional · newer pages carry it, older ones do not
+🖼 Diagram        REQUIRED · derived tree + ONE authored WORKFLOW fence
+📚 Content        REQUIRED · derived · the unit's own bytes, never authored
+🎯 Aims           REQUIRED · authored · the UNIT's open work
+📍 States         REQUIRED · authored
+📎 Files          OMITTED, and that is correct here: the derived Diagram tree
+                  already lists every file the unit ships, so a Files section
+                  would be a second, staler copy of it
+🗃 folds          Log is derived-plus-authored; the rest optional
+```
+
+The base marks `Files` "allowed, advised against"; for this kind it is simply omitted, and no skill page carries one.
+
+## 🔌 Shipping it is not the last step: REGISTER it
+
+A new skill folder is invisible to every agent until it is linked into the skill roster. The variant this file describes shipped on 260802 and was NOT linked, so `Skill(haipipe-board-page-for-skill)` failed for a whole day while the folder sat on disk. A blind door test found it: the agent concluded the skill did not exist and fell back to the base contract, which is exactly the failure this variant was written to prevent.
+
+```bash
+cd Tools && ./install.sh --global      # links every plugin skill; the documented step
+# or, minimally, mirror what it does for one unit:
+ln -s <repo>/Tools/plugins/haipipe-toolkit/skills/<family>/<unit> ~/.claude/skills/<unit>
+```
+
+A session already running keeps its old roster, so the link helps the NEXT session and every agent dispatched after it, not the one that shipped the skill.
+
 ## 🩺 `state:` is health, and only a person writes it
 
-The page `state:` line keeps the base's four values, and on a roster page it answers one question: **is this unit stable, in flux, in question, or parked?**
+The page `state:` line keeps the base's four values, and on a skill page it answers one question: **is this unit stable, in flux, in question, or parked?**
 
 A version cannot answer it: a unit at `0.1.0` may be finished and one at `0.9.4` mid-rewrite. So `new` seeds `🔴 OPEN` and a person changes it. The version rides the TITLE, never `state:` and never the filename, so a machine number and a human judgment never compete for one line.
 
@@ -137,9 +242,9 @@ A version cannot answer it: a unit at `0.1.0` may be finished and one at `0.9.4`
 
 `🔴 OPEN` on a unit that ships is almost always a page nobody finished, not a real judgment.
 
-## 🎯 Aims and States on a roster page
+## 🎯 Aims and States on a skill page
 
-A roster page's Aims are **the unit's own open work**, not the page's. The page is finished the moment it describes the unit truthfully; the unit is not.
+A skill page's Aims are **the unit's own open work**, not the page's. The page is finished the moment it describes the unit truthfully; the unit is not.
 
 Three sources fill them, and the third is the one people miss:
 
@@ -151,7 +256,23 @@ Three sources fill them, and the third is the one people miss:
 
 ③ is correct routing, not passing the buck: the page that finds a defect is rarely the page that ships the file, and a finding parked on the finder's page is a finding nobody owns. Name the page it came from.
 
-States carries one dated record per real event, in the base's `- YYMMDD WHO · <emoji> <title>` form with indented body lines. **Never leave `Page generated <date>. Nothing ruled yet.`** on a page whose unit ships: that is the generator's stub, and it is a claim that nobody has looked, which stops being true the moment somebody has.
+**The FORM here overrides the base, and that override is claimed on purpose.** The base wants `- A<n>.<m> · target` ids with a testable `Done when` and one State row mirroring every Aim id exactly once, and `writing-rules.md` forbids a checkbox on a canonical Aim. A skill page does none of that:
+
+```
+✅ ON A SKILL PAGE   Aims    - [ ] / - [x] <emoji> <the unit's open work>
+                             indented explanation · no A<n> id · no Done when
+                     States  dated records, NOT one row per Aim
+                             - YYMMDD WHO · <emoji> <title>
+
+WHY  the base's Aim ids key to CONTENT DIVISIONS, and this page's Content is
+     the unit's own bytes in a managed span. There are no divisions of OURS to
+     key to, so an A<n> id would point at somebody else's headings.
+     An Aim here is a to-do about the UNIT, and a checkbox is honest about that.
+```
+
+Flagged by the first independent reviewer, which correctly refused to judge the Aim-to-State map on eight pages because three contracts disagreed and none claimed the override.
+
+**Never leave `Page generated <date>. Nothing ruled yet.`** on a page whose unit ships. That is the generator's stub, and it is a claim that nobody has looked, which stops being true the moment somebody has.
 
 ## 🗄 When a unit retires
 

@@ -174,7 +174,7 @@ Those are two different acts, and on disk they are both just markdown in the sam
 (`skills/paper/` is numbered as one entry on `QA1@paper` while holding 35 skills)
 The unit of numbering is a shipped set, not a directory, so `skills/board/` is one entry.
 An earlier draft numbered `agents/` separately, on the argument that a cited authority belongs on the map.
-That argument fails here: each agent has a roster page of its own in the QC group, so it was never off the map.
+That argument fails here: each agent has a skill page of its own in the QC group, so it was never off the map.
 
 #### 1.3 · `②` holds two things that are not pages, and both are generated
 (`board.html` and `board.excalidraw`, which is why neither is written by hand)
@@ -475,7 +475,7 @@ It also removes the question entirely from every future board, which is the real
 ### The two-folder map, drafted 260729
 - [x] 🗺 Name the two folders, with what lives inside each
       Verified on disk 260729. `①` `skills/board/`: one skill v0.46.0 with SKILL.md, `ref/` 4 specs, 10 scripts plus 2 test files, `src/` 9 modules, `assets/` and `vendor/xterm`, plus `agents/` holding one reviewer v1.0.0 with no write tools.
-      `②` this board: `board.md`, 41 pages in 7 group folders, 2 generated roster rows, `board.html`, `fig/` and the archived pages.
+      `②` this board: `board.md`, 41 pages in 7 group folders, 2 generated skill pages, `board.html`, `fig/` and the archived pages.
       They are separated by what a write MEANS, not by distance on disk, because both sit two directories apart under the same plugin.
 - [x] 🔀 State the three crossings and the one forbidden direction
       Graduate, render, judge. And the one that must never exist: no script may require an open page, so deleting `②` leaves every script in `①` running.
@@ -503,7 +503,7 @@ It also removes the question entirely from every future board, which is the real
 **The map is drafted and unapproved. The folder-internal decision underneath it stays settled and in use on every board.**
 
 - 🧩 Skills · what this page governs, and whether it has landed there yet
-  Full text of each unit is on its own roster page in the QC group, starting with `Q-Skill-haipipe-board`; this item only says what has landed.
+  Full text of each unit is on its own skill page in the QC group, starting with `Q-Skill-haipipe-board`; this item only says what has landed.
   `SKILL.md` 🗂 Shape · **NOT landed.** It describes one board folder's contents and says nothing about the `①`/`②` split or the three crossings. This is the open `📐` item below.
   `ref/board-form.md` §1 folder · §2 numbering · **landed 260726.** The group-folder decision and the two reasons a page sits in a folder, both stated as one rule.
   `src/common.py` `q_files()` · **landed 260722.** Membership by path is the rule this page settled first, and it has not changed since.

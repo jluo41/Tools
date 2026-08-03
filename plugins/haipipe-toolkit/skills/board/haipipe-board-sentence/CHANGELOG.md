@@ -7,6 +7,12 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.3.1 - 2026-08-03
+
+**Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
+
+- The Files block said "owns no scripts at 0.1.0", a version string frozen three releases back.
+
 ## 0.3.0 - 2026-08-02
 
 **🚪 Became the DOOR for one sentence, not only its spec** (JL 260802: "if we want to put sentence things, we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?").
@@ -19,6 +25,19 @@ The `haipipe-board-page` precedent is precise about what migrates: that skill ow
 - **What every verb must hold**: the anchor is an exact match and a miss fails visibly; a form CLOSES before it asks for the repaint, because the live swap will not run while a textarea inside `div.wrap` holds text.
 
 192 lines, against the page skill's 299.
+
+## 0.3.0 - 2026-08-02
+
+⚠️ **Entry reconstructed on 260802 from the shipped file, not written at release time.**
+`cli/agree.py` reported `SKILL.md says 0.3.0 · CHANGELOG.md shipped 0.2.0`, so the release that changed what this unit IS went unrecorded. What follows is read off the committed `SKILL.md`; if the author of 0.3.0 meant more by it, this entry is the floor and not the ceiling.
+
+**This skill stopped being only a contract and became a DOOR.** Its `description` now opens "TWO USES, and this skill is the door for both: RUN a verb on one sentence or LOAD it as a pure contract."
+
+- `## 🚪 Three verbs, and this skill is the door for all of them` is new: `comment` on a sentence, `edit` one line and leave one record, and `card` on a few words. Say any of them and this skill runs it; the caller never touches the engine.
+- `### What every verb must hold` is new, and every line of it is a scar: the anchor is an EXACT match on the source line and a miss FAILS VISIBLY; a form CLOSES before it asks for the repaint, or the swap refuses it, which is what stops a rebuild eating a half-written comment; a write needs `serve.py` and with it down the page keeps a pending line rather than growing a comment area at its foot; and the badge names WHICH KIND is underneath.
+- `## 🏷 The reader's controls` is new: hover for the address plus Comment and Chat, double-click to edit, one quiet `⋯` on touch, every attached record SHUT by default, and a single click on the body left unclaimed so selecting and copying still work.
+
+**Two consequences nobody recorded either.** The roster on the design board's `QC1b` filed this unit as a pure SPEC beside `haipipe-board-page`, which stopped being true here; and `### What every verb must hold` restates the addressing law that `QC4a` owns, which is a second copy of a rule rather than a citation of it.
 
 ## 0.2.0 - 2026-08-02
 

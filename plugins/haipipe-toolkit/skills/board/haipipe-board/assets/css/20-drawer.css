@@ -116,6 +116,16 @@ body.split .chatbtn{display:none}
 #chat .sfattached pre{overscroll-behavior:contain}
 #chat .bd{padding:14px;flex:1 1 auto;min-height:0;overflow-y:auto;
  display:flex;flex-direction:column;gap:9px;background:var(--bg)}
+/* NOTHING IN A SCROLLING COLUMN MAY SHRINK. `.bd` is a flex column, and a flex
+   item's default is `flex-shrink:1`, so once a turn has enough children they
+   are all squeezed to fit instead of scrolling. A text bubble resists because
+   its text has intrinsic height; a `<details class="tool">` has
+   `overflow:hidden`, so it collapses to its 1px border and reads as a bare
+   rule across the drawer. That is the "thinking part is lines" JL reported
+   three times, and it is why every empty-row fix did nothing: the rows were
+   never empty. Measured 260803 from his own console: 35 tool cards, every one
+   `h=1`, each holding real text (`Bash`, the command, `done`). */
+#chat .bd > *{flex:0 0 auto}
 #chat .m{max-width:90%;padding:9px 13px;border-radius:var(--radius-surface);font-size:14px;line-height:1.6;
  white-space:pre-wrap;word-break:break-word}
 #chat .m.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:var(--radius-inline)}
