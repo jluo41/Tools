@@ -2,7 +2,7 @@
 state: ✅ SETTLED · all 16 Aims closed and JL moved the line, 260802
 owner: JL
 method: one sentence per source line; everything that attaches to a sentence gets its own face
-
+session: 958e95d5-b099-4cde-b3fd-9b4b2b7ba8b5
 ## Opening
 What is the smallest unit a board can address, and what attaches to it?
 A board writes one sentence per source line, and that line is what a reader clicks.

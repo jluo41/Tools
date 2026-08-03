@@ -9,6 +9,12 @@ method: state what Nature Medicine requires of translational evidence, and recor
 A journal's editors read a paper before any reviewer does, and they can turn it away right there. That first gate is the desk. Most desks on this board can be satisfied by a rewrite: the same study, framed for a different reader. This one usually cannot. What is it asking for that a rewrite cannot produce?
 > ✎ *A journal's editors read a paper before any reviewer does, and they can turn it away right there. That first gate is the desk.* Most desks ~in~ *on* this ~tree~ *board* can be satisfied by ~re-argument:~ *a rewrite:* the same study, framed for a different reader. This one usually cannot. What is it asking for that a rewrite cannot produce? · CC · 260802 1540
 
+**How to read this page**: everything here is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and refusals below describe what published Nature Medicine papers do, measured from the exemplars on disk.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is returned unreviewed.
+Every length on the page says which of the two it is.
+
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-nature-portfolio/nature-medicine/`.
 
@@ -31,6 +37,61 @@ The style.md heading or the exemplar name rides on the same line, so a number is
 **Say the bar is a design property, not a strength**: call it rigor and a paper answers by trying harder at revision, and revision is the one thing that cannot reach this bar.
 
 ✅ `prospective multi-center validation cannot be added later`  ❌ `Nature Medicine wants very rigorous validation`
+
+**The shape of this page is a contract**, `../../board/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A venue page carries three figures in `## Diagram`, in this order, and a Files section in these five groups:
+
+```text
+  🖼 THREE FIGURES        what each one answers
+     ① desk taste         what counts as the contribution · what is desk-rejected · the test
+     ② Venue-Structure    which sections, in reading order, and the budget each carries
+     ③ Submission-Rules   category and cap · manuscript format · references · system ·
+                          anonymity · disclosures · the odds, the clock and the money ·
+                          the desk's own URLs
+
+  📎 FIVE FILES GROUPS
+     ⚙️ Engines           what regenerates this page
+     📋 Contracts         the venue-page contract, and the base it extends ·
+                          a loadable spec is a Contract and never an Engine
+     📥 Input files       the pack files this page reads
+     🔗 Authority         what the DESK publishes, read directly and never through the pack
+     📤 Generated         what a tool WRITES into this page, between markers
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK (JL 260803)
+     the pack-derived arcs, budgets, moves and refusals are suggestions
+     drawn from published papers · only the desk's own published rules bind,
+     and they live in the Submission-Rules figure and the Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never
+     sounds like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS (JL 260803)
+     a DESK RULE is published by the venue and binding · a PACK OBSERVATION is
+     a measurement of papers the pack read, and breaking it is off-pattern
+     rather than a violation · a budget printed with neither label reads as a
+     rule, and this page carries dozens of them
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX (JL 260803)
+     ### 3 · Sec-0-Abstract: one paragraph that closes on a clinical action
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, in THIS DESK's reading order ·
+         │           the appendix takes Sec-A
+         └── the Content division number, which counts §1 and §2 as well
+     ### A3 · 📝 Sec-0-Abstract: one paragraph that closes on a clinical action
+              ▲  the emoji lives HERE and on the division's closing line,
+                 never on the division heading: check.py strips it from an
+                 Aims group name and not from a division, so a heading-side
+                 emoji reads as group-name-drift on every section at once
+     ⚠️ AT THIS DESK THE INDEX AND THE S-Main PAGE COME APART, unlike at MISQ:
+        Nature Medicine prints Methods AFTER Discussion, so Sec-5-Methods is
+        `S-Main-3` and Sec-3-Results is `S-Main-4` · Venue-Structure prints
+        both numbers rather than picking one
+
+  📏 A NUMBER CARRIES ITS SOURCE   inline, always: a style.md heading, an exemplar,
+     or the desk's own page, and never as this page's own claim
+  ❓ AN UNKNOWN IS PRINTED         a slot the desk does not publish is written as an
+     open row, never left off the figure
+```
+
+**What the pack knows and what the desk says are two different sources**, and where they disagree the desk wins and the disagreement is written down. The pack is READ and never written by this plugin, so a correction lands here, not in `paper/venue/`.
 
 ## Diagram
 
@@ -58,6 +119,69 @@ The style.md heading or the exemplar name rides on the same line, so a number is
      ── so this outlet is SHORTLISTED early or not at all
 
   📊 24 exemplars ── the largest base in the whole tree
+```
+
+**Venue-Structure**: the sections a Nature Medicine paper is written in, in the DESK's reading order, and what each one costs.
+
+```text
+  🏗 VENUE-STRUCTURE ── every pack budget below is stated with its source inline
+     in the §3 to §9 division that owns it, and §10 is the desk's own gate
+
+  index                   §     page          length                       what the section owes
+  ───────────────────────   ───   ───────────   ──────────────────────────   ───────────────────────────────
+  📝 Sec-0-Abstract       §3    S-Main-0      ≤150w Article, DESK RULE     1 unstructured ¶, 0 citations,
+                                              150-350w observed by pack    the study design by sentence 3
+  🩺 Sec-1-Introduction   §4    S-Main-1      350-1,200w observed          a patient burden, then the NAMED
+                                              ⚠️ carries NO heading        evidence tier that is missing
+  🔗 Sec-2-Related-Work   §5    S-Main-2      no allotment of its own      positioning prose, distributed
+                                              ⚠️ NEVER printed             into Sec-1 and Sec-4
+  📊 Sec-3-Results        §7    S-Main-4      1,500-3,500w observed        every estimate with its CI, and
+                                                                           the main-text tables
+  💬 Sec-4-Discussion     §8    S-Main-5      750-1,800w observed          limitations paired, closing on a
+                                              ⚠️ NO subheadings            clinical recommendation
+  🧪 Sec-5-Methods        §6    S-Main-3      1,500-5,000w+ observed       the validation design in its
+                                              ⚠️ printed AFTER Sec-4       first sentence, 3 closing blocks
+  🗄 Sec-A-Appendix       §9    S-Appendix-A  ≤10 Extended Data display    the per-site tables, which
+                                              figures, DESK RULE           compete for that cap
+
+  🔢 HERE THE INDEX AND THE PAGE COME APART, and at MISQ they do not
+     the desk prints Methods after Discussion, so Sec-5-Methods is `S-Main-3` and
+     Sec-3-Results is `S-Main-4` · the index is the DESK's reading position, the
+     S-Main number is what `section-kinds.yml` declares, and they disagree at this
+     outlet · § is a third number, belonging to this page only: it counts the two
+     judgment divisions ahead of the sections, and §6 sits before §7 and §8 because
+     the divisions were written in the resolver's order and never moved
+     ⚠️ Sec-2 is the one index that is not a reading position at all, because the
+        section is never printed; it keeps the number `section-kinds.yml` gives it
+
+  🧱 THE DESK PUBLISHES FOUR BLOCKS AND NO MORE, quoted from Content types:
+     "Article should be divided as follows: Introduction (without heading),
+     Results, Discussion, Online Methods", and "Results and online Methods should
+     be divided by topical subheadings; the Discussion does not contain
+     subheadings" · none of the four is prior work, which is why Sec-2 exists as a
+     kind and never as a heading   [nature.com/nm/content, fetched 260802]
+
+  ⚖️ RULE vs OBSERVATION   the 4,000-word Article main text, the 150-word abstract,
+     the 6 display items and the 10 Extended Data figures are the DESK's, published
+     and binding · every per-section word budget in the column above is the PACK's
+     measurement of papers it read, from two papers in most cases
+     a paper over a budget is off-pattern · a paper over the cap is unreviewed
+
+  📏 ONE CEILING OVER ALL OF IT   Article ≤4,000w main text, EXCLUDING abstract,
+     Methods, references and figure legends · ≤6 display items · ~60 references as
+     a guideline · abstract ≤150w and unreferenced
+     Brief Communication ≤2,000w INCLUDING abstract, references and figure legends ·
+     "contains no headings" · ≤2 display items · ~20 references
+     [nature.com/nm/content, fetched 260802]
+
+  ➕ A KIND IS A FLOOR, NOT A CEILING
+     one kind may spread across several numbered Main pages
+     the ORDER above does not move: it is this venue's reading order
+
+  ✅ AN ONLINE TIER EXISTS HERE, unlike at MISQ   Extended Data is peer-reviewed and
+     capped at 10 display figures; Supplementary Information is uncapped and checked
+     editorially, and the desk allows it "only for cases when the use of Extended
+     Data to report these findings is not appropriate"   [fetched 260802]
 ```
 
 ## Content
@@ -114,7 +238,7 @@ So the venue stage inherits a decision it did not make.
 
 🔀 Establishes the live boundary as the one against npj Digital Medicine, which is where this repo's work is actually decided.
 
-### 3 · Abstract: one paragraph that closes on a clinical action
+### 3 · Sec-0-Abstract: one paragraph that closes on a clinical action
 
 **The abstract as an evidence report**: eight beats in one unstructured paragraph, with the study design in sentence three and a recommendation at the end.
 
@@ -194,7 +318,7 @@ The primary-endpoint sentence with its estimate: M5 carrying the point estimate,
 "In this trial, LLM assistance was safe but did not reduce treatment failure within 14 days and any benefit, if present, is probably modest." [Brinton 2026]
 The plainly stated null, which is the nearest thing an abstract has to a limitation, and the anti-pattern at 3.2 that forbids spinning it.
 
-### 4 · Introduction: a clinical funnel that names the missing tier
+### 4 · Sec-1-Introduction: a clinical funnel that names the missing tier
 
 **The funnel and its gap sentence**: four to five flat paragraphs that narrow from a patient burden to a named evidence gap, then pivot to the study.
 
@@ -270,7 +394,7 @@ The design declaration: the P4 pivot carries multi-site inside the noun phrase, 
 The one display reference this section makes, which 4.2 rules is a display request and never a probe question.
 No primary-endpoint sentence and no limitation appear here: natmed-introduction/style.md forbids results in the Introduction, and its arc has no limitation position.
 
-### 5 · Related work: the kind with no section of its own
+### 5 · Sec-2-Related-Work: the kind with no section of its own
 
 **Declared everywhere in this family, printed nowhere**: `related-work` is a real section-edit unit for all five Nature outlets, and its output is distributed prose rather than a heading.
 
@@ -372,7 +496,7 @@ The file's positioning-by-scale example is still the borrowed pontikos sentence 
 > ✎ The file's positioning-by-scale example is still the borrowed pontikos sentence from an NMI paper, marked borrowed in the file and ~unreplaced, so~ *unreplaced. So* it is not quoted ~above~ *above,* and *it* must never be shown as this outlet's own. · CC · 260802 1540
 So it is not quoted above, and it must never be shown as this outlet's own.
 
-### 6 · Methods: a clinical protocol placed after Discussion
+### 6 · Sec-5-Methods: a clinical protocol placed after Discussion
 
 **A protocol, not a model card**: eight to fourteen subsections in a fixed order, ending on three mandatory availability blocks.
 
@@ -462,7 +586,7 @@ The estimator behind the primary-endpoint sentence, promising the interval Resul
 "This study was approved by the NYU Langone Institutional Review Board (i23-00510)." [Restrepo 2026]
 The ethics move at 6.3, named committee plus approval number, which the pack records as absent from NMI entirely.
 
-### 7 · Results: descriptive headings, every estimate with its CI
+### 7 · Sec-3-Results: descriptive headings, every estimate with its CI
 
 **Two arcs and one reporting rule**: the subsection headings stay procedural, the tables stay in the main text, and no estimate appears without its interval.
 
@@ -541,7 +665,7 @@ The same slot in its evaluation form, interval written with a dash, and the per-
 "The primary outcome did not differ significantly between groups, extending emerging evidence from recent randomized evaluations in other clinical settings." [Brinton 2026]
 The plainly stated null, the closest Results comes to a limitation, and the refusal at 7.3 to report positive findings only.
 
-### 8 · Discussion: limitations woven in, never the last word
+### 8 · Sec-4-Discussion: limitations woven in, never the last word
 
 **A compact close**: six to eight flat paragraphs that restate in clinical terms, position against prior trials, own the limitations, and end on a recommendation.
 
@@ -622,7 +746,7 @@ The limitation a paper that missed this desk's design bar cannot avoid, and 8.2'
 "CXR AI deployments should not include worklist prioritization in this context." [Varoquaux 2026]
 The clinical recommendation the close must carry, the move the pack records as absent from NMI.
 
-### 9 · Appendix: three tiers, and a hard cap of ten
+### 9 · Sec-A-Appendix: three tiers, and a hard cap of ten
 
 **The supplementary tier system**: three tiers with strict boundaries, two numbering sequences, and a cap that forces a triage decision.
 
@@ -711,33 +835,35 @@ It is the same thinness recorded at 9.3, where the file's prohibitions sit inlin
 - A2.1 · The Nature Medicine against npj Digital Medicine boundary is written as a test rather than a description.
   **Done when:** a clinical digital-health candidate is routed between the two on a stated question.
 
-### A3 · 📝 Abstract: one paragraph that closes on a clinical action
+### A3 · 📝 Sec-0-Abstract: one paragraph that closes on a clinical action
 - A3.1 · The abstract variant is chosen before any budget is quoted, since Article, RCT and Brief Communication carry different word caps and only the RCT ends on a registration id.
   **Done when:** a drafted abstract states which of the three variants it fills and holds itself to that variant's cap.
+- A3.2 · The abstract is drafted against the DESK's 150-word cap rather than the pack's 150-350 observation, which is the widest pack-versus-desk gap on this page.
+  **Done when:** an abstract draft prints both numbers, names which one it is held to, and the pack's range is either re-measured or marked as pre-cap.
 
-### A4 · 🩺 Introduction: a clinical funnel that names the missing tier
+### A4 · 🩺 Sec-1-Introduction: a clinical funnel that names the missing tier
 - A4.1 · The gap sentence names an evidence tier rather than an absence of knowledge.
   **Done when:** a drafted introduction's gap sentence names retrospective, vignette, prospective or real-world evidence, and the study's own design supplies the named tier.
 
-### A5 · 🔗 Related work: the kind with no section of its own
+### A5 · 🔗 Sec-2-Related-Work: the kind with no section of its own
 - A5.1 · The `related-work` S page names, paragraph by paragraph, which manuscript section receives it.
   **Done when:** a Nature Medicine paper's related-work page reads as a routing plan into introduction, discussion and results, and no draft grows a Related Work heading.
 - A5.2 · The borrowed NMI positioning exemplar is replaced with a mined Nature Medicine sentence.
   **Done when:** natmed-related-work/style.md and natmed-discussion/template.md both quote a Nature Medicine paper for the positioning-by-scale move.
 
-### A6 · 🧪 Methods: a clinical protocol placed after Discussion
+### A6 · 🧪 Sec-5-Methods: a clinical protocol placed after Discussion
 - A6.1 · A draft's validation design is readable from the first sentence of its Methods.
   **Done when:** the venue stage can lift the prospective or retrospective adjective, the center count and the design from that sentence and compare them against this desk's desk-reject line.
 
-### A7 · 📊 Results: descriptive headings, every estimate with its CI
+### A7 · 📊 Sec-3-Results: descriptive headings, every estimate with its CI
 - A7.1 · The pack carries a measured norm for reporting an external validation cohort in Results.
   **Done when:** natmed-results/style.md holds an external-validation slot mined from the multi-site exemplars on disk, with its own arc position and measured counts.
 
-### A8 · 💬 Discussion: limitations woven in, never the last word
+### A8 · 💬 Sec-4-Discussion: limitations woven in, never the last word
 - A8.1 · A single-center or retrospective draft pairs the design limitation with a stated mitigation instead of leaving it bare.
   **Done when:** the limitation appears in the limitations paragraph with its mitigation, and the Discussion still closes on a clinical recommendation.
 
-### A9 · 🗄 Appendix: three tiers, and a hard cap of ten
+### A9 · 🗄 Sec-A-Appendix: three tiers, and a hard cap of ten
 - A9.1 · The Supplementary numbering contradiction inside natmed-appendix/style.md is settled.
   **Done when:** the file states one rule for whether Supplementary tables continue past the Extended Data tables or restart at 1, and drops the other reading.
 
@@ -749,37 +875,76 @@ It is the same thinness recorded at 9.3, where the file's prohibitions sit inlin
 ### A2 · 🔀 Where it sits against its four siblings
 - ⬜ A2.1 · Not started. Both taste files exist and nothing compares them.
 
-### A3 · 📝 Abstract: one paragraph that closes on a clinical action
+### A3 · 📝 Sec-0-Abstract: one paragraph that closes on a clinical action
 - ⬜ A3.1 · Not started. natmed-abstract/template.md already prints the three variants at its `PICK THE VARIANT` line, and nothing forces a choice.
+- ⬜ A3.2 · Not started, and it is a live contradiction rather than a gap. The desk publishes 150 words; the pack's own measured exemplars run 182 and 194, both over it.
 
-### A4 · 🩺 Introduction: a clinical funnel that names the missing tier
+### A4 · 🩺 Sec-1-Introduction: a clinical funnel that names the missing tier
 - ⬜ A4.1 · Not started. The tier vocabulary is written down in `../style-profile.md` and in natmed-related-work/style.md, and no check reads a draft against it.
 
-### A5 · 🔗 Related work: the kind with no section of its own
+### A5 · 🔗 Sec-2-Related-Work: the kind with no section of its own
 - ⬜ A5.1 · Not started. The kind is declared for all five Nature outlets in `stages/section-kinds.yml` and its template already refuses a standalone heading, so only the S page's own shape is open.
 - ⬜ A5.2 · Not started. The borrowed line is marked as borrowed in natmed-related-work/style.md, so the hole is known and unfilled.
 
-### A6 · 🧪 Methods: a clinical protocol placed after Discussion
+### A6 · 🧪 Sec-5-Methods: a clinical protocol placed after Discussion
 - ⬜ A6.1 · Not started, and shared with A1.1: both want the same design facts read before a venue is recommended.
 
-### A7 · 📊 Results: descriptive headings, every estimate with its CI
+### A7 · 📊 Sec-3-Results: descriptive headings, every estimate with its CI
 - ⬜ A7.1 · Not started. Seven of the 24 stored exemplars have never been distilled, and the multi-site validation papers are among them.
 
-### A8 · 💬 Discussion: limitations woven in, never the last word
+### A8 · 💬 Sec-4-Discussion: limitations woven in, never the last word
 - ⬜ A8.1 · Not started. lang-2026 supplies the pairing pattern and nothing applies it to a draft.
 
-### A9 · 🗄 Appendix: three tiers, and a hard cap of ten
+### A9 · 🗄 Sec-A-Appendix: three tiers, and a hard cap of ten
 - ⬜ A9.1 · Not started. Both readings sit in natmed-appendix/style.md, one in its numbering rule and one in its bean-2026 observation.
 
 ## Files
 
-- `../../paper/venue/playbook-nature-portfolio/nature-medicine/taste.md` · the desk signals and the one-sentence test
-- `QBv8-npj-digital-medicine.md` · the sibling this outlet is decided against
-- `QBv2-isr.md` · the same unacquirable-property trap in the IS family
+### ⚙️ Engines · what RUNS this page's subject
+
+- `_tools/sync-exemplars.py`
+  Rewrites both generated blocks below, from the pack folder and from `section-kinds.yml`. ⚠️ Never hand-edit between the markers: the next run overwrites it.
+
+### 📋 Contracts · what CARRIES a rule to other pages
+
+- `../../board/haipipe-board-page-for-venue/SKILL.md`
+  The venue-page contract: the three figures, the `Sec-<n>` index, the two-source rule, these five Files groups, the provenance stamp. A rule this page discovers is written into that file in the same pass, and this page reads it rather than reading the reference implementation.
+- `../../board/haipipe-board-page/SKILL.md`
+  The base frame that contract extends. Load it first; it owns the seven sections and their order.
+- `QBv1-misq.md`
+  The contract's reference implementation, and the page to copy a shape from. Copy the shape and never the facts: MISQ's cap counts pages and this desk's counts words, and MISQ has no online tier where this desk has two.
+
+### 📥 Input files · what this page READS
+
+- `../../paper/venue/playbook-nature-portfolio/nature-medicine/taste.md`
+  The desk signals and the one-sentence test. Start here when what this desk buys is the question.
+- `../../paper/venue/playbook-nature-portfolio/nature-medicine/natmed-methods/style.md`
+  The section this desk checks its own bar in, and the one §6 is built from.
+- `../../paper/venue/playbook-nature-portfolio/nature-medicine/natmed-related-work/style.md`
+  The kind that is declared for all five Nature outlets and printed by none, which §5 is built from.
+- `../../paper/venue/playbook-nature-portfolio/style-profile.md`
+  The family profile across all five Nature outlets, which is where the evidence-tier vocabulary is written down.
+- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml`
+  The reader-side resolver: outlet ▸ section kinds. It is what the generated kinds block below is built from, and it orders methods before results where this desk prints them the other way round.
+- `QBv8-npj-digital-medicine.md`
+  The sibling this outlet is decided against, and the one this repo's shipped paper actually went to.
+- `QBv2-isr.md`
+  The same trap in the IS family: a property of how the evidence was gathered, which no revision can add.
+
+### 🔗 Authority · what the DESK itself PUBLISHES, read directly and never through the pack
+
+⚠️ Provenance: the four rows below were fetched and verified 260802 against nature.com's own pages.
+
+- [Submission guidelines](https://www.nature.com/nm/submission-guidelines) · the per-journal door, which routes to two pages that matter here. [Formatting your initial submission](https://www.nature.com/nm/submission-guidelines/initial-formatting) governs what is sent first: "We accept initial submissions in PDF, Word or TeX/LaTeX formats; if you are using TeX/LaTeX, please submit compiled PDFs." [AIP and formatting](https://www.nature.com/nm/submission-guidelines/aip-and-formatting) governs the accepted manuscript: "Please submit your manuscript in either Word or TeX/LaTeX format. We do not accept PDFs for final submissions." That second page is portfolio boilerplate served per journal: it is about 98% identical to the same page at Nature Human Behaviour and Nature Machine Intelligence once the journal name is substituted, so its rules bind all three.
+- [Content types](https://www.nature.com/nm/content) · per journal, and the only place the limits differ from the siblings. An Article takes a main text of up to 4,000 words excluding abstract, Methods, references and figure legends, an abstract of up to 150 words and unreferenced, up to 6 display items (figures and/or tables), and around 60 references as a guideline. A Brief Communication takes up to 2,000 words INCLUDING abstract, references and figure legends, "contains no headings", takes up to 2 display items, and around 20 references.
+- [Springer Nature LaTeX author support](https://www.springernature.com/gp/authors/campaigns/latex-author-support) · the published LaTeX package, and this journal sends authors to exactly this address, saying they may go there to "download the Springer Nature LaTeX template". A journal-specific class file does not exist; the instruction is "To submit a TeX/LaTeX file, please use any of the standard class files such as article.cls, revtex.cls or amsart.cls." The template itself is portfolio-wide and wider, usable "for any Springer Nature journal inclusive of Springer, Nature Portfolio, and BMC".
+- Tiers, and both claims this board makes · the 10-item Extended Data cap is CONFIRMED at source, and the wording is tighter than the pack's: "A maximum of 10 Extended Data display figures is permitted." The unit is display FIGURES, not items, and the tier below it is subordinate to it, since "Supplementary Figures should be used only for cases when the use of Extended Data to report these findings is not appropriate." The no-standalone-Related-Work rule is CONFIRMED too, from an exhaustive list rather than a prohibition: "Article should be divided as follows: Introduction (without heading), Results, Discussion, Online Methods", followed by "Results and online Methods should be divided by topical subheadings; the Discussion does not contain subheadings." Four blocks are permitted, none of them is prior work, and the two that host it may carry no heading of their own.
+
+### 📤 Generated · what `sync-exemplars.py` WRITES into this page
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 24 papers on disk · the section guides were mined from 14 of them, so 10 stored papers back no norm, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 24 papers on disk · the section guides were mined from 14 of them, so 10 stored papers back no norm, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-nature-portfolio/nature-medicine/examples/afshar-2025-natmed-ai-screening-opioid-use-disorder.pdf` · Afshar 2025
 - `../../paper/venue/playbook-nature-portfolio/nature-medicine/examples/alber-2025-natmed-llm-data-poisoning.pdf` · Alber 2025
@@ -812,31 +977,9 @@ It is the same thinness recorded at 9.3, where the file's prohibitions sit inlin
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · related-work
-- `S-Main-3` · methods
-- `S-Main-4` · results
-- `S-Main-5` · discussion
-- `S-Appendix-A` · appendix
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
-
-🔗 **Authority** · the venue's own instructions, fetched and verified 260802
-
-- [Submission guidelines](https://www.nature.com/nm/submission-guidelines) · the per-journal door, which routes to two pages that matter here. [Formatting your initial submission](https://www.nature.com/nm/submission-guidelines/initial-formatting) governs what is sent first: "We accept initial submissions in PDF, Word or TeX/LaTeX formats; if you are using TeX/LaTeX, please submit compiled PDFs." [AIP and formatting](https://www.nature.com/nm/submission-guidelines/aip-and-formatting) governs the accepted manuscript: "Please submit your manuscript in either Word or TeX/LaTeX format. We do not accept PDFs for final submissions." That second page is portfolio boilerplate served per journal: it is about 98% identical to the same page at Nature Human Behaviour and Nature Machine Intelligence once the journal name is substituted, so its rules bind all three.
-- [Content types](https://www.nature.com/nm/content) · per journal, and the only place the limits differ from the siblings. An Article takes a main text of up to 4,000 words excluding abstract, Methods, references and figure legends, an abstract of up to 150 words and unreferenced, up to 6 display items (figures and/or tables), and around 60 references as a guideline. A Brief Communication takes up to 2,000 words INCLUDING abstract, references and figure legends, "contains no headings", takes up to 2 display items, and around 20 references.
-- [Springer Nature LaTeX author support](https://www.springernature.com/gp/authors/campaigns/latex-author-support) · the published LaTeX package, and this journal sends authors to exactly this address, saying they may go there to "download the Springer Nature LaTeX template". A journal-specific class file does not exist; the instruction is "To submit a TeX/LaTeX file, please use any of the standard class files such as article.cls, revtex.cls or amsart.cls." The template itself is portfolio-wide and wider, usable "for any Springer Nature journal inclusive of Springer, Nature Portfolio, and BMC".
-- Tiers, and both claims this board makes · the 10-item Extended Data cap is CONFIRMED at source, and the wording is tighter than the pack's: "A maximum of 10 Extended Data display figures is permitted." The unit is display FIGURES, not items, and the tier below it is subordinate to it, since "Supplementary Figures should be used only for cases when the use of Extended Data to report these findings is not appropriate." The no-standalone-Related-Work rule is CONFIRMED too, from an exhaustive list rather than a prohibition: "Article should be divided as follows: Introduction (without heading), Results, Discussion, Online Methods", followed by "Results and online Methods should be divided by topical subheadings; the Discussion does not contain subheadings." Four blocks are permitted, none of them is prior work, and the two that host it may carry no heading of their own.
 
 ## Law
 

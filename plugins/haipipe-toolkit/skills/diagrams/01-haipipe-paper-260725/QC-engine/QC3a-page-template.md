@@ -170,7 +170,7 @@ The division titles and their job lines are the artifact's SHAPE, and the shape 
 ### What is not decided
 Which FORM a new template should be written in. Three are accepted, their precedence lives in a code comment, and no contract field records which form a given template uses.
 
-And whether `sections:` in the contract and the divisions in the template must agree, and which one wins if they do not. Today both exist, `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` requires `sections:` to be present, the parser reads only the template, and nothing compares them.
+And whether `sections:` in the contract and the divisions in the template must agree, and which one wins if they do not. Today both exist, `../../paper/route/haipipe-paper-stage/check-contracts.py` requires `sections:` to be present, the parser reads only the template, and nothing compares them.
 
 ## Aims
 - [x] 🔧 Two of five stale `Fill` lines already repaired
@@ -204,7 +204,7 @@ Nothing is ruled. This face is 🔴 because the central question, what the file 
   Eight templates, 754 lines, 46 to 140 lines each. One board form (`4-display`, zero Setext underlines), six Setext, one ATX (`3-narrative`).
 - `create-page.py`
   `template_divisions()` :89-171 (three branches), `compact_rule()` :71-76, `board_template_items()` :174-182, `resolve_template()` :185-232.
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/CONTRACT.md`
+- `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md`
   Declares `template:`, `sections:` and `formatting:` as required fields, and says nothing about how they interact or which form a template may take.
 - `stages/2a-venue/template.md`
   Line 36 heads the Section Styles block; the source of the "table" versus "record line" drift.
@@ -220,7 +220,7 @@ Nothing is ruled. This face is 🔴 because the central question, what the file 
 > The cost of A is that a template stops being freely editable prose, and that cost is real. It is also the cost we are already paying without having agreed to it.
 
 > CC 260727: measuring the parser changed which option is cheap, so the 260726 recommendation above needs a correction rather than a repeat. There are three accepted forms, not one, and the newest template (`4-display`, written 260726) is the one that is furthest from A: it is a complete S page with its own frontmatter and its own queue, i.e. it is option B, shipped without a ruling. A now means converting or grandfathering 7 stage templates plus 95 venue templates onto one form; B means the opposite conversion, on 102 files, and losing the `board_template_items()` path that `4-display` depends on.
-> So my recommendation moves to C, with one condition: each template header declares its form in a fixed first line, and `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` asserts the declared form matches what `template_divisions()` actually used. C is normally the weak answer, but here the three forms are not an accident to be tidied away; the board form exists because a per-unit stage wants to hand the drafter a whole page, and the Setext form exists because a single-artifact stage wants to hand it a shape. The cost of C is that the parse function stays three branches long forever, and a reader of any one template still cannot tell which branch will claim it. Declaring the form is what buys that back, and it is one line per file.
+> So my recommendation moves to C, with one condition: each template header declares its form in a fixed first line, and `../../paper/route/haipipe-paper-stage/check-contracts.py` asserts the declared form matches what `template_divisions()` actually used. C is normally the weak answer, but here the three forms are not an accident to be tidied away; the board form exists because a per-unit stage wants to hand the drafter a whole page, and the Setext form exists because a single-artifact stage wants to hand it a shape. The cost of C is that the parse function stays three branches long forever, and a reader of any one template still cannot tell which branch will claim it. Declaring the form is what buys that back, and it is one line per file.
 
 ## Log
 260726 · Created in the QB restructure. Nothing on this board had ever described `template.md`, though five faces referenced one in passing under `## Files`. Reading `create-page.py` to write this face is what surfaced the parse story, the five stale `Fill` lines, and the duplicated `section_rule`.

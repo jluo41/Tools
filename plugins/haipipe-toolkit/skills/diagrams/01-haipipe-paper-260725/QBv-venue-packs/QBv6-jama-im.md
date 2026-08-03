@@ -10,6 +10,14 @@ The pack's outlet table names this desk's territory: prescribing, overuse, safet
 > ✎ The pack's outlet table names this desk's ~territory in five words:~ *territory:* prescribing, overuse, safety, health services. It calls that the lane this repo's opioid work sits in. So what does this desk want that the flagship above it does not? *It wants a system-level finding, one that changes how care is organized, delivered, or made safe. A drug effect alone does not clear that bar.* · CC · 260802 1539
 It wants a system-level finding, one that changes how care is organized, delivered, or made safe. A drug effect alone does not clear that bar.
 
+**How to read this page**: most of it is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and refusals below describe what published JAMA Internal Medicine papers do, measured from the exemplars on disk.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is returned unreviewed.
+At a clinical desk that binding figure is unusually large.
+The body word cap, the display cap, the reference cap, the abstract cap and the Key Points cap are all published by this journal, where MISQ publishes one page count and nothing else, so far more of this page binds than binds on `QBv1`.
+Every length on the page says which of the two it is.
+
 **The words in that question**: a `desk` is one journal's editors and what they buy, and this page is about one desk, JAMA Internal Medicine.
 The `flagship` is JAMA itself, the outlet one step above this one, and `QBv5` is its page.
 A `lane` is the pack's own name for a kind of paper an outlet wants, here the prescribing-safety claim this repo's opioid work makes.
@@ -37,6 +45,64 @@ How this page must be written. Read it before editing, and edit to it.
 **Say system-level insight, not importance**: the desk's own phrasing is about organization, delivery, and safety, and generic importance language loses the bar.
 
 ✅ `does this change how care is organized or made safe`  ❌ `is this clinically important`
+
+**The venue-page contract is `../../board/haipipe-board-page-for-venue/SKILL.md`**, and it is loaded before this page is edited. `QBv1-misq.md` is its reference implementation and this page copies its shape:
+
+```text
+  🖼 THREE FIGURES        what each one answers
+     ① desk taste         what counts as the contribution · what is desk-rejected · the test
+     ② Venue-Structure    which sections, in reading order, and the budget each carries
+     ③ Submission-Rules   category and cap · manuscript format · references · system ·
+                          anonymity · disclosures · the odds, the clock, the money ·
+                          an open row for what is NOT on record · the desk's own URLs
+
+  📎 FIVE FILES GROUPS
+     ⚙️ Engines           what regenerates this page
+     📋 Contracts         the venue-page contract, the base it extends, and the reference
+                          page · a loadable spec is a Contract and never an Engine
+     📥 Input files       the pack files this page reads
+     🔗 Authority         what the DESK publishes, read directly and never through the pack
+     📤 Generated         what a tool WRITES into this page, between markers
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK (JL 260803)
+     the pack-derived arcs, budgets, moves and refusals are suggestions
+     drawn from published papers · only the desk's own published rules bind,
+     and they live in the Submission-Rules figure and the Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never
+     sounds like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS (JL 260803)
+     a DESK RULE is published by the venue and binding · a PACK OBSERVATION is
+     a measurement of papers the pack read, and breaking it is off-pattern
+     rather than a violation
+     ⚠️ THIS DESK IS THE OPPOSITE OF MISQ ON THAT SPLIT: at a clinical journal
+        most word counts ARE desk rules. 3000 words of body text, a 350-word
+        abstract, 75-100 words of Key Points, 5 displays and 50-75 references
+        are all published by the journal. What stays a PACK OBSERVATION here is
+        the per-SECTION split of those 3000 words, which the desk never states.
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX (JL 260803)
+     ### 3 · Sec-0-Abstract: two labeled blocks under one hard ceiling
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, so the index IS the number of
+         │           the S-Main page it becomes · the appendix takes Sec-A
+         └── the Content division number, which counts §1 and §2 as well
+     ### A3 · 🧾 Sec-0-Abstract: two labeled blocks under one hard ceiling
+              ▲  the emoji lives HERE and on the division's closing line,
+                 never on the division heading: check.py strips it from an
+                 Aims group name and not from a division, so a heading-side
+                 emoji reads as group-name-drift on every section at once
+     🔤 the appendix takes `Sec-A`, and the Research Letter takes `Sec-L`
+        because it is a whole article type rather than a section of this one,
+        so it holds no numbered reading position at all
+
+  📏 A NUMBER CARRIES ITS SOURCE   inline, always: a `jamaim-<section>/style.md`
+     line, an exemplar name, or the desk's own page, never as this page's claim
+  ❓ AN UNKNOWN IS PRINTED         a slot neither source can fill is written as
+     an open row, never left off the figure
+```
+
+**What the pack knows and what the desk says are two different sources**, and where they disagree the desk wins and the disagreement is written down. The pack is READ and never written by this plugin, so a correction lands here, not in `paper/venue/`.
 
 ## Diagram
 
@@ -72,6 +138,171 @@ How this page must be written. Read it before editing, and edit to it.
      CMS Medicare claims · physician prescribing variation
      ── named in the pack's outlet table, pinned on no paper
 ```
+
+**Venue-Structure**: the sections an Original Investigation is written in, in reading order, and the one desk cap they all have to fit inside together.
+
+```text
+  🏗 VENUE-STRUCTURE ── every budget below is stated with its source inline in
+     the §3 to §9 division that owns it, and §10 is the desk's own gate
+
+  index                        §     page           words                   what the section owes
+  ────────────────────────────   ───   ────────────   ─────────────────────   ─────────────────────────────
+  🧾 Sec-0-Abstract            §3    S-Main-0       350w is the DESK's cap  Key Points box + 7 labeled
+                                                    · 250-350w and 321/349w   blocks, no reference markers
+                                                    measured by the pack      ⚖️ NOT counted in the 3000
+  🚪 Sec-1-Introduction        §4    S-Main-1       350-900w stated, the    burden ▸ known ▸ gap ▸ aim,
+                                                    guide reconciles its      the pivot word compulsory
+                                                    exemplars to ~350-500w
+  🔬 Sec-2-Methods             §5    S-Main-2       1200-2500w observed     STROBE first, software version
+                                                                              last, 6 named subsections
+  📊 Sec-3-Results             §6    S-Main-3       800-1500w observed      one effect per sentence, the
+                                                                              exhibits carry the rest
+  🧭 Sec-4-Discussion          §7    S-Main-4       1000-1800w observed     findings ▸ prior work ▸
+                                                                              mechanisms ▸ policy ▸ Limits
+  🗂 Sec-A-Appendix            §8    S-Appendix-A   no word budget          2 Supplements for a non-RCT,
+                                                    recorded                  3 for an RCT
+                                                                              ⚖️ NOT counted in the 3000
+  ✉️ Sec-L        §9    S-Main-0 of    800w is the DESK's cap  a WHOLE article type, not a
+                                    its OWN paper   · 600w is what the        section of this one, so it
+                                                    pack inherited            takes a letter, not a number
+
+  🔢 THE INDEX AND THE PAGE ARE THE SAME NUMBER   Sec-<n> counts from 0, so
+     Sec-2-Methods becomes S-Main-2 and nobody converts anything · § is a third
+     number and belongs to this page only: it counts the judgment divisions
+     §1 and §2 ahead of the sections
+
+  📏 ONE CEILING OVER ALL OF IT   3000 words of TEXT for an Original Investigation
+     text only: the abstract, tables, figures, acknowledgments and references are
+     outside the count · plus ≤5 tables and/or figures TOTAL, and 50-75 references
+     [jamanetwork.com JAMA Internal Medicine Instructions for Authors, read 260803]
+
+  ⚠️ THE PACK'S SECTION BUDGETS DO NOT FIT INSIDE THAT CEILING
+     add the LOW end of every prose section the pack states: 350 + 1200 + 800 +
+     1000 = 3350 words, already over the 3000-word cap before anyone writes long
+     add the HIGH end: 900 + 2500 + 1500 + 1800 = 6700, more than twice the cap
+     both sources are honest and they disagree: the desk publishes a submission
+     cap and the pack measured PUBLISHED papers at this same desk
+     ⚖️ the CAP is the rule · the section budgets are PACK OBSERVATIONS, and at
+        least one of them has to give on any real manuscript · §10.1 says which
+
+  ➕ A KIND IS A FLOOR, NOT A CEILING
+     one kind may spread across several numbered Main pages
+     the ORDER does not move: it is this venue's reading order
+```
+
+**Submission-Rules**: the desk's own mechanics, which the pack does not record and no section division owns.
+
+```text
+  🧾 SUBMISSION-RULES ── ⚖️ THE ONE BINDING FIGURE ON THIS PAGE
+     every row below is the DESK's own published rule, from jamanetwork.com,
+     and almost none of it is in the pack's seven section folders
+     everything else on this page is a reference; these are enforced
+     ⚠️ read 260803 by direct fetch of the two pages named at the foot of this
+        figure · re-read them before submitting, since a limit moves silently
+
+  📁 CATEGORY & CAP    Original Investigation   3000 w text · ≤5 tables and/or
+                                                figures · 50-75 refs · structured
+                                                abstract required
+                       Research Letter          800 w · ≤10 refs · ≤2 small tables
+                                                and/or figures · NO abstract, NO
+                                                Key Points
+                       Systematic Review        3000 w · 50-75 refs · ≤5 displays ·
+                                                350 w structured abstract
+                       Narrative Review         2000-3500 w · 50-75 refs · ≤5
+                                                displays · 300 w 3-part abstract
+                       Special Communication    3000 w · 50 refs · ≤4 displays
+                       Teachable Moment         800 w · ≤5 refs · ≤3 authors
+                       Inside Story             1200 w, or 1000 w + 1 small
+                                                display · ≤7 refs · ≤3 authors
+                       Viewpoint                1200 w, or 1000 w + 1 small
+                                                display · ≤7 refs · ≤4 authors
+                       Challenges in Clinical   1000 w total, case 200 +
+                       Electrocardiography      discussion 800 · ≤10 refs
+                       Letter to the Editor     400 w · ≤5 refs · ≤3 authors
+                       Letter in Reply          500 w · ≤6 refs · ≤3 authors
+                       ⚖️ Teachable Moment, Inside Story and Challenges in
+                          Clinical Electrocardiography are THIS desk's own types
+                          and appear on no flagship roster
+
+  🗝 ABSTRACT & BOX    Reports of Original Data: 350 words maximum, structured
+                       headings as the desk lists them ── Importance · Objective ·
+                       Design · Setting · Participants · Main Outcome Measures ·
+                       Results · Conclusions and Relevance
+                       Key Points: Question 1 sentence · Findings 1-2 sentences ·
+                       Meaning 1 sentence · "Limit to 75-100 words or less" ·
+                       required for research and review manuscripts only
+
+  📄 MANUSCRIPT        Word document · "Do not submit your manuscript in PDF
+                       format" · 10, 11 or 12 pt · double-spaced · unjustified
+                       right margin · individual files ≤500 kB, 1 MB maximum,
+                       ≤5 MB in total excluding video
+                       ⚠️ LaTeX is named nowhere, so a markdown-to-LaTeX
+                          projection must be converted to .docx to be submitted
+
+  📚 REFERENCES        AMA Manual of Style, 11th edition, and/or the ICMJE
+                       Recommendations · numbered superscript markers in the
+                       order of first mention, which is what every exemplar shows
+
+  🖥 SYSTEM            manuscripts.jamainternalmed.com · the Authorship Form is
+                       sent to every author of a manuscript under consideration
+
+  🕶 ANONYMITY         ❓ neither page read states whether review is masked in
+                       either direction · see the open row below
+
+  🤖 DISCLOSURE        ICMJE Form for Disclosure of Potential Conflicts of
+                       Interest, one per author, with conflicts also stated in
+                       the Acknowledgment section · a Data Sharing Statement is
+                       required for every research article type, collected as
+                       questions inside the submission system
+                       AI: "Use of AI, LLM, and chatbots to draft opinion
+                       manuscripts is not permitted" ── here that means
+                       Viewpoints, Inside Story and Letters to the Editor ·
+                       elsewhere, authors "must review and confirm the accuracy
+                       of all content generated by" AI and take full
+                       responsibility for it
+
+  📋 REPORTING         EQUATOR is the umbrella · STROBE for observational work,
+                       which is what this repo's claims study files · CONSORT
+                       trials · PRISMA and MOOSE reviews · CHEERS economic ·
+                       STARD and TRIPOD diagnostic and prognostic · SQUIRE
+                       quality improvement · STREGA genetic · SRQR and COREQ
+                       qualitative
+
+  🎲 ODDS & CLOCK      9% of submissions accepted · median time to first decision
+                       1 day WITHOUT external peer review and 33 days WITH it ·
+                       impact factor 26.3 · 49% of submissions from outside the
+                       United States · these are the journal's own reported
+                       figures, not a promise
+                       ⚠️ the 1-day median is the desk-reject lane: most papers
+                          are answered in a day and never see a reviewer
+
+  💵 MONEY             no author fees to publish · every research article becomes
+                       free 12 months after publication · authors MAY elect to
+                       pay for immediate open access, and the desk's own pages
+                       name no price for it
+
+  ❓ STILL NOT ON RECORD  the open-access price: the desk says the option exists
+                       and states no amount · a third-party aggregator says
+                       $5,000 and no journal page read confirms it, so it is not
+                       printed above
+                       masking: neither the Instructions for Authors nor the For
+                       Authors page says whether authors are masked to reviewers,
+                       reviewers to authors, or neither
+                       the number of revision rounds a paper takes, and the
+                       median time from submission to ACCEPTANCE, as opposed to
+                       to first decision
+                       whether a JAMA IM Research Letter may carry a sub-banner
+                       such as LESS IS MORE, which is the pack's own open
+                       question at §9.1 and is unanswered by the instructions
+
+  🔗 THE DESK ITSELF    jamanetwork.com/journals/jamainternalmedicine/pages/instructions-for-authors
+                       jamanetwork.com/journals/jamainternalmedicine/pages/for-authors
+                       manuscripts.jamainternalmed.com
+                       jamanetwork.com/pages/instructions-for-authors
+```
+
+**Open the desk**: [Instructions for Authors](https://jamanetwork.com/journals/jamainternalmedicine/pages/instructions-for-authors) · [For Authors](https://jamanetwork.com/journals/jamainternalmedicine/pages/for-authors) · [the submission portal](https://manuscripts.jamainternalmed.com/) · [the network's per-journal index](https://jamanetwork.com/pages/instructions-for-authors) · [JAMA flagship, for the delta](https://jamanetwork.com/journals/jama/pages/instructions-for-authors).
+A row inside a figure is plain text by design, so the same links are repeated here as real ones.
 
 ## Content
 
@@ -121,7 +352,7 @@ Frame it as variation with a safety consequence and it clears.
 📐 Establishes this outlet as the one a paper plans from, so the step down to JAMA Network Open is settled before writing starts.
 > ✎ 📐 Establishes this outlet as the ~planning position within~ *one a paper plans from, so* the ~portfolio, which~ *step down to JAMA Network Open* is ~why the descent is decided~ *settled* before ~writing.~ *writing starts.* · CC · 260802 1539
 
-### 3 · The abstract: two labeled blocks under one hard ceiling
+### 3 · Sec-0-Abstract: two labeled blocks under one hard ceiling
 
 **Two blocks, and the second one has a ceiling that a measured exemplar already sits on**: the Key Points box and the structured abstract are both mandatory, and `jamaim-abstract/style.md` line 9 records that unstructured prose is never accepted.
 
@@ -227,7 +458,7 @@ The effect slot as a claims abstract writes it, an estimate in clinical units wi
 "Prescription opioid use may spread within households." [Seamans 2018]
 The Key Points Meaning line, hedged on "may" and carrying no causal verb for an observational design [style.md line 44].
 
-### 4 · The introduction: three paragraphs, and a gap that needs its pivot word
+### 4 · Sec-1-Introduction: three paragraphs, and a gap that needs its pivot word
 
 **Three paragraphs is a real mode here, not a shortcut**: both measured exemplars reach the gap by paragraph three, and `jamaim-introduction/style.md` line 118 reconciled the guide's own stated budget down to what they actually run.
 
@@ -318,7 +549,7 @@ The practice-variation gap, stated as a hole in how care is delivered rather tha
 "we assessed the association between Medicaid expansion and rates of opioid-related ED visits and inpatient hospitalizations" [Wen 2020]
 The aim sentence on an associational verb, first person, bundling design and data source and taking no citation [style.md lines 75, 78].
 
-### 5 · The methods: STROBE named first, the software version named last
+### 5 · Sec-2-Methods: STROBE named first, the software version named last
 
 **The section opens on governance and closes on a version number**: the reporting guideline lands in the first two or three sentences and `jamaim-methods/style.md` line 84 calls the closing software line a house-style requirement.
 
@@ -422,7 +653,7 @@ That is what the anti-pattern in 5.1 turns on [style.md line 81].
 "Analyses were performed using SAS version 9.4 (SAS Institute)." [Taylor 2025]
 The closing house-style sentence, software and version last, immediately after the significance threshold [style.md lines 82, 84].
 
-### 6 · The results: one effect per sentence, the displays carry the rest
+### 6 · Sec-3-Results: one effect per sentence, the displays carry the rest
 
 **The prose narrates and the exhibits hold the numbers**: `jamaim-results/style.md` line 9 records heavy table and figure use precisely so the text stays narrative rather than a data dump.
 
@@ -521,7 +752,7 @@ A null stated plainly and kept next to its interval, so a reader can see the eff
 "The RD among younger adults ages 18 to 25 years was 0.91% (95% CI, 0.81%-1.01%)" [Seamans 2018]
 The subgroup sentence, each stratum named and each carrying its own interval rather than a shared one [style.md line 98].
 
-### 7 · The discussion: findings first, competing mechanisms, then policy
+### 7 · Sec-4-Discussion: findings first, competing mechanisms, then policy
 
 **The body ends on Limitations, and never on the implication**: `jamaim-discussion/style.md` line 16 makes Conclusions a separate labeled subsection with its own heading, and line 155 names ending the body on implications as the error.
 
@@ -623,7 +854,7 @@ The policy implication written for the internist reader, in the signature paragr
 "Second, Medicaid expansions were not randomly assigned." [Wen 2020]
 A numbered limitation stated flatly, then followed by what the design does about it rather than left open [style.md lines 111, 114].
 
-### 8 · The appendix: numbered Supplements and two independent e-streams
+### 8 · Sec-A-Appendix: numbered Supplements and two independent e-streams
 
 **Supplements are numbered files and e-items are a separate numbering stream**: `jamaim-appendix/style.md` line 47 states that the main-text and supplementary streams never overlap.
 
@@ -718,7 +949,7 @@ The bare-Supplement form, reserved for the protocol because it carries no e-item
 "in the Supplement" [Seamans 2018]
 The 2018 articled form the guide records precisely to tell a writer not to imitate it [style.md line 112].
 
-### 9 · The research letter: the compressed form the pack cannot yet vouch for
+### 9 · Sec-L-Letter: the compressed form the pack cannot yet vouch for
 
 **Every number below is a flagship number wearing this desk's name**: `jamaim-letter/style.md` lines 3 to 5 flag the whole guide as inherited, with no JAMA IM Research Letter stored and no Micro-norms block measured.
 
@@ -810,6 +1041,71 @@ It routes the effect and CI shapes to `jamaim-results`, the hedging to `jamaim-d
 So the sentences a letter would actually reuse are the ones already quoted in divisions 5, 6 and 7 above.
 That routing is why the repair at lines 82 to 84 is worth doing rather than working around: the prose is already inherited safely, and what is missing is the measurement.
 
+### 10 · Before you upload: the binding rules as a list you can run
+
+**Everything here is enforced by the desk, not by us**: it is the `Submission-Rules` figure turned into an order of operations, and it is the only part of this page that can cost a submission.
+
+```text
+  ✅ BEFORE YOU UPLOAD ── run top to bottom, on the FINAL file
+
+  ① PICK THE ARTICLE TYPE  Original Investigation · Research Letter · Systematic
+                           Review · Narrative Review · Special Communication ·
+                           Teachable Moment · Inside Story · Viewpoint
+                           every cap below follows the TYPE, so pick it first
+
+  ② COUNT THE BODY TEXT    ≤ 3000 words for an Original Investigation
+                           TEXT ONLY: abstract, tables, figures, acknowledgments
+                           and references are all outside this number
+                           ⚠️ THE TRAP: the pack's own per-section budgets add up
+                              to 3350 at their LOW end · something has to give,
+                              and §10.1 says what
+
+  ③ COUNT THE EXHIBITS     ≤ 5 tables AND/OR figures, as ONE total
+                           ⚠️ both measured exemplars sit exactly ON it: Williams
+                              2025 runs 4 tables + 1 figure, Fournier 2026 runs
+                              3 tables + 2 figures · a sixth exhibit moves to a
+                              Supplement, which is uncapped
+
+  ④ COUNT THE REFERENCES   50-75 for an Original Investigation
+                           a Research Letter takes 10, a Teachable Moment 5
+
+  ⑤ CUT THE FRONT MATTER   abstract ≤ 350 words, over the desk's own eight
+                           headings · Key Points 75-100 words over Question,
+                           Findings and Meaning · a Research Letter carries
+                           NEITHER of them
+
+  ⑥ FIX THE REFERENCES     AMA Manual of Style, 11th edition, and/or the ICMJE
+                           Recommendations
+
+  ⑦ NAME THE GUIDELINE     the EQUATOR guideline the design owes, in Methods ·
+                           STROBE for observational claims work · CONSORT for a
+                           trial · the desk lists nine
+
+  ⑧ WRITE THE DISCLOSURES  the ICMJE Form for Disclosure of Potential Conflicts
+                           of Interest, ONE PER AUTHOR, with the conflicts also
+                           in the Acknowledgment section · the Data Sharing
+                           Statement, required for every research type · the
+                           Authorship Form, sent to every author
+
+  ⑨ MAKE IT A WORD FILE    "Do not submit your manuscript in PDF format" ·
+                           10, 11 or 12 pt · double-spaced · right margin
+                           unjustified · each file ≤500 kB, 1 MB maximum,
+                           ≤5 MB in total
+
+  ⑩ UPLOAD                 manuscripts.jamainternalmed.com
+```
+
+✅ Establishes the desk's own gate as a ten-step list, so the binding rules are executed once at the end rather than remembered while drafting.
+
+#### 10.1 · The 3000-word body count is the step that actually fails
+(it is the only rule here that a finished paper cannot fix in an afternoon)
+Steps ⑤ to ⑩ are minutes of work on a file that already exists, and steps ③ and ④ are a triage decision made in an hour.
+The word count is not, because it is the sum of four content decisions taken months earlier.
+The pack's own low-end budgets add to 3350 words before anyone writes long, so a paper written to every section budget on this page arrives over the cap by construction.
+The pack and the desk are both honest here: the desk publishes a SUBMISSION cap, and the pack measured PUBLISHED papers at this same desk, which is why §7's Discussion range alone runs to 1800.
+The section that gives is Methods, and the Supplement is where it goes, because §8's triage rule already sends definitions, cohort flow and every robustness cut there, and the data supplement carries no page cap.
+So a JAMA Internal Medicine paper decides early what will live in Supplement 1 rather than discovering it at the portal.
+
 ## Aims
 
 ### A1 · 🎯 Why this desk fits the work in this repo
@@ -820,33 +1116,50 @@ That routing is why the repair at lines 82 to 84 is worth doing rather than work
 - A2.1 · The planned descent to JAMA Network Open is recorded alongside the pin.
   **Done when:** the paper pinned here names its next outlet before it is submitted anywhere.
 
-### A3 · 🧾 The abstract: two labeled blocks under one hard ceiling
+### A3 · 🧾 Sec-0-Abstract: two labeled blocks under one hard ceiling
 - A3.1 · The abstract's binding numbers reach a paper's own venue blueprint, not only this page.
   **Done when:** a `2a-venue.md` in this repo carries the 350-word ceiling, the seven-label set and the Key Points box, each citing its `jamaim-abstract/style.md` line.
+- A3.2 · The Key Points box is drafted to the DESK's cap rather than to the pack's measurement of two papers.
+  **Done when:** a Key Points draft measures 75-100 words, and the blueprint records that the pack's ~80-120 is a measurement the desk's own instructions overrule.
 
-### A4 · 🚪 The introduction: three paragraphs, and a gap that needs its pivot word
+### A4 · 🚪 Sec-1-Introduction: three paragraphs, and a gap that needs its pivot word
 - A4.1 · The paragraph count and the citation shape are fixed before the first introduction draft.
   **Done when:** the introduction blueprint block records 3-5 paragraphs, the 350-900 word band, and the zero-citation aim paragraph.
 
-### A5 · 🔬 The methods: STROBE named first, the software version named last
+### A5 · 🔬 Sec-2-Methods: STROBE named first, the software version named last
 - A5.1 · The two housekeeping sentences are present from the first Methods pass, not added at CHECK.
   **Done when:** a Methods draft for this repo's claims work names the data source, the IRB and STROBE in its opening paragraph, and closes Statistical Analysis on a software version.
 
-### A6 · 📊 The results: one effect per sentence, the displays carry the rest
+### A6 · 📊 Sec-3-Results: one effect per sentence, the displays carry the rest
 - A6.1 · Every effect sentence reports its interval, and every exhibit is a display request rather than a repeated number.
   **Done when:** a Results draft carries a CI beside each estimate and points at each table or figure without restating its contents.
 
-### A7 · 🧭 The discussion: findings first, competing mechanisms, then policy
+### A7 · 🧭 Sec-4-Discussion: findings first, competing mechanisms, then policy
 - A7.1 · The Discussion closes in the order this desk requires, with Limitations last in the body.
   **Done when:** a Discussion draft ends its body on a numbered Limitations paragraph and carries Conclusions under its own heading at 1-3 sentences.
 
-### A8 · 🗂 The appendix: numbered Supplements and two independent e-streams
+### A8 · 🗂 Sec-A-Appendix: numbered Supplements and two independent e-streams
 - A8.1 · The Supplement plan is settled before the first supplementary exhibit is drawn.
   **Done when:** an appendix manifest names Supplement 1 and Supplement 2 for this repo's non-RCT design and cites every item as "eItem N in Supplement M".
 
-### A9 · ✉️ The research letter: the compressed form the pack cannot yet vouch for
+### A9 · ✉️ Sec-L-Letter: the compressed form the pack cannot yet vouch for
 - A9.1 · The letter norms are verified against a real JAMA Internal Medicine Research Letter before any letter is written to them.
   **Done when:** at least one published JAMA IM Research Letter sits in `jama-im/examples/` and `jamaim-letter/style.md` carries its own measured Micro-norms block.
+- A9.2 · A letter is drafted to this desk's published caps rather than to the flagship figures the pack inherited.
+  **Done when:** a letter draft records 800 words, 10 references and 2 small tables and/or figures as its budget, and names the journal page those came from.
+
+### A10 · ✅ Before you upload: the binding rules as a list you can run
+- A10.1 · The desk's ten steps are executed once on the final file, rather than remembered in pieces while drafting.
+  **Done when:** a deliver run walks §10's ten steps and records a pass or a fail for each, with the body word count measured on the final .docx and the exhibits counted as one total.
+
+### P · 🧾 Targets that belong to no single section
+
+- P1 · The 3000-word body cap is allocated across the four prose sections BEFORE drafting, because the pack's own budgets do not fit inside it.
+  **Done when:** a venue blueprint for this repo's claims paper assigns a word share to Introduction, Methods, Results and Discussion that sums to 3000 or less, and names which pack budget it is departing from.
+- P2 · The cost of this desk is known before a paper commits to it, not after the first decision.
+  **Done when:** a venue decision for this paper names the 9% acceptance rate, the 1-day and 33-day first-decision medians, and the fact that immediate open access is optional at a price the desk does not publish.
+- P3 · The two facts the desk does not publish are chased down before a manuscript is uploaded, rather than discovered at the portal.
+  **Done when:** the masking policy and the open-access price are either recorded from a journal source or logged as answered by the editorial office.
 
 ## States
 
@@ -856,26 +1169,36 @@ That routing is why the repair at lines 82 to 84 is worth doing rather than work
 ### A2 · 📐 What separates it from the two siblings
 - ⬜ A2.1 · Not started, and dependent on A1.1.
 
-### A3 · 🧾 The abstract: two labeled blocks under one hard ceiling
+### A3 · 🧾 Sec-0-Abstract: two labeled blocks under one hard ceiling
 - ⬜ A3.1 · Not started. No `2a-venue.md` in this repo pins this outlet, so the ceiling and the label set stay inside the pack.
+- ⬜ A3.2 · Not started, and now evidenced. The desk's own instructions cap Key Points at "75-100 words or less" against the pack's measured ~80-120, so a blueprint written from the pack alone would draft up to 20 words over.
 
-### A4 · 🚪 The introduction: three paragraphs, and a gap that needs its pivot word
+### A4 · 🚪 Sec-1-Introduction: three paragraphs, and a gap that needs its pivot word
 - ⬜ A4.1 · Not started, and blocked behind the pin in A1.1.
 
-### A5 · 🔬 The methods: STROBE named first, the software version named last
+### A5 · 🔬 Sec-2-Methods: STROBE named first, the software version named last
 - ⬜ A5.1 · Not started. The CMS claims source is PHI and stays on the secure server, so no Methods draft exists to check.
 
-### A6 · 📊 The results: one effect per sentence, the displays carry the rest
+### A6 · 📊 Sec-3-Results: one effect per sentence, the displays carry the rest
 - ⬜ A6.1 · Not started. No paper pinned to this outlet has a Results section file.
 
-### A7 · 🧭 The discussion: findings first, competing mechanisms, then policy
+### A7 · 🧭 Sec-4-Discussion: findings first, competing mechanisms, then policy
 - ⬜ A7.1 · Not started. The limitation order this desk expects is recorded in division 7.1 and used by nothing yet.
 
-### A8 · 🗂 The appendix: numbered Supplements and two independent e-streams
+### A8 · 🗂 Sec-A-Appendix: numbered Supplements and two independent e-streams
 - ⬜ A8.1 · Not started. The design variant is already decided by the work itself, non-RCT, which the pack settles at two Supplements.
 
-### A9 · ✉️ The research letter: the compressed form the pack cannot yet vouch for
+### A9 · ✉️ Sec-L-Letter: the compressed form the pack cannot yet vouch for
 - 🧠 A9.1 · Waiting on the pack, not on this repo. `jamaim-letter/style.md` lines 82 to 84 name the three items owed, and none has landed.
+- ⬜ A9.2 · Not started, and the numbers it needs are now on this page. The desk publishes 800 words, 10 references and 2 small displays; the pack's guide still carries the flagship's 600, 6 and 1.
+
+### A10 · ✅ Before you upload: the binding rules as a list you can run
+- ⬜ A10.1 · Not started. The ten steps landed on this page 260803 and no deliver run reads them.
+
+### P · 🧾 Targets that belong to no single section
+- ⬜ P1 · Not started, and it is the sharpest open item on this page. The arithmetic is recorded in Venue-Structure and in §10.1, and nothing allocates the 3000 words.
+- ⬜ P2 · Not started. The odds, the clock and the money landed 260803 from the desk's own For Authors page; nothing in a venue decision cites them.
+- ⬜ P3 · Not started. Both gaps are printed in the `❓ STILL NOT ON RECORD` row of Submission-Rules, which is where they stay until someone asks the desk.
 
 ## Files
 
@@ -885,7 +1208,7 @@ That routing is why the repair at lines 82 to 84 is worth doing rather than work
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 15 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 15 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-jama-portfolio/jama-im/examples/berkowitz-2025-jamaim-food-insecurity-bp.pdf` · Berkowitz 2025
 - `../../paper/venue/playbook-jama-portfolio/jama-im/examples/boone-2026-jamaim-hypertension-incentive.pdf` · Boone 2026
@@ -909,22 +1232,7 @@ That routing is why the repair at lines 82 to 84 is worth doing rather than work
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · methods
-- `S-Main-3` · results
-- `S-Main-4` · discussion
-- `S-Appendix-A` · appendix
-- `S-Main-0` of its OWN paper · letter, a standalone article format rather than a section of this one
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 

@@ -10,7 +10,7 @@ This page covers the paper-side PROBE bridge.
 It turns a question already anchored on an S page into an entry and interprets a landed QA artifact back into the paper, while `haipipe-probe` and the bank retain their own ownership.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 3e78a5554227f18b paper/2-phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:tree:start 3e78a5554227f18b paper/phase/1-probe/haipipe-paper-probe -->
 
 ```
 haipipe-paper-probe/
@@ -42,11 +42,11 @@ The paper records what the fact means.  The executor records the fact.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 3e78a5554227f18b paper/2-phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:body:start 3e78a5554227f18b paper/phase/1-probe/haipipe-paper-probe -->
 
 **haipipe-paper-probe** · `0.7.5` · last shipped 2026-07-26
 
-- folder   `paper/2-phase/1-probe/haipipe-paper-probe/`
+- folder   `paper/phase/1-probe/haipipe-paper-probe/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 - summary  The paper's PROBE-phase worker — runs ①ORGANIZE→②MATCH→③DISPATCH→④POINT→⑤INTERPRET for a paper (all five; ①② came back here from DRAFT on 2026-07-20). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is owned by ../../../../probe/haipipe-probe/SKILL.md. This file is only the paper-side deltas. History: ./CHANGELOG.md.
 
@@ -314,10 +314,10 @@ The remaining acceptance test is a mixed-depth campaign that exercises all four 
 
 ## Log
 260727 · Audited against `board.md`'s decision-only rule, which says `state:` is about the DECISION and that implementation does not gate this board. Every open item here is implementation or a test, not an undecided question, so the page was reporting itself as open because code was missing. Flipped with no ruling made.
-260727 1450 · Created the paper-side PROBE skill page from `paper/2-phase/1-probe/haipipe-paper-probe/`.
+260727 1450 · Created the paper-side PROBE skill page from `paper/phase/1-probe/haipipe-paper-probe/`.
 The authored diagram keeps the five-step loop and the evidence/story ownership wall in one place.
 
-<!-- haipipe:skill:log:start 3e78a5554227f18b paper/2-phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:log:start 3e78a5554227f18b paper/phase/1-probe/haipipe-paper-probe -->
 
 Converted from the skill's own `CHANGELOG.md`: 55 releases.
 

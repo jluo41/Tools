@@ -9,6 +9,12 @@ method: state ISR's own desk signals and one-sentence test, and record the ident
 An ISR paper opens with a statement, never a question: `[Domain] is characterized by [tension] that leads to [consequences]`, cited in the first sentence. By its third paragraph it says "To the best of our knowledge, ours is one of the first", and never "we are the first". Before the theory section starts, it has already named every data source it will use. What is that shape for?
 > ✎ An ISR paper opens ~declaratively and~ *with a statement,* never ~with~ a question: `[Domain] is characterized by [tension] that leads to [consequences]`, cited in the first sentence. By its third paragraph it says "To the best of our knowledge, ours is one of the ~first"~ *first",* and never "we are the first". Before the theory section ~starts~ *starts,* it has *already* named every data source it will use. What is that shape ~enforcing?~ *for?* · CC · 260802 1430
 
+**How to read this page**: everything here is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and refusals below describe what published ISR papers do, measured from the exemplars on disk.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is returned unreviewed.
+Every length on the page says which of the two it is.
+
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-utd-is/ISR/`, and its shape claims are measured from the two exemplars the pack stores.
 
@@ -35,6 +41,12 @@ How this page must be written. Read it before editing, and edit to it.
 ✅ `an ISR introduction previews the identification strategy and the data`  ❌ `unlike MISQ, ISR wants identification`
 
 **Copy the SHAPE, quote the content**: the pack's own instruction is that a draft imitates the slot pattern and never the sentence, and that still holds. A quotation on this page is EVIDENCE that the slot was derived from a real paper, attributed and one sentence long; it is never text for a draft to reuse.
+
+**This page follows the venue-page contract** in `../../board/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`. Three figures in `## Diagram`, in order: desk taste, Venue-Structure, Submission-Rules. Five Files groups: Engines, Contracts, Input files, Authority, Generated. A section division is named `Sec-<n>-<Kind>`, counting from 0 so the index is the number of the `S-Main` page it becomes, and the emoji lives on the Aims and States group rather than on the division heading.
+
+**A venue page is a REFERENCE, not a rulebook**: the pack-derived arcs, budgets, moves and refusals are suggestions drawn from published papers, and only the desk's own published rules bind. Write `the pack refuses X` rather than `do not do X`, so the page never sounds like it is the one doing the refusing.
+
+**Every length says whose it is**: a DESK RULE is published by the venue and binding; a PACK OBSERVATION is a measurement, and departing from it is off-pattern rather than a violation. This pack labels several of its own ranges UNMEASURED, and those stay labelled.
 
 **Keep the hedge when quoting the gap move**: `one of the first`, never `the first`. The pack records that ISR reviewers punish absolutism, so dropping the hedge misreports the move.
 
@@ -67,6 +79,102 @@ How this page must be written. Read it before editing, and edit to it.
 
   📊 16 exemplars · the pack's largest base
 ```
+
+**Venue-Structure**: the sections an ISR paper is written in, in reading order, and what each one costs.
+
+```text
+  🏗 VENUE-STRUCTURE ── every budget below is stated with its source inline
+     in the §4 to §9 division that owns it, and §10 is the desk's own gate
+
+  index                      §     page           words                    what the section owes
+  ──────────────────────────   ───   ────────────   ──────────────────────   ─────────────────────────────
+  📝 Sec-0-Abstract          §4    S-Main-0       200-250w target, pool    five beats, zero citations
+                                                  150-300 across 10 papers ⚠️ the DESK caps it at 300w
+                                                  [ISR-abstract/style.md]  + a 500w contribution statement
+  📖 Sec-1                   —     S-Main-1       Bao 2021 ~1,270w / 10 ¶  the identification strategy AND
+                                                  Zhang 2026 ~730w / 4 ¶   the data, previewed before theory
+                                                  ⚠️ NO DIVISION ON THIS PAGE YET, though the pack ships
+                                                     ISR-introduction/style.md and the Opening quotes it
+  🧱 Sec-2-Theory            §5    S-Main-2       measured 1,400-3,000w ·  survey and derivation SPLIT into
+                                                  pool 2,500-5,500,        two sections, because they are
+                                                  labelled UNMEASURED      different jobs
+  📊 Sec-3-Methods           §6    S-Main-3       measured 1,500-3,400w ·  data closes on a count, the
+                                                  pool 2,000-5,500 UNMEAS. identification is never a footnote
+  🔻 Sec-4-Results           §7    S-Main-4       measured 1,100-2,500w ·  a progressive funnel, then 5-11
+                                                  pool 4,000-7,000 UNMEAS. robustness checks
+  🎁 Sec-5-Discussion        §8    S-Main-5       850-2,800w target ·      contribution first, limitations
+                                                  measured 860-1,280w      visible, the last sentence elevates
+  🅰 Sec-A-Appendix          §9    S-Appendix-A   free to outweigh the     lettered, DOI-hosted, a SEPARATE
+                                                  paper                    document from the article
+
+  🔢 THE INDEX AND THE PAGE ARE THE SAME NUMBER   Sec-<n> counts from 0, so
+     Sec-3-Methods becomes S-Main-3 · § is this page's own division number and
+     counts the three judgment divisions ahead of the sections
+
+  ⚖️ RULE vs OBSERVATION   the 300w abstract cap and the 500w contribution
+     statement are the DESK's · every other number above is the PACK's, and
+     several of its ranges are labelled UNMEASURED by the pack itself
+     the pack's README also records a ~35 pp body limit that the desk's own
+     stored exemplars, at 32 and 38 pages, contradict
+
+  ➕ A KIND IS A FLOOR, NOT A CEILING   one kind may spread across several
+     numbered Main pages · the ORDER does not move
+```
+
+**Submission-Rules**: the desk's own mechanics, which the pack does not record and no section division owns.
+
+```text
+  🧾 SUBMISSION-RULES ── ⚖️ THE ONE BINDING FIGURE ON THIS PAGE
+     every row below is the DESK's own published rule, from pubsonline.informs.org
+     everything else on this page is a reference; these are enforced
+     ⚠️ read 260803 through search summaries only: the INFORMS site answers a
+        direct fetch with 403 · re-read it before submitting
+
+  📁 CATEGORY & CAP    Research Article, the primary form · Research Note ·
+                       Research Commentary, ≤ 20 pp + ≤ 8 pp of figures
+                       and tables
+                       ❓ no overall page cap for a Research Article is
+                          published, unlike MISQ's 55
+
+  📄 MANUSCRIPT        double-spaced · at least 11 pt · 1-inch margins ·
+                       the abstract, references and footnotes are inside
+                       that formatting rule
+
+  ✂️ ABSTRACT          ≤ 300 words, stating problem, method and main result
+                       PLUS a 500-word contribution statement, required
+                       since June 2023 · this is a desk RULE, not a norm
+
+  📚 REFERENCES        the INFORMS Style Guide governs, published as a PDF
+                       by the press rather than by the journal
+
+  🖥 SYSTEM            ScholarOne · a submitted manuscript is first checked
+                       for completeness and provenance compliance, then a
+                       Senior Editor is assigned
+
+  🕶 ANONYMITY         ⚔️ THE DESK CONTRADICTS ITSELF: the submission
+                       guidelines say double-anonymous, the review-process
+                       page says single-blind · settle it before submitting
+
+  🤖 DISCLOSURE        a GenAI Use Appendix: which models, at which stages,
+                       with what verification, auditable and replicable ·
+                       authors certify the legal right to the data
+
+  🎲 ODDS & CLOCK      the desk targets a decision within 120 days of
+                       submission · ~16% accepted, from the 2016 editorial
+                       reporting 64 acceptances on 392 submissions
+                       ⚠️ that rate is a decade old and is the only one
+                          published
+
+  💵 MONEY             open access is optional · ⚔️ the fee is quoted as
+                       $3,450 on one INFORMS page and $3,000 for the
+                       INFORMS Open Option on another
+
+  ❓ STILL NOT ON RECORD  the Research Article page cap · a current
+                       acceptance rate · any per-section word limit
+```
+
+**Open the desk**: [submission guidelines](https://pubsonline.informs.org/page/isre/submission-guidelines) · [instructions for authors](https://pubsonline.informs.org/page/isre/instructions-for-authors) · [review process and stats](https://pubsonline.informs.org/page/isre/review-process-and-stats) · [ethical behavior in publishing](https://pubsonline.informs.org/page/isre/guidelines-for-ethical-behavior-in-publishing) · [INFORMS Style Guide (PDF)](https://pubsonline.informs.org/pb-assets/INFORMS_style_guide-1.6-1574695301483.pdf) · [INFORMS Open Option](https://pubsonline.informs.org/authorportal/open-option).
+A row inside a figure is plain text by design, so the same links are repeated here as real ones.
 
 ## Content
 
@@ -210,7 +318,7 @@ A tight mechanism with clean causal identification comes here.
 
 🚫 Establishes ISR as an outlet decided upstream of the venue stage, alongside Nature Medicine at `QBv9` and npj Digital Medicine at `QBv8`.
 
-### 4 · The abstract: one paragraph, five beats, zero citations
+### 4 · Sec-0-Abstract: one paragraph, five beats, zero citations
 
 **Five beats in one block**: the shortest section is the strictest, and every number below is the pack's rather than this page's.
 
@@ -282,7 +390,7 @@ Beat B4 for a null result, in the "Contrary to" shape 4.1 says replaces "we find
 [Wang 2026] "the findings position digital platforms as a form of 'soft governance' that complements formal oversight"
 Beat B5 as conceptual frame elevation, which the pack calls a stronger close than a plain implication.
 
-### 5 · Theory: two sections, because surveying and deriving are different jobs
+### 5 · Sec-2-Theory: two sections, because surveying and deriving are different jobs
 
 **Lit review, then hypotheses**: ISR keeps the two jobs apart, and merging them is the anti-pattern its own style file leads with.
 
@@ -364,7 +472,7 @@ The italic single-sentence variant, placed at the end of the subsection that arg
 [Wang 2026] "Our framework predicts that potential discrepancies between publicly articulated positions and private practice generate consistency pressure"
 The zero-hypothesis paper 5.2 records, where a coined mechanism carries the prediction instead of a numbered H.
 
-### 6 · Methods: the data closes on a count, and the identification is never a footnote
+### 6 · Sec-3-Methods: the data closes on a count, and the identification is never a footnote
 
 **Data first, then the model**: ISR sometimes splits the two into separate sections and sometimes merges them, but the order holds either way.
 
@@ -450,7 +558,7 @@ The estimand sentence 6.1 records, and the cheaper of the two demands that file 
 [Bao 2021] "DEA has been adopted widely to analyze hospital productivity and is particularly suited to measure the efficiency of complex service organizations"
 The method-justification slot: prior use, a named domain, and a citation carrying both.
 
-### 7 · Results: a progressive funnel, then five to eleven robustness checks
+### 7 · Sec-4-Results: a progressive funnel, then five to eleven robustness checks
 
 **Establish, rule out, then defend**: an ISR results section is long because the robustness battery lives inside it rather than after it.
 
@@ -535,7 +643,7 @@ The if-then slot 7.2 records, which turns a defence into positive evidence for t
 [Zhang 2026] "We verify covariate balance after matching and find that the standardized differences for all matching variables fall below the 5% threshold."
 The balance diagnostic a matching-based check owes its reader before its verdict counts.
 
-### 8 · Discussion: contribution first, limitations visible, and the last sentence elevates
+### 8 · Sec-5-Discussion: contribution first, limitations visible, and the last sentence elevates
 
 **Five beats, nearly no citations**: this block has to ADD something, because a Discussion that only restates Results is an anti-pattern by name.
 
@@ -611,7 +719,7 @@ The advisory register 8.2 permits a methods paper to use in place of the elevati
 [Mousavi 2026] "we advocate for the acceptance of LLMs as a standard for psychometric NLP in social science research."
 The closing elevation, using the one advocacy verb 4.1 allows and only in a final sentence.
 
-### 9 · The Online Appendix: lettered, DOI-hosted, and free to outweigh the paper
+### 9 · Sec-A-Appendix: lettered, DOI-hosted, and free to outweigh the paper
 
 **A separate PDF, not a back section**: the body is capped, and everything that supports rather than tests a hypothesis moves online.
 
@@ -702,6 +810,51 @@ The specific-exhibit pointer, naming the table number and its appendix letter to
 The parenthetical pointer: a robustness sub-check closes this way without moving its evidence back into the body.
 > ✎ The parenthetical ~pointer, which is how~ *pointer:* a robustness sub-check closes *this way* without moving its evidence back into the body. · CC · 260802 1430
 
+### 10 · Before you upload: the binding rules as a list you can run
+
+**Everything here is enforced by the desk, not by us**: it is the `Submission-Rules` figure turned into an order of operations, and it is the only part of this page that can cost a submission.
+
+```text
+  ✅ BEFORE YOU UPLOAD ── run top to bottom, on the FINAL file
+
+  ① PICK THE CATEGORY      Research Article · Research Note · Research
+                           Commentary, and only the Commentary has a
+                           published cap, ≤ 20 pp + ≤ 8 pp of exhibits
+
+  ② FORMAT THE FILE        double-spaced · ≥ 11 pt · 1-inch margins, and
+                           the abstract, references and footnotes obey it too
+
+  ③ CUT THE ABSTRACT TO    ≤ 300 words · problem, method, main result
+     THE CAP               this one IS a desk rule, not the pack's 200-250
+
+  ④ WRITE THE 500-WORD     required since June 2023 · it is a separate
+     CONTRIBUTION          document from the abstract and from the paper
+     STATEMENT
+
+  ⑤ SETTLE THE ANONYMITY   the desk's own two pages disagree, double-anonymous
+                           against single-blind · assume double and strip
+                           yourself out, which is safe under either
+
+  ⑥ WRITE THE GenAI        which models, at which stages, with what
+     USE APPENDIX          verification · auditable and replicable ·
+                           plus the data-rights certification
+
+  ⑦ RESTYLE THE REFS       the INFORMS Style Guide, not APA and not the
+                           style a MISQ draft arrived in
+
+  ⑧ UPLOAD                 ScholarOne · completeness and provenance are
+                           checked before a Senior Editor is assigned
+```
+
+✅ Establishes the desk's own gate as an eight-step list, so the binding rules are executed once at the end rather than remembered while drafting.
+
+#### 10.1 · The two steps a MISQ draft always fails
+(this is the desk a retargeted MISQ paper arrives at most often)
+The reference style changes: MISQ requires APA 7th, ISR requires the INFORMS Style Guide, and no part of a draft warns you.
+The 500-word contribution statement has no MISQ equivalent at all, so it is written from nothing rather than adapted.
+Both are cheap in hours and easy to forget, which is the combination that costs a desk check.
+The expensive change is upstream and belongs to `§2`: the identification bar, which is argued rather than formatted.
+
 ## Aims
 
 ### A1 · 📐 What an ISR paper looks like on the page
@@ -716,29 +869,40 @@ The parenthetical pointer: a robustness sub-check closes this way without moving
 - A3.1 · The identification bar is scored before venue rather than discovered at submission.
   **Done when:** a paper with no identification strategy is not shortlisted for ISR.
 
-### A4 · 📝 The abstract: one paragraph, five beats, zero citations
+### A4 · 📝 Sec-0-Abstract: one paragraph, five beats, zero citations
 - A4.1 · An ISR abstract draft can be failed on its beat order, its word cap, or a verb the pack rules out.
   **Done when:** a section-edit abstract is checked against the five beats and the 200-250 target before a human reads it.
 
-### A5 · 🧱 Theory: two sections, because surveying and deriving are different jobs
+### A5 · 🧱 Sec-2-Theory: two sections, because surveying and deriving are different jobs
 - A5.1 · The surveying job and the deriving job stay in separate sections in every ISR draft.
   **Done when:** a draft that argues a prediction inside a survey subsection is reported as a defect rather than read as a style choice.
 
-### A6 · 📊 Methods: the data closes on a count, and the identification is never a footnote
+### A6 · 📊 Sec-3-Methods: the data closes on a count, and the identification is never a footnote
 - A6.1 · Every ISR methods draft names its estimand, its fixed effects and its clustering level.
   **Done when:** a methods draft missing any of the three is failed before its identification claim reaches Results.
 
-### A7 · 🔻 Results: a progressive funnel, then five to eleven robustness checks
+### A7 · 🔻 Sec-4-Results: a progressive funnel, then five to eleven robustness checks
 - A7.1 · The robustness battery is counted, and each check carries its own numbered subsection.
   **Done when:** a results draft under five checks, or with checks merged into one paragraph, is flagged against the pack's range.
 
-### A8 · 🎁 Discussion: contribution first, limitations visible, and the last sentence elevates
+### A8 · 🎁 Sec-5-Discussion: contribution first, limitations visible, and the last sentence elevates
 - A8.1 · How strongly the Discussion speaks about cause matches the identification the paper actually holds.
   **Done when:** a Discussion drafted for ISR is read for causal wording its identification does not support, before the draft gate.
 
-### A9 · 🅰 The Online Appendix: lettered, DOI-hosted, and free to outweigh the paper
+### A9 · 🅰 Sec-A-Appendix: lettered, DOI-hosted, and free to outweigh the paper
 - A9.1 · The body-versus-online triage runs before the body is over its page limit.
   **Done when:** every exhibit that supports rather than tests a hypothesis carries an Online Appendix letter at the display stage.
+
+### P · 🧾 Targets that belong to no single section
+
+- P1 · `Sec-1-Introduction` gets the division the other six kinds have, since the pack ships `ISR-introduction/style.md` and this page quotes it in the Opening without ever giving it a home.
+  **Done when:** a numbered division carries the introduction's arc, budget, moves, refusals, format values and exemplar language, like every other section here.
+- P2 · The desk's own submission mechanics are run before a manuscript is uploaded, rather than discovered at the portal.
+  **Done when:** a deliver run walks §10's eight steps and records the result of each, including the 300-word abstract cap and the 500-word contribution statement.
+- P3 · The two places the desk contradicts itself are settled before this outlet is targeted, rather than guessed at.
+  **Done when:** the anonymity model and the open-access fee are each confirmed against the desk and recorded here with the date and the page that settled them.
+- P4 · The cost of this desk is known before a paper commits to it.
+  **Done when:** a venue decision for this paper names the 120-day decision target and the acceptance rate it is signing up for, and says how old that rate is.
 
 ## States
 
@@ -751,25 +915,45 @@ The parenthetical pointer: a robustness sub-check closes this way without moving
 ### A3 · 🚫 What arriving here costs
 - ⬜ A3.1 · Not started. The bar is prose in `ISR/taste.md`.
 
-### A4 · 📝 The abstract: one paragraph, five beats, zero citations
+### A4 · 📝 Sec-0-Abstract: one paragraph, five beats, zero citations
 - ⬜ A4.1 · Not started. The beats, the target and the guarded-verb list all sit in `ISR-abstract/style.md` and no checker reads them.
 
-### A5 · 🧱 Theory: two sections, because surveying and deriving are different jobs
+### A5 · 🧱 Sec-2-Theory: two sections, because surveying and deriving are different jobs
 - ⬜ A5.1 · Not started. The two-job split is prose in `ISR-theory/style.md` and a naming note in its template.
 
-### A6 · 📊 Methods: the data closes on a count, and the identification is never a footnote
+### A6 · 📊 Sec-3-Methods: the data closes on a count, and the identification is never a footnote
 - ⬜ A6.1 · Not started. `ISR-methods/style.md` names all three, and nothing compares them against a draft.
 
-### A7 · 🔻 Results: a progressive funnel, then five to eleven robustness checks
+### A7 · 🔻 Sec-4-Results: a progressive funnel, then five to eleven robustness checks
 - ⬜ A7.1 · Not started. The 5-11 range lives only in `ISR-results/style.md`'s revised guidance.
 
-### A8 · 🎁 Discussion: contribution first, limitations visible, and the last sentence elevates
+### A8 · 🎁 Sec-5-Discussion: contribution first, limitations visible, and the last sentence elevates
 - ⬜ A8.1 · Not started. This is the same unenforced identification bar the page's state line names.
 
-### A9 · 🅰 The Online Appendix: lettered, DOI-hosted, and free to outweigh the paper
+### P · 🧾 Targets that belong to no single section
+- ⬜ P1 · Not started, and it is a hole rather than a decision: six of seven kinds have a division and the introduction does not.
+- ⬜ P2 · Not started. The mechanics landed 260803 as §10 and no deliver run reads them.
+- 🧠 P3 · Waiting on a read of the desk. Both contradictions are between two of the desk's OWN pages, so neither can be settled from here.
+- ⬜ P4 · Not started. The only published acceptance rate is from a 2016 editorial.
+
+### A9 · 🅰 Sec-A-Appendix: lettered, DOI-hosted, and free to outweigh the paper
 - ⬜ A9.1 · Not started. The triage rule is one line in `ISR-appendix/style.md`, and no display request carries an appendix letter.
 
 ## Files
+
+### ⚙️ Engines · what RUNS this page's subject
+
+- `_tools/sync-exemplars.py`
+  Rewrites both generated blocks below, from the pack folder and from `section-kinds.yml`. ⚠️ Never hand-edit between the markers: the next run overwrites it.
+
+### 📋 Contracts · what CARRIES a rule to other pages
+
+- `../../board/haipipe-board-page-for-venue/SKILL.md`
+  The venue-page contract this page is written to: the three figures, the `Sec-<n>` index, the two-source rule, these Files groups.
+- `QBv1-misq.md`
+  The contract's reference implementation, and the outlet this one is only decidable against.
+
+### 📥 Input files · what this page READS
 
 - `../../paper/venue/playbook-utd-is/ISR/taste.md` · the desk signals and the one-sentence test
 - `../../paper/venue/playbook-utd-is/ISR/ISR-introduction/style.md` · the measured arc, the slot patterns, and the citation density
@@ -781,11 +965,28 @@ The parenthetical pointer: a robustness sub-check closes this way without moving
 - `../../paper/venue/playbook-utd-is/ISR/ISR-results/style.md` · the progressive funnel, the endogeneity move, and the 5-11 checks
 - `../../paper/venue/playbook-utd-is/ISR/ISR-discussion/style.md` · the five beats, the four limitation placements, and the closing elevation
 - `../../paper/venue/playbook-utd-is/ISR/ISR-appendix/style.md` · the lettering, the triage rule, and the DOI-hosted tier
-- `QBv1-misq.md` · the outlet this one is only decidable against
+- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml` · the reader-side resolver: outlet ▸ section kinds.
+
+### 🔗 Authority · what the DESK itself PUBLISHES, read directly and never through the pack
+
+⚠️ Provenance: read 260803 through search summaries of the pages below, because pubsonline.informs.org answers a direct fetch with HTTP 403. Nothing here has been read first-hand. Re-read the desk before a real submission.
+
+- [Submission guidelines](https://pubsonline.informs.org/page/isre/submission-guidelines) · article types, the manuscript format, the abstract cap, the contribution statement.
+- [Instructions for authors](https://pubsonline.informs.org/page/isre/instructions-for-authors) · the desk's own longer form of the same.
+- [Review process and stats](https://pubsonline.informs.org/page/isre/review-process-and-stats) · the 120-day decision target, and the page that says single-blind.
+- [Guidelines for ethical behavior in publishing](https://pubsonline.informs.org/page/isre/guidelines-for-ethical-behavior-in-publishing) · the data-rights certification and the provenance policy.
+- [INFORMS Style Guide (PDF)](https://pubsonline.informs.org/pb-assets/INFORMS_style_guide-1.6-1574695301483.pdf) · the reference style, which the pack records nowhere.
+- [INFORMS Open Option](https://pubsonline.informs.org/authorportal/open-option) · the optional open-access fee.
+- ⚔️ THE DESK CONTRADICTS ITSELF ON ANONYMITY: the submission guidelines describe a double-anonymous process, and the review-process page describes a single-blind one. Both are the desk's own pages, so this is not a pack error and cannot be settled from here.
+- ⚔️ AND ON THE OPEN-ACCESS FEE: $3,450 on one INFORMS page, $3,000 for the INFORMS Open Option on another.
+- CONTRADICTS the pack on length: `playbook-utd-is/README.md` records a ~35 pp body limit for this outlet, which the pack's own stored exemplars contradict at 32 and 38 pages, and which the desk does not publish at all for a Research Article.
+- The pack records no reference style, no abstract cap, and no contribution statement, all three of which are desk rules.
+
+### 📤 Generated · what `sync-exemplars.py` WRITES into this page
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 16 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 16 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-utd-is/ISR/examples/bao-bardhan-2021-isr-aco-healthit-quality-efficiency.pdf` · Bao-Bardhan 2021
 - `../../paper/venue/playbook-utd-is/ISR/examples/behavioral-data-2026-isr-social-interaction-leakages.pdf` · Behavioral-Data 2026
@@ -811,22 +1012,7 @@ The parenthetical pointer: a robustness sub-check closes this way without moving
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · theory
-- `S-Main-3` · methods
-- `S-Main-4` · results
-- `S-Main-5` · discussion
-- `S-Appendix-A` · appendix
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 
@@ -840,6 +1026,13 @@ The ORDER does not move. It is this venue's reading order, not a house default.
 - Not in the pack at all: since 1 June 2023 every submission needs a contribution statement in the cover letter, under 500 words, saying how the paper adds to the literature and how it can influence practice, policy, or societal outcomes; papers submitted without one "will not move forward in the review process".
 
 ## Law
+
+- 260803 JL · 📖 This page is a reference, not a rulebook
+      Everything on it is a suggestion drawn from what published papers at this desk do, and a drafter may depart from any of it deliberately.
+      The exception is the desk's own published rules, in the `Submission-Rules` figure and the `Authority` group: those are enforced by the desk, and the 300-word abstract cap and the 500-word contribution statement are the two this pack never recorded at all.
+- 260803 CC · ⚔️ Where the desk contradicts itself, the page records both readings
+      ISR's submission guidelines describe a double-anonymous review and its review-process page describes a single-blind one; the open-access fee is quoted at two different amounts on two INFORMS pages.
+      Neither is a pack error, so neither can be corrected from here, and picking one silently would be the page inventing a fact.
 
 An ISR introduction previews the identification strategy and the data, not only the theory.
 So the demand its desk makes arrives one section early, and it cannot be deferred to Methods.
@@ -857,6 +1050,9 @@ An identification strategy is a study-design property, so this outlet is decided
 
 ## Log
 
+260803 · Brought to the venue-page contract in `../../board/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`. Two figures added: Venue-Structure, which prints the seven kinds in reading order with each budget and the pack's own UNMEASURED labels kept, and Submission-Rules, which carries the desk's mechanics and is the one binding figure here. Section divisions took the `Sec-<n>` index counting from 0, mirrored in the Aims and States group names. `## Files` was regrouped into Engines, Contracts, Input files, Authority and Generated. `§10 · Before you upload` turns the binding rules into an eight-step list, and `§10.1` names the two steps a retargeted MISQ draft always fails: the reference style changes to the INFORMS Style Guide, and the 500-word contribution statement has no MISQ equivalent to adapt.
+260803 · The desk landed three rules this pack records nowhere: the abstract is capped at 300 words, a separate 500-word contribution statement has been required since June 2023, and the manuscript must be double-spaced at 11 pt or larger with 1-inch margins including its references and footnotes. Two of the desk's own pages contradict each other, on the anonymity model and on the open-access fee, and both contradictions are printed rather than resolved. `P1` records the real hole this page has always had: six of seven section kinds have a division and `Sec-1-Introduction` does not, even though the pack ships its `style.md` and the Opening quotes its measured budgets.
+⚠️ Provenance for everything in this entry: read 260803 through search summaries of pubsonline.informs.org, because that site answers a direct fetch with HTTP 403. Nothing was read first-hand.
 260802 · Corrected against the desk.
   The pack's "~35 pp double-spaced text" matches neither ISR limit: the journal states 32 pages of text and 38 including all material.
   Separately, `ISR-abstract/style.md` marks 200-250 words HARD and BINDING where the desk's own cap is 300.

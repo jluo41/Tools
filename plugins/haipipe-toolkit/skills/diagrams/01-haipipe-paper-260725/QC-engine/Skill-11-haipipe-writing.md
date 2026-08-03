@@ -382,7 +382,7 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
       by hand on 260801: eighteen `✎` records were removed with a regex to reposition
       them. Repositioning is the legitimate need; erasing was the wrong way to get it.
 260801 · `0.3.0`
-      Second look at `paper/2-phase/0-draft`, on JL's ask. The first pass reported
+      Second look at `paper/phase/0-draft`, on JL's ask. The first pass reported
       nothing general there and was wrong: the strongest pattern in the phase is
       general, and it reads as paper machinery only because every rule is written in
       `\cite{TOADD}`, `{VAL:?}` and `Q-<Stage>-<n>`.

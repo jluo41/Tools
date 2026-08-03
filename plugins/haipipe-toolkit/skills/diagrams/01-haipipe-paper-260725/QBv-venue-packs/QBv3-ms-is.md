@@ -10,6 +10,12 @@ MS-IS is the Information Systems department of Management Science, and the pack'
 > ✎ *MS-IS is the Information Systems department of Management Science.* The pack's own taste file gives this desk its sharpest ~line. MS-IS~ *line: it* thinks in mechanisms, equilibria, and welfare, not in constructs, theories, and implications. That is a ~vocabulary~ claim ~rather than a topic one.~ *about words, not about topics. A paper can keep its subject and still have to change every term it uses.* So what does a paper have to become? · CC · 260802 1538
 > ✎ MS-IS is the Information Systems department of Management ~Science. The~ *Science, and the* pack's own taste file gives this desk its sharpest ~line: it~ *line. It* thinks in mechanisms, ~equilibria,~ *equilibria* and ~welfare,~ *welfare. It does* not *think* in constructs, ~theories, and~ *theories or* implications. That is a claim about words, not ~about topics. A~ *topics: a* paper can keep its subject *here* and still have to change every term it uses. So what does a paper have to become? · CC · 260802 1545
 
+**How to read this page**: everything here is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and refusals below describe what published Management Science papers do, measured from the exemplars on disk.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is returned unreviewed.
+Every length on the page says which of the two it is.
+
 **The six words in the question**: a mechanism is the economic story of how one thing moves another, and `5` carries the pack's own list of the names it wants used, switching costs and adverse selection among them.
 An equilibrium is where that story settles, once no agent wants to move again.
 Welfare is who ended up better or worse off, counted as surplus.
@@ -38,6 +44,55 @@ The theory folder is `MS-IS-theory-model/` on disk, which `stages/section-kinds.
 **Use this desk's vocabulary when describing this desk**: mechanism, equilibrium, welfare. Writing about MS-IS in construct language reproduces the exact failure it rejects.
 
 ✅ `what welfare consequence follows`  ❌ `what the theoretical implications are`
+
+**The contract this page answers to** is `../../board/haipipe-board-page-for-venue/SKILL.md`, and its reference implementation is `QBv1-misq.md`. Every rule in the block below belongs to that contract, not to this page, so a rule changed here is changed there in the same pass.
+
+```text
+  🖼 THREE FIGURES        what each one answers
+     ① desk taste         what counts as the contribution · what is desk-rejected · the test
+     ② Venue-Structure    which sections, in reading order, and the budget each carries
+     ③ Submission-Rules   category and cap · manuscript format · references · system ·
+                          anonymity · disclosures · odds, clock, money · the desk's own URLs
+
+  📎 FIVE FILES GROUPS
+     ⚙️ Engines           what regenerates this page
+     📋 Contracts         the venue-page contract, and the base it extends ·
+                          a loadable spec is a Contract and never an Engine
+     📥 Input files       the pack files this page reads
+     🔗 Authority         what the DESK publishes, read directly and never through the pack ·
+                          opens with a provenance line · holds every desk-versus-pack clash
+     📤 Generated         what a tool WRITES into this page, between markers
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK (JL 260803)
+     the pack-derived arcs, budgets, moves and refusals are suggestions
+     drawn from published papers · only the desk's own published rules bind,
+     and they live in the Submission-Rules figure and the Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never
+     sounds like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS (JL 260803)
+     a DESK RULE is published by the venue and binding · a PACK OBSERVATION is
+     a measurement of papers the pack read, and breaking it is off-pattern
+     rather than a violation · a budget printed with neither label reads as a
+     rule, which is how three abstract ranges in one style file were being read
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX (JL 260803)
+     ### 3 · Sec-0-Abstract: one prose paragraph with five hidden beats
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, so the index IS the number of
+         │           the S-Main page it becomes · the appendix takes Sec-A
+         └── the Content division number, which counts §1 and §2 as well
+     ### A3 · 📏 Sec-0-Abstract: one prose paragraph with five hidden beats
+              ▲  the emoji lives HERE and on the division's closing line,
+                 never on the division heading: check.py strips it from an
+                 Aims group name and not from a division, so a heading-side
+                 emoji reads as group-name-drift on every section at once
+     🔢 the index counts from ZERO, not one, and the `Sec-` prefix is what
+        makes that readable: a bare `0-Abstract` looks like a typo, and a
+        1-based index would sit one off the S-Main page forever
+     🔤 only the appendix takes a letter, because this venue letters its own
+        Online Appendix sections A, B, C and Sec-A matches them
+```
 
 ## Diagram
 
@@ -70,6 +125,76 @@ The theory folder is `MS-IS-theory-model/` on disk, which `stages/section-kinds.
 
   📊 10 exemplars · the most economics-adjacent of the three
      IS outlets in this pack
+```
+
+**Venue-Structure**: the sections an MS-IS paper is written in, in reading order, and what each one costs.
+
+```text
+  🏗 VENUE-STRUCTURE ── every budget below is stated with its source
+     inline in the §3 to §9 division that owns it, and §10 is the desk's own gate
+
+  index                   §    page           words                       what the section owes
+  ───────────────────────   ──   ────────────   ─────────────────────────   ────────────────────────────────
+  📏 Sec-0-Abstract       §3   S-Main-0       150w target, 100-220w       1 ¶ of prose, five beats and not
+                                              observed · ≤250w is the      one of them labelled
+                                              DESK's own cap
+  🔢 Sec-1-Introduction   §4   S-Main-1       ~1,300-2,500w · 9-13 ¶      the results enumerated with their
+                                                                           magnitudes, BEFORE the data arrives
+  🧮 Sec-2-Theory         §5   S-Main-2       3,000-5,000w analytical     a numbered Proposition, its
+                                              1,500-2,500w empirical       intuition in plain words, and the
+                                                with theory                proof at a different address
+                                              500-1,000w empirical
+                                                with no formal theory
+  📐 Sec-3-Methods        §6   S-Main-3       ~1,250-3,000w · 13-22 ¶     the estimating equation as a
+                                                                           display, every term defined under
+                                                                           it, the identifying assumption said
+  📊 Sec-4-Results        §7   S-Main-4       2,000-4,000w incl. tables   the primary result first, carrying a
+                                              and figures · robustness     coefficient, a standard error, and a
+                                              may add 1,000-2,000w         percentage of the control mean
+  ⚖️ Sec-5   §8   S-Main-5       500-2,500w standalone       an action for a named decision
+                                              500-1,000w inline            maker, and a welfare statement for
+                                              500-1,000w conclusion        a market or platform paper
+                                              1,000-2,500w combined
+  🗂 Sec-A-Appendix       §9   S-Appendix-A   not recorded in words       3-6 lettered sections, 10-20 tables
+                                              main paper 13-16 typeset     and figures, and every proof, so the
+                                              pp · the appendix is         body pointer names a letter and
+                                              routinely longer             never reads bare
+
+  🔢 THE INDEX AND THE PAGE ARE THE SAME NUMBER   Sec-<n> counts from 0, so
+     Sec-3-Methods becomes S-Main-3 and nobody converts anything · § is a third
+     number and belongs to this page only: it counts the judgment divisions
+     §1 and §2 ahead of the sections, and the desk's own gate at §10
+
+  📏 NO CEILING AT INITIAL SUBMISSION   the desk publishes NO page limit on a
+     first submission, only a Department Editor's right to reject a manuscript
+     for excessive length · the 47 pp of 25 lines double-spaced, or 32 pp of 33
+     lines at 1.5 spacing, binds an INVITED REVISION alone, and the desk states
+     that "an online appendix will not count toward the page limit"
+     [pubsonline.informs.org submission guidelines, fetched and verified 260802]
+
+  ⚖️ RULE vs OBSERVATION   the 250-word abstract cap is the DESK's, published
+     and binding, and it is the ONLY length rule an initial submission has ·
+     every word budget in the column above is the PACK's measurement of the
+     papers it read, and the desk publishes no per-section limit at all
+     a paper over a budget is off-pattern · a paper over the abstract cap has
+     broken a published rule at the portal
+
+  ⚠️ THREE PAGE FIGURES THAT DO NOT RECONCILE, and none of them is a cap
+     ~35 pp of text          playbook-utd-is/README.md L148, the pack's own
+                                          estimate, matching no number the desk states
+     13-16 typeset pp        MS-IS-appendix/style.md L89, measured on two
+                                          published articles
+     47 pp / 32 pp           the desk, and for an INVITED REVISION only
+     `9.3` records the first two and states that neither file names its unit
+
+  ✅ AN ONLINE TIER EXISTS, AND THE DESK EXPECTS IT   unlike MISQ, this desk
+     directs analytical proofs and data analysis into the electronic companion,
+     and rules that its contents "should not be critical for the proper
+     evaluation of the paper" · that sentence is the triage test `9` runs
+
+  ➕ A KIND IS A FLOOR, NOT A CEILING
+     one kind may spread across several numbered Main pages
+     the ORDER does not move: it is this venue's reading order
 ```
 
 ## Content
@@ -119,7 +244,7 @@ What it refuses is empirical work with no structural interpretation at all, whic
 
 📈 Establishes MS-IS's position on the family's shared axis, and names the one matrix row that leaves the choice open.
 
-### 3 · The abstract is one prose paragraph with five hidden beats
+### 3 · Sec-0-Abstract: one prose paragraph with five hidden beats
 
 **Five beats in order, and not one of them labelled**: the five-label structured abstract in the MS submission guidelines is a typesetting artifact that no published paper carries.
 
@@ -205,7 +330,7 @@ Beat ④ for a method paper, whose primary result is a performance number rather
 > ✎ Beat ④ for a method paper, whose primary result is a performance number rather than an ~effect, which is why the~ *effect. The* slot list holds no shape for ~it.~ *that.* · CC · 260802 1545
 The slot list holds no shape for that.
 
-### 4 · The introduction previews every result before the data arrives
+### 4 · Sec-1-Introduction: every result previewed before the data arrives
 
 **Enumerated findings with magnitudes, one per paragraph**: the pack calls this the single most distinctive MS move against its two siblings.
 
@@ -304,7 +429,7 @@ Bick et al. is quoted twice by `MS-IS-introduction/style.md` at L61-74, and it i
 > ✎ Bick et al. is quoted twice by `MS-IS-introduction/style.md` at ~L61-74~ *L61-74,* and *it* is not one of the ten PDFs on ~disk, so~ *disk. So* the pack's two sharpest introduction quotations come from a paper it does not store. · CC · 260802 1538
 So the pack's two sharpest introduction quotations come from a paper it does not store.
 
-### 5 · The model section is where a Proposition lives and its proof does not
+### 5 · Sec-2-Theory: the model section, where a Proposition lives and its proof does not
 
 **Numbered statement, then the intuition in plain language, then the proof elsewhere**: MS-IS carries the formal apparatus here and relegates its verification.
 
@@ -421,7 +546,7 @@ The assumption justified against the pack's own anti-pattern `we assume for simp
 
 The Proposition block, its `*Intuition.*` readback and the welfare Proposition at L93-98 and L108-111 carry bracketed placeholders and no paper's name, so the apparatus this division is named for is the one thing here nobody has quoted, which is what `5.1` records.
 
-### 6 · The estimating equation is a display and every term is defined under it
+### 6 · Sec-3-Methods: the estimating equation is a display and every term is defined under it
 
 **The identification strategy is an economic argument, not a technique**: naming the estimator is the cheap half, and the pack asks for the other half.
 
@@ -521,7 +646,7 @@ The referee-voice threat pattern this division records at `6.1` is written at L1
 > ✎ The referee-voice threat pattern this division records at `6.1` is written at L107-109 with bracketed placeholders and no paper's ~name, so~ *name. So* the signature move has a shape and no worked sentence. · CC · 260802 1538
 So the signature move has a shape and no worked sentence.
 
-### 7 · Results are ordered by identification, never by hypothesis
+### 7 · Sec-4-Results: ordered by identification, never by hypothesis
 
 **The primary result leads, with a coefficient, a standard error and a percentage of the control mean**: nothing warms up in front of it.
 
@@ -630,7 +755,7 @@ No welfare sentence and no numbered Corollary is quoted from any paper in this f
 The welfare arc at L59-61 and the Corollary instruction at L56-58 are prescriptions.
 So the analytical half of this division rests on nothing measured.
 
-### 8 · The discussion translates results into an action and states the welfare
+### 8 · Sec-5-Discussion: results become an action, and a market paper states the welfare
 
 **Not what the paper found, but what a decision-maker should do about it**: and for a market or platform paper, what happened to surplus.
 
@@ -742,7 +867,7 @@ It survives here only as a bracketed pattern at L110-112, with no paper's name o
 The `Proposition 2 implies that firms should ...` translation at L71-74 carries no name either.
 `8.1` records both.
 
-### 9 · The Online Appendix is a separate document, lettered A onward
+### 9 · Sec-A-Appendix: the Online Appendix is a separate document, lettered A onward
 
 **Two tiers, one of them at a DOI**: a short in-paper appendix may follow the References, and everything substantial lives in a separate PDF.
 
@@ -879,39 +1004,48 @@ No sentence of appendix prose is quoted anywhere in the pack.
 - A2.1 · The undecided matrix row is resolved with a tiebreak.
   **Done when:** a computational large-scale-data paper is routed to ISR or MS-IS on a written rule.
 
-### A3 · 📏 The abstract is one prose paragraph with five hidden beats
+### A3 · 📏 Sec-0-Abstract: one prose paragraph with five hidden beats
 - A3.1 · The abstract's binding word range is one number rather than three.
   **Done when:** a draft is failed against a single cited range, and the two residual ranges in `MS-IS-abstract/style.md` are marked superseded in the file that carries them.
 
-### A4 · 🔢 The introduction previews every result before the data arrives
+### A4 · 🔢 Sec-1-Introduction: every result previewed before the data arrives
 - A4.1 · The enumerated-results preview is checkable on a draft pinned to this outlet.
   **Done when:** an introduction with no magnitude-bearing result paragraph ahead of its data section is failed by a check rather than by a reader.
 - A4.2 · The stated and measured paragraph counts stop disagreeing.
   **Done when:** `MS-IS-introduction/style.md` carries one paragraph count, and it is the measured one the template already follows.
 
-### A5 · 🧮 The model section is where a Proposition lives and its proof does not
+### A5 · 🧮 Sec-2-Theory: the model section, where a Proposition lives and its proof does not
 - A5.1 · The Proposition, comparative-static and welfare apparatus gains an exemplar.
   **Done when:** the pack stores one MS-IS paper stating a numbered Proposition and a welfare comparison, and the phrasing block cites it by name.
 - A5.2 · The analytical word budget rests on a counted section.
   **Done when:** one analytical MS-IS section is measured with its display equations included, and the 3,000-5,000 range is confirmed or reconciled against it.
 
-### A6 · 📐 The estimating equation is a display and every term is defined under it
+### A6 · 📐 Sec-3-Methods: the estimating equation is a display and every term is defined under it
 - A6.1 · The identification apparatus a draft owes is listed before the section is written.
   **Done when:** a methods draft naming no estimator, no identifying assumption, no clustering level or no first-stage F is failed once per missing item.
 
-### A7 · 📊 Results are ordered by identification, never by hypothesis
+### A7 · 📊 Sec-4-Results: ordered by identification, never by hypothesis
 - A7.1 · The organizing axis is enforced as identification and outcome.
   **Done when:** a results draft ordered H1, H2, H3 is flagged before it reaches a reader.
 
-### A8 · ⚖️ The discussion translates results into an action and states the welfare
+### A8 · ⚖️ Sec-5-Discussion: results become an action, and a market paper states the welfare
 - A8.1 · The welfare statement is demanded of the papers that owe one.
   **Done when:** a market, platform or pricing paper reaching CHECK with no stated welfare consequence is failed on that alone.
 - A8.2 · The discussion budget is one range rather than two.
   **Done when:** the contrast table in `MS-IS-discussion/style.md` carries the revised 500-2,500 range or loses the row.
 
-### A9 · 🗂 The Online Appendix is a separate document, lettered A onward
+### A9 · 🗂 Sec-A-Appendix: the Online Appendix is a separate document, lettered A onward
 - A9.1 · The body-versus-appendix triage runs before the body is drafted rather than after.
   **Done when:** every proof, robustness table and instrument detail carries a lettered Online Appendix address at draft time, and no body pointer reads bare.
+
+### P · 🧾 Targets that belong to no single section
+
+- P1 · The desk's own submission mechanics are checked before a manuscript is uploaded, rather than discovered at the portal.
+  **Done when:** a deliver run walks §10's steps and records the result of each, with the abstract counted on the final file.
+- P2 · The cost of this desk is known before a paper commits to it, not after the first decision.
+  **Done when:** a venue decision for this paper names the acceptance odds, the review clock and the money this desk charges, and says where each was read.
+- P3 · Every row `Submission-Rules` prints as `❓ STILL NOT ON RECORD` is closed by a direct read of the desk rather than by a search summary.
+  **Done when:** each open row carries a value with a `fetched and verified` stamp, or records that the desk publishes nothing on it.
 
 ## States
 
@@ -921,38 +1055,77 @@ No sentence of appendix prose is quoted anywhere in the pack.
 ### A2 · 📈 Where it sits against its two siblings
 - ⬜ A2.1 · Not started. The matrix row points at two outlets and stops.
 
-### A3 · 📏 The abstract is one prose paragraph with five hidden beats
+### A3 · 📏 Sec-0-Abstract: one prose paragraph with five hidden beats
 - ⬜ A3.1 · Not started. Three ranges sit in one style file and the template picks one of them silently.
 
-### A4 · 🔢 The introduction previews every result before the data arrives
+### A4 · 🔢 Sec-1-Introduction: every result previewed before the data arrives
 - ⬜ A4.1 · Not started. The signature move is described in prose and enforced by nothing.
 - ⬜ A4.2 · Not started. The file's header says 7-12 and its own micro-norms say 9-13.
 
-### A5 · 🧮 The model section is where a Proposition lives and its proof does not
+### A5 · 🧮 Sec-2-Theory: the model section, where a Proposition lives and its proof does not
 - ⬜ A5.1 · Not started. The 8 mined exemplars are empirical, structural or methodological, and the 2 on disk that no `style.md` names are unmined.
 - ⬜ A5.2 · Not started. The only measurement under the analytical budget is declared a measurement artifact.
 
-### A6 · 📐 The estimating equation is a display and every term is defined under it
+### A6 · 📐 Sec-3-Methods: the estimating equation is a display and every term is defined under it
 - ⬜ A6.1 · Not started. The five owed items are spread across the style file's anti-patterns and signature moves.
 
-### A7 · 📊 Results are ordered by identification, never by hypothesis
+### A7 · 📊 Sec-4-Results: ordered by identification, never by hypothesis
 - ⬜ A7.1 · Not started. The axis is a contrast-table row and no draft is measured against it.
 
-### A8 · ⚖️ The discussion translates results into an action and states the welfare
+### A8 · ⚖️ Sec-5-Discussion: results become an action, and a market paper states the welfare
 - ⬜ A8.1 · Not started. The requirement is stated three times in the style file and shown by no exemplar.
 - ⬜ A8.2 · Not started. The revision landed in the budget section and the template, and not in the contrast table.
 
-### A9 · 🗂 The Online Appendix is a separate document, lettered A onward
+### A9 · 🗂 Sec-A-Appendix: the Online Appendix is a separate document, lettered A onward
 - ⬜ A9.1 · Not started. The triage rule exists and no artifact records which item went where.
+
+### P · 🧾 Targets that belong to no single section
+- ⬜ P1 · Not started. The mechanics reached this page on 260803, as a runnable list in §10, and no deliver run reads them.
+- ⬜ P2 · Not started. The odds, the clock and the money landed 260803; nothing in the venue decision cites them.
+- ⬜ P3 · Not started, and it is blocked on the site rather than on effort: `pubsonline.informs.org` answers a direct fetch with HTTP 403.
 
 ## Files
 
-- `../../paper/venue/playbook-utd-is/MS-IS/taste.md` · the desk signals and the one-sentence test
-- `../../paper/venue/playbook-utd-is/README.md` · the lean-signal matrix, including the undecided row
+### ⚙️ Engines · what RUNS this page's subject
+
+- `_tools/sync-exemplars.py`
+  Rewrites both generated blocks in the Generated group below, from the pack folder and from `section-kinds.yml`. ⚠️ Never hand-edit between the markers: the next run overwrites it. Run it with `--check` before calling this page finished; a stale block is a count that disagrees with the folder.
+
+### 📋 Contracts · what CARRIES a rule to other pages
+
+- `../../board/haipipe-board-page-for-venue/SKILL.md`
+  The venue-page contract: the three figures, the five Files groups, the `Sec-<n>` index, the two-source rule, and the reference-not-rulebook principle. This page reads that file rather than reading the reference page, so a rule this page discovers is written there in the same pass.
+- `../../board/haipipe-board-page/SKILL.md`
+  The base frame that contract extends. Load it first; it owns the seven sections and their order.
+- `QBv1-misq.md`
+  The contract's reference implementation, and the nearest sibling desk. Read it for the shape of a finished venue page, and for the MISQ side of every comparison `2` draws.
+
+### 📥 Input files · what this page READS
+
+- `../../paper/venue/playbook-utd-is/MS-IS/taste.md`
+  The desk signals and the one-sentence test. Start here when what MS-IS buys is the question.
+- `../../paper/venue/playbook-utd-is/MS-IS/MS-IS-theory-model/style.md`
+  The model section `5` is built from, including the mechanism translation table `1` folds in. The folder is named `theory-model` on disk and resolves to the canonical `theory` kind.
+- `../../paper/venue/playbook-utd-is/README.md`
+  The family delta and the lean-signal matrix `2` reads, covering all four UTD-IS outlets at once.
+- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml`
+  The reader-side resolver: outlet ▸ section kinds. It is what the generated kinds block below is built from, and it carries the `theory-model` alias.
+
+### 🔗 Authority · what the DESK itself PUBLISHES, read directly and never through the pack
+
+⚠️ Provenance: the submission-guideline and LaTeX pages were fetched and verified 260802. Everything added on 260803 comes from search summaries of the desk's own pages, because `pubsonline.informs.org` answers a direct fetch with HTTP 403; each such row says so. Re-read the desk before a real submission.
+
+- [Author / submission instructions](https://pubsonline.informs.org/page/mnsc/submission-guidelines) · one page for the whole journal, governing manuscript types, length, format, electronic companions, and the ScholarOne steps; the department is not a separate desk with its own instructions, it is the manuscript "Type" chosen at ScholarOne Step 1, and the Information Systems department states its own scope in [the departmental editorial statements](https://pubsonline.informs.org/page/mnsc/editorial-statement).
+- [LaTeX template](https://pubsonline.informs.org/pb-assets/LaTeX/INFORMS-MNSC-Template-6-10-2024-1718048504857.zip) · the Management-Science-template.tex archive INFORMS ships from its [LaTeX style files page](https://pubsonline.informs.org/authorportal/latex-style-files), carrying the journal template, the submission style file, and a BibTeX style for [the INFORMS reference style](https://pubsonline.informs.org/pb-assets/INFORMSReferencesStyle-1513283897320.pdf); the instructions add that any software is accepted so long as it produces a conforming PDF, so Word is not refused, only untemplated.
+- The rule the pack does not record: there is NO page limit on an initial submission at this desk, only a Department Editor's right to reject one for excessive length. The limit binds invited revisions alone, at 47 pages of 25 lines double-spaced or 32 pages of 33 lines at 1.5 spacing, and "an online appendix will not count toward the page limit". The desk also directs analytical proofs and data analysis into the electronic companion, and rules that companion contents "should not be critical for the proper evaluation of the paper", which is the test for what may leave the body.
+- CONTRADICTS the pack on length: `../../paper/venue/playbook-utd-is/README.md` records "~35 pp text", which matches no number the desk states; the pack's routing of proofs and robustness to the online appendix is confirmed, but its page figure is not the journal's rule.
+- CORRECTS the pack on the abstract: `../../paper/venue/playbook-utd-is/MS-IS/MS-IS-abstract/template.md` warns against "the 5-label MS submission-guideline format" as a typesetting artifact, but the current instructions state no labelled or structured abstract anywhere; the only abstract rule they carry is a cap of 250 words or less, which the pack does not record.
+
+### 📤 Generated · what `sync-exemplars.py` WRITES into this page
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 10 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 10 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-utd-is/MS-IS/examples/burtch-2026-ms-ensembleiv-ml-generated-variables.pdf` · Burtch 2026
 - `../../paper/venue/playbook-utd-is/MS-IS/examples/chen-2025-ms-structural-topic-sentiment-text.pdf` · Chen 2025
@@ -972,32 +1145,9 @@ No sentence of appendix prose is quoted anywhere in the pack.
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · theory
-- `S-Main-3` · methods
-- `S-Main-4` · results
-- `S-Main-5` · discussion
-- `S-Appendix-A` · appendix
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
-
-🔗 **Authority** · the venue's own instructions, fetched and verified 260802
-
-- [Author / submission instructions](https://pubsonline.informs.org/page/mnsc/submission-guidelines) · one page for the whole journal, governing manuscript types, length, format, electronic companions, and the ScholarOne steps; the department is not a separate desk with its own instructions, it is the manuscript "Type" chosen at ScholarOne Step 1, and the Information Systems department states its own scope in [the departmental editorial statements](https://pubsonline.informs.org/page/mnsc/editorial-statement).
-- [LaTeX template](https://pubsonline.informs.org/pb-assets/LaTeX/INFORMS-MNSC-Template-6-10-2024-1718048504857.zip) · the Management-Science-template.tex archive INFORMS ships from its [LaTeX style files page](https://pubsonline.informs.org/authorportal/latex-style-files), carrying the journal template, the submission style file, and a BibTeX style for [the INFORMS reference style](https://pubsonline.informs.org/pb-assets/INFORMSReferencesStyle-1513283897320.pdf); the instructions add that any software is accepted so long as it produces a conforming PDF, so Word is not refused, only untemplated.
-- The rule the pack does not record: there is NO page limit on an initial submission at this desk, only a Department Editor's right to reject one for excessive length. The limit binds invited revisions alone, at 47 pages of 25 lines double-spaced or 32 pages of 33 lines at 1.5 spacing, and "an online appendix will not count toward the page limit". The desk also directs analytical proofs and data analysis into the electronic companion, and rules that companion contents "should not be critical for the proper evaluation of the paper", which is the test for what may leave the body.
-- CONTRADICTS the pack on length: `../../paper/venue/playbook-utd-is/README.md` records "~35 pp text", which matches no number the desk states; the pack's routing of proofs and robustness to the online appendix is confirmed, but its page figure is not the journal's rule.
-- CORRECTS the pack on the abstract: `../../paper/venue/playbook-utd-is/MS-IS/MS-IS-abstract/template.md` warns against "the 5-label MS submission-guideline format" as a typesetting artifact, but the current instructions state no labelled or structured abstract anywhere; the only abstract rule they carry is a cap of 250 words or less, which the pack does not record.
 
 ## Law
 

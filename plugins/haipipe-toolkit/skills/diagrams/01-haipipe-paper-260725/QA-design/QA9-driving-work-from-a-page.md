@@ -214,12 +214,12 @@ Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Ever
   The current Items to Finish grammar.
 - `haipipe-paper-stage/SKILL.md`
   The future queue loop.
-- `stages/4-display/stage.md`
+- `../../paper/S05-display/display/stage.md`
   Still declares the retired inbox.
 - `haipipe-paper-draft-display/SKILL.md`
   Still files Display request rows.
   The runner to narrow.
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml`
+- `../../paper/route/haipipe-paper-stage/stages/index.yml`
   The stage registry.
 - `stages/*/stage.md`
   The permitted worker routes and stop conditions.

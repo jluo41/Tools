@@ -149,7 +149,7 @@ This is the clearest single example of the board's rule that a filename names th
 
 📥 **Input files** · what the work reads
 
-- `../../paper/1-lifecycle/haipipe-paper-stage/stages/5-section-edit/stage.md` · the per-unit stage that authors a Main page, and where `units_from:` is declared
+- `../../paper/S06-main/section-edit/stage.md` · the per-unit stage that authors a Main page, and where `units_from:` is declared
 
 ## Law
 

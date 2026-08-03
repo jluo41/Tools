@@ -269,7 +269,7 @@ Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Ever
   Where the ownership line should be stated.
 - `haipipe-board/src/stage_contract.py`
   The only writer of the managed block.
-- `stages/5-section-edit/stage.md`
+- `../../paper/S06-main/section-edit/stage.md`
   Four of five inputs archived.
 - `0-lifecycle/4-main/S-Main-6-results.md`
   The same dependencies, generated, with gate states.

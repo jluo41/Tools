@@ -299,8 +299,9 @@ Claude Code needs a full path, so it can open the right place in the right file.
 So the chip shows the short id, and clicking it copies the long one (JL 260801).
 > ✎ So the chip shows the short ~id~ *id,* and ~the click~ *clicking it* copies the long ~form~ *one* (JL ~260801: the address was too long, and `C1` is enough to look at).~ *260801).* · CC · 260801 2350
 A Content part reuses the `C1` the sentence grammar already gives it, an Aims or States group uses its `A3` or `P`, and every other heading uses whatever comes before its first ` · `, so `⚙️ Engines · what RUNS this subject` shows `Engines`.
-A chip that repeats the whole heading is worse than no chip, because the reader is already looking at that heading and now reads it twice (JL 260802).
+A chip that repeats the whole heading is worse than no chip, because the reader is already looking at that heading and now reads it twice.
 > ✎ A Content ~division~ *part* reuses the `C1` ~its own~ *the* sentence grammar already ~assigns rather than~ *gives it, instead of* inventing a second ~id, and everywhere~ *id. Everywhere* else the page id drops off the front, ~since~ *because* the ~browser~ tab and the breadcrumb ~both~ already say which page ~this is.~ *you are on.* · CC · 260801 2350
+> ✎ A chip that repeats the whole heading is worse than no chip, because the reader is already looking at that heading and now reads it ~twice (JL 260802).~ *twice.* · JL · 260803 1411
 Everywhere else the page id drops off the front, because the tab and the breadcrumb already say which page you are on.
 Content keeps its finer `C.H` and `C.P.S` addressing for paragraph and sentence work.
 

@@ -9,6 +9,12 @@ method: state what the Marketing department of Management Science requires, and 
 Management Science has a Marketing department, and it is the one UTD-IS outlet whose test names a person or a firm rather than a field. The other three ask what an IS reader now knows, what mechanism is identified, or what equilibrium holds. This desk asks two plainer things. What decision does the evidence inform, and who ends up better or worse off? So when does a paper belong here rather than at MS-IS, the sibling department inside the same journal?
 > ✎ ~This~ *Management Science has a Marketing department, and it* is the one UTD-IS outlet whose test names ~an actor~ *a person or a firm* rather than a field. ~Not~ *The other three ask* what an IS reader ~learns, not~ *now knows, what mechanism is identified, or* what equilibrium ~is characterized: what~ *holds. This desk asks two plainer things. What* decision does ~this~ *the evidence* inform, and who ~is~ *ends up better or* worse ~or better~ off? So when ~is~ *does* a paper *belong* here rather than at ~MS-IS?~ *MS-IS, the sibling department inside the same journal?* · CC · 260802 1720
 
+**How to read this page**: everything here is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and refusals below describe what five published Management Science papers actually do, measured from the exemplars on disk.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is returned unreviewed or never reaches a reviewer.
+Every length on the page says which of the two it is.
+
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-utd-is/MS-Marketing/`.
 
@@ -31,6 +37,65 @@ How this page must be written. Read it before editing, and edit to it.
 **Name the decision, not the topic**: this desk's test is about a choice somebody makes, and topic language loses it.
 
 ✅ `what marketing decision does this evidence inform`  ❌ `it studies digital advertising`
+
+**The venue-page contract this page answers to** is `../../board/haipipe-board-page-for-venue/SKILL.md`, and it is filed under Contracts in `## Files`. It is loaded, not restated; what follows is only the shape a reader can check by eye.
+
+```text
+  🖼 THREE FIGURES, IN THIS ORDER    what each one answers
+     ① desk taste         what counts as the contribution · what is
+                          desk-rejected · the test · the exemplar count
+     ② Venue-Structure    the sections in this venue's reading order, the
+                          budget each carries, and the one ceiling over them
+     ③ Submission-Rules   category and cap · manuscript format · references ·
+                          the portal · anonymity · disclosures · the odds, the
+                          clock and the money · the desk's own URLs
+
+  📎 FIVE FILES GROUPS, IN THIS ORDER
+     ⚙️ Engines           what REGENERATES this page
+     📋 Contracts         the venue-page contract and the base it extends ·
+                          a loadable spec is a Contract and never an Engine
+     📥 Input files       the pack files this page READS
+     🔗 Authority         what the DESK publishes, read directly and never
+                          through the pack · opens with a provenance warning ·
+                          holds every place the desk contradicts the pack
+     📤 Generated         what a tool WRITES into this page, between markers
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX
+     ### 3 · Sec-0-Abstract: one paragraph that names its own machinery
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, so the index IS the number of
+         │           the S-Main page it becomes · the appendix takes Sec-A
+         └── the Content division number, which counts the judgment
+             divisions ahead of the sections
+     ### A3 · 📝 Sec-0-Abstract: one paragraph that names its own machinery
+              ▲  the emoji lives HERE and on the division's closing line,
+                 never on the division heading: check.py strips it from an
+                 Aims group name and not from a Content division, so a
+                 heading-side emoji reports group-name-drift on every
+                 section at once
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK (JL 260803)
+     the pack-derived arcs, budgets, shapes, moves and refusals are
+     suggestions drawn from published papers · only the desk's own published
+     rules bind, and they live in the Submission-Rules figure and the
+     Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never
+     sounds like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS (JL 260803)
+     a DESK RULE is published by the venue and binding · a PACK OBSERVATION
+     is a measurement of the five papers the pack read, and breaking it is
+     off-pattern rather than a violation · a budget printed with neither
+     label reads as a rule
+     ⚠️ this matters more here than anywhere in the pack: five exemplars is
+        under half of what MISQ and ISR were measured from, so a
+        MS-Marketing budget is the thinnest kind of observation there is
+
+  📏 A NUMBER CARRIES ITS SOURCE   inline, always: a `style.md` line, an
+     exemplar name, or the desk's own page, and never as this page's own claim
+  ❓ AN UNKNOWN IS PRINTED         a slot neither source can fill is written
+     as an open row, never left off the figure
+```
 
 ## Diagram
 
@@ -63,6 +128,224 @@ How this page must be written. Read it before editing, and edit to it.
      market  ▶ here
      IS-artifact question                        ▶ MS-IS
 ```
+
+**Venue-Structure**: the sections a Management Science marketing paper is written in, in reading order, and what each one costs.
+
+```text
+  🏗 VENUE-STRUCTURE ── every budget below is stated with its source inline in
+     the §3 to §9 division that owns it, and §11 is the desk's own gate
+
+  index                        §     page           words                     what the section owes
+  ────────────────────────────   ───   ────────────   ───────────────────────   ─────────────────────────────
+  📝 Sec-0-Abstract            §3    S-Main-0       ~95-230w observed, pack   1 ¶ unstructured, the model
+                                                    target 150-200 · DESK     class NAMED, 0 citations
+                                                    cap 250w
+  📖 Sec-1-Introduction        §4    S-Main-1       1,700-2,450w observed,    the market fact, the gap, the
+                                                    incl. any lit subsection  results WITH their numbers
+  🧮 Sec-2-Theory              §5    S-Main-2       analytical ~1,250-1,500w  a model, an estimator, or an
+                                                    econometric ~2,400w       institution · zero H-labels
+                                                    institutional ~600w
+  🔬 Sec-3-Methods             §6    S-Main-3       field expt ~1,100w        why the comparison is causal
+                                                    case study ~900w          ⚠️ an analytical paper has NO
+                                                    numerical ~500-700w          methods section at all
+  📊 Sec-4-Results             §7    S-Main-4       empirical ~2,700w + ~500  every number with a display
+                                                    -900w per secondary       coordinate and a business unit
+                                                    analytical ~1,600-2,000w
+                                                    numerical ~1,000w
+  🏁 Sec-5-Discussion          §8    S-Main-5       230-800w in 2-6 ¶         a Conclusion, not a Discussion:
+                                                                              the numbers restated, one
+                                                                              limitation per ¶
+  🗂 Sec-A-Appendix            §9    S-Appendix-A   no word budget recorded   complete derivations, lettered
+                                                    1-4 prose ¶ per lettered  exhibits, and a tier declared
+                                                    appendix                  on page one
+
+  ❗ A SLOT NO PACK FILE HAS   the desk requires a concise NONTECHNICAL
+     EXECUTIVE SUMMARY, maximum 250 words, naming the intended practitioner
+     audience plus the key novel insight and practical implications
+     `stages/section-kinds.yml` declares seven kinds for this outlet and none
+     of them is this, and no `MS-Marketing-<kind>/` folder covers it either
+     ⚠️ so a paper drafted from the pack alone arrives at the portal missing a
+        required block · read 260803 through search summaries, see §11
+
+  🔢 THE INDEX AND THE PAGE ARE THE SAME NUMBER   Sec-<n> counts from 0, so
+     Sec-3-Methods becomes S-Main-3 and nobody converts anything · § is a third
+     number and belongs to this page only: it counts the judgment divisions
+     §1, §2 and §10 alongside the sections
+
+  ⚖️ RULE vs OBSERVATION   every word budget in the column above is the PACK's
+     measurement of five papers · the desk publishes no per-section limit at
+     all, and only two lengths of its own: the 250-word abstract and the
+     250-word executive summary
+     a paper over a budget is off-pattern · a paper over a desk cap is fixed
+     at the portal or not accepted there
+
+  📏 THE CEILING, AND WHEN IT ARRIVES   ⚠️ NOT at first submission
+     initial submission   NO page limit is published · the Department Editor
+                                       may reject one for excessive length
+     invited revision     47 pp at 25 lines per page double-spaced, OR 32 pp
+                                       at 33 lines per page at 1.5 spacing
+                                       "an online appendix will not count toward the page
+                                       limit"
+     [pubsonline.informs.org/page/mnsc/submission-guidelines · fetched 260802,
+      re-read 260803 through search summaries only]
+
+  ➕ A KIND IS A FLOOR, NOT A CEILING
+     one kind may spread across several numbered Main pages, and this desk's
+     own exemplars do it: Joo 2026 runs its methods inside an Application
+     section, and Li 2025 runs a separate Numerical Experiments section
+     the ORDER does not move: it is this venue's reading order
+```
+
+**Submission-Rules**: the desk's own mechanics, which no pack file records and no section division owns.
+
+```text
+  🧾 SUBMISSION-RULES ── ⚖️ THE ONE BINDING FIGURE ON THIS PAGE
+     every row below is the DESK's own published rule, from
+     pubsonline.informs.org and informs.org, and none of it is in the pack's
+     seven section folders · everything else on this page is a reference
+     ⚠️ PROVENANCE · the guideline and template pages were fetched and verified
+        260802 · every row added or re-read on 260803 came from SEARCH
+        SUMMARIES ONLY, because pubsonline.informs.org answers a direct fetch
+        with HTTP 403 · re-read the desk before submitting
+     🏢 ONE DESK, TWO PAGES ON THIS BOARD: the Marketing department is a
+        manuscript Type chosen at ScholarOne Step 1, not an outlet with its own
+        instructions, so QBv3 (MS-IS) and QBv4 answer to the same authority
+
+  📁 CATEGORY & CAP    regular submission ── no published page limit at
+                       submission · the cap binds INVITED REVISIONS only, at
+                       47 pp / 25 lines double-spaced or 32 pp / 33 lines at
+                       1.5 spacing, online appendix excluded
+                       Discussion Paper ── 20 pages or fewer in manuscript
+                       submission format, first decision targeted within one
+                       month of assignment
+                       "Comments on" ── short pieces reflecting on a
+                       previously published Management Science paper
+                       ⚠️ Fast Track (formerly no more than 5,000 words) has
+                          been REMOVED; the pack records neither the track nor
+                          its removal
+
+  📄 MANUSCRIPT        1.5 spacing at a minimum, or double-spaced · 11-point
+                       font · 1-inch margins all around
+                       no font FACE is prescribed on anything read
+                       INFORMS ships a Management Science LaTeX archive; any
+                       software is accepted so long as it produces a
+                       conforming PDF, so Word is not refused, only untemplated
+                       ⚠️ THE TRAP: the same INFORMS template page lists a
+                          Marketing Science archive beside it. Different
+                          journal, wrong archive for this desk
+
+  📝 THE TWO 250s      abstract ── 250 words or less
+                       nontechnical executive summary ── maximum 250 words,
+                       naming the intended practitioner audience plus the key
+                       novel insight and practical implications
+                       ⚔️ these are TWO blocks by the plainest reading, and the
+                          260802 pass on this page read the instructions as
+                          carrying "exactly one" 250-word cap. Both readings
+                          are written down; neither is resolved here
+
+  📚 REFERENCES        the INFORMS Style Guide, v1.6 dated 2019-11-25 ·
+                       author-year in text, "(Norman 1977)" or "Norman (1977)" ·
+                       reference list alphabetical by author
+                       ⚠️ no pack file in the whole venue tree records a
+                          reference style for this desk
+
+  🖥 SYSTEM            ScholarOne Manuscripts · the DEPARTMENT is chosen first
+                       in the upload flow, and it decides who reads the paper
+                       possible decisions: Desk Reject · Reject · Major
+                       Revision · Minor Revision · Accept
+
+  🕶 ANONYMITY         ⚔️ TWO DESK PAGES DISAGREE, and this is not resolved here
+                       submission-guidelines reading ── double-anonymous:
+                         "remove explicit indications of the authors' names and
+                         institutions and all acknowledgments must be removed",
+                         and self-citation written neutrally
+                       editorial-statements reading ── "Management Science uses
+                         a single-blind process for peer review. Authors'
+                         identities are known to the editors and reviewers."
+                       both were read 260803 through search summaries · prepare
+                       an anonymized file, because it satisfies both readings
+
+  🤖 DISCLOSURE        generative AI ── authors may use it in preparation and
+                       take FULL responsibility for the accuracy of the
+                       submitted version, reviewing and editing AI output;
+                       uploading a manuscript to a public AI server may breach
+                       confidentiality or copyright
+                       conflicts ── disclose perceived conflicts of interest
+                       and all work substantially overlapping prior
+                       publications, proceedings, chapters or other submissions
+                       ethics ── the desk may ask for written confirmation of a
+                       favorable opinion from the author's own ethical
+                       committee
+                       code and data ── the 2019 Code and Data Disclosure
+                       policy: authors of ACCEPTED papers "must provide the
+                       data, programs, and other details of the experiment and
+                       computations sufficient to permit replication", checked
+                       by a Data Editor
+                       and an acknowledgment that the submission conforms to
+                       the Guidelines for Ethical Behavior in Publishing
+
+  📦 E-COMPANION       analytical proofs and data analysis go to the electronic
+                       companion, and "the contents of such material should not
+                       be critical for the proper evaluation of the paper"
+                       that sentence, not a length, is the test for what may
+                       leave the body
+
+  🎲 ODDS & CLOCK      9.4% accepted, against 9.8% the year before, with the
+                       Finance department at 7.5% ── the editor's own 2018
+                       report on informs.org, and the only rate this desk
+                       publishes anywhere we could read
+                       the desk "strives to provide high-quality feedback to
+                       90% of authors within 90 days"
+                       a paper sent to reviewers gets a Department Editor
+                       decision in 65 days on average
+                       2018 comparators from the same editor's report: 58 days
+                       to first decision, 130 days to final decision, 20 months
+                       from acceptance to print
+                       ⚠️ these are reported statistics and a stated aim, not a
+                          promise, and the acceptance rate is EIGHT YEARS OLD
+
+  💵 MONEY             $79 submission fee on every original submission,
+                       effective 2025-08-01, funding the reproducibility
+                       program · waived for INFORMS members, for authors whose
+                       primary affiliation is in a low- or lower-middle-income
+                       country, and for anyone who asks on an honor-system
+                       hardship basis with no explanation required
+                       ⚔️ one 260803 search summary reported $89 instead of $79
+                          against the same editorial; $79 is what the fee FAQ
+                          and the Loch 2025 editorial both return, and the
+                          disagreement is recorded rather than resolved
+                       open access ── INFORMS Open Option, a one-time $3,000
+                       publication fee charged only after acceptance · the
+                       green route, posting the accepted manuscript to a
+                       noncommercial repository, costs nothing
+
+  ❓ STILL NOT ON RECORD
+                       no acceptance rate later than 2018 was found on the
+                       desk's own site
+                       no desk-rejection rate is published by the desk; the
+                       50-60% figure in circulation comes from a third-party
+                       summary site and is NOT recorded here as a desk fact
+                       no number of review ROUNDS to acceptance is published
+                       no word or page limit is published for a regular
+                       submission, only the revision cap and the two 250s
+                       the Marketing department's own scope paragraph was not
+                       read directly on 260803; the journal-wide editorial
+                       statement was
+                       whether the abstract and the executive summary are one
+                       block or two is not settled by anything read
+
+  🔗 THE DESK ITSELF    pubsonline.informs.org/page/mnsc/submission-guidelines
+                       pubsonline.informs.org/page/mnsc/submission-fee-faq
+                       pubsonline.informs.org/page/mnsc/editorial-statement
+                       pubsonline.informs.org/page/mnsc/editorial-statements
+                       pubsonline.informs.org/page/mnsc/guidelines-for-ethical-behavior-in-publishing
+                       pubsonline.informs.org/authorportal/latex-style-files
+                       pubsonline.informs.org/authorportal/open-option
+                       informs.org/Blogs/ManSci-Blogs/From-the-Editor
+```
+
+**Open the desk**: [submission guidelines](https://pubsonline.informs.org/page/mnsc/submission-guidelines) · [submission fee FAQ](https://pubsonline.informs.org/page/mnsc/submission-fee-faq) · [submission fee waivers](https://pubsonline.informs.org/page/mnsc/submission-fee-waivers) · [editorial statement](https://pubsonline.informs.org/page/mnsc/editorial-statement) · [departmental editorial statements](https://pubsonline.informs.org/page/mnsc/editorial-statements) · [ethical behavior in publishing](https://pubsonline.informs.org/page/mnsc/guidelines-for-ethical-behavior-in-publishing) · [LaTeX style files](https://pubsonline.informs.org/authorportal/latex-style-files) · [INFORMS style guide v1.6](https://pubsonline.informs.org/pb-assets/INFORMS_style_guide-1.6.pdf) · [INFORMS Open Option](https://pubsonline.informs.org/authorportal/open-option) · [the editor's own statistics](https://www.informs.org/Blogs/ManSci-Blogs/From-the-Editor/Management-Science-Progress-and-Challenges).
+A row inside a figure is plain text by design, because the renderer runs the figure linker over a fence and never the inline markdown pass, so the same links are repeated here as real ones.
 
 ## Content
 
@@ -108,7 +391,7 @@ A recommender-system paper can satisfy one and fail the other, so the two reject
 
 ⚠️ Establishes a defect this outlet shows first and the whole tree shares: a `style.md` number carries no confidence marker.
 
-### 3 · Abstract: one paragraph that names its own machinery
+### 3 · Sec-0-Abstract: one paragraph that names its own machinery
 
 **Method-visible, unstructured, uncited**: this abstract is the inverse of the MISQ enabler clause, it names the model class early, and it carries no references at all.
 
@@ -197,7 +480,7 @@ The mechanism attribution. It says why the result holds, not what it is.
 "the AMMR decision rule effectively selects the optimal marketing action and improves revenue across various data-generating processes" [Joo 2026]
 The close on a managerial capability, the move 3.3 names as refused when a paper ends on its technique instead.
 
-### 4 · Introduction: the results are stated, never teased
+### 4 · Sec-1-Introduction: the results are stated, never teased
 
 **A market fact, then the gap, then the findings with their numbers**: this desk's introduction gives away the whole paper, with forward references, before Section 2 begins.
 
@@ -294,7 +577,7 @@ The results preview with its magnitude stated, the move 4.3 contrasts against te
 "It is best suited for situations where A/B testing data are collected in a single batch" [Joo 2026]
 The scope condition, which is the nearest thing to a limitation this section carries and which 4.2 writes as `It is best suited for situations where <condition>.`
 
-### 5 · Theory: the slot that holds no hypotheses
+### 5 · Sec-2-Theory: the slot that holds no hypotheses
 
 **A formal model, or the institution the identification rests on**: `theory/style.md` line 5 records that none of the 5 exemplars has an MISQ-style hypothesis-development section, so an H1 arriving here is the loudest off-register signal available.
 
@@ -393,7 +676,7 @@ The plain-language readback that follows a formal block immediately, the pairing
 "During the experiment, approximately 12% of sellers promote at least one listing." [Moshary 2025]
 The institutional descriptive of the empirical variant, where quantified market mechanics stand in for a model.
 
-### 6 · Methods: the section only some papers here have
+### 6 · Sec-3-Methods: the section only some papers here have
 
 **In the analytical exemplars the model is the method**: `methods/style.md` line 5 says only the empirical and method papers carry a methods section, and line 81 makes fabricating one an anti-pattern in its own right.
 
@@ -496,7 +779,7 @@ The error-structure justification attached to the specification slot in 6.2, whe
 "denoted as the Fluid-R policy (see, e.g., Jasin and Kumar 2012)" [Li 2025]
 The numerical-experiment move, where every baseline gets a citation and a coined name, which 6.3 makes a refusal when it is skipped.
 
-### 7 · Results: every number carries a coordinate and a unit
+### 7 · Sec-4-Results: every number carries a coordinate and a unit
 
 **Interpretation is interleaved, not deferred**: this desk puts the managerial reading inside the results walk, so a paper saving all of it for the conclusion is off-register long before the conclusion arrives.
 
@@ -605,7 +888,7 @@ The mechanism unification paragraph of the analytical shape, closing a battery o
 "Users who see ads complain less often, but they are less likely to purchase twice on the platform." [Moshary 2025]
 The mixed evidence kept in the main text, which 7.3 records as the exemplar norm against hiding it.
 
-### 8 · Discussion: a short conclusion that keeps its numbers
+### 8 · Sec-5-Discussion: a short conclusion that keeps its numbers
 
 **There is no Discussion section at this desk**: `discussion/style.md` line 5 records that all five exemplars close with a Conclusion, and that it is short enough to be measured in hundreds of words rather than pages.
 
@@ -704,7 +987,7 @@ The empirical humility move, bounding what a single experiment identifies rather
 "We recommend not subjectively reweighting the maximum regrets by default and simply setting K = 1." [Joo 2026]
 The practitioner register, written imperatively, and the reason 8.1 makes the practitioner guide a separate drafting unit.
 
-### 9 · Appendix: two tiers, lettered, and declared on page one
+### 9 · Sec-A-Appendix: two tiers, lettered, and declared on page one
 
 **Where a proof goes is settled once, in the introduction**: this desk runs up to two appendix layers, and `appendix/style.md` lines 9-15 shows the five exemplars using every combination of them.
 
@@ -865,31 +1148,31 @@ The family page states this outlet's hero display as the identification display.
 - A2.1 · A `style.md` number carries the size of the base it was extracted from.
   **Done when:** a reader can tell a 5-paper norm from an 18-paper norm without counting the folder.
 
-### A3 · 📝 Abstract: one paragraph that names its own machinery
+### A3 · 📝 Sec-0-Abstract: one paragraph that names its own machinery
 - A3.1 · A drafted abstract picks its length variant before its first sentence is written.
   **Done when:** the draft names compact-empirical or layered-analytical and its word count sits inside that variant's measured range.
 
-### A4 · 📖 Introduction: the results are stated, never teased
+### A4 · 📖 Sec-1-Introduction: the results are stated, never teased
 - A4.1 · The literature-review placement is a recorded decision rather than a default.
   **Done when:** a draft names which of the five exemplar placements it follows, and the intro budget is split accordingly.
 
-### A5 · 🧮 Theory: the slot that holds no hypotheses
+### A5 · 🧮 Sec-2-Theory: the slot that holds no hypotheses
 - A5.1 · No hypothesis-development section reaches a draft aimed at this desk.
   **Done when:** the theory unit resolves to a formal model, an econometric framework or an institutional setting, with zero H-labels.
 
-### A6 · 🔬 Methods: the section only some papers here have
+### A6 · 🔬 Sec-3-Methods: the section only some papers here have
 - A6.1 · An analytical paper drafted for this desk carries no Methods section.
   **Done when:** the section-kind list for an analytical paper routes the analysis machinery to theory and results instead of scaffolding a methods unit.
 
-### A7 · 📊 Results: every number carries a coordinate and a unit
+### A7 · 📊 Sec-4-Results: every number carries a coordinate and a unit
 - A7.1 · Every reported estimate reaches the page with a display coordinate and a business unit.
   **Done when:** no results sentence states a coefficient without both.
 
-### A8 · 🏁 Discussion: a short conclusion that keeps its numbers
+### A8 · 🏁 Sec-5-Discussion: a short conclusion that keeps its numbers
 - A8.1 · The conclusion's paragraph budget stops contradicting itself.
   **Done when:** the guide's block table and its 2-to-6 ceiling agree, or one of them is marked as losing.
 
-### A9 · 🗂 Appendix: two tiers, lettered, and declared on page one
+### A9 · 🗂 Sec-A-Appendix: two tiers, lettered, and declared on page one
 - A9.1 · Tier, numbering scheme and declaration are settled before any appendix prose is written.
   **Done when:** a draft states which tiers exist, which scheme letters them, and where the online tier is declared.
 
@@ -905,25 +1188,25 @@ The family page states this outlet's hero display as the identification display.
 ### A2 · ⚠️ The exemplar base is the pack's weakest
 - ⬜ A2.1 · Not started, and tree-wide. Three of this outlet's seven guides carry a narrower caveat; none records the base size itself.
 
-### A3 · 📝 Abstract: one paragraph that names its own machinery
+### A3 · 📝 Sec-0-Abstract: one paragraph that names its own machinery
 - ⬜ A3.1 · Not started. Both variants and their ranges are on this page; nothing yet makes a draft declare which one it took.
 
-### A4 · 📖 Introduction: the results are stated, never teased
+### A4 · 📖 Sec-1-Introduction: the results are stated, never teased
 - ⬜ A4.1 · Not started. The five exemplar placements are recorded; the pack offers no rule for choosing among them.
 
-### A5 · 🧮 Theory: the slot that holds no hypotheses
+### A5 · 🧮 Sec-2-Theory: the slot that holds no hypotheses
 - ⬜ A5.1 · Not started. `theory/style.md` line 5 and `theory/template.md` line 13 both state the ban; nothing checks a draft against it.
 
-### A6 · 🔬 Methods: the section only some papers here have
+### A6 · 🔬 Sec-3-Methods: the section only some papers here have
 - ⬜ A6.1 · Not started. The seven declared section kinds include `methods` unconditionally, with no analytical exception.
 
-### A7 · 📊 Results: every number carries a coordinate and a unit
+### A7 · 📊 Sec-4-Results: every number carries a coordinate and a unit
 - ⬜ A7.1 · Not started. `results/template.md` line 38 says a coefficient without a coordinate fails CHECK; the checker itself is not on this page.
 
-### A8 · 🏁 Discussion: a short conclusion that keeps its numbers
+### A8 · 🏁 Sec-5-Discussion: a short conclusion that keeps its numbers
 - ⬜ A8.1 · Not started, and it is a pack defect. `discussion/style.md` lines 19 and 96 cap at 6 paragraphs while its table at lines 82-88 sums to 8.
 
-### A9 · 🗂 Appendix: two tiers, lettered, and declared on page one
+### A9 · 🗂 Sec-A-Appendix: two tiers, lettered, and declared on page one
 - ⬜ A9.1 · Not started. All four combinations the corpus uses are recorded; proof placement is owed to the introduction, not to this unit.
 
 ### A10 · 🧬 What the retired family page still owes this desk
@@ -936,7 +1219,7 @@ The family page states this outlet's hero display as the identification display.
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 5 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 5 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 - `../../paper/venue/playbook-utd-is/MS-Marketing/examples/chen-2025-ms-position-auctions-live-streaming-advertising.pdf` · Chen 2025
 - `../../paper/venue/playbook-utd-is/MS-Marketing/examples/guo-2025-ms-selling-data-to-marketers.pdf` · Guo 2025
@@ -951,22 +1234,7 @@ The family page states this outlet's hero display as the identification display.
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 7 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 6 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · theory
-- `S-Main-3` · methods
-- `S-Main-4` · results
-- `S-Main-5` · discussion
-- `S-Appendix-A` · appendix
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 

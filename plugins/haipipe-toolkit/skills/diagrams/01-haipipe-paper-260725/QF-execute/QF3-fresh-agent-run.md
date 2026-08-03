@@ -175,7 +175,7 @@ It is written here with what it did NOT exercise, so a later reader cannot mista
 ## Files
 
 - `../../../../CLAUDE.md` · the repository's fresh-subagent validation rule
-- `stages/5-section-edit/stage.md` · the hardest stage, and therefore the right one to test
+- `../../paper/S06-main/section-edit/stage.md` · the hardest stage, and therefore the right one to test
 - `QF1-execution-map.md` · owns the record this run's observations become
 - `QC-engine/QC4d-check.md` · owns the gate-line item this test would most likely fail on
 

@@ -92,6 +92,13 @@ A weak caption is a writing problem; a changed label silently breaks every sente
 🚫 THIS MUST REFUSE YOU
    a division here explaining how the picture was drawn: that belongs to the
    Display layer, and QB5's Law is the test
+📥 OR DOWNLOAD THE UNIT ITSELF · this is the whole of what a display is
+   display05  preview.pdf   147 KB  float.tex COMPILED · the table as the paper sets it
+              float.tex     3.6 KB  the wrapper: caption, label, \input of the body
+              assets/table-body.tex  4.0 KB  the rows, which the task layer computed
+   display02  preview.pdf    65 KB  the figure as the paper sets it
+              assets/figure.png     84 KB  the promoted picture
+              candidates/C-enriched.png  157 KB  a candidate nobody promoted
 ```
 
 🧪 Establishes the object as something to open rather than read about, and starts from the failure the two fixture units are already in.

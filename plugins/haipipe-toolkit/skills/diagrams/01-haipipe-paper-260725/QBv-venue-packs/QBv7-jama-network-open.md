@@ -1,6 +1,6 @@
 # JAMA Network Open: the desk that publishes a rigorous null result
 
-state: 🟡 PARTIAL · 3 papers filed under the flagship · 6 declared kinds · taste ✓ · the only outlet with no examples folder
+state: 🟡 PARTIAL · 0 exemplars in its own folder and 3 filed under the flagship · 6 declared kinds · taste ✓ · desk re-read directly 260803 · 4 slots still not on record
 owner: JL
 method: state what JAMA Network Open accepts that its two siblings do not, and separate its one real folder defect from the section count that is declared
 
@@ -12,6 +12,12 @@ Every other desk in this tree wants a finding. This one will publish a rigorous 
 **What a rigorous null result is**: a study that was built well and found nothing.
 The desk's own files use the phrase, so this page keeps it.
 What it asks for is that the nothing is led with, not buried under some subgroup that did move.
+
+**How to read this page**: everything here is a REFERENCE, not a rulebook.
+The arcs, budgets, moves and anti-patterns below describe what published JAMA Network Open papers do, measured from two stored full texts.
+A paper that departs from them is off-pattern, which is a thing to do on purpose and not a violation.
+One figure is different: `Submission-Rules` carries the desk's own published rules, and a manuscript that breaks one of those is returned before review.
+Every length on the page says which of the two it is.
 
 **Where this page sits**: it is one venue target in `QBv`, one page per desk with no pack layer above it.
 This page owns only what is true of `playbook-jama-portfolio/jama-netopen/`.
@@ -36,6 +42,65 @@ How this page must be written. Read it before editing, and edit to it.
 **Never call this outlet a fallback**: the descent is a planned route, ruled 260802, and fallback language contradicts the ruling on the page that instantiates it.
 
 ✅ `written for JAMA IM, submittable here unchanged`  ❌ `Network Open if IM rejects it`
+
+**This page is built to the venue-page contract** at `../../board/haipipe-board-page-for-venue/SKILL.md`, which owns the shape below. A rule changed on this page is changed in that file in the same pass, and `QBv1-misq.md` is the reference implementation to copy from.
+
+```text
+  🖼 THREE FIGURES        what each one answers
+     ① desk taste         what counts here · what is desk-rejected · the null it publishes
+     ② Venue-Structure    which sections, in reading order, and the budget each carries
+     ③ Submission-Rules   article type and cap · manuscript format · references ·
+                          the portal · disclosures · the odds, the clock and the
+                          money · an open row for what is NOT on record · the URLs
+
+  📎 FIVE FILES GROUPS
+     ⚙️ Engines           what regenerates this page
+     📋 Contracts         the venue-page contract, the base it extends, and the
+                          reference implementation · a loadable spec is a Contract
+                          and never an Engine, because an Engine is something you RUN
+     📥 Input files       the pack files and sibling pages this page reads
+     🔗 Authority         what the DESK publishes, read directly and never through
+                          the pack · opens with a provenance warning · carries the
+                          desk's links AND every place the desk contradicts the pack
+     📤 Generated         what a tool WRITES into this page, between markers
+
+  📖 A VENUE PAGE IS A REFERENCE, NOT A RULEBOOK (JL 260803)
+     the pack-derived arcs, budgets, moves and anti-patterns are suggestions
+     drawn from published papers · only the desk's own published rules bind,
+     and they live in the Submission-Rules figure and the Authority group
+     write "the pack refuses X" rather than "do not do X", so the page never
+     sounds like it is the one doing the refusing
+
+  ⚖️ EVERY LENGTH SAYS WHOSE IT IS (JL 260803)
+     a DESK RULE is published by the journal and binding · a PACK OBSERVATION is
+     a measurement of papers the pack read, and breaking it is off-pattern
+     rather than a violation · the split is unusually sharp here: the desk sets
+     3000 words of text, a 350-word abstract, a 75-100-word Key Points box and
+     ≤5 displays, and every per-section budget on this page is measured off
+     n = 2 papers that the desk never set a limit for
+
+  🔢 A SECTION DIVISION CARRIES ITS Sec- INDEX (JL 260803)
+     ### 3 · Sec-0-Abstract: seven fields, a Key Points box, ...
+         ▲       ▲
+         │       └── Sec-<n>, counting from 0, so the index IS the number of
+         │           the S-Main page it becomes · the appendix takes Sec-A
+         └── the Content division number, which counts §1 and §2 as well
+     ### A3 · 📋 Sec-0-Abstract: seven fields, a Key Points box, ...
+              ▲  the emoji lives HERE and on the division's closing line,
+                 never on the division heading: check.py strips it from an
+                 Aims group name and not from a division, so a heading-side
+                 emoji reads as group-name-drift on every section at once
+     🔢 this desk declares no theory kind, so Methods is Sec-2 here where it is
+        Sec-3 at MISQ · the index is read off `stages/section-kinds.yml` and
+        never off a house order
+
+  📏 A NUMBER CARRIES ITS SOURCE   inline, always: a `jno-<kind>/style.md` line,
+     a named exemplar, or the desk's own page, and never as this page's own claim
+  ❓ AN UNKNOWN IS PRINTED         a slot the pack or the desk cannot fill is
+     written as an open row, never left off the figure
+```
+
+**What the pack knows and what the desk says are two different sources**, and where they disagree the desk wins and the disagreement is written down. The pack is READ and never written by this plugin, so a correction lands here, not in `paper/venue/`.
 
 ## Diagram
 
@@ -946,7 +1011,7 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 
 <!-- exemplars:begin -->
 
-📚 **Exemplars** · 0 papers on disk, regenerated by `sync-exemplars.py`
+📚 **Exemplars** · 0 papers on disk, regenerated by `_tools/sync-exemplars.py`
 
 - none. No `examples/` folder under `../../paper/venue/playbook-jama-portfolio/jama-netopen/`, so this outlet states section norms with no exemplar behind them.
 
@@ -954,21 +1019,7 @@ Every quotation is a main-text sentence or an exhibit title, because the kind wr
 
 <!-- kinds:begin -->
 
-📐 **Section kinds** · 6 declared in `stages/section-kinds.yml`, regenerated by `sync-exemplars.py`
-
-`section-edit` runs once per kind, and writes one page each. That is 5 numbered `S-Main-<n>` pages, plus `S-Appendix-<letter>`.
-
-- `S-Main-0` · abstract
-- `S-Main-1` · introduction
-- `S-Main-2` · methods
-- `S-Main-3` · results
-- `S-Main-4` · discussion
-- `S-Appendix-A` · appendix
-
-A kind is the SMALLEST unit a paper gets here, not a ceiling.
-One kind can spread across several numbered Main pages.
-This repo's own MISQ paper runs to `S-Main-8-conclusion`, and the numbers above move with it.
-The ORDER does not move. It is this venue's reading order, not a house default.
+📐 **Section kinds** · none declared in `stages/section-kinds.yml`, so this venue is blueprint-only: the S-Venue-0 blueprint is binding and no per-section pack is resolved.
 
 <!-- kinds:end -->
 

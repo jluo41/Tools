@@ -1,6 +1,6 @@
 # The paper skill folder: one folder per question asked, and ten named after the board
 
-state: 🔴 OPEN · the shape is proposed and argued; nothing has moved, and one ruling blocks the move
+state: 🟡 PARTIAL · the shape is BUILT on disk; the application coupling it named is still unruled
 owner: JL
 method: sort the folder by the question each skill answers, then name the delivery folders after the board groups they produce
 
@@ -117,7 +117,7 @@ Today that fact lives in a sentence; under the proposed shape it is an empty dir
 (8 pairs of `stage.md` and `template.md`, 22 files, 256 KB)
 Every stage folder holds exactly two files, so the move is small and complete.
 `haipipe-paper-stage` stops owning the contracts and resolves them instead, which is what its own contract already says it does.
-`../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` keeps the roster and its `dir:` values point into the `SNN-` folders.
+`../../paper/route/haipipe-paper-stage/stages/index.yml` keeps the roster and its `dir:` values point into the `SNN-` folders.
 
 #### 2.2 · The board's folder rule, copied exactly
 (JL 260803, after checking what `_` already means in this repo)
@@ -204,7 +204,7 @@ If they stop sharing one, each family sorts by its own board, which is the whole
 - A2.1 · The ten delivery groups each have a folder named after the board group they produce.
   **Done when:** `skills/paper/s01_opening` through `s10_round` exist, and each holds the stage contracts and skills that write that group's pages.
 - A2.2 · The lifecycle contracts live with their group rather than inside the router.
-  **Done when:** each `stage.md` and `template.md` sits in its `SNN-` folder, `../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` points at the new paths, and `../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` still passes.
+  **Done when:** each `stage.md` and `template.md` sits in its `SNN-` folder, `../../paper/route/haipipe-paper-stage/stages/index.yml` points at the new paths, and `../../paper/route/haipipe-paper-stage/check-contracts.py` still passes.
 
 ### A3 · 🔪 Two defects the move forces into the open
 - A3.1 · One stage contract declares one family.
@@ -247,8 +247,8 @@ If they stop sharing one, each family sorts by its own board, which is the whole
 
 📥 **Input files** · what the work reads
 
-- `../../../paper/1-lifecycle/haipipe-paper-stage/stages/index.yml` · the stage roster and its `dir:` values
-- `../../../paper/1-lifecycle/haipipe-paper-stage/check-contracts.py` · what would verify the move
+- `../../../paper/route/haipipe-paper-stage/stages/index.yml` · the stage roster and its `dir:` values
+- `../../../paper/route/haipipe-paper-stage/check-contracts.py` · what would verify the move
 - `../../../application/SOP-paper-alignment.md` · the document that keeps the two families in step
 - `../../../../install.sh` · prunes `_`-prefixed folders, which is why the proposal uses none
 
@@ -261,5 +261,6 @@ If they stop sharing one, each family sorts by its own board, which is the whole
 
 ## Log
 
+260803 · EXECUTED, on JL's "please update it to the new structure, and we can fix bugs later". The tree on disk is now the one `§2` draws: `container/` `phase/` `quality/` `route/` as the axis folders and `S01-opening/` through `S10-round/` as the groups, with `venue/` untouched. The eight stage contracts moved out of the router into their delivery group, so `index.yml`'s `dir:` values now point at `../../../S01-opening/seed` and its siblings. `install.sh --global` re-registered cleanly and all 37 `SKILL.md` files still resolve. Two things the move broke and fixed on the way: `check-contracts.py` was globbing `stages/*/`, so after the move it found ZERO contracts and still printed `form ok`, a checker passing because it looked at nothing, and it now follows `index.yml`; and two MISQ board pages cited the old bucket paths, now repointed. What did NOT happen is the A4.1 ruling: `application/` still carries the old skeleton and `SOP-paper-alignment.md` still describes a shape only one family has, so that Decision Now row stands and the two families have diverged in fact before diverging by ruling.
 260803 · The naming aligned to the board rather than inventing one. The proposal first read `s01_opening/`, and JL asked for consistency with the paper board's own folders, which had just become `S01-opening/` beside `QA-design/` on every skill board. So the axis folders keep plain names, the group folders take `SNN-<group>`, and the zero-padding was pushed up into the group TOKEN as well: the headings are now `S01 · Delivery Opening` through `S10 · Delivery Round`, so a folder and its heading can never disagree and `S01.html` through `S10.html` sort in board order.
 260803 · Opened after JL asked to rethink `skills/paper/`, and written before any file moved. The diagnosis is that the tree sorts by a story while the skills sort by three questions, which is why `3-deliver` holds fourteen skills and five of them deliver nothing. JL proposed the group axis as the top folder and asked whether the shared axes could drop the underscore; both are adopted, the second after checking that `install.sh` already prunes `_`-prefixed folders and that plain names sort correctly anyway. Pre-flight then found the blocker this page is OPEN on: `application/` was given these bucket names in a deliberate port and `../../application/SOP-paper-alignment.md` exists to keep the two families in step, so the move is a decision about two families rather than one. One correction along the way: `haipipe-paper-project` was read as project scaffolding and is actually projection, board pages into LaTeX candidates, so it belongs in Build and not in the container axis.
