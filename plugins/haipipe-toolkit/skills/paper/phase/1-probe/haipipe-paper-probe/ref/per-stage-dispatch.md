@@ -15,22 +15,22 @@ the entries still owed after ② MATCH, handed as a SET
               |
               +-- Agent(haipipe-task-orchestrator-agent)        internal work
               +-- Agent(haipipe-discovery-orchestrator-agent)   external evidence
-                  The collector sends each `### q-executor` VERBATIM according
+                  The collector sends each `#### q-executor` VERBATIM according
                   to the authoritative route settled at ② MATCH.
         |
         +-- on return, this worker writes NOTHING bank-side:
-              the entry's `### a-executor` copies the answer in, and each Q-consumer's
-              a-consumer (in its stage doc) is the paper's record of what the answer
-              MEANS; the CLAIM's status lives in 0-lifecycle/1-work/S-Work-1-claims.md.
+              the entry's `#### a-executor` copies the answer in, and the parent topic
+              register is the paper's record of what the answer MEANS; the CLAIM's status
+              lives in 0-lifecycle/S02-work/S-Work-C-claims.md.
               The reusable artifact is the EXECUTOR's <task-folder>/QA/<n>-<slug>.md,
               which any paper's PROBE-time MATCH can find and read (`bank: reuse`).
 ```
 
 Per-stage table (workers = HARVESTERS: they transcribe landed evidence, never
-acquire; acquisition is always a question ENTRY -> its `### q-executor` -> the
+acquire; acquisition is always a question ENTRY -> its `#### q-executor` -> the
 task/discovery orchestrator -> the answering QA file)
 ----------------
-- **seed** (-> discovery): landscape / related work / novelty to sharpen the seed question; returned source anchors stay in the ENTRY's `### a-executor`.
+- **seed** (-> discovery): landscape / related work / novelty to sharpen the seed question; returned source anchors stay in the ENTRY's `#### a-executor`.
 - **resource** (-> task + discovery): DRAFT asks Qs keyed to N rows on `S-Work-0-resources.md`; PROBE opens and MATCHes one entry per Q, writes the `-> PP<NN>` backlink, and dispatches only within `--depth`. `task-for-fit` and `task-for-eval` are Claims work.
 - **claims** (-> task + discovery): one question entry per GAP claim. The author writes claim status in `S-Work-1-claims.md`; CHECK reviews the paper judgment. Claims consumes only Resource-declined forward pointers recorded in that S page's `## Log`.
 - **pitch** -- anchor-paper questions (-> discovery).
@@ -69,7 +69,7 @@ novelty ("is this idea new?")                  -> discovery novelty-check -> ver
 ```
 
 The **a-consumer** (in S-Seed-0-seed.md) feeds Motivations and Tentative Claim Shape. Source anchors
-the answer brought back stay in the ENTRY's `### a-executor` so the user can eyeball them
+the answer brought back stay in the ENTRY's `#### a-executor` so the user can eyeball them
 paper-side. Full evidence stays executor-side, reusable by claims.
 NOTE: a discovery leaf's own `verdict.md` is executor-native and SURVIVES; it is a
 different thing: it belongs to the bank, not to the probe layer.)
@@ -110,7 +110,7 @@ BUILD -- days to weeks. NON-BLOCKING, ALWAYS.
 ```
 
 FORBIDDEN in resource: **`task-for-fit`** and **`task-for-eval`**. Those are CLAIMS
-(training and evaluating are the experiment). An entry whose `### q-executor` is fit- or
+(training and evaluating are the experiment). An entry whose `#### q-executor` is fit- or
 eval-shaped while its Q-consumer serves resource is mis-scoped by definition --
 a bundled fit+eval entangles the
 judgment (Paper-CGMtoAge's PP04: you cannot tell whether the null came from the
@@ -126,16 +126,16 @@ Every GAP/weak claim raises one question ENTRY -- PROBE MATCHes first
 (reuse-before-create), then the ones left `run`/`code`/`new` fan out by shape:
 
 ```
-claim needs its status settled     -> an ENTRY whose `### q-executor` is task-shaped
+claim needs its status settled     -> an ENTRY whose `#### q-executor` is task-shaped
                                       -> collector -> Agent(haipipe-task-orchestrator-agent)
 question needs a run / artifact    -> same door (the executor picks the depth)
 question needs outside context     -> collector -> Agent(haipipe-discovery-orchestrator-agent)
 settled claim status               -> 0-lifecycle/1-work/S-Work-1-claims.md (the ONLY home
                                       of a claim's status; the probe entry carries
-                                      only its `### a-executor`)
+                                      only its `#### a-executor`)
 ```
 
-At ⑤ INTERPRET the entry's `### a-executor` is copied in and each Q-consumer's a-consumer
+At ⑤ INTERPRET the entry's `#### a-executor` is copied in and the parent topic register's interpretation
 lands (station ②), and the CLAIM's status is written in S-Work-1-claims.md (supported |
 refuted | inconclusive + confidence + claim_type), citing the entry's `target` QA file.
 The paper owns the NEED and the JUDGMENT; the executor owns the FACT.
@@ -144,7 +144,7 @@ See the Evidence Routing Protocol + Delivery Need Routing sections in ../../../.
 Phase status (derive from disk)
 --------------------------------
 ```
-probe ⬜  no entry in 1-probes/ serves this stage
+probe ⬜  no nested S03/S04 entry serves this stage
 probe 🚀  entries exist, at least one not yet `read`
 probe ✅  every entry serving this stage is `read` or `answered-local`
 probe --  skipped (logged verdict required)

@@ -42,6 +42,10 @@ haipipe-board-page-for-skill
 haipipe-board-page-for-venue
                          SPEC · the VARIANT for QBv<n> venue pages, one per
                          place a paper is submitted to
+ref/topic-entry-contract.md
+                         SPEC · optional generic overlay: a topic page owns a
+                         Q-consumer register and nested entries own one
+                         q-executor each
 haipipe-board-sentence   DOOR + SPEC · one sentence: comment, edit, card;
                          lanes, addresses, the archive-never-delete lifecycle
 haipipe-board-routing    VERB · every write onto a board, at BOTH altitudes:
@@ -700,6 +704,7 @@ Operating rules go into SKILL.md's prose, and **specifications** such as display
 | `ref/page-template.md` | The file a Q or S page is copied from (renamed from `ref/q-template.md` on 260801). A Skill, Agent or Meeting page is generated from its own stub instead and never copies this |
 | `ref/board-form.md` | The full specification: folders, numbering, section ↔ page correspondence, the syntax table, `## Links` |
 | `ref/writing-rules.md` | How to write it in plain language, plus the zero-background review prompt and its convergence criteria |
+| `ref/topic-entry-contract.md` | Optional generic contract for a topic page and its nested `probes/<topic>/` entry pages |
 | `ref/board-example.md` | A minimal example board with two questions |
 
 The scripts and packages in the skill root:

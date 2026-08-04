@@ -46,6 +46,7 @@ PATH_FIELD = re.compile(
 RETIRED_PATH_PREFIXES = ("0-sections/", "0-displays/")
 RETIRED = {"log": "retired 2026-07-26; the S face carries the history",
            "inputs": "retired by QF2; use the page's requires: and optional read_order:"}
+ON_DEMAND_PATHS = {"archive", "display_request", "inbox"}
 
 
 def frontmatter(text):
@@ -171,6 +172,9 @@ def main():
                                  f"not created yet")
                 continue
             if (paper / path).exists():
+                continue
+            if field in ON_DEMAND_PATHS:
+                notes.append(f"{where}: {field}: {path} — created only when work is filed")
                 continue
             if field == "artifact" and "artifact_fallback" in f \
                     and (paper / f["artifact_fallback"]).exists():

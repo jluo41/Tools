@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-folder
-description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + .gitignore + 0-lifecycle/ carrying board.md and one Seed page, so a new paper is runnable on day 0. Every other page is absent-until-allocated; 1-probes/ arrives on the first probe and 2-src/ + the manuscript machinery (master tex, sections/, compile script) is an on-request upgrade at the Display or section frontier. THE NUMBER IS THE DELETE TEST: 0-lifecycle 1-probes 2-src are working machinery, everything unnumbered is the deliverable. Reached via /haipipe-paper enter (get-or-create on a missing path), then haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
+description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + .gitignore + 0-lifecycle/ carrying board.md and one S01 Opening page, so a new paper is runnable on day 0. Every other page is absent-until-allocated; probes are nested below their S03/S04 topic only when one is opened, and 2-src/ plus manuscript machinery is an on-request upgrade at the Display or section frontier. THE NUMBER IS THE DELETE TEST: 0-lifecycle and 2-src are working machinery, everything unnumbered is the deliverable. Reached via /haipipe-paper enter (get-or-create on a missing path), then haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
 metadata:
   version: "0.5.1"
   last_updated: "2026-07-26"
@@ -22,18 +22,17 @@ This skill never runs gh or git submodule commands.
 The layout contract (design board QA6, ruled 2026-07-26)
 ---------------------------------------------------------
 
-**The NUMBER is the delete test.** A `0-`, `1-` or `2-` prefix means working machinery; everything
+**The NUMBER is the delete test.** A `0-` or `2-` prefix means working machinery; everything
 unnumbered is what a journal receives.
 
 ```text
 rm -rf 0-* 1-* 2-*     and the paper still compiles and still submits
 ```
 
-Three numbered folders, and only three:
+Two numbered roots, and only two:
 
 ```text
 0-lifecycle/   the board, and nothing but the board
-1-probes/      the near side of the wall
 2-src/         how the deliverable is BUILT, not what it is
 ```
 
@@ -50,29 +49,28 @@ Paper-<Name>/
 ├── .gitignore              # LaTeX artifacts; preserves displays/**/*.pdf (contract below)
 └── 0-lifecycle/            # THE BOARD, and nothing but the board
     ├── board.md            # the spine; /haipipe-board builds board.html from it
-    └── 0-seed/
-        └── S-Seed-0-seed.md    # ONE runnable page, so the paper can be worked immediately
+    └── S01-opening/
+        └── S-Open-Seed.md      # ONE runnable page, so the paper can be worked immediately
 ```
 
-That is the whole scaffold. `1-probes/` is created on the first probe; `2-src/` and everything
-unnumbered arrive at the manuscript upgrade.
+That is the whole scaffold. A probe appears only inside its S03/S04 topic's `probes/<topic>/` folder; `2-src/` and everything unnumbered arrive at the manuscript upgrade.
 
 **Board-first, and minimal.** A new paper gets a control plane and one runnable page. Every other
 page is absent until its unit is allocated, so an absence is information rather than an oversight.
 
-**One family, one folder.** The seven remaining family folders are created by the stage that first
+**One stage, one folder.** The remaining lifecycle folders are created by the stage that first
 writes into them, never in advance:
 
 ```text
-0-seed/  1-work/  2-venue/  3-display/  4-main/  5-appendix/  6-submission/  7-round/
+S01-opening/  S02-work/  S03-literature/  S04-value/  S05-display/
+S06-main/  S07-appendix/  S08-present/  S09-build/  S10-round/
 ```
 
-The folder name IS the S family name, and a page's name places it: `S-Main-7-results.md` is in
-`4-main/`, and nothing else could be. `haipipe-board/cli/stage.py resolve` owns that filename rule; do
-not reimplement it here.
+The folder name is the lifecycle stage name, and a page's family places it: `S-Main-7-results.md` is in
+`S06-main/`. `haipipe-board/cli/stage.py resolve` owns the filename rule; do not reimplement it here.
 
-**The board is CONTROL-PLANE FIRST.** Every family holds S pages and its
-`_archive/`. One owned exception exists: `3-display/` also holds the display
+**The board is CONTROL-PLANE FIRST.** Every stage folder holds S pages and its
+`_archive/`. One owned exception exists: `S05-display/` also holds the display
 stage's request inbox, directly compilable gallery `4-display.tex` /
 `4-display.pdf`, and `_preview/`. Those artifacts belong to the Display stage
 whose Board pages govern them. No other family accepts `.tex`, assets, build
@@ -119,10 +117,10 @@ Display never grows a LaTeX toolchain.
 ```
 <Name>-<Venue><Year>.tex       # the driver: venue preamble + \input per section   UNNUMBERED
 <Name>-<Venue><Year>.bib       # bibliography. HUMAN-ONLY: an agent greps it, never writes it
-sections/                      # GENERATED from 0-lifecycle/4-main/ pages. One way, md to tex
-appendices/                    # GENERATED from 0-lifecycle/5-appendix/ pages
+sections/                      # GENERATED from 0-lifecycle/S06-main/ pages. One way, md to tex
+appendices/                    # GENERATED from 0-lifecycle/S07-appendix/ pages
 displays/                      # one folder per unit; THE ONLY home of an asset
-0-lifecycle/3-display/
+0-lifecycle/S05-display/
   4-display.tex · 4-display.pdf  # Display-owned review gallery; inputs unit float.tex files
 <venue>.cls · <venue>.bst      # the venue shell, copied, never authored
 2-src/compile.sh · compile.ps1 · config.yaml · setup.sh        # NUMBERED: how it is built
@@ -132,7 +130,7 @@ Note what is NOT here: there is no top-level `figures/`, and no `Figure/`/`Table
 is a UNIT (`displays/displayNN-<slug>/`) and its render lives inside it, in `assets/`. A second home
 for the same kind of thing is the defect this layout exists to prevent.
 
-Section format follows the pinned venue (consult the paper's `0-lifecycle/2-venue/S-Venue-0-venue.md`
+Section format follows the pinned venue (consult the paper's `0-lifecycle/S01-opening/S-Open-Venue.md`
 Structural Blueprint first; fallback: `venue/playbook-<venue>` when it is absent):
 
 | Venue format | Sections (in order) |
@@ -160,8 +158,8 @@ Not this skill's job
 repo + submodule wiring        -> /haipipe-paper enter (get-or-create branch)
 S pages (S-Seed-…, S-Main-…)   -> each stage, when its unit is allocated
 board.html                     -> /haipipe-board (never hand-write it)
-rounds                         -> S-Round pages in 0-lifecycle/7-round/, one page per round
-probe files (PPNN_<topic>/)    -> /haipipe-paper probe verbs (fn/probes.md)
+rounds                         -> S-Round pages in 0-lifecycle/S10-round/, one page per round
+probe entry pages              -> /haipipe-paper probe verbs, nested under the owning S03/S04 topic
 display units                  -> the Display stage + the renderer family
 venue knowledge                -> venue/playbook-<venue> packs
 is this folder correct?        -> /haipipe-paper-conform (report-only; the machine test)

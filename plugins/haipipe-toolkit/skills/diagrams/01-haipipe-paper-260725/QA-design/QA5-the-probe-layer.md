@@ -1,6 +1,6 @@
-# The evidence channel: how a question crosses the wall
+# QA5 · Q-consumers, Q-executors, and the Evidence Channel
 
-state: 🟡 PARTIAL · the crossing and the vocabulary are ruled; which half of the contract this board may rule is not yet checkable
+state: ✅ DONE · topic pages own Q-consumers; nested entries own Q-executors; the Board validates the seam
 owner: JL
 method: one file per question inside the paper, bound BY PATH to an answer the paper may not produce
 session: 822af3ea-7685-49dd-9ee0-7d0ee2eea8ec
@@ -8,7 +8,7 @@ session: 822af3ea-7685-49dd-9ee0-7d0ee2eea8ec
 ## Opening
 
 A paper may not run code and may not read the literature, so where does a question live between being raised and being answered?
-It lives in a file inside the paper: `1-probes/PP03_results-values/QX1_slug.md` holds it and points by path at the answer.
+It lives in a topic-keyed entry inside the paper: `S04-value/probes/V01-headline-lbp/S-Value-6-opioid-cohort-regression-estimates.md` holds one q-executor and points by path at the answer.
 The answer is written by an executor that never learns which claim it settles, because a clean context IS the wall.
 The paper's half of that crossing is ruled here; the model itself stays the layer's.
 
@@ -27,8 +27,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 **Inherited from `QB4@boardform`**: the page grammar, the section order, and the sentence rules come from `../01-boardform-260722/QB-delivery/QB4-overall.md` and are not restated here.
 
-**Never restate the probe-file anatomy**: the four sections, the QA state line and the two LAWS belong to `⑤` and are not this board's to change.
-Cite them; a copy here becomes a second authority the day the layer moves.
+**Keep the ownership split explicit**: the shared Probe layer owns the execution model. This board owns the Paper overlay that locates a topic and requires the four entry sections. The executable version is `haipipe-board/ref/topic-entry-contract.md`; this page explains why it exists.
 
 **Name the four vocabulary words exactly**: Q-consumer, q-executor, a-executor, a-consumer.
 They differ by one letter and one hyphen, and a page that blurs them makes the wall unreadable, which is the only thing this page is for.
@@ -43,21 +42,22 @@ Name what it owns instead of where it sits in a list.
 ```text
  📄 ⑦ THE PAPER                              🏦 THE BANK, across the wall
  ┌──────────────────────────────┐            ┌────────────────────────┐
- │ 0-lifecycle/…/S-Main-7.md    │            │ examples/Project-*/    │
+ │ 0-lifecycle/S03-literature/  │            │ examples/Project-*/    │
+ │  S-Literature-<n>-<topic>.md │            │   tasks/  discoveries/ │
  │   a sentence owes a number   │            │   tasks/  discoveries/ │
  │   {VAL:? …} [Q-Sec6Results-4]│            │                        │
- │   ## Q-consumer              │            │ owned by /haipipe-task │
+│   ### Q-consumer register    │            │ owned by /haipipe-task │
  │     🔒 the STAKE lives here  │            │ and /haipipe-discovery │
  │        and never crosses     │            │ neither knows a paper  │
  └────────────┬─────────────────┘            │ exists                 │
               ▼                              │                        │
  ┌──────────────────────────────┐            │ <task-folder>/QA/      │
- │ 1-probes/PP03_results-values/│            │   <n>-<slug>.md        │
- │   QX1_<slug>.md              │            │   state: working |     │
- │   ### q-executor   ━━ STRING ━━━━━━━━━━━▶ │   answered | superseded│
- │   ### q-consumer             │            │                        │
- │   ### bank binding · target: ━━ BY PATH ━▶│   points at that file  │
- │   ### a-executor  ◀━━━━━━━━━━━ the answer │                        │
+ │ S03-literature/probes/       │            │   <n>-<slug>.md        │
+ │   L01-<topic>/<entry>.md     │            │   state: working |     │
+│   #### q-executor  ━━ STRING ━━━━━━━━━━━▶ │   answered | superseded│
+│   #### consumer trace        │            │                        │
+│   #### bank binding · target: ━━ BY PATH ▶│   points at that file  │
+│   #### a-executor ◀━━━━━━━━━━━ the answer │                        │
  └──────────────────────────────┘  as a FILE └────────────────────────┘
 ```
 
@@ -102,13 +102,13 @@ Name what it owns instead of where it sits in a list.
 `create-page.py` is the same thing onto the board tool's `stage.py`.
 The pattern is the shared-family pattern `QA1` rules, and this page is one instance of it.
 
-#### 1.2 · Which half this board may rule is prose, and not yet checkable
-(the paper-side deltas, yes; the anatomy and the QA state line, no)
-The line is stated above and nothing enforces it, so a page here could specify the anatomy tomorrow and nothing would report the overreach.
+#### 1.2 · The Paper overlay is checked without claiming ownership of the shared execution model
+(the Board checks location, dependency, headings, state vocabulary, and trace symmetry)
+`haipipe-board/cli/check.py` detects a direct `### Q-consumer register`, then checks nested entries against the generic topic-entry contract. It does not judge the executor's evidence or invent a second Probe model.
 
 #### 1.3 · Nobody has ruled what happens when the layer's contract changes
 (two consumer families bind the same folder, and neither owns the migration)
-`1-probes/` is bound by the paper family and by `/haipipe-application`.
+`probes/<topic>/` is bound by the paper family and by `/haipipe-application`.
 Nothing says who migrates a paper when the anatomy moves, and `QA8`'s equivalent question for the board grammar is open for the same reason.
 
 ### 2 · The vocabulary, and the id that must not collide
@@ -139,42 +139,44 @@ Measured on the MISQ paper: `Q-Section-1` named three different questions on thr
 Six chips on `S-Main-7` read `ok` or `ready` while the page's own records read DEFERRED, and three on `S-Main-4` read `ready` while its records said no live probe owned them.
 Renaming both sides moved all nine to `parked` or `unowned` with zero evidence changed.
 
-### 3 · Why the probe folder stays outside the paper board
+### 3 · Why live probe entries belong inside their evidence topic
 
-**Page versus file**: the line, and the case it is measured against.
+**Topic first, entry second**: the durable paper object and the evidence work it owns.
 
 ```text
-                      🔁 rounds            🔎 probes
- gated by a human?    yes, a round closes  no, the bank answers
- shape                one unit, one page   one TOPIC, many stages
- owned by             this family alone    shared with application
- duplicated ⑧?        queue · register ·   nothing. the lane and the
-                      discussion           chip already surface it
+  S03 Literature                         S04 Value
+  ├── S-Literature-<n>-<topic>.md        ├── S-Value-<n>-<topic>.md
+  │   └── Aim: Q-consumer + stake         │   └── Aim: Q-consumer + stake
+  └── probes/                             └── probes/
+      └── L01-<topic>/                        └── V01-<topic>/
+          └── one entry per q-executor            └── one entry per q-executor
+              discovery binding                     task binding
+              a-executor                            a-executor
 
- ✅ rounds MOVED onto the board, because a round CAN be a page
- 🚫 a probe file cannot: topic-scoped across stages, and its shape is ⑤'s
- ⏳ EXPIRY: if application stops binding 1-probes/, re-open this ruling
+  queue = entries whose bank-binding state is planned | commissioned | deferred
+  _archive/1-probes/ = historical provenance, never a live work queue
 ```
 
-🚫 Establishes why working state that looks like it belongs on the board does not, and records the condition that would reopen the question.
+✅ Establishes that a topic owns the paper-facing reason for an answer and its active evidence entries, while the shared Probe layer still owns the loop and entry anatomy.
 
-#### 3.1 · The boundary is page-versus-file, not working-state-versus-output
-(probes are working state, and so were rounds, so that axis decides nothing)
-Rounds moved into `⑧` because a round can become a page: one round, one gate, one unit.
-A probe file cannot, because it is topic-scoped across stages and its four-section shape belongs to `⑤` and is shared.
+#### 3.1 · The topic owns the paper stake; the entry owns the execution payload
+(the Q-consumer must stay with the paper, while the q-executor must stay clean)
+The topic page sits directly in S03 or S04 and is the canonical home for the Aim and Q-consumer because it explains why the paper needs an answer.
+Its keyed entry under `probes/<topic>/` holds one q-executor, its bank binding, and its a-executor because those are the neutral exchange with Discovery or Task; it retains the original Q-consumer text only as a review trace during the page-level normalization.
+The generic Probe layer remains the owner of the loop and entry anatomy, so nesting changes the live location without forking the contract.
 
-#### 3.2 · The layer is visible from the board without living in it
-(which is the outcome moving it would have been trying to buy)
-An S page's Q-consumer names its questions, and the sentence chips on `QBe1 §4` and `QBe1 §5` resolve their states onto the sentences that owe them.
-On the MISQ board that is 215 chips over eighteen probe files.
+#### 3.2 · The queue is a view, not another folder
+(the bank-binding state is the only live source of backlog)
+An entry is queued exactly when its `#### bank binding` names `state: planned`, `commissioned`, or `deferred`; `read` and `answered-local` are resolved states and leave the queue. The topic page's own `state:` records delivery readiness, not queue membership.
+No queue file is written by hand, so moving or resolving an entry cannot leave an out-of-date duplicate behind.
 
 ## Aims
 
 ### A1 · 🔎 What the layer owns, and what this board owns
 - A1.1 · The probe layer is named as a shared family this paper depends on and does not own.
   **Done when:** every page citing the crossing names `⑤` as the owner of the model and the paper side as a delta.
-- A1.2 · Which half of the probe contract this board may rule is checkable, not just stated.
-  **Done when:** something reports a page here that specifies the probe-file anatomy or the QA state line.
+- A1.2 · The Paper overlay is checkable without replacing the shared Probe model.
+  **Done when:** Board check reports an entry whose topic dependency, anatomy, state, or consumer trace is invalid.
 - A1.3 · The migration path is ruled for when the layer's contract changes.
   **Done when:** a named owner exists for migrating a paper when the anatomy moves, and `QA8` records the same answer for the board grammar.
 
@@ -184,9 +186,9 @@ On the MISQ board that is 215 chips over eighteen probe files.
 - A2.2 · A per-unit stage names its unit in its own consumer id.
   **Done when:** no two consumers share a `Q-<Stage>-<n>` token, and the gate that checks it asserts a non-zero count.
 
-### A3 · 🚫 Why the probe folder stays outside the paper board
-- A3.1 · `1-probes/` stays where it is, on the page-versus-file line, with a recorded expiry test.
-  **Done when:** the ruling names its expiry condition and something reopens it if `/haipipe-application` stops binding the folder.
+### A3 · 🧭 Why live probe entries belong inside their evidence topic
+- A3.1 · Each live Literature or Value entry lives in the `probes/` folder of the topic it serves.
+  **Done when:** S03 and S04 contain every live entry beneath its assigned topic, no S11 Probe group remains, and `_archive/1-probes/` is historical provenance only.
 
 ### P · 🏁 Page-level
 - P1 · No claim on this page about a folder it does not own is left without a check.
@@ -196,15 +198,15 @@ On the MISQ board that is 215 chips over eighteen probe files.
 
 ### A1 · 🔎 What the layer owns, and what this board owns
 - ✅ A1.1 · Ruled 260726. It was called "the third reusable skill" until 260802, when `⑨` and `⑪` joined `QA1`'s map and made the ordinal wrong.
-- 🔨 A1.2 · Written above as prose. Nothing enforces it, so an overreach would go unreported.
-- 🧠 A1.3 · Waiting on a ruling, not on work. Two consumer families bind `1-probes/` and neither owns the migration.
+- ✅ A1.2 · Shipped 260804. `haipipe-board/cli/check.py` validates the generic topic-entry overlay; `haipipe-paper-probe/check-probe-cards.sh` validates the Paper runtime form.
+- ✅ A1.3 · Ruled and carried out 260803. The Paper board moves live entries beneath S03 and S04 topics; `_archive/1-probes/` keeps the old source paths as provenance.
 
 ### A2 · 🗣 The vocabulary, and the id that must not collide
 - ✅ A2.1 · The four names, the bank binding and the stripped stake are all on the page. They had been live for months and appeared nowhere on this board.
 - ✅ A2.2 · Ruled and shipped 260727. Three letters-only id regexes had to move with it, in `dialect_paper.py`, `body.py` and `check-probe-cards.sh`, and none of them failed loudly.
 
-### A3 · 🚫 Why the probe folder stays outside the paper board
-- ✅ A3.1 · Ruled 260726 with the expiry test recorded. Eighteen probe files on the MISQ paper bind to ten QA answers across nineteen task groups.
+### A3 · 🧭 Why live probe entries belong inside their evidence topic
+- ✅ A3.1 · JL refined and CC applied 260804. S03 and S04 topic pages sit directly in their stage folders; ten discovery entries live in `S03-literature/probes/L01-<topic>/` and eighteen task entries in `S04-value/probes/V01-<topic>/`. Each entry is one q-executor; S11 no longer exists as a live group.
 
 ### P · 🏁 Page-level
 - 🔨 P1 · One such claim was repaired on 260802: `⑥` had been recorded as a design folder rather than a board since before that board existed, here and on `QA1`. The rule is now in `## Writing Style`; the remaining claims have not been re-read against it.
@@ -221,7 +223,7 @@ On the MISQ board that is 215 chips over eighteen probe files.
 
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `../../board/haipipe-board/cli/check.py`
-  Reports page structure. Nothing checks the seam this page rules, which is why `A1.2` is 🔨.
+  Detects `### Q-consumer register` and validates the generic topic-entry seam: direct topic dependency, headings, state, and trace symmetry.
 
 ### 📤 Output files · what a BUILD writes
 - `../board/QA/QA5-the-probe-layer.html`
@@ -231,10 +233,10 @@ On the MISQ board that is 215 chips over eighteen probe files.
 
 - The probe layer is a reusable family this paper depends on and does not own. The paper side is a delta on a shared model, and this board rules the delta and never the model.
 - A question crosses the wall as a STRING with its stake stripped, and the answer comes back as a FILE the executor wrote, bound BY PATH. The manuscript never contains the bank's file and the bank never learns the claim, because a clean context IS the wall: strip the stake and the answer is evidence, leave it in and it is a request.
-- `1-probes/` stays where it is, and the line is PAGE versus FILE rather than working-state versus output. Rounds moved into `⑧` because a round can be a page: one round, one gate, one unit. A probe file cannot, because it is topic-scoped across stages and its four-section shape belongs to `⑤` and is shared with `/haipipe-application`.
-- The layer is therefore VISIBLE from the board without living in it: an S page's Q-consumer names its questions, and the sentence chips resolve their states.
+- An S03 Literature or S04 Value topic page lives directly in its stage folder. Its `### Q-consumer register` is the canonical paper-facing mapping from Q-consumer to entry. Live entries belong in that stage's `probes/<topic>/` folder. Each entry is one q-executor and holds its bank binding and a-executor; its consumer trace is audit history only.
+- `_archive/1-probes/` preserves historical provenance only. It is not a live queue or a location for new probe entries.
+- Queue is derived from the `state:` inside each nested entry's bank binding. It is never maintained as a separate file or a third register.
 - A Q-consumer id is CONSUMER-LOCAL and must not collide across consumers, so a stage that `runs: per-unit` names its unit in its own token, both halves read off the S page filename. The resolver takes the FURTHEST-ALONG match among entries claiming an id, so a shared id lets a DEFERRED question inherit an ANSWERED one's state. That is a manufactured green on the exact chip a reader trusts.
-- This ruling carries an expiry test. If `/haipipe-application` stops binding `1-probes/`, re-open it.
 
 ## Lesson
 
@@ -247,7 +249,18 @@ On the MISQ board that is 215 chips over eighteen probe files.
 - **a-consumer**: the paper's interpretation of a landed answer, which is the paper's business and never the bank's.
 - **The wall**: the clean context between a paper's claim and the executor's evidence.
 
+## Discussion
+
+- 🧭 Adopted direct-topic probe structure
+  JL ruled on 260804 that S03 and S04 topic pages are direct children of their stage folders, while a shared `probes/` child groups their entries by topic.
+  The live shape is `S03-literature/S-Literature-<n>-<topic>.md` plus `S03-literature/probes/L01-<topic>/<entry>.md` for discovery, and the parallel S04 Value shape for task evidence.
+  The topic is the canonical home for the Q-consumer and paper stake, while each entry is one neutral q-executor with its bank binding and returned a-executor.
+  The queue is derived from planned, commissioned, and deferred bank-binding states, so it is never a second hand-maintained file.
+  The former `1-probes/` tree is preserved only at `_archive/1-probes/`, and the separate S11 Probe group is gone.
+
 ## Log
+
+260804 · JL refined the topic-owned structure: S03 and S04 topic pages are direct stage children, and their evidence entries live in `probes/<topic>/`. CC applied it to the Paper board. One entry equals one q-executor; each topic's Q-consumer register is canonical, and queue is derived from bank-binding state.
 
 260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into three divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action.
 

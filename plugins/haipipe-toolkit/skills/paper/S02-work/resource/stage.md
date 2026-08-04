@@ -34,7 +34,7 @@ artifact_fallback: 0-lifecycle/S02-work/1a-resource.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
-probes: 1-probes/PPNN_<topic>/
+probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
 template: template.md
 
 exit_when: "at CHECK — pick one of the `exits:` below"

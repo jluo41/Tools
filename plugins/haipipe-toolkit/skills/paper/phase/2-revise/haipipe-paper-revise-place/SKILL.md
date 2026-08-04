@@ -23,7 +23,7 @@ haipipe-paper-revise-place
 
 The first worker in the REVISE chain.
 
-DRAFT marked the holes and named their owners. PROBE brought the answers back into each entry's `### a-executor`. This worker does the one remaining mechanical step: **put the landed answer where the placeholder is, and discharge the bracket.**
+DRAFT marked the holes and named their owners. PROBE brought the answers back into each entry's `#### a-executor`. This worker does the one remaining mechanical step: **put the landed answer where the placeholder is, and discharge the bracket.**
 
 
 Why it runs FIRST
@@ -43,13 +43,13 @@ What this worker does NOT do
 
 - It does NOT verify. Whether the DOI resolves, whether the paper says what the sentence claims, whether the number re-derives — none of that is here. That is the pre-submission evidence check.
 - It does NOT search, and does NOT re-run anything. If the answer has not landed, the hole stays a hole.
-- It does NOT invent. There is no case where this worker writes a value or a key that it did not read out of a landed `### a-executor` or the `.bib`.
+- It does NOT invent. There is no case where this worker writes a value or a key that it did not read out of a landed `#### a-executor` or the `.bib`.
 
 
 The three substitutions
 ------------------------
 
-For each placeholder in the working `.md`, resolve its `[Q-<Stage>-<n>]` to the ENTRY that serves it, and read that entry's `### a-executor`.
+For each placeholder in the working `.md`, resolve its `[Q-<Stage>-<n>]` through the direct topic register to the nested entry, and read that entry's `#### a-executor`.
 
 ```
 CITATION   \cite{TOADD} [Q-X-n]
@@ -137,5 +137,5 @@ haipipe-paper-revise-content     runs next — WHAT the sentences say
 haipipe-paper-revise-humanizer   then — HOW they sound
 haipipe-paper-revise-results     then — results narration
 haipipe-paper-draft-{citation,values,display}   marked these holes and named their owners
-haipipe-paper-probe              landed the answers into each `### a-executor`
+haipipe-paper-probe              landed the answers into each `#### a-executor`
 ```

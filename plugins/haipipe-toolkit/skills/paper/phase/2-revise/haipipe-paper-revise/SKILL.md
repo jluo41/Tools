@@ -149,7 +149,7 @@ DRAFT → PROBE → REVISE (this) → CHECK
                     └── haipipe-paper-revise-results     (results-specific)
 ```
 
-REVISE reads what PROBE landed in each entry's `### a-executor`, PLACES it into the prose (discharging the placeholder's bracket), and rewrites those sentences into final prose.
+REVISE reads what PROBE landed in each entry's `#### a-executor`, PLACES it into the prose (discharging the placeholder's bracket), and rewrites those sentences into final prose.
 CHECK then verifies the revised result.
 
 ## Return contract

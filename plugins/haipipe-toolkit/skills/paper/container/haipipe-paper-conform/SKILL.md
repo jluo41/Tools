@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-conform
-description: "Audit a paper folder against the layout contract ruled 2026-07-26 (design board QA6): the delete test (rm -rf 0-* 1-* 2-* must leave a paper that still compiles), three numbered folders and only three, 0-lifecycle/ purity + one-family-one-folder, displays/ as the only home of an asset, sections/ naming + wiring, and every \\input/\\includegraphics/\\bibliography target resolving. Report-only; routes each finding to the skill that fixes it. Trigger: check paper structure, structure audit, paper folder check, validate paper layout, conformance, delete test, /haipipe-paper-conform."
+description: "Audit a paper folder against the layout contract: the delete test (rm -rf 0-* 1-* 2-* must leave a paper that still compiles), two numbered roots, direct S01–S10 lifecycle folders, nested S03/S04 topic probes, displays/ as the only home of an asset, sections/ naming + wiring, and every \\input/\\includegraphics/\\bibliography target resolving. Report-only; routes each finding to the skill that fixes it. Trigger: check paper structure, structure audit, paper folder check, validate paper layout, conformance, delete test, /haipipe-paper-conform."
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
   version: "0.2.2"
@@ -24,8 +24,7 @@ The contract, in one line
 **The NUMBER is the delete test.**
 
 ```text
-0-lifecycle/   the board, and nothing but the board
-1-probes/      the near side of the wall
+0-lifecycle/   the board, including nested S03/S04 probe entries
 2-src/         how the deliverable is BUILT, not what it is
 <unnumbered>   IS the deliverable
 
@@ -59,9 +58,9 @@ Exit 0 = conforms, 1 = findings, 2 = not a paper folder (no `0-lifecycle/`).
 | Block | Checks |
 |-------|--------|
 | A folder | `0-lifecycle/` exists at all; every paper is Board-first |
-| B numbers | exactly three numbered entries are legal: `0-lifecycle` `1-probes` `2-src`. Any other `[0-9]-*` file or folder is a finding. Missing `1-probes/`/`2-src/` is a ⚠, not a ✗: both are absent-until-needed |
+| B numbers | exactly two numbered roots are legal: `0-lifecycle` and `2-src`. Any other top-level `[0-9]-*` file or folder is a finding. Missing `2-src/` is a ⚠ before the manuscript upgrade |
 | C assets | no `figures/`, `Figures/` or `0-displays/`; no `Figure/`/`Table/` flat buckets under `displays/`. A display is a UNIT and its render lives in `displays/<unit>/assets/` |
-| D board | `0-lifecycle/` holds the eight family folders + `_archive/` + Board indexes; families hold `S-*.md` + `_archive/`, with one Display-owned exception: `3-display/` may also hold `_DISPLAY_REQUEST.md`, `_preview/`, and `4-display.tex`/`.pdf`; `S-<Family>-…` sits in its family folder |
+| D board | `0-lifecycle/` holds direct `S01-opening` through `S10-round` folders, `_archive/`, and generated Board indexes. S03 and S04 may hold `probes/<topic>/` entries; S05 may hold its display workspace. Each `S-<Family>-…` page sits in its family folder |
 | E masters | unnumbered `*.tex` carrying `\documentclass`. None yet is a ⚠: legal before the manuscript upgrade |
 | F build | `2-src/compile.sh` present + executable once a master exists; a surviving `1-compile.sh` is a ✗ |
 | G naming | `sections/` + `appendices/`: `NN[-MM]_<slug>.tex` / `X_<slug>.tex` grammar, `NN` and `NN-MM` contiguity, `NN-MM` groups have their `NN_` wrapper. A surviving `0-sections/` is a ✗ |
@@ -89,7 +88,7 @@ Present findings as a table, severity-ranked (✗ before ⚠), each row with its
 | Any block B / C / G ✗, or a J delete-test failure | `/haipipe-paper-restructure` (this is the old layout; it needs migrating, not patching) |
 | Numbering gap, orphan, wrapper prose, stray asset, in an otherwise conforming folder | `/haipipe-paper-restructure --repair` |
 | Missing folder/driver/compile script (skeleton incomplete) | `/haipipe-paper-scaffold` (or `restructure` if content exists) |
-| Block D: an unowned build product or sidecar inside `0-lifecycle/` | move it out; only the declared `3-display/` gallery/inbox exception belongs there |
+| Block D: an unowned build product or sidecar inside `0-lifecycle/` | move it out; only the declared `S05-display/` workspace exception belongs there |
 | Block D: an `S-…` page in the wrong family folder | `/haipipe-board` owns the filename rule (`stage.py resolve`); move the file, then rebuild |
 | Broken `\includegraphics` (the render was never produced) | the Display stage; the render comes from a task or discovery run, never from ad-hoc plotting |
 | Broken `\cite` / bib content problems | `/haipipe-paper-check-evidence` (out of scope here; only the `.bib` file's existence is checked) |

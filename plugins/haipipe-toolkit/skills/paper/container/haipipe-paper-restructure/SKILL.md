@@ -34,8 +34,7 @@ The target layout, and the test that defines it
 still submits. Migration is largely the work of making that true.
 
 ```text
-NUMBERED, working machinery      0-lifecycle/   the board, and nothing but the board
-                                 1-probes/      the near side of the wall
+NUMBERED, working machinery      0-lifecycle/   the board, including nested topic probes
                                  2-src/         how the deliverable is BUILT
 
 UNNUMBERED, the deliverable      <paper>.tex · <paper>.bib · <paper>.pdf

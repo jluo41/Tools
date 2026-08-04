@@ -42,7 +42,7 @@ compiled: 0-lifecycle/S05-display/4-display.pdf         # compile from the PAPER
 inbox: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md      # DR rows other stages file; only THIS stage advances their status
 units: displays/displayNN-<slug>/                   # README + intake/ + recipe/ + float.tex + preview + assets/ candidates/ versions/
 intake_contract: ../../../../../display/ref/display-intake-contract.md
-probes: 1-probes/PPNN_<topic>/
+probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
 template: template.md
 support: [figure-logic.md, checklist.md]
 

@@ -89,7 +89,7 @@ seed                    SEED (0):    maintain 0-lifecycle/0-seed/0-seed.md: 3 se
 
 resource            RESOURCE (1a): maintain S-Work-0-resources.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? The stage ASKS; PROBE ROUTES within its depth ceiling.
 
-claims                CLAIMS (1b):  maintain 0-lifecycle/1-work/1b-claims.md, the venue-FREE claim ledger AND the home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to a probe entry's answering QA file. Claims RUNS THE EXPERIMENT (train the model + evaluate); it reads the entry's `### a-executor` and writes its own a-consumer in the stage doc.
+claims                CLAIMS (1b): maintain the S02 Work claims page, the venue-FREE claim ledger and home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to an entry's answering QA file. Claims reads the entry's `#### a-executor`; the parent topic register records the paper interpretation.
 
 --- VENUE DECISION (pins target journal in S-Venue-0-venue.md) ---
 
@@ -181,8 +181,8 @@ For a whole paper, prefer the GLOBAL-PASS order (JL ruling 2026-07-11): probes p
                   ({VAL:?} placeholders + GAP markers + Q-consumer questions are fine;
                   venue still pins BEFORE the venue-ALIGNED drafts)
 ② PROBE-PLAN      /haipipe-paper probe plan — the cross-stage consolidation:
-                  merge duplicate questions (one ENTRY, many `### q-consumer` bullets), author
-                  the dispatch DAG into 1-probes/README.md Campaign section
+                  merge duplicate questions (one q-executor entry, many topic-register mappings),
+                  author the dispatch DAG from the nested S03/S04 entry pages
                   [HUMAN GATE — present the campaign, stop]
 ③ DISPATCH BATCH  probe run — MATCH first (most sections close on T2 REUSE, for
                   free); only what MATCH cannot close is dispatched, per the DAG
@@ -195,9 +195,9 @@ For a whole paper, prefer the GLOBAL-PASS order (JL ruling 2026-07-11): probes p
                   session — the `### q-executor` block in the entry is the bridge,
                   and it survives a dead session with zero files bank-side)
 ⑤ HARVEST         a PROBE re-run re-resolves each `commissioned` entry's
-                  `**target**:`, `ls` its QA file, and lands the `### a-executor`
-                  + each Q-consumer's a-consumer in its stage doc
-                  + the 1b-claims.md flip + the harvest lanes
+                  `**target**:`, `ls` its QA file, and lands the `#### a-executor`
+                  + the parent topic register's interpretation + the S02 claims-page flip
+                  + the harvest lanes
                   (query-once: landed answers are read from registries, never
                   re-queried) → then run each stage's remaining declared phases
 ```
@@ -442,7 +442,7 @@ plain text and the marker report above is empty and useless:
 
 ```yaml
 dialect: paper            # opt in to resolving markers at build time
-paper-root: ..            # where the .bib, displays/ and 1-probes/ live
+paper-root: ..            # where the .bib, displays/, and nested topic entries live
 ```
 
 That one-line seam is the entire paper-specific surface of a generic tool (`QA4`). A board that

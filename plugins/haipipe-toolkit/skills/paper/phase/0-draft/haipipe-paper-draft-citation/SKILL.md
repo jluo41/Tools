@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-draft-citation
-description: "DRAFT-phase citation auditor (internal). Reports assertions that need sources, real existing bib keys, and every remaining hole with its owning Q-consumer id. READ-ONLY: the DRAFT hub writes the manuscript and S-page Q-consumer; PROBE alone writes 1-probes/. Never searches or writes bibtex."
+description: "DRAFT-phase citation auditor (internal). Reports assertions that need sources, real existing bib keys, and every remaining hole with its owning Q-consumer id. READ-ONLY: the DRAFT hub writes the manuscript and direct topic Q-consumer register; PROBE alone writes nested entry pages. Never searches or writes bibtex."
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
   argument_hint: "[stage-or-section] [paper-path]"
@@ -21,12 +21,12 @@ One job: **no assertion leaves DRAFT owing a source to nobody.**
 What this skill does NOT do
 ----------------------------
 
-- It does NOT search. Finding a paper is a question's job: the ENTRY's `### q-executor` goes to `Agent(haipipe-discovery-orchestrator-agent)`.
+- It does NOT search. Finding a paper is a question's job: the nested entry's `#### q-executor` goes to `Agent(haipipe-discovery-orchestrator-agent)`.
 - It does NOT generate bibtex and NEVER touches `0-*.bib`. Generated bibtex means hallucinated authors, wrong years, wrong journals, wrong pages — the failure is silent and survives into the submitted PDF.
 - It does NOT verify a source (does the DOI resolve? does the paper actually say this?). That is `haipipe-paper-check-evidence`.
 - It does NOT WRITE, anywhere. It walks and reports;
-  `haipipe-paper-draft` writes the manuscript and Q-consumer, PROBE writes
-  `1-probes/`, and `haipipe-paper-revise-place` places landed keys later.
+  `haipipe-paper-draft` writes the manuscript and Q-consumer register, PROBE
+  writes nested S03/S04 entries, and `haipipe-paper-revise-place` places landed keys later.
 
 
 AUDIT — what owes a source

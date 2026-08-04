@@ -38,7 +38,7 @@ artifact_fallback: 0-lifecycle/S01-opening/2b-pitch.md
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 archive: 0-lifecycle/S01-opening/archive/vNN_<reason>.md
-probes: 1-probes/PPNN_<topic>/
+probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
 template: template.md
 support: [readability.md]   # the 9 global language rules, section lead cues, hook method menu,
                             # worked rewrites, reviewer checklist — LARGER than the template
@@ -46,7 +46,7 @@ support: [readability.md]   # the 9 global language rules, section lead cues, ho
 exit_when: "abstract/intro sells another story"   # the stage's own failure exit
 
 venue_contract:           # read FIRST, before a word is drafted — see the craft body
-  read: 0-lifecycle/S01-opening/S-Venue-0-venue.md
+  read: 0-lifecycle/S01-opening/S-Open-Venue.md
   blocks: [Venue Profile, Fit Assessment]
   shapes: [Editor's Chair Test, "[primary] designation", RQ framing, Audience and Venue Fit]
   fallback: "venue/playbook-<venue> ONLY if S-Venue-0-venue.md is absent; with neither, proceed without
@@ -80,7 +80,7 @@ formatting:
 
 q_id_pattern: "- P<n> · Q-Pitch-<n> · <title>"
 q_anchor: "[Q-Pitch-<n>] cited inline wherever a point rests on the open check (usually Evidence)"
-closed_when: "PROBE writes the finding + [source: PP<nn>] into Answer; REVISE weaves it back in
+closed_when: "PROBE writes the finding + [source: <nested-entry>] into Answer; REVISE weaves it back in
               and discharges the [Q-Pitch-<n>] bracket"
 
 done_criteria:
@@ -198,7 +198,7 @@ Intuition is allowed; a SHIFT needs a source
 
 A seed pitch may rest on author judgment, a research review, or a rough direction. Every SEMANTIC
 shift after that must cite one: a landed QA file in `discoveries/` or `tasks/`, a `read` entry in
-`1-probes/`, reviewer feedback, venue strategy, or an explicit author decision.
+the nested S03/S04 entries, reviewer feedback, venue strategy, or an explicit author decision.
 
 Archive on story-state change (`seed -> discovery-shift`, `accuracy -> robustness`,
 `method-first -> application-first`), never for typo edits.

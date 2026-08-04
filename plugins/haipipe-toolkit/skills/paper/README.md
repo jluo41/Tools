@@ -1,183 +1,74 @@
-# Paper Skill
+# Paper skill family
 
-Canonical reference for the family's stable organization and router. Executable
-contracts remain owned by the named skills below, and live paper state remains
-on the paper's Board, S pages, claim ledger, probe entries, and artifacts.
-This file never overrides those runtime sources.
+`haipipe-paper` turns a research argument into a paper delivery. It owns the
+story, claims, display decisions, prose, and submission artifacts. It does not
+run analysis or search evidence directly.
 
-A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>/` probe files hold its QUESTIONS, one ENTRY each, and BIND each one BY PATH to the answering `<task-folder>/QA/<n>-<slug>.md` in that bank. Claim gaps become entries there; MATCH closes most of them for free, and only the rest are dispatched (the `q-executor:` block, verbatim) to the task/discovery orchestrators. The paper reaches the bank only through a stage's PROBE phase; a standalone utility question uses the bank's own `/haipipe-task qa` door, typed by a human.
-
-## Paper-folder layout
-
-```text
-<paper-root>/
-├── 0-lifecycle/board.md     Board manifest: spine, page registry, links
-├── 0-<paper>.tex/.bib       main manuscript shell
-├── 0-lifecycle/              first-class Board + lifecycle S pages
-│   ├── 0-seed/               Seed family
-│   ├── 1-work/               Resources + Claims
-│   ├── 2-venue/              Venue + Pitch + Narrative
-│   ├── 3-display/            Display design + display faces
-│   ├── 4-main/               Main-section faces
-│   ├── 5-appendix/           Appendix faces
-│   ├── 6-submission/         Reconcile + Compile + Review + Submit
-│   └── 7-round/              dated work rounds
-├── sections/               manuscript prose .tex
-├── displays/displayNN-*/   figure/table units
-├── 1-probes/PPNN_<topic>/   the paper's questions, one ENTRY each -> bound BY PATH to a QA file
-├── 0-lifecycle/7-round/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
-├── 1-config.yaml
-└── 2-src/compile.sh
-```
-
-`0-` = source of truth (content). `1-` = process (build + revise).
-
-## Skill-tree layout
-
-The skill tree mirrors the lifecycle spine (`1-lifecycle/ref/03-paper-lifecycle.md`,
-`1-lifecycle/ref/04-lifecycle-map.md`) on two axes: `1-lifecycle/` holds the STAGE
-orchestrators (user-facing; define WHAT each stage delivers) and `2-phase/` holds the
-PHASE workers (internal; define HOW: DRAFT -> PROBE -> REVISE -> CHECK). Inside those
-two groups each numbered stage/phase folder holds its skills
-(`paper/1-lifecycle/<N-stage>/<skill>/SKILL.md`); support groups stay flat
-(`paper/<group>/<skill>/SKILL.md`).
+## Canonical skill structure
 
 ```text
 paper/
-├── haipipe-paper/        router + Paper Console front door
-│                         also THE home of three family-wide conventions:
-│                         Closing Block · Comment lifecycle · Delivery Need
-│                         Routing + Evidence Routing Protocol
-├── PHILOSOPHY.md         design philosophy
-├── README.md             this file — canonical skill tree, router, derived-state rule
-├── 0-enter/             haipipe-paper-enter (Console; owns the dashboard spec)
-│                        + haipipe-paper-round (owns the 0-lifecycle/7-round/ contract)
-├── 1-lifecycle/         STAGE orchestrators, one numbered folder per stage
-│     ref/               lifecycle references (03-paper-lifecycle, 04-lifecycle-map, 08-stage-gate, 09-stage-illuminate)
-│     haipipe-paper-stage/stages/0-seed/
-│     haipipe-paper-stage/stages/1a-resource/     (venue-FREE; stage 1a)
-│     haipipe-paper-stage/stages/1b-claims/         (venue-FREE; stage 1b)
-│     haipipe-paper-stage/stages/2a-venue/           (venue pin; venue-ALIGNED boundary; stage 2a)
-│     haipipe-paper-stage/stages/2b-pitch/            (venue-ALIGNED cover letter; stage 2b)
-│     haipipe-paper-stage/stages/3-narrative/
-│     haipipe-paper-stage/stages/4-display/ + renderers
-│       -display-{table,figure,diagram,illustration}
-│       (illustration = Codex bridge;
-│        framework candidate rounds inside display)
-│     haipipe-paper-stage/stages/5-section-edit/ (+ outline-format.md + section-type/ norms)
-│     + haipipe-paper-lifecycle (orchestrator)
-├── 2-phase/             PHASE workers (internal; driven by stage skills)
-│     0-draft/haipipe-paper-draft
-│     1-probe/haipipe-paper-probe
-│     2-revise/haipipe-paper-revise (+ -revise-{content,humanizer,results,weaving})
-│     3-check/haipipe-paper-check (+ haipipe-paper-proof-checker)
-├── 3-deliver/      downstream of the argument, grouped by verb-intent:
-│     haipipe-paper-deliver   (group router; owns the Lifecycle TeX Quality Standard)
-│     1-build/   haipipe-paper-{scaffold,restructure,conform,folder}   (structure the folder)
-│     2-audit/   haipipe-paper-{claim-audit,reviewer,optimizer}   (read-only findings)
-│     3-polish/  haipipe-paper-polish   (consistency → format → typeset; mutates the draft)
-│     4-ship/    haipipe-paper-{compile,diffpdf,to-overleaf}   (produce & move the artifact)
-├── 4-respond/           haipipe-paper-rebuttal + paper-rebuttal + rebuttal-response
-├── 5-present/           paper-slides + paper-poster
-└── venue/               venue playbook packs (knowledge, not stages; consulted)
-                         a SUBMODULE (jluo41/Venue-Paper). If the folder is empty,
-                         run `git submodule update --init` from the Tools root
+├── haipipe-paper/                  public router and paper-wide conventions
+├── S01-opening/                    seed, venue, pitch
+├── S02-work/                       resource, claims, narrative
+├── S03-literature/                 runtime store for discovery-backed topic entries
+├── S04-value/                      runtime store for task-backed topic entries
+├── S05-display/                    reader-facing displays
+├── S06-main/                       main manuscript sections
+├── S07-appendix/                   appendix material
+├── S08-present/                    slides and poster
+├── S09-build/                      compile and delivery
+├── S10-round/                      review and response rounds
+├── container/                      folder, scaffold, restructure, conformance
+├── phase/                          DRAFT → PROBE → REVISE → CHECK workers
+├── route/                          enter, lifecycle, and stage router
+├── quality/                        claim audit, review, polish, optimization
+└── venue/                          venue knowledge packs
 ```
 
-`venue/` is a paper-internal area, not a standalone layer. It is the venue knowledge the
-lifecycle consults at pitch/narrative/display/section-edit/submit/respond
-(`venue/playbook-<venue>`). Venues hold knowledge, never lifecycle verbs.
+The numbered S folders are the Paper family grammar. `route/`, `phase/`,
+`container/`, and `quality/` are capability groupings, not a second lifecycle.
 
-## Stage to Procedure
-
-Lifecycle stages map 1:1 to skills (full table in `1-lifecycle/ref/04-lifecycle-map.md`):
+## Runtime paper structure
 
 ```text
-enter             -> 0-enter/haipipe-paper-enter
-0-seed            -> 1-lifecycle/haipipe-paper-stage/stages/0-seed/
-1-resource        -> 1-lifecycle/haipipe-paper-stage/stages/1a-resource/ (venue-FREE; what must EXIST for the paper to be testable; is stage 1a, just before claims (1b))
-1-claims          -> 1-lifecycle/haipipe-paper-stage/stages/1b-claims/
-venue (choose+pin)-> 1-lifecycle/haipipe-paper-stage/stages/2a-venue/ (recommend journal, pin `S-Venue-0-venue.md` state; after claims, before pitch; claims is venue-free)
-2-pitch           -> 1-lifecycle/haipipe-paper-stage/stages/2b-pitch/
-3-narrative       -> 1-lifecycle/haipipe-paper-stage/stages/3-narrative/
-4-display         -> 1-lifecycle/haipipe-paper-stage/stages/4-display/ (+ render skills -display-{table,figure,diagram,illustration})
-5-section-edit    -> 1-lifecycle/haipipe-paper-stage/stages/5-section-edit/ (per-section DRAFT/PROBE/REVISE/CHECK)
-review            -> 3-deliver/2-audit/ (claim-audit, reviewer, optimizer)
-round             -> 0-enter/haipipe-paper-round
-respond           -> 4-respond/*
-present           -> 5-present/*
+<paper-root>/
+├── 0-lifecycle/
+│   ├── S01-opening/ … S10-round/   paper state as Board S pages
+│   ├── S03-literature/             direct topic pages + nested discovery entries
+│   └── S04-value/                  direct topic pages + nested task entries
+├── sections/                        generated manuscript prose
+├── appendices/                      generated appendix prose
+├── displays/                        the only home of visual assets
+└── 2-src/compile.sh                 build entrypoint
 ```
 
-Every stage drives its phases through the `2-phase/` workers (never user-invoked directly):
+S03 and S04 use the same topic-entry grammar:
 
 ```text
-DRAFT  -> 2-phase/0-draft/haipipe-paper-draft
-PROBE  -> 2-phase/1-probe/haipipe-paper-probe    (runs the five-step loop ORGANIZE->MATCH->DISPATCH->POINT->INTERPRET;
-                                                  DISPATCH+POINT run through the isolated
-                                                  haipipe-probe-q-executor-agent collector;
-                                                  only that collector calls task/discovery executor agents)
-REVISE -> 2-phase/2-revise/haipipe-paper-revise
-CHECK  -> 2-phase/3-check/haipipe-paper-check   (the one human gate in every current stage)
+direct S topic page:  canonical Q-consumer register and paper interpretation
+nested probes/ entry: one Q-executor, consumer trace, bank binding, and answer
 ```
 
-Each `stage.md` owns its ordered `phases:` list and `gates:` list. Most current
-stages declare DRAFT → PROBE → REVISE → CHECK; Venue intentionally declares
-DRAFT → PROBE → CHECK. All current stages declare `gates: [check]`.
+There is no live top-level `1-probes/`; legacy probe material belongs only in
+`0-lifecycle/_archive/1-probes/`.
 
-## Router Rule
-
-`haipipe-paper` should first resolve paper status through `enter`. Then route actions by
-the user's intended lifecycle object:
+## Stage to worker
 
 ```text
-status / enter / preload              -> 0-enter
-seed / resource / claims / venue / pitch
-  / narrative / figures / section-edit -> 1-lifecycle
-round / todo / decisions              -> 0-enter/haipipe-paper-round
-write / edit / revise (prose)         -> 1-lifecycle/5-section-edit (drives 2-phase/ workers)
-review / audits                       -> 3-deliver/2-audit
-scaffold / build / conform            -> 3-deliver/1-build
-polish / format / typeset             -> 3-deliver/3-polish
-compile / diff / overleaf / ship      -> 3-deliver/4-ship
-rebuttal / response                   -> 4-respond
-slides / poster                       -> 5-present
-venue / which journal / where submit  -> 1-lifecycle/haipipe-paper-stage/stages/2a-venue/  (recommend + pin the venue S-page state)
-  (the pinned venue's pack             -> venue/playbook-<venue>, consulted by each stage)
+stage work        -> route/haipipe-paper-stage
+draft             -> phase/0-draft/haipipe-paper-draft
+probe             -> phase/1-probe/haipipe-paper-probe
+revise            -> phase/2-revise/haipipe-paper-revise
+check             -> phase/3-check/haipipe-paper-check
+build and deliver -> S09-build/
+review round      -> S10-round/
 ```
 
-## Derived State Rule
+Stage contracts live beside their named S01, S02, S05, and S06 workers.
+`route/haipipe-paper-stage/stages/index.yml` resolves the eight current
+user-facing stages; S03 and S04 are their shared runtime evidence stores.
 
-There is no stored `current_layer`, frontier, maturity, gate, or open-needs
-record. Before every paper action, `haipipe-paper-enter` re-reads
-`0-lifecycle/board.md`, the relevant S pages, the claim ledger, probe entries,
-and their target artifacts.
-
-The active stage is the first lifecycle stage whose artifact predicate or
-required S-page `✅` gate fails. `.paper-console.yaml` stores paper identity
-only. Maturity remains optional descriptive vocabulary when useful, derived
-from the artifacts that actually exist; it is neither a required response
-field nor a cache.
-
-## References
-
-| File | Read it for |
-|---|---|
-| `1-lifecycle/ref/03-paper-lifecycle.md` | stage spine, maturity ladder, loopback rule, evidence-worker handoff |
-| `1-lifecycle/ref/04-lifecycle-map.md` | stage-to-procedure map with reads/writes/calls |
-| `1-lifecycle/ref/08-stage-gate.md` | exit criteria, confirm-before-advance gate, Evidence Principles (总纲) |
-| `haipipe-paper/SKILL.md` | Closing Block · Comment lifecycle · Delivery Need Routing · Evidence Routing Protocol |
-| `0-enter/haipipe-paper-round/SKILL.md` | `0-lifecycle/7-round/` contract, file semantics, triage targets |
-| `0-enter/haipipe-paper-enter/SKILL.md` | the dashboard spec: derive-from-disk frontier, glyphs, render skeleton |
-| `3-deliver/haipipe-paper-deliver/SKILL.md` | Lifecycle TeX Quality Standard (self-contained compilable tex with Pn.Sm tags) |
-| `PHILOSOPHY.md` | design philosophy: paper as a delivery contract |
-
-## Retired names
-
-| Retired | Use instead |
-|---|---|
-| `1-feedback/` | `0-lifecycle/7-round/` |
-| `architecture-minimap`, `paper-plan`, `display-contract`, `5-minimap` | `1b-claims`, `3-narrative`, `4-display`, `5-section-edit` |
-| `displays/Figures/` `Tables/` buckets | `displays/displayNN-<slug>/` |
-| project-level narrative coordination | paper owns its story; gaps route to probe |
-| `haipipe-paper-{conference,journal,is}` | `venue/playbook-<venue>` + lifecycle verbs |
-| `haipipe-paper-{create,revise}` | `haipipe-paper-stage/stages/5-section-edit/` (drives the DRAFT/REVISE phases) |
+See `haipipe-paper/fn/probes.md` for the delivery-to-engine contract and
+`phase/1-probe/haipipe-paper-probe/ref/topic-entry-contract.md` for validation
+rules.

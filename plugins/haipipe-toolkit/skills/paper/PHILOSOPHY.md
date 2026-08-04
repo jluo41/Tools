@@ -1,100 +1,61 @@
-# Paper Design Philosophy
+# Paper design philosophy
 
-A paper is a delivery contract, not a writing folder.
+A paper is a delivery contract, not a writing folder. It selects evidence,
+expresses the argument, and produces reader-facing artifacts. Tasks run project
+work. Discoveries inspect outside evidence. Both return a general-language QA
+file that the Paper may read but never author.
 
-Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>/`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1-work/S-Work-1-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
-
-## Lifecycle
+## Delivery, engine, execution
 
 ```text
-enter > 0-seed > 1-resource > 1-claims > [venue] > 2-pitch > 3-narrative > 4-display
-        > 5-section-edit > review > submit > round/respond > present
+Paper delivery       why an answer matters to this manuscript
+  ↓
+Nested probe entry   neutral question and bank binding
+  ↓
+Task or discovery    executes and authors the QA evidence
+  ↓
+Paper interpretation what the answer means for this paper
 ```
 
-`1-resource` and `1-claims` share the number 1, deliberately, exactly as `2-venue` and `2-pitch` already do. The number is decoration; frontier derivation matches the bare stage key `resource`. Nothing renumbers.
-
-Early stages are markdown (argument documents need no compilation); display and section-edit carry tex. Each stage answers one question:
-
-| Stage | Question |
-|---|---|
-| 0-seed | Why might this paper exist? |
-| 1-resource | What must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? (data, model checkpoints, producing-code) |
-| 1-claims | Which claims are supported, weak, or GAP? |
-| 2-pitch | What is the paper selling? (one minute, to the pinned venue) |
-| 3-narrative | How do claims become a manuscript arc? |
-| 4-display | What figure/table carries each claim? |
-| 5-section-edit | Does each section's prose do its job? (per-section DRAFT-PROBE-REVISE-CHECK) |
-
-Two axes stay orthogonal: **layer/frontier** (which stage has the active work) and **maturity** (how real the paper is: seed, working, submission-ready, published).
-
-`1-resource`, `1-claims` and `4-display` are the three stages where the paper reaches out for evidence. They cleave cleanly: resource asks whether the ingredients EXIST and can CARRY the claim (`task-for-data` / `task-for-algo`); claims RUNS THE EXPERIMENT — training this paper's model (`task-for-fit`) and evaluating it (`task-for-eval`) — that MOVES a claim's status. Resource may never train or evaluate. `review` is the gate that decides which earlier stage is broken.
+The Paper owns the first and last line. The executor owns the middle evidence.
+That boundary keeps a desired conclusion out of the evidence request.
 
 ## Evidence routing
 
-For claim-related evidence, the paper always routes through the PROBE phase. It raises its questions as ENTRIES in `1-probes/`, MATCHes each against the bank's QA corpus (most close there, for free), and dispatches only what MATCH cannot close — handing the section's `q-executor:` block, VERBATIM, to the task/discovery orchestrators. A standalone utility question a human wants goes to the bank's own `/haipipe-task qa` door, never proxied by the paper.
-
-The paper does not execute code, search literature directly, or store raw results.
-
-## Boundaries
-
 ```text
-task       executes internal work
-discovery  checks outside evidence
-probe      the paper's Q/A map: one ENTRY per question, bound BY PATH to the
-           executor's answering QA file. It does not judge — the claim's status
-           lands in the paper's 0-lifecycle/1-work/S-Work-1-claims.md
-paper      selects evidence, writes prose, delivers
+S03 Literature topic page
+  └── nested discovery entry
+
+S04 Value topic page
+  └── nested task entry
 ```
 
-## Paper Console
+Each direct topic page owns the canonical Q-consumer register and paper stake.
+Each nested entry owns one stake-free q-executor, consumer trace, bank binding,
+and returned answer. The five-step PROBE loop is ORGANIZE → MATCH → DISPATCH →
+POINT → INTERPRET. The paper matches before it dispatches and never executes
+bank work inline.
 
-`/haipipe-paper` inside a paper opens the paper's Board: a context-aware working session for one active paper. The console resolves the paper root, builds and opens `0-lifecycle/board.html`, derives the artifact frontier and S-page gates from disk, stores only the paper identity in `.paper-console.yaml`, and routes follow-up input through the lifecycle.
+## Lifecycle
 
-## Copilot policy
-
-Auto: read files, summarize status, classify input, draft stage .tex, detect open needs.
-
-Ask first: costly task/PHI work, claim verdicts, multi-section edits, compile-to-submit, opening/closing rounds.
-
-## Folder model
+The Paper family uses one delivery grammar:
 
 ```text
-the S page's own `state:`                     0-lifecycle/{0..5}/
-sections/                   displays/displayNN-*/
-1-probes/PPNN_<topic>/   0-lifecycle/7-round/vYYMMDD/
-2-src/compile.sh                  1-config.yaml
+S01 Opening → S02 Work → S03 Literature → S04 Value → S05 Display
+→ S06 Main → S07 Appendix → S08 Present → S09 Build → S10 Round
 ```
 
-`0-` = source of truth. `1-` = process.
+Venue is part of Opening. Literature and Value are shared runtime evidence
+stores that enable the user-facing stages, rather than extra public stages.
+The Board reads this order as delivery orientation; execution follows explicit
+stage contracts and their dependencies.
 
-## Design prompt
+## Non-negotiable boundaries
 
-Use this when revising or implementing the paper skill:
-
-```text
-You are designing the haipipe-paper layer.
-
-Treat a paper as a delivery contract, not a writing folder.
-The paper lifecycle is the stage spine:
-0-seed > 1-resource > 1-claims > [venue] > 2-pitch > 3-narrative > 4-display >
-5-section-edit, then review > submit > round/respond > present. Seed, resource
-and claims are venue-FREE; pitch through section-edit are venue-ALIGNED.
-(resource and claims SHARE the number 1, as venue and pitch already share 2.
-The number is decoration; the spine key is the bare name. Never renumber.)
-
-For each lifecycle stage, specify: what question it answers, which skill
-procedure owns it, which files it reads/writes, whether it calls
-task/probe/discovery, what artifact it produces, what machine state
-it updates, and when it must stop and ask the user.
-
-Keep the paper folder fixed:
-the S page's own `state:`, 0-lifecycle/<stage>/<stage>.tex, sections/,
-displays/displayNN-<slug>/, 1-probes/PPNN_<topic>/,
-0-lifecycle/7-round/vYYMMDD/S-Round-<n>-<vYYMMDD>.md.
-
-Preserve boundaries:
-- for claim-related evidence, paper routes through a stage's PROBE phase; there
-  is no direct task/discover — a standalone utility question uses the bank's own door
-- paper raises questions as entries in 1-probes/, MATCHes, then dispatches
-- paper does not execute code, search literature, or store raw results
-```
+- Paper does not run code, inspect raw data, or author bank evidence.
+- Task and discovery do not learn which paper claim an answer would settle.
+- A claim status lives on the Paper claim ledger, not in a probe entry.
+- A queue is derived from nested-entry state. It is not a separate folder or
+  a hand-maintained list.
+- The only live evidence-entry homes are `S03-literature/probes/` and
+  `S04-value/probes/`.

@@ -38,7 +38,7 @@ artifact_fallback: 0-lifecycle/S01-opening/3-narrative.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
-probes: 1-probes/PPNN_<topic>/
+probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
 display_request: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md   # one DR row per beat that needs a
                           # display, filed on this stage's behalf; the DISPLAY stage owns the file
                           # and advances its statuses
@@ -47,7 +47,7 @@ template: template.md
 exit_when: "arc weak -> pitch / claims"   # the stage's own failure exit
 
 venue_contract:           # read BEFORE composing — see the craft body
-  read_first: 0-lifecycle/S01-opening/S-Venue-0-venue.md   # Structural Blueprint beats + Writing Principles
+  read_first: 0-lifecycle/S01-opening/S-Open-Venue.md   # Structural Blueprint beats + Writing Principles
   fallback: venue/playbook-<venue>               # only if S-Venue-0-venue.md absent; no pack -> proceed without
   stale: "recorded pack commit behind venue HEAD -> note 'consider /haipipe-paper-stage venue refresh',
           but still use S-Venue-0-venue.md; never silently re-read packs"
@@ -67,8 +67,8 @@ sections:                 # in order. The MIDDLE IS NOT FIXED (JL 260802, ruling
 readiness_tags: [READY, PENDING, INFER, LIT, GAP]   # exactly one per beat; meanings in the craft body
 
 read_order:               # optional DRAFT craft order; dependencies live on the Board page
-  - 0-lifecycle/S01-opening/S-Venue-1-pitch.md      # the framing constraint, NOT evidence
-  - 0-lifecycle/S02-work/S-Work-1-claims.md    # the spine; the ONLY home of a claim's status
+  - 0-lifecycle/S01-opening/S-Open-Pitch.md      # the framing constraint, NOT evidence
+  - 0-lifecycle/S02-work/S-Work-C-claims.md    # the spine; the ONLY home of a claim's status
   - experiment results under figures/ · results/ · outputs/ · tasks/
   - review history and recorded limitations
   - repo source                           # one paragraph on what was BUILT, not what was proposed
@@ -91,7 +91,7 @@ closed_when: "REVISE weaves the Answer into the beat and discharges the [Q-Narra
 
 done_criteria:
   - "every beat carries exactly one readiness tag; no untagged beat"
-  - "no [GAP] or [PENDING] beat without a Q-consumer Aim record and a question ENTRY in 1-probes/"
+  - "no [GAP] or [PENDING] beat without a Q-consumer Aim record and a nested question entry under S03 or S04"
   - "no placeholder without its bracket — a \\cite{TOADD} or {VAL:?} carrying no [Q-Narrative-<n>]
      is a hole no question will ever fill"
   - "every beat needing a display carries a DR row in 0-lifecycle/S05-display/_DISPLAY_REQUEST.md"
