@@ -28,7 +28,7 @@ probe_depth: 0             # THE CEILING on what PROBE may dispatch, on the bank
                            # no gate. Raise it per invocation with `probe --depth N`.
 runs: per-unit
 unit: section
-units_from: 0-lifecycle/S01-opening/S-Venue-2-narrative.md
+units_from: 0-lifecycle/S02-work/S-Work-N-narrative.md
              # FALLBACK, for papers that predate the narrative stage: if that file is
              # absent, the unit list is the folders already scaffolded under
              # 0-lifecycle/S06-main/ (excluding z-structure/, which is the
@@ -53,7 +53,7 @@ artifact: 0-lifecycle/S06-main/S-{board_family}-{board_unit}-{board_slug}.md
                           # family, unit and slug (QB4@paper), never spelled by this stage. `board_family`
                           # and `board_unit` are per-unit here, not per-stage: a unit's kind decides
                           # Main vs Appendix and its reader order decides the number or letter.
-probes: 1-probes/PPNN_<topic>/
+probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
 output: sections/*.tex   # GENERATED from the .md by sync; NEVER hand-authored
 template: <resolved per (venue, section_kind)>
           # PRINCIPLE (JL 2026-07-20): every (venue, kind) has its OWN template, summarized from
@@ -70,12 +70,12 @@ fallback_template: template.md     # generic scaffold — placeholder grammar, t
                           # as <tpl: …> guidance. There is no separate format spec.
 
 read_order:               # optional DRAFT craft order; dependencies live on the Board page
-  venue:         0-lifecycle/S01-opening/S-Venue-0-venue.md                        # blueprint + writing principles
-  narrative:     0-lifecycle/S01-opening/S-Venue-2-narrative.md                  # the story beats
-  claims:        0-lifecycle/S02-work/S-Work-1-claims.md                      # what this section must support
+  venue:         0-lifecycle/S01-opening/S-Open-Venue.md                        # blueprint + writing principles
+  narrative:     0-lifecycle/S02-work/S-Work-N-narrative.md                  # the story beats
+  claims:        0-lifecycle/S02-work/S-Work-C-claims.md                      # what this section must support
   existing_tex:  sections/{NN}_{section}.tex                           # only if prose already exists
 
-venue_contract: 0-lifecycle/S01-opening/S-Venue-0-venue.md
+venue_contract: 0-lifecycle/S01-opening/S-Open-Venue.md
 venue_read_first:         # DRAFT opens these BEFORE writing a sentence
   - "Structural Blueprint, THIS section's block — BINDING: subsections, ¶ per subsection,
      sentences per ¶, citation density, word budget, display limits"

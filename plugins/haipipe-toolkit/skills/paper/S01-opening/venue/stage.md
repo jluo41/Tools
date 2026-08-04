@@ -15,7 +15,7 @@ phases: [draft, probe, check]
                           # decision + a transcribed blueprint), not prose, so there is
                           # nothing for REVISE to polish. But it DOES run PROBE: it raises
                           # `## Q-Venue-<n>` questions (recent-publications, editor and
-                          # competing-paper checks) as real ENTRIES in 1-probes/, and
+                          # competing-paper checks) as real nested S03/S04 entries, and
                           # template.md states "Answer: empty in DRAFT — PROBE
                           # fills it: the finding + [source: PP<nn>]".
                           # The invariant is only that `phases` ends with `check`.
@@ -57,8 +57,8 @@ artifact_fallback: 0-lifecycle/S01-opening/2a-venue.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
-probes: 1-probes/PPNN_<topic>/
-pins: 0-lifecycle/S01-opening/S-Venue-0-venue.md   # the pin lives on THIS stage's own S page, in its
+probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+pins: 0-lifecycle/S01-opening/S-Open-Venue.md   # the pin lives on THIS stage's own S page, in its
                            # on its `state:` line: `state: ✅ PINNED · <venue> <year>`. NOT a
                            # `venue:` frontmatter key — the board's face grammar is a CLOSED
                            # whitelist (haipipe-board src/parse.py) and would not parse one.
@@ -111,7 +111,7 @@ formatting:
 
 q_id_pattern: "- P<n> · Q-Venue-<n> · <title>"
 q_anchor: "[Q-Venue-<n>] cited inline in the Venue Decision sentence it rests on"
-closed_when: "PROBE writes the finding + [source: PP<nn>] into the Answer field. That is where
+closed_when: "PROBE writes the finding + [source: <nested-entry>] into the Answer field. That is where
               the loop closes for this stage — there is no REVISE to weave it back into prose,
               because the artifact is a contract, not prose. A landed Answer that changes the
               pick re-opens DRAFT rather than being woven in."

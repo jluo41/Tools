@@ -1,6 +1,6 @@
 ---
 name: haipipe-probe
-description: "The probe layer: a consumer-level Q/A map in a paper or application's 1-probes/PPNN_topic/ folder, one file per q-executor, that binds each question the consumer cannot answer itself by PATH to a QA file in the probe-unaware task/discovery bank. Owns the probe-file anatomy, the five-step loop, the cost ladder, the QA state-line contract, the two LAWS, and the checker's FAIL conditions. Trigger: probe, probe file, PPNN, q-executor, a-consumer, QA file, qa verb, state, working, answered, superseded, evidence, /haipipe-probe."
+description: "The shared probe model: a consumer-level Q/A map that binds a neutral q-executor by PATH to a QA file in the probe-unaware task/discovery bank. Consumer families own their entry location and local page overlay; this skill owns stake stripping, the five-step loop, bank independence, and the QA evidence boundary. Trigger: probe, q-executor, a-consumer, QA file, qa verb, state, evidence, /haipipe-probe."
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
   version: "0.11.1"
@@ -8,15 +8,12 @@ metadata:
   summary: "The probe layer, operational form. Board-first Q-consumers are Content-linked Aims with separate rows in States; PROBE owns ORGANIZE→MATCH→DISPATCH→POINT→INTERPRET."
 ---
 
-> **WHERE AN ENTRY LIVES IS THE CONSUMER'S CHOICE, not this model's** (JL 260803).
-> This skill owns the entry's ANATOMY, its state contract and its two LAWS; it does
-> not own the path. A paper now keeps each entry as a PAGE in its own board, in the
-> group that matches the entry's route: `0-lifecycle/8-literature/` for
-> `route: discovery` and `0-lifecycle/9-value/` for `route: task`, because those two
-> groups ARE the paper's outside-evidence and inside-evidence concerns. The older
-> `1-probes/PPNN_<topic>/QXn_<slug>.md` layout is retired for papers and archived
-> under the paper's `_archive/`; an application still uses its own path until it
-> makes the same move.
+> **WHERE AN ENTRY LIVES IS THE CONSUMER'S CHOICE, not this model's.** This
+> skill owns the crossing: stake stripping, MATCH-before-DISPATCH, and the
+> bank's independent QA evidence. A consumer skill owns its page path, direct
+> consumer register, entry headings, and local state overlay. For Paper, read
+> `paper/phase/1-probe/haipipe-paper-probe/ref/topic-entry-contract.md` before
+> authoring an entry; it defines the S03 Literature and S04 Value runtime shape.
 
 Skill: haipipe-probe — the probe layer
 ======================================
@@ -27,7 +24,8 @@ A paper may instead record a terminal `concern` when no bank can close the doubt
 A probe is COMMUNICATION between a consumer and an executor — it carries a clean question out and a general answer back, while its `### q-consumer` copy remains review-only on the consumer side.
 
 Spec and rationale (why it is built this way): `../../diagrams/01-probe-qa-260726/`.
-This file is the operational form and the vocabulary source; where another skill disagrees, this file wins.
+This file is the shared execution model and vocabulary source. A consumer-specific
+contract wins for the storage path, page hierarchy, and entry headings it owns.
 
 ⚠️ ONE SOURCE FOR THE VOCABULARY.
 The task/discovery twins, the `qa` verbs, the probe workers, and `check-probe-cards.sh` COPY the canonical strings from here.

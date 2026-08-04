@@ -174,7 +174,7 @@ If the page does not exist, the dashboard says "pitch not yet written".
 4. Main and appendix sections: scan `0-lifecycle/4-main/` and `0-lifecycle/5-appendix/` for
    `S-Main-*.md` / `S-Appendix-*.md`. Derive per-section DPRC status from each page's `state:`
    and from what exists on disk.
-4b. `1-probes/PP*/*.md`: the paper's open questions, one `QXn` file per q-executor inside each topic folder. Per entry read its `**state**` and whether `### a-executor` is filled — this is what the phase strip's `probe` glyph is derived from.
+4b. `S03-literature/probes/` and `S04-value/probes/`: the paper's open questions, one nested entry page per q-executor. Per entry read its bank-binding `**state**` and whether `#### a-executor` is filled — this is what the phase strip's `probe` glyph is derived from.
 5. Explicit need records in lifecycle TeX comments or markdown tables.
    Search for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, and `open`.
 6. `displays/*/README.md` -- one per unit; there is no top-level index and no `figures/`.

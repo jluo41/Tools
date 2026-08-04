@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-draft-values
-description: "DRAFT-phase value auditor (internal). Walks a stage doc or section for every quantitative claim, decides which already trace to a named source, and REPORTS every remaining hole to haipipe-paper-draft — where it is, that it owes `{VAL:? <what>}`, and which `Q-<Stage>-<n>` will produce the number (or UNOWNED). READ-ONLY: the hub holds the pen for the manuscript, the Q-consumer, and 1-probes/. Never re-derives, never greps the codebase, never writes anything. Users invoke stage skills (claims, section-edit...), not this skill directly."
+description: "DRAFT-phase value auditor (internal). Walks a stage doc or section for every quantitative claim, decides which already trace to a named source, and REPORTS every remaining hole to haipipe-paper-draft — where it is, that it owes `{VAL:? <what>}`, and which `Q-<Stage>-<n>` will produce the number (or UNOWNED). READ-ONLY: the hub holds the pen for the manuscript and direct topic Q-consumer register; PROBE owns nested entries. Never re-derives, never greps the codebase, never writes anything. Users invoke stage skills (claims, section-edit...), not this skill directly."
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
@@ -24,7 +24,7 @@ What this skill does NOT do
 - It does NOT invent a number, ever, for any reason. An invented number is the single worst failure this bucket can ship: it is invisible in review, survives compile, and is indistinguishable from a real one.
 - It does NOT re-derive. Recomputing from the parquet, re-running the regression, checking the arithmetic — that is `haipipe-paper-check-evidence`.
 - It does NOT grep the codebase for a method claim. At DRAFT an unverifiable method claim becomes a question, not a search.
-- It does NOT WRITE, anywhere. Not the manuscript, not the stage doc, not `1-probes/`. It walks and reports; `haipipe-paper-draft` holds the pen for all three, and `haipipe-paper-revise-place` places landed numbers later. One writer per file — two lanes editing one sentence is a race.
+- It does NOT WRITE, anywhere. Not the manuscript, not the topic register, and not a nested probe entry. It walks and reports; `haipipe-paper-draft` holds the pen for the first two, and `haipipe-paper-revise-place` places landed numbers later. One writer per file — two lanes editing one sentence is a race.
 
 
 AUDIT — find every quantitative claim
@@ -50,7 +50,7 @@ For each, ask one question: **what named source would a stranger open to confirm
 
 ```
 has a source     the number appears in a named results file, a landed
-                 `### a-executor`, or a display unit's source data → keep it, and
+                 `#### a-executor`, or a display unit's source data → keep it, and
                  write the source path beside it so REVISE and CHECK can follow it
 no source        it came from memory, from an earlier draft, or from nowhere → it
                  is a hole
@@ -76,7 +76,7 @@ Finding the right `[Q-<Stage>-<n>]`, cheapest first:
 
 ```
 1. an EXISTING Q-consumer would produce it        → reuse its id
-2. an existing ENTRY in 1-probes/ asks it         → add a `### q-consumer` bullet
+2. an existing entry asks it                      → add its Q-consumer mapping to the owning topic register
 3. nothing would produce it                       → REPORT it to the hub as UNOWNED;
                                                      the hub raises it at Step 4b
 ```

@@ -37,7 +37,7 @@ artifact_fallback: 0-lifecycle/0-seed/0-seed.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
-probes: 1-probes/PPNN_<topic>/
+probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
 template: template.md
 
 exit_when: "not viable -> drop the paper"   # the stage's own failure exit
@@ -69,7 +69,7 @@ defer_to: resource        # anything else: keep the Q block, `Answer: deferred -
 done_criteria:
   - "all four Content divisions plus the Q-consumer records carry real content; every <!-- RULE --> comment deleted"
   - "every question the draft hangs on is a Q-consumer Aim record, anchored to a draft assertion"
-  - "each Q marked DISPATCHED (an entry in 1-probes/) or DEFERRED (no entry, forward pointer)"
+  - "each Q links from a direct topic register to one nested entry, or is explicitly deferred"
   - "no bare \\cite{TOADD} — the citation command and its [Q-Seed-<n>] bracket sit side by side"
   - "the S page's ## Log records phase history and the gate row"
   - "check-probe-cards.sh <paper_root> --stage seed exits 0"
@@ -120,7 +120,7 @@ The narrow part is DISPATCH. What goes OUT at seed stays feasibility-shaped:
 
 A raised question of any other shape — profiling OUR OWN data (cohort size, field coverage, label
 availability in our AIData), or any other prerequisite — KEEPS its `## Q-Seed-<n>` block, gets NO
-entry in `1-probes/`, records `Answer: deferred -> RESOURCE`, and carries a forward pointer. It
+entry under the S03/S04 topic's `probes/` folder, records `Answer: deferred -> RESOURCE`, and carries a forward pointer. It
 fires when resource opens.
 
 **The split costs nothing to get wrong now.** At `probe_depth: 0` a dispatched question can only
@@ -140,7 +140,7 @@ q-executor entries. It is NEVER evidence.
 
 PROBE must ALWAYS run the real worker. An inline result binds to nothing.
 DRAFT raises the Q-consumer question; PROBE alone opens the entry, MATCHes it,
-dispatches within the ceiling, and harvests `### a-executor`.
+dispatches within the ceiling, and harvests `#### a-executor`.
 
 Profiling OUR OWN data belongs in RESOURCE. Such a question may well have been RAISED here — it
 was deferred at the gate, and it is not dispatched from this stage.

@@ -1,192 +1,81 @@
-Probe files (paper)
-====================
+# Paper probe routing
 
-The paper accumulates its open QUESTIONS as **probe files** during lifecycle work (seed,
-resource, claims, pitch, narrative, display, section-edit). DRAFT raises the
-Q-consumer questions on the owning S page. PROBE owns the complete loop:
-① ORGANIZE → ② MATCH → ③ DISPATCH → ④ POINT → ⑤ INTERPRET.
+The Paper layer owns why a question matters. The task and discovery layers own
+the evidence. PROBE is the durable path between them:
 
-The MODEL itself is owned by `../../../probe/haipipe-probe/SKILL.md`.
-Read that; this file only carries the paper-side paths and verbs. The application twin is the
-same document with application paths.
-
-Location — one flat pool of topic folders, one file per entry
---------------------------------------------------------------
-
-```
-<paper>/
-└── 1-probes/
-    ├── PP01_welldoc-feasibility/
-    │   ├── QX1_cycle-indicator.md
-    │   └── QX2_coverage.md
-    ├── PP02_cgm-horizon/
-    │   └── QX1_forecast-window.md
-    └── README.md                     a GENERATED board (see below); the files win
+```text
+DRAFT: direct topic page owns the Q-consumer and paper stake
+  ↓
+PROBE: one nested entry owns the Q-executor and bank binding
+  ↓
+EXECUTOR: task or discovery produces a QA file
+  ↓
+PROBE: entry copies the answer; topic page records paper interpretation
 ```
 
-- `1-probes/` — a single pool at the paper root. Topic folders are never stage folders.
-- Stage affinity is an ENTRY's `### q-consumer` bullet, never the file's path. One flat cross-stage pool.
-- PP numbers are **paper-local footnote numbers**. `ls 1-probes/` is the numbering authority.
-  There is no ledger, and no PP id ever crosses to the task/discovery bank — so two papers may
-  both carry a PP03 with nothing to reconcile, the way two books both carry a footnote 4.
-Probe file anatomy
--------------------
+## Runtime layout
 
-Full spec: `probe/haipipe-probe/SKILL.md` → "The probe file". Each
-`QXn_<slug>.md` file contains one `## QX<n>` entry with four `###` subsections.
-The topic is its parent `PPNN_<topic>/` folder.
+```text
+0-lifecycle/
+├── S03-literature/
+│   ├── S-Literature-<n>-<topic>.md
+│   └── probes/L<n>-<topic>/S-Literature-<n>-<slug>.md
+└── S04-value/
+    ├── S-Value-<n>-<topic>.md
+    └── probes/V<n>-<topic>/S-Value-<n>-<slug>.md
+```
+
+S03 is for outside-project discovery. S04 is for project-task evidence. The
+direct topic page is canonical for its `### Q-consumer register`: it states the
+paper-facing question, stake, and final interpretation. Every nested entry has
+one direct topic `requires:` and exactly this anatomy:
 
 ```markdown
-# PP01 — WellDoc data feasibility
+#### q-executor
+<neutral, stake-free question sent verbatim to the executor>
 
-## QX1 — cycle indicator
+#### consumer trace
+Q-<Stage>-<n> <audit copy only; it must exist in the parent topic register>
 
-### q-executor
-Scan all 40 WellDoc CSV tables for menstrual/cycle/hormone columns. Report which exist, or none.
-Deliverable: QA digest + machine artifact. Accepted: present | absent.
+#### bank binding
+**route**: task | discovery
+**bank**: reuse | run | code | new
+**target**: <QA file or NEW>
+**state**: planned | commissioned | deferred | read | answered-local
 
-### q-consumer
-* Q-Claim-6 — does WellDoc have a cycle column? (C6 dies if it does)
-
-### bank binding
-**route**: task
-**bank**: reuse
-**target**: tasks/A03_welldoc_cycle_check/01_column_scan/QA/1-cycle-indicator.md
-**state**: read
-
-### a-executor
-No cycle column in 40 tables.
+#### a-executor
+<answer copied from the resolved QA file>
 ```
 
-- `### q-executor` — the question in GENERAL language: no claim ids, no stake, no hint of which
-  answer is wanted. This is the DISPATCH PAYLOAD, and nothing else is. FROZEN once written. Carries
-  its own `Deliverable:` line and an `Accepted: a | b` line.
-- `### q-consumer` — one bullet per Q-consumer this q-executor serves: the stage-doc `Q-<Stage>-<n>`
-  id + that consumer's ORIGINAL question, copied in (review-only, never dispatched). One q-executor
-  serving several Q-consumers IS reuse, structurally. A stage gate greps these ids for its stage
-  token (Q-Seed-1 → seed).
-- `### bank binding` — four `**field**:` lines: `route` (task | discovery, the dispatch door,
-  AUTHORITATIVE), `bank` (reuse | run | code | new — the PROBE ② verdict, judged by a read-only grep
-  ON THE ANSWER), `target` (a PATH to the answering QA FILE, `NEW <path>` while unwritten, `NEW ?`
-  while even the folder is undecided), `state` (DERIVED from disk, never asserted).
-- `### a-executor` — a COPY of the answering QA file's answer, written at HARVEST (PROBE ⑤); empty
-  until answered. The consumer-side single source of truth. Each Q-consumer then writes its OWN
-  a-consumer in its stage doc (station ②), anchored `[source: PP<NN>]` back to this copy.
+`planned`, `commissioned`, and `deferred` form the queue. `read` and
+`answered-local` are resolved. A `consumer trace` is audit history, never a
+second Q-consumer source of truth.
 
-The STAKE never appears in a probe file — it lives in each Q-consumer, in the stage doc.
+There is no live top-level `1-probes/`. A migrated paper may preserve it only
+under `0-lifecycle/_archive/1-probes/`.
 
-⛔ No markdown tables in a probe file. It holds ENTRIES. The words "card", "row" and "table"
-are not part of this vocabulary.
+## Commands
 
-**BUILD-lane fields** — present ONLY at `state: commissioned`, on work that takes days to weeks
-(`task-for-data` / `task-for-algo` / `task-for-fit`, or a long acquisition such as a DUA/IRB),
-added under `### bank binding`:
-`**owner**:` · `**eta**: YYYY-MM-DD` · `**blocks**:` · `**cross-project**: <sibling path | none-found>`.
-A future `eta` PASSES the gate — a 3-week build has not failed, it is WORKING, and it must not
-red every downstream gate for 3 weeks. An `eta` that has PASSED with no answer is a HARD FAIL:
-without the date test, `commissioned` becomes the state every un-run section wears and the
-mechanism ships as a laundering token. `cross-project:` is MANDATORY on every BUILD-lane section.
-Enforced by `check-probe-cards.sh`.
-
-States (DERIVED from disk — never asserted)
---------------------------------------------
-
-```
-planned          the entry exists · the target leaf is missing (or `NEW …`)
-commissioned     the task-folder + its plan.yaml exist · the QA file is absent
-answered         the target QA FILE exists
-read             the entry's `### a-executor` is non-empty (+ 1b-claims.md flipped, if it serves a claim)
-answered-local   target points into the paper's OWN registries; no dispatch happened
-failed           a reading with a dead target · the task-folder was deleted · the qa verb REFUSEd
+```text
+/haipipe-paper probe "<question>"       raise a Q-consumer and route it to S03 or S04
+/haipipe-paper probe                    inspect the nested entry queue
+/haipipe-paper probe run                run the five-step loop over queued entries
+/haipipe-paper probe run <topic-id>     run one topic, for example literature-1
 ```
 
-An entry in flight is `commissioned`.
-A claim's STATUS (`supported | refuted | inconclusive` + confidence + claim_type)
-lives in `0-lifecycle/1-work/S-Work-1-claims.md`. It is not a probe field.
+All commands go through `haipipe-paper-probe`.
 
-Binding is by PATH, never by id
---------------------------------
+## The five-step loop
 
-An entry's `target` is a PATH to the answering file — a **QA file** in the bank:
-
-```
-tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md          discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
-```
-
-The QA file is the EXECUTOR's readable digest of a direction it explored: `# Q` / `## Answer` /
-`## Caveats` / `## Not-done`, in general language, with anchors into `results/` or `sources.md`.
-`ls QA/` IS the index. Point at the FILE, never the folder — a leaf that answered three things
-cannot tell you which one is yours.
-
-**The probe CAUSES a QA file; the EXECUTOR AUTHORS it.** When a probe meets a bare `results/`
-with no digest, it does not write the digest: it DISPATCHES a digest-only run. A paper session
-that writes in the bank has broken LAW 1, whatever it ends up writing — that is exactly how
-`tasks/A03_welldoc_cycle_check/result.md` ended up carrying "C6"/"C7".
-
-Commands
----------
-
-```
-/haipipe-paper probe "<question>"   raise a question -> a QX<n> entry file in the right topic folder
-/haipipe-paper probe                show the board (derived from 1-probes/ on disk, never stored)
-/haipipe-paper probe run            run the five-step loop over every open entry
-/haipipe-paper probe run PP01       run it for one probe file
+```text
+① ORGANIZE   open one entry per Q-executor under the owning S03/S04 topic
+② MATCH      read the bank's QA corpus and set route, bank, target, state
+③ DISPATCH   send only the frozen q-executor block for unmatched work
+④ POINT      bind target to the answering QA file
+⑤ INTERPRET  copy into a-executor and update the parent topic register
 ```
 
-All four go through `haipipe-paper-probe` (the PROBE phase worker) — the single door.
-
-The loop — haipipe-paper-probe owns ① through ⑤
------------------------------------------------
-
-```
-PROBE authors and runs the plan:
-  ① ORGANIZE   collect the questions into 1-probes/, grouped by topic; find-or-open each
-               `## QX<n>`, write its `### q-executor` (stake stripped), copy the Q-consumer
-               under `### q-consumer`, and choose its `route`:
-  ② MATCH      T0 JOIN · T1 LOCAL · T2 REUSE — grep the bank's QA corpus, READ the hits, and
-               ROOT each question to a SPECIFIC folder: set `bank` (reuse | run | code | new)
-               and `target` (an existing QA path, or `NEW <path>`).
-               → most entries should stop HERE. A NEW dispatch is the EXCEPTION, not the norm.
-  ③ DISPATCH   target: NEW only: hand the authorized entries as a SET to
-                 Agent(haipipe-probe-q-executor-agent)
-               whose clean context IS the wall. The collector sends each
-               `### q-executor` VERBATIM to the task/discovery orchestrator
-               selected by its authoritative route and writes back each target.
-  ④ POINT      target: → the answering QA FILE (open it, read the state: line)
-  ⑤ INTERPRET  `### a-executor` (copy the QA answer, HARVEST inline: source anchors,
-                 values, display-unit paths) → each consumer's a-consumer in its stage
-                 doc → 1b-claims.md flips
-```
-
-⛔ **MATCH BEFORE DISPATCH — both at PROBE, in that order.** The bank fills AUTONOMOUSLY from the executor
-side, so in a healthy project most answers already exist before anyone asks. A probe file whose
-every entry is NEW-to-dispatch is a SMELL — either the MATCH was lazy, or the bank is starving.
-Say which, in the reply.
-
-Lifecycle Integration
-----------------------
-
-Any lifecycle stage can raise a question:
-- 0-seed: "NEED-1 (probe): expand ex ante audit" -> an entry in the matching topic's probe file
-- 1-resource: each `Q<n>` -> an entry, plus a `-> PP<NN>` backlink written back
-  into S-Work-0-resources.md (that backlink is the mechanical proof the question was ASKED, and the
-  CHECK gate tests it)
-- 2-claims: every GAP / weak claim -> an entry
-
-The entry captures the question immediately; the MATCH may close it for free, and only a T3/T4
-entry is ever dispatched.
-
-A standalone question — one with no paper behind it
-----------------------------------------------------
-
-There is no `task` or `discover` verb on the paper front door; the paper reaches the bank only
-through a stage's PROBE phase. A question with no paper behind it does not need a probe file at
-all — a HUMAN hands it straight to the executor's own door:
-
-```
-/haipipe-task qa "<question>"        the everyday "go explore this" verb; the QA file is the receipt
-/haipipe-discovery qa "<question>"   same, for external evidence
-```
-
-If that answer later matters to the paper, open an entry whose `target` points at the
-already-written QA file. That is a T2 REUSE — nothing re-runs.
+The default rule is MATCH before DISPATCH. The paper never writes the bank and
+never executes task or discovery work inline. See
+`phase/1-probe/haipipe-paper-probe/ref/topic-entry-contract.md` for the exact
+contract and `check-probe-cards.sh` for its deterministic verification.

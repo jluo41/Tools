@@ -194,25 +194,22 @@ def dashboard(main_dir, date):
     # unplaced because it compared a label against a folder-name fragment).
     unit_of, units = {}, set()
     root = main.parent.parent
-    # The units moved to `0-lifecycle/3-display/workspace/` on 2026-07-27 and the
-    # dashboard, which had `displays/` hardcoded, silently reported "0 of 0
-    # units" rather than failing. Follow BOTH homes, the same two the resolver
-    # follows, so a layout change shows up as a number rather than as silence.
-    homes = [main.parent / "3-display" / "workspace", root / "displays"]
+    # Display workspace is an optional runtime area; deliverable assets live in
+    # the paper's unnumbered displays/ root. Follow both supported homes.
+    homes = [main.parent / "S05-display" / "workspace", root / "displays"]
     for f in [x for h in homes for x in h.glob("*/float.tex")]:
         units.add(f.parent.name)
         for lab in re.findall(r"\\label\{([^}]*)\}", f.read_text()):
             unit_of[lab] = f.parent.name
     asked = set()
-    for f in (root / "1-probes").rglob("QX*.md"):
-        blk = f.read_text().split("### q-consumer")
-        if len(blk) > 1:
-            asked.update(re.findall(r"Q-[A-Za-z0-9]+-\d+", blk[1].split("###")[0]))
+    for stage in ("S03-literature", "S04-value"):
+        for topic in (main.parent / stage).glob("S-*.md"):
+            asked.update(re.findall(r"Q-[A-Za-z][A-Za-z0-9-]*", topic.read_text()))
 
     L = [BEGIN,
          f"  SECTION DASHBOARD, MEASURED {date}. GENERATED; do not hand-edit.",
-         "  regenerate: section-stats.py --dashboard <0-lifecycle/4-main>",
-         "  floors and citation targets are TRANSCRIBED from S-Venue-0-venue.md's",
+         "  regenerate: section-stats.py --dashboard <0-lifecycle/S06-main>",
+         "  floors and citation targets are TRANSCRIBED from S-Open-Venue.md's",
          "  Structural Blueprint; everything else is measured from the pages.",
          "",
          "  §  page            P  sent  words  floor      !    cite  targ  disp  bad  state",

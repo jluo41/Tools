@@ -6,8 +6,7 @@
 #   the NUMBER is the delete test. `rm -rf 0-* 1-* 2-*` must leave a paper that
 #   still compiles and still submits.
 #
-#   0-lifecycle/  the Board control plane; 3-display also owns its review gallery
-#   1-probes/     the near side of the wall
+#   0-lifecycle/  the Board control plane, including nested topic probes
 #   2-src/        how the deliverable is BUILT, not what it is
 #   everything unnumbered  IS the deliverable
 #
@@ -29,7 +28,7 @@ hdr()  { printf '\n-- %s\n' "$*"; }
 
 echo "== paper-structure-check: $(pwd)"
 
-FAMILIES="Seed Work Venue Display Main Appendix Submission Round"
+FAMILIES="Opening Work Literature Value Display Main Appendix Present Submission Round"
 
 # ---------- A. is this a paper folder at all ----------
 hdr "A. paper folder"
@@ -41,24 +40,23 @@ if [ ! -d 0-lifecycle ]; then
 fi
 ok "0-lifecycle/ present"
 
-# ---------- B. three numbered folders, and only three ----------
-hdr "B. numbered entries (three folders, and only three)"
+# ---------- B. two numbered roots, and only two ----------
+hdr "B. numbered entries (two roots, and only two)"
 STRAY=0
 for e in [0-9]-*; do
   [ -e "$e" ] || continue
   case "$e" in
-    0-lifecycle|1-probes|2-src) ;;
+    0-lifecycle|2-src) ;;
     *)
       STRAY=1
       if [ -d "$e" ]; then
-        bad "$e/ carries a number but is not one of the three (0-lifecycle 1-probes 2-src)"
+        bad "$e/ carries a number but is not one of the two roots (0-lifecycle 2-src)"
       else
-        bad "$e is a numbered FILE; the prefix is reserved for the three working folders"
+        bad "$e is a numbered FILE; the prefix is reserved for the two working roots"
       fi
       ;;
   esac
 done
-[ -d 1-probes ] || warn "1-probes/ missing (created on first probe; absent is legal on a young paper)"
 [ -d 2-src ]    || warn "2-src/ missing (arrives with the manuscript upgrade; absent is legal before Display)"
 [ "$STRAY" -eq 0 ] && ok "no stray numbered entries"
 
@@ -81,8 +79,8 @@ for e in 0-lifecycle/*; do
   b=$(basename "$e")
   if [ -d "$e" ]; then
     case "$b" in
-      0-seed|1-work|2-venue|3-display|4-main|5-appendix|6-submission|7-round|_archive) ;;
-      *) bad "0-lifecycle/$b/ is not one of the eight family folders (0-seed 1-work 2-venue 3-display 4-main 5-appendix 6-submission 7-round) or _archive" ;;
+      S01-opening|S02-work|S03-literature|S04-value|S05-display|S06-main|S07-appendix|S08-present|S09-build|S10-round|_archive|board) ;;
+      *) bad "0-lifecycle/$b/ is not a lifecycle stage folder (S01 through S10), board/, or _archive" ;;
     esac
   else
     case "$b" in
@@ -92,37 +90,38 @@ for e in 0-lifecycle/*; do
   fi
 done
 
-for f in 0-lifecycle/*/*; do
+for f in 0-lifecycle/S*/*; do
   [ -e "$f" ] || continue
   d=$(basename "$(dirname "$f")")
   b=$(basename "$f")
   [ "$d" = "_archive" ] && continue
   [ "$b" = "_archive" ] && continue      # every family may keep its own _archive/
-  if [ "$d" = "3-display" ]; then
-    case "$b" in
-      4-display.tex|4-display.pdf|_DISPLAY_REQUEST.md|_preview) continue ;;
-    esac
-  fi
+  case "$d/$b" in
+    S03-literature/probes|S04-value/probes) continue ;;
+    S05-display/workspace|S05-display/_preview|S05-display/_DISPLAY_REQUEST.md) continue ;;
+  esac
   case "$b" in
     S-*.md) ;;
     *)
       if [ -d "$f" ]; then
-        bad "0-lifecycle/$d/$b/ is an unowned folder; only 3-display/_preview is allowed beside S pages and _archive/"
+        bad "0-lifecycle/$d/$b/ is an unowned folder; only S03/S04 probes, S05 display workspace, and _archive/ are allowed beside S pages"
       else
-        bad "0-lifecycle/$d/$b is not an owned S-page or Display gallery/inbox artifact"
+        bad "0-lifecycle/$d/$b is not an owned S page or allowed display artifact"
       fi
       continue ;;
   esac
   fam=$(echo "$b" | sed -E 's/^S-([A-Za-z]+)-.*/\1/')
   case "$fam" in
-    Seed)       want=0-seed ;;
-    Work)       want=1-work ;;
-    Venue)      want=2-venue ;;
-    Display)    want=3-display ;;
-    Main)       want=4-main ;;
-    Appendix)   want=5-appendix ;;
-    Submission) want=6-submission ;;
-    Round)      want=7-round ;;
+    Open)       want=S01-opening ;;
+    Work)       want=S02-work ;;
+    Literature) want=S03-literature ;;
+    Value)      want=S04-value ;;
+    Display)    want=S05-display ;;
+    Main)       want=S06-main ;;
+    Appendix)   want=S07-appendix ;;
+    Present)    want=S08-present ;;
+    Submission) want=S09-build ;;
+    Round)      want=S10-round ;;
     *) bad "0-lifecycle/$d/$b names family '$fam', which is not one of: $FAMILIES"; continue ;;
   esac
   [ "$d" = "$want" ] || bad "0-lifecycle/$d/$b belongs in $want/ (one family, one folder)"

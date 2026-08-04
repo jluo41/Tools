@@ -47,6 +47,7 @@ from urllib.parse import unquote
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
 from src.common import ALIAS, STN, aim_progress, page_files  # noqa: E402
+from src.topic_entry_contract import check_topic_entries  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 STATE_LABELS = {"✅": "SETTLED", "🟡": "PARTIAL", "🔴": "OPEN", "⏸": "ON HOLD"}
@@ -966,6 +967,7 @@ def main():
             page_ids.add(m.group(1))
     for name, p in sorted(pages.items()):
         check_face(p, name, rep, links, page_ids, decision_only)
+    check_topic_entries(d, pages, rep)
     check_page(d, rep)
     check_css(rep)
     if not a.no_template:

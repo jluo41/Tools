@@ -37,7 +37,7 @@ artifact_fallback: 0-lifecycle/S02-work/1b-claims.md
                           # papers that predate the 2026-07-25 S-face restructure carry
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
-probes: 1-probes/PPNN_<topic>/
+probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
 template: template.md
 
 exit_when: "claim unsupported/too strong, no route"   # the stage's own failure exit
@@ -58,7 +58,7 @@ status:                   # THIS STAGE IS THE ONLY HOME OF A CLAIM'S STATUS — 
   confidence: "per-claim, written beside the status"
   claim_type: [associational, causal, in-sample, generalizing]
   blocked: "BLOCKED-ON-RESOURCE — cites the resource row it waits on (`-> N<n>` in S-Work-0-resources.md)"
-  written_at: "INTERPRET, when a probe entry's `### a-executor` lands and its a-consumer reads it"
+  written_at: "INTERPRET, when a nested entry's `#### a-executor` lands and the topic register records it"
 
 formatting:
   title_rule: "====="
@@ -75,7 +75,7 @@ done_criteria:
   - "both Content divisions plus the Q-consumer records carry real content; every <!-- RULE --> comment deleted"
   - "every claim carries a status and an `Evidence:` line naming the Q-Claim-<n>s that settle it"
   - "every GAP/inconclusive claim has a plan and a question ENTRY — or is BLOCKED-ON-RESOURCE citing its `-> N<n>` row"
-  - "every settled claim passes BOTH stages: the cited file exists with the number in it, AND a probe entry whose `target:` QA file resolves on disk carries the answer in its `### a-executor`"
+  - "every settled claim passes BOTH stages: the cited file exists with the number in it, AND a nested entry whose `target:` QA file resolves on disk carries the answer in its `#### a-executor`"
   - "no aspirational anchor cited as evidence — a `planned` entry settles nothing"
   - "no bare {VAL:?} or \\cite{TOADD} — the marker and its [Q-Claim-<n>] bracket sit side by side"
   - "the S page's ## Log records phase history and the gate row"

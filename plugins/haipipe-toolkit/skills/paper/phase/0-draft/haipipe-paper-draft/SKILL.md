@@ -34,7 +34,7 @@ The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **P
 - **LOCAL answers**: DRAFT may cite paper-owned registries it has actually read, but it does not author `### bank binding`; that is PROBE's MATCH work.
 - **RESOURCE stage**: write `Resource Description` under `## Content` and the logical `Q-consumer` records under `## Items to Finish` on `S-Work-0-resources.md`. DRAFT describes each resource and raises the questions; PROBE opens the entries, lands the answers, and writes their source pointers. `--depth`, supplied by the human, is the spend authorization.
 - One sentence per line; no markdown tables in probe files.
-- ⛔ **DRAFT DOES NOT TOUCH `1-probes/`.** It raises `- [ ] 🔎 Q-<Stage>-<n>` records in the S page's `## Items to Finish` and stops. Writing a `### q-executor`, choosing a `route`, judging a `bank`, or setting a `target` is PROBE's ① and ②. (They ran here until 2026-07-20, purely so one human gate could review draft + plan together; stages now declare `gates: [check]`, so that reason is gone.)
+- ⛔ **DRAFT DOES NOT TOUCH nested entries.** It raises Q-consumer rows in the direct topic page's `### Q-consumer register` and stops. Writing a `#### q-executor`, choosing a route, judging a bank, or setting a target is PROBE's ① and ②. (They ran here until 2026-07-20, purely so one human gate could review draft + plan together; stages now declare `gates: [check]`, so that reason is gone.)
 - ⛔ **DRAFT OPENS NO GATE unless the stage's contract declares one.** Read `gates:` in `stage.md`. The default is `[check]` — in that case DRAFT ends by handing straight to PROBE, with no STOP.
 
 The steps below are the HOW-TO for these rules.
@@ -159,8 +159,8 @@ But a seed is allowed to be intuition (seed principle 1), so what that search pr
 1. **PROSE** in the stage artifact (Motivations, Claim Shape, ...) -- phrased as orientation, with `\cite{TOADD} [Q-<Stage>-<n>]` slots, never as settled fact. Anything load-bearing stays a raised question.
 2. **A RAISED QUESTION** -- a gap the search reveals goes through Step 4b like any other, with no special status.
 
-FORBIDDEN in DRAFT: opening or editing `1-probes/`, writing a
-`### a-executor`, or treating an inline result as landed evidence.
+FORBIDDEN in DRAFT: opening or editing a nested entry page, writing a
+`#### a-executor`, or treating an inline result as landed evidence.
 Real evidence lands ONLY via the PROBE phase dispatching `haipipe-paper-probe` (the single door); inline search results bind to nothing -- evidence gathered any other way means "the PROBE phase did not happen."
 `check-probe-cards.sh` runs after PROBE and again at CHECK, not here, because
 DRAFT has not created entries yet.
@@ -177,7 +177,7 @@ Skill("haipipe-paper-draft-display",  args="<stage-or-section> <paper-path>")
 
 Each RETURNS a report — for every hole: WHERE it is (the sentence), WHAT it is (`\cite{TOADD}` / `{VAL:? <what>}` / a DR row), and WHO owes it (the existing `Q-<Stage>-<n>` that will produce it, or `UNOWNED` if nothing will).
 
-**THIS HUB HOLDS THE PEN — for all of it.** The lanes do not touch the manuscript, the stage doc, or `1-probes/`. THIS worker takes the three reports and writes:
+**THIS HUB HOLDS THE PEN — for all of it.** The lanes do not touch the manuscript, the topic register, or nested entry pages. THIS worker takes the three reports and writes:
 
 ```
 draft.md · prose        this hub, from the lane reports — insert each placeholder
@@ -193,7 +193,7 @@ Skip a lane only when the artifact cannot carry its kind of hole (a seed has no 
 
 ### Step 4b. 🙋 RAISE — every question this draft cannot answer
 
-**DRAFT is where the questions are BORN — and only born.** Raise each `- [ ] 🔎 Q-<Stage>-<n>` record under the S page's `## Items to Finish`, in the consumer's own words, with `Description`, `Reason`, `Probe: not opened yet`, and an empty `Answer`, then STOP. Planning them (①ORGANIZE, ②MATCH) is PROBE's; see probe's PHASE MAP. This skill never opens `1-probes/`.
+**DRAFT is where the questions are BORN — and only born.** Raise each Q-consumer row under the direct topic page's `### Q-consumer register`, in the consumer's own words, with its paper stake and an empty entry link or return note, then STOP. Planning them (①ORGANIZE, ②MATCH) is PROBE's; see probe's phase map. This skill never opens a nested entry page.
 
 This step is UNCONDITIONAL. It runs on every draft, whatever the question's origin: a hole Step 4a's lanes returned unowned, a question the stage typically raises (see the calling stage's `dispatch_scope:` + craft body), a gap a web search revealed, or one you simply noticed while writing.
 
@@ -218,7 +218,7 @@ It checks both directions, and the second one is the one a reader misses: a hole
 carrying `[Q-Main-9]` when no `Q-Main-9` exists LOOKS owned, so nobody ever goes
 looking for it. The discipline behind the check is
 `writing/haipipe-writing/ref/holes.md`; the notation, the `.bib` grep, and the
-`1-probes/` boundary stay here, because none of those generalize. Do not run the probe-entry checker yet: no entries should exist from this
+topic-entry boundary stays here, because none of those generalize. Do not run the probe-entry checker yet: no entries should exist from this
 phase. The sub-agent's job is semantic judgment — whether the draft says
 something, follows the stage contract, and raises answerable questions.
 

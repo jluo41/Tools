@@ -84,14 +84,15 @@ class AimsStateTest(unittest.TestCase):
 
     def test_public_paper_generator_materializes_stage_specific_aims(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
-        paper = root.parents[1] / "paper/1-lifecycle/haipipe-paper-stage"
+        paper_root = root.parents[1] / "paper"
+        paper = paper_root / "route/haipipe-paper-stage"
         spec = importlib.util.spec_from_file_location(
             "paper_stage_create_page", paper / "create-page.py"
         )
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        display_template = paper / "stages/4-display/template.md"
+        display_template = paper_root / "S05-display/display/template.md"
         divisions = [name for name, _ in module.template_divisions(display_template)]
         self.assertIn("Q-consumer", divisions)
         self.assertEqual(
@@ -112,7 +113,7 @@ class AimsStateTest(unittest.TestCase):
             ),
             "Q-Sec6MainResults-1",
         )
-        seed_template = paper / "stages/0-seed/template.md"
+        seed_template = paper_root / "S01-opening/seed/template.md"
         seed_aim = module.consumer_aim(
             module.board_template_aims(seed_template), "Q-Seed-1"
         )
@@ -121,8 +122,8 @@ class AimsStateTest(unittest.TestCase):
 
     def test_active_paper_templates_teach_aims_and_states(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
-        paper = root.parents[1] / "paper/1-lifecycle/haipipe-paper-stage"
-        for path in (paper / "stages").glob("*/template.md"):
+        paper = root.parents[1] / "paper"
+        for path in paper.glob("S*/**/template.md"):
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("## Items to Finish", text, path.as_posix())
             self.assertNotIn("## Where we are", text, path.as_posix())
