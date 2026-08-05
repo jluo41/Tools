@@ -5,7 +5,7 @@ Source: converted from `workers/haipipe-paper-draft-citation/SKILL.md` on 2026-0
 
 One job: **no assertion leaves DRAFT owing a source to nobody.**
 
-This lane is READ-ONLY. It walks and reports; the DRAFT phase writes the manuscript and the direct topic Q-consumer register, and PROBE alone writes nested entry pages.
+This lane is READ-ONLY. It walks and reports; the DRAFT phase writes the manuscript and the direct topic Q-consumer register, and PROBE alone writes the nested probe QAs (entry records).
 
 
 What this lane does NOT do

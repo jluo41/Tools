@@ -40,17 +40,11 @@ What question does this topic own?
   ✅ Written here.
 """
 
-ENTRY = """# S Literature 5 · Entry
-state: 🟡 PARTIAL
-owner: JL
+# Ruling B (JL 260806): an entry is a hidden SOURCE RECORD named <n>-<slug>.md,
+# not a board page. It carries no page frame; the digit-first name keeps it out
+# of page_files, so the checker finds it with its own probes/ glob.
+ENTRY = """# Entry
 requires: S-Literature-1
-
-## Opening
-What answer does this entry request?
-
-## Stage Contract
-
-## Content
 
 #### q-executor
 What neutral answer does the bank owe?
@@ -63,16 +57,6 @@ What neutral answer does the bank owe?
 
 #### a-executor
 No answer has returned yet.
-
-## Aims
-
-- A1 · Entry contract is complete
-  - [x] The entry has its four parts.
-
-## States
-
-- A1 · Entry contract is complete
-  ✅ Written here.
 """
 
 
@@ -81,13 +65,14 @@ class TopicEntryContractTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             board = Path(tmp)
             topic = board / "S-Literature-1-topic.md"
-            entry = board / "probes" / "L01-topic" / "S-Literature-5-entry.md"
+            entry = board / "probes" / "L01-topic" / "1-entry.md"
             entry.parent.mkdir(parents=True)
             topic.write_text(TOPIC, encoding="utf-8")
             entry.write_text(ENTRY, encoding="utf-8")
             report = _Report()
 
-            check_topic_entries(board, {topic.name: topic, entry.name: entry}, report)
+            # the entry record is NOT in pages: the checker's own glob finds it
+            check_topic_entries(board, {topic.name: topic}, report)
 
             self.assertEqual([], report.rows)
 
@@ -95,12 +80,12 @@ class TopicEntryContractTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             board = Path(tmp)
             topic = board / "S-Literature-1-topic.md"
-            entry = board / "probes" / "L01-topic" / "S-Literature-5-entry.md"
+            entry = board / "probes" / "L01-topic" / "1-entry.md"
             entry.parent.mkdir(parents=True)
             topic.write_text(TOPIC, encoding="utf-8")
             entry.write_text(ENTRY.replace("requires: S-Literature-1", "requires: S-Literature-Dash"), encoding="utf-8")
             report = _Report()
 
-            check_topic_entries(board, {topic.name: topic, entry.name: entry}, report)
+            check_topic_entries(board, {topic.name: topic}, report)
 
             self.assertEqual(["topic-entry-requires-topic"], [row[1] for row in report.rows])

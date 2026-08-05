@@ -31,7 +31,7 @@ route: outward
 <!-- RULE: the route line is REQUIRED and is the register's FIRST line: it is the machine-readable key that resolves this page to page-types/haipipe-board-page-for-literature (board/haipipe-board/ref/topic-entry-contract.md, "Register route line"). Without it the page's type is unresolvable and the page is defective. -->
 <!-- RULE: one row per Q-consumer, and the row is the CANONICAL record: the human gate reads this register, never the entries. An answer sitting in an entry's #### a-executor closes nothing until it becomes a record on its row here. Row states, written on the row itself: ⬜ open · SUPPORTED (the citation binding is on the row) · DEFERRED (reason on the row) · WITHDRAWN (the claim the row served changed). An open row points at its entry with the ⏳ pointer. -->
 - ⬜ `Q-<Stage>-<n>` · <the stake question this row carries: what the work claims to add, and what published result would break it>
-  ⏳ → `probes/L<nn>-<topic>/S-Literature-<n>-<slug>.md`
+  ⏳ → `probes/L<nn>-<topic>/<n>-<slug>.md`
 - SUPPORTED `Q-<Stage>-<m>` · <the stake question this row carried>
   `<realkey>` · <one positioning sentence: how this work stands next to the found result: extends | contradicts | first-in-setting> · novelty <supported | threatened | broken>, with the source named
   <!-- RULE: a SUPPORTED row IS the citation binding, three parts on the row: (1) a real key that resolves in the .bib, (2) one positioning sentence, (3) a novelty verdict with the source named. Never write "novelty confirmed" from an absence of findings alone: absence after a bounded search is written "no precedent found within <the search's own scope>". -->

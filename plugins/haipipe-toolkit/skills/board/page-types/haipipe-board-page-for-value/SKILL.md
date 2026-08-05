@@ -1,17 +1,17 @@
 ---
 name: haipipe-board-page-for-value
 description: >-
-  The VARIANT contract for a VALUE topic Page: a topic page owning a `### Q-consumer register` whose questions face INWARD, toward results this project must produce, with one probe entry page nested below probes/ per neutral executor question. It loads haipipe-board-page for the base frame and the shared topic-entry core for the anatomy, then adds only the inward route's translation layer: what a legal register row carries here, what a returned answer must become (a value binding: the number, its run provenance, the claim it serves), and when the topic may close. Use when writing or fixing a Value topic page, when a register row names no claim dependency, when a number appears in prose with no run behind it, or when a claim ledger row cannot say which specification produced its estimate. Trigger: value topic, value page, S-Value, task route, value binding, run provenance, claim ledger, number evidence, /haipipe-board-page-for-value.
+  The VARIANT contract for a VALUE topic Page: a topic page owning a `### Q-consumer register` whose questions face INWARD, toward results this project must produce, with one probe QA (the entry record) nested below probes/ per neutral executor question. It loads haipipe-board-page for the base frame and the shared topic-entry core for the anatomy, then adds only the inward route's translation layer: what a legal register row carries here, what a returned answer must become (a value binding: the number, its run provenance, the claim it serves), and when the topic may close. Use when writing or fixing a Value topic page, when a register row names no claim dependency, when a number appears in prose with no run behind it, or when a claim ledger row cannot say which specification produced its estimate. Trigger: value topic, value page, S-Value, task route, value binding, run provenance, claim ledger, number evidence, /haipipe-board-page-for-value.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-08-05"
-  summary: "0.2.0 pulled this file out of its sibling's shadow: route: inward is now a REQUIRED register key, the close rule cites the core's Register-row states, and BOUND is defined here as provenance paths that resolve."
+  version: "0.3.0"
+  last_updated: "2026-08-06"
+  summary: "Entries are hidden source records, not board pages (JL ruling B, 260806): one probe QA per neutral executor question, named <n>-<slug>.md below probes/, pointing at its bank QA, with the anatomy in the core contract."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-board-page-for-value · the inward route: what this project must produce
 
-**LOAD TWO THINGS FIRST.** `haipipe-board-page` gives the frame; `haipipe-board/ref/topic-entry-contract.md` gives the register and entry anatomy, which both topic routes share and neither restates (`QB6 §4`, JL 260805). What this file adds is the inward route alone. Inward means the answer does not exist yet: the project must RUN something to make it, so every rule here is about chaining a produced number to the run that made it and to the claim that needs it.
+**LOAD TWO THINGS FIRST.** `haipipe-board-page` gives the frame; `haipipe-board/ref/topic-entry-contract.md` gives the register and entry-record anatomy, which both topic routes share and neither restates (`QB6 §4`, JL 260805). A probe QA is a hidden source record named `<n>-<slug>.md`, never a board page (JL ruling B, 260806); it is the paper's copy that points at the bank QA, the original. What this file adds is the inward route alone. Inward means the answer does not exist yet: the project must RUN something to make it, so every rule here is about chaining a produced number to the run that made it and to the claim that needs it.
 
 **The kind this variant covers**: a topic page whose questions face INWARD.
 
@@ -36,7 +36,7 @@ A Value Q-consumer carries a CLAIM DEPENDENCY: which claim rests on the number, 
 🚫  "Produce an estimate near 0.3."                  the answer ordered in advance
 ```
 
-The stake stays on this page. The nested entry's q-executor asks for the computation in neutral terms, and the bank that runs it never learns which claim would be rescued (`page-phases/haipipe-board-page-probe` owns that wall).
+The stake stays on this page. The nested probe QA's q-executor asks for the computation in neutral terms, and the bank that runs it never learns which claim would be rescued (`page-phases/haipipe-board-page-probe` owns that wall).
 
 ## 📥 What a returned answer must BECOME: the value binding
 

@@ -1,17 +1,17 @@
 ---
 name: haipipe-board-page-for-literature
 description: >-
-  The VARIANT contract for a LITERATURE topic Page: a topic page owning a `### Q-consumer register` whose questions face OUTWARD, toward published knowledge, with one probe entry page nested below probes/ per neutral executor question. It loads haipipe-board-page for the base frame and the shared topic-entry core for the anatomy, then adds only the outward route's translation layer: what a legal register row carries here, what a returned answer must become (a citation binding: a real key, a positioning sentence, a novelty verdict), and when the topic may close. Use when writing or fixing a Literature topic page, when a register row carries no positioning stake, when an answer landed but never became a citation record, or when a novelty claim rests on nothing traceable. Trigger: literature topic, literature page, S-Literature, discovery route, positioning, novelty, citation binding, related work evidence, /haipipe-board-page-for-literature.
+  The VARIANT contract for a LITERATURE topic Page: a topic page owning a `### Q-consumer register` whose questions face OUTWARD, toward published knowledge, with one probe QA (the entry record) nested below probes/ per neutral executor question. It loads haipipe-board-page for the base frame and the shared topic-entry core for the anatomy, then adds only the outward route's translation layer: what a legal register row carries here, what a returned answer must become (a citation binding: a real key, a positioning sentence, a novelty verdict), and when the topic may close. Use when writing or fixing a Literature topic page, when a register row carries no positioning stake, when an answer landed but never became a citation record, or when a novelty claim rests on nothing traceable. Trigger: literature topic, literature page, S-Literature, discovery route, positioning, novelty, citation binding, related work evidence, /haipipe-board-page-for-literature.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-08-05"
-  summary: "Close semantics moved to the core's Register-row states; the register carries the REQUIRED route: outward key; SUPPORTED means named sources stand behind the positioning, never an empty search."
+  version: "0.3.0"
+  last_updated: "2026-08-06"
+  summary: "Entries are hidden source records, not board pages (JL ruling B, 260806): one probe QA per neutral executor question, named <n>-<slug>.md below probes/, pointing at its bank QA, with the anatomy in the core contract."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-board-page-for-literature · the outward route: what is already known
 
-**LOAD TWO THINGS FIRST.** The base frame is `haipipe-board-page`, and the register-and-entry anatomy is `haipipe-board/ref/topic-entry-contract.md`, stated once for both topic routes so they cannot drift apart (`QB6 §4`, JL 260805). This file is the outward route's dictionary and nothing more: what a question aimed at the published record carries, and what a found result must become before this page may lean on it. Any sentence here that seems to describe the register's shape belongs to the core, not to this file.
+**LOAD TWO THINGS FIRST.** The base frame is `haipipe-board-page`, and the register and entry-record anatomy is `haipipe-board/ref/topic-entry-contract.md`, stated once for both topic routes so they cannot drift apart (`QB6 §4`, JL 260805). A probe QA is a hidden source record named `<n>-<slug>.md`, never a board page (JL ruling B, 260806); it is the paper's copy that points at the bank QA, the original. This file is the outward route's dictionary and nothing more: what a question aimed at the published record carries, and what a found result must become before this page may lean on it. Any sentence here that seems to describe the register's shape belongs to the core, not to this file.
 
 **The kind this variant covers**: a topic page whose questions face OUTWARD.
 
@@ -36,7 +36,7 @@ A Literature Q-consumer carries a POSITIONING STAKE: what the work claims to add
 🚫  "Confirm nobody has done this."                 a verdict ordered in advance
 ```
 
-The stake stays on this page. The nested entry's q-executor carries the neutral question only, and the wall between them is PROBE's (`page-phases/haipipe-board-page-probe`).
+The stake stays on this page. The nested probe QA's q-executor carries the neutral question only, and the wall between them is PROBE's (`page-phases/haipipe-board-page-probe`).
 
 ## 📥 What a returned answer must BECOME: the citation binding
 

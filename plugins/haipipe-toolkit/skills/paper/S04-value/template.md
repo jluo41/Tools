@@ -31,7 +31,7 @@ route: inward
 <!-- RULE: the route line is REQUIRED and is the register's FIRST line: it is the machine-readable key that resolves this page to page-types/haipipe-board-page-for-value (board/haipipe-board/ref/topic-entry-contract.md, "Register route line"). Without it the page's type is unresolvable and the page is defective. -->
 <!-- RULE: one row per Q-consumer, and the row is the CANONICAL record: the human gate reads this register, never the entries. An answer sitting in an entry's #### a-executor closes nothing until it becomes a record on its row here. Row states, written on the row itself: ⬜ open · BOUND (the value binding is on the row) · DEFERRED (reason on the row) · WITHDRAWN (the claim the row served changed). An open row points at its entry with the ⏳ pointer. -->
 - ⬜ `Q-<Stage>-<n>` · <the claim dependency this row carries: which claim rests on the number, and what specification counts as producing it>
-  ⏳ → `probes/V<nn>-<topic>/S-Value-<n>-<slug>.md`
+  ⏳ → `probes/V<nn>-<topic>/<n>-<slug>.md`
 - BOUND `Q-<Stage>-<m>` · <the claim dependency this row carried>
   <the value with its uncertainty, exactly as the run reported it, e.g. coef <b> (SE <se>), N <n>>
   run `tasks/<task-folder>/` · spec `tasks/<task-folder>/<spec file>` · qa `tasks/<task-folder>/QA/<n>-<slug>.md`

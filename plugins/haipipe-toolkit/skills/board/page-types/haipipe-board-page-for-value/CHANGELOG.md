@@ -7,6 +7,16 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.3.0 - 2026-08-06
+
+Entries are hidden source records, not board pages (JL ruling B, 260806: "an
+entry is a source file the topic page points at, like a PDF; the board renders
+the topic page, never the entry"). Description now says "one probe QA (the entry record)
+nested below probes/", the LOAD paragraph states the `<n>-<slug>.md` naming,
+and the stake-wall sentence names the nested probe QA. Anatomy, twin-QA naming
+law, and hiding mechanism live in the core
+`haipipe-board/ref/topic-entry-contract.md`; nothing else here changed.
+
 ## 0.2.1 - 2026-08-05
 
 Paper-family projection path repointed to

@@ -3,7 +3,7 @@ name: haipipe-paper
 description: "THE one door for paper-lifecycle work: parse intent (venue + stage), resolve the stage contract from stages/index.yml, ensure the S page exists, and hand the page to haipipe-board-page. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through PROBE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board (get-or-create on a missing path). Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 选刊, 写论文, 论文流程, /haipipe-paper."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.0"
+  version: "0.6.1"
   last_updated: "2026-08-06"
   summary: "Single door for the Board-first paper lifecycle, and the paper family's ONLY registered skill (thin-paper phase 3): folder/conform and the five build verbs are fn/ procedures with tooling under scripts/, round/rebuttal is the round stage's data. Absorbs the earlier enter/lifecycle/stage routers; workers/ dissolved into stage craft files and this door's probe/ tooling. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -88,7 +88,7 @@ build | restructure | project | projection |
   polish | consistency | format | typeset |
   compile | diffpdf | overleaf | ship | deliver  -> INTERNAL fns, human-triggered: compile -> fn/compile.md · diffpdf -> fn/diffpdf.md · overleaf -> fn/to-overleaf.md · word -> fn/to-word.md · project/projection -> fn/project.md (tooling under scripts/). (The deliver umbrella and the audit/polish leaf verbs are retired to ../_old/, see ../_old/README.md)
 round | rounds                               -> STAGE step, key round (dated work rounds; also "todo", "decisions", "applied")
-probe ["<question>"] | probe | probe plan | probe run [topic-id]  -> the topic-entry pool: one nested entry page per q-executor, under its S03 Literature or S04 Value topic (RAISE / SHOW / PLAN / RUN the five-step loop; anatomy + loop: fn/probes.md)
+probe ["<question>"] | probe | probe plan | probe run [topic-id]  -> the topic-entry pool: one nested probe QA (the entry record) per q-executor, under its S03 Literature or S04 Value topic (RAISE / SHOW / PLAN / RUN the five-step loop; anatomy + loop: fn/probes.md)
 rebuttal                                     -> STAGE step, key round (the Response division of the active round; craft: ../S10-round/rebuttal-craft.md; also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
 feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
 digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
@@ -494,7 +494,7 @@ No message bus, no shared contract file. Two channels carry it, and the agent (t
 
 ```
 1. Command   paper hits a claim gap -> the agent runs
-             /haipipe-paper probe "<question>" (opens one nested entry page in the
+             /haipipe-paper probe "<question>" (opens one nested probe QA in the
              owning S03 or S04 topic). PROBE owns the whole five-step loop, MATCH
              before DISPATCH (fn/probes.md).
 2. Disk      paper writes the need on its owning S page or claim ledger; the executor
@@ -504,7 +504,7 @@ No message bus, no shared contract file. Two channels carry it, and the agent (t
              handshake — binding is by PATH, and the file on disk IS the state.
 ```
 
-Who owns which format: the topic page owns the paper NEED and its Q-consumer register; the entry page owns the neutral q-executor and returned answer; the EXECUTOR owns the QA file (`# Q` / `## Answer` / `## Caveats` / `## Not-done`, general language, anatomy in `probe/haipipe-probe/SKILL.md`). A claim's status is the paper's alone and lives in its claims page. That is why no shared interface file is needed: each artifact's shape belongs to the layer that produces it.
+Who owns which format: the topic page owns the paper NEED and its Q-consumer register; the probe QA owns the neutral q-executor and returned answer; the EXECUTOR owns the bank QA, the original (`# Q` / `## Answer` / `## Caveats` / `## Not-done`, general language, anatomy in `probe/haipipe-probe/SKILL.md`). A claim's status is the paper's alone and lives in its claims page. That is why no shared interface file is needed: each artifact's shape belongs to the layer that produces it.
 
 ### When to record a need
 
@@ -622,7 +622,7 @@ e. BACKFILL: when the answering QA file lands, PROBE writes the entry's
 /haipipe-paper probe <need-description>
 ```
 
-opens one nested entry page in the right S03/S04 topic. The PROBE phase is what dispatches it — through `Agent(haipipe-probe-q-executor-agent)` to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the entry's `#### q-executor` block and nothing else. The paper stays a story layer; the executor does the work. Anatomy + campaign + the paper-side loop: `fn/probes.md`.
+opens one nested probe QA in the right S03/S04 topic. The PROBE phase is what dispatches it — through `Agent(haipipe-probe-q-executor-agent)` to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the probe QA's `#### q-executor` block and nothing else. The paper stays a story layer; the executor does the work. Anatomy + campaign + the paper-side loop: `fn/probes.md`.
 
 A HEAVY probe (reading a lot of code/logs, e.g. cohort construction from Stata do-files) is
 dispatched with `run_in_background=true` so the paper session keeps doing paper work: mark the
@@ -686,7 +686,7 @@ Composing with Evidence Workers
         │                     to-overleaf · to-word (human-triggered, tooling in scripts/)
         │
         │   evidence path (a claim hits a gap):
-        └─► S03-literature/probes/ or S04-value/probes/ — one entry page per q-executor
+        └─► S03-literature/probes/ or S04-value/probes/ — one probe QA per q-executor
                  │   PROBE runs ① ORGANIZE + ② MATCH ──► most entries close at MATCH (T2 REUSE)
                  └─► ③ DISPATCH the `#### q-executor` VERBATIM, only for what MATCH missed:
                           Agent(haipipe-probe-q-executor-agent)   ← its clean context IS the wall
