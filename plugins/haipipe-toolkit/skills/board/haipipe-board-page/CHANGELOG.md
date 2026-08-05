@@ -7,6 +7,37 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.18.0 - 2026-08-05
+
+**for-slide admitted** (JL, on the Page-for-Slide branch). One page per deck, one
+division per slide, each carrying its outline plus the PNG export of the built
+slide; the live html-ppt deck stays a linked artifact because the board strips JS.
+The slide binding (division · source · render · acceptance) is its typed record.
+
+## 0.17.0 - 2026-08-05
+
+**Two more Page Types admitted** (JL, same day, thought against the paper skill board and the MISQ board together).
+
+- `for-section`: loads `for-stage`, adds the section kind, the venue contract block (blueprint BINDING, style reference, override stated), and the landing surface for the three record types. Reverses the for-main rejection: Main is one family's region, section is a cross-family shape.
+- `for-meeting`: the routing rule for spoken decisions; Meeting pages stop being contract-less.
+- The types table's Meeting row now states the real closing rule.
+
+## 0.16.0 - 2026-08-05
+
+**Three Page Types admitted** (JL, QB6 Decision Now: D, plus display standing alone).
+
+- `page-types/haipipe-board-page-for-literature` and `-for-value`: two types over ONE loaded topic core (`ref/topic-entry-contract.md`), each adding only its route's translation layer. They resolve by the register marker plus route direction, not by filename.
+- `page-types/haipipe-board-page-for-display`: mirror-shaped, but its unit is produced by the project and closes on human acceptance of a specific render.
+- The Six Page Types section now lists six variants and says why the last three were admitted.
+
+## 0.15.1 - 2026-08-05
+
+**Nine review findings applied** (fresh-context cold read, verdict REVISE; JL: "go ahead to update it").
+
+- The Decision Now reservation now admits the unsettled S-page exception (`### Needs JL · tick these`) instead of stating the rule as settled while a variant contradicted it.
+- The "A CHANGE IS FINISHED" paragraph split to one sentence per line; the QC1b consumer chain split at its double colon.
+- The boundary figure names `cli/serve.py` and `cli/check.py` with their dir, as it already did for `src/`.
+
 ## 0.15.0 - 2026-08-04
 
 - Adds `### 🔗 Related Board Pages` as the fixed, typed Files group for bounded

@@ -1216,7 +1216,7 @@ It is `Supplementary Figure N. Title.` as a bold title line, followed by a legen
   The supplement's three classes, and the "Triage rule" that carries the whole-article word figure the other six guides contradict.
 - `../../paper/venue/playbook-nature-portfolio/README.md`
   The routing section that places this outlet against its four siblings, and the source of the Extended Data cap the Authority group below corrects.
-- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml`
+- `../../paper/haipipe-paper-stage/stages/section-kinds.yml`
   The reader-side resolver: outlet ▸ section kinds. It is what the generated kinds block is built from, and it is what fixes the `Sec-<n>` index to a number the desk's printed order does not match.
 
 ### 🔗 Authority · what the DESK itself PUBLISHES, read directly and never through the pack

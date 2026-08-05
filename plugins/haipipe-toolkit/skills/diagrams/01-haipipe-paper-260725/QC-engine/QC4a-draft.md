@@ -117,7 +117,7 @@ One ruling is genuinely live, and it is the gap that cannot be phrased as an ans
   The value finder. READ-ONLY at its own `:27`, in the same words, and it never re-derives a number.
 - `2-phase/0-draft/haipipe-paper-draft-display/SKILL.md`
   The one lane that holds a pen. Its `allowed-tools` carries `Write` and `Edit`, and it files a DR row; the hub scopes that pen to the display inbox at `haipipe-paper-draft/SKILL.md:189-190`.
-- `../../paper/route/ref/08-stage-gate.md`
+- `../../paper/haipipe-paper-stage/ref/08-stage-gate.md`
   `:199`, where the bracket rule reappears as an exit criterion: every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]`. One of the three prose homes the unwritten regex would replace.
 
 ## Law

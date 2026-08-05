@@ -141,7 +141,7 @@ This Paper Board supplies that second layer without changing Board grammar.
 - [ ] 🔍 Assert the managed block still matches its generated form
       The existing digest cannot do this. `src/stage_contract.py`'s `contract_digest()` hashes only the pages named by `requires:` and `style-from:`, and its docstring says so: never the destination page. So `stage.py check` reports a stale SOURCE and is blind to a hand-edit. The assertion is to re-render the block for each page and compare bytes, over 39 pages that already exist.
 - [ ] 📐 Name the frontmatter whitelist as a closed set
-      `haipipe-board/src/parse.py:145` accepts exactly `state owner method session requires style-from provides contract-source-hash` and drops everything else in silence. `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` already had to rule out a `venue:` key for this reason. This face draws the frontmatter as one region of the page and never says the set of legal keys is fixed.
+      `haipipe-board/src/parse.py:145` accepts exactly `state owner method session requires style-from provides contract-source-hash` and drops everything else in silence. `../../paper/haipipe-paper-stage/stages/CONTRACT.md` already had to rule out a `venue:` key for this reason. This face draws the frontmatter as one region of the page and never says the set of legal keys is fixed.
 - [ ] 🧪 Hand-edit a managed block, then run `stage.py sync`
       The acceptance test for the protected region. Copy one of the 39 pages, write a line inside the block, sync, and confirm the line is gone and nothing warned. The reversion is stated in `stage.py:142` and has never been watched happen.
 

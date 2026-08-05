@@ -154,7 +154,7 @@ So the cheap cut gives way and the expensive one does not, which leaves the boar
 - A2.2 · The map is refreshed after Work rather than left at its first pass.
   **Done when:** a paper's literature dash names the discovery answers it was rewritten against.
 - A2.3 · `Literature` is a first-class family, so a topic page can exist.
-  **Done when:** `cli/stage.py`, `../../paper/route/haipipe-paper-stage/check-contracts.py` and `src/parse.py` all admit `Literature`, and `stage.py resolve` composes `S-Literature-1-<topic>.md`.
+  **Done when:** `cli/stage.py`, `../../paper/haipipe-paper-stage/check-contracts.py` and `src/parse.py` all admit `Literature`, and `stage.py resolve` composes `S-Literature-1-<topic>.md`.
 - A2.4 · The concern carries one page per topic under a dash.
   **Done when:** a paper's `Delivery · Literature` lists a dash plus one page per topic, and no single page carries the whole map.
 
@@ -198,6 +198,6 @@ So the cheap cut gives way and the expensive one does not, which leaves the boar
 260803 · The family-list count on this page was wrong: `§2.4` said the list is closed in three places and named three. It is FIVE. The two it omitted are `src/page_board.py:497` and `live/chat.py:201`, which are exactly the two that fail with no message, so a person following this page would have admitted `Literature` to three of five and got a page that parses, sorts nowhere, and cannot be linked. Corrected in `§2.4`; the 260802 Log entry below is left as written, because it records what was believed then. `QB0 §13` now argues the write side against the read side, and `QB0`'s Law names all five paths.
 260802 · State dropped from ✅ to 🟡. The concern's Law is still ruled, but JL ruled a new shape the same day and nothing carries it, so three Aims are open and `settled-with-open-aims` caught the mismatch.
 260802 · JL: literature should look like Display and be cut by TOPIC, with a dash plus `S-Literature-1`, `-2`, `-3`. `§2` redrawn to that shape, and QC3b's per-unit test backs it: one topic settles while another is still being searched. A2.3 opened on the blocker, which is the same one Round carries: `Literature` is not a family, and the list is closed in `cli/stage.py:27`, `check-contracts.py:40` and `src/parse.py:247`.
-260802 · `### 2 · What we want on the paper board` added. This concern turned out to own NO stage: `../../paper/route/haipipe-paper-stage/stages/index.yml` has no `literature` key, so its two pages are written by seed and by section-edit, and what the concern owns is the Law rather than a stage. That is a second kind of Delivery concern, and QB1 and QB2 read as though every concern grouped stages.
+260802 · `### 2 · What we want on the paper board` added. This concern turned out to own NO stage: `../../paper/haipipe-paper-stage/stages/index.yml` has no `literature` key, so its two pages are written by seed and by section-edit, and what the concern owns is the Law rather than a stage. That is a second kind of Delivery concern, and QB1 and QB2 read as though every concern grouped stages.
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered with a face figure and caption, Aims regrouped as A1/P with `Done when`, States mirrored per Aim.
 260729 · Literature placed after Work in the accepted Delivery order.

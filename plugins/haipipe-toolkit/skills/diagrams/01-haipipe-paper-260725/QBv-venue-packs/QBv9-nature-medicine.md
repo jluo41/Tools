@@ -924,7 +924,7 @@ It is the same thinness recorded at 9.3, where the file's prohibitions sit inlin
   The kind that is declared for all five Nature outlets and printed by none, which §5 is built from.
 - `../../paper/venue/playbook-nature-portfolio/style-profile.md`
   The family profile across all five Nature outlets, which is where the evidence-tier vocabulary is written down.
-- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml`
+- `../../paper/haipipe-paper-stage/stages/section-kinds.yml`
   The reader-side resolver: outlet ▸ section kinds. It is what the generated kinds block below is built from, and it orders methods before results where this desk prints them the other way round.
 - `QBv8-npj-digital-medicine.md`
   The sibling this outlet is decided against, and the one this repo's shipped paper actually went to.

@@ -7,6 +7,11 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.3.1 - 2026-08-05
+
+- Opening now states DRAFT's own risk (a hidden hole reaches print) instead of the three-line ownership couplet shared verbatim with REVISE and CHECK, the 260802 form-letter failure repeating one level down.
+- Q-consumer and stake get a defining line at first use; this file is loadable standalone.
+
 ## 0.3.0 - 2026-08-04
 
 - Adds the shared RUN receipt boundary: DRAFT names the promise authority it

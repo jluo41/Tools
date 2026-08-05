@@ -7,6 +7,10 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.3.1 - 2026-08-05
+
+- Opening now states CHECK's own risk (becoming a hidden revision) instead of the shared ownership couplet.
+
 ## 0.3.0 - 2026-08-04
 
 - Adds the shared RUN receipt and immutable version gate: CHECK records the

@@ -169,7 +169,7 @@ Formatting is then never guessed at and never erased, the 47.3% refusal disappea
       Nobody wrote it back, so this page claimed an open defect that had already been fixed, which is the "stale pretty thing" the sync verb exists to prevent.
       Remeasured 260802.
 - [ ] 🈶 The refusal a reader meets is in English
-      (kept here rather than on `QB5`: the STRING is emitted by `live/write.py`, which this face owns, while WHETHER the refusal should exist at all is `QB5`'s)
+      (kept here rather than on `QB8`: the STRING is emitted by `live/write.py`, which this face owns, while WHETHER the refusal should exist at all is `QB8`'s)
       `edit_sentence` returns `这句话带有 Markdown 格式；为避免丢格式，请先在源文件编辑`, and it is the single most-produced message in the write path because 44.8% of this board's lines trigger it.
       JL ruled boards and artifacts English-only on 260724; a UI string a reader hits daily is squarely inside that rule.
       It is one line and it is not the same work as the fix below, which is why it is its own row: even if the refusal stays, it should be readable.
@@ -219,8 +219,8 @@ These are the calls only JL can make; CC ticks nothing here.
       Levels 0 to 2 for finding a line, and no approximate matching in the write path ever, on the grounds that a wrong write is invisible while a wrong highlight is not.
       → CC's proposal: yes as drawn; it keeps today's behaviour as level 1 and only adds a level for the case that is refused today.
 - [x] ✂️ Rule how a decorated sentence gets edited
-      MOVED to `QB5`'s Decision Now on 260802, at JL's direction: "I think it should be the QB5 question, right?"
-      He is right. `QB5` `### 8` claims "the sentence, and everything written onto it · §6 the edit", so what an author experiences when editing one sentence is that page's, and this face owns only how any write FINDS its line and refuses safely.
+      MOVED to `QB8`'s Decision Now on 260802, at JL's direction: "I think it should be the QB8 question, right?"
+      He is right. `QB8` `### 8` claims "the sentence, and everything written onto it · §6 the edit", so what an author experiences when editing one sentence is that page's, and this face owns only how any write FINDS its line and refuses safely.
       It was written here because CC was measuring `live/write.py` and anchored the ruling to the file it was reading rather than to the page that owns the gesture, which is what routing's step 3 forbids.
 - [ ] 🔒 Rule the concurrency token, and where it lives
       A write carries the version it read and is refused on mismatch; the question is whether that belongs here or with `QE4`'s lock.
@@ -238,13 +238,13 @@ These are the calls only JL can make; CC ticks nothing here.
   `findAndWrap` holds the approximate fallback that this face rules acceptable for highlights and forbidden for writes.
 
 ### The faces this contract borders
-- `QB-delivery/QB5-overview.md`
+- `QB-delivery/QB8-overview.md`
   `### 6` owns the edit as an author meets it, and `### 8` claims "everything written onto" a sentence. The decorated-sentence ruling moved there on 260802. This face owns the addressing mechanism every writer shares, not any one writer's gesture.
 - `QC-engine/QC1b-subskills.md`
   §9 is the section-boundary law this face's step ③ implements, and the incident that produced it.
 - `QE-sharing/QE4-editlock.md`
   The lock around a page, which composes with the version token rather than replacing it.
-- `QB-delivery/QB5-overview.md`
+- `QB-delivery/QB8-overview.md`
   What a comment is, as opposed to how its line is found.
 
 ## Glossary
@@ -258,7 +258,7 @@ The sources behind §3, so every claim there is checkable.
 - iA Markdown Annotations, the SHA-256 over the annotated range: https://github.com/iainc/Markdown-Annotations
 
 ## Log
-260802 2200 · The decorated-sentence ruling moved to `QB5`, its real owner (JL: "I think it should be the QB5 question, right?"). It had been written here because CC anchored to `live/write.py` rather than to the page owning the gesture. What stays here is the shared mechanism: the normalizer, the ladder, the version token, and widening past the browser; what left is one writer's reader-facing behaviour
+260802 2200 · The decorated-sentence ruling moved to `QB8`, its real owner (JL: "I think it should be the QB8 question, right?"). It had been written here because CC anchored to `live/write.py` rather than to the page owning the gesture. What stays here is the shared mechanism: the normalizer, the ladder, the version token, and widening past the browser; what left is one writer's reader-facing behaviour
 260802 2130 · Remeasured against disk and the numbers all moved: 4908 to 7752 addressable lines, decorated 47.3% to 44.8% but 2321 to 3474 in absolute count, and the two normalizers are now ONE, so that Aim was met silently and is ticked. Three new Aims: the Chinese refusal message, widening the contract past the browser now that routing wants the same endpoint, and taking the law back from `haipipe-board-sentence` 0.3.0 which restates it. `state:` 🔴 to 🟡 PARTIAL
 260801 0140 · Full renumber QC7a -> QC4a (JL forced 260801)
 260801 0130 · Reindexed QC7 -> QC7a: the write path is now the return-half face of the QC7 round trip (JL 260801)

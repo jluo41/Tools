@@ -77,5 +77,5 @@ All commands go through `haipipe-paper-probe`.
 
 The default rule is MATCH before DISPATCH. The paper never writes the bank and
 never executes task or discovery work inline. See
-`phase/1-probe/haipipe-paper-probe/ref/topic-entry-contract.md` for the exact
+`workers/haipipe-paper-probe/ref/topic-entry-contract.md` for the exact
 contract and `check-probe-cards.sh` for its deterministic verification.

@@ -705,7 +705,14 @@ def check_division_figures(text, name, rep):
         lines = [l for l in body_.split("\n")]
         first = next((l for l in lines if l.strip()), "")
         fenced = any(l.lstrip().startswith("```") for l in lines)
-        if not fenced:
+        # A rendered media embed is a figure in the renderer's own vocabulary
+        # (`img.fig`, `object.figpdf`, `.fightml`): a slide page's divisions
+        # carry the live slide instead of an ascii fence, and that satisfies
+        # the reader the same way (JL 260805, QA4). The caption rule below
+        # still applies to it.
+        media = any(re.match(r"^!\[[^\]]*\]\([^)]+\)\s*$", l.strip())
+                    for l in lines)
+        if not (fenced or media):
             rep.add(WARN, "division-no-figure", f"{name} · §{num}",
                     f"{title.strip()!r} opens with no figure (QB4 §3.3.1)")
         elif not re.match(r"^\*\*[^*]+\*\*\s*:", first.strip()):

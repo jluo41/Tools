@@ -7,6 +7,10 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.4.2 - 2026-08-05
+
+**The resolver table caught up with the paper reorg it shipped a day behind.** The table stamped "where the keys ACTUALLY live" listed 7 dead dirs and 6 stale key pairs; regenerated from the shipped stage.md files: seed/venue/pitch are Open with capitalised control-page units, resource/claims/narrative are Work R/C/N. Three `5-section-edit/stage.md` citations repointed to `S06-main/section-edit/stage.md`; the `S-Venue-0` examples became `S-Open-Venue`; one em-dash pair became parentheses; the `S-Main-3` measurement sentence split in two.
+
 ## 0.4.1 - 2026-08-04
 
 - Moved under `page-types/` with the other stable Page Type variants.

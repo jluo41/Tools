@@ -15,4 +15,4 @@ interpretation. One nested entry owns a stake-free `#### q-executor`, an audit
 `#### consumer trace`, its `#### bank binding`, and `#### a-executor` answer.
 
 Use this store when the evidence must come from literature, search, review, or
-other external discovery. See `phase/1-probe/haipipe-paper-probe/ref/topic-entry-contract.md`.
+other external discovery. See `../workers/haipipe-paper-probe/ref/topic-entry-contract.md`.

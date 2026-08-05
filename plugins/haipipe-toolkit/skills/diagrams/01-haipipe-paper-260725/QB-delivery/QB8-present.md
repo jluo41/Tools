@@ -89,7 +89,7 @@ The half that needs the gate is whether every claim on a slide is one the paper 
         📄 QP0-present-delivery.md   a Q page: how THIS paper projects
         🚫 no S page                 nothing is authored per-unit here
 
-  ⚡ this concern owns NO STAGE ── `../../paper/route/haipipe-paper-stage/stages/index.yml` has no `present` key
+  ⚡ this concern owns NO STAGE ── `../../paper/haipipe-paper-stage/stages/index.yml` has no `present` key
   🔑 the artifacts live OUTSIDE 0-lifecycle/
      5-present/paper-slides/ · 5-present/paper-poster/
   🔗 same shape as QB4 Value: one Q page, a rule, no prose of its own

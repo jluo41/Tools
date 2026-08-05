@@ -66,12 +66,14 @@ They live at:
 
 ```text
 probe/haipipe-probe/SKILL.md          the probe layer + the DRAFT/PROBE phase rules
-paper/1-lifecycle/ref/08-stage-gate.md  the stage gate + Phase Transition Contract
+./ref/08-stage-gate.md                the stage gate + Phase Transition Contract
 ```
 
 **Step 4 — drive the stage's declared phases.**
 Run the phases listed in that stage's `phases:` field, in order, each through its `Skill()`
-dispatch (`haipipe-paper-draft` · `-probe` · `-revise` · `-check`). A phase executed inline did
+dispatch: draft → `haipipe-board-page-draft` (page logic) + the `../workers/` draft leaves ·
+probe → `haipipe-paper-probe` (in `../workers/`) · revise → `haipipe-board-page-revise` + the
+revise leaves · check → `haipipe-board-page-check` + the check leaves. A phase executed inline did
 not happen.
 
 - `phases:` is a LIST, not a type. venue declares `[draft, probe, check]` — it raises real
@@ -157,7 +159,7 @@ with different invariants:
 # The RELATIVE path resolves even from an installed symlink, because the link's target
 # sits in the real tree — prefer it. The find is the fallback, and it needs -L: installed
 # skills are symlinks and a find without -L descends into nothing and returns zero hits.
-CHK="../../../2-phase/1-probe/haipipe-paper-probe/check-probe-cards.sh"
+CHK="../workers/haipipe-paper-probe/check-probe-cards.sh"
 [ -f "$CHK" ] || CHK=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 \
                          -path '*haipipe-paper-probe/check-probe-cards.sh' 2>/dev/null | head -1)
 [ -n "$CHK" ] && [ -f "$CHK" ] || { echo 'FAIL: paper probe checker not found'; exit 1; }
@@ -242,13 +244,15 @@ every `*-template.md`, `pitch-readability.md`, `figure-logic.md`, `CHECKLIST.md`
 the shared `display-unit-output-contract.md`.
 Nothing under `../_old/` may be referenced by a live file.
 
-Wired to this skill, all verified 2026-07-20:
+Wired to this skill, verified 2026-07-20 (hub rows repointed 2026-08-05, thin-paper phase 1):
 
 ```text
-haipipe-paper-draft        Step 1 reads stages/<dir>/stage.md + template.md (was: the legacy SKILL.md)
+haipipe-board-page-draft   DRAFT page logic (the retired haipipe-paper-draft's Step 1 rule
+                           lives on here: read stages/<dir>/stage.md + template.md)
 haipipe-paper-lifecycle    every stage key -> Skill("haipipe-paper-stage", args="<key> …")
 haipipe-paper              same rule stated in its dispatch block
-haipipe-paper-check        gate table keyed on stage NAME, not skill name
+haipipe-board-page-check   CHECK page logic (gate table keyed on stage NAME, not skill name)
+../workers/                the flat LaTeX-side phase leaves the stage.md declarations dispatch
 4 display renderers        STAY registered; the shared contract moved to ../../4-display/ref/
                            and all 12 relative paths were rewritten
 ```

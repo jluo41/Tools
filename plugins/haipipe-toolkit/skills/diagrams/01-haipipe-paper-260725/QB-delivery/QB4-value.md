@@ -112,7 +112,7 @@ That is why the gate names all five: the four besides the digits are where a re-
 
 #### 2.1 · A concern with no stage is still a real concern
 (it owns a rule, and a rule needs pages even when it produces no prose)
-`../../paper/route/haipipe-paper-stage/stages/index.yml` declares no `value` stage, and no manuscript section belongs to this concern.
+`../../paper/haipipe-paper-stage/stages/index.yml` declares no `value` stage, and no manuscript section belongs to this concern.
 Every number a paper states is written on some other page, in Results or Methods or a display caption.
 What this concern owns is the binding: that number resolves to a run, and its pages are where a paper records how its own values are bound.
 
@@ -139,7 +139,7 @@ Machine enforcement is missing too: the projection check compares markers and co
 
 ### A2 · 🎯 What we want on the paper board
 - A2.1 · `Value` is a first-class family, so a topic page can exist.
-  **Done when:** `cli/stage.py`, `../../paper/route/haipipe-paper-stage/check-contracts.py` and `src/parse.py` all admit `Value`, and `stage.py resolve` composes `S-Value-1-<topic>.md`.
+  **Done when:** `cli/stage.py`, `../../paper/haipipe-paper-stage/check-contracts.py` and `src/parse.py` all admit `Value`, and `stage.py resolve` composes `S-Value-1-<topic>.md`.
 - A2.2 · The concern carries one page per topic under a dash.
   **Done when:** a paper's `Delivery · Value` lists a dash plus one page per value topic.
 
@@ -179,6 +179,6 @@ Machine enforcement is missing too: the projection check compares markers and co
 
 260803 · The family-list count on this page was wrong in three places: `§2.3`, A2.1's State and the 260802 Log entry all said three files and named three. It is SIX. The omitted ones were `src/parse.py:301`, `src/page_board.py:497` and `live/chat.py:201`, and two of those three fail with no message at all. `§2.3` and the State are corrected; the Log entry below is left as written, because it records what was believed then. This is the same undercount `QB3-literature.md` carried until the same day, which is the evidence `QB0 §13.2` cites for declaring the list once.
 260802 · JL: Value takes the same shape as Literature, a dash plus one page per topic, because different values belong to different topics. `§2` redrawn, the state dropped from ✅ to 🟡 because the shape is ruled and not built, and A2.1 opened on the blocker: `Value` is not a family, and the list is closed in three files.
-260802 · `### 2 · What we want on the paper board` added. This is the one Delivery concern with NO S page: `../../paper/route/haipipe-paper-stage/stages/index.yml` declares no `value` stage and no manuscript section belongs to it, so the group holds a single Q page and the work it causes happens inside other pages' sentences. Thin is the correct shape here, and the page now says so rather than leaving a reader to wonder what is missing.
+260802 · `### 2 · What we want on the paper board` added. This is the one Delivery concern with NO S page: `../../paper/haipipe-paper-stage/stages/index.yml` declares no `value` stage and no manuscript section belongs to it, so the group holds a single Q page and the work it causes happens inside other pages' sentences. Thin is the correct shape here, and the page now says so rather than leaving a reader to wonder what is missing.
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered with a face figure and caption, Aims regrouped as A1/P with `Done when`, States mirrored per Aim.
 260730 · Project trial recorded the structured-value comparison as a later G3 extension.

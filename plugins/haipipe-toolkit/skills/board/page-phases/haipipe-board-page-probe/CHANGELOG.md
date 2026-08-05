@@ -7,6 +7,10 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.3.1 - 2026-08-05
+
+- The description leads with the plain job before the four coined Q/A terms, per the no-undefined-jargon rule.
+
 ## 0.3.0 - 2026-08-04
 
 - Adds the shared RUN receipt boundary: PROBE records the unknown, executor and

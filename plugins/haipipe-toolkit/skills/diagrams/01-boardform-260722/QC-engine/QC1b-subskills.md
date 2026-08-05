@@ -13,7 +13,7 @@ Get it wrong and the same rule gets written twice, or a capability another workf
 
 **Why the answer moved**: CC read the roster on 260729 as defer page and sentence, because nothing then needed either one without a board. JL named `haipipe-board-routing` and `haipipe-board-digest` the same day, and both verbs are handed raw input with no board attached, so the missing consumer had simply not been proposed yet.
 
-**Covered elsewhere**: What a page IS, and its section contract: `QB4`. What a sentence IS, and its records: `QB5`. What SKILL.md must say, and the rule that specs go to `ref/`: `QC1a`. Where a write may land on somebody else's board: `QB1` §4. One synced mirror page per shipped unit: `Skill-0`, `Skill-3`, `Skill-4`, `Skill-5`, `Agent-1`, `Agent-2`; the retired `Skill-1` is in `_archive/` and its id still resolves.
+**Covered elsewhere**: What a page IS, and its section contract: `QB4`. What a sentence IS, and its records: `QB8`. What SKILL.md must say, and the rule that specs go to `ref/`: `QC1a`. Where a write may land on somebody else's board: `QB1` §4. One synced mirror page per shipped unit: `Skill-0`, `Skill-3`, `Skill-4`, `Skill-5`, `Agent-1`, `Agent-2`; the retired `Skill-1` is in `_archive/` and its id still resolves.
 
 ## Diagram
 
@@ -63,7 +63,7 @@ So the test is not "is this a coherent topic", it is "does some consumer need th
 **1.1 · Every seam in `skills/board/`, walked once on 260729**
 
 - `haipipe-board-page`, the page contract: the strongest case.
-  `QD2`'s drawer keeps a hand-rolled copy of exactly these instructions in a Python string, and `QB5d` caught that copy describing a page shape that no longer existed, which is the rot duplication guarantees.
+  `QD2`'s drawer keeps a hand-rolled copy of exactly these instructions in a Python string, and `QB8d` caught that copy describing a page shape that no longer existed, which is the rot duplication guarantees.
 - `haipipe-board-sentence`, the apparatus grammar: second, on the same consumer plus the paper family's evidence card.
 - `haipipe-board-stage`, the S-page machinery: already consumed across families, because `create-page.py` in the paper skill calls the Board's `stage.py`.
   That consumer needs the SCRIPT, not the instructions, so it argues for keeping `stage.py` clean rather than for a skill.
@@ -199,7 +199,7 @@ Routing automates the claim, which makes both failure modes run at machine speed
 
 #### 4.1 · An id no longer predicts a folder
 
-This board carries `QA2`, `QB5`, `QC1b` and `QB8` under group letters they were not opened under, precisely so external citations keep working.
+This board carries `QA2`, `QB8`, `QC1b` and `QB7` under group letters they were not opened under, precisely so external citations keep working.
 So routing cannot resolve a page by name pattern: it has to read `board.md`'s `## Pages`, with `## Links` resolving the older ids.
 `haipipe-board-routing` 0.6.0 states exactly that in its step 3, and `check.py`'s `declared_links` resolves ids the same way, so the two agree.
 
@@ -256,7 +256,7 @@ What it sharpens is `haipipe-board-page`'s job: it ships the BASE contract the v
 #### 6.2 · The four rule strings in `live/chat.py` are the one real defect
 
 `CHAT_RULES` at line 297 teaches an agent one question page and `BOARD_CHAT_RULES` at line 353 teaches it the whole board, with `FULL_RULES` and `BOARD_FULL_RULES` doing the same for a full session.
-None of the four reads `ref/` or either spec: all four restate them in a Python string, and `QB5d` already caught one describing a page shape that no longer existed.
+None of the four reads `ref/` or either spec: all four restate them in a Python string, and `QB8d` already caught one describing a page shape that no longer existed.
 They were the extraction's original trigger and they moved rather than changed, travelling from `cli/serve.py` into `live/chat.py` in the `QC2c` live-layer split, so the de-duplication is still owed.
 
 #### 6.3 · The cheaper fix was available all along, and it is still the fix
@@ -279,7 +279,7 @@ That is worth doing whether or not the page door ships, and the page door shippi
 📌 The mapping is a support record, not a new skill per UI component, so a part of the board with no unit of its own is normal rather than a gap.
 
 The Board-level SkillSet declares the linked units once, while each owning Page or subsection may point at the exact capability that supports it.
-For example `QB5 · The sentence` should show `supported by haipipe-board-sentence · Evidence Card`.
+For example `QB8 · The sentence` should show `supported by haipipe-board-sentence · Evidence Card`.
 
 #### 7.1 · When a capability earns its own door instead of a support row
 
@@ -317,7 +317,7 @@ It is unshipped in the sense that matters: `haipipe-board`'s `open` and `add` st
 
 #### 8.3 · A sentence BOARD is a different fork, and it needs nothing shipped
 
-A dedicated design board for the sentence, a future `01-sentence-YYMMDD/`, is where sentence decisions would be argued if `QB5` outgrows this board.
+A dedicated design board for the sentence, a future `01-sentence-YYMMDD/`, is where sentence decisions would be argued if `QB8` outgrows this board.
 That is a board-folder decision, which `QB1` owns through its two locations, and it is not a skill decision.
 
 ## Aims
@@ -483,7 +483,7 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
   One page's `.md` fails that test and fans out; `board.md`, the lane block, the rebuild and the checker pass it and stay with the caller.
 
 ## Log
-260802 2030 · `QB5` closed and `haipipe-board-sentence` reached 0.3.0 with three verbs, so the roster's contract-versus-action column is wrong a second time and in the opposite direction from the index. `2.3` now records both failures and rules that a row names what a reader DOES with a unit when it is both. The count in `3` corrected to 0.3.0 and 191 lines, with the changelog drift `agree.py` found flagged in place
+260802 2030 · `QB8` closed and `haipipe-board-sentence` reached 0.3.0 with three verbs, so the roster's contract-versus-action column is wrong a second time and in the opposite direction from the index. `2.3` now records both failures and rules that a row names what a reader DOES with a unit when it is both. The count in `3` corrected to 0.3.0 and 191 lines, with the changelog drift `agree.py` found flagged in place
 260802 · 🚪 The sentence unit became a DOOR, on JL's read of the `haipipe-board-page` precedent ("we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?"). The precedent is precise about what migrates: the page skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. The sentence half had been the other way round, with the operating detail in `haipipe-board`'s SKILL.md and a 94-line spec carrying no verbs. `haipipe-board-sentence` 0.3.0 now holds three verbs (comment, edit, card), the boundary block, and the reader's controls, at 192 lines against the page skill's 299; `haipipe-board` 0.111.0 keeps only the two rules that bind the ENGINE rather than the contract, which are that a write needs `serve.py` and that a form closes before it asks for the repaint. The one-door table now states the rule at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board is the board skill's
 260802 1810 · JL ruled `B`, merge: `haipipe-board-index` is deleted and `haipipe-board-routing` 0.9.0 owns both write altitudes, with `src/lanes.py` moved into it. Two Decision Now rows closed on the one ruling, because the group-altitude landing rule was only ever blocked on which unit would own it. `haipipe-board` 0.109.0 corrects the family block and its heading, which had said "three specs" while one of the three was a verb set. `Skill-1` retires to `_archive/` and `Skill-5` absorbs the altitude
 260802 1710 · JL asked what `haipipe-board-index` is for, said it may not be needed, and proposed merging it with `haipipe-board-routing`. The question forced the first real `A2.2` audit and it found a duplication: three of the index's five verbs are the door's own `open`, `regroup.py` and `check.py` written a second time, and only `src/lanes.py` is code held nowhere else. Three options are on the row in Decision Now, and the recommendation is retiring the unit rather than merging it, because merging moves a script into a verb that holds none

@@ -117,7 +117,7 @@ Today that fact lives in a sentence; under the proposed shape it is an empty dir
 (8 pairs of `stage.md` and `template.md`, 22 files, 256 KB)
 Every stage folder holds exactly two files, so the move is small and complete.
 `haipipe-paper-stage` stops owning the contracts and resolves them instead, which is what its own contract already says it does.
-`../../paper/route/haipipe-paper-stage/stages/index.yml` keeps the roster and its `dir:` values point into the `SNN-` folders.
+`../../paper/haipipe-paper-stage/stages/index.yml` keeps the roster and its `dir:` values point into the `SNN-` folders.
 
 #### 2.2 · The board's folder rule, copied exactly
 (JL 260803, after checking what `_` already means in this repo)
@@ -204,7 +204,7 @@ If they stop sharing one, each family sorts by its own board, which is the whole
 - A2.1 · The ten delivery groups each have a folder named after the board group they produce.
   **Done when:** `skills/paper/s01_opening` through `s10_round` exist, and each holds the stage contracts and skills that write that group's pages.
 - A2.2 · The lifecycle contracts live with their group rather than inside the router.
-  **Done when:** each `stage.md` and `template.md` sits in its `SNN-` folder, `../../paper/route/haipipe-paper-stage/stages/index.yml` points at the new paths, and `../../paper/route/haipipe-paper-stage/check-contracts.py` still passes.
+  **Done when:** each `stage.md` and `template.md` sits in its `SNN-` folder, `../../paper/haipipe-paper-stage/stages/index.yml` points at the new paths, and `../../paper/haipipe-paper-stage/check-contracts.py` still passes.
 
 ### A3 · 🔪 Two defects the move forces into the open
 - A3.1 · One stage contract declares one family.
@@ -217,6 +217,17 @@ If they stop sharing one, each family sorts by its own board, which is the whole
 ## States
 
 ### Decision Now
+
+- [ ] 🗣 Does `skills/application` take the same shape: door + its OWN roster + workers, on the shared board?
+      📍 JL 260805: "as long as we specify the Stages as S01 to S10, we can make a specific usage of haipipe-board. This will be the same to haipipe-application, right?" Yes, and the specials cost nothing now: S03/S04 load `for-literature`/`for-value`, display loads `for-display`, sections load `for-section`, all host-agnostic already. CORRECTED after reading the code (JL 260805: "no, it is not the same... they have their own style"): the application's roster is genuinely its own, read from `1-lifecycle/` on disk: the EVIDENCE LADDER 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice is a refinement pipeline with sequential gates (no paper group chains like this); its VENUE is a GATE, not a stylist (the channel decides WHICH stages fire and how deep claims settle, needing a fires-per-venue contract field paper has no use for); and iterate's rounds are driven by deployment feedback, not reviewer letters. Shared for free: display, section-edit, and both evidence routes ride for-display, for-section, for-literature, for-value unchanged. The recipe is shared; the roster is not. Sequenced behind the paper's phase 1, running in the same tree.
+
+- [x] 🗣 The thin paper: does `haipipe-paper-stage` fold into the door, and does `phase/` dissolve into flat workers?
+      📍 Reopens this page as a new round (JL 260805: "maybe we can make it very thin"; then: stage "do we still need it?", phase "we don't need phase... or we want to immigrate"). The board family now owns all page logic (8 types, 4 phases, RUN), so what remains of stage is not an engine but a PACKET COMPILER: resolve the roster row, read stage.md, assemble the RUN packet, call board RUN.
+      ⭐ `A ·` fold stage into `haipipe-paper` (one door, one router); retire the four phase HUBS; the seven LaTeX leaves (citation · values · display-req · place · results · evidence · proof) move to a flat `workers/` with no hubs, dispatched by each stage.md's declarations; humanizer moves to the writing family. The LaTeX leaves stay paper-side because the board engine never names a consumer family. ≈33 → ~17 skills, one router.
+      `B ·` keep stage as its own thin skill (roster + packet only) and retire just the hubs.
+      🛑 `Blocks` retiring any hub, and SEQUENCED behind one thing: RUN has not driven a live page yet; prove it once before the paper family bets its lifecycle on it.
+      🤖 `If nobody answers` the hubs stay as thin overlays and nothing retires.
+      ✅ `Ruled A` JL 260805: "please do A." Executed in two phases: phase 1 (mechanical, fresh-context agent) builds workers/, moves humanizer to writing, retires the draft/revise/check hubs and the three redundant routers to _old/, repoints references, and verifies with install + check-contracts + both board builds; the probe worker moves to workers/ INTACT because it carries real paper deltas (check-probe-cards.sh, the S03/S04 projection). Phase 2 (the door fold: stage + enter + lifecycle into haipipe-paper) needs merge judgment and runs next session, still sequenced behind one live RUN.
 
 - [x] 🗣 Do the paper and application families still share one folder skeleton?
       RULED C, 260804 (JL: "ok, I agree, please go ahead and make them"). **The two families share a CONTRACT, not folder names.** The four phase rulebooks now live in the Board family, host-agnostic, and each family's worker loads them and adds only its own artifact knowledge. Application renames nothing.
@@ -247,8 +258,8 @@ If they stop sharing one, each family sorts by its own board, which is the whole
 
 📥 **Input files** · what the work reads
 
-- `../../../paper/route/haipipe-paper-stage/stages/index.yml` · the stage roster and its `dir:` values
-- `../../../paper/route/haipipe-paper-stage/check-contracts.py` · what would verify the move
+- `../../../paper/haipipe-paper-stage/stages/index.yml` · the stage roster and its `dir:` values
+- `../../../paper/haipipe-paper-stage/check-contracts.py` · what would verify the move
 - `../../../application/SOP-paper-alignment.md` · the document that keeps the two families in step
 - `../../../../install.sh` · prunes `_`-prefixed folders, which is why the proposal uses none
 

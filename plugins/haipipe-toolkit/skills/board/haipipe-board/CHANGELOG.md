@@ -5,6 +5,25 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.118.0 - 2026-08-05
+
+**Live html embeds, for the slide page type** (JL: "you will embed the html in
+the content division"; proven on the boardform board's QA4).
+
+- `src/body.py`: `![alt](x.html)` renders as a live iframe (`.fightml`) with an
+  always-visible open link as the no-JS path. `?preview=N` on an html-ppt deck
+  embeds exactly slide N, so a slide page carries one deck file, per-division.
+- `src/page_board.py`: the split-site reroot now tells authored html files from
+  generated page links by EXISTENCE in the board source folder, so an embed's
+  src gets the `../../` hop exactly like a png while group-index links stay
+  sited. (The first cut keyed on the `../` prefix and broke every group index
+  row; the existence test replaced it the same hour.)
+- `cli/check.py`: a media embed (`![](…)`) satisfies the division-figure rule,
+  since a rendered embed is a figure in the renderer's own vocabulary; the
+  caption rule still applies.
+- `assets/css/60-chips.css`: `.fightml` frame styles, slide-proportioned
+  (16:9), scoped like `figpdf`.
+
 ## 0.117.0 - 2026-08-04
 
 - Adds the typed `### 🔗 Related Board Pages` Files group for precise Page-to-Page

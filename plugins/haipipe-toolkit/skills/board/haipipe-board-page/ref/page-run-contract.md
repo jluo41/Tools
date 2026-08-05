@@ -14,9 +14,9 @@ and receipt they share.
 The caller supplies facts and authority, not a proposed paragraph formula.
 
 ```yaml
-run_id: 260804-2130-QB9
+run_id: 260804-2130-QB5
 board: /absolute/path/to/board-folder
-page: /absolute/path/to/QB9-page-loop.md
+page: /absolute/path/to/QB5-page-loop.md
 start_phase: CHECK              # DRAFT | PROBE | REVISE | CHECK
 intent: audit and improve the automatic Page loop
 sources:                       # exact files the run may rely on
@@ -80,7 +80,7 @@ shape and preserves all receipts in order:
   "reopens_promise": false,
   "reason": "A3.1 lacks visible evidence",
   "artifacts": [],
-  "evidence": ["QB9-page-loop.md#A3"],
+  "evidence": ["QB5-page-loop.md#A3"],
   "findings": ["A3.1 is asserted but not demonstrated"],
   "human_gate": {"required": false, "status": "not-required", "evidence": []}
 }
@@ -96,8 +96,12 @@ snapshot. Every receipt's `version_before` must equal the preceding receipt's
 must be checked again.
 
 `reason` names the authority exercised, not merely the file operation. A route
-to DRAFT from PROBE, REVISE, or CHECK sets `reopens_promise: true` and increments
-the round. Repeated DRAFT within the same unsettled promise does not.
+to DRAFT from PROBE, REVISE, or CHECK is legal ONLY as a reopen: the receipt
+names the reopened purpose or Aim, sets `reopens_promise: true`, and increments
+the round, which is the same "only when purpose or an Aim reopened" rule the
+base and QB5 (the loop page, QB9 until 260805) state; a cross-phase route to DRAFT that reopens nothing is an
+illegal route, not a free visit. Repeated DRAFT within the same unsettled
+promise does not increment.
 
 ## Legal routes
 

@@ -173,7 +173,7 @@ That makes placement a fact about citation order, which is a sequence, so it lef
 (the admission test above sorts by ORDER, so it has no answer for a rule about AMOUNT)
 How many words a section may run is a fact about the whole section, but reordering its paragraphs does not change the count, so the shuffle test sends it to QBe1, where a per-sentence check can never see it.
 The number itself already exists and is read, never written, by this plugin: it sits in `paper/venue/playbook-*/<outlet>/<outlet>-<kind>/style.md` under `## Word budget`, present in 78 of the 95 `style.md` files and absent from all 13 `*-appendix` packs and from four of the five `*-related-work` packs.
-The measuring side already exists too: `../../paper/route/haipipe-paper-stage/section-stats.py` counts P, sentences, and prose words per section, and its `--dashboard` mode prints a `floor` column transcribed from the venue blueprint with a `LOW` flag.
+The measuring side already exists too: `../../paper/haipipe-paper-stage/section-stats.py` counts P, sentences, and prose words per section, and its `--dashboard` mode prints a `floor` column transcribed from the venue blueprint with a `LOW` flag.
 So neither the budget nor the counter is missing; what is missing is any page on this Board that says a section HAS a size, which is why no reader of QBe3 can find one.
 Measured 260802: npj Digital Medicine 2025 main text runs 7,313 prose words, MISQ 2026 runs 9,600, and the medical-journal draft runs 2,654; across all three one paragraph is about 5 sentences and about 110 words, and one sentence is about 22 words.
 
@@ -665,7 +665,7 @@ Until this face says what a section does when its unit is not promoted, five `re
 
 ### 📏 The aggregate rule · where the number and the counter already live
 - `../../paper/venue/playbook-*/<outlet>/<outlet>-<kind>/style.md` · `## Word budget`, the source. Read by the `2a-venue` stage, never written by this plugin.
-- `../../paper/route/haipipe-paper-stage/section-stats.py` · the counter. `<S-page.md>` prints P, sentences and words per paragraph; `--dashboard <4-main>` prints the whole section set with a `floor` column and a `LOW` flag.
+- `../../paper/haipipe-paper-stage/section-stats.py` · the counter. `<S-page.md>` prints P, sentences and words per paragraph; `--dashboard <4-main>` prints the whole section set with a `floor` column and a `LOW` flag.
 - `QBv1`–`QBv16` · one venue page each, and `QBv4` already rules that a venue page reports the pack's number and never asserts one of its own.
 
 ## Log

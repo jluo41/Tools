@@ -118,7 +118,7 @@ Reopening is then a transition with a date rather than a failure of the gate.
 
 #### 1.2 · Work sits in the middle of this group, on purpose
 (the stages run 0, then 1a and 1b, then 2a and 2b, so this concern has a hole in it)
-`../../paper/route/haipipe-paper-stage/stages/index.yml` runs seed 0, resource 1a, claims 1b, venue 2a, pitch 2b, narrative 3.
+`../../paper/haipipe-paper-stage/stages/index.yml` runs seed 0, resource 1a, claims 1b, venue 2a, pitch 2b, narrative 3.
 This concern holds 0, 2a, and 2b, so Work's two stages sit inside its span.
 That is the price of grouping by what a reader asks rather than by when the machine runs, and the Law below is what keeps the two apart.
 
@@ -456,7 +456,7 @@ That leaves one live gap in the Opening group, `S-Venue-2-narrative.md`, which m
 
 📥 **Input files** · what the work reads
 
-- `../../paper/route/haipipe-paper-stage/stages/index.yml` · declares seed, venue, and pitch as separate stages, which is exactly what this concern groups
+- `../../paper/haipipe-paper-stage/stages/index.yml` · declares seed, venue, and pitch as separate stages, which is exactly what this concern groups
 - `../../paper/S01-opening/seed/stage.md` · the seed contract, and `0-seed/template.md` beside it, which fixes that page's sections
 - `../../paper/S01-opening/venue/stage.md` · the venue contract, and `2a-venue/template.md` beside it
 - `../../paper/S01-opening/pitch/stage.md` · the pitch contract, and `2b-pitch/template.md` beside it

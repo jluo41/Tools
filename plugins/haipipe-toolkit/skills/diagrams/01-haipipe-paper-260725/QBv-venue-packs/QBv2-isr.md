@@ -965,7 +965,7 @@ The expensive change is upstream and belongs to `§2`: the identification bar, w
 - `../../paper/venue/playbook-utd-is/ISR/ISR-results/style.md` · the progressive funnel, the endogeneity move, and the 5-11 checks
 - `../../paper/venue/playbook-utd-is/ISR/ISR-discussion/style.md` · the five beats, the four limitation placements, and the closing elevation
 - `../../paper/venue/playbook-utd-is/ISR/ISR-appendix/style.md` · the lettering, the triage rule, and the DOI-hosted tier
-- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml` · the reader-side resolver: outlet ▸ section kinds.
+- `../../paper/haipipe-paper-stage/stages/section-kinds.yml` · the reader-side resolver: outlet ▸ section kinds.
 
 ### 🔗 Authority · what the DESK itself PUBLISHES, read directly and never through the pack
 

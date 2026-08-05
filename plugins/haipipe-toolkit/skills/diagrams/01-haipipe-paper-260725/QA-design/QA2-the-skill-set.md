@@ -349,7 +349,7 @@ Reopened to 🟡 on 260726: the edge map raised a real unruled question, which i
 - `haipipe-paper/SKILL.md`
   The front door, and the largest compaction candidate at 556 lines.
 - `1-lifecycle/haipipe-paper-stage/`
-  The runner, `../../paper/route/haipipe-paper-stage/stages/index.yml`, the eight contracts, and `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md`.
+  The runner, `../../paper/haipipe-paper-stage/stages/index.yml`, the eight contracts, and `../../paper/haipipe-paper-stage/stages/CONTRACT.md`.
 - `2-phase/`
   The thirteen phase workers.
 - `3-deliver/`

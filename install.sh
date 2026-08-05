@@ -143,6 +143,7 @@ enumerate_skills() {
     find "$plugins_root" \
         -path '*/_paper-writing-backup' -prune -o \
         -path '*/_archive' -prune -o \
+        -path '*/_old' -prune -o \
         -path '*/skills/*/SKILL.md' -type f -print | while IFS= read -r skill_file; do
         local skill_path plugin_rel plugin_name rel_path skill_name priority
         skill_path="${skill_file%/SKILL.md}"

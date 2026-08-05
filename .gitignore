@@ -16,3 +16,22 @@ plugins/haipipe-toolkit/skills/paper/_venue/**/exemplars/**/*.pdf
 # `plugins/haipipe-toolkit/skills/board/`, the skill family itself, and silently
 # untrack the whole thing. Match only the generated tree inside a board folder.
 plugins/haipipe-toolkit/skills/diagrams/*/board/
+
+# ── Bulk data never enters git ──────────────────────────────────────────────
+# This is a skills repo, so none of this should ever appear. The rule is here
+# because a task or demo that writes a parquet beside its code would otherwise
+# be committed silently, and git never forgets a large file.
+*.parquet
+*.pkl
+*.feather
+*.arrow
+*.npy
+*.npz
+*.h5
+*.hdf5
+*.sqlite
+*.db
+*.zip
+*.tar
+*.tar.gz
+*.tgz

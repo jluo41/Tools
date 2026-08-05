@@ -1,4 +1,4 @@
-# Page folder management: a page inside its home folder
+# Page · its home folder: one page inside one folder it owns
 state: ✅ SETTLED
 owner: CC
 method: recursive discovery in build.py + path vetting in serve.py; ruled by JL 260724, shipped same day

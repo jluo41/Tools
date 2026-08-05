@@ -36,7 +36,8 @@ Gate Protocol (per-stage loop)
 1. **Produce** the stage artifact on its S page (`## Content` + `## Log`);
    display also produces compiled assets.
 2. **Review** the artifact content. Display only: compile the PDF (Lifecycle TeX
-   Quality Standard, ../../3-deliver/haipipe-paper-deliver/SKILL.md). Markdown stages
+   Quality Standard: a stale PDF, tex newer than pdf, is a defect; full text sits
+   with the retired deliver router, debt tracked in ../../_old/README.md). Markdown stages
    have no compile step; their gate is content review.
 3. **Present exit criteria** with per-item check/fail marks (see table below).
 4. **APPROVAL** -- copilot: ASK "Stage <X> looks ready -- confirm to close and

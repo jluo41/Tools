@@ -7,8 +7,8 @@ renderer needs arrives as a **content plan**: one markdown file plus a folder of
 ```
    whoever has the content              display/ renderer
    ────────────────────────             ─────────────────────────────────
-   paper/5-present/paper-poster   ──►   haipipe-display-poster   → A0 PDF · PPTX · SVG
-   paper/5-present/paper-slides   ──►   haipipe-display-slides   → PDF · PPTX
+   display/skills/paper-poster    ──►   haipipe-display-poster   → A0 PDF · PPTX · SVG
+   display/skills/paper-slides    ──►   haipipe-display-slides   → PDF · PPTX
    (an application, a talk, you)  ──►   same renderers, same contract
         writes the plan below                reads it, never reads the source
 ```

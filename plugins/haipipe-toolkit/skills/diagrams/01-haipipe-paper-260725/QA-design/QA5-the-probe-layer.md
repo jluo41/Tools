@@ -1,6 +1,6 @@
 # QA5 · Q-consumers, Q-executors, and the Evidence Channel
 
-state: 🟡 OPEN · physical placement in S03/S04 is settled; Q-consumer ownership and the cross-Page write set are reopened
+state: 🟡 OPEN · S03/S04 placement is implemented; generic Q-consumer ownership is deferred to QB9@boardform
 owner: JL
 method: one file per question inside the paper, bound BY PATH to an answer the paper may not produce
 session: 822af3ea-7685-49dd-9ee0-7d0ee2eea8ec
@@ -170,50 +170,6 @@ The generic Probe layer remains the owner of the loop and entry anatomy, so nest
 An entry is queued exactly when its `#### bank binding` names `state: planned`, `commissioned`, or `deferred`; `read` and `answered-local` are resolved states and leave the queue. The topic page's own `state:` records delivery readiness, not queue membership.
 No queue file is written by hand, so moving or resolving an entry cannot leave an out-of-date duplicate behind.
 
-### 4 · The open ownership question after moving Probe Pages into S03 and S04
-
-**One active Page**: the proposed write boundary separates where a Probe Page is filed from which Page owns the paper-facing question.
-
-```text
- CURRENT TOPIC-OWNED RULE
- writing Page       origin Aim + prose marker
- topic Page         Q-consumer + stake + interpretation + Probe path
- Probe Page         q-executor + bank binding + copied a-executor
- bank QA            answer
-
- PROPOSED ORIGIN-OWNED RULE
- active writing Page  Q-consumer + stake + Probe ref + a-consumer + State
- Probe Page           q-executor + consumer refs + bank binding
- bank QA              answer
- topic Page           generated rollup + authored topic synthesis
-```
-
-🔄 Establishes that the settled S03/S04 folder layout does not by itself settle which Page owns a Q-consumer raised while another Page is being written.
-
-#### 4.1 · The current rule turns one Probe into a multi-Page consumer write
-(the originating Page raises the Aim, then the topic Page becomes the canonical consumer)
-When `S-Main-6-results.md` raises `Q-Sec6Results-6`, the current Paper contract moves the canonical paper stake and interpretation to `S-Value-1-headline-lbp.md` before the nested Probe Page can bind the task answer.
-One exchange can therefore require manual consumer records on the originating Page and the topic Page, plus the Probe Page itself, before REVISE returns to the originating prose.
-The paths are all traceable, but the workflow has two paper-facing ownership surfaces and no single active Page boundary.
-
-#### 4.2 · Physical route and logical ownership can be separate
-(S03 and S04 can classify evidence without taking ownership from the Page that raised the question)
-Under the proposed split, the originating Page keeps its Q-consumer, stake, a-consumer, and evidence-based State.
-The Probe Page still lives beneath `S03-literature/probes/<topic>/` for discovery or `S04-value/probes/<topic>/` for task evidence, so the settled route and folder organization do not move.
-The Probe Page owns the neutral q-executor and bank binding, while the QA file remains the bank's answer receipt.
-
-#### 4.3 · Another Page receives a handoff, not an inline rewrite
-(a Probe may make evidence available to several consumers without authoring all of their Content)
-One q-executor may list consumer references to Results, Discussion, and a Value topic without rewriting all three Pages in the same run.
-The active consumer receives its a-consumer immediately; another consumer becomes eligible for its own PROBE or REVISE run when it next opens.
-A topic Page is edited only when the landed evidence changes its own synthesis, and that edit receives its own Page lifecycle and CHECK.
-
-#### 4.4 · Topic completeness can be rendered without a second authored register
-(the topic Page can show every Probe while keeping the Probe and QA as the editable sources)
-`S-Literature-<n>-<topic>.md` and `S-Value-<n>-<topic>.md` can render a folded rollup from the Probe Pages filed under their topic.
-Each row can show the q-executor, consumers, bank target, state, and returned answer by reference, while the topic Page source contains only its authored synthesis.
-The same canonical Probe reference should drive the rendered card and phase-scoped context loading, so an author does not maintain a Probe pointer, an embed, and a Related Board Pages row for the same relationship.
-
 ## Aims
 
 ### A1 · 🔎 What the layer owns, and what this board owns
@@ -234,12 +190,6 @@ The same canonical Probe reference should drive the rendered card and phase-scop
 - A3.1 · Each live Literature or Value entry lives in the `probes/` folder of the topic it serves.
   **Done when:** S03 and S04 contain every live entry beneath its assigned topic, no S11 Probe group remains, and `_archive/1-probes/` is historical provenance only.
 
-### A4 · 🔄 The open ownership question after moving Probe Pages into S03 and S04
-- A4.1 · One Page is named as the canonical owner of a Q-consumer raised while writing another Page.
-  **Done when:** JL rules whether the originating consumer Page or the evidence topic Page owns the stake, a-consumer, and State, and the Paper topic-entry contract states the same answer.
-- A4.2 · A topic Page can show its complete Probe set without hand-copying consumer questions or bank answers.
-  **Done when:** one canonical Probe reference drives the topic rollup, answer projection, bounded agent context, stale-source detection, and CHECK.
-
 ### P · 🏁 Page-level
 - P1 · No claim on this page about a folder it does not own is left without a check.
   **Done when:** every sentence asserting the state of `⑥` or of `/haipipe-application` names how a reader verifies it.
@@ -257,17 +207,6 @@ The same canonical Probe reference should drive the rendered card and phase-scop
 
 ### A3 · 🧭 Why live probe entries belong inside their evidence topic
 - ✅ A3.1 · JL refined and CC applied 260804. S03 and S04 topic pages sit directly in their stage folders; ten discovery entries live in `S03-literature/probes/L01-<topic>/` and eighteen task entries in `S04-value/probes/V01-<topic>/`. Each entry is one q-executor; S11 no longer exists as a live group.
-
-### A4 · 🔄 The open ownership question after moving Probe Pages into S03 and S04
-- 🧠 A4.1 · Waiting on JL. The current topic-owned rule is implemented, while the origin-owned alternative is now concrete enough to compare against it.
-- 🧠 A4.2 · Waiting on A4.1. The Board already has live Markdown embeds and scoped Related Board Pages, but no single Probe reference currently drives both surfaces.
-
-### Decision Now
-- [ ] 🗣 Which Page owns a Q-consumer raised while writing a manuscript Page?
-      The physical location is settled: the Probe Page remains under the matching S03 Literature or S04 Value topic. The open issue is whether that location also transfers ownership of the paper-facing question.
-      A · Keep the topic-owned rule. The originating Page raises an Aim, then the Literature or Value topic Page becomes canonical for the stake, interpretation, and Probe path; this preserves a self-contained topic register but requires a multi-Page consumer write.
-      B · Keep ownership on the originating consumer Page. The Probe Page remains filed by evidence route, while the topic Page renders a derived rollup and is revised only when its own synthesis changes; this gives each Page one lifecycle but requires a checked projection and handoff mechanism.
-      → CC recommends B, because physical evidence routing should not silently transfer the ownership of a Page question or require PROBE to author a sibling Page's Content.
 
 ### P · 🏁 Page-level
 - 🔨 P1 · One such claim was repaired on 260802: `⑥` had been recorded as a design folder rather than a board since before that board existed, here and on `QA1`. The rule is now in `## Writing Style`; the remaining claims have not been re-read against it.
@@ -312,11 +251,9 @@ The same canonical Probe reference should drive the rendered card and phase-scop
 
 ## Discussion
 
-- 🔄 Reopened: folder placement is not Q-consumer ownership
-  JL asked what happens when writing one paper Page requires a Probe that is physically filed beneath a Literature or Value topic, and whether PROBE must then update that topic Page as well as the originating Page.
-  The current ruling answers yes by making the direct topic Page canonical, but that creates two paper-facing consumer surfaces before the answer reaches prose.
-  The alternative recorded in §4 keeps the settled S03/S04 layout, keeps one Probe Page per q-executor, and changes only the logical owner: the originating Page keeps its Q-consumer while topic completeness becomes a generated view.
-  No ruling changed in this write; A4 and Decision Now preserve the choice that remains.
+- 🔗 Generic Probe ownership moved to the Boardform lifecycle Page
+  The S03/S04 folder layout remains the implemented Paper case.
+  Whether filing a Probe Page may transfer Q-consumer ownership is now owned by `QB9@boardform` §2.4 to §2.6, including the one-active-Page handoff boundary and the zero-copy projection question.
 
 - 🧭 Adopted direct-topic probe structure
   JL ruled on 260804 that S03 and S04 topic pages are direct children of their stage folders, while a shared `probes/` child groups their entries by topic.
@@ -327,7 +264,7 @@ The same canonical Probe reference should drive the rendered card and phase-scop
 
 ## Log
 
-260804 · Reopened the Q-consumer ownership question after JL separated physical Probe placement from Page authorship. Added §4 with the current topic-owned write set, the origin-owned alternative, one-active-Page handoffs, and a zero-copy topic rollup; added A4 and Decision Now without changing the settled S03/S04 folder layout.
+260804 · Moved the generic Q-consumer ownership, one-active-Page handoff, and zero-copy projection discussion to `QB9@boardform`. This Page now keeps only the implemented Paper S03/S04 case and a pointer to the lifecycle owner.
 
 260804 · JL refined the topic-owned structure: S03 and S04 topic pages are direct stage children, and their evidence entries live in `probes/<topic>/`. CC applied it to the Paper board. One entry equals one q-executor; each topic's Q-consumer register is canonical, and queue is derived from bank-binding state.
 

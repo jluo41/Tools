@@ -180,7 +180,7 @@ Counting lines of method body per area:
    390  activity       a SQLite focus-time database: spans per board, group,
                        page and actor, day-part aggregation, cross-board stats (QD6)
    334  write-back     every comment, lane, edit, discussion and resolve landed as a
-                       typed line under its exact anchor sentence             (QB5)
+                       typed line under its exact anchor sentence             (QB8)
    322  terminal       the PTY serve.py now owns, its WS terminus, ring buffer,
                        resize and reaping                                     (QD3)
    291  http           routing, headers, target resolution, and calling build.py
@@ -214,7 +214,7 @@ The frame is not "make the drawer more like the plugin".
 It is that the board becomes the plugin, and the mapping is one to one at every layer.
 
 The IDE bridge exists so the session can reach EDITOR surfaces: a diff in a real tab, the current selection, the language server's diagnostics.
-On this board the editor IS the board page, so the equivalent already half exists and has different names: the sentence address is the selection, `QB5`'s lanes are the annotations, and `check.py`'s output is the diagnostics.
+On this board the editor IS the board page, so the equivalent already half exists and has different names: the sentence address is the selection, `QB8`'s lanes are the annotations, and `check.py`'s output is the diagnostics.
 That is the one place where migrating means translating rather than copying, and it is where the board can end up better than the plugin rather than merely equal to it.
 
 ### 7 · What stays VS Code only, and does not matter

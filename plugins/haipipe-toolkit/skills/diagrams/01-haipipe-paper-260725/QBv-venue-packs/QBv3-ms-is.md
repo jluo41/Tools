@@ -1108,7 +1108,7 @@ No sentence of appendix prose is quoted anywhere in the pack.
   The model section `5` is built from, including the mechanism translation table `1` folds in. The folder is named `theory-model` on disk and resolves to the canonical `theory` kind.
 - `../../paper/venue/playbook-utd-is/README.md`
   The family delta and the lean-signal matrix `2` reads, covering all four UTD-IS outlets at once.
-- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml`
+- `../../paper/haipipe-paper-stage/stages/section-kinds.yml`
   The reader-side resolver: outlet ▸ section kinds. It is what the generated kinds block below is built from, and it carries the `theory-model` alias.
 
 ### 🔗 Authority · what the DESK itself PUBLISHES, read directly and never through the pack

@@ -53,9 +53,10 @@ Two-Axis Model (stages x phases)
 
 Stage skills are the USER-FACING surface.
 Internally, each stage skill dispatches the ordered `phases:` declared by that
-stage's `stage.md` through the shared workers in `2-phase/`
-(`haipipe-paper-draft`, `haipipe-paper-probe`,
-`haipipe-paper-revise`, `haipipe-paper-check`). Most current stages declare
+stage's `stage.md` through the shared page-phase contracts in `../../board/page-phases/`
+(`haipipe-board-page-draft`, `haipipe-board-page-revise`, `haipipe-board-page-check`)
+plus the flat LaTeX-side leaves in `../workers/` (PROBE runs through
+`../workers/haipipe-paper-probe`). Most current stages declare
 DRAFT → PROBE → REVISE → CHECK; Venue declares DRAFT → PROBE → CHECK.
 Every current stage declares one human gate, CHECK. Earlier phases run
 unattended; phase records and REVISE worker provenance live in the owning S
@@ -81,7 +82,7 @@ which loads that key's contract from `haipipe-paper-stage/stages/<order>-<key>/s
 
 
 ```
-haipipe-paper-folder                  SCAFFOLD:  minimal Board-first scaffold (README + .gitignore + 0-lifecycle/ with board.md and ONE Seed page). No STATUS.md. Everything else is absent-until-allocated; the driver tex / sections/ / 2-src/compile.sh are a later on-request upgrade via haipipe-paper-scaffold. Repo+submodule wiring belongs to /haipipe-paper enter (get-or-create on a missing path).
+haipipe-paper-folder                  SCAFFOLD:  minimal Board-first scaffold (README + .gitignore + 0-lifecycle/ with board.md and ONE Seed page). No STATUS.md. Everything else is absent-until-allocated; the driver tex / sections/ / 2-src/compile.sh are a later on-request upgrade (the scaffold flow is retired; haipipe-paper-folder owes it, see ../_old/README.md). Repo+submodule wiring belongs to /haipipe-paper enter (get-or-create on a missing path).
 
 --- VENUE-FREE (don't change on retarget) ---
 
@@ -168,7 +169,7 @@ The typical first-pass order:
                     syncing venue-quality prose to sections/*.tex
 ```
 
-After the lifecycle spine, whole-paper delivery tooling lives under `3-deliver/`, routed by its own umbrella `haipipe-paper-deliver` (1-build: scaffold/restructure/conform/folder · 2-audit · 3-polish · 4-ship).
+After the lifecycle spine, whole-paper delivery tooling lives under `../S09-build/` (haipipe-paper-compile · -diffpdf · -to-overleaf · -to-word · -project), invoked directly; folder and conformance live in `../container/`.
 
 Global-pass mode (breadth-first — the whole-paper cycle)
 ---------------------------------------------------------
@@ -510,9 +511,10 @@ haipipe-paper-lifecycle (this orchestrator)
   |-- display (4)        (only compiled stage; renders via table / figure / diagram / illustration;
   |                       planning in its figure-logic.md)
   +-- section-edit (5)   (per-section hub in 0-lifecycle/4-main/; internally dispatches
-                          2-phase/ DRAFT->PROBE->REVISE->CHECK workers)
+                          the DRAFT->PROBE->REVISE->CHECK phase contracts + workers/ leaves)
 
-Every stage skill runs its declared phases through the shared 2-phase/ workers
-(haipipe-paper-draft / -probe / -revise / -check); users never invoke those directly.
-Whole-paper delivery tools live in 3-deliver/ (umbrella: haipipe-paper-deliver).
+Every stage skill runs its declared phases through the shared board page-phase
+contracts (haipipe-board-page-draft / -revise / -check) plus the flat paper/workers/
+leaves (PROBE: workers/haipipe-paper-probe); users never invoke those directly.
+Whole-paper delivery tools live in S09-build/ (compile · diffpdf · to-overleaf · to-word · project).
 ```

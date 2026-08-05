@@ -561,6 +561,19 @@ def inline(s):
                 return (f'<object class="figpdf" data="{src}" '
                         f'type="application/pdf"><a class="fp" href="{src}">'
                         f'open {alt or "PDF"}</a></object>')
+            # An html file embeds LIVE, in its own browsing context. The
+            # iframe's src is a source file the build never rewrites, so its
+            # scripts run intact (an html-ppt slide, a demo) while the board
+            # page itself stays complete with scripts off: the link under the
+            # frame is the no-JS path. `?preview=N` on an html-ppt deck shows
+            # exactly slide N, which is how a slide page embeds one deck file
+            # per division without copying slides out of it (JL 260805).
+            if re.search(r"\.html?(?:[?#].*)?$", src, re.I):
+                return (f'<span class="fightml"><iframe src="{src}" '
+                        f'loading="lazy" title="{alt or "embedded page"}">'
+                        f'</iframe><a class="fp fsopen" href="{src}" '
+                        f'target="_blank" rel="noopener">⛶ open '
+                        f'{alt or "this frame"} full size</a></span>')
             return f'<img class="fig" alt="{alt}" src="{src}" loading="lazy">'
 
         seg = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", media, seg)
