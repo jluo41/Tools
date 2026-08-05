@@ -47,6 +47,7 @@ from urllib.parse import unquote
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
 from src.common import ALIAS, STN, aim_progress, page_files  # noqa: E402
+from src.page_context import audit_related_rows  # noqa: E402
 from src.topic_entry_contract import check_topic_entries  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
@@ -376,6 +377,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_division_figures(text, name, rep)
     check_comment_form(text, name, rep)
     check_file_paths(text, name, rep, path.parent)
+    check_related_board_pages(path, name, text, rep)
     check_canvas_frames(text, name, rep, path.parent)
     check_duplicate_sections(text, name, rep)
     check_retired_sections(text, name, rep)
@@ -639,6 +641,20 @@ def check_file_paths(text, name, rep, board_dir=None):
                 rep.add(WARN, "dead-file-path", f"{name} · Files",
                         f"`{cand}` does not resolve from the engine, the board, "
                         "or the repo root (QB4 §6.3.1)")
+
+
+def check_related_board_pages(path, name, text, rep):
+    """Validate the typed, scoped Page links under Files (QB4 §6.4).
+
+    Ordinary Files rows may point anywhere the work continues. A Related Board
+    Pages row is narrower: its target must be a real Page on this Board, its
+    visible Page id must agree with that source, and its requested Content scope
+    must exist. Those facts are deterministic, so malformed context never waits
+    for an agent to discover it during DRAFT, PROBE, REVISE, or CHECK.
+    """
+    for finding in audit_related_rows(path, text):
+        level = ERROR if finding.level == "ERROR" else WARN
+        rep.add(level, finding.code, f"{name}:{finding.line}", finding.message)
 
 
 def check_comment_form(text, name, rep):

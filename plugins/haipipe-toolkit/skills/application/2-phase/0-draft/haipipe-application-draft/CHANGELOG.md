@@ -3,6 +3,12 @@ haipipe-application-draft — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.1.6] — 2026-08-04
+
+- Layers the worker on `haipipe-board-page-for-stage` and `haipipe-board-page-draft`.
+- Removes the stale DRAFT-owned probe plan and merged DRAFT gate: DRAFT now raises Q-consumers and stops before Q-executor, route, bank, target, and A-executor.
+- Routes after DRAFT according to the Page and local stage contract rather than assuming one fixed handoff.
+
 
 ## [0.1.5] — 2026-07-24
 
@@ -49,4 +55,3 @@ From `_console/closed/260719-01-DRAFT-RAISE-QUESTIONS.md` findings A1 A2 A3 A6 A
 ## [1.0.0] — 2026-07-06
 
 - NEW phase worker (paper-alignment refactor, SOP archived in haipipe-application/CHANGELOG.md §5.0.0; full-DPRC ruling R4).
-

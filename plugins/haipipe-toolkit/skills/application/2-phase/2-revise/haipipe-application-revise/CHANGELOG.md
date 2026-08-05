@@ -3,6 +3,12 @@ haipipe-application-revise — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.1.2] — 2026-08-04
+
+- Layers the worker on the Stage Page Type and `haipipe-board-page-revise`.
+- Defines REVISE by fixed purpose and Aims rather than by always following PROBE.
+- Routes changed intent to DRAFT and a consequential unknown to PROBE.
+
 
 ## [0.1.1] — 2026-07-24
 

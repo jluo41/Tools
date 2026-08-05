@@ -38,7 +38,7 @@ The style.md heading or the exemplar name rides on the same line, so a number is
 
 ✅ `prospective multi-center validation cannot be added later`  ❌ `Nature Medicine wants very rigorous validation`
 
-**The shape of this page is a contract**, `../../board/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A venue page carries three figures in `## Diagram`, in this order, and a Files section in these five groups:
+**The shape of this page is a contract**, `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A venue page carries three figures in `## Diagram`, in this order, and a Files section in these five groups:
 
 ```text
   🖼 THREE FIGURES        what each one answers
@@ -907,7 +907,7 @@ It is the same thinness recorded at 9.3, where the file's prohibitions sit inlin
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 
-- `../../board/haipipe-board-page-for-venue/SKILL.md`
+- `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`
   The venue-page contract: the three figures, the `Sec-<n>` index, the two-source rule, these five Files groups, the provenance stamp. A rule this page discovers is written into that file in the same pass, and this page reads it rather than reading the reference implementation.
 - `../../board/haipipe-board-page/SKILL.md`
   The base frame that contract extends. Load it first; it owns the seven sections and their order.

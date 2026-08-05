@@ -39,7 +39,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ✅ `playbook-pnas/pnas/pnas-significance/style.md`  ❌ `the significance style guide`
 
-**The venue-page contract is a file, and this page obeys it**: it is `../../board/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A rule below is stated here only so a writer editing this page meets it; the contract is what carries it.
+**The venue-page contract is a file, and this page obeys it**: it is `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A rule below is stated here only so a writer editing this page meets it; the contract is what carries it.
 
 ```text
   🖼 THREE FIGURES IN `## Diagram`, IN THIS ORDER

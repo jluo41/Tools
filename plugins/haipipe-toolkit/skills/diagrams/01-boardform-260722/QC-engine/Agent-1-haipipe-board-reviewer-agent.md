@@ -1,19 +1,19 @@
-# haipipe-board-reviewer-agent · v0.6.0
+# haipipe-board-reviewer-agent · v0.7.0
 state: 🟡 in question · existence unruled since 260729, never yet dispatched
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 session: 2dec022b-fc77-4efc-a03f-a589dc02583c
 
 ## Opening
-This agent is dispatched into a fresh context to judge a board that was just revised, and it is granted no write tool.
-Reach for it over the page's own `✅ Quality Check`, which runs the same rubric in the author's session and shares the author's blind spots.
-Since 0.4.0 it reads the changed Openings back to back in board order, so a page that is clear alone can still fail beside its siblings.
-That pass has never run on a real batch, and this unit's own existence has been unruled since 260729.
+`haipipe-board-reviewer-agent` is the fresh, read-only judge for a changed Board scope or one exact Page version inside RUN.
+Reach for it over the Page's own `✅ Quality Check`, which shares the author's context and blind spots.
+It verifies the source and render identity and judges the declared requirements.
+CHECK then routes to CLOSE, REVISE, PROBE, DRAFT, or HOLD without curing its own finding.
 
 **Why it has to be a stranger**: a writer who has just finished a revision knows what they meant, so they cannot see the premise the page never states.
 A fresh dispatch has only the files, which is the position every later reader is in.
 
-**What one dispatch returns**: `pass`, `revise`, or `blocked`, with one row per reviewed unit carrying the requirements it was judged against, the verdict, the evidence, and the smallest fix.
+**What one dispatch returns**: `pass`, `revise`, or `blocked`, one row per reviewed unit, the exact checked version, and the authority route that follows.
 It runs `check.py --strict` and `--summary` itself, so the mechanical findings and the prose findings arrive in one report.
 `NOT VERIFIABLE` is one of its four verdicts and never counts as a pass.
 
@@ -22,11 +22,11 @@ It runs `check.py --strict` and `--summary` itself, so the mechanical findings a
 Whether this unit stays at all is a decision row on `QC1b`, and this page's Aims carry what the unit still owes.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 0cc451fad22069bb board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:tree:start 573030cbcaf8f057 board/agents/haipipe-board-reviewer-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
-**One dispatch, three passes, no write tool**: what it loads, what it judges, and the verdict it returns.
+**One dispatch, three passes, no write tool**: what it loads, what it judges, and how a verdict becomes a route.
 
 ```text
 WORKFLOW  one file, no write tools, and the reason it must be a stranger
@@ -52,6 +52,7 @@ WORKFLOW  one file, no write tools, and the reason it must be a stranger
               Opening is a form letter whose subject could be swapped
         ▼
   returns  ✅ pass   ✏️ revise   🛑 blocked
+  routes   CLOSE · REVISE · PROBE · DRAFT · HOLD
   writes   NOTHING: no markdown, no rebuild, no state, no decision
            it has no write tools at all, so the rule is enforced
            rather than promised
@@ -63,13 +64,13 @@ WORKFLOW  one file, no write tools, and the reason it must be a stranger
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 0cc451fad22069bb board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:body:start 573030cbcaf8f057 board/agents/haipipe-board-reviewer-agent.md -->
 
-**haipipe-board-reviewer-agent** · `0.6.0` · last shipped 2026-08-01
+**haipipe-board-reviewer-agent** · `0.7.0` · last shipped 2026-08-04
 
 - folder   `board/agents/haipipe-board-reviewer-agent.md/`
 - tools    not declared
-- summary  Loads haipipe-board-page-for-skill whenever a page under review is a Skill or Agent skill page, whose Opening rule inverts the base's.
+- summary  Checks one immutable Page version and returns the auditable route consumed by the bounded RUN loop.
 
 ### haipipe-board-reviewer-agent.md
 
@@ -84,21 +85,24 @@ copy is exactly what goes a night out of date while the contract moves:
 
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
 2. `../haipipe-board-page/SKILL.md` for the base page and evaluation contract.
-3. `../haipipe-board-page-for-skill/SKILL.md` WHENEVER a page under review is a
+3. `../page-types/haipipe-board-page-for-skill/SKILL.md` WHENEVER a page under review is a
    `Skill-<n>` or `Agent-<n>` skill page. It is the variant those two kinds are
    judged against, and its Opening rule is the OPPOSITE of the base's: a roster
    page mirrors a unit that ships elsewhere and decides nothing, so it must
    INTRODUCE that unit and may never open with a question. Judging a skill page
    by the base alone marks correct prose as wrong and passes the form letter this
    variant exists to catch.
-4. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
-5. The target Board's `board.md` for topic, pipeline, groups, links, and page order.
+4. `../page-phases/haipipe-board-page-check/SKILL.md` for the judgment and
+   routing boundary. If the assignment asks whether another phase was performed
+   correctly, also load that phase's contract from the same folder.
+5. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
+6. The target Board's `board.md` for topic, pipeline, groups, links, and page order.
 
 
 - 1 · Scope and boundary
       ```text
-      input:   Board folder, plus optional changed page ids or paths
-      output:  pass | revise | blocked with evidence and exact next fixes
+      input:   Board folder, optional changed pages, and optional expected Page version
+      output:  pass | revise | blocked, plus CLOSE | REVISE | PROBE | DRAFT | HOLD
       role:    independent, zero-background reviewer
       ```
       Own:
@@ -136,6 +140,10 @@ copy is exactly what goes a night out of date while the contract moves:
          worst pages, and how many pages are clean. Report that score, because a
          list of findings says nothing about whether the board is improving, and a
          page at zero is the one the others should be made to look like.
+         When the assignment supplies an expected version, compute SHA-256 for the
+         target Markdown and its current rendered HTML and join them as
+         `<source>:<render>`. If it differs, return `blocked` with route HOLD. Never
+         rebuild to make the expected and observed versions agree.
       5. Cold-read the scoped pages using `ref/writing-rules.md`. Quote unreadable
          sentences, list undefined terms at first use, and name missing premises.
       6. Resolve applicable requirements in the order defined by
@@ -163,21 +171,32 @@ copy is exactly what goes a night out of date while the contract moves:
          sibling page's subject. The page skill's review questions are probes, not a
          required order. A page may be clear alone and still fail this batch voice
          gate when it reads like a form letter beside the others.
-      11. Return the contract below. Do not write a review file.
+      11. Choose the route by required next authority: realization defect → REVISE;
+          consequential missing answer → PROBE; changed purpose or Aim → DRAFT with
+          `reopens_promise: true`; satisfied machine gate → CLOSE; unavailable input,
+          version mismatch, or unmet human gate → HOLD.
+      12. Return the contract below. Do not write a review file.
 
 - 3 · Verdict
       - `pass`: no mechanical ERROR and no actionable readability, ownership, or
         staleness finding in the reviewed scope, and no interchangeable Opening in
-        the batch voice gate.
+        the batch voice gate. In RUN, pass routes to CLOSE unless a required human
+        gate remains pending, which routes to HOLD.
       - `revise`: at least one actionable defect has file-and-line evidence.
       - `blocked`: the Board, canonical rules, or required target files cannot be
-        read, so judgment would be invented.
+        read, or the expected version changed, so judgment would be invented.
       WARN and GAP findings are always reported. They make the verdict `revise` only
       when they affect the reviewed change or reveal an actual broken promise.
 
 - 4 · Return contract
       ```text
+      actor:    haipipe-board-reviewer-agent
       status:   pass | revise | blocked
+      verdict:  pass | revise | blocked
+      route:    CLOSE | REVISE | PROBE | DRAFT | HOLD
+      reason:   <why this route owns the next authority>
+      checked_version: <source-sha256>:<render-sha256>
+      reopens_promise: true | false
       board:    <path>
       scope:    <page ids/paths reviewed>
       mechanical:
@@ -202,8 +221,18 @@ copy is exactly what goes a night out of date while the contract moves:
         stale_or_contradictory: <file:line findings or none>
       structure:
         unclear_page_or_group_ownership: <findings or none>
+      findings: <flat exact findings used by the RUN receipt, or none>
+      evidence: <visible evidence supporting the verdict>
+      human_gate:
+        required: true | false
+        status: not-required | pending | passed
+        evidence: <durable human ruling or none>
       next:     <specific repairs for the writer, or none>
       ```
+      Outside RUN, `checked_version`, `route`, and `human_gate` are still returned so
+      the ordinary reviewer and automatic reviewer have one contract. The reviewer
+      never writes the receipt to the Page: the caller stores it in the RUN audit
+      bundle, preserving the version that was judged.
 <!-- haipipe:skill:body:end -->
 
 ## Aims
@@ -241,11 +270,12 @@ It reached 0.5.0 on 260802 and has still never been dispatched on this board, so
   That is precisely the input 0.4.0's consecutive-Openings pass was added to judge, and the session limit is the only reason it has not run.
 
 ## Log
+260804 · Updated the authored mirror for exact-version CHECK and the CLOSE, REVISE, PROBE, DRAFT, or HOLD route returned to Page RUN.
 260802 2100 · Synced to 0.5.0 and the authored half updated: the agent now loads `haipipe-board-page-for-skill` for a skill page, which it did not when that variant shipped hours earlier. Two Aims closed, one opened for the consecutive read of the eight roster Openings that is now waiting on it
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the dispatch, the four loaded contracts, the three-step review and the empty write-tool list, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in question. Recorded that the 260731 skill-versus-agent ruling argues against the retirement reading of JL's 260729 remark
 260727 0017 · page generated from `board/agents/haipipe-board-reviewer-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 0cc451fad22069bb board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:log:start 573030cbcaf8f057 board/agents/haipipe-board-reviewer-agent.md -->
 
 Converted from the skill's own `CHANGELOG.md`: 9 releases.
 

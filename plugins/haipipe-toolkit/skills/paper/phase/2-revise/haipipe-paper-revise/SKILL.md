@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-revise
-description: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality after PROBE. Default REVISE changes prose directly and leaves %% {CC-*}: why-comments; an explicit author request for original-preserving or sentence-apparatus review instead enables candidate-diff mode, which leaves prose unchanged and writes word-level Note-lane diffs. Dispatches place, content, humanizer, and results workers; place runs first. Users invoke stage skills (pitch, narrative, section-edit...), not this skill directly."
+description: "Paper-specific REVISE phase worker (internal). Called whenever the Page router enters REVISE to improve manuscript realization under fixed purpose and Aims. Default REVISE changes prose directly; an explicit author request enables candidate-diff mode. If PROBE landed evidence, place runs before content and voice workers. A changed promise routes to DRAFT and a new unknown routes to PROBE. Users invoke stage skills, not this directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   argument_hint: "[section-name-or-number] [paper-path]"
-  version: "0.2.2"
-  last_updated: "2026-07-27"
-  summary: "REVISE phase worker (internal): default direct revision plus an author-selected candidate-diff mode for auditable, original-preserving wording review."
+  version: "0.2.3"
+  last_updated: "2026-08-04"
+  summary: "Paper-specific REVISE worker layered on haipipe-board-page-revise, with evidence placement first when applicable and manuscript quality workers after it."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,9 +14,13 @@ Skill: haipipe-paper-revise (internal phase worker)
 ====================================================
 
 REVISE phase worker.
-Called by stage skills (pitch, narrative, section-edit) to rewrite draft prose to venue-quality after PROBE.
+Called by stage skills (pitch, narrative, section-edit) whenever the current purpose and Aims stand but their manuscript realization needs work.
 The stage defines WHAT was drafted.
 This skill defines HOW to revise it.
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-revise/SKILL.md`.
+The generic contract owns fixed-promise authority and routing.
+This file adds manuscript workers and markup rules.
 
 **What the REVISE contract means.** By default, the agent CHANGES the prose directly and leaves `%% {CC-*}:` comments explaining WHY each non-trivial change was made.
 The human does not approve changes here; the human gives preferences in CHECK (via `> USER:` comments), and a REVISE restart responds to them.
@@ -38,7 +42,8 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
 
 ## What REVISE means
 
-REVISE = put the landed answers into the prose, then rewrite those sentences to venue-quality, applying changes directly with why-comments.
+REVISE = improve the current promise's manuscript realization, applying changes directly with why-comments.
+When an answer landed, place it before rewriting the affected prose.
 Four workers, each with a different lens:
 
 ```
@@ -135,7 +140,7 @@ Derive revise status from disk:
 ```
 revise ✅    tex synced from revised outline, all rules applied
 revise 🚀    revise in progress
-revise ⬜    not yet started (PROBE must complete first)
+revise ⬜    not yet started for the current fixed-promise work
 ```
 
 ## Relation to other phases
@@ -149,7 +154,7 @@ DRAFT → PROBE → REVISE (this) → CHECK
                     └── haipipe-paper-revise-results     (results-specific)
 ```
 
-REVISE reads what PROBE landed in each entry's `#### a-executor`, PLACES it into the prose (discharging the placeholder's bracket), and rewrites those sentences into final prose.
+When PROBE landed evidence, REVISE reads each `#### a-executor`, PLACES it into the prose (discharging the placeholder's bracket), and rewrites those sentences into final prose.
 CHECK then verifies the revised result.
 
 ## Return contract

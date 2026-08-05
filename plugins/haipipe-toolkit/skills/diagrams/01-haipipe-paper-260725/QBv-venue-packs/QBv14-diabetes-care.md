@@ -42,7 +42,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ✅ `the abstract headings are ADA, not JAMA`  ❌ `the paper should follow ADA conventions`
 
-**The shape of this page is not this page's own** (260803). It comes from `../../board/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`, and a rule changed here is changed in that contract in the same pass:
+**The shape of this page is not this page's own** (260803). It comes from `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`, and a rule changed here is changed in that contract in the same pass:
 
 ```text
   🖼 THREE FIGURES IN `## Diagram`, IN THIS ORDER

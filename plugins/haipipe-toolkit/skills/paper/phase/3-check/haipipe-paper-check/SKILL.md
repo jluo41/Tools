@@ -3,9 +3,9 @@ name: haipipe-paper-check
 description: "CHECK phase worker (internal). Called as a stage's declared human gate. All current paper stages declare one gate here; earlier declared phases run unattended. Runs automated sub-checkers, seeds in-file CHECK comments, and presents the approval or restart decision."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "0.3.5"
-  last_updated: "2026-07-26"
-  summary: "CHECK phase worker (internal) -- the LAST human gate of a stage, and by default its ONLY one: runs the deterministic sub-checkers (./checks.sh), seeds `> CHECK:` comments in-file at every flag site, and gates human review. Its compile option follows the canonical 2-src build or an explicit tex target. What it walks is the stage doc plus its nested S03/S04 entries. History: ./CHANGELOG.md."
+  version: "0.3.6"
+  last_updated: "2026-08-04"
+  summary: "Paper-specific CHECK worker layered on haipipe-board-page-check; runs declared stage checks, seeds findings, and applies the paper's human gate."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,6 +14,9 @@ Skill: haipipe-paper-check (internal phase worker)
 
 CHECK phase worker.
 Called by stage skills as the gate at the end of their declared phase sequence.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-check/SKILL.md`.
+The generic contract owns judgment and routing.
+This file adds paper checks, in-file comments, and the stage's declared human gate.
 **HOW MANY GATES A STAGE OPENS IS THE STAGE'S OWN DECLARATION, not this file's.** Read `gates:` in the stage's contract at `../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md` before you open anything:
 
 ```text

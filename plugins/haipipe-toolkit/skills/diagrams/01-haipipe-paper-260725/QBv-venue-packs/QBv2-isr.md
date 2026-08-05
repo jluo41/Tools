@@ -42,7 +42,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 **Copy the SHAPE, quote the content**: the pack's own instruction is that a draft imitates the slot pattern and never the sentence, and that still holds. A quotation on this page is EVIDENCE that the slot was derived from a real paper, attributed and one sentence long; it is never text for a draft to reuse.
 
-**This page follows the venue-page contract** in `../../board/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`. Three figures in `## Diagram`, in order: desk taste, Venue-Structure, Submission-Rules. Five Files groups: Engines, Contracts, Input files, Authority, Generated. A section division is named `Sec-<n>-<Kind>`, counting from 0 so the index is the number of the `S-Main` page it becomes, and the emoji lives on the Aims and States group rather than on the division heading.
+**This page follows the venue-page contract** in `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`. Three figures in `## Diagram`, in order: desk taste, Venue-Structure, Submission-Rules. Five Files groups: Engines, Contracts, Input files, Authority, Generated. A section division is named `Sec-<n>-<Kind>`, counting from 0 so the index is the number of the `S-Main` page it becomes, and the emoji lives on the Aims and States group rather than on the division heading.
 
 **A venue page is a REFERENCE, not a rulebook**: the pack-derived arcs, budgets, moves and refusals are suggestions drawn from published papers, and only the desk's own published rules bind. Write `the pack refuses X` rather than `do not do X`, so the page never sounds like it is the one doing the refusing.
 
@@ -948,7 +948,7 @@ The expensive change is upstream and belongs to `§2`: the identification bar, w
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 
-- `../../board/haipipe-board-page-for-venue/SKILL.md`
+- `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`
   The venue-page contract this page is written to: the three figures, the `Sec-<n>` index, the two-source rule, these Files groups.
 - `QBv1-misq.md`
   The contract's reference implementation, and the outlet this one is only decidable against.
@@ -1050,7 +1050,7 @@ An identification strategy is a study-design property, so this outlet is decided
 
 ## Log
 
-260803 · Brought to the venue-page contract in `../../board/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`. Two figures added: Venue-Structure, which prints the seven kinds in reading order with each budget and the pack's own UNMEASURED labels kept, and Submission-Rules, which carries the desk's mechanics and is the one binding figure here. Section divisions took the `Sec-<n>` index counting from 0, mirrored in the Aims and States group names. `## Files` was regrouped into Engines, Contracts, Input files, Authority and Generated. `§10 · Before you upload` turns the binding rules into an eight-step list, and `§10.1` names the two steps a retargeted MISQ draft always fails: the reference style changes to the INFORMS Style Guide, and the 500-word contribution statement has no MISQ equivalent to adapt.
+260803 · Brought to the venue-page contract in `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, whose reference implementation is `QBv1-misq.md`. Two figures added: Venue-Structure, which prints the seven kinds in reading order with each budget and the pack's own UNMEASURED labels kept, and Submission-Rules, which carries the desk's mechanics and is the one binding figure here. Section divisions took the `Sec-<n>` index counting from 0, mirrored in the Aims and States group names. `## Files` was regrouped into Engines, Contracts, Input files, Authority and Generated. `§10 · Before you upload` turns the binding rules into an eight-step list, and `§10.1` names the two steps a retargeted MISQ draft always fails: the reference style changes to the INFORMS Style Guide, and the 500-word contribution statement has no MISQ equivalent to adapt.
 260803 · The desk landed three rules this pack records nowhere: the abstract is capped at 300 words, a separate 500-word contribution statement has been required since June 2023, and the manuscript must be double-spaced at 11 pt or larger with 1-inch margins including its references and footnotes. Two of the desk's own pages contradict each other, on the anonymity model and on the open-access fee, and both contradictions are printed rather than resolved. `P1` records the real hole this page has always had: six of seven section kinds have a division and `Sec-1-Introduction` does not, even though the pack ships its `style.md` and the Opening quotes its measured budgets.
 ⚠️ Provenance for everything in this entry: read 260803 through search summaries of pubsonline.informs.org, because that site answers a direct fetch with HTTP 403. Nothing was read first-hand.
 260802 · Corrected against the desk.

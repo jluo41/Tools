@@ -3,6 +3,12 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.11.2] — 2026-08-04 — Probe is the concept
+
+- Canonicalizes the user-facing vocabulary as PROBE phase, lowercase probe exchange, and persisted Probe record or Probe Page.
+- Keeps `entry` only as a legacy label in checker names, paths, and executable schemas, not as another Page Type or lifecycle concept.
+- Leaves the Q-consumer, Q-executor, A-executor, and A-consumer model unchanged.
+
 ## [0.11.1] — 2026-08-01 — Board section labels are paired plurals
 
 - Emits Q-consumer status rows under canonical `## States`; one row is still

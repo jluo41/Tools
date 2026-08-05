@@ -338,6 +338,16 @@ Which group a file goes in is decided by what YOU do to it, not by what it is: e
 -> Output files. So a governing spec that never executes goes in **Contracts** when it carries a rule to other pages, and in Input files only when this page merely reads it, and a script whose
 rules are code is an Engine. A page may add a name, and the test is that it states an ACTION, in the page's own words: a group named after a SUBJECT rots the moment that subject leaves the page. Stay flat under about three rows; omit an empty group and never invent a row to fill one.
 
+When this Page needs a precise fragment of another Page, use the one fixed exception to action-named groups. Delete it when unused:
+
+```markdown
+### 🔗 Related Board Pages · what this Page READS BY SCOPE
+- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)
+  Why this phase needs that fragment.
+```
+
+The relation is `reads`, `constrained by`, `continues`, or `contrasts`; the phase is DRAFT, PROBE, REVISE, CHECK, or ALL; the link target is Board-root-relative. The Page id must match the target, and scope is `page` or one direct Content division such as `§3.2`. `pagecontext.py` reads only phase-matching rows and follows one hop. For a division it returns the target Page identity, Opening, that division, and its matching Aims/States group; several scopes on one target share one identity and Opening. Never list a whole Page when one division is enough.
+
 ## Law
 optional · folded · Rules this question has settled and will follow from now on, one per line.
 Write each entry as a `- ` row opening with an emoji that says its SUBJECT (JL 260802), which the render lifts out as the row's icon, so a reader hunting one rule finds it without reading forty headings. Do not write intentions here as if settled. Delete the section if unused.

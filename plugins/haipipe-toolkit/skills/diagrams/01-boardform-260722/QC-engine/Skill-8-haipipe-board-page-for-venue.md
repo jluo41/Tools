@@ -1,4 +1,4 @@
-# haipipe-board-page-for-venue · v0.1.1
+# haipipe-board-page-for-venue · v0.1.2
 state: 🟡 in flux · one day old · 1 of 16 venue pages conforms · 2 contradictions inside the shipped file
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -43,14 +43,14 @@ Two contradictions sit inside the shipped file and are carried as Aims below, bo
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 4026515f00058159 board/haipipe-board-page-for-venue -->
+<!-- haipipe:skill:tree:start 700d0f9ae07e31fd board/page-types/haipipe-board-page-for-venue -->
 
 **What `haipipe-board-page-for-venue` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-board-page-for-venue/
-  CHANGELOG.md          32 ln  haipipe-board-page-for-venue · Changelog
-  SKILL.md             314 ln  /haipipe-board-page-for-venue · a venue page records a desk it cannot argue with
+  CHANGELOG.md          50 ln  haipipe-board-page-for-venue · Changelog
+  SKILL.md             361 ln  /haipipe-board-page-for-venue · a venue page records a desk it cannot argue with
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -106,13 +106,13 @@ WORKFLOW  writing or fixing ONE QBv page
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 4026515f00058159 board/haipipe-board-page-for-venue -->
+<!-- haipipe:skill:body:start 700d0f9ae07e31fd board/page-types/haipipe-board-page-for-venue -->
 
-**haipipe-board-page-for-venue** · `0.1.1` · last shipped 2026-08-03
+**haipipe-board-page-for-venue** · `0.1.2` · last shipped 2026-08-04
 
-- folder   `board/haipipe-board-page-for-venue/`
+- folder   `board/page-types/haipipe-board-page-for-venue/`
 - tools    not declared
-- summary  First release. Lifts the contract QBv1-misq was built to on 260803 into a loadable variant.
+- summary  Now lives under page-types/ and composes the venue-page contract with the current Page Phase.
 
 ### SKILL.md
 
@@ -122,6 +122,7 @@ WORKFLOW  writing or fixing ONE QBv page
 **LOAD `haipipe-board-page` FIRST.** It owns the base: the sections and their fixed order, the five rows that define each one, the title rule, the Opening split, the numbering, and the evaluation contract.
 This file adds only what a venue page needs and an ordinary decision page does not.
 It never repeats a base rule, because a copied rule goes a night out of date while the contract moves.
+After resolving this Page Type, load the current contract from `page-phases/`; this file determines the persistent venue shape, not whether the current work is DRAFT, PROBE, REVISE, or CHECK.
 
 **The kind this variant covers**: one page per submission TARGET, and nothing above it.
 
@@ -164,6 +165,13 @@ There is no pack-head page above the outlets (JL 260802): four outlets in one pa
       ✅  120-160w observed, no desk cap · ~250w ruled acceptable JL 260803
       ✅  55 pp Research Article · the DESK's cap, counting everything
       🚫  120-160 words, do NOT exceed ~185        ← reads as a rule, is not one
+      ```
+      **A binding rule also has a WHEN, and it is not always submission.** Nature Communications requires no particular structure or format at first submission and says style and length "will not directly influence consideration"; its caps are enforced at REVISION. A page that files those caps beside JAMA's tells a drafter to spend weeks on a gate that is not there yet, and a page that omits them lets a revision arrive over the limit. So a binding row carries the moment it bites:
+      ```
+      ⚖️ AT SUBMISSION    the desk checks it before an editor reads · JAMA's 3,000 words
+      ⏳ AT REVISION      free at first submission, enforced later · Nature Communications
+      🎯 AT ACCEPTANCE    priced or demanded once accepted · every Nature-family APC,
+                          and npj's waiver, which must be REQUESTED at submission anyway
       ```
       **Write the pack's refusals as the pack's.** `the pack refuses more than ~160 words` rather than `do not exceed ~160 words`, so the page never sounds like it is the one doing the refusing.
 
@@ -255,7 +263,7 @@ There is no pack-head page above the outlets (JL 260802): four outlets in one pa
       JAMA IM    a Research Letter is a whole article type with no reading position, so
                  QBv6 gave it Sec-L rather than claiming a slot in the sequence
       ```
-      When the two disagree, print both columns and say which is the desk's. Never renumber the desk to match the resolver.
+      **When the two disagree, `Sec-<n>` follows the RESOLVER and the desk's printed order gets its own row.** The fan-out split 2-2 on this before anyone ruled: `QBv12` and `QBv10` bound the index to `section-kinds.yml`, `QBv9` and `QBv13` bound it to the desk's reading order. Both printed both numbers, so nothing was lost either way, but a board cannot carry two conventions. The resolver wins for one reason: `Sec-<n>` exists to JOIN the `S-Main` page a paper actually writes, and an index that tracks the desk stops being a join key the moment the two differ. Describing the desk is `Venue-Structure`'s job, and it has a column for it.
       **The desk's own section list can be longer than the resolver's, and that gap is a finding.** `section-kinds.yml` declaring seven kinds is not evidence that the desk asks for seven blocks: MISQ expects Concluding Remarks that the resolver does not declare, Management Science requires a ≤250-word nontechnical executive summary that no pack folder covers, and JAMA Network Open publishes a Research Letter the resolver withholds. A draft built from the resolver alone reaches the portal with a required field empty. Print the block in `Venue-Structure` with the gap named, and open an Aim on it.
       **A section has three numbers, and only one pair agrees**, so `Venue-Structure` prints all three: the venue index counts from 0 and the lifecycle page `S-Main-<n>` counts from 0, so those two LINE UP, which is the whole reason 0-based was chosen; the Content division is the one that differs, because it counts the judgment divisions ahead of it. State this in the figure; do not make a reader work it out.
 
@@ -284,6 +292,40 @@ There is no pack-head page above the outlets (JL 260802): four outlets in one pa
       ✅  a better classifier is not a MISQ paper
       🚫  MISQ values theory highly
       ```
+
+      ## 🏛 When the target is NOT a journal
+
+      A funder and a patent office are venue targets, and four of this contract's rules break on them. All four were found on 260803, by the agents that wrote `QBv15-grant` and `QBv16-patent`, and each is a real adaptation rather than a licence to skip the section.
+
+      ```
+      1  Sec-<n> HAS NO RESOLVER      section-kinds.yml declares ZERO kinds for grant and
+                                      for patent, so no S-Main page exists and the index
+                                      cannot be "the S-Main number"
+                                      → grant used Row-<i>-<AGENCY>, the pack's own unit
+                                      → patent read its index off 37 CFR 1.77(b), with
+                                        HOLES: conditional items take a figure row and no
+                                        division, so the index is not contiguous
+      2  ONE TARGET, MANY DESKS       playbook-grant covers 8 agencies, playbook-patent
+                                      covers CNIPA + USPTO + EPO, each with its own
+                                      prescribed order
+                                      → Venue-Structure becomes a MATRIX, one lane per
+                                        agency; or PIN one, say so in three places, and
+                                        keep the others' deltas as their own divisions
+      3  "PACK OBSERVATION" IS EMPTY  the label means measured from published work, and
+                                      these packs hold ZERO funded proposals and ZERO
+                                      filings
+                                      → use AGENCY RULE vs PACK RECORD, and say on the
+                                        page why the measured tier is missing
+      4  A RULE NEEDS ITS CYCLE       a journal's guidelines stand until changed; a
+                                      funder's expire every round and an office's fees
+                                      are dated
+                                      → provenance says when it was READ · a non-journal
+                                        row also says which CYCLE it binds
+      ```
+
+      **The unfixable step is not the page count.** At a journal it usually is. At a funder it is CHOOSING THE AGENCY, because a 15-page NSF description, a 5-page ERC Part I and a 7-page ARC description are three documents rather than three formats of one. At a patent office it is what the specification failed to disclose, because `35 U.S.C. 132(a)` bars new matter after the filing date. Verify the claim at source before writing it, as `QBv16` did.
+
+      **A blueprint-only pack has no exemplar language, and the page says so.** The per-section shape (`n.1` moves, `n.2` refusals, `n.3` format values, `n.4` the papers' own words) presumes measured work. Fill only what the pack or the office actually says, and never print four subsubsections with empty rows to satisfy the shape.
 
       ## 📎 Files: five groups, and two of them are this kind's own
 
@@ -356,7 +398,7 @@ There is no pack-head page above the outlets (JL 260802): four outlets in one pa
 
       ### 📄 create a venue page
 
-      1. Confirm the pack exists: `paper/venue/playbook-<family>/<OUTLET>/`. A missing file at either level is a missing ANSWER to record, not a reason to stop.
+      1. Confirm the pack family and outlet folder exist under `paper/venue/`. A missing file at either level is a missing ANSWER to record, not a reason to stop.
       2. Copy `QBv1-misq.md` as the shape, never `ref/page-template.md` alone: the base template has no three-figure Diagram, no Authority group, and no section-division pattern.
       3. Take the next free `QBv<n>` and register the page in `board.md`'s `## Pages` under `QBv`.
       4. Fill `§1`-`§3` from `taste.md` and the family `README.md`, then one division per section kind from that kind's `style.md` and `template.md`.
@@ -379,7 +421,7 @@ There is no pack-head page above the outlets (JL 260802): four outlets in one pa
       ## 📂 Files
 
       ```
-      haipipe-board-page-for-venue/
+      page-types/haipipe-board-page-for-venue/
       ├── SKILL.md            this variant contract
       └── CHANGELOG.md        version history
       ```
@@ -425,17 +467,30 @@ Nothing about it is unreachable, which is the one thing its sibling got wrong: t
 
 ## Log
 260803 0043 · authored half written: Opening, the WORKFLOW figure, Aims, States; `state:` ruled 🟡 in flux from 🔴 OPEN; Aims and States converted from the generator's base-form stub to the checkbox and dated-record form `haipipe-board-page-for-skill` overrides to
-260803 0043 · page generated from `board/haipipe-board-page-for-venue/` by `skillpage.py new`
+260803 0043 · page generated from `board/page-types/haipipe-board-page-for-venue/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 4026515f00058159 board/haipipe-board-page-for-venue -->
+<!-- haipipe:skill:log:start 700d0f9ae07e31fd board/page-types/haipipe-board-page-for-venue -->
 
-Converted from the skill's own `CHANGELOG.md`: 2 releases.
+Converted from the skill's own `CHANGELOG.md`: 4 releases.
 
+260804 · `0.1.2`
+      - Moved under `page-types/` with the other stable Page Type variants.
+      - Separates the venue Page's persistent structure from its current DRAFT, PROBE, REVISE, or CHECK authority.
 260803 · `0.1.1`
       **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
       - **The section index contradicted itself eight lines apart.** `:149` ruled the index counts from ZERO so it lines up with `S-Main-<n>`; `:157` then said "the venue index counts from 1", which is the superseded rule left standing. A writer reaching `:157` first numbered every division wrong.
       - The 0.1.0 changelog entry taught that same abandoned 1-based form, in the same folder at the same version, so the reader who checked the history was the one who got misled. Corrected.
       - Drops "the seven sections" from the base description.
+260803 · `0.1.1`
+      Written from the fan-out: fourteen agents took this contract to fourteen desks the same day it shipped, and every item below is something a real desk broke rather than something anyone predicted. That is the point of releasing a contract and then running it at scale immediately.
+      - **🧮 Add the pack's parts up against the desk's total.** Now a required row in `Venue-Structure`, because it went 3 for 3 the first time anyone checked: JAMA IM 3,350 against 3,000, PNAS ~6,970 against ~4,000, Diabetes Care 3,950 against 4,000, and JAMA where an RCT at the pack's floor lands within 50 words of the cap. The arithmetic is systematic: a pack measures published papers section by section, and a published page is not a submission budget, so the parts were never fitted to the whole.
+      - **⏳ A binding rule has a WHEN.** Nature Communications is format-free at first submission and enforces its caps at revision; every Nature-family APC bites at acceptance, and npj's waiver must be requested at submission anyway. A binding row now carries at-submission, at-revision or at-acceptance.
+      - **🔢 `Sec-<n>` = `S-Main-<n>` is a property, not a law, and the resolver wins when they part.** Five Nature-family desks print Methods last and PNAS reads Significance first, none of which `section-kinds.yml` orders that way. The fan-out split 2-2 on which side the index should follow; ruled for the resolver, because the index exists to JOIN the S page and an index tracking the desk stops being a join key the moment the two differ.
+      - **🚨 The desk's section list can be longer than the resolver's, and the gap is a finding.** MISQ expects Concluding Remarks, Management Science requires a 250-word nontechnical executive summary, JAMA Network Open publishes a Research Letter: none is a declared kind, and a draft built from the resolver alone reaches the portal with a required field empty.
+      - **🏛 A whole section on non-journal targets**, from `QBv15-grant` and `QBv16-patent`: no resolver means no `Sec-<n>`, one target can be many desks (8 agencies, 3 patent offices), `PACK OBSERVATION` is empty where a pack holds zero funded proposals, and a non-journal rule carries its CYCLE and not just its read date. Also that the unfixable step is choosing the agency, or what the specification failed to disclose, rather than a page count.
+      - **🕶 Same-family rules are not the same desk's rules.** Nature Medicine's page carries neither superscript numbering, nor the et-al threshold, nor double spacing; those are *Nature*'s. A sibling rule inherited by proximity is the mirror of the pack-versus-desk error, one level in.
+      - **📌 nature.com does not 403.** It 303s to its SSO host and WebFetch refuses the cross-host hop; `curl -L` with a cookie jar and a desktop UA returns 200. Four Nature pages were read live because one agent worked that out. INFORMS, PNAS and ADA genuinely do 403, and Wayback snapshots of the desk's OWN url are the next-best read, stamped as such.
+      - **⚔️ Desks contradict THEMSELVES, and the page prints both.** ISR on anonymity and on its open-access fee, Management Science on single-blind against double-anonymous, JAMA on a 400-word against a 300-word Narrative Review abstract, Nature Communications on three separate pairs, Nature Medicine and NMI on Extended Data figures against items.
 260803 · `0.1.0`
       First release. JL ruled `QBv1-misq.md` the template for the other fifteen venue pages, then asked for the rule to be written down as a skill rather than left as one page other pages are told to copy. Everything here was established on that page the same day and is lifted, not invented.
       - **📖 The governing principle: a venue page is a reference, not a rulebook** (JL 260803). Almost everything on it is a measurement of what published papers did, and departing from it is a choice rather than a violation; only the desk's own published rules bind. Found through a real misreading: `QBv1` printed "120-160 words, do NOT exceed ~185" for the abstract, which is the pack's measurement of eight papers, where the desk publishes no abstract cap at all. JL ruled ~250 words fine. Every length now says whose it is, and the pack's refusals are written as the pack's.

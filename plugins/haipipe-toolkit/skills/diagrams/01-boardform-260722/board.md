@@ -142,7 +142,7 @@ QA3-the-round.md
 ### QB · Delivery
 What a reader gets, altitude by altitude: Board → Group → Page → Section → Sentence.
 Board: QB1 the folder, QB2 the webpage and its Index (QB2a its pages sidebar), QB3 a page's home folder.
-Page: QB4 the page template, whose Content specifies each section in turn, one division per section (the seven per-section faces were folded into it on 260801 and archived).
+Page: QB4 the page template, whose Content specifies each section in turn, one division per section (the seven per-section faces were folded into it on 260801 and archived); QB9 the page's TIME axis, the draft → probe → revise → check loop and whether the base contract names it.
 Sentence: QB5 the atomic unit, holding the card, the lanes, the remark and the edit in its own Content since the five faces folded on 260802; QB5e still owns the details lifecycle, and the generated address left for QD8.
 Write affordance: QB8 attaches a drawing to the `## Diagram` section from the page, the write-half of QB4's Diagram section (moved from QD5, 260801).
 
@@ -178,6 +178,7 @@ QB4-overall.md
 QB5-overview.md
 QB5e-sentence-details-lifecycle.md
 QB8-diagramattach.md
+QB9-page-loop.md
 ### QC · Engine
 How the delivery is produced and shipped.
 QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
@@ -235,6 +236,7 @@ Agent-2-haipipe-board-creator-agent.md
 Skill-6-haipipe-board-page-for-skill.md
 Skill-7-haipipe-writing.md
 Skill-8-haipipe-board-page-for-venue.md
+Agent-3-haipipe-board-page-orchestrator-agent.md
 ### QD · Working with Chat
 How people and agents work on a live board.
 QD1 a session per question, QD2 the GUI chat version, QD3 the TUI chat version (raw pane + the smooth pane, QD3m merged in 260801), QD4 the terminal's form per device, QD5 operating the board as index, page and chat each refreshing on its own, QD6 the status strip, QD7 what a page costs to open and what we spend to make it less, and QD8 the generated address and what an agent acting on one is handed.

@@ -1,4 +1,4 @@
-# haipipe-board-page-for-skill · v0.4.1
+# haipipe-board-page-for-skill · v0.4.2
 state: 🟡 in flux · hours old, applied once, never reviewed
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -35,14 +35,14 @@ No `haipipe-board-reviewer-agent` has read the seven Openings consecutively, whi
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
 
 ## Diagram
-<!-- haipipe:skill:tree:start b1f503e6f88897bf board/haipipe-board-page-for-skill -->
+<!-- haipipe:skill:tree:start f140b94c43151dd6 board/page-types/haipipe-board-page-for-skill -->
 
 **What `haipipe-board-page-for-skill` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-board-page-for-skill/
-  CHANGELOG.md          85 ln  haipipe-board-page-for-skill · Changelog
-  SKILL.md             291 ln  /haipipe-board-page-for-skill · a skill page is not a decision page
+  CHANGELOG.md          90 ln  haipipe-board-page-for-skill · Changelog
+  SKILL.md             292 ln  /haipipe-board-page-for-skill · a skill page is not a decision page
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -85,13 +85,13 @@ WORKFLOW  load the base, then add what a mirror page needs
 ```
 
 ## Content
-<!-- haipipe:skill:body:start b1f503e6f88897bf board/haipipe-board-page-for-skill -->
+<!-- haipipe:skill:body:start f140b94c43151dd6 board/page-types/haipipe-board-page-for-skill -->
 
-**haipipe-board-page-for-skill** · `0.4.1` · last shipped 2026-08-03
+**haipipe-board-page-for-skill** · `0.4.2` · last shipped 2026-08-04
 
-- folder   `board/haipipe-board-page-for-skill/`
+- folder   `board/page-types/haipipe-board-page-for-skill/`
 - tools    not declared
-- summary  Opens with the whole page in one picture, marking every slot machine-written or person-written, and merges the two Aims sections that had drifted apart.
+- summary  Now lives under page-types/ and composes its mirror-page structure with the current Page Phase.
 
 ### SKILL.md
 
@@ -101,6 +101,7 @@ WORKFLOW  load the base, then add what a mirror page needs
 **LOAD `haipipe-board-page` FIRST.** It owns the base: the sections and their fixed order, the five rows that define each one, the title rule, the numbering, and the evaluation contract.
 This file adds only what a skill page needs and a decision page does not.
 It never repeats a base rule, because a copied rule is the thing that goes a night out of date while the contract moves.
+After resolving this Page Type, load the current contract from `page-phases/`; generated spans constrain the phase write surface but do not replace the phase authority test.
 
 **The two kinds this variant covers**: both mirror something that ships elsewhere.
 
@@ -363,7 +364,7 @@ A skill is LOADED into a context and an agent is DISPATCHED into a fresh one (JL
       ## 📂 Files
 
       ```
-      haipipe-board-page-for-skill/
+      page-types/haipipe-board-page-for-skill/
       ├── SKILL.md            this variant contract
       └── CHANGELOG.md        version history
       ```
@@ -404,10 +405,13 @@ Its health is `🟡 in flux` because everything in it is new, and the two things
 ## Log
 260803 · Aims, States and Log restored by hand after `sync` deleted them; the bug they exposed is fixed in `skillpage.py` and carried as an open Aim above
 260802 1930 · Authored half written after the dispatched writer died on a session limit: the Opening replaced the generated rhetorical stub, and `state:` moved from 🔴 to 🟡 in flux
-<!-- haipipe:skill:log:start b1f503e6f88897bf board/haipipe-board-page-for-skill -->
+<!-- haipipe:skill:log:start f140b94c43151dd6 board/page-types/haipipe-board-page-for-skill -->
 
-Converted from the skill's own `CHANGELOG.md`: 5 releases.
+Converted from the skill's own `CHANGELOG.md`: 6 releases.
 
+260804 · `0.4.2`
+      - Moved under `page-types/` with the other stable Page Type variants.
+      - Makes the current Page Phase a separate contract, while this variant continues to own the mirror Page's generated and authored surfaces.
 260803 · `0.4.1`
       **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
       - Drops "the seven sections" from the line describing what the base owns; the base no longer claims a count.

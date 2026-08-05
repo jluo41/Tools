@@ -3,6 +3,11 @@ haipipe-paper-check — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.3.6] — 2026-08-04 — Page CHECK layering
+
+- Loads the Stage Page Type and generic `haipipe-board-page-check` before paper-specific gates and sub-checkers.
+- Leaves the paper's human-gate declaration local while the shared phase owns judgment and routing boundaries.
+
 ## [0.3.5] — 2026-07-27 — the reported id follows the per-unit scheme
 
 - The PROBE-axis example line now names this unit's own `Q-Sec<unit><Slug>-<n>` id rather

@@ -3,6 +3,12 @@ haipipe-paper-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.7.6] — 2026-08-04 — Page PROBE layering
+
+- Loads the Stage Page Type, generic `haipipe-board-page-probe`, and shared `haipipe-probe` before paper deltas.
+- Names the persisted S03/S04 artifact a Probe Page and retains `entry` only for the existing checker schema.
+- Allows DRAFT, REVISE, or CHECK to route a consequential unknown into PROBE.
+
 ## [0.7.5] — 2026-07-27 — the section-edit gate stops being vacuously green
 
 - **`stage_stem()` maps `section-edit -> Sec`.** It previously derived the stem by stripping a

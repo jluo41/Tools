@@ -1,13 +1,14 @@
-# haipipe-board-creator-agent · v0.5.0
+# haipipe-board-creator-agent · v0.6.0
 state: 🟡 in flux · first real fan-out 260802, 3 of 6 died on a limit
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-`haipipe-board-creator-agent` writes exactly one board page in a fresh context, so several run at once instead of one session writing them in turn.
-Dispatch it rather than write the page through `haipipe-board` yourself; the line is whether a write touches a file another writer also touches.
-One page's `.md` does not and fans out; `board.md`, the rebuild and the checker do and stay with the caller.
-It had never run until today, when six were fanned out by hand to revise six roster Openings, this one included.
+`haipipe-board-creator-agent` is the producer for one target Page.
+It supports parallel CREATE work and one DRAFT, PROBE, or REVISE authority inside RUN.
+Reach for it to produce a Page version; reach for `haipipe-board-reviewer-agent` to judge that version.
+It has no Bash tool and never touches `board.md` or rebuilds.
+It never performs CHECK, so producer and judge cannot collapse into one hidden pass.
 
 **The words in that paragraph**: A fresh context means the agent starts with no memory of the session that sent it, so everything it knows arrives in one assignment packet: the path, the id, the title, the sources it must read, and, for a new page, the siblings it must not overlap.
 The caller is whoever holds `haipipe-board` in the session that dispatches the batch, and it stays a single context precisely because the writes it keeps are the ones two writers would collide on.
@@ -24,15 +25,19 @@ The prose standard travels in neither, since each writer loads `haipipe-board-pa
 `haipipe-board`'s family section now states the dispatch policy, but its `open` and `add` actions still copy `ref/page-template.md` and write the page in the calling session, and nothing turns an approved page list into N packets.
 Whether the fan-out pays at every batch size is also unmeasured; both are Aims below.
 
+**What lifecycle production adds**: RUN supplies the Page, Phase, round, exact current version, intent, sources, constraints, and limits.
+The agent performs exactly one DRAFT, PROBE, or REVISE authority and returns artifacts, evidence, findings, reason, and one suggested route.
+The controller then rebuilds and versions the result before the independent reviewer sees it.
+
 ## Diagram
-<!-- haipipe:skill:tree:start 35595af35318ac25 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:tree:start 0f279d488d3546f4 board/agents/haipipe-board-creator-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
-**What fans out and what must not**: one page per agent, and every shared write kept by the caller.
+**What the producer may do**: batch creation fans out by Page, while RUN serializes one Phase receipt before independent CHECK.
 
 ```text
-   ── what parallelizes, and what must not ─────────────────────────
+   ── two producer modes, neither includes judgment ────────────────
 
    haipipe-board  (the door, and the only holder of shared state)
         │
@@ -57,26 +62,35 @@ Whether the fan-out pays at every batch size is also unmeasured; both are Aims b
                                 ▼
                         Agent-1 · reviewer
                     judges the batch, pass | revise
+
+   Page RUN packet ─▶ Agent-2 · one DRAFT / PROBE / REVISE
+                           │  phase receipt
+                           ▼
+                    build + version snapshot
+                           │
+                           ▼
+                    Agent-1 · CHECK and route
 ```
 
 The two halves are divided by one test: does the write touch a file another writer also touches.
 One page's `.md` fails that test and so it fans out; `board.md`, the lane block, `board.html`, and the checker all pass it and so they stay with the caller.
 
 ## Content
-<!-- haipipe:skill:body:start 35595af35318ac25 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:body:start 0f279d488d3546f4 board/agents/haipipe-board-creator-agent.md -->
 
-**haipipe-board-creator-agent** · `0.5.0` · last shipped 2026-08-01
+**haipipe-board-creator-agent** · `0.6.0` · last shipped 2026-08-04
 
 - folder   `board/agents/haipipe-board-creator-agent.md/`
 - tools    not declared
-- summary  Checks the target filename first and loads haipipe-board-page-for-skill for a Skill or Agent skill page, whose Opening rule inverts the base's.
+- summary  Produces one Page phase and returns the receipt consumed by the automatic RUN router; it never judges its own version.
 
 ### haipipe-board-creator-agent.md
 
 
 
 
-Write one Board page in a fresh context. Produce and self-check; do not independently approve.
+Produce work for one target Board Page in a fresh context. Self-check; never
+independently approve.
 
 You are one of several agents writing at the same time, each holding a different
 page of the same board. Everything you must not touch below follows from that.
@@ -85,17 +99,21 @@ Use the `Skill` tool to load `haipipe-board-page`, then follow the canonical
 sources it routes to. Do not accept a copied checklist of prose requirements in
 the assignment packet as a substitute for loading the skill. At minimum, read:
 
-1. `../haipipe-board-page/SKILL.md` for what a page is: the six kinds, the one
-   base, the fixed page spine, and which state a machine may write.
-2. `../haipipe-board-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
+1. `../haipipe-board-page/SKILL.md` for what a Page is: the six Page Types, the
+   fixed Page spine, and the Page Type × Page Phase router.
+2. `../page-types/haipipe-board-page-for-skill/SKILL.md` IF your target is a `Skill-<n>` or
    `Agent-<n>` skill page. Check the filename before you write a word. That
    variant inverts the base's Opening rule: a skill page mirrors a unit that
    ships elsewhere and DECIDES NOTHING, so it introduces that unit and never
    opens with a question. Five skill and agent pages were written from the base alone on
    260802 and came out as one form letter with the nouns swapped.
-3. `../haipipe-board-sentence/SKILL.md` for how a line must read.
-4. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
-5. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
+3. The one phase contract matching the operation: DRAFT for `create-page` or
+   `draft`, PROBE for `probe`, and REVISE for `revise` or `revise-opening` while
+   purpose and Aims remain fixed. If revision changes either, stop the edit,
+   route to DRAFT, and set `reopens_promise: true`.
+4. `../haipipe-board-sentence/SKILL.md` for how a line must read.
+5. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
+6. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
    judged against.
 
 Do NOT read the whole board to orient yourself. Your assignment carries the
@@ -105,10 +123,9 @@ duplicating each other's judgment.
 
 - 1 · Scope and boundary
       ```text
-      input:   one assignment packet (below) for exactly ONE page and one operation
-      output:  one new Q/S/QBv page, or an Opening-only revision to one existing
-                     page of ANY kind, including Skill-<n> and Agent-<n>
-      role:    producer; the reviewer agent judges, the caller integrates
+      input:   one assignment packet for one target Page and one operation
+      output:  one Page change, plus one declared probe surface only when PROBE needs it
+      role:    producer; the reviewer agent judges, the controller routes and records
       ```
       Own when `operation: create-page`:
       - The full markdown of your one page, every section the template earns.
@@ -127,14 +144,24 @@ duplicating each other's judgment.
               `retired-section`; renaming it is out of scope here, so leave it and NAME it in
               your report. It may
         remain as-is; this operation does not rename it.
+      Own when `operation: draft | probe | revise`:
+      - Reading `haipipe-board-page/ref/page-run-contract.md` and the matching phase
+        contract before touching the target.
+      - Performing exactly one phase, not continuing into the phase it recommends.
+      - DRAFT: define or reopen purpose, Aims, and promised shape.
+      - PROBE: write only the declared probe surface and Page-facing answer records;
+        never author the target argument.
+      - REVISE: improve the current realization while purpose and Aims remain fixed.
+      - Returning one receipt with actor, phase, route, reason, artifacts, evidence,
+        open findings, and whether the promise reopened.
       Do not:
       - Touch `board.md`. Its `## Pages` listing is the registry and the one file
         every parallel writer would collide on; the caller registers you.
       - Run `build.py`, `check.py`, `lanes.py`, or any script. You have no Bash tool
         precisely so this cannot happen by accident: one rebuild belongs to the
-        caller, after every page has landed.
-      - Read, edit, or create any page other than your target, including a sibling
-        another agent is writing right now. Its bytes on disk are mid-flight.
+        caller or RUN's mechanical builder after the phase lands.
+      - Read, edit, or create any sibling Page. PROBE may write exactly one declared
+        `probe_path` beside the target; no other second Page is allowed.
       - Tick a `### Decision Now` checkbox, change the page-level human gate, or
         write a decision row that claims to be settled. Propose; the human rules.
       - Mark an Aim met without evidence. A machine may update an Aim's State from
@@ -146,7 +173,7 @@ duplicating each other's judgment.
       naming the field rather than guessing it.
       ```text
       required:
-        operation:   create-page | revise-opening
+        operation:   create-page | revise-opening | draft | probe | revise
         path:        the exact file path to write, inside its group folder
         id:          the page id (QA3, S-Main-2, ...)
         title:       the short title, unique on this board
@@ -160,6 +187,11 @@ duplicating each other's judgment.
         owner:       defaults to JL for a decision, CC for a stage
         sources:     files this page must read and cite
         constraints: anything the human already ruled that the page must respect
+        run_id:      required for draft | probe | revise
+        round:       required for draft | probe | revise
+        version:     required source:render identity for draft | probe | revise
+        intent:      required run-level purpose for draft | probe | revise
+        probe_path:  required for probe when it needs a separate persisted surface
       ```
       For `create-page`, `opening` and `siblings` are required. `siblings` is the
       field that makes parallel writing safe. It is how your
@@ -168,14 +200,18 @@ duplicating each other's judgment.
       For `revise-opening`, the existing `path` is the source of truth. The packet
       must carry facts and scope, not a sentence formula. Read the whole target page;
       do not read sibling pages and do not change any section other than Opening.
+      For `draft`, `probe`, and `revise`, `run_id`, `round`, `version`, and `intent`
+      are required. Treat `sources` and `constraints` as the complete raw-material
+      boundary. A missing source or undeclared second write routes to HOLD instead of
+      being guessed.
 
 - 3 · Procedure
       1. Load the page skill and read the canonical sources above. Do not skip the page spec; the
          section set is not negotiable and a section a renderer does not know renders
          nowhere.
-      2. For `revise-opening`, read the target page from first line to last before
-         drafting. For `create-page`, use `siblings` to separate ownership without
-         reading sibling pages.
+      2. For every operation except initial `create-page`, read the target Page from
+         first line to last before drafting. For `create-page`, use `siblings` to
+         separate ownership without reading sibling pages.
       3. Read every file in `sources`. Cite only what you read. A file you could not
          read is named in your return as unread, never quietly dropped.
       4. For `create-page`, draft the page in the template's section order. Earn each
@@ -185,13 +221,18 @@ duplicating each other's judgment.
       5. For `revise-opening`, draft from the page's actual subject and evidence.
          Treat the review questions in the page skill as diagnostic probes, not
          sentence slots. Replace only the Opening body.
-      6. Self-check the result against the page skill and `writing-rules.md`. Confirm
+      6. For `draft`, `probe`, or `revise`, perform only the authority named by the
+         loaded phase contract. Stop before the returned route begins. Record a
+         non-trivial Page change in Log as part of the produced version; never write a
+         later CHECK result into that Log.
+      7. Self-check the result against the page skill and `writing-rules.md`. Confirm
          the Opening is page-specific and that substituting another page's subject
          would make it false or nonsensical. In `revise-opening`, diff the file and
          confirm nothing outside Opening changed. This check informs the return; it
          does not award a final pass.
-      7. Write the file, once, to the exact `path` given. Create no other file.
-      8. Return the contract below. Do not rebuild, do not run the independent check,
+      8. Write the target to the exact `path` given. Create no other file except the
+         declared `probe_path` during PROBE.
+      9. Return the contract below. Do not rebuild, do not run the independent check,
          and do not announce
          that the board is updated: you cannot see the board.
 
@@ -208,8 +249,10 @@ duplicating each other's judgment.
 
 - 5 · Return contract
       ```text
-      status:   written | blocked
-      operation: create-page | revise-opening
+      actor:    haipipe-board-creator-agent
+      status:   ok | blocked | failed
+      operation: create-page | revise-opening | draft | probe | revise
+      phase:    DRAFT | PROBE | REVISE
       path:     <the file written, or none>
       id:       <page id>
       title:    <title as written>
@@ -221,6 +264,13 @@ duplicating each other's judgment.
         read:   <files read and cited>
         unread: <files named in the packet that could not be read, or none>
       open:     <what this page leaves for the human to decide, or none>
+      route:    DRAFT | PROBE | REVISE | CHECK | HOLD
+      reason:   <which phase authority was exercised and why this route follows>
+      reopens_promise: true | false
+      artifacts: <every file written, target first>
+      evidence:  <exact source locations or artifacts supporting the receipt>
+      findings:  <remaining defects or none>
+      open_questions: <consequential unknowns or none>
       self_check:
         canonical_sources_loaded: yes | no
         full_target_read: yes | no | n/a
@@ -229,8 +279,10 @@ duplicating each other's judgment.
       needs:    <what the caller must still do: register in board.md, rebuild, review>
       blocked:  <the missing field or unreadable input, when status is blocked>
       ```
-      The caller registers the page, runs the build and the checker once for the whole
-      batch, and dispatches `haipipe-board-reviewer-agent` to judge the result.
+      For batch CREATE or `revise-opening`, the caller registers pages as needed, runs
+      one build/check, and dispatches `haipipe-board-reviewer-agent`. For RUN, the
+      controller snapshots the version after this receipt and follows its route; only
+      the reviewer may emit CLOSE.
 <!-- haipipe:skill:body:end -->
 
 ## Aims
@@ -267,12 +319,13 @@ Its health is `🟡 in flux` because that first run also exposed two gaps it had
   Fixed at 0.4.0. JL found it by asking whether these agents call any skills.
 
 ## Log
+260804 · Expanded the authored mirror from batch-only Page creation to the shared producer role: exactly one DRAFT, PROBE, or REVISE authority per RUN receipt, still with no rebuild or CHECK.
 260731 · The concurrency boundary was JL's ruling that day: the test is not whether a unit has its own trigger but whether a write touches a file another writer also touches
 260802 2100 · Synced to 0.4.0 and the authored half updated after its first real fan-out: six writers, six pages, no scope collision, three killed by a session limit after writing. The agent now loads `haipipe-board-page-for-skill` itself instead of depending on the caller naming it in the packet, which its own contract forbids
 260802 1720 · Health ruled from evidence rather than left as a placeholder Aim: `state:` moved from 🔴 to 🟡 in flux, because the unit is written and registered at 0.3.0 and has never been dispatched. The `🧠 Rule this skill's health` row was removed, since the three Aims below it are the real work
 260731 1530 · page generated from `board/agents/haipipe-board-creator-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 35595af35318ac25 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:log:start 0f279d488d3546f4 board/agents/haipipe-board-creator-agent.md -->
 
 Converted from the skill's own `CHANGELOG.md`: 9 releases.
 

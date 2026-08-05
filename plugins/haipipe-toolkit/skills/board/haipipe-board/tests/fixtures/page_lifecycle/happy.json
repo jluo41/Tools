@@ -1,0 +1,88 @@
+{
+  "status": "closed",
+  "run_id": "fixture-happy",
+  "board": ".",
+  "page": "QF1-fixture-page.md",
+  "packet": {
+    "run_id": "fixture-happy",
+    "board": ".",
+    "page": "QF1-fixture-page.md",
+    "start_phase": "DRAFT",
+    "intent": "exercise the Page lifecycle process and artifact identity",
+    "sources": [],
+    "constraints": [],
+    "human_gate": {
+      "required": false,
+      "rule": "no human ruling is required for this synthetic process fixture"
+    },
+    "limits": {
+      "max_steps": 4,
+      "max_rounds": 2
+    }
+  },
+  "limits": {
+    "max_steps": 4,
+    "max_rounds": 2
+  },
+  "final_version": "d69ea76e1ed432e0c8abdfcb66ca0e02ee80a69a6ea8bf4786d0d25a54471e4c:f8caa96d1172ad031f0d43fd1926db676d3f9b62bcb1a5c6e1dcc960d0789a32",
+  "receipts": [
+    {
+      "step": 1,
+      "round": 1,
+      "phase": "DRAFT",
+      "actor": "page-producer",
+      "role": "producer",
+      "builder_actor": "fresh-page-builder",
+      "status": "ok",
+      "version_before": "0000000000000000000000000000000000000000000000000000000000000000:1111111111111111111111111111111111111111111111111111111111111111",
+      "version_after": "d69ea76e1ed432e0c8abdfcb66ca0e02ee80a69a6ea8bf4786d0d25a54471e4c:f8caa96d1172ad031f0d43fd1926db676d3f9b62bcb1a5c6e1dcc960d0789a32",
+      "checked_version": "",
+      "source_sha256": "d69ea76e1ed432e0c8abdfcb66ca0e02ee80a69a6ea8bf4786d0d25a54471e4c",
+      "render_sha256": "f8caa96d1172ad031f0d43fd1926db676d3f9b62bcb1a5c6e1dcc960d0789a32",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "CHECK",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "the Page promise is explicit and ready for judgment",
+      "artifacts": ["QF1-fixture-page.md"],
+      "evidence": ["QF1-fixture-page.md"],
+      "findings": [],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      }
+    },
+    {
+      "step": 2,
+      "round": 1,
+      "phase": "CHECK",
+      "actor": "fresh-page-reviewer",
+      "role": "judge",
+      "builder_actor": "fresh-page-builder",
+      "status": "ok",
+      "version_before": "d69ea76e1ed432e0c8abdfcb66ca0e02ee80a69a6ea8bf4786d0d25a54471e4c:f8caa96d1172ad031f0d43fd1926db676d3f9b62bcb1a5c6e1dcc960d0789a32",
+      "version_after": "d69ea76e1ed432e0c8abdfcb66ca0e02ee80a69a6ea8bf4786d0d25a54471e4c:f8caa96d1172ad031f0d43fd1926db676d3f9b62bcb1a5c6e1dcc960d0789a32",
+      "checked_version": "d69ea76e1ed432e0c8abdfcb66ca0e02ee80a69a6ea8bf4786d0d25a54471e4c:f8caa96d1172ad031f0d43fd1926db676d3f9b62bcb1a5c6e1dcc960d0789a32",
+      "source_sha256": "d69ea76e1ed432e0c8abdfcb66ca0e02ee80a69a6ea8bf4786d0d25a54471e4c",
+      "render_sha256": "f8caa96d1172ad031f0d43fd1926db676d3f9b62bcb1a5c6e1dcc960d0789a32",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "pass",
+      "route": "CLOSE",
+      "requested_route": "CLOSE",
+      "reopens_promise": false,
+      "reason": "the exact rendered version meets its declared gate",
+      "artifacts": [],
+      "evidence": ["board/QF/QF1-fixture-page.html"],
+      "findings": [],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      }
+    }
+  ]
+}

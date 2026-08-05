@@ -3,9 +3,9 @@ name: haipipe-paper-draft
 description: "DRAFT phase worker (internal). Called by a paper stage to produce the first-pass S-page artifact and raise every unresolved Q-consumer question. Reads that stage's stage.md and template, writes no probe entries, and opens no human gate unless stage.md explicitly declares draft in gates. Users invoke stage skills, not this skill directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
 metadata:
-  version: "0.6.2"
-  last_updated: "2026-07-26"
-  summary: "DRAFT writes two things on the owning S page: first-pass Content and Q-consumer questions. Citation/value/display lanes report holes; this hub is the single writer that makes each hole FILLED or OWNED. PROBE alone authors entries and runs the five-step evidence loop. History: ./CHANGELOG.md."
+  version: "0.6.3"
+  last_updated: "2026-08-04"
+  summary: "Paper-specific DRAFT worker layered on haipipe-board-page-draft: define or reopen the stage promise, write first-pass Content, and raise owned Q-consumers."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -13,9 +13,13 @@ Skill: haipipe-paper-draft (internal phase worker)
 ====================================================
 
 DRAFT phase worker.
-Called by stage skills (seed, resource, claims, pitch, narrative, display, section-edit) to produce the first-pass artifact.
+Called by stage skills (seed, resource, claims, pitch, narrative, display, section-edit) to define the first round or reopen the promise of a mature artifact.
 The stage defines WHAT the result looks like (its contract at `../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md`).
 This skill defines HOW to get there.
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-draft/SKILL.md`.
+Those contracts own the Stage Page shape and DRAFT authority.
+This file adds only manuscript and paper-stage knowledge.
 
 **Not user-facing.**
 Users invoke stage skills:
@@ -26,9 +30,11 @@ Users invoke stage skills:
 ```
 
 
-## Rules (follow these — the model is haipipe-probe's)
+## Rules
 
-The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · DRAFT phase** + **The DRAFT self-review checklist**. Follow those; on conflict, that file wins. Paper-specific additions:
+The DRAFT authority lives in `haipipe-board-page-draft`.
+`../../../../probe/haipipe-probe/SKILL.md` supplies the Q-consumer vocabulary and evidence-wall boundary only.
+On a phase conflict, the Page Phase contract wins; paper-specific additions follow:
 - **EVERY HOLE IS FILLED OR OWNED, EVERY STAGE.** A hole you cannot fill leaves a placeholder carrying the id of the S page's Q-consumer question that will settle it — `\cite{TOADD} [Q-<Stage>-<n>]`, `{VAL:? <what>} [Q-<Stage>-<n>]`. A placeholder with no bracket is a defect. PROBE later turns those questions into entries.
 - **Citations**: grep the paper's `.bib` FIRST — real `\citep{key}` for hits, `\cite{TOADD} [Q-<Stage>-<n>]` where none fits. A key that does not grep is invented.
 - **LOCAL answers**: DRAFT may cite paper-owned registries it has actually read, but it does not author `### bank binding`; that is PROBE's MATCH work.
@@ -41,7 +47,7 @@ The steps below are the HOW-TO for these rules.
 
 ## What DRAFT means
 
-DRAFT = settle WHAT to say, **and what you cannot yet say**.
+DRAFT = define or reopen WHAT the Page promises to say, **and what it cannot yet say**.
 Two outputs, both on the owning S page: first-pass Content and the Q-consumer
 questions that Content could not answer. PROBE plans and runs those questions.
 A draft that does not know what it does not know is not a draft.
@@ -353,9 +359,9 @@ to say            evidence    HOW to     everything
                               say it
 ```
 
-DRAFT produces the first-pass artifact.
-If the content is WRONG, fix it in DRAFT.
-If the content is RIGHT but sounds bad, fix it in REVISE.
+DRAFT produces or redefines the artifact promise for one round.
+If the purpose or Aims are wrong, return to DRAFT and begin a new round.
+If the promise stands but its realization is weak, use REVISE.
 
 
 ## Who calls this skill

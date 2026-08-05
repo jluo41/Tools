@@ -5,6 +5,42 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.117.0 - 2026-08-04
+
+- Adds the typed `### 🔗 Related Board Pages` Files group for precise Page-to-Page
+  context by relation, Page Phase, Page id, and `page`/`§n` scope.
+- Adds `src/page_context.py` and `cli/pagecontext.py`. The reader filters rows for
+  the current phase, closes a division over target identity + Opening + matching
+  Aims/States, shares the target frame across several selected scopes, and stops
+  after one hop.
+- Extends `cli/check.py` with errors for malformed rows, unsafe or dead paths,
+  undiscoverable targets, Page-id mismatches, self-links, and missing scopes;
+  duplicates warn and context emits them once.
+- Adds fault tests for dead path, wrong Page id, missing scope, path escape,
+  malformed form, duplicates, phase filtering, and recursion boundaries.
+
+## 0.116.0 - 2026-08-04
+
+- Adds `ref/page-lifecycle.workflow.js`, the bounded dynamic router for one Page.
+  A producer performs DRAFT/PROBE/REVISE, a separate builder snapshots source
+  and render hashes, and the fresh reviewer performs CHECK and selects the next
+  legal route.
+- Adds `src/page_lifecycle.py`, `cli/pageflow.py`, and lifecycle tests covering
+  happy paths, legal branches, self-approval, changed-after-CHECK, human gates,
+  illegal routes, round changes, bounded stops, strict SHA version identities,
+  independent source/render rehashing, packet/run matching, version continuity,
+  and producer/builder/judge separation.
+- Routes Page-level `RUN` through `haipipe-board-page` and registers the narrow
+  non-interactive Page orchestrator. `RUN` replaces the deferred router need;
+  `ADVANCE` remains absent because the lifecycle is not linear.
+
+## 0.115.0 - 2026-08-04
+
+- Updates the family map to the Page Type × Page Phase model adopted on QB9.
+- Lists `page-types/` with the three `for-*` variants and `page-phases/` with the direct DRAFT, PROBE, REVISE, and CHECK contracts.
+- Routes phase work through `haipipe-board-page` and deliberately adds no Board-level `ADVANCE` verb.
+- Treats the existing topic-entry implementation as a persisted Probe Page adapter rather than another lifecycle concept.
+
 ## 0.114.0 - 2026-08-03
 
 **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.

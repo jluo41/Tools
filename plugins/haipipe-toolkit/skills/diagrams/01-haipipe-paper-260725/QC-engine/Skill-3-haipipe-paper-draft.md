@@ -1,4 +1,4 @@
-# haipipe-paper-draft · v0.6.2
+# haipipe-paper-draft · v0.6.3
 state: 🟡 PARTIAL · account written; the acceptance test is open in Items
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -10,14 +10,16 @@ This page examines the DRAFT phase's two outputs: real first-pass Content and re
 Its central boundary is that it asks a question but never plans, routes, or executes the evidence work.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 9bd3490d630514a6 paper/phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:tree:start 1954fdf0b4e3ac83 paper/phase/0-draft/haipipe-paper-draft -->
+
+**What `haipipe-paper-draft` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-paper-draft/
   feedback/
     README.md            4 ln  haipipe-paper-draft -- Feedback Inbox
-  CHANGELOG.md         231 ln  ## 2026-08-01
-  SKILL.md             394 ln  Skill: haipipe-paper-draft (internal phase worker)
+  CHANGELOG.md         236 ln  ## 2026-08-01
+  SKILL.md             400 ln  Skill: haipipe-paper-draft (internal phase worker)
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -35,19 +37,19 @@ one sentence per source line        - [ ] 🔎 Q-… checklist record
 real .bib key OR owned placeholder  Description · Reason · Probe · Answer
 adjacent > lanes attach to sentence  ▲ same id anchors any unresolved sentence
       │                                     │
-      └────────── no `1-probes/` writes ────┘
+      └──── no nested entry-page writes ────┘
                                             ▼
                                   PROBE owns entry / route / bank / target
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 9bd3490d630514a6 paper/phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:body:start 1954fdf0b4e3ac83 paper/phase/0-draft/haipipe-paper-draft -->
 
-**haipipe-paper-draft** · `0.6.2` · last shipped 2026-07-26
+**haipipe-paper-draft** · `0.6.3` · last shipped 2026-08-04
 
 - folder   `paper/phase/0-draft/haipipe-paper-draft/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
-- summary  DRAFT writes two things on the owning S page: first-pass Content and Q-consumer questions. Citation/value/display lanes report holes; this hub is the single writer that makes each hole FILLED or OWNED. PROBE alone authors entries and runs the five-step evidence loop. History: ./CHANGELOG.md.
+- summary  Paper-specific DRAFT worker layered on haipipe-board-page-draft: define or reopen the stage promise, write first-pass Content, and raise owned Q-consumers.
 
 ### SKILL.md
 
@@ -57,9 +59,13 @@ Skill: haipipe-paper-draft (internal phase worker)
 ====================================================
 
 DRAFT phase worker.
-Called by stage skills (seed, resource, claims, pitch, narrative, display, section-edit) to produce the first-pass artifact.
+Called by stage skills (seed, resource, claims, pitch, narrative, display, section-edit) to define the first round or reopen the promise of a mature artifact.
 The stage defines WHAT the result looks like (its contract at `../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md`).
 This skill defines HOW to get there.
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-draft/SKILL.md`.
+Those contracts own the Stage Page shape and DRAFT authority.
+This file adds only manuscript and paper-stage knowledge.
 
 **Not user-facing.**
 Users invoke stage skills:
@@ -71,19 +77,21 @@ Users invoke stage skills:
 
 
 
-- 1 · Rules (follow these — the model is haipipe-probe's)
-      The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · DRAFT phase** + **The DRAFT self-review checklist**. Follow those; on conflict, that file wins. Paper-specific additions:
+- 1 · Rules
+      The DRAFT authority lives in `haipipe-board-page-draft`.
+      `../../../../probe/haipipe-probe/SKILL.md` supplies the Q-consumer vocabulary and evidence-wall boundary only.
+      On a phase conflict, the Page Phase contract wins; paper-specific additions follow:
       - **EVERY HOLE IS FILLED OR OWNED, EVERY STAGE.** A hole you cannot fill leaves a placeholder carrying the id of the S page's Q-consumer question that will settle it — `\cite{TOADD} [Q-<Stage>-<n>]`, `{VAL:? <what>} [Q-<Stage>-<n>]`. A placeholder with no bracket is a defect. PROBE later turns those questions into entries.
       - **Citations**: grep the paper's `.bib` FIRST — real `\citep{key}` for hits, `\cite{TOADD} [Q-<Stage>-<n>]` where none fits. A key that does not grep is invented.
       - **LOCAL answers**: DRAFT may cite paper-owned registries it has actually read, but it does not author `### bank binding`; that is PROBE's MATCH work.
       - **RESOURCE stage**: write `Resource Description` under `## Content` and the logical `Q-consumer` records under `## Items to Finish` on `S-Work-0-resources.md`. DRAFT describes each resource and raises the questions; PROBE opens the entries, lands the answers, and writes their source pointers. `--depth`, supplied by the human, is the spend authorization.
       - One sentence per line; no markdown tables in probe files.
-      - ⛔ **DRAFT DOES NOT TOUCH `1-probes/`.** It raises `- [ ] 🔎 Q-<Stage>-<n>` records in the S page's `## Items to Finish` and stops. Writing a `### q-executor`, choosing a `route`, judging a `bank`, or setting a `target` is PROBE's ① and ②. (They ran here until 2026-07-20, purely so one human gate could review draft + plan together; stages now declare `gates: [check]`, so that reason is gone.)
+      - ⛔ **DRAFT DOES NOT TOUCH nested entries.** It raises Q-consumer rows in the direct topic page's `### Q-consumer register` and stops. Writing a `#### q-executor`, choosing a route, judging a bank, or setting a target is PROBE's ① and ②. (They ran here until 2026-07-20, purely so one human gate could review draft + plan together; stages now declare `gates: [check]`, so that reason is gone.)
       - ⛔ **DRAFT OPENS NO GATE unless the stage's contract declares one.** Read `gates:` in `stage.md`. The default is `[check]` — in that case DRAFT ends by handing straight to PROBE, with no STOP.
       The steps below are the HOW-TO for these rules.
 
 - 2 · What DRAFT means
-      DRAFT = settle WHAT to say, **and what you cannot yet say**.
+      DRAFT = define or reopen WHAT the Page promises to say, **and what it cannot yet say**.
       Two outputs, both on the owning S page: first-pass Content and the Q-consumer
       questions that Content could not answer. PROBE plans and runs those questions.
       A draft that does not know what it does not know is not a draft.
@@ -109,7 +117,7 @@ Users invoke stage skills:
       template.md   the canonical skeleton — section order, placeholders, inline <!-- RULE --> comments
       ```
       This skill carries NO templates of its own — the stage owns its format.
-      Resolve the folder from `../../paper/route/haipipe-paper-stage/stages/index.yml`, which maps a
+      Resolve the folder from `../../../1-lifecycle/haipipe-paper-stage/stages/index.yml`, which maps a
       stage key to its `dir`. Do NOT hardcode the mapping here; that index is the one enumerating file.
       ```text
       seed          -> stages/0-seed/
@@ -122,8 +130,8 @@ Users invoke stage skills:
       section-edit  -> stages/5-section-edit/     (a section NAME, e.g. `introduction`, routes here)
       ```
       Some stages carry EXTRA support files in the same folder; read them when the contract's
-      `support:` field names them. They are NOT uniform — `../../paper/S01-opening/pitch/readability.md`,
-      `../../paper/S05-display/display/figure-logic.md` + `../../paper/S05-display/display/checklist.md`. section-edit has none — its template is its own rulebook. Never assume a
+      `support:` field names them. They are NOT uniform — `2b-pitch/readability.md`,
+      `4-display/figure-logic.md` + `checklist.md`. section-edit has none — its template is its own rulebook. Never assume a
       file exists because a sibling stage has one.
       ⚠️ The `phases:` field in `stage.md` is AUTHORITATIVE and is not always four. `venue` declares
       `[draft, probe, check]` — it has no REVISE. Run what the stage declares.
@@ -181,8 +189,8 @@ Users invoke stage skills:
       But a seed is allowed to be intuition (seed principle 1), so what that search produces has exactly two legal destinations:
       1. **PROSE** in the stage artifact (Motivations, Claim Shape, ...) -- phrased as orientation, with `\cite{TOADD} [Q-<Stage>-<n>]` slots, never as settled fact. Anything load-bearing stays a raised question.
       2. **A RAISED QUESTION** -- a gap the search reveals goes through Step 4b like any other, with no special status.
-      FORBIDDEN in DRAFT: opening or editing `1-probes/`, writing a
-      `### a-executor`, or treating an inline result as landed evidence.
+      FORBIDDEN in DRAFT: opening or editing a nested entry page, writing a
+      `#### a-executor`, or treating an inline result as landed evidence.
       Real evidence lands ONLY via the PROBE phase dispatching `haipipe-paper-probe` (the single door); inline search results bind to nothing -- evidence gathered any other way means "the PROBE phase did not happen."
       `check-probe-cards.sh` runs after PROBE and again at CHECK, not here, because
       DRAFT has not created entries yet.
@@ -195,7 +203,7 @@ Users invoke stage skills:
       Skill("haipipe-paper-draft-display",  args="<stage-or-section> <paper-path>")
       ```
       Each RETURNS a report — for every hole: WHERE it is (the sentence), WHAT it is (`\cite{TOADD}` / `{VAL:? <what>}` / a DR row), and WHO owes it (the existing `Q-<Stage>-<n>` that will produce it, or `UNOWNED` if nothing will).
-      **THIS HUB HOLDS THE PEN — for all of it.** The lanes do not touch the manuscript, the stage doc, or `1-probes/`. THIS worker takes the three reports and writes:
+      **THIS HUB HOLDS THE PEN — for all of it.** The lanes do not touch the manuscript, the topic register, or nested entry pages. THIS worker takes the three reports and writes:
       ```
       draft.md · prose        this hub, from the lane reports — insert each placeholder
                               with its [Q-<Stage>-<n>]
@@ -207,7 +215,7 @@ Users invoke stage skills:
       Skip a lane only when the artifact cannot carry its kind of hole (a seed has no numbers; a pitch has no displays), and log the skip.
 
 - 3.6 · Step 4b. 🙋 RAISE — every question this draft cannot answer
-      **DRAFT is where the questions are BORN — and only born.** Raise each `- [ ] 🔎 Q-<Stage>-<n>` record under the S page's `## Items to Finish`, in the consumer's own words, with `Description`, `Reason`, `Probe: not opened yet`, and an empty `Answer`, then STOP. Planning them (①ORGANIZE, ②MATCH) is PROBE's; see probe's PHASE MAP. This skill never opens `1-probes/`.
+      **DRAFT is where the questions are BORN — and only born.** Raise each Q-consumer row under the direct topic page's `### Q-consumer register`, in the consumer's own words, with its paper stake and an empty entry link or return note, then STOP. Planning them (①ORGANIZE, ②MATCH) is PROBE's; see probe's phase map. This skill never opens a nested entry page.
       This step is UNCONDITIONAL. It runs on every draft, whatever the question's origin: a hole Step 4a's lanes returned unowned, a question the stage typically raises (see the calling stage's `dispatch_scope:` + craft body), a gap a web search revealed, or one you simply noticed while writing.
       Each question gets one DRAFT artifact: a `## Q-<Stage>-<n>` block in the S
       page's Q-consumer, in the consumer's own words and carrying the STAKE. Cite its
@@ -226,8 +234,8 @@ Users invoke stage skills:
       It checks both directions, and the second one is the one a reader misses: a hole
       carrying `[Q-Main-9]` when no `Q-Main-9` exists LOOKS owned, so nobody ever goes
       looking for it. The discipline behind the check is
-      `../../writing/haipipe-writing/ref/holes.md`; the notation, the `.bib` grep, and the
-      `1-probes/` boundary stay here, because none of those generalize. Do not run the probe-entry checker yet: no entries should exist from this
+      `writing/haipipe-writing/ref/holes.md`; the notation, the `.bib` grep, and the
+      topic-entry boundary stays here, because none of those generalize. Do not run the probe-entry checker yet: no entries should exist from this
       phase. The sub-agent's job is semantic judgment — whether the draft says
       something, follows the stage contract, and raises answerable questions.
       Then, the CREATOR/REVIEWER split, so the drafter does not grade its own work. Dispatch a review sub-agent in a FRESH context (report-only; the drafter applies the fixes):
@@ -271,7 +279,7 @@ Users invoke stage skills:
 - 4.1 · seed
       - Output: `0-lifecycle/0-seed/S-Seed-0-seed.md`
       - WebSearch-to-orient: see Step 4 (the one normative home).
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S01-opening/seed/stage.md` -> its `dispatch_scope:` + the craft body (the stage owns its own list; this file never restates it).
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/0-seed/stage.md` -> its `dispatch_scope:` + the craft body (the stage owns its own list; this file never restates it).
         Profiling OUR OWN data is RESOURCE-stage task work; register it as a `[FORWARD -> RESOURCE]` pointer in the Seed S page's `## Log`, do not raise it in seed.
         The RESOURCE stage is the SOLE CONSUMER of these pointers and takes them at its open (reader clause in the resource stage contract) -- an unconsumed pointer fails the RESOURCE done-criteria, not claims'.
       - Short document, FIVE sections: Seed Question + Motivations + Landscape + Tentative Claim Shape + Q-consumer (Landscape and Q-consumer are not optional — the `[Q-Seed-<n>]` anchor loop hangs on Q-consumer)
@@ -291,7 +299,7 @@ Users invoke stage skills:
         A CLAIM-STATUS pointer is not ours — leave it for claims and say so.
       - The stage ASKS; it never mints a PP id, never picks a probe type or topic, and never executes (no `/haipipe-data`, `/haipipe-nn`, `/haipipe-task`, no inline store scan).
         WebSearch/glob to ORIENT is legal DRAFT fuel per Step 4 — it never lands in an `A`.
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S02-work/resource/stage.md` -> its `probe_lanes:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/1a-resource/stage.md` -> its `probe_lanes:` + the craft body.
       - PROBE (resource): one `Skill("haipipe-paper-probe", ...)` call. The worker
         authors/matches entries, dispatches only within `--depth`, and lands each Q's
         `A`. There is no DRAFT gate or `_LOG` sidecar.
@@ -303,24 +311,24 @@ Users invoke stage skills:
         Q-consumer.
       - Reads `S-Work-0-resources.md`: ingredients are settled there; training and
         evaluation belong to Claims.
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S02-work/claims/stage.md` -> its `dispatch_scope:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/1b-claims/stage.md` -> its `dispatch_scope:` + the craft body.
       - Hypotheses are venue-neutral (H1, H2, H3)
 
 - 4.4 · pitch
       - Output: `0-lifecycle/2-venue/S-Venue-1-pitch.md`
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S01-opening/pitch/stage.md` -> its `dispatch_scope:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/2b-pitch/stage.md` -> its `dispatch_scope:` + the craft body.
       - Venue-ALIGNED: reads `S-Venue-0-venue.md` (pack fallback per the venue guard)
 
 - 4.5 · narrative
       - Output: `0-lifecycle/2-venue/S-Venue-2-narrative.md`
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S02-work/narrative/stage.md` -> its `dispatch_scope:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/3-narrative/stage.md` -> its `dispatch_scope:` + the craft body.
       - Section-mirrored story with readiness tags
 
 - 4.6 · display
-      - Resolve the current output from `../../paper/S05-display/display/stage.md`; do not invent a replacement while its declared `blocked_on` remains open.
+      - Resolve the current output from `stages/4-display/stage.md`; do not invent a replacement while its declared `blocked_on` remains open.
       - DRAFT runs the stage's step-0 reconcile first (legacy probes/preview/tex-comments merge), then authors the md: Venue Set, Display Map, PROBE PLAN (S0/En/Rn rows, ▶ ready / ✋ gated-on-thread), one block per display with method candidates + ASCII sketch
       - Open threads stay inline for CHECK; DRAFT proposes and PROBE executes within its ceiling.
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S05-display/display/stage.md` -> its `dispatch_scope:` + the craft body (the cross-stage coverage sweep is DRAFT's, not PROBE's)
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/4-display/stage.md` -> its `dispatch_scope:` + the craft body (the cross-stage coverage sweep is DRAFT's, not PROBE's)
       - PROBE: evidence lane (tasks) + render lane (renderer skills, candidate mode) over the approved plan rows
 
 - 4.7 · section-edit
@@ -328,7 +336,7 @@ Users invoke stage skills:
       - Format: REAL prose per `stages/5-section-edit/template.md` (shape + rules in one file)
       - Ends with the Q-consumer block: every placeholder has an owning question.
         DRAFT proposes; PROBE later binds each one to an answer.
-      - Question types: `../../../1-lifecycle/haipipe-paper-stage/../../paper/S06-main/section-edit/stage.md` -> its `dispatch_scope:` + the craft body.
+      - Question types: `../../../1-lifecycle/haipipe-paper-stage/stages/5-section-edit/stage.md` -> its `dispatch_scope:` + the craft body.
         (citation / values / display are DRAFT's Step 4a lanes, not PROBE tracks.)
       - Reads section-type norms and `S-Venue-0-venue.md`'s per-section blueprint block for style
 
@@ -339,7 +347,7 @@ Users invoke stage skills:
       |---|---|---|
       | Venue style, word budget, arc | `0-lifecycle/2-venue/S-Venue-0-venue.md` (compiled from `venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
       | Per-section structure norms | the paper's `S-Venue-0-venue.md` blueprint block (BINDING), deep dive `paper/venue/playbook-*/<journal>/<journal>-<kind>/style.md` (reference) | DRAFT (structure) |
-      | Prose quality rules | `../../paper/phase/REF/prose-quality.md` | REVISE |
+      | Prose quality rules | `../../REF/prose-quality.md` | REVISE |
       Old venue LaTeX templates and the write-conference/scientific/systems style skills were archived to the paper-root `_archive/` (venue knowledge belongs in `venue/` packs).
 
 - 6 · Relation to other phases
@@ -349,9 +357,9 @@ Users invoke stage skills:
       to say            evidence    HOW to     everything
                                     say it
       ```
-      DRAFT produces the first-pass artifact.
-      If the content is WRONG, fix it in DRAFT.
-      If the content is RIGHT but sounds bad, fix it in REVISE.
+      DRAFT produces or redefines the artifact promise for one round.
+      If the purpose or Aims are wrong, return to DRAFT and begin a new round.
+      If the promise stands but its realization is weak, use REVISE.
 
 - 7 · Who calls this skill
       Stage skills call this as their DRAFT phase:
@@ -416,9 +424,10 @@ feedback/README.md       4 ln  haipipe-paper-draft -- Feedback Inbox
       to that sentence; page-level work belongs in Items.  A candidate `> Note:`
       is REVISE's author-requested review mode, not DRAFT's normal output.
 - [x] 🚧 Preserve the routing boundary
-      DRAFT never creates `1-probes/` entries, selects `route` or `bank`, binds
-      a target, or runs evidence work.  A missing display *unit* is a Display
-      Request row, not a Q-consumer.
+      DRAFT never opens a nested entry page beneath `S03-literature/probes/` or
+      `S04-value/probes/`, selects `route` or `bank`, binds a target, or runs
+      evidence work.  A missing display *unit* is a Display Request row, not a
+      Q-consumer.
 - [ ] 🧪 Run an end-to-end section example
       Confirm that a section's sentence ids, checklist records, Board chips,
       PROBE entry, answer, REVISE placement, and CHECK all retain one join key.
@@ -432,10 +441,13 @@ The remaining test is a full section run in which every placeholder either reach
 260727 1445 · Created the DRAFT skill page from `paper/phase/0-draft/haipipe-paper-draft/`.
 The authored record distinguishes sentence apparatus, Q-consumer ownership, and Display Requests so they cannot be conflated in later writing work.
 
-<!-- haipipe:skill:log:start 9bd3490d630514a6 paper/phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:log:start 1954fdf0b4e3ac83 paper/phase/0-draft/haipipe-paper-draft -->
 
-Converted from the skill's own `CHANGELOG.md`: 27 releases.
+Converted from the skill's own `CHANGELOG.md`: 28 releases.
 
+260804 · `0.6.3` · Page Type × Page Phase layering
+      - Loads the Stage Page Type and generic DRAFT contract before paper-specific rules.
+      - Defines DRAFT as first-round or reopened promise authority; wrong purpose or Aims starts a new round, while weak realization routes to REVISE.
 260726 · `0.6.2` · Board-native question records
       - DRAFT writes stage substance only under `## Content`.
       - The logical Q-consumer now materializes as checklist records under
@@ -508,7 +520,7 @@ Converted from the skill's own `CHANGELOG.md`: 27 releases.
       ### Changed — the Rules block
       The citation rule and the sidecar rule collapse into one: EVERY HOLE IS FILLED OR OWNED, EVERY STAGE. `1-probes/` is the only consumer-side source of truth; `_LOG_<stage>.md` is the only sidecar.
       ### Changed — the seed artifact is FIVE sections, not three
-      This file described `../../probe/haipipe-probe/test/fixture/proj/papers/Paper-Fx/0-lifecycle/0-seed/0-seed.md` as three sections in three places (Step 3, the seed stage note, and the caller table), omitting Landscape and Q-consumer. Q-consumer is where every `[Q-Seed-<n>]` anchor lives, so an agent following the old Step 3 would present a 3-section plan and fail the seed skill's own done-criterion 1.
+      This file described `0-seed.md` as three sections in three places (Step 3, the seed stage note, and the caller table), omitting Landscape and Q-consumer. Q-consumer is where every `[Q-Seed-<n>]` anchor lives, so an agent following the old Step 3 would present a 3-section plan and fail the seed skill's own done-criterion 1.
 260719 · `4.4.0` · sync to probe constitution v9.5.0 (Q-executor-entry probe-file format) + archaeology strip
       Rewrote every probe-file-anatomy reference to the new v9.5.0 shape: a probe entry is now `## QX<n>` (topic-local) with four `###` subsections — `### q-executor` (+ `Deliverable:` / `Accepted:` lines), `### q-consumer` (one bullet per Q-consumer, its stage-doc id + original question), `### bank binding` (`route` / `bank` / `target` / `state`), and `### a-executor` (the harvested copy of the QA answer). Field renames applied across the Rules block, Step 4 (probe plan), Step 4b self-review Surface B, the summary, and the frontmatter: `route:`→`route`, `match: EXISTS·<f> / NONE→NEW`→`bank: reuse | run | code | new`, `target:`→`target`, `state:`→`state`, and the probe-file `a-consumer:` (the answer copied INTO the probe file)→`### a-executor`; the `## Why` field is DROPPED — the stake stays in the stage-doc Q-consumer. Unchanged (deliberately): the stage-doc `Q-<Stage>-<n>` Q-consumer id and its `Answer:`/a-consumer (station ②) — only the probe-file entry heading and fields moved. Retired the `_VALUES_*`/`_CITATION_*` consumer-side sidecars from the T1 LOCAL registry list (1-probes/ is the only consumer-side source of truth; `_LOG` is the only kept sidecar); the `.bib`/`\citep{}`/`\cite{TOADD}`/`{VAL:?}` citation rules are untouched. Archaeology strip: dropped the dated ruling citation from the resource-stage "cut" note.
 260719 · `4.3.0` · RULES block (points at haipipe-probe's DRAFT phase rules + paper deltas)

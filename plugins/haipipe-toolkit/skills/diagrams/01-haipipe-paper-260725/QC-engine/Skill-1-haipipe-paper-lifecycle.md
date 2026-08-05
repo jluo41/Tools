@@ -13,6 +13,8 @@ Its Seed → Work → Venue sequence below is the Engine's explicit execution pi
 ## Diagram
 <!-- haipipe:skill:tree:start 5883bf6a7b5edf8d paper/route/haipipe-paper-lifecycle -->
 
+**What `haipipe-paper-lifecycle` ships**: every file in the folder, with the one-line purpose each one states for itself.
+
 ```
 haipipe-paper-lifecycle/
   feedback/
@@ -60,7 +62,7 @@ Skill: haipipe-paper-lifecycle (orchestrator)
 ==============================================
 
 User-facing entry for **paper structural work** -- everything that decides *what the paper is* before prose exists, or when the argument needs rethinking.
-This is the **Plan cycle** in the paper mental model (see `paper/README.md`, `../../paper/route/ref/03-paper-lifecycle.md`, and `../../paper/route/ref/04-lifecycle-map.md`).
+This is the **Plan cycle** in the paper mental model (see `paper/README.md`, `../ref/03-paper-lifecycle.md`, and `../ref/04-lifecycle-map.md`).
 
 The lifecycle has a **venue-free / venue-aligned boundary**.
 Seed, resource and claims are venue-FREE (they don't change when you retarget to a different journal -- what a paper NEEDS to exist does not depend on where you send it).
@@ -114,7 +116,7 @@ Phase dispatch is each stage skill's internal business.
 If a request sounds like a phase ("gather citations for §3", "polish the intro"), route to the owning stage skill (usually section-edit) and let it dispatch.
 
 Stage artifacts are markdown S pages (`S-<Family>-<n>-<slug>.md`, one family one folder) for every stage except display, which also compiles to `.tex` + PDF (you need to SEE rendered figures/tables).
-Stage gates and the illuminate loop are shared conventions: `../../paper/route/ref/08-stage-gate.md`, `../../paper/route/ref/09-stage-illuminate.md`.
+Stage gates and the illuminate loop are shared conventions: `../ref/08-stage-gate.md`, `../ref/09-stage-illuminate.md`.
 
 ---
 
@@ -134,7 +136,7 @@ Specialists
 
       resource            RESOURCE (1a): maintain S-Work-0-resources.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? The stage ASKS; PROBE ROUTES within its depth ceiling.
 
-      claims                CLAIMS (1b):  maintain 0-lifecycle/1-work/1b-claims.md, the venue-FREE claim ledger AND the home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to a probe entry's answering QA file. Claims RUNS THE EXPERIMENT (train the model + evaluate); it reads the entry's `### a-executor` and writes its own a-consumer in the stage doc.
+      claims                CLAIMS (1b): maintain the S02 Work claims page, the venue-FREE claim ledger and home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to an entry's answering QA file. Claims reads the entry's `#### a-executor`; the parent topic register records the paper interpretation.
 
       --- VENUE DECISION (pins target journal in S-Venue-0-venue.md) ---
 
@@ -215,8 +217,8 @@ Specialists
                         ({VAL:?} placeholders + GAP markers + Q-consumer questions are fine;
                         venue still pins BEFORE the venue-ALIGNED drafts)
       ② PROBE-PLAN      /haipipe-paper probe plan — the cross-stage consolidation:
-                        merge duplicate questions (one ENTRY, many `### q-consumer` bullets), author
-                        the dispatch DAG into 1-probes/README.md Campaign section
+                        merge duplicate questions (one q-executor entry, many topic-register mappings),
+                        author the dispatch DAG from the nested S03/S04 entry pages
                         [HUMAN GATE — present the campaign, stop]
       ③ DISPATCH BATCH  probe run — MATCH first (most sections close on T2 REUSE, for
                         free); only what MATCH cannot close is dispatched, per the DAG
@@ -229,9 +231,9 @@ Specialists
                         session — the `### q-executor` block in the entry is the bridge,
                         and it survives a dead session with zero files bank-side)
       ⑤ HARVEST         a PROBE re-run re-resolves each `commissioned` entry's
-                        `**target**:`, `ls` its QA file, and lands the `### a-executor`
-                        + each Q-consumer's a-consumer in its stage doc
-                        + the 1b-claims.md flip + the harvest lanes
+                        `**target**:`, `ls` its QA file, and lands the `#### a-executor`
+                        + the parent topic register's interpretation + the S02 claims-page flip
+                        + the harvest lanes
                         (query-once: landed answers are read from registries, never
                         re-queried) → then run each stage's remaining declared phases
       ```
@@ -450,7 +452,7 @@ Specialists
       plain text and the marker report above is empty and useless:
       ```yaml
       dialect: paper            # opt in to resolving markers at build time
-      paper-root: ..            # where the .bib, displays/ and 1-probes/ live
+      paper-root: ..            # where the .bib, displays/, and nested topic entries live
       ```
       That one-line seam is the entire paper-specific surface of a generic tool (`QA4`). A board that
       does not declare it renders byte-identical and pays nothing.
@@ -609,11 +611,11 @@ Converted from the skill's own `CHANGELOG.md`: 20 releases.
       JL ruling on the removal style, 2026-07-19: "不需要留退役告示，直接抹除任何痕迹" / "follow this rule to do all the following changes."
       Changed (SKILL.md)
       - The section-edit specialist line described the per-section folder as "outline .md, _LOG changelog, _CITATION_ map, _VALUES_ registry" → "outline .md and _LOG changelog".
-      Changed (`../../paper/route/ref/04-lifecycle-map.md`)
+      Changed (`../ref/04-lifecycle-map.md`)
       - `1-claims` Writes — `+ _LOG + _EVIDENCE_` → `+ _LOG`.
       - `3-narrative` Writes — `+ _LOG + _DISPLAY_` → `+ _LOG`, plus the DR rows it files in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage owns that file and its statuses).
       - `5-section-edit` Writes — `(outline .md, _LOG, _CITATION_, _VALUES_)` → `(outline .md, _LOG)`.
-      Changed (`../../paper/route/ref/08-stage-gate.md`)
+      Changed (`../ref/08-stage-gate.md`)
       - The section-edit exit question no longer requires a scaffold containing `_CITATION_ + _VALUES_`; it asks for `outline + _LOG`, and adds the check that actually matters now — every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]` anchor bracket.
       Untouched (deliberately)
       - Every `mode: light | full` reference — deferred to a separate review.
@@ -625,7 +627,7 @@ Converted from the skill's own `CHANGELOG.md`: 20 releases.
       Added (JL resource ruling 2026-07-14; pairs with haipipe-paper-resource 1.0.0 + haipipe-paper 2.11.0)
       - RESOURCE registered as a lifecycle stage everywhere this router enumerates stages: the verbs block (`resource <args>` -> `0-lifecycle/1a-resource/1a-resource.md`), the Specialists list (`haipipe-paper-resource  RESOURCE (1)`), the Natural Pipeline Order, the Routing Logic stage set, the Function Keyword Map + positional aliases, the no-arg dashboard, and the parent-orchestrator diagram.
       - Venue boundary prose now reads seed + resource + claims as venue-FREE (what a paper NEEDS to exist does not depend on where you send it); the Retarget rule says the same.
-      - resource SHARES the number 1 with claims, deliberately -- precedented on disk by 2a-venue/ and 2b-pitch/. No other stage renumbers; `../../application/haipipe-application/stage-strip.sh` strips the digit and keys on the bare name `resource`.
+      - resource SHARES the number 1 with claims, deliberately -- precedented on disk by 2a-venue/ and 2b-pitch/. No other stage renumbers; `stage-strip.sh` strips the digit and keys on the bare name `resource`.
 260711 · `2.3.0`
       Added (JL cross-stage ruling 2026-07-11; pairs with haipipe-probe 7.5.0 + haipipe-paper 2.8.0)
       - "Global-pass mode (breadth-first — the whole-paper cycle)" section after the Natural Pipeline Order: ① DRAFT SWEEP all stages (placeholders/GAPs fine; venue still pins before the ALIGNED drafts) → ② PROBE-PLAN (`/haipipe-paper probe plan`, campaign consolidation, HUMAN GATE) → ③ HANDOFF BATCH per the DAG → ④ RUN (task/discovery sessions — often a separate concurrent session) → ⑤ HARVEST (query-once) then REVISE/CHECK per stage. Depth-first per-stage cycles remain valid for single-stage work; stage gates unchanged.
