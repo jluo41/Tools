@@ -47,8 +47,8 @@ which skill it concerns; there is no separate `skill:` field.
       or new?" rather than guess. (Under digest, the confirm gate decides.)
 5. CONFIRM where it landed, whether it was MERGED (into <file>) or NEW, and how
    it matched; offer the one-line correction:
-   "filed -> haipipe-paper-stage pitch/feedback/ NEW (matched keyword 'pitch').
-    wrong target? /haipipe-paper feedback move <file> <skill>"
+   "filed -> S01-opening/pitch/feedback/ NEW (matched keyword 'pitch').
+    wrong target? /haipipe-paper feedback move <file> <skill-or-stage>"
    (When invoked in BATCH by digest, SKIP this per-item confirm: digest's gate
    already approved and its step-6 report is the single confirmation.)
    Do NOT attempt a fix now.
@@ -94,35 +94,37 @@ resolve:
        Rule of thumb: "would this complaint be equally true at the seed stage,
        the claims stage, AND the display stage?" If yes, it is cross-cutting.
        Contrast: "every stage must recompile its PDF" -> fallback (spine rule);
-       "the compile script crashed on bibtex" -> haipipe-paper-compile (one bug).
+       "the compile script crashed on bibtex" -> the compile fn (one bug; files
+       into the orchestrator fallback, the fn verbs are the door's own steps).
   1. else keyword match in TEXT -> that skill (most specific wins)
   2. else active-stage skill
   3. else orchestrator fallback
 ```
 
-Keyword -> skill map (first/most-specific match wins):
+Keyword -> target map (first/most-specific match wins; a STAGE target files
+into that stage's own data folder, see "Inbox paths"):
 
 ```
-pitch                                   -> haipipe-paper-stage pitch
-seed                                    -> haipipe-paper-stage seed
-claim, claims, ledger                   -> haipipe-paper-stage claims
-narrative, beat, story arc              -> haipipe-paper-stage narrative
-section-edit, paragraph job, evidence anchor -> haipipe-paper-stage section-edit
-venue, journal, playbook                -> haipipe-paper-stage venue
-display, gallery, float, figure plan    -> haipipe-paper-stage display
+pitch                                   -> stage pitch
+seed                                    -> stage seed
+claim, claims, ledger                   -> stage claims
+narrative, beat, story arc              -> stage narrative
+section-edit, paragraph job, evidence anchor -> stage section-edit
+venue, journal, playbook                -> stage venue
+display, gallery, float, figure plan    -> stage display
   table                                 -> haipipe-display-table
   figure, plot                          -> haipipe-display-figure
   diagram, vector, elbow, connector     -> haipipe-display-diagram
   illustration, ai-img, concept art     -> haipipe-display-illustration
-enter, console, dashboard, status view  -> haipipe-paper-enter
-round, rounds                           -> haipipe-paper-round
-write, draft, scaffold prose            -> haipipe-paper-stage section-edit
-edit, polish, weave, walk sections      -> haipipe-paper-stage section-edit
-rebuttal, reply, reviewers, response    -> haipipe-paper-rebuttal
-compile this paper, build broke         -> haipipe-paper-compile
-citation, bibtex, references            -> haipipe-paper-draft-citation
+enter, console, dashboard, status view  -> orchestrator fallback (the console is the door's own step)
+round, rounds                           -> stage round
+write, draft, scaffold prose            -> stage section-edit
+edit, polish, weave, walk sections      -> stage section-edit
+rebuttal, reply, reviewers, response    -> stage round
+compile this paper, build broke         -> orchestrator fallback (compile is a door fn)
+citation, bibtex, references            -> stage section-edit (the citation craft lane)
   (NB: "every/each stage must compile a PDF" is the cross-cutting guard,
-   not a haipipe-paper-compile bug -> fallback, per resolve step 0)
+   not a compile-fn bug -> fallback, per resolve step 0)
 --------------------------------------------------------------------------
 NO MATCH  (cross-cutting discipline: Board/session tail, illuminate-every-stage,
           compile-pdf-every-stage, stage gate / user-confirm,
@@ -131,10 +133,10 @@ NO MATCH  (cross-cutting discipline: Board/session tail, illuminate-every-stage,
 ```
 
 When more than one keyword matches, prefer the MOST SPECIFIC (a `diagram`
-display complaint routes to `-display-diagram`, not `-display`). When the only
-signal is the active stage and the complaint is plainly cross-cutting, prefer
-the fallback over the stage skill (do not bury a spine-wide rule inside one
-stage).
+display complaint routes to `-display-diagram`, not the display stage). When the
+only signal is the active stage and the complaint is plainly cross-cutting,
+prefer the fallback over the stage inbox (do not bury a spine-wide rule inside
+one stage).
 
 ### One file per item (schema)
 
@@ -165,31 +167,29 @@ so the root is one level ABOVE the orchestrator folder, i.e. `…/skills/paper`,
 mapped folder not existing yet is expected, not an error.
 
 ```
-# The 8 lifecycle STAGES are one skill now. File by STAGE KEY, not skill name:
-seed                                1-lifecycle/haipipe-paper-stage/feedback/seed/
-resource                            1-lifecycle/haipipe-paper-stage/feedback/resource/
-claims                              1-lifecycle/haipipe-paper-stage/feedback/claims/
-venue                               1-lifecycle/haipipe-paper-stage/feedback/venue/
-pitch                               1-lifecycle/haipipe-paper-stage/feedback/pitch/
-narrative                           1-lifecycle/haipipe-paper-stage/feedback/narrative/
-display                             1-lifecycle/haipipe-paper-stage/feedback/display/
-section-edit                        1-lifecycle/haipipe-paper-stage/feedback/section-edit/
+# The 8 lifecycle STAGES file into their own stage data folders, by STAGE KEY:
+seed                                S01-opening/seed/feedback/
+venue                               S01-opening/venue/feedback/
+pitch                               S01-opening/pitch/feedback/
+resource                            S02-work/resource/feedback/
+claims                              S02-work/claims/feedback/
+narrative                           S02-work/narrative/feedback/
+display                             S05-display/display/feedback/
+section-edit                        S06-main/section-edit/feedback/
 
 # The four display RENDERERS moved out to the shared display/ bucket (2026-07-24)
 # and dropped the "paper" from their names; they keep their own inboxes:
 display-[table|figure|diagram|illustration]
                                     ../display/skills/haipipe-display-*/feedback/
 
-# Feedback filed before the 2026-07-20 cutover stayed with the retired skills:
-#   1-lifecycle/_old/<stage-dir>/haipipe-paper-<stage>/feedback/   (68 files; 19 still `status: open`)
-haipipe-paper-lifecycle             1-lifecycle/haipipe-paper-lifecycle/feedback/
-haipipe-paper-enter                 0-enter/haipipe-paper-enter/feedback/
-haipipe-paper-round                 0-enter/haipipe-paper-round/feedback/
-haipipe-paper-{scaffold,restructure,check,folder}        3-deliver/1-build/<skill>/feedback/
-haipipe-paper-{claim-audit,reviewer,optimizer}           3-deliver/2-audit/<skill>/feedback/
-haipipe-paper-polish                                     3-deliver/3-polish/haipipe-paper-polish/feedback/
-haipipe-paper-{compile,diffpdf,to-overleaf}              3-deliver/4-ship/<skill>/feedback/
-haipipe-paper-rebuttal              4-respond/haipipe-paper-rebuttal/feedback/
+# Feedback filed with skills retired to _old/ stays there as history
+# (_old/haipipe-paper-enter/, _old/haipipe-paper-lifecycle/, _old/haipipe-paper-stage/,
+#  _old/phase3-260806/ (the ex folder/conform/build/round skills), and the
+#  pre-2026-07-20 stage skills); never file NEW items into _old/.
+round, rebuttal                     S10-round/round/feedback/       (stage data folder)
+fn verbs (folder, conform, compile, diffpdf, to-overleaf, to-word, project)
+                                    haipipe-paper/feedback/   (the door's own fallback:
+                                    fn verbs are the door's internal steps)
 ORCHESTRATOR FALLBACK               haipipe-paper/feedback/   (this skill's own folder)
 ```
 

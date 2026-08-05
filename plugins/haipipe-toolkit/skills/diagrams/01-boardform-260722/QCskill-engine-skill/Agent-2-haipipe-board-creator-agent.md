@@ -304,6 +304,7 @@ duplicating each other's judgment.
 
 ## States
 It ran for the first time on 260802 and the fan-out worked: six fresh writers, six pages, no scope collision, and the shared writes stayed with the caller as designed.
+Its RUN producer half ran for the first time on 260805: the QB8e RUN dispatched this charter for both REVISE phases, as fresh-context `claude -p` subprocesses, and each produced version returned to a fresh judge with zero mechanical findings (receipt `_runs/page/QB8e/260805-0216-QB8e.json`).
 Its health is `🟡 in flux` because that first run also exposed two gaps it had no way to show while it had never run.
 
 - 260802 CC · 🧪 The first real fan-out, and what it proved
@@ -319,6 +320,7 @@ Its health is `🟡 in flux` because that first run also exposed two gaps it had
   Fixed at 0.4.0. JL found it by asking whether these agents call any skills.
 
 ## Log
+- 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the RUN producer half is no longer untried, the QB8e RUN exercised it for both REVISE phases as fresh-context claude -p subprocesses.
 260804 · Expanded the authored mirror from batch-only Page creation to the shared producer role: exactly one DRAFT, PROBE, or REVISE authority per RUN receipt, still with no rebuild or CHECK.
 260731 · The concurrency boundary was JL's ruling that day: the test is not whether a unit has its own trigger but whether a write touches a file another writer also touches
 260802 2100 · Synced to 0.4.0 and the authored half updated after its first real fan-out: six writers, six pages, no scope collision, three killed by a session limit after writing. The agent now loads `haipipe-board-page-for-skill` itself instead of depending on the caller naming it in the packet, which its own contract forbids

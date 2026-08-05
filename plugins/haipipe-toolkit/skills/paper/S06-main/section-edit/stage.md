@@ -34,10 +34,9 @@ units_from: 0-lifecycle/S02-work/S-Work-N-narrative.md
              # 0-lifecycle/S06-main/ (excluding z-structure/, which is the
              # architecture doc, not a manuscript section). Say which source you used.
 
-# ⚠️ ARGUMENT ORDER CHANGES on cutover — the section is no longer positional 1:
-#      old: /haipipe-paper-section-edit <section> <phase> [paper-path]
-#      new: /haipipe-paper-stage section-edit <section> <phase> [paper-path]
-#    Stage name is always positional 1 under the router; the section slides to 2.
+# ⚠️ ARGUMENT ORDER — the section is not positional 1:
+#      /haipipe-paper section-edit <section> <phase> [paper-path]
+#    The stage key is always positional 1 under the door; the section slides to 2.
 argument_hint: "<section> [draft|probe|revise|check] [paper-path]"
 
 needs_paper: true
@@ -54,6 +53,16 @@ artifact: 0-lifecycle/S06-main/S-{board_family}-{board_unit}-{board_slug}.md
                           # and `board_unit` are per-unit here, not per-stage: a unit's kind decides
                           # Main vs Appendix and its reader order decides the number or letter.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage section-edit
+                          # run by CHECK before judging; path relative to the skills root
+craft:                    # data files the DRAFT/REVISE/CHECK phases load after the type
+                          # contract (ex workers/); the three revise/check files live here
+  - ../../S03-literature/citation-craft.md
+  - ../../S04-value/values-craft.md
+  - ../../S05-display/display/draft-craft.md
+  - revise-place-craft.md
+  - revise-results-craft.md
+  - check-evidence-craft.md
 output: sections/*.tex   # GENERATED from the .md by sync; NEVER hand-authored
 template: <resolved per (venue, section_kind)>
           # PRINCIPLE (JL 2026-07-20): every (venue, kind) has its OWN template, summarized from
@@ -80,7 +89,7 @@ venue_read_first:         # DRAFT opens these BEFORE writing a sentence
   - "Structural Blueprint, THIS section's block — BINDING: subsections, ¶ per subsection,
      sentences per ¶, citation density, word budget, display limits"
   - "Writing Principles — advisory"
-section_kind: <one of the closed set in ../section-kinds.yml>
+section_kind: <one of the closed set in ../../haipipe-paper/stages/section-kinds.yml>
                                    # THIS section's kind: abstract · introduction · theory ·
                                    # related-work · methods · results · discussion · appendix ·
                                    # letter · significance. Which kinds EXIST is per-outlet —
@@ -134,7 +143,7 @@ formatting:
 displays: file-only       # JL ruling: this stage FILES a display request, it never CREATES one
 display_request: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md   # a DR row goes here; the units
                           # themselves come from displays/ and 0-lifecycle/S05-display/
-display_split: |          # BINDING, owned by ../4-display/stage.md (`display_split:`) — read it there.
+display_split: |          # BINDING, owned by ../../S05-display/display/stage.md (`display_split:`) — read it there.
   A DR row filed from here names BOTH halves of the unit, because they have different owners:
     `bank deliverable:`     the numbers — canonical source_data.csv + provenance, produced by the
                             TASK layer (haipipe-task-for-display); a paper stage never authors them.

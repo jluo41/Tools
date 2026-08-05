@@ -38,6 +38,8 @@ artifact_fallback: 0-lifecycle/0-seed/0-seed.md
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage seed
+                          # run by CHECK before judging; path relative to the skills root
 template: template.md
 
 exit_when: "not viable -> drop the paper"   # the stage's own failure exit
@@ -83,7 +85,7 @@ handoff: "on CHECK confirm, append the gate row to this stage's S page ## Log an
           There is no frontier to advance and none to protect: the frontier is DERIVED from each
           page's own `state:`, so a LOOPBACK — running seed again on a paper whose frontier is
           further along — simply records its gate and changes nothing else. That is what retiring
-          a derived frontier makes possible. See ../../../ref/08-stage-gate.md."
+          a derived frontier makes possible. See ../../haipipe-paper/ref/08-stage-gate.md."
 ---
 
 Seed — the craft

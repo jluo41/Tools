@@ -3,6 +3,12 @@ haipipe-display-illustration — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.2] — 2026-08-05
+
+- Scaffold dispatch line repointed: `haipipe-paper-stage` is retired
+  (thin-paper phase 2); the display S page is created via
+  `Skill("haipipe-paper", "display scaffold ...")`.
+
 ## [0.2.1] — 2026-07-27 — Caller-owned wrapper semantics
 
 - Requires an explicit Paper-approved caption and label when finalizing into a display unit.

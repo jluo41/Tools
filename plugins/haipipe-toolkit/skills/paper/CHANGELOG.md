@@ -5,6 +5,52 @@ Layer-scoped changelog for the paper (DELIVERY) layer. Newest first.
 Rollup lives in the plugin-level CHANGELOG.md.
 
 
+[2.5.0] -- 2026-08-06
+-----------------------
+
+Thin-paper PHASE 3 (JL ruling 260806): the paper family registers exactly ONE skill,
+`haipipe-paper` (0.6.0); everything else is data.
+
+### Changed
+
+- The nine remaining registered skills retired to `_old/phase3-260806/`:
+  `haipipe-paper-folder` and `haipipe-paper-conform` became the door's `fn/folder.md`
+  and `fn/conform.md` (checker at `haipipe-paper/scripts/check_structure.sh`); the five
+  S09-build skills (`haipipe-paper-compile`, `-diffpdf`, `-project`, `-to-overleaf`,
+  `-to-word`) became `fn/<verb>.md` door verbs with their toolkits under
+  `haipipe-paper/scripts/{diffpdf,project,to-word}/` and the diffpdf reference docs
+  under `haipipe-paper/ref/diffpdf/`; `haipipe-paper-round` and
+  `haipipe-paper-rebuttal` became the `round` STAGE (`S10-round/round/stage.md` +
+  `template.md`; per-unit, one dated round = one `S-Round-<n>-<vYYMMDD>.md` page;
+  `board_family: Round`) with `S10-round/rebuttal-craft.md` on the stage's `craft:` list.
+- `stages/index.yml` gained the round row (order "6", after section-edit; triggers:
+  round, rebuttal, 返修, reviewer response); `check-contracts.py` now covers 9 contracts.
+- References repointed across the live tree (paper/README.md, the door's ref/ files,
+  skills/STRUCTURE.md, project-structure.md, haipipe-application-round's description).
+  `diagrams/` boards left untouched for the main session.
+
+[2.4.0] -- 2026-08-05
+-----------------------
+
+Thin-paper PHASE 2 (QC6 ruled A; JL "go" 260805): the door fold and the workers dissolve.
+
+### Changed
+
+- `haipipe-paper` is THE one door (0.5.0). `haipipe-paper-stage`, `haipipe-paper-enter`,
+  and `haipipe-paper-lifecycle` are retired to `_old/`; their jobs are internal steps of
+  the door. `stages/`, `create-page.py`, `check-contracts.py`, `section-stats.py`, and
+  `ref/` moved into `haipipe-paper/`.
+- `workers/` is GONE (retired to `_old/workers/`). Page rules stay in `../board/`
+  (`page-phases/` own DPRC); the LaTeX craft became stage DATA files declared by each
+  stage.md `craft:` list (S03 `citation-craft.md`, S04 `values-craft.md`, S05
+  `draft-craft.md`, S06 `revise-place-craft.md` + `revise-results-craft.md` +
+  `check-evidence-craft.md`, S09 `proof-checker/` as a craft pack); the probe tooling
+  moved to `haipipe-paper/probe/` and its unique deltas merged into `fn/probes.md`;
+  `workers/REF/` moved to `haipipe-paper/ref/`.
+- Every stage.md gained a `checker:` line (`paper/haipipe-paper/probe/check-probe-cards.sh
+  --stage <key>`); the craft-consuming stages declare `craft:`. Board layer stays
+  family-blind: no LaTeX knowledge moved into `board/`.
+
 [2.3.0] -- 2026-07-21
 -----------------------
 

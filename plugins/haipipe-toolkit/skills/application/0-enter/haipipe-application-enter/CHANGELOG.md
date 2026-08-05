@@ -4,6 +4,12 @@ haipipe-application-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.2.4] — 2026-08-05
+
+- Mirror pointer updated: the Paper Console is now the `/haipipe-paper enter`
+  verb with its detail in `paper/haipipe-paper/ref/enter-console.md`
+  (haipipe-paper-enter retired in thin-paper phase 2).
+
 ## [0.2.3] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.3.1; older entries below keep their original numbers).

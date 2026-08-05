@@ -132,10 +132,14 @@ never author or judge.
   **Done when:** `state:` records a human judgment: stable, in flux, needs work, or parked.
 
 ## States
+The first live Page RUN executed this controller logic on 260805 against QB8e: the Workflow tool was unavailable, so the session emulated `page-lifecycle.workflow.js` verbatim, dispatched the producer and judge as fresh-context `claude -p` subprocesses, and played the mechanical builder itself under the actor name `orchestrator-mechanical-builder`.
+The run closed in five steps and one round, CHECK to REVISE to CHECK to REVISE to CHECK, on a final reviewer verdict of pass and route CLOSE; the receipt is `_runs/page/QB8e/260805-0216-QB8e.json`.
+
 ### P · Page-level health ruling
 - ⬜ P1 · Page generated 260804 2030; nothing ruled yet.
 
 ## Log
+- 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the first live RUN is on the record, 260805 on QB8e, closed in five steps on a final CHECK pass, with the session emulating the Workflow controller because the Workflow tool was unavailable.
 260804 2035 · Replaced the generated Opening and Diagram stubs with the Page-specific role boundary, reviewer comparison, trust condition, dispatched authorities, and durable receipt flow. Page health remains for JL to rule after fresh validation.
 260804 2030 · page generated from `board/agents/haipipe-board-page-orchestrator-agent.md/` by `skillpage.py new`
 

@@ -3,7 +3,7 @@ name: haipipe-board-page-for-literature
 description: >-
   The VARIANT contract for a LITERATURE topic Page: a topic page owning a `### Q-consumer register` whose questions face OUTWARD, toward published knowledge, with one probe entry page nested below probes/ per neutral executor question. It loads haipipe-board-page for the base frame and the shared topic-entry core for the anatomy, then adds only the outward route's translation layer: what a legal register row carries here, what a returned answer must become (a citation binding: a real key, a positioning sentence, a novelty verdict), and when the topic may close. Use when writing or fixing a Literature topic page, when a register row carries no positioning stake, when an answer landed but never became a citation record, or when a novelty claim rests on nothing traceable. Trigger: literature topic, literature page, S-Literature, discovery route, positioning, novelty, citation binding, related work evidence, /haipipe-board-page-for-literature.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-08-05"
   summary: "Close semantics moved to the core's Register-row states; the register carries the REQUIRED route: outward key; SUPPORTED means named sources stand behind the positioning, never an empty search."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -63,4 +63,4 @@ haipipe-board-page-for-literature/
 └── CHANGELOG.md        version history
 ```
 
-This folder holds prose only. The anatomy lives in `haipipe-board/ref/topic-entry-contract.md` and its checker in `haipipe-board/src/topic_entry_contract.py`; a literature question crosses to the discovery bank through `page-phases/haipipe-board-page-probe`. A question about what this project must PRODUCE, rather than what the field already holds, belongs on a `haipipe-board-page-for-value` page instead. The paper family's projection of the shape is `paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md`.
+This folder holds prose only. The anatomy lives in `haipipe-board/ref/topic-entry-contract.md` and its checker in `haipipe-board/src/topic_entry_contract.py`; a literature question crosses to the discovery bank through `page-phases/haipipe-board-page-probe`. A question about what this project must PRODUCE, rather than what the field already holds, belongs on a `haipipe-board-page-for-value` page instead. The paper family's projection of the shape is `paper/haipipe-paper/probe/topic-entry-contract.md`.

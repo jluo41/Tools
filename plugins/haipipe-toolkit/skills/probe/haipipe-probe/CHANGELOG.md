@@ -3,6 +3,12 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.11.3] — 2026-08-05 — paper projection repointed
+
+- The paper family's probe tooling moved from `paper/workers/haipipe-paper-probe/`
+  into the paper door: pointers and the checker test path now name
+  `paper/haipipe-paper/probe/` (thin-paper phase 2).
+
 ## [0.11.2] — 2026-08-04 — Probe is the concept
 
 - Canonicalizes the user-facing vocabulary as PROBE phase, lowercase probe exchange, and persisted Probe record or Probe Page.

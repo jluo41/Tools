@@ -4,8 +4,8 @@ description: "AI-illustration renderer of the display family: generate publicati
 argument-hint: "[description-or-method-file]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-07-27"
+  version: "0.2.2"
+  last_updated: "2026-08-05"
   summary: "AI-illustration renderer that uses a Display Intake for approved narrative context and facts."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -152,7 +152,7 @@ Render this checklist explicitly before starting:
 ```
 
 1. Resolve the target display unit (`displays/displayNN-slug/`); scaffold it via
-   `Skill("haipipe-paper-stage", "display scaffold ...")` if it does not exist.
+   `Skill("haipipe-paper", "display scaffold ...")` if it does not exist.
    Only when
    there is no paper, fall back to creating `figures/ai_generated/`.
 2. Confirm the request is suitable for a raster illustration:

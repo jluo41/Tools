@@ -4,8 +4,8 @@ description: "Quick project setup: create the container folders and stop. Two ki
 argument-hint: "[repo|new|feedback|digest] [Project-Name|args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-07-14"
+  version: "0.3.4"
+  last_updated: "2026-08-05"
   summary: "Project SETUP only: Project-* repo-backed submodules + ProjX-* plain dirs. Everything else moved out or retired. v3.2 syncs the container contract to the probe v3 model (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/, JL 2026-07-14): a task/discovery LEAF may carry an OPTIONAL QA/ folder (QA/<n>-<slug>.md — the executor's readable digest, numbering IS the index, on BOTH banks); the scaffold NEVER mints _ASK/ or _ANS/ (the bank is PROBE-UNAWARE: no PP ids, no answers: field); a consumer's evidence questions live in papers|applications/<X>/1-probes/PPNN_<topic>/ (renamed from 1-probe-plans/), bound to the bank BY PATH."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -39,7 +39,7 @@ Not this skill's job (where it lives instead):
 task-group / task-folder / run scaffolding   -> /haipipe-task   (task/)
 eval status scanning (scan-status)           -> /haipipe-task   (task/)
 workflow plan/report schema                  -> task/haipipe-workflow
-paper folders inside a project               -> /haipipe-paper-lifecycle folder
+paper folders inside a project               -> /haipipe-paper folder
 project audits / reorganization              -> retired; originals in project/_archive
 claims / evidence questions                  -> /haipipe-probe (a probe is a
                                                 paper-level file, papers/<P>/1-probes/PPNN_<topic>/

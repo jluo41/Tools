@@ -226,6 +226,56 @@ The queue in `§3` answered ⑤ as a possibility question, and every candidate p
 The cost of the shortcut is that a page can violate its type contract today and no build reports it.
 Recording the ten specs here means the next ✅ on ⑤ must name the rule it ships with, and A5 below holds the page open until then.
 
+### 6 · The Log pattern per type: same four authorities, different events
+
+**The grammar is QB4's and appears exactly once**: `- <date> [<time>] · [<PHASE>-<actor>] <what moved> [→ <pointer>]`, PHASE from DRAFT · PROBE · REVISE · CHECK, actor from the comment-protocol id table, bare `[<actor>]` legal only for meaning-preserving housekeeping, and doubt resolves to a phase tag (JL 260805, the "every change is one of D P R C" ruling).
+What a TYPE owns is none of that; a type owns which EVENTS its typed record makes worth a line.
+The rung, the binding, the selection are line TEXT; the authority stays one of four.
+
+#### 6.1 · for-stage, the full trace a stage page walks
+
+```text
+birth      [CC]        page created by create-page.py; shell only, and the Log
+                       section itself does not exist until this first line
+round 1    [DRAFT-CC]  round 1: promise set · Content scaffold authored · P-holes raised
+           [PROBE-CC]  P1 ⏳ → probes/L1-<topic>/<entry>.md   q-executor out, stake stays here
+           [PROBE-CC]  P1 answer landed: A-consumer written HERE, a-executor stays on the entry
+           [REVISE-CC] answer woven into Content; its [Q-<Stage>-1] bracket discharged
+           [CHECK-CC]  declared checker green + cold read → routes CLOSE
+           [CHECK-JL]  gate: state ✅ GATED
+maintain   [CC]        stage.py sync regenerated the managed span (meaning-preserving)
+reopen     [DRAFT-CC]  `requires:` changed, or a venue retarget: the promise moved, round 2 opens
+```
+
+PROBE is the one authority that legally writes two pages in one act, so its lines land on both: the focal page's line above, and the entry page's own `[PROBE-CC] dispatched, working since <date>` / `answered → <QA path>` pair.
+
+#### 6.2 · The other nine, one pattern line each
+
+```text
+for-venue      [REVISE-CC] desk fact updated, provenance stamped · [CHECK-JL] venue PINNED
+for-skill      [REVISE-CC] mirror synced to <skill> vX.Y.Z · [CHECK-JL] accepted at ship
+for-literature [DRAFT-CC] register row raised (the stake) · [PROBE-CC] entry ⏳ · [PROBE-CC]
+               citation binding written, row → SUPPORTED · [CHECK-CC] all rows terminal → CLOSE
+for-value      the same voice with the value binding: row → BOUND only when run, spec,
+               and QA paths resolve on disk
+for-display    the acceptance ladder IS the pattern: [DRAFT-CC] ① requested · [PROBE-CC]
+               ② sourced, producing run named · [REVISE-CC] ③ rendered · [CHECK-JL]
+               ④ accepted THIS render · [REVISE-CC] ⑤ placed · a re-render after ④ logs
+               [REVISE-CC] back to ③, because acceptance was of a render, not a name
+for-slide      for-display's ladder at beat grain: accept rows per beat, deck-wide gate last
+for-section    for-stage's trace PLUS the venue events: [DRAFT-CC] retarget rewrote the
+               venue contract block · [REVISE-CC] a landed binding reached its owing sentence
+for-meeting    [CC] spoken decision captured, not yet ruled · [REVISE-CC] routed → owning
+               page · [CHECK-CC] every decision line routed → CLOSE
+for-design     [DRAFT-CC] brief: audience + candidates A/B/C · [REVISE-CC] candidate B
+               rewritten · [CHECK-JL] SELECTION: B; A archived, C parked, dispositions on
+               the same line, and a losing division is never silently deleted
+```
+
+#### 6.3 · Where the patterns live
+Each `page-types/*/SKILL.md` gets a three-to-five line "Log pattern" block, EXAMPLES in that type's own vocabulary, never a restatement of the grammar; the grammar ships once, in the base's Log obligation.
+Execution rides the paused Log pass (grammar paragraph + renderer + the QB4 P-row trim), so A6 below holds this page open until the blocks exist.
+
 ## Aims
 
 - [x] 🗣 Is `for-slide` admitted: one page per deck, one Content DIVISION per slide, each embedding its rendered slide?
@@ -275,6 +325,10 @@ Recording the ten specs here means the next ✅ on ⑤ must name the rule it shi
 ### A5 · 🧾 The checker debt: ⑤ was claimed ten times and implemented three
 - A5.1 · Every ⑤ claim in the queue is backed by a shipped checker rule, or the coverage table in `§5` stays the admitted truth.
   **Done when:** `cli/check.py` implements the ten rules specced in `§5.1`, or each still-missing rule is re-marked in `§5` with the reason it waits.
+
+### A6 · 📜 The Log pattern per type: same four authorities, different events
+- A6.1 · Every type contract carries its own "Log pattern" block, examples in its vocabulary, with the grammar stated once in the base.
+  **Done when:** the base's Log obligation carries the `[PHASE-actor]` grammar and all ten `page-types/*/SKILL.md` carry a pattern block matching `§6`.
 
 ## States
 
@@ -331,6 +385,9 @@ Recording the ten specs here means the next ✅ on ⑤ must name the rule it shi
 ### A5 · 🧾 The checker debt: ⑤ was claimed ten times and implemented three
 - ⬜ A5.1 · Recorded 260805; the ten rules are specs only, and the coverage table in `§5` states what the checker holds today: one real coverage, two partials, the topic anatomy, and meeting's counting exemption.
 
+### A6 · 📜 The Log pattern per type: same four authorities, different events
+- ⬜ A6.1 · Specced 260805 in `§6` on JL's ask ("could we have each page type and how the logging patterns will change along the way"); no contract carries a pattern block yet, and execution rides the paused Log pass.
+
 ## Files
 
 ### Contracts
@@ -343,7 +400,7 @@ Recording the ten specs here means the next ✅ on ⑤ must name the rule it shi
 ### Input files
 
 - `QB-delivery/QB5-page-loop.md` · the Type-against-Phase axis split and the admission law this page extends
-- `../../../paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md` · the paper projection showing what a family layer adds
+- `../../../paper/haipipe-paper/probe/topic-entry-contract.md` · the paper projection showing what a family layer adds (moved 260805, thin-paper phase 2)
 
 ### Checks
 
@@ -352,6 +409,7 @@ Recording the ten specs here means the next ✅ on ⑤ must name the rule it shi
 
 ## Log
 
+- 260806 0100 · [DRAFT-CC] §6 opened with A6: the per-type Log patterns, on JL's ask; for-stage's full trace in §6.1, the nine others in §6.2, the placement rule (examples in each type contract, grammar once in the base) in §6.3. The QB4-owned grammar and the paused Log pass are cited, not restated; the dead workers/ path in Input files repointed to paper/haipipe-paper/probe/ (phase 2 move).
 260805 · The checker debt recorded as `§5` with its own Aim (A5.1, ⬜). The admission test's ⑤ was answered ✅ for every candidate, while the checker actually ships one real coverage (for-skill's managed spans), two partials (the stage contract span + hash, the slide embed-as-figure rule), the topic anatomy only, and meeting's counting exemption; venue, display, design, and section have nothing. The ten missing rules are specced one line each in `§5.1`, type resolution first. The same review pass landed across the contracts: the base's one resolution table for all types (0.20.0) with the REQUIRED `route:` register line and `page-type:` frontmatter keys, the core's new Register route line and Register-row states sections, the topic pair de-parallelized into their own voices (0.2.0 each), and patch fixes on section, display, design, slide, and stage.
 260805 · `for-design` RULED A and built the same day. JL's definition decided it: the page is the brief, and the Content divisions ARE the different messages, one per candidate carrying the artifact, its rationale, and its fit to the brief's criteria. The contract ships at `page-types/haipipe-board-page-for-design` 0.1.0 and the base at 0.19.0 with a ten-variant table. It sits UPSTREAM of `for-display`, design selecting the candidate and display accepting its render; the page closes on a SELECTION record naming the winner, why, and each loser's disposition (dropped · kept for A/B test · merged), and a losing division is never silently deleted.
 260805 · `for-slide`'s embed rule CORRECTED by its first real page. JL rejected the PNG design ("plase try it yourself... you will embed the html in the content division") and demanded proof over discussion. Built `QA4` on this board: seven divisions, each embedding the ONE deck file live via html-ppt's `?preview=N` single-slide mode, verified by driving a real Chrome (slides render live in the divisions; a click plus ArrowRight flips the bare deck). The 0.1.0 premise "`build.py` strips JS" was FALSE: the build only asserts pages read with scripts off, and never touches an iframe's file. Contract at 0.2.0 with the wrong premise recorded in place; the engine gained `![alt](x.html)` live-iframe embeds (`src/body.py`), an existence-based reroot for authored html (`src/page_board.py`), and media-embed-counts-as-figure in `cli/check.py`.

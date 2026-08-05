@@ -38,6 +38,11 @@ artifact_fallback: 0-lifecycle/S02-work/1b-claims.md
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage claims
+                          # run by CHECK before judging; path relative to the skills root
+craft:                    # data files DRAFT loads after the type contract (ex workers/)
+  - ../../S03-literature/citation-craft.md
+  - ../../S04-value/values-craft.md
 template: template.md
 
 exit_when: "claim unsupported/too strong, no route"   # the stage's own failure exit

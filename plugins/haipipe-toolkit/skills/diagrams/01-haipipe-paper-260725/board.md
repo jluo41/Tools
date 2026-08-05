@@ -153,6 +153,7 @@ QA7-the-paper-board.md
 QA8-owning-the-shared-page.md
 QA9-driving-work-from-a-page.md
 QA10-the-writing-layer.md
+QA11-the-full-walk.md
 
 ### QB · Delivery
 What one paper must give its reader or collaborator, in reader order and uninterrupted. QB1 through QB10 are the ten concerns, and reading them top to bottom is the paper.
@@ -208,7 +209,7 @@ QBe3-content-latex-word-display.md
 One page per VENUE TARGET, and nothing above it. A page is a specific journal, agency, or patent office: what that desk accepts, what it desk-rejects, and what it requires of every section and of the appendix. `QB1` ruled on 260729 that the venue DECISION lives inside Opening and that ruling stands: this group is not an eleventh Delivery concern, it is the catalog Opening reads to make that decision and that four other concerns read afterwards.
 A venue cuts across Delivery, which is why it cannot be filed under any single concern. Every `playbook-*/README.md` carries four stage maps: rewards land on QB4 Value, display conventions on QB5 Display, the section arc on QB6 Main, and the language profile on QBe3 §3.
 
-**The law this group runs on**, absorbed from the retired `QBv0` on 260802: a venue pack is READ and never written by this plugin. The packs are their own repository, `jluo41/Venue-Paper`, pinned as a submodule at `paper/venue/`, so every paper stage is a reader by construction. A pack answers at two levels, family and outlet, and a file missing from either level is a missing answer rather than a missing folder. Two files sit at different levels depending on the pack: `taste.md` and `examples/` are per-outlet for the eleven multi-outlet journals and per-family for PNAS, grant, and patent, and that split is declared nowhere. `../../paper/haipipe-paper-stage/stages/section-kinds.yml` is the reader-side resolver: it maps outlet to section kinds, aliases `theory-model` to `theory`, rules that a pack path is reached by GLOB and never by concatenation, and declares grant and patent blueprint-only by design.
+**The law this group runs on**, absorbed from the retired `QBv0` on 260802: a venue pack is READ and never written by this plugin. The packs are their own repository, `jluo41/Venue-Paper`, pinned as a submodule at `paper/venue/`, so every paper stage is a reader by construction. A pack answers at two levels, family and outlet, and a file missing from either level is a missing answer rather than a missing folder. Two files sit at different levels depending on the pack: `taste.md` and `examples/` are per-outlet for the eleven multi-outlet journals and per-family for PNAS, grant, and patent, and that split is declared nowhere. `../../paper/haipipe-paper/stages/section-kinds.yml` is the reader-side resolver: it maps outlet to section kinds, aliases `theory-model` to `theory`, rules that a pack path is reached by GLOB and never by concatenation, and declares grant and patent blueprint-only by design.
 
 ```text
 ⚙️ ENGINE                      📋 PAGES · the working record          📂 FOLDER
@@ -272,19 +273,6 @@ skillpage.py new / sync     ◀── Skill-0–5 · 12–14  the paper family  
 three managed spans         ◀── Skill-6 · 8–11  the Board substrate  ──▶  skills/board/ · writing/
 ```
 Skill-0-haipipe-paper.md
-Skill-1-haipipe-paper-lifecycle.md
-Skill-2-haipipe-paper-stage.md
-Skill-3-haipipe-paper-draft.md
-Skill-4-haipipe-paper-probe.md
-Skill-5-haipipe-paper-revise.md
-Skill-12-haipipe-paper-enter.md
-Skill-13-haipipe-paper-check.md
-Skill-14-haipipe-paper-round.md
-Skill-6-haipipe-board.md
-Skill-8-haipipe-board-page.md
-Skill-9-haipipe-board-sentence.md
-Skill-10-haipipe-board-routing.md
-Skill-11-haipipe-writing.md
 
 ### QF · Execute
 What actually ran. Each record names its Delivery target, Engine route, fixture, observable gate, non-write boundary, receipt, and failure-to-reopen path.
@@ -320,18 +308,18 @@ QE0                QF-execute/QF1-execution-map.md
 QE1                QF-execute/QF2-contract-run.md
 QE2                QF-execute/QF3-fresh-agent-run.md
 Q-Skill-haipipe-paper          QCskill-engine-skill/Skill-0-haipipe-paper.md
-Q-Skill-haipipe-paper-lifecycle QCskill-engine-skill/Skill-1-haipipe-paper-lifecycle.md
-Q-Skill-haipipe-paper-stage    QCskill-engine-skill/Skill-2-haipipe-paper-stage.md
-Q-Skill-haipipe-paper-draft    QCskill-engine-skill/Skill-3-haipipe-paper-draft.md
-Q-Skill-haipipe-paper-probe    QCskill-engine-skill/Skill-4-haipipe-paper-probe.md
-Q-Skill-haipipe-paper-revise   QCskill-engine-skill/Skill-5-haipipe-paper-revise.md
-Q-Skill-haipipe-board          QCskill-engine-skill/Skill-6-haipipe-board.md
+Q-Skill-haipipe-paper-lifecycle _archive/QCskill-retired-260806/Skill-1-haipipe-paper-lifecycle.md
+Q-Skill-haipipe-paper-stage    _archive/QCskill-retired-260806/Skill-2-haipipe-paper-stage.md
+Q-Skill-haipipe-paper-draft    _archive/QCskill-retired-260806/Skill-3-haipipe-paper-draft.md
+Q-Skill-haipipe-paper-probe    _archive/QCskill-retired-260806/Skill-4-haipipe-paper-probe.md
+Q-Skill-haipipe-paper-revise   _archive/QCskill-retired-260806/Skill-5-haipipe-paper-revise.md
+Q-Skill-haipipe-board          _archive/QCskill-retired-260806/Skill-6-haipipe-board.md
 Q-Skill-haipipe-board-index    _archive/Skill-7-haipipe-board-index.md
 Skill-7              _archive/Skill-7-haipipe-board-index.md
-Q-Skill-haipipe-board-page     QCskill-engine-skill/Skill-8-haipipe-board-page.md
-Q-Skill-haipipe-board-sentence QCskill-engine-skill/Skill-9-haipipe-board-sentence.md
-Q-Skill-haipipe-board-routing  QCskill-engine-skill/Skill-10-haipipe-board-routing.md
-Q-Skill-haipipe-writing        QCskill-engine-skill/Skill-11-haipipe-writing.md
+Q-Skill-haipipe-board-page     _archive/QCskill-retired-260806/Skill-8-haipipe-board-page.md
+Q-Skill-haipipe-board-sentence _archive/QCskill-retired-260806/Skill-9-haipipe-board-sentence.md
+Q-Skill-haipipe-board-routing  _archive/QCskill-retired-260806/Skill-10-haipipe-board-routing.md
+Q-Skill-haipipe-writing        _archive/QCskill-retired-260806/Skill-11-haipipe-writing.md
 Legacy-QB1          QC-engine/QC2-stage-contract.md
 Legacy-QB2          QC-engine/QC3-page-contract.md
 Legacy-QB2a         QC-engine/QC3a-page-template.md

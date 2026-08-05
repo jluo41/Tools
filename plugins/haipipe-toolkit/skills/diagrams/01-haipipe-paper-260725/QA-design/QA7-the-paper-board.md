@@ -1,6 +1,6 @@
 # The paper board: a control plane nothing leaves
 
-state: 🟡 PARTIAL · the frontier and the gate meaning are ruled and measured; the Round family is not built and the rule reaches no worker
+state: 🟡 PARTIAL · the frontier and the gate meaning are ruled and measured; the Round family shipped (260806) and the record-versus-control-plane rule still reaches no worker
 owner: JL
 method: one S page per independently gated unit, state read off the pages, and no second pointer anywhere
 
@@ -36,7 +36,7 @@ The frontier is read, and every attempt to store it has ended by disagreeing wit
 
 ## Diagram
 
-**The execution pipeline**: eight families, and the edges that are real.
+**The execution pipeline**: the S families, and the edges that are real. (On disk the pages sit in the ten `S01-opening/` … `S10-round/` group folders.)
 
 ```text
  S-Seed 0,1          why this paper can exist, and where it sits
@@ -89,8 +89,9 @@ The frontier is read, and every attempt to store it has ended by disagreeing wit
     🎯 Aims               that unit's queue
     🚦 state:             where the unit actually is
 
- 🗂 EIGHT FAMILIES   Seed · Work · Venue · Display · Main · Appendix
-                     · Submission · Round
+ 🗂 THE FAMILIES     Open · Seed · Work · Venue · Literature · Value ·
+                     Display · Main · Appendix · Submission · Round
+                     (the eleven in the board's FAMILIES list)
  📇 family order makes the index scannable; the pipeline holds the real edges
  🚫 nothing here empties on ✅, because the Content IS the paper
 ```
@@ -155,7 +156,7 @@ The one predicate that failed was a defect introduced the same morning: a `venue
  applied.md                    ━▶ that is what a passed gate records
  latest.md                     ━▶ 🚨 A STORED FRONTIER POINTER
 
- ✅ one S-Round page per round, in 0-lifecycle/7-round/
+ ✅ one S-Round page per round, in 0-lifecycle/S10-round/
  📎 reviewer letters, decision letters and the submitted PDF sit BESIDE it
  🚫 four pages per round was considered and rejected: it would dissolve
     S-Submission for a distinction nobody has needed
@@ -171,7 +172,7 @@ The other four were merely redundant; this one was the frontier written down in 
 #### 3.2 · The received artifacts follow the page
 (one round, one place)
 Reviewer letters, decision letters and the submitted PDF sit beside `S-Round-<n>-<vYYMMDD>.md`, and `1-rounds/` is retired as a top-level container.
-This differs from Display, whose S pages and rebuild workspace stay under `0-lifecycle/3-display/` while only the journal-facing `float.tex` and selected assets project out.
+This differs from Display, whose S pages and rebuild workspace stay under `0-lifecycle/S05-display/` while only the journal-facing `float.tex` and selected assets project out.
 
 ### 4 · Every edge runs through a page
 
@@ -184,8 +185,9 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
           and page grammar, Paper owns the Content jobs
  ⑧ ━▶ ⑦  OUT, by generation only. An S page's Content IS the section, and
           sections/*.tex is produced FROM it. md to tex, never back
- ⑧ ━▶ 🧱 OUT, through the page. A Q-consumer block becomes an entry in ⑦'s
-          1-probes/, and the landed answer returns to the sentence that owes it
+ ⑧ ━▶ 🧱 OUT, through the page. A Q-consumer becomes an entry under the
+          owning S03/S04 topic's probes/, and the landed answer returns to
+          the sentence that owes it
  ⑧ ━▶ ②  🚫 NOTHING. This board never writes to a design board
 ```
 
@@ -207,7 +209,7 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
 
 ### A3 · 🔁 Rounds are pages, and what that replaced
 - A3.1 · One S page per round, with its received artifacts beside it.
-  **Done when:** `0-lifecycle/7-round/` exists, the `S-Round` family is in the board's family list, and `1-rounds/` is scaffolded by nothing.
+  **Done when:** `0-lifecycle/S10-round/` exists, the `S-Round` family is in the board's family list, and `1-rounds/` is scaffolded by nothing.
 - A3.2 · No shipped skill still describes the layer this ruling removed.
   **Done when:** `haipipe-paper-round` no longer owns a five-file `1-rounds/` contract with a `latest.md`.
 
@@ -226,8 +228,8 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
 - ✅ A2.1 · Measured 260726 against the MISQ paper's 40 S faces: every predicate resolves and the frontier lands correctly. `STATUS.md` is retired and `latest.md` never shipped.
 
 ### A3 · 🔁 Rounds are pages, and what that replaced
-- ⬜ A3.1 · Not built. The ruling landed on 260726 and `0-lifecycle/7-round/` plus the `S-Round` family entry are still owed.
-- ⬜ A3.2 · Not started. `haipipe-paper-round` still owns the superseded contract, so a worker following it today would recreate exactly what the ruling removed.
+- 🔨 A3.1 · Mostly built. `Round` is in the board's `FAMILIES` list, the live paper carries `0-lifecycle/S10-round/` with its round-delivery register, and nothing scaffolds `1-rounds/`; the first `S-Round` page itself arrives with the first live round.
+- ✅ A3.2 · Closed by retirement plus replacement: `haipipe-paper-round` retired to `_old/phase3-260806/` (phase 3, ruled 260806, executing; `QC6` Log), and the round contract is now `S10-round/round/stage.md` data, which carries one page per round and no `latest.md`.
 
 ### P · 🏁 Page-level
 - ⬜ P1 · Never run.
@@ -237,8 +239,8 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
 ### 📋 Contracts · what CARRIES a rule to other pages
 - `../../board/haipipe-board/SKILL.md`
   The S-family grammar a paper board follows, owned by `③` and consulted here.
-- `../../paper/haipipe-paper-stage/`
-  The stage runner and its eight contracts, which is where `A1.3` must land for a worker to see it.
+- `../../paper/haipipe-paper/`
+  The one door and its stage contracts (`stages/index.yml` resolving one `stage.md` per run), which is where `A1.3` must land for a worker to see it.
 
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `../../board/haipipe-board/cli/check.py`
@@ -268,6 +270,8 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
 - **The frontier**: the earliest page in pipeline order whose gate has not passed, always derived and never stored.
 
 ## Log
+
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the Round rows closed against `FAMILIES` and `S10-round/round/` stage data, and the runtime folder names moved to the S01-S10 groups.
 
 260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into four divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Two dead `## Files` paths repaired.
 

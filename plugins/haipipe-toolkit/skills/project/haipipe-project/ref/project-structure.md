@@ -136,6 +136,6 @@ For anything below the top level, consult the owner; this file never restates th
   --------------  -----------------------  --------------------------------------------------------------------------
   tasks/          /haipipe-task            task/haipipe-task/ref/task-structure.md (layout), plus ref/hierarchy.md + ref/authoring-conventions.md
   discoveries/    /haipipe-discovery       discovery/haipipe-discovery/SKILL.md (folder contract: discovery.yaml + evidence files)
-  papers/         /haipipe-paper-*         paper wiki (paper/wiki/) + paper/3-deliver/1-build/haipipe-paper-folder (paper-folder contract)
+  papers/         /haipipe-paper           paper/haipipe-paper/fn/folder.md (paper-folder contract) + paper/haipipe-paper/ref/paper-folder-anatomy.md
   applications/   /haipipe-application-*   application/_audience/audience-requirements.md + the venue playbooks under application/_venue/
   diagram/        this skill               this file (Project-Level diagram/ section above)

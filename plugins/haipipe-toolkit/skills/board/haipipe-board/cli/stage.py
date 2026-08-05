@@ -248,7 +248,10 @@ def dependency_order(targets, by_id):
 def add_to_pages(board, group, filename):
     path = board / "board.md"
     text = path.read_text(encoding="utf-8")
-    heading = re.search(rf"^###\s+{re.escape(group)}\s*$", text, re.M)
+    # Exact match first (legacy "### S-Open" headings), then the group token as
+    # the heading's first word ("### S01 · Delivery Opening", the 260803 grammar).
+    heading = re.search(rf"^###\s+{re.escape(group)}\s*$", text, re.M) \
+        or re.search(rf"^###\s+{re.escape(group)}\b[^\n]*$", text, re.M)
     if not heading:
         raise SystemExit(f"Pages group not found: {group}")
     next_heading = re.search(r"^###\s+", text[heading.end():], re.M)

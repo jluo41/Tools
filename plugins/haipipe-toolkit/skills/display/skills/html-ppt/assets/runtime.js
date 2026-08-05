@@ -37,11 +37,55 @@
     return m ? parseInt(m[1], 10) - 1 : -1;
   }
 
+  /* preview=5-7 → [4, 6]: a RANGE preview, rendered as a vertical strip of
+   * those slides, each at 16:9 of the frame width. Single previews return
+   * null here and keep the original path below. */
+  function getPreviewRange() {
+    const m = /[?&]preview=(\d+)-(\d+)/.exec(location.search || '');
+    if (!m) return null;
+    const a = parseInt(m[1], 10) - 1;
+    const b = parseInt(m[2], 10) - 1;
+    return b > a ? [a, b] : null;
+  }
+
   ready(function () {
     const deck = document.querySelector('.deck');
     if (!deck) return;
     const slides = Array.from(deck.querySelectorAll('.slide'));
     if (!slides.length) return;
+
+    const previewRange = getPreviewRange();
+    if (previewRange) {
+      /* ===== Range preview: slides a..b as a vertical strip ===== */
+      const [a, b] = [Math.max(0, previewRange[0]),
+                      Math.min(slides.length - 1, previewRange[1])];
+      document.documentElement.setAttribute('data-preview', '1');
+      document.body.setAttribute('data-preview', '1');
+      document.body.style.height = 'auto';
+      document.body.style.overflow = 'auto';
+      deck.style.height = 'auto';
+      deck.style.overflow = 'visible';
+      slides.forEach((s, j) => {
+        const inRange = j >= a && j <= b;
+        /* explicit 'flex', not '': an empty inline display would let any
+         * stylesheet rule (e.g. a deck's :target fallback) hide a strip
+         * member, which is exactly how each beat showed one slide + blank. */
+        s.style.display = inRange ? 'flex' : 'none';
+        if (inRange) {
+          s.classList.add('is-active');
+          s.style.opacity = '1';
+          s.style.transform = 'none';
+          s.style.pointerEvents = 'auto';
+          s.style.position = 'relative';
+          s.style.width = '100vw';
+          s.style.height = 'calc(100vw * 9 / 16)';
+          if (j < b) s.style.borderBottom = '1px solid rgba(127,127,127,.25)';
+        }
+      });
+      const hideSel = '.progress-bar, .notes-overlay, .overview, .notes, aside.notes, .speaker-notes';
+      document.querySelectorAll(hideSel).forEach(el => { el.style.display = 'none'; });
+      return;
+    }
 
     const previewOnlyIdx = getPreviewIdx();
     const isPreviewMode = previewOnlyIdx >= 0 && previewOnlyIdx < slides.length;

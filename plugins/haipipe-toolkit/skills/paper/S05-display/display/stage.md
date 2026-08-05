@@ -41,8 +41,11 @@ generated: 0-lifecycle/S05-display/4-display.tex        # gallery, rebuilt whole
 compiled: 0-lifecycle/S05-display/4-display.pdf         # compile from the PAPER ROOT so displays/ paths resolve
 inbox: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md      # DR rows other stages file; only THIS stage advances their status
 units: displays/displayNN-<slug>/                   # README + intake/ + recipe/ + float.tex + preview + assets/ candidates/ versions/
-intake_contract: ../../../../../display/ref/display-intake-contract.md
+intake_contract: ../../../display/ref/display-intake-contract.md
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage display
+                          # run by CHECK before judging; path relative to the skills root
+craft: [draft-craft.md]   # data file DRAFT loads after the type contract (ex workers/)
 template: template.md
 support: [figure-logic.md, checklist.md]
 
@@ -95,9 +98,9 @@ exit_when: "display cannot support claim"   # the stage's own failure exit
 # Display is the ONLY stage that hands units to workers; the four renderers stay
 # independently registered skills, invoked by name, and are NOT part of this contract.
 commissions: [haipipe-display-table, haipipe-display-figure, haipipe-display-diagram, haipipe-display-illustration]
-worker_contract: ../../../4-display/ref/paper-adapter.md
-                 # RELOCATED 2026-07-20. The four renderer skills read it as ../ref/…
-                 # from their own folders; all 12 paths rewritten.
+worker_contract: ../ref-display/ref/paper-adapter.md
+                 # RELOCATED 2026-07-20 (path updated 2026-08-05 for the SNN layout).
+                 # The four renderer skills read it from their own folders.
 
 # VENUE-ALIGNED. Read the pinned venue contract BEFORE proposing any display:
 #   0-lifecycle/S01-opening/S-Venue-0-venue.md

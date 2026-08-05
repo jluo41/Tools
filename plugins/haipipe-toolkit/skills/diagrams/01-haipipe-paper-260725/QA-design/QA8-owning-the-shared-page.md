@@ -23,9 +23,9 @@ Scope: This page covers What each skill may write on a shared page, which declar
  │   inherited requirements + GATE STATES  ◄ ③ GENERATED,       │
  │ <!-- haipipe:contract:end -->             will be OVERWRITTEN│
  │                                                              │
- │ ## Question · Boundary                 ◄ ① PAPER  substance  │
+ │ ## Opening                             ◄ ① PAPER  substance  │
  │ ## Content     the stage's actual PRODUCT                    │
- │ ## Items to Finish · Where we are      DRAFT and REVISE write│
+ │ ## Aims · States                       DRAFT and REVISE write│
  │                                        CHECK rules           │
  │ …the human, anywhere, any time. It is plain markdown, and    │
  │  that is the whole reason this shape was chosen.             │
@@ -80,7 +80,7 @@ The alternative was an adapter: the paper skill writes its own format, the board
 #### The ownership line as it actually stands
 ```
  /haipipe-paper   the page's SUBSTANCE
-                  Question · Boundary · Content · Items to Finish · Where we are
+                  Opening · Content · Aims · States
                   written by DRAFT and REVISE, ruled at CHECK
 
  /haipipe-board   the page's FURNITURE and the machine-managed block
@@ -105,8 +105,8 @@ Content is not the Board's description of a stage, its inherited contract, its q
 ```
 Stage Contract     inherited requirements, venue rules, writing style
 Content            this stage's actual product
-Items to Finish    work still owed before the gate
-Where we are       settled corrections and present state
+Aims               work still owed before the gate
+States             settled corrections and present state
 ```
 
 Different stages produce different things. For Section, Content is the section itself. For Display, Content is the visual argument, candidate judgment, caption job, and stable unit meaning. Rendered assets and source files are linked artifacts, not a replacement for Content.
@@ -265,27 +265,27 @@ One consequence, stated rather than discovered later: the delete-test needs a bo
 Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Every division, item and Law below is the original's, unchanged; only the framing above is new.
 
 ## Files
-- `stages/*/stage.md`
+- `../../paper/S01-opening/seed/stage.md` (and its sibling stage contracts, resolved via `haipipe-paper/stages/index.yml`)
   Where the ownership line should be stated.
 - `haipipe-board/src/stage_contract.py`
   The only writer of the managed block.
 - `../../paper/S06-main/section-edit/stage.md`
   Four of five inputs archived.
-- `0-lifecycle/4-main/S-Main-6-results.md`
+- `0-lifecycle/S06-main/S-Main-6-results.md`
   The same dependencies, generated, with gate states.
-- `PHILOSOPHY.md`
-  The frontier and maturity axes.
+- `../../paper/haipipe-paper/ref/paper-folder-anatomy.md`
+  The frontier and maturity axes (the retired `PHILOSOPHY.md`'s surviving home).
 - `0-lifecycle/board.md`
   Carries the ruling in its Topic and Pipeline.
-- `stages/*/template.md`
+- `../../paper/S01-opening/seed/template.md` (one per stage folder)
   The disciplinary half of what a new page needs.
-- `haipipe-board/stage.py`
+- `haipipe-board/cli/stage.py`
   The board half, currently writing a generic stub.
 - `create-page.py`
   The public composition path; Board shell first, selected stage scaffold second.
 - `haipipe-board/src/dialect_paper.py`
   The only paper-aware module in the Board.
-- `haipipe-board/build.py`
+- `haipipe-board/cli/build.py`
   The guarded import and the declaration check.
 - `haipipe-board/src/body.py`
   The mechanism half: `cite_chips()` and the code-span guard.
@@ -298,5 +298,7 @@ Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Ever
 - **The board runs paper code: where is that boundary.** - Dialect code may hold grammar and resolution. Rendering, invariants and file writing stay with the Board. - A dialect is DELETABLE: the board must build without it, and boards that do not declare it must render byte-identical. - A dialect is opted into by a declaration on the board, never by detection.
 
 ## Log
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the shared-page section names moved to their post-rename forms (Opening, Aims, States) and the Files paths to the live SNN stage folders and `cli/` tools.
+
 260726 · Merged from five faces that each ruled one seam of the `①`/`③` joint. Every division, item and Law is the original's. Seam labels were renumbered to `SEAM n` after a board-wide glyph sweep collided them with the folder numbers.
 260801 · Added the Paper-writing dialect boundary: Board owns reusable page mechanics; QC3/QC5 own the Paper section, paragraph, sentence, and evidence requirements that use them.

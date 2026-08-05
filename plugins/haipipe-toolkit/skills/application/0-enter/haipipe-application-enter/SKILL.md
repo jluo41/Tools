@@ -4,15 +4,15 @@ description: "Open the Intervention Console for an intervention folder. Use for 
 argument-hint: "[intervention-path] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "0.2.3"
-  last_updated: "2026-07-19"
+  version: "0.2.4"
+  last_updated: "2026-08-05"
   summary: "Intervention Console (mirrors the Paper Console): resolve the intervention root, derive state from disk (not stored status), render an open-needs dashboard (frontier + maturity + venue/audience + claim/display/round gaps + releasable probes + loopback), record session state in .intervention-console.yaml, and route free-form follow-up through the lifecycle in copilot mode. Get-or-create scaffolds a missing path (confirm-gated). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # haipipe-application-enter (Intervention Console)
 
-Open a concrete intervention folder as the **Intervention Console**: a context-aware working session for one active intervention. It mirrors the Paper Console (`../../../paper/0-enter/haipipe-paper-enter/`).
+Open a concrete intervention folder as the **Intervention Console**: a context-aware working session for one active intervention. It mirrors the Paper Console (the `/haipipe-paper enter` verb, `../../../paper/haipipe-paper/ref/enter-console.md`).
 
 The console:
 

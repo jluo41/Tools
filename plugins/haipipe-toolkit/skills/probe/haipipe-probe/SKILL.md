@@ -3,8 +3,8 @@ name: haipipe-probe
 description: "The shared probe model: a consumer-level Q/A map that binds a neutral q-executor by PATH to a QA file in the probe-unaware task/discovery bank. Consumer families own their persisted Probe record or Page and local overlay; this skill owns stake stripping, the five-step loop, bank independence, and the QA evidence boundary. Trigger: probe, q-executor, a-consumer, QA file, qa verb, state, evidence, /haipipe-probe."
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "0.11.2"
-  last_updated: "2026-08-04"
+  version: "0.11.3"
+  last_updated: "2026-08-05"
   summary: "Canonical user-facing vocabulary is PROBE, probe, and Probe record or Page; entry remains only a legacy implementation label."
 ---
 
@@ -12,7 +12,7 @@ metadata:
 > skill owns the crossing: stake stripping, MATCH-before-DISPATCH, and the
 > bank's independent QA evidence. A consumer skill owns its page path, direct
 > consumer register, Probe headings, and local state overlay. For Paper, read
-> `paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md` before
+> `paper/haipipe-paper/probe/topic-entry-contract.md` before
 > authoring a Probe Page; it defines the S03 Literature and S04 Value runtime shape.
 
 **Canonical lifecycle vocabulary, ruled 260804:** PROBE is the Page phase, a
@@ -385,7 +385,7 @@ Pointers
 
 ```text
    spec + rationale (why it is built this way)  → ../../diagrams/01-probe-qa-260726/
-   the PROBE-phase workers that run the loop     → ../../paper/workers/haipipe-paper-probe/
+   the paper family's probe tooling               → ../../paper/haipipe-paper/probe/
                                                    ../../application/2-phase/1-probe/haipipe-application-probe/
    the question-level collector agent (②③④,       → ../agents/haipipe-probe-q-executor-agent.md
      stake-free, shared, isolated context)

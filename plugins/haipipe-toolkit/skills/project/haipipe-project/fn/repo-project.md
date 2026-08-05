@@ -120,7 +120,7 @@ Each paper is a submodule OF THE PROJECT, one level down. Same recipe relative t
 gh repo create <org>/Paper-<X>-<Venue> --private            # paper may use a different owner
 cd examples/<Project-Name>
 git submodule add git@github.com:<org>/Paper-<X>-<Venue>.git papers/Paper-<X>-<Venue>
-# scaffold the paper folder via /haipipe-paper-lifecycle folder, commit, push
+# scaffold the paper folder via /haipipe-paper folder, commit, push
 ```
 
 The paper's URL goes into the PROJECT's `.gitmodules`. The workspace never lists it.
@@ -144,4 +144,4 @@ Report
 -------
 
 Print: repo URL, submodule path, scaffold tree, and next steps:
-`/haipipe-paper-lifecycle folder <paper-path>` (first paper) or `/haipipe-task` (first task-group).
+`/haipipe-paper folder <paper-path>` (first paper) or `/haipipe-task` (first task-group).

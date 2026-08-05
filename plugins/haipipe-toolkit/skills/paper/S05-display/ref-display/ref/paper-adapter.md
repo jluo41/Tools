@@ -51,7 +51,7 @@ or `0-lifecycle/`.
    `displays/displayNN-<slug>/`. Create the Paper page through the real creator:
 
    ```sh
-   python3 <haipipe-paper-stage>/create-page.py display <paper-root> \
+   python3 <haipipe-paper>/create-page.py display <paper-root> \
      --family Display --unit <N> --slug <slug> --directory 3-display
    ```
 
@@ -129,4 +129,4 @@ PowerPoint-native figure places its canonical source in `recipe/` and exports a 
 `assets/` before `float.tex` and `preview.pdf` are refreshed.
 
 Page shape, the per-asset template, and the thirteen-condition completeness checklist live with
-the stage: `../../haipipe-paper-stage/stages/4-display/template.md`.
+the stage: `../../display/template.md` (the S05 display stage folder).

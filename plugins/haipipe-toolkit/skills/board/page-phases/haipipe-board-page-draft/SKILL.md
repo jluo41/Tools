@@ -1,9 +1,9 @@
 ---
 name: haipipe-board-page-draft
 description: >-
-  The DRAFT phase contract for any Board Page. DRAFT is the authority to define or reopen the Page's purpose, Aims, and promised shape for one round; it is not identified by an empty file, first typing, or adding text. Load haipipe-board-page first, then the matching Page Type under page-types/, then this contract, and finally any paper or application worker. Use when creating a Page promise, changing what an existing Page is for, adding or removing an Aim, starting a new round after REVISE or CHECK, or raising a stake-bearing Q-consumer without performing PROBE. Trigger: page draft, DRAFT phase, define purpose, reopen Aims, new round, raise Q-consumer, owned hole, draft boundary, /haipipe-board-page-draft.
+  The DRAFT phase contract for any Board Page. DRAFT is the authority to define or reopen the Page's purpose, Aims, and promised shape for one round; it is not identified by an empty file, first typing, or adding text. Load haipipe-board-page first, then the matching Page Type under page-types/, then this contract, and finally the stage's declared family craft files. Use when creating a Page promise, changing what an existing Page is for, adding or removing an Aim, starting a new round after REVISE or CHECK, or raising a stake-bearing Q-consumer without performing PROBE. Trigger: page draft, DRAFT phase, define purpose, reopen Aims, new round, raise Q-consumer, owned hole, draft boundary, /haipipe-board-page-draft.
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
   last_updated: "2026-08-05"
   summary: "DRAFT owns the Page promise and emits an auditable receipt into the bounded RUN router."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -17,7 +17,7 @@ Load the contracts in this order:
 haipipe-board-page
   → matching page-types/ variant, when one exists
   → haipipe-board-page-draft
-  → family worker, when the Page belongs to paper or application
+  → family craft: the stage's declared craft files, when the Page belongs to paper or application
 ```
 
 What is DRAFT's alone: the promise may move here, and nowhere else without a new round.

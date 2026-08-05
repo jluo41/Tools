@@ -5,6 +5,21 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.122.0 - 2026-08-06
+
+**Register rows render as evidence cards** (JL 260806: literature/values are the first to test the card evidence). Inside a `### Q-consumer register` section, and only there, a backticked binding token becomes the same chip + popover chipcard the prose `\citep` markers get: a bibliography key (or key-shaped token, which renders broken when it does not resolve, suggestions included) opens the cite card with the .bib entry, source links and rendered reference; a `tasks/…` or `discoveries/…` provenance path opens a `val` card whose links are the QA file and its run folder, with the QA's own `state:` line quoted, and a path that is not on disk renders `owed` with the miss stated, never invented. `src/dialect_paper.py` gains `Paper.register_binding` / `Paper.bank_binding` (the dialect resolves, the board renders, QBc5); `src/body.py` gains the scoped `REGISTER` mode (a `body(register=True)` door plus its own `###` detector, save/restore so embeds cannot bleed it) and the `code_or_link` binding branch; `src/page_question.py` passes the flag from `render_aims` and `render_subsections`, whose division split had hidden the heading from body(). Log lines and discussion lanes stay chip-free through the existing NOTE wall, and non-register backticks everywhere render exactly as before. Companion data files shipped with the paper family: `paper/S03-literature/{template,entry-template}.md` and `paper/S04-value/{template,entry-template}.md`, the copyable topic-register and probe-entry skeletons those cards read from.
+
+## 0.121.0 - 2026-08-06
+
+**Chip-card PDF previews fold shut** (JL: "the evidence card doesn't work, I cannot click it", S-Main-1). Root cause verified by driving a real Chrome over CDP: an open display card stacked two 24em `<object>` PDF previews inside its 60vh scroll box, pushing the file links ~900px below the card's fold, and the PDF plugin swallowed the wheel, so the card could neither be scrolled nor clicked where it mattered. `src/body.py` now wraps each pdf preview in a closed `<details class="ccfold">` whose summary wears the figcaption's face; `assets/css/60-chips.css` styles the fold. A card opens compact (header, body, one summary line per preview, links visible); one click expands the PDF in place (verified expanding to 348px and collapsing again). Image, text, and reference previews are unchanged.
+
+## 0.120.1 - 2026-08-05
+
+One line reworded for thin-paper phase 2: family-specific stage data (the paper
+door's stages/ and craft files) stays with its family; the retired
+`haipipe-paper-stage` is no longer named. Test fixture path updated to
+`paper/haipipe-paper` (create-page.py's new home).
+
 ## 0.119.0 - 2026-08-05
 
 **`ref/topic-entry-contract.md` grows the two rules the topic types need**
@@ -19,6 +34,23 @@ here).
   WITHDRAWN; an unresolved row holds the topic open; the topic's human gate
   reads the register, not the entries. Moved here from the two route contracts
   so the shared close semantics are stated once.
+
+## 0.120.0 - 2026-08-05
+
+**Embed URLs carry the shell opt-out** (JL 260805: "they are always of the same
+slide number").
+
+- `src/body.py`: the html-embed iframe src and its open link get `plain`
+  appended. serve.py's shell-vs-file fallback is the Accept header, and a
+  browser's iframe request sends the same `Accept: text/html` a tab navigation
+  does; over a tailnet address plain http never carries `Sec-Fetch-Dest`, so
+  every embed came back as the three-pane shell with its query dropped, and all
+  seven divisions showed the deck's cover. `plain` is the shell's own
+  documented opt-out, and it holds on every browser and origin.
+- The blind spot was verification through 127.0.0.1, where Chrome DOES send
+  `Sec-Fetch-Dest` (localhost is a trustworthy origin) and the embeds happened
+  to get the raw file. The reader's path was the tailnet IP, where it never
+  arrives. Reproduced with a header-faithful request before fixing.
 
 ## 0.118.0 - 2026-08-05
 

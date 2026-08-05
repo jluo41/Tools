@@ -7,6 +7,39 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.4.0 - 2026-08-05
+
+**Re-ruled A, the same day, after seeing B rendered** (JL: "So it is not like
+I can do the iteration. What about the old method of A? will that be easier.").
+
+- Beat-grain acceptance blocked slide-by-slide review: one tick covered the
+  set, so a reviewer could not accept slide 5 while sending slide 6 back.
+- The default is now A inside B's divisions: division = talk beat, one embed
+  and one accept row PER SLIDE. A rebuilt slide resets only its own row.
+- `?preview=A-B` (0.3.0's strip) stays built and legal as a COMPACT form for
+  a beat that is already settled, with its costs stated: set-grain reset and
+  a first-slide-only scripts-off fallback.
+- The deck's :target fallback CSS is scoped to `html:not([data-preview])`:
+  unscoped it fought the runtime and hid every non-target slide of a strip,
+  which is what "I don't think it is very good" looked like.
+
+## 0.3.0 - 2026-08-05
+
+**Ruled B on QA4** (JL: "Do this one.", against CC's recommended multi-embed):
+division = talk BEAT, one range embed per beat.
+
+- `?preview=A-B` renders slides A..B as a vertical strip: new range mode in
+  html-ppt's `assets/runtime.js` (backward compatible; single previews and the
+  presenter untouched). The board renderer (`haipipe-board` `src/body.py`)
+  reads the range and sizes the frame to `aspect-ratio:16/(9×count)`.
+- The slide binding moves to beat grain: the row names its range, one tick
+  accepts the set, and a rebuild of any slide in the range resets the row.
+  The acceptance blur was stated on the option and accepted with it.
+- The scripts-off fallback shows a range's FIRST slide (`#sA`); CSS cannot
+  express an interval endpoint from one fragment, and the limit is stated.
+- QA4 regrouped from 7 one-slide divisions into 4 beats as the proving shape
+  (three ranges, one single).
+
 ## 0.2.1 - 2026-08-05
 
 Review fixes, no rule change:

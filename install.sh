@@ -230,7 +230,20 @@ if [ "$DO_GLOBAL" = true ]; then
         echo "  $skill_name -> $target"
     done < <(enumerate_skills "$SCRIPT_DIR/plugins")
 
-    echo "  All skills installed globally."
+    # Clean up stale global symlinks (point to removed/retired skills).
+    # Plain "*" rather than "*/" so broken symlinks are still enumerated.
+    global_cleaned=0
+    shopt -s nullglob
+    for link in "$CLAUDE_DIR/skills"/*; do
+        if [ -L "$link" ] && [ ! -e "$link" ]; then
+            echo "  - $(basename "$link") (stale, removed)"
+            rm "$link"
+            global_cleaned=$((global_cleaned + 1))
+        fi
+    done
+    shopt -u nullglob
+
+    echo "  All skills installed globally ($global_cleaned stale links removed)."
 
     echo ""
     echo "Installing agents globally to $CLAUDE_DIR/agents/..."

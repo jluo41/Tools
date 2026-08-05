@@ -1,5 +1,5 @@
 # haipipe-board-reviewer-agent · v0.7.0
-state: 🟡 in question · existence unruled since 260729, never yet dispatched
+state: 🟡 in question · existence unruled since 260729, first exercised 260805 in the QB8e RUN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 session: 2dec022b-fc77-4efc-a03f-a589dc02583c
@@ -255,7 +255,8 @@ copy is exactly what goes a night out of date while the contract moves:
 ## States
 The agent is written the way this family wants its agents written: it loads five contracts, restates none of them, and holds no write tool.
 What is unsettled is not its quality but its existence, and that has been unsettled since 260729.
-It reached 0.5.0 on 260802 and has still never been dispatched on this board, so every claim about what its review catches is a claim about a procedure rather than a result.
+It reached 0.7.0 on 260804 and was first exercised on this board on 260805, when the QB8e RUN dispatched its charter three times as the judge, as fresh-context `claude -p` subprocesses rather than the Agent tool.
+Its review now has first results rather than only a procedure: two revise verdicts with file-and-line findings and one final pass that routed the run to CLOSE (receipt `_runs/page/QB8e/260805-0216-QB8e.json`).
 
 - 260802 CC · 📚 It did not know about a contract that had shipped hours earlier
   `haipipe-board-page-for-skill` shipped on 260802 and this agent's source list was not updated with it, so it would have judged the eight skill and agent pages by the base contract whose Opening rule is the opposite one.
@@ -270,6 +271,7 @@ It reached 0.5.0 on 260802 and has still never been dispatched on this board, so
   That is precisely the input 0.4.0's consecutive-Openings pass was added to judge, and the session limit is the only reason it has not run.
 
 ## Log
+- 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); "never yet dispatched" is over, the QB8e RUN exercised this judge three times as fresh-context claude -p subprocesses and its final CHECK pass closed the run.
 260804 · Updated the authored mirror for exact-version CHECK and the CLOSE, REVISE, PROBE, DRAFT, or HOLD route returned to Page RUN.
 260802 2100 · Synced to 0.5.0 and the authored half updated: the agent now loads `haipipe-board-page-for-skill` for a skill page, which it did not when that variant shipped hours earlier. Two Aims closed, one opened for the consecutive read of the eight roster Openings that is now waiting on it
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the dispatch, the four loaded contracts, the three-step review and the empty write-tool list, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in question. Recorded that the 260731 skill-versus-agent ruling argues against the retirement reading of JL's 260729 remark

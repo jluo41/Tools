@@ -3,6 +3,65 @@ haipipe-paper — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.6.0] -- 2026-08-06 -- ONE registered skill (thin-paper phase 3)
+
+JL ruling 260806 ("只保留一个 skill, 就是 haipipe-paper"): the paper family now registers
+exactly ONE skill, this door; everything else is data. The nine remaining registered
+siblings retired to `../_old/phase3-260806/`, their jobs absorbed as internal steps:
+
+- `haipipe-paper-folder` -> `fn/folder.md` (the scaffold procedure; `enter`'s
+  get-or-create branch cites it).
+- `haipipe-paper-conform` -> `fn/conform.md`; its mechanical checker moved to
+  `scripts/check_structure.sh` and the `conform` verb runs it. The delete-test RULE
+  text lives in the fn.
+- The five S09-build skills became human-triggered door verbs, one fn each:
+  `haipipe-paper-compile` -> `fn/compile.md` · `haipipe-paper-diffpdf` ->
+  `fn/diffpdf.md` (toolkit at `scripts/diffpdf/`, class presets + known bugs at
+  `ref/diffpdf/`) · `haipipe-paper-project` -> `fn/project.md` (runtime at
+  `scripts/project/`) · `haipipe-paper-to-overleaf` -> `fn/to-overleaf.md` ·
+  `haipipe-paper-to-word` -> `fn/to-word.md` (exporter at `scripts/to-word/`).
+- `haipipe-paper-round` + `haipipe-paper-rebuttal` became STAGE DATA: the new `round`
+  stage (`../S10-round/round/stage.md` + `template.md`, per-unit, one dated round per
+  page, `board_family: Round`) with the reviewer-response craft distilled to
+  `../S10-round/rebuttal-craft.md` and loaded via the stage's `craft:` list. New row
+  in `stages/index.yml` after section-edit (triggers: round, rebuttal, 返修,
+  reviewer response); the checker is the door's own
+  `probe/check-probe-cards.sh --stage round`.
+- Verbs table updated: folder/conform/build rows now name their fn files; round and
+  rebuttal route to the STAGE step, key round. `fn/feedback.md` inboxes repointed
+  (fn verbs -> the door's own fallback; round/rebuttal -> `S10-round/round/feedback/`).
+- Reference sweep: `../README.md`, `ref/04-lifecycle-map.md`,
+  `ref/paper-folder-anatomy.md`, `ref/diffpdf/compile-pipelines.md`, moved scripts'
+  self-references, `skills/STRUCTURE.md`, haipipe-project's `project-structure.md`,
+  and haipipe-application-round's description all repointed to door verbs / fn paths.
+  Boards under `diagrams/` deliberately left for the main session.
+
+## [0.5.0] — 2026-08-05 — the ONE door (thin-paper phase 2)
+
+- Absorbed the three routers into this skill and retired them to `../_old/`:
+  `haipipe-paper-stage` (stage resolution via stages/index.yml, create-page.py,
+  the one-stage-file rule, the PROBE ceiling with the --depth spend-authority
+  warning kept word-for-word, checker-before-CHECK, rebuild-after-write and
+  re-read-before-read), `haipipe-paper-enter` (the console procedure, compressed;
+  detail in the new `ref/enter-console.md`), and `haipipe-paper-lifecycle`
+  (stage ordering, maturity rule, global-pass mode, phase-verb pass-through).
+- Phase driving is NOT restated: the door ensures the S page exists and hands it
+  to `haipipe-board-page` (WORK ON / RUN); `board/page-phases/` own DPRC.
+- `workers/` dissolved: page rules stayed in board/, the LaTeX craft became
+  stage data files declared by each stage.md `craft:` list
+  (S03 citation-craft.md · S04 values-craft.md · S05 draft-craft.md ·
+  S06 revise-place/revise-results/check-evidence-craft.md ·
+  S09-build/proof-checker/ as a craft pack), and the probe tooling moved into
+  this skill's `probe/` (check-probe-cards.sh, check_topic_entries.py,
+  topic-entry-contract.md, per-stage-dispatch.md); the probe worker's unique
+  deltas merged into `fn/probes.md`.
+- Moved in from the retired stage router: `stages/` (index.yml, CONTRACT.md,
+  section-kinds.yml), `create-page.py` (BOARD_STAGE repointed to
+  board/haipipe-board/cli/stage.py), `check-contracts.py`, `section-stats.py`,
+  and `ref/` (joined by the ex `workers/REF/` files). The comment protocol's
+  format detail moved to `ref/comment-protocol.md`; the door keeps the binding
+  lifecycle rules.
+
 ## [0.4.6] — 2026-07-30 — explicit projection routing
 
 - Added `project` and `projection` to delivery routing so gated S-page content

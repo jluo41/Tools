@@ -32,7 +32,7 @@ Scope: This page covers The Board as control plane, the executable queue, where 
  THE TEST: kill the session mid-item. A NEW worker reads the page and
  resumes. Nothing important was ever only in a terminal transcript.
 
- ② ## Items to Finish IS THE QUEUE
+ ② ## Aims IS THE QUEUE   (the section then named Items to Finish)
     - [ ] I4 · Rebuild the primary regression columns
           phase: revise      kind: display-render
           from: S-Main-7 · P2.S3      ◄ the sentence that asked
@@ -87,9 +87,9 @@ The CLI may remain as an internal recovery surface, but the user should not need
 
 #### Where that seam stood
 The architectural direction is accepted.
-The Board currently renders the state but does not yet drive the page-first worker loop.
+The page-first loop now ships as `haipipe-board-page`'s RUN verb, a bounded producer/build/judge loop with auditable receipts; its first live RUN landed on 260805.
 
-### Items to Finish is the queue
+### Aims is the queue
 #### Proposed item
 ```markdown
 - [ ] I4 · Rebuild the primary regression columns
@@ -156,7 +156,7 @@ read requires, style-from, Content, queue, comments, and state
 select and claim one allowed item
 dispatch the worker declared for its kind
 verify the returned result
-update Content, item handoff, Where we are, state, and Board
+update Content, item handoff, States, state, and Board
 continue only when the user asked to work the queue
 ```
 
@@ -165,8 +165,7 @@ Stop at a human decision, spend authorization, unresolved dependency, CHECK gate
 DPRC remains a safety model, but phases become queue semantics rather than the user's remote-control language.
 
 #### Where that seam stood
-The loop is designed and recorded.
-The live stage skill remains stage-first and has not been compacted around this entry.
+The loop is designed and recorded, and the runner has since been compacted around exactly this entry: the door resolves the page's one stage contract from `stages/index.yml` and hands the page to `haipipe-board-page` (WORK ON to repair, RUN for the bounded loop), first live RUN 260805.
 
 ## Aims
 - [x] 🧭 Choose the Board as the remote control plane
@@ -177,7 +176,7 @@ The live stage skill remains stage-first and has not been compacted around this 
       Claimed owner, blocker, result, verification, and handoff must be visible on the page.
 - [ ] 🧪 Resume from a new session
       A fresh session should continue a page without reading the previous transcript.
-- [x] 📋 Reuse Items to Finish
+- [x] 📋 Reuse the page's own queue section (`## Aims`, then named Items to Finish)
       No second task list is created beside the page.
 - [ ] 📐 Freeze the minimal fields
       Keep enough structure for recovery without turning Markdown into a verbose database.
@@ -208,28 +207,29 @@ Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Ever
 ## Files
 - `haipipe-board/`
   The durable interaction surface.
-- `haipipe-paper-stage/`
-  The execution engine behind an S page.
+- `../../paper/haipipe-paper/`
+  The one door: the execution entry behind an S page, since the stage runner folded into it (260805).
 - `haipipe-board/ref/page-template.md`
-  The current Items to Finish grammar.
-- `haipipe-paper-stage/SKILL.md`
-  The future queue loop.
+  The current queue grammar.
+- `../../board/haipipe-board-page/SKILL.md`
+  The page loop: WORK ON and RUN, the bounded producer/build/judge cycle with receipts.
 - `../../paper/S05-display/display/stage.md`
   Still declares the retired inbox.
-- `haipipe-paper-draft-display/SKILL.md`
-  Still files Display request rows.
-  The runner to narrow.
-- `../../paper/haipipe-paper-stage/stages/index.yml`
+- `../../paper/S05-display/display/draft-craft.md`
+  The dissolved draft-display worker's surviving craft; the DR-row routing it followed lives in the stage.md above.
+- `../../paper/haipipe-paper/stages/index.yml`
   The stage registry.
-- `stages/*/stage.md`
+- `../../paper/S01-opening/seed/stage.md` (one per stage folder)
   The permitted worker routes and stop conditions.
 
 ## Law
 
 - **The Board is the control plane.** A person sees, starts, steers and resumes paper work from a page. A CLI may remain an internal execution mechanism or a recovery path, and never the front door.
-- **`## Items to Finish` is the queue.** The page's item list IS the executable queue; no second queue file is created anywhere. A queue held outside the page is a second copy of the truth and will disagree with it.
+- **`## Aims` (then named `## Items to Finish`) is the queue.** The page's item list IS the executable queue; no second queue file is created anywhere. A queue held outside the page is a second copy of the truth and will disagree with it.
 - **A completed item's handoff stays on that item.** The result of finishing a queue item is recorded on the item that asked for it. No `_DISPLAY_REQUEST.md`, no handoff sidecar, no per-change request file.
-- **The runner is page-first.** `haipipe-paper-stage` is invoked with a page and an item, resolves the one stage contract that page needs, dispatches a bounded worker, and returns the result to that same page. A session is ephemeral; everything it needed was on the page, and everything it produced goes back there.
+- **The runner is page-first.** The door `haipipe-paper` (which absorbed the stage runner, 260805) is invoked with a page and an item, resolves the one stage contract that page needs, and hands the page to `haipipe-board-page` for the bounded loop; the result returns to that same page. A session is ephemeral; everything it needed was on the page, and everything it produced goes back there.
 
 ## Log
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the page-first runner Law now names its live implementers (the door + `haipipe-board-page` RUN, first live RUN 260805), and the queue section carries its current name `## Aims`.
+
 260726 · Merged from four faces. Its `## Law` was empty after the merge, which a cold-read review caught: a face about how work runs, on a board whose close condition is that Laws graduate, had nothing to graduate. Written from its four seams.

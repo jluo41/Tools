@@ -39,6 +39,8 @@ artifact_fallback: 0-lifecycle/S01-opening/2b-pitch.md
                           # resolved S face is absent, and say which one you used.
 archive: 0-lifecycle/S01-opening/archive/vNN_<reason>.md
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage pitch
+                          # run by CHECK before judging; path relative to the skills root
 template: template.md
 support: [readability.md]   # the 9 global language rules, section lead cues, hook method menu,
                             # worked rewrites, reviewer checklist — LARGER than the template
@@ -52,7 +54,7 @@ venue_contract:           # read FIRST, before a word is drafted — see the cra
   fallback: "venue/playbook-<venue> ONLY if S-Venue-0-venue.md is absent; with neither, proceed without
              venue inputs and say so"
   stale: "provenance commit older than venue HEAD -> note 'venue contract stale — consider
-          /haipipe-paper-stage venue refresh', still use S-Venue-0-venue.md; never silently re-read packs"
+          /haipipe-paper venue refresh', still use S-Venue-0-venue.md; never silently re-read packs"
   rewrite_when: "venue changes"
 
 sections:                 # logical order; Q-consumer adapts to Board Aims

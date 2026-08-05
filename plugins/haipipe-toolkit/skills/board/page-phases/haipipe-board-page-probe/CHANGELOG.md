@@ -7,6 +7,12 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.3.2 - 2026-08-05
+
+Load-order slot reworded for thin-paper phase 2: the last slot is the family
+DOOR's probe tooling (paper: `paper/haipipe-paper/probe/`), and the family DOOR
+owns the persisted Probe Page shape and checker (was: "family workers own...").
+
 ## 0.3.1 - 2026-08-05
 
 - The description leads with the plain job before the four coined Q/A terms, per the no-undefined-jargon rule.

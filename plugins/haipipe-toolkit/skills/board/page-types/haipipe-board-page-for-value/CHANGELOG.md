@@ -7,6 +7,12 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.2.1 - 2026-08-05
+
+Paper-family projection path repointed to
+`paper/haipipe-paper/probe/topic-entry-contract.md` (workers/ dissolved,
+thin-paper phase 2).
+
 ## 0.2.0 - 2026-08-05
 
 **De-parallelized from the literature sibling; the route key is explicit** (review fix).

@@ -1,9 +1,9 @@
 ---
 name: haipipe-board-page-revise
 description: >-
-  The REVISE phase contract for any Board Page. REVISE improves the realization of the current round while the Page's purpose and Aims stay fixed; it may add, delete, move, or rewrite, so edit shape never distinguishes it from DRAFT. Load haipipe-board-page first, then the matching Page Type, then this contract, and finally any family worker. Use when incorporating landed evidence or feedback, improving structure or prose under fixed Aims, deciding whether a change instead requires a new DRAFT round, or preserving an unanswered hole rather than inventing its answer. Trigger: page revise, REVISE phase, fixed Aims, rewrite, add paragraph, delete section, move argument, land answer, candidate diff, /haipipe-board-page-revise.
+  The REVISE phase contract for any Board Page. REVISE improves the realization of the current round while the Page's purpose and Aims stay fixed; it may add, delete, move, or rewrite, so edit shape never distinguishes it from DRAFT. Load haipipe-board-page first, then the matching Page Type, then this contract, and finally the stage's declared family craft files. Use when incorporating landed evidence or feedback, improving structure or prose under fixed Aims, deciding whether a change instead requires a new DRAFT round, or preserving an unanswered hole rather than inventing its answer. Trigger: page revise, REVISE phase, fixed Aims, rewrite, add paragraph, delete section, move argument, land answer, candidate diff, /haipipe-board-page-revise.
 metadata:
-  version: "0.3.1"
+  version: "0.3.2"
   last_updated: "2026-08-05"
   summary: "REVISE improves a fixed Page promise and emits an auditable receipt before the changed version is checked again."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -17,7 +17,7 @@ Load the contracts in this order:
 haipipe-board-page
   → matching page-types/ variant, when one exists
   → haipipe-board-page-revise
-  → family worker, when the Page belongs to paper or application
+  → family craft: the stage's declared craft files, when the Page belongs to paper or application
 ```
 
 What is REVISE's alone: the Page may change a great deal here while its promise may not move at all.
@@ -84,7 +84,7 @@ CANDIDATE   explicit author request only · leave the Page unchanged and place a
 Candidate mode is review material, not a completed revision.
 The Page returns to direct REVISE after the author chooses.
 
-The family worker owns prose, markup, or artifact-specific quality rules.
+The family craft files own prose, markup, or artifact-specific quality rules.
 This contract owns only the phase boundary and routing.
 
 ## 🔀 Exit and routing
@@ -124,5 +124,5 @@ page-phases/haipipe-board-page-revise/
 ```
 
 Owns no scripts.
-The base is `haipipe-board-page`; Page Type variants live under `page-types/`; prose and artifact workers remain in their owning families.
+The base is `haipipe-board-page`; Page Type variants live under `page-types/`; prose and artifact craft files remain in their owning families.
 The Board engine owns execution and audit; this phase owns only its authority and receipt.

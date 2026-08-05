@@ -4,6 +4,11 @@ haipipe-run-timeline — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match the skill frontmatter `version:`. Newest first.
 
 
+## [0.1.4] — 2026-08-05
+
+- Example timeline row updated: `haipipe-paper-enter` is retired (thin-paper
+  phase 2); the lane now shows `Skill(haipipe-paper)` with the enter verb.
+
 ## [0.1.3] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.3.0; older entries below keep their original numbers).

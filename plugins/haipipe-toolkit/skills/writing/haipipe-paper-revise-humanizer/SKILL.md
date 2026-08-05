@@ -4,8 +4,8 @@ description: "Remove AI-writing patterns from academic prose while preserving sc
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   argument_hint: "[section-or-file] [--grant] [--venue <venue>]"
-  version: "0.2.4"
-  last_updated: "2026-07-27"
+  version: "0.2.6"
+  last_updated: "2026-08-05"
   summary: "De-AI academic prose via six-layer audit plus venue-grounded SciWrite clarity gates; supports auditable candidate-diff review."
   source: "Based on AIScientists-Dev/academic-humanizer (MIT license). Catalog VENDORED at ./ref/pattern-catalog.md (upstream submodule under references/ is provenance only)"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -63,7 +63,7 @@ No comment-first, no waiting for human approval.
 ```
 1. READ the section tex or outline. Note venue from S-Venue-0-venue.md.
    If author samples exist (prior papers), read a sample first.
-   Read ../../paper/workers/REF/prose-quality.md for universal rules.
+   Read ../../paper/haipipe-paper/ref/prose-quality.md for universal rules.
 
 2. AUDIT + APPLY (in one pass):
    Walk the section sentence by sentence through all 6 layers.

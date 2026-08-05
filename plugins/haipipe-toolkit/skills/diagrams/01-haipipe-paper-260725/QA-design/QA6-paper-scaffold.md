@@ -26,18 +26,20 @@ Scope: This page covers What a paper folder contains, the numbered and unnumbere
    │                                                                    │
    ● │  0-lifecycle/     ⑧ THE BOARD, and nothing but the board        │
    │ ● │    board.md · board/ (generated Index, group pages, page files)│
-   │ ● │    0-seed/   ○ 1-work/   ○ 2-venue/    ○ 3-display/           │
-   │   │    historical folder numbering; Delivery reads Venue before Work│
-   │ ○ │    4-main/   ○ 5-appendix/ ○ 6-submission/ ○ 7-round/         │
+   │ ● │    S01-opening/  ○ S02-work/ … ○ S10-round/                    │
+   │   │    ten SNN group folders, one per delivery concern             │
+   │   │    (renamed from the numbered stage folders, 260803-05)        │
+   │ ○ │    S03-literature/probes/ · S04-value/probes/                  │
+   │   │    the near side of the wall → ⑤ · one entry per q-executor   │
+   │   │    (no live top-level 1-probes/; legacy entries are            │
+   │   │     provenance in _archive/1-probes/ only)                     │
    │ ○ │    _archive/                                                   │
-   │ │                                                                  │
-   ● │  1-probes/        the near side of the wall            → ⑤       │
-   │ ○ │    PPnn_<topic>/QXn_<slug>.md   topic-scoped, cross-stage      │
    │ │                                                                  │
    ○ │  2-src/           how the deliverable is BUILT, not what it is   │
    │   │    compile.sh · compile.ps1 · config.yaml · setup.sh           │
    │ │                                                                  │
-   ● │  3-dist/          accepted fourth: review/handoff projections     │
+   ● │  3-dist/          review/handoff projections (the 1- slot        │
+   │   │                 retired when probes moved under S03/S04)       │
    │   │    tex/         candidate LaTeX + proof PDF, never the source  │
    │   │    word/        coauthor copies; edits return to the S page    │
    │   └────────────────────────────────────────────────────────────────┘
@@ -47,8 +49,8 @@ Scope: This page covers What a paper folder contains, the numbered and unnumbere
      ○   <paper>.tex        the driver: \\input each section            │
      ○   <paper>.bib        HUMAN-ONLY. An agent greps; never writes.   │
      ○   <paper>.pdf        the compiled artifact                       │
-     ○   sections/          GENERATED from ⑧'s 4-main pages. ONE WAY.   │
-     ○   appendices/        GENERATED from ⑧'s 5-appendix pages         │
+     ○   sections/          GENERATED from ⑧'s S06-main pages. ONE WAY. │
+     ○   appendices/        GENERATED from ⑧'s S07-appendix pages       │
      ○   displays/          one submission folder per Display unit:    │
      │                      float.tex + selected assets only            │
      ○   <venue>.cls · <venue>.bst      the venue shell                 │
@@ -63,7 +65,7 @@ Scope: This page covers What a paper folder contains, the numbered and unnumbere
 ```
    ── ONE DISPLAY UNIT ACROSS THE SUBMISSION CUT ────────────────────
 
-      0-lifecycle/3-display/
+      0-lifecycle/S05-display/
         🧠 S-Display-<id>-<slug>.md   authority and gate
         🛠 workspace/                 rebuild code, previews, candidates
 
@@ -87,39 +89,39 @@ Scope: This page covers What a paper folder contains, the numbered and unnumbere
 ```
 
 ```
-   ── WHO WRITES WHAT, and WHICH SKILL THIS RULE CHANGED ────────────
-      ✅ rewritten to this layout on 260726
-      ⬜ still names paths that no longer exist   (old-path · STATUS.md)
-      ➖ never names a paper path; nothing here to change
+   ── WHO WRITES WHAT, under the thin architecture ──────────────────
+      ONE registered skill writes or dispatches all of it: haipipe-paper,
+      THE DOOR. The build and round tools became door fn/ verbs and S10
+      stage data under phase 3 (ruled 260806, executing; QC6's Log).
 
-      WHAT ON DISK      WHO WRITES IT                 UPDATED?
+      WHAT ON DISK      WHO WRITES IT
       ─────────────────────────────────────────────────────────────
-      Paper-X/          /haipipe-paper enter          ✅  0.5.0
-      0-lifecycle/      haipipe-paper-folder          ✅  0.5.0
-        board.md/html   /haipipe-board            ③   ➖  CALLED by ①,
-                        never typed (QA4)                 not typed
-        S-*.md          haipipe-paper-stage           ✅  0.7.0  8 contracts
-      1-probes/         haipipe-paper-probe       ⑤   ✅  0.7.0
-      2-src/            haipipe-paper-compile         ✅  0.2.0
-      3-dist/tex/       haipipe-paper-project        ✅ isolated candidate
-      3-dist/word/      md2docx.py                   ✅ handoff export
-      sections/         haipipe-paper-project        ✅ explicit PROMOTE only
-      appendices/       haipipe-paper-project         "
-      displays/         haipipe-paper-stage           (the Display stage)
-        assets/         a task or discovery run       ➖  across the wall
-                        haipipe-paper-draft-display   ✅  0.2.0  finds only
-      <paper>.tex       haipipe-paper-scaffold        ✅  0.2.0
-      <paper>.bib       NOBODY. HUMAN-ONLY.           ➖  an agent greps
-      <paper>.pdf       haipipe-paper-compile          "
-      <venue>.cls/bst   the venue pack                ✅  90 templates
-      whole tree        haipipe-paper-conform         ✅  0.2.0  THE test
-                        haipipe-paper-restructure     ✅  0.2.0  migrates in
-                        haipipe-paper-lifecycle       ✅  0.4.0  the router
-                        haipipe-paper-diffpdf         ✅  0.2.0
+      Paper-X/          /haipipe-paper enter (get-or-create)
+      0-lifecycle/      the door's fn/folder.md scaffold
+        board.md/html   /haipipe-board            ③  CALLED by ①,
+                        never typed (QA4)
+        S-*.md          the door + create-page.py; shell from ③'s
+                        cli/stage.py; phases run by haipipe-board-page
+        S03/S04         the door's PROBE, on the shared model of
+          probes/       probe/haipipe-probe       ⑤
+      2-src/            fn/compile.md
+      3-dist/tex/       fn/project.md (scripts/project/project.py)
+      3-dist/word/      fn/to-word.md (scripts/to-word/md2docx.py)
+      sections/         fn/project.md · explicit PROMOTE only
+      appendices/         "
+      displays/         the Display stage: S05-display/ + its
+        assets/         draft-craft.md; unit assets arrive from a
+                        task or discovery run, across the wall
+      <paper>.tex       fn/folder.md's manuscript-upgrade step
+      <paper>.bib       NOBODY. HUMAN-ONLY. An agent greps
+      <paper>.pdf       fn/compile.md
+      <venue>.cls/bst   the venue pack (venue/ playbooks)
+      whole tree        fn/conform.md → scripts/check_structure.sh,
+                        THE test · fn/diffpdf.md · fn/to-overleaf.md
 
-      THE SPEC ITSELF   2-phase/REF/paper-folder-anatomy.md   ✅ rewritten
-        its old "0- means manuscript source of truth" table said the
-        OPPOSITE of the delete test. That table is why the family
+      THE SPEC ITSELF   haipipe-paper/ref/paper-folder-anatomy.md
+        its pre-260726 "0- means manuscript source of truth" table said
+        the OPPOSITE of the delete test. That table is why the family
         drifted; it is now the delete-test table.
 ```
 
@@ -157,6 +159,12 @@ Scope: This page covers What a paper folder contains, the numbered and unnumbere
       $ conform/scripts/check_structure.sh <paper>
       on the 260726 migration baseline:
                           exit 1 · 56 findings · 18 delete-test
+
+   ── where the four live now (260806) ──────────────────────────────
+      conform → fn/conform.md and folder → fn/folder.md of the ONE
+      door, with check_structure.sh under the door's scripts/;
+      scaffold's manuscript upgrade is the folder fn's upgrade step,
+      and restructure is retired to _old/ with the migration done
 ```
 
 ```
@@ -171,8 +179,8 @@ Scope: This page covers What a paper folder contains, the numbered and unnumbere
 ```
 
 ## Content
-### Four numbered work areas, with different reasons
-The accepted four-area model is: `0-lifecycle/` is the authoritative Board and S-page source, `1-probes/` binds evidence, `2-src/` carries build recipes, and `3-dist/` carries derived review and handoff projections.
+### Three numbered work areas, with different reasons
+The live model is three numbered areas: `0-lifecycle/` is the authoritative Board and S-page source, and since 260804 it also holds the evidence bindings, as entries under `S03-literature/probes/` and `S04-value/probes/`; `2-src/` carries build recipes; `3-dist/` carries derived review and handoff projections. The `1-probes/` slot is retired, and its history sits in `_archive/1-probes/` as provenance only.
 They share one packaging property rather than one durability property: none belongs in the journal submission cut.
 
 That distinction repairs a hidden contradiction in the old phrase "number by deletability".
@@ -292,8 +300,8 @@ Promotion is transactional rather than a direct overwrite.
 The checked files are staged together, the pre-check target hashes are verified again, and any failed replacement rolls the set back.
 `run_id` is the SHA-256 of the canonical manifest, selected Content, and dependency-set digests; the separate candidate digest is computed after generation over normalized output paths and bytes.
 
-The runtime owner is the callable `haipipe-paper-project` 0.1.3 skill at `3-deliver/1-build/haipipe-paper-project/`, with `project.py validate`, `generate`, `check`, and `promote`.
-Its renderer follows the QBe3 §3 boundary; `../../paper/S09-build/haipipe-paper-to-word/md2tex.py` remains a separate adapter and never receives a submission-write flag.
+The runtime owner is the door's project verb, `fn/project.md` backed by `scripts/project/project.py`, with `validate`, `generate`, `check`, and `promote`; it shipped as the `haipipe-paper-project` 0.1.3 skill and folded into the door under phase 3 (ruled 260806, executing).
+Its renderer follows the QBe3 §3 boundary; `../../paper/haipipe-paper/scripts/to-word/md2tex.py` remains a separate adapter and never receives a submission-write flag.
 
 Generate, check, blocked-check, and promotion receipts are append-only JSON records under `2-src/projection-receipts/`.
 They use SHA-256 over canonical paper-relative paths plus file bytes:
@@ -327,31 +335,34 @@ The receipted Main-1 candidate is deterministic and passes G0-G3, but G4 refuses
 Generation and promotion remain separate commands.
 No `--into-sections` generation shortcut is needed.
 
-### One family, one folder
-Inside `0-lifecycle/`, the folder name IS the S family name: SEVEN families, and eight folders. The mismatch is deliberate and is not yet resolved. `Round` was ruled a family on 260726 and the board tooling never learned it: `FAMILIES` in `haipipe-board/stage.py:25` is seven names, `resolve_filename("Round", …)` raises, and the live paper's `7-round/` holds only `_archive/` with zero `S-Round` pages. So the eighth folder exists and its family does not. Before 260726 the folders carried the old STAGE order and the two disagreed badly. `Work` was split across `1a-resource/` and `1b-claims/`, `Venue` across three, and `5-section-edit/` held Main, Appendix and Submission at once while Submission was also split with `6-submission/`. Nine folders, eight families, and not one clean mapping.
+### One group, one folder
+Inside `0-lifecycle/`, the folder name IS the group name: TEN `SNN-<group>` folders, one per delivery concern, and a page's family reads off its group (`S-Open-Seed.md` sits in `S01-opening/`, `S-Work-C-claims.md` in `S02-work/`). The 260803-05 SNN regroup closed the mismatch this division used to record: `Round` had been ruled a family on 260726 while `FAMILIES` in the board tooling stayed at seven names, so `resolve_filename("Round", …)` raised and the old `7-round/` held only `_archive/`. `FAMILIES` in `haipipe-board/cli/stage.py` now carries eleven names including `Round`, and phase 3 (ruled 260806, executing; `QC6` Log) gives round a stage row in `stages/index.yml` backed by `S10-round/round/` data. Before 260726 the folders carried the old STAGE order and the two disagreed badly: `Work` was split across `1a-resource/` and `1b-claims/`, `Venue` across three, and `5-section-edit/` held Main, Appendix and Submission at once while Submission was also split with `6-submission/`. Nine folders, eight families, and not one clean mapping.
 
-A reader can now place a page from its name alone: `S-Main-6-results.md` is in `4-main/`, and nothing else could be.
+A reader can now place a page from its name alone: `S-Main-6-results.md` is in `S06-main/`, and nothing else could be.
 
-The eight families are not the eight stages, and the folders are named for the families. The following is the physical stage/family map, not the accepted Delivery reading order. Delivery places Venue inside Opening before Work; historical stage ids and folder numbers are not renamed by that regrouping.
-Which stage fills which folder, and what each one asks:
+The families are not the stages, and the folders are named for the delivery groups. The following is the physical stage/group map, not the accepted Delivery reading order; the stage keys and their historical order tokens are `stages/index.yml`'s.
+Which stage fills which runtime group, and what each one asks:
 ```
- STAGE            asks                                     ──▶ FAMILY      FOLDER
- 0-seed           why might this paper exist?                  Seed 0      0-seed/
- 1a-resource      does the evidence EXIST, and can it
-                  CARRY a claim?                               Work 0      1-work/
- 1b-claims        supported, weak, or GAP?                     Work 1        "
- 2a-venue         which outlet, and what does it demand?       Venue 0     2-venue/
- 2b-pitch         what is it selling, in one minute?           Venue 1       "
- 3-narrative      how do claims become a manuscript arc?       Venue 2       "
- 4-display        what figure or table carries each claim?     Display 0   3-display/
- 5-section-edit   does each section's prose do its job?        Main <n>    4-main/
-                                                               Appendix <A> 5-appendix/
- ──────────────────────────────────────────────────────────────────────────────────
- (no stage)                                                    Submission  6-submission/
- (no stage)     ⚠️ RULED a family 260726, NOT in FAMILIES     Round       7-round/
-                    resolve_filename("Round", …) raises; 0 live pages
+ STAGE            asks                                     ──▶ RUNTIME GROUP
+ seed (0)         why might this paper exist?                  S01-opening/
+ resource (1a)    does the evidence EXIST, and can it
+                  CARRY a claim?                               S02-work/
+ claims (1b)      supported, weak, or GAP?                     S02-work/
+ venue (2a)       which outlet, and what does it demand?       S01-opening/
+ pitch (2b)       what is it selling, in one minute?           S01-opening/
+ narrative (3)    how do claims become a manuscript arc?       S02-work/
+ display (4)      what figure or table carries each claim?     S05-display/
+ section-edit (5) does each section's prose do its job?        S06-main/ ·
+                                                               S07-appendix/
+ round (6)        where does this batch's feedback go?         S10-round/
+                  ⚠️ the row phase 3 added (ruled 260806)
+ ──────────────────────────────────────────────────────────────────────────
+ (no stage key)   the evidence stores                          S03-literature/ ·
+                                                               S04-value/
+ (fn verbs)       build · deliver · submit                     S09-build/ → fn/
+ (unfilled)       present                                      S08-present/
 ```
-Three stages fill Venue, two fill Work, one fills either Main or Appendix depending on the section, and two families are filled by no stage at all. So the folder tree answers "where do I read this" and says nothing about what produced it. `QC3b` owns that seam; what a stage IS as an object is `QC2`.
+Several stages fill one group, one fills two, and three groups are filled by no stage key at all. So the folder tree answers "where do I read this" and says nothing about what produced it. `QC3b` owns that seam; what a stage IS as an object is `QC2`.
 
 A stage also declares whether it SURVIVES a change of journal, and that split is a fact about the stage set rather than about any one stage:
 ```
@@ -398,7 +409,7 @@ A stage also declares whether it SURVIVES a change of journal, and that split is
 ```
 Evidence is venue-free. A retarget may rewrite how a paper is told and may not reopen what it found. What retargeting concretely does to each aligned stage has never been run end to end, so it is design rather than practice.
 
-The set of stages is OPEN, and deliberately so. Adding one costs a row in `../../paper/haipipe-paper-stage/stages/index.yml`, a folder, and two files: no new skill, no version bump. Compiling, submitting and answering reviewers all sit outside the eight today and none of those exclusions was ever argued in writing, so if one should become a stage the argument is available rather than blocked. Rounds went the other way on 260726: ruled a family rather than a stage, so `7-round/` exists outside the stage contracts. The live folder still has only `_archive/` and zero `S-Round` pages because the family remains unimplemented.
+The set of stages is OPEN, and deliberately so. Adding one costs a row in `../../paper/haipipe-paper/stages/index.yml`, a folder, and two files: no new skill, no version bump. Compiling and submitting still sit outside the stage keys as door `fn/` verbs, and neither exclusion was ever argued in writing, so if one should become a stage the argument is available rather than blocked. Rounds prove the openness in both directions: ruled a family rather than a stage on 260726, then made the ninth `index.yml` row on 260806 (phase 3), with `S10-round/round/` as its stage data and the rebuttal craft beside it.
 
 The folder is also PURE. Every file in it is an S page or the board's own index, never a `.tex`, an asset or a scratch note. The moment something else lands there the board stops being a control plane and becomes a folder that happens to contain some pages.
 
@@ -412,9 +423,10 @@ The folder is also PURE. Every file in it is an S page or the board's own index,
            where the real Content lives. sections/ and appendices/ are
            produced FROM those pages. One direction, md to tex, never back.
 
- ⑦ ──▶ the wall   OUT. 1-probes/ holds one entry per question this paper
-           cannot answer, bound BY PATH to a QA file in tasks/ or
-           discoveries/. The paper asks; it never computes.
+ ⑦ ──▶ the wall   OUT. S03-literature/probes/ and S04-value/probes/ hold
+           one entry per question this paper cannot answer, bound BY PATH
+           to a QA file in tasks/ or discoveries/. The paper asks; it
+           never computes.
 
  ⑦ ──▶ ②   NOTHING. A paper never writes to a design board.
 ```
@@ -451,20 +463,20 @@ Almost nothing here is authored in place. The prose arrives from `⑧`, the numb
       `S-Main-1-introduction.md` passes G0-G3 as an exact candidate.
       G4 is baseline-blocked by one active missing Display input that the candidate did not introduce; G5 was not run.
 - [x] 🗂 One family, one folder
-      Seven S families with a folder each, plus `7-round/` whose family is declared and unimplemented; 40 pages migrated on the MISQ paper with none lost.
-- [ ] 🔧 Make `Round` a family, or rule that it is not one
-      It was ruled one on 260726 and `FAMILIES` in `haipipe-board/stage.py:25` still lists seven, so `resolve_filename("Round", …)` raises and `7-round/` cannot receive a named page. Either add it there and in `check-contracts.py:40`, or say rounds are a folder with a different naming rule and stop calling them a family.
+      Seven S families with a folder each, plus `7-round/` whose family is declared and unimplemented; 40 pages migrated on the MISQ paper with none lost. (The 260803-05 SNN regroup then renamed the folders to the ten `S01-opening/` … `S10-round/` delivery groups.)
+- [x] 🔧 Make `Round` a family, or rule that it is not one
+      Resolved as a family, in two steps: `FAMILIES` in `haipipe-board/cli/stage.py` now carries `Round` (with `Open`, `Literature`, and `Value`, eleven names), and phase 3 (ruled 260806, executing; `QC6` Log) made round a `stages/index.yml` row backed by `S10-round/round/` stage data, so a round runs like any other stage.
 - [x] 🖼 Delete `figures/` from the layout
       It predates display units. The MISQ migration moved its 5 orphan PNGs, which no `\includegraphics` in the paper points at, into `_archive/figures-orphan/`; every real graphic already sits in a unit's `assets/`. A second active home for the same thing is the defect this face forbids elsewhere.
 - [x] ✂️ The venue split is stated
-      `PHILOSOPHY.md` and the per-stage `venue_aligned:` field, with `venue_role` for the pin itself.
+      The per-stage `venue_aligned:` frontmatter field, with `venue_role` for the pin itself (the retired `PHILOSOPHY.md`'s statement lives in the stage contracts now).
 - [ ] 📐 Define what retargeting does to each aligned stage
       Rewrite from scratch, or re-derive while keeping the argument. Different operations; the contracts do not distinguish them.
 - [ ] 🧠 Rule whether a retarget reopens the claims stage
       It should not, by this design. Say so explicitly, because the temptation at a new venue is to re-cut the claims to fit.
 
 - [x] ✂️ Split a display unit at the submission boundary
-      The S page and rebuild workspace live under `0-lifecycle/3-display/`; only `float.tex` and the selected `assets/` project to unnumbered `displays/<unit>/`. One unit id binds both halves.
+      The S page and rebuild workspace live under `0-lifecycle/S05-display/`; only `float.tex` and the selected `assets/` project to unnumbered `displays/<unit>/`. One unit id binds both halves.
 - [x] 🛠 Teach the four BUILD skills this layout
       Done 260726. `conform` 0.2.0 was rewritten around the delete test as an executable check (block J) plus board purity (block D); at the pre-migration baseline it failed the MISQ paper with 56 findings. `folder` 0.5.0 scaffolds Board-first with one runnable Seed page and creates no `STATUS.md`. `scaffold` 0.2.0 reframed as the manuscript upgrade, with its six templates rewritten, not just its prose. `restructure` 0.2.0 migrates INTO the new shape and gained the delete test as a third non-negotiable gate.
 - [x] 🧹 Align the remaining skills with this layout
@@ -479,10 +491,10 @@ Almost nothing here is authored in place. The prose arrives from `⑧`, the numb
 
 ## States
 JL accepted the submission-cut and three-role model and authorized implementation.
-The paper has four numbered non-submission work areas: `0-lifecycle/`, `1-probes/`, `2-src/`, and `3-dist/`.
+The paper has three numbered non-submission work areas: `0-lifecycle/` (which now also holds the probe bindings under its S03/S04 topics), `2-src/`, and `3-dist/`; the retired `1-probes/` slot survives only as `_archive/1-probes/` provenance.
 S pages are source authority, `3-dist/` holds isolated candidates/handoffs, and the unnumbered tree is the journal submission projection.
 
-`haipipe-paper-project` 0.1.3 implements validate, generate, check, and explicit promotion.
+The door's project verb (shipped as `haipipe-paper-project` 0.1.3, folded into `fn/project.md` under phase 3) implements validate, generate, check, and explicit promotion.
 The MISQ manifest passes G0 with 20 outputs and 8 explicit unreachable targets.
 Main-1 is the only GATED Main unit and its surviving candidate is byte-exact against the selected Content, so G1-G3 pass.
 G4 is correctly blocked by one baseline input missing after the Display regroup:
@@ -494,17 +506,15 @@ Disposable runtime tests pass deterministic reuse, path-escape refusal, no submi
 The display unit's working/shipping split is now explicit. The remaining trial gap is owned by the one active stale Display input.
 
 ## Files
-- `../../paper/container/haipipe-paper-conform/scripts/check_structure.sh`
-  THE machine test for this face. Blocks A to K; block J is the delete test, block D is board purity and one-family-one-folder. Exit 0 conforms, 1 findings, 2 not a paper folder.
-- `3-deliver/1-build/`
-  The other three: `haipipe-paper-folder` (Board-first minimal scaffold), `-scaffold` (the manuscript upgrade), `-restructure` (migrate an existing paper in). All four rewritten 260726.
-- `0-enter/haipipe-paper-enter/SKILL.md`
-  The entry path that creates and opens the initial board; 9 old-layout mentions, the second-worst.
-- `1-lifecycle/haipipe-paper-lifecycle/SKILL.md`
-  The router that names paths on the way through; 6 mentions.
-- `README.md`
-  The family map, which still describes the older complete-folder shape.
-- `../../paper/S09-build/haipipe-paper-to-word/md2tex.py`
+- `../../paper/haipipe-paper/scripts/check_structure.sh`
+  THE machine test for this face, behind the door's `fn/conform.md`. Blocks A to K; block J is the delete test, block D is board purity and one-group-one-folder. Exit 0 conforms, 1 findings, 2 not a paper folder.
+- `../../paper/haipipe-paper/fn/folder.md`
+  The Board-first minimal scaffold and the manuscript-upgrade step (the retired scaffold and restructure skills' surviving jobs).
+- `../../paper/haipipe-paper/SKILL.md`
+  The one door: enter, status, and the stage routing that the retired enter and lifecycle routers used to split between them.
+- `../../paper/README.md`
+  The family map, rewritten 260805 to the thin one-door shape.
+- `../../paper/haipipe-paper/scripts/to-word/md2tex.py`
   The QBe3 §3 format adapter; it is not allowed to perform implicit submission promotion.
 - `_archive/QBe3a-section-to-latex.md`
   Owns conversion semantics and evidence extraction; QA6 owns only where candidates land and how they may be promoted.
@@ -512,8 +522,8 @@ The display unit's working/shipping split is now explicit. The remaining trial g
   Live MISQ wiring manifest; G0 validated.
 - `2-src/projection-receipts/`
   Live append-only generation/check receipt location. No promotion receipt exists.
-- `3-deliver/1-build/haipipe-paper-project/`
-  Runtime owner for validate, generate, check, and explicit transactional promote.
+- `../../paper/haipipe-paper/scripts/project/`
+  Runtime owner for validate, generate, check, and explicit transactional promote, behind `fn/project.md`.
 - `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/`
   The measured tree: four numbered work areas, 9 reachable section entrypoints, 11 reachable appendix files, 8 unreachable `.tex` files, and PDFs of 47 and 46 pages.
 
@@ -521,11 +531,11 @@ The display unit's working/shipping split is now explicit. The remaining trial g
 
 - The prefix is a submission-cut boundary: on a copy, remove all numbered work areas and the unnumbered paper must still compile and submit.
   That copy-only packaging test is never permission to erase the working repository.
-- There are four current numbered work areas: authoritative lifecycle pages, probe bindings, build recipes, and derived format candidates/handoffs.
+- There are three current numbered work areas: authoritative lifecycle pages (which carry the probe bindings under their S03/S04 topics), build recipes, and derived format candidates/handoffs.
   The S page is source authority; `3-dist/` is candidate/handoff projection; the unnumbered tree is submission projection.
   Generation and promotion are separate, and no candidate may be promoted until G0-G4 pass and a human explicitly authorizes G5.
-- `0-lifecycle/3-display/` owns Display pages and rebuild work. Unnumbered `displays/` is the submission projection: one folder per unit containing only `float.tex` and selected `assets/`. There is no active top-level `figures/` or flat `Figure/`/`Table/` bucket.
-- Inside `0-lifecycle/`, one family one folder, and the folder holds S pages and its own index and nothing else.
+- `0-lifecycle/S05-display/` owns Display pages and rebuild work. Unnumbered `displays/` is the submission projection: one folder per unit containing only `float.tex` and selected `assets/`. There is no active top-level `figures/` or flat `Figure/`/`Table/` bucket.
+- Inside `0-lifecycle/`, one group one folder, and the folder holds S pages and its own index and nothing else.
 - A new paper is created Board-first and minimal, and every other page is absent until its unit is allocated. No request file, sidecar, section stub or empty stage tree is created in advance. Manuscript machinery is an upgrade performed at the Display or section frontier, never at creation.
 - Every stage declares exactly one of venue-free or venue-aligned, decided by whether a different journal could change its answer. The venue stage itself declares `venue_role`, because it is the stage that picks the venue and is therefore neither. Evidence is venue-free: a retarget may rewrite how a paper is told and may not reopen what it found.
 
@@ -555,6 +565,8 @@ The display unit's working/shipping split is now explicit. The remaining trial g
 > On the strip I would separate two things. Deleting the stored `current_layer` it was designed to read: yes, and it already does not read it. Deleting the strip itself: that is a different question about how a reply closes, not about this folder, and it belongs on `QA7` or `QA2` rather than here.
 
 ## Log
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the tree, the WHO WRITES WHAT table, the stage/group map, and the Files list were redrawn from the retired multi-skill layout (`1-probes/`, `0-seed/`…`7-round/`, `2-phase/`, `3-deliver/`) to today's S01-S10 groups, S03/S04 nested probes, and door `fn/` verbs, and the Round-family aim closed against `cli/stage.py`'s eleven-name `FAMILIES`.
+
 260730 · JL accepted implementation. Created `haipipe-paper-project` and the MISQ manifest. Main-1 passes G0-G3 in an isolated candidate; runtime 0.1.2 corrected the commented-input false positive, and 0.1.3 made G3 independent of the renderer by extracting evidence from filtered pre-render prose. One active G4 blocker remains. G5 not run and submission untouched.
 
 260729 2132 · Closed the final two cold-read precision gaps. Promotion now recomputes manifest, selected Content, every gate state, dependencies, pre-target bytes, and approved candidate bytes before writing, so a changed source or gate makes the check receipt stale rather than merely a changed target. QB9a's introduction citation count was corrected from a raw-Content 29 to 16 prose calls; the larger count included apparatus and one unresolved marker.
