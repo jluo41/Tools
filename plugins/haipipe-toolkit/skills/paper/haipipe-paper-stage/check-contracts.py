@@ -82,7 +82,7 @@ def main():
             dirs.append(_p)
     dirs = sorted(set(dirs))
     if not dirs:
-        sys.exit("FAIL: index.yml resolved ZERO stage dirs — a checker that looks "
+        sys.exit("FAIL: index.yml resolved ZERO stage dirs; a checker that looks "
                  "at nothing must not report ok (each dir: is relative to stages/)")
 
     for d in dirs:

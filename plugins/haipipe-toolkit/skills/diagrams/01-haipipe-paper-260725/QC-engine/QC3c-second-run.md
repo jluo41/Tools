@@ -213,7 +213,7 @@ One re-run has already produced a real defect: a MISQ seed gate recorded as pass
   `existing_face()` at line 249, called at 290: get-or-create at the page level, silent on everything after. `template_divisions()` at 89 is what drops the template's guard comment.
 - `../../paper/S06-main/section-edit/stage.md`
   Line 267 preserves `> USER:` comments; line 272 forbids a second backward fill. The two closest things to the rule this face wants, four lines apart, in one stage's contract.
-- `../../paper/phase/REF/prose-quality.md`
+- `../../paper/workers/REF/prose-quality.md`
   Line 34, "never compress, summarize, translate, or replace `> USER:`" lines. Required reading for every REVISE worker, and the only one of the eight that runs on every revise.
 - `2-phase/USAGE.md`
   Line 53, the ruling that makes `> USER:` canonical and `> JL:` a tolerated alias when reading. The sentence the token split rests on.

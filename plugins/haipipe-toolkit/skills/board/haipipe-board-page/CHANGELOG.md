@@ -7,6 +7,41 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.20.0 - 2026-08-05
+
+**One resolution table, every type machine-resolvable** (review fix). The stale
+"Six Page Types" table, written when six types existed, is replaced by a single
+resolution table covering ALL types, resolved in a fixed order: ① filename
+prefix (`Skill-`/`Agent-` → for-skill, `Meeting-` → for-meeting, `QBv` →
+for-venue), ② the register's REQUIRED `route: outward | inward` line
+(for-literature / for-value, declared in `haipipe-board/ref/topic-entry-contract.md`),
+③ the REQUIRED frontmatter `page-type: display | slide | design | section`,
+④ the `S-<Family>-<unit>` stage filename, ⑤ the Q filename. Exactly one key
+matches or the page is defective. A `page-type:` key beats the filename, which
+settles the S-Display-4c stage/display double match and the QA4 Q-file slide
+page.
+
+- Four stale self-contradictions fixed: the six-type heading and table; "the
+  three Page Type variants maintained here" (ten); the "five implemented types
+  need only four prefixes" sentence (the glob decides membership only, the
+  table decides type); the claim that Meeting "has no contract in any skill"
+  (it has for-meeting).
+- The admissions paragraph is split into short sentences; "ride the stage
+  shape" now reads "look like stage-page filenames".
+
+## 0.19.0 - 2026-08-05
+
+**for-design admitted** (JL, ruled A on the design board's QB6; his definition,
+260805: "we want to design some messages, say message A, B, C for one group of
+people; the Content divisions ARE the different messages"). One page per design
+BRIEF, its Opening stating audience, goal, and constraints; one Content division
+per CANDIDATE, each carrying the artifact itself, its rationale, and its fit to
+the brief's criteria; Aims are the criteria. Closes on a SELECTION record naming
+the winner, why, and each loser's disposition (dropped · kept for A/B test ·
+merged). Sits upstream of for-display: design selects the candidate, display
+accepts its render. A losing division is never silently deleted, because the
+rationale for NOT choosing is part of the design record.
+
 ## 0.18.0 - 2026-08-05
 
 **for-slide admitted** (JL, on the Page-for-Slide branch). One page per deck, one

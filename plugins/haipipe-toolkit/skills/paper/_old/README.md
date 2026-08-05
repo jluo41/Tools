@@ -1,4 +1,4 @@
-# paper/_old/ — retired skills (moved, never deleted)
+# paper/_old/: retired skills (moved, never deleted)
 
 Retirements from the thin-paper restructure, ruled A on
 `diagrams/01-haipipe-paper-260725/QC-engine/QC6-paper-skill-folder.md` (JL 260805).

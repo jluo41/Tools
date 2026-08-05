@@ -3,7 +3,7 @@ name: haipipe-board-page-for-display
 description: >-
   The VARIANT contract for a DISPLAY unit Page: one page per display unit a paper or application ships, such as a figure, table, or diagram, mirroring the unit's folder (float, assets, caption, provenance) and carrying the human acceptance that no file in that folder can hold. It loads haipipe-board-page for the base frame and adds only what a display page needs: Content that mirrors the unit rather than arguing a question, the acceptance ladder from requested through rendered to accepted-into-prose, the rule that every shown number carries provenance from a Value binding or a named run, and the placement record binding the unit to the sentence that cites it. Use when writing or fixing a display page, when a rendered unit was never accepted by a person, when a figure shows a number nothing traces, or when a unit ships but no sentence points at it. Trigger: display page, display unit, S-Display, figure page, table page, float, preview, caption, acceptance, placement, /haipipe-board-page-for-display.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-05"
   summary: "First cut, on JL's ruling that display stands alone: mirror-shaped like a Skill page, but its unit is produced BY this project and closes on human acceptance, not on shipping."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -11,7 +11,7 @@ metadata:
 
 # /haipipe-board-page-for-display · a unit you can look at, and the acceptance it waits for
 
-**LOAD `haipipe-board-page` FIRST.** It owns the base frame. This file adds only what a display page needs and no other kind does.
+**LOAD `haipipe-board-page` FIRST.** It owns the base frame. What this file guards is ACCEPTANCE: a person says yes to one specific render, and no file in the unit's folder can hold that judgment for them.
 
 **The kind this variant covers**: one page per display UNIT.
 
@@ -21,6 +21,8 @@ kind      subject                              closes when
 Display   ONE unit's folder: float · assets ·  a person ACCEPTS the rendered
 unit      caption · source recipe               unit into the work
 ```
+
+**The type key.** A display page declares `page-type: display` in its frontmatter, and the line is REQUIRED: display unit pages wear stage filenames (`S-Display-4c-…`), so without the key the resolver reads them as plain stage pages. The `page-type:` key beats the filename (base, type resolution step ③).
 
 **Where it stands beside the mirror type**: a Skill page and a display page are both mirror-shaped, and they differ in the two facts that matter. A Skill page mirrors a unit maintained ELSEWHERE and closes when that unit ships; a display page mirrors a unit THIS project produces and closes only when a person accepts it. Shipping is an event; acceptance is a judgment. That difference is why display stands alone rather than riding `-for-skill` (JL 260805), and why its `state:` line is a gate position no machine may flip.
 
@@ -51,7 +53,7 @@ each number the unit shows  →  a Value binding on a Value topic page, BY PATH,
 
 ## 🔗 The placement record
 
-A unit that renders beautifully and is cited by no sentence is unfinished work wearing finished clothes. The page carries one placement record per consumer: which section, which sentence, and whether the citation landed. An accepted-but-unplaced unit is a visible open row, never a silent success.
+A unit that renders well but is cited by no sentence is not finished. The page carries one placement record per consumer: which section, which sentence, and whether the citation landed. An accepted-but-unplaced unit is a visible open row, never a silent success.
 
 ## 📂 Files
 

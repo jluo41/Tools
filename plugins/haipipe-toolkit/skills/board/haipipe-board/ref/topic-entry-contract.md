@@ -15,6 +15,27 @@ S topic page
 
 An originating delivery page may raise a Q first. The topic page owns its canonical evidence-routing record, while an entry owns the q-executor because it is the neutral question another system can answer. The consumer trace is never a second register.
 
+## Register route line
+
+The register's first line under `### Q-consumer register` is REQUIRED and machine-readable:
+
+```text
+route: outward    the questions face published knowledge
+route: inward     the questions face results this project must produce
+```
+
+The line is the page's type key. A topic page wears a stage-shaped filename, and the register marker alone cannot separate the two routes, so a register with no `route:` line, or with any other value, leaves the page's type unresolvable and the page defective. `route: outward` resolves the page to `page-types/haipipe-board-page-for-literature`; `route: inward` resolves it to `page-types/haipipe-board-page-for-value`.
+
+## Register-row states
+
+A register row ends in exactly one of three states, written on the row itself:
+
+- RESOLVED · the row's stake is met: SUPPORTED by named sources on the outward route, BOUND to an accepted run by path on the inward route
+- DEFERRED · with the reason written on the row
+- WITHDRAWN · because the claim or need the row served changed
+
+A row in none of these states holds the topic open. The topic's human gate reads the register, not the entries: an answer sitting in an entry's `#### a-executor` that never became a register record does not close its row.
+
 ## Entry shape
 
 An entry page lives below `probes/<topic>/`, has `requires: <topic-page-id>`, and has exactly one each of:

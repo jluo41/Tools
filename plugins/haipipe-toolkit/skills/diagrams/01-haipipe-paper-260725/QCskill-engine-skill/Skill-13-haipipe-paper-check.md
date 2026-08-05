@@ -14,7 +14,7 @@ Delete these instructions once the paragraph is written; the FIRST BLANK LINE ab
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
 
 ## Diagram
-<!-- haipipe:skill:tree:start e8374e077346678f paper/phase/3-check/haipipe-paper-check -->
+<!-- haipipe:skill:tree:start e8374e077346678f paper/_old/phase-hubs/haipipe-paper-check -->
 
 **What `haipipe-paper-check` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -37,11 +37,11 @@ caption line above it if the tree is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start e8374e077346678f paper/phase/3-check/haipipe-paper-check -->
+<!-- haipipe:skill:body:start e8374e077346678f paper/_old/phase-hubs/haipipe-paper-check -->
 
 **haipipe-paper-check** · `0.3.6` · last shipped 2026-08-04
 
-- folder   `paper/phase/3-check/haipipe-paper-check/`
+- folder   `paper/_old/phase-hubs/haipipe-paper-check/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, Agent
 - summary  Paper-specific CHECK worker layered on haipipe-board-page-check; runs declared stage checks, seeds findings, and applies the paper's human gate.
 
@@ -450,7 +450,7 @@ checks.sh     277 ln
 ## Log
 260804 1627 · page generated from `paper/phase/3-check/haipipe-paper-check/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start e8374e077346678f paper/phase/3-check/haipipe-paper-check -->
+<!-- haipipe:skill:log:start e8374e077346678f paper/_old/phase-hubs/haipipe-paper-check -->
 
 Converted from the skill's own `CHANGELOG.md`: 23 releases.
 

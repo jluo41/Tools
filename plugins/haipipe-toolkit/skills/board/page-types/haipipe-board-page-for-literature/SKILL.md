@@ -3,27 +3,27 @@ name: haipipe-board-page-for-literature
 description: >-
   The VARIANT contract for a LITERATURE topic Page: a topic page owning a `### Q-consumer register` whose questions face OUTWARD, toward published knowledge, with one probe entry page nested below probes/ per neutral executor question. It loads haipipe-board-page for the base frame and the shared topic-entry core for the anatomy, then adds only the outward route's translation layer: what a legal register row carries here, what a returned answer must become (a citation binding: a real key, a positioning sentence, a novelty verdict), and when the topic may close. Use when writing or fixing a Literature topic page, when a register row carries no positioning stake, when an answer landed but never became a citation record, or when a novelty claim rests on nothing traceable. Trigger: literature topic, literature page, S-Literature, discovery route, positioning, novelty, citation binding, related work evidence, /haipipe-board-page-for-literature.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-08-05"
-  summary: "First cut, on JL's D ruling: separate types over ONE loaded topic core; this file is the outward route's dictionary and nothing else."
+  summary: "Close semantics moved to the core's Register-row states; the register carries the REQUIRED route: outward key; SUPPORTED means named sources stand behind the positioning, never an empty search."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-board-page-for-literature · the outward route: what is already known
 
-**LOAD TWO THINGS FIRST.** `haipipe-board-page` owns the base frame. `haipipe-board/ref/topic-entry-contract.md` owns the shared anatomy: the `### Q-consumer register` on the direct topic page, entry pages below `probes/`, the four fixed entry headings, and the state-derived queue. This file restates NEITHER; it adds only what the outward route means, because the anatomy is stated once or the two topic types drift apart (`QB6 §4`, JL 260805).
+**LOAD TWO THINGS FIRST.** The base frame is `haipipe-board-page`, and the register-and-entry anatomy is `haipipe-board/ref/topic-entry-contract.md`, stated once for both topic routes so they cannot drift apart (`QB6 §4`, JL 260805). This file is the outward route's dictionary and nothing more: what a question aimed at the published record carries, and what a found result must become before this page may lean on it. Any sentence here that seems to describe the register's shape belongs to the core, not to this file.
 
 **The kind this variant covers**: a topic page whose questions face OUTWARD.
 
 ```
 kind        resolved by                          closes when
 ────────────────────────────────────────────────────────────────────────
-Literature  the page declares a Q-consumer       every register row's positioning
-topic       register AND its route is the        is supported, deferred with a
-            outward, discovery-bank direction    reason, or withdrawn
+Literature  the `### Q-consumer register`        every register row is SUPPORTED,
+topic       marker plus its REQUIRED             DEFERRED, or WITHDRAWN, per the
+            `route: outward` line                core's Register-row states
 ```
 
-"Literature" names a DIRECTION, not a paper section: any family may ask what is already known. The paper family's projection files these pages as `S-Literature-<n>-<topic>` under its discovery group with `L<n>` entry folders; those letters are family vocabulary and stay in the paper projection.
+"Literature" names a DIRECTION, not a paper section: any family may ask what is already known. The paper family's projection files these pages as `S-Literature-<n>-<topic>` under its discovery group with `L<n>` entry folders; those letters are family vocabulary and stay in the paper projection. The register opens with its REQUIRED key, `route: outward`: the filename looks like a stage page's, so only this line routes the page here (base, type resolution step ②).
 
 ## 🗣 What a legal register row carries HERE
 
@@ -53,7 +53,7 @@ An answer that stays in the entry's `#### a-executor` is not yet evidence the pa
 
 ## 🚪 When the topic closes
 
-Every register row reaches one of three states: its positioning is SUPPORTED by named sources, DEFERRED with the reason written on the row, or WITHDRAWN because the claim it served changed. A row that is none of these holds the topic open, and the topic's human gate reads the register, not the entries.
+The three terminal row states, and the rule that the gate reads the register rather than the entries, live in the core (`topic-entry-contract.md`, Register-row states). This route only says what SUPPORTED takes here: named, real sources standing behind the positioning, which is the citation binding above, written onto the row. A search that came back empty supports nothing by itself; the row either carries the bounded no-precedent finding, scope and all, or it stays open.
 
 ## 📂 Files
 
@@ -63,4 +63,4 @@ haipipe-board-page-for-literature/
 └── CHANGELOG.md        version history
 ```
 
-Owns no scripts and no anatomy. The core is `haipipe-board/ref/topic-entry-contract.md`; the checker is `haipipe-board/src/topic_entry_contract.py`; the crossing is `page-phases/haipipe-board-page-probe`; the inward sibling is `haipipe-board-page-for-value`; the paper projection is `paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md`.
+This folder holds prose only. The anatomy lives in `haipipe-board/ref/topic-entry-contract.md` and its checker in `haipipe-board/src/topic_entry_contract.py`; a literature question crosses to the discovery bank through `page-phases/haipipe-board-page-probe`. A question about what this project must PRODUCE, rather than what the field already holds, belongs on a `haipipe-board-page-for-value` page instead. The paper family's projection of the shape is `paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md`.

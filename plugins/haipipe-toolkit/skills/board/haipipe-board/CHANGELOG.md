@@ -5,6 +5,21 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.119.0 - 2026-08-05
+
+**`ref/topic-entry-contract.md` grows the two rules the topic types need**
+(review fix; the ref carries no version of its own, so the change is recorded
+here).
+
+- Register route line: the register's first line is a REQUIRED
+  `route: outward | inward`, the machine key that separates the two topic
+  types (the base's type resolution step ②). A register with no `route:` line,
+  or with any other value, leaves the page's type unresolvable.
+- Register-row states: a row ends SUPPORTED/BOUND, DEFERRED with a reason, or
+  WITHDRAWN; an unresolved row holds the topic open; the topic's human gate
+  reads the register, not the entries. Moved here from the two route contracts
+  so the shared close semantics are stated once.
+
 ## 0.118.0 - 2026-08-05
 
 **Live html embeds, for the slide page type** (JL: "you will embed the html in

@@ -3,7 +3,7 @@ name: haipipe-board-page-for-slide
 description: >-
   The VARIANT contract for a SLIDE Page: one page per deck, one Content division per slide. Each division carries the slide's SOURCE half (outline and talk notes, usually extracted from section pages) and its RENDER half: the LIVE slide, embedded as `![slide N](deck.html?preview=N)`, which the board renders as an iframe of the one deck file in single-slide mode. The same file opened bare is the full keyboard presentation, so review surface and presentation surface can never drift. It loads haipipe-board-page for the base frame and shares for-display's acceptance model: a person accepts a specific render. Use when writing or fixing a slide page, when a talk needs a review surface colleagues can read beside the live slides, when a slide shows a number nothing traces, or when the embed shows the wrong slide or none. Trigger: slide page, deck page, talk page, slides, presentation page, slide binding, preview mode, embed html, presenter deck, html-ppt, /haipipe-board-page-for-slide.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-08-05"
   summary: "Corrected by its first real page (QA4): the division embeds the LIVE slide via ?preview=N, one deck file for both surfaces; the PNG story and the strips-JS belief are retired."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -23,6 +23,8 @@ page    deck order                           slide, or cuts it from
                                              the talk
 ```
 
+**The type key.** A slide page declares `page-type: slide` in its frontmatter, and the line is REQUIRED: a deck can sit on any filename, and the proving page `QA4` wears a Q filename, so only the key says the divisions are slides and the page closes slide by slide. The `page-type:` key beats the filename (base, type resolution step ③).
+
 ## 🎬 One file, two surfaces
 
 The deck is ONE html-ppt file, and both surfaces read it, so neither can drift:
@@ -40,9 +42,18 @@ The deck is ONE html-ppt file, and both surfaces read it, so neither can drift:
 
 `?preview=N` is html-ppt's own locked single-slide mode (`assets/runtime.js`): only slide N visible, chrome hidden, keys off. The board engine renders any `![alt](x.html)` as a live iframe with an always-visible open link beneath it (`src/body.py`), and the split-site build reroots the src like any figure path.
 
-🚫 **Never paste slide markup into the page, and never write the embed without `?preview=N`.** Raw html in a division is escaped to visible text by the renderer; an embed without the preview query shows the whole deck cover in every division. The embed is always the one deck file plus the slide's own preview number.
+**The embed carries BOTH selectors: `?preview=N#sN`.** The query drives the runtime; the fragment drives a scripts-off fallback. The deck gives each `<section class="slide">` an `id="sN"` and carries one small style block:
 
-**What the earlier version of this contract got wrong, recorded so it stays wrong**: 0.1.0 ruled "never embed the live deck, embed the PNG export, because `build.py` strips JS". The first real page (`QA4` on the boardform board, 260805) disproved both halves: the build never strips scripts from anything it ships, it only ASSERTS the page stays readable with scripts off (the open link under each frame is that no-JS path), and an iframe's file is never rewritten by the build at all. JL's ruling was "embed the html in the content division", and that is the rule. The PNG export remains available for surfaces that cannot iframe (a paper figure, an offline export); it is not the board's path.
+```css
+.deck .slide:target{opacity:1;transform:none;pointer-events:auto}
+.deck:has(.slide:target) .slide:not(:target){display:none}
+```
+
+So on a surface that blocks scripts (a VS Code webview, a locked-down frame), the fragment still shows exactly slide N; with scripts on, the runtime takes over and the two agree because both name the same slide. Verified both ways in a real Chrome on QA4, including with script execution disabled.
+
+🚫 **Never paste slide markup into the page, and never write the embed bare.** Raw html in a division is escaped to visible text by the renderer; an embed without `?preview=N#sN` shows the whole deck cover in every division, or a blank frame where scripts are off. The embed is always the one deck file plus the slide's own preview number and fragment.
+
+**What the earlier version of this contract got wrong, recorded so the mistake stays on the page**: 0.1.0 ruled "never embed the live deck, embed the PNG export, because `build.py` strips JS". The first real page (`QA4` on the boardform board, 260805) disproved both halves: the build never strips scripts from anything it ships, it only ASSERTS the page stays readable with scripts off (the open link under each frame is that no-JS path), and an iframe's file is never rewritten by the build at all. JL's ruling was "embed the html in the content division", and that is the rule. The PNG export remains available for surfaces that cannot iframe (a paper figure, an offline export); it is not the board's path.
 
 ## 🧬 The division: source half, render half, and the slide binding
 

@@ -1,0 +1,279 @@
+{
+  "status": "closed",
+  "run_id": "260805-0216-QB8e",
+  "board": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722",
+  "page": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB8e-sentence-details-lifecycle.md",
+  "packet": {
+    "run_id": "260805-0216-QB8e",
+    "board": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722",
+    "page": "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB8e-sentence-details-lifecycle.md",
+    "start_phase": "CHECK",
+    "intent": "bring QB8e to a version that passes CHECK; its four known mechanical findings are division-no-figure on §1 'The surface', §2 'Three record families', §3 'Cleanup lifecycle', §4 'Identity'",
+    "sources": [
+      "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB8e-sentence-details-lifecycle.md",
+      "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/writing-rules.md",
+      "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/page-template.md"
+    ],
+    "related_context": {
+      "command": "pagecontext.py QB-delivery/QB8e-sentence-details-lifecycle.md --phase CHECK",
+      "traversal": "one-hop",
+      "packet": "# Related Board Pages · QB8e-sentence-details-lifecycle.md · CHECK\n\nTraversal: one hop only; rows declared by a target Page are not followed.\n\nNo Related Board Pages rows match this phase.",
+      "note": "rematerialized before every dispatch (CHECK at steps 1, 3, 5; REVISE at steps 2, 4); the Page declares no Related Board Pages rows for any phase"
+    },
+    "constraints": [
+      "English only",
+      "no em-dashes",
+      "one sentence per source line",
+      "do not change the page's purpose or Aims; a new round is not authorized",
+      "the id QB8e and its filename must not change",
+      "the page-level state: line is JL's alone; do not edit the state: line"
+    ],
+    "human_gate": {
+      "required": false,
+      "rule": "JL authorized this run; the page-level state: line remains his alone to flip"
+    },
+    "limits": {
+      "max_steps": 8,
+      "max_rounds": 1
+    }
+  },
+  "limits": {
+    "max_steps": 8,
+    "max_rounds": 1
+  },
+  "final_version": "8a3ee70fa28af2f0504705be44c224e8a4f57eb45ce5e872611c72dba07fe6fa:f889e129dadfecd8b960afd08b8040c8e2157eb5b2c10a6bc4dae0e1781f323d",
+  "receipts": [
+    {
+      "step": 1,
+      "round": 1,
+      "phase": "CHECK",
+      "actor": "haipipe-board-reviewer-agent#r1s1",
+      "role": "judge",
+      "builder_actor": "orchestrator-mechanical-builder",
+      "status": "ok",
+      "version_before": "0e570456007c709580f27f58f4547eb661e968373a84db25a5d6100c30adae84:0af7ebd64a2bba4af13d1137f61f8d3b9ffa49f0a068dd8dce80c47b71885357",
+      "version_after": "0e570456007c709580f27f58f4547eb661e968373a84db25a5d6100c30adae84:0af7ebd64a2bba4af13d1137f61f8d3b9ffa49f0a068dd8dce80c47b71885357",
+      "checked_version": "0e570456007c709580f27f58f4547eb661e968373a84db25a5d6100c30adae84:0af7ebd64a2bba4af13d1137f61f8d3b9ffa49f0a068dd8dce80c47b71885357",
+      "source_sha256": "0e570456007c709580f27f58f4547eb661e968373a84db25a5d6100c30adae84",
+      "render_sha256": "0af7ebd64a2bba4af13d1137f61f8d3b9ffa49f0a068dd8dce80c47b71885357",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 4,
+      "verdict": "revise",
+      "route": "REVISE",
+      "requested_route": "REVISE",
+      "reopens_promise": false,
+      "reason": "The computed version matches the expected identity and no consequential unknown or gate blocks work, but realization defects with file-and-line evidence remain while purpose and Aims stand, so the next authority is a REVISE producer and this CHECK may not cure its own findings.",
+      "artifacts": [],
+      "evidence": [
+        "shasum -a 256 on QB-delivery/QB8e-sentence-details-lifecycle.md and board/QB/QB8e-sentence-details-lifecycle.html: both match the expected version, so no HOLD",
+        "check.py --strict on the board: QB8e shows exactly 4 WARN division-no-figure (§1-§4), no ERROR, no em-dash/cjk/dead-path findings",
+        "check.py --summary: 57 pages, 173 findings board-wide, 35 clean pages; QB8e is not among the worst pages",
+        "rendered HTML board/QB/QB8e-sentence-details-lifecycle.html: qlead span holds only the bare question; the four rationale sentences and Covered elsewhere render inside the More details drawer",
+        "full cold read of QB8e source (title, state, Opening, Diagram, Content §1-§4, Aims, States, Files, Glossary, Log); prose itself reads clear with no em-dashes and terms 'Sentence details', 'apparatus', 'archive', 'purge' defined in Glossary",
+        "board.md: QB8e registered in the QB roster (line 184), named in the Pipeline 260802 record and QB group listing, so ownership is unambiguous; batch voice gate not applicable to a single-page scope",
+        "convention calibration against QB4-overall.md (worked example: visible Opening block, A-id Aims with Done when, mirrored States, captioned Diagram, emoji-bold Glossary rows) and QB8-overview.md; grep confirms '### §N' divisions and unnumbered #### paragraphs are a board-wide tolerated pattern also used by clean pages, so those two shapes were not counted as QB8e defects",
+        "contracts read: haipipe-board-page SKILL.md v0.19.0, haipipe-board-page-check SKILL.md v0.3.1, writing-rules.md, page-template.md, reviewer charter v0.7.0"
+      ],
+      "findings": [
+        "check.py WARN division-no-figure x4: Content divisions §1 'The surface' (line 34), §2 'Three record families' (line 46), §3 'Cleanup lifecycle' (line 62), §4 'Identity' (line 73) each open with no caption + figure + short intro (rule source QB4 §3.3.1); these are the run's four known mechanical findings and all four are still present in this version.",
+        "Opening's first blank line sits directly after the question (lines 7-8), so the rendered stage shows only the bare 95-character question while the four rationale sentences (lines 9-12) sit in the More details drawer as one unlabelled prose block; the base contract requires a 4-5 sentence visible paragraph (~450 chars, ceiling 520) and names this exact bare-question failure mode; verified on board/QB/QB8e-sentence-details-lifecycle.html where the qlead span holds only the question.",
+        "The ## Diagram figure (fence at lines 19-31) carries no caption line above it; every figure requires '**Name**: what this diagram shows.' directly above the fence (JL 260801, writing-rules.md; QB4 and QB8 both comply).",
+        "Aims rows (lines 81-102) are checkbox records without ids ('- [x] 🧭 Open one independent lifecycle Q') instead of '- A<division>.<n> · target' with a testable Done when, and the groups ('### The panel's name and three families') do not mirror Content divisions as '### A<n> · <emoji> <name>'; the base contract says Aims never carry checkboxes; a REVISE can convert record form while preserving every Aim's intent, respecting the no-Aims-change constraint; note many sibling pages still share this legacy form, so this is a conformance gap against the current base contract, not a QB8e-only invention.",
+        "States (lines 104-112) contains only prose and Decision Now with no per-Aim State row, so the one-to-one Aim-to-State id map the base contract requires on a Q page is absent and the section's met/total derivation has nothing to read.",
+        "Both Decision Now rows (lines 110 and 112) claim a tick 'also closes the same row in Items to Finish': 'Items to Finish' is the section name retired for Aims on 260731, and the described close mechanism contradicts the base contract's answered-decision rule (ruling to Law, change to Log, matching Aim's State row updated in the same edit).",
+        "The Decision Now identity row (line 112) packs both options into one prose line; each option takes its own line naming what choosing it commits to, with the recommendation on its own line (JL 260731).",
+        "Glossary entries (lines 128-131) are plain unbulleted lines; each entry must be a '- <emoji> **TERM**: definition' row with the term in bold (JL 260802; QB4's Glossary is the worked shape).",
+        "Line 14 ('**Covered elsewhere**') packs two sentences onto one source line, breaking the one-sentence-per-line hard rule (JL 260725)."
+      ],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      }
+    },
+    {
+      "step": 2,
+      "round": 1,
+      "phase": "REVISE",
+      "actor": "haipipe-board-creator-agent#r1s2",
+      "role": "producer",
+      "builder_actor": "orchestrator-mechanical-builder",
+      "status": "ok",
+      "version_before": "0e570456007c709580f27f58f4547eb661e968373a84db25a5d6100c30adae84:0af7ebd64a2bba4af13d1137f61f8d3b9ffa49f0a068dd8dce80c47b71885357",
+      "version_after": "17c517fa72c549cc048a483953162c153c3599e3db80d0ab52d2e72fd326c67f:9d9832a8306d1b2c1efb7b3205a8cc4d3450a8fae775648d05661680ac1af44d",
+      "checked_version": "",
+      "source_sha256": "17c517fa72c549cc048a483953162c153c3599e3db80d0ab52d2e72fd326c67f",
+      "render_sha256": "9d9832a8306d1b2c1efb7b3205a8cc4d3450a8fae775648d05661680ac1af44d",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "CHECK",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "Exercised REVISE authority only: improved the realization of QB8e under its fixed purpose and nine preserved Aims, so the changed version is ready for a fresh judge.",
+      "artifacts": [
+        "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB8e-sentence-details-lifecycle.md"
+      ],
+      "evidence": [
+        "Read the full target page, the creator charter, haipipe-board-page/SKILL.md, haipipe-board-page-revise/SKILL.md, ref/writing-rules.md, ref/page-template.md, and QB4-overall.md (Aims, States, Glossary, Law, and Content division shapes) as the worked example.",
+        "Finding 1: each of §1-§4 now opens with a one-line '**Name**: ...' caption, a fenced emoji ASCII face figure under 80 columns, and a one-line 📌 intro directly after the ### heading, before the existing #### paragraphs.",
+        "Finding 2: the Opening's visible paragraph is now the question plus four rationale sentences (5 sentences, ~505 characters joined, under the 520 ceiling), with the first blank line after them; the drawer holds two bold-labelled parts (Covered elsewhere, What success looks like) instead of unlabelled prose.",
+        "Finding 3: the ## Diagram figure now carries '**One sentence's records, end to end**: ...' above its fence, matching QB4's Diagram caption placement.",
+        "Finding 4: the nine checkbox Aims became id'd records A1.1-A1.3, A2.1-A2.2, A3.1, A4.1, P1, P2 with testable Done when lines, grouped as '### A<n> · <emoji> <name>' mirroring §1-§4 plus '### P · 🏁 Page-level'; each target and Done when restates the original row's heading and explanation, with no Aim added, dropped, or retargeted.",
+        "Finding 5: States now mirrors every Aim id exactly once with shape markers (✅ x3 with named evidence: §1+Glossary for A1.1, §2 for A2.1, the page's own existence and ownership list for P1; 🧠 x2 pointing at the Decision Now rows; ⬜ x4 with the missing implementation named), keeping the two original summary sentences after the groups as in QB4.",
+        "Finding 6: both 'a tick here also closes the same row in Items to Finish' clauses are removed; the rows now carry no close-mechanism claim, leaving closure to the answered-decision rule in the base contract.",
+        "Finding 7: the identity row now gives option A (hidden stable key) and option B (page-level archive) one line each stating what choosing it commits to, with a separate '→ CC recommends A, because ...' line; the Overview row received the same shape.",
+        "Finding 8: the four Glossary entries are now '- <emoji> **TERM**: definition' rows (🪟 Sentence details, ⚙️ apparatus, 📦 archive, 🔥 purge).",
+        "Finding 9: the Covered elsewhere part now puts the QB8 sentence and the QD8 sentence on separate source lines.",
+        "Added one dated Log row (260805) recording this REVISE; the title line, state: line, owner, method, and session lines are byte-identical to the prior version.",
+        "builder snapshot r1:s2: build.py rebuilt 57 pages; check.py --strict names QB8e in zero rows (0 ERROR, 0 WARN); shasum -a 256 over source md and rendered html; git status confirms QB8e-sentence-details-lifecycle.md is the only source file modified during the producer window"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      },
+      "open_questions": [
+        "The Content divisions keep the page's pre-existing '### §<n> <name>' heading shape without a ' · ' separator; the assigned findings referenced them in that form, but if check.py's group-name-drift comparison expects the '### <n> · <name>' form used by QB4, the new mirrored A-groups could surface a drift finding that predates this pass and was not in my cure list.",
+        "The #### paragraph headings inside the divisions remain unnumbered (e.g. '#### Compact default'), as in the prior version; the 'Content is numbered all the way down' writing rule would want '#### 1.1 ·' style, but renumbering was not among the nine findings and I left the anchors stable for the judge."
+      ]
+    },
+    {
+      "step": 3,
+      "round": 1,
+      "phase": "CHECK",
+      "actor": "haipipe-board-reviewer-agent#r1s3",
+      "role": "judge",
+      "builder_actor": "orchestrator-mechanical-builder",
+      "status": "ok",
+      "version_before": "17c517fa72c549cc048a483953162c153c3599e3db80d0ab52d2e72fd326c67f:9d9832a8306d1b2c1efb7b3205a8cc4d3450a8fae775648d05661680ac1af44d",
+      "version_after": "17c517fa72c549cc048a483953162c153c3599e3db80d0ab52d2e72fd326c67f:9d9832a8306d1b2c1efb7b3205a8cc4d3450a8fae775648d05661680ac1af44d",
+      "checked_version": "17c517fa72c549cc048a483953162c153c3599e3db80d0ab52d2e72fd326c67f:9d9832a8306d1b2c1efb7b3205a8cc4d3450a8fae775648d05661680ac1af44d",
+      "source_sha256": "17c517fa72c549cc048a483953162c153c3599e3db80d0ab52d2e72fd326c67f",
+      "render_sha256": "9d9832a8306d1b2c1efb7b3205a8cc4d3450a8fae775648d05661680ac1af44d",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "revise",
+      "route": "REVISE",
+      "requested_route": "REVISE",
+      "reopens_promise": false,
+      "reason": "Two realization defects with file-and-line evidence remain while purpose and Aims stand unchanged, so the next authority is REVISE, not CLOSE.",
+      "artifacts": [],
+      "evidence": [
+        "Version identity computed via shasum -a 256 on QB-delivery/QB8e-sentence-details-lifecycle.md and board/QB/QB8e-sentence-details-lifecycle.html equals the expected version exactly, so no HOLD.",
+        "check.py --strict on the board: 57 pages, 1 error, 168 warn, 0 gap; zero findings name QB8e (grep over full output), and the four known division-no-figure findings on §1-§4 no longer fire because each division now opens with a captioned fenced figure (lines 39-51, 66-79, 98-107, 120-129); the single board ERROR is board.md's dead Link to ../../../../subjective-label/diagram/02-method-260722/, outside this page and untouched by this run.",
+        "check.py --summary: 36 of 57 pages clean; QB8e is not among the eight worst pages.",
+        "Cold read against writing-rules.md: Opening visible paragraph is 5 sentences under the 520-char ceiling (checker-enforced), question-then-rationale shape with Sentence details defined at first use; drawer is two bold-labelled parts; no em-dash, no CJK, one sentence per source line; all four Glossary terms (Sentence details, apparatus, archive, purge) defined; C/H/P/S address functionally defined at §4 line 133; verdict clear.",
+        "Aims-to-States map is one-to-one (A1.1-A1.3, A2.1-A2.2, A3.1, A4.1, P1, P2 each mirrored once); A1.2 and A4.1 honestly 🧠 waiting on JL and each matches one open Decision Now row, which the run's closing rule counts as recorded work, not defects; A2.1 and P1 ✅ rows verified against §2's per-family rules and board.md lines 122, 149, 170 assigning the lifecycle to QB8e alone (QB8-overview.md line 436 points at QB8e rather than claiming the lifecycle).",
+        "Files paths resolve (no dead-file-path finding on QB8e); Aims/States group names match division number and name (no group-name-drift on QB8e); Log newest-on-top and its 260805 entry matches the visible r1s2 changes.",
+        "Requirement conflict noted for the owner, not judged against the page: haipipe-board-page SKILL.md's Decision Now row shape (ask, context, one option per line, → CC recommends; the shape QB8e follows) differs from page-template.md's richer 🗣/📍/🔔/⭐/🛑/🤖 shape with Blocks and If-nobody-answers rows.",
+        "Batch voice gate not applicable: one page in scope.",
+        "Read-only throughout: no file edited, no build run."
+      ],
+      "findings": [
+        "Content is not numbered all the way down (JL 260801; haipipe-board-page SKILL.md, writing-rules.md hard rule 1, page-template.md Content comment): all eight #### paragraph headings carry no index number, at QB8e-sentence-details-lifecycle.md lines 54 (User-facing name), 59 (Compact default), 81 (Comments), 86 (Evidence), 91 (Changes), 109 (Archive first), 114 (Permanent deletion is separate), 131 (Render address versus durable key); sibling pages QB4-overall.md and QB8-overview.md number every paragraph (#### 1.1 · form), so the smallest fix is numbering them #### 1.1 · through #### 4.1 · under their divisions.",
+        "States A1.1 (line 179) claims '✅ Met' against A1.1's Done when (line 139), which requires 'The page and the rendered panel use Sentence details as the user-facing name', but the string 'Sentence details' appears nowhere in the haipipe-board render source (src/body.py render_apparatus emits an unnamed .sapp panel with no user-facing panel name; the only occurrence is tests/drive_board.py:104, a test expectation on the retired QB5e path), so the render leg of the Done when is visibly unmet and the ✅ is an unsupported claim; smallest fix under REVISE is a truthful State row naming what is met (§1 and the Glossary) and what still waits on the rendered panel."
+      ],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      }
+    },
+    {
+      "step": 4,
+      "round": 1,
+      "phase": "REVISE",
+      "actor": "haipipe-board-creator-agent#r1s4",
+      "role": "producer",
+      "builder_actor": "orchestrator-mechanical-builder",
+      "status": "ok",
+      "version_before": "17c517fa72c549cc048a483953162c153c3599e3db80d0ab52d2e72fd326c67f:9d9832a8306d1b2c1efb7b3205a8cc4d3450a8fae775648d05661680ac1af44d",
+      "version_after": "8a3ee70fa28af2f0504705be44c224e8a4f57eb45ce5e872611c72dba07fe6fa:f889e129dadfecd8b960afd08b8040c8e2157eb5b2c10a6bc4dae0e1781f323d",
+      "checked_version": "",
+      "source_sha256": "8a3ee70fa28af2f0504705be44c224e8a4f57eb45ce5e872611c72dba07fe6fa",
+      "render_sha256": "f889e129dadfecd8b960afd08b8040c8e2157eb5b2c10a6bc4dae0e1781f323d",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "",
+      "route": "CHECK",
+      "requested_route": "CHECK",
+      "reopens_promise": false,
+      "reason": "Exercised REVISE's authority to improve the realization under fixed purpose and Aims: cured the two CHECK findings (paragraph numbering and the untruthful A1.1 State row) without touching any Aim's target or Done when, so the version is ready for a fresh judge.",
+      "artifacts": [
+        "/Users/jluo41/Desktop/Physician-SPACE/Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/QB-delivery/QB8e-sentence-details-lifecycle.md"
+      ],
+      "evidence": [
+        "Read the full target page, the creator charter, haipipe-board-page/SKILL.md, haipipe-board-page-revise/SKILL.md, page-run-contract.md, writing-rules.md, and page-template.md before editing.",
+        "Finding 1 (numbering): writing-rules.md 'Content is numbered all the way down' (JL 260801) and page-template.md's '#### 2.1 · ' form; renamed all eight paragraph headings to '#### 1.1 · User-facing name', '#### 1.2 · Compact default', '#### 2.1 · Comments', '#### 2.2 · Evidence', '#### 2.3 · Changes', '#### 3.1 · Archive first', '#### 3.2 · Permanent deletion is separate', '#### 4.1 · Render address versus durable key', exactly the reviewer's prescribed indices; the page holds no other #### headings.",
+        "Finding 2 (A1.1 truthfulness): A1.1's Done when requires the page AND the rendered panel to carry the Sentence details name; the judge established src/body.py emits an unnamed panel, so the ✅ was unsupported; replaced the row with '🔨 A1.1 · Partly met; ...' naming the met leg (§1 and the Glossary record the name) and the waiting leg (the rendered panel in haipipe-board/src/body.py does not yet carry it); the Aim record itself is byte-identical.",
+        "Log: added one new 260805 'REVISE r1s4' row above the preserved r1s2 row recording both cures; no other line on the page changed, and the state:, title, owner, method, and session lines are untouched.",
+        "builder snapshot r1:s4: build.py rebuilt 57 pages; check.py --strict names QB8e in zero rows; shasum -a 256 over source md and rendered html; git status plus mtimes confirm QB8e-sentence-details-lifecycle.md is the only file modified during the producer window"
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      },
+      "open_questions": []
+    },
+    {
+      "step": 5,
+      "round": 1,
+      "phase": "CHECK",
+      "actor": "haipipe-board-reviewer-agent#r1s5",
+      "role": "judge",
+      "builder_actor": "orchestrator-mechanical-builder",
+      "status": "ok",
+      "version_before": "8a3ee70fa28af2f0504705be44c224e8a4f57eb45ce5e872611c72dba07fe6fa:f889e129dadfecd8b960afd08b8040c8e2157eb5b2c10a6bc4dae0e1781f323d",
+      "version_after": "8a3ee70fa28af2f0504705be44c224e8a4f57eb45ce5e872611c72dba07fe6fa:f889e129dadfecd8b960afd08b8040c8e2157eb5b2c10a6bc4dae0e1781f323d",
+      "checked_version": "8a3ee70fa28af2f0504705be44c224e8a4f57eb45ce5e872611c72dba07fe6fa:f889e129dadfecd8b960afd08b8040c8e2157eb5b2c10a6bc4dae0e1781f323d",
+      "source_sha256": "8a3ee70fa28af2f0504705be44c224e8a4f57eb45ce5e872611c72dba07fe6fa",
+      "render_sha256": "f889e129dadfecd8b960afd08b8040c8e2157eb5b2c10a6bc4dae0e1781f323d",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 0,
+      "verdict": "pass",
+      "route": "CLOSE",
+      "requested_route": "CLOSE",
+      "reopens_promise": false,
+      "reason": "The version identity matches the expected snapshot, check.py --strict reports zero findings on QB8e (the four known division-no-figure findings on §1-§4 are cured by captioned face figures), and the semantic read finds no defect a REVISE must cure, so the satisfied machine gate routes to CLOSE.",
+      "artifacts": [],
+      "evidence": [
+        "Version: shasum -a 256 on QB-delivery/QB8e-sentence-details-lifecycle.md and board/QB/QB8e-sentence-details-lifecycle.html equals the expected 8a3ee70f...:f889e129... exactly; no HOLD.",
+        "Mechanical: check.py --strict over the board returned 57 pages, 1 ERROR, 168 WARN, 0 GAP with zero lines naming QB8e; QB8e is among the 36 clean pages in --summary; the single ERROR is board.md's dead declared Link to ../../../../subjective-label/diagram/02-method-260722/, outside this page and untouched by this run.",
+        "Render freshness: the rendered HTML contains r1s4's numbered paragraph headings (1.1 · User-facing name), the corrected 🔨 A1.1 row, and the Sentence details name, so the render reflects the judged source.",
+        "Sections: Opening is one visible 5-sentence block (~509 chars, under the 520 ceiling) shaped question, definition, stake, decision, with labelled drawer parts Covered elsewhere and What success looks like; Diagram and all four Content divisions open with a captioned figure whose rows are label+value; paragraphs are numbered 1.1 through 4.1 with no third level and no emoji on division headings; Aims groups A1-A4 mirror the divisions' number and name with emoji on the group only, every Aim has a testable Done when, and States mirrors all nine Aim ids one-to-one (A1.1 🔨, A1.2 🧠, A1.3 ⬜, A2.1 ✅, A2.2 ⬜, A3.1 ⬜, A4.1 🧠, P1 ✅, P2 ⬜) with Decision Now first.",
+        "Consistency: the two 🧠 rows point at the two open Decision Now rows, which per this run's closing rule are recorded work awaiting JL, not defects; A1.1's negative claim verified (grep finds zero 'Sentence details' in haipipe-board/src/body.py while render_apparatus exists at body.py:819); P1's no-other-page-claims half corroborated by board.md lines 122 and 149 and QB8-overview.md lines 23 and 436, which defer the lifecycle to QB8e.",
+        "Cold read: no unreadable sentence, no undefined term (queue is defined board vocabulary at Skill-0-haipipe-board.md:433; the Comments and Evidence member lists reuse the template's typed-lane vocabulary; Sentence details, apparatus, archive, and purge are in the page Glossary), no em-dash in the source, one sentence per line throughout; batch voice gate not applicable with one page in scope.",
+        "Requirement conflict noted for the contract owner, not a QB8e defect: haipipe-board-page SKILL.md's Decision Now example (options one line each, recommendation on its own '→ CC recommends' line, which QB8e follows and check.py accepts) diverges from page-template.md's richer row shape (📍 Part, 🔔 Why now, ⭐ starred option, 🛑 Blocks, 🤖 If nobody answers); per the evaluation contract this source-vs-source disagreement is reported rather than judged, and a REVISE on this page could not cure it."
+      ],
+      "findings": [],
+      "human_gate": {
+        "required": false,
+        "status": "not-required",
+        "evidence": []
+      }
+    }
+  ],
+  "controller": {
+    "actor": "board-page-orchestrator (this session) emulating page-lifecycle.workflow.js verbatim controller logic",
+    "workflow_tool": "unavailable in this environment; producer and judge dispatched as fresh-context claude -p subprocesses; builder role performed by the controller identity orchestrator-mechanical-builder",
+    "initial_snapshot": {
+      "actor": "orchestrator-mechanical-builder",
+      "version_id": "0e570456007c709580f27f58f4547eb661e968373a84db25a5d6100c30adae84:0af7ebd64a2bba4af13d1137f61f8d3b9ffa49f0a068dd8dce80c47b71885357",
+      "mechanical_errors": 0,
+      "mechanical_warnings": 4,
+      "evidence": [
+        "builder snapshot initial: build.py wrote 66 files, 57 pages; check.py --strict names QB8e in exactly 4 WARN division-no-figure rows (§1-§4), 0 ERROR; shasum -a 256 over source md and board/QB/QB8e-sentence-details-lifecycle.html"
+      ]
+    },
+    "deviations": [
+      "controller appended the preceding CHECK receipt findings to each REVISE producer dispatch, labeled as route context, because the shipped workflow prompt omits them",
+      "controller added one labeled closing-rule interpretation to the step-3 and step-5 CHECK dispatches: run-level CLOSE asserts this exact version passes CHECK, not that every Aim of the decision page is met, because the base Q close condition would make CLOSE unreachable for any mid-life decision page",
+      "run_id minted by the orchestrator because the raw-material packet arrived without one"
+    ],
+    "concurrency_observed": "a concurrent session edited QA4-board-skillset.md, QA4-board-skillset-deck.html, QB6-page-types.md, and Skill-3-haipipe-board-page.md during this run; mtime analysis places every foreign write outside the producer windows, and both producers touched only the target Page"
+  }
+}

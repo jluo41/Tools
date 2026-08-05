@@ -1,5 +1,5 @@
-# Page · the types: Q · for-stage · for-section · for-venue · for-skill mirror · for-meeting · for-literature · for-value · for-display · for-slide, and what admits a new one
-state: 🟡 IN PROGRESS · six types admitted and built 260805, base at 0.18.0; the nesting row below is the one still open
+# Page · the types: Q · for-stage · for-section · for-venue · for-skill mirror · for-meeting · for-literature · for-value · for-display · for-design · for-slide, and what admits a new one
+state: 🟡 IN PROGRESS · seven types admitted and built 260805, base at 0.20.0; the nesting row and the checker debt (`§5`) are the open work
 owner: JL
 method: keep one shared structural core per shape, admit a type only on a structural or typed-record delta, and rule the list here rather than on the lifecycle page
 
@@ -40,6 +40,7 @@ The entry anatomy itself stays in `haipipe-board/ref/topic-entry-contract.md`, a
   │   Section unit            for-section      loads for-stage · the venue join
   │   Meeting                 for-meeting      talk recorded, ruled elsewhere
   │   Slide deck              for-slide        live ?preview=N embed per division
+  │   Design brief            for-design       division = candidate · closes on SELECTION
   │
   │   REJECTED   for-main: one family's region
   │   OPEN       the nesting row: do the two shelves move INSIDE the base?
@@ -47,9 +48,9 @@ The entry anatomy itself stays in `haipipe-board/ref/topic-entry-contract.md`, a
 
 ## Content
 
-### 1 · The list today: nine types, six contracts
+### 1 · The list today: twelve types, ten contracts
 
-**What ships now**: the filename or a declared marker decides the type, and six types carry a loadable contract.
+**What ships now**: the filename or a declared marker decides the type, and ten loadable contracts ship under `page-types/`.
 
 ```text
   type            resolved by            closes when                contract
@@ -72,6 +73,9 @@ The entry anatomy itself stays in `haipipe-board/ref/topic-entry-contract.md`, a
                                          routed · NEVER counted
   Slide deck      one page per deck,     a person accepts the       for-slide
                   division per slide     deck for the talk
+  Design brief    the page states a      a SELECTION record names   for-design
+                  brief; one division    the winner and each
+                  per candidate          loser's disposition
 ```
 
 ⚙️ Establishes the baseline this page grows from, and the two gaps it already shows.
@@ -116,7 +120,7 @@ A direction is host-agnostic.
 The `### Q-consumer register` marker can, and `src/topic_entry_contract.py` already keys on exactly that signal.
 Admitting a type on a declared marker follows the machine's own precedent rather than inventing a second resolution rule.
 
-### 3 · The queue: three admitted and built, two rejected
+### 3 · The queue: six admitted and built, one rejected
 
 **Where each candidate stands**: measured against `§2`, with the ruling collected in Decision Now.
 
@@ -128,6 +132,7 @@ Admitting a type on a declared marker follows the machine's own precedent rather
   for-display       ✅   ✅   ✅   ✅   ✅    ✅ ADMITTED + built 260805
   for-section       ✅   ✅   ✅   ✅   ✅    ✅ ADMITTED + built 260805, loads for-stage
   for-meeting       ✅   ✅   ✅   ✅   ✅    ✅ ADMITTED + built 260805
+  for-design        ✅   ✅   ✅   ✅   ✅    ✅ ADMITTED + built 260805
   for-main          ❌   ✅   ❌   ❌   —     ❌ rejected: one family's region
 ```
 
@@ -181,6 +186,46 @@ Each type contract owes its reader four things: what a legal register row carrie
 Neither may restate the register or entry anatomy, because a copied rule goes a night out of date while the core moves.
 Neither may touch the entry's inside, the q-executor and a-executor, which stay language-free because that wall is what keeps the bank from learning which answer would be convenient.
 
+### 5 · The checker debt: ⑤ was claimed ten times and implemented three
+
+**What the admission test promised against what the checker holds**: every admitted candidate got a ✅ on ⑤ CHECKER-ENFORCEABLE, and most of those checks do not exist.
+
+```text
+  contract            checker coverage today
+  ─────────────────────────────────────────────────────────────
+  for-skill           REAL            managed spans, checked
+  for-stage           PARTIAL         contract span + hash; not the venue block
+  for-literature ┐    ANATOMY ONLY    topic_entry_contract.py checks the shape,
+  for-value      ┘                    never the routes or the typed records
+  for-slide           PARTIAL         embed counts as figure; bindings unchecked
+  for-meeting         EXEMPTIONS ONLY never-counted; fidelity, routing unchecked
+  for-venue           NOTHING
+  for-display         NOTHING
+  for-design          NOTHING
+  for-section         NOTHING
+```
+
+🧾 Establishes the gap between the admission test's ⑤ answers and the checker that exists, and specs the ten rules that would close it.
+
+#### 5.1 · The ten missing rules, one line each
+(the spec the next checker pass implements; owned here until each ships)
+1. Type resolution first: exactly one key claims each page, in the base's ①-⑤ order, before any per-type rule runs.
+2. Design: a page past its gate carries a SELECTION record, and every non-winning division carries a disposition line.
+3. Display: an ACCEPTED row is dated, and every shown number names a value binding or a producing run by path.
+4. Slide: every division's embed targets the one deck file with `?preview=N#sN` and carries an acceptance row.
+5. Literature: every register row sits in a terminal state, and every citation binding's key resolves in the bibliography.
+6. Value: every value binding's run, specification, and QA paths exist on disk.
+7. Section: the `### Venue contract` block is present with blueprint, style, and override lines, and the blueprint path resolves.
+8. Venue: the three figures appear in their fixed order, and every desk fact carries a provenance stamp.
+9. Meeting: every decision-shaped line points at where it landed or is marked not-yet-routed.
+10. Stage: the page declares venue-free or venue-aligned, and a venue-aligned page's `style-from:` resolves to a venue-pinned upstream page.
+
+#### 5.2 · Why the debt is recorded rather than repaid here
+(⑤ was answered about what a machine COULD catch, not what one catches)
+The queue in `§3` answered ⑤ as a possibility question, and every candidate passes that reading.
+The cost of the shortcut is that a page can violate its type contract today and no build reports it.
+Recording the ten specs here means the next ✅ on ⑤ must name the rule it ships with, and A5 below holds the page open until then.
+
 ## Aims
 
 - [x] 🗣 Is `for-slide` admitted: one page per deck, one Content DIVISION per slide, each embedding its rendered slide?
@@ -193,13 +238,14 @@ Neither may touch the entry's inside, the q-executor and a-executor, which stay 
       ✅ `Ruled A` JL 260805, by branching the session to Page-for-Slide and saying "go ahead and focusing on the slide." Built the same day at `page-types/haipipe-board-page-for-slide` 0.1.0, base at 0.18.0 with nine variants. The contract's first stated rule was the JS constraint: the division embeds the PNG export, the live html-ppt deck stays a linked artifact with its runtime intact.
       ✅ `Corrected same day` by JL's follow-up ruling ("what I am thinking is that you will embed the html in the content division") and its proof `QA4`: the division embeds the deck LIVE via html-ppt's `?preview=N` single-slide mode, one file for both surfaces. The strips-JS premise was FALSE: `build.py` only asserts pages stay readable with scripts off, and never rewrites an iframe's file. Contract corrected at 0.2.0 with the wrong premise recorded in place.
 
-- [ ] 🗣 Is `for-design` admitted: one page per design BRIEF, one division per CANDIDATE?
+- [x] 🗣 Is `for-design` admitted: one page per design BRIEF, one division per CANDIDATE?
       📍 JL defined it 260805 (his words, translated: "we want to design some messages, say message A, B, C for one group of people; the Content divisions ARE the different messages"): the page is the brief, who it is for and what it must do, and each Content division IS one candidate artifact, side by side.
       🔔 `Why now` the shape already exists unruled in two places: the application family designs channel messages per cohort, and the paper family's display units keep `candidates/` folders (display01b has one on disk). Nothing rules how candidates sit on a page or how one is chosen.
       ⭐ `A ·` admit: page = brief · division = candidate (the artifact itself + its rationale + fit to the brief's criteria) · Aims = the brief's criteria · closes on a SELECTION record naming which candidate won, why, and each loser's disposition (dropped · kept for A/B test · merged). Sits UPSTREAM of for-display: design selects the candidate, display accepts its render. An earlier reading of for-design (the Decision Now row grammar) was CC's misreading; that gap is real but belongs to the base, not to this type.
       `B ·` no type: candidates stay a folder convention inside display units and application artifacts.
       🛑 `Blocks` writing the contract.
       🤖 `If nobody answers` candidates stay folder convention, selection stays undocumented.
+      ✅ `Ruled A` JL 260805, his definition on this board deciding it: page = brief, division = candidate. The contract shipped the same day at `page-types/haipipe-board-page-for-design` 0.1.0, base at 0.19.0 with a ten-variant table; its one hard rule is that a losing candidate keeps its division with its disposition, because the rationale for NOT choosing is part of the design record.
 
 - [ ] 🗣 Do `page-types/` and `page-phases/` move INSIDE `haipipe-board-page/`, with the variant mirrors folding under Skill-3 on QCskill?
       📍 JL proposed it 260805 ("could we just put the skill of page-for-xxxx under haipipe-board-page?"); it would revise `QB5 A8.1`'s ruling that the two shelves sit BESIDE the base.
@@ -208,15 +254,15 @@ Neither may touch the entry's inside, the q-executor and a-executor, which stay 
       🛑 `Blocks` moving any folder, retiring any mirror.
       🤖 `If nobody answers` the shelves stay where QB5 A8.1 put them.
 
-### A1 · ⚙️ The list today: nine types, six contracts
+### A1 · ⚙️ The list today: twelve types, ten contracts
 - A1.1 · The list is recorded here with its two contract gaps named.
-  **Done when:** the base's Six Page Types section and this page agree, and a change to either is a diff on both.
+  **Done when:** the base's Page Types section and this page agree, and a change to either is a diff on both.
 
 ### A2 · 🧪 The admission test: five questions, all must pass
 - A2.1 · The five-part test is the ruled gate for every future candidate.
   **Done when:** the next candidate is measured against ①-⑤ on this page before any folder is created.
 
-### A3 · 🧭 The queue: three admitted and built, two rejected
+### A3 · 🧭 The queue: six admitted and built, one rejected
 - A3.1 · The Literature and Value types ship as separate contracts over one loaded core.
   **Done when:** `page-types/haipipe-board-page-for-literature/` and `-for-value/` exist, each loads `ref/topic-entry-contract.md` rather than restating it, and the checker still reports the same topic findings on the MISQ board.
 - A3.2 · The mirror question is ruled before any display contract is written.
@@ -225,6 +271,10 @@ Neither may touch the entry's inside, the q-executor and a-executor, which stay 
 ### A4 · 🔒 The layering rule: a type LOADS the core, never restates it
 - A4.1 · No admitted type contract duplicates the shared anatomy.
   **Done when:** grep finds the register and entry heading rules stated in exactly one file under `board/`.
+
+### A5 · 🧾 The checker debt: ⑤ was claimed ten times and implemented three
+- A5.1 · Every ⑤ claim in the queue is backed by a shipped checker rule, or the coverage table in `§5` stays the admitted truth.
+  **Done when:** `cli/check.py` implements the ten rules specced in `§5.1`, or each still-missing rule is re-marked in `§5` with the reason it waits.
 
 ## States
 
@@ -265,24 +315,27 @@ Neither may touch the entry's inside, the q-executor and a-executor, which stay 
       🛑 `Blocks` moving any folder, retiring any mirror.
       🤖 `If nobody answers` the shelves stay where QB5 A8.1 put them.
 
-### A1 · ⚙️ The list today: nine types, six contracts
+### A1 · ⚙️ The list today: twelve types, ten contracts
 - ⬜ A1.1 · Not started as a synced pair; this page's table was copied from the base at 0.15.0 on 260805.
 
 ### A2 · 🧪 The admission test: five questions, all must pass
 - ⬜ A2.1 · The test is drafted here and not yet cited by the base.
 
-### A3 · 🧭 The queue: three admitted and built, two rejected
+### A3 · 🧭 The queue: six admitted and built, one rejected
 - ✅ A3.1 · Ruled D and built 260805: both contracts exist under `page-types/`, each loads the core by path and states only its route's dictionary; no checker code changed.
 - ✅ A3.2 · Ruled B 260805: `-for-display` stands alone, and its contract names the shipping-against-acceptance difference that keeps it off `-for-skill`.
 
 ### A4 · 🔒 The layering rule: a type LOADS the core, never restates it
 - ⬜ A4.1 · Holds today by accident rather than by rule: the anatomy lives once in `ref/topic-entry-contract.md` and once in the paper projection, which names paths rather than restating headings.
 
+### A5 · 🧾 The checker debt: ⑤ was claimed ten times and implemented three
+- ⬜ A5.1 · Recorded 260805; the ten rules are specs only, and the coverage table in `§5` states what the checker holds today: one real coverage, two partials, the topic anatomy, and meeting's counting exemption.
+
 ## Files
 
 ### Contracts
 
-- `../../../board/haipipe-board-page/SKILL.md` · the base whose Six Page Types section this page grows
+- `../../../board/haipipe-board-page/SKILL.md` · the base whose Page Types section this page grows
 - `../../../board/page-types/haipipe-board-page-for-stage/SKILL.md` · the stage type the topic types sit beside
 - `../../../board/page-types/haipipe-board-page-for-skill/SKILL.md` · the mirror shape the display question measures against
 - `../../../board/haipipe-board/ref/topic-entry-contract.md` · the structural core both topic types would load
@@ -299,6 +352,8 @@ Neither may touch the entry's inside, the q-executor and a-executor, which stay 
 
 ## Log
 
+260805 · The checker debt recorded as `§5` with its own Aim (A5.1, ⬜). The admission test's ⑤ was answered ✅ for every candidate, while the checker actually ships one real coverage (for-skill's managed spans), two partials (the stage contract span + hash, the slide embed-as-figure rule), the topic anatomy only, and meeting's counting exemption; venue, display, design, and section have nothing. The ten missing rules are specced one line each in `§5.1`, type resolution first. The same review pass landed across the contracts: the base's one resolution table for all types (0.20.0) with the REQUIRED `route:` register line and `page-type:` frontmatter keys, the core's new Register route line and Register-row states sections, the topic pair de-parallelized into their own voices (0.2.0 each), and patch fixes on section, display, design, slide, and stage.
+260805 · `for-design` RULED A and built the same day. JL's definition decided it: the page is the brief, and the Content divisions ARE the different messages, one per candidate carrying the artifact, its rationale, and its fit to the brief's criteria. The contract ships at `page-types/haipipe-board-page-for-design` 0.1.0 and the base at 0.19.0 with a ten-variant table. It sits UPSTREAM of `for-display`, design selecting the candidate and display accepting its render; the page closes on a SELECTION record naming the winner, why, and each loser's disposition (dropped · kept for A/B test · merged), and a losing division is never silently deleted.
 260805 · `for-slide`'s embed rule CORRECTED by its first real page. JL rejected the PNG design ("plase try it yourself... you will embed the html in the content division") and demanded proof over discussion. Built `QA4` on this board: seven divisions, each embedding the ONE deck file live via html-ppt's `?preview=N` single-slide mode, verified by driving a real Chrome (slides render live in the divisions; a click plus ArrowRight flips the bare deck). The 0.1.0 premise "`build.py` strips JS" was FALSE: the build only asserts pages read with scripts off, and never touches an iframe's file. Contract at 0.2.0 with the wrong premise recorded in place; the engine gained `![alt](x.html)` live-iframe embeds (`src/body.py`), an existence-based reroot for authored html (`src/page_board.py`), and media-embed-counts-as-figure in `cli/check.py`.
 260805 · `for-slide` RULED A and built, on the Page-for-Slide branch. One page per deck, division = slide, and the slide binding (division · source · render · acceptance) as its typed record. The design's one load-bearing constraint came from reading the builder and the renderer together: html-ppt ships a live JS runtime and a headless PNG export, and `build.py` strips JS, so the board embeds the PNG and the browser gets the deck. Two surfaces, one source.
 260805 · Second admission the same day (JL: "what I want is also for-venue, for-meeting, for-stage... and also for-section (connecting with for-venue)", thought against the paper skill board and the MISQ paper board): `for-section` and `for-meeting` built, the base at 0.17.0 with an eight-variant table. The section admission reverses `§3.3`'s earlier verdict with the measurement that decides it, and `for-stage`'s "different formats" question resolved without new types: the three shapes (stage page, unit page, dash page) are already `for-stage`'s own section, and per-stage variation lives in `stage.md` plus `template.md`, which is the stage-contract mechanism's whole job.

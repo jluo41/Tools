@@ -10,7 +10,7 @@ This page examines the DRAFT phase's two outputs: real first-pass Content and re
 Its central boundary is that it asks a question but never plans, routes, or executes the evidence work.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 1954fdf0b4e3ac83 paper/phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:tree:start 1954fdf0b4e3ac83 paper/_old/phase-hubs/haipipe-paper-draft -->
 
 **What `haipipe-paper-draft` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -43,11 +43,11 @@ adjacent > lanes attach to sentence  ▲ same id anchors any unresolved sentence
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 1954fdf0b4e3ac83 paper/phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:body:start 1954fdf0b4e3ac83 paper/_old/phase-hubs/haipipe-paper-draft -->
 
 **haipipe-paper-draft** · `0.6.3` · last shipped 2026-08-04
 
-- folder   `paper/phase/0-draft/haipipe-paper-draft/`
+- folder   `paper/_old/phase-hubs/haipipe-paper-draft/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
 - summary  Paper-specific DRAFT worker layered on haipipe-board-page-draft: define or reopen the stage promise, write first-pass Content, and raise owned Q-consumers.
 
@@ -441,7 +441,7 @@ The remaining test is a full section run in which every placeholder either reach
 260727 1445 · Created the DRAFT skill page from `paper/phase/0-draft/haipipe-paper-draft/`.
 The authored record distinguishes sentence apparatus, Q-consumer ownership, and Display Requests so they cannot be conflated in later writing work.
 
-<!-- haipipe:skill:log:start 1954fdf0b4e3ac83 paper/phase/0-draft/haipipe-paper-draft -->
+<!-- haipipe:skill:log:start 1954fdf0b4e3ac83 paper/_old/phase-hubs/haipipe-paper-draft -->
 
 Converted from the skill's own `CHANGELOG.md`: 28 releases.
 

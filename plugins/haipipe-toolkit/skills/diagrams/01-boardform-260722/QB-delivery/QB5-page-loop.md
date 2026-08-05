@@ -549,10 +549,10 @@ The final report therefore names the checked version, traversed branches, eviden
 - ✅ A8.1 · JL ruled 260804 that `for-*` skills belong under `page-types/`, direct phase skills belong under `page-phases/`, and the remaining layering proposal stands.
 
 ### A9 · 🔁 RUN turns the phase grammar into a bounded loop
-- 🔨 A9.1 · The `RUN` contract, dynamic Workflow, producer/builder/reviewer roles, version snapshot, legal routes, and bounded stop policy are implemented; executing the Workflow in Claude Code remains the end-to-end gate.
+- 🔨 A9.1 · LIVE-PROVEN with one caveat, 260805: run `260805-0216-QB8e` drove a real page CHECK→REVISE→CHECK→REVISE→CHECK→CLOSE in 5 receipts, findings 8→2→0, distinct fresh-context actors per role, audit PASS with hashes recomputed from disk (`_runs/page/QB8e/260805-0216-QB8e.json`). The caveat keeping this 🔨: `page-lifecycle.workflow.js` was NOT invocable as shipped (no Workflow harness in the live environment); the controller logic was executed by hand, and the run surfaced 11 contract ambiguities, logged below.
 
 ### A10 · 🧪 Audit proves process claims with receipts and fault tests
-- 🔨 A10.1 · The deterministic lifecycle auditor, 27 branch/fault tests, packet and version continuity, strict SHA identities, independent disk rehashing, and a fresh-agent receipt audit pass; semantic CHECK of a live Workflow-produced Page remains before this Aim can close.
+- ✅ A10.1 · Met 260805: the live QB8e run supplied the missing semantic CHECK, three fresh judges on three exact versions, converging 8→2→0, terminal verdict pass with zero findings; the deterministic auditor passed the same bundle with artifact hashes recomputed from disk.
 
 ### P · Page-level
 - ✅ P1 · JL chose B on 260804: the base adopted the lifecycle vocabulary first; the later concrete router is now named `RUN`, not linear `ADVANCE`.
@@ -570,7 +570,7 @@ The final report therefore names the checked version, traversed branches, eviden
 
 ### Input files
 
-- `../../../paper/phase/README.md` · the paper family's existing lifecycle model
+- `../../../paper/workers/` · the paper family's side: flat LaTeX workers since the 260805 thin-paper move; the loop itself now lives in `page-phases/`
 - `../../../application/2-phase/` · the application family's existing lifecycle model
 - `QB-delivery/QB4-overall.md` · the fixed Page structure paired with this lifecycle
 - `../../01-haipipe-paper-260725/QA-design/QA5-the-probe-layer.md` · the Paper S03/S04 implementation case that exposed the difference between Probe placement and target Page ownership
@@ -636,6 +636,8 @@ The final report therefore names the checked version, traversed branches, eviden
 > CC: Producer, builder, reviewer, controller, and human are distinct roles. Actor and version identities make self-approval and mutation after CHECK auditable failures.
 
 ## Log
+
+260805 · FIRST LIVE RUN, `260805-0216-QB8e`: CLOSE, audit PASS, and the run's second product is a defect list for this page's own contract, 11 items recorded in the bundle and owed fixes here. The sharpest six: ① the workflow controller is not invocable outside a Workflow harness and the contract never says what a bare caller may do; ② the producer prompt omits the judge's findings, so a strict REVISE guesses (the controller forwarded them as a disclosed deviation); ③ "the local closing rule" is ambiguous for a mid-life Q page whose Decision rows wait on JL by design, so the contract must say run-level CLOSE certifies THE VERSION, not the page's decisions; ④ `mechanical_errors` scope is undefined, and board-scoped counting would let one foreign dead link forbid CLOSE forever; ⑤ warnings do not gate CLOSE, so the semantic judge is the only defense on a WARN-only page; ⑥ fresh judges oscillate (r1s1 waived unnumbered paragraphs, r1s3 raised them), and max_steps is the only brake. Also surfaced: no run_id minting rule, no concurrency rule while a foreign session rebuilds board/, the pre-run snapshot has no receipt home, extra bundle keys pass unaudited, and the Decision Now row shape diverges between the base and page-template.md.
 
 260805 · The Page-Types admission row MOVED to `QB6-page-types.md`, created after JL asked whether Page Types deserve their own Q. Measured against this page's own `§7.2` split test, the list-of-types question passes all four: independent question, own Aims and States, its own closing rule, and the `page-types/` contracts as its continuation files. This page keeps the axis split (`§8`) and the lifecycle; `QB6` keeps the list, the admission test, and the D-starred separation ruling.
 260805 · JL held the separation: "I still want to separate for-literature and for-value," and named the reason that decides it: each uses ITS OWN LANGUAGE to understand the Q and the A crossing the executor wall. That is a typed-records difference, and the base says the type decides "which typed records it fills," so the separation is principled rather than preferential. Option D added and starred: two types over ONE loaded structural core, so the register and entry anatomy is never stated twice. The earlier A recommendation under-weighted the translation layer by reducing the two routes to "which bank answers."
