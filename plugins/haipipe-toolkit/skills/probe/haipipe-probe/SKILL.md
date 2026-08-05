@@ -12,7 +12,7 @@ metadata:
 > skill owns the crossing: stake stripping, MATCH-before-DISPATCH, and the
 > bank's independent QA evidence. A consumer skill owns its page path, direct
 > consumer register, Probe headings, and local state overlay. For Paper, read
-> `paper/phase/1-probe/haipipe-paper-probe/ref/topic-entry-contract.md` before
+> `paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md` before
 > authoring a Probe Page; it defines the S03 Literature and S04 Value runtime shape.
 
 **Canonical lifecycle vocabulary, ruled 260804:** PROBE is the Page phase, a
@@ -385,7 +385,7 @@ Pointers
 
 ```text
    spec + rationale (why it is built this way)  → ../../diagrams/01-probe-qa-260726/
-   the PROBE-phase workers that run the loop     → ../../paper/2-phase/1-probe/haipipe-paper-probe/
+   the PROBE-phase workers that run the loop     → ../../paper/workers/haipipe-paper-probe/
                                                    ../../application/2-phase/1-probe/haipipe-application-probe/
    the question-level collector agent (②③④,       → ../agents/haipipe-probe-q-executor-agent.md
      stake-free, shared, isolated context)

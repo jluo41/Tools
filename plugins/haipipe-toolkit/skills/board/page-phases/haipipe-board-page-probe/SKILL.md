@@ -1,10 +1,10 @@
 ---
 name: haipipe-board-page-probe
 description: >-
-  The PROBE phase contract for any Board Page. PROBE owns a consequential unknown from the Page's stake-bearing Q-consumer through a neutral Q-executor and returned A-executor to a per-consumer A-consumer; it changes the Page's knowledge boundary without authoring its argument. Load haipipe-board-page, the matching Page Type, this contract, and the shared haipipe-probe crossing protocol before a family worker. Use when a Page has an unresolved question, when stake must be stripped before dispatch, when one Q-executor can serve several Q-consumers, when evidence must be matched or collected, or when an answer needs to return without being silently woven into prose. Trigger: page probe, PROBE phase, Q-consumer, Q-executor, A-executor, A-consumer, stake stripping, probe page, evidence return, /haipipe-board-page-probe.
+  The PROBE phase contract for any Board Page. PROBE's plain job: send one question the Page cannot answer out to a real source, and bring the answer back without letting the source learn what is at stake. In the layer's terms, PROBE owns a consequential unknown from the Page's stake-bearing Q-consumer through a neutral Q-executor and returned A-executor to a per-consumer A-consumer; it changes the Page's knowledge boundary without authoring its argument. Load haipipe-board-page, the matching Page Type, this contract, and the shared haipipe-probe crossing protocol before a family worker. Use when a Page has an unresolved question, when stake must be stripped before dispatch, when one Q-executor can serve several Q-consumers, when evidence must be matched or collected, or when an answer needs to return without being silently woven into prose. Trigger: page probe, PROBE phase, Q-consumer, Q-executor, A-executor, A-consumer, stake stripping, probe page, evidence return, /haipipe-board-page-probe.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-04"
+  version: "0.3.1"
+  last_updated: "2026-08-05"
   summary: "PROBE crosses the evidence wall and emits an auditable receipt without becoming target-prose authorship."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

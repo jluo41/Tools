@@ -1,4 +1,4 @@
-# Board-Webpage design: what the Index shows, and how the shared surface looks
+# Board · the webpage: what the Index shows, and how the shared surface looks
 state: 🟡 PARTIAL
 owner: JL
 method: distinguish the Board-Webpage-Index from an opened Board-Webpage-Page, then settle what the Index must answer and how the shared surface makes it legible
@@ -41,7 +41,7 @@ This board has 55 of them, and 51 of those have nothing waiting on anyone.
 │ └─────────────┘           └──────┬───────┘   │  arrows are authored
 │                                  owns          │  relationships only
 │                           ┌──────▼───────┐   │
-│                           │ QB5 sentence │   │
+│                           │ QB8 sentence │   │
 │                           └──────────────┘   │
 ├──────────────────────────────────────────────┤
 │ 🗂 Related Folders   🩺 Section Matrix        │  two more folds, shut
@@ -431,7 +431,7 @@ The broader baseline audit remains open because chat and comment interaction sta
    🧭 Opening · 🖼 Diagram · 📚 Content
    🎯 Aims · 📍 States · 📎 Files
       ▼
-✏️ SENTENCE       ⬅ QB5 · comments, edits, evidence cards
+✏️ SENTENCE       ⬅ QB8 · comments, edits, evidence cards
 ──────────────────────────────────────────────────────
 ⚖️ one principle, three owners; none of them restates another
 ```
@@ -440,7 +440,7 @@ The broader baseline audit remains open because chat and comment interaction sta
 This page stops at the Index and at the surface every view shares.
 `QB4` owns the opened Q or S page: the order its sections keep, and what each one owes a reader.
 Its seven per-section faces were folded into it on 260802, so there is one page to read instead of eight, and the older `QAa1` to `QAa6` ids still resolve through `board.md`'s `## Links`.
-`QB5` carries the same ladder on into the section and the sentence.
+`QB8` carries the same ladder on into the section and the sentence.
 The specifications use the same principle without mixing their responsibilities.
 
 ### 15 · Board Map, see relationships before scanning rows
@@ -454,7 +454,7 @@ The specifications use the same principle without mixing their responsibilities.
    └─────────┘           └────┬────┘
                            owns
                          ┌────▼────┐
-                         │  QB5    │
+                         │  QB8    │
                          └─────────┘
 
    🖊 an arrow = a relationship someone DREW and LABELLED

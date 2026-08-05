@@ -185,6 +185,14 @@ img.fig{max-width:100%;height:auto;display:block;margin:12px 0;
    Scoped to object so it never repeats the historic `.fig`/chip collision. */
 object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12px 0;
  border:1px solid var(--line);border-radius:var(--radius-surface);background:#fff}
+/* Markdown `![](path.html)` is a LIVE embed (a slide, a demo): the real file
+   in its own frame, slide-proportioned, with the open link as the no-JS path.
+   A span wrapper because the embed is emitted inline; block by style. */
+.fightml{display:block;margin:12px 0}
+.fightml iframe{display:block;width:100%;aspect-ratio:16/9;border:0;
+ border-radius:var(--radius-surface);background:#fff;
+ box-shadow:0 0 0 1px var(--line)}
+.fightml .fsopen{display:inline-block;margin-top:6px;font-size:12.5px}
 .xadd-row .xnew{border-style:dashed;color:var(--accent);border-color:var(--accent)}
 /* 🗑 removal (QD7, JL 260726) reads as the destructive one without shouting */
 .xadd-row .xrm{color:var(--mut)}

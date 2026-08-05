@@ -1204,7 +1204,7 @@ So a MISQ paper decides early what will NOT be in it, and `Sec-A-Appendix`'s tri
   The section no other pack in this tree requires, and the one §6 is built from.
 - `../../paper/venue/playbook-utd-is/README.md`
   The family delta and the lean-signal matrix that §3 folds in, covering all four UTD-IS outlets at once.
-- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml`
+- `../../paper/haipipe-paper-stage/stages/section-kinds.yml`
   The reader-side resolver: outlet ▸ section kinds. It is what the generated kinds block below is built from.
 
 ### 🔗 Authority · what the DESK itself PUBLISHES, read directly and never through the pack

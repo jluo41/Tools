@@ -100,7 +100,7 @@ Writing down that a change was declined, and why, is what lets the next round ar
         📄 S-Round-1-<slug>.md     one page per BATCH, added when it happens
         📄 S-Round-2-<slug>.md     …
 
-  ⚡ this concern owns NO STAGE ── `../../paper/route/haipipe-paper-stage/stages/index.yml` has no `round` key
+  ⚡ this concern owns NO STAGE ── `../../paper/haipipe-paper-stage/stages/index.yml` has no `round` key
   ⚠️ `Round` is not yet a first-class Board family, so a filename does
      not resolve today
   🔁 the four Build submission pages are REUSED every round, and live

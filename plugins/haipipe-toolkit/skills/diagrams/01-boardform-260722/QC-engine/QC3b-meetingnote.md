@@ -89,7 +89,7 @@ A meeting page is the same generator pointed at a different source, which makes 
    read the summary, not the transcript
         │
         ├─ "we decided the tree replaces board.html"   → QC4 · Where we are
-        ├─ "JL still owes the identity call"           → QB5e · Decision Now
+        ├─ "JL still owes the identity call"           → QB8e · Decision Now
         └─ "renamed the groups"                        → QA1 · Log
                                                          + each line cites
                                                            Meeting-1-260723

@@ -95,7 +95,7 @@ Every prose or template leaf must point at an explicit authoritative source regi
         📄 S-Appendix-E-robustness.md  │
         📄 S-Appendix-F-bigfive.md     ┘
 
-  ⚡ this concern owns NO STAGE ── `../../paper/route/haipipe-paper-stage/stages/index.yml` has no `appendix` key
+  ⚡ this concern owns NO STAGE ── `../../paper/haipipe-paper-stage/stages/index.yml` has no `appendix` key
   🔑 the control page is a FAMILY control page, which no stage writes
   🔤 units are LETTERED, so a unit added late renumbers nothing
 ```
@@ -109,7 +109,7 @@ Letters mean a new unit lands as G without renumbering anything that cites A thr
 
 #### 2.2 · The control page is the inventory, and no stage writes it
 (`S-Appendix-0-control.md` is a family control page, the same kind as `S-Main-Dash`)
-`../../paper/route/haipipe-paper-stage/stages/index.yml` declares no appendix stage, so the lettered pages are authored through section-edit and the control page is authored by hand.
+`../../paper/haipipe-paper-stage/stages/index.yml` declares no appendix stage, so the lettered pages are authored through section-edit and the control page is authored by hand.
 It answers one question a reader cannot get from the units themselves: which units this paper has, and which of them are gated.
 
 #### 2.3 · Where the MISQ paper stands against this

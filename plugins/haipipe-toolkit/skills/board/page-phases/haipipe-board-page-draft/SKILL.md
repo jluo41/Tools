@@ -3,8 +3,8 @@ name: haipipe-board-page-draft
 description: >-
   The DRAFT phase contract for any Board Page. DRAFT is the authority to define or reopen the Page's purpose, Aims, and promised shape for one round; it is not identified by an empty file, first typing, or adding text. Load haipipe-board-page first, then the matching Page Type under page-types/, then this contract, and finally any paper or application worker. Use when creating a Page promise, changing what an existing Page is for, adding or removing an Aim, starting a new round after REVISE or CHECK, or raising a stake-bearing Q-consumer without performing PROBE. Trigger: page draft, DRAFT phase, define purpose, reopen Aims, new round, raise Q-consumer, owned hole, draft boundary, /haipipe-board-page-draft.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-04"
+  version: "0.3.1"
+  last_updated: "2026-08-05"
   summary: "DRAFT owns the Page promise and emits an auditable receipt into the bounded RUN router."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -20,9 +20,9 @@ haipipe-board-page
   → family worker, when the Page belongs to paper or application
 ```
 
-The base owns the shared Page frame.
-The Page Type owns the persistent structural variation.
-This file owns only DRAFT authority.
+What is DRAFT's alone: the promise may move here, and nowhere else without a new round.
+Its risk runs in one direction: presenting an unavailable answer as settled fact, because a hole hidden at DRAFT reaches print wearing the same face as a real number.
+So DRAFT's exit is not polish; it is a stable purpose, its Aims, and every unknown named with an owner.
 
 ## 🎯 The authority test
 
@@ -62,6 +62,7 @@ The difference is authority, not the visible diff.
 ## 🕳 Raise the question, then stop
 
 When the Page needs a fact it cannot support, DRAFT leaves a visible hole and raises a Q-consumer carrying the stake.
+A Q-consumer is the Page-side record of the question: what must be known, and the STAKE, meaning what the Page loses if the answer never comes.
 
 ```text
 target prose     "The effect is <HOLE>." [Q-<local-id>]

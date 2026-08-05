@@ -6,7 +6,8 @@ sentence it changed.
 
 ```
 writing/
-└── haipipe-writing/     the verb: score → rewrite → record → check
+├── haipipe-writing/                 the verb: score → rewrite → record → check
+└── haipipe-paper-revise-humanizer/  the academic-venue dialect (moved here from paper/, 260805)
 ```
 
 **Why a bucket of its own.** Every other family owns a KIND of artifact: `paper`
@@ -14,7 +15,8 @@ owns manuscripts, `board` owns pages, `application` owns reports. This one owns
 none. Its consumer is any authored prose in the repo, and its test does not care
 what file the prose is in.
 
-**The seam with `paper/`.** `haipipe-paper-revise-humanizer` rewrites academic
+**The paper-facing dialect.** `haipipe-paper-revise-humanizer` (in this bucket
+since 260805) rewrites academic
 prose for a venue and writes `%%` comments into LaTeX. Different reader,
 different host, same machinery. It should become a consumer of
 `haipipe-writing/cli/wdiff.py` rather than grow a second copy of it; until then

@@ -17,7 +17,7 @@ The paper lifecycle is a delivery owner: it owns this paper's angle, resources, 
 Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (see "Delivery Need Routing" below) and route to the evidence worker.
 
 This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`.
-Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly.
+Stage skills internally drive the DPRC phases (page logic: `../../board/page-phases/haipipe-board-page-draft` / `-revise` / `-check`; LaTeX-side workers: `../workers/`); users and this router never invoke phase skills directly.
 Canonical structure: `../README.md` at the paper skill root (skill-tree layout, Stage to Procedure, Router Rule, Maturity Rule).
 
 ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change.
@@ -65,7 +65,7 @@ table | figure | plot | diagram |
 build | scaffold | restructure | conform | folder | project | projection |
   audit | review | claim-audit | reviewer | optimizer |
   polish | consistency | format | typeset |
-  compile | diffpdf | overleaf | ship | deliver  -> haipipe-paper-deliver (artifact side; forwards the leaf verb to 1-build/2-audit/3-polish/4-ship; polish runs consistency→format→typeset; also "make submission-ready", "conformance", "produce the PDF")
+  compile | diffpdf | overleaf | ship | deliver  -> the S09-build/ leaves directly: compile -> haipipe-paper-compile · diffpdf -> haipipe-paper-diffpdf · overleaf -> haipipe-paper-to-overleaf · word -> haipipe-paper-to-word · project/projection -> haipipe-paper-project; folder | conform -> ../container/ (haipipe-paper-folder · haipipe-paper-conform). (The deliver umbrella and the audit/polish leaf verbs are retired to ../_old/, see ../_old/README.md)
 round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
 probe ["<question>"] | probe | probe plan | probe run [topic-id]  -> the topic-entry pool: one nested entry page per q-executor, under its S03 Literature or S04 Value topic (RAISE / SHOW / PLAN / RUN the five-step loop)
 rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
@@ -580,10 +580,10 @@ Structure Pointers
 Each area's internal contract lives with its owner; consult, never restate:
 
 ```
-skill tree (S01–S10 / container / phase / route / quality / venue)
+skill tree (S01–S10 / container / workers / venue)
                                    -> ../README.md (skill root: skill-tree layout and routing)
-paper-folder layout                -> ../phase/REF/paper-folder-anatomy.md (canonical tree and maturity ladder)
-lifecycle stages + venue coupling  -> ../route/haipipe-paper-stage/stages/CONTRACT.md + stages/index.yml
+paper-folder layout                -> ../workers/REF/paper-folder-anatomy.md (canonical tree and maturity ladder)
+lifecycle stages + venue coupling  -> ../haipipe-paper-stage/stages/CONTRACT.md + stages/index.yml
 rounds                             -> ../S10-round/haipipe-paper-round/SKILL.md ("Rounds contract")
 venue knowledge                    -> ../venue/playbook-<venue> packs (venue is knowledge, not a pipeline)
 ```
@@ -594,7 +594,7 @@ Composing with Evidence Workers
 ```
 /haipipe-paper (router)
         ├─► /haipipe-paper-lifecycle    (the ARGUMENT: seed -> resource -> claims -> [venue] -> pitch -> narrative -> display -> section-edit)
-        ├─► /haipipe-paper-deliver      (the ARTIFACT: build -> audit -> polish -> ship; mirror of lifecycle)
+        ├─► S09-build/ leaves           (the ARTIFACT: haipipe-paper-compile · -diffpdf · -to-overleaf · -to-word · -project)
         ├─► /haipipe-paper-rebuttal     (any venue, post-review)
         │
         │   evidence path (a claim hits a gap):

@@ -11,7 +11,7 @@ How should a stage be described, so a router can pick it cheaply and an executor
 Those two readers want opposite things. A router needs almost nothing, and it reads on every single invocation including the ones that turn out to be about something else. An executor needs everything, but only for the one stage that won. So the description is split across two files that are read at very different rates.
 
 **Where this page sits**: QC2 owns what a stage IS, and QC3b owns who names its files.
-This page owns the FORM of the description: what lives in `../../paper/route/haipipe-paper-stage/stages/index.yml`, what lives in `stage.md`, what a contract must declare, and how `artifact:` resolves to a real path.
+This page owns the FORM of the description: what lives in `../../paper/haipipe-paper-stage/stages/index.yml`, what lives in `stage.md`, what a contract must declare, and how `artifact:` resolves to a real path.
 
 **Why the split is a real constraint and not a preference**: anything added to the index is paid for by every user of the skill, forever, including users whose request had nothing to do with stages.
 That is the entire reason board navigation fields live in `stage.md`, and it is why the index has stayed readable while the contracts grew.
@@ -28,7 +28,7 @@ How this page must be written. Read it before editing, and edit to it.
 **Measure, then state; never assert a core**: the 24-and-43 split came from counting all eight contracts on 260726.
 A claim about what contracts have in common is worth nothing unless it says how it was counted.
 
-**A proposal is labelled a proposal**: `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` argues for keeping craft prose in the contract, and that argument is not a ruling.
+**A proposal is labelled a proposal**: `../../paper/haipipe-paper-stage/stages/CONTRACT.md` argues for keeping craft prose in the contract, and that argument is not a ruling.
 This page must never let the two read alike, because a proposal that gets cited as settled is how an off-the-cuff rule becomes law.
 
 **A dangling path is a defect; a declared block is not**: say `blocked_on: <Q page>` when a path cannot resolve yet.
@@ -160,7 +160,7 @@ A check therefore reports it as KNOWN rather than passing it silently, and it ca
 
 ### A2 · 📐 The required core, measured
 - A2.1 · The required fields of a contract are stated rather than inferred.
-  **Done when:** `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` names the required core, the stage-specific set, the conditional set, and the retired fields, each traced to the measurement.
+  **Done when:** `../../paper/haipipe-paper-stage/stages/CONTRACT.md` names the required core, the stage-specific set, the conditional set, and the retired fields, each traced to the measurement.
 - A2.2 · The S filename rule has exactly one home.
   **Done when:** only `stage.py`'s `resolve_filename()` composes an S filename, and every other layer calls it.
 
@@ -176,7 +176,7 @@ A check therefore reports it as KNOWN rather than passing it silently, and it ca
 - A4.1 · Where contract checking lives is ruled.
   **Done when:** JL picks A, B, or C, and the checker either stays in the paper skill, moves into `stage.py`, or is deleted.
 - A4.2 · Whether craft prose belongs in a contract is ruled.
-  **Done when:** `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md`'s argument is either adopted as a rule or replaced by a split, with the decision dated.
+  **Done when:** `../../paper/haipipe-paper-stage/stages/CONTRACT.md`'s argument is either adopted as a rule or replaced by a split, with the decision dated.
 
 ## States
 
@@ -185,7 +185,7 @@ A check therefore reports it as KNOWN rather than passing it silently, and it ca
 - ✅ A1.2 · Held. The index carries its own header stating the rule and the reason it exists.
 
 ### A2 · 📐 The required core, measured
-- ✅ A2.1 · Done 260726. `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` records 24 required and 43 stage-specific fields, plus the conditional set and the two retired ones, grouped by the question each answers.
+- ✅ A2.1 · Done 260726. `../../paper/haipipe-paper-stage/stages/CONTRACT.md` records 24 required and 43 stage-specific fields, plus the conditional set and the two retired ones, grouped by the question each answers.
 - ✅ A2.2 · Done. `resolve_filename()` and the `resolve` verb live in `stage.py`, replacing a rule that had been in three places.
 
 ### A3 · 🔧 What the contracts were declaring before the repair
@@ -195,12 +195,12 @@ A check therefore reports it as KNOWN rather than passing it silently, and it ca
 
 ### A4 · 🧠 What is still owed to JL
 - 🧠 A4.1 · Waiting on JL since 260726. The checker exists in the paper skill provisionally and may move or be deleted.
-- 🧠 A4.2 · Waiting on JL. `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` states the case for keeping craft prose in the contract, and that remains a proposal.
+- 🧠 A4.2 · Waiting on JL. `../../paper/haipipe-paper-stage/stages/CONTRACT.md` states the case for keeping craft prose in the contract, and that remains a proposal.
 
 ## Files
 
-- `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` · the required core, the resolution rule, the conditional fields, the retired ones
-- `../../paper/route/haipipe-paper-stage/stages/index.yml` · unchanged, still one row per stage
+- `../../paper/haipipe-paper-stage/stages/CONTRACT.md` · the required core, the resolution rule, the conditional fields, the retired ones
+- `../../paper/haipipe-paper-stage/stages/index.yml` · unchanged, still one row per stage
 - `stages/` · all eight contracts repointed; `5-section-edit` is the largest and the only per-unit one, and its artifact is a pattern rather than a path
 - `haipipe-board/` · `stage.py` exposes `resolve_filename()` and a `resolve` verb, so the S filename rule has one home
 
@@ -220,4 +220,4 @@ A check therefore reports it as KNOWN rather than passing it silently, and it ca
 ## Log
 
 260802 · Migrated to the QB4 page contract: Writing Style added, Content numbered into four divisions with face figures and captions, Aims regrouped as A1 to A4 with `Done when`, States mirrored per Aim.
-260726 · Measured the eight contracts: 24 fields common to all, 43 stage-specific. Wrote `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md`. Repointed 22 dangling paths; retired `log:`; added `board_slug`, `artifact_fallback`, `venue_role`, `blocked_on`. Extracted the filename rule into `stage.py`'s `resolve_filename()`. Left `4-display` blocked on QC3b, and both rulings open.
+260726 · Measured the eight contracts: 24 fields common to all, 43 stage-specific. Wrote `../../paper/haipipe-paper-stage/stages/CONTRACT.md`. Repointed 22 dangling paths; retired `log:`; added `board_slug`, `artifact_fallback`, `venue_role`, `blocked_on`. Extracted the filename rule into `stage.py`'s `resolve_filename()`. Left `4-display` blocked on QC3b, and both rulings open.

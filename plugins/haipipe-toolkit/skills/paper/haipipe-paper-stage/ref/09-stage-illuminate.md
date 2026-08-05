@@ -63,6 +63,7 @@ Refresh after every edit
 After the stage artifact is drafted or edited, refresh what the user reads.
 Markdown stages (seed, claims, pitch, narrative, section-edit outlines) present
 the updated .md directly. Only the display stage compiles: refresh
-`4-display.pdf` from `4-display.tex` (per the Lifecycle TeX Quality Standard,
-../../3-deliver/haipipe-paper-deliver/SKILL.md). Without a fresh
+`4-display.pdf` from `4-display.tex` (per the Lifecycle TeX Quality Standard:
+a stale PDF, tex newer than pdf, is a defect; full text sits with the retired
+deliver router, debt tracked in ../../_old/README.md). Without a fresh
 artifact, there is nothing to illuminate.

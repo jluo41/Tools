@@ -1,4 +1,4 @@
-# The page list: jump anywhere from a fixed panel down the left
+# Board · the sidebar: jump anywhere from a fixed panel down the left
 state: 🟡 PARTIAL · the page list and the per-page section outline ship; the outline's reach forks await JL
 owner: JL
 method: render the page list from the same listing as the index and the same Structure rows as the Opening drawer, so the page list can never disagree with the page
@@ -296,7 +296,7 @@ The one case where this costs a click is a narrow screen, where the page list hi
 - 🎯 **An outline row named a page id that never existed** · 260801
   JL: "when I click a page's content name it does not take me there."
   Two bugs stacked, and the first made the second invisible.
-  The handler read the target page from the row's own href and sliced one character off it, which is exactly right in the one-file board, where the href IS `#QB5c`, and produces `B/QB5c-editing.html` in the tree, where the href is a file path.
+  The handler read the target page from the row's own href and sliced one character off it, which is exactly right in the one-file board, where the href IS `#QB8c`, and produces `B/QB8c-editing.html` in the tree, where the href is a file path.
   `getElementById` of that returns nothing, so the handler returned at its first line and the click did nothing at all.
   Behind it sat a timing bug: the work was scheduled on a fixed 80ms timer, which is a race against a fetch and a wrap swap, and losing it was equally silent.
   The id now comes from the `.sb-out` the row lives in, which carries it in BOTH packagings, and the click is treated as a REQUEST that outlives the click: it is parked in `sessionStorage` and honoured by whichever document ends up holding the page, this one after a swap or a fresh one after a real load, then cleared so it can never fire twice.
@@ -313,7 +313,7 @@ The one case where this costs a click is a narrow screen, where the page list hi
   The fix gives each row a `data-page` carrying the id, which is the ONE thing spelled identically in both packagings, and asks the DOCUMENT which page it is through the drawer's own `docPage()` rather than a second copy of it.
   `mark()` now answers in a fixed order, because a wrong order let the Index row win on a group page: a page, then a group file, then the Index.
   It also re-runs on `board:updated`, since a tree navigation swaps the wrap and fires no hashchange.
-  Verified on all seven kinds of file: the Index marks itself, `QB.html` and `QD.html` mark their group, and QB5c, QC4, QB4 and Meeting-1 each mark their row and open their own outline (6, 14, 26 and 28 rows).
+  Verified on all seven kinds of file: the Index marks itself, `QB.html` and `QD.html` mark their group, and QB8c, QC4, QB4 and Meeting-1 each mark their row and open their own outline (6, 14, 26 and 28 rows).
 - 📏 **The drag handle stood in the page with no page list behind it** · 260801
   JL sent a screenshot of the QD group: a blue bar down the middle of the text, tooltip "Drag to resize", page list collapsed.
   The handle is `position:fixed` and placed off `--sbw` alone, which is right while the page list is open and meaningless once it is shut, so it stayed 238px into the page and tinted on hover because that is what a handle does.

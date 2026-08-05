@@ -6,7 +6,7 @@ import json
 import os
 import re
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from . import body as bd
 from .body import body, inline
@@ -791,7 +791,7 @@ _TREE_SOURCE_URL = re.compile(
     r'(?P<attr>href|src|data)="(?!https?:|mailto:|data:|#|/)(?P<url>[^"]+)"')
 
 
-def tree_reroot(html, up):
+def tree_reroot(html, up, src_dir=None):
     """Move Board-root-relative href/src/data URLs under a split page."""
     def fix(m):
         url = m.group("url")
@@ -802,7 +802,16 @@ def tree_reroot(html, up):
         # happen to end in generated filenames.
         if bare.startswith("board/"):
             return f'{m.group("attr")}="{up}{url}"'
-        if bare.endswith(".html"):      # a generated page link is already sited
+        if bare.endswith(".html"):
+            # Two kinds of url end in .html and only one of them is sited. A
+            # GENERATED page link (`QA/QA0-x.html` on a group index,
+            # `../QB/x.html` after tree_relink) names an output file, which
+            # never exists in the SOURCE folder. An AUTHORED html file (the
+            # deck a slide page's embed points at, JL 260805 on QA4) does
+            # exist there, and it needs the hop exactly like a png. The
+            # filesystem is the one witness that tells them apart.
+            if src_dir is not None and (src_dir / unquote(bare)).exists():
+                return f'{m.group("attr")}="{up}{url}"'
             return m.group(0)
         if "_assets/" in bare:          # TREE_TPL owns shared asset paths
             return m.group(0)
@@ -890,8 +899,8 @@ def render_tree(meta, qs, out_dir, only=None):
         # `root` is already the hop from this file up to board/, and the board
         # FOLDER is one further up.
         up = root + "../"
-        body = tree_reroot(body, up)
-        popcards = tree_reroot("\n".join(bd.CARDS), up)
+        body = tree_reroot(body, up, out_dir.parent)
+        popcards = tree_reroot("\n".join(bd.CARDS), up, out_dir.parent)
         return TREE_TPL.format(
             title=esc(title), body=body, root=root, crumb=crumb,
             sidebar=sidebar, popcards=popcards,

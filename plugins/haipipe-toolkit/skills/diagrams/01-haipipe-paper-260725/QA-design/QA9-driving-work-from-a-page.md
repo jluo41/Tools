@@ -219,7 +219,7 @@ Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Ever
 - `haipipe-paper-draft-display/SKILL.md`
   Still files Display request rows.
   The runner to narrow.
-- `../../paper/route/haipipe-paper-stage/stages/index.yml`
+- `../../paper/haipipe-paper-stage/stages/index.yml`
   The stage registry.
 - `stages/*/stage.md`
   The permitted worker routes and stop conditions.

@@ -1,4 +1,4 @@
-# The board folder: where it lives, what it holds, and what we may write into one we do not own
+# Board · the folder: where it lives, what it holds, and what we may write into one we do not own
 state: 🟡 PARTIAL · the map is written and unapproved; the folder-internal decision below stays settled
 owner: JL
 method: two folders, what lives inside each, what may cross between them, and what we may write into a board that is neither
@@ -68,7 +68,7 @@ Rewording it here without touching the file it graduated into is how the board a
   │   └── 🧪 tests/        13 files     what proves a change              (QF1)
   │
   ├── 📄 haipipe-board-page/            SPEC · what ONE PAGE is            (QB4)
-  ├── ✏️  haipipe-board-sentence/        SPEC · the atomic unit            (QB5)
+  ├── ✏️  haipipe-board-sentence/        SPEC · the atomic unit            (QB8)
   ├── 🔀 haipipe-board-routing/         VERB · BOTH altitudes             (QC4a)
   │      src/lanes.py                   board.md structure + one write
   │

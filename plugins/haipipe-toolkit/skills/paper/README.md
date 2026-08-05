@@ -16,18 +16,17 @@ paper/
 ├── S05-display/                    reader-facing displays
 ├── S06-main/                       main manuscript sections
 ├── S07-appendix/                   appendix material
-├── S08-present/                    slides and poster
+├── S08-present/                    empty; paper-slides and paper-poster live in ../display/skills/
 ├── S09-build/                      compile and delivery
 ├── S10-round/                      review and response rounds
-├── container/                      folder, scaffold, restructure, conformance
-├── phase/                          DRAFT → PROBE → REVISE → CHECK workers
-├── route/                          enter, lifecycle, and stage router
-├── quality/                        claim audit, review, polish, optimization
+├── container/                      folder and conformance (scaffold, restructure retired to _old/container-merged/)
+├── workers/                        flat LaTeX-side phase workers (page logic lives in ../board/page-phases/)
+├── _old/                           retired skills, moved never deleted (see _old/README.md)
 └── venue/                          venue knowledge packs
 ```
 
-The numbered S folders are the Paper family grammar. `route/`, `phase/`,
-`container/`, and `quality/` are capability groupings, not a second lifecycle.
+The numbered S folders are the Paper family grammar. `workers/` and
+`container/` are capability groupings, not a second lifecycle.
 
 ## Runtime paper structure
 
@@ -56,19 +55,22 @@ There is no live top-level `1-probes/`; legacy probe material belongs only in
 ## Stage to worker
 
 ```text
-stage work        -> route/haipipe-paper-stage
-draft             -> phase/0-draft/haipipe-paper-draft
-probe             -> phase/1-probe/haipipe-paper-probe
-revise            -> phase/2-revise/haipipe-paper-revise
-check             -> phase/3-check/haipipe-paper-check
+stage work        -> haipipe-paper-stage
+draft             -> ../board/page-phases/haipipe-board-page-draft (page logic)
+                     + workers/haipipe-paper-draft-citation · -draft-values · -draft-display
+probe             -> workers/haipipe-paper-probe
+revise            -> ../board/page-phases/haipipe-board-page-revise (page logic)
+                     + workers/haipipe-paper-revise-place · -revise-results
+check             -> ../board/page-phases/haipipe-board-page-check (page logic)
+                     + workers/haipipe-paper-check-evidence · -proof-checker
 build and deliver -> S09-build/
 review round      -> S10-round/
 ```
 
 Stage contracts live beside their named S01, S02, S05, and S06 workers.
-`route/haipipe-paper-stage/stages/index.yml` resolves the eight current
+`haipipe-paper-stage/stages/index.yml` resolves the eight current
 user-facing stages; S03 and S04 are their shared runtime evidence stores.
 
 See `haipipe-paper/fn/probes.md` for the delivery-to-engine contract and
-`phase/1-probe/haipipe-paper-probe/ref/topic-entry-contract.md` for validation
+`workers/haipipe-paper-probe/ref/topic-entry-contract.md` for validation
 rules.

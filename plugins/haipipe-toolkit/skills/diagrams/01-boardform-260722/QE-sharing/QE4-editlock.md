@@ -12,7 +12,7 @@ The hard part is that Markdown is a file, not a collaborative database, so the l
 The answer determines which sections can change, how edits are traced, and whether locking is enough.
 It succeeds when two readers collide visibly and no content is lost.
 
-**Covered elsewhere**: The comment and discussion write-back path: that is finished, and belongs to `QB5 §5`. Nor chat / terminal working on a question: that is `QD1`/`QD2`/`QD3`. Nor who is allowed to edit: that is `QE1`'s authentication.
+**Covered elsewhere**: The comment and discussion write-back path: that is finished, and belongs to `QB8 §5`. Nor chat / terminal working on a question: that is `QD1`/`QD2`/`QD3`. Nor who is allowed to edit: that is `QE1`'s authentication.
 
 
 ## Diagram

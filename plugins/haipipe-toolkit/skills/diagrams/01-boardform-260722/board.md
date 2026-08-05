@@ -10,13 +10,13 @@ Cast: JL = the one who decides. CC = Claude Code, who does the work. Colleagues 
 What makes this board unusual: its subject IS the board itself, a board used to define boards.
 
 ## Pipeline
-260802: QB5's five faces folded. QB5a, QB5b and QB5c became QB5's own `### 3` to `### 6` and were archived; QB5d moved to QD8, because a generated address is how a machine POINTS AT a location rather than a thing attached to a sentence; QB5e stayed its own page, since nothing in it is built and its identity question is open. Same shape and same answer as QB4's seven section faces on 260801.
-Since 260731 every page id matches its group letter, and a parent page may carry faces as sub-letters. Neither QB4 nor QB5 does any more: QB4's seven section faces folded into its Content on 260801 and QB5's five followed on 260802, which is now the answer whenever a face stops carrying a subject of its own.
+260802: QB8's five faces folded. QB8a, QB8b and QB8c became QB8's own `### 3` to `### 6` and were archived; QB8d moved to QD8, because a generated address is how a machine POINTS AT a location rather than a thing attached to a sentence; QB8e stayed its own page, since nothing in it is built and its identity question is open. Same shape and same answer as QB4's seven section faces on 260801.
+Since 260731 every page id matches its group letter, and a parent page may carry faces as sub-letters. Neither QB4 nor QB8 does any more: QB4's seven section faces folded into its Content on 260801 and QB8's five followed on 260802, which is now the answer whenever a face stops carrying a subject of its own.
 Every earlier id stays resolvable as a declared Link, so a citation written under any older naming still lands on the right page.
 260731: ids aligned to groups (36 renames), and the Skill roster became its own page kind, `Skill-0` `Skill-1` `Skill-2`.
 260731: QD split back into QD · Working and QE · Sharing (briefly QDa/QDb the same day), the archived board-agent page returned as QD7, and Execute moved to QF: a lowercase letter now always means a page's face, never a group.
 260730: seven groups folded into five, and `## Board Map` above draws how the groups connect.
-260729: the old QC group dissolved (its folder-management and proposal pages survive as today's QB3 and QA2), and the page/sentence faces split out into what are now QB4* and QB5*.
+260729: the old QC group dissolved (its folder-management and proposal pages survive as today's QB3 and QA2), and the page/sentence faces split out into what are now QB4* and QB8*.
 260725: the former QF group merged into QA, and its last page retired on 260726.
 
 ## Board Map
@@ -119,12 +119,12 @@ Topic, Pipeline, and this Board Structure remain source-only documentation in `b
 **Board-Webpage-Page — work on one page**
 Opening a Q or S row goes to `board/<GROUP>/<page>.html`, one focused page with the shared sidebar.
 With scripts on the router swaps that page into the current document so chat and terminal attachment survive; with scripts off the same link navigates normally.
-`QB4`'s Content specifies each page section; `QB5` owns the sentence and everything written onto it, and `QB5e` owns the record lifecycle.
+`QB4`'s Content specifies each page section; `QB8` owns the sentence and everything written onto it, and `QB8e` owns the record lifecycle.
 
 ## Pages
 ### QA · Design
 What the Board system IS, before any piece of it is built.
-QA1 owns the words the family uses; QA2 owns how a topic becomes pages and groups in the first place; QA3 owns when an agent may hand a round back.
+QA1 owns the words the family uses; QA2 owns how a topic becomes pages and groups in the first place; QA3 owns when an agent may hand a round back; QA4 explains the whole skill set as a deck, and is the first real `for-slide` page.
 Still unwritten: the board types page (Skill-Board · Paper-Board · Task-Board), born when its content exists, not before.
 
 ```text
@@ -134,17 +134,19 @@ ref/board-form.md §1       ◀── QA0  the folders and their kinds   ──�
 ref/board-form.md          ◀── QA1  the words this family uses    ──▶  the shared vocabulary
 ?                          ◀── QA2  page and group proposals      ──▶  a new page + group folder
 build.py check.py          ◀── QA3  the round's closing gate      ──▶  every reply to JL
+html-ppt · body.py         ◀── QA4  the skill set as a live deck  ──▶  QA-design/slides/
 ```
 QA0-three-folders.md
 QA1-concepts.md
 QA2-question-group-design.md
 QA3-the-round.md
+QA4-board-skillset.md
 ### QB · Delivery
 What a reader gets, altitude by altitude: Board → Group → Page → Section → Sentence.
-Board: QB1 the folder, QB2 the webpage and its Index (QB2a its pages sidebar), QB3 a page's home folder.
-Page: QB4 the page template, whose Content specifies each section in turn, one division per section (the seven per-section faces were folded into it on 260801 and archived); QB9 the page's TIME axis, the draft → probe → revise → check loop and whether the base contract names it.
-Sentence: QB5 the atomic unit, holding the card, the lanes, the remark and the edit in its own Content since the five faces folded on 260802; QB5e still owns the details lifecycle, and the generated address left for QD8.
-Write affordance: QB8 attaches a drawing to the `## Diagram` section from the page, the write-half of QB4's Diagram section (moved from QD5, 260801).
+Since 260805 every title in this group leads with its ALTITUDE (`Board ·`, `Page ·`, `Sentence ·`) and the listing runs down the ladder, so the index reads as the ladder itself (JL: "make it started with Page, like Page - xxx, then sentence will be Sentence - xxx, and then order them").
+Board: QB1 the folder, QB2 the webpage and its Index (QB2a its pages sidebar).
+Page: QB3 its home folder; QB4 the template, whose Content specifies each section in turn (the seven per-section faces folded into it on 260801); QB5 the loop, the page's TIME axis through draft, probe, revise and check; QB6 the types, what admits a new one; QB7 attaching a drawing, the write-half of QB4's Diagram section (moved from QD5, 260801).
+Sentence: QB8 the atomic unit, holding the card, the lanes, the remark and the edit in its own Content since the five faces folded on 260802; QB8e still owns the details lifecycle, and the generated address left for QD8.
 
 ```text
 one page = one reading protocol · each section answers ONE reader question
@@ -164,9 +166,9 @@ division uses the same five rows · conveys · holds · source · rules · omit
 around the page, the other altitudes this group owns
 🏛 QB1 the board folder · QB2 the webpage index · QB2a the sidebar rail
 📂 QB3 a page inside its own home folder · 📋 QB4 the shared Q/S frame
-✏️ QB5 the sentence: two surfaces, one page · §3 card · §4 lanes ·
-§5 remark · §6 edit · 📄 QB5e the details lifecycle, still its own
-🖌 QB8 attach a drawing to the ## Diagram section, from the page (was QD5)
+✏️ QB8 the sentence: two surfaces, one page · §3 card · §4 lanes ·
+§5 remark · §6 edit · 📄 QB8e the details lifecycle, still its own
+🖌 QB7 attach a drawing to the ## Diagram section, from the page (was QD5)
 ──────────────────────────────────────────────────────────────────────
 the engine behind each row lives on that page's Files · code shape: QC2
 ```
@@ -175,19 +177,15 @@ QB2-board-webpage-design.md
 QB2a-sidebar.md
 QB3-folderq.md
 QB4-overall.md
-QB5-overview.md
-QB5e-sentence-details-lifecycle.md
-QB8-diagramattach.md
-QB9-page-loop.md
+QB5-page-loop.md
+QB6-page-types.md
+QB7-diagramattach.md
+QB8-overview.md
+QB8e-sentence-details-lifecycle.md
 ### QC · Engine
 How the delivery is produced and shipped.
 QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
-One synced Skill page per shipped unit.
-The family took QC1b §2's shape on 260731, lost a unit on 260802 and gained one the same day: one door (Skill-0 haipipe-board), two loadable SPECS (Skill-3 page, Skill-6 the skill-page variant), the sentence which became a DOOR + SPEC on 260802 (Skill-4), and the write VERB (Skill-5 routing), which absorbed the board and group altitude when JL ruled the index merged into it; the retired Skill-1 is in `_archive/` and its id still resolves, and digest is named on the roster and unshipped.
-Skill-6 is `haipipe-board-page-for-skill`, opened because five roster Openings came out of one template: a Skill or Agent page mirrors a unit that ships elsewhere and DECIDES NOTHING, so the base Opening shape, which ends in what the page decides, left it with no question to ask.
-Skill-7 is `haipipe-writing`, the roster's first row for a unit OUTSIDE `skills/board/` (JL 260802), which widens QC3a's 260727 scope ruling; it belongs because it owns `ref/writing-rules.md`, the prose standard every page here is judged against, and where the new line falls is a Decision Now row on QC3a.
-Skill-8 is `haipipe-board-page-for-venue`, the SECOND variant of Skill-3 and the roster's second unit born by lifting a rule off the page that carried it (JL 260803, one day after Skill-6 was born the same way); it governs the QBv pages on the paper board, so it is the first roster row whose consumer is another board, and whether a variant of the base may ship beside the base when its consumer is elsewhere is the same open QC3a scope row that Skill-7 widened.
-An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer and Agent-2 the page creator, one page each so N run at once.
+The mirror pages of the shipped units moved to their own group, QCskill, on 260805 (JL, the same split he had just ruled on the paper board): a QC page argues a design and closes when ruled, while a Skill or Agent page mirrors a unit and closes only when the unit ships, so the two kinds never belonged in one settled count.
 260801: renumbered contiguous QC1-QC4 (JL forced); the former QC5/QC7 generators and round-trip topics are now QC3/QC4, and every retired id resolves through the Links table.
 
 ```text
@@ -205,15 +203,6 @@ skillpage.py                ◀── QC3a     skill folder -> skill page    ─
 meetingpage.py              ◀── QC3b     a meeting note on the board   ──▶  the dated note file
 build.py + live/write.py    ◀── QC4      the whole round trip          ──▶  board/ tree + the .md
 serve.py _sentence_line     ◀── QC4a     the write path's anchor       ──▶  one line in one .md
-skillpage.py sync           ◀── Skill-0  haipipe-board · the engine    ──▶  SKILL.md snapshot
-skillpage.py new/sync       ◀── Skill-6  the SKILL-PAGE variant      ──▶  every Skill-* · Agent-*
-skillpage.py sync           ◀── Skill-8  the VENUE-PAGE variant       ──▶  QBv-* on the PAPER board
-skillpage.py sync           ◀── Skill-7  haipipe-writing · NEIGHBOUR  ──▶  skills/writing/, not board/
-skillpage.py sync           ◀── Skill-3  the page SPEC                 ──▶  its SKILL.md snapshot
-skillpage.py sync           ◀── Skill-4  the sentence SPEC             ──▶  its SKILL.md snapshot
-skillpage.py sync           ◀── Skill-5  the write VERB, both altitudes──▶  its SKILL.md snapshot
-skillpage.py sync           ◀── Agent-1  the fresh-context reviewer    ──▶  its definition .md
-skillpage.py sync           ◀── Agent-2  the page creator, N at once   ──▶  one Q*.md per agent
 ```
 QC1-skillfamily.md
 QC1a-skillmd.md
@@ -227,15 +216,38 @@ QC3a-skill-to-page.md
 QC3b-meetingnote.md
 QC4-roundtrip.md
 QC4a-writepath.md
+
+### QCskill · Engine skills
+One synced mirror page per shipped unit, split out of QC on 260805; a mirror is GENERATED by `skillpage.py`, carries the unit's own bytes in managed spans, and is never counted in the settled total.
+The family took QC1b §2's shape on 260731, lost a unit on 260802 and gained one the same day: one door (Skill-0 haipipe-board), two loadable SPECS (Skill-3 page, Skill-6 the skill-page variant), the sentence which became a DOOR + SPEC on 260802 (Skill-4), and the write VERB (Skill-5 routing), which absorbed the board and group altitude when JL ruled the index merged into it; the retired Skill-1 is in `_archive/` and its id still resolves, and digest is named on the roster and unshipped.
+Skill-6 is `haipipe-board-page-for-skill`, opened because five roster Openings came out of one template: a Skill or Agent page mirrors a unit that ships elsewhere and DECIDES NOTHING, so the base Opening shape, which ends in what the page decides, left it with no question to ask.
+Skill-7 is `haipipe-writing`, the roster's first row for a unit OUTSIDE `skills/board/` (JL 260802), which widens QC3a's 260727 scope ruling; it belongs because it owns `ref/writing-rules.md`, the prose standard every page here is judged against, and where the new line falls is a Decision Now row on QC3a.
+Skill-8 is `haipipe-board-page-for-venue`, the SECOND variant of Skill-3 and the roster's second unit born by lifting a rule off the page that carried it (JL 260803, one day after Skill-6 was born the same way); it governs the QBv pages on the paper board, so it is the first roster row whose consumer is another board, and whether a variant of the base may ship beside the base when its consumer is elsewhere is the same open QC3a scope row that Skill-7 widened.
+An AGENT is its own page kind below the skills (JL 260731: a skill is LOADED, an agent is DISPATCHED): Agent-1 is the fresh-context reviewer, Agent-2 the page creator, and Agent-3 the RUN orchestrator, one page each so N run at once.
+
+```text
+⚙️ ENGINE                       📋 PAGES · the working record            📂 FOLDER
+──────────────────────────      ────────────────────────────────────    ────────────────────────
+skillpage.py sync           ◀── Skill-0  haipipe-board · the engine    ──▶  SKILL.md snapshot
+skillpage.py sync           ◀── Skill-3  the page SPEC                 ──▶  its SKILL.md snapshot
+skillpage.py sync           ◀── Skill-4  the sentence SPEC             ──▶  its SKILL.md snapshot
+skillpage.py sync           ◀── Skill-5  the write VERB, both altitudes──▶  its SKILL.md snapshot
+skillpage.py new/sync       ◀── Skill-6  the SKILL-PAGE variant      ──▶  every Skill-* · Agent-*
+skillpage.py sync           ◀── Skill-7  haipipe-writing · NEIGHBOUR  ──▶  skills/writing/, not board/
+skillpage.py sync           ◀── Skill-8  the VENUE-PAGE variant       ──▶  QBv-* on the PAPER board
+skillpage.py sync           ◀── Agent-1  the fresh-context reviewer    ──▶  its definition .md
+skillpage.py sync           ◀── Agent-2  the page creator, N at once   ──▶  one Q*.md per agent
+skillpage.py sync           ◀── Agent-3  the RUN orchestrator          ──▶  _runs/page/ receipts
+```
 Skill-0-haipipe-board.md
 Skill-3-haipipe-board-page.md
 Skill-4-haipipe-board-sentence.md
 Skill-5-haipipe-board-routing.md
-Agent-1-haipipe-board-reviewer-agent.md
-Agent-2-haipipe-board-creator-agent.md
 Skill-6-haipipe-board-page-for-skill.md
 Skill-7-haipipe-writing.md
 Skill-8-haipipe-board-page-for-venue.md
+Agent-1-haipipe-board-reviewer-agent.md
+Agent-2-haipipe-board-creator-agent.md
 Agent-3-haipipe-board-page-orchestrator-agent.md
 ### QD · Working with Chat
 How people and agents work on a live board.
@@ -244,7 +256,7 @@ Numbers in this lane are POSITIONS, and the lane is renumbered to close its gaps
 The earlier rule was the opposite, that a number is a permanent address and a retired page leaves a hole, which is how six live pages came to be numbered up to QD14; the holes were doing more damage than the renumbering they were meant to prevent, because a reader cannot tell a gap from a missing page.
 Renumbered 260801: QD14 (the terminal's form) became QD4 so it sits beside the engine it designs, and QD13 (the split workspace) became QD5; QD1, QD2, QD3 and QD6 did not move.
 QD7 arrived from `QC` on 260802 (JL: "move it") and took the `QD7` position on 260802 when the empty `QD7-rejoin-bench` stub was archived, because this lane closes its gaps: what a page costs to open was opened in the engine lane because every lever is engine code, and moved here because WAITING is what stops the work and this lane is where the work happens. The rule it sets for the next page like it is that a lane is chosen by where a cost is FELT, not by which file holds its fix.
-What the retired pages took with them is recorded here rather than in a gap: QD4 (live pages) was archived 260801 and its file keeps its own name, `_archive/QD4-liveupdate.md`; the drawing-attach page moved to QB as `QB8`; the board-level agent was archived once QD1 settled that a chat attaches at three levels; and the 260731 split into QE · Sharing carried off five more.
+What the retired pages took with them is recorded here rather than in a gap: QD4 (live pages) was archived 260801 and its file keeps its own name, `_archive/QD4-liveupdate.md`; the drawing-attach page moved to QB as `QB7`; the board-level agent was archived once QD1 settled that a chat attaches at three levels; and the 260731 split into QE · Sharing carried off five more.
 QD4 is QD3's design half, split out on 260801 when the terminal proved hard to use on a phone: QD3 owns the engine and QD4 owns the FORM, meaning where typing happens, what the pane shows when 80 columns will not fit, and what the page owes a reader who switches away and comes back.
 QD5 asks whether the board should be operated as three side-by-side panes (index · page · chat) rather than as one html document that swaps its own middle; it measured the four causes of the unsmooth refresh, ruled the mechanism as three same-origin iframes in one shell page on 260801, and is the successor to the archived live-update page's in-place-swap approach.
 
@@ -326,7 +338,9 @@ QDa2                QD-working/QD2-chat-sdk.md
 QDa3                QD-working/QD3-chat-terminal.md
 QDa4                QD-working/_archive/QD4-liveupdate.md
 QD4-liveupdate      QD-working/_archive/QD4-liveupdate.md
-QDa5                QB-delivery/QB8-diagramattach.md
+QDa5                QB-delivery/QB7-diagramattach.md
+QB9                 QB-delivery/QB5-page-loop.md
+QB10                QB-delivery/QB6-page-types.md
 QD13                QD-working/QD5-split-workspace.md
 QC5-pagecost        QD-working/QD7-pagecost.md
 QD8-pagecost        QD-working/QD7-pagecost.md
@@ -343,13 +357,11 @@ QD9                 QE-sharing/QE3-whereitruns.md
 QD10                QE-sharing/QE4-editlock.md
 QD11                QE-sharing/QE5-consolescope.md
 QD12                QE-sharing/QE6-bindaddress.md
-QB6                 QC-engine/QC3a-skill-to-page.md
-QB7                 QC-engine/QC1b-subskills.md
-Q-Skill-haipipe-board                QC-engine/Skill-0-haipipe-board.md
+Q-Skill-haipipe-board                QCskill-engine-skill/Skill-0-haipipe-board.md
 Q-Skill-haipipe-board-index          _archive/Skill-1-haipipe-board-index.md
 Skill-1              _archive/Skill-1-haipipe-board-index.md
-Q-Skill-haipipe-board-reviewer-agent QC-engine/Agent-1-haipipe-board-reviewer-agent.md
-Skill-2              QC-engine/Agent-1-haipipe-board-reviewer-agent.md
+Q-Skill-haipipe-board-reviewer-agent QCskill-engine-skill/Agent-1-haipipe-board-reviewer-agent.md
+Skill-2              QCskill-engine-skill/Agent-1-haipipe-board-reviewer-agent.md
 QA1a                QA-design/QA1-concepts.md
 QA2b                QB-delivery/QB2-board-webpage-design.md
 QAa0                QB-delivery/QB4-overall.md
@@ -360,10 +372,14 @@ QAa4                QB-delivery/_archive/QB4d-items.md
 QAa5                QB-delivery/_archive/QB4e-where-we-are.md
 QAa7                QB-delivery/_archive/QB4f-files.md
 QAa6                QB-delivery/_archive/QB4g-folds.md
+QB8a                QB-delivery/_archive/QB5a-evidence-card.md
+QB8b                QB-delivery/_archive/QB5b-comments.md
+QB8c                QB-delivery/_archive/QB5c-editing.md
 QB5a                QB-delivery/_archive/QB5a-evidence-card.md
 QB5b                QB-delivery/_archive/QB5b-comments.md
 QB5c                QB-delivery/_archive/QB5c-editing.md
-QB5d                QD-working/QD8-sentence-address.md
+QB5e                QB-delivery/QB8e-sentence-details-lifecycle.md
+QB8d                QD-working/QD8-sentence-address.md
 QAb1                QB-delivery/_archive/QB5a-evidence-card.md
 QAb2                QB-delivery/_archive/QB5c-editing.md
 QAb3                QD-working/QD8-sentence-address.md
@@ -374,9 +390,9 @@ QB4d                QB-delivery/_archive/QB4d-items.md
 QB4e                QB-delivery/_archive/QB4e-where-we-are.md
 QB4f                QB-delivery/_archive/QB4f-files.md
 QB4g                QB-delivery/_archive/QB4g-folds.md
-QAb0                QB-delivery/QB5-overview.md
+QAb0                QB-delivery/QB8-overview.md
 QA6                 QB-delivery/_archive/QB5b-comments.md
-QAb4                QB-delivery/QB5e-sentence-details-lifecycle.md
+QAb4                QB-delivery/QB8e-sentence-details-lifecycle.md
 QA9                 QF-execute/QF1-acceptance.md
 QA10                QB-delivery/QB2-board-webpage-design.md
 QA4                 QB-delivery/QB4-overall.md
@@ -419,7 +435,7 @@ assets/css/        ../../board/haipipe-board/assets/css/
 assets/js/         ../../board/haipipe-board/assets/js/
 fig/board-mark-palettes.svg fig/board-mark-palettes.svg
 haipipe-board/assets/js/ ../../board/haipipe-board/assets/js/
-haipipe-paper-stage/ ../../paper/1-lifecycle/haipipe-paper-stage/
+haipipe-paper-stage/ ../../paper/haipipe-paper-stage/
 0-lifecycle/        ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
 02-method-260722/   ../../../../subjective-label/diagram/02-method-260722/
 haichat-inlab/      ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/

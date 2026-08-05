@@ -57,7 +57,7 @@ Scope: This page covers What a stage authors, what is generated from it, the dir
          reads it. `output:` is the only `output:` in the eight, which
          is literally true and hid the other two declarations of the
          same rule for a day.
-      ⚠️ one law, three field names, and `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` lists
+      ⚠️ one law, three field names, and `../../paper/haipipe-paper-stage/stages/CONTRACT.md` lists
          them as unrelated stage-specific fields.
       📍 `sections/` is UNNUMBERED now (QA6's delete test), so a
          generated file ships and its source does not. The direction
@@ -140,7 +140,7 @@ That is the two-manuscript failure in its literal form: prose that exists only a
 - [ ] 🔧 Give pitch and narrative a field for their `.tex`
       `0-lifecycle/2-venue/2b-pitch.tex` (173 lines, standalone `\documentclass`) and `3-narrative.tex` (211 lines) sit beside `S-Venue-1-pitch.md` and `S-Venue-2-narrative.md`, both written 2026-07-18 against pages written 2026-07-26. Neither `../../paper/S01-opening/pitch/stage.md` nor `../../paper/S02-work/narrative/stage.md` declares any output field, so 384 lines of `.tex` are governed by nothing.
 - [ ] 📐 Declare the direction under ONE field name
-      `output:` at `5-section-edit/stage.md:53`, `generated:` and `compiled:` at `4-display/stage.md:36-37`. One law, three names, listed in `../../paper/route/haipipe-paper-stage/stages/CONTRACT.md` as unrelated stage-specific fields. Pick one and record it there, or the next stage that generates something invents a fourth.
+      `output:` at `5-section-edit/stage.md:53`, `generated:` and `compiled:` at `4-display/stage.md:36-37`. One law, three names, listed in `../../paper/haipipe-paper-stage/stages/CONTRACT.md` as unrelated stage-specific fields. Pick one and record it there, or the next stage that generates something invents a fourth.
 
 ## States
 The rule holds and is stated with its reason, on two contracts under three field names. It is unexecuted, because nothing performs the step; that is `QBe3 §3`'s to close and is not restated here.

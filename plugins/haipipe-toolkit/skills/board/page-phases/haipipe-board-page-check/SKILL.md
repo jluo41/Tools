@@ -3,8 +3,8 @@ name: haipipe-board-page-check
 description: >-
   The CHECK phase contract for any Board Page. CHECK judges one concrete rendered version against its purpose, Aims, evidence, Page Type, and local closing rule, records findings where they apply, and routes the work to close, REVISE, PROBE, or a new DRAFT round; it does not cure its own substantive findings. Load haipipe-board-page, the matching Page Type, this contract, and haipipe-board-sentence when findings use sentence lanes, then any family checker. Use when reviewing a Page version, running a declared gate, planting findings in context, choosing the next phase, or preventing a checker from silently revising what it judged. Trigger: page check, CHECK phase, quality gate, review version, close round, route finding, restart phase, human decision, /haipipe-board-page-check.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-04"
+  version: "0.3.1"
+  last_updated: "2026-08-05"
   summary: "CHECK independently judges one immutable Page version and emits the terminal or corrective route used by RUN."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -21,8 +21,9 @@ haipipe-board-page
   → family checker, when the Page belongs to paper or application
 ```
 
-The Page Type or local contract owns the closing rule and whether a person must rule.
-This file owns only CHECK authority.
+What is CHECK's alone: it is the only phase that may CLOSE, and the only one forbidden to change what it judges.
+Its risk is becoming a hidden revision: curing its own finding and calling the same version checked, which is why the fix always runs under another phase and returns for a fresh look.
+The Page Type or local contract supplies the closing rule and whether a person must rule.
 
 ## 👁 The authority test
 

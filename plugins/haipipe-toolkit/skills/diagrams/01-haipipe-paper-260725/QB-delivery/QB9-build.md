@@ -130,7 +130,7 @@ The older `displays/Table/table-gradient-results.tex` TODO is commented out in T
         📄 S-Submission-2-review.md
         📄 S-Submission-3-submit.md
 
-  ⚡ this concern owns NO STAGE ── `../../paper/route/haipipe-paper-stage/stages/index.yml` has no `build` key
+  ⚡ this concern owns NO STAGE ── `../../paper/haipipe-paper-stage/stages/index.yml` has no `build` key
   🔁 the SAME four pages run again for every Round ── QB10 adds a dated
      round record, and never a second set of these
   🏷 the S-Submission ids are HISTORICAL and unchanged; Build is the

@@ -85,9 +85,9 @@ Present findings as a table, severity-ranked (✗ before ⚠), each row with its
 
 | Finding | Fix route |
 |---------|-----------|
-| Any block B / C / G ✗, or a J delete-test failure | `/haipipe-paper-restructure` (this is the old layout; it needs migrating, not patching) |
-| Numbering gap, orphan, wrapper prose, stray asset, in an otherwise conforming folder | `/haipipe-paper-restructure --repair` |
-| Missing folder/driver/compile script (skeleton incomplete) | `/haipipe-paper-scaffold` (or `restructure` if content exists) |
+| Any block B / C / G ✗, or a J delete-test failure | the restructure flow (retired; this skill owes its repair half, see `../../_old/README.md`) — the old layout needs migrating, not patching |
+| Numbering gap, orphan, wrapper prose, stray asset, in an otherwise conforming folder | same retired restructure flow, repair mode (debt: `../../_old/README.md`) |
+| Missing folder/driver/compile script (skeleton incomplete) | `/haipipe-paper-folder` (the scaffold upgrade it owes, see `../../_old/README.md`) |
 | Block D: an unowned build product or sidecar inside `0-lifecycle/` | move it out; only the declared `S05-display/` workspace exception belongs there |
 | Block D: an `S-…` page in the wrong family folder | `/haipipe-board` owns the filename rule (`stage.py resolve`); move the file, then rebuild |
 | Broken `\includegraphics` (the render was never produced) | the Display stage; the render comes from a task or discovery run, never from ad-hoc plotting |

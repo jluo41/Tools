@@ -1242,7 +1242,7 @@ Three of these four are the same paper, because the guide has only two, which is
 
 - `../../paper/venue/playbook-nature-portfolio/NMI/taste.md` · the desk signals and the one-sentence test
 - `../../paper/venue/playbook-nature-portfolio/README.md` · the family conventions, including the no-standalone-Related-Work rule division 6 records
-- `../../paper/route/haipipe-paper-stage/stages/section-kinds.yml` · the resolver, and the source of the `Sec-<n>` order in `Venue-Structure`
+- `../../paper/haipipe-paper-stage/stages/section-kinds.yml` · the resolver, and the source of the `Sec-<n>` order in `Venue-Structure`
 - `QBv8-npj-digital-medicine.md` · where a dataset-only paper goes when the claim becomes clinical
 - `QBv1-misq.md` · the desk that refuses outright what this one accepts
 

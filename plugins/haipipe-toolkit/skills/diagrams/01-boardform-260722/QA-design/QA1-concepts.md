@@ -32,11 +32,11 @@ group: a `###` heading in `## Pages`, one folder per group (`QB1`); the id lette
 state: the first emoji of the `state:` line (🔴 OPEN · 🟡 PARTIAL · ✅ SETTLED · ⏸️ ON HOLD); the suffix is human-readable and never a fifth state.
 
 ### 3 · The sentence family
-sentence: the atomic row, one per source line (`QB5`).
-apparatus / lane: a typed `>` line bound to the sentence above it by adjacency (`QB5 §4`).
-comment: a sentence-local `> Comment WHO` row written directly below the sentence it discusses (`QB5 §5`); the former page-bottom queue and its open/solved lifecycle are retired.
-edit record: a sentence-local `> ✎` row recording one saved whole-sentence change (`QB5 §6`).
-card: a panel opened by clicking a few marked words INSIDE a sentence, written `> Card the words: what to show` (`QB5 §3`).
+sentence: the atomic row, one per source line (`QB8`).
+apparatus / lane: a typed `>` line bound to the sentence above it by adjacency (`QB8 §4`).
+comment: a sentence-local `> Comment WHO` row written directly below the sentence it discusses (`QB8 §5`); the former page-bottom queue and its open/solved lifecycle are retired.
+edit record: a sentence-local `> ✎` row recording one saved whole-sentence change (`QB8 §6`).
+card: a panel opened by clicking a few marked words INSIDE a sentence, written `> Card the words: what to show` (`QB8 §3`).
 
 ### 4 · The working vocabulary
 decision: what a Q face settles; the word replaced "ruling" on 260729 (JL). A settled decision GRADUATES: its `## Law` is copied into `SKILL.md` (operating rules) or `ref/` (specs), and only then binds.
@@ -61,7 +61,7 @@ Collected 260729 from `SKILL.md`, `ref/board-form.md`, and the faces named per e
   Archived pages keep theirs, because rewriting an archive would falsify a record.
 
 - 260731 CC · 📖 Refreshed to the post-restructure state
-  The family entry now counts five skills and one agent, the page family gained the Skill and Agent mirror kinds and the `Opening` canon, `board.md` gained its Board Map section, and every pointer moved to its live id (`QAa0`→`QB4`, `QAb0`→`QB5`, `QAb1`→`QB5a`, `QA6`→`QB5b`, `QAb2`→`QB5c`, `QAa5`→`QB4e`).
+  The family entry now counts five skills and one agent, the page family gained the Skill and Agent mirror kinds and the `Opening` canon, `board.md` gained its Board Map section, and every pointer moved to its live id (`QAa0`→`QB4`, `QAb0`→`QB8`, `QAb1`→`QB8a`, `QA6`→`QB8b`, `QAb2`→`QB8c`, `QAa5`→`QB4e`).
   Nothing was defined here for the first time; every refreshed entry points at the face or ruling that owns it.
 
 ### Decision Now

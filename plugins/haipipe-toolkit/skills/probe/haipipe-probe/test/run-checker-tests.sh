@@ -23,7 +23,7 @@
 set -u
 here=$(cd "$(dirname "$0")" && pwd)
 skills=$(cd "$here/../../.." && pwd)
-paper_chk="$skills/paper/2-phase/1-probe/haipipe-paper-probe/check-probe-cards.sh"
+paper_chk="$skills/paper/workers/haipipe-paper-probe/check-probe-cards.sh"
 fx="$here/fixture/proj/papers/Paper-Fx"
 out=""
 [ "${1:-}" = "--save" ] && { out=${2:?--save needs a dir}; mkdir -p "$out"; }

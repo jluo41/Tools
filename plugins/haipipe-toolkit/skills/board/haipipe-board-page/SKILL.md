@@ -3,9 +3,9 @@ name: haipipe-board-page
 description: >-
   The PAGE contract and router of a Board: one persistent Page combines a stable Page Type with a current Page Phase. It owns the shared frame, fixed section order, section obligations, machine write boundaries, evaluation contract, and the lifecycle vocabulary DRAFT, PROBE, REVISE, CHECK. Page Type variants live under page-types/; phase contracts live under page-phases/. THREE VERBS form the callable door: CREATE scaffolds one Page, WORK ON repairs one Page, and RUN drives one Page through a bounded non-linear producer/build/judge loop with auditable receipts. RUN is deliberately not ADVANCE. Trigger: create a page, new page, working on a page, update a page, run page lifecycle, automatic page loop, audit page workflow, page contract, page grammar, page sections, Page Type, Page Phase, draft probe revise check, rewrite Opening, section evaluation, quality check, which section, base page, /haipipe-board-page.
 metadata:
-  version: "0.15.0"
-  last_updated: "2026-08-04"
-  summary: "Adds checked, phase-scoped Related Board Pages and a one-hop context reader."
+  version: "0.18.0"
+  last_updated: "2026-08-05"
+  summary: "Nine Page Type variants ship under page-types/, six admitted 260805; for-slide embeds the deck LIVE per division via ?preview=N, proven on QA4."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -13,7 +13,8 @@ metadata:
 
 `haipipe-board` is the door you walk through to RUN a board.
 This skill is the door for ONE PAGE, and the spec that page is measured against. Say `create a new page on <topic>`, `working on <page>`, or `run <page>`; load it with no board open and it is a pure contract.
-QC1b §1 on the design board states the test it passes: a consumer needs these rules with no board open, and the consumers exist: the routing verb deciding "which page, which section", the chat drawer priming a per-page session, and the variant authors in other families.
+QC1b §1 on the design board states the test it passes: a consumer needs these rules with no board open.
+Those consumers exist today: the routing verb deciding "which page, which section", the chat drawer priming a per-page session, and the variant authors in other families.
 
 **The boundary, and it is a hard one:**
 
@@ -23,8 +24,8 @@ QC1b §1 on the design board states the test it passes: a consumer needs these r
 haipipe-board-page               haipipe-board
 ─────────────────────            ──────────────────────────────
 what a page IS                   rendering it (src/page_question.py)
-the section contract             serving and write-back (serve.py)
-where a write may land           the checker (check.py)
+the section contract             serving and write-back (cli/serve.py)
+where a write may land           the checker (cli/check.py)
 the base/variant model           the template file itself (ref/page-template.md)
 ```
 
@@ -47,7 +48,7 @@ S  stage      S-<Family>-<unit>-<slug>     its human gate passes
 QBv venue     QBv<n>-<slug>                the desk's rules are recorded
 Skill mirror  Skill-<n>-<slug>             the unit ships · NEVER counted
 Agent mirror  Agent-<n>-<slug>             the unit ships · NEVER counted
-Meeting       Meeting-<n>-<slug>           it records what was said · no contract yet
+Meeting       Meeting-<n>-<slug>           faithful + every decision routed · NEVER counted
 ```
 
 `src/common.py` globs four prefixes, `Q`, `S`, `Agent` and `Meeting`; a `Skill-` Page rides the `S` glob, which is why five implemented types need only four prefixes.
@@ -59,16 +60,31 @@ The three Page Type variants maintained here live under `page-types/`; a family-
 The earlier wording was "ships under its CONSUMER, never here", which broke when the venue variant landed because its consumer is the paper family and its maintainer is this one.
 This skill owns the BASE those variants extend.
 
-THREE Page Type variants ship under `page-types/`, and one of them must be loaded before you write the Page it governs:
+NINE Page Type variants ship under `page-types/`, and one of them must be loaded before you write the Page it governs:
 
 ```
-Skill-<n> · Agent-<n>   →  haipipe-board-page-for-skill    a page that mirrors a
-                                                           shipped unit and decides nothing
-QBv<n>                  →  haipipe-board-page-for-venue    a page per place a paper
-                                                           is submitted to
-S-<Family>-<unit>       →  haipipe-board-page-for-stage    a page per lifecycle stage
-                                                           of one paper or application
+Skill-<n> · Agent-<n>   →  haipipe-board-page-for-skill      a page that mirrors a
+                                                             shipped unit and decides nothing
+QBv<n>                  →  haipipe-board-page-for-venue      a page per place a paper
+                                                             is submitted to
+S-<Family>-<unit>       →  haipipe-board-page-for-stage      a page per lifecycle stage
+                                                             of one paper or application
+topic, outward route    →  haipipe-board-page-for-literature a Q-consumer register asking
+                                                             what is already KNOWN
+topic, inward route     →  haipipe-board-page-for-value      a Q-consumer register asking
+                                                             what this project must PRODUCE
+display unit            →  haipipe-board-page-for-display    a unit a person must ACCEPT:
+                                                             figure, table, diagram
+section unit            →  haipipe-board-page-for-section    one reader-ordered unit, bound
+                                                             to its venue allocation
+Meeting-<n>             →  haipipe-board-page-for-meeting    talk recorded here, ruled
+                                                             elsewhere · NEVER counted
+slide deck              →  haipipe-board-page-for-slide      one division per slide, each
+                                                             embedding the deck LIVE via
+                                                             ?preview=N
 ```
+
+The last six were admitted 260805 (JL, ruled on the design board's QB6; `-for-slide` on the Page-for-Slide branch). `-for-section` loads `-for-stage` the way the topic types load the topic core: it adds the section kind, the venue contract block, and the landing surface where citation, value, and display bindings reach prose; a section reads the venue BLUEPRINT, never the QBv catalog. `-for-meeting` closes the gap the types table itself records: `Meeting-<n>` pages had a generator and no contract; its one owned rule is that a spoken decision is not ruled until routed to the owning page. The two topic types resolve by the `### Q-consumer register` marker plus their route direction, the same signal `src/topic_entry_contract.py` already trusts, because their filenames ride the stage shape; both LOAD `haipipe-board/ref/topic-entry-contract.md` for the anatomy and add only their route's translation layer. A display page is mirror-shaped but closes on human ACCEPTANCE of a render, not on a unit shipping, which is why it does not ride `-for-skill`. A slide page shares that acceptance model at deck grain: one division per slide, each embedding the ONE deck file live via html-ppt's `?preview=N` single-slide mode, while the same file opened bare is the presentation; JL ruled the embed must be the html itself, and the boardform board's QA4 is the proving page (260805).
 
 Load the matching one before writing or fixing any Page of those types.
 `haipipe-board-page-for-stage` names the ONE stage that reads a `QBv` Page and the four tiers deciding what crosses from that catalog into a draft.
@@ -258,7 +274,11 @@ Load this skill and `haipipe-board/ref/writing-rules.md` directly before writing
 Do not copy their requirements into an assignment prompt: a copied checklist becomes a second prose authority and drifts.
 For an existing page, read the entire target file before changing any section, including Content, Aims, States, Files, and settled folds.
 
-A CHANGE IS FINISHED WHEN IT IS ON THE RENDERED PAGE, and nobody is asked for permission on the way (JL 260801: "don't wait me to say go next time, just go ahead and don't stop until the content is updated in the Page"). The unit of work is a visible page, not an edit. Carry every change all the way through: write the source, propagate the rule to `haipipe-board/ref/page-template.md` and to this file so a new page inherits it, run `check.py`, then confirm the RENDER rather than the markdown. Stopping mid-way to ask for a go leaves the change half-applied, which is strictly worse than either finishing or not starting: a renamed label with a dozen sentences still naming the old one, or a rule written on one page and in no template. Verify on the artifact a reader opens, because source-is-correct is not page-is-correct: a dead watcher and a shut `<details>` each produced a correct file and a wrong page.
+A CHANGE IS FINISHED WHEN IT IS ON THE RENDERED PAGE, and nobody is asked for permission on the way (JL 260801: "don't wait me to say go next time, just go ahead and don't stop until the content is updated in the Page").
+The unit of work is a visible page, not an edit.
+Carry every change all the way through: write the source, propagate the rule to `haipipe-board/ref/page-template.md` and to this file so a new page inherits it, run `check.py`, then confirm the RENDER rather than the markdown.
+Stopping mid-way to ask for a go leaves the change half-applied, which is strictly worse than either finishing or not starting: a renamed label with a dozen sentences still naming the old one, or a rule written on one page and in no template.
+Verify on the artifact a reader opens, because source-is-correct is not page-is-correct: a dead watcher and a shut `<details>` each produced a correct file and a wrong page.
 The page's own source is what keeps a rewritten Opening from promising something the rest of the page does not establish.
 
 The title is a phrase in SENTENCE CASE that says what the page is FOR (JL 260801, ruled on the design board's QB4 §8). Capitalize the first word and proper nouns and nothing else; a defined term keeps its capitals. A colon may carry a short subtitle, and that is usually where the purpose lands: `The page template: one grammar every page kind obeys` rather than `Page Template design`, which mixes two cases and names only a topic. On the Index the title is the only line a reader gets before choosing, so a title naming its subject alone makes them open the page to learn what the page was for. Sentence case is a string test a checker can own; whether the title states a purpose is a judgment and belongs to the Evaluation contract below.
@@ -355,6 +375,7 @@ There is NO `## Boundary` section (JL 260731, said twice). It was added by CC on
 The same ruling renamed three sections: `## Question` -> `## Opening`, `## Items to Finish` -> `## Aims`, `## Where we are` -> `## States`. `src/common.py` still ALIASES every old name, so a page on the old vocabulary keeps rendering correctly. Do not read that as permission. This skill claimed the removal was finished on 260731; on 260802 the board still had 26 `## Boundary` sections and 45 of 55 pages on the old names, because a forgiving renderer means nobody ever sees the drift. `check.py` now reports every retired name as `retired-section`, which is the only reason this paragraph can be trusted.
 
 One name is RESERVED inside States (JL 260731): `### Decision Now` holds the decisions a machine proposes and the human must make, one `- [ ]` row each carrying the ask, the options, and a recommendation.
+One exception is UNSETTLED and admitted: the paper board's S pages use `### Needs JL · tick these`, which JL approved four days before this reservation, and neither ruling supersedes the other in writing; keep each board's local name until JL rules once for both (the conflict is recorded in `page-types/haipipe-board-page-for-stage`).
 A proposal never lives only in chat: it is written there on the owning page, the human answers by ticking, and an answered row moves into the page's dated record.
 
 The options take ONE LINE EACH, and each line says what choosing it commits you to (JL 260731: "I want the decision A, B, C, to be in a new line and explain each options, not all the options in one line").
@@ -393,7 +414,7 @@ Answered means the human said it: in chat, in a comment lane, or by ticking. A m
 page        QB4            #QB4
 face        QB4a           a page whose id carries its parent's number
 group       #group-QB      scrolls the index, opens nothing
-sentence    QB5's grammar  haipipe-board-sentence owns everything below the section
+sentence    QB8's grammar  haipipe-board-sentence owns everything below the section
 ```
 
 Every id inside a fenced figure renders as a link (haipipe-board 0.53.0), so a contract that names pages is itself a map.

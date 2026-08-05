@@ -3,8 +3,8 @@ name: haipipe-board-page-for-stage
 description: >-
   The VARIANT contract for a Board's S-Family-unit stage pages, one Page per lifecycle stage of a paper or application across seed, resource, claims, venue, pitch, narrative, display, and section-edit. It resolves a Page to its own stage through the board_family and board_unit declared by stage.md and holds no per-stage rule itself. It loads haipipe-board-page for the base frame and adds the chain, managed Stage Contract, venue transfer tiers, venue-free versus venue-aligned split, and human gate semantics. Use when writing or fixing a stage Page, when its inputs or venue binding are wrong, when a paper retargets, or when a draft needs to know which venue rules bind it. Trigger: stage page, S page, S-Main, S-Venue, S-Seed, lifecycle stage, stage contract, requires, style-from, provides, venue contract, blueprint, retarget, section edit, gate, /haipipe-board-page-for-stage.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-08-04"
+  version: "0.4.2"
+  last_updated: "2026-08-05"
   summary: "Now lives under page-types/ and composes with a separate DRAFT, PROBE, REVISE, or CHECK contract."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -84,11 +84,11 @@ contract-source-hash:  sha256 of the SOURCES, never of this page
    what the desk buys · Venue-Structure · Submission-Rules · Authority
         │  read ONCE, by the venue stage
         ▼
-📌 S-Venue-0-venue           this paper's DECISION · which desk, and the blueprint
+📌 S-Open-Venue              this paper's DECISION · which desk, and the blueprint
    per-section budget, structure, density, H-assignments
         │  read by every stage after it
         ▼
-✍️ S-Main-<n>, S-Venue-1…   each carries a short ### Venue contract block:
+✍️ S-Main-<n>, S-Open-Pitch…  each carries a short ### Venue contract block:
    venue · section-type · blueprint (BINDING) · pack style.md (reference only)
 ```
 
@@ -100,7 +100,7 @@ Why not let each page read `QBv` directly: nine pages re-deriving one desk drift
 ### Venue contract
 venue: MISQ 2026 · section-type: theory
 desk: QBv1-misq (the catalog · this page never reads it; the venue stage did)
-blueprint: 0-lifecycle/2-venue/S-Venue-0-venue.md (theory blueprint block)  <- BINDING
+blueprint: 0-lifecycle/S01-opening/S-Open-Venue.md (theory blueprint block)  <- BINDING
   binds:   6-7 subsections · H-assignments · the displays this section owes
   reports: ~2,900-6,000w · 0.67-0.78 citations per sentence
 style: venue/playbook-utd-is · MISQ/MISQ-theory/style.md  (reference only)
@@ -119,26 +119,28 @@ Every row earns its place: without `desk:` a reader cannot tell which catalog wa
 **The resolver runs in the page id, and the join keys live in `stage.md`.** ⚠️ Not in `stages/index.yml`: that file carries `{key, order, dir, migrated, triggers}` and nothing else, by its own header, which says everything else about a stage lives in `stages/<dir>/stage.md`. An earlier draft of this section sent readers to the index row and a blind reader lost a step grepping the wrong file. Each `stage.md` declares `board_family` and `board_unit`, and that pair is the join:
 
 ```
-stage.md       dir              board_family        board_unit
-               ▲ where the keys ACTUALLY live
+stage.md       dir                        board_family        board_unit
+               ▲ where the keys ACTUALLY live (read 260805, after the SNN reorg)
 ─────────────────────────────────────────────────────────────────────────────
-seed           0-seed           Seed                "0"        → S-Seed-0-*
-resource       1a-resource      Work                "0"        → S-Work-0-*
-claims         1b-claims        Work                "1"        → S-Work-1-*
-venue          2a-venue         Venue               "0"        → S-Venue-0-*
-pitch          2b-pitch         Venue               "1"        → S-Venue-1-*
-narrative      3-narrative      Venue               "2"        → S-Venue-2-*
-display        4-display        Display             "0"        → S-Display-0-*
-section-edit   5-section-edit   Main or Appendix,   reader-order number
-                                per section_kind    or appendix letter
+seed           S01-opening/seed           Open                "Seed"   → S-Open-Seed
+venue          S01-opening/venue          Open                "Venue"  → S-Open-Venue
+pitch          S01-opening/pitch          Open                "Pitch"  → S-Open-Pitch
+resource       S02-work/resource          Work                "R"      → S-Work-R-*
+claims         S02-work/claims            Work                "C"      → S-Work-C-*
+narrative      S02-work/narrative         Work                "N"      → S-Work-N-*
+display        S05-display/display        Display             "0"      → S-Display-0-*
+section-edit   S06-main/section-edit      Main or Appendix,   reader-order number
+                                          per section_kind    or appendix letter
 ```
+
+The `dir` values are relative to `skills/paper/`, where each stage now lives inside its delivery group's `SNN-` folder (the 260803 reorg); `stages/index.yml`'s `dir:` rows point at the same places. A capitalised `board_unit` such as `"Seed"` is a control-page token: `stage.py` drops the slug, so the page is `S-Open-Seed.md` with no trailing slug.
 
 To go from a page to its rules: read `S-<Family>-<unit>` off the filename, find the row whose `board_family` and `board_unit` match, and load that `stage.md`. To go the other way, the stage spells the artifact path itself. Nothing needs to be guessed, and no page hard-codes a phase list.
 
 **Three page shapes sit under one stage row, and only the first is what `stage.md` describes:**
 
 ```
-🎯 THE STAGE PAGE     the unit the row declares · S-Work-1-claims, S-Venue-0-venue
+🎯 THE STAGE PAGE     the unit the row declares · S-Work-C-claims, S-Open-Venue
                       → load its stage.md · it owns phases, gates, done-criteria
 
 🧩 A UNIT PAGE        a page the stage produces per unit, or a sub-page under a hub ·
@@ -186,8 +188,8 @@ Naming the source is not enough; a drafter needs to know what to DO with each ro
                          is real, not text to reuse. Every venue page says so and
                          no stage page was ever told.
 
-⚖️ DEFER TO DELIVER      the desk's binding rules — total page cap, reference
-                         style, anonymity, disclosures — belong to the deliver
+⚖️ DEFER TO DELIVER      the desk's binding rules (total page cap, reference
+                         style, anonymity, disclosures) belong to the deliver
                          gate, not to a section draft
                          EXCEPT when the rule is PER-SECTION, and then it binds
                          this page: ISR caps the abstract at 300 words and
@@ -197,7 +199,7 @@ Naming the source is not enough; a drafter needs to know what to DO with each ro
 
 **A per-section desk rule outranks the blueprint's budget**, because one is published and enforced and the other is this paper's plan. A blueprint that allocates 200 words to an abstract at a desk that caps it at 150 is a planning error, and the stage page reports it rather than writing to the plan.
 
-**The blueprint BINDS row by row, and not every row binds.** This is the contradiction a blind reader hit on 260803 and could not settle: tier 🟡 above says a word budget is "measured after drafting and never enforced", while the venue block stamps the blueprint `<- BINDING` and `5-section-edit/stage.md` lists the word budget among the things that bind. Both are right about different rows, and the page was left unable to tell whether a 1,770-word shortfall was a defect or a reported deviation. The split:
+**The blueprint BINDS row by row, and not every row binds.** This is the contradiction a blind reader hit on 260803 and could not settle: tier 🟡 above says a word budget is "measured after drafting and never enforced", while the venue block stamps the blueprint `<- BINDING` and `S06-main/section-edit/stage.md` lists the word budget among the things that bind. Both are right about different rows, and the page was left unable to tell whether a 1,770-word shortfall was a defect or a reported deviation. The split:
 
 ```
 ⚖️ BINDS      the subsection count · the H-assignments · which claim each
@@ -237,12 +239,12 @@ A stage page states which side it is on, because that is what tells a reader whe
 
 ## 🎯 Aims and States on a stage page: the `A<n>` scheme does not fit, and this says what to do
 
-**The hole both testers named first.** The base keys an Aim id to a CONTENT PART: `### A3 · <emoji> <name>` mirrors Content division `3`, and `- A3.1 · target` hangs from it. A stage page's Content is a manuscript section numbered `§3.1 / §3.2 / §3.3`, so there is no Content part `3` for `A3.1` to hang from, and every stage page on the real board answered by using no ids at all: measured 260803, `S-Main-3-theory` carries 21 un-ided Aims, zero `Done when`, and a States section of prose plus a fenced block plus ten `### Needs JL` rows. The render derives its `met/total` counter from States, so the page reports nothing about itself.
+**The hole both testers named first.** The base keys an Aim id to a CONTENT PART: `### A3 · <emoji> <name>` mirrors Content division `3`, and `- A3.1 · target` hangs from it. A stage page's Content is a manuscript section numbered `§3.1 / §3.2 / §3.3`, so there is no Content part `3` for `A3.1` to hang from. Every stage page on the real board answered by using no ids at all. The measurement, 260803: `S-Main-3-theory` carries 21 un-ided Aims and zero `Done when`, and its States section is prose plus a fenced block plus ten `### Needs JL` rows. The render derives its `met/total` counter from States, so the page reports nothing about itself.
 
 **The scheme for this kind:**
 
 ```
-🎯 AIM ID       - Q-Sec<unit><Kind>-<n>   the q-consumer id 5-section-edit/stage.md
+🎯 AIM ID       - Q-Sec<unit><Kind>-<n>   the q-consumer id S06-main/section-edit/stage.md
                                           already declares, NOT A<n>
                 - P<n>                    a target belonging to no single division
    WHY          the stage owns the id pattern, and a second scheme collides with the
@@ -316,7 +318,7 @@ Found on 260803 by a reader applying this file to a live page. Each is a conflic
 
 💬 `> CC:` IS BOTH LEGACY AND MANDATORY
    check.py calls it the legacy comment form and asks for `> Comment CC …`
-   5-section-edit/stage.md's Edit surgically step instructs the agent to reply
+   S06-main/section-edit/stage.md's Edit surgically step instructs the agent to reply
    with `> CC:` · two shipped authorities, opposite instructions, neither
    citing the other
 

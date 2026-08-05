@@ -23,7 +23,7 @@ STAGES = HERE / "stages"
 # The S filename rule belongs to Board tooling (QC2). Import it rather than
 # re-spelling it here, so a checker can never disagree with the creator.
 _spec = importlib.util.spec_from_file_location(
-    "board_stage", HERE.parents[2] / "board" / "haipipe-board" / "cli" / "stage.py")
+    "board_stage", HERE.parents[1] / "board" / "haipipe-board" / "cli" / "stage.py")
 board_stage = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(board_stage)
 resolve_filename = board_stage.resolve_filename
@@ -81,6 +81,9 @@ def main():
         if _p.is_dir():
             dirs.append(_p)
     dirs = sorted(set(dirs))
+    if not dirs:
+        sys.exit("FAIL: index.yml resolved ZERO stage dirs — a checker that looks "
+                 "at nothing must not report ok (each dir: is relative to stages/)")
 
     for d in dirs:
         contract = d / "stage.md"

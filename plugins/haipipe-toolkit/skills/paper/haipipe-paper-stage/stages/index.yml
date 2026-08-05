@@ -9,28 +9,28 @@
 # migrated: false -> the router hands off to legacy_skill and stops.
 
 stages:
-  - {key: seed,         order: "0",  dir: ../../../S01-opening/seed,         migrated: true,
+  - {key: seed,         order: "0",  dir: ../../S01-opening/seed,         migrated: true,
      triggers: [seed, 立项, 研究问题, why this paper, 0-seed]}
 
-  - {key: resource,     order: 1a,   dir: ../../../S02-work/resource,    migrated: true,
+  - {key: resource,     order: 1a,   dir: ../../S02-work/resource,    migrated: true,
      triggers: [resource, 数据, 我们有什么, obtainable]}
 
-  - {key: claims,       order: 1b,   dir: ../../../S02-work/claims,      migrated: true,
+  - {key: claims,       order: 1b,   dir: ../../S02-work/claims,      migrated: true,
      triggers: [claims, 主张, H1, supported, refuted, GAP, claim ledger]}
 
-  - {key: venue,        order: 2a,   dir: ../../../S01-opening/venue,       migrated: true,
+  - {key: venue,        order: 2a,   dir: ../../S01-opening/venue,       migrated: true,
      triggers: [venue, 选刊, 投哪个期刊, 期刊推荐, which journal, desk-reject]}
 
-  - {key: pitch,        order: 2b,   dir: ../../../S01-opening/pitch,       migrated: true,
+  - {key: pitch,        order: 2b,   dir: ../../S01-opening/pitch,       migrated: true,
      triggers: [pitch, 卖点, hook, 一分钟]}
 
-  - {key: narrative,    order: "3",  dir: ../../../S02-work/narrative,    migrated: true,
+  - {key: narrative,    order: "3",  dir: ../../S02-work/narrative,    migrated: true,
      triggers: [narrative, 叙事, 大纲, arc, beats, outline]}
 
-  - {key: display,      order: "4",  dir: ../../../S05-display/display,      migrated: true,
+  - {key: display,      order: "4",  dir: ../../S05-display/display,      migrated: true,
      triggers: [display, 图表, figure, table, diagram, gallery, caption]}
 
-  - {key: section-edit, order: "5",  dir: ../../../S06-main/section-edit, migrated: true,
+  - {key: section-edit, order: "5",  dir: ../../S06-main/section-edit, migrated: true,
      triggers: [section, section edit, 写某一节, 编辑某节]}
      # ⚠️ runs per-unit; on cutover the argument order changes —
      #    old: /haipipe-paper-section-edit <section> <phase>
