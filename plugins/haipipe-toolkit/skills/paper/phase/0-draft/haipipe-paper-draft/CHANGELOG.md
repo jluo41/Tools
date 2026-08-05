@@ -13,6 +13,11 @@ haipipe-paper-draft — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.6.3] — 2026-08-04 — Page Type × Page Phase layering
+
+- Loads the Stage Page Type and generic DRAFT contract before paper-specific rules.
+- Defines DRAFT as first-round or reopened promise authority; wrong purpose or Aims starts a new round, while weak realization routes to REVISE.
+
 ## [0.6.2] — 2026-07-26 — Board-native question records
 
 - DRAFT writes stage substance only under `## Content`.

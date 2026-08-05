@@ -1,4 +1,4 @@
-# haipipe-board · v0.109.0
+# haipipe-board · v0.115.0
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -9,139 +9,149 @@ method: three managed spans sync from the skill folder; everything else is writt
 It does not author Paper content or decide manuscript truth. In this Board, `QC3` and `QC5` add the Paper dialect: section purpose, paragraph progression, and sentence/evidence requirements. This card is the entry point for Board operation; `Skill-8`, `Skill-9` and `Skill-10` are its loadable page, sentence, and routing specifications. The index specification was `Skill-7` until 260802, when JL merged `haipipe-board-index` into `haipipe-board-routing`, so that altitude is now part of `Skill-10` and the retired page sits in `_archive/`.
 
 ## Diagram
-<!-- haipipe:skill:tree:start df37e0cc0da4c068 board/haipipe-board -->
+<!-- haipipe:skill:tree:start 4fbcab24210317e8 board/haipipe-board -->
+
+**What `haipipe-board` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-board/
   assets/
     css/
-      00-base.css              283 ln  palette + type follow html-ppt's academic-report; layout is body.single
-      10-focus.css             353 ln  单题聚焦：纯 CSS，零脚本
-      20-drawer.css            418 ln  每题一个对话窗（QD1）
-      30-slide.css             189 ln  聚焦 = 一张幻灯片，不是一个卡片
-      40-structure.css          45 ln  group intro (QC2, JL 260724): one quiet sentence under each group header;
-      45-sitebar.css            44 ln  The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
-      50-embeds.css             35 ln  QF1 · embeds: another file's content shown by reference (live)
-      60-chips.css             227 ln  chips: an inline marker that knows its own state (QC1, 260726)
-      70-sidebar.css           131 ln  Pages sidebar (JL 260731): Index → group → page, hideable
-      80-matrix.css            142 ln  SECTION MATRIX (QB2, JL 260731): page × section, computed at build
+      00-base.css                  290 ln  palette + type follow html-ppt's academic-report; layout is body.single
+      10-focus.css                 353 ln  单题聚焦：纯 CSS，零脚本
+      20-drawer.css                428 ln  每题一个对话窗（QD1）
+      30-slide.css                 191 ln  聚焦 = 一张幻灯片，不是一个卡片
+      40-structure.css              45 ln  group intro (QC2, JL 260724): one quiet sentence under each group header;
+      45-sitebar.css                44 ln  The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
+      50-embeds.css                 35 ln  QF1 · embeds: another file's content shown by reference (live)
+      60-chips.css                 227 ln  chips: an inline marker that knows its own state (QC1, 260726)
+      70-sidebar.css               139 ln  Pages sidebar (JL 260731): Index → group → page, hideable
+      80-matrix.css                142 ln  SECTION MATRIX (QB2, JL 260731): page × section, computed at build
     js/
       10-drawer/
         10-comment/
-          00-highlight.js      123 ln  highlighting
-          10-select.js         152 ln  select -> floating button
-          20-panel.js           55 ln  panel
-          30-write.js           94 ln  写盘：优先让服务器写
-          40-paste.js          102 ln  贴图（JL 260731）：往评论框/讨论框里 Ctrl+V 一张图 → POST /_board/image
-          50-xcal.js           111 ln  ➕ Excalidraw (QD7, JL 260726): attach a canvas to a 🖼 Diagram from the page.
+          00-highlight.js          123 ln  highlighting
+          10-select.js             152 ln  select -> floating button
+          20-panel.js               55 ln  panel
+          30-write.js               94 ln  写盘：优先让服务器写
+          40-paste.js              102 ln  贴图（JL 260731）：往评论框/讨论框里 Ctrl+V 一张图 → POST /_board/image
+          50-xcal.js               111 ln  ➕ Excalidraw (QD7, JL 260726): attach a canvas to a 🖼 Diagram from the page.
         20-chat/
-          00-open.js           113 ln  每题一个对话窗（QD1）
-          10-sessions.js       477 ln  session 拣选器（QD1 Law 修正 260731：一题多 session，一个 current）
-          20-focus.js           66 ln  One focus card, two kinds of focus (QB5d): a SENTENCE, or a HEADING — a
-          30-render.js         309 ln  回复是 markdown，得渲染出来 —— 先转义，再只认几种最常用的写法。
-          40-permissions.js    239 ln  权限提示 —— 行为跟 Claude Code CLI 一致：只读的自动放行，
-          50-prefs-paste.js    664 ln  模型 / effort / 权限档 记在本机；default Opus 5 · high · full·ask
-        00-open.js              38 ln
-        30-terminal.js         476 ln  ⌨ 真终端：同一个 session 换个窗口
-        35-imagepick.js         99 ln  🖼 Attach an image WITHOUT a clipboard (QD14, JL 260801: "然后我们手机上的话，
-        40-follow.js            79 ln  面板跟着题走（JL 260723）
-        50-structure.js        317 ln  index structure controls (QC2, JL 260724): add / archive groups and
+          00-open.js               113 ln  每题一个对话窗（QD1）
+          10-sessions.js           477 ln  session 拣选器（QD1 Law 修正 260731：一题多 session，一个 current）
+          20-focus.js               66 ln  One focus card, two kinds of focus (QB5d): a SENTENCE, or a HEADING — a
+          30-render.js             331 ln  回复是 markdown，得渲染出来 —— 先转义，再只认几种最常用的写法。
+          40-permissions.js        239 ln  权限提示 —— 行为跟 Claude Code CLI 一致：只读的自动放行，
+          50-prefs-paste.js        676 ln  模型 / effort / 权限档 记在本机；default Opus 5 · high · full·ask
+        00-open.js                  38 ln
+        30-terminal.js             510 ln  ⌨ 真终端：同一个 session 换个窗口
+        35-imagepick.js             99 ln  🖼 Attach an image WITHOUT a clipboard (QD14, JL 260801: "然后我们手机上的话，
+        40-follow.js                79 ln  面板跟着题走（JL 260723）
+        50-structure.js            317 ln  index structure controls (QC2, JL 260724): add / archive groups and
       40-sentence/
-        00-apparatus.js        245 ln  ➕ sentence apparatus add (QA8, JL 260725): click a bare prose sentence, or the
-        10-address.js          221 ln  Automatic Content addresses + sentence-specific chat.
-        20-breadcrumb.js       224 ln  Section and subsection breadcrumbs (QB5d)
-      00-header.js              33 ln  Every write posts `path`, and the server takes that path's PARENT as the
-      20-live-refresh.js       315 ln  live refresh (QD6, JL 260724)
-      30-expand-all.js           6 ln  section「expand / collapse all」
-      45-decision-copy.js      115 ln  A hidden ⧉ on every Decision Now row (JL 260802: "could you give a hidden
-      50-activity.js           282 ln  QD8 · activity timing and layout
-      60-sidebar.js            210 ln  Pages sidebar: toggle, per-board persistence, active row (JL 260731)
-      65-section-matrix.js      22 ln  SECTION MATRIX cells open their page at the named section (QB2).
-      70-router.js             145 ln  board/ tree navigation (QC9, JL 260731)
-      80-restore.js            103 ln  the reload must not cost you your place (QD2/QD6, JL 260731)
-    board-mark.svg              44 ln
-    xcal-boot.js               264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
+        00-apparatus.js            268 ln  ➕ sentence apparatus add (QA8, JL 260725): click a bare prose sentence, or the
+        10-address.js              221 ln  Automatic Content addresses + sentence-specific chat.
+        20-breadcrumb.js           224 ln  Section and subsection breadcrumbs (QB5d)
+      00-header.js                  33 ln  Every write posts `path`, and the server takes that path's PARENT as the
+      20-live-refresh.js           315 ln  live refresh (QD6, JL 260724)
+      30-expand-all.js               6 ln  section「expand / collapse all」
+      45-decision-copy.js          115 ln  A hidden ⧉ on every Decision Now row (JL 260802: "could you give a hidden
+      50-activity.js               282 ln  QD8 · activity timing and layout
+      60-sidebar.js                210 ln  Pages sidebar: toggle, per-board persistence, active row (JL 260731)
+      65-section-matrix.js          22 ln  SECTION MATRIX cells open their page at the named section (QB2).
+      70-router.js                 145 ln  board/ tree navigation (QC9, JL 260731)
+      80-restore.js                103 ln  the reload must not cost you your place (QD2/QD6, JL 260731)
+    board-mark.svg                  44 ln
+    xcal-boot.js                   264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
   checks/
-    chatui.mjs                 335 ln
-    guichat.mjs                489 ln
-    pending.mjs                116 ln
-    pty_e2e.py                 153 ln  End-to-end test of serve.py's own-PTY terminal (QD3's engine; the plan was
-    ring_e2e.py                229 ln  QD2 §9 R1 · prove the turn outlives the socket that started it.
-    run.py                     187 ln  The board's standing checklist: every hard 'Items to Finish' condition that
-    smoke.py                   117 ln  Smoke tier: is the LIVE board healthy, right now? Seconds, read-only.
-    splitgaps.mjs              228 ln
-    splitgaps.py               174 ln  QD5 · the gap checks: everything checks/splitshell.mjs does NOT cover.
-    splitshell.mjs             324 ln
-    termnav.mjs                185 ln
-    tuichat.mjs                108 ln
+    binding.mjs                    127 ln
+    chatui.mjs                     335 ln
+    guichat.mjs                    525 ln
+    pending.mjs                    116 ln
+    pty_e2e.py                     153 ln  End-to-end test of serve.py's own-PTY terminal (QD3's engine; the plan was
+    ring_e2e.py                    229 ln  QD2 §9 R1 · prove the turn outlives the socket that started it.
+    run.py                         187 ln  The board's standing checklist: every hard 'Items to Finish' condition that
+    scopechat.mjs                  110 ln
+    smoke.py                       117 ln  Smoke tier: is the LIVE board healthy, right now? Seconds, read-only.
+    splitgaps.mjs                  228 ln
+    splitgaps.py                   174 ln  QD5 · the gap checks: everything checks/splitshell.mjs does NOT cover.
+    splitshell.mjs                 324 ln
+    switchback.mjs                 161 ln
+    termnav.mjs                    185 ln
+    tuichat.mjs                    176 ln
   cli/
-    build.py                   164 ln  Board source folder -> generated board/ site.
-    check.py                   997 ln  check.py — the structural half of QA9, run against one board.
-    gate.py                    143 ln  QA3 · the round's gate, as one command.
-    gate_live.py               213 ln  QC8 gate: prove a serve.py refactor changed no RESPONSE and no file on disk.
-    meetingpage.py             390 ln  Turn an echo-meeting note into a board page of kind `Meeting-<n>`.
-    refs.py                     73 ln  Render a paper's real bibliography, once, into a cache the board can read.
-    regroup.py                 142 ln  Move a board's root pages into one named folder per Q group (QA1, JL 260726).
-    sentencerun.py             211 ln  The ANCHOR PARITY sweep: can every sentence on this board still be written to?
-    sentencewrite.py           544 ln  The WRITE half of QF5: once a sentence is named, does the write land clean?
-    serve.py                   496 ln  Serve boards AND accept comment writes — from the machine the files live on.
-    skillpage.py               755 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
-    stage.py                   421 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
-    watch.py                    66 ln  Watch a Board source folder and rebuild its generated board/ site.
-    xcal.py                    324 ln  board.md + the pages' ASCII figures -> ONE `fig/board.excalidraw` (QA4a).
+    build.py                       164 ln  Board source folder -> generated board/ site.
+    check.py                      1014 ln  check.py — the structural half of QA9, run against one board.
+    gate.py                        143 ln  QA3 · the round's gate, as one command.
+    gate_live.py                   213 ln  QC8 gate: prove a serve.py refactor changed no RESPONSE and no file on disk.
+    meetingpage.py                 390 ln  Turn an echo-meeting note into a board page of kind `Meeting-<n>`.
+    refs.py                         73 ln  Render a paper's real bibliography, once, into a cache the board can read.
+    regroup.py                     142 ln  Move a board's root pages into one named folder per Q group (QA1, JL 260726).
+    sentencerun.py                 211 ln  The ANCHOR PARITY sweep: can every sentence on this board still be written to?
+    sentencewrite.py               544 ln  The WRITE half of QF5: once a sentence is named, does the write land clean?
+    serve.py                       496 ln  Serve boards AND accept comment writes — from the machine the files live on.
+    skillpage.py                   793 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
+    stage.py                       440 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
+    watch.py                        66 ln  Watch a Board source folder and rebuild its generated board/ site.
+    xcal.py                        324 ln  board.md + the pages' ASCII figures -> ONE `fig/board.excalidraw` (QA4a).
   live/
-    __init__.py                  1 ln  QC8 · serve.py's live layer, one module per area.
-    activity.py                446 ln  QC8 · focus time (QD6): the SQLite span store and its aggregates.
-    base.py                    260 ln  QC8 · shared state, the request floor, and the helpers every mixin calls.
-    chat.py                   1303 ln  QC8 · the Claude Code bridge (QD2): rules, prime context, the SDK turn.
-    home.py                    238 ln  The read-only SPACE-level Board Home.
-    shell.py                   743 ln  QD5 · the operating shell: index · page · chat, three frames that ignore each other.
-    structure.py               270 ln  QC8 · index shape (QB2): add a question, add a group, archive.
-    term.py                    857 ln  QC8 · the terminal (QD3): PTY, ring buffer, the /_term WebSocket terminus.
-    turnring.py                171 ln  QD2 §9 R1 · the turn ring — what QD3's terminal has had all along.
-    write.py                   379 ln  QC8 · the write path (QC7, QB5): a typed line under its anchor sentence.
-    xcal.py                    468 ln  QC8 · the canvas round-trip (QB4b, QD5): frames, scenes, embedded files.
+    __init__.py                      1 ln  QC8 · serve.py's live layer, one module per area.
+    activity.py                    446 ln  QC8 · focus time (QD6): the SQLite span store and its aggregates.
+    base.py                        260 ln  QC8 · shared state, the request floor, and the helpers every mixin calls.
+    chat.py                       1332 ln  QC8 · the Claude Code bridge (QD2): rules, prime context, the SDK turn.
+    home.py                        260 ln  The read-only SPACE-level Board Home.
+    shell.py                       815 ln  QD5 · the operating shell: index · page · chat, three frames that ignore each other.
+    structure.py                   270 ln  QC8 · index shape (QB2): add a question, add a group, archive.
+    term.py                        857 ln  QC8 · the terminal (QD3): PTY, ring buffer, the /_term WebSocket terminus.
+    turnring.py                    171 ln  QD2 §9 R1 · the turn ring — what QD3's terminal has had all along.
+    write.py                       426 ln  QC8 · the write path (QC7, QB5): a typed line under its anchor sentence.
+    xcal.py                        468 ln  QC8 · the canvas round-trip (QB4b, QD5): frames, scenes, embedded files.
   ref/
-    board-example.md           125 ln  Minimal example: a board with two questions
-    board-form.md              437 ln  Board form: full specification
-    page-template.md           365 ln  Short title in sentence case: say what this page is FOR
-    writing-rules.md            98 ln  Writing rules: how to write so it reads like human language
+    board-example.md               125 ln  Minimal example: a board with two questions
+    board-form.md                  437 ln  Board form: full specification
+    page-template.md               365 ln  Short title in sentence case: say what this page is FOR
+    topic-entry-contract.md         32 ln  Topic page and nested entry contract
+    writing-rules.md                98 ln  Writing rules: how to write so it reads like human language
   src/
-    __init__.py                  3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
-    assets.py                   90 ln  The browser assets, assembled from parts.
-    body.py                   1398 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
-    common.py                  197 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
-    dialect_paper.py          1004 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
-    page_board.py             1035 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
-    page_question.py           809 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
-    page_stage.py              262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
-    parse.py                   374 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
-    stage_contract.py          128 ln  Managed requirements and page-writing sources for S pages.
+    __init__.py                      3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
+    assets.py                       90 ln  The browser assets, assembled from parts.
+    body.py                       1407 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
+    common.py                      197 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
+    dialect_paper.py              1012 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
+    page_board.py                 1039 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
+    page_question.py               809 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
+    page_stage.py                  262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
+    parse.py                       398 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
+    stage_contract.py              128 ln  Managed requirements and page-writing sources for S pages.
+    topic_entry_contract.py         95 ln  Optional generic contract for a topic page and its nested entry pages.
   tests/
-    conftest.py                 15 ln  Make the engine folder importable from tests/ (JL 260801: the top level had
-    drive_sentence.py          497 ln  Drive every sentence gesture in a real Chrome, and record what happened.
-    fixture_board.py           222 ln  A throwaway board the browser drive can write into.
-    test_activity.py           178 ln  Focused regression tests for QD8 board activity timing.
-    test_aims_state.py         138 ln
-    test_board_structure.py     44 ln
-    test_hold.py               113 ln  QD2 M1 proof: does holding the client actually remove the per-message boot?
-    test_home.py               131 ln  Read-only discovery and rendering checks for the SPACE Board Home.
-    test_quality_check.py       64 ln  Executable safety checks for the one-click, read-only Quality Check.
-    test_sentence_chat.py       81 ln  Contract checks for render-local sentence addressing and focused Q chat.
-    test_sentence_editing.py    94 ln  Regression tests for sentence-local comments and tracked edits.
-    test_shell.py              157 ln  QD5 · the operating shell: pane recognition, injection, and link carry-over.
-    test_stage_style.py         88 ln
-    test_status.py             150 ln
-    test_tree_reroot.py         39 ln
-    test_turnring.py           134 ln  QD2 R1 · the turn ring, tested where a browser cannot see it.
+    conftest.py                     15 ln  Make the engine folder importable from tests/ (JL 260801: the top level had
+    drive_board.py                 191 ln  Smoke the WHOLE board in a real browser, and record it.
+    drive_sentence.py              579 ln  Drive every sentence gesture in a real Chrome, and record what happened.
+    fixture_board.py               222 ln  A throwaway board the browser drive can write into.
+    test_activity.py               178 ln  Focused regression tests for QD8 board activity timing.
+    test_aims_state.py             139 ln
+    test_board_structure.py         44 ln
+    test_change_diff.py             87 ln  The `> ✎` diff has ONE computation, and this test is what keeps it one.
+    test_hold.py                   113 ln  QD2 M1 proof: does holding the client actually remove the per-message boot?
+    test_home.py                   135 ln  Read-only discovery and rendering checks for the SPACE Board Home.
+    test_quality_check.py           69 ln  Executable safety checks for the one-click, read-only Quality Check.
+    test_sentence_chat.py           81 ln  Contract checks for render-local sentence addressing and focused Q chat.
+    test_sentence_editing.py        94 ln  Regression tests for sentence-local comments and tracked edits.
+    test_shell.py                  157 ln  QD5 · the operating shell: pane recognition, injection, and link carry-over.
+    test_stage_style.py             88 ln
+    test_status.py                 150 ln
+    test_topic_entry_contract.py   106 ln
+    test_tree_reroot.py             39 ln
+    test_turnring.py               134 ln  QD2 R1 · the turn ring, tested where a browser cannot see it.
   vendor/
     xterm/
-      addon-unicode11.js         2 ln
-      xterm.css                285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
-      xterm.min.js               2 ln
-  CHANGELOG.md                1863 ln  haipipe-board — Changelog
-  SKILL.md                     709 ln  /haipipe-board: one topic, one source tree, one generated Board site
-  status.py                    359 ln  Render the three-line closing block for one Board-attached session.
+      addon-unicode11.js             2 ln
+      xterm.css                    285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
+      xterm.min.js                   2 ln
+  CHANGELOG.md                    1960 ln  haipipe-board — Changelog
+  SKILL.md                         752 ln  /haipipe-board: one topic, one source tree, one generated Board site
+  status.py                        364 ln  Render the three-line closing block for one Board-attached session.
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -154,13 +164,13 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start df37e0cc0da4c068 board/haipipe-board -->
+<!-- haipipe:skill:body:start 4fbcab24210317e8 board/haipipe-board -->
 
-**haipipe-board** · `0.109.0` · last shipped 2026-08-02
+**haipipe-board** · `0.115.0` · last shipped 2026-08-04
 
 - folder   `board/haipipe-board/`
 - tools    not declared
-- summary  haipipe-board-index is retired: the sub-skill roster is now one door, two specs and one verb, and routing owns both write altitudes.
+- summary  Routes one Page through a stable Page Type under page-types/ and a current DRAFT, PROBE, REVISE, or CHECK contract under page-phases/.
 
 ### SKILL.md
 
@@ -182,15 +192,32 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
   That rests on `close` (the closing condition) and each page's `## Aims` plus `## States`.
 
 
-- 1 · 👪 The family: one door, two specs, one verb (QC1b §2, merged 260802)
+- 1 · 👪 The family: one door, one Page base, two contract catalogs, one verb
       This skill is the DOOR: you invoke it to run a board.
       The rest of `skills/board/` is what other agents LOAD or CALL without opening the door, and this skill routes to them rather than restating them:
       **The board's sub-skills**: which altitude each one works at.
       ```
-      haipipe-board-page       SPEC · what a page IS: three kinds over one base,
-                               the seven sections, where a machine may write
-      haipipe-board-sentence   SPEC · the atomic unit: lanes, evidence card,
-                               addresses, the archive-never-delete lifecycle
+      haipipe-board-page       SPEC + ROUTER · the shared Page frame and the
+                               Page Type × Page Phase composition
+      page-types/
+        haipipe-board-page-for-stage
+                               TYPE · S-<Family>-<unit> lifecycle pages
+        haipipe-board-page-for-skill
+                               TYPE · Skill-<n> and Agent-<n> mirror pages
+        haipipe-board-page-for-venue
+                               TYPE · QBv<n> venue pages
+      page-phases/
+        haipipe-board-page-draft
+        haipipe-board-page-probe
+        haipipe-board-page-revise
+        haipipe-board-page-check
+                               PHASES · promise, inquiry, realization, judgment
+      ref/topic-entry-contract.md
+                               LEGACY IMPLEMENTATION SPEC · the persisted Probe Page
+                               shape used by the current topic checker; not another
+                               Page Type or lifecycle phase
+      haipipe-board-sentence   DOOR + SPEC · one sentence: comment, edit, card;
+                               lanes, addresses, the archive-never-delete lifecycle
       haipipe-board-routing    VERB · every write onto a board, at BOTH altitudes:
                                board.md's structure (propose · materialize · lanes ·
                                regroup) and one input → owning page → anchored write;
@@ -216,7 +243,23 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       `haipipe-board-reviewer-agent` then judges each changed page and reads all
       changed Openings consecutively in Board order; interchangeable or form-letter
       prose fails even when every page is locally clear.
-      A page-kind VARIANT ships under its consumer family (`haipipe-paper-stage` is the first), never here, except for `Skill-<n>-<slug>` and `Agent-<n>-<slug>`, which DO ship here (`cli/skillpage.py`, `src/parse.py`, `src/common.py`; the page-kind list is under the `open` verb below).
+      A Page Type variant ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803).
+      The three `for-*` variants maintained here ship under `page-types/`; family-specific workers such as `haipipe-paper-stage` stay with their families.
+      The earlier rule read "ships under its CONSUMER, never here", and it broke the day a second variant landed: venue pages are consumed by the paper family and maintained here, so they satisfied neither that rule nor its Skill-and-Agent exception.
+      Who maintains it is the line that held twice; who consumes it never did.
+      **The Page Types, and how each one is CREATED**: six filename shapes, two procedures.
+      ```
+      type      filename                     created by
+      ──────────────────────────────────────────────────────────────────────
+      Q         Q<group><n>-<slug>.md        copy ref/page-template.md
+      S         S-<Family>-<unit>-<slug>.md  copy, or cli/stage.py new
+      QBv       QBv<n>-<slug>.md             copy QBv1-misq.md as the shape
+      Skill     Skill-<n>-<slug>.md          cli/skillpage.py new   ← GENERATED
+      Agent     Agent-<n>-<slug>.md          cli/skillpage.py new   ← GENERATED
+      Meeting   Meeting-<n>-<slug>.md        cli/meetingpage.py     ← GENERATED
+      ```
+      A GENERATED Page Type is never copied from the template: the generator writes it from its own stub, owns managed spans inside it, and registers it in `board.md` itself.
+      `Meeting-<n>` had an engine and no contract in any SKILL.md until 260803; it is listed here so the kind is discoverable, and a contract for it is still owed.
 
 - 2 · 🗂 Shape
       **Where a board folder lives**: the two homes, by who owns the board.
@@ -232,8 +275,8 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
         QB-<group-title-slug>/
           QB1-<slug>.md
           S-Seed-0-<slug>.md        a named lifecycle page (only when there is a lifecycle)
-          Skill-1-<slug>.md         a skill roster page
-          Agent-1-<slug>.md         an agent roster page
+          Skill-1-<slug>.md         a skill skill page
+          Agent-1-<slug>.md         an agent skill page
         board/                      ← generated by build.py, never hand-edit
           index.html                Board-Webpage-Index
           QA.html                   one Board-Webpage-Group
@@ -261,7 +304,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       - **The date is the day the board was opened, and it never changes afterward.**
         One folder, one topic; later discussion is appended into it, never split into a new one.
       - **Membership on a board is decided by path.**
-        Every `Q*.md` / `S*.md` anywhere in the board folder's **whole tree** is a page of this board (except segments starting with `_` or `.`, and `fig/`).
+        Every `Q*`, `S*`, `Agent-*` and `Meeting-*` `.md` anywhere in the board folder's **whole tree** is a page of this board (except segments starting with `_` or `.`, and `fig/`). Those four prefixes are what `page_files()` in `src/common.py` globs; a `Skill-` page rides the `S` glob, which is why it is not a fifth prefix.
         `## Pages` only controls ordering and grouping (and still only writes filenames); an unregistered page still shows up (filed under the ⚠️ group) and the command line flags it.
         **Missing registration only makes it ugly, it never loses the question.**
       - **A Q/S file can live inside the folder it is about.**
@@ -329,7 +372,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       Its complete shape is deliberately only three lines:
       **The closing block**: the three lines every reply ends on.
       ```markdown
-      🧭 [BOARD · QUEUE/FOCUS](deep-link)
+      🧭 BOARD · QUEUE/FOCUS (deep-link)
       ✅ done · implementation
       → one concrete next action
       ```
@@ -350,7 +393,8 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       Offline (needs `cli/build.py`, plus `cli/stage.py` for `stage`): **view · open · add · stage · build · sync · link · close**
       Live (needs `cli/serve.py` running): **serve · excalidraw · comment**
       Routed to `haipipe-board-page`: **create a page · update a page**
-      That is 11 verbs here, plus two this skill does not run itself.
+      Routed to `haipipe-board-sentence`: **comment · edit · card**
+      That is 11 verbs here, plus five this skill does not run itself.
       **One door** (JL 260802: "you can just say, haipipe-board update the page etc, it will route to the haipipe-board-page"). Anything about ONE PAGE routes to `haipipe-board-page`, which owns the page contract and drives that page end to end:
       ```
       🚪 say it here                                    ▸ runs there
@@ -360,9 +404,16 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       "bring <page> up to the standard"                 ▸ haipipe-board-page
       "why does <page> fail the checker"                ▸ haipipe-board-page
 
+      "comment on / edit <sentence>"                    ▸ haipipe-board-sentence
+      "put a card on <these words>"                     ▸ haipipe-board-sentence
+      "what may attach to a sentence"                   ▸ haipipe-board-sentence
+
       anything about the BOARD: its groups, roster,     ▸ here
       index, serving, the round trip
       ```
+      Route by SCOPE at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board and its structure are this skill's.
+      Inside the one-Page route, `haipipe-board-page` resolves the stable Page Type and the current DRAFT, PROBE, REVISE, or CHECK authority.
+      The Board door adds no `ADVANCE` action; phase routing remains part of the one-Page contract until a concrete board-level router needs another verb.
       Route by SCOPE, not by wording: one page is the page skill's, the board and its structure are this skill's. When a request names a page id or a page path, it is the page skill's even if it sounds structural, because whoever asks is looking at one page.
       `xcal.py` rebuilds the scene offline, but both the embedded canvas and the editable one go through `serve.py`, so `excalidraw` is counted as live.
       > **"Open `<some board>`" = view (look at an existing one), not open (create a new one).**
@@ -405,9 +456,10 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
          If this board has to show its own shape to a zero-background reader, write `## Board Structure` after Pipeline.
          Since 0.78.0 it is board.md source-only documentation rather than a block on the rendered Board Index, and it is never opened as a Q page; inside it, keep `Board-Folder` (the source and the generated output on disk) separate from `Board-Webpage` (`Board-Webpage-Index` and the pages you reach after opening).
          An old board without this section still generates normally.
-      4. Every page copies the same `ref/page-template.md`, and the rename decides which kind it is: a decision becomes `Q<group-letter><n>-<slug>.md`; a paper lifecycle page becomes `S-<Family>-<unit>-<slug>.md`, where Family is `Seed|Work|Venue|Display|Main|Appendix|Submission` (for example `S-Seed-1-literature.md`, `S-Main-3-theory.md`, `S-Appendix-A-prompts.md`).
-         A skill roster page becomes `Skill-<n>-<slug>.md` and an agent roster page becomes `Agent-<n>-<slug>.md`: the S grammar minus the family, where the number orders the roster and the slug says which unit the page mirrors (`src/parse.py`, JL 260731: a skill is LOADED into a context, an agent is DISPATCHED into a fresh one).
+      4. A Q or S page copies `ref/page-template.md`, and the rename decides which kind it is (a Skill, Agent or Meeting page does NOT: see step 4b): a decision becomes `Q<group-letter><n>-<slug>.md`; a paper lifecycle page becomes `S-<Family>-<unit>-<slug>.md`, where Family is `Seed|Work|Venue|Display|Main|Appendix|Submission` (for example `S-Seed-1-literature.md`, `S-Main-3-theory.md`, `S-Appendix-A-prompts.md`).
+         A skill skill page becomes `Skill-<n>-<slug>.md` and an agent skill page becomes `Agent-<n>-<slug>.md`: the S grammar minus the family, where the number orders the roster and the slug says which unit the page mirrors (`src/parse.py`, JL 260731: a skill is LOADED into a context, an agent is DISPATCHED into a fresh one).
          The `S0-<slug>.md` of a plain old board stays compatible.
+      4b. A `Skill-`, `Agent-` or `Meeting-` page is GENERATED, never copied. `cli/skillpage.py new` writes the first two from its own stub and `cli/meetingpage.py` writes the third, and each registers the page in `board.md` itself. Copying `ref/page-template.md` for one of these produces a page with no managed spans, which `skillpage.py check` then reports as `no managed block` forever. Load `haipipe-board-page-for-skill` before writing the authored half of a Skill or Agent page.
          `<slug>` uses short lowercase English (`access`, `scheduling`), matching `ref/board-example.md`.
          A newly opened page is always `state: 🔴 OPEN` (Q and S use the same set of four states, see "One page" below).
          Give the owner by nature: whatever needs a ruling or an authorization goes to JL, hands-on work goes to the responsible colleague's initials or to CC.
@@ -423,6 +475,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
 
 - 5.3 · add · add a question
       Copy `ref/page-template.md` → new filename → write it into `board.md`'s `## Pages` → rebuild.
+      That is the Q and S path. A `Skill-`, `Agent-` or `Meeting-` page is generated instead, by `cli/skillpage.py new` or `cli/meetingpage.py`, which register it themselves (step 4b above).
       Forgetting to write it into Pages does not lose it; it only lands in the ⚠️ group.
       A folder question (QC3): put the new file into the folder it is about; Pages still writes the filename only, and filenames must be unique across the whole board.
       The ＋Q on the page always generates the file at the **board root**: if it should live in a folder, move it there yourself (the Pages line needs no edit).
@@ -531,28 +584,17 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       Re-running it is safe, which is why it could be made a script at all: ids are stable (`frame-QAa2`), a frame a human moved keeps its position, hand-drawn content is carried over untouched, and **a frame whose page has retired is deleted**.
       `--fresh` is the only mode that destroys anything (it re-lays out everything and drops hand-drawn content), so it is never the default.
 
-- 5.9 · comment / edit · comments and edits on a sentence (needs serve.py running)
-      - **Comment**: hover a sentence → click the `＋` on the right, or select text inside the sentence → click "💬 Comment" → write the comment → **Save**.
-        The live layer writes it **directly under that sentence** (`live/write.py`): `> JL: comment · 260729 1502`, and then rebuilds the html.
-        There is no comment box at the bottom of the page, and no need to hunt for context among the comments on different sentences.
-        `## Discussion` still holds only loose discussion that is pinned to no sentence.
-      - **Edit**: double-click a sentence → change the words → Save.
-        The body becomes the final sentence, and a complete sentence diff is added automatically below it: `> ✎ Whole sentence with ~removed~ *added* words. · JL · 260729 1502`.
-        `~…~` are the removed words, `*…*` are the added words.
-        One line per edit, and no separate History is built.
-        A touch device can also reach Edit from the sentence's `⋯` menu; a single click on the body is unclaimed, so selecting and copying still work normally.
-      - **Content addresses**: only `## Content` is addressed.
-        Every `###` division is `Cn`; a `####` heading inside it is a terminal node `Cn.Hn`, a body paragraph is that heading's sibling, and a sentence address is `Cn.Pn.S1`.
-        So `QAb3.C1.H1` and `QAb3.C1.P1.S1` are both legal, and `QAb3.C1.H1.P1.S1` is never legal.
-        Today one source line is one sentence, so every P has only `S1`; the S level is kept for a future paragraph with several sentences.
-      - **The sentence action bar**: on a pointer device, hover or focus a sentence and `Cn.Pn.S1 ＋ 💬` fades in on the right; `＋` opens Comment under the sentence and `💬` opens Chat.
-        A touch device keeps only one quiet `⋯` in place, which expands to the full address plus Comment / Chat / Edit, so that three small buttons do not sit on top of the prose permanently.
-      - **Sentence chat**: clicking `💬` reuses this Q's existing chat session, shows a closable Sentence Focus at the top of the drawer (the full address, the Content/Heading display name, the sentence, the adjacent apparatus), and puts the cursor into the input box; **the click itself does not call the model**.
-        The focused content is handed to the agent together with the message only when the user sends the next message.
-        The `×` on the focus card, or `Esc` in the input box, clears only the sentence focus and does not close the Q chat.
-        Addresses are generated at every render and live refresh; they are only this page load's focus address, they are not written into the Markdown, and they promise nothing about staying stable after a Content division, Heading, or Paragraph is inserted.
-      - A new write needs serve.py, because it has to find that sentence in the server's Markdown.
-        When the service is down, the page keeps only a pending line or a copyable patch, and it never creates a comment area at the bottom of the page.
+- 5.9 · comment / edit / card · anything about ONE SENTENCE (routed)
+      Routed to `haipipe-board-sentence`, which owns the sentence contract and its three verbs the way `haipipe-board-page` owns the page. Say it here and it runs there:
+      ```
+      💬 "comment on <sentence>"      a person's remark, written under that line
+      ✎ "edit <sentence>"            one line replaced, one word-level record
+      🪪 "card on <words>"            a panel on a few words INSIDE the line
+      ```
+      This skill keeps the machinery those verbs call, and nothing else: `src/body.py` renders both surfaces, `live/write.py` and `cli/serve.py` hold the four write routes, `assets/js/40-sentence/` holds the controls a reader touches, and `tests/drive_sentence.py` drives all of it in a real browser.
+      Two rules that bind the ENGINE rather than the contract, so they stay here:
+      - **A write needs `serve.py`**, because it has to find that sentence in the server's Markdown. With the service down the page keeps only a pending line or a copyable patch, and it never grows a comment area at the foot of the page.
+      - **A form CLOSES before it asks for the repaint.** The live swap refuses to run while a textarea inside `div.wrap` holds text, which is what stops a rebuild from eating a half-written comment; a save form is inside `div.wrap` and still holds what it just saved, so asking first asks for something that can only be refused (260802: the edit path wrote its `> ✎` record and the page sat unchanged until someone pressed reload).
       The old page-bottom comment queue is dead: it is no longer read, displayed, or migrated.
 
 - 5.10 · sync · when the work is done, write it back to that question in the same round
@@ -633,7 +675,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       The rest of an S's Content still lives in `📚 Content`, and the section title shows the stage name (`📚 Content · Main 7 §6 Results`) instead of counting subsections; a Q's explicit Content is optional and its title still shows the count.
       That title is derived from `# Short title`, so when the artifact's own numbering does not line up with the board's index, write the title as `S Main 7 · §6 Results`, putting both numbers on display.
       **An S's `## Content` holds only what this stage itself produces** (JL 260725): Required Inputs and Venue belong in `## Stage Contract`; prose rules belong in `## Writing Style`; a correction already decided belongs in `## States`; and the intended outcome belongs in `## Aims`.
-      A new board writes `## Opening`; the `## Question` written by old boards stays a permanently recognized legacy alias.
+      A new board writes `## Opening`. The `## Question` written by old boards still PARSES, so no old page breaks, but it is retired: `check.py` reports it as `retired-section` and a page being worked on should be renamed.
       **One layout, two workflows:**
       - `Q*.md` = decision.
         Only after every Aim is met or explicitly held may it be `✅ SETTLED`.
@@ -711,9 +753,10 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
 - 10 · 📚 ref/
       | File | What you read it for |
       |---|---|
-      | `ref/page-template.md` | The one file every new page is copied from, whatever its kind (renamed from `ref/q-template.md` on 260801) |
+      | `ref/page-template.md` | The file a Q or S page is copied from (renamed from `ref/q-template.md` on 260801). A Skill, Agent or Meeting page is generated from its own stub instead and never copies this |
       | `ref/board-form.md` | The full specification: folders, numbering, section ↔ page correspondence, the syntax table, `## Links` |
       | `ref/writing-rules.md` | How to write it in plain language, plus the zero-background review prompt and its convergence criteria |
+      | `ref/topic-entry-contract.md` | Optional generic contract for a topic page and its nested `probes/<topic>/` entry pages |
       | `ref/board-example.md` | A minimal example board with two questions |
       The scripts and packages in the skill root:
       | File | What it does |
@@ -722,14 +765,14 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       | `cli/build.py` | Read the Board Markdown and generate the canonical `board/` site; standard library only |
       | `cli/watch.py` | Watch the board folder and re-run `build.py` on any `.md` change |
       | `cli/check.py` | The structural self-check (the machine half of `QA9`): sections, state, references, the rendered html, template coverage |
-      | `cli/serve.py` | The live server, about 398 lines: argument parsing, the request router, and the shared setup; everything with a feature in it now lives in `live/` |
-      | `../../0_utils/diagram-excalidraw/references/.venv/lib/python3.11/site-packages/pyee/base.py` | 154 lines: the shared request base the other live modules mix in |
-      | `live/structure.py` | 274 lines: `structure_op`, behind `POST /_board/structure` (＋Q / ＋Group / 🗄) |
-      | `live/write.py` | 259 lines: the sentence write path, the comment and edit writes under an anchor sentence |
+      | `cli/serve.py` | The live server, 496 lines: argument parsing, the request router, and the shared setup; everything with a feature in it now lives in `live/` |
+      | `live/base.py` | 260 lines: the shared request base the other live modules mix in |
+      | `live/structure.py` | 270 lines: `structure_op`, behind `POST /_board/structure` (＋Q / ＋Group / 🗄) |
+      | `live/write.py` | 426 lines: the sentence write path, the comment and edit writes under an anchor sentence |
       | `live/xcal.py` | 468 lines: `serve_frame()`, the `assets/xcal-boot.js` injection, and the image pointer ↔ dataURL restore |
-      | `live/activity.py` | 408 lines: focus-time spans and the aggregates behind the Activity component |
-      | `live/chat.py` | 1064 lines: the chat drawer, its sessions, and the `claude_agent_sdk` turn |
-      | `live/term.py` | 670 lines: the `/_term/` PTY, parking, and reattachment |
+      | `live/activity.py` | 446 lines: focus-time spans and the aggregates behind the Activity component |
+      | `live/chat.py` | 1332 lines: the chat drawer, its sessions, and the `claude_agent_sdk` turn |
+      | `live/term.py` | 857 lines: the `/_term/` PTY, parking, and reattachment |
       | `src/` | The build's code split by topic: `common · parse · body · page_board · page_question · page_stage · dialect_paper · stage_contract`; `build.py` and `serve.py` stay thin entries (QB5) |
       | `cli/stage.py` | Explicitly create and sync an S page's inherited requirements, Venue links, and page Writing Style inheritance |
       | `cli/skillpage.py` | One skill folder → one `Skill-<n>-<slug>` page (`new` / `sync` / `check`); the same split as `stage.py`, the derived header only, never the authored sections |
@@ -741,26 +784,26 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       | `assets/board-mark.svg` | The Board's shared SVG mark; inlined into the title at build time and reused as the favicon |
       | `assets/css/`, `assets/js/` | The page's real CSS and JS parts, assembled by `build.py` into `board/_assets/board.css` and `board/_assets/board.js` |
       | `assets/xcal-boot.js` | The script `live/xcal.py` injects into the proxied Excalidraw so that drawings save back to the repository |
-      | `tests/` | The skill's own tests, all 11 of them (`python3 -m pytest tests/`): activity, aims state, board structure, hold, home, quality check, sentence chat, sentence editing, stage style, status, tree reroot. Moved out of the top level 260801; `tests/conftest.py` puts the engine dir on `sys.path` |
-      The independent judge: `../../../agents/haipipe-board-reviewer-agent.md`.
+      | `tests/` | The skill's own tests, all 14 of them (`python3 -m pytest tests/`): activity, aims state, board structure, hold, home, quality check, sentence chat, sentence editing, stage style, status, tree reroot. Moved out of the top level 260801; `tests/conftest.py` puts the engine dir on `sys.path` |
+      The independent judge: `../agents/haipipe-board-reviewer-agent.md`.
       It has no write tools; after the author has fixed things, start another new reviewer.
       A live example: `Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/`, this skill's own board (the flat form).
       A live example of the nested form (Q decisions + S stages): `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`.
 ### The other files
 
-112 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
+120 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
 
 ```
 assets/board-mark.svg               44 ln
-assets/css/00-base.css             283 ln  palette + type follow html-ppt's academic-report; layout is body.single
+assets/css/00-base.css             290 ln  palette + type follow html-ppt's academic-report; layout is body.single
 assets/css/10-focus.css            353 ln  单题聚焦：纯 CSS，零脚本
-assets/css/20-drawer.css           418 ln  每题一个对话窗（QD1）
-assets/css/30-slide.css            189 ln  聚焦 = 一张幻灯片，不是一个卡片
+assets/css/20-drawer.css           428 ln  每题一个对话窗（QD1）
+assets/css/30-slide.css            191 ln  聚焦 = 一张幻灯片，不是一个卡片
 assets/css/40-structure.css         45 ln  group intro (QC2, JL 260724): one quiet sentence under each group header;
 assets/css/45-sitebar.css           44 ln  The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
 assets/css/50-embeds.css            35 ln  QF1 · embeds: another file's content shown by reference (live)
 assets/css/60-chips.css            227 ln  chips: an inline marker that knows its own state (QC1, 260726)
-assets/css/70-sidebar.css          131 ln  Pages sidebar (JL 260731): Index → group → page, hideable
+assets/css/70-sidebar.css          139 ln  Pages sidebar (JL 260731): Index → group → page, hideable
 assets/css/80-matrix.css           142 ln  SECTION MATRIX (QB2, JL 260731): page × section, computed at build
 assets/js/00-header.js              33 ln  Every write posts `path`, and the server takes that path's PARENT as the
 assets/js/10-drawer/00-open.js      38 ln
@@ -773,16 +816,16 @@ assets/js/10-drawer/10-comment/50-xcal.js   111 ln  ➕ Excalidraw (QD7, JL 2607
 assets/js/10-drawer/20-chat/00-open.js   113 ln  每题一个对话窗（QD1）
 assets/js/10-drawer/20-chat/10-sessions.js   477 ln  session 拣选器（QD1 Law 修正 260731：一题多 session，一个 current）
 assets/js/10-drawer/20-chat/20-focus.js    66 ln  One focus card, two kinds of focus (QB5d): a SENTENCE, or a HEADING — a
-assets/js/10-drawer/20-chat/30-render.js   309 ln  回复是 markdown，得渲染出来 —— 先转义，再只认几种最常用的写法。
+assets/js/10-drawer/20-chat/30-render.js   331 ln  回复是 markdown，得渲染出来 —— 先转义，再只认几种最常用的写法。
 assets/js/10-drawer/20-chat/40-permissions.js   239 ln  权限提示 —— 行为跟 Claude Code CLI 一致：只读的自动放行，
-assets/js/10-drawer/20-chat/50-prefs-paste.js   664 ln  模型 / effort / 权限档 记在本机；default Opus 5 · high · full·ask
-assets/js/10-drawer/30-terminal.js   476 ln  ⌨ 真终端：同一个 session 换个窗口
+assets/js/10-drawer/20-chat/50-prefs-paste.js   676 ln  模型 / effort / 权限档 记在本机；default Opus 5 · high · full·ask
+assets/js/10-drawer/30-terminal.js   510 ln  ⌨ 真终端：同一个 session 换个窗口
 assets/js/10-drawer/35-imagepick.js    99 ln  🖼 Attach an image WITHOUT a clipboard (QD14, JL 260801: "然后我们手机上的话，
 assets/js/10-drawer/40-follow.js    79 ln  面板跟着题走（JL 260723）
 assets/js/10-drawer/50-structure.js   317 ln  index structure controls (QC2, JL 260724): add / archive groups and
 assets/js/20-live-refresh.js       315 ln  live refresh (QD6, JL 260724)
 assets/js/30-expand-all.js           6 ln  section「expand / collapse all」
-assets/js/40-sentence/00-apparatus.js   245 ln  ➕ sentence apparatus add (QA8, JL 260725): click a bare prose sentence, or the
+assets/js/40-sentence/00-apparatus.js   268 ln  ➕ sentence apparatus add (QA8, JL 260725): click a bare prose sentence, or the
 assets/js/40-sentence/10-address.js   221 ln  Automatic Content addresses + sentence-specific chat.
 assets/js/40-sentence/20-breadcrumb.js   224 ln  Section and subsection breadcrumbs (QB5d)
 assets/js/45-decision-copy.js      115 ln  A hidden ⧉ on every Decision Now row (JL 260802: "could you give a hidden
@@ -792,20 +835,23 @@ assets/js/65-section-matrix.js      22 ln  SECTION MATRIX cells open their page 
 assets/js/70-router.js             145 ln  board/ tree navigation (QC9, JL 260731)
 assets/js/80-restore.js            103 ln  the reload must not cost you your place (QD2/QD6, JL 260731)
 assets/xcal-boot.js                264 ln  Injected by serve.py into the proxied Excalidraw app (QA4a).
+checks/binding.mjs                 127 ln
 checks/chatui.mjs                  335 ln
-checks/guichat.mjs                 489 ln
+checks/guichat.mjs                 525 ln
 checks/pending.mjs                 116 ln
 checks/pty_e2e.py                  153 ln  End-to-end test of serve.py's own-PTY terminal (QD3's engine; the plan was
 checks/ring_e2e.py                 229 ln  QD2 §9 R1 · prove the turn outlives the socket that started it.
 checks/run.py                      187 ln  The board's standing checklist: every hard 'Items to Finish' condition that
+checks/scopechat.mjs               110 ln
 checks/smoke.py                    117 ln  Smoke tier: is the LIVE board healthy, right now? Seconds, read-only.
 checks/splitgaps.mjs               228 ln
 checks/splitgaps.py                174 ln  QD5 · the gap checks: everything checks/splitshell.mjs does NOT cover.
 checks/splitshell.mjs              324 ln
+checks/switchback.mjs              161 ln
 checks/termnav.mjs                 185 ln
-checks/tuichat.mjs                 108 ln
+checks/tuichat.mjs                 176 ln
 cli/build.py                       164 ln  Board source folder -> generated board/ site.
-cli/check.py                       997 ln  check.py — the structural half of QA9, run against one board.
+cli/check.py                      1014 ln  check.py — the structural half of QA9, run against one board.
 cli/gate.py                        143 ln  QA3 · the round's gate, as one command.
 cli/gate_live.py                   213 ln  QC8 gate: prove a serve.py refactor changed no RESPONSE and no file on disk.
 cli/meetingpage.py                 390 ln  Turn an echo-meeting note into a board page of kind `Meeting-<n>`.
@@ -814,50 +860,55 @@ cli/regroup.py                     142 ln  Move a board's root pages into one na
 cli/sentencerun.py                 211 ln  The ANCHOR PARITY sweep: can every sentence on this board still be written to?
 cli/sentencewrite.py               544 ln  The WRITE half of QF5: once a sentence is named, does the write land clean?
 cli/serve.py                       496 ln  Serve boards AND accept comment writes — from the machine the files live on.
-cli/skillpage.py                   755 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
-cli/stage.py                       421 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
+cli/skillpage.py                   793 ln  One skill folder -> one Q page on a board (QC5, opened by JL 260726).
+cli/stage.py                       440 ln  Create and synchronize lifecycle S pages with explicit inherited contracts.
 cli/watch.py                        66 ln  Watch a Board source folder and rebuild its generated board/ site.
 cli/xcal.py                        324 ln  board.md + the pages' ASCII figures -> ONE `fig/board.excalidraw` (QA4a).
 live/__init__.py                     1 ln  QC8 · serve.py's live layer, one module per area.
 live/activity.py                   446 ln  QC8 · focus time (QD6): the SQLite span store and its aggregates.
 live/base.py                       260 ln  QC8 · shared state, the request floor, and the helpers every mixin calls.
-live/chat.py                      1303 ln  QC8 · the Claude Code bridge (QD2): rules, prime context, the SDK turn.
-live/home.py                       238 ln  The read-only SPACE-level Board Home.
-live/shell.py                      743 ln  QD5 · the operating shell: index · page · chat, three frames that ignore each other.
+live/chat.py                      1332 ln  QC8 · the Claude Code bridge (QD2): rules, prime context, the SDK turn.
+live/home.py                       260 ln  The read-only SPACE-level Board Home.
+live/shell.py                      815 ln  QD5 · the operating shell: index · page · chat, three frames that ignore each other.
 live/structure.py                  270 ln  QC8 · index shape (QB2): add a question, add a group, archive.
 live/term.py                       857 ln  QC8 · the terminal (QD3): PTY, ring buffer, the /_term WebSocket terminus.
 live/turnring.py                   171 ln  QD2 §9 R1 · the turn ring — what QD3's terminal has had all along.
-live/write.py                      379 ln  QC8 · the write path (QC7, QB5): a typed line under its anchor sentence.
+live/write.py                      426 ln  QC8 · the write path (QC7, QB5): a typed line under its anchor sentence.
 live/xcal.py                       468 ln  QC8 · the canvas round-trip (QB4b, QD5): frames, scenes, embedded files.
 ref/board-example.md               125 ln  Minimal example: a board with two questions
 ref/board-form.md                  437 ln  Board form: full specification
 ref/page-template.md               365 ln  Short title in sentence case: say what this page is FOR
+ref/topic-entry-contract.md         32 ln  Topic page and nested entry contract
 ref/writing-rules.md                98 ln  Writing rules: how to write so it reads like human language
 src/__init__.py                      3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
 src/assets.py                       90 ln  The browser assets, assembled from parts.
-src/body.py                       1398 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
+src/body.py                       1407 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
 src/common.py                      197 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
-src/dialect_paper.py              1004 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
-src/page_board.py                 1035 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
+src/dialect_paper.py              1012 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
+src/page_board.py                 1039 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
 src/page_question.py               809 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
 src/page_stage.py                  262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
-src/parse.py                       374 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
+src/parse.py                       398 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
 src/stage_contract.py              128 ln  Managed requirements and page-writing sources for S pages.
-status.py                          359 ln  Render the three-line closing block for one Board-attached session.
+src/topic_entry_contract.py         95 ln  Optional generic contract for a topic page and its nested entry pages.
+status.py                          364 ln  Render the three-line closing block for one Board-attached session.
 tests/conftest.py                   15 ln  Make the engine folder importable from tests/ (JL 260801: the top level had
-tests/drive_sentence.py            497 ln  Drive every sentence gesture in a real Chrome, and record what happened.
+tests/drive_board.py               191 ln  Smoke the WHOLE board in a real browser, and record it.
+tests/drive_sentence.py            579 ln  Drive every sentence gesture in a real Chrome, and record what happened.
 tests/fixture_board.py             222 ln  A throwaway board the browser drive can write into.
 tests/test_activity.py             178 ln  Focused regression tests for QD8 board activity timing.
-tests/test_aims_state.py           138 ln
+tests/test_aims_state.py           139 ln
 tests/test_board_structure.py       44 ln
+tests/test_change_diff.py           87 ln  The `> ✎` diff has ONE computation, and this test is what keeps it one.
 tests/test_hold.py                 113 ln  QD2 M1 proof: does holding the client actually remove the per-message boot?
-tests/test_home.py                 131 ln  Read-only discovery and rendering checks for the SPACE Board Home.
-tests/test_quality_check.py         64 ln  Executable safety checks for the one-click, read-only Quality Check.
+tests/test_home.py                 135 ln  Read-only discovery and rendering checks for the SPACE Board Home.
+tests/test_quality_check.py         69 ln  Executable safety checks for the one-click, read-only Quality Check.
 tests/test_sentence_chat.py         81 ln  Contract checks for render-local sentence addressing and focused Q chat.
 tests/test_sentence_editing.py      94 ln  Regression tests for sentence-local comments and tracked edits.
 tests/test_shell.py                157 ln  QD5 · the operating shell: pane recognition, injection, and link carry-over.
 tests/test_stage_style.py           88 ln
 tests/test_status.py               150 ln
+tests/test_topic_entry_contract.py   106 ln
 tests/test_tree_reroot.py           39 ln
 tests/test_turnring.py             134 ln  QD2 R1 · the turn ring, tested where a browser cannot see it.
 vendor/xterm/addon-unicode11.js      2 ln
@@ -877,10 +928,66 @@ Mirrored into the Paper Engine so a reader can see the shared Board substrate wi
 ## Log
 260801 0000 · page generated from `board/haipipe-board/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start df37e0cc0da4c068 board/haipipe-board -->
+<!-- haipipe:skill:log:start 4fbcab24210317e8 board/haipipe-board -->
 
-Converted from the skill's own `CHANGELOG.md`: 146 releases.
+Converted from the skill's own `CHANGELOG.md`: 154 releases.
 
+260804 · `0.115.0`
+      - Updates the family map to the Page Type × Page Phase model adopted on QB9.
+      - Lists `page-types/` with the three `for-*` variants and `page-phases/` with the direct DRAFT, PROBE, REVISE, and CHECK contracts.
+      - Routes phase work through `haipipe-board-page` and deliberately adds no Board-level `ADVANCE` verb.
+      - Treats the existing topic-entry implementation as a persisted Probe Page adapter rather than another lifecycle concept.
+260803 · `0.114.0`
+      **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
+      - **The door was telling everyone to create a page the wrong way.** Three places said every page copies `ref/page-template.md`, "whatever its kind". For `Skill-`, `Agent-` and `Meeting-` pages that produces a page with no managed spans, which the checker then reports as broken forever. A new step 4b names the generated kinds and their generators, and `add` and the `ref/` table say the same.
+      - **A whole page kind had an engine and no contract.** `Meeting-<n>` is globbed by `src/common.py`, generated by `cli/meetingpage.py`, and exempted by `check.py`, and appeared in no SKILL.md in the family. The page-kind table now lists all six kinds with how each is created; a contract for Meeting is still owed.
+      - **The variant rule is rewritten from CONSUMER to MAINTAINER** (JL 260803 ruling). "A variant ships under its consumer, never here" broke the day `haipipe-board-page-for-venue` landed: its consumer is the paper family and its maintainer is this one, so it satisfied neither the rule nor the Skill-and-Agent exception. Who maintains it held twice; who consumes it never did.
+      - The family block names `haipipe-board-page-for-venue`, which had shipped with no door pointing at it.
+      - Seven of eight line counts in the `ref/` table were wrong, several by ~2x, and are now measured: `serve.py` 398→496, `chat.py` 1064→1332, `term.py` 670→857, `write.py` 259→426, `activity.py` 408→446, `base.py` 154→260, `structure.py` 274→270.
+      - "all 11 tests" → 14. The whole-tree membership sentence named two prefixes where the code globs four.
+      - `## Question` is no longer called "permanently recognized": it still parses, and `check.py` reports it as `retired-section`.
+      - The status strip's spec follows the code (JL 260803 ruling): `status.py` emits a terminal-clickable link, and `SKILL.md` plus three tests asserted the older markdown form. Suite is green, 91 passing.
+260803 · `0.114.0`
+      **🔗 A generic board folder no longer claims the whole SPACE's URL.**
+      JL: "the lifecycle is not good, I prefer it to be misq-xxxx-lifecycle".
+      `board_slug` trimmed the `NN-` ordinal and stopped, so `0-lifecycle` became `lifecycle`. Every paper on this SPACE carries a `0-lifecycle/`, so the FIRST paper took `/b/lifecycle` and the second would have answered to the same route. That name says what KIND of board it is, not which one. Generic names are now qualified by the owning folder, with the `Paper-` and `Project-` prefixes dropped for the same reason the ordinal is: `personality2opioid-misq2026-lifecycle`. Every non-generic board keeps the slug it had, checked against all ten boards on this SPACE. The old bare route now 404s rather than redirecting, which is this file's own doctrine: a redirect to the wrong board is worse than a miss.
+      `configured_base_url` also looked for `env.sh` in exactly one directory, `--root`, which defaults to cwd, so running `status.py` from inside a board folder printed the loopback URL even with a tailnet address set at the SPACE root. It now walks up.
+      **This was never a serving defect.** One `serve.py --root <SPACE>` has always answered for every board on the same tailnet address and port, because a board is just a path under that root. Only the printed strip was wrong. Measured the same day while looking for a slowness that is not on this side: `ThreadingHTTPServer`, gzip already live through `try_gzip` (407 KB of HTML leaves as 62 KB), 6 ms total on the host, and the peer link is `direct`, not DERP-relayed. Noted because a `curl -sI` probe sends HEAD, `try_gzip` handles GET only, and the missing `Content-Encoding` header reads exactly like compression being off when it is not.
+260802 · `0.113.0`
+      **💬 A comment made on selected words now RECORDS those words.**
+      JL asked whether selecting a few words and commenting makes an evidence card, and whether the comment also lands in the lanes. Neither happened. The comment landed under the whole line as a lane, and the words he had selected were used for a temporary local highlight and then thrown away: `srvComment` posted `{file, who, sentence, text, when}` and never sent `quote`, which the client had been collecting all along. So a remark about three words in a forty-word sentence arrived saying nothing about which three.
+      The grammar already had a home for it. `render_apparatus` carried a `「…」` quoted form, but only on the bare-initials shape, and the canonical `> Comment WHO` branch runs first, so `> Comment JL 「words」: text` printed its brackets as prose.
+      - `src/body.py` — the `Comment` branch takes an OPTIONAL `「…」` span and renders it in `.qt` ahead of the text. The three older shapes are untouched.
+      - `live/write.py` — `add_comment` accepts `quote` and writes `> Comment WHO 「the words」: text`. It is kept only when the words really occur in that source line, so a selection crossing two sentences records nothing rather than something wrong, and it never blocks the comment itself: a remark must always land.
+      - `assets/js/10-drawer/10-comment/30-write.js` — sends the `quote` it was already holding.
+      **A card is still a different thing, on purpose.** A card answers what a phrase IS and holds one answer; a remark is a person talking about the line. 🪪 Card remains the button that makes the other one, and `QB5 §5.1` now says so where a reader meets the question.
+      **🖼 Also fixed: the excalidraw embed pointed at the wrong page's frame.** Yesterday's review repointed QB5's embed from the retired `frame=QAb0` to `frame=QB5`, which was correct in form and wrong in fact: `frame-QB5` had been seeded back when `QB5` meant the `src/` split page, so the page embedded a drawing about a different subject. `cli/xcal.py` reseeds from the current pages; it dropped 22 frames whose pages are gone (`QAb0`-`QAb4`, `QAa0`-`QAa7`, `QA6`, `QA9` and others) and `frame-QB5` now carries this page's own figure.
+260802 · `0.112.0`
+      **🔗 The `✎` record has one computation, and a test that keeps it one.**
+      JL asked how `haipipe-writing` wires in. The answer is one place, and it is the `> ✎` change record: this file and `haipipe-writing/cli/wdiff.py` both computed the word-level diff with difflib and agreed byte for byte on every case tried, which is agreement by luck. The next edit to either splits them, and the record is a review trail somebody reads months later.
+      - `live/write.py` — `_change_diff` now calls `wdiff(host="board")`. It is LOOKED UP BY PATH, not imported, because every unit in this family must stay deletable from every other; the local computation survives as the fallback for a checkout with no `haipipe-writing` beside it.
+      - `tests/test_change_diff.py` — compares the fallback against the shared function over ten pairs, including an empty side, a full replacement and an unchanged sentence. Drift is now a red test.
+      **🌐 `tests/drive_board.py`** — a second recorded drive, 16 checks, against the REAL board instead of a fixture, and it writes nothing so it is safe to point at a live one. It answers the question the sentence drive cannot: a sentence can work perfectly on a page nobody can reach.
+      Its first run produced three FALSE REDS, both worth naming. It read `innerText`, which reports only what is on screen while every section is folded shut, so a complete page looked empty. And its detail line printed "found <probe>" whether or not the probe was found, so a red row read like a green one. Both fixed; it reads `textContent` and reports which half failed.
+260802 · `0.111.0`
+      **🚪 The sentence verbs migrated to `haipipe-board-sentence`, on the `haipipe-board-page` precedent (JL 260802).**
+      JL: "if we want to put sentence things, we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?" Yes, and the precedent is precise about WHAT migrates: `haipipe-board-page` owns the page contract and its two verbs and owns no scripts, calling this engine rather than containing it. The sentence half had been the other way round: the operating detail lived in this SKILL.md while `haipipe-board-sentence` was a 94-line spec with no verbs at all.
+      - `### comment / edit` (26 lines of gestures, addresses, the action bar and sentence chat) is now a ROUTE. What stays are the two rules that bind the engine rather than the contract: a write needs `serve.py`, and a form closes before it asks for the repaint.
+      - The one-door table gained three sentence rows, and now states the rule at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board is this skill's.
+      - The family roster now reads `DOOR + SPEC` for the sentence unit rather than `SPEC`.
+260802 · `0.110.0`
+      **📄 The family gains a page-kind variant: `haipipe-board-page-for-skill`.**
+      JL asked whether a skill page is special enough to need its own contract that calls `haipipe-board-page` inside it. It is. A `Skill-<n>` or `Agent-<n>` page mirrors a unit that ships elsewhere and DECIDES NOTHING, so the base Opening shape, which ends in `what this page decides`, leaves it with no question to ask. Five skill and agent pages filled that empty slot with the same rhetorical question, and read consecutively they were one form letter with the nouns swapped.
+      The family block and its heading change back to `three specs` for a real third spec this time, rather than for a verb set filed as one.
+260802 · `0.110.0`
+      **🔍 Two write paths still needed a manual reload, and nothing had ever tested past the point where they could not fail.**
+      JL asked directly: when I add a comment, or I do an edit, does the page only update when I refresh it myself? The card and comment paths were fine. The other two were not.
+      **Editing a sentence** called `location.reload()` on save. It threw away the scroll position and shut every section the reader had opened to reach that sentence, to show one changed line. Replacing it with the swap then exposed a second, quieter defect: the swap refuses to run while any textarea inside `div.wrap` holds text, which is the rule that stops a rebuild from eating a half-written comment. The editor's own textarea is inside `div.wrap` and still held the sentence that had just been saved, so the repaint could only ever be refused. The `> ✎` record reached the markdown and the page sat unchanged until somebody pressed reload. The reload it replaced had never met that guard, which is why it had never shown.
+      **Adding a typed lane** never asked for a repaint at all. It printed "✔ saved", closed its form, and left the lane to arrive whenever the background poll noticed, which backs off to five seconds on a page nobody has touched.
+      - `assets/js/40-sentence/00-apparatus.js` — both forms now CLOSE first and then call `window.__boardRefresh()`. The rule this sets: a writer clears its own draft before it asks for the page back.
+      All four write paths now repaint in 0.4s and hold the reader's place: card 883→883, comment 1204→1204, edit 1925→1925 with 16 open sections before and after, typed lane unchanged across the save.
+      **🧪 `tests/drive_sentence.py` grew from 31 to 36 checks.** The old F3 was called "double-click opens the sentence editor" and checked exactly that, which is the half that cannot fail; both defects lived after it. Four new steps follow the edit and the lane through to the repainted row, including a window flag set before the save and read after it, which is how a swap is told apart from a reload. `tests/fixture_board.py` gained five more targets: a sentence carrying both surfaces, a card naming absent words, two cards on one sentence, a three-line card body, and a sentence to edit.
+      Two of the new steps were red for a while because of the harness, not the code, and both are worth naming: the lane form is reached from the `＋` in the hover rail rather than by double-click, which opens the editor; and its dropdown remembers what was used last and falls back to `JL`, which is a person's initials and renders as a comment row, so the step was counting a lane that was never going to appear.
 260802 · `0.109.0`
       **👪 `haipipe-board-index` is retired, and the family is one door, two specs, one verb.**
       JL ruled the merge on 260802 ("maybe merge, I will do B") after asking what the index was for. The audit that question forced found three of its five verbs were other units' work written a second time: `propose` and `materialize` are this skill's own `open` action, `regroup` wrapped `cli/regroup.py`, and `check` was a subset of `cli/check.py`. Only `src/lanes.py` was code the family held nowhere else, and it moved to `haipipe-board-routing/src/lanes.py`.
@@ -1016,7 +1123,7 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
 260801 · `0.92.0`
       **A group intro's figure renders as a figure on the group page.** `index_rows` and the group page built the same intro body two ways: the index turned a ``` fence into `<pre class="gidia">`, while the group page flattened every fence line into `<p>` prose, which is how a group's ladder arrived mangled inside "why this group exists" (JL 260801). Both paths now share `page_board._gi_body()`, and `.gwhy-b .gidia` joins the `.gib .gidia` CSS rule so the figure is styled there too. Board-side, on the design board: the QB group intro redrawn as the section-protocol ladder (one reader question per section), and the seven QB4a-QB4g faces each open with the five-row protocol (conveys · holds · source · rules · omit), master view on QB4 §0. JL ruled the graduation (option A) the same day: the template's How-to-use comment now carries the reader-question ladder + the misplaced-sentence rule, and `haipipe-board-page` 0.3.0 carries the five-row contract.
 260801 · `0.91.1`
-      **checks/ follows the QD3m→QD3 merge.** JL ruled the design board's QD3m (the myrlin smooth-view page) folds back into QD3 — its engine half had already shipped into QD3 as 0.64.0, and its open smooth-view work now rides QD2 M1 — so the page moved to the board's `_archive/`. `checks/pty_e2e.py`'s default spawn target pointed at the archived path and would have 400'd on the next full-tier run; it now defaults to `../01-boardform-260722/QD-working/QD3-chat-terminal.md`. Board-side records on QD3 (Where we are + Log) and board.md's QD lane/map/Pages rows.
+      **checks/ follows the QD3m→QD3 merge.** JL ruled the design board's QD3m (the myrlin smooth-view page) folds back into QD3 — its engine half had already shipped into QD3 as 0.64.0, and its open smooth-view work now rides QD2 M1 — so the page moved to the board's `_archive/`. `checks/pty_e2e.py`'s default spawn target pointed at the archived path and would have 400'd on the next full-tier run; it now defaults to `QD-working/QD3-chat-terminal.md`. Board-side records on QD3 (Where we are + Log) and board.md's QD lane/map/Pages rows.
 260731 · `0.91.0`
       **`Meeting-<n>` is a page kind, and a vault note becomes a board page.** JL: "the MEETING-page should be a special page like SKILL, but still fit the Basic page structure." It does, and the reason it fits is what reading `jluo41/echo-meeting` turned up: its summarizer's system prompt FIXES six headings, so the mapping is a lookup rather than an interpretation. `### TL;DR` becomes the Opening, `### Diagram` is already the emoji ASCII figure this board asks every page for, `### Key Points` and `### Decisions` and the `## Conversation` chapters become Content divisions, the transcript is the last division, and an Obsidian `> [!quote]-` callout becomes exactly this board's sentence apparatus, so clicking a chapter's summary line opens the words that produced it. Three managed spans (`head`, `diagram`, `body`) resync from the note; Items to Finish and Decision Now are SEEDED ONCE from `### Action Items` and `### Open Questions` and never touched again, because you tick those and a resync that rewrote them would eat your state. New `meetingpage.py` (`new` / `sync`); `src/common.py` and `src/parse.py` learned the prefix and a `meeting` kind that sorts after Agent; `check.py` learned the filename in `## Pages`. Generated `Meeting-1` from the real 260723 note: six base sections, 18 Content divisions, 15 sentence drawers, zero warnings. Recorded on QC10.
       **A meeting page is exempt from English-only, deliberately.** The imported note is 8,573 Chinese words, and JL's 260724 rule is about the prose this team writes, not about a meeting held in the language it was held in; "fixing" a quotation falsifies the record. Managed spans were already skipped by `strip_fences(prose_only=True)`, but the two seeded lists sit outside them by design, so `check.py` now exempts `Meeting-<n>` pages from the CJK and em-dash rules: 26 warnings became 0.
@@ -1280,8 +1387,8 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
       - **`4a-l2` is not available, on a mechanical ground.** The page-id regex stops at the first hyphen, so a hyphenated tail parses as `S-Display-4A` and collides with its own parent. The tail runs on: `4al2`.
       - **Verified on the MISQ board:** 42 pages, the new page ordered between `S-Display-4A` and `S-Display-4B`, 0 stale-contract warnings, every other page id unchanged, and `build-displays.py` shipping 11 units.
 260728 · `0.44.0` · measure the master the paper SHIPS
-      - **A paper may have two tex trees, and 0.43.0 measured the wrong one.** On the MISQ board `3-dist/tex/paper.tex` is the live deliverable, generated one-way from the S-Main pages by `../../paper/S09-build/haipipe-paper-to-word/md2tex.py`, while a root master over hand-written `sections/` still builds beside it. `_input_closure()` globbed the ROOT for `\begin{document}`, so it saw only the legacy tree and reported `??` for nine displays that were in the shipped PDF all along. It now prefers `3-dist/tex/paper.tex` when present.
-      - **An `\input` resolves against the file's own directory OR the paper root.** `../../paper/S09-build/haipipe-paper-to-word/md2tex.py` compiles with `TEXINPUTS=".:<paper root>:"`, which is how `\input{S-Main-3-theory}` and `\input{displays/S-Display-1a-hero-concept/float}` both work from inside `3-dist/tex/`. A walker trying only one base silently loses half the tree.
+      - **A paper may have two tex trees, and 0.43.0 measured the wrong one.** On the MISQ board `3-dist/tex/paper.tex` is the live deliverable, generated one-way from the S-Main pages by `md2tex.py`, while a root master over hand-written `sections/` still builds beside it. `_input_closure()` globbed the ROOT for `\begin{document}`, so it saw only the legacy tree and reported `??` for nine displays that were in the shipped PDF all along. It now prefers `3-dist/tex/paper.tex` when present.
+      - **An `\input` resolves against the file's own directory OR the paper root.** `md2tex.py` compiles with `TEXINPUTS=".:<paper root>:"`, which is how `\input{S-Main-3-theory}` and `\input{displays/S-Display-1a-hero-concept/float}` both work from inside `3-dist/tex/`. A walker trying only one base silently loses half the tree.
       - **Net effect on that board:** one `\ref` chip still reports `??`, `fig:llm-measurement`, whose unit is deliberately folded. Verified by regenerating: `paper.pdf` at 47 pages, nine unit labels in `paper.aux`, zero undefined references.
       - **The lesson worth keeping:** "a label exists on disk" (0.42.0), "a label reaches the master" (0.43.0), and "which master" (this one) are three different questions, and only the third makes the second mean anything.
 260728 · `0.43.0` · a label on disk is not a label in the document
@@ -1372,7 +1479,7 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
         link the paper board had renamed again.
 260727 · `0.41.1` · agents are shipped units too, and every section folds
       - `skillpage.py` accepts a single definition `.md` as well as a skill folder, so
-        `../../../agents/haipipe-board-reviewer-agent.md` gets a page. Both carry identical
+        `agents/haipipe-board-reviewer-agent.md` gets a page. Both carry identical
         frontmatter, so one generator covers both rather than a second that would
         drift. A single-file unit emits the tree span EMPTY rather than omitting it:
         `sync` replaces spans it can find, and a missing one would report as an older
@@ -1388,7 +1495,7 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
 260727 · `0.41.0` · a named Q family for skill pages
       - **Named Q pages.** `parse.py` recognizes `Q-<Family>-<rest>.md`, so a skill
         page is `Q-Skill-haipipe-board.md` in a `Q-Skill/` group rather than `QS1-…`.
-        Same shape as the named S families, same reason: a roster row is identified by
+        Same shape as the named S families, same reason: a skill page is identified by
         WHAT IT IS, never by a position in a queue.
       - Split the two concerns onto two pages. `QB6 · Convert a skill folder to a
         skill page` owns the mechanism and lives in QB; everything it generates lives
@@ -1645,7 +1752,7 @@ Converted from the skill's own `CHANGELOG.md`: 146 releases.
         unit's `diagram/`; plugin skill-design Boards share the plugin's
         `skills/diagrams/`. `NN` sequences one topic series, so unrelated topics may
         each start at `01`.
-      - Added `../../../agents/haipipe-board-reviewer-agent.md`, a read-only packaging of
+      - Added `../agents/haipipe-board-reviewer-agent.md`, a read-only packaging of
         the existing `check.py` plus zero-background cold-read workflow. The original
         session remains the writer and fixes every finding.
 260726 · `0.29.0` · warn when a board writes markers and declares no dialect

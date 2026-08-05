@@ -1,19 +1,26 @@
 ---
 name: haipipe-probe
-description: "The shared probe model: a consumer-level Q/A map that binds a neutral q-executor by PATH to a QA file in the probe-unaware task/discovery bank. Consumer families own their entry location and local page overlay; this skill owns stake stripping, the five-step loop, bank independence, and the QA evidence boundary. Trigger: probe, q-executor, a-consumer, QA file, qa verb, state, evidence, /haipipe-probe."
+description: "The shared probe model: a consumer-level Q/A map that binds a neutral q-executor by PATH to a QA file in the probe-unaware task/discovery bank. Consumer families own their persisted Probe record or Page and local overlay; this skill owns stake stripping, the five-step loop, bank independence, and the QA evidence boundary. Trigger: probe, q-executor, a-consumer, QA file, qa verb, state, evidence, /haipipe-probe."
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "0.11.1"
-  last_updated: "2026-08-01"
-  summary: "The probe layer, operational form. Board-first Q-consumers are Content-linked Aims with separate rows in States; PROBE owns ORGANIZE→MATCH→DISPATCH→POINT→INTERPRET."
+  version: "0.11.2"
+  last_updated: "2026-08-04"
+  summary: "Canonical user-facing vocabulary is PROBE, probe, and Probe record or Page; entry remains only a legacy implementation label."
 ---
 
-> **WHERE AN ENTRY LIVES IS THE CONSUMER'S CHOICE, not this model's.** This
+> **WHERE A PROBE RECORD LIVES IS THE CONSUMER'S CHOICE, not this model's.** This
 > skill owns the crossing: stake stripping, MATCH-before-DISPATCH, and the
 > bank's independent QA evidence. A consumer skill owns its page path, direct
-> consumer register, entry headings, and local state overlay. For Paper, read
+> consumer register, Probe headings, and local state overlay. For Paper, read
 > `paper/phase/1-probe/haipipe-paper-probe/ref/topic-entry-contract.md` before
-> authoring an entry; it defines the S03 Literature and S04 Value runtime shape.
+> authoring a Probe Page; it defines the S03 Literature and S04 Value runtime shape.
+
+**Canonical lifecycle vocabulary, ruled 260804:** PROBE is the Page phase, a
+lowercase probe is one question-and-answer exchange, and a Probe record or
+Probe Page is its persisted consumer-side surface. The older word `entry`
+still appears in checker names, paths, and executable schemas below. Read it as
+that persisted probe record, not as another Page Type, phase, or conceptual
+layer.
 
 Skill: haipipe-probe — the probe layer
 ======================================

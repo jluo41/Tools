@@ -7,6 +7,46 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.15.0 - 2026-08-04
+
+- Adds `### 🔗 Related Board Pages` as the fixed, typed Files group for bounded
+  cross-Page context rather than configuration inheritance or dependency
+  inference.
+- Defines relation + Page Phase + Page id + scope + Board-relative path rows.
+  Scope is either one whole Page or one direct Content division; a division
+  brings its Page identity, Opening, and matching Aims/States group.
+- Requires agents and Page RUN to resolve the current phase through
+  `cli/pagecontext.py`, one hop only. Broken paths, mismatched Page ids, missing
+  scopes, and malformed rows stop as mechanical findings instead of silently
+  dropping context.
+- Emits Page identity and Opening once when one phase selects several scopes on
+  the same target, after the first fresh-context trial exposed the repetition.
+
+## 0.14.0 - 2026-08-04
+
+- Adds the concrete `RUN` verb for one bounded, non-linear Page lifecycle. It is
+  not named `ADVANCE` because phases may repeat, branch, HOLD, or begin a new
+  DRAFT round.
+- Adds `ref/page-run-contract.md`, the common raw-material packet, phase receipt,
+  version identity, role-separation, durable audit bundle, legal-route, stop,
+  and fault-test contract shared by all four Page Phases.
+- Requires the producer, mechanical builder, and judge to have distinct actor
+  identities and verifies that each version is exactly its two declared
+  lowercase SHA-256 digests.
+- Makes the CLI independently rehash the current source and rendered Page, so
+  agreement among receipt fields cannot substitute for artifact identity.
+- Audits the preserved packet against the run and enforces receipt-to-receipt
+  version continuity, start-phase identity, gate identity, and declared bounds.
+- Wires RUN to the Board-owned Workflow and deterministic lifecycle auditor.
+
+## 0.13.0 - 2026-08-04
+
+- Adopts QB9's lifecycle vocabulary without adding an `ADVANCE` verb: one persistent Page combines a stable Page Type with a current DRAFT, PROBE, REVISE, or CHECK phase.
+- Adds the load order `base → matching Page Type → current Page Phase → family worker` and routes phases by authority rather than add, delete, move, or rewrite operations.
+- Moves the three `for-*` variants under `page-types/` and names the four direct phase contracts under `page-phases/`.
+- Defines returning to DRAFT after purpose or Aims change as a new round on the same Page.
+- Changes the section write table from generic machine permissions to phase authority, including the correction that changing Aim intent is DRAFT rather than REVISE.
+
 ## 0.12.0 - 2026-08-03
 
 **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.

@@ -4,6 +4,34 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## 2026-08-04 · Phase-scoped Related Board Pages
+
+- Adds one typed Files group for precise Page-to-Page context by relation,
+  current Page Phase, Page id, and whole-Page or Content-division scope.
+- Adds a one-hop reader and checker integration so cycles stay bounded and dead
+  targets, wrong ids, missing scopes, malformed rows, and path escape fail
+  before an agent silently works without required context.
+- Carries the rule through QB4, the template, Board form, Page and Board skills,
+  the Page RUN raw-material packet, generated Skill mirror Pages, and focused
+  fault tests.
+
+## 2026-08-04 · Page RUN, receipts, and lifecycle audit
+
+- Adds the third Page verb, `RUN`, as a bounded non-linear router rather than a
+  linear `ADVANCE` command.
+- Adds the common packet/receipt contract, Board-owned Workflow and deterministic
+  auditor, branch/fault tests, and the Page orchestrator agent.
+- Preserves the core separation: producer writes, builder versions, reviewer
+  judges, controller routes, and a human alone supplies any required human gate.
+
+## [0.7.0] — 2026-08-04
+
+- Adopts the Page Type × Page Phase structure ruled on QB9.
+- Moves the stable `for-stage`, `for-skill`, and `for-venue` variants under `page-types/` without changing their globally unique skill names.
+- Replaces the four stage-shaped phase names with `haipipe-board-page-draft`, `-probe`, `-revise`, and `-check` under `page-phases/`.
+- Wires the base Page and Board door to resolve type and phase independently, and keeps `ADVANCE` deferred until a real router needs it.
+- Keeps `haipipe-probe` as the shared Q-consumer, Q-executor, A-executor, and A-consumer crossing protocol.
+
 ## [0.6.0] — 2026-08-03
 
 **A full diagnose-first review of the bucket** (`/haipipe-skill-diagnose`), 27 findings across 6 skills and 2 agents, all fixed in one round.

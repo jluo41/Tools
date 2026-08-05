@@ -1045,26 +1045,29 @@ A superseded State stays findable in Log or Law; it does not sit beside the curr
 The section should be readable top to bottom as a description of right now, and every line that survives from an earlier now makes that false.
 
 ### 6 · Files
-**The action map**: the three file groups, chosen by what you DO to a file.
+**The action and context map**: ordinary files group by what you DO; related Pages name exactly what this phase reads.
 
 ```
 📎 Files  ── the action map, NOT a change list
 
   ⚙️ Engines        what RUNS the subject      🔧 build.py · serve.py
-  📥 Input files    what the work READS        📄 the .md sources
+  📋 Contracts      what CARRIES a rule        📄 template · loadable spec
+  🧪 Checks         what CATCHES a break       🔍 check.py
+  📥 Input files    what the work READS        📄 source evidence
   📤 Output files   what a build WRITES        🌐 board/*.html   ⚠️ never hand-edit
+  🔗 Related Pages  what this PHASE reads      QB7 §3 · one hop
 
 🧭 which group? ── by what YOU DO to it, not by what it IS
    the same .md is 📥 input on one page and 📤 output on another
 ```
-📎 Establishes the action map: the standard trio, and which group a file belongs to.
+📎 Establishes the five-group action menu plus the scoped Related Board Pages map.
 
 ```
 📎 Files · answers: which few files do I open to continue this work?
 ──────────────────────────────────────────────────────────────
 👁 conveys   the action map: entry points, never an exhaustive change list
-📦 holds     the standard trio: Engines, what runs the subject · Input files,
-             what the work reads · Output files, what a build writes
+📦 holds     five ordinary action groups as they apply · one fixed Related
+             Board Pages group when this Page needs another Page by scope
 ✍️ source    one backticked path + its role in one sentence, per row ·
              a generated file says so in its row: never hand-edit
 ⚖️ rules     place a file by what YOU do to it, not by what it is · rename a
@@ -1097,13 +1100,14 @@ One line per row saying what that file does, and nothing else. A path with no ro
 `board.md` is an input to the renderer and an output of the index verb, so its own nature never settles the question. The page's relationship to it does.
 An empty group is omitted, and three rows or fewer stay flat with no group at all.
 
-#### 6.2.2 · The group names are a MENU of actions, and a page takes what applies
-(five names cover almost everything; a page uses the ones it has and omits the rest)
+#### 6.2.2 · The ordinary group names are a MENU of actions, and a page takes what applies
+(five names cover ordinary files; the fixed cross-Page group has its own typed rows)
 ⚙️ `Engines` what RUNS the subject · 📋 `Contracts` what CARRIES a rule to other pages · 🧪 `Checks` what CATCHES a page breaking one · 📥 `Input files` what the work READS · 📤 `Output files` what a BUILD writes.
 Take the ones that apply. This page has no meaningful Inputs group, so it does not have one, and a page that only reads and writes uses two.
 `Contracts` and `Checks` exist because a spec page needs them and the older trio had nowhere to put them: `ref/page-template.md` is not something a build writes, and `cli/check.py` runs but what this page DOES to it is write rules into it.
 A page may still add a name, and the test is that it states an ACTION. `The Board mark sources` and `Graduation target and neighbouring faces` are subjects, and a subject-named group rots the moment its subject leaves the page, which is exactly what happened here on 260801.
 `### 0.5`'s contextual-naming rule holds: it asks for the page's own language, and an action in the page's own words is still an action.
+`### 🔗 Related Board Pages` is the deliberate fixed exception. Its heading must stay exact so the checker can find it, and every row begins with the relation that supplies the missing action.
 
 #### 6.2.3 · Mark what is generated
 (the failure this prevents is someone editing the layer that gets overwritten)
@@ -1125,6 +1129,27 @@ Prose can be wrong and still read as prose. A path is either right or it is a de
 This page proves the rate: of fourteen paths listed here, FOUR were dead by 260802. `build.py` and `stage.py` had moved into `cli/`, `assets/board.css` had been split into `assets/css/*.css`, and `test_stage_style.py` was gone.
 A group can rot too. `The Board mark sources` survived here after 260801 deleted the Content part it served, so it pointed at files no part of this page discusses.
 `check.py` now resolves every path in this section, which is the only reason to trust the rows: a dead path is a mechanical fact and does not need a person to notice it.
+
+**6.4 · 🔗 Related Board Pages are bounded context, not dependencies**
+
+#### 6.4.1 · Every row says relation, phase, Page, and scope
+(a link without when and where makes the agent choose both from memory)
+The canonical row is ``- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)`` followed by one indented sentence explaining why that fragment matters here.
+The relation is `reads`, `constrained by`, `continues`, or `contrasts`; the phase is DRAFT, PROBE, REVISE, CHECK, or ALL; and the path is relative to the Board root even when either Page lives in a group folder.
+The visible Page id must agree with the linked source, and scope is either `page` or one direct Content division such as `§3.2`.
+
+#### 6.4.2 · A division arrives with its smallest useful context closure
+(the fragment keeps its promise and state without dragging in the whole Page)
+Reading only a paragraph can make a true sentence misleading because its Page Opening, Aim, or current State supplied the qualification.
+So `§3` returns the target Page identity and Opening, direct Content division 3, and the matching A3 groups from Aims and States.
+When one phase selects several divisions from the same target Page, the packet emits that Page identity and Opening once, followed by each scoped division closure; the first fresh-context trial caught and removed the repeated frame.
+It does not return unrelated divisions, Files, folds, or anything linked by the target Page; `page` is available only when the whole target genuinely matters.
+
+#### 6.4.3 · Phase filtering and one-hop traversal keep the context bounded
+(a cycle stays a pair of links instead of becoming an unbounded read)
+Read the current Page whole first, then `cli/pagecontext.py <page> --phase <PHASE>` selects only rows for that phase or ALL.
+The reader follows one hop and never recursively opens a target Page's Related Board Pages, so cycles are legal and finite.
+`check.py` rejects malformed rows, paths outside the Board, dead or undiscoverable Pages, mismatched Page ids, self-links, and missing scopes before a phase can silently proceed with incomplete context.
 
 ### 7 · Folds
 **Below the read**: what is kept down there, and what folds may never swallow.
@@ -1470,6 +1495,10 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 - A5.1 · The States section is a factual one-row-per-Aim collection.
   **Done when:** The five statuses render, counts derive from States, and transitions are recorded in Log.
 
+### A6 · 📎 Files
+- A6.1 · A Page can declare the exact fragment of another Board Page that one phase needs without recursively loading the Board.
+  **Done when:** The template and Page skill carry the row grammar, `pagecontext.py` returns a one-hop scope closure, and `check.py` fault tests reject dead paths, wrong Page ids, missing scopes, malformed rows, and path escape.
+
 ### A8 · 📄 The source file
 - A8.1 · Every page-creation path emits the canonical Aims/States contract.
   **Done when:** The template, new-page generators, checker, Board matrix, and JSON output agree while legacy headings still rebuild.
@@ -1518,6 +1547,9 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 ### A5 · 📍 States
 - ✅ A5.1 · Implemented with the paired plural headings Aims/States and one current State row per Aim.
 
+### A6 · 📎 Files
+- ✅ A6.1 · Implemented 260804 in the template, base Page skill, Page RUN packet, Board form, one-hop context reader, checker integration, and ten focused tests including recursion, fenced examples, checker wiring, and fault boundaries; the second fresh-context trial selected only QB9 §8/§10, emitted their shared frame once, and followed no second-hop link.
+
 ### A8 · 📄 The source file
 - ✅ A8.1 · Implemented and verified across templates, every active generator, checker, Board matrix, JSON output, aliases, and the public paper-stage creation path.
 - ✅ A8.2 · Stated in `ref/page-template.md`'s first line and its How-to-use comment, in `### 8`, `## Writing Style`, `## Law`, and `haipipe-board-page`. This page and QB2 were the board's only two divergent titles and both were corrected in the same edit, so all 46 pages now read in sentence case. `QB1` remains a full question rather than a phrase, which is the template's separate phrase rule and not a casing divergence.
@@ -1541,6 +1573,8 @@ The dated implementation history lives in Log, so this section stays a current s
 ### ⚙️ Engines · what RUNS this subject
 - `cli/build.py`
   The generator entry. Q/S discovery and parsing live under `src/`; output stays self-contained.
+- `cli/pagecontext.py` · `src/page_context.py`
+  The one-hop reader and its typed Related Board Pages parser, scope closure, and deterministic audit.
 - `src/page_question.py`
   The shared renderer: the Opening split, the Diagram halves, and the folding Content, Aims, States and Files groups.
 - `src/body.py`
@@ -1572,13 +1606,24 @@ The dated implementation history lives in Log, so this section stays a current s
 - `agents/haipipe-board-reviewer-agent.md`
   The independent judge. It LOADS `haipipe-board-page` and `ref/writing-rules.md` rather than restating them, which is why a rule written here is enforced by it with no edit, and it runs `check.py --strict` and `--summary` as its mechanical half.
 - `cli/check.py`
-  Where a rule becomes mechanical. Owns `group-name-drift`, `two-canvases`, `division-no-figure`, `division-no-caption`, `old-comment-form`, `dead-file-path`, and the on-stage paragraph ceiling.
+  Where a rule becomes mechanical. Owns `group-name-drift`, `two-canvases`, `division-no-figure`, `division-no-caption`, `old-comment-form`, `dead-file-path`, the Related Board Pages faults, and the on-stage paragraph ceiling.
+- `tests/test_page_context.py`
+  Exercises scope closure, phase filtering, one-hop recursion boundaries, fenced examples, checker wiring, dead paths, wrong ids, missing scopes, malformed rows, path escape, and duplicate suppression.
+
+### 🔗 Related Board Pages · what this Page READS BY SCOPE
+- `constrained by · ALL` · [QB9 §8](QB-delivery/QB9-page-loop.md)
+  Page Type and Page Phase must stay separate when a Files row selects phase-specific context.
+- `continues · CHECK` · [QB9 §10](QB-delivery/QB9-page-loop.md)
+  The lifecycle audit defines what the process can prove after scoped context has been supplied.
 
 ### 📤 Output files · what a BUILD writes
 - `board/QB/QB4-overall.html`
   ⚠️ Generated by `cli/build.py`. Never hand-edit.
 
 ## Law
+- 🔗 **Related Board Pages are phase-scoped context, not configuration or dependency inference**: JL 260804 approved adding the fixed group under Files after asking how one Page can precisely read only the useful part of another without filling the context window.
+  A row declares relation, Page Phase, matching Page id, `page`/`§n` scope, and Board-root-relative path; a division closes over identity, Opening, and matching Aims/States, and traversal stops after one hop.
+  The checker rejects an invalid row before work begins, while `pagecontext.py` materializes only the current phase's rows.
 - 🖌 **A page shows no canvas link rather than one that 404s**: JL 260802, ruling B. Four pages pointed at frames nobody had drawn, so each promised a picture and delivered an error. The link goes, and a sentence says which frame is missing and that the link returns when it is drawn.
 - 🗺 **Design history follows the SUBJECT, not the page that once held it**: JL 260802, ruling A. `_archive/QB4b` §1-§4 answered "how does the canvas work", so it moved to `QB8`, which owns attaching a drawing, rather than back into the page-template contract.
 - 🧹 **One vocabulary across every board, swept in one pass**: JL 260802, ruling A. The alternative was sweeping each board when next touched, which leaves the checker reporting a rule most boards do not yet follow.
@@ -1878,8 +1923,13 @@ The dated implementation history lives in Log, so this section stays a current s
 >> CC0801: `check.py` can enforce sentence case, since that is a string test. Whether a title states a purpose is a judgment, so it belongs to the `✅ Quality Check` row and the fresh reviewer in `### 9` rather than to the checker. Nothing has been added to `check.py` yet; the rule is currently carried by prose alone, which is exactly the condition that let the last one drift.
 > Open: `haipipe-board-page` still writes the fifth section as lower-case `folds`
 >> CC0801: left alone deliberately. `P3` in Decision Now may retire the word entirely in favour of `Memory`, so recapitalizing it now is work that a ruling could throw away. It is recorded here so the inconsistency is known rather than missed.
+> JL: when writing one Page, I may need the literature or values Page, but I want the exact useful fragment without losing context or filling the window; should Files carry Related Board Pages?
+>> CC0804: yes. The Page now declares relation, phase, target Page, and `page`/`§n` scope under one fixed group. A scoped division brings its target Opening and matching Aims/States, the reader follows one hop, and the checker rejects a dead Page or scope before an agent works without it.
 
 ## Log
+260804 2246 · The post-fix fresh-context trial passed the behavioral gate: without this discussion it loaded the base Page and CHECK contracts, read QB4 whole, selected exactly QB9 §8 from ALL and §10 from CHECK, measured the packet at 139 lines / 9,127 characters, saw QB9 identity and Opening exactly once, followed no second-hop link, ran all ten context tests, and reported zero `related-*` checker findings. It made no edits and did not claim the Files design itself was semantically approved.
+260804 2240 · The first fresh-context trial discovered the right two CHECK scopes and stopped at one hop without prompting, then exposed one context-cost defect: QB9's identity and Opening were repeated once per selected scope. The reader now emits that shared frame once per target Page while retaining each scope's Content/Aims/States closure; the focused phase-filter test asserts the Opening appears once when PROBE selects two scopes from one Page.
+260804 2229 · `### 6.4` and A6.1 implement JL's Related Board Pages proposal as bounded Page context rather than configuration reference: a typed row declares relation, Page Phase, Page id, scope, and Board-root-relative source; `pagecontext.py` returns one phase's one-hop packet; `check.py` validates every target and scope; the template, Board form, Page skill, RUN packet, Files map, Law, Discussion, and focused fault tests now carry the same rule.
  260802 1900 · QB4 SETTLED (JL: "I will close it for now"). Two Aims were checked against their own Done when rather than closed by assertion, and both turned out to be genuinely met once one gap was fixed: `A1.1` required the size ceiling, the plain-English rule and the no-growing-roster rule in BOTH `ref/page-template.md` and `haipipe-board-page`, and the template carried only the blank-line split, so the three missing rules were written into it; `P2` was met by JL's own ruling A earlier the same evening. The other three are HELD, not met, each with its reason on the row: `A2.1` is board-wide and 110 figure and caption findings sit on other pages, `A9.2` wants a fresh-context audit of a file set wider than the one the 260802 agents tested, and `P4` waits on `haipipe-writing`, which does not exist. The contract closes a Q page when every Aim is met OR EXPLICITLY HELD, so a held Aim is a closed page's normal furniture and not a loose end
  260802 1830 · JL answered the last three rows and they are executed. A: the canvas half of `_archive/QB4b` §1-§4 moved to `QB8` as its `### 4`, 123 lines; the group-title half named `QD4` as its target, which was a slip, since `QD4` never mentions the marker and `QB4 ### 3` already carries the contract in 19 places, so nothing moved and the marker stays where it was. B: the dead `frame=` links on `QB8`, `QC1a`, `QC2a` and `QF2` are gone, each replaced by the reason, and the moved block brought a fifth (`frame=QA4a`) that went the same way; `dead-canvas-frame` is now 0. A: all four sibling boards swept, 172 renames and 45 `## Boundary` sections retired across probe-qa, task, display and paper, with the collision check run first on each and `_archive/` left alone; every board reports 0 `retired-section` and 0 errors
  260802 1800 · `Folds` stays, and the row asking about it is gone (JL: "so you mean, you want to update the Folds into Memories, right?"). JL had already ruled the name on 260801 in a single sentence, "let's make this to be 'Folds', why 'fold', very bad": the objection was to the SINGULAR, and the plural was the instruction. CC split that sentence in two, treated the second half as a live objection to the word, recommended `Memory`, and carried the row for a day. P3 is met, one of the three Aims that were waiting on JL, and a Law now says to read the whole quote before raising a row from it

@@ -1,19 +1,22 @@
 ---
 name: haipipe-application-revise
-description: "REVISE phase worker (internal). Called by application stage skills after PROBE to bring the stage doc (or artifact text) to venue+audience quality: weave in the evidence PROBE landed, tighten wording, enforce the venue style-profile and audience profile (tone, reading level, length limits). Agent-only -- changes the text directly, leaves why-comments, no comment-first. Users invoke stage skills, not this skill directly."
-argument-hint: "[stage <stage-name>] [intervention-path]"
+description: "Application-specific REVISE phase worker (internal). Called whenever the Page router enters REVISE to improve a stage doc under fixed purpose and Aims: weave any landed evidence, tighten wording, and enforce applicable venue and audience profiles. A changed promise routes to DRAFT and a new unknown routes to PROBE. Users invoke stage skills, not this skill directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-19"
-  summary: "The intervention's REVISE-phase worker — a single thin worker whose quality spec is the pinned venue's style-profile plus the audience profile. History: ./CHANGELOG.md."
+  argument_hint: "[stage <stage-name>] [intervention-path]"
+  version: "0.1.2"
+  last_updated: "2026-08-04"
+  summary: "Application-specific REVISE worker layered on haipipe-board-page-revise, adding venue and audience quality under fixed Aims."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-revise (internal phase worker)
 ==========================================================
 
-REVISE phase worker. Runs after PROBE, before CHECK. Agent-only: change the text directly and leave a short why-comment in `_LOG`; never switch to comment-first mode.
+REVISE phase worker. Runs whenever the Page router selects REVISE. Agent-only: change the text directly and leave a short why-comment in `_LOG`; never switch to comment-first mode.
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-revise/SKILL.md`.
+This file adds application quality rules to that fixed-promise authority.
 
 ## What REVISE means
 
@@ -33,6 +36,7 @@ REVISE phase worker. Runs after PROBE, before CHECK. Agent-only: change the text
 ## Boundaries
 
 - Never introduce new claims or numbers -- REVISE rearranges and polishes what DRAFT + PROBE settled.
+- If purpose or an Aim must change, return to DRAFT and begin a new round; if a consequential answer is missing, route to PROBE.
 - Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, advice): skip step 3's venue half; clarity rules still apply.
 - Do not resolve CHECK-level questions (approval, scope changes) here.
 
@@ -43,5 +47,5 @@ status:    ok | blocked
 stage:     <stage-name>
 artifact:  <path revised>
 open:      <count of NEEDs still flagged for CHECK>
-next:      CHECK
+next:      <CHECK | PROBE | DRAFT | REVISE, chosen by the Page router>
 ```

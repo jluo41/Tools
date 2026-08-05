@@ -5,6 +5,17 @@ Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/
 
 ## [Unreleased] — 2026-07-26 — Board becomes a first-class family
 
+- Added the Page-level `RUN` router: a bounded Workflow composes DRAFT, PROBE,
+  REVISE, mechanical source/render versioning, and fresh CHECK without imposing
+  one fixed sequence.
+- Added durable `_runs/page/` receipts, a deterministic lifecycle auditor,
+  strict and independently recomputed source/render SHA identities,
+  packet/run and version-continuity checks, producer/builder/judge separation,
+  branch and fault-injection tests, and the registered
+  `haipipe-board-page-orchestrator-agent`.
+- Expanded the Board creator and reviewer into the separated producer and judge
+  roles consumed by RUN while retaining their ordinary batch-review behavior.
+
 - Promoted `haipipe-board` from `skills/0_utils/` to
   `skills/board/haipipe-board/`, parallel to paper, probe, and task.
 - Added `skills/board/agents/haipipe-board-reviewer-agent.md`, a read-only

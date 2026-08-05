@@ -130,7 +130,7 @@ skills/
 ├── probe/             🌉 the constitution + the claim JUDGE (G1/G2/G3)
 ├── paper/             📄 academic consumer — stages × DPRC
 ├── application/       📱 non-academic consumer — venue-gated
-├── board/             🧭 shared Board skill + read-only reviewer agent
+├── board/             🧭 Board + Page Type/Phase contracts + producer/reviewer/orchestrator
 ├── diagrams/          🗺 working design Boards; kept outside delivery skills
 ├── project/           📦 container setup
 ├── 0_utils/ 0_connect/   utilities and connectors

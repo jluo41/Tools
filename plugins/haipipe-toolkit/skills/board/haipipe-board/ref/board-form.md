@@ -261,7 +261,7 @@ provides:       → contract    a short delivery note this page gives downstream
                      the prose.
 ## Aims           → .col.goal   green border, the column header derives `met/total` from States
 ## States         → .col.now    yellow border; one current emoji row per Aim
-## Files           → .fls        which files this question touches, blue border (paths auto-become clickable links)
+## Files           → .fls        action map plus scoped Related Board Page context, blue border
 ## Why here        → .folds      legacy only; collapsed when an old page still has it
 ## Discussion      → .folds      collapsed
 ## Law             → .folds      collapsed · the rules this question settled
@@ -269,6 +269,21 @@ provides:       → contract    a short delivery note this page gives downstream
 ## Glossary        → .folds      collapsed
 ## Log             → .folds      collapsed
 ```
+
+**Related Board Pages inside Files** use one exact group and row grammar:
+
+```markdown
+### 🔗 Related Board Pages · what this Page READS BY SCOPE
+- `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)
+  Why this Page needs that target fragment in this phase.
+```
+
+- Relation is one of `reads`, `constrained by`, `continues`, or `contrasts`.
+- Phase is `DRAFT`, `PROBE`, `REVISE`, `CHECK`, or `ALL`.
+- The Markdown target is relative to the Board root, even when the source Page lives in a group folder. The label's Page id must match that source.
+- Scope is `page` or one direct Content division, `§n[.n]`. A division context closes over the target Page identity, Opening, and matching Aims/States group; several scopes on one target share one identity and Opening in the packet.
+- `cli/pagecontext.py` filters by phase and follows one hop only. It does not infer dependencies or recursively traverse target rows.
+- `cli/check.py` treats malformed rows, unsafe or dead paths, Page-id mismatches, and dead scopes as errors.
 
 **Required on both kinds of page**: `# title`, `state:`, `owner:`, `## Opening`, `## Writing Style`, `## Aims`, `## States`.
 S additionally requires `## Stage Contract` and `## Content`; Q deletes Stage Contract and may omit Content.

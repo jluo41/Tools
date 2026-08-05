@@ -41,7 +41,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ✅ `will a clinician change what they do Monday`  ❌ `is the finding important`
 
-**The shape of this page is a contract, not a local habit** (JL 260803). It is `../../board/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A rule changed here is changed in that file in the same pass.
+**The shape of this page is a contract, not a local habit** (JL 260803). It is `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. A rule changed here is changed in that file in the same pass.
 
 ```text
   🖼 THREE FIGURES IN `## Diagram`, IN THIS ORDER

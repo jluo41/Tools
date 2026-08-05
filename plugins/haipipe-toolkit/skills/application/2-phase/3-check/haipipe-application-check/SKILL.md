@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-check
-description: "CHECK phase worker (internal) -- the only human-involved phase, run by every application stage skill after REVISE. Opens with a mechanical Run step (./checks.sh markdown checks + the probe-file checker) whose ❌/FAIL blocks the gate green, seeds > CHECK: comments in stage docs (0-artifacts/*.md stay clean; artifact findings go to the Gate Ledger notes), presents the stage's exit criteria with per-item marks, proposes approve / revise / done, and on explicit approval writes the Gate Ledger row in STATUS.md and advances current_layer. Venue-scaled depth: simple venues confirm inline, complex venues get a full CHECK report. Persona presets + attendance modes let a stand-in approve ONLY in unattended runs. Renamed from haipipe-application-gate (paper-alignment 2026-07-06). Trigger: check, gate, approve stage, exit criteria, /haipipe-application check."
-argument-hint: "[stage: seed|descriptions|themes|claims|advice|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
+description: "Application-specific CHECK phase worker (internal). Runs when a stage's local contract declares its human gate. It opens with markdown and probe-file checks whose failures block green, seeds CHECK comments in stage docs while keeping deliverable artifacts clean, presents exit criteria, and on explicit approval writes the Gate Ledger row in STATUS.md and advances current_layer. Venue-scaled depth controls inline versus full reporting, and attendance modes govern whether a stand-in may approve. Trigger: check, gate, approve stage, exit criteria, /haipipe-application check."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.2"
-  last_updated: "2026-07-17"
-  summary: "The intervention's CHECK-phase worker and the only human gate — runs ./checks.sh + the probe-file checker (any ❌/FAIL blocks green), seeds > CHECK: threads in stage docs, writes the Gate Ledger row on approval. History: ./CHANGELOG.md."
+  argument_hint: "[stage: seed|descriptions|themes|claims|advice|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
+  version: "0.4.3"
+  last_updated: "2026-08-04"
+  summary: "Application-specific CHECK worker layered on haipipe-board-page-check; runs local checkers, seeds findings, and applies the application's declared human gate."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,6 +14,10 @@ Skill: haipipe-application-check (CHECK phase worker)
 ======================================================
 
 CHECK phase worker -- the 🧑 phase. Reviews the artifacts produced during one lifecycle stage's DRAFT-PROBE-REVISE and proposes the next move:
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-check/SKILL.md`.
+The generic contract owns judgment and phase routing.
+This file adds the application's deterministic checks, comment surface, and Gate Ledger.
 
 ```
 approve   → Gate Ledger row + advance current_layer to the next non-skipped stage

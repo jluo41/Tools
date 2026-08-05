@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-probe
-description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads the stage doc's Q-consumer and ①ORGANIZEs each question into an ENTRY FILE in applications/<A>/1-probes/PPNN_<topic>/ — one q-executor per QXn_<slug>.md file (## QX<n> · q-executor / q-consumer / bank binding / a-executor), ②MATCHes it against the bank with a read-only grep, ③DISPATCHes what the ceiling allows, ④POINTs, ⑤INTERPRETs. ①② moved here from DRAFT on 2026-07-20 with the removal of the DRAFT gate; DRAFT now raises questions and nothing else. Binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Harvest folds INTO the entry's a-executor (anchored to target) — no sidecar docs. Users invoke stage skills (seed, claims…), not this directly."
-argument-hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
+description: "Application-specific PROBE phase worker (internal). Owns the whole five-step loop from each stage Page Q-consumer through a neutral Q-executor and returned A-executor to the Page-facing A-consumer. The persisted Probe file uses the existing QX schema, binds by path to a QA file in the task/discovery bank, and dispatches only the Q-executor. DRAFT raises questions and stops. Users invoke stage skills, not this directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-07-19"
-  summary: "The intervention's PROBE-phase worker — runs ③DISPATCH→④POINT→⑤INTERPRET for an application (DRAFT authored ①ORGANIZE+②MATCH; the plan is executed, not re-matched). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) belongs to probe: ../../../../probe/haipipe-probe/SKILL.md. This file is only the application-side deltas: intervention_root, the DIKW-ladder rungs, and no-sidecar harvest (folds into a-executor). History: ./CHANGELOG.md."
+  argument_hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
+  version: "0.3.3"
+  last_updated: "2026-08-04"
+  summary: "Application-specific PROBE worker layered on haipipe-board-page-probe and haipipe-probe; it runs all five steps because DRAFT authors no executor-side field."
 ---
 
 Skill: haipipe-application-probe — the PROBE-phase worker for an application
@@ -14,6 +14,10 @@ Skill: haipipe-application-probe — the PROBE-phase worker for an application
 
 Called by application stage skills (seed, descriptions, themes, claims, venue, pitch, narrative, display, section-edit) after DRAFT.
 DRAFT raised the Q-consumer questions in the stage doc and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-probe/SKILL.md`, then `../../../../probe/haipipe-probe/SKILL.md`.
+The persisted QX file is the application's Probe file.
+Older code may call the record an entry, but that label is not another Page Type or phase.
 
 ⭐ THE MODEL IS NOT THIS FILE'S — it is `probe`'s: `../../../../probe/haipipe-probe/SKILL.md`.
 Read it for the probe-file anatomy, the QA state-line contract, the cost ladder, the two LAWS, the derived states, and the checker's FAIL codes.
@@ -40,8 +44,8 @@ The PROBE-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **P
 The loop below is the HOW-TO for these rules.
 
 
-The loop, application-side — DRAFT authored ①②; this worker runs ③④⑤
-====================================================================
+The loop, application-side — this worker runs ① through ⑤
+==========================================================
 
 Each step ends with a PROOF this worker MUST show in its reply; an absent proof means the step did not happen.
 STEP 0 — re-invoke this skill fresh every run, even when its text is already in context (a probe once ran a 3-hour-old contract).
@@ -51,10 +55,12 @@ THE PHASE SPLIT (`probe`).
 This worker runs ③DISPATCH + ④POINT (COLLECT the answer from the bank, per `probe`) + ⑤INTERPRET (HARVEST it — write `### a-executor` and the stage-doc a-consumer). Collection is `probe`'s model; harvest is this worker's, and `probe` says nothing about it.
 
 
-① + ② — DONE AT DRAFT (this worker's PRECONDITION)
--------------------------------------------------
+① + ② — ORGANIZE AND MATCH HERE
+--------------------------------
 
-The entries already exist under `<intervention_root>/1-probes/PPNN_<topic>/`, each carrying the DRAFT-authored plan. This worker READS them; it does not author or re-match them.
+Read the stage Page's Q-consumers, then find or create the persisted Probe files under `<intervention_root>/1-probes/PPNN_<topic>/`.
+This worker writes the neutral Q-executor, audit copy, route, bank verdict, and target plan, then performs the read-only match.
+DRAFT authored none of those fields.
 - Resolve `project_root`: walk UP from `intervention_root` to the first ancestor containing `discoveries/`.
   Do NOT use `git rev-parse` — a repo-backed project is its own git repo. (The checker resolves the same way.)
 - Read each entry's `### bank binding` (`bank` + `target`) to route it: an existing `target:` path (bank `reuse`) → the answer may already be banked, go to ④/⑤ (verify then harvest); `target: NEW …` (bank `run`/`code`/`new`) → ③ DISPATCH.
@@ -68,7 +74,7 @@ PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <interve
 ③ DISPATCH — hand the NEW entries to the collector agent
 --------------------------------------------------------
 
-For each STILL-COLLECTING entry (`target: NEW`, bank `run`/`code`/`new`, not resolved by T1 LOCAL), hand the SET to the collector agent, tagging each with the DRAFT-authored `route:` (task|discovery — AUTHORITATIVE, not a hint):
+For each STILL-COLLECTING entry (`target: NEW`, bank `run`/`code`/`new`, not resolved by T1 LOCAL), hand the SET to the collector agent, tagging each with the PROBE-authored `route:` (task|discovery — AUTHORITATIVE, not a hint):
 
   ```text
   Agent(haipipe-probe-q-executor-agent, prompt="

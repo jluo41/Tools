@@ -1,18 +1,22 @@
 ---
 name: haipipe-paper-probe
-description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads a direct S03/S04 topic page's Q-consumer register and ①ORGANIZEs each neutral request as one nested entry page, ②MATCHes it against the bank with a read-only grep, ③DISPATCHes only what the stage's probe_depth ceiling allows, ④POINTs each target, and ⑤INTERPRETs the answer back. S03 is the discovery route and S04 is the task route. The topic retains the paper stake; an entry retains exactly one q-executor, consumer trace, bank binding, and a-executor. Binds by PATH to a QA file in the probe-unaware task/discovery bank; dispatches through the shared collector, never running bank work inline. Users invoke stage skills, not this directly."
+description: "Paper-specific PROBE phase worker (internal). Owns the whole five-step loop from each stage Page Q-consumer through a neutral Q-executor and returned A-executor to the Page-facing A-consumer. S03 is the discovery route and S04 is the task route. A nested Probe Page holds one q-executor using the current entry schema, binds by path to a QA file, and dispatches through the shared collector. DRAFT raises questions and stops. Users invoke stage skills, not this directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "0.7.5"
-  last_updated: "2026-07-26"
-  summary: "The paper's PROBE-phase worker — runs ①ORGANIZE→②MATCH→③DISPATCH→④POINT→⑤INTERPRET for a paper (all five; ①② came back here from DRAFT on 2026-07-20). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is owned by ../../../../probe/haipipe-probe/SKILL.md. This file is only the paper-side deltas. History: ./CHANGELOG.md."
+  version: "0.7.6"
+  last_updated: "2026-08-04"
+  summary: "Paper-specific PROBE worker layered on haipipe-board-page-probe and haipipe-probe, retaining Q-consumer/Q-executor and A-executor/A-consumer."
 ---
 
 Skill: haipipe-paper-probe — the PROBE-phase worker for a paper
 ==============================================================
 
-Called by paper stage skills (seed, resource, claims, pitch, narrative, display, section-edit) after DRAFT.
-DRAFT raised the Q-consumer questions in the stage doc and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
+Called by paper stage skills whenever DRAFT, REVISE, or CHECK routes a consequential unknown to PROBE.
+The originating phase raised or identified the Q-consumer and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-probe/SKILL.md`, then `../../../../probe/haipipe-probe/SKILL.md`.
+The nested S03/S04 artifact is the paper's Probe Page.
+Its existing code and headings may say entry, but that label is not another Page Type or phase.
 
 > **Where the bracket grammar was ruled.** `[Q-X-n]` is the paper's ONE join key
 > from a sentence to the question that owes it, ruled on `QC2@paper` and shared by

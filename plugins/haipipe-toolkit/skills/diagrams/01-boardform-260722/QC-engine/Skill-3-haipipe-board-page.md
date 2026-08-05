@@ -1,14 +1,15 @@
-# haipipe-board-page · v0.12.0
+# haipipe-board-page · v0.15.0
 state: 🟡 in flux · door test passed 260802, scope bound unmeasured
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-`haipipe-board-page` is the spec a board page is measured against, and the door for its two verbs: create a page, or work on one that exists.
-Load it when the unit of work is one page, and `haipipe-board` when you want to build or check a whole board.
-This skill holds the contract; that one holds the machinery.
-Finding it is proven; where an agent stops once inside is not.
-On 260802 three fresh agents all opened it unaided, then wrote to 15, 1 and 2 files from the same instruction.
+`haipipe-board-page` is the spec one Board Page is measured against and the door for CREATE, WORK ON, and RUN.
+CREATE scaffolds one persistent Page.
+WORK ON performs a known repair.
+RUN follows bounded DRAFT, PROBE, REVISE, and CHECK routes until CLOSE or HOLD.
+Load it when the unit is one Page; load `haipipe-board` when the Board itself is the subject.
+This skill owns the Page contract and lifecycle receipt, while the Board skill owns rendering, checking, Workflow execution, and audit code.
 
 **Where the line with `haipipe-board` runs**: both are doors, and the unit of work is what separates them.
 Ask for a board and `haipipe-board` renders it, serves it and checks it.
@@ -21,27 +22,33 @@ They drove three pages from 15, 13 and 10 findings to zero.
 The same run exposed what nobody had questioned: from that one instruction they wrote to 15 files, 1 file and 2 files, so the verb said where to start and never where to stop.
 `0.10.0` wrote that bound in as steps 7 and 8, and no second run has measured it.
 
+**What RUN adds**: an automatic run begins with an explicit raw-material packet and records one receipt per attempted Phase.
+The producer writes, a mechanical worker rebuilds and identifies the exact source and render version, and a fresh reviewer performs CHECK.
+The durable `_runs/page/` bundle and `pageflow.py` make illegal routes, self-approval, changed-after-check, missing human evidence, and exhausted limits visible.
+
 **Covered elsewhere**: `haipipe-board-sentence` owns everything below a section, such as a comment lane attached to one sentence.
 `haipipe-board-routing` is a consumer rather than a neighbour: it loads this contract to decide which page and which section an input belongs in.
 `haipipe-board-page-for-skill` owns the Skill and Agent mirror kinds, and it is the variant this page itself is written to.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 9394ebac1ce34408 board/haipipe-board-page -->
+<!-- haipipe:skill:tree:start c392bedb862ce987 board/haipipe-board-page -->
 
 **What `haipipe-board-page` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-board-page/
-  CHANGELOG.md         179 ln  haipipe-board-page · Changelog
-  SKILL.md             317 ln  /haipipe-board-page · the page, as a contract you can load
+  ref/
+    page-run-contract.md   191 ln  Page RUN contract
+  CHANGELOG.md             219 ln  haipipe-board-page · Changelog
+  SKILL.md                 415 ln  /haipipe-board-page · the page, as a contract you can load
 ```
 
 <!-- haipipe:skill:tree:end -->
 
-**How the page contract is reached**: the two verbs that run it, the spec load that only reads it, and the scope bound added at 0.10.0.
+**How the Page contract is reached**: two direct verbs, one bounded lifecycle verb, and a pure spec load share the same door.
 
 ```text
-WORKFLOW  two verbs and one spec load, from the same door
+WORKFLOW  three verbs and one spec load, from the same door
 
   ── loaded as a SPEC ──────────────────────────────────────────
   an agent with NO board open needs to know what a page is:
@@ -53,16 +60,13 @@ WORKFLOW  two verbs and one spec load, from the same door
   🧭 Opening  🖼 Diagram  📚 Content  🎯 Aims  📍 States  📎 Files  🗃 folds
 
   ── invoked as a VERB ─────────────────────────────────────────
-  "create a new page on <topic>"      "working on <page>"
-        │                                   │
-        ▼                                   ▼
-  scaffold from ref/page-template.md   start from check.py's findings
-  register it in board.md ## Pages     bring the page to the contract
-        │                                   │
-        └───────────────┬───────────────────┘
-                        ▼
-              calls haipipe-board's ENGINE
-              build.py · check.py · never its own renderer
+  CREATE                 WORK ON                 RUN
+  scaffold Page          perform known repair   route unknown next work
+       │                       │                       │
+       └──────────┬────────────┘                       ▼
+                  ▼                         producer · builder · reviewer
+        haipipe-board engine                     ↺ until CLOSE | HOLD
+        build.py · check.py                 receipt → pageflow.py audit
 
   ── the bound, added at 0.10.0 because it was measured missing ──
   steps 7 and 8: ONE page is the deliverable. A write outside it is
@@ -74,13 +78,13 @@ WORKFLOW  two verbs and one spec load, from the same door
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 9394ebac1ce34408 board/haipipe-board-page -->
+<!-- haipipe:skill:body:start c392bedb862ce987 board/haipipe-board-page -->
 
-**haipipe-board-page** · `0.12.0` · last shipped 2026-08-03
+**haipipe-board-page** · `0.15.0` · last shipped 2026-08-04
 
 - folder   `board/haipipe-board-page/`
 - tools    not declared
-- summary  Names haipipe-board-page-for-skill as the Skill and Agent mirror variant, the one variant that ships beside this skill rather than under a consumer family.
+- summary  Adds checked, phase-scoped Related Board Pages and a one-hop context reader.
 
 ### SKILL.md
 
@@ -88,7 +92,7 @@ WORKFLOW  two verbs and one spec load, from the same door
 
 
 `haipipe-board` is the door you walk through to RUN a board.
-This skill is the door for ONE PAGE, and the spec that page is measured against. Say `create a new page on <topic>` or `working on <page>` and it runs; load it with no board open and it is a pure contract.
+This skill is the door for ONE PAGE, and the spec that page is measured against. Say `create a new page on <topic>`, `working on <page>`, or `run <page>`; load it with no board open and it is a pure contract.
 QC1b §1 on the design board states the test it passes: a consumer needs these rules with no board open, and the consumers exist: the routing verb deciding "which page, which section", the chat drawer priming a per-page session, and the variant authors in other families.
 
 **The boundary, and it is a hard one:**
@@ -108,12 +112,13 @@ This skill never CONTAINS the renderer, the server or the checker. It calls them
 The authoritative template stays `haipipe-board/ref/page-template.md`; this contract cites it and must never fork it.
 
 
-- 1 · 🧬 Six page kinds, one base
-      A page's KIND comes from its filename, and the kind decides how the page closes, what its Content holds, and which typed records it fills through the base frame's declared extension points.
+- 1 · 🧬 Six Page Types, one base
+      A Page's TYPE comes from its filename, and the type decides how the Page closes, what its Content holds, and which typed records it fills through the base frame's declared extension points.
       Everything else is the shared base (the model on the design board's QB4, JL 260729).
-      **Six kinds, one base**: the filename decides the kind, and the kind decides how the page closes.
+      The implementation may still call this field `kind`; the contract term is Page Type.
+      **Six Page Types, one base**: the filename decides the type, and the type decides how the Page closes.
       ```
-      kind          filename                     closes when
+      Page Type     filename                     closes when
       ─────────────────────────────────────────────────────────────────
       Q  decision   Q<group><n>[<face>]-<slug>   every Aim is met or explicitly held
       S  stage      S-<Family>-<unit>-<slug>     its human gate passes
@@ -122,36 +127,76 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       Agent mirror  Agent-<n>-<slug>             the unit ships · NEVER counted
       Meeting       Meeting-<n>-<slug>           it records what was said · no contract yet
       ```
-      `src/common.py` globs four prefixes, `Q`, `S`, `Agent` and `Meeting`; a `Skill-` page rides the `S` glob, which is why five kinds need only four prefixes.
+      `src/common.py` globs four prefixes, `Q`, `S`, `Agent` and `Meeting`; a `Skill-` Page rides the `S` glob, which is why five implemented types need only four prefixes.
       `Meeting-<n>` is generated by `cli/meetingpage.py` and has no contract in any skill; it is named here so the kind is at least discoverable.
-      A page kind used by one consumer family is a VARIANT of the base: it defines Content and may populate fixed extension points in Aims, States, and Stage Contract, but it never redefines, adds, removes, or reorders those frame sections.
-      A variant ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803). `haipipe-board-page-for-skill` and `haipipe-board-page-for-venue` are maintained by this family and ship beside this skill; `haipipe-paper-stage` is maintained by the paper family and ships there.
-      The earlier wording was "ships under its CONSUMER, never here", which broke when the venue variant landed: its consumer is the paper family and its maintainer is this one.
+      A Page Type used by one consumer family is a VARIANT of the base: it defines Content and may populate fixed extension points in Aims, States, and Stage Contract, but it never redefines, adds, removes, or reorders those frame sections.
+      A variant ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803).
+      The three Page Type variants maintained here live under `page-types/`; a family-specific stage worker such as `haipipe-paper-stage` remains in its own family.
+      The earlier wording was "ships under its CONSUMER, never here", which broke when the venue variant landed because its consumer is the paper family and its maintainer is this one.
       This skill owns the BASE those variants extend.
-      TWO variants ship beside this skill, and one of them must be loaded before you write the page it governs:
+      THREE Page Type variants ship under `page-types/`, and one of them must be loaded before you write the Page it governs:
       ```
       Skill-<n> · Agent-<n>   →  haipipe-board-page-for-skill    a page that mirrors a
                                                                  shipped unit and decides nothing
       QBv<n>                  →  haipipe-board-page-for-venue    a page per place a paper
                                                                  is submitted to
+      S-<Family>-<unit>       →  haipipe-board-page-for-stage    a page per lifecycle stage
+                                                                 of one paper or application
       ```
-      Load the matching one before writing or fixing any page of those kinds.
-      Those two kinds also do NOT take the `create a new page` steps below: they are GENERATED by `haipipe-board/cli/skillpage.py new`, which writes the page from its own stub and registers it in `board.md` itself, so copying `ref/page-template.md` and registering by hand produces a page with no managed spans that the checker then reports as broken forever.
+      Load the matching one before writing or fixing any Page of those types.
+      `haipipe-board-page-for-stage` names the ONE stage that reads a `QBv` Page and the four tiers deciding what crosses from that catalog into a draft.
+      The first two listed types also do NOT take the `create a new page` steps below: they are GENERATED by `haipipe-board/cli/skillpage.py new`, which writes the Page from its own stub and registers it in `board.md` itself, so copying `ref/page-template.md` and registering by hand produces a Page with no managed spans that the checker then reports as broken forever.
       `haipipe-board-page-for-skill` exists because a mirror page DECIDES NOTHING, so this skill's Opening shape, which ends in `what this page decides`, leaves it with no question to ask; five skill and agent pages filled that empty slot with the same rhetorical question on 260802.
 
-- 2 · 📑 The sections, in their fixed on-stage order
+- 2 · 🎭 Four Page Phases, independent of Page Type
+      A Page persists while the authority acting on it changes.
+      The current phase is not another Page Type and is not inferred from the edit operation.
+      ```text
+      phase       authority                                     load
+      ─────────────────────────────────────────────────────────────────────────────
+      DRAFT       define or reopen purpose, Aims, promised shape page-phases/haipipe-board-page-draft
+      PROBE       resolve a consequential unknown across the evidence wall
+                                                               page-phases/haipipe-board-page-probe
+      REVISE      improve the current promise while purpose and Aims stay fixed
+                                                               page-phases/haipipe-board-page-revise
+      CHECK       judge one version and route its next authority page-phases/haipipe-board-page-check
+      ```
+      Resolve one invocation in this order:
+      ```text
+      base Page contract
+        → matching Page Type, when one exists
+        → current Page Phase
+        → family worker, when paper or application adds artifact knowledge
+      ```
+      The four phases form a routing grammar, not a conveyor belt.
+      Each may repeat, PROBE may be skipped when no consequential unknown exists, and CHECK may route to REVISE, PROBE, or DRAFT.
+      Returning to DRAFT because purpose or Aims changed starts a new round on the same Page.
+      Use the authority test when the visible operation is ambiguous:
+      ```text
+      purpose or Aims change                 → DRAFT
+      an unanswered consequential fact moves → PROBE
+      the same purpose and Aims are improved  → REVISE
+      a concrete version is judged            → CHECK
+      ```
+      Adding, deleting, moving, and rewriting may be DRAFT or REVISE.
+      The reason for the change decides.
+      `RUN` is the router verb now that the automatic loop has a concrete contract.
+      It is deliberately not called `ADVANCE`: a Page can repeat a phase, branch, HOLD, or return to DRAFT in a new round.
+      The shared packet, receipt, version, role-separation, and stop rules live in `ref/page-run-contract.md`.
+
+- 3 · 📑 The sections, in their fixed on-stage order
       **The sections in order**: what each owes a reader, and how much a machine may write into it.
       The AUTHORITY is `haipipe-board/ref/board-form.md` §4, which fixes the ON-STAGE order as five, `Opening → Diagram → Content → Aims → States`, with Files after them and the folds last. This skill adds no section to that list; the table below names the same run plus what a machine may write into each. `ref/page-template.md` carries more `##` headings than this because it also seeds the optional and folded ones.
       ```
-      #   section            owes the reader                      a machine may write
+      #   section            owes the reader                      phase authority
       ──────────────────────────────────────────────────────────────────────────────────
-      1   Opening            the lead question + why it matters   nothing
-      2   Diagram            the figure; ids in it are links      nothing without the human
-      3   Content            the substance, ### divisions         nothing without the human
-      4   Aims               durable Content-linked targets       revise only when intent changes
-      5   States             one factual current State per Aim    update with evidence; a decision is closed only once answered
-      6   Files              the action map, grouped by ACTION     append a row
-      7   folds              Discussion · Law · Lesson · Glossary · Log  append a Log or > lane line
+      1   Opening            the lead question + why it matters   DRAFT defines · REVISE clarifies
+      2   Diagram            the figure; ids in it are links      DRAFT/REVISE, within Page Type rules
+      3   Content            the substance, ### divisions         DRAFT defines · REVISE realizes
+      4   Aims               durable Content-linked targets       DRAFT; changing intent starts a round
+      5   States             one factual current State per Aim    any phase, from inspectable evidence
+      6   Files              action map + scoped Page context      DRAFT/REVISE maintain
+      7   folds              Discussion · Law · Lesson · Glossary · Log  the phase owning the record
       ```
       Each section answers ONE reader question, and the same five rows define every section's contract (JL 260801, ruled on the design board's QB4 §0): **conveys**, the reader question it answers · **holds**, the elements it must contain · **source**, how the author writes it · **rules**, what binds a write · **omit**, when it may be absent.
       **One reader question per section**: the question it answers, and when it may be left out.
@@ -163,36 +208,45 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       📚 Content          what does this page actually establish?      Q may · S never
       🎯 Aims             what should become true, and for which Content division? never
       📍 States           what is true now for each Aim, what waits?   never
-      📎 Files            which few files continue this work?          allowed, advised against
+      📎 Files            which few files or Page fragments continue this work? allowed, advised against
       🗃 folds            what was ruled, learned, changed, if needed  each optional
       ```
       A sentence answering another section's question is MISPLACED, and the protocol names its home: substance found in Opening moves to Content, Required Inputs and Venue move to Stage Contract, prose rules move to Writing Style, intended outcomes move to Aims, current facts move to States, and temporary next steps become an Aim's optional Plan.
       The full five rows per section live in the design board's `QB4` Content divisions; the authoritative source form stays `haipipe-board/ref/page-template.md`.
-      An Aims or States group is `### A<n> · <emoji> <name>`, taking the NUMBER, NAME and EMOJI of the Content part it answers, so the three sections line up by eye as well as by id (JL 260802; it was `C<n>` until then, which made a reader translate one letter to see that `A3.1` belonged under it, and `C<n>` still resolves). `P` is for a target belonging to no single part. Files groups are a MENU of actions, taken as they apply: ⚙️ Engines what RUNS the subject · 📋 Contracts what CARRIES a rule to other pages · 🧪 Checks what CATCHES a page breaking one · 📥 Input files what the work READS · 📤 Output files what a BUILD writes. A group name states an ACTION, never a subject, because a subject-named group rots the moment its subject leaves the page.
+      An Aims or States group is `### A<n> · <emoji> <name>`, taking the NUMBER, NAME and EMOJI of the Content part it answers, so the three sections line up by eye as well as by id (JL 260802; it was `C<n>` until then, which made a reader translate one letter to see that `A3.1` belonged under it, and `C<n>` still resolves). `P` is for a target belonging to no single part. Ordinary Files groups are a MENU of actions, taken as they apply: ⚙️ Engines what RUNS the subject · 📋 Contracts what CARRIES a rule to other pages · 🧪 Checks what CATCHES a page breaking one · 📥 Input files what the work READS · 📤 Output files what a BUILD writes. Their names state an ACTION, never a subject, because a subject-named group rots the moment its subject leaves the page.
+      `### 🔗 Related Board Pages` is the one fixed Files group. It is a selective context map between Pages, not a file dependency graph and not configuration inheritance. The fixed group name gives the checker a parser boundary; each row begins with the action-like relation that ordinary Files groups put in their heading:
+      ```markdown
+      ### 🔗 Related Board Pages · what this Page READS BY SCOPE
+      - `reads · PROBE` · [QB7 §3](QB-research/QB7-literature.md)
+        Read the evidence boundary before resolving this Page's consequential unknown.
+      ```
+      The four relations are `reads`, `constrained by`, `continues`, and `contrasts`. The phase is `DRAFT`, `PROBE`, `REVISE`, `CHECK`, or `ALL`. The target is a Board-root-relative Page source. Its visible id must match that Page. Scope is `page` or one direct Content division such as `§3` or `§3.2`; a division read automatically carries the target Page's identity, Opening, and matching Aims/States group so the fragment does not arrive without its promise and current state. When one packet selects several divisions from the same target Page, identity and Opening are emitted once rather than repeated per row.
+      Read the current Page whole first. Then run `python3 <board-skill>/cli/pagecontext.py <current-page.md> --phase <PHASE>` and load only the returned packet. The reader follows one hop: it never traverses Related Board Pages declared by a target Page. Cycles are therefore harmless, context stays bounded, and a phase sees only rows written for it or for `ALL`. `check.py` rejects a malformed row, a path outside the Board, a dead Page, a mismatched Page id, or a missing scope before an agent can silently work without that context.
       An Aim is not a task. Write `- A3.1 · target` for a result owned by Content part 3, under the group `### A3`, and `P1` only for a target that genuinely crosses parts. One division may have zero, one, or many Aims. Each Aim has a testable `Done when` and may carry a temporary `Plan`; changing Plan does not change the Aim.
       The section labels are deliberately both plural: `Aims` contains Aim records and `States` contains their State records. States mirrors every Aim id exactly once: `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or something outside this page, `✅` met with the evidence named, or `❄️` on ice, held on purpose. Each says its meaning by SHAPE (JL 260802); the old `🟡` `🟠` `⏸️` still parse. This is the AIM vocabulary and NOT the page `state:` line, which keeps its own ✅ 🟡 🔴 ⏸️ set and is checked apart. The section is a snapshot, so the reason for a transition belongs in Log. The strict one-to-one relationship is Aim to current State row, never Content division to Aim.
 
-- 3 · 🚪 Two verbs, and this skill is the door for both
-      Say either of these and this skill runs it. You never call the engine yourself.
+- 4 · 🚪 Three verbs, and this skill is the door for all three
+      Say any of these and this skill runs it. You never call the engine yourself.
       ```
       📄 CREATE     /haipipe-board-page create a new page on <topic>   [on <board>]
       🔧 WORK ON    /haipipe-board-page working on <page>              or just the path
+      🔁 RUN        /haipipe-board-page run <page> [from <phase>]
       ```
       `haipipe-board` owns the machinery and this skill owns the contract, which is why the boundary above says this skill never renders, serves or checks: it does not CONTAIN that code. It does CALL it. A page is one unit of work, and a reader asking for one page should not have to know which script does what.
 
-- 3.1 · 📄 create a new page on a topic
+- 4.1 · 📄 create a new page on a topic
       1. Resolve the board folder, and the group the page belongs to. Ask ONLY if the group is genuinely ambiguous.
       2. Pick the id (`Q<group><n>-<slug>`, or `S-<Family>-<unit>-<slug>` for a lifecycle stage) and copy `haipipe-board/ref/page-template.md` to it. Never retype the shape from memory: the template's guide sentences ARE the contract.
       3. Write the title so it states the page's PURPOSE, in sentence case.
       4. Write the Opening: the visible paragraph above the first blank line, everything else below it.
       5. Write Content as numbered parts, each opening with a caption, a `/diagram-ascii` figure and a short intro.
-      6. Write Aims, their States, and Files.
+      6. Write Aims, their States, and Files. When another Page supplies necessary context, add only the exact Related Board Pages row and scope the current phase needs.
       7. Register the page in the board's `board.md` roster.
       8. Build, check, and read the RENDER. Report the page's finding count, not the fact that you finished.
 
-- 3.2 · 🔧 working on an existing page
+- 4.2 · 🔧 working on an existing page
       Scope is the one thing this verb got wrong when it was measured. On 260802 three fresh agents were each given one sentence and nothing else, and all three found this skill unaided and drove their page to zero findings. They then disagreed completely about how far to reach: one wrote to a single file, its own page; another wrote to fifteen, including four shipped `SKILL.md` files, four `CHANGELOG.md` files, six sibling pages and the shared `board.md`. Neither was wrong on the merits, and the wide one was fixing citations a renumbering really had broken. The skill simply never said where to stop, so steps 7 and 8 below now do.
-      1. Read the whole target file first, including Content, Aims, States, Files and the settled folds.
+      1. Read the whole target file first, including Content, Aims, States, Files and the settled folds. If Files declares Related Board Pages, resolve the current phase with `cli/pagecontext.py` and read that one-hop packet before changing prose.
       2. Run the checker on it and work its list. Every finding names the rule it breaks and the part it is in, so nothing has to be read to know what to do.
       3. Fix the MECHANICAL findings first, in bulk: dead `## Files` paths, a part with no figure, a figure with no caption, a group name that drifted. None needs judgment.
       4. Then read for what no checker reaches: the weak-English axis, whether each part still answers one question, whether the Opening's visible paragraph says anything the title did not.
@@ -200,7 +254,36 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       6. Build, check, read the render, and report the before and after counts.
       7. ONE page is the deliverable. Step 5 sends you to other files on purpose, and this step bounds it: a write outside the target page is allowed only when the page CANNOT be made correct without it, and every such write is named in the report, with the reason, file by file.
       8. Never rewrite a sibling page's content. Repointing a citation your own renumbering broke is repair; rewriting the page that citation lands in is a second job, and it belongs to that page's own turn.
-      The engine both verbs call, so nobody has to remember it:
+
+- 4.3 · 🔁 run one Page lifecycle
+      RUN is the automatic, bounded loop. Use it when the process itself must be
+      exercised and audited, rather than when one known edit is enough.
+      1. Read `ref/page-run-contract.md` and assemble its raw-material packet. Resolve
+         the Page Type from the filename. For a new Page, CREATE and register it first,
+         then start at DRAFT. For an existing Page with no known next authority, start
+         at CHECK. Before each phase dispatch, materialize that phase's Related Board
+         Pages packet with `cli/pagecontext.py`; an invalid row or missing scope is a
+         named HOLD, never omitted context.
+      2. Invoke `haipipe-board/ref/page-lifecycle.workflow.js` with the packet. The
+         workflow dispatches a phase-scoped producer for DRAFT, PROBE, or REVISE, a
+         mechanical builder/version snapshot, and a fresh read-only reviewer for
+         CHECK.
+      3. Follow returned routes rather than a prescribed order. Only CHECK may CLOSE.
+         A route to DRAFT from another phase begins a new round only when purpose or an
+         Aim reopened.
+      4. Stop at CLOSE, explicit HOLD, a missing input, a version mismatch, a required
+         human gate, `max_steps`, or `max_rounds`. A limit stop means the run did not
+         converge; it never means quality passed.
+      5. Write the exact Workflow result to
+         `<board>/_runs/page/<page-id>/<run-id>.json`. Do not append the terminal CHECK
+         result to the Page, because that would mutate the approved version.
+      6. Run `haipipe-board/cli/pageflow.py audit <receipt.json>`. Report the terminal
+         route, checked version, traversed edges, deterministic finding count,
+         semantic finding count, human-gate state, and residual risk.
+      RUN never lets one hidden pass write, judge, fix, and approve. The producer and
+      judge have different actor identities, and every changed version returns
+      through CHECK before CLOSE.
+      The engine the direct verbs call, so nobody has to remember it:
       ```bash
       python3 <toolkit>/skills/board/haipipe-board/cli/build.py <board-folder>
       python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> | grep '^<PAGE>'
@@ -208,7 +291,7 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       ```
       `watch.py` rebuilds on any `.md` save, so step "build" is usually already done; a change to `.py`, `.css` or `.js` is not watched and needs the build run once.
 
-- 4 · ✍️ What both verbs are writing to
+- 5 · ✍️ What CREATE and WORK ON write to
       Load this skill and `haipipe-board/ref/writing-rules.md` directly before writing.
       Do not copy their requirements into an assignment prompt: a copied checklist becomes a second prose authority and drifts.
       For an existing page, read the entire target file before changing any section, including Content, Aims, States, Files, and settled folds.
@@ -237,15 +320,16 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       This self-check improves the draft but never approves it.
       A fresh reviewer judges the page after the writer's context is gone.
 
-- 5 · ✅ Evaluation contract
+- 6 · ✅ Evaluation contract
       Evaluation asks whether the authored page satisfies its declared requirements; it does not ask whether the reviewer personally likes the format.
       The requirements stay here, in the page spec and its cited template, rather than being copied into a second evaluation skill.
       The evaluator is a consumer of this contract.
       Resolve applicable requirements in this order:
       1. The base section contract in this skill and `ref/page-template.md`.
-      2. The page kind or consumer variant, when one exists.
-      3. The page's own `## Writing Style`; on S pages, also its `## Stage Contract`.
-      4. The local `###` division purpose and each `####` heading's immediately following `(job line)`, when present.
+      2. The Page Type variant, when one exists.
+      3. The current Page Phase contract, when the review concerns work performed under DRAFT, PROBE, REVISE, or CHECK.
+      4. The Page's own `## Writing Style`; on S Pages, also its `## Stage Contract`.
+      5. The local `###` division purpose and each `####` heading's immediately following `(job line)`, when present.
       A more specific source may refine a broader one but may not silently contradict it.
       When two sources disagree, report a requirement conflict and stop judging that criterion until the owner resolves it.
       Review four distinct axes:
@@ -302,7 +386,7 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       The old rule left every answered row open, so a page showed decisions as pending that had been made hours earlier and acted on, which is the same drift the board exists to prevent.
       Answered means the human said it: in chat, in a comment lane, or by ticking. A machine's own recommendation is not an answer, however confident it is.
 
-- 6 · 🏷 Addressing
+- 7 · 🏷 Addressing
       **How a location is addressed**: what each level of the board is called, and how it is written.
       ```
       page        QB4            #QB4
@@ -312,15 +396,26 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       ```
       Every id inside a fenced figure renders as a link (haipipe-board 0.53.0), so a contract that names pages is itself a map.
 
-- 7 · 📂 Files
+- 8 · 📂 Files
       **This skill's own files**: what ships in the folder, and what each part is for.
       ```
       haipipe-board-page/
       ├── SKILL.md            this contract
-      └── CHANGELOG.md        version history
+      ├── CHANGELOG.md        version history
+      └── ref/
+          └── page-run-contract.md
       ```
       Reads `haipipe-board/ref/page-template.md` and `ref/board-form.md` §4 (the section mapping and requiredness) and §8 (on-stage order) as the authority; owns no scripts.
+      `ref/page-run-contract.md` is the shared lifecycle packet and receipt spec; executable workflow and audit machinery remain under `haipipe-board`.
       The named next step (QC1b §1): `live/chat.py`'s four hand-rolled rule strings (`CHAT_RULES`, `FULL_RULES`, `BOARD_CHAT_RULES`, `BOARD_FULL_RULES`) become this contract's consumers instead of restating it, which kills the copies, one of which has already rotted once.
+### The other files
+
+1 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
+
+```
+ref/page-run-contract.md     191 ln  Page RUN contract
+```
+
 <!-- haipipe:skill:body:end -->
 
 ## Aims
@@ -352,13 +447,48 @@ It is also the base that variant doors extend, so `haipipe-paper-stage` and any 
   So this unit is not written only for routing: variant authors in other families resolve the same base contract, which is why a rule may never be forked into a variant.
 
 ## Log
+260804 · Updated the authored mirror for the third Page verb: CREATE, WORK ON, and bounded RUN now appear together, including the producer, builder, reviewer, version receipt, and audit boundary.
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the spec load, the two verbs and the 0.10.0 scope bound, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. The measured door test recorded as met, and its scope failure recorded as the one Aim it left open
 260731 1115 · page generated from `board/haipipe-board-page/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 9394ebac1ce34408 board/haipipe-board-page -->
+<!-- haipipe:skill:log:start c392bedb862ce987 board/haipipe-board-page -->
 
-Converted from the skill's own `CHANGELOG.md`: 13 releases.
+Converted from the skill's own `CHANGELOG.md`: 16 releases.
 
+260804 · `0.15.0`
+      - Adds `### 🔗 Related Board Pages` as the fixed, typed Files group for bounded
+        cross-Page context rather than configuration inheritance or dependency
+        inference.
+      - Defines relation + Page Phase + Page id + scope + Board-relative path rows.
+        Scope is either one whole Page or one direct Content division; a division
+        brings its Page identity, Opening, and matching Aims/States group.
+      - Requires agents and Page RUN to resolve the current phase through
+        `cli/pagecontext.py`, one hop only. Broken paths, mismatched Page ids, missing
+        scopes, and malformed rows stop as mechanical findings instead of silently
+        dropping context.
+      - Emits Page identity and Opening once when one phase selects several scopes on
+        the same target, after the first fresh-context trial exposed the repetition.
+260804 · `0.14.0`
+      - Adds the concrete `RUN` verb for one bounded, non-linear Page lifecycle. It is
+        not named `ADVANCE` because phases may repeat, branch, HOLD, or begin a new
+        DRAFT round.
+      - Adds `ref/page-run-contract.md`, the common raw-material packet, phase receipt,
+        version identity, role-separation, durable audit bundle, legal-route, stop,
+        and fault-test contract shared by all four Page Phases.
+      - Requires the producer, mechanical builder, and judge to have distinct actor
+        identities and verifies that each version is exactly its two declared
+        lowercase SHA-256 digests.
+      - Makes the CLI independently rehash the current source and rendered Page, so
+        agreement among receipt fields cannot substitute for artifact identity.
+      - Audits the preserved packet against the run and enforces receipt-to-receipt
+        version continuity, start-phase identity, gate identity, and declared bounds.
+      - Wires RUN to the Board-owned Workflow and deterministic lifecycle auditor.
+260804 · `0.13.0`
+      - Adopts QB9's lifecycle vocabulary without adding an `ADVANCE` verb: one persistent Page combines a stable Page Type with a current DRAFT, PROBE, REVISE, or CHECK phase.
+      - Adds the load order `base → matching Page Type → current Page Phase → family worker` and routes phases by authority rather than add, delete, move, or rewrite operations.
+      - Moves the three `for-*` variants under `page-types/` and names the four direct phase contracts under `page-phases/`.
+      - Defines returning to DRAFT after purpose or Aims change as a new round on the same Page.
+      - Changes the section write table from generic machine permissions to phase authority, including the correction that changing Aim intent is DRAFT rather than REVISE.
 260803 · `0.12.0`
       **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
       - **"The seven sections" is gone.** It was an invented count, cited as settled by four files, and it disagreed with its own authority and with the template: `ref/board-form.md` §4 fixes the ON-STAGE order at FIVE, and `ref/page-template.md` carries 13 `##` headings. Every statement now points at the authority instead of restating a number.

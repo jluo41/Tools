@@ -2,6 +2,24 @@ board agents: Changelog
 ========================
 
 Agent-scoped history. Versions match the agent frontmatter.
+
+## 0.6.0 / 0.7.0 / 0.1.0 - 2026-08-04
+
+- Creator 0.6.0 gains one-phase `draft`, `probe`, and `revise` operations and
+  emits the shared Page RUN receipt without rebuilding or judging.
+- Reviewer 0.7.0 verifies one immutable source/render version and returns the
+  authority route `CLOSE | REVISE | PROBE | DRAFT | HOLD`, including human-gate
+  evidence and protection against producer self-approval.
+- Adds Page orchestrator 0.1.0, the non-interactive dispatch target that runs
+  the Workflow, stores its exact `_runs/page/` receipt, and invokes the
+  deterministic lifecycle auditor without touching Page prose.
+
+## 0.5.1 / 0.6.1 - 2026-08-04
+
+- Repoints the Skill Page Type contract after the move to `page-types/`.
+- The creator now loads DRAFT for a new Page promise and REVISE for an Opening change under fixed Aims.
+- The reviewer loads the generic CHECK phase and any additional phase whose output it was asked to judge.
+
 ## 0.5.0 / 0.6.0 - 2026-08-03
 
 **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.

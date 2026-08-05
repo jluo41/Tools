@@ -1,11 +1,11 @@
 ---
 name: haipipe-board
 description: >-
-  Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
+  Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.114.0"
-  last_updated: "2026-08-03"
-  summary: "The family block names haipipe-board-page-for-skill, the skill-page variant for Skill and Agent mirror pages."
+  version: "0.117.0"
+  last_updated: "2026-08-04"
+  summary: "Adds checked, phase-scoped Related Board Pages and a bounded one-hop context reader."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,27 +25,33 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
 - You know when you can stop.
   That rests on `close` (the closing condition) and each page's `## Aims` plus `## States`.
 
-## 👪 The family: one door, three specs, one verb (QC1b §2, variant added 260802)
+## 👪 The family: one door, one Page base, two contract catalogs
 
 This skill is the DOOR: you invoke it to run a board.
-The rest of `skills/board/` is what other agents LOAD or CALL without opening the door, and this skill routes to them rather than restating them:
+The rest of this board family (`../`) is what other agents LOAD or CALL without opening the door, and this skill routes to them rather than restating them:
 
 **The board's sub-skills**: which altitude each one works at.
 
 ```
-haipipe-board-page       SPEC · what a page IS: the base every kind varies
-                         from, its sections in their fixed order, where a
-                         machine may write
-haipipe-board-page-for-skill
-                         SPEC · the VARIANT for Skill-<n> and Agent-<n> pages,
-                         which decide nothing and so ask nothing
-haipipe-board-page-for-venue
-                         SPEC · the VARIANT for QBv<n> venue pages, one per
-                         place a paper is submitted to
+haipipe-board-page       SPEC + ROUTER · the shared Page frame and the
+                         Page Type × Page Phase composition
+page-types/
+  haipipe-board-page-for-stage
+                         TYPE · S-<Family>-<unit> lifecycle pages
+  haipipe-board-page-for-skill
+                         TYPE · Skill-<n> and Agent-<n> mirror pages
+  haipipe-board-page-for-venue
+                         TYPE · QBv<n> venue pages
+page-phases/
+  haipipe-board-page-draft
+  haipipe-board-page-probe
+  haipipe-board-page-revise
+  haipipe-board-page-check
+                         PHASES · promise, inquiry, realization, judgment
 ref/topic-entry-contract.md
-                         SPEC · optional generic overlay: a topic page owns a
-                         Q-consumer register and nested entries own one
-                         q-executor each
+                         LEGACY IMPLEMENTATION SPEC · the persisted Probe Page
+                         shape used by the current topic checker; not another
+                         Page Type or lifecycle phase
 haipipe-board-sentence   DOOR + SPEC · one sentence: comment, edit, card;
                          lanes, addresses, the archive-never-delete lifecycle
 haipipe-board-routing    VERB · every write onto a board, at BOTH altitudes:
@@ -55,6 +61,9 @@ haipipe-board-routing    VERB · every write onto a board, at BOTH altitudes:
 haipipe-board-creator-agent    AGENT · writes ONE page in a fresh context;
                          designed to fan out N of them, keep every shared write here
 haipipe-board-reviewer-agent   AGENT · the read-only fresh-context reviewer
+haipipe-board-page-orchestrator-agent
+                         AGENT · runs one bounded Page loop, stores and audits
+                         the receipt, never writes Page prose
 ```
 
 `haipipe-board-index` was retired on 260802 (JL: "maybe merge, I will do B") and its whole altitude, including `lanes.py`, lives in `haipipe-board-routing`.
@@ -75,15 +84,21 @@ Writer self-checks are local evidence, never approval. A fresh
 `haipipe-board-reviewer-agent` then judges each changed page and reads all
 changed Openings consecutively in Board order; interchangeable or form-letter
 prose fails even when every page is locally clear.
-A page-kind VARIANT ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803).
-`haipipe-board-page-for-skill` and `haipipe-board-page-for-venue` are maintained here and ship here; `haipipe-paper-stage` is maintained by the paper family and ships there.
+For an automatic one-Page lifecycle, dispatch
+`haipipe-board-page-orchestrator-agent` instead. It invokes the Page Workflow,
+which calls the same creator for exactly one DRAFT, PROBE, or REVISE authority,
+then a mechanical builder/version snapshot, then the reviewer for CHECK. The
+orchestrator stores the exact result under `_runs/page/` and audits it; it never
+writes Page prose, and the reviewer never cures its own finding.
+A Page Type variant ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803).
+The three `for-*` variants maintained here ship under `page-types/`; family-specific workers such as `haipipe-paper-stage` stay with their families.
 The earlier rule read "ships under its CONSUMER, never here", and it broke the day a second variant landed: venue pages are consumed by the paper family and maintained here, so they satisfied neither that rule nor its Skill-and-Agent exception.
 Who maintains it is the line that held twice; who consumes it never did.
 
-**The page kinds, and how each one is CREATED**: six prefixes, two procedures.
+**The Page Types, and how each one is CREATED**: six filename shapes, two procedures.
 
 ```
-kind      filename                     created by
+type      filename                     created by
 ──────────────────────────────────────────────────────────────────────
 Q         Q<group><n>-<slug>.md        copy ref/page-template.md
 S         S-<Family>-<unit>-<slug>.md  copy, or cli/stage.py new
@@ -93,7 +108,7 @@ Agent     Agent-<n>-<slug>.md          cli/skillpage.py new   ← GENERATED
 Meeting   Meeting-<n>-<slug>.md        cli/meetingpage.py     ← GENERATED
 ```
 
-A GENERATED kind is never copied from the template: the generator writes it from its own stub, owns managed spans inside it, and registers it in `board.md` itself.
+A GENERATED Page Type is never copied from the template: the generator writes it from its own stub, owns managed spans inside it, and registers it in `board.md` itself.
 `Meeting-<n>` had an engine and no contract in any SKILL.md until 260803; it is listed here so the kind is discoverable, and a contract for it is still owed.
 
 ## 🗂 Shape
@@ -256,10 +271,10 @@ And the prior question: most proposed decisions do not belong there at all. The 
 
 Offline (needs `cli/build.py`, plus `cli/stage.py` for `stage`): **view · open · add · stage · build · sync · link · close**
 Live (needs `cli/serve.py` running): **serve · excalidraw · comment**
-Routed to `haipipe-board-page`: **create a page · update a page**
+Routed to `haipipe-board-page`: **create a page · update a page · run one page lifecycle**
 Routed to `haipipe-board-sentence`: **comment · edit · card**
 
-That is 11 verbs here, plus five this skill does not run itself.
+That is 11 verbs here, plus six routed actions this skill does not run itself.
 
 **One door** (JL 260802: "you can just say, haipipe-board update the page etc, it will route to the haipipe-board-page"). Anything about ONE PAGE routes to `haipipe-board-page`, which owns the page contract and drives that page end to end:
 
@@ -270,6 +285,7 @@ That is 11 verbs here, plus five this skill does not run itself.
 "update / fix / work on <page>"                   ▸ haipipe-board-page
 "bring <page> up to the standard"                 ▸ haipipe-board-page
 "why does <page> fail the checker"                ▸ haipipe-board-page
+"run / audit the lifecycle of <page>"             ▸ haipipe-board-page
 
 "comment on / edit <sentence>"                    ▸ haipipe-board-sentence
 "put a card on <these words>"                     ▸ haipipe-board-sentence
@@ -280,6 +296,11 @@ index, serving, the round trip
 ```
 
 Route by SCOPE at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board and its structure are this skill's.
+
+Inside the one-Page route, `haipipe-board-page` resolves the stable Page Type and the current DRAFT, PROBE, REVISE, or CHECK authority.
+The one-Page contract now owns `RUN`, backed by `ref/page-lifecycle.workflow.js`.
+It is not `ADVANCE`: the router may repeat, branch, HOLD, or begin a new DRAFT round.
+The non-interactive dispatch target is `haipipe-board-page-orchestrator-agent`; the Board door still owns no separate phase verb.
 
 Route by SCOPE, not by wording: one page is the page skill's, the board and its structure are this skill's. When a request names a page id or a page path, it is the page skill's even if it sounds structural, because whoever asks is looking at one page.
 `xcal.py` rebuilds the scene offline, but both the embedded canvas and the editable one go through `serve.py`, so `excalidraw` is counted as live.
@@ -591,7 +612,7 @@ method: one line on how it gets done
                    on its own, `####` is one paragraph                            │
 ## Aims             durable targets linked to Content; header derives met/total   │
 ## States           one factual current State per Aim                             │
-## Files           which files this question touches (optional, recommended)      ┘
+## Files           action map + scoped related Page context (optional, advised)   ┘
 ## Law          the rules this question ruled  ┐
 ## Lesson       the traps this question hit    │
 ## Glossary     this page's new words          ├ optional · folded, off stage
@@ -627,6 +648,8 @@ A new board writes `## Opening`. The `## Question` written by old boards still P
   A deferred Aim closes only after its forward pointer is recorded.
 - `## States` summarizes the actual stage state through one current State per Aim.
   It does not copy every consumer answer.
+
+Inside `## Files`, `### 🔗 Related Board Pages` is the checked, selective context map for another Page. Its rows declare relation + Page Phase + Page id + `page`/`§n` scope + Board-root-relative source path. `haipipe-board-page` owns the row contract; `cli/pagecontext.py` materializes only the current phase's rows, one hop, and `cli/check.py` rejects malformed or dead references. This is Page context, not configuration inheritance and not inferred stage order.
 
 Long content in the prose is always written as **`- heading` plus a two-space-indented explanation**, never as one loose sentence after another.
 A whole line in bold `**…**` is a **group title** (it leads a run of items).
@@ -706,6 +729,7 @@ Operating rules go into SKILL.md's prose, and **specifications** such as display
 | `ref/writing-rules.md` | How to write it in plain language, plus the zero-background review prompt and its convergence criteria |
 | `ref/topic-entry-contract.md` | Optional generic contract for a topic page and its nested `probes/<topic>/` entry pages |
 | `ref/board-example.md` | A minimal example board with two questions |
+| `ref/page-lifecycle.workflow.js` | Bounded non-linear controller for one Page: producer → build/version snapshot → independent CHECK → route |
 
 The scripts and packages in the skill root:
 
@@ -715,6 +739,8 @@ The scripts and packages in the skill root:
 | `cli/build.py` | Read the Board Markdown and generate the canonical `board/` site; standard library only |
 | `cli/watch.py` | Watch the board folder and re-run `build.py` on any `.md` change |
 | `cli/check.py` | The structural self-check (the machine half of `QA9`): sections, state, references, the rendered html, template coverage |
+| `cli/pagecontext.py` | Materialize one Page Phase's typed Related Board Page scopes, one hop only |
+| `cli/pageflow.py` | Audit one serialized Page RUN for legal routes, round changes, role separation, immutable CHECK versions, human gates, and terminal stops |
 | `cli/serve.py` | The live server, 496 lines: argument parsing, the request router, and the shared setup; everything with a feature in it now lives in `live/` |
 | `live/base.py` | 260 lines: the shared request base the other live modules mix in |
 | `live/structure.py` | 270 lines: `structure_op`, behind `POST /_board/structure` (＋Q / ＋Group / 🗄) |
@@ -723,7 +749,7 @@ The scripts and packages in the skill root:
 | `live/activity.py` | 446 lines: focus-time spans and the aggregates behind the Activity component |
 | `live/chat.py` | 1332 lines: the chat drawer, its sessions, and the `claude_agent_sdk` turn |
 | `live/term.py` | 857 lines: the `/_term/` PTY, parking, and reattachment |
-| `src/` | The build's code split by topic: `common · parse · body · page_board · page_question · page_stage · dialect_paper · stage_contract`; `build.py` and `serve.py` stay thin entries (QB5) |
+| `src/` | The build and audit code split by topic, including `page_context.py` for checked scoped Page reads and `page_lifecycle.py` for deterministic RUN receipt validation; `build.py` and `serve.py` stay thin entries (QB5) |
 | `cli/stage.py` | Explicitly create and sync an S page's inherited requirements, Venue links, and page Writing Style inheritance |
 | `cli/skillpage.py` | One skill folder → one `Skill-<n>-<slug>` page (`new` / `sync` / `check`); the same split as `stage.py`, the derived header only, never the authored sections |
 | `status.py` | Derive the visible session status strip at the end of every reply from Board, page group, and page; read-only, writes no state file. **The one script still at the top level, deliberately**: the reply-footer automation invokes it by absolute path, so moving it into `cli/` would silently break every board attachment |
@@ -734,10 +760,12 @@ The scripts and packages in the skill root:
 | `assets/board-mark.svg` | The Board's shared SVG mark; inlined into the title at build time and reused as the favicon |
 | `assets/css/`, `assets/js/` | The page's real CSS and JS parts, assembled by `build.py` into `board/_assets/board.css` and `board/_assets/board.js` |
 | `assets/xcal-boot.js` | The script `live/xcal.py` injects into the proxied Excalidraw so that drawings save back to the repository |
-| `tests/` | The skill's own tests, all 14 of them (`python3 -m pytest tests/`): activity, aims state, board structure, hold, home, quality check, sentence chat, sentence editing, stage style, status, tree reroot. Moved out of the top level 260801; `tests/conftest.py` puts the engine dir on `sys.path` |
+| `tests/` | The skill's own tests, including Page lifecycle happy paths, branch routes, and fault injection; `tests/conftest.py` puts the engine dir on `sys.path` |
 
 The independent judge: `../agents/haipipe-board-reviewer-agent.md`.
 It has no write tools; after the author has fixed things, start another new reviewer.
+The bounded non-interactive runner: `../agents/haipipe-board-page-orchestrator-agent.md`.
+It stores the Workflow result under `_runs/page/` and calls `cli/pageflow.py`; it never edits Page prose.
 
 A live example: `Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/`, this skill's own board (the flat form).
 A live example of the nested form (Q decisions + S stages): `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`.

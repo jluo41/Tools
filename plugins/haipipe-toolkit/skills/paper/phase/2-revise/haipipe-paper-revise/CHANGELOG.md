@@ -14,6 +14,12 @@ haipipe-paper-revise — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.2.3] — 2026-08-04 — Page REVISE layering
+
+- Loads the Stage Page Type and generic `haipipe-board-page-revise` before manuscript workers.
+- Defines REVISE by fixed purpose and Aims rather than mandatory position after PROBE.
+- Keeps placement first when evidence landed and routes changed intent to DRAFT or new unknowns to PROBE.
+
 ## [0.2.1] — 2026-07-26 — provenance lives on the S page
 
 - `[REVISE]` worker proof now lives in the owning S page's `## Log`.

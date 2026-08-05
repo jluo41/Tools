@@ -38,7 +38,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ✅ `what marketing decision does this evidence inform`  ❌ `it studies digital advertising`
 
-**The venue-page contract this page answers to** is `../../board/haipipe-board-page-for-venue/SKILL.md`, and it is filed under Contracts in `## Files`. It is loaded, not restated; what follows is only the shape a reader can check by eye.
+**The venue-page contract this page answers to** is `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, and it is filed under Contracts in `## Files`. It is loaded, not restated; what follows is only the shape a reader can check by eye.
 
 ```text
   🖼 THREE FIGURES, IN THIS ORDER    what each one answers

@@ -1,23 +1,29 @@
 ---
 name: haipipe-application-draft
-description: "DRAFT phase worker (internal). Called first by every application stage skill to settle the stage doc's structure and sentences with the user: illuminate what exists, elicit taste-bearing choices, write the stage artifact per the calling stage's artifact spec. Content decisions happen here (agent + user together); evidence collection is PROBE's job, prose quality is REVISE's. Users invoke stage skills, not this skill directly."
-argument-hint: "[stage <stage-name>] [intervention-path]"
+description: "Application-specific DRAFT phase worker (internal). Called whenever a stage enters DRAFT to define or reopen its purpose, Aims, and artifact shape, then raise stake-bearing Q-consumers for what it cannot answer. It writes no Probe record or executor-side field. Content decisions happen here; evidence collection is PROBE's job, realization under fixed Aims is REVISE's. Users invoke stage skills, not this skill directly."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent
 metadata:
-  version: "0.1.5"
-  last_updated: "2026-07-19"
-  summary: "DRAFT phase worker (internal): settle the stage doc's structure + sentences with the user (illuminate → elicit → write per the stage's template), and RAISE what the draft cannot answer as `## QX<n>` question ENTRIES in 1-probes/ AND author their probe plan (`### q-executor` + route + bank + target — PROBE runs the loop's ①ORGANIZE + ②MATCH); never writes an answer (`### a-executor`). Inline WebSearch is drafting fuel only, never durable evidence. The calling stage supplies the artifact spec + template; this worker carries neither. History: ./CHANGELOG.md."
+  argument_hint: "[stage <stage-name>] [intervention-path]"
+  version: "0.1.6"
+  last_updated: "2026-08-04"
+  summary: "Application-specific DRAFT worker layered on haipipe-board-page-draft: settle the stage promise and artifact, raise stake-bearing Q-consumers, and stop before every PROBE-side field."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-draft (internal phase worker)
 =========================================================
 
-DRAFT phase worker. Every stage skill calls this first. The calling stage passes its artifact spec (files, content structure, done-criteria); this worker turns intent into a settled stage doc.
+DRAFT phase worker. A stage calls it whenever the Page router enters DRAFT. The calling stage passes its artifact spec (files, content structure, done-criteria); this worker turns intent into a settled stage doc.
 
-## Rules (follow these — the model is haipipe-probe's)
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-draft/SKILL.md`.
+Those contracts own the Stage Page shape and DRAFT authority.
+This file adds only application artifact knowledge.
 
-The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · DRAFT phase** + **The DRAFT self-review checklist**. Follow those; on conflict, that file wins. Application-specific additions are the steps below.
+## Rules
+
+The DRAFT authority lives in `haipipe-board-page-draft`.
+`../../../../probe/haipipe-probe/SKILL.md` supplies the Q-consumer vocabulary and evidence-wall boundary only.
+On a phase conflict, the Page Phase contract wins; application-specific additions are the steps below.
 
 ## What DRAFT means
 
@@ -29,41 +35,25 @@ The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **P
                 emphasis, scope); mechanical structure is autonomous
 3. WRITE        the stage artifact per the calling stage's spec:
                 0-lifecycle/<N-stage>/<N-stage>.md + a [DRAFT] entry in _LOG
-4. RAISE+PLAN   FIND the questions first: read the calling stage's
+4. RAISE        FIND the questions first: read the calling stage's
                 **Questions this stage typically raises** and walk the draft
-                against it. Then every spot where the draft needs evidence it
-                does not have becomes a QUESTION -- a `Q-<Stage>-<n>` in the stage doc's
-                Q-consumer AND a `## QX<n>` ENTRY in the right topic's probe file
-                (1-probes/PPNN_<topic>/) -- then write the
-                `→ 1-probes/PP<NN> · QX<n>` pointer BACK into that
-                `Q-<Stage>-<n>`, so the stage doc says where its answer will
-                come from. Per
-                ../../../haipipe-application/fn/probes.md. DRAFT runs the loop's
-                ①ORGANIZE + ②MATCH: write `### q-executor` (general language,
-                stake stripped, + Deliverable/Accepted) + a `### q-consumer`
-                bullet + `### bank binding` (route · bank · target — an existing
-                path or `NEW <path>`). NEVER write `### a-executor` (the answer).
-4b. SELF-REVIEW a fresh-context sub-agent checks the draft + the probe plan
-                before the human sees either (creator/reviewer split — the drafter
+                against it. Every spot where the draft needs evidence it does
+                not have becomes a stake-bearing `Q-<Stage>-<n>` in the stage
+                doc's Q-consumer. DRAFT writes no Probe file, Q-executor, route,
+                bank, target, or A-executor. PROBE owns the whole five-step loop.
+4b. SELF-REVIEW a fresh-context sub-agent checks the draft + Q-consumer shape
+                before handoff (creator/reviewer split — the drafter
                 does not grade its own work). Report-only; the drafter fixes.
                 Bounded at 2 rounds; a 3rd-round residual is SURFACED at the gate,
                 never hidden. See **Step 4b** below.
-5. PRESENT      ⛔ STOP and end the turn, presenting all THREE things the one
-                merged gate exists to review:
-                  (a) the DRAFT -- structure + where the placeholders are;
-                  (b) the PROBE PLAN -- one line per question:
-                      PP id -- question -- route -- bank -- what it fills/settles;
-                  (c) the SELF-REVIEW VERDICT, incl. any residual.
-                No open questions -> say "questions raised: none".
-                The user reviews structure AND plan and adds `> USER:` comments;
-                reply `> CC:` underneath each, never deleting or rewording one.
-                Iterate until the user advances -- their verb/"go" is the gate.
-6. CONFIRM      on approval: move resolved threads to `_LOG`, write the phase
-                summary + a `[GATE] draft-review: approved` line quoting the user,
-                mark draft ✅, hand off to PROBE.
+5. HAND OFF     record the draft, raised Q-consumers, and self-review verdict.
+                If the local stage contract declares a DRAFT gate, present them
+                and wait there. Otherwise route immediately: consequential
+                questions go to PROBE; a version ready for judgment may go to
+                CHECK; more promise work remains in DRAFT.
 ```
 
-## Step 4b. 🤖 SELF-REVIEW — check the draft + probe plan before the gate
+## Step 4b. 🤖 SELF-REVIEW — check the draft + Q-consumers before handoff
 
 ```text
 Agent(general-purpose, prompt="
@@ -72,7 +62,6 @@ Agent(general-purpose, prompt="
 
   READ:
     - the stage draft (the stage doc this run wrote/updated)
-    - the probe plan (the 1-probes/PPNN_*.md files touched this run)
     - the calling stage's artifact spec, and probe's 'The DRAFT self-review checklist' at
       Tools/plugins/haipipe-toolkit/skills/probe/haipipe-probe/SKILL.md (repo-root-relative —
       you resolve from the repo root, not from the calling skill's folder)
@@ -85,10 +74,9 @@ Agent(general-purpose, prompt="
       Q-<Stage>-<n> or explicitly declined in _LOG. An unowned hole is a defect — nobody
       owns it, so nobody will ever fill it.
 
-  Surface B — the probe plan (run probe's 'DRAFT self-review checklist' verbatim):
-    LAW-2-clean q-executor · answerable+specific · route set · bank ROOTED to a specific folder
-    (candidate READ + judged on the answer) · target agrees with bank · each ### q-consumer bullet
-    copies a real stage-doc Q-consumer id · no stake leaked into a q-executor
+  Surface B — the Page-facing question register:
+    every open need has one specific Q-consumer carrying its stake and a matching State row;
+    no Probe file, q-executor, route, bank, target, or a-executor was authored during DRAFT
 ")
 ```
 
@@ -133,7 +121,8 @@ DRAFT may search the web to orient (is this intervention space crowded? what res
 
 FORBIDDEN in DRAFT: writing an `### a-executor` (the ANSWER -- that is PROBE's ⑤ harvest), or treating an inline result as landed evidence. Real evidence lands ONLY via the PROBE phase dispatching `haipipe-application-probe` (the single door); inline search results bind to nothing -- evidence gathered any other way means "the PROBE phase did not happen."
 
-The line is no longer an empty `target:` (DRAFT now writes the `target:` plan) -- it is `### a-executor` / `state`: DRAFT leaves an entry at `planned` (a `NEW` target awaiting dispatch) or `answered` (an existing target already answered, awaiting harvest), never `read`; only PROBE's harvest writes `### a-executor` and reaches `read`. `check-probe-cards.sh` enforces this at the probe worker's VERIFY step and again at the CHECK gate -- a `planned` entry blocks green, so DRAFT search can never masquerade as evidence.
+DRAFT writes no `target:` or Probe state at all.
+Only PROBE may create the persisted Probe record, write `### a-executor`, and advance its derived state.
 
 ## Return contract
 
@@ -141,7 +130,7 @@ The line is no longer an empty `target:` (DRAFT now writes the `target:` plan) -
 status:    ok | blocked
 stage:     <stage-name>
 artifact:  <path written>
-needs:     <count of questions raised for PROBE>
-probes:    <each raised question: PPNN -- question -- route -- bank -- fills/settles; or "none">
-next:      PROBE (runs the approved entries forward: ③DISPATCH → ④POINT → ⑤INTERPRET)
+needs:     <count of Q-consumers raised for PROBE>
+questions:<each raised Q-consumer id + question; or "none">
+next:      <PROBE | REVISE | CHECK | DRAFT, chosen by the Page router>
 ```

@@ -35,7 +35,7 @@ How this page must be written. Read it before editing, and edit to it.
 
 ✅ `changes what a clinician can know, measure, or do`  ❌ `achieves higher accuracy`
 
-**The venue-page contract this page obeys** is `../../board/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. Neither is restated here; what follows is the shape a reader should expect to find.
+**The venue-page contract this page obeys** is `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`, and `QBv1-misq.md` is its reference implementation. Neither is restated here; what follows is the shape a reader should expect to find.
 
 ```text
   🖼 THREE FIGURES        what each one answers

@@ -1,4 +1,4 @@
-# haipipe-paper-revise · v0.2.2
+# haipipe-paper-revise · v0.2.3
 state: 🟡 PARTIAL · account written; the acceptance test is open in Items
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -10,15 +10,17 @@ This page brings the three revision layers into one contract: evidence bindings,
 It also distinguishes the normal direct REVISE from the author's original-preserving candidate review.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 150deccb409110e5 paper/phase/2-revise/haipipe-paper-revise -->
+<!-- haipipe:skill:tree:start c423e7d6d9d0deb7 paper/phase/2-revise/haipipe-paper-revise -->
+
+**What `haipipe-paper-revise` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-paper-revise/
   feedback/
     2026-07-09_revise-skipped-humanize-and-outline-first.md    34 ln  "the revise phase didn't really work." (JL, 2026-07-09)
     README.md                            4 ln  haipipe-paper-revise -- Feedback Inbox
-  CHANGELOG.md                          78 ln  haipipe-paper-revise — Changelog
-  SKILL.md                             185 ln  Skill: haipipe-paper-revise (internal phase worker)
+  CHANGELOG.md                          84 ln  haipipe-paper-revise — Changelog
+  SKILL.md                             190 ln  Skill: haipipe-paper-revise (internal phase worker)
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -39,13 +41,13 @@ CHECK reviews the result            no tex sync; not a completed REVISE
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 150deccb409110e5 paper/phase/2-revise/haipipe-paper-revise -->
+<!-- haipipe:skill:body:start c423e7d6d9d0deb7 paper/phase/2-revise/haipipe-paper-revise -->
 
-**haipipe-paper-revise** · `0.2.2` · last shipped 2026-07-27
+**haipipe-paper-revise** · `0.2.3` · last shipped 2026-08-04
 
 - folder   `paper/phase/2-revise/haipipe-paper-revise/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, Skill
-- summary  REVISE phase worker (internal): default direct revision plus an author-selected candidate-diff mode for auditable, original-preserving wording review.
+- summary  Paper-specific REVISE worker layered on haipipe-board-page-revise, with evidence placement first when applicable and manuscript quality workers after it.
 
 ### SKILL.md
 
@@ -55,9 +57,13 @@ Skill: haipipe-paper-revise (internal phase worker)
 ====================================================
 
 REVISE phase worker.
-Called by stage skills (pitch, narrative, section-edit) to rewrite draft prose to venue-quality after PROBE.
+Called by stage skills (pitch, narrative, section-edit) whenever the current purpose and Aims stand but their manuscript realization needs work.
 The stage defines WHAT was drafted.
 This skill defines HOW to revise it.
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-revise/SKILL.md`.
+The generic contract owns fixed-promise authority and routing.
+This file adds manuscript workers and markup rules.
 
 **What the REVISE contract means.** By default, the agent CHANGES the prose directly and leaves `%% {CC-*}:` comments explaining WHY each non-trivial change was made.
 The human does not approve changes here; the human gives preferences in CHECK (via `> USER:` comments), and a REVISE restart responds to them.
@@ -79,7 +85,8 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
 
 
 - 1 · What REVISE means
-      REVISE = put the landed answers into the prose, then rewrite those sentences to venue-quality, applying changes directly with why-comments.
+      REVISE = improve the current promise's manuscript realization, applying changes directly with why-comments.
+      When an answer landed, place it before rewriting the affected prose.
       Four workers, each with a different lens:
       ```
       haipipe-paper-revise-place                SUBSTITUTE landed answers into placeholders (runs FIRST)
@@ -100,7 +107,7 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
       Apply the four workers to the source `.md`, leave `%% {CC-*}:` why-comments for non-trivial edits, then sync the accepted source to TeX. This is the normal autonomous REVISE path.
 
 - 2.2 · Candidate-diff mode
-      Use this mode only after an explicit author request for reviewable alternatives. Read `../../paper/phase/2-revise/haipipe-paper-revise-humanizer/ref/venue-sciwrite.md` before proposing any change, and `../../writing/haipipe-writing/ref/ai-tells.md` for the general catalogue (Layer 1 moved there on 260801).
+      Use this mode only after an explicit author request for reviewable alternatives. Read `haipipe-paper-revise-humanizer/ref/venue-sciwrite.md` before proposing any change, and `writing/haipipe-writing/ref/ai-tells.md` for the general catalogue (Layer 1 moved there on 260801).
       1. Keep the source sentence, its citations, values, display lanes, and user comments byte-intact.
       2. Put one complete proposed sentence in an adjacent `> Note:` lane. Mark removed text as `~~removed~~` and inserted or replacement text as `**inserted**`.
          COMPUTE those marks, do not write them: `python3 <skills>/writing/haipipe-writing/cli/wdiff.py record --host paper --old "<source sentence>" --new "<proposal>" --when "<YYYY-MM-DD>"` (JL 260801, `--host` added 260802). `--host paper` emits this host's `~~removed~~` / `**inserted**` marks directly, so convert nothing by hand. Written by hand the diff comes out as a whole-sentence swap, which shows the reviewer nothing that SURVIVED, and that is the one thing a candidate lane exists to show.
@@ -110,7 +117,7 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
       6. Do not sync candidate Notes to TeX, call the source revised, or mark REVISE complete. Promote only author-accepted candidates in a later direct REVISE or CHECK action.
 
 - 3 · Universal rules
-      All revise workers read and enforce `../../paper/phase/REF/prose-quality.md`. Installed skills flatten the tree (symlinks under `~/.claude/skills/`), so that relative path is NOT reliable — locate it layout-agnostically:
+      All revise workers read and enforce `../../REF/prose-quality.md`. Installed skills flatten the tree (symlinks under `~/.claude/skills/`), so that relative path is NOT reliable — locate it layout-agnostically:
       `PQ=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in the S page's `## Log`).
       The rules:
       - One idea per sentence
@@ -159,7 +166,7 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
       ```
       revise ✅    tex synced from revised outline, all rules applied
       revise 🚀    revise in progress
-      revise ⬜    not yet started (PROBE must complete first)
+      revise ⬜    not yet started for the current fixed-promise work
       ```
 
 - 7 · Relation to other phases
@@ -171,7 +178,7 @@ Order of operations: revise the working `.md` FIRST, then sync to tex — never 
                           ├── haipipe-paper-revise-humanizer   (HOW: de-AI voice)
                           └── haipipe-paper-revise-results     (results-specific)
       ```
-      REVISE reads what PROBE landed in each entry's `### a-executor`, PLACES it into the prose (discharging the placeholder's bracket), and rewrites those sentences into final prose.
+      When PROBE landed evidence, REVISE reads each `#### a-executor`, PLACES it into the prose (discharging the placeholder's bracket), and rewrites those sentences into final prose.
       CHECK then verifies the revised result.
 
 - 8 · Return contract
@@ -248,10 +255,14 @@ The remaining acceptance test compares both modes on the same source section and
 260727 1455 · Created the REVISE skill page from `paper/phase/2-revise/haipipe-paper-revise/`.
 It incorporates the venue-grounded SciWrite and anti-AI-prose work as a three-layer revision model, not a generic word-substitution pass.
 
-<!-- haipipe:skill:log:start 150deccb409110e5 paper/phase/2-revise/haipipe-paper-revise -->
+<!-- haipipe:skill:log:start c423e7d6d9d0deb7 paper/phase/2-revise/haipipe-paper-revise -->
 
-Converted from the skill's own `CHANGELOG.md`: 11 releases.
+Converted from the skill's own `CHANGELOG.md`: 12 releases.
 
+260804 · `0.2.3` · Page REVISE layering
+      - Loads the Stage Page Type and generic `haipipe-board-page-revise` before manuscript workers.
+      - Defines REVISE by fixed purpose and Aims rather than mandatory position after PROBE.
+      - Keeps placement first when evidence landed and routes changed intent to DRAFT or new unknowns to PROBE.
 260726 · `0.2.1` · provenance lives on the S page
       - `[REVISE]` worker proof now lives in the owning S page's `## Log`.
       - `checks.sh --stage-page` replaces the retired `_LOG` input.

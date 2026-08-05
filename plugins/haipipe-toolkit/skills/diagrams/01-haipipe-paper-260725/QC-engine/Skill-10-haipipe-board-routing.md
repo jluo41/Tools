@@ -1,4 +1,4 @@
-# haipipe-board-routing · v0.9.0
+# haipipe-board-routing · v0.9.1
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -9,13 +9,15 @@ method: three managed spans sync from the skill folder; everything else is writt
 For this Paper Board it carries Paper/Probe/Display work back to its owning delivery or engine record, but it does not decide whether the work changes a manuscript claim. Paper meaning, evidence interpretation, and human gates remain with the Paper route and `QC5`; routing only preserves the record.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 909a02c37e3ea486 board/haipipe-board-routing -->
+<!-- haipipe:skill:tree:start ce19445e76ba2ef0 board/haipipe-board-routing -->
+
+**What `haipipe-board-routing` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-board-routing/
   src/
     lanes.py           253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane block per group, in board.md.
-  CHANGELOG.md         129 ln  haipipe-board-routing · Changelog
+  CHANGELOG.md         136 ln  haipipe-board-routing · Changelog
   SKILL.md             226 ln  /haipipe-board-routing · every write onto a board, at both altitudes
 ```
 
@@ -29,9 +31,9 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 909a02c37e3ea486 board/haipipe-board-routing -->
+<!-- haipipe:skill:body:start ce19445e76ba2ef0 board/haipipe-board-routing -->
 
-**haipipe-board-routing** · `0.9.0` · last shipped 2026-08-02
+**haipipe-board-routing** · `0.9.1` · last shipped 2026-08-03
 
 - folder   `board/haipipe-board-routing/`
 - tools    not declared
@@ -102,8 +104,8 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
 
 - 2.3 · `lanes` · refresh the per-group blocks
       ```bash
-      python3 src/lanes.py <board-dir>            # dry run: what would change
-      python3 src/lanes.py <board-dir> --apply    # write board.md
+      python3 <this-skill>/src/lanes.py <board-dir>            # dry run: what would change
+      python3 <this-skill>/src/lanes.py <board-dir> --apply    # write board.md
       ```
       It ROUND-TRIPS.
       The page roster is generated from `## Pages` so it can never disagree with the index, but every cell a person typed is kept:
@@ -201,7 +203,7 @@ Digest is not built yet; when it is, it runs in a fresh context for the same rea
       ④  REACHABLE      the tab the person opens can run what shipped
       ⑤  STATED         the reply names which of ①-④ ran, with ③'s numbers
       ```
-      Run `python3 cli/gate.py <board> --start` before the work and `cli/gate.py <board>` after it.
+      Run `python3 <board-skill>/cli/gate.py <board> --start` before the work and the same command without `--start` after it. The script lives in `haipipe-board/cli/`, not here: this skill ships one script and it is `src/lanes.py`.
       ③ compares PER PAGE, never the board's total, because a second session writing the same board moves the total underneath you: it went 304 to 276 during one round on 260802. A warning the round introduced blocks the handback; the board's standing warnings are out of scope.
       ① and ④ are printed as not tested, because whether a change was substantive and whether the person's own tab has the new assets are judgments the command cannot make. A gate that reports a condition it did not test is worse than no gate.
       A round that changed PROSE also owes a cold read by `haipipe-board-reviewer-agent`; a round that changed only mechanics does not, since there is nothing for a reader to judge.
@@ -244,10 +246,14 @@ Mirrored into the Engine roster as the write-back mechanism shared by all lanes.
 ## Log
 260801 0000 · page generated from `board/haipipe-board-routing/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 909a02c37e3ea486 board/haipipe-board-routing -->
+<!-- haipipe:skill:log:start ce19445e76ba2ef0 board/haipipe-board-routing -->
 
-Converted from the skill's own `CHANGELOG.md`: 10 releases.
+Converted from the skill's own `CHANGELOG.md`: 11 releases.
 
+260803 · `0.9.1`
+      **Board bucket review, 260803** (JL: "go ahead to solve yourself, dont ask me"). Ledger: `skills/_console/260803-board-bucket-review.md`.
+      - **A documented command could not run from any directory.** `Run python3 cli/gate.py` — this skill has no `cli/`, and its own Files block says so two sections later. It now uses the `<board-skill>/cli/gate.py` form the rest of the family uses, and says which script this skill actually ships.
+      - `src/lanes.py` was a bare relative path that worked from exactly one working directory; it now carries `<this-skill>/`.
 260802 · `0.9.0`
       - **`haipipe-board-index` is merged into this skill and retired** (JL 260802: "maybe
         merge, I will do B"). This verb now owns BOTH altitudes: `board.md`'s structure and
@@ -324,7 +330,7 @@ Converted from the skill's own `CHANGELOG.md`: 10 releases.
 260731 · `0.2.0`
       - Proposals land in Decision Now: whatever routing wants the human to decide
         (a PROPOSED tick, a drafted page, an open fork) is written as a row under the
-        owning page's `## Where we are `### Decision Now`, never left in chat
+        owning page's `## Where we are` `### Decision Now`, never left in chat
         (JL 260731: "don't make the decision here").
       - The reply contract: every reply closes with the routing footer, one line per
         write, `page id · ## section`, so the human sees where each record landed

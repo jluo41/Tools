@@ -1235,7 +1235,7 @@ Three of these four are the same paper, because the guide has only two, which is
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 
-- `../../board/haipipe-board-page-for-venue/SKILL.md` · the variant contract this page is written to: three figures in a fixed order, the `Sec-<n>` index, the two-source rule, and the five Files groups. The link runs both ways, so a rule changed here is changed in that file in the same pass.
+- `../../board/page-types/haipipe-board-page-for-venue/SKILL.md` · the variant contract this page is written to: three figures in a fixed order, the `Sec-<n>` index, the two-source rule, and the five Files groups. The link runs both ways, so a rule changed here is changed in that file in the same pass.
 - `../../board/haipipe-board-page/SKILL.md` · the base frame the variant extends: the section order, the Opening split, the numbering, and the Aim-to-State pairing.
 
 ### 📥 Input files · what this page READS

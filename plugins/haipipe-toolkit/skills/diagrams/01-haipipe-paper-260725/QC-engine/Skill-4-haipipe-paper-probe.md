@@ -1,4 +1,4 @@
-# haipipe-paper-probe · v0.7.5
+# haipipe-paper-probe · v0.7.6
 state: 🟡 PARTIAL · account written; the acceptance test is open in Items
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -10,30 +10,35 @@ This page covers the paper-side PROBE bridge.
 It turns a question already anchored on an S page into an entry and interprets a landed QA artifact back into the paper, while `haipipe-probe` and the bank retain their own ownership.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 3e78a5554227f18b paper/phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:tree:start 6e79c181dcc8bc4b paper/phase/1-probe/haipipe-paper-probe -->
+
+**What `haipipe-paper-probe` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
 ```
 haipipe-paper-probe/
   feedback/
-    README.md                 4 ln  haipipe-paper-probe -- Feedback Inbox
+    README.md                   4 ln  haipipe-paper-probe -- Feedback Inbox
   ref/
-    per-stage-dispatch.md   160 ln  Per-stage dispatch reference (haipipe-paper-probe)
-  CHANGELOG.md              453 ln  haipipe-paper-probe — Changelog
-  check-probe-cards.sh     1121 ln
-  SKILL.md                  230 ln  Skill: haipipe-paper-probe — the PROBE-phase worker for a paper
+    per-stage-dispatch.md     160 ln  Per-stage dispatch reference (haipipe-paper-probe)
+    topic-entry-contract.md    28 ln  Paper topic and probe-entry contract
+  CHANGELOG.md                459 ln  haipipe-paper-probe — Changelog
+  check-probe-cards.sh          3 ln
+  check_topic_entries.py      162 ln  Verify the Paper S03/S04 nested topic-entry contract.
+  SKILL.md                    235 ln  Skill: haipipe-paper-probe — the PROBE-phase worker for a paper
 ```
 
 <!-- haipipe:skill:tree:end -->
 
 ```
-S page: - [ ] 🔎 Q-…                 paper-side consumer + stake
-             │
+direct topic page · ### Q-consumer register   paper-side consumer + stake
+             │                                S03 discovery · S04 task
              ▼
-① ORGANIZE  1-probes/PPNN_topic/QXn_slug.md
+① ORGANIZE  S03-literature/probes/L<n>-<topic>/S-Literature-<n>-<slug>.md
+            S04-value/probes/V<n>-<topic>/S-Value-<n>-<slug>.md
 ② MATCH     route + bank verdict + target, rooted to a readable QA answer
 ③ DISPATCH  collector only, if depth(bank) <= authorized probe_depth
 ④ POINT     verify the target QA file and its state on disk
-⑤ INTERPRET copy into a-executor → S-page Answer / claim ledger as applicable
+⑤ INTERPRET copy into #### a-executor → the topic register's interpretation
              │
              ▼
 haipipe-probe / task / discovery     independently-owned QA artifact
@@ -42,13 +47,13 @@ The paper records what the fact means.  The executor records the fact.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 3e78a5554227f18b paper/phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:body:start 6e79c181dcc8bc4b paper/phase/1-probe/haipipe-paper-probe -->
 
-**haipipe-paper-probe** · `0.7.5` · last shipped 2026-07-26
+**haipipe-paper-probe** · `0.7.6` · last shipped 2026-08-04
 
 - folder   `paper/phase/1-probe/haipipe-paper-probe/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
-- summary  The paper's PROBE-phase worker — runs ①ORGANIZE→②MATCH→③DISPATCH→④POINT→⑤INTERPRET for a paper (all five; ①② came back here from DRAFT on 2026-07-20). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is owned by ../../../../probe/haipipe-probe/SKILL.md. This file is only the paper-side deltas. History: ./CHANGELOG.md.
+- summary  Paper-specific PROBE worker layered on haipipe-board-page-probe and haipipe-probe, retaining Q-consumer/Q-executor and A-executor/A-consumer.
 
 ### SKILL.md
 
@@ -57,21 +62,25 @@ The paper records what the fact means.  The executor records the fact.
 Skill: haipipe-paper-probe — the PROBE-phase worker for a paper
 ==============================================================
 
-Called by paper stage skills (seed, resource, claims, pitch, narrative, display, section-edit) after DRAFT.
-DRAFT raised the Q-consumer questions in the stage doc and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
+Called by paper stage skills whenever DRAFT, REVISE, or CHECK routes a consequential unknown to PROBE.
+The originating phase raised or identified the Q-consumer and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
+
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-probe/SKILL.md`, then `../../../../probe/haipipe-probe/SKILL.md`.
+The nested S03/S04 artifact is the paper's Probe Page.
+Its existing code and headings may say entry, but that label is not another Page Type or phase.
 
 > **Where the bracket grammar was ruled.** `[Q-X-n]` is the paper's ONE join key
 > from a sentence to the question that owes it, ruled on `QC2@paper` and shared by
 > every marker type (`QC1@paper` citation, `QC3@paper` table, `QC4@paper` figure).
-> What this worker writes under `### q-consumer` is what makes a chip resolve, so
-> the id spelled there and the id spelled in the prose are the same string or the
-> sentence reports as `unowned`.
+> The Q-consumer register is the canonical page-facing map, so the id written
+> there and the id bracketed in prose are the same string or the sentence reports
+> as `unowned`. An entry preserves that id only in `#### consumer trace`.
 
 ⭐ THE MODEL IS NOT THIS FILE'S — it is owned by `../../../../probe/haipipe-probe/SKILL.md`.
 Read it for the probe-file anatomy, the QA state-line contract, the cost ladder, the two LAWS, the derived states, and the checker's FAIL codes.
 This file is ONLY how a paper runs the loop, plus the paper-side deltas that file does not cover.
 
-Not user-facing: users invoke stage skills; a stage calls `Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]")`.
+Not user-facing: users invoke stage skills; a stage calls `Skill("haipipe-paper-probe", args="from-buffer <paper_root> [topic-id]")`.
 Which stage routes where, seed/claims/resource specifics, and section-edit logic: `ref/per-stage-dispatch.md`.
 
 The paper-side deltas:
@@ -85,9 +94,9 @@ Rules (follow these — the model is probe's)
 
 The PROBE-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · PROBE phase** (+ **The QA file**, **The two LAWS**). Follow those; on conflict, that file wins. Paper-specific additions:
 - Dispatch goes through the collector agent (`haipipe-probe-q-executor-agent`), NEVER an orchestrator called inline by this worker — results would die with the reply.
-- HARVEST IS INLINE, and `### a-executor` is its ONLY probe sink. `1-probes/` is the consumer-side source of truth; phase history lives in the owning S page's `## Log`.
-- RESOURCE write-back: the landed reading goes into `0-lifecycle/1-work/S-Work-0-resources.md` as the Q's `A:` (existence AND fitness AND what it KILLS).
-- A claim's STATUS goes in `0-lifecycle/1-work/S-Work-1-claims.md`, written by the AUTHOR, NEVER in the probe file.
+- HARVEST IS INLINE, and `#### a-executor` is its only answer sink. The entry page is the consumer-side source of truth for the returned answer; the parent topic's Q-consumer register remains the source of truth for paper stake and interpretation. Phase history lives in the owning S page's `## Log`.
+- RESOURCE write-back: the landed reading goes into the owning `0-lifecycle/S02-work/S-Work-*.md` resource page as the Q's `A:` (existence AND fitness AND what it KILLS).
+- A claim's STATUS goes in the owning `0-lifecycle/S02-work/S-Work-*.md` claims page, written by the AUTHOR, NEVER in the probe file.
 - No bibtex / no `.bib` edits; no ad-hoc plots; no markdown tables in any probe document.
 
 The loop below is the HOW-TO for these rules.
@@ -99,14 +108,14 @@ The loop, paper-side — this worker owns ① through ⑤
 Each step ends with a PROOF this worker MUST show in its reply; an absent proof means the step did not happen.
 STEP 0 — re-invoke this skill fresh every run, even when its text is already in context (a probe once ran a 3-hour-old contract).
 
-①ORGANIZE + ②MATCH happen HERE. Read the Board S page's recognizable Q-consumer checklist records under `## Items to Finish`, and for each question author its ENTRY: the `### q-executor` (stake stripped, then FROZEN), the `### q-consumer` bullet copying the original wording, and the `### bank binding` — `route`, the `bank` verdict rooted to a SPECIFIC QA answer by READING it, and `target` (an existing QA path, or `NEW <path>` for `run` / `code` / `new`). DRAFT authors none of this; it never opens `1-probes/`.
+①ORGANIZE + ②MATCH happen HERE. Read the direct topic page's `### Q-consumer register`, and for each question author one nested entry: `#### q-executor` (stake stripped, then frozen), `#### consumer trace` (audit copy of the original wording), `#### bank binding` (route, bank verdict rooted to a specific QA answer by reading it, and target), and `#### a-executor`. DRAFT writes the Q-consumer register but never opens an entry page.
 This worker delegates ③DISPATCH + ④POINT to the isolated collector, then owns ⑤INTERPRET (HARVEST into the paper's OWN registries).
 
 
 ① + ② — THIS WORKER AUTHORS THEM
 ---------------------------------
 
-The S page's `## Items to Finish` is the input. For each recognizable `- [ ] 🔎 Q-<Stage>-<n>` Q-consumer record, find-or-open its ENTRY FILE `<paper_root>/1-probes/PPNN_<topic>/QXn_<slug>.md` (one q-executor per file; the folder is the topic) and author it. DRAFT wrote none of this and never opened `1-probes/`; if an entry is already there from a previous PROBE run, read it and do not re-author it.
+The direct topic page's `### Q-consumer register` is the input. For each Q-consumer, find or open one entry page below its route topic: `<paper_root>/0-lifecycle/S03-literature/probes/L<n>-<topic>/S-Literature-<n>-<slug>.md` for discovery, or `<paper_root>/0-lifecycle/S04-value/probes/V<n>-<topic>/S-Value-<n>-<slug>.md` for task work. ONE entry page owns ONE q-executor. The route decides the stage because Literature receives outside-project discovery and Value receives project-task evidence. The retired `1-probes/PPNN_<topic>/QXn_<slug>.md` layout is preserved only under `<paper_root>/0-lifecycle/_archive/1-probes/`. DRAFT wrote no entry page; if one exists from a previous PROBE run, read it and do not re-author it.
 - Resolve `project_root`: walk UP from `paper_root` to the first ancestor containing `discoveries/`.
   Do NOT use `git rev-parse` — a repo-backed paper is its own git repo. (The checker resolves the same way.)
 - Route on the TARGET, not on the verdict. They answer different questions: `bank` says what the
@@ -122,9 +131,9 @@ The S page's `## Items to Finish` is the input. For each recognizable `- [ ] �
   the bank still owes a digest-only execution: classify it `bank: run`, point
   `target` at `NEW <path>`, and apply the normal depth-1 ceiling. LAW 1 forbids
   the consumer from writing that digest itself.
-- T1 LOCAL is this worker's, at ②: root the question against the paper's OWN registries and set `target` + `state: answered-local`, then write the entry's `### a-executor`. The CLOSED whitelist: entries already `read` or `answered-local` in `1-probes/` · `displays/` units · the `.bib` · the stage's S page `## Log`.
-  Fully answered there → write the `### a-executor`, set `answered-local`, do NOT dispatch. Adopt the POINTER, never the verdict (a reused value re-verifies against its ORIGINAL source at PLACE).
-- DISPLAY-shaped needs are REROUTED, not collected: a question asking for a display unit that does not exist becomes a DR row in `0-lifecycle/3-display/_DISPLAY_REQUEST.md`; close the entry `answered-local` with the `### a-executor` "rerouted to display stage: DRNN".
+- T1 LOCAL is this worker's, at ②: root the question against the paper's own registries and set target plus `state: answered-local`, then write the entry's `#### a-executor`. The closed whitelist: entries already `read` or `answered-local` beneath `S03-literature/probes/` or `S04-value/probes/` · `displays/` units · the `.bib` · the stage's S page `## Log`.
+  Fully answered there → write the `#### a-executor`, set `answered-local`, do NOT dispatch. Adopt the POINTER, never the verdict (a reused value re-verifies against its ORIGINAL source at PLACE).
+- DISPLAY-shaped needs are REROUTED, not collected: a question asking for a display unit that does not exist becomes a DR row in `0-lifecycle/S05-display/_DISPLAY_REQUEST.md`; close the entry `answered-local` with the `#### a-executor` "rerouted to display stage: DRNN".
 - RESOURCE (paper only): DRAFT wrote the `Q<n>` questions on
   `S-Work-0-resources.md`; this worker opens one ENTRY per question, writes the
   `Q<n> (N<n>) -> PP<NN>` backlink, and carries `blocks: N<n>` in the bank
@@ -167,7 +176,7 @@ and `check-probe-cards.sh` FAILs it as `deferred-undeclared`.
 spend. Report in the `[PROBE]` entry in the owning S page's `## Log`
 which ceiling was in force, how many entries dispatched, and how many deferred at what depth.
 
-PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <paper_root>/1-probes/`, the `probe_depth` in force, and per entry its `bank` verdict + resolved depth + `target` (dispatched / deferred).
+PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <paper_root>/0-lifecycle/S03-literature/ <paper_root>/0-lifecycle/S04-value/`, the `probe_depth` in force, and per entry its bank verdict, resolved depth, target, and dispatch/defer decision.
 
 
 ③ DISPATCH — hand the NEW entries to the collector agent
@@ -178,13 +187,13 @@ For each STILL-COLLECTING entry (`target: NEW` — `bank: new | run | code` — 
   ```text
   Agent(haipipe-probe-q-executor-agent, prompt="
     project_root: <from ①>
-    probe_files:  <the PPNN files touched this run>
+    entry_pages:  <the nested entry pages touched this run>
     dispatch:     <entry ids with target: NEW>, each with its route: task|discovery
   ")
   ```
 
 The agent runs in ITS OWN clean context: it sends each `q-executor` VERBATIM to `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)` (`run_in_background` for fresh work; omit the leaf for fresh — the orchestrator picks the folder and returns the path), and returns `{ entry → target: QA-path | in-flight | failed }`, having written each `target`.
-Under model A the agent does NOT re-run ②MATCH — THIS worker rooted each question at ② just above; the agent DISPATCHES (the executor orchestrator's OWN QA-gate still dedups against an existing answer). It NEVER reads the paper's registries, the `### q-consumer` copies, or the stake — its clean context IS the wall; and it never authors a fresh folder (LAW 1).
+Under model A the agent does NOT re-run ②MATCH — this worker rooted each question at ② just above; the agent dispatches (the executor orchestrator's own QA gate still dedups against an existing answer). It NEVER reads the paper's registries, consumer traces, or paper stake — its clean context IS the wall; and it never authors a fresh folder (LAW 1).
 The stage NEVER calls `haipipe-task-orchestrator-agent` / `haipipe-discovery-orchestrator-agent` ITSELF — the collector owns dispatch; a stage that dispatches inline lands results nowhere reviewable.
 
 DEFERRED / ASYNC is the agent's too: an entry it cannot land synchronously comes back `in-flight` and stays `commissioned`; the NEXT PROBE run re-hands it. This worker writes NOTHING under `tasks/` or `discoveries/`, ever — no stub, no mailbox.
@@ -206,23 +215,23 @@ PROOF 4: per entry the `target` line, the `ls` that resolves it, and `grep '^- s
 ════════ COLLECTION (①–④) ends here — the answer is banked.
 HARVEST (⑤) begins. ════════
 
-⑤ INTERPRET — the a-executor, the a-consumer, the claim status, and HARVEST (the paper's own, not probe's)
+⑤ INTERPRET — the a-executor, the topic register, the claim status, and HARVEST (the paper's own, not probe's)
 --------------------------------------------------------------------------------------------------------------------
 
-- Copy the QA answer into `### a-executor` (the probe-file single source of truth), then each Q-consumer writes its own a-consumer in its stage doc (station ②, anchored `[source: PP<NN>]`) — translate the general answer UP into the paper's words.
+- Copy the QA answer into `#### a-executor` (the entry's answer source of truth), then update the parent topic's Q-consumer register with its paper-facing interpretation and the entry path. Translate the general answer up into the paper's words without overwriting the consumer stake.
   ONLY against an `answered`, non-superseded target (probe).
-- The AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence + claim_type) into `0-lifecycle/1-work/S-Work-1-claims.md`, never in the probe file.
+- The AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence + claim_type) into its owning `0-lifecycle/S02-work/S-Work-*.md` claims page, never in the probe file.
   A probe communicates evidence; the stage interprets it, and CHECK reviews the paper judgment. Keep the `claim_type` overclaim check.
 - RESOURCE WRITE-BACK (an entry serving a resource `Q<n>`): write the landed reading BACK into `S-Work-0-resources.md` as the Q's `A:` line — existence AND fitness AND what it KILLS ("probably fine" is a DEFECT, not an answer).
   A BUILD-lane entry writes `A: COMMISSIONED · owner <who> · eta YYYY-MM-DD · blocks N<n> · cross-project: <path|none-found>` at booking; the async path overwrites it on landing.
   Both receipts: the entry is the probe-layer one; the Q's `A:` is what the human reads at CHECK.
-- HARVEST — inline, in this worker, into the SAME `### a-executor`. Whatever reusable material the answer carries rides along with the answer:
-  - **source anchors** (literature): transcribe each into the `### a-executor` in the QA file's own words, with its identifiers. NEVER generate bibtex; NEVER touch `.bib`. Carry provenance at TWO levels and never flatten them — `VERIFIED-by-discovery` is arXiv-level, NOT bibtex-level, so a source stays 🔍 until a human confirms it. An entry carrying only identity fields (title/authors/year) and no statement of WHAT the source found is a DEFECTIVE harvest: the reader must be able to see what each source contributes without opening the discovery folder.
+- HARVEST — inline, in this worker, into the SAME `#### a-executor`. Whatever reusable material the answer carries rides along with the answer:
+  - **source anchors** (literature): transcribe each into the `#### a-executor` in the QA file's own words, with its identifiers. NEVER generate bibtex; NEVER touch `.bib`. Carry provenance at TWO levels and never flatten them — `VERIFIED-by-discovery` is arXiv-level, NOT bibtex-level, so a source stays 🔍 until a human confirms it. An entry carrying only identity fields (title/authors/year) and no statement of WHAT the source found is a DEFECTIVE harvest: the reader must be able to see what each source contributes without opening the discovery folder.
   - **values** (numbers): transcribe the number AND the named source path it came from. FABRICATION GUARD: the literal value string must grep in its named source file — `grep -F '<value>' <source>` — and a value with no source hit is REJECTED. The parquet/script decides, never the prose.
   - **display units**: name the landed `displays/<unit>/` path. LINK ONLY UNITS THAT EXIST (or whose DR row is `done` with the unit path filled) — a `requested`/`accepted` DR row stays 📨 pending and is flagged for CHECK; never pre-place a `\ref` for a display that does not exist yet, or the tex compiles to `??`.
   Placing any of this INTO manuscript prose is REVISE's job (`haipipe-paper-revise-place`), not this worker's. This worker transcribes; it does not edit the manuscript.
 
-PROOF 5: per entry the `### a-executor` copy + the stage-doc a-consumer line, the claim-ledger diff (if it serves a claim), the `grep -A2 'Q<n>' S-Work-0-resources.md` for a resource write-back, and — for any harvested value — the `grep -F` output proving it appears in its named source.
+PROOF 5: per entry the `#### a-executor` copy plus the parent Q-consumer register line, the claim-ledger diff (if it serves a claim), the `grep -A2 'Q<n>' S-Work-0-resources.md` for a resource write-back, and — for any harvested value — the `grep -F` output proving it appears in its named source.
 
 
 VERIFY — the checker (the stage CHECK gate re-runs the same script)
@@ -247,7 +256,7 @@ Hard boundaries (paper-specific; the wall + ONE-WRITER are probe's)
 
 - NEVER generate bibtex or touch `.bib`.
 - NEVER fabricate numbers; NEVER create ad-hoc plots inline.
-- NEVER edit manuscript prose. This worker transcribes into `### a-executor`; placing anything into the manuscript is REVISE's (`haipipe-paper-revise-place`).
+- NEVER edit manuscript prose. This worker transcribes into `#### a-executor`; placing anything into the manuscript is REVISE's (`haipipe-paper-revise-place`).
 - NO markdown tables in probe files or any probe document — bullet lines and `###` subsections only.
 - NO inline search in the PROBE phase — the dispatch is the door.
   (DRAFT may WebSearch to orient; the difference is DURABILITY, not the search verb.)
@@ -260,7 +269,7 @@ Return contract
 ```
 status:    ok | blocked
 stage:     <stage-name>
-probes:    PPNN <n> entries · T0/T1 <n> · T2 <n> · T3/T4 <n> dispatched
+probes:    <n> nested entries · T0/T1 <n> · T2 <n> · T3/T4 <n> dispatched
 harvest:   <n> entries whose a-executor carries sources/values/display paths
 next:      <suggested command>
 ```
@@ -273,16 +282,19 @@ Reference
 ../../../../probe/haipipe-probe/SKILL.md   probe — the model. Read it.
 ref/per-stage-dispatch.md                  per-stage routing · seed/claims/resource specifics
 check-probe-cards.sh                       the VERIFY / stage-gate verifier (family-local)
+ref/topic-entry-contract.md                the paper-specific S03/S04 entry shape
 ```
 
 ### The other files
 
-3 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
+5 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
 
 ```
-check-probe-cards.sh         1121 ln
-feedback/README.md              4 ln  haipipe-paper-probe -- Feedback Inbox
-ref/per-stage-dispatch.md     160 ln  Per-stage dispatch reference (haipipe-paper-probe)
+check-probe-cards.sh              3 ln
+check_topic_entries.py          162 ln  Verify the Paper S03/S04 nested topic-entry contract.
+feedback/README.md                4 ln  haipipe-paper-probe -- Feedback Inbox
+ref/per-stage-dispatch.md       160 ln  Per-stage dispatch reference (haipipe-paper-probe)
+ref/topic-entry-contract.md      28 ln  Paper topic and probe-entry contract
 ```
 
 <!-- haipipe:skill:body:end -->
@@ -317,10 +329,14 @@ The remaining acceptance test is a mixed-depth campaign that exercises all four 
 260727 1450 · Created the paper-side PROBE skill page from `paper/phase/1-probe/haipipe-paper-probe/`.
 The authored diagram keeps the five-step loop and the evidence/story ownership wall in one place.
 
-<!-- haipipe:skill:log:start 3e78a5554227f18b paper/phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:log:start 6e79c181dcc8bc4b paper/phase/1-probe/haipipe-paper-probe -->
 
-Converted from the skill's own `CHANGELOG.md`: 55 releases.
+Converted from the skill's own `CHANGELOG.md`: 56 releases.
 
+260804 · `0.7.6` · Page PROBE layering
+      - Loads the Stage Page Type, generic `haipipe-board-page-probe`, and shared `haipipe-probe` before paper deltas.
+      - Names the persisted S03/S04 artifact a Probe Page and retains `entry` only for the existing checker schema.
+      - Allows DRAFT, REVISE, or CHECK to route a consequential unknown into PROBE.
 260727 · `0.7.5` · the section-edit gate stops being vacuously green
       - **`stage_stem()` maps `section-edit -> Sec`.** It previously derived the stem by stripping a
         trailing `s`, producing `section-edit`, and grepped `q-section-edit` — which matched NO id
@@ -410,7 +426,7 @@ Converted from the skill's own `CHANGELOG.md`: 55 releases.
       ### Changed (JL: "do A.") — D1, the harvest sink
       `### a-executor` is ratified as the ONLY harvest sink. This was BROKEN ON DISK before the refactor, not by it: `ref/per-stage-dispatch.md:34` said the anchors stay in `### a-executor` while `SKILL.md:116` and `ref/harvest-acceptance.md:60,91` still wrote `_CITATION_{stage}.md`. Observable symptom: `ref/per-stage-dispatch.md:174-183` rendered `cite ⬜ / val ⬜ / disp ⬜` for every stage forever, because the files those forms test for can never exist again.
       ### Changed (JL: "A. the principle is everything now in the Questions of 1-probes and the stages's Q-consumer.") — D4, the lanes
-      The `**values**:` / `**sources**:` / `**displays**:` lane lines and their `harvest: OWED` debt tokens are RETIRED, and `../../application/2-phase/1-probe/haipipe-application-probe/ref/harvest-acceptance.md` is DELETED. The mechanism had no destination left: its first instruction (`harvest-acceptance.md:11` — write `harvest: OWED` FIRST) triggers checker rule 7 (`harvest: OWED -> FAIL`), and the only legal exit was a sub-worker writing a sidecar retired on 2026-07-19. Following it as written reddened the gate with no way to clear it — which happened live in this session on `Paper-Personality2Opioid/1-probes/PP01`.
+      The `**values**:` / `**sources**:` / `**displays**:` lane lines and their `harvest: OWED` debt tokens are RETIRED, and `ref/harvest-acceptance.md` is DELETED. The mechanism had no destination left: its first instruction (`harvest-acceptance.md:11` — write `harvest: OWED` FIRST) triggers checker rule 7 (`harvest: OWED -> FAIL`), and the only legal exit was a sub-worker writing a sidecar retired on 2026-07-19. Following it as written reddened the gate with no way to clear it — which happened live in this session on `Paper-Personality2Opioid/1-probes/PP01`.
       SALVAGED, not dropped: the fabrication guard from `harvest-acceptance.md:30-32` (`grep -F '<value>' <source>`; a value with no hit in its named source is REJECTED) is now inline in ⑤ INTERPRET. It was the only mechanical anti-fabrication tooth in the bucket and losing it inside a cleanup would have been a real regression.
       ### Changed (JL: "A.") — D3, the three ⑤ residues
       `haipipe-paper-probe-citation` / `-values` / `-display` are dissolved; their genuine ⑤ INTERPRET content folds into this worker. My premise to the auditors ("none of the five phases is PROBE work") was CONFIRMED for the numbered phases and REFUTED for the skills — each hid ⑤ work where the phase numbering did not reach: citation's `## Harvest mode` (a sixth section, 85 lines, self-describing as "Called by haipipe-paper-probe at ⑤ INTERPRET"), values' Phase-3 PRECONDITION (17 lines, the QA state-line gate), display's Phase-3 LINK body (12 lines, tex links, enforced by checker rule 7). ⑤ INTERPRET now carries the surviving rules for all three payload types: source anchors (two-level provenance, never flattened; `VERIFIED-by-discovery` is arXiv-level not bibtex-level; an identity-fields-only entry is a DEFECTIVE harvest), values (the fabrication guard), and display units (LINK ONLY UNITS THAT EXIST — never pre-place a `\ref` for a pending DR row, or the tex compiles to `??`).
@@ -555,7 +571,7 @@ Converted from the skill's own `CHANGELOG.md`: 55 releases.
       - Rebuilt as a 4-step procedure: BOOKKEEP → DISPATCH → TRANSLATE → VERIFY, each ending in a mandatory PROOF shown in the reply (project_root + ls, the literal Agent call, per-card refs + ls, checker output). A step without its proof did not happen.
       - NEW `check-probe-cards.sh`: deterministic verifier (read/verdicted ⇒ refs resolve under project_root; no markdown tables in any card; ≤80 lines; status:failed surfaced). Run at STEP 4 and re-run by the stage CHECK gate — two enforcement points.
       - project_root resolution corrected: walk-up to first ancestor with discoveries/ ONLY; `git rev-parse --show-toplevel` dropped (repo-backed papers are their own repos, it returns paper_root).
-      - Reference prose moved out of the invocation path: `ref/per-stage-dispatch.md` (stage map, seed/claims specifics, section-edit logic, status forms) + `../../application/2-phase/1-probe/haipipe-application-probe/ref/harvest-acceptance.md` (harvest dispatch + literal acceptance greps). Main file 260 → ~150 lines.
+      - Reference prose moved out of the invocation path: `ref/per-stage-dispatch.md` (stage map, seed/claims specifics, section-edit logic, status forms) + `ref/harvest-acceptance.md` (harvest dispatch + literal acceptance greps). Main file 260 → ~150 lines.
       - Hard boundary added: NO markdown tables in PP cards / _CITATION_ / probe-discovery documents (JL standing rule).
 260706 · `2.6.0`
       Changed (first pass at the same incident, prose-only — superseded by 3.0.0 same day)

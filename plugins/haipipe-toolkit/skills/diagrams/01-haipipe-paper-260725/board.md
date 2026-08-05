@@ -272,6 +272,9 @@ QC4d-check.md
 QC5-sentence-evidence-contract.md
 QC6-paper-skill-folder.md
 Skill-11-haipipe-writing.md
+Skill-12-haipipe-paper-enter.md
+Skill-13-haipipe-paper-check.md
+Skill-14-haipipe-paper-round.md
 
 ### QF · Execute
 What actually ran. Each record names its Delivery target, Engine route, fixture, observable gate, non-write boundary, receipt, and failure-to-reopen path.

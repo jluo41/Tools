@@ -1191,7 +1191,7 @@ So a MISQ paper decides early what will NOT be in it, and `Sec-A-Appendix`'s tri
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 
-- `../../board/haipipe-board-page-for-venue/SKILL.md`
+- `../../board/page-types/haipipe-board-page-for-venue/SKILL.md`
   The venue-page contract, lifted out of this page on 260803: the three figures, the `Sec-<n>` index, the two-source rule, these Files groups. This page is its reference implementation, so a rule changed here is changed there in the same pass, and the other fifteen outlet pages read it rather than reading this page.
 - `../../board/haipipe-board-page/SKILL.md`
   The base frame that contract extends. Load it first; it owns the seven sections and their order.

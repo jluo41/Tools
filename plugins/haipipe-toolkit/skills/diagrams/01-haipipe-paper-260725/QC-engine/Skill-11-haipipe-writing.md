@@ -18,6 +18,8 @@ English only. One sentence per source line. Describe the shipped unit factually 
 ## Diagram
 <!-- haipipe:skill:tree:start f230e8df4faea9c7 writing/haipipe-writing -->
 
+**What `haipipe-writing` ships**: every file in the folder, with the one-line purpose each one states for itself.
+
 ```
 haipipe-writing/
   cli/
@@ -122,10 +124,10 @@ So the reader who pays is the one who knows least, and nobody in the room is tha
       A model asked to "show the diff" writes a whole-sentence swap, because that is what a diff feels like from the inside.
       It also appends the record wherever it finished writing, which quietly attaches it to a sentence it does not describe.
       Both happened on `QB4` on 260801, twice each.
-      So neither is left to judgment: `../../writing/haipipe-writing/cli/wdiff.py` computes the diff with `difflib` and inserts the record by position.
+      So neither is left to judgment: `cli/wdiff.py` computes the diff with `difflib` and inserts the record by position.
 
 - 3 · 📐 3 · The rules it applies
-      They are not invented here. They were ruled by JL while rewriting `QB4` and they live in full in `../../writing/haipipe-writing/ref/plain-rules.md`; this is the short form.
+      They are not invented here. They were ruled by JL while rewriting `QB4` and they live in full in `ref/plain-rules.md`; this is the short form.
       **The test**: can a reader who does not read English well follow this? That is harder than "is it correct", and it is the one that catches what correctness misses.
       - A shorter common word always beats a precise rare one. ✅ `settles a decision` ❌ `argues one choice to a close`
       - A heading names its CONSEQUENCE, not its mechanism. ✅ `A blank line decides what people see` ❌ `The opening paragraph ends at the first blank line`
@@ -134,7 +136,7 @@ So the reader who pays is the one who knows least, and nobody in the room is tha
       - A good/bad pair gets its own line, marked ✅ and ❌, never buried in a sentence.
 
 - 4 · 🧾 4 · The change record
-      **The grammar**: one line, under the sentence it changed. `../../writing/haipipe-writing/ref/change-record.md` is the full contract.
+      **The grammar**: one line, under the sentence it changed. `ref/change-record.md` is the full contract.
       ```
       > ✎ ~removed words~ *added words* · WHO · YYMMDD HHMM
 
@@ -156,26 +158,26 @@ So the reader who pays is the one who knows least, and nobody in the room is tha
 - 5 · 📎 5 · Files
 
 - 5.1 · Engines
-      - `../../writing/haipipe-writing/cli/wdiff.py`
+      - `cli/wdiff.py`
         Computes the word-level diff and anchors the record. `record`, `apply`, `check`.
-      - `../../writing/haipipe-writing/cli/score.py`
+      - `cli/score.py`
         Ranks prose against the weak-English test. Read-only, and it never rewrites.
-      - `../../writing/haipipe-writing/cli/holes.py`
+      - `cli/holes.py`
         Audits placeholders both ways: unowned holes, and holes pointing at an owner that does not exist. Read-only.
-      - `../../writing/haipipe-writing/cli/agree.py`
+      - `cli/agree.py`
         Two statements of one fact, compared: a skill's declared version against its changelog, and every cross-skill path citation against what is on disk. Read-only.
         `python3 cli/agree.py --all --quiet <skills-root>`
 
 - 5.2 · Contracts
-      - `../../writing/haipipe-writing/ref/plain-rules.md`
+      - `ref/plain-rules.md`
         The rules, with the ruling that produced each one.
-      - `../../writing/haipipe-writing/ref/change-record.md`
+      - `ref/change-record.md`
         The `✎` grammar, the anchoring law, and how a non-board host records a change.
-      - `../../writing/haipipe-writing/ref/ai-tells.md`
+      - `ref/ai-tells.md`
         How a machine writes, in any register. Migrated 260801 out of the paper humanizer's Layer 1, which no paper owned.
-      - `../../writing/haipipe-writing/ref/weaving.md`
+      - `ref/weaving.md`
         Paragraph-to-paragraph arc, hinges, and rhythm. Migrated 260801 out of `haipipe-paper-revise-content`, which still owns when the pass runs.
-      - `../../writing/haipipe-writing/ref/holes.md`
+      - `ref/holes.md`
         What to do about what you do not know: never invent, every hole names an owner, sweep after writing. Migrated 260801 out of the paper DRAFT phase.
 
 - 6 · 🔗 6 · It plugs into an apparatus that already exists
@@ -200,7 +202,7 @@ So the reader who pays is the one who knows least, and nobody in the room is tha
       cli/agree.py       DIR...   do TWO files stating one fact agree?
       tests/test_roundtrip.py     does what `apply` writes, `check` accept?
       ```
-      `../../writing/haipipe-writing/cli/agree.py` exists because three defects surfaced on 260802 in one afternoon and all three were one shape: two halves of a contract, stating one fact, disagreeing, with nothing comparing them. It compares the two that are static, a declared version against its changelog and a cited path against the disk. The third was a round trip, which no grep can see, so it is a test instead.
+      `agree.py` exists because three defects surfaced on 260802 in one afternoon and all three were one shape: two halves of a contract, stating one fact, disagreeing, with nothing comparing them. It compares the two that are static, a declared version against its changelog and a cited path against the disk. The third was a round trip, which no grep can see, so it is a test instead.
       ⚠️ It is a FLOOR, not a proof. It checks the two disagreements that have actually bitten, and it stays quiet about path-shaped nouns a skill merely describes, such as `results/` or `1-probes/`, because a checker that cries wolf stops being read.
 
 - 8 · 🚧 8 · What this does NOT own
@@ -209,10 +211,10 @@ So the reader who pays is the one who knows least, and nobody in the room is tha
       They share machinery. They do not share judgment.
       So the machinery moved here and the judgment stayed there (JL 260801).
       This skill now holds the general AI-tell catalogue and the weaving method.
-      The humanizer calls `../../writing/haipipe-writing/cli/wdiff.py` for its diffs instead of writing them by hand.
+      The humanizer calls `cli/wdiff.py` for its diffs instead of writing them by hand.
       What stayed in `paper/` is everything a venue owns.
       How loudly a paper may claim, how it cites, which gates a claim must pass, how a funding proposal sounds, and the `%%` comment grammar LaTeX needs.
-      `../../writing/haipipe-writing/ref/change-record.md` §3 is where the two host dialects are written down together, so they cannot drift into two ideas.
+      `ref/change-record.md` §3 is where the two host dialects are written down together, so they cannot drift into two ideas.
 ### The other files
 
 10 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
@@ -278,7 +280,7 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
 
 260802 · `0.6.1`
       **A split rewrite anchored its record on the LAST new line, not the first.**
-      `../../writing/haipipe-writing/ref/change-record.md` §3 states both halves of the rule: the diff covers the
+      `ref/change-record.md` §3 states both halves of the rule: the diff covers the
       whole rewritten run, and the record sits under the FIRST of the new lines.
       `apply` wrote `[first] + tail + kept + [rec]`, which puts it under the last. So a
       40-word sentence broken into three short ones carried its record on sentence
@@ -288,14 +290,14 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
       single-line, where `tail` is empty and the two orders produce the same string.
       Found on `QBv1-misq.md` (260802), on the first rewrite that split one source line
       into three.
-      - `../../writing/haipipe-writing/cli/wdiff.py` — `[first] + kept + [rec] + tail`. The existing lane run still
+      - `cli/wdiff.py` — `[first] + kept + [rec] + tail`. The existing lane run still
         travels with the sentence it belonged to, and the new record still joins the
         END of that run; only the rest of the split now follows it.
-      - `../../writing/haipipe-writing/tests/test_roundtrip.py` — a split case, asserting the record sits under line
+      - `tests/test_roundtrip.py` — a split case, asserting the record sits under line
         one after its existing `> Citation:` lane, that line two follows it, and that
         the diff still covers the whole run.
 260802 · `0.6.0`
-      **`../../writing/haipipe-writing/cli/agree.py`: two statements of one fact, compared** (JL 260802, from `QA10`
+      **`cli/agree.py`: two statements of one fact, compared** (JL 260802, from `QA10`
       aim 7). Three defects surfaced that afternoon and all three were one shape, two
       halves of a contract disagreeing with nothing that compares them: a path cited
       one way by a skill and another way by its own hub, a frontmatter version against
@@ -321,12 +323,12 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
       folders flagged, nearly all of them agreeing perfectly. Fixed, and left in the
       docstring, because the checker written to catch two-halves-disagreeing shipped
       its first draft with two halves disagreeing.
-      **`../../writing/haipipe-writing/tests/test_roundtrip.py`.** What `apply` writes, `check` must accept, over a
+      **`tests/test_roundtrip.py`.** What `apply` writes, `check` must accept, over a
       bare sentence, a sentence with one lane, one with three lanes and a comment, one
       already carrying a signed record, and a paper-host call beside a board record. It
       also asserts the three things `check` must still reject. Verified to FAIL against
       the pre-0.5.0 `check`, so it locks the repair in rather than merely passing. A
-      round trip is not a grep and `../../writing/haipipe-writing/cli/agree.py` could never have seen it.
+      round trip is not a grep and `agree.py` could never have seen it.
 260802 · `0.5.0`
       **The host is a flag, not an instruction** (JL 260802, from `QA10` aim 5).
       `record` and `apply` take `--host {board,paper}`. One `difflib` computation, two
@@ -346,7 +348,7 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
       under a sentence that already carried a `> Citation:`, `> Value:` or any other
       lane was written correctly by one half of the tool and rejected by the other.
       Nothing had caught it because the corpus it was validated against,
-      `../01-boardform-260722/QB-delivery/QB4-overall.md`, happens to carry its 31 records on sentences with no other
+      `QB4-overall.md`, happens to carry its 31 records on sentences with no other
       lane.
       `check` now walks the `>` run back to the sentence it hangs under. A record under
       no prose at all is still caught, and a malformed one still is: verified against
@@ -359,18 +361,18 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
       Aligned with the sentence apparatus, which 0.1.0 through 0.3.0 had ignored
       (JL: "how could you make haipipe-writing consistent with the evidence card and
       comments as well? Did you ever considered about it?"). No, it had not been.
-      The gap was that `../../writing/haipipe-writing/ref/change-record.md` described `✎` as a standalone grammar,
+      The gap was that `ref/change-record.md` described `✎` as a standalone grammar,
       creating a SECOND authority on something already owned by
       `board/haipipe-board-sentence` and specified in `QB4 §3.3.3`: eight ⚑ typed
       lanes, a 💬 comment, and the ✎ record, with a badge naming the kind.
-      - `../../writing/haipipe-writing/ref/change-record.md` rewritten to CITE the owning contract instead of
+      - `ref/change-record.md` rewritten to CITE the owning contract instead of
         restating it. It now carries only what is this skill's: how the diff is
         computed and where the record is placed.
-      - `../../writing/haipipe-writing/ref/holes.md` §4 rewritten. The "board dialect" had been invented; the real
+      - `ref/holes.md` §4 rewritten. The "board dialect" had been invented; the real
         one is the typed lanes, and `QB4 §3.3.3` already states the one-to-one map
         `> Citation:` ←→ `\cite{TOADD}`, `> Value:` ←→ `{VAL:? …}`, `> Display:` ←→ a
         display id. That mapping is how the board reaches `/haipipe-paper`.
-      - `../../writing/haipipe-writing/cli/holes.py` board dialect rebuilt on the eight real lanes. A lane stating
+      - `cli/holes.py` board dialect rebuilt on the eight real lanes. A lane stating
         what it FOUND is no longer counted as a hole; `> Check:` and `> Q-consumer:`
         are holes by definition.
       - `cli/wdiff.py apply` now honours three lane rules it had been breaking:
@@ -382,14 +384,14 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
       by hand on 260801: eighteen `✎` records were removed with a regex to reposition
       them. Repositioning is the legitimate need; erasing was the wrong way to get it.
 260801 · `0.3.0`
-      Second look at `paper/phase/0-draft`, on JL's ask. The first pass reported
+      Second look at `paper/2-phase/0-draft`, on JL's ask. The first pass reported
       nothing general there and was wrong: the strongest pattern in the phase is
       general, and it reads as paper machinery only because every rule is written in
       `\cite{TOADD}`, `{VAL:?}` and `Q-<Stage>-<n>`.
-      - `../../writing/haipipe-writing/ref/holes.md` — the hole discipline. Never invent a fact to close a gap;
+      - `ref/holes.md` — the hole discipline. Never invent a fact to close a gap;
         every hole names an owner; sweep after writing, not during; one writer per
         file. Three dialects (paper, board, plain) over one contract.
-      - `../../writing/haipipe-writing/cli/holes.py` — the checker, both directions. FORWARD catches an unowned
+      - `cli/holes.py` — the checker, both directions. FORWARD catches an unowned
         hole; REVERSE catches a hole pointing at an owner that does not exist, which
         is the worse of the two because it looks owned.
       - `haipipe-paper-draft` Step 4c now RUNS the checker instead of verifying by
@@ -400,31 +402,31 @@ Converted from the skill's own `CHANGELOG.md`: 7 releases.
       `0-draft/` and `2-revise/` is bound to LaTeX, to `%%` comments, to `\cite{TOADD}`
       placeholders, or to venue voice. What moved is the general writing knowledge that
       was only reachable by loading a paper skill.
-      - `../../writing/haipipe-writing/ref/ai-tells.md` — Layer 1 of the humanizer's pattern catalog. It describes
+      - `ref/ai-tells.md` — Layer 1 of the humanizer's pattern catalog. It describes
         how a machine writes in any register; Layers 2 to 6 stayed, because
         over-claiming, citation dumping, venue voice and proposal register do not
         generalize. The humanizer now points here for Layer 1.
-      - `../../writing/haipipe-writing/ref/weaving.md` — the paragraph-flow pass (arc, hinges, rhythm) from
+      - `ref/weaving.md` — the paragraph-flow pass (arc, hinges, rhythm) from
         `haipipe-paper-revise-content`. Generalized: the recording grammar is now the
         host's, so the same method serves `%% {CC-content}:` and `> ✎`.
         `haipipe-paper-revise-content` still owns WHEN the pass runs.
-      - `haipipe-paper-revise-humanizer` now calls `../../writing/haipipe-writing/cli/wdiff.py` to compute its
+      - `haipipe-paper-revise-humanizer` now calls `cli/wdiff.py` to compute its
         candidate diffs rather than writing them by hand.
 260801 · `0.1.0`
       First cut. Extracted from one evening of hand-rewriting the design board's `QB4`
       page with JL, who asked for the capability after watching the same work be done
       by hand: "I think we need to add it to the skills to make this work."
-      - `../../writing/haipipe-writing/cli/wdiff.py` — word-level diff and anchored record insertion. `record`,
+      - `cli/wdiff.py` — word-level diff and anchored record insertion. `record`,
         `apply`, `check`. The diff is `difflib`, not judgment; the placement is by
         position, not by where the writer stopped typing.
-      - `../../writing/haipipe-writing/cli/score.py` — read-only ranking against the weak-English test. Counts house
+      - `cli/score.py` — read-only ranking against the weak-English test. Counts house
         words, long words, sentence length, and the AI tells this repo has actually
         produced. Reports; never rewrites.
-      - `../../writing/haipipe-writing/ref/plain-rules.md` — the rules, each with the ruling that produced it.
-      - `../../writing/haipipe-writing/ref/change-record.md` — the `✎` grammar, the anchoring law, the two host
+      - `ref/plain-rules.md` — the rules, each with the ruling that produced it.
+      - `ref/change-record.md` — the `✎` grammar, the anchoring law, the two host
         dialects, the badge, and what `check` fails on.
       Validated against real prose on the day it was written: `check` passed all 31
-      records on `../01-boardform-260722/QB-delivery/QB4-overall.md`, and `score` independently surfaced the same `### 3`
+      records on `QB4-overall.md`, and `score` independently surfaced the same `### 3`
       sentences that had been flagged by hand, while reporting 0 bad headings on a
       division whose headings had just been repaired.
       Not built yet: a `rewrite` verb that drives the loop end to end. Today step 2 is
