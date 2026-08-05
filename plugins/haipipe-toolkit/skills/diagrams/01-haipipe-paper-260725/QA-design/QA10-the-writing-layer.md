@@ -322,7 +322,7 @@ The checker got its own job wrong twice before it worked, and both are recorded 
   Where the no-artifact-kind argument is stated by the family in its own words.
 - `../../board/haipipe-board-sentence/`
   `③`'s lane contract, which owns the shape the `✎` record lives in.
-- `../../paper/phase/2-revise/haipipe-paper-revise-humanizer/`
+- `../../writing/haipipe-paper-revise-humanizer/`
   The venue half, and one of the two verified callers.
 
 ### 🧪 Checks · what CATCHES a page breaking a rule

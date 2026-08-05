@@ -3,7 +3,7 @@ name: haipipe-board-page-for-section
 description: >-
   The VARIANT contract for a SECTION Page: one page per reader-ordered section unit of a paper or application, produced by a stage that runs once per unit. It loads haipipe-board-page for the base and haipipe-board-page-for-stage for the chain and gate, then adds only what a section page carries and a plain stage page does not: the section kind, the venue contract block whose blueprint line BINDS this unit alone, the template resolved per venue and kind, and the landing surface where citation, value, and display bindings reach prose. This is the type that CONNECTS to for-venue: the QBv catalog is read once by the venue stage, the blueprint allocates the desk's totals per section, and this page consumes its own allocation. Use when writing or fixing a section page, when its venue binding is wrong or missing, when a retarget must say what gets rewritten, or when a landed answer never reached the sentence that owed it. Trigger: section page, S-Main, S-Appendix, section kind, venue contract block, blueprint binds, word budget, section edit page, retarget section, /haipipe-board-page-for-section.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   last_updated: "2026-08-05"
   summary: "First cut, on JL's 260805 admission. Rejected earlier as for-main; readmitted as for-section because section is cross-family and carries typed records for-stage does not."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -24,28 +24,17 @@ unit      one page per reader-ordered unit     judged against its venue floor
 
 The paper family files these as `S-Main-<n>-<slug>` and `S-Appendix-<letter>-<slug>`; the application family's section-edit produces its own. "Section" is cross-family, which is why this type exists while `for-main` was rejected: Main names one family's region, section names a shape both have.
 
+**The type key.** A section page declares `page-type: section` in its frontmatter, and the line is REQUIRED: `S-Main-3-theory` is letter for letter a stage filename, and the key is what routes the page here instead of stopping at `-for-stage`. The `page-type:` key beats the filename (base, type resolution step ③).
+
 ## 🔗 The venue chain, which is the reason this type exists
 
-```
-🗂 QBv<n> catalog     every desk's rules          for-venue owns this page
-      │  read ONCE, by the venue stage
-      ▼
-📌 the blueprint      the desk's TOTALS allocated per section:
-                      word budget · subsection count · density · H-assignments
-      │  read by every section page
-      ▼
-✍️ THIS PAGE          ### Venue contract block · a POINTER, never a copy:
-                      blueprint <- BINDING for this unit alone
-                      style     <- reference only
-                      override  <- a per-section desk rule outranks the blueprint,
-                                   and the block SAYS whether one exists
-```
+The chain is drawn once, in `-for-stage`'s "ONE stage reads the venue page, and it is the venue stage": the QBv catalog is read once by the venue stage, the blueprint turns the desk's totals into per-section allocations, and every later page reads the blueprint. This page does not redraw it. What it adds is the unit grain: this page consumes ITS OWN allocation through its `### Venue contract` block, a POINTER and never a copy. The blueprint line is BINDING for this unit alone; the style line is reference only; the override line SAYS whether a per-section desk rule exists, because such a rule outranks the blueprint.
 
-The block is the typed record that makes this a type: no other stage page carries a per-unit venue binding. Its three lines answer the three questions a retarget asks: what binds, what merely advises, and what the desk itself said.
+The block is the typed record that makes this a type. Other stage pages carry a venue contract block too, `S-Open-Pitch` among them; what no other stage page carries is one PER READER-ORDERED UNIT, allocating that unit's own budget and shape. Its three lines answer the three questions a retarget asks: what binds, what merely advises, and what the desk itself said.
 
 ## 🎚 The section kind is a JOIN KEY, and the template is one of three things it joins
 
-A section declares its KIND from a closed set the family owns (introduction, methods, results, discussion, appendix, and the set grows). The kind is not a label; it is the join key lining up three surfaces that were written at different times by different owners:
+A section declares its KIND from a closed set the family owns (introduction, methods, results, discussion, appendix, and the set grows). The kind is the one name that ties three things together: the venue division, the blueprint block, and the template. Three owners wrote them at different times, and the kind is what lines them up:
 
 ```
   section_kind = "theory"  joins

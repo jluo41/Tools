@@ -7,6 +7,16 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.2.1 - 2026-08-05
+
+Review fixes, no rule change:
+
+- The REQUIRED `page-type: slide` frontmatter key is stated: a deck can sit on
+  any filename, QA4 wears a Q filename, and the key beats the filename (base
+  type resolution ③).
+- Plain English: the 0.1.0 correction is "recorded so the mistake stays on the
+  page", not "recorded so it stays wrong".
+
 ## 0.2.0 - 2026-08-05
 
 **Corrected by its first real page, the same day.** JL rejected the PNG design
@@ -21,6 +31,10 @@ embedding the one deck file with `?preview=N`, verified live in a real browser.
 - The 0.1.0 premise "build.py strips JS" was false and is retired with the
   reason recorded in the contract: the build only asserts pages stay readable
   with scripts off, and it never rewrites an iframe's file at all.
+- The embed carries both selectors, `?preview=N#sN`: the query drives the
+  runtime, the fragment drives a scripts-off CSS `:target` fallback the deck
+  carries in one style block, so the slide still shows where a webview blocks
+  JS. Verified in a real Chrome with script execution disabled.
 - Engine work the correction rode on (in `haipipe-board`): `![alt](x.html)`
   renders as a live iframe with a no-JS open link (`src/body.py`), the
   split-site reroot distinguishes authored html from generated page links by

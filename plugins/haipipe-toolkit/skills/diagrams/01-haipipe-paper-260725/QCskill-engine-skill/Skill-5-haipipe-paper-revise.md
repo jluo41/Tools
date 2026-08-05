@@ -10,7 +10,7 @@ This page brings the three revision layers into one contract: evidence bindings,
 It also distinguishes the normal direct REVISE from the author's original-preserving candidate review.
 
 ## Diagram
-<!-- haipipe:skill:tree:start c423e7d6d9d0deb7 paper/phase/2-revise/haipipe-paper-revise -->
+<!-- haipipe:skill:tree:start c423e7d6d9d0deb7 paper/_old/phase-hubs/haipipe-paper-revise -->
 
 **What `haipipe-paper-revise` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -41,11 +41,11 @@ CHECK reviews the result            no tex sync; not a completed REVISE
 ```
 
 ## Content
-<!-- haipipe:skill:body:start c423e7d6d9d0deb7 paper/phase/2-revise/haipipe-paper-revise -->
+<!-- haipipe:skill:body:start c423e7d6d9d0deb7 paper/_old/phase-hubs/haipipe-paper-revise -->
 
 **haipipe-paper-revise** · `0.2.3` · last shipped 2026-08-04
 
-- folder   `paper/phase/2-revise/haipipe-paper-revise/`
+- folder   `paper/_old/phase-hubs/haipipe-paper-revise/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, Skill
 - summary  Paper-specific REVISE worker layered on haipipe-board-page-revise, with evidence placement first when applicable and manuscript quality workers after it.
 
@@ -255,7 +255,7 @@ The remaining acceptance test compares both modes on the same source section and
 260727 1455 · Created the REVISE skill page from `paper/phase/2-revise/haipipe-paper-revise/`.
 It incorporates the venue-grounded SciWrite and anti-AI-prose work as a three-layer revision model, not a generic word-substitution pass.
 
-<!-- haipipe:skill:log:start c423e7d6d9d0deb7 paper/phase/2-revise/haipipe-paper-revise -->
+<!-- haipipe:skill:log:start c423e7d6d9d0deb7 paper/_old/phase-hubs/haipipe-paper-revise -->
 
 Converted from the skill's own `CHANGELOG.md`: 12 releases.
 

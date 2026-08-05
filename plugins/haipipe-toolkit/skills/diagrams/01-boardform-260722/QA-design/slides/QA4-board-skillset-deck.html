@@ -8,12 +8,20 @@
 <link rel="stylesheet" id="theme-link" href="../../../../display/skills/html-ppt/assets/themes/academic-report.css">
 <link rel="stylesheet" href="../../../../display/skills/html-ppt/assets/academic-report-extras.css">
 <link rel="stylesheet" href="../../../../display/skills/html-ppt/assets/animations/animations.css">
+<style>
+/* No-JS fallback: the URL fragment picks the slide (…deck.html?preview=3#s3),
+   so an embed still shows its one slide where scripts are blocked (a VS Code
+   webview, a locked-down frame). With scripts on, runtime.js preview mode
+   takes over and the two agree, because both key on the same slide. */
+.deck .slide:target{opacity:1;transform:none;pointer-events:auto}
+.deck:has(.slide:target) .slide:not(:target){display:none}
+</style>
 </head>
 <body data-theme-base="../../../../display/skills/html-ppt/assets/themes/">
 <div class="deck">
 
   <!-- 1. Cover -->
-  <section class="slide" data-title="Cover">
+  <section id="s1" class="slide" data-title="Cover">
     <p class="kicker">HAI-Pipe · 2026</p>
     <h1 class="h1 anim-fade-up" data-anim="fade-up">A board is a<br><span class="gradient-text">filesystem of decisions</span></h1>
     <p class="lede">One board per topic · one page per question · one human verb per ruling</p>
@@ -22,7 +30,7 @@
   </section>
 
   <!-- 2. The problem -->
-  <section class="slide" data-title="Problem">
+  <section id="s2" class="slide" data-title="Problem">
     <p class="kicker">Why it exists</p>
     <h2 class="h2">Decisions die in chat</h2>
     <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
@@ -34,7 +42,7 @@
   </section>
 
   <!-- 3. The shape -->
-  <section class="slide" data-title="Shape">
+  <section id="s3" class="slide" data-title="Shape">
     <p class="kicker">The shape</p>
     <h2 class="h2">One page, four sections, one place to rule</h2>
     <div class="grid g2 mt-l">
@@ -47,7 +55,7 @@
   </section>
 
   <!-- 4. The skill set -->
-  <section class="slide" data-title="Skills">
+  <section id="s4" class="slide" data-title="Skills">
     <p class="kicker">The skill set</p>
     <h2 class="h2">Three layers of skills run it</h2>
     <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
@@ -59,7 +67,7 @@
   </section>
 
   <!-- 5. Type × Phase -->
-  <section class="slide" data-title="Type × Phase">
+  <section id="s5" class="slide" data-title="Type × Phase">
     <p class="kicker">The one design idea</p>
     <h2 class="h2">Page = <span class="gradient-text">Type × Phase</span></h2>
     <div class="grid g2 mt-l">
@@ -71,7 +79,7 @@
   </section>
 
   <!-- 6. How work happens -->
-  <section class="slide" data-title="Loop">
+  <section id="s6" class="slide" data-title="Loop">
     <p class="kicker">How work happens</p>
     <h2 class="h2">Agents draft · humans rule</h2>
     <div class="grid g3 mt-l anim-stagger-list" data-anim-target>
@@ -84,7 +92,7 @@
   </section>
 
   <!-- 7. This deck is the proof -->
-  <section class="slide center tc" data-title="Proof">
+  <section id="s7" class="slide center tc" data-title="Proof">
     <div>
       <p class="kicker">And this very deck</p>
       <h1 class="h1 anim-rise-in" data-anim="rise-in">You are looking<br>at the proof</h1>

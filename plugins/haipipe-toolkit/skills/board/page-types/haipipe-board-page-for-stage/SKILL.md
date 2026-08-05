@@ -3,7 +3,7 @@ name: haipipe-board-page-for-stage
 description: >-
   The VARIANT contract for a Board's S-Family-unit stage pages, one Page per lifecycle stage of a paper or application across seed, resource, claims, venue, pitch, narrative, display, and section-edit. It resolves a Page to its own stage through the board_family and board_unit declared by stage.md and holds no per-stage rule itself. It loads haipipe-board-page for the base frame and adds the chain, managed Stage Contract, venue transfer tiers, venue-free versus venue-aligned split, and human gate semantics. Use when writing or fixing a stage Page, when its inputs or venue binding are wrong, when a paper retargets, or when a draft needs to know which venue rules bind it. Trigger: stage page, S page, S-Main, S-Venue, S-Seed, lifecycle stage, stage contract, requires, style-from, provides, venue contract, blueprint, retarget, section edit, gate, /haipipe-board-page-for-stage.
 metadata:
-  version: "0.4.2"
+  version: "0.4.3"
   last_updated: "2026-08-05"
   summary: "Now lives under page-types/ and composes with a separate DRAFT, PROBE, REVISE, or CHECK contract."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -158,6 +158,8 @@ To go from a page to its rules: read `S-<Family>-<unit>` off the filename, find 
                         its venue floor while the others stand against theirs.
                         Never give a Dash page a gate, requires:, or provides:.
 ```
+
+**A unit page may carry a more specific type.** An `S-Main-<n>` or `S-Appendix-<letter>` section unit declares `page-type: section` in its frontmatter and loads `haipipe-board-page-for-section` on top of this file; an `S-Display` unit page declares `page-type: display` and loads `haipipe-board-page-for-display`. The stage filename still says which family and unit the page belongs to; the `page-type:` key says which contract governs it, and the key beats the filename (base, type resolution step ③).
 
 **A family with no stage row is a real state, not a defect.** Submission and Literature carry gated pages that no row in `index.yml` declares, and Round carries a Q page instead of an S page. Such a page has no `stage.md` to load, so it owns its own contract in its own `## Stage Contract`, and it says on the page that no stage row declares it. Do not invent a row, and do not file the page under a neighbouring stage because the folder sits next to it.
 

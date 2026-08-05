@@ -3,27 +3,27 @@ name: haipipe-board-page-for-value
 description: >-
   The VARIANT contract for a VALUE topic Page: a topic page owning a `### Q-consumer register` whose questions face INWARD, toward results this project must produce, with one probe entry page nested below probes/ per neutral executor question. It loads haipipe-board-page for the base frame and the shared topic-entry core for the anatomy, then adds only the inward route's translation layer: what a legal register row carries here, what a returned answer must become (a value binding: the number, its run provenance, the claim it serves), and when the topic may close. Use when writing or fixing a Value topic page, when a register row names no claim dependency, when a number appears in prose with no run behind it, or when a claim ledger row cannot say which specification produced its estimate. Trigger: value topic, value page, S-Value, task route, value binding, run provenance, claim ledger, number evidence, /haipipe-board-page-for-value.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-08-05"
-  summary: "First cut, on JL's D ruling: separate types over ONE loaded topic core; this file is the inward route's dictionary and nothing else."
+  summary: "0.2.0 pulled this file out of its sibling's shadow: route: inward is now a REQUIRED register key, the close rule cites the core's Register-row states, and BOUND is defined here as provenance paths that resolve."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-board-page-for-value · the inward route: what this project must produce
 
-**LOAD TWO THINGS FIRST.** `haipipe-board-page` owns the base frame. `haipipe-board/ref/topic-entry-contract.md` owns the shared anatomy: the `### Q-consumer register` on the direct topic page, entry pages below `probes/`, the four fixed entry headings, and the state-derived queue. This file restates NEITHER; it adds only what the inward route means, because the anatomy is stated once or the two topic types drift apart (`QB6 §4`, JL 260805).
+**LOAD TWO THINGS FIRST.** `haipipe-board-page` gives the frame; `haipipe-board/ref/topic-entry-contract.md` gives the register and entry anatomy, which both topic routes share and neither restates (`QB6 §4`, JL 260805). What this file adds is the inward route alone. Inward means the answer does not exist yet: the project must RUN something to make it, so every rule here is about chaining a produced number to the run that made it and to the claim that needs it.
 
 **The kind this variant covers**: a topic page whose questions face INWARD.
 
 ```
 kind     resolved by                          closes when
 ─────────────────────────────────────────────────────────────────────
-Value    the page declares a Q-consumer       every register row's claim is
-topic    register AND its route is the        bound to an accepted run, deferred
-         inward, task-bank direction          with a reason, or withdrawn
+Value    the `### Q-consumer register`        every register row is BOUND,
+topic    marker plus its REQUIRED             DEFERRED, or WITHDRAWN, per the
+         `route: inward` line                 core's Register-row states
 ```
 
-"Value" names a DIRECTION, not a paper section: any family may ask for a number its own work must produce. The paper family's projection files these pages as `S-Value-<n>-<topic>` with `V<n>` entry folders; those letters are family vocabulary and stay in the paper projection.
+"Value" names a DIRECTION, not a paper section: any family may ask for a number its own work must produce. The paper family's projection files these pages as `S-Value-<n>-<topic>` with `V<n>` entry folders; those letters are family vocabulary and stay in the paper projection. `route: inward` is the REQUIRED key on the register's first line; it is what separates a page that must produce numbers from one that searches for papers (base, type resolution step ②).
 
 ## 🗣 What a legal register row carries HERE
 
@@ -53,7 +53,7 @@ An answer that stays in the entry's `#### a-executor` is not yet a number the pa
 
 ## 🚪 When the topic closes
 
-Every register row reaches one of three states: its claim is BOUND to an accepted run by path, DEFERRED with the reason written on the row, or WITHDRAWN because the claim changed. A row that is none of these holds the topic open, and the topic's human gate reads the register, not the entries.
+The core's Register-row states section owns the three terminal states and the rule that the human gate reads the register, not the entries. What BOUND takes on this route is a run you can walk to: the row carries the number together with its run, specification, and QA file, each named by path. A number typed from memory binds nothing. Until the provenance paths exist the row stays open, however right the number looks in the prose.
 
 ## 📂 Files
 
@@ -63,4 +63,4 @@ haipipe-board-page-for-value/
 └── CHANGELOG.md        version history
 ```
 
-Owns no scripts and no anatomy. The core is `haipipe-board/ref/topic-entry-contract.md`; the checker is `haipipe-board/src/topic_entry_contract.py`; the crossing is `page-phases/haipipe-board-page-probe`; the outward sibling is `haipipe-board-page-for-literature`; the paper projection is `paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md`.
+Nothing executable ships here. The register and entry shape belongs to `haipipe-board/ref/topic-entry-contract.md`, enforced by `haipipe-board/src/topic_entry_contract.py`; the wall a computation request crosses is owned by `page-phases/haipipe-board-page-probe`. A question about what is already published goes to `haipipe-board-page-for-literature`. The paper family projects this shape at `paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md`.

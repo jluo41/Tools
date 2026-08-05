@@ -64,7 +64,7 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
 - 1 · ✍️ The unit and its address
       One prose line in the source is one sentence on the page: that is why prose is written ONE SENTENCE PER LINE (`check.py` warns on a hard wrap, because a wrapped sentence renders as a broken row).
       ```
-      QB5.C1.P1.S1        Content division 1 · paragraph 1 · sentence 1
+      QB8.C1.P1.S1        Content division 1 · paragraph 1 · sentence 1
                           UPPERCASE+digit tokens, so a section slug can
                           never collide with a coordinate
       ```

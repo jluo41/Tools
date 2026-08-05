@@ -10,7 +10,7 @@ This page covers the paper-side PROBE bridge.
 It turns a question already anchored on an S page into an entry and interprets a landed QA artifact back into the paper, while `haipipe-probe` and the bank retain their own ownership.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 6e79c181dcc8bc4b paper/phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:tree:start 6e79c181dcc8bc4b paper/workers/haipipe-paper-probe -->
 
 **What `haipipe-paper-probe` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -47,11 +47,11 @@ The paper records what the fact means.  The executor records the fact.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 6e79c181dcc8bc4b paper/phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:body:start 6e79c181dcc8bc4b paper/workers/haipipe-paper-probe -->
 
 **haipipe-paper-probe** · `0.7.6` · last shipped 2026-08-04
 
-- folder   `paper/phase/1-probe/haipipe-paper-probe/`
+- folder   `paper/workers/haipipe-paper-probe/`
 - tools    Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 - summary  Paper-specific PROBE worker layered on haipipe-board-page-probe and haipipe-probe, retaining Q-consumer/Q-executor and A-executor/A-consumer.
 
@@ -65,7 +65,7 @@ Skill: haipipe-paper-probe — the PROBE-phase worker for a paper
 Called by paper stage skills whenever DRAFT, REVISE, or CHECK routes a consequential unknown to PROBE.
 The originating phase raised or identified the Q-consumer and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../../board/page-phases/haipipe-board-page-probe/SKILL.md`, then `../../../../probe/haipipe-probe/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../board/page-types/haipipe-board-page-for-stage/SKILL.md`, then `../../../board/page-phases/haipipe-board-page-probe/SKILL.md`, then `../../../probe/haipipe-probe/SKILL.md`.
 The nested S03/S04 artifact is the paper's Probe Page.
 Its existing code and headings may say entry, but that label is not another Page Type or phase.
 
@@ -76,7 +76,7 @@ Its existing code and headings may say entry, but that label is not another Page
 > there and the id bracketed in prose are the same string or the sentence reports
 > as `unowned`. An entry preserves that id only in `#### consumer trace`.
 
-⭐ THE MODEL IS NOT THIS FILE'S — it is owned by `../../../../probe/haipipe-probe/SKILL.md`.
+⭐ THE MODEL IS NOT THIS FILE'S — it is owned by `../../../probe/haipipe-probe/SKILL.md`.
 Read it for the probe-file anatomy, the QA state-line contract, the cost ladder, the two LAWS, the derived states, and the checker's FAIL codes.
 This file is ONLY how a paper runs the loop, plus the paper-side deltas that file does not cover.
 
@@ -92,7 +92,7 @@ The paper-side deltas:
 Rules (follow these — the model is probe's)
 ======================================================
 
-The PROBE-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · PROBE phase** (+ **The QA file**, **The two LAWS**). Follow those; on conflict, that file wins. Paper-specific additions:
+The PROBE-phase rules live in `../../../probe/haipipe-probe/SKILL.md` → **Phase rules · PROBE phase** (+ **The QA file**, **The two LAWS**). Follow those; on conflict, that file wins. Paper-specific additions:
 - Dispatch goes through the collector agent (`haipipe-probe-q-executor-agent`), NEVER an orchestrator called inline by this worker — results would die with the reply.
 - HARVEST IS INLINE, and `#### a-executor` is its only answer sink. The entry page is the consumer-side source of truth for the returned answer; the parent topic's Q-consumer register remains the source of truth for paper stake and interpretation. Phase history lives in the owning S page's `## Log`.
 - RESOURCE write-back: the landed reading goes into the owning `0-lifecycle/S02-work/S-Work-*.md` resource page as the Q's `A:` (existence AND fitness AND what it KILLS).
@@ -144,7 +144,7 @@ The direct topic page's `### Q-consumer register` is the input. For each Q-consu
 ----------------------------------------------
 
 ⛔ NO ENTRY IS DISPATCHED WITHOUT PASSING THIS. Read `probe_depth:` from the stage's contract
-(`../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md`), or take the value the
+(`../../S<NN>-<group>/<key>/stage.md`, per the roster `../../haipipe-paper-stage/stages/index.yml`), or take the value the
 invocation passed as `probe --depth N`, whichever is HIGHER — the invocation may raise the
 contract's default, never lower it silently.
 
@@ -279,7 +279,7 @@ Reference
 =========
 
 ```
-../../../../probe/haipipe-probe/SKILL.md   probe — the model. Read it.
+../../../probe/haipipe-probe/SKILL.md   probe — the model. Read it.
 ref/per-stage-dispatch.md                  per-stage routing · seed/claims/resource specifics
 check-probe-cards.sh                       the VERIFY / stage-gate verifier (family-local)
 ref/topic-entry-contract.md                the paper-specific S03/S04 entry shape
@@ -329,7 +329,7 @@ The remaining acceptance test is a mixed-depth campaign that exercises all four 
 260727 1450 · Created the paper-side PROBE skill page from `paper/phase/1-probe/haipipe-paper-probe/`.
 The authored diagram keeps the five-step loop and the evidence/story ownership wall in one place.
 
-<!-- haipipe:skill:log:start 6e79c181dcc8bc4b paper/phase/1-probe/haipipe-paper-probe -->
+<!-- haipipe:skill:log:start 6e79c181dcc8bc4b paper/workers/haipipe-paper-probe -->
 
 Converted from the skill's own `CHANGELOG.md`: 56 releases.
 

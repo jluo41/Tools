@@ -1,4 +1,4 @@
-# haipipe-board-page · v0.18.0
+# haipipe-board-page · v0.20.0
 state: 🟡 in flux · door test passed 260802, scope bound unmeasured
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -31,7 +31,7 @@ The durable `_runs/page/` bundle and `pageflow.py` make illegal routes, self-app
 `haipipe-board-page-for-skill` owns the Skill and Agent mirror kinds, and it is the variant this page itself is written to.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 2695d7414ea02423 board/haipipe-board-page -->
+<!-- haipipe:skill:tree:start f1cd7bee1b5fb824 board/haipipe-board-page -->
 
 **What `haipipe-board-page` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -39,8 +39,8 @@ The durable `_runs/page/` bundle and `pageflow.py` make illegal routes, self-app
 haipipe-board-page/
   ref/
     page-run-contract.md   195 ln  Page RUN contract
-  CHANGELOG.md             250 ln  haipipe-board-page · Changelog
-  SKILL.md                 436 ln  /haipipe-board-page · the page, as a contract you can load
+  CHANGELOG.md             285 ln  haipipe-board-page · Changelog
+  SKILL.md                 468 ln  /haipipe-board-page · the page, as a contract you can load
 ```
 
 <!-- haipipe:skill:tree:end -->
@@ -78,13 +78,13 @@ WORKFLOW  three verbs and one spec load, from the same door
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 2695d7414ea02423 board/haipipe-board-page -->
+<!-- haipipe:skill:body:start f1cd7bee1b5fb824 board/haipipe-board-page -->
 
-**haipipe-board-page** · `0.18.0` · last shipped 2026-08-05
+**haipipe-board-page** · `0.20.0` · last shipped 2026-08-05
 
 - folder   `board/haipipe-board-page/`
 - tools    not declared
-- summary  Nine Page Type variants ship under page-types/, six admitted 260805; for-slide embeds the deck LIVE per division via ?preview=N, proven on QA4.
+- summary  One resolution table covers ALL types: filename prefix, then the register's REQUIRED route: line, then the REQUIRED page-type: frontmatter key, then the stage and Q filenames; exactly one key matches or the page is defective.
 
 ### SKILL.md
 
@@ -113,29 +113,41 @@ This skill never CONTAINS the renderer, the server or the checker. It calls them
 The authoritative template stays `haipipe-board/ref/page-template.md`; this contract cites it and must never fork it.
 
 
-- 1 · 🧬 Six Page Types, one base
-      A Page's TYPE comes from its filename, and the type decides how the Page closes, what its Content holds, and which typed records it fills through the base frame's declared extension points.
+- 1 · 🧬 Page Types, one base
+      A Page's TYPE comes from one machine-readable key on the page: a filename prefix, a declared register marker, or a frontmatter `page-type:` line.
+      The type decides how the Page closes, what its Content holds, and which typed records it fills through the base frame's declared extension points.
       Everything else is the shared base (the model on the design board's QB4, JL 260729).
       The implementation may still call this field `kind`; the contract term is Page Type.
-      **Six Page Types, one base**: the filename decides the type, and the type decides how the Page closes.
+      **Type resolution**: one table for ALL types. Resolve ① to ⑤ in order and stop at the first key that matches.
       ```
-      Page Type     filename                     closes when
-      ─────────────────────────────────────────────────────────────────
-      Q  decision   Q<group><n>[<face>]-<slug>   every Aim is met or explicitly held
-      S  stage      S-<Family>-<unit>-<slug>     its human gate passes
-      QBv venue     QBv<n>-<slug>                the desk's rules are recorded
-      Skill mirror  Skill-<n>-<slug>             the unit ships · NEVER counted
-      Agent mirror  Agent-<n>-<slug>             the unit ships · NEVER counted
-      Meeting       Meeting-<n>-<slug>           faithful + every decision routed · NEVER counted
+      step  machine-readable key                            Page Type             contract
+      ─────────────────────────────────────────────────────────────────────────────────────
+      ①     filename Skill-<n>- or Agent-<n>-               Skill / Agent mirror  for-skill
+            filename Meeting-<n>-                           Meeting               for-meeting
+            filename QBv<n>-                                QBv venue             for-venue
+      ②     `### Q-consumer register` + `route: outward`    Literature topic      for-literature
+            `### Q-consumer register` + `route: inward`     Value topic           for-value
+      ③     frontmatter `page-type: display`                Display unit          for-display
+            frontmatter `page-type: slide`                  Slide deck            for-slide
+            frontmatter `page-type: design`                 Design brief          for-design
+            frontmatter `page-type: section`                Section unit          for-section
+      ④     filename S-<Family>-<unit>-<slug>               Stage                 for-stage
+      ⑤     filename Q<group><n>[<face>]-<slug>             Q decision            base only
       ```
-      `src/common.py` globs four prefixes, `Q`, `S`, `Agent` and `Meeting`; a `Skill-` Page rides the `S` glob, which is why five implemented types need only four prefixes.
-      `Meeting-<n>` is generated by `cli/meetingpage.py` and has no contract in any skill; it is named here so the kind is at least discoverable.
+      EXACTLY ONE step may claim a page, or the page is defective: a page no key matches, or one carrying two keys that disagree, is fixed on the page, never in the resolver.
+      Step ② needs the register's `route:` line because the marker alone cannot tell the two topic routes apart; the line is REQUIRED, and `haipipe-board/ref/topic-entry-contract.md` declares it.
+      Step ③'s `page-type:` line is REQUIRED on those four types' pages, and it BEATS the filename.
+      That order settles the two real collisions: `S-Display-4c` wears a stage filename and is a display unit, so `page-type: display` resolves it at ③ before ④ can claim it; `QA4` wears a Q filename and is a slide deck, so `page-type: slide` resolves it before ⑤.
+      Each type's contract states how it closes; the base's own type, the Q decision page, closes when every Aim is met or explicitly held, and mirror and Meeting pages are NEVER counted in a board's settled totals.
+      `src/common.py` globs four filename prefixes, `Q`, `S`, `Agent` and `Meeting`, and that glob decides only what counts as a page at all; a `Skill-` page starts with the letter S, so it rides the `S` glob.
+      Membership is the glob's whole job. The table above, not the glob, decides which type a page is.
+      `Meeting-<n>` is generated by `cli/meetingpage.py`, and its contract is `haipipe-board-page-for-meeting`: talk is recorded there, ruled elsewhere.
       A Page Type used by one consumer family is a VARIANT of the base: it defines Content and may populate fixed extension points in Aims, States, and Stage Contract, but it never redefines, adds, removes, or reorders those frame sections.
       A variant ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803).
-      The three Page Type variants maintained here live under `page-types/`; a family-specific stage worker such as `haipipe-paper-stage` remains in its own family.
+      The ten Page Type variants maintained here live under `page-types/`; a family-specific stage worker such as `haipipe-paper-stage` remains in its own family.
       The earlier wording was "ships under its CONSUMER, never here", which broke when the venue variant landed because its consumer is the paper family and its maintainer is this one.
       This skill owns the BASE those variants extend.
-      NINE Page Type variants ship under `page-types/`, and one of them must be loaded before you write the Page it governs:
+      TEN Page Type variants ship under `page-types/`, and one of them must be loaded before you write the Page it governs:
       ```
       Skill-<n> · Agent-<n>   →  haipipe-board-page-for-skill      a page that mirrors a
                                                                    shipped unit and decides nothing
@@ -156,8 +168,27 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       slide deck              →  haipipe-board-page-for-slide      one division per slide, each
                                                                    embedding the deck LIVE via
                                                                    ?preview=N
+      design brief            →  haipipe-board-page-for-design     one division per candidate,
+                                                                   closes on a SELECTION record
       ```
-      The last six were admitted 260805 (JL, ruled on the design board's QB6; `-for-slide` on the Page-for-Slide branch). `-for-section` loads `-for-stage` the way the topic types load the topic core: it adds the section kind, the venue contract block, and the landing surface where citation, value, and display bindings reach prose; a section reads the venue BLUEPRINT, never the QBv catalog. `-for-meeting` closes the gap the types table itself records: `Meeting-<n>` pages had a generator and no contract; its one owned rule is that a spoken decision is not ruled until routed to the owning page. The two topic types resolve by the `### Q-consumer register` marker plus their route direction, the same signal `src/topic_entry_contract.py` already trusts, because their filenames ride the stage shape; both LOAD `haipipe-board/ref/topic-entry-contract.md` for the anatomy and add only their route's translation layer. A display page is mirror-shaped but closes on human ACCEPTANCE of a render, not on a unit shipping, which is why it does not ride `-for-skill`. A slide page shares that acceptance model at deck grain: one division per slide, each embedding the ONE deck file live via html-ppt's `?preview=N` single-slide mode, while the same file opened bare is the presentation; JL ruled the embed must be the html itself, and the boardform board's QA4 is the proving page (260805).
+      The last seven were admitted 260805 (JL, ruled on the design board's QB6; `-for-slide` on the Page-for-Slide branch).
+      `-for-section` loads `-for-stage` the way the topic types load the topic core.
+      It adds the section kind, the venue contract block, and the landing surface where citation, value, and display bindings reach prose.
+      A section reads the venue BLUEPRINT, never the QBv catalog.
+      `-for-meeting` closed a gap this section itself used to record: `Meeting-<n>` pages had a generator and no contract.
+      Its one owned rule is that a spoken decision is not ruled until routed to the owning page.
+      The two topic types resolve by the `### Q-consumer register` marker plus the register's REQUIRED `route:` line, the same marker `src/topic_entry_contract.py` already trusts.
+      Their filenames look like stage-page filenames, which is why a filename cannot resolve them.
+      Both LOAD `haipipe-board/ref/topic-entry-contract.md` for the anatomy and add only their route's translation layer.
+      A display page is mirror-shaped but closes on human ACCEPTANCE of a render, not on a unit shipping.
+      That is why it does not load `-for-skill`.
+      A slide page shares that acceptance model at deck grain: one division per slide.
+      Each division embeds the ONE deck file live, via html-ppt's `?preview=N` single-slide mode.
+      The same file opened bare is the presentation.
+      JL ruled the embed must be the html itself, and the boardform board's QA4 is the proving page (260805).
+      A design page is the brief itself: its Opening states audience, goal, and constraints, and each Content division carries one CANDIDATE artifact.
+      It closes on a SELECTION record naming the winner and each loser's disposition.
+      It sits UPSTREAM of `-for-display`: design selects the candidate, display accepts its render.
       Load the matching one before writing or fixing any Page of those types.
       `haipipe-board-page-for-stage` names the ONE stage that reads a `QBv` Page and the four tiers deciding what crosses from that catalog into a draft.
       The first two listed types also do NOT take the `create a new page` steps below: they are GENERATED by `haipipe-board/cli/skillpage.py new`, which writes the Page from its own stub and registers it in `board.md` itself, so copying `ref/page-template.md` and registering by hand produces a Page with no managed spans that the checker then reports as broken forever.
@@ -471,10 +502,40 @@ It is also the base that variant doors extend, so `haipipe-paper-stage` and any 
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the spec load, the two verbs and the 0.10.0 scope bound, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. The measured door test recorded as met, and its scope failure recorded as the one Aim it left open
 260731 1115 · page generated from `board/haipipe-board-page/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 2695d7414ea02423 board/haipipe-board-page -->
+<!-- haipipe:skill:log:start f1cd7bee1b5fb824 board/haipipe-board-page -->
 
-Converted from the skill's own `CHANGELOG.md`: 20 releases.
+Converted from the skill's own `CHANGELOG.md`: 22 releases.
 
+260805 · `0.20.0`
+      **One resolution table, every type machine-resolvable** (review fix). The stale
+      "Six Page Types" table, written when six types existed, is replaced by a single
+      resolution table covering ALL types, resolved in a fixed order: ① filename
+      prefix (`Skill-`/`Agent-` → for-skill, `Meeting-` → for-meeting, `QBv` →
+      for-venue), ② the register's REQUIRED `route: outward | inward` line
+      (for-literature / for-value, declared in `haipipe-board/ref/topic-entry-contract.md`),
+      ③ the REQUIRED frontmatter `page-type: display | slide | design | section`,
+      ④ the `S-<Family>-<unit>` stage filename, ⑤ the Q filename. Exactly one key
+      matches or the page is defective. A `page-type:` key beats the filename, which
+      settles the S-Display-4c stage/display double match and the QA4 Q-file slide
+      page.
+      - Four stale self-contradictions fixed: the six-type heading and table; "the
+        three Page Type variants maintained here" (ten); the "five implemented types
+        need only four prefixes" sentence (the glob decides membership only, the
+        table decides type); the claim that Meeting "has no contract in any skill"
+        (it has for-meeting).
+      - The admissions paragraph is split into short sentences; "ride the stage
+        shape" now reads "look like stage-page filenames".
+260805 · `0.19.0`
+      **for-design admitted** (JL, ruled A on the design board's QB6; his definition,
+      260805: "we want to design some messages, say message A, B, C for one group of
+      people; the Content divisions ARE the different messages"). One page per design
+      BRIEF, its Opening stating audience, goal, and constraints; one Content division
+      per CANDIDATE, each carrying the artifact itself, its rationale, and its fit to
+      the brief's criteria; Aims are the criteria. Closes on a SELECTION record naming
+      the winner, why, and each loser's disposition (dropped · kept for A/B test ·
+      merged). Sits upstream of for-display: design selects the candidate, display
+      accepts its render. A losing division is never silently deleted, because the
+      rationale for NOT choosing is part of the design record.
 260805 · `0.18.0`
       **for-slide admitted** (JL, on the Page-for-Slide branch). One page per deck, one
       division per slide, each carrying its outline plus the PNG export of the built

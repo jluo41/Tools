@@ -1,4 +1,4 @@
-# haipipe-board · v0.117.0
+# haipipe-board · v0.118.0
 state: 🔴 OPEN
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -9,7 +9,7 @@ method: three managed spans sync from the skill folder; everything else is writt
 It does not author Paper content or decide manuscript truth. In this Board, `QC3` and `QC5` add the Paper dialect: section purpose, paragraph progression, and sentence/evidence requirements. This card is the entry point for Board operation; `Skill-8`, `Skill-9` and `Skill-10` are its loadable page, sentence, and routing specifications. The index specification was `Skill-7` until 260802, when JL merged `haipipe-board-index` into `haipipe-board-routing`, so that altitude is now part of `Skill-10` and the retired page sits in `_archive/`.
 
 ## Diagram
-<!-- haipipe:skill:tree:start e5bfbbfd6b768254 board/haipipe-board -->
+<!-- haipipe:skill:tree:start e0df0b13714c28e7 board/haipipe-board -->
 
 **What `haipipe-board` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -24,7 +24,7 @@ haipipe-board/
       40-structure.css               45 ln  group intro (QC2, JL 260724): one quiet sentence under each group header;
       45-sitebar.css                 44 ln  The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
       50-embeds.css                  35 ln  QF1 · embeds: another file's content shown by reference (live)
-      60-chips.css                  227 ln  chips: an inline marker that knows its own state (QC1, 260726)
+      60-chips.css                  235 ln  chips: an inline marker that knows its own state (QC1, 260726)
       70-sidebar.css                139 ln  Pages sidebar (JL 260731): Index → group → page, hideable
       80-matrix.css                 142 ln  SECTION MATRIX (QB2, JL 260731): page × section, computed at build
     js/
@@ -81,7 +81,7 @@ haipipe-board/
     tuichat.mjs                     176 ln
   cli/
     build.py                        164 ln  Board source folder -> generated board/ site.
-    check.py                       1030 ln  check.py — the structural half of QA9, run against one board.
+    check.py                       1037 ln  check.py — the structural half of QA9, run against one board.
     gate.py                         143 ln  QA3 · the round's gate, as one command.
     gate_live.py                    213 ln  QC8 gate: prove a serve.py refactor changed no RESPONSE and no file on disk.
     meetingpage.py                  390 ln  Turn an echo-meeting note into a board page of kind `Meeting-<n>`.
@@ -118,10 +118,10 @@ haipipe-board/
   src/
     __init__.py                       3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
     assets.py                        90 ln  The browser assets, assembled from parts.
-    body.py                        1407 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
+    body.py                        1420 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
     common.py                       197 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
     dialect_paper.py               1012 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
-    page_board.py                  1039 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
+    page_board.py                  1048 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
     page_context.py                 318 ln  Bounded cross-Page context declared under ``## Files``.
     page_lifecycle.py               550 ln  Deterministic audit of one Page lifecycle Workflow receipt.
     page_question.py                809 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
@@ -163,7 +163,7 @@ haipipe-board/
       addon-unicode11.js              2 ln
       xterm.css                     285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
       xterm.min.js                    2 ln
-  CHANGELOG.md                     1989 ln  haipipe-board — Changelog
+  CHANGELOG.md                     2008 ln  haipipe-board — Changelog
   SKILL.md                          771 ln  /haipipe-board: one topic, one source tree, one generated Board site
   status.py                         364 ln  Render the three-line closing block for one Board-attached session.
 ```
@@ -178,13 +178,13 @@ above is the whole story.
 ```
 
 ## Content
-<!-- haipipe:skill:body:start e5bfbbfd6b768254 board/haipipe-board -->
+<!-- haipipe:skill:body:start e0df0b13714c28e7 board/haipipe-board -->
 
-**haipipe-board** · `0.117.0` · last shipped 2026-08-04
+**haipipe-board** · `0.118.0` · last shipped 2026-08-05
 
 - folder   `board/haipipe-board/`
 - tools    not declared
-- summary  Adds checked, phase-scoped Related Board Pages and a bounded one-hop context reader.
+- summary  Live html embeds: a markdown image whose target ends in .html renders as a live iframe, authored html reroots by existence, and a media embed counts as a division's figure (QA4, JL 260805).
 
 ### SKILL.md
 
@@ -834,7 +834,7 @@ assets/css/30-slide.css            191 ln  聚焦 = 一张幻灯片，不是一�
 assets/css/40-structure.css         45 ln  group intro (QC2, JL 260724): one quiet sentence under each group header;
 assets/css/45-sitebar.css           44 ln  The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
 assets/css/50-embeds.css            35 ln  QF1 · embeds: another file's content shown by reference (live)
-assets/css/60-chips.css            227 ln  chips: an inline marker that knows its own state (QC1, 260726)
+assets/css/60-chips.css            235 ln  chips: an inline marker that knows its own state (QC1, 260726)
 assets/css/70-sidebar.css          139 ln  Pages sidebar (JL 260731): Index → group → page, hideable
 assets/css/80-matrix.css           142 ln  SECTION MATRIX (QB2, JL 260731): page × section, computed at build
 assets/js/00-header.js              33 ln  Every write posts `path`, and the server takes that path's PARENT as the
@@ -883,7 +883,7 @@ checks/switchback.mjs              161 ln
 checks/termnav.mjs                 185 ln
 checks/tuichat.mjs                 176 ln
 cli/build.py                       164 ln  Board source folder -> generated board/ site.
-cli/check.py                      1030 ln  check.py — the structural half of QA9, run against one board.
+cli/check.py                      1037 ln  check.py — the structural half of QA9, run against one board.
 cli/gate.py                        143 ln  QA3 · the round's gate, as one command.
 cli/gate_live.py                   213 ln  QC8 gate: prove a serve.py refactor changed no RESPONSE and no file on disk.
 cli/meetingpage.py                 390 ln  Turn an echo-meeting note into a board page of kind `Meeting-<n>`.
@@ -917,10 +917,10 @@ ref/topic-entry-contract.md         32 ln  Topic page and nested entry contract
 ref/writing-rules.md                98 ln  Writing rules: how to write so it reads like human language
 src/__init__.py                      3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
 src/assets.py                       90 ln  The browser assets, assembled from parts.
-src/body.py                       1407 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
+src/body.py                       1420 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
 src/common.py                      197 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
 src/dialect_paper.py              1012 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
-src/page_board.py                 1039 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
+src/page_board.py                 1048 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
 src/page_context.py                318 ln  Bounded cross-Page context declared under ``## Files``.
 src/page_lifecycle.py              550 ln  Deterministic audit of one Page lifecycle Workflow receipt.
 src/page_question.py               809 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
@@ -970,10 +970,26 @@ Mirrored into the Paper Engine so a reader can see the shared Board substrate wi
 ## Log
 260801 0000 · page generated from `board/haipipe-board/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start e5bfbbfd6b768254 board/haipipe-board -->
+<!-- haipipe:skill:log:start e0df0b13714c28e7 board/haipipe-board -->
 
-Converted from the skill's own `CHANGELOG.md`: 156 releases.
+Converted from the skill's own `CHANGELOG.md`: 157 releases.
 
+260805 · `0.118.0`
+      **Live html embeds, for the slide page type** (JL: "you will embed the html in
+      the content division"; proven on the boardform board's QA4).
+      - `src/body.py`: `![alt](x.html)` renders as a live iframe (`.fightml`) with an
+        always-visible open link as the no-JS path. `?preview=N` on an html-ppt deck
+        embeds exactly slide N, so a slide page carries one deck file, per-division.
+      - `src/page_board.py`: the split-site reroot now tells authored html files from
+        generated page links by EXISTENCE in the board source folder, so an embed's
+        src gets the `../../` hop exactly like a png while group-index links stay
+        sited. (The first cut keyed on the `../` prefix and broke every group index
+        row; the existence test replaced it the same hour.)
+      - `cli/check.py`: a media embed (`![](…)`) satisfies the division-figure rule,
+        since a rendered embed is a figure in the renderer's own vocabulary; the
+        caption rule still applies.
+      - `assets/css/60-chips.css`: `.fightml` frame styles, slide-proportioned
+        (16:9), scoped like `figpdf`.
 260804 · `0.117.0`
       - Adds the typed `### 🔗 Related Board Pages` Files group for precise Page-to-Page
         context by relation, Page Phase, Page id, and `page`/`§n` scope.

@@ -375,14 +375,14 @@ The console:
       Loopback is no longer a rendered block either: with the frontier derived and
       nothing stored, re-running an earlier stage is ordinary, not an anomaly to
       diagnose. Say it in one clause on the frontier line if it is worth saying.
-      Per the Lifecycle TeX Quality Standard (`../../3-deliver/haipipe-paper-deliver/SKILL.md`),
-      a stale PDF is a defect: list any stage whose `.tex` is newer than its `.pdf`
-      under Open Needs.
+      Per the Lifecycle TeX Quality Standard (full text sits with the retired deliver
+      router; debt tracked in `../_old/README.md`), a stale PDF is a defect: list any
+      stage whose `.tex` is newer than its `.pdf` under Open Needs.
       Keep it concise. The goal is to orient the session and hand over the URL, not
       to rewrite the paper.
 
 - 9 · Free-form Routing
-      After the dashboard, route follow-up input through the lifecycle using the command map in `../../1-lifecycle/ref/04-lifecycle-map.md`:
+      After the dashboard, route follow-up input through the lifecycle using the command map in `../haipipe-paper-stage/ref/04-lifecycle-map.md`:
       ```text
       seed                       -> /haipipe-paper seed         (stage key: seed)
       resource / prereq /        -> /haipipe-paper resource      (stage key: resource)
@@ -394,7 +394,7 @@ The console:
       narrative / arc            -> /haipipe-paper narrative     (stage key: narrative)
       display / figure / table   -> /haipipe-paper display       (stage key: display)
       section / edit / §N        -> /haipipe-paper section-edit  (stage key: section-edit)
-      check §N                   -> /haipipe-paper-check
+      check §N                   -> /haipipe-paper section-edit, CHECK gate (page logic: haipipe-board-page-check)
       round / todo               -> round skills
       rebuttal / respond         -> rebuttal skills
       ```
