@@ -75,8 +75,8 @@ An undated claim here is a claim about a release nobody can identify.
    it has a     it is argued where its prose already lives
    subject to
    argue        ⑪ writing/  → ②, this board, at QA10
-                ⑨ display/  → ⑩, its own board  (owns the float)
-                ⑤ probe/    → ⑥, its own board  (owns the QA file)
+                ⑨ display/  → earned ⑩ (owns the float; board retired 260804)
+                ⑤ probe/    → earned ⑥ (owns the QA file; board retired 260804)
                 ③ board/    → ④, its own board  (owns the page)
 ```
 
@@ -140,8 +140,8 @@ That is the healthy shape of a dependency, and it was got wrong first. Releases 
  📋 it has a    🏠 it is argued where its prose already lives
     subject to
     argue       ✍️ ⑪ writing/  ━▶ ②, this board, at QA10
-                🖼 ⑨ display/  ━▶ ⑩, its own board  (owns the float)
-                🔎 ⑤ probe/    ━▶ ⑥, its own board  (owns the QA file)
+                🖼 ⑨ display/  ━▶ earned ⑩ (the float; board retired 260804)
+                🔎 ⑤ probe/    ━▶ earned ⑥ (the QA file; board retired 260804)
                 👁 ③ board/    ━▶ ④, its own board  (owns the page)
 
  🔑 this makes ② the board of TWO things, and it is the only such case
@@ -185,15 +185,18 @@ This makes `②` the board of two things, which `QA1`'s Law now states, and it i
 
 🔗 Establishes what the seam with the paper family actually is, and what checking it turned up that nobody had asked about.
 
-#### 3.1 · The call is real, and wired twice
+#### 3.1 · The call is real, and was wired twice
 
-The call is real, and it is wired in two places rather than the one that was claimed. Both are instructions in a `SKILL.md`, not notes in a changelog, so a worker following either one reaches `../../writing/haipipe-writing/cli/wdiff.py`.
+The call was verified real on 260802, wired in two places rather than the one that was claimed, both instructions in a `SKILL.md` rather than notes in a changelog. One of the two, the `haipipe-paper-revise` hub, retired to `_old/phase-hubs/` on 260805, so the live caller today is the humanizer alone, and `writing/haipipe-writing/SKILL.md` names that call itself.
 
 ```
  haipipe-paper-revise/SKILL.md:70            "COMPUTE those marks, do not write
    the candidate-diff hub                     them: wdiff.py record …"
  haipipe-paper-revise-humanizer/SKILL.md:94  "COMPUTE the diff, never write it
    the pass that emits candidates             by hand: wdiff.py record …"
+
+ (as verified 260802; the revise hub retired to _old/phase-hubs/ on
+  260805, so the humanizer line is the live one)
 ```
 
 There is no second diff implementation anywhere in `paper/`, so the 0.2.0 migration was carried and not merely declared. `wdiff.py record` was run against this board's own prose to confirm it works: `The map has ~three~ *five* reusable skills, not two.`
@@ -323,7 +326,7 @@ The checker got its own job wrong twice before it worked, and both are recorded 
 - `../../board/haipipe-board-sentence/`
   `③`'s lane contract, which owns the shape the `✎` record lives in.
 - `../../writing/haipipe-paper-revise-humanizer/`
-  The venue half, and one of the two verified callers.
+  The venue half, and since the `haipipe-paper-revise` hub retired (260805), the one live caller.
 
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `../../writing/haipipe-writing/tests/test_roundtrip.py`
@@ -346,6 +349,8 @@ The checker got its own job wrong twice before it worked, and both are recorded 
 - **Artifact kind**: the class of thing a family produces and owns, which is the test for whether it needs its own board.
 
 ## Log
+
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the two-caller wiring claim is now dated to its 260802 verification, with the humanizer named as the one live caller since the revise hub retired, and the two retired sibling boards are marked so on the artifact-kind figures.
 
 260802 · Opened when JL placed `writing/` on the map and ruled that its skill board is this board. The face exists because that ruling makes this board the family's owner, which is the one condition under which `QA1`'s no-face rule permits a page about a shared family. Two unverified claims recorded rather than repeated: the humanizer's call to `../../writing/haipipe-writing/cli/wdiff.py`, and the `0.1.0` frontmatter against a `0.4.0` changelog.
 

@@ -53,6 +53,16 @@ def resolve(token):
 
 LABEL_TOK = re.compile(r"^(?:tab|fig):[a-z0-9_-]+$")
 
+# True only while a `### Q-consumer register` section renders (JL 260806,
+# "literature/values are the first to test the card evidence"). Inside it a
+# backticked binding token, a bib key or a bank path, becomes the same chip +
+# card the prose \citep markers get; outside it backticks stay plain code, so
+# the register is the ONE place a code span can carry evidence. The flag is
+# set by body(register=True) for a division whose heading is the register, and
+# by _body's own ### handler where the heading text flows through whole.
+REGISTER = False
+REGISTER_TITLE = re.compile(r"^\s*Q-consumer register\s*$", re.I)
+
 
 def code_or_link(m):
     tok = m.group(1)          # 已经过外层 esc()，别再转义一次（否则 `>` 显示成 &gt;）
@@ -61,6 +71,15 @@ def code_or_link(m):
     # here, because the rewriter is forbidden to reach inside a code span.
     if PAPER is not None and LABEL_TOK.match(tok):
         return _ref(tok)
+    # A register row's BINDING TOKEN: `luo2025mapping` opens the cite card,
+    # `tasks/…/QA/….md` opens a card whose links are the provenance paths.
+    # Register only, and never in a Log or discussion lane (NOTE), so free
+    # prose and quoted keys elsewhere keep the no-chips rulings.
+    if PAPER is not None and REGISTER and not NOTE:
+        reg = PAPER.register_binding(tok)
+        if reg is not None:
+            kind, state, label, tip, meta = reg
+            return _chip(kind, state, label, tip, meta)
     href = resolve(tok)
     if href:
         return f'<a class="fp" href="{esc(href)}"><code>{tok}</code></a>'
@@ -264,11 +283,17 @@ def _sources(meta):
             # <object>, not <img>: a browser renders a PDF natively and this
             # stays script-free. The link inside is the fallback a viewer-less
             # browser shows, so the evidence is never a blank rectangle.
-            prev.append(f'<figure class="ccprev">{cap}'
+            # CLOSED by default (JL 260806, "the evidence card doesn't work"):
+            # two stacked 24em objects buried the file links below the card's
+            # scroll fold, and the PDF plugin eats the wheel, so the open card
+            # read as dead. The caption is the summary; one click expands.
+            prev.append(f'<figure class="ccprev">'
+                        f'<details class="ccfold"><summary>{esc(label)}'
+                        f' · expand preview</summary>'
                         f'<object class="ccpdf" data="{esc(href)}" '
                         f'type="application/pdf">'
                         f'<a class="fp" href="{esc(href)}">open {esc(label)}</a>'
-                        f'</object></figure>')
+                        f'</object></details></figure>')
         elif kind == "text":
             prev.append(f'<figure class="ccprev">{cap}'
                         f'<pre class="ccraw">{esc(text)}</pre></figure>')
@@ -568,10 +593,28 @@ def inline(s):
             # frame is the no-JS path. `?preview=N` on an html-ppt deck shows
             # exactly slide N, which is how a slide page embeds one deck file
             # per division without copying slides out of it (JL 260805).
+            #
+            # `plain` is appended for serve.py: its shell-vs-file fallback is
+            # the Accept header, and a browser's IFRAME request sends the same
+            # `Accept: text/html` a tab navigation does, so over a tailnet
+            # address (no Sec-Fetch-Dest on plain http) every embed came back
+            # as the three-pane shell with the query dropped: seven divisions,
+            # seven covers (JL 260805, "they are always of the same slide
+            # number"). `plain` is the shell's own documented opt-out.
             if re.search(r"\.html?(?:[?#].*)?$", src, re.I):
-                return (f'<span class="fightml"><iframe src="{src}" '
+                base, _, frag = src.partition("#")
+                sep = "&amp;" if "?" in base else "?"
+                live = f'{base}{sep}plain' + (f'#{frag}' if frag else "")
+                # `?preview=5-7` is a RANGE: the deck renders those slides as
+                # a vertical strip (JL 260805, ruled B on QA4), so the frame
+                # grows to hold the whole strip instead of clipping it to one
+                # slide's 16:9.
+                mr = re.search(r"[?&]preview=(\d+)-(\d+)", base)
+                n = (abs(int(mr.group(2)) - int(mr.group(1))) + 1) if mr else 1
+                sz = f' style="aspect-ratio:16/{9 * n}"' if n > 1 else ""
+                return (f'<span class="fightml"><iframe src="{live}"{sz} '
                         f'loading="lazy" title="{alt or "embedded page"}">'
-                        f'</iframe><a class="fp fsopen" href="{src}" '
+                        f'</iframe><a class="fp fsopen" href="{live}" '
                         f'target="_blank" rel="noopener">⛶ open '
                         f'{alt or "this frame"} full size</a></span>')
             return f'<img class="fig" alt="{alt}" src="{src}" loading="lazy">'
@@ -941,7 +984,25 @@ def pad_emoji(html):
     return EMOJI.sub(lambda m: f'<span class="eu">{m.group(0)}</span>', html)
 
 
-def body(txt, fold_code=True, apparatus=True, show_lead=False):
+def body(txt, fold_code=True, apparatus=True, show_lead=False, register=False):
+    """The public door to _body, plus the one flag that cannot travel in txt.
+
+    `register=True` says the caller is rendering a `### Q-consumer register`
+    division whose heading was split off before the text got here (render_aims
+    and render_subsections both split on ###), so _body's own heading detector
+    never sees it. The flag is scoped by save/restore rather than assignment,
+    because an embed inside a division re-enters body() and must not bleed its
+    default back over the caller's register mode.
+    """
+    global REGISTER
+    prev, REGISTER = REGISTER, register
+    try:
+        return _body(txt, fold_code, apparatus, show_lead)
+    finally:
+        REGISTER = prev
+
+
+def _body(txt, fold_code=True, apparatus=True, show_lead=False):
     """paragraphs + ``` blocks + comment lanes + topic/explanation bullets -> html
 
     An `<!-- ... -->` block is dropped, everywhere, not rendered as escaped text.
@@ -962,6 +1023,7 @@ def body(txt, fold_code=True, apparatus=True, show_lead=False):
     fold_code=True（默认）：``` 代码块也收进 <details>，默认合着、想看再点开（JL 260723），
     跟节标题的 expand-all 联动。传 False 才铺开（`## Diagram` 那张招牌图就用它）。
     """
+    global REGISTER
     out, fence, blt, lg, flang = [], None, None, None, ""
     ifence = None    # 缩进在 item 下的 ``` 块：收进这个 item 的折叠区（JL 260724）
     last_p, appar = None, {}   # 最近一句正文的 out 下标 → 它收集到的 `>` 装置行（QA8）
@@ -1183,6 +1245,10 @@ def body(txt, fold_code=True, apparatus=True, show_lead=False):
         # "### …" prose. `.sh` is also the anchor the sidebar outline scrolls to.
         m = re.match(r"^###\s+(.+?)\s*$", ln)
         if m:
+            # The register's binding chips switch on at its own heading and off
+            # at the next one. The pending rows flushed above, before this
+            # branch, so the last register row still rendered in register mode.
+            REGISTER = bool(REGISTER_TITLE.match(m.group(1)))
             out.append(f'<div class="sh">{inline(m.group(1))}</div>')
             last_p = None
             continue

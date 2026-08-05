@@ -188,7 +188,7 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 - ✅ A2.1 · Ruled by JL on 260729 and applied. `QBe3` through `QBe2` were added on 260802 as series rather than concerns, which left the ten untouched.
 - ⬜ A2.2 · Not started. Do it one group at a time, so no page claims a route or run that does not exist.
 - ⬜ A2.3 · Not started. The initial skill cards become the first Engine route, never a new authority layer.
-- ⬜ A2.4 · Not started.
+- ⬜ A2.4 · Overtaken by the thin restructure rather than audited: `haipipe-paper-deliver` is retired to `_old/routers/`, and `haipipe-paper-project` becomes a door `fn/` verb under phase 3 (ruled 260806, executing; `QC6` Log). The admission test now applies only to future candidates.
 - ⬜ A2.5 · Not started. Present and Round are the two currently visible as gaps.
 
 ### A3 · 🌐 Source and generated
@@ -237,6 +237,8 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 - **Round**: one external-feedback batch and its applied revision or resubmission record.
 
 ## Log
+
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); A2.4's two audit subjects left the roster, so its state row now says the admission test is for future candidates.
 
 260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into three divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Two stale facts corrected in the pass: the board is 63 pages rather than 53, and `QBe3`-`QBe2` were added to `### 2` as series rather than being silently absent.
 

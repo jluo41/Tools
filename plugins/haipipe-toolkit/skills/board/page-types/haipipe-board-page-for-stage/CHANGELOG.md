@@ -7,6 +7,16 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.5.0 - 2026-08-05
+
+Thin-paper phase 2 (QC6 ruled A; JL "go" 260805): stage.md MAY declare `checker:`
+(CHECK runs it before judging) and `craft:` (DRAFT/REVISE load these data files
+last, in place of the old "family worker" skills). New paragraph added under the
+stage.md resolver section. Stage roster repointed to
+`paper/haipipe-paper/stages/index.yml`; the venue-free/aligned line is now drawn
+by the paper door (`haipipe-paper`), and family artifact knowledge arrives
+through declared craft files rather than worker skills.
+
 ## 0.4.3 - 2026-08-05
 
 **The unit-page shape hands off to the more specific types** (review fix). An

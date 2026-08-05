@@ -1,26 +1,27 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through PROBE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
-allowed-tools: Bash, Read, Write, Grep, Glob, Skill
+description: "THE one door for paper-lifecycle work: parse intent (venue + stage), resolve the stage contract from stages/index.yml, ensure the S page exists, and hand the page to haipipe-board-page. Each stage runs the ordered phases declared by its stage.md and stops only at its declared gates; evidence enters ONLY through PROBE, which turns the S page's Q-consumer questions into probe entries and runs them through clean agents. `enter`/`status` open the paper's first-class Board (get-or-create on a missing path). Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 选刊, 写论文, 论文流程, /haipipe-paper."
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.6"
-  last_updated: "2026-07-30"
-  summary: "Front door for the Board-first paper lifecycle. Each stage runs its declared phases/gates; delivery routing now includes the explicit project/projection leaf for isolated S-page candidates. History: ./CHANGELOG.md."
+  version: "0.6.0"
+  last_updated: "2026-08-06"
+  summary: "Single door for the Board-first paper lifecycle, and the paper family's ONLY registered skill (thin-paper phase 3): folder/conform and the five build verbs are fn/ procedures with tooling under scripts/, round/rebuttal is the round stage's data. Absorbs the earlier enter/lifecycle/stage routers; workers/ dissolved into stage craft files and this door's probe/ tooling. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: haipipe-paper (orchestrator)
-====================================
+Skill: haipipe-paper (the door)
+================================
 
-User-facing entry for the paper lifecycle.
+User-facing entry for the paper lifecycle, and since 2026-08-05 the ONLY paper router: the old enter/lifecycle/stage routers are retired to `../_old/` and their jobs are internal steps of this one skill.
+**The paper family registers exactly ONE skill (this one); everything else is data**: stage contracts under `stages/` + the `SNN-*/` folders, craft files, `fn/` verb procedures, `scripts/` tooling, and `venue/` packs. Since 2026-08-06 (thin-paper phase 3) the former folder/conform, build (compile · diffpdf · project · to-overleaf · to-word), and round/rebuttal skills are `fn/` procedures and the `round` stage of this door; their folders live in `../_old/phase3-260806/`.
 The paper lifecycle is a delivery owner: it owns this paper's angle, resources, claims, narrative, section map, displays, maturity, and dated work rounds.
 Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (see "Delivery Need Routing" below) and route to the evidence worker.
 
-This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`.
-Stage skills internally drive the DPRC phases (page logic: `../../board/page-phases/haipipe-board-page-draft` / `-revise` / `-check`; LaTeX-side workers: `../workers/`); users and this router never invoke phase skills directly.
-Canonical structure: `../README.md` at the paper skill root (skill-tree layout, Stage to Procedure, Router Rule, Maturity Rule).
+Page logic is NOT restated here: once the stage's S page exists, this door hands it to `haipipe-board-page` (WORK ON to repair, RUN with a packet to drive it); the `board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK.
+The stage's LaTeX-side craft lives in data files each `stage.md` declares under `craft:`; the phase contracts load them after the type contract.
+Canonical structure: `../README.md` at the paper skill root.
 
-ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change.
+Read and honor `PREFERENCES.md` (this skill's own folder) WHEN PRESENT: portable, git-tracked global behavioral preferences that survive a machine change. The file does not exist until the first `feedback` flags a global preference (`fn/feedback.md` merge-or-creates it); its absence is normal, never a stall.
 `digest` / `feedback` append flagged global prefs there (merge-or-create).
 
 The model: stages × declared phases
@@ -44,38 +45,58 @@ PROBE, not an inline paper run. The narrow display exception is a missing, non-c
 aggregate; it is recorded in the Display request and goes to `haipipe-task-for-display`.
 A standalone utility question a human wants (a quick lit scan, a data check) goes to the bank's OWN door — `/haipipe-task qa` or `/haipipe-discovery qa` — typed by a person, never proxied by the paper.
 
+Venue coupling: seed + resource + claims are venue-FREE (what a paper NEEDS to
+exist does not depend on where you send it); Venue pins the journal on
+`0-lifecycle/S01-opening/S-Open-Venue.md`'s `state:` line; pitch, narrative,
+display, and section-edit are venue-ALIGNED and consult that page first, with
+direct venue-pack reads as fallback when it is absent. Re-targeting re-runs
+`venue`; pitch re-couples (new [primary], new RQ framing); resource and claims
+stay unchanged. The stage order is `stages/index.yml`'s row order:
+
+```text
+folder -> seed -> resource -> claims -> [venue pins] -> pitch -> narrative ->
+display (+ renderers) -> section-edit (per section) -> build verbs (fn/) ->
+round (per dated round)
+```
+
+Maturity is read from artifacts, never assumed, and is orthogonal to the current
+stage (ladder: `ref/paper-folder-anatomy.md`). The frontier is DERIVED from each
+S page's own `state:` and gate receipt; nothing stores it, so re-running an
+early stage is ordinary, not an anomaly (`ref/08-stage-gate.md`).
 
 Verbs
 ------
 
-One block: verb, aliases and trigger keywords, then where it goes.
+One block: verb, aliases and trigger keywords, then where it goes. Stage keys, `enter`, and every fn verb are INTERNAL steps of this skill: no target in this block is a `Skill()` dispatch except the four Display renderers.
 
 ```
-enter | status | dashboard | preload         -> haipipe-paper-enter (open-needs console; GET-OR-CREATE: a missing path offers to create the paper first, see Dispatch notes; also "enter paper", "paper status", "create paper", "new paper folder")
-venue | journal | 选刊 | any venue name       -> haipipe-paper-stage venue (recommend + pin; MISQ/ISR/Management Science/Nature/PNAS/JAMA/NEJM/Lancet/clinical/grant/patent all land here)
-seed                                         -> haipipe-paper-stage seed        (also "paper seed", "why this paper")
-resource | prereq | prerequisite | need      -> haipipe-paper-stage resource    (venue-FREE; what must EXIST for this paper to be testable, does it exist, can it CARRY the claim -- data, model checkpoints and producing-code alike; also "do we have the data", "does the checkpoint exist", "demand", "1-resource")
-claims | claim | ledger                      -> haipipe-paper-stage claims      (also "claim gap", "supported", "GAP", "H1/H2/H3")
-pitch                                        -> haipipe-paper-stage pitch       (also "cover letter", "one-minute story", "editor's chair")
-narrative | story | contract                 -> haipipe-paper-stage narrative
-display | figures | figures-tables           -> haipipe-paper-stage display     (also "figure plan", "gallery", "preview pdf")
-section-edit | section | sec | §N            -> haipipe-paper-stage section-edit (per-section prose work)
+enter | status | dashboard | preload         -> the CONSOLE step below (open-needs console; GET-OR-CREATE: a missing path offers to create the paper first; also "enter paper", "paper status", "create paper", "new paper folder")
+venue | journal | 选刊 | any venue name       -> STAGE step, key venue (recommend + pin; MISQ/ISR/Management Science/Nature/PNAS/JAMA/NEJM/Lancet/clinical/grant/patent all land here)
+seed                                         -> STAGE step, key seed        (also "paper seed", "why this paper")
+resource | prereq | prerequisite | need      -> STAGE step, key resource    (venue-FREE; what must EXIST for this paper to be testable, does it exist, can it CARRY the claim -- data, model checkpoints and producing-code alike; also "do we have the data", "does the checkpoint exist", "demand", "1-resource")
+claims | claim | ledger                      -> STAGE step, key claims      (also "claim gap", "supported", "GAP", "H1/H2/H3")
+pitch                                        -> STAGE step, key pitch       (also "cover letter", "one-minute story", "editor's chair")
+narrative | story | contract                 -> STAGE step, key narrative
+display | figures | figures-tables           -> STAGE step, key display     (also "figure plan", "gallery", "preview pdf")
+section-edit | section | sec | §N            -> STAGE step, key section-edit (per-section prose work; also "introduction", "methods", "results section")
 table | figure | plot | diagram |
-  illustration | figure1 | framework         -> haipipe-paper-stage display first (allocate/bind the unit); then commission the matching Display renderer
-build | scaffold | restructure | conform | folder | project | projection |
+  illustration | figure1 | framework         -> STAGE step, key display first (allocate/bind the unit); then commission the matching Display renderer (haipipe-display-table · -figure · -diagram · -illustration, which stay independently registered skills)
+folder | scaffold                            -> INTERNAL fn: load fn/folder.md (Board-first scaffold; the get-or-create branch of `enter` cites it)
+conform | structure audit | delete test      -> INTERNAL fn: load fn/conform.md (report-only; runs scripts/check_structure.sh)
+build | restructure | project | projection |
   audit | review | claim-audit | reviewer | optimizer |
   polish | consistency | format | typeset |
-  compile | diffpdf | overleaf | ship | deliver  -> the S09-build/ leaves directly: compile -> haipipe-paper-compile · diffpdf -> haipipe-paper-diffpdf · overleaf -> haipipe-paper-to-overleaf · word -> haipipe-paper-to-word · project/projection -> haipipe-paper-project; folder | conform -> ../container/ (haipipe-paper-folder · haipipe-paper-conform). (The deliver umbrella and the audit/polish leaf verbs are retired to ../_old/, see ../_old/README.md)
-round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
-probe ["<question>"] | probe | probe plan | probe run [topic-id]  -> the topic-entry pool: one nested entry page per q-executor, under its S03 Literature or S04 Value topic (RAISE / SHOW / PLAN / RUN the five-step loop)
-rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
+  compile | diffpdf | overleaf | ship | deliver  -> INTERNAL fns, human-triggered: compile -> fn/compile.md · diffpdf -> fn/diffpdf.md · overleaf -> fn/to-overleaf.md · word -> fn/to-word.md · project/projection -> fn/project.md (tooling under scripts/). (The deliver umbrella and the audit/polish leaf verbs are retired to ../_old/, see ../_old/README.md)
+round | rounds                               -> STAGE step, key round (dated work rounds; also "todo", "decisions", "applied")
+probe ["<question>"] | probe | probe plan | probe run [topic-id]  -> the topic-entry pool: one nested entry page per q-executor, under its S03 Literature or S04 Value topic (RAISE / SHOW / PLAN / RUN the five-step loop; anatomy + loop: fn/probes.md)
+rebuttal                                     -> STAGE step, key round (the Response division of the active round; craft: ../S10-round/rebuttal-craft.md; also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
 feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
 digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
 "<natural language>"                         -> infer via the keywords above, dispatch
 ```
 
-**Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage verb's args is a PHASE VERB — forward it verbatim through the lifecycle router to the stage skill (e.g. `/haipipe-paper edit 4-llmtrait revise` → section-edit drives its REVISE phase).
-Stage skills stop only at the human gates declared in `gates:`. All current
+**Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage verb's args is a PHASE VERB — it names which declared phase the page work drives (e.g. `/haipipe-paper section-edit 4-llmtrait revise` → the section's page runs its REVISE phase).
+Stage runs stop only at the human gates declared in `gates:`. All current
 stages declare `[check]`: DRAFT, PROBE, and (when declared) REVISE run
 unattended, then CHECK asks for explicit approval. Never invent or auto-advance
 a gate.
@@ -101,53 +122,236 @@ Resolution order (first match wins):
 1. feedback / digest first-token             -> run the fn (before any other parsing)
 2. first positional matches a verb/alias     -> that target
 3. keyword scan over the whole phrase        -> per the trigger keywords in the Verbs block; a named journal/venue anywhere -> venue
-4. no args, cwd inside a paper root          -> enter "."
-5. no args, no paper root                    -> chooser (below)
-6. input but target unclear                  -> ASK; NEVER silently default a venue (venue drives pitch/narrative/display/prose, expensive to redo)
+4. a PAGE id or page path on the paper's board (S-<Family>-…, Q…, or a .md
+   under 0-lifecycle/) with no stage verb    -> a stage page resolves its stage key first (board_family/unit)
+                                                and runs the STAGE step; any other page hands to
+                                                haipipe-board-page WORK ON directly, phase verb passed through.
+                                                "work on <page>" is always legal at this door.
+5. no args, cwd inside a paper root          -> enter "."
+6. no args, no paper root                    -> chooser (below)
+7. input but target unclear                  -> ASK; NEVER silently default a venue (venue drives pitch/narrative/display/prose, expensive to redo)
 ```
 
 A paper root is any directory upward containing `the S pages`, `0-lifecycle/`, `0-*.tex` + `sections/`, or `2-src/compile.sh` + `sections/`.
 
-Venue coupling (drives two routing rules): seed + resource + claims are
-venue-FREE; Venue pins the journal on
-`0-lifecycle/S01-opening/S-Open-Venue.md`; pitch/narrative/display/section-edit
-are venue-ALIGNED and consult that page. Direct venue-pack reads are fallback
-when it is absent, or deep dives through its `[source: ...]` tags.
-So: "paper" with claims done but no venue pinned -> run `venue` before pitch.
-Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); resource and claims stay unchanged (what a paper NEEDS to exist does not depend on where you send it).
+The STAGE step (one door, one stage file)
+------------------------------------------
 
-**Every lifecycle STAGE goes through one skill.** `seed · resource · claims · venue · pitch · narrative · display · section-edit` are no longer separate skills — dispatch them as `Skill("haipipe-paper-stage", args="<stage-key> <rest>")`, stage key first. The four display RENDERERS (`table · figure · diagram · illustration`) are workers and keep their own skills.
+Every lifecycle stage runs through these steps, inside this skill.
 
-Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-paper-<target>")` or `Skill("haipipe-paper-lifecycle", args="<verb> ...")`):
+**Step 1 — resolve the stage.**
+Read `stages/index.yml` (this skill's folder). This is the ONLY file that enumerates all stages, and it is deliberately
+small. Match the verb against each row's `key`; if it is not a key, match the user's phrasing against
+`triggers`. Ambiguous or absent → list the keys and ask; never guess a stage.
 
-```
-enter     Path exists -> Skill("haipipe-paper-enter", args="<path>"). Path MISSING -> get-or-create:
-          CONFIRM FIRST (creating a repo is outward-facing; never create off a typo). Then resolve the
-          parent project (walk up, or ask). Project-* repo -> paper is REPO-BACKED: resolve --org
-          (flag or ask, NEVER assume; the paper's owner may differ from the project's), follow the
-          papers-inside recipe in project/haipipe-project/fn/repo-project.md, then
-          Skill("haipipe-paper-lifecycle", args="folder <paper-path>"), double-bump (paper push ->
-          project pointer -> workspace pointer), and continue straight into the console.
-          Plain projects: folder + scaffold, then console.
-probe     Operates on the nested cross-stage entry pool: S03 topics route to discovery and S04
-          topics route to tasks. Sub-modes are listed in the Verbs block above (raise · board ·
-          plan the campaign · run). It is the SAME operation at two scopes: this paper-level
-          verb works the WHOLE pool (see/plan/drain every open question across all topics), while
-          a stage's PROBE phase works only its own topic entries during that stage's declared
-          phase turn. The topic page's `### Q-consumer register` is canonical; an entry's
-          `#### consumer trace` is audit history only. Both go
-          through the one worker, haipipe-paper-probe, which runs the five-step loop
-          MATCH-before-DISPATCH and is the ONLY thing that touches the bank; the umbrella and the
-          stages never do. That worker follows the shared probe model owned by
-          `probe/haipipe-probe/SKILL.md`. Anatomy + campaign + model: fn/probes.md.
+**Step 2 — load exactly ONE stage.**
+Read `stages/<dir>/stage.md`: the contract (frontmatter) plus craft (body). The `dir:` values are
+relative to the SOURCE tree; from an installed (flattened) skill they do not resolve, so locate the
+one stage.md with `find -L` over the source tree, scoped to the stage key (`-path '*<key>*'`) so no
+other stage file is ever surfaced. The same flatten caveat applies to `craft:` and `checker:` paths.
+
+⛔ NEVER read the other stages' `stage.md` files. Loading all eight is a 7.5x context regression
+over the per-stage skills this replaces, and it is the specific failure mode this layout exists to
+avoid. One invocation, one stage file.
+
+**Step 2a — ensure this stage's Board page exists.**
+This door is the only public creator for paper lifecycle pages. Resolve the page by the
+selected contract's stable `board_family` + `board_unit`; do not store or guess a literal
+filename. If the page is absent, create its Board shell and stage-specific Content scaffold with:
+
+```sh
+python3 create-page.py <stage-key> <paper-root>
 ```
 
-After dispatch, capture the specialist's structured tail (status / summary / artifacts / next) and present it.
+`create-page.py` (this skill's folder) selects the stage template, then calls
+`haipipe-board/cli/stage.py new` for the filename, face grammar, listing under Pages, and managed
+Stage Contract. It does not draft the research substance. For a dynamic `runs: per-unit` page,
+pass `--family`, `--unit`, `--slug`, and `--directory`; Section-edit also requires
+`--section-kind`, which resolves the exact template from the Venue page's `Section Styles`
+record (or its declared generic fallback). `--template` is a repair/testing override. Do not
+create a sidecar request or handoff file; unfinished work stays in the page's `## Aims`, with
+its current fact in `## States`.
+
+**Step 3 — hand the page to the page layer.**
+Phase driving is NOT this door's: with the page resolved, call `haipipe-board-page` (WORK ON to
+repair one page; RUN with a raw-material packet to drive it through its declared phases). The
+`board/page-phases/` contracts own DRAFT, PROBE, REVISE, and CHECK; the shared probe model is
+`probe/haipipe-probe/SKILL.md` and the paper-side loop is `fn/probes.md`.
+Two declarations in the stage.md feed that hand-off:
+
+```text
+craft:     data files the DRAFT/REVISE phases load LAST, after the type
+           contract (the dissolved workers/ leaves live on as these files)
+checker:   the script CHECK runs before judging (see Step 4)
+```
+
+- `phases:` is a LIST, not a type. venue declares `[draft, probe, check]`. Run what the stage
+  declares; never pad a list to four.
+- INVARIANT: `phases` always ends with `check`. That is the human gate.
+- `runs: per-unit` means the phase list runs once PER UNIT (section-edit's grain; the unit is
+  positional 2, after the stage key).
+- `gates:` declares this stage's HUMAN stops, the same way `phases:` declares its phases. The
+  default is `[check]` — ONE gate, at the end. DRAFT, PROBE and REVISE run unattended.
+  Never open a gate a stage did not declare, and never skip one it did.
+- `commissions:` names worker skills this stage hands units to (display → the four renderers).
+  Those workers stay independently registered and are invoked by name.
+- Board mapping: after any phase changes the artifact, sync the resolved S face in the same
+  turn (`state:`, `## Aims`, `## States`, `## Log`), then rebuild the board. The S face's
+  `requires:` / `style-from:` / `provides:` are board contracts; refresh the managed
+  `## Stage Contract` span with `haipipe-board/cli/stage.py`, and run explicit `stage.py sync`
+  before CHECK if the board reports a stale contract.
+
+**Step 3a — the PROBE ceiling.**
+`probe_depth:` is what makes a single CHECK gate safe: PROBE may only dispatch work whose cost
+sits at or below the ceiling, so an unattended run cannot spend.
+
+```text
+depth  bank:    what it takes                        cost
+  0    reuse    results already answer it            free — nothing runs
+  1    run      old script, new config               costs
+  2    code     must write new code first            costs
+  3    new      open a new task-folder               costs most
+```
+
+The ladder is the bank's own (`task/haipipe-task/fn/qa.md`, "How deep"), and the consumer's
+`bank:` verdict maps onto it 1:1. The rule is one line:
+
+```text
+dispatch when depth(bank) <= probe_depth, else DEFER the entry
+```
+
+Default is `0`, so a plain run HARVESTS and never orders. Raise it for one invocation:
+
+```text
+/haipipe-paper <stage> <paper> probe             ceiling 0 — harvest only, free
+/haipipe-paper <stage> <paper> probe --depth 1   also allow reruns of existing code
+/haipipe-paper <stage> <paper> probe --depth 3   unsealed — may open new task-folders
+```
+
+⚠️ `--depth` AUTHORIZES SPEND. Passing it is the human act that a removed DRAFT gate used to be.
+Report what each raise actually dispatched; never raise it on your own initiative.
+⚠️ Depth is a proxy for KIND of work, not AMOUNT: a depth-1 rerun over a large cohort can cost
+far more than a depth-2 script that counts rows.
+
+**Step 4 — Checker before CHECK.**
+Before the CHECK gate judges, run the script the stage.md declares on its `checker:` line
+(path relative to the skills root, arguments included). For the probe-consuming stages the
+declared default is this door's own probe checker, scoped to the stage key:
+
+```sh
+sh paper/haipipe-paper/probe/check-probe-cards.sh <paper_root> --stage <stage-key>
+```
+
+`--stage <key>` IS PART OF THE COMMAND. Without it the checker globs the whole paper and this
+stage's gate inherits every other stage's open work. CONVENTION: a stage.md's `checker:` line
+carries script + flags only and OMITS `<paper_root>`; the caller always inserts the paper root as
+the first positional after the script path, exactly as the template above shows. Installed skills flatten the tree, so when
+the relative path does not resolve, locate the script with `find -L` over the installed skill
+roots (`-L` matters: installed skills are symlinks). The vacuous-green test fires when NO entry
+serves this stage while the stage doc still has unanswered Q-consumer blocks. Never report a
+green gate over a checker FAIL.
+
+**Global-pass mode (whole-paper cycle).** The per-stage cycle is DEPTH-FIRST; for a whole paper
+prefer the GLOBAL PASS (JL ruling 2026-07-11), because stage-by-stage probes duplicate questions
+and miss shared gating dependencies:
+
+```text
+① DRAFT SWEEP     draft ALL stages in pipeline order, no human stop (placeholders fine;
+                  venue still pins BEFORE the venue-ALIGNED drafts)
+② PROBE-PLAN      probe plan — merge duplicate questions, author the dispatch DAG
+                  [HUMAN GATE — present the campaign, stop]
+③ DISPATCH BATCH  probe run — MATCH first; dispatch only what MATCH cannot close, per
+                  the DAG; a dependent entry waits until its upstream QA file EXISTS
+④ RUN             the task/discovery orchestrators write <task-folder>/QA/<n>-<slug>.md
+⑤ HARVEST         a PROBE re-run lands a-executors + topic-register interpretations +
+                  the S02 claims-page flips, then each stage runs its remaining phases
+```
+
+Stage gates are unchanged; the global pass only reorders WHEN drafting and probing happen. The
+per-entry fields (`route:` / `bank:` / `target:` / `state:`) are owned by
+`probe/haipipe-probe/SKILL.md`.
+
+Rebuild the Board after every write
+------------------------------------
+
+Ruled 2026-07-26 (design board `QA1`, `QA4`): `enter` leaves the human LOOKING at `board.html`,
+so a stale board is a DEFECT, not an inconvenience. **Two directions, both mandatory.**
+
+```text
+AFTER a write   rebuild, or the browser shows the previous version
+BEFORE a read   RE-READ the page off disk: a human comment or a `>` lane may have
+                arrived through serve.py. Never cache a page across a phase boundary.
+```
+
+Three entry points, paths relative to THIS skill folder:
+
+```bash
+python3 ../../board/haipipe-board/cli/build.py <paper-root>/0-lifecycle   # after every write; ~1s, idempotent
+python3 ../../board/haipipe-board/cli/watch.py <paper-root>/0-lifecycle   # once per session, own terminal
+python3 ../../board/haipipe-board/cli/serve.py                            # the live layer, port 5599; NEVER file://
+```
+
+Calling is not owning: `haipipe-board` owns the build, the filename rule, the html and the
+write-back; this door calls it and renders nothing.
+
+**The build's marker report IS the content check.** `build.py` prints one line per unresolved
+marker in the paper's `.tex`; surface it after every rebuild:
+
+```text
+broken    \citep{key} not in the .bib → compiles to [?]. HUMAN-ONLY fix: an agent never writes bibtex.
+unowned   \cite{TOADD} or {VAL:?} with no [Q-…] bracket, or a \ref{} with no \label
+          → a hole no question will ever fill (the placeholder grammar exists to prevent this, QB6)
+uncited   a display unit's \label referenced by NO section → route to the Display stage
+```
+
+A paper's `0-lifecycle/board.md` must declare `dialect: paper` and `paper-root: ..`, or these
+markers render as plain text and the report is empty and useless.
+
+The CONSOLE step (enter / status)
+----------------------------------
+
+`enter` opens a concrete paper folder as the Paper Console: resolve the root (walk up for
+`0-lifecycle/board.md` · `0-lifecycle/` · `<paper>.tex` + `sections/`; STATUS.md is retired and
+is NOT a signature), derive current state from disk (never from stored status), CALL
+`haipipe-board` on `<paper-root>/0-lifecycle/` (build.py, then serve.py pushes the URL to the
+browser), record only the active paper identity in `.paper-console.yaml`, and route later
+free-form input through the lifecycle in copilot mode.
+
+The BOARD is the panel; the terminal prints exactly this, in this order, and stops:
+
+```markdown
+📋 <board URL>          ← FIRST. If the push failed, say so and print the URL anyway.
+
+<paper-folder-name> · <venue: from S-Open-Venue.md> · frontier: <stage>
+<one sentence from the pitch page's lead, or "Pitch not yet written — run /haipipe-paper pitch.">
+
+## Open Needs
+  - <gap> -> <route>       one line each, route per Delivery Need Routing
+
+## Recommended Next
+  <the single highest-leverage command>
+```
+
+Never fall back to `file://`, and never report success when only the build succeeded. The full
+console procedure (read order, frontier predicates and the Golden Rule, diagnosis rules, the
+resource exemption, copilot policy, `.paper-console.yaml` fields) is `ref/enter-console.md`;
+read it when running the console, and re-derive everything from disk on every action.
+
+**Missing path = get-or-create (the ONLY way papers are created).** When the given path does not
+exist, do NOT fail. CONFIRM FIRST (creating a repo is outward-facing; never create off a typo),
+then resolve the parent project (walk up, or ask). Project-* repo -> paper is REPO-BACKED:
+resolve --org (flag or ask, NEVER assume; the paper's owner may differ from the project's),
+follow the papers-inside recipe in `project/haipipe-project/fn/repo-project.md`, scaffold per
+`fn/folder.md` (the folder verb, run internally), double-bump (paper push -> project pointer
+-> workspace pointer), and continue straight into the console. Plain projects: folder +
+scaffold, then console. One command from nothing to dashboard.
+
+After dispatch to any specialist skill, capture its structured tail (status / summary / artifacts / next) and present it.
 
 Closing Block (end every reply)
 --------------------------------
 
-THE single source of truth for the closing block (every stage / enter skill inherits this section).
+THE single source of truth for the closing block (every stage / console reply inherits this section).
 This is the explicit enclosing-skill exception defined by `haipipe-board`:
 Paper calls Board, but a Paper reply emits this ONE composed block rather than
 also appending Board's direct-session `status.py` strip. The `board:` line below
@@ -155,10 +359,8 @@ preserves the active Board/page attachment. A direct `/haipipe-board` session
 still uses Board's own strip.
 
 **The BOARD is the paper's face; the closing block is the session's.** Ruled
-2026-07-26 (design board `QA1`, `QA4`): `/haipipe-paper` is the single thing a
-human types, and it CALLS `haipipe-board` to build and open `⑧`. So the closing
-block stopped carrying a 9-stage strip, which was a worse copy of the board's own
-spine, and now carries the URL instead.
+2026-07-26 (`QA1`, `QA4`): the closing block stopped carrying a 9-stage strip, which was a worse
+copy of the board's own spine, and now carries the URL instead.
 
 In a paper session, END every reply with ONE fenced `text` block: a titled top
 rule carrying `📄 paper · <active-stage> 🔥`, the two-line tail, a plain bottom
@@ -177,10 +379,9 @@ The `board:` line is deep-linked to the page this session is working, so one
 click lands on it. If the push to the browser failed, say so on that line and
 print the URL anyway; never report success when only the build succeeded.
 
-The PHASE line survives the strip's retirement, and the reason is worth stating:
-it is the only thing here the board does NOT show. A page's `state:` is its
-gate status, not the live DPRC progress of a run in flight. The stage line was
-derivable from the board and therefore redundant; the phase line is not.
+The PHASE line survives the strip's retirement because it is the only thing here
+the board does NOT show: a page's `state:` is its gate status, not the live DPRC
+progress of a run in flight.
 
 Markers: 🔥 active now · 🚀 frontier (farthest the paper has ever reached) · ✅ done · ⬜ not started · `--` skipped.
 Rules: the phase line always has the four display slots
@@ -189,83 +390,27 @@ from the active stage's `phases:` list is `--`, not pending. Probe entries carry
 their own evidence type; the closing block never revives retired
 `cite`/`val`/`disp` sub-tracks. EXACTLY one 🔥, never zero.
 
-Gate-aware: closing a stage and advancing to the next requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../1-lifecycle/ref/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once the S page carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
+Gate-aware: closing a stage and advancing to the next requires an EXPLICIT approval action that the current stage is done (Stage Gate, `ref/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once the S page carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
 
 
 Comment lifecycle
 ------------------
 
-THE single source of truth for inline comments across ALL paper skills. Every phase worker, lifecycle stage, and orchestrator follows this convention.
+THE single source of truth for inline comments across ALL paper skills. Every phase contract, lifecycle stage, and orchestrator follows this convention. The full format spec (actor ids, the two marks, anchoring, the S-page `## Log` format, round invariants) is `ref/comment-protocol.md`; this section carries the lifecycle and its binding rules.
 
 **Loaded-context rule.** This section is not in context at every skill
 invocation, so it cannot bind behavior by itself. Every skill that touches
 working files must INLINE its binding subset: never delete/reword `> USER:`;
 reply `> CC:` underneath; only the user resolves; move resolved threads
 verbatim into the owning S page's `## Log`; make surgical edits only. The stage
-hubs carry that block as "Comment rules (binding)".
+contracts carry that block as "Comment rules (binding)".
 
-### Actor ids
+Two formats, one namespace of actor ids (asked, never assumed):
 
-The `{...}` token names **who** authored that line. Keep it short. One flat namespace:
-
-| Kind | Examples | Note |
-|------|----------|------|
-| AI tool / agent | `CC` (Claude Code), `GPT`, `GEM` (Gemini), `CDX` (Codex) | reviewing tools; append `-<topic>` on findings |
-| Person | initials (`AU`, `CO1`, etc.) | authors / coauthors |
-| Role | `R1`, `R2`, `AC`, `ED` | numbered reviewers, area chair, editor |
-
-**The human actor id is asked, never assumed.** At the start of a cycle the skill asks the user for their initials (and the pass date `vMMDD`). Never default to any specific initials.
-
-### Two comment formats
-
-In outline `.md` files, blockquote style:
-
-```markdown
-> USER: comment about this paragraph
-> CC: response to the comment
+```text
+outline .md    > USER: comment      /      > CC: response underneath
+.tex           %% {<actor>-<topic>-vMMDD}: <finding> | <suggestion> ========> {AU vMMDD}: accept
 ```
-
-Used in: section `.md` files, seed, claims, pitch, narrative, and nested S03/S04 probe entry pages.
-
-In `.tex` files, LaTeX comment style:
-
-```latex
-%% {CC-content-v0531}: finding | suggestion ========>
-```
-
-Used in: `sections/*.tex`, `4-display.tex`, rebuttal files.
-
-### The two marks (tex format)
-
-Finding (the comment):
-
-```
-%% {<actor>-<topic>-vMMDD}: <one-line finding> | <one-line suggestion>
-```
-
-- `<actor>` -- who wrote it. A reviewing AI appends the topic for traceability: `CC-content`, `CC-values`, `GPT-cite`.
-- `vMMDD` -- the pass date (e.g. `v0531`). New round = new date.
-- `<finding> | <suggestion>` -- what's wrong, then what to do. One line each.
-
-Reply (same line, after the separator):
-
-```
-%% {CC-content-v0531}: claim stated as causal. | Soften to "associated with". ========> {AU v0531}: accept
-```
-
-- `========>` -- the reply separator (literal, eight `=` then `>`).
-- Reply verb vocabulary: `accept` / `reject` / `modify: <how>` / `discuss: <q>` / `done`.
-
-### Anchoring (tex files)
-
-A comment sits on its **own line, directly below the text it refers to**:
-
-```latex
-Agreeableness showed the strongest positive correlation ($r = 0.62$).
-%% {CC-values-v0531}: 0.62 here vs 0.747 in the table. | Reconcile. ========>
-```
-
-For wrapped paragraphs, use `@"quote"` to anchor: `%% {CC-content-v0531}: @"we next examined" opener is throat-clearing. | Start with the finding.`
 
 ### The lifecycle
 
@@ -300,53 +445,13 @@ Rules:
    unresolved threads and either resolves them or restarts the appropriate
    phase.
 
-### S-page `## Log` format
-
-Every lifecycle S page owns both its current content and history. There is no
-live `_LOG` sidecar. Insert new dated phase records directly under that page's
-`## Log` heading, newest first. If the working document is the S page itself,
-move the resolved thread from its content position down into its own `## Log`.
-
-**Insertion is non-destructive.** The previous newest entry stays byte-intact;
-the new entry slots between `## Log` and that entry.
-
-**Entry headings carry date + HH:MM**
-(`### 2026-07-05 13:29 — [PHASE] PROBE — START`), so the S page
-doubles as a coarse on-disk timeline. Legacy undated entries stay as-is.
-
-```markdown
-### 2026-07-03 10:14 — [DRAFT] resolved comments
-
-### Seed Question
-> USER: don't use "discretion", too academic
-> CC: reframed to "room for judgment"
--> applied
-
-### Motivations
-> USER: lead the first motivation with a puzzle
-> CC: done, led with "the puzzle is..."
--> applied
-```
-
-Why move, not copy:
-
-- The working document stays readable as content, not buried in old discussion.
-- Each phase gets a clean slate.
-- The S page preserves the full reasoning chain beside the artifact it explains.
-- If a comment is reopened, it is written fresh, not resurrected from history.
+Resolved threads land in the owning S page's `## Log`, newest first,
+non-destructively, under a dated heading (`### 2026-07-03 10:14 — [DRAFT] resolved comments`);
+the full format and the why is `ref/comment-protocol.md`.
 
 ### REVISE phase: no comment-first
 
-REVISE is the exception. REVISE workers apply changes directly (no comment-first round). They leave `%% {CC-<worker>}: <why>` comments explaining non-trivial changes. These comments are for CHECK to review, not for a human reply cycle. The human reviews in CHECK and can add `> USER:` comments to restart REVISE.
-
-### Round invariants (tex comment-first, when used)
-
-| Round | A skill MAY | A skill MUST NOT |
-|-------|-------------|------------------|
-| **1 -- review** | insert `%% {CC-...}:` comment lines | change any body text, banner, label, or value |
-| **2 -- apply** | apply changes for `accept` / `modify` replies | touch any `OPEN` comment; apply a `reject` |
-
-Round 1 diff adds only comment lines. If any non-comment line changed, the pass violated the protocol.
+REVISE is the exception. REVISE passes apply changes directly (no comment-first round). They leave `%% {CC-<pass>}: <why>` comments explaining non-trivial changes. These comments are for CHECK to review, not for a human reply cycle. The human reviews in CHECK and can add `> USER:` comments to restart REVISE. When a tex comment-first round IS used, its two-round invariants are in `ref/comment-protocol.md`.
 
 
 No-Arg Chooser
@@ -390,10 +495,8 @@ No message bus, no shared contract file. Two channels carry it, and the agent (t
 ```
 1. Command   paper hits a claim gap -> the agent runs
              /haipipe-paper probe "<question>" (opens one nested entry page in the
-             owning S03 or S04 topic). PROBE owns the whole five-step loop: ① ORGANIZE
-             the `#### q-executor`, ② MATCH against the bank's QA corpus, then RUN
-             FORWARD, dispatching that executor block only for entries MATCH left as
-             run | code | new.
+             owning S03 or S04 topic). PROBE owns the whole five-step loop, MATCH
+             before DISPATCH (fn/probes.md).
 2. Disk      paper writes the need on its owning S page or claim ledger; the executor
    (async)   writes the answer as <task-folder>/QA/<n>-<slug>.md; the entry's
              `**target**:` points at that FILE, its `#### a-executor` copies the answer
@@ -405,34 +508,20 @@ Who owns which format: the topic page owns the paper NEED and its Q-consumer reg
 
 ### When to record a need
 
-Only when the problem is EVIDENCE, not wording. A wording/structure problem loops back inside the paper lifecycle (1-claims / 2-pitch / 3-narrative / 4-display / 5-section-edit). A need leaves the paper for an evidence worker.
-
-```
-paper GAP -> a Q-consumer in a direct topic register -> PROBE opens one nested
-entry page and MATCHes it -> PROBE DISPATCHes only what MATCH could not close ->
-the answering QA file -> the entry's `#### a-executor` -> the parent topic register
-records the paper interpretation -> the paper backfills its claim page
-```
-
-Do NOT route through a project-level narrative layer (there isn't one).
+Only when the problem is EVIDENCE, not wording. A wording/structure problem loops back inside the paper lifecycle (claims / pitch / narrative / display / section-edit). A need leaves the paper for an evidence worker, and it travels the loop above: paper GAP -> a Q-consumer in a direct topic register -> PROBE opens and MATCHes one nested entry -> DISPATCH only what MATCH could not close -> the answering QA file -> `#### a-executor` -> topic-register interpretation -> the paper backfills its claim page. Do NOT route through a project-level narrative layer (there isn't one).
 
 ### Routes
 
 ```
 claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (a nested S03/S04 entry; PROBE does MATCH first, and dispatches only what MATCH cannot close)
 figure/table lacks its verified display-ready aggregate           -> /haipipe-task-for-display <need>
-figure/table has a verified aggregate and needs a paper asset     -> haipipe-paper-stage display → Intake → matching Display renderer
+figure/table has a verified aggregate and needs a paper asset     -> the display stage → Intake → matching Display renderer
 settled claim status (supported|refuted|inconclusive             -> 0-lifecycle/S02-work/S-Work-C-claims.md (the ONLY home of a claim's status; the
-  + confidence + claim_type)                                        probe entry carries only the `#### a-executor` copy of the bank's answer.
+  + confidence + claim_type)                                        probe entry carries only the `#### a-executor` copy of the bank's
                                                                     answer)
-wording/section placement                                        -> the owning lifecycle stage skill
+wording/section placement                                        -> the owning lifecycle stage
 standalone utility (a HUMAN, not the paper: lit scan, data check) -> /haipipe-task qa | /haipipe-discovery qa (the bank's own door)
 ```
-
-The entry is `/haipipe-paper probe "<need>"`: PROBE opens one nested page in
-the right S03/S04 topic and owns all five steps:
-① ORGANIZE → ② MATCH → ③ DISPATCH → ④ POINT → ⑤ INTERPRET. DRAFT only writes
-the S-page content and its Q-consumer questions.
 
 Two entry rules (who the delivery calls):
 
@@ -440,23 +529,12 @@ Two entry rules (who the delivery calls):
 - a pure RENDER need (no claim at stake, e.g. re-render a figure) -> return to the Paper Display stage; it reuses the approved Intake and commissions the renderer. Call `/haipipe-task-for-display` only when the display-ready aggregate itself is missing or must change.
 
 ALL evidence enters through a stage's PROBE phase; the paper never calls the bank directly.
-Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs.
+Resolved evidence backfills into claims, display, sections, or round logs.
 Evidence workers never own the paper story.
 
-### Need record
+### Need record and backfill
 
-Each open need is one row on its owning Board/S page; claim needs live on `0-lifecycle/S02-work/S-Work-C-claims.md`:
-
-```
-need_id      stable handle (e.g. N1, tied to a claim slot C2 or a display)
-gap          which claim slot / display / section has the gap
-kind         evidence | context | artifact | meaning
-route        the command above
-state        open | commissioned | returned      (mirrors the probe entry's derived state)
-backfill     the slot/display to update when the worker returns
-```
-
-### Backfill (the return direction)
+Each open need is one row on its owning Board/S page (fields: `need_id · gap · kind · route · state open|commissioned|returned · backfill`); claim needs live on `0-lifecycle/S02-work/S-Work-C-claims.md`.
 
 The answer is a FILE: the executor's `<task-folder>/QA/<n>-<slug>.md`. The probe entry's `**target**:` points at it and `#### a-executor` copies its answer in. The parent topic's Q-consumer register records what it means for this paper and links to that entry. On backfill:
 
@@ -464,7 +542,7 @@ The answer is a FILE: the executor's `<task-folder>/QA/<n>-<slug>.md`. The probe
 - write the claim's status in 0-lifecycle/S02-work/S-Work-C-claims.md — supported |
   refuted | inconclusive, + confidence + claim_type. THAT ledger is
   the only home of a claim's status.
-- if the evidence narrows the claim, narrow the claim wording in 1-claims
+- if the evidence narrows the claim, narrow the claim wording in the claims page
 - the executor NEVER edits paper prose: it returns a FACT, and the paper decides
   what the fact means and how to phrase it
 ```
@@ -486,11 +564,7 @@ LOOP until (no open needs) OR (gate hit) OR (only server-blocked left):
   6. -> 1
 ```
 
-State lives on disk in the Board/S pages, claim ledger, probe entries, and their target files, so a fresh session re-enters and continues.
-
-Server vs local: a local need (render, parse, draft, backfill) drains immediately. A need that requires a NEW server run (Stata on PHI depositing to `Report-From-CMS-Server`) is server-blocked: schedule a poll and resume when results land. A figure renders locally; it blocks only if its underlying regression is not back yet.
-
-Autonomy policy:
+State lives on disk in the Board/S pages, claim ledger, probe entries, and their target files, so a fresh session re-enters and continues. A local need (render, parse, draft, backfill) drains immediately; a need requiring a NEW server run (Stata on PHI) is server-blocked: schedule a poll and resume when results land.
 
 ```
 AUTO (no asking):  local render/parse, backfill claims/displays, draft a stage tex,
@@ -548,31 +622,43 @@ e. BACKFILL: when the answering QA file lands, PROBE writes the entry's
 /haipipe-paper probe <need-description>
 ```
 
-opens one nested entry page in the right S03/S04 topic. The stage's PROBE phase (`haipipe-paper-probe`) is what dispatches it — through `Agent(haipipe-probe-q-executor-agent)` to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the entry's `#### q-executor` block and nothing else. The paper stays a story layer; the executor does the work.
+opens one nested entry page in the right S03/S04 topic. The PROBE phase is what dispatches it — through `Agent(haipipe-probe-q-executor-agent)` to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the entry's `#### q-executor` block and nothing else. The paper stays a story layer; the executor does the work. Anatomy + campaign + the paper-side loop: `fn/probes.md`.
 
-### Heavy probes and subagent dispatch
-
-When a probe requires reading a lot of code/logs (e.g. cohort construction from Stata do-files), dispatch it to a BACKGROUND SUBAGENT so the main paper session keeps doing paper work:
-
-```
-a. Add a beat to narrative/Methods for the topic (e.g. "Cohort construction"),
-   marked \needprobe{} until the report lands.
-b. Raise the question ENTRY (/haipipe-paper probe "<need>"), then let the PROBE
-   phase dispatch its `#### q-executor` with run_in_background=true.
-c. When the subagent report returns, fold it into Methods + Table 1 and flip the
-   beat from \needprobe{} to supported.
-```
+A HEAVY probe (reading a lot of code/logs, e.g. cohort construction from Stata do-files) is
+dispatched with `run_in_background=true` so the paper session keeps doing paper work: mark the
+beat `\needprobe{}`, raise the entry, fold the returned report into Methods when it lands.
 
 ### Construction as a first-class beat
 
-Dataset/cohort CONSTRUCTION is a first-class narrative/Methods beat, not a one-line "Setting" aside. The narrative must account for:
+Dataset/cohort CONSTRUCTION is a first-class narrative/Methods beat, not a one-line "Setting"
+aside: the inclusion/exclusion funnel, the unit definition, the exposure -> outcome linkage, and
+how each outcome, flag, and control variable is computed. Each may trigger its own
+`\needprobe{}` if no answering QA file covers it. The EXECUTOR (not the paper) reads the
+do-files, inspects the data, and returns the description.
 
-- inclusion/exclusion funnel
-- unit definition (what is one observation)
-- exposure -> outcome linkage
-- how each outcome, flag, and control variable is computed
+Layout
+-------
 
-Each of these may trigger its own `\needprobe{}` if the paper layer has no answering QA file covering it. The EXECUTOR (not the paper) reads the do-files, inspects the data, and returns the description.
+```text
+haipipe-paper/
+├── SKILL.md            this file: the paper family's ONLY registered skill
+├── create-page.py      the public creator; composes Board shell + stage scaffold
+├── check-contracts.py  stage-contract form checker (run after any contract edit)
+├── section-stats.py    section-size reporter
+├── stages/             index.yml (small, always read) · CONTRACT.md · section-kinds.yml;
+│                       each row's dir: points at the stage's own folder under ../SNN-*/
+├── probe/              check-probe-cards.sh · check_topic_entries.py ·
+│                       topic-entry-contract.md · per-stage-dispatch.md
+├── ref/                cross-stage references (08-stage-gate.md, paper-folder-anatomy.md,
+│                       prose-quality.md, enter-console.md, diffpdf/ presets+bugs, …)
+├── fn/                 probes.md · feedback.md · digest.md · folder.md · conform.md ·
+│                       compile.md · diffpdf.md · project.md · to-overleaf.md · to-word.md
+└── scripts/            check_structure.sh (conform) · diffpdf/ (make-diff.sh + templates) ·
+                        project/ (project.py + runtime) · to-word/ (md2docx.py + siblings)
+```
+
+Adding a stage = one folder + one row in `index.yml`. Adding a build verb = one `fn/` file
+(+ tooling under `scripts/`). No new skill, no version bump, no `description` edit.
 
 Structure Pointers
 -------------------
@@ -580,34 +666,34 @@ Structure Pointers
 Each area's internal contract lives with its owner; consult, never restate:
 
 ```
-skill tree (S01–S10 / container / workers / venue)
-                                   -> ../README.md (skill root: skill-tree layout and routing)
-paper-folder layout                -> ../workers/REF/paper-folder-anatomy.md (canonical tree and maturity ladder)
-lifecycle stages + venue coupling  -> ../haipipe-paper-stage/stages/CONTRACT.md + stages/index.yml
-rounds                             -> ../S10-round/haipipe-paper-round/SKILL.md ("Rounds contract")
-venue knowledge                    -> ../venue/playbook-<venue> packs (venue is knowledge, not a pipeline)
+skill tree (S01–S10 / venue)               -> ../README.md (skill root: skill-tree layout and routing)
+paper-folder layout                        -> ref/paper-folder-anatomy.md (canonical tree and maturity ladder)
+lifecycle stages + venue coupling          -> stages/CONTRACT.md + stages/index.yml
+stage gate + phase transitions             -> ref/08-stage-gate.md
+rounds                                     -> ../S10-round/round/stage.md (the Rounds contract; rebuttal craft beside it)
+venue knowledge                            -> ../venue/playbook-<venue> packs (venue is knowledge, not a pipeline)
 ```
 
 Composing with Evidence Workers
 --------------------------------
 
 ```
-/haipipe-paper (router)
-        ├─► /haipipe-paper-lifecycle    (the ARGUMENT: seed -> resource -> claims -> [venue] -> pitch -> narrative -> display -> section-edit)
-        ├─► S09-build/ leaves           (the ARTIFACT: haipipe-paper-compile · -diffpdf · -to-overleaf · -to-word · -project)
-        ├─► /haipipe-paper-rebuttal     (any venue, post-review)
+/haipipe-paper (the door)
+        ├─► STAGE step        seed -> resource -> claims -> [venue] -> pitch ->
+        │                     narrative -> display -> section-edit -> round (pages
+        │                     driven via haipipe-board-page)
+        ├─► fn/ verbs         folder · conform · compile · diffpdf · project ·
+        │                     to-overleaf · to-word (human-triggered, tooling in scripts/)
         │
         │   evidence path (a claim hits a gap):
-        └─► S03-literature/probes/L<n>-<topic>/ or S04-value/probes/V<n>-<topic>/
-                 one entry page per q-executor
-                 │        PROBE runs ① ORGANIZE + ② MATCH ─────► most entries close at MATCH (T2 REUSE)
-                 └─► haipipe-paper-probe (the PROBE phase worker, run inside a stage's PROBE phase)
-                          ③ DISPATCH the `#### q-executor` block, VERBATIM, only for what MATCH missed:
-                               Agent(haipipe-probe-q-executor-agent)          ← its clean context IS the wall
-                                    ├─► Agent(haipipe-task-orchestrator-agent)
-                                    └─► Agent(haipipe-discovery-orchestrator-agent)
-                          ④ POINT  **target** ─► the answering QA file  tasks|discoveries/<group>/<folder>/QA/<n>-<slug>.md
-                          ⑤ INTERPRET ─► `#### a-executor` (harvest inline) ─► parent topic register
+        └─► S03-literature/probes/ or S04-value/probes/ — one entry page per q-executor
+                 │   PROBE runs ① ORGANIZE + ② MATCH ──► most entries close at MATCH (T2 REUSE)
+                 └─► ③ DISPATCH the `#### q-executor` VERBATIM, only for what MATCH missed:
+                          Agent(haipipe-probe-q-executor-agent)   ← its clean context IS the wall
+                               ├─► Agent(haipipe-task-orchestrator-agent)
+                               └─► Agent(haipipe-discovery-orchestrator-agent)
+                     ④ POINT **target** ─► the answering QA file
+                     ⑤ INTERPRET ─► `#### a-executor` ─► parent topic register
 
         a stage reaches the bank ONLY through its PROBE phase — no direct discover/task verb
 ```

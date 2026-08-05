@@ -1,5 +1,5 @@
 # haipipe-board-page-for-venue · v0.1.2
-state: 🟡 in flux · one day old · 1 of 16 venue pages conforms · 2 contradictions inside the shipped file
+state: 🟡 in flux · lifted 260803 · 13 of 16 venue pages conform · the 0.1.0 contradictions fixed at 0.1.1
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
@@ -8,11 +8,11 @@ method: three managed spans sync from the skill folder; everything else is writt
 That place is a journal, a funder, or a patent office.
 Its sibling `haipipe-board-page-for-skill` governs the other page kind that describes rather than decides.
 What splits them: a skill page mirrors a folder in this repo, a venue page records an outside desk.
-It was lifted off `QBv1-misq.md` on 260803, and that page is still the only one of sixteen written to it.
+It was lifted off `QBv1-misq.md` on 260803, and the same day's fan-out took it to fourteen more desks.
 
 **The pages it governs, and where they live**: a venue page is named `QBv<n>-<slug>.md` and every one of them sits on the paper board `01-haipipe-paper-260725`, not here.
 Sixteen exist.
-Measured 260803, one carries the three figures and the section index this contract requires, and fifteen carry none of the three.
+Re-measured 260806, thirteen carry the three figures and the section index this contract requires; the grant and patent pages have no journal resolver to index, and `QBv11` has not been brought up.
 
 **What binds on a venue page and what does not**: this is the rule the skill puts above all the others, and it is a rule about how the PAGE IS READ rather than about how it is written.
 Nearly everything on a venue page is a measurement of what published papers at that desk actually did, so a drafter may depart from any of it on purpose.
@@ -25,10 +25,10 @@ When they disagree the desk wins and the disagreement is written onto the page r
 `QBv1-misq.md` records three of them, including a pack that observed "40-50 published pages" where the desk sets a 55-page ceiling.
 Every desk fact also carries HOW it was read, which was added the day `misq.umn.edu` began answering a direct fetch with HTTP 403 and a fact could only be re-checked through search summaries.
 
-**Why its placement is worth a second look**: it ships in `skills/board/`, beside the base, and `haipipe-board-page` §50 states that a variant ships under its CONSUMER and never beside the base.
-`haipipe-board-page-for-skill` is allowed there because its consumer is the board family itself.
+**Why its placement was worth a second look**: it shipped in `skills/board/`, beside the base, while `haipipe-board-page` then stated that a variant ships under its CONSUMER and never beside the base.
+`haipipe-board-page-for-skill` was allowed there because its consumer is the board family itself.
 This variant's consumer is the paper family: every page it governs lives on `01-haipipe-paper-260725`, and the generator it names lives in that board's `_tools/`.
-So by the base's own stated law this file would sit under the paper family, and nothing on this board has ruled that it may sit here instead; that scope line is the open Decision Now row on `QC3a`, widened once already when `Skill-7` landed for a unit outside `skills/board/`.
+The conflict resolved by changing the law rather than the folder: the base now rules that a variant ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803), and at 0.1.2 this file moved under the base's `page-types/` with the other nine variants.
 
 **Covered elsewhere**: `haipipe-board-page` owns the frame both variants extend and this file never repeats a rule from it.
 `Skill-6` mirrors `haipipe-board-page-for-skill`, the variant this one is most often confused with, and the two disagree on purpose about Aim form: the skill-page variant drops the base's `A<n>` ids and `Done when`, and this one keeps them, which its changelog says out loud so a reader arriving from the roster does not assume every variant drops them.
@@ -36,8 +36,8 @@ So by the base's own stated law this file would sit under the paper family, and 
 `_tools/sync-exemplars.py` on that same board owns the two marker blocks inside a venue page's `## Files`, and is the only generator involved; nothing on THIS board writes a venue page.
 
 **Where it stands**: it is registered, which the sibling variant was not, so the failure that made `haipipe-board-page-for-skill` unloadable for a day did not repeat here.
-Nothing has yet been written from it: all fifteen non-reference `QBv` pages predate the contract and none has been brought up to it.
-Two contradictions sit inside the shipped file and are carried as Aims below, both found by writing this page.
+The 260803 fan-out wrote from it at scale: fourteen agents took it to fourteen desks the day it shipped, and thirteen of sixteen `QBv` pages now carry its shapes.
+The two contradictions this page found inside the shipped file were fixed at 0.1.1, and their Aims below are closed with the evidence.
 
 ## Writing Style
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
@@ -431,27 +431,32 @@ There is no pack-head page above the outlets (JL 260802): four outlets in one pa
 <!-- haipipe:skill:body:end -->
 
 ## Aims
-- [ ] 🧪 It is used to write a venue page it was not lifted from
+- [x] 🧪 It is used to write a venue page it was not lifted from
       Every rule in it was read off `QBv1-misq.md`, which is also the only page that satisfies it: of sixteen venue pages, one carries `Venue-Structure`, `Submission-Rules` and the `Sec-` index, and fifteen carry none of the three.
       A contract measured against the single page it was derived from has not been tested, only restated.
-- [ ] 🩹 Its own section-index rule stops contradicting itself
+      Closed 260803 by the fourteen-desk fan-out its own 0.1.1 changelog records; re-measured 260806, thirteen of sixteen `QBv` pages carry the three shapes, with the grant and patent pages outside the journal index by design.
+- [x] 🩹 Its own section-index rule stops contradicting itself
       The shipped `SKILL.md` rules that the index counts from ZERO so that `Sec-<n>` lines up with the lifecycle page `S-Main-<n>`, and then eight lines later says a section carries "three numbers that disagree on purpose", listing "the venue index counts from 1".
       The mapping table printed between those two passages shows the two indexes AGREEING, which is the whole reason 0-based was chosen after three tries.
       The 1-based sentence is leftover text from the superseded rule, and a writer who reaches it first will number every division wrong.
-- [ ] 📓 The changelog stops teaching the rule the skill abandoned
+      Closed at 0.1.1 (260803): the shipped `SKILL.md` no longer contains the 1-based sentence, verified by grep on 260806.
+- [x] 📓 The changelog stops teaching the rule the skill abandoned
       `CHANGELOG.md` 0.1.0 records the index rule as `### 4 · 1-Abstract` and repeats "venue index from 1", while `SKILL.md` of the same release rules `Sec-0-Abstract`, which is what `QBv1-misq.md` actually uses in all eleven of its section divisions.
       Both documents ship in the same folder at the same version, so the reader who checks the history is the one who gets misled.
-- [ ] 🔌 A writer who loads only the base is routed here
+      Closed at 0.1.1 (260803): the changelog now names the 1-based form only as the corrected defect, verified by grep on 260806.
+- [x] 🔌 A writer who loads only the base is routed here
       `haipipe-board-page` 0.11.1 names `haipipe-board-page-for-skill` as its variant and never mentions this one, so nothing sends the author of a `QBv` page from the base to this contract.
       That is the same discoverability failure the sibling variant hit on 260802 in its other form, where the file existed and could not be reached.
       The fix lands in the base's own `SKILL.md`, which `Skill-3` mirrors, so this Aim closes on a change to that unit rather than this one.
-- [ ] 🗺 Where this variant BELONGS is ruled
+      Closed by the base's one resolution table (0.20.0, 260805): a `QBv<n>` filename resolves to this contract at step ①, and the ten-variant list names it.
+- [x] 🗺 Where this variant BELONGS is ruled
       It ships beside the base while its consumer is the paper family, and `haipipe-board-page` states that a variant ships under its consumer and never beside the base.
       Routed from `QC3a`, which already carries the open scope row for what the roster admits, widened once on 260802 when `Skill-7` landed for a unit outside `skills/board/`.
+      Closed by the maintainer rule (JL 260803, "a variant ships WHERE THE BOARD FAMILY MAINTAINS IT") and the 0.1.2 move under the base's `page-types/` on 260804.
 
 ## States
-The contract is one day old and describes a page kind that has sixteen instances, exactly one of which was written to it.
-Its health is `🟡 in flux` because the rules themselves are still moving: two of them contradict a second statement inside the same shipped release, and both were found by mirroring the unit rather than by using it.
+The contract was lifted 260803 and describes a page kind that has sixteen instances, thirteen of which now carry its shapes after the same day's fourteen-desk fan-out.
+Its health is `🟡 in flux` because the rules moved fast: the two shipped contradictions this page found were fixed at 0.1.1, and the folder moved under the base's `page-types/` at 0.1.2.
 Nothing about it is unreachable, which is the one thing its sibling got wrong: the folder was linked into the skill roster on 260803 at 0026 and loads by name.
 
 - 260803 CC · 🔎 Mirroring the unit found two contradictions inside one release
@@ -466,6 +471,7 @@ Nothing about it is unreachable, which is the one thing its sibling got wrong: t
   That is the same move that produced `Skill-6` the day before, and the roster now carries two variants born the same way, which is an argument that the base's variant list is the thing that keeps going stale.
 
 ## Log
+- 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the "1 of 16 conforms, never used, still contradicting itself" picture is replaced by the measured one, 13 of 16 conform after the 260803 fan-out, the 0.1.1 fixes landed, the base's resolution table routes QBv writers here, and the placement was ruled by the maintainer rule with the folder now under page-types/.
 260803 0043 · authored half written: Opening, the WORKFLOW figure, Aims, States; `state:` ruled 🟡 in flux from 🔴 OPEN; Aims and States converted from the generator's base-form stub to the checkbox and dated-record form `haipipe-board-page-for-skill` overrides to
 260803 0043 · page generated from `board/page-types/haipipe-board-page-for-venue/` by `skillpage.py new`
 

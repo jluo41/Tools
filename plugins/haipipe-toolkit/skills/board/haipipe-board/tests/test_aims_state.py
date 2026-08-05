@@ -85,7 +85,7 @@ class AimsStateTest(unittest.TestCase):
     def test_public_paper_generator_materializes_stage_specific_aims(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
         paper_root = root.parents[1] / "paper"
-        paper = paper_root / "route/haipipe-paper-stage"
+        paper = paper_root / "haipipe-paper"
         spec = importlib.util.spec_from_file_location(
             "paper_stage_create_page", paper / "create-page.py"
         )

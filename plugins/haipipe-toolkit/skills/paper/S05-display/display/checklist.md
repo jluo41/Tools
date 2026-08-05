@@ -41,7 +41,7 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 | display needs task-produced numbers | PROBE evidence lane: `/haipipe-task-for-display <need>` (direct, not claim-gated) |
 | display rests on an unverified claim | PROBE evidence lane: `/haipipe-paper probe "<need>"` |
 | missing / weak render, candidate never tried | PROBE render lane: figure / table / diagram / illustration skill |
-| wrong figure sequence / hero does not sell the story | `/haipipe-paper-lifecycle pitch` or DRAFT |
+| wrong figure sequence / hero does not sell the story | `/haipipe-paper pitch` or DRAFT |
 
 ## Exit (stage gate)
 - [ ] Display Map consistent with units on disk — no orphans either way (asset without row, row without asset/float).

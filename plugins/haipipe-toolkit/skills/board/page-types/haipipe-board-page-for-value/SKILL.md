@@ -3,7 +3,7 @@ name: haipipe-board-page-for-value
 description: >-
   The VARIANT contract for a VALUE topic Page: a topic page owning a `### Q-consumer register` whose questions face INWARD, toward results this project must produce, with one probe entry page nested below probes/ per neutral executor question. It loads haipipe-board-page for the base frame and the shared topic-entry core for the anatomy, then adds only the inward route's translation layer: what a legal register row carries here, what a returned answer must become (a value binding: the number, its run provenance, the claim it serves), and when the topic may close. Use when writing or fixing a Value topic page, when a register row names no claim dependency, when a number appears in prose with no run behind it, or when a claim ledger row cannot say which specification produced its estimate. Trigger: value topic, value page, S-Value, task route, value binding, run provenance, claim ledger, number evidence, /haipipe-board-page-for-value.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   last_updated: "2026-08-05"
   summary: "0.2.0 pulled this file out of its sibling's shadow: route: inward is now a REQUIRED register key, the close rule cites the core's Register-row states, and BOUND is defined here as provenance paths that resolve."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -63,4 +63,4 @@ haipipe-board-page-for-value/
 └── CHANGELOG.md        version history
 ```
 
-Nothing executable ships here. The register and entry shape belongs to `haipipe-board/ref/topic-entry-contract.md`, enforced by `haipipe-board/src/topic_entry_contract.py`; the wall a computation request crosses is owned by `page-phases/haipipe-board-page-probe`. A question about what is already published goes to `haipipe-board-page-for-literature`. The paper family projects this shape at `paper/workers/haipipe-paper-probe/ref/topic-entry-contract.md`.
+Nothing executable ships here. The register and entry shape belongs to `haipipe-board/ref/topic-entry-contract.md`, enforced by `haipipe-board/src/topic_entry_contract.py`; the wall a computation request crosses is owned by `page-phases/haipipe-board-page-probe`. A question about what is already published goes to `haipipe-board-page-for-literature`. The paper family projects this shape at `paper/haipipe-paper/probe/topic-entry-contract.md`.

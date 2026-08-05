@@ -1,11 +1,11 @@
 ---
 name: haipipe-application-round
-description: "Round management for the intervention lifecycle. Captures stakeholder/clinician review feedback, A/B test results, or iteration decisions into dated round folders. Triages todo items back to lifecycle stages. Modeled on haipipe-paper-round. Trigger: round, feedback round, review round, iteration, /haipipe-application round."
+description: "Round management for the intervention lifecycle. Captures stakeholder/clinician review feedback, A/B test results, or iteration decisions into dated round folders. Triages todo items back to lifecycle stages. Modeled on the paper family's round stage (paper/S10-round/round/). Trigger: round, feedback round, review round, iteration, /haipipe-application round."
 argument-hint: "[new|enter|triage|close] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-06"
+  version: "0.1.2"
+  last_updated: "2026-08-06"
   summary: "Round management — dated work rounds: feedback intake, triage to the owning stage, iteration cycles. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

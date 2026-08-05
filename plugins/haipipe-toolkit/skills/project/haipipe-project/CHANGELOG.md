@@ -4,6 +4,19 @@ haipipe-project — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.3.4] -- 2026-08-06
+
+- `ref/project-structure.md` papers/ row repointed: the paper-folder contract is
+  `paper/haipipe-paper/fn/folder.md` + `ref/paper-folder-anatomy.md` (thin-paper
+  phase 3 retired the standalone folder skill), and the owner column reads the
+  one door `/haipipe-paper`.
+
+## [0.3.3] — 2026-08-05
+
+- `haipipe-paper-lifecycle` is retired (thin-paper phase 2): paper-folder
+  scaffolding rows now read `/haipipe-paper folder` in SKILL.md and
+  fn/repo-project.md.
+
 ## [0.3.2] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 3.2.0; older entries below keep their original numbers).

@@ -35,6 +35,11 @@ artifact_fallback: 0-lifecycle/S02-work/1a-resource.md
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage resource
+                          # run by CHECK before judging; path relative to the skills root.
+                          # --stage resource also runs the resource pass over the resource S
+                          # page: every Q<n> carries an A:, a -> PP<NN> backlink, or a
+                          # DECLINED line in its ## Log.
 template: template.md
 
 exit_when: "at CHECK — pick one of the `exits:` below"

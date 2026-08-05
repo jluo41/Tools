@@ -1,3 +1,9 @@
+## 0.2.6 — 2026-08-05
+
+- Shared prose rules repointed to `paper/haipipe-paper/ref/prose-quality.md`
+  (ex `paper/workers/REF/`, dissolved in thin-paper phase 2). Frontmatter also
+  catches up with the 0.2.5 entry below, which had not been reflected there.
+
 ## 0.2.5 — 2026-08-01
 
 - Layer 1 of `ref/pattern-catalog.md` moved to

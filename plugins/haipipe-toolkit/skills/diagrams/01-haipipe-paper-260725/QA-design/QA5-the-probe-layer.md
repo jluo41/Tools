@@ -14,7 +14,7 @@ The paper's half of that crossing is ruled here; the model itself stays the laye
 
 **Where this page sits**: `QA1` names `⑤ /haipipe-probe` as one of the shared families the paper calls and owns none of.
 This page is the near side of one of them: the file that holds the question, the words it is written in, and the wall it is asked across.
-What the LAYER guarantees is the probe board's, at `QB1@probe`, `QB3@probe` and `QB6@probe`.
+What the LAYER guarantees is stated in `⑤`'s own `SKILL.md`; its board `01-probe-qa-260726` was retired on 260804 with its rulings graduated.
 What the STAGE declares and consumes is `QC4b`; how a landed value renders on a sentence is `QBe1 §5`.
 
 **Why it matters that the stake never crosses**: the bank must not know which answer would be convenient.
@@ -82,7 +82,7 @@ Name what it owns instead of where it sits in a list.
 
 ```text
  🔎 ⑤ /haipipe-probe          📄 ① the paper side
- v0.9.9 · 353 lines           haipipe-paper-probe
+ 0.11.3 · 393 lines           the door's probe/ + fn/probes.md
  ─────────────────────────    ──────────────────────────────────
  the probe-file anatomy       which questions THIS paper raises
  the five-step loop           what stake each one carries
@@ -96,9 +96,9 @@ Name what it owns instead of where it sits in a list.
 
 🔎 Establishes that the paper depends on a contract it does not own, and rules only its own half of it.
 
-#### 1.1 · Every phase worker is an adapter onto a model owned elsewhere
-(the same relationship the board tool has, stated by the skill in its own words)
-`haipipe-paper-probe/SKILL.md` says of itself that the model is not that file's, and that the file is only the paper-side deltas.
+#### 1.1 · Every paper-side tool is an adapter onto a model owned elsewhere
+(the same relationship the board tool has, stated by the file in its own words)
+`haipipe-paper/fn/probes.md` says of itself that the shared crossing model is `probe/haipipe-probe/SKILL.md`'s, and that the file holds only how a paper runs the loop plus the paper-side deltas.
 `create-page.py` is the same thing onto the board tool's `stage.py`.
 The pattern is the shared-family pattern `QA1` rules, and this page is one instance of it.
 
@@ -198,7 +198,7 @@ No queue file is written by hand, so moving or resolving an entry cannot leave a
 
 ### A1 · 🔎 What the layer owns, and what this board owns
 - ✅ A1.1 · Ruled 260726. It was called "the third reusable skill" until 260802, when `⑨` and `⑪` joined `QA1`'s map and made the ordinal wrong.
-- ✅ A1.2 · Shipped 260804. `haipipe-board/cli/check.py` validates the generic topic-entry overlay; `haipipe-paper-probe/check-probe-cards.sh` validates the Paper runtime form.
+- ✅ A1.2 · Shipped 260804. `haipipe-board/cli/check.py` validates the generic topic-entry overlay; the door's `probe/check-probe-cards.sh` validates the Paper runtime form.
 - ✅ A1.3 · Ruled and carried out 260803. The Paper board moves live entries beneath S03 and S04 topics; `_archive/1-probes/` keeps the old source paths as provenance.
 
 ### A2 · 🗣 The vocabulary, and the id that must not collide
@@ -216,10 +216,10 @@ No queue file is written by hand, so moving or resolving an entry cannot leave a
 ### 📋 Contracts · what CARRIES a rule to other pages
 - `../../probe/haipipe-probe/`
   `⑤` itself: the anatomy, the loop, the cost ladder, the QA state-line contract, and the two LAWS. Consulted, never written from here.
-- `../../paper/workers/haipipe-paper-probe/`
-  The paper-side deltas, which say so in their own summary.
-- `../01-probe-qa-260726/`
-  `⑥`, the layer's own board. Read-only from here.
+- `../../paper/haipipe-paper/probe/`
+  The paper-side probe tooling of the one door; `../../paper/haipipe-paper/fn/probes.md` states the deltas-only split in its own words.
+- `../../probe/haipipe-probe/SKILL.md`
+  Where the layer's guarantees live. Its own board `01-probe-qa-260726` was retired on 260804 with its rulings graduated.
 
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `../../board/haipipe-board/cli/check.py`
@@ -263,6 +263,8 @@ No queue file is written by hand, so moving or resolving an entry cannot leave a
   The former `1-probes/` tree is preserved only at `_archive/1-probes/`, and the separate S11 Probe group is gone.
 
 ## Log
+
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the paper-side probe adapter is now the door's `probe/` + `fn/probes.md` (the `workers/haipipe-paper-probe` skill dissolved 260805), and the retired probe board's pages are no longer cited as live.
 
 260804 · Moved the generic Q-consumer ownership, one-active-Page handoff, and zero-copy projection discussion to `QB9@boardform`. This Page now keeps only the implemented Paper S03/S04 case and a pointer to the lifecycle owner.
 

@@ -92,6 +92,19 @@ S_DISPLAY_UNIT = re.compile(
 # any number as it is written in a probe answer: 1.21494 · 765,701 · 0.001
 NUMTOK = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+")
 
+# ---------------------------------------------------- register bindings --
+# A `### Q-consumer register` row (ref/topic-entry-contract.md) binds its
+# stake to evidence with backticked TOKENS, not prose: a bibliography key on
+# the outward route (the citation binding), bank provenance paths on the
+# inward one (the value binding). Only these two shapes resolve to chips;
+# everything else in backticks stays ordinary code, which is how the
+# register's free prose keeps the no-chips ruling (JL 260806).
+#   BIBKEY is the surname-year-word shape this family's .bib uses
+#   (luo2025mapping, mafi2013association). Requiring the trailing word is
+#   what keeps run ids (`v0618`) and spec names (`SPEC5`) out.
+BIBKEY = re.compile(r"^[A-Za-z][A-Za-z'-]*\d{4}[a-z][a-z0-9-]*$")
+BANK_PATH = re.compile(r"^(?:tasks|discoveries)/\S+$")
+
 
 def _sections(text):
     """A probe file split on its `### ` headings, keyed lowercase."""
@@ -531,6 +544,66 @@ class Paper:
         ref = self.refs.get(key)
         return ("ok", key, (ref or _one_line(e.fields) or key),
                 {"entry": e, "links": e.links(), "reference": ref})
+
+    # -- register bindings ---------------------------------------------------
+    def register_binding(self, tok):
+        """-> (kind, state, label, tip, meta) for one backticked token inside
+        a `### Q-consumer register` section, or None when the token is not a
+        binding shape and must keep its ordinary code rendering.
+
+        The citation side reuses citation() whole, so a register key opens the
+        same card a prose \\citep chip does: the .bib entry, its line, the
+        source links, the rendered reference. A key-shaped token that does NOT
+        resolve is exactly the defect the register exists to surface, so it
+        renders broken rather than silently grey. The value side resolves the
+        row's provenance paths against the bank and NEVER invents: a path that
+        is not on disk renders owed, with the miss stated.
+        """
+        if BANK_PATH.match(tok):
+            state, label, tip, meta = self.bank_binding(tok)
+            return ("val", state, label, tip, meta)
+        if tok in self.bib or BIBKEY.match(tok):
+            state, label, tip, meta = self.citation(tok)
+            return ("cite", state, label, tip, meta)
+        return None
+
+    def bank_binding(self, tok):
+        """-> (state, label, tip, meta) for a value binding's provenance path.
+
+        BOUND on the inward route means a run you can walk to
+        (haipipe-board-page-for-value), so the card carries the path as links:
+        the file itself and the run folder it belongs to, the same shape
+        chain() gives a number chip. The label is the path's tail; the full
+        path stays in the tip and on the card's 🎯 line.
+        """
+        label = "/".join(tok.split("/")[-2:])
+        if self.bank_root is None:
+            return ("unowned", label,
+                    f"{tok}\nNO BANK: no tasks/ or discoveries/ folder was "
+                    f"found above the paper root, so this path resolves "
+                    f"against nothing.", {"target": tok})
+        p = self.bank_root / tok
+        if p.is_file():
+            files = [(f"answer · {p.name}", p)]
+            folder = p.parent.parent if p.parent.name.upper() == "QA" \
+                else p.parent
+            if folder.is_dir() and folder != self.bank_root:
+                files.append((f"run · {folder.name}/", folder))
+            tip = f"{tok}\nresolves in the bank."
+            if p.suffix.lower() == ".md":
+                head = p.read_text(encoding="utf-8", errors="replace")[:600]
+                st = re.search(r"^state:\s*(.+)$", head, re.M)
+                if st:
+                    tip += f"\nQA state: {st.group(1).strip()}"
+            return ("ok", label, tip, {"files": files, "target": tok})
+        if p.is_dir():
+            return ("ok", label,
+                    f"{tok}\nresolves to a run folder in the bank.",
+                    {"files": [(f"run · {p.name}/", p)], "target": tok})
+        return ("owed", label,
+                f"{tok}\nDOES NOT RESOLVE under {self.bank_root.name}/. "
+                f"The row stays open: a value binding is only BOUND when its "
+                f"run, spec and QA paths exist on disk.", {"target": tok})
 
     # -- the [Q-X-n] join key -----------------------------------------------
     def question(self, qid):

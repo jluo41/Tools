@@ -64,19 +64,19 @@ Writing only one is how a ruling gets applied to half of itself, twice on 260726
 ```text
  group                     ━▶ ① haipipe-paper          ━▶ ③ haipipe-board
  ───────────────────────    ────────────────────────     ──────────────────
- QA1  the folder map        README · PHILOSOPHY          —
- QA2  the skill set         the tree · the front door    —
+ QA1  the folder map        README · folder-anatomy      —
+ QA2  the skill set         the tree · the one door      —
  QA3  the skill board       — it rules ② itself          —
- QA6  the paper             paper-folder · enter         —
- QA7  the paper board       paper-round  ← owed          the S-family list
+ QA6  the paper             the door: fn/folder · enter  —
+ QA7  the paper board       S10-round/round stage data   the S-family list
  QA4  the tool              create-page.py               the whole package
  QA8  who owns a region     create-page.py               stage.py · serve.py
- QA9  driving work          haipipe-paper-stage          serve.py
+ QA9  driving work          the door's STAGE step        page RUN · serve.py
  QA10 the prose verb        revise-humanizer             haipipe-board-sentence
  QC2-3   adding a stage     index.yml · CONTRACT.md      —
  QC3b-d  the page written   create-page.py               stage.py
- QC4-4d  the four phases    2-phase/                     —
- QC5     the sentence       draft-* · revise-place       src/body.py
+ QC4-4d  the four phases    the stages' craft: files     page-phases/
+ QC5     the sentence       citation/revise craft files  src/body.py
 ```
 
 ## Content
@@ -244,6 +244,8 @@ Nothing has ever checked that no runtime skill references a Q page, and `QA1` ow
 - **The delete test**: removing a design board and checking that every skill still runs, which is the only available proof that a record has not become a dependency.
 
 ## Log
+
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the graduation table's landing files renamed to their live owners, since the routers and phase hubs they named are retired to `_old/`.
 
 260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into three divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Two stale counts removed, and the rule preventing a third written into Writing Style. `QA10` added to the graduation table, which had not been updated when the prose verb was placed.
 

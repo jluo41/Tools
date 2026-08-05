@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.119.0"
-  last_updated: "2026-08-05"
-  summary: "ref/topic-entry-contract.md grows two rules the topic types need: the register's REQUIRED route: outward | inward line (the type key) and the Register-row states section (SUPPORTED/BOUND · DEFERRED · WITHDRAWN; the gate reads the register)."
+  version: "0.122.0"
+  last_updated: "2026-08-06"
+  summary: "Register rows carry card evidence: inside a ### Q-consumer register a backticked bib key opens the cite chipcard and a backticked tasks//discoveries/ path opens a card whose links are the provenance paths; Log and free prose stay chip-free (JL 260806)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -91,7 +91,7 @@ then a mechanical builder/version snapshot, then the reviewer for CHECK. The
 orchestrator stores the exact result under `_runs/page/` and audits it; it never
 writes Page prose, and the reviewer never cures its own finding.
 A Page Type variant ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803).
-The three `for-*` variants maintained here ship under `page-types/`; family-specific workers such as `haipipe-paper-stage` stay with their families.
+The three `for-*` variants maintained here ship under `page-types/`; family-specific stage data, such as the paper door's `stages/` and craft files, stays with its family.
 The earlier rule read "ships under its CONSUMER, never here", and it broke the day a second variant landed: venue pages are consumed by the paper family and maintained here, so they satisfied neither that rule nor its Skill-and-Agent exception.
 Who maintains it is the line that held twice; who consumes it never did.
 

@@ -23,7 +23,7 @@ The rules the verbs share are the interesting part, because each is a scar: the 
 Rendering the line (`src/body.py`), the write path (`live/write.py`) and the popover a card opens in are `haipipe-board`'s, and locks and concurrent writers are `QE4`'s.
 The grammar's authority is `haipipe-board/ref/board-form.md` §5, which this spec cites and is forbidden to fork.
 
-**Where it stands**: 0.1.0 to 0.3.0 in two days, and the door half is one day old with nothing measured against it.
+**Where it stands**: 0.1.0 to 0.3.0 in two days, and the door half, shipped 260802, still has nothing measured against it.
 Its three named consumers are still only named: `live/chat.py`, whose duplicated lane rules justified cutting this spec out in the first place, still teaches the grammar from its own Python prose.
 The release that made it a door shipped with no changelog entry and `cli/agree.py` caught it; the entry was reconstructed from the shipped file on 260802 and the tool now reports clean.
 
@@ -259,7 +259,7 @@ The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract 
 
 ## States
 The ground moved under this page on 260802: `QB8` closed with all 16 Aims met, and this unit went from a 94-line contract an agent loads to a 191-line door a person runs, across three releases in two days.
-Its health is `🟡 in flux` for one reason now: the door half is a day old and nothing has been measured against it.
+Its health is `🟡 in flux` for one reason now: the door half, shipped 260802, still has nothing measured against it.
 
 - 260802 JL · 🚪 It stopped being only a SPEC
   `QB8` settled the sentence as the board's atomic unit and handed each attachment its own page, and the skill followed by taking three verbs: comment, edit, card.
@@ -272,6 +272,7 @@ Its health is `🟡 in flux` for one reason now: the door half is a day old and 
   A sync updates the derived half and cannot touch the authored one, so a page can be green on `skillpage.py check` and self-contradictory on screen, which is the sharpest example yet of why that check covers frontmatter only.
 
 ## Log
+- 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the "one day old" age clauses on the door half now date it 260802 instead, and no 260805 change touched this unit.
 260802 2030 · Rewritten after `QB8` closed and this unit reached 0.3.0: the Opening and the `WORKFLOW` fence had said `loaded, never run` while the page's own derived Content announced three verbs. Four Aims replace the earlier set, including the missing 0.3.0 changelog entry that `agree.py` found, and `state:` now names the two live problems rather than the one it had
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the address, the three consumers and the boundary, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. Recorded plainly that this unit's consumers are declared rather than measured, and that `live/chat.py`, the consumer that justified cutting it out, still carries its own copy
 260731 1116 · page generated from `board/haipipe-board-sentence/` by `skillpage.py new`

@@ -74,7 +74,7 @@ Reading order is therefore imperfect and the table is what to read instead of th
                          ⑦ the paper · ⑧ its board
 
 🚫 the human NEVER types /haipipe-board or /haipipe-probe for paper work
-🔓 both stay real doors for what is NOT a paper: ③ renders five design boards
+🔓 both stay real doors for what is NOT a paper: ③ renders the design boards
 ```
 
 **When ① calls ③**: three moments, and the middle one is what a naive reading misses.
@@ -103,12 +103,14 @@ Reading order is therefore imperfect and the table is what to read instead of th
    ───────────────────────────────     ──────────────────────────────
  ① 📄 paper skill    skills/paper/  ⟷  ② 01-haipipe-paper-260725  ← here
  ③ 👁 board tool     skills/board/  ⟷  ④ 01-boardform-260722      read-only
- ⑤ 🔎 probe layer    skills/probe/  ⟷  ⑥ 01-probe-qa-260726       read-only
+ ⑤ 🔎 probe layer    skills/probe/  ⟷  ⑥ retired 260804 · was 01-probe-qa-260726
  ⑦ 📝 one paper      Paper-X/       ⟷  ⑧ Paper-X/0-lifecycle/
- ⑨ 🖼 display layer  skills/display/⟷  ⑩ 01-haipipe-display-260727 read-only
+ ⑨ 🖼 display layer  skills/display/⟷  ⑩ retired 260804 · was 01-haipipe-display-260727
  ⑪ ✍️ writing layer  skills/writing/⟷  ② ◀━━ THIS BOARD · no board of its own
 
  🔑 the test for a board of its own: does the family own a KIND of artifact?
+ 🗑 ⑥ and ⑩ were retired on 260804 ("retire old boards"): their rulings had
+    graduated into the owning skills, and the records live in git history
  🚫 the evidence banks are NOT on this map. They are the OUTSIDE
 ```
 
@@ -116,7 +118,7 @@ Reading order is therefore imperfect and the table is what to read instead of th
 
 #### 1.1 · Every thing has a board, and a board may serve two things
 (the pairing is the rule; `②` serving both `①` and `⑪` is the one exception and it has a test)
-A family that owns a KIND of artifact has a subject of its own to argue, so it earns a board: `⑨` owns the float and has `⑩`.
+A family that owns a KIND of artifact has a subject of its own to argue, so it earns a board: `⑨` owns the float and earned `⑩` (retired 260804 once its rulings had graduated; the test, not a board's survival, is the rule).
 A family that owns none is argued where its prose already lives: `⑪` owns no artifact kind, its own `writing/README.md` says so, and its record is `②` at `QA10`.
 That is the whole test, and it is checkable by opening the family's README rather than by taste.
 
@@ -187,8 +189,8 @@ Both are stated in `## Law` and neither is mechanical, so a skill could acquire 
 ```text
  🧩 THING                    🎭 face here?  ⚖️ why
  ────────────────────────    ───────────    ──────────────────────────────
- ④ ⑥ ⑩ boards we do NOT own  🚫 no          ruling a board we have no
-                                            standing over
+ ④ the board we do NOT own   🚫 no          ruling a board we have no
+   (⑥ ⑩ retired 260804)                     standing over
  ③ ⑤   paper-side seam is    ✅ yes         QA4 · QA8 · QA9   and   QA5
         ruled here
  ⑨     seam ruled in QB      🚫 not in QA   it is a DELIVERY seam: QB5 owns
@@ -222,14 +224,15 @@ The thing to watch is that the imbalance stays a reflection rather than becoming
  🤖 a procedure an agent follows   ━▶  ①, in the owning SKILL.md or contract
  📝 one paper's prose · display    ━▶  ⑦
  📊 one paper's status · queue     ━▶  ⑧
- 🔢 a number or citation from a run ━▶ across the wall, from ⑦'s 1-probes/
+ 🔢 a number or citation from a run ━▶ across the wall, through a probes/
+                                       entry under ⑧'s S03/S04 topic page
 ```
 
 📍 Establishes the answer to the page's lead question, in the form a reader can apply without reading the rest.
 
 #### 4.1 · The table is the deliverable, and it is not yet portable
 (a fresh agent should be able to place a file without opening this board)
-`paper/README.md` still describes the tree without this distinction, so today the only place the routing exists is here.
+`paper/README.md` was rewritten to the thin family map on 260805 and still carries no routing table, so today the only place the routing exists is here.
 That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than ✅.
 
 ## Aims
@@ -265,7 +268,7 @@ That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than �
 ## States
 
 ### A1 · 🗺 The map
-- ✅ A1.1 · Eleven folders in six pairs. `⑨ display/` was admitted on 260802 after being cited eleven times in `## Links` while absent from the map; `⑪ writing/` was placed the same day.
+- ✅ A1.1 · Eleven folders in six pairs. `⑨ display/` was admitted on 260802 after being cited eleven times in `## Links` while absent from the map; `⑪ writing/` was placed the same day. `⑥` and `⑩` no longer resolve on disk since the 260804 board retirement, and the map now says so beside them.
 - ✅ A1.2 · The artifact-kind test is in `## Law` and each pair satisfies it. `⑪` is the only family with no board of its own, and `writing/README.md` states the reason in the family's own words.
 - 🔨 A1.3 · The `⑥` claim was repaired on 260802 after standing false since 260726, and `QA5` carried the same claim as an open item. The rule is now in `## Writing Style`; whether the other two claims obey it has not been re-read.
 
@@ -278,7 +281,7 @@ That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than �
 - ✅ A3.1 · The rule sorted `⑪` correctly on the day it was written, without an exception being added for it.
 
 ### A4 · 📍 Placing something new
-- ⬜ A4.1 · `paper/README.md` still carries the older complete-folder description. This is the one gap keeping the page 🟡.
+- ⬜ A4.1 · `paper/README.md` was rewritten to the thin family map on 260805, but the placement routing table is still only here. This is the one gap keeping the page 🟡.
 
 ### P · 🏁 Page-level
 - 🔨 P1 · First QA page migrated to the `QB4` contract, on JL's pilot ruling of 260802. The remaining ten are unmigrated.
@@ -288,8 +291,8 @@ That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than �
 ### 📋 Contracts · what CARRIES a rule to other pages
 - `../../paper/README.md`
   The paper family map that should carry the routing table and does not. This is `A4.1`.
-- `../../paper/PHILOSOPHY.md`
-  Where the family states what it is for, and the other place a placement rule could land.
+- `../../paper/haipipe-paper/ref/paper-folder-anatomy.md`
+  Where the family states its folder rules, and the other place a placement rule could land (`PHILOSOPHY.md` retired with the thin restructure).
 
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `../../board/haipipe-board/cli/check.py`
@@ -302,7 +305,7 @@ That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than �
 ## Law
 
 - Eleven folders in six pairs, and exactly four crossings between them. Every thing has a board, and that board holds the arguments that produced it.
-- A board may be the board of more than one thing. `②` is the board of `①` and of `⑪`, and the test of whether a family needs its own board is whether it owns a KIND of artifact. A family that owns one has a subject to argue and earns a board; a family that owns none is argued where its prose already lives. `⑨` owns the float and has `⑩`; `⑪` owns nothing and has `②`.
+- A board may be the board of more than one thing. `②` is the board of `①` and of `⑪`, and the test of whether a family needs its own board is whether it owns a KIND of artifact. A family that owns one has a subject to argue and earns a board; a family that owns none is argued where its prose already lives. `⑨` owns the float and earned `⑩` (retired 260804); `⑪` owns nothing and has `②`.
 - A shared family is not a channel. There are four shared families and exactly two channels, and the counts move independently: a channel is a door out of the paper, and `⑨` and `⑪` are neither.
 - A settled ruling graduates from the skill board into the OWNING SKILL, which for seven of thirteen groups means both `①` and `③`, and only then binds. A ruling landed on one half of a pair is a defect.
 - `①` and `③` produce `⑦` and `⑧` together, on one file, in disjoint regions: the tool owns the shell and every human keystroke, the paper skill owns the substance and every generated manuscript file. A paper consumes the settled contract and never stores the universal manual. A paper binds a question it cannot answer to a bank answer, by path, across a wall it may not reach through in any other way.
@@ -323,6 +326,8 @@ That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than �
 - **Artifact kind**: the class of thing a family produces and owns, which is the test for whether it earns a board of its own.
 
 ## Log
+
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); marked `⑥` and `⑩` retired on the map, repointed the probe routing row at S03/S04 `probes/` entries, and replaced the dead `PHILOSOPHY.md` contract path.
 
 260802 · Migrated to the `QB4` page contract as JL's pilot for the QA series: Writing Style added, Content numbered into four divisions each with a face figure and caption, Aims regrouped as A1-A4 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Three rulings that had been buried in prose became their own Aims: the artifact-kind test, the stale-claim rule, and the unchecked forbidden directions.
 The page grew, 305 lines to 341, against an expectation that the contract would shrink it. The prose did compress, and the apparatus the contract requires (a Writing Style section, four face figures with captions, nine `Done when` conditions, nine mirrored State rows) added more than the compression saved. A page carrying eight Law paragraphs and four divisions is simply not the shape of the 122-line QB pages the estimate was drawn from.

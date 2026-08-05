@@ -7,6 +7,13 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.20.1 - 2026-08-05
+
+Resolve-order slot reworded for thin-paper phase 2: the last slot is
+"family craft: the stage's declared craft files (and for probe, the family
+door's probe tooling)". Family-specific stage data (the paper door's stages/
+and craft files) stays in its own family; `haipipe-paper-stage` is retired.
+
 ## 0.20.0 - 2026-08-05
 
 **One resolution table, every type machine-resolvable** (review fix). The stale

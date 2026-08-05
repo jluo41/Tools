@@ -42,6 +42,12 @@ probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/
 display_request: 0-lifecycle/S05-display/_DISPLAY_REQUEST.md   # one DR row per beat that needs a
                           # display, filed on this stage's behalf; the DISPLAY stage owns the file
                           # and advances its statuses
+checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage narrative
+                          # run by CHECK before judging; path relative to the skills root
+craft:                    # data files DRAFT loads after the type contract (ex workers/)
+  - ../../S03-literature/citation-craft.md
+  - ../../S04-value/values-craft.md
+  - ../../S05-display/display/draft-craft.md
 template: template.md
 
 exit_when: "arc weak -> pitch / claims"   # the stage's own failure exit
@@ -49,7 +55,7 @@ exit_when: "arc weak -> pitch / claims"   # the stage's own failure exit
 venue_contract:           # read BEFORE composing — see the craft body
   read_first: 0-lifecycle/S01-opening/S-Open-Venue.md   # Structural Blueprint beats + Writing Principles
   fallback: venue/playbook-<venue>               # only if S-Venue-0-venue.md absent; no pack -> proceed without
-  stale: "recorded pack commit behind venue HEAD -> note 'consider /haipipe-paper-stage venue refresh',
+  stale: "recorded pack commit behind venue HEAD -> note 'consider /haipipe-paper venue refresh',
           but still use S-Venue-0-venue.md; never silently re-read packs"
 
 sections:                 # in order. The MIDDLE IS NOT FIXED (JL 260802, ruling A): one `## ` per

@@ -6,72 +6,80 @@ session: 582e6b19-40ad-4fe2-91b3-253835dc92d2
 
 ## Opening
 What is in the reusable skill package, what runs at each stage, and what does it put into the other folders?
-This is the one folder written once and used by every paper: the 35-skill baseline plus the new `haipipe-paper-project` runtime, each of them a promise that some stage worker will follow. The work here is ownership, not layout.
+This is the one folder written once and used by every paper: ten registered skills and eight stage contracts in ten stage data folders, each of them a promise a stage run will follow. The work here is ownership, not layout.
 
 This is one of three folders written once and used by every paper, `③` being the other. Everything in it is a promise: a contract a stage worker will follow, a script that will run, a template that will be filled. Nothing in it is about any particular paper, and the moment something here mentions one, it has stopped being reusable.
 
-The folder is already close to the right architecture, so the useful work is not a directory migration. It is ownership. Several skills still carry routing, craft, rendering, history and state at once, and the front door has grown to 556 lines, which every invocation pays for whether or not it needs them.
+The folder has now had its directory migration three times over (260803 SNN move, thin-paper phase 1, thin-paper phase 2), and the ownership work landed with it. One 687-line door replaced four routers totaling 1,783 lines; an invocation pays the door, the small stage index, and exactly ONE stage.md, and the phase machinery the family used to carry is rented from `board/`.
 
-What is genuinely missing is the second half of the question above. A reader can see which layers exist and cannot see what a stage RUN actually does: which workers it dispatches, what it writes, where it writes it, and what appears in the paper as a result. That is the part this face now carries, because it is also the map of how `①` touches `⑦` and `⑧`.
+What is genuinely missing is the second half of the question above. A reader can see which layers exist and cannot see what a stage RUN actually does: which phases it runs, what it writes, where it writes it, and what appears in the paper as a result. That is the part this face now carries, because it is also the map of how `①` touches `⑦` and `⑧`.
 
 Scope: This page covers The layers, the direction of control, the anatomy of one callable skill, what each of the eight stages runs and produces, and what crosses this folder's edges. Neighbouring pages cover Which folder this is among the eleven is `QA1`; the design board that rules it is `QA3`; the paper it writes into is `QA6` and that paper's board is `QA7`; the contract form itself is `QF2`; the Display split is `QBe2 §3`.
 
 ## Diagram
-```
+```text
    one request, one direction, no second orchestrator
-   ② WHICH BOARD GROUP RULES IT · the layer · what it LEAVES BEHIND
+   ② WHICH BOARD GROUP RULES IT · the step · what it LEAVES BEHIND
 
    ruled by ②        user intent
                          │
                          ▼
-   QA2 ──────────▶  haipipe-paper/   THE SINGLE DOOR. the only thing a human
-   QA1                   │           types. resolve the paper, CALL ③ to build
-   QA4                   │           and open ⑧, route. WHICH, never HOW.
-                         │           writes NOTHING · renders NOTHING
-                         │           → calls ③ haipipe-board   (the human channel)
-                         │           → calls ⑤ haipipe-probe   (the evidence channel)
+   QA2 ──────────▶  haipipe-paper/     THE ONE DOOR (0.5.0). the only router and
+   QA1  QA4              │             the only thing a human types. enter/status
+   QA6 (get-or-create)   │             open ⑧ through ③; it renders NOTHING and
+                         │             computes NOTHING itself.
+                         │             → calls ③ haipipe-board   (the human channel)
+                         │             → calls ⑤ haipipe-probe   (the evidence channel)
+                         │             owns --depth spend authority · probe/ tooling
+                         │             · ref/enter-console.md · fn/
                          ▼
-   QA6 ──────────▶  0-enter/         which paper, which round
-   QA7                   │           → ⑦  .paper-console.yaml   session state
-                         │           → ⑧  S-Round-<n>-<vYYMMDD>.md
-                         │                and that round's letters beside it
+   QC2  QF2 ─────▶  stages/index.yml   the small index, read on every invocation
+                         │             verb → ONE stage key → load ONE stage.md,
+                         │             NEVER the other seven
                          ▼
-   QC2-QC4d ──────▶  1-lifecycle/     pick ONE S page, load ONE stage contract
-   QA8  (creation)       │           haipipe-paper-stage · index.yml · 8 contracts
-   QE   (the form)       │           → ⑧  S-<Family>-<unit>-<slug>.md
-                         │                create-page.py calls the Board's stage.py
+   QC3-QC3d  QA8 ─▶ create-page.py     ensure the S page: select the stage
+                         │             template here, call ③'s cli/stage.py for
+                         │             the filename and shell
+                         │             → ⑧  S-<Family>-<unit>-<slug>.md
                          ▼
-   QC4-QC4d (phases) ─▶ 2-phase/   the four phases, 13 workers, all on ONE page
-   QC   (sentence)       │
-   QA9  (the runner)     │  DRAFT   → ⑧  the page's ## Content + its Q-consumer
-                         │  PROBE   → ⑦  1-probes/PPnn_<topic>/QXn_<slug>.md
+   QC4-QC4d  QA9 ─▶ haipipe-board-page WORK ON / RUN. the page work is ③'s;
+   (rented from ③)       │             each phase loads, in order: base page →
+                         │             for-stage variant → phase contract → the
+                         │             stage's craft: files
+                         │  DRAFT   → ⑧  the page's ## Content + its Q-consumer
+                         │  PROBE   → ⑧  S03/S04 probes/ entries
                          │           ↳ ACROSS THE WALL, read-only, to
                          │             tasks/ · discoveries/ → QA/<n>-<slug>.md
                          │             The answer is never copied in; it is pointed at.
                          │  REVISE  → ⑧  the same page, plus %% why-comments
-                         │  CHECK   → ⑧  state: ✅   WRITTEN BY A HUMAN
+                         │  CHECK   →    runs the declared checker: script, then
+                         │              the HUMAN GATE → ⑧  state: ✅
                          ▼
+                    rebuild the board  ③'s build.py, after every write
 ```
 
-```
+```text
    …continuing DOWN the same chain, the artifact side ──────────
 
-   QC3d (the product) ──▶ 3-deliver/  1-build · 2-audit · 3-polish · 4-ship
-   QD   (renderers)      │           → ⑦  sections/*.tex   GENERATED from ⑧
-                         │           → ⑦  displays/…/float.tex
-                         │           → ⑦  main.pdf · overleaf · the bundle
+   QB5  QB6 ───────▶ display · section-edit   the only two stages that generate
+                         │                    manuscript files, always FROM the page
+                         │            → ⑦  displays/<unit>/ via the four
+                         │                 commissioned renderers
+                         │            → ⑦  sections/*.tex, generated by sync
                          ▼
-   QA7 ──────────▶  4-respond/       → ⑧  the round's S-Round page: what came
-                         │                back, what was decided, what applied
+   QB9 ──────────▶  S09-build/        five artifact tools + the proof-checker/
+                         │            craft pack
+                         │            → ⑦  main.pdf · diff.pdf · overleaf ·
+                         │                 word bundle · projection
                          ▼
-   QD  ──────────▶  5-present/       → ⑦  slides.pdf · poster.pdf, from the
-                                          ACCEPTED paper
-
+   QB10  QA7 ────▶  S10-round/        round + rebuttal
+                                      → ⑧  the round's S page: what came back,
+                                           what was decided, what applied
 ```
 
-```
+```text
    ── read the LEFT column and the graduation edge is addressable ──
-      every layer here is ruled by some group on ②. A Law that reaches ✅
+      every step here is ruled by some group on ②. A Law that reaches ✅
       has a named target, so "it is decided" and "it is applied" stop
       being the same sentence. QA3 is the only group with no target at
       all, because it rules the board itself.
@@ -83,16 +91,18 @@ Scope: This page covers The layers, the direction of control, the anatomy of one
       ① gets NOTHING. Nothing a paper run produces is written back into
         the skill: that direction is graduation, and only ② may travel it.
 
-   ── which layers are ADAPTERS, and onto what ─────────────────────
-      1-lifecycle/  create-page.py ──▶ ③  the Board's stage.py
-      2-phase/      haipipe-paper-probe ──▶ ⑤  "only the paper-side deltas"
-      every other layer writes ⑦ or ⑧ directly and adapts onto nothing.
+   ── what is DATA and what is a SKILL ─────────────────────────────
+      S01-opening … S10-round hold stage DATA: stage.md (contract + craft),
+      template.md, and craft .md files. No name: field, not registered.
+      Registered skills: the door, the container pair at the ROOT
+      (haipipe-paper-folder · haipipe-paper-conform), the five S09-build
+      tools, and the two S10-round skills. Ten in all.
 
    consulted, never in the chain of command:
-     venue/     knowledge packs, read lazily. NEVER lifecycle verbs.
-     diagram/   design Boards.               NEVER runtime contracts.
+     venue/     seven playbook packs, read lazily. NEVER lifecycle verbs.
+     _old/      retired history, moved never deleted. NEVER loaded at runtime.
 
-   ───────────────── zoom in on any one skill ─────────────────
+   ────────────── zoom in on any one registered skill ──────────────
 
    tier 1  metadata        name + description     selects the skill, always paid
    tier 2  SKILL.md        the core loop          paid on every invocation
@@ -100,208 +110,211 @@ Scope: This page covers The layers, the direction of control, the anatomy of one
            scripts/        run without consuming reasoning context
            assets/         copied into outputs
 
+   and on any one stage folder: stage.md frontmatter is the CONTRACT the
+   door reads; its body is the CRAFT; craft: files load LAST, after the
+   phase contract.
+
    ✗ never in the invocation path, at any tier:
      CHANGELOG.md · feedback/ · migration notes · status reports · design Boards
 ```
 
 ## Content
 ### The family layers
+One door, ten stage data folders, one container pair, and two consulted shelves.
+```text
+haipipe-paper/       THE ONE DOOR: the only router. verbs + stages/index.yml +
+                     create-page.py + probe/ tooling + ref/ + fn/ + --depth authority
+S01-opening/         stage DATA: seed · venue · pitch   (stage.md + template.md each)
+S02-work/            stage DATA: resource · claims · narrative
+S03-literature/      runtime store for discovery-backed topic entries + citation-craft.md
+S04-value/           runtime store for task-backed topic entries + values-craft.md
+S05-display/         display stage + draft-craft.md + ref-display/
+S06-main/            section-edit stage + revise-place · revise-results ·
+                     check-evidence craft files
+S07-appendix/        appendix material
+S08-present/         empty; paper-slides and paper-poster live in ../display/skills/
+S09-build/           five artifact tools + the proof-checker/ craft pack
+S10-round/           round + rebuttal
+haipipe-paper-folder/ · haipipe-paper-conform/   the container pair, at the ROOT
+venue/               seven playbook packs, consulted never commanded
+_old/                retired history, moved never deleted (see _old/README.md)
 ```
-haipipe-paper/   thin front door: resolve paper, open Board, route intent
-0-enter/         create or enter a paper and manage dated rounds
-1-lifecycle/     stage contracts and the Board-aware stage runner
-2-phase/         internal DRAFT, PROBE, REVISE, and CHECK workers
-3-deliver/       build, render, audit, compile, export, and ship
-4-respond/       rebuttal and revision response
-5-present/       slides and posters derived from the accepted paper
-venue/           lazily consulted knowledge packs, never lifecycle verbs
-diagram/         design Boards, never runtime contracts
-```
-The front door selects context. The stage runner works one S page and dispatches a bounded worker. Workers return results to the same page. Delivery adapters materialize accepted Content into target formats. There is no second orchestrator anywhere in that chain.
+The door resolves ONE stage and hands its S page to `haipipe-board-page`; the stage folders hold the data the door and the phases read; the container pair scaffolds and conforms a paper folder. There is no `0-enter/` … `5-present/` bucket layer, no `workers/`, and no second orchestrator anywhere in the chain. Canonical tree: `paper/README.md`.
 
 ### What every stage runs
-The same four phases, dispatched to the same thirteen workers, whichever stage is running.
+The phases are RENTED, not owned. Since thin-paper phase 2 there are no paper phase workers: the four phase contracts, the ten Page Types, the three verbs (CREATE, WORK ON, RUN), and the RUN receipts all live in `board/`, and this folder adds only data.
+```text
+what ③ owns (the rental)                what ① adds (the data)
+─────────────────────────────────────   ──────────────────────────────────────
+4 phase contracts  board/page-phases/   craft:    .md files DRAFT/REVISE load
+10 Page Types      board/page-types/              LAST (citation · values ·
+3 verbs + receipts haipipe-board-page             display · placement · results
+                                                  · evidence · proof-checker/)
+                                        checker:  the script CHECK runs before
+                                                  judging, declared per stage.md
 ```
-DRAFT    haipipe-paper-draft          raises questions, writes nothing it cannot source
-         ├── draft-citation           finds assertions owing a source. READ-ONLY.
-         ├── draft-values             finds numbers owing a run
-         └── draft-display            finds claims owing a display
-PROBE    haipipe-paper-probe          the ONLY door evidence enters by; crosses the
-                                      wall to tasks/ and discoveries/
-REVISE   haipipe-paper-revise         rewrites to venue quality, leaves why-comments
-         ├── revise-place             substitutes LANDED answers into placeholders
-         ├── revise-content           section → paragraph → weave → sentence
-         ├── revise-humanizer         removes AI tells
-         └── revise-results           results prose
-CHECK    haipipe-paper-check          HUMAN GATE. Only a person may pass it.
-         ├── check-evidence
-         └── proof-checker
+The load order, per phase, is fixed by `board/page-types/haipipe-board-page-for-stage/SKILL.md` ("checker: and craft:"):
+```text
+base haipipe-board-page → for-stage variant → the phase contract → the
+stage's craft: files
 ```
+A stage runs the ordered `phases:` list its own stage.md declares; venue declares `[draft, probe, check]`, every other current stage all four.
+`gates:` defaults to `[check]`: DRAFT, PROBE, and REVISE run unattended, then ONE human stop.
+The unattended run is safe because `probe_depth: 0` caps PROBE at harvesting; passing `--depth N` is the human act that authorizes spend, and it lives in the door.
+CHECK runs the declared `checker:` script first (for the probe-consuming stages, `probe/check-probe-cards.sh --stage <key>`); a green gate over a checker FAIL is a defect.
+Evidence enters ONLY through PROBE: entries under S03/S04 `probes/`, answers pointed at QA files in tasks/ and discoveries/, never copied.
+This page states the rental and the load order only; the page machinery's own board is the boardform board (`④`).
 
 ### What each stage writes, and what appears in the paper
+The eight stages of `stages/index.yml`, each row read off its own stage.md tonight.
+```text
+ stage          phases        writes into ⑧ the paper board                generates in ⑦
+ ────────────   ───────────   ──────────────────────────────────────────   ──────────────────
+ seed           D P R C       S01-opening/S-Open-Seed.md                   none
+ resource       D P R C       S02-work/S-Work-R-resources.md               none
+ claims         D P R C       S02-work/S-Work-C-claims.md                  none
+                              (the ONLY home of a claim's status)
+ venue          D P   C       S01-opening/S-Open-Venue.md                  none
+                no REVISE     (the pin lives on this page's state: line)
+ pitch          D P R C       S01-opening/S-Open-Pitch.md                  none
+ narrative      D P R C       S02-work/S-Work-N-narrative.md               none
+ display        D P R C       S05-display/4-display.md                     displays/<unit>/ via the
+                              (the brain; commissions the renderers)       four commissioned renderers
+ section-edit   D P R C       S06-main/S-<Family>-<unit>-<slug>.md         sections/*.tex, GENERATED
+                PER UNIT      one page per section                         from the .md by sync
 ```
- stage          phases        writes into ⑧ the paper board      generates in ⑦
- ────────────   ───────────   ─────────────────────────────────  ──────────────────
- seed           D P R C       S-Seed-0-seed.md                   —
- resource       D P R C       S-Work-0-resources.md              —
- claims         D P R C       S-Work-1-claims.md                 —
- venue          D P   C       S-Venue-0-venue.md                 venue pin on that S page
-                no REVISE     (a contract, not prose, so there
-                              is nothing to polish)
- pitch          D P R C       S-Venue-1-pitch.md                 —
- narrative      D P R C       S-Venue-2-narrative.md             —
- display        D P R C       S-Display-<id>-<slug>.md            displays/<unit>/
-                              (authority + rebuild workspace)     float.tex + selected assets
- section-edit   D P R C       S-Main-n · S-Appendix-x            sections/*.tex
-                PER UNIT      one page per section
-```
-Five of the eight produce nothing in `⑦` at all: their whole product is a page in `⑧`. Only display and section-edit generate manuscript files, and both generate them FROM the page, never the other way round.
+Six of the eight produce nothing in `⑦` at all: their whole product is a page in `⑧`. Only display and section-edit generate manuscript files, and both generate them FROM the page, never the other way round. Paths under ⑧ are relative to the paper's `0-lifecycle/`.
 
-### The anatomy of one skill
+### The anatomy of one unit
+Two shapes now, and only one of them is a skill.
+```text
+a REGISTERED skill (10 of these)         a STAGE DATA folder (8 of these)
+<skill-name>/                            SNN-<name>/<stage>/
+├── SKILL.md     trigger + shortest      ├── stage.md     frontmatter CONTRACT
+│                complete procedure      │                (phases, gates, artifact,
+├── references/  loaded only when        │                probe_depth, checker:,
+│                its branch is taken     │                craft:) + body CRAFT
+├── scripts/     deterministic ops       ├── template.md  parsed by create-page.py
+└── assets/      copied into outputs     └── *-craft.md   data the phases load LAST
 ```
-<skill-name>/
-├── SKILL.md       trigger and shortest complete execution procedure
-├── references/    detailed contracts and variants, loaded only when needed
-├── scripts/       deterministic operations that should not be rewritten
-├── assets/        templates or files copied into outputs
-└── agents/        optional discovery and UI metadata
-```
-Metadata selects the skill. `SKILL.md` explains the core loop and names exactly which conditional reference to read. Scripts and assets do work without consuming routine reasoning context.
+Metadata selects a skill. `SKILL.md` explains the core loop and names exactly which conditional reference to read. Scripts and assets do work without consuming routine reasoning context.
+A stage.md has NO `name:` field: it is data the door reads, not a registered skill. Adding a stage is one folder plus one `index.yml` row; no new skill, no version bump, no description edit.
 
-Design Boards, changelogs, feedback archives, migration narratives and status reports do not belong in the live invocation path. If history must be retained, keep it outside the callable skill folder. The evidence that this is not theoretical: `haipipe-paper/SKILL.md` is 556 lines and owns routing, closing UI, comment history, evidence routing and delivery needs at once; `haipipe-display-poster/SKILL.md` is 854.
+Design Boards, changelogs, feedback archives, migration narratives and status reports do not belong in the live invocation path. If history must be retained, keep it outside the callable skill folder. The compaction evidence flipped sides on 260805: the door is 687 lines, but it replaced four routers totaling 1,783, and an invocation pays the door + the small index + exactly ONE stage.md. Loading all eight stage files would be the regression this layout exists to avoid, and the door's Step 2 forbids it.
 
-### The roster: 36 skills, with versions
-The 35-skill baseline was measured 2026-07-26; `haipipe-paper-project` was added 2026-07-30. `ver` is the skill's own `metadata.version`; `lines` is its `SKILL.md`, which is what every invocation of it pays for.
-```
- layer            skill                             ver     updated     lines
- ──────────────   ───────────────────────────────   ─────   ──────────  ─────
- front door       haipipe-paper                     0.3.2   2026-07-19    556  ⚠
- 0-enter          haipipe-paper-enter               0.4.1   2026-07-19    570  ⚠
-                  haipipe-paper-round               0.1.0   2026-07-19    168  ⚠ superseded
- 1-lifecycle      haipipe-paper-lifecycle           0.3.1   2026-07-19    422
-                  haipipe-paper-stage               0.6.0   2026-07-25    235
- 2-phase/draft    haipipe-paper-draft               0.5.2   2026-07-19    416
-                  haipipe-paper-draft-citation      0.1.1   2026-07-19    122
-                  haipipe-paper-draft-display       0.1.1   2026-07-19    116
-                  haipipe-paper-draft-values        0.1.1   2026-07-19    116
- 2-phase/probe    haipipe-paper-probe               0.6.1   2026-07-19    219
- 2-phase/revise   haipipe-paper-revise              0.1.6   2026-07-19    158
-                  haipipe-paper-revise-content      0.1.4   2026-07-19     84
-                  haipipe-paper-revise-humanizer    0.2.3   2026-07-07    130
-                  haipipe-paper-revise-place        0.1.0   2026-07-19    111
-                  haipipe-paper-revise-results      0.2.3   2026-07-08     86
- 2-phase/check    haipipe-paper-check               0.3.0   2026-07-19    442
-                  haipipe-paper-check-evidence      0.1.0   2026-07-19    148
-                  haipipe-paper-proof-checker       0.1.2   2026-07-19    369
- 3-deliver/build  haipipe-paper-conform             0.1.1   2026-07-19     81
-                  haipipe-paper-folder              0.4.0   2026-07-14    131
-                  haipipe-paper-project             0.1.3   2026-07-30     94
-                  haipipe-paper-restructure         0.1.1   2026-06-04    110
-                  haipipe-paper-scaffold            0.1.1   2026-06-04    120
- 3-deliver/audit  haipipe-paper-claim-audit         0.1.1   2026-05-31    230
-                  haipipe-paper-optimizer           0.1.1   2026-05-31    346
-                  haipipe-paper-reviewer            0.1.1   2026-05-31    148
- 3-deliver/polish haipipe-paper-polish              0.1.0   2026-07-17     56
- 3-deliver/ship   haipipe-paper-compile             0.1.0   2026-05-31    287
-                  haipipe-paper-diffpdf             0.1.1   2026-07-19    350
-                  haipipe-paper-to-overleaf         0.1.1   2026-07-19    239
- 3-deliver        haipipe-paper-deliver             0.1.0   2026-07-19    163
- 4-respond        haipipe-paper-rebuttal            0.1.1   2026-07-14    310  ⚠
-                  paper-rebuttal                    0.1.1   2026-07-14    146  ⚠
-                  rebuttal-response                 0.1.0   2026-05-31    171  ⚠
- 5-present        paper-poster                      0.2.0   2026-07-24    134
-                  paper-slides                      0.2.0   2026-07-24    136
- ──────────────   ───────────────────────────────   ─────   ──────────  ─────
-                  36 skills                                            7,500
+### The roster: 10 skills, with versions
+Measured 2026-08-05, tonight, with `find paper -name SKILL.md -not -path '*/_old/*'`. `ver` is the skill's own `metadata.version`; `lines` is its `SKILL.md`, which is what an invocation of it pays for.
+```text
+ place        skill                       ver     updated      lines
+ ──────────   ─────────────────────────   ─────   ──────────   ─────
+ the door     haipipe-paper               0.5.0   2026-08-05     687
+ root         haipipe-paper-folder        0.5.2   2026-08-05     174
+ root         haipipe-paper-conform       0.2.2   2026-07-26     114
+ S09-build    haipipe-paper-compile       0.3.0   2026-07-26     281
+ S09-build    haipipe-paper-diffpdf       0.2.0   2026-07-26     350
+ S09-build    haipipe-paper-project       0.1.3   2026-07-30      94
+ S09-build    haipipe-paper-to-overleaf   0.1.1   2026-07-19     239
+ S09-build    haipipe-paper-to-word       0.5.1   2026-07-30     170
+ S10-round    haipipe-paper-round         0.2.0   2026-07-26     109
+ S10-round    haipipe-paper-rebuttal      0.1.1   2026-07-14     310
+ ──────────   ─────────────────────────   ─────   ──────────   ─────
+              10 skills                                        2,528
 ```
 
-Four things this roster says that no prose on this page did.
+Four things this census says that the 260726 roster could not.
 
-**Nothing has reached 1.0.** Every skill is `0.x`, and eleven are still `0.1.x`. That is honest rather than alarming, but it means no part of this folder has ever been declared stable, and `QF3`'s fresh-agent acceptance has never been passed by any of them.
+**The roster shrank 36 to 10 across three restructures.** The 260803 SNN move renamed the buckets to the S01 to S10 spine; thin-paper phase 1 dissolved the phase worker skills into stage `craft:` data files plus `board/`'s four phase contracts; thin-paper phase 2, tonight, folded `haipipe-paper-enter`, `haipipe-paper-lifecycle`, and `haipipe-paper-stage` into the one door. Everything removed is in `_old/`, moved never deleted, and each retired unit's mirror page in `../QCskill-engine-skill/` carries a ⚫ RETIRED banner (Skill-1 to Skill-5, Skill-12, Skill-13).
 
-**The compaction problem is bigger than the front door.** `haipipe-paper` is 556 lines and `haipipe-paper-enter` is 570, so the two files a session reads first total 1,126 lines before any actual work is selected. `haipipe-paper-check` adds 442 and `haipipe-paper-draft` 416. `QA3`'s progressive-disclosure Law is stated and, by these numbers, not applied anywhere.
+**Nothing has reached 1.0.** Every skill is `0.x`, and three are still `0.1.x`. No part of this folder has ever been declared stable, and `QF3`'s fresh-agent acceptance has never been passed by any of them.
 
-**`4-respond/` has three overlapping rebuttal skills**: `haipipe-paper-rebuttal` (310), `paper-rebuttal` (146) and `rebuttal-response` (171). Nothing on this board rules which is the entry, and two of them predate the third. That is the clearest single ownership defect in the folder.
+**The two old ownership defects are gone.** The three overlapping rebuttal skills are down to one: `paper-rebuttal` and `rebuttal-response` retired to `_old/round-duplicates/`, and `haipipe-paper-rebuttal` is the only entry. And the naming is uniform: all ten carry the `haipipe-` prefix, since `paper-poster` and `paper-slides` moved to `../display/skills/`.
 
-**The naming is not uniform.** Four skills drop the `haipipe-` prefix: `paper-rebuttal`, `rebuttal-response`, `paper-poster`, `paper-slides`. A reader cannot tell from a name whether a skill belongs to this family, which matters because the prefix is how the family is discovered.
+**The invocation cost dropped by an order of magnitude.** 36 SKILL.md files totaled 7,500 lines; ten now total 2,528, and a stage run reads exactly one of them plus one stage.md. The craft did not disappear: it became data, in the six `*-craft.md` files and the `proof-checker/` pack, loaded only by the phase that declares them.
+
+**And the census above is already a dated snapshot.** Phase 3 was ruled the next morning (260806, `QC6`'s Log) and is executing: folder and conform fold into the door's `fn/`, the five S09-build tools become door verbs backed by `fn/` files and `scripts/`, round and rebuttal become S10 stage data, and the nine non-door skills retire to `_old/phase3-260806/`. End state: this family registers exactly ONE skill.
 
 ### Which board group rules which skill
 This is the `② ──graduates──▶ ①` edge, made addressable. Every group on the design board rules some part of this folder, and a ruling that reaches ✅ has to land somewhere concrete or it has not graduated. This is that target list, so nobody has to guess.
-```
- board group                   what it rules in ①                        state
- ───────────────────────────   ───────────────────────────────────────   ─────
- QA1  six folders              README.md · PHILOSOPHY.md                  ✅
-       the family map that should carry the boundary and does not yet
- QA2  the skill set            the tree layout · haipipe-paper/SKILL.md   🟡
-       THIS page. 556 lines at the front door is its open item.
- QA3  the skill board          NOTHING in ①, by design                    🟡
+```text
+ board page or group           what it rules in ① (or beside it)
+ ───────────────────────────   ─────────────────────────────────────────────
+ QA1  the folder map           paper/README.md, the family map
+ QA2  the skill set            THIS page: the tree layout · the census ·
+                               haipipe-paper/SKILL.md's shape
+ QA3  the skill board          NOTHING in ①, by design
        it rules the board itself; that is what makes ② deletable
- QA6  the paper                haipipe-paper-folder/SKILL.md              🟡
-                               haipipe-paper-enter/SKILL.md
-       the scaffold contract. Already changed once today: 3 containers.
- QA7  the paper board          haipipe-paper-round/SKILL.md   <- REWRITE  🟡
-                               haipipe-board's S-family list
-       the round ruling landed here and the skill still contradicts it
- ───────────────────────────   ───────────────────────────────────────   ─────
- QC2-QC3b  adding a stage       stages/index.yml . CONTRACT.md . SKILL.md  🟡
-       the test that admits one, the four files, the two variation flags
- QC3a  the stage template      stages/*/template.md  x8                   🔴
-       create-page.py PARSES it; the file says "follow, don't ship"
- QC3b-QC3d  the page it writes   create-page.py . haipipe-board/stage.py    🟡
-       who names it, what a second run does, what is generated from it
- QC4-QC4d the four phases      2-phase/  x4 . ref/08-stage-gate.md        🟡
-       calling them, then DRAFT, PROBE, REVISE and the gate
- QA8  who owns the page        create-page.py . haipipe-board/stage.py    🟡
-       the one-file rule, dependencies, state, creation
- QA9  how work is DRIVEN       haipipe-paper-stage/SKILL.md (the runner)  🟡
-                               haipipe-board/serve.py (the live layer)
- ───────────────────────────   ───────────────────────────────────────   ─────
- QC   the sentence             2-phase/0-draft/draft-{citation,values,    🟡
-                                 display}/ . 2-phase/2-revise/revise-place/
-                               stages/5-section-edit/template.md
-                               haipipe-board/src/body.py (the chips)
- QD   the display              display/ (the reusable family)             🟡
- QA10 the prose verb           writing/haipipe-writing/                   🔴
-       ⑪, the first family whose board is ② rather than one of its own
-                               0-lifecycle/3-display/
-                               3-deliver/ renderers
- QE   shipping                 stages/index.yml . stages/CONTRACT.md      🟡
+ QA4  the board tool           the ①→③ call sites: build.py · serve.py ·
+                               cli/stage.py (rebuild after every write)
+ QA5  the probe layer          probe/haipipe-probe binding · the door's
+                               probe/ tooling · fn/probes.md
+ QA6  the paper scaffold       haipipe-paper-folder/SKILL.md · the door's
+                               get-or-create enter path
+ QA7  the paper board          the runtime 0-lifecycle/ layout ·
+                               S10-round/haipipe-paper-round/SKILL.md
+ QA8  who owns the page        create-page.py · haipipe-board/cli/stage.py
+ QA9  how work is DRIVEN       the door's STAGE step · haipipe-board-page
+                               WORK ON / RUN · haipipe-board/cli/serve.py
+ QA10 the prose verb           writing/haipipe-writing/ (⑪, boarded here)
+ ───────────────────────────   ─────────────────────────────────────────────
+ QC2  the stage contract       stages/CONTRACT.md · index.yml · each
+                               SNN stage.md's frontmatter
+ QC3-QC3d  the page it writes  SNN */template.md x8 · create-page.py ·
+                               haipipe-board/cli/stage.py
+ QC4-QC4d  the four phases     board/page-phases/ x4 · each stage.md's
+                               craft: and checker: lines · ref/08-stage-gate.md
+ QC5  the sentence             citation-craft.md · values-craft.md ·
+                               revise-place-craft.md · board/src/body.py
+ QC6  the paper skill folder   the S01-S10 spine itself; thin-paper's owner
+ QCskill  the mirrors          one Skill-N page per unit; ⚫ RETIRED pages
+                               keep the fold visible
+ ───────────────────────────   ─────────────────────────────────────────────
+ QB0-QB10  the paper board's   the stage data each S page is built from
+           S families          (QB5 display · QB6 main · QB9 build · QB10 round)
+ QBv  the venue packs          venue/playbook-* x7
+ QF2  the contract form        stages/index.yml smallness · the one-stage rule
+ QF3  fresh-agent acceptance   the test none of the ten skills has passed
 ```
 
 Three things fall out of reading it as a column.
 
 `QA3` is the only group with no target in `①`, and that is not an omission. It rules the design board itself, which is exactly why `②` can be deleted without breaking anything.
 
-`QA4`, `QA8`, `QA9`, `QC` and `QD` each name a file in `board/haipipe-board/` or `display/`, which are not inside this folder at all. Those are the rulings that cross a package boundary, and they are the ones most likely to be half-applied: a Law can graduate into the paper skill and quietly not reach the board tool that implements its other half.
+`QA4`, `QA8`, `QA9`, `QC3-QC4d` and `QC5` each name a file in `board/`, which is not inside this folder at all. Those are the rulings that cross a package boundary, and they are the ones most likely to be half-applied: a Law can graduate into the paper skill and quietly not reach the board tool that implements its other half. Thin-paper made this edge heavier, because the four phases themselves now live on the far side of it.
 
-`QA7` is the live example of a ruling that landed and has not been carried: the round ruling is written on the board and `haipipe-paper-round/SKILL.md` still describes the layer it removed. It carries a superseded banner rather than a rewrite, so the gap is visible instead of silent.
+The mirror group `QCskill` is how a graduated fold stays visible: seven of its pages (Skill-1 to Skill-5, Skill-12, Skill-13) now open with a ⚫ RETIRED banner naming exactly where each retired unit's job went. The 260726 defect this section used to carry, `haipipe-paper-round` contradicting the round ruling, closed when the skill was rewritten to 0.2.0.
 
 ### What crosses this folder's edge
-```
+```text
  ② the skill board  ──▶ ①    IN, and only this way. A ruling reaches ✅ and its
-                             Law is COPIED into a SKILL.md, a stage contract, or
-                             a ref/ file. Nothing here may read the board back.
+                             Law is COPIED into the door's SKILL.md, a stage.md,
+                             or a ref/ file. Nothing here may read the board back.
 
- ① ──▶ ⑦ the paper           OUT, only through a stage run. A worker writes the
-                             page and any generated manuscript file. No skill
-                             file is ever copied into a paper.
+ ① ──▶ ⑦ the paper           OUT, only through a stage run. display and
+                             section-edit generate manuscript files FROM their
+                             pages; S09-build/ materializes the accepted bundle.
+                             No skill file is ever copied into a paper.
 
  ① ──▶ ⑧ the paper board     OUT, and this is the one people forget. Creating a
-                             page is `create-page.py`, which selects the stage
-                             and template here, then calls haipipe-board's
-                             `stage.py` for the shell. Board owns the filename,
-                             Paper owns the Content jobs.
+                             page is the door's `create-page.py`, which selects
+                             the stage and template here, then calls
+                             haipipe-board's `cli/stage.py` for the shell. Board
+                             owns the filename, Paper owns the Content jobs.
+                             Every phase write ends with ③'s build.py rebuild.
 
- ① ──▶ the wall              NEVER directly. Only the PROBE worker crosses to
-                             tasks/ and discoveries/, and it asks; it does not run.
+ ① ──▶ the wall              NEVER directly. Only PROBE crosses, through S03/S04
+                             probes/ entries and clean agents; the answer stays
+                             a QA file in tasks/ · discoveries/, pointed at,
+                             never copied. --depth is the human lever that lets
+                             a crossing SPEND.
 ```
 
 ### What changes here, and how often
-```
- rarely    the layer map, the anatomy, the phase list           a QA/QB ruling
- per rule  a stage contract's fields                            a graduated Law
- per venue a pack under venue/                                  a new outlet
- never     anything naming one paper                            that is ⑦ or ⑧
+```text
+ rarely     the door, the README, this census                   a QA/QC ruling
+ per rule   a stage.md's contract fields or craft body          a graduated Law
+ per stage  one folder + one index.yml row, no new skill        a new stage
+ per venue  a pack under venue/                                 a new outlet
+ never      anything naming one paper                           that is ⑦ or ⑧
 ```
 
 ## Aims
@@ -310,21 +323,21 @@ Three things fall out of reading it as a column.
 - [x] ✂️ Choose progressive disclosure
       One short SKILL.md points directly to conditional references, scripts, and assets.
 - [x] 🔭 Say what a stage RUN does, not just which layers exist
-      The four phases, the thirteen workers, and the per-stage write and generate table (260726, JL's ask).
+      The four phases (rented from `③` since thin-paper), the craft files, and the per-stage write and generate table (260726, JL's ask).
 - [x] 🔀 State this folder's three edges
       What comes in from `②`, what goes out to `⑦` and `⑧`, and that only PROBE crosses the wall.
 - [x] 🎯 Map every board group to what it rules here
       The graduation edge is addressable: each group names the files a settled Law must land in (JL 260726).
 - [ ] 🔗 Carry the cross-package rulings
-      QA4, QA8, QA9, QC and QD each rule a file in `haipipe-board/` or `display/`, outside this folder. Nothing checks that a Law reached both halves.
+      QA4, QA8, QA9, QC3-QC4d and QC5 each rule a file in `board/`, outside this folder. Nothing checks that a Law reached both halves.
 - [x] 📋 List the roster with versions
-      The 35-skill baseline plus `haipipe-paper-project`, with versions, dates and SKILL.md sizes.
-- [ ] 🧠 Rule which rebuttal skill is the entry
-      `4-respond/` carries three: `haipipe-paper-rebuttal`, `paper-rebuttal`, `rebuttal-response`. Nothing says which one a session calls, and two predate the third.
-- [ ] 🏷 Make the naming uniform
-      Four skills drop the `haipipe-` prefix, which is how the family is discovered.
+      The 10 registered skills after thin-paper phase 2, with versions, dates and SKILL.md sizes.
+- [x] 🧠 Rule which rebuttal skill is the entry
+      Resolved on disk 260805: `paper-rebuttal` and `rebuttal-response` retired to `_old/round-duplicates/`; `haipipe-paper-rebuttal` is the only entry.
+- [x] 🏷 Make the naming uniform
+      All ten registered skills now carry the `haipipe-` prefix; `paper-poster` and `paper-slides` moved to `../display/skills/`.
 - [ ] ✂️ Make the front door thin
-      Move stage craft, comment detail, evidence detail, and output-specific rules to their actual owners. 556 lines paid on every invocation.
+      Move stage craft, comment detail, evidence detail, and output-specific rules to their actual owners. Thin-paper folded four routers (1,783 lines) into one 687-line door and moved the craft out; the comment and evidence protocols still ride every invocation.
 - [ ] 📏 Set a compactness acceptance test
       A fresh agent should identify the entry, stop conditions, and next owner without reading family history.
 - [ ] 🧹 Inventory the current paper skills
@@ -339,7 +352,7 @@ The ownership map, the anatomy, and the per-stage run map are recorded, and on 2
 
 The front door was applied too. `haipipe-paper` is now the single thing a human types, and it calls `③` and `⑤` rather than sitting beside them (`QA4`).
 
-What is still only argued is the ownership cleanup this face opened with: several skills continue to carry routing, craft, rendering, history and state at once.
+The ownership cleanup this face opened with has since landed: three restructures (260803 SNN move, thin-paper phases 1 and 2) folded the routers into one door and dissolved the phase workers into stage craft data files.
 
 The two zoom levels, family and folder, were separate faces until 260726, when they merged: both answer "what is inside `①`", and splitting them put two of QA's four faces on one quadrant.
 
@@ -347,13 +360,13 @@ Reopened to 🟡 on 260726: the edge map raised a real unruled question, which i
 
 ## Files
 - `haipipe-paper/SKILL.md`
-  The front door, and the largest compaction candidate at 556 lines.
-- `1-lifecycle/haipipe-paper-stage/`
-  The runner, `../../paper/haipipe-paper-stage/stages/index.yml`, the eight contracts, and `../../paper/haipipe-paper-stage/stages/CONTRACT.md`.
-- `2-phase/`
-  The thirteen phase workers.
-- `3-deliver/`
-  The output and shipping family.
+  The one door (0.5.0, 687 lines): verbs, the STAGE step, `create-page.py`, `probe/`, `ref/`, `fn/`.
+- `haipipe-paper/stages/`
+  `index.yml` (read on every invocation), `CONTRACT.md`, `section-kinds.yml`; each row's `dir:` points at a stage folder under `../SNN-*/`.
+- `S01-opening/ … S10-round/`
+  The stage data: eight `stage.md` contracts with their `template.md` and craft `.md` files, plus the S09/S10 skills.
+- `../../board/page-phases/`
+  The four rented phase contracts; `③`'s, not this folder's.
 
 ## Law
 
@@ -363,6 +376,9 @@ Reopened to 🟡 on 260726: the edge map raised a real unruled question, which i
 - Nothing in this folder names one paper. A rule that mentions a specific manuscript belongs in `⑦` or `⑧`, not here.
 
 ## Log
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the 260805 ten-skill census is marked as a dated snapshot, with phase 3 (ruled 260806, executing; QC6's Log) collapsing the family to ONE registered skill.
+- 260806 0200 · [REVISE-CC] page rewritten to the 0.5.0 one-door architecture (door + stage data + board rental); the bucket-era diagram, 36-skill roster, and 13-worker phase map replaced with the current census
+
 260726 · The map stopped being only a map. 16 skills aligned to `QA6`'s layout in one pass, plus the shared anatomy spec and 90 venue templates; the front door became the single door (`QA4`). The diagram's front-door box now names both dispatches. One correction the pass produced belongs here: measuring per SKILL.md badly understated the work, because `haipipe-paper-stage`'s real debt was in its eight `stages/*/stage.md` contracts, whose paths RESOLVE AT RUN TIME. A stale path in a contract does not read wrong; it writes to the wrong place.
 
 260726 · Added what a stage RUN does (13 workers, the per-stage write/generate table), the roster of 35 skills with versions, and the map of which board group rules which skill. The diagram gained a left column naming the ruling group per layer, on JL's ask. Reopened to 🟡: the edge map raised an unruled question, whether a stage may write into `⑦` without going through a page.

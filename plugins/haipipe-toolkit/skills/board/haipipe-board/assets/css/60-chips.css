@@ -141,6 +141,13 @@
    caption and the notes too, and those are the half a reader checks. */
 .ccpdf{display:block;width:100%;height:24em;border:1px solid var(--line);
   border-radius:var(--radius-control);background:var(--pre)}
+/* pdf previews fold shut (JL 260806): open-by-default objects buried the
+   card's links below its scroll fold and the plugin eats the wheel. The
+   summary wears the figcaption's face so the card reads the same closed. */
+.ccfold summary{cursor:pointer;font:11px ui-monospace,Menlo,monospace;
+  color:var(--mut);letter-spacing:.05em;margin-bottom:5px}
+.ccfold summary:hover{color:var(--accent)}
+.ccfold[open] summary{margin-bottom:6px}
 /* the rendered reference: hanging indent, the way a bibliography reads */
 .ccref{font:14px/1.6 Charter,"Bitstream Charter",Georgia,Cambria,serif;
   padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);

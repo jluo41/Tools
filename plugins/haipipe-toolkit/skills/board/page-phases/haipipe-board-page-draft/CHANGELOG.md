@@ -7,6 +7,12 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.3.2 - 2026-08-05
+
+Load-order slot reworded for thin-paper phase 2: "family worker" is now
+"family craft: the stage's declared craft files". The dissolved paper workers/
+leaves live on as stage data files declared in each stage.md `craft:` list.
+
 ## 0.3.1 - 2026-08-05
 
 - Opening now states DRAFT's own risk (a hidden hole reaches print) instead of the three-line ownership couplet shared verbatim with REVISE and CHECK, the 260802 form-letter failure repeating one level down.

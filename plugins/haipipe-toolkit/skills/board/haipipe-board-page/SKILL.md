@@ -3,7 +3,7 @@ name: haipipe-board-page
 description: >-
   The PAGE contract and router of a Board: one persistent Page combines a stable Page Type with a current Page Phase. It owns the shared frame, fixed section order, section obligations, machine write boundaries, evaluation contract, and the lifecycle vocabulary DRAFT, PROBE, REVISE, CHECK. Page Type variants live under page-types/; phase contracts live under page-phases/. THREE VERBS form the callable door: CREATE scaffolds one Page, WORK ON repairs one Page, and RUN drives one Page through a bounded non-linear producer/build/judge loop with auditable receipts. RUN is deliberately not ADVANCE. Trigger: create a page, new page, working on a page, update a page, run page lifecycle, automatic page loop, audit page workflow, page contract, page grammar, page sections, Page Type, Page Phase, draft probe revise check, rewrite Opening, section evaluation, quality check, which section, base page, /haipipe-board-page.
 metadata:
-  version: "0.20.0"
+  version: "0.20.1"
   last_updated: "2026-08-05"
   summary: "One resolution table covers ALL types: filename prefix, then the register's REQUIRED route: line, then the REQUIRED page-type: frontmatter key, then the stage and Q filenames; exactly one key matches or the page is defective."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -69,7 +69,7 @@ Membership is the glob's whole job. The table above, not the glob, decides which
 
 A Page Type used by one consumer family is a VARIANT of the base: it defines Content and may populate fixed extension points in Aims, States, and Stage Contract, but it never redefines, adds, removes, or reorders those frame sections.
 A variant ships WHERE THE BOARD FAMILY MAINTAINS IT (JL 260803).
-The ten Page Type variants maintained here live under `page-types/`; a family-specific stage worker such as `haipipe-paper-stage` remains in its own family.
+The ten Page Type variants maintained here live under `page-types/`; family-specific stage data, such as the paper door's `stages/` and craft files, remains in its own family.
 The earlier wording was "ships under its CONSUMER, never here", which broke when the venue variant landed because its consumer is the paper family and its maintainer is this one.
 This skill owns the BASE those variants extend.
 
@@ -145,7 +145,7 @@ Resolve one invocation in this order:
 base Page contract
   → matching Page Type, when one exists
   → current Page Phase
-  → family worker, when paper or application adds artifact knowledge
+  → family craft: the stage's declared craft files (and for probe, the family door's probe tooling), when paper or application adds artifact knowledge
 ```
 
 The four phases form a routing grammar, not a conveyor belt.

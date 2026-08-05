@@ -21,7 +21,7 @@ Content part 1 states that separation, and `## Aims` carries it as the one open 
 `haipipe-board`'s `open` action still describes propose and materialize too, which Content 2.2 declares on purpose, so those two descriptions have to be corrected together.
 `haipipe-board-index` held the board altitude until 260802; its folder is deleted and its page sits in `_archive/`.
 
-**Where it stands**: the merge is one day old and one unit now holds two approval rules that only the contract keeps apart.
+**Where it stands**: the merge landed 260802 and one unit now holds two approval rules that only the contract keeps apart.
 10 releases shipped between 260731 and 260802, ending with that merge, which is what `🟡 in flux` on the `state:` line is reporting.
 No group-altitude finding has been written through the new landing rule, no fresh agent has been measured choosing this door, and `haipipe-board-digest` is named on the roster and not on disk.
 Each of those is an open row in `## Aims`.
@@ -335,7 +335,7 @@ src/lanes.py     253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane b
       0.8.0 carries the human-decision law, the cross-board law and the anchored-append rule under its own headings, so digest will inherit a written protocol instead of needing a new one.
 
 ## States
-This is the fastest-moving unit in the family, 10 releases to 0.9.0, and as of 260802 it is the family's only write verb.
+This is the fastest-moving unit in the family, 11 releases to 0.9.1, and as of 260802 it is the family's only write verb.
 Its health is `🟡 in flux` because the merge landed the same day it was ruled and nothing has exercised the new altitude yet.
 Both failure modes its page-altitude rules exist to prevent had already happened by hand before it shipped, which is why those fixes were written into the contract rather than learned from it; the board altitude has no equivalent scar tissue yet.
 
@@ -351,6 +351,7 @@ Both failure modes its page-altitude rules exist to prevent had already happened
   That is real evidence for the door test's premise and it is not the door test, because the script names the skill instead of an agent choosing it.
 
 ## Log
+- 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the merge's "one day old" clause now dates it 260802 and the release count reads 11 to 0.9.1, with no 260805 change touching this unit.
 260802 1810 · Absorbed `haipipe-board-index` at 0.9.0 on JL's `B` ruling: the board and group altitude, `propose` `materialize` `lanes` `regroup`, and `src/lanes.py`. The Opening, the `WORKFLOW` fence and the Aims were rewritten for two altitudes, and the group-altitude landing rule the merge settled is now on the page. The two Aims that were waiting on `QC1b`'s rows are closed, and one new Aim opened for the risk the merge introduced: one unit now carries two approval rules and only the contract keeps them apart
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the five-step route, the three end states and the never-list, five real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux on the release evidence. JL's merge proposal recorded as a State record pointing at `QC1b`'s row rather than restating its options
 260731 1117 · page generated from `board/haipipe-board-routing/` by `skillpage.py new`

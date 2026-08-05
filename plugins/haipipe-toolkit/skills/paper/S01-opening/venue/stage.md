@@ -58,6 +58,8 @@ artifact_fallback: 0-lifecycle/S01-opening/2a-venue.md
                           # the stage file under its old name. Use this ONLY when the
                           # resolved S face is absent, and say which one you used.
 probes: 0-lifecycle/S03-literature/probes/L<n>-<topic>/ | 0-lifecycle/S04-value/probes/V<n>-<topic>/
+checker: paper/haipipe-paper/probe/check-probe-cards.sh --stage venue
+                          # run by CHECK before judging; path relative to the skills root
 pins: 0-lifecycle/S01-opening/S-Open-Venue.md   # the pin lives on THIS stage's own S page, in its
                            # on its `state:` line: `state: ✅ PINNED · <venue> <year>`. NOT a
                            # `venue:` frontmatter key — the board's face grammar is a CLOSED
@@ -67,7 +69,7 @@ pins: 0-lifecycle/S01-opening/S-Open-Venue.md   # the pin lives on THIS stage's 
                            # venue contract; a second copy could only disagree with it.
 template: template.md
 
-packs: ../../../../venue/  # the venue knowledge directory: playbook-*/README.md (`-> Claims`
+packs: ../../venue/        # the venue knowledge directory: playbook-*/README.md (`-> Claims`
                            # rewards), <journal>/taste.md (desk signals), <journal>/<journal>-
                            # <section>/style.md (Micro-norms), <journal>/examples/.
                            # READ BY ~13 SKILLS and NOT owned by this stage. This stage is the
@@ -91,15 +93,15 @@ owns_resolution: |         # THIS stage resolves, ONCE, what every downstream st
   · pack + outlet -> section styles + templates  (the Section Styles table in the artifact)
   Each kind row resolves TWO pack paths by parallel globs: `*-<kind>/style.md` (how it reads,
   reference) and `*-<kind>/template.md` (the skeleton section-edit drafts into, authored from
-  this outlet's exemplars — the PRINCIPLE, see ../section-kinds.yml). Both, or an explicit
+  this outlet's exemplars — the PRINCIPLE, see ../../haipipe-paper/stages/section-kinds.yml). Both, or an explicit
   `style: — blueprint-only` / `template: — generic-fallback` per missing file, so a missing
   pack file is distinguishable from an unchecked one.
   Downstream NEVER globs, finds, or spells a pack path. section-edit reads its row and stops.
-  The kind vocabulary and which kinds each outlet actually has: ../section-kinds.yml
+  The kind vocabulary and which kinds each outlet actually has: ../../haipipe-paper/stages/section-kinds.yml
   Resolution is a GLOB (`*-<kind>`), never concatenation — the per-journal slug is arbitrary
   and sometimes multi-token (jno- · diabcare- · npjdm- · MS-IS-); concatenation works for
   MISQ and fails on six other outlets.
-kinds_file: ../section-kinds.yml
+kinds_file: ../../haipipe-paper/stages/section-kinds.yml
 
 formatting:
   title_rule: "====="
@@ -130,7 +132,7 @@ done_criteria:
      sentence length, citation density, results reported, display units — each [source: ...]-tagged"
   - "blueprint adapted to THIS paper's claim structure (H1/H2/H3 mapped to sections/subsections)"
   - "Writing Principles filled: tone, citation style, results presentation, display limits, abstract"
-  - "Section Styles carries ONE record line per kind (kinds from ../section-kinds.yml), each line
+  - "Section Styles carries ONE record line per kind (kinds from ../../haipipe-paper/stages/section-kinds.yml), each line
      giving BOTH its resolved style: path and its resolved template: path — or an explicit
      `style: — blueprint-only` / `template: — generic-fallback` when the pack lacks that file, so
      'no pack file' is distinguishable from 'not checked'"

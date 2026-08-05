@@ -7,11 +7,11 @@ method: one door in, ① dispatches and ③ renders, and every paper-specific be
 /haipipe-board is not part of /haipipe-paper, and half this board's rulings land in it. What is the relationship, where is its edge, and WHO DOES THE USER TYPE?
 Two separate skills write the same markdown file to produce a paper and its board, and this face is how they manage that without ever colliding.
 
-The typing question was the one that had never been answered, and the board contradicted itself about it. `QA1` drew `③` as a peer the human reaches directly and said `①` owns neither channel out. `QA2` said `①` is a thin front door that RESOLVES THE PAPER, OPENS THE BOARD, and routes. Both could not be true, and at the time this page opened the code answered a third way: `haipipe-paper-enter` read `board.md` as a data file and rendered its own text dashboard, so the human had to type the second skill with the paper's `0-lifecycle/` path.
+The typing question was the one that had never been answered, and the board contradicted itself about it. `QA1` drew `③` as a peer the human reaches directly and said `①` owns neither channel out. `QA2` said `①` is a thin front door that RESOLVES THE PAPER, OPENS THE BOARD, and routes. Both could not be true, and at the time this page opened the code answered a third way: `haipipe-paper-enter` (the console of that era, since retired into the one door) read `board.md` as a data file and rendered its own text dashboard, so the human had to type the second skill with the paper's `0-lifecycle/` path.
 
 JL ruled it on 260726: `①` is the SINGLE source of entry. `/haipipe-paper enter <path>` builds and opens the paper's board, and `③` is called rather than typed.
 
-The map is four pairs, each a thing and the board that governs it (`QA1`). This face is the middle row: `③` the tool, whose own board is `④`. What the grid alone does not show is that this one first-class family builds the entire right-hand column, its own board included. `haipipe-board` lives at `skills/board/haipipe-board/` and renders Boards across this repo, including this paper family's design and lifecycle Boards.
+The map pairs each thing with the board that governs it (`QA1`). This face is the middle row: `③` the tool, whose own board is `④`. What the grid alone does not show is that this one first-class family builds the entire right-hand column, its own board included. `haipipe-board` lives at `skills/board/haipipe-board/` and renders Boards across this repo, including this paper family's design and lifecycle Boards.
 
 That earns it a place on the map, and it earns the number by the same test that excluded the evidence banks. We rule nothing about what is inside `tasks/`, so the banks are a wall rather than a room. We rule a great deal about `haipipe-board`: who composes an S filename, who creates a page, what `## Items to Finish` means, what a `>` lane binds to, and how a citation chip resolves. Nine faces on this board already rule its behaviour. A thing you rule that much is not outside the map.
 
@@ -37,8 +37,8 @@ Scope: This page covers What `haipipe-board` is to this skill, which of its beha
    │     ③ owns   the filename · the face grammar · the Pages     │
    │              row · the managed Stage Contract block ·         │
    │              anything a human types into the page             │
-   │     ① owns   Question · Boundary · Content · Items to         │
-   │              Finish · Where we are                            │
+   │     ① owns   Opening · Content · Aims · States                │
+   │              (the substance sections)                         │
    └───────────────────────────────┬──────────────────────────────┘
                                    │  ① GENERATES from it, one way
                                    ▼
@@ -64,7 +64,7 @@ Scope: This page covers What `haipipe-board` is to this skill, which of its beha
                                  the human is LOOKING at ⑧
 
       The user never types /haipipe-board for a paper. It stays a
-      real door for the five boards that are NOT inside a paper,
+      real door for the design boards that are NOT inside a paper,
       this one included: ③ must not become paper-only.
 
    ── why this does NOT break "① owns neither channel out" ───────
@@ -105,8 +105,8 @@ Scope: This page covers What `haipipe-board` is to this skill, which of its beha
     7 sync           owns everything else on    stage.py sync: refreshes ONLY
                      the page                   the managed block
     8 CHECK          prepares the gate          —      a HUMAN writes ✅
-    9 generate       3-deliver reads ⑧'s        —
-                     Content   ──▶ ⑦
+    9 generate       the door's build fns       —
+                     read ⑧'s Content ──▶ ⑦
 
 ```
 
@@ -182,14 +182,14 @@ Scope: This page covers What `haipipe-board` is to this skill, which of its beha
 ### One door in, and why that is not a contradiction
 `QA1` says `①` owns neither channel out of the paper. `QA2` says `①` is a thin front door that resolves the paper, OPENS THE BOARD and routes. Both were on the board at once, and the code answered a third way: `haipipe-paper-enter` never called `haipipe-board` at all, so a human who wanted to SEE the paper typed the second skill themselves with the `0-lifecycle/` path by hand.
 
-JL ruled it on 260726. `①` is the SINGLE thing a human types. It calls `③` to build and open `⑧`, and it calls `⑤` to ask across the wall. **Calling is not owning**: `③` still owns the format, the build, the filename rule, the html and the write-back, and `①` renders nothing.
+JL ruled it on 260726, and the ruling outlived the console that prompted it: since 260805 the enter step is a verb of the one door itself. `①` is the SINGLE thing a human types. It calls `③` to build and open `⑧`, and it calls `⑤` to ask across the wall. **Calling is not owning**: `③` still owns the format, the build, the filename rule, the html and the write-back, and `①` renders nothing.
 
 Two things make that safe rather than a compromise. The dependency was already there, at the write layer: `create-page.py` calls the Board's `stage.py` to compose an S filename, so `①` could never ship without `③`. And the ruling REMOVES an asymmetry rather than adding one, because `⑤` was already dispatched-to. Nobody types `/haipipe-probe` for paper work; they type `/haipipe-paper probe`, and `①` still never computes an answer. `③` alone was typed, and that was an accident of history.
 
 The failure test is the clearest statement of it: when `serve.py` cannot reach the browser, `①` has no renderer of its own to fall back to, because it never had one. It prints the URL and says the push failed.
 
 ### One file, two writers, disjoint regions
-The collaboration works because the two skills never contend for the same lines. `③` composes the filename, writes the face shell, maintains the Pages row and the managed Stage Contract block, and is the only path by which anything a human types reaches the page. `①` owns the substance: Question, Boundary, Content, Items to Finish, Where we are.
+The collaboration works because the two skills never contend for the same lines. `③` composes the filename, writes the face shell, maintains the Pages row and the managed Stage Contract block, and is the only path by which anything a human types reaches the page. `①` owns the substance: Opening, Content, Aims, States.
 
 Two asymmetries follow, and both are load-bearing. `①` has no interface of its own, so every comment, every sentence lane and every ticked box arrives through `serve.py`. And `③` never touches a manuscript file; it does not know what LaTeX is, which is why generation into `⑦` is entirely `①`'s.
 
@@ -231,11 +231,11 @@ It does not, today. That is the open item. A Law that graduates from `②` lands
 
 ## Aims
 - [x] 🚪 Rule the door
-      `①` is the single thing a human types; `③` is called, never typed, for a board inside a paper (JL 260726). `/haipipe-board` stays a real door for the five boards that are not inside a paper.
+      `①` is the single thing a human types; `③` is called, never typed, for a board inside a paper (JL 260726). `/haipipe-board` stays a real door for the design boards that are not inside a paper.
 - [x] 🔁 Rule the three moments
       ENTER, after every write to `⑧`, and before `①` acts. The middle one is what a naive reading misses, and without it the human reads a stale board.
 - [x] 🛠 Implement it
-      `haipipe-paper-enter` gained an `## Open the Board` step and lost its 152-line duplicate renderer; `haipipe-paper-stage` gained the rebuild-after-write rule; the router's Closing Block carries a deep-linked board URL instead of a stage strip.
+      `haipipe-paper-enter` gained an `## Open the Board` step and lost its 152-line duplicate renderer; `haipipe-paper-stage` gained the rebuild-after-write rule; the router's Closing Block carries a deep-linked board URL instead of a stage strip. (All three routers were absorbed into the one door `haipipe-paper` on 260805; the rules carried over.)
 - [ ] 🧪 Prove the door with a fresh agent
       One `/haipipe-paper enter <new-path>` by an agent that did not write these skills: it should end up looking at a board without being told the word `haipipe-board`.
 - [ ] 🔌 Make the push failure loud in code, not just in prose
@@ -260,7 +260,7 @@ What is still missing is the mechanism connecting the two halves in the other di
 
 ## Files
 - `haipipe-board/`
-  The tool: `build.py`, `stage.py`, `serve.py`, `src/` ×9.
+  The tool: `cli/build.py`, `cli/stage.py`, `cli/serve.py`, `src/`.
 - `../01-boardform-260722/`
   Its own board, which owns what a board IS.
 - `create-page.py`
@@ -279,6 +279,8 @@ What is still missing is the mechanism connecting the two halves in the other di
 - A ruling that touches both halves is not graduated until it has landed in both. Applied to one side only, it produces a page and an implementation that disagree, which is a defect and not a partial success.
 
 ## Log
+- 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the door ruling now names its live implementer (the enter verb of `haipipe-paper` since 260805), the S-page substance sections carry their current names, and the generate step points at the door's build fns.
+
 260726 · closed a composition ambiguity found by a fresh reviewer: direct `③` sessions own the `status.py` strip, while an `①` session emits one Paper block containing the deep Board link; the call does not append two mutually exclusive closing blocks
 
 260726 · Tested the door against `Paper-Personality2Opioid-MISQ2026` instead of reading it, and the venue predicate failed. Yesterday's `STATUS.md` retirement had moved the venue pin to a `venue:` frontmatter key; `haipipe-board`'s face grammar is a CLOSED whitelist at `src/parse.py:145`, so that key is invisible to `③` and was specified in 12 places that could never have parsed. The pin was already on the page's own `state:` line as `✅ PINNED · MISQ 2026`, so the fix needed no new field and no grammar change. Logged as the day's THIRD cross-package gap, and it produced the rule now in the Diagram and the Law: `①` may not invent a face-grammar key.
