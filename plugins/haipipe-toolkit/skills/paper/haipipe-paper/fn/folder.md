@@ -150,7 +150,7 @@ repo + submodule wiring        -> /haipipe-paper enter (get-or-create branch)
 S pages (S-Seed-…, S-Main-…)   -> each stage, when its unit is allocated
 board.html                     -> /haipipe-board (never hand-write it)
 rounds                         -> S-Round pages in 0-lifecycle/S10-round/, one page per round
-probe entry pages              -> /haipipe-paper probe verbs, nested under the owning S03/S04 topic
+probe QAs (entry records)      -> /haipipe-paper probe verbs, nested under the owning S03/S04 topic
 display units                  -> the Display stage + the renderer family
 venue knowledge                -> venue/playbook-<venue> packs
 is this folder correct?        -> the door's conform verb (report-only; the machine test)

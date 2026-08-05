@@ -3,6 +3,24 @@ haipipe-paper — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.6.1] -- 2026-08-06 -- probe entries are hidden probe QAs (ruling B)
+
+JL ruling B (260806: "an entry is a source file the topic page points at, like a
+PDF; the board renders the topic page, never the entry") plus its naming
+addendum (one conversation, two QAs: the bank QA is the original, the probe QA
+is the paper's copy that points at it):
+
+- `probe/topic-entry-contract.md` and `fn/probes.md` now name the nested file a
+  probe QA (the entry record), state the digit-first naming law
+  `probes/L<nn>|V<nn>-<topic>/<n>-<slug>.md` with `<n>` restarting at 1 per
+  drawer, and say why the name hides it from the board's page sweep.
+- `SKILL.md`, `fn/folder.md`, and `ref/comment-protocol.md` wording sweep:
+  entry page -> probe QA; the executor's file is the bank QA, the original.
+- Stage data updated in place (unversioned folders): `S03-literature/` and
+  `S04-value/` `entry-template.md` rewritten to the record shape (# title +
+  `requires:` + the four slots, no page frame, no Log), `template.md` example
+  pointers and both READMEs moved to the `<n>-<slug>.md` naming.
+
 ## [0.6.0] -- 2026-08-06 -- ONE registered skill (thin-paper phase 3)
 
 JL ruling 260806 ("只保留一个 skill, 就是 haipipe-paper"): the paper family now registers

@@ -1,9 +1,14 @@
-"""Optional generic contract for a topic page and its nested entry pages.
+"""Optional generic contract for a topic page and its nested entry records.
 
 The Board engine never names a consumer family such as Paper, Literature, or
 Value.  A board opts into this overlay by writing ``### Q-consumer register``
-on an S page and placing entry pages below a ``probes/`` directory.  Each entry
-then has one neutral executor and a declared dependency on its topic page.
+on an S page and placing entry records below a ``probes/`` directory.  Each
+entry then has one neutral executor and a declared dependency on its topic
+page.  Since JL's ruling B (260806) an entry is a hidden SOURCE RECORD named
+``<n>-<slug>.md``, the probe QA that points at the bank QA it is answered by:
+the digit-first name keeps it out of ``page_files``'s prefix sweep, so this
+module finds records with its own ``probes/`` glob rather than through the
+page registry.
 """
 from __future__ import annotations
 
@@ -53,10 +58,18 @@ def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None
     if not topics:
         return
 
+    entries: dict[Path, None] = {}
     for path in pages.values():
-        relative = path.relative_to(board_dir)
-        if "probes" not in relative.parts:
+        if "probes" in path.relative_to(board_dir).parts:
+            entries[path] = None
+    for path in sorted(board_dir.rglob("probes/*/*.md")):
+        parts = path.relative_to(board_dir).parts
+        if any(s.startswith(("_", ".")) for s in parts[:-1]):
             continue
+        entries[path] = None
+
+    for path in entries:
+        relative = path.relative_to(board_dir)
         text = path.read_text(encoding="utf-8")
         where = relative.as_posix()
         requires = re.search(r"^requires:\s*([^\s,]+)\s*$", text, re.M)

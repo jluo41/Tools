@@ -26,7 +26,7 @@ In outline `.md` files, blockquote style:
 > CC: response to the comment
 ```
 
-Used in: section `.md` files, seed, claims, pitch, narrative, and nested S03/S04 probe entry pages.
+Used in: section `.md` files, seed, claims, pitch, narrative, and nested S03/S04 probe QAs (entry records).
 
 In `.tex` files, LaTeX comment style:
 

@@ -24,11 +24,17 @@ file holds only how a PAPER runs the loop, plus the paper-side deltas.
 0-lifecycle/
 ├── S03-literature/
 │   ├── S-Literature-<n>-<topic>.md
-│   └── probes/L<n>-<topic>/S-Literature-<n>-<slug>.md
+│   └── probes/L<nn>-<topic>/<n>-<slug>.md
 └── S04-value/
     ├── S-Value-<n>-<topic>.md
-    └── probes/V<n>-<topic>/S-Value-<n>-<slug>.md
+    └── probes/V<nn>-<topic>/<n>-<slug>.md
 ```
+
+An entry is a probe QA (the entry record): a hidden source record, not a board
+page (JL ruling B, 260806). Its digit-first `<n>-<slug>.md` name, `<n>`
+restarting at 1 per drawer, keeps it out of the board's page sweep, so the
+board renders the topic page only. One conversation, two QAs: the bank QA is
+the original, the probe QA is the paper's copy that points at it.
 
 S03 is for outside-project discovery. S04 is for project-task evidence. The
 direct topic page is canonical for its `### Q-consumer register`: it states the
@@ -136,7 +142,7 @@ initiative.
 ### ③ DISPATCH goes through the collector
 
 Hand the still-collecting SET to `Agent(haipipe-probe-q-executor-agent)` with
-`project_root`, the entry pages, and each entry's PROBE-authored `route`
+`project_root`, the probe QAs, and each one's PROBE-authored `route`
 (task|discovery, AUTHORITATIVE). The agent's clean context IS the wall: it
 sends each `q-executor` VERBATIM to the task or discovery orchestrator agent
 and returns `{ entry → target: QA-path | in-flight | failed }`. A stage or the

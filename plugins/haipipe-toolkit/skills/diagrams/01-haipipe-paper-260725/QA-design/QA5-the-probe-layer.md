@@ -263,6 +263,7 @@ No queue file is written by hand, so moving or resolving an entry cannot leave a
   The former `1-probes/` tree is preserved only at `_archive/1-probes/`, and the separate S11 Probe group is gone.
 
 ## Log
+- 260806 0900 · [REVISE-CC] TWO RULINGS landed and executed. Ruling B (JL: entry is a hidden source file, like a PDF, never on the board): entries demoted from board pages to records named <n>-<slug>.md (digit-first, invisible to the page glob); 28 MISQ entries renamed with pointers repointed, MISQ board 87 to 59 pages, record shape = title + requires + four slots, no page frame. Naming law (JL: call them both QA): one conversation, two QAs, the BANK QA is the original (# Q = q-executor, ## Answer = a-executor) and the PROBE QA is the paper's copy that points at it; QA-executor/QA-consumer retired as file names, consumer/executor words name slots only. Contracts at topic-entry-contract + for-literature/for-value 0.3.0 + page-probe 0.3.3, haipipe-board 0.123.0; 131 tests green.
 
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the paper-side probe adapter is now the door's `probe/` + `fn/probes.md` (the `workers/haipipe-paper-probe` skill dissolved 260805), and the retired probe board's pages are no longer cited as live.
 
