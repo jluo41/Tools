@@ -377,6 +377,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
         rep.add(WARN, "no-aims", name, "no Aims at all, so nothing defines done")
 
     check_opening(text, name, rep)
+    check_page_type(path, text, name, rep)
     check_group_names(text, name, rep)
     check_one_canvas(text, name, rep)
     check_division_figures(text, name, rep)
@@ -861,6 +862,44 @@ def check_one_canvas(text, name, rep):
         rep.add(WARN, "two-canvases", f"{name} · Diagram",
                 f"{len(urls)} canvas URLs; a page attaches one (QB4 §2.7). "
                 f"Keep either the board scene or the hosted link, not both")
+
+
+# ---- QB6 §5.1 rule 1: type resolution runs BEFORE any per-type rule ----
+# The base contract (`haipipe-board-page/SKILL.md`) resolves ① to ⑤ and stops
+# at the first key that matches. Step ③ is REQUIRED on its four types and BEATS
+# the filename, which is what settles the two real collisions, `S-Display-4c`
+# (a stage filename, a display page) and `QA4` (a Q filename, a slide deck).
+#
+# Only the ③ key can be wrong in a way a machine can see, so that is what this
+# rule reads. The unit segment is `[A-Za-z0-9]+` because the live board's real
+# units are `Pitch`, `Seed`, `C`, `C0`, `R1`, `1a` and `Dash`; a first version
+# demanded a digit and reported 25 of 59 pages on the live MISQ paper as
+# claimed by nothing, which was the pattern being wrong, not the board.
+PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
+PAGE_TYPE_VALUES = ("display", "slide", "design", "section")
+STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
+
+
+def check_page_type(path, text, name, rep):
+    """Exactly one key claims a page, and step ③'s key is one the table knows."""
+    head = text.split("\n## ", 1)[0]
+    declared = PAGE_TYPE_LINE.findall(head)
+    route = re.search(r"(?m)^route:\s*(outward|inward)\s*$", head)
+    if len(declared) > 1:
+        rep.add(WARN, "page-type-twice", name,
+                f"{len(declared)} `page-type:` lines; exactly one step may "
+                "claim a page")
+    for value in declared:
+        if value not in PAGE_TYPE_VALUES:
+            rep.add(WARN, "page-type-unknown", f"{name} -> {value}",
+                    f"step ③ defines {', '.join(PAGE_TYPE_VALUES)}; `{value}` "
+                    "is in no step, so this page resolves by filename instead")
+    if declared and route:
+        # ② wins by order, so the ③ key is dead text and says otherwise.
+        rep.add(WARN, "page-type-conflict", name,
+                f"carries `route: {route.group(1)}` (step ②) AND "
+                f"`page-type: {declared[0]}` (step ③); ② resolves first, so "
+                "the page is not the type its own key names")
 
 
 def check_group_names(text, name, rep):
