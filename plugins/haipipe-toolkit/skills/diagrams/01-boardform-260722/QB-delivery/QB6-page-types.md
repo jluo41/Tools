@@ -209,7 +209,7 @@ Neither may touch the entry's inside, the Q-executor and A-executor, which stay 
 
 #### 5.1 · The ten missing rules, one line each
 (the spec the next checker pass implements; owned here until each ships)
-1. Type resolution first: exactly one key claims each page, in the base's ①-⑤ order, before any per-type rule runs.
+1. ✅ SHIPPED 260806 · Type resolution first: exactly one key claims each page, in the base's ①-⑤ order, before any per-type rule runs. `cli/check.py check_page_type`, three findings: `page-type-unknown` a value step ③ does not define, `page-type-twice` two claims on one page, `page-type-conflict` a `route:` and a `page-type:` on the same page where ② resolves first and the ③ key is dead text. Blast radius measured before shipping: 2 findings board-wide, both the QBt1/QBt2 keys already sitting in Decision Now, and 0 on the other three boards including the live MISQ lifecycle.
 2. Design: a page past its gate carries a SELECTION record, and every non-winning division carries a disposition line.
 3. Display: an ACCEPTED row is dated, and every shown number names a value binding or a producing run by path.
 4. Slide: every division's embed targets the one deck file with `?preview=N#sN` and carries an acceptance row.
@@ -422,6 +422,8 @@ Execution rides the paused Log pass (grammar paragraph + renderer + the QB4 P-ro
 - 260806 · JL · Evidence pages organize BY EXECUTOR: one Content division per Q-executor conversation (E<n>), consumers collected under it, E0 incoming queue; one division ↔ one QA-probe; many QA-probes ↔ one QA-bank. Files are QA-bank and QA-probe; slot words are the four capitals Q-consumer/A-consumer/Q-executor/A-executor; the type key is the head route: line.
 
 ## Log
+
+- 260806 · [REVISE-CC] Rule 1 of §5.1 shipped, so the checker debt is 9 rather than 10. Worth recording what the measurement caught before it became a rule: a first version of the step ④ pattern demanded a digit unit and reported 25 of the live MISQ paper's 59 pages as claimed by no key. The board was fine; the pattern was wrong. Real units there are `Pitch`, `Seed`, `C`, `C0`, `R1`, `1a` and `Dash`, so the unit segment is alphanumeric and the slug is optional. Shipping the first version would have put 25 false findings on JL's paper, which is how a checker stops being read.
 
 - 260806 · [REVISE-CC] the Opening's worked-example line was frozen at "`QBt3-for-display` is the first", written when one specimen existed. `ls QBt-page-types/` returns eight pages, so the line now names all eight and leaves only `for-skill` and `for-meeting` unbuilt. A grep for QBt7 and QBt8 across `skills/` returns nothing, so those two numbers were never used; the gap contradicts the renumbering rule `board.md`'s `QD` block states for its own lane, and the new first Decision Now row asks JL which rule `QBt` follows.
 - 260806 2109 · [REVISE-CC] swept to the 260806 architecture; base 0.21.0 in the state line, §1's Literature/Value rows re-keyed to the head `route:` line with the duplicate Meeting row dropped, §1.1/§1.2/§3.2 closed gaps moved to past tense, §6 traces moved to QA-probe and E-division vocabulary with capital slot words
