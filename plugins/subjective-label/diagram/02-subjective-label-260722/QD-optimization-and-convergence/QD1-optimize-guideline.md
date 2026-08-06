@@ -1,81 +1,204 @@
-# How a sentence becomes a vector
+# Guideline optimization: improve execution without moving the human concept
 state: ✅ SETTLED
-owner: CC
-method: `lib/embed.py` wraps sentence-transformers and OpenAI; swapping the model changes one line of config
+owner: JL
+method: Diagnose human-model differences, propose the smallest general patch, require human semantic acceptance, and regression-check affected gold.
 
-## Question
-How does one review sentence turn into a string of numbers (a vector), so that the work done by distance (picking hard cases, de-duplicating, covering the full corpus) means anything: which model produces it, how the cache is stored, and is it allowed to decide a label?
+## Opening
+How should correction evidence improve the annotation policy when a weak model repeatedly misunderstands a rule?
+The strong agent may study structured model reasons and propose clearer definitions, boundary tests, ordering, or examples.
+The human must decide whether a patch expresses the existing concept or changes what the trait means.
+This page fixes the error taxonomy, patch path, generalization rule, and regression gate that protect that authority.
 
-JL asked this one directly: how does a sentence become an embedding.
-It is also the lowest foundation under the "does the code already do it" half of the spine, because QB1's hard-case picking, Tier 0 of the cascade in QD2, and QB2's de-duplication all stand on it.
-If it is not written down, the "pick by position" in those questions above is empty talk.
-The other half of the question is a guard rail rather than a build order: a vector is close to another vector for reasons that have nothing to do with the label, so letting distance decide a label would quietly corrupt every set that was picked by distance.
+**Where this page sits**: QC4 supplies human-confirmed corrections; QA3 defines the policy parts; QB3 freezes only accepted and checked changes.
 
-## Boundary
-- ✅ Covered here
-  The embedding layer itself: which model turns a sentence into a vector, how the cache is keyed, and the standing rule that a vector never decides a label.
-- ↪ Covered elsewhere
-  How the cascade splits the work and uses this layer as its Tier 0 is QD2; hunting hard cases by distance to grow the gallery is QB1; deciding a label is the panel's job, which is QA2 for labeling independently and QA3 for putting a weak model through the exam.
+**Why it matters**: Patching every error can bloat the guideline, overfit development wording, or make a model easier to satisfy by changing the target itself.
+
+## Writing Style
+**Language and sentences**: Describe one error cause and one smallest fix at a time.
+
+**Authority**: Separate agent diagnosis, agent proposal, human semantic ruling, and checkpoint freeze.
+
+**Reasoning**: Use concise structured reasons and visible evidence rather than hidden model chain-of-thought.
 
 ## Diagram
+**Optimization loop**: one correction becomes a diagnosis, a guarded patch, and a regression-tested policy version.
+
+```text
+🏷 human gold + 🧠 sealed prediction
+             │
+             ▼
+       🔍 error diagnosis
+             │
+             ▼
+       🤖 smallest patch
+             │
+             ▼
+       🧑 semantic ruling
+             │
+             ▼
+       🧪 regression check
+             │
+             ▼
+       📜 G_t draft for checkpoint
 ```
-  one review  ──►  lib/embed.py  ──►  [0.02, -0.31, …]  384-dim vector
-                                       sentences close in meaning → close in coordinates
 
-  ⚖️ one iron rule: embedding is a SPEED tool, not a JUDGMENT tool
-       it only does: find candidates · de-duplicate · cover the full corpus        it never decides a label
-       labels come only from panel reasoning, because four traps wait otherwise:
-         semantic inversion ("I feel alive" vs "I feel nothing" sit close together, opposite labels)
-         irony / genre imitation looks like the target in vector space
-         ordinal collapse ("extremely high" vs "very high" squash into one blob)
-         no explanation (when a label is wrong you cannot point at the word that caused it)
+## Content
+
+### 1 · Error diagnosis
+**Taxonomy**: the system edits the core policy only when the observed failure is policy-addressable.
+
+```text
+🔍 causes
+├── 📜 unclear definition
+├── ⚖️ missing boundary test
+├── 📚 misleading example
+├── ⚙️ wrapper or schema failure
+├── 🧠 executor capability limit
+└── 🎲 stochastic or isolated error
 ```
 
-## Items to Finish
-- [x] 🎯 The default model is fixed, and so is the way to swap it
-      The default is `all-MiniLM-L6-v2`, and changing model means editing the `model` and `dim` lines in the config, nothing else.
-      `all-MiniLM-L6-v2` is 22M parameters, 384 dimensions, roughly 2K sentences per second on CPU, and free, which covers anything under 100K English items with no reason to deliberate.
-      For better quality or a large corpus the alternative is OpenAI `text-embedding-3-small`; for medical text it is `biobert`.
-      The swap stays a one-line edit because the choice lives in the `embedding:` block of `config.yaml` and nowhere else in the code.
-- [x] 🗄 The cache layout is fixed
-      Vectors are stored under a `sha1(model+text)` hash, so the cache is keyed by the pair `(model, text)`.
-      Because the model name is part of the key, switching models does not invalidate what is already cached.
-      A new model only recomputes on its first use, and the old entries stay usable if the choice is reverted.
-- [x] ⚖️ The principle is nailed down: embedding finds candidates and never decides a label
-      Its three jobs are finding candidates, de-duplicating, and covering the full corpus; the label itself always comes from panel reasoning.
-      `ref/ref-embeddings.md` records the four failure modes behind the rule.
-      Semantic inversion: "I feel alive" and "I feel nothing" sit close in coordinates and carry opposite labels.
-      Irony and genre imitation look like the target in vector space.
-      Ordinal collapse: "extremely high" and "very high" squash into one blob.
-      And there is no explanation: when a label comes out wrong you cannot point at the word that caused it.
+#### 1.1 · Human-model comparison
+The diagnosis compares final human evidence and rejected alternatives with each executor's cited evidence and applied rule.
+It also checks whether the error repeats across items, models, classes, or regions.
 
-## Where we are
-One module, one agent, and one block of config, all three settled.
-`lib/embed.py` is the only place in the whole system that touches Hugging Face, OpenAI, or sentence-transformers, and everything else reaches it through the embedder agent, which offers embed, index, nearest, cluster, and stratified-sample.
-Nothing here is waiting on a decision: the model choice, the cache layout, and the rule that a vector never decides a label were all fixed in `ref/ref-embeddings.md` before this face was written, and this face only pins them where they can be read.
+#### 1.2 · Patch eligibility
+Definitions, boundary rules, procedure order, escalation policy, and canonical examples are valid core-patch targets.
+Formatting failures belong in an executor wrapper, while incapability and random errors remain scorecard findings rather than policy prose.
+
+### 2 · Patch proposal and authority
+**Guarded edit**: the strong agent proposes, while the human rules on meaning.
+
+```text
+🤖 proposal
+├── changed policy part
+├── evidence cases
+├── scope + exclusions
+├── counterexample
+└── expected regression surface
+        │
+        ▼
+🧑 accept · reject · reframe
+```
+
+#### 2.1 · Smallest general patch
+The proposal states the minimal change that should prevent the error class rather than only the observed item.
+It names which policy component changes and which components remain unchanged.
+
+#### 2.2 · Semantic ruling
+The human confirms whether the proposal clarifies existing intent, revises the concept, or merely improves wording.
+A model-readability gain cannot override a human rejection.
+
+#### 2.3 · Core versus wrapper
+The core policy holds portable meaning and decision order.
+Output JSON, token limits, model-specific reminders, and parser repairs belong in versioned execution wrappers.
+
+### 3 · Generalization and casebook control
+**Example transformation**: development cases produce transferable rules, while only unique teaching cases remain attached.
+
+```text
+📄 case
+  ↓
+🔍 decisive evidence + rejected label
+  ↓
+🔁 counterfactual flip condition
+  ↓
+📜 general rule
+  └──▶ 📚 retain only if canonical
+```
+
+#### 3.1 · Rule extraction
+The agent records decisive evidence, the strongest rejected label, and the smallest change that would flip the human decision.
+Repeated structures become one scoped rule with exclusions and a named boundary.
+
+#### 3.2 · Casebook pruning
+An example remains only when it uniquely anchors a center, counterexample, pairwise boundary, or triple junction.
+Near duplicates and source-specific wording are removed from the prompt-facing casebook while their audit records remain preserved.
+
+#### 3.3 · No corpus copying
+The annotation policy cannot rely on the full development corpus or chat transcript.
+An executor must be able to apply the frozen policy from its explicit rules and compact casebook alone.
+
+### 4 · Regression and concept impact
+**Acceptance gate**: an accepted patch must preserve earlier intended decisions or expose every intended change.
+
+```text
+📜 candidate patch
+        │
+        ├──▶ 🏷 affected prior gold
+        ├──▶ ⚖️ neighboring boundaries
+        ├──▶ 🧠 seen weak executors
+        └──▶ 🚨 concept-impact queue
+                    │
+                    ▼
+               📌 checkpoint decision
+```
+
+#### 4.1 · Regression set
+The system tests the patch on affected prior gold, nearby counterexamples, and representative audit items.
+Any changed prediction receives a reason and human review when semantic intent is uncertain.
+
+#### 4.2 · Concept revision
+A concept revision may legitimately change earlier labels.
+It opens a backward-impact queue and prevents a silent comparison between policy versions that no longer target the same decision function.
+
+#### 4.3 · Version diff
+Every checkpoint classifies edits as semantic, procedural, example, wrapper, or editorial.
+The diff links each substantive change to its evidence, human ruling, and regression outcome.
+
+## Aims
+
+### A1 · 🔍 Error diagnosis
+- A1.1 · Core policy edits occur only for policy-addressable failures.
+  **Done when:** Every proposed patch names one evidence-backed error category.
+
+### A2 · 🧑 Patch proposal and authority
+- A2.1 · Model readability improves subject to human semantic fidelity.
+  **Done when:** The human accepts, rejects, or reframes every substantive patch.
+
+### A3 · 📚 Generalization and casebook control
+- A3.1 · Cases become scoped rules and a compact canonical casebook rather than copied training text.
+  **Done when:** Every retained example states its unique teaching role.
+
+### A4 · 🧪 Regression and concept impact
+- A4.1 · Policy changes cannot silently invalidate prior gold.
+  **Done when:** Regression results and backward-impact dispositions accompany the version diff.
+
+## States
+
+### A1 · 🔍 Error diagnosis
+- ✅ A1.1 · Met; division 1 separates policy, wrapper, capability, and noise causes.
+
+### A2 · 🧑 Patch proposal and authority
+- ✅ A2.1 · Met; division 2 preserves human semantic authority.
+
+### A3 · 📚 Generalization and casebook control
+- ✅ A3.1 · Met; division 3 fixes extraction, pruning, and no-copy rules.
+
+### A4 · 🧪 Regression and concept impact
+- ✅ A4.1 · Met; division 4 fixes regression and version evidence.
 
 ## Files
-- `lib/embed.py`
-  The single module behind this face, and the only one allowed to talk to Hugging Face, OpenAI, or sentence-transformers, so any change to the embedding layer starts here.
-- `ref/ref-embeddings.md`
-  The document this face was copied from: the model choice, the cache layout, and the four failure modes behind the iron rule.
-- `ref/ref-config.md`
-  Carries the `embedding:` block, which is the one place a model swap is edited.
+
+### 🔗 Related Board Pages · what this Page READS BY SCOPE
+- `constrained by · ALL` · [QA3 page](QA-semantic-contract/QA3-guideline-contract.md)
+  QA3 defines the policy components that an optimization may change.
+- `reads · ALL` · [QC4 §3](QC-selection-and-adjudication/QC4-blind-adjudication.md)
+  QC4 supplies correction type and concept-impact evidence.
+
+### Contracts · what must carry this rule
+- `../../ref/ref-architecture.md`
+  The architecture must separate optimizer proposal from human acceptance and checkpoint writing.
+- `../../ref/ref-assets.md`
+  The artifact layout must version policy diffs, wrappers, regression sets, and casebook entries.
 
 ## Law
-- Embedding only finds candidates, de-duplicates, and covers the full corpus, and **never decides a label** (labels come only from panel reasoning).
-- Swapping the embedding model touches only `model` and `dim` in `config.yaml`; the cache is keyed by the `(model, text)` hash, so a swap does not invalidate it.
-- One module (`lib/embed.py`), one agent (embedder), one block of config (`embedding:`): do not start a second place that touches Hugging Face.
+- 260806 JL · 📜 Guideline optimization is constrained by human semantic fidelity
+      A strong model may diagnose and simplify, but only the human accepts a substantive rule and concept revisions trigger backward review.
 
 ## Glossary
-embedding / vector: mapping a sentence to a string of numbers, where sentences close in meaning get numbers that are close.
-cosine similarity: a number measuring how closely two vectors point the same way, 1 = same direction, 0 = unrelated, used to judge how alike two sentences are.
-faiss: a library that finds nearest neighbors by vector, `faiss-flat` (under 100K items) or `faiss-ivf` (larger).
-panel: the set of model labelers, whose reasoning is the only thing that decides a label.
-
-## Discussion
-> CC0723: This face is the foundation under QB1 (hunting hard cases) and QD2 (Tier 0 of the cascade). Everything in it comes from `ref/ref-embeddings.md`, which was fixed long ago, so this face went straight to ✅: a board does not only hold the undecided questions, it also pins the settled engine facts where they can be seen.
+- 🧪 **Regression set**: prior gold and counterexamples selected to test whether a policy patch changed unintended decisions.
+- ⚙️ **Execution wrapper**: model-specific formatting and interface instructions kept outside the portable core policy.
+- 🧠 **Concept revision**: a human-authorized change to label meaning that may require earlier gold to be revisited.
 
 ## Log
-260725 · rewritten to the current face format in English
-260723 1600 · created: pulled the model choice, the cache layout, and the iron rule out of `ref/ref-embeddings.md` onto the board and marked it ✅ (already fixed)
+260806 · Reopened QD1 in DRAFT and replaced the embedding-engine question with the approved guideline-optimization contract.

@@ -1,74 +1,54 @@
 ---
 name: sl-status
-description: "Show current state of a subjective-label project: iteration count, gallery size, panel-internal κ, public-dataset κ trajectory, disagreement category breakdown, suggested next step. Read-only. Use when the researcher says /sl-status or wants to check progress."
+description: "Read-only dashboard for a human-grounded subjective-labeling project. Shows lifecycle phase, open round, D_t/G_t, Session progress, audit and challenge evidence, seven-region coverage, stopping gates, sealed-test validity, executor scorecards, production provenance, implementation holds, and next valid action. Use for /sl-status or progress checks."
 ---
 
-Skill: sl-status
-================
+# Show subjective-label project status
 
-Read-only status dashboard.
+Read state without modifying artifacts, opening seals, rerunning models, or advancing a
+phase.
 
-Protocol
---------
+## Read first
 
-Step 1. Resolve project_dir (from arg or cwd).
+Read `../../ref/ref-output-style.md`, `../../ref/ref-assets.md`, and
+`../../ref/ref-stages.md`.
 
-Step 2. Read:
-  - ref/ref-output-style.md (lead result-first, ≤15-line dashboard)
-  - {project_dir}/REPORT.md (if present — mirror it as the headline block)
-  - {project_dir}/.state.json
-  - {project_dir}/gallery/gallery.json
-  - {project_dir}/gallery/guideline.md (first 30 lines for preview)
-  - {project_dir}/validation/trajectory.jsonl (if exists)
-  - {project_dir}/gallery/history/*.diff (last 3 for preview)
-  - {project_dir}/iterations/iter_*/pool_stats.json (residual trajectory)
-  - {project_dir}/iterations/iter_*/projection/separation.json (geometric signal)
+Resolve the project directory and inspect, when present:
 
-Step 3. Print status.
+- `REPORT.md`, `config.yaml`, and `.state.json`;
+- latest closed policy manifest and guideline components;
+- cumulative human gold;
+- open and recent round manifests, Session progress, checkpoints, policy diffs, audit
+  and challenge metrics, coverage, and risk ledger;
+- sealed-test status and access log metadata without reading protected ids or labels;
+- evaluation registry, validity, and scorecards;
+- production manifest, terminal dispositions, risk queue, and final audit;
+- migration receipts and implementation holds.
 
-  LEAD with the ≤15-line dashboard (mirror REPORT.md): status · guideline v · gallery ·
-  anchor · κ (anchor / generalization / panel) · latest validate · next step.
-  The detailed sections below are OPTIONAL expansion — only show what's relevant;
-  do not make the researcher scroll to grasp where the project stands.
+## Output
 
-  Full status block (expand on request or when useful):
+Lead with:
 
-  ============================================================
-  Project:    {project_dir}
-  Topic:      {config.topic}
-  Labels:     {config.label_values}
-  Iteration:  {state.iteration}
-  Status:     {state.status}  (initialized / iterating / converged / scaled)
-  ------------------------------------------------------------
-  Gallery:    {N} entries across {K} label values
-  Guideline:  {M} rules, last updated iter {state.last_guideline_update}
-  ------------------------------------------------------------
-  Panel κ (latest iter): {value}
-  Public-κ trajectory (last 5 iters):
-    iter 1  GoEmotions  κ=0.31
-    iter 2  GoEmotions  κ=0.42
-    iter 3  GoEmotions  κ=0.48  ← ceiling 0.46, CONVERGED
-  ------------------------------------------------------------
-  Disagreement profile (latest iter):
-    A boundary:  12 cases
-    B ambiguity: 3 cases
-    C novel:     1 case
-    D noise:     8 cases
-  ------------------------------------------------------------
-  Geometric separation (latest iter, n=3 labels):
-    overall silhouette: 0.41
-    per-label:  high (n=18, sil=0.51)  low (n=14, sil=0.38)  none (n=31, sil=0.12, fragments=2)
-    warnings:
-      - label 'none' shows fragmentation (2 sub-clusters) — possible schema gap
-      - labels {low, none} overlap heavily (sil=0.05) — add a tiebreaker
-    plot: iterations/iter_3/projection/projection.png
-  ------------------------------------------------------------
-  Residual trajectory (sample pool the classifier cannot absorb):
-    iter 1   full       pool=12000   (no classifier yet)
-    iter 2   residual   pool= 4100   (-66%)
-    iter 3   residual   pool= 1280   (-69%)
-    iter 4   residual   pool=  310   (-76%)   ← shrinking-net working
-  ------------------------------------------------------------
-  Next step:
-    {contextual recommendation based on state}
-  ============================================================
+```text
+project {id} · state {state} · round {round/phase}
+policy {G_t/G*} · human gold {n} · unresolved {n}
+quality {gate} · stability {gate/streak} · coverage {gate} · risk {gate}
+sealed test {reserved/frozen/released/valid/invalid}
+next {single valid action}
+```
+
+Then show only relevant detail:
+
+- H/L/N and seven-region coverage;
+- audit and challenge metrics in separate rows;
+- consensus-audit shared errors;
+- last material guideline diff and backward-impact result;
+- executor qualification and scorecard summary after evaluation;
+- terminal/provenance shares and final-audit findings during completion;
+- explicit `HOLD` entries with missing capability and preserved state.
+
+Distinguish `not started`, `pending human`, `HOLD`, `failed`, `invalid`, and `complete`.
+Never infer success from missing files, model consensus, a legacy kappa field, or a
+rendered report that conflicts with canonical records.
+
+Recommend exactly one next valid command or human decision based on the state machine.

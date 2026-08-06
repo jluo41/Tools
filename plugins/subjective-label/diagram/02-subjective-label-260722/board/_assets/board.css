@@ -1,13 +1,20 @@
 /* palette + type follow html-ppt's academic-report; layout is body.single
    (base.css's own no-JS mode) so every section is visible without any script. */
-:root{--bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
+/* Inline `code` has its own pair, separate from --pre (JL 260803). --pre is
+   #f4f4f0 against a #fbfbf9 page: four points of luminance, so a backticked
+   term was invisible in a paragraph. A fenced block is a whole surface and
+   reads fine at that contrast; a five-character span does not, so the span
+   gets a cooler tint plus a hairline, and the fences stay calm. */
+:root{--code-bg:#ecf0f6;--code-line:#d5dceb;
+ --bg:#fbfbf9;--fg:#1c1c1c;--mut:#7c7c78;--line:#e4e4df;--card:#fff;--pre:#f4f4f0;
  --accent:#1f5aa8;--focus:#075fbd;--todo:#c23b3b;--wip:#b45309;--done:#15803d;--hold:#8a8a8a;
  --board-mark-top-a:#2947d6;--board-mark-top-b:#1d35b5;
  --board-mark-left-a:#b394f6;--board-mark-left-b:#9569ee;
  --board-mark-right-a:#1678ff;--board-mark-right-b:#0862ee;
  --board-mark-bottom-a:#082965;--board-mark-bottom-b:#011a4a;
  --radius-inline:4px;--radius-control:7px;--radius-surface:10px;--radius-pill:999px}
-@media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
+@media(prefers-color-scheme:dark){:root{--code-bg:#22262e;--code-line:#333a47;
+ --bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;
  --line:#2c2e33;--card:#1d1f23;--pre:#111214;--accent:#6ea8f0;--focus:#9dc8ff;
  --todo:#e0736e;--wip:#e0a458;--done:#5fc98a}}
 *{box-sizing:border-box}
@@ -60,10 +67,15 @@ details.sent[open]>summary .sbadge{background:var(--accent);color:#fff;border-co
 .sadd .serr{font:12px ui-monospace,Menlo,monospace;color:var(--mut);white-space:nowrap}
 .saddrow{margin-top:8px;font:12.5px ui-monospace,Menlo,monospace;color:var(--mut);cursor:pointer}
 .saddrow:hover{color:var(--accent)}
-.sedit{display:grid;grid-template-columns:1fr auto auto auto auto;gap:6px;align-items:center;
+.sedit{display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center;
  margin:6px 0 10px;padding:8px;border:1px solid var(--accent);border-radius:var(--radius-control);
  background:var(--card)}
-.sedit textarea{min-height:2.3em;resize:vertical;font:inherit;background:var(--bg);color:var(--fg);
+/* The message used to sit in a fifth grid column, so a long one (the anchor
+   failure is a whole sentence of Chinese) took the width and squeezed the
+   textarea down to a single character (JL 260801, screenshot). It spans its own
+   row now, and the textarea keeps a floor. */
+.sedit .serr{grid-column:1 / -1}
+.sedit textarea{min-width:12em;min-height:2.3em;resize:vertical;font:inherit;background:var(--bg);color:var(--fg);
  border:1px solid var(--line);border-radius:var(--radius-control);padding:5px 7px}
 .sedit input{width:4.5em;font:12px ui-monospace,Menlo,monospace;background:var(--bg);color:var(--fg);
  border:1px solid var(--line);border-radius:var(--radius-control);padding:5px}
@@ -78,7 +90,7 @@ details.sent[open]>summary .sbadge{background:var(--accent);color:#fff;border-co
 .chcopy:hover{color:var(--accent);border-color:var(--accent)}
 /* Heading address rail (QB5d): breadcrumb + ⧉ + 🤖 at the END of a `##` or
    `###` heading. It collapses to ZERO WIDTH rather than to opacity:0, because a
-   `QB4e / Where we are / Decision Now` chip is long enough to reflow the
+   `QB4 / State / Decision Now` chip is long enough to reflow the
    heading it decorates if it keeps its box while invisible. Hidden on touch,
    exactly as the C/H chips and the sentence rail are. */
 .hpath{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;
@@ -455,7 +467,23 @@ body.split .q .ql{font-size:13px;margin:0 0 8px}
 .cbody p{margin:0 0 8px;line-height:1.65}
 
 /* 勾选清单：md 里写 - [ ] / - [x] */
-.ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65}
+.ck{display:flex;gap:9px;align-items:flex-start;margin:7px 0;line-height:1.65;
+ position:relative}
+/* Hidden ⧉ on a Decision Now row (JL 260802: "could you give a hidden copy
+   button so I can copy the decision easier?"). Absent at rest so the page still
+   reads as a document; revealed on hover, and on focus so it is reachable from
+   the keyboard. `visibility` rather than `display` keeps the row from reflowing
+   under the cursor. */
+.dcopy{position:absolute;top:0;right:0;width:22px;height:20px;
+ display:inline-grid;place-items:center;padding:0;
+ background:var(--card);color:var(--mut);border:1px solid var(--line);
+ border-radius:var(--radius-pill);cursor:pointer;font:11px/1 sans-serif;
+ visibility:hidden;opacity:0;transition:opacity .12s}
+.ck:hover>.dcopy,.ck:focus-within>.dcopy,.dcopy:focus-visible{
+ visibility:visible;opacity:1}
+.dcopy:hover,.dcopy:focus-visible{color:var(--accent);border-color:var(--accent);
+ outline:none}
+@media (hover:none),(pointer:coarse){.dcopy{visibility:visible;opacity:1}}
 .ck .ct{font-weight:600}
 .ck.on .ct{font-weight:600;opacity:.85}
 .ck .bd{padding-left:0;margin-top:2px}
@@ -659,6 +687,24 @@ body.chaton{padding-right:min(var(--chatw,440px),92vw)}
  box-shadow:0 6px 20px rgba(0,0,0,.28)}
 #chatfab:hover{filter:brightness(1.06)}
 body:not(.chaton) #chatfab{display:inline-flex}
+/* 选哪个聊天（QD2 C8，JL 260802）：右下角那一下先给两行 —— GUI 抽屉还是 TUI
+   终端。每一行还报「这边是不是已经有东西在跑」，那是别处看不到的事实。
+   宽度跟着屏幕走：手机上贴着两边，桌面上是一张卡片。 */
+#chatpick{position:fixed;right:20px;bottom:74px;z-index:56;display:flex;
+ flex-direction:column;gap:2px;padding:6px;width:min(320px,calc(100vw - 40px));
+ background:var(--card);border:1px solid var(--line);border-radius:12px;
+ box-shadow:0 10px 32px rgba(0,0,0,.32)}
+#chatpick[hidden]{display:none}
+#chatpick .pk{display:grid;grid-template-columns:1fr auto;gap:0 8px;
+ background:none;border:0;border-radius:8px;padding:9px 10px;cursor:pointer;
+ text-align:left;font:inherit;color:var(--fg)}
+#chatpick .pk:hover,#chatpick .pk:focus-visible{background:var(--hover,rgba(127,127,127,.12));outline:none}
+#chatpick .pk b{font-size:14px;font-weight:600}
+#chatpick .pk s{grid-row:1;grid-column:2;text-decoration:none;color:var(--accent);font-size:12px}
+#chatpick .pk i{grid-column:1/-1;font-style:normal;font-size:12px;opacity:.62;margin-top:2px}
+#chatpick .pk u{grid-column:1/-1;text-decoration:none;font-size:12px;margin-top:3px;color:var(--accent)}
+#chatpick .pk u:empty{display:none}
+@media(max-width:820px){#chatpick{right:12px;left:12px;bottom:68px;width:auto}}
 /* 聚焦看一题时，卡片头里那个小 💬 Chat 让位给悬浮图标；平铺/展开视图里还留着 */
 body:has(.q:target) .chatbtn,
 body.split .chatbtn{display:none}
@@ -678,6 +724,11 @@ body.split .chatbtn{display:none}
 #chat .tm .xterm{height:100%}
 #chat .tm .xterm-viewport{overflow-y:auto}
 #chat .hd .x{font-size:20px;font-weight:400}
+/* the labelled way back to the page; it needs real width, unlike the 32px pair.
+   Hidden while the drawer DOCKS (the page is already visible beside it) and
+   shown exactly where the drawer starts covering the page. */
+#chat .hd .back{flex:0 0 auto;width:auto;padding:0 9px;font-size:12px;font-weight:600;display:none}
+@media(max-width:820px){#chat .hd .back{display:inline-flex;align-items:center}}
 #chat .sfocus{flex:0 0 auto;margin:10px 12px 0;padding:10px 11px;
  border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));
  border-left:3px solid var(--accent);border-radius:var(--radius-surface);
@@ -704,13 +755,38 @@ body.split .chatbtn{display:none}
 #chat .sfattached pre{max-height:130px;overflow:auto;margin:6px 0 0;padding:7px 8px;
  white-space:pre-wrap;background:var(--pre);border-radius:var(--radius-control);
  color:var(--mut);font:11px/1.45 ui-monospace,Menlo,monospace}
+/* every scroller inside the drawer keeps its overscroll to itself, so
+   reaching the top or bottom never starts scrolling the page behind */
+#chat .bd,#chat .trace,#chat .tk .tk-body,#chat .spick .spl,
+#chat .sfattached pre{overscroll-behavior:contain}
 #chat .bd{padding:14px;flex:1 1 auto;min-height:0;overflow-y:auto;
  display:flex;flex-direction:column;gap:9px;background:var(--bg)}
+/* NOTHING IN A SCROLLING COLUMN MAY SHRINK. `.bd` is a flex column, and a flex
+   item's default is `flex-shrink:1`, so once a turn has enough children they
+   are all squeezed to fit instead of scrolling. A text bubble resists because
+   its text has intrinsic height; a `<details class="tool">` has
+   `overflow:hidden`, so it collapses to its 1px border and reads as a bare
+   rule across the drawer. That is the "thinking part is lines" JL reported
+   three times, and it is why every empty-row fix did nothing: the rows were
+   never empty. Measured 260803 from his own console: 35 tool cards, every one
+   `h=1`, each holding real text (`Bash`, the command, `done`). */
+#chat .bd > *{flex:0 0 auto}
 #chat .m{max-width:90%;padding:9px 13px;border-radius:var(--radius-surface);font-size:14px;line-height:1.6;
  white-space:pre-wrap;word-break:break-word}
 #chat .m.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:var(--radius-inline)}
 #chat .m.cc{align-self:flex-start;background:var(--pre);color:var(--fg);
  border:1px solid var(--line);border-bottom-left-radius:var(--radius-inline)}
+/* where one turn ends and the next begins, in a replayed transcript */
+#chat .tool.done>summary .ts{opacity:.55}
+#chat .turnsep{align-self:stretch;display:flex;align-items:center;gap:9px;
+ margin:8px 0 2px;color:var(--mut);font:10.5px ui-monospace,Menlo,monospace;
+ letter-spacing:.05em;opacity:.75}
+#chat .turnsep:before,#chat .turnsep:after{content:'';flex:1;height:1px;background:var(--line)}
+/* which conversation this pane IS — louder than a turn boundary, because it is
+   the one label that says the transcript above and below are different sessions */
+#chat .switchsep{position:sticky;top:0;z-index:2;opacity:1;margin:2px 0 8px;
+ padding:5px 0;color:var(--fg);font-weight:600;background:var(--bg)}
+#chat .switchsep:before,#chat .switchsep:after{background:var(--acc,var(--line));opacity:.5}
 #chat .m.sys{align-self:center;background:none;color:var(--mut);font-size:12px;padding:2px}
 /* 思考过程折叠块 */
 #chat .tk{align-self:flex-start;max-width:92%;border:1px dashed var(--line);
@@ -785,7 +861,16 @@ body.split .chatbtn{display:none}
 #chat .utoggle.active,#chat .stoggle.active{border-color:var(--accent);background:var(--accent);color:#fff}
 #chat .utility-body{display:none}
 #chat .utility.open .utility-body{display:block;border-top:1px solid var(--line);padding-top:3px}
-#chat .utility.show-actions .settings,#chat .utility.show-settings .acts{display:none}
+/* three tabs, one open at a time: every panel hides unless its tab is the
+   active one, which scales past the original two-way rule */
+#chat .utility-body .acts,#chat .utility-body .sessions,
+#chat .utility-body .settings{display:none}
+#chat .utility.show-actions .acts{display:block}
+#chat .utility.show-sessions .sessions{display:block}
+#chat .utility.show-settings .settings{display:block}
+#chat .utility .sessions .spick{border:none;background:transparent}
+#chat .utility .sessions .spick summary{padding:4px 13px}
+#chat .utility .sessions .spl{max-height:230px}
 
 /* Phone is a different surface, not a narrow desktop rail.  A nearly-full
    drawer left a distracting sliver of the page beside it and hid the close /
@@ -927,6 +1012,65 @@ details.sect:not([open])>summary.ch{margin-bottom:0}
 body.split .q .secall{font-size:12px;padding:2px 11px}
 .col p{margin:0 0 6px;font-size:15px}
 .col pre{font-size:11.5px}
+
+
+/* An Aim shows its `Done when` without a second click (JL 260802): the check
+   IS the Aim's substance, and the group above it is already shut. */
+.aims-open > .blt > details.it.row > .bd{display:block}
+.aims-open > .blt > details.it.row > summary::after{content:none}
+
+/* 💬 Discussion as a nested THREAD, in the shape JL sent (Reddit): avatar,
+   author bold on its own row, body aligned under the NAME not the avatar, a
+   rail spanning the whole subtree, and a ⊖ that collapses it. `<details>`
+   does the collapse, so the zero-script invariant holds. */
+.thread{margin:2px 0 6px}
+.thr{position:relative}
+.thr>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:7px;
+  padding:3px 0;margin:0}
+.thr>summary .tsay{flex:1 1 auto;min-width:0}
+.thr>summary::-webkit-details-marker{display:none}
+.tav{flex:0 0 auto;width:20px;height:20px;border-radius:5px;background:var(--line);
+  color:#fff;font-size:10px;font-weight:700;letter-spacing:.02em;align-self:flex-start;
+  display:inline-flex;align-items:center;justify-content:center;position:relative;top:2px}
+.thr.jl>summary .tav{background:#c2703a}
+.thr.cc>summary .tav{background:#6c8ebf}
+.thr>summary b{flex:0 0 auto;font-size:12.5px;font-weight:700;letter-spacing:.01em}
+.thr.jl>summary b{color:#a9541f}
+.thr.cc>summary b{color:#4a6fa5}
+.thr>summary .tq{font-style:italic;font-weight:400;font-size:11.5px;color:var(--muted)}
+/* the ⊖ collapse handle, on the rail */
+.thr>summary::before{content:"⊖";position:absolute;left:-15px;top:4px;font-size:12px;
+  color:var(--muted);opacity:.55}
+.thr:not([open])>summary::before{content:"⊕"}
+/* body and children align under the NAME, and the rail runs the full subtree */
+.thr>.tbody,.thr>.tkids{margin-left:10px;padding-left:20px;border-left:2px solid var(--line)}
+.thr>.tbody{padding-top:2px;padding-bottom:2px}
+.thr>.tbody>p{margin:.28em 0}
+.thr>.tkids{padding-top:2px}
+.thr:not([open])>.tbody,.thr:not([open])>.tkids{display:none}
+.thread>.thr{margin-top:10px;padding-left:15px}
+
+/* the name and what was said share one row, so a COLLAPSED entry still tells
+   you what it is about, not only who spoke (JL 260802) */
+.thr>.tbody,.thr>.tkids{margin-left:9px;padding-left:19px}
+
+/* In a fold, the row title is NORMAL weight and the `**name**` inside it
+   carries the bold (JL 260802: "I only want the item to be bold, and the
+   explanation to be normal"). Law, Lesson and Glossary all read the same way:
+   a short name, then what it means, on one line. */
+.fb .bt .ttl,.fb .ct .ttl{font-weight:400}
+.fb .bt .ttl b,.fb .ct .ttl b{font-weight:700}
+
+/* a fold row shows its VALUE on stage: the name bold, the first explanation
+   line beneath it, and the rest behind the click (JL 260802) */
+.fb details.it.row>summary>.ld{margin:.15em 0 .35em;padding-left:2px;
+  color:var(--fg);opacity:.9}
+/* 🪪 the card button sits beside 💬 Comment and reads as the quieter of the
+   two: a comment is a person speaking, a card is a fact being filed. */
+#ccard{position:absolute;z-index:40;display:none;background:var(--card);
+ color:var(--accent);border:1px solid var(--accent);border-radius:var(--radius-control);
+ padding:5px 11px;font-size:13px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+#ccard:hover{background:color-mix(in srgb,var(--accent) 12%,var(--card))}
 
 /* ── 聚焦 = 一张幻灯片，不是一个卡片 ─────────────────────────
    照 html-ppt：内容直接铺在页面上，没有边框、圆角、卡片底色把它围住。
@@ -1110,8 +1254,10 @@ body.split .q code{overflow-wrap:anywhere}
 .mut{color:var(--mut)}
 a.fp{text-decoration:none;border-bottom:1px dashed var(--accent)}
 a.fp code{color:var(--accent);cursor:pointer}
-a.fp:hover code{background:var(--accent);color:var(--bg)}
-code{background:var(--pre);padding:1px 5px;border-radius:var(--radius-inline);font:13px ui-monospace,Menlo,monospace}
+a.fp:hover code{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+code{background:var(--code-bg);border:1px solid var(--code-line);padding:0 4px;
+ border-radius:var(--radius-inline);font:13px ui-monospace,Menlo,monospace}
+pre code{background:none;border:0;padding:0}
 pre{background:var(--pre);border:1px solid var(--line);border-radius:var(--radius-control);padding:11px 13px;
  margin:8px 0;overflow-x:auto;font:12.5px/1.6 ui-monospace,Menlo,monospace;white-space:pre}
 img{max-width:100%;border:1px solid var(--line);border-radius:var(--radius-control)}
@@ -1123,6 +1269,14 @@ img{max-width:100%;border:1px solid var(--line);border-radius:var(--radius-contr
    expands to say what the group is for and why it is here. No script. ── */
 .grp{display:flex;align-items:baseline;gap:8px}
 .grp .gt{flex:1}
+/* A group heading became a LINK to the group page, and no rule followed it, so
+   it rendered as a default anchor: link-blue going visited-purple, underlined,
+   in 16px bold (JL 260801, with a screenshot of "QA · Design"). A heading that
+   happens to be clickable must still read as a heading. */
+.grp .gt a{color:inherit;text-decoration:none}
+.grp .gt a:visited{color:inherit}
+.grp .gt a:hover{color:var(--accent);text-decoration:underline;
+ text-underline-offset:3px;text-decoration-thickness:1px}
 details.gi,.gi.one{margin:-2px 0 10px 2px;font-size:12.8px;color:var(--mut);line-height:1.55}
 details.gi summary{cursor:pointer;list-style:none;user-select:none}
 details.gi summary::-webkit-details-marker{display:none}
@@ -1155,6 +1309,51 @@ details.gi summary:hover{color:var(--fg)}
 .gform .go{border:1px solid var(--accent);background:var(--accent);color:#fff;
  border-radius:var(--radius-control);font-size:11.5px;padding:3px 9px;cursor:pointer}
 .gform .cx2{border:none;background:none;color:var(--mut);font-size:14px;cursor:pointer}
+
+/* The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
+   this UI is not good, how to make it more beautiful?").
+
+   It had NO rule in any stylesheet, so `🏠 Boards` / `🗂 Index` / the crumb
+   rendered as browser-default anchors: underlined, link-blue turning visited
+   purple, and butted together with no separator. That is the whole defect —
+   the markup was fine and the page simply had no styling to apply.
+
+   The voice is the sidebar's, not a new one: muted chrome type, the accent only
+   on hover, `--line` hairlines, and no colour that competes with a page's
+   state emoji. */
+.sitebar{display:flex;align-items:center;flex-wrap:wrap;gap:2px;
+ margin:-4px 0 18px;padding:0 0 10px;
+ border-bottom:1px solid var(--line);
+ font:500 11.5px/1.6 ui-sans-serif,system-ui,sans-serif;
+ color:var(--mut)}
+
+/* Links read as quiet chrome until pointed at, when they take the accent and
+   a soft pill — the same feedback the sidebar rows and the ☰ toggle already use. */
+.sitebar a{display:inline-flex;align-items:center;gap:5px;
+ padding:3px 8px;border-radius:var(--radius-control);
+ color:var(--mut);text-decoration:none;
+ white-space:nowrap;transition:background .12s,color .12s}
+.sitebar a:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.sitebar a:visited{color:var(--mut)}
+.sitebar a:visited:hover{color:var(--accent)}
+
+/* The last crumb is where you ARE: a <b>, never a link, so it is the one
+   element here allowed full-strength text. */
+.sitebar b{padding:3px 8px;color:var(--fg);font-weight:650;
+ font-family:ui-monospace,Menlo,monospace;font-size:11px;
+ letter-spacing:.02em;white-space:nowrap}
+
+.sitebar .sb-sep{color:var(--line);font-size:12px;
+ padding:0 1px;user-select:none;flex:none}
+
+/* The ☰ toggle is position:fixed at left:10px, so with the sidebar hidden it
+   would sit on top of the first crumb. Yield exactly its width plus air. */
+body:not(.sbon) .sitebar{padding-left:34px}
+
+@media (max-width:640px){
+  .sitebar{gap:0;margin-bottom:14px;font-size:11px}
+  .sitebar a{padding:3px 6px}
+}
 
 /* ── QF1 · embeds: another file's content shown by reference (live) ────── */
 .embed{border:1px solid var(--line);border-radius:var(--radius-control);margin:10px 0;background:var(--card);overflow:hidden}
@@ -1335,6 +1534,13 @@ details.gi summary:hover{color:var(--fg)}
    caption and the notes too, and those are the half a reader checks. */
 .ccpdf{display:block;width:100%;height:24em;border:1px solid var(--line);
   border-radius:var(--radius-control);background:var(--pre)}
+/* pdf previews fold shut (JL 260806): open-by-default objects buried the
+   card's links below its scroll fold and the plugin eats the wheel. The
+   summary wears the figcaption's face so the card reads the same closed. */
+.ccfold summary{cursor:pointer;font:11px ui-monospace,Menlo,monospace;
+  color:var(--mut);letter-spacing:.05em;margin-bottom:5px}
+.ccfold summary:hover{color:var(--accent)}
+.ccfold[open] summary{margin-bottom:6px}
 /* the rendered reference: hanging indent, the way a bibliography reads */
 .ccref{font:14px/1.6 Charter,"Bitstream Charter",Georgia,Cambria,serif;
   padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
@@ -1379,6 +1585,14 @@ img.fig{max-width:100%;height:auto;display:block;margin:12px 0;
    Scoped to object so it never repeats the historic `.fig`/chip collision. */
 object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12px 0;
  border:1px solid var(--line);border-radius:var(--radius-surface);background:#fff}
+/* Markdown `![](path.html)` is a LIVE embed (a slide, a demo): the real file
+   in its own frame, slide-proportioned, with the open link as the no-JS path.
+   A span wrapper because the embed is emitted inline; block by style. */
+.fightml{display:block;margin:12px 0}
+.fightml iframe{display:block;width:100%;aspect-ratio:16/9;border:0;
+ border-radius:var(--radius-surface);background:#fff;
+ box-shadow:0 0 0 1px var(--line)}
+.fightml .fsopen{display:inline-block;margin-top:6px;font-size:12.5px}
 .xadd-row .xnew{border-style:dashed;color:var(--accent);border-color:var(--accent)}
 /* 🗑 removal (QD7, JL 260726) reads as the destructive one without shouting */
 .xadd-row .xrm{color:var(--mut)}
@@ -1394,8 +1608,34 @@ object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12p
 .xcal .xurl{display:block;margin-top:4px;font-size:11.5px;color:var(--mut);
  word-break:break-all;user-select:all}
 
+/* ── 🪪 a card on a SPAN of words (JL 260802, ruled on QB5) ──────────────────
+   A `\citep{smith2019}` chip REPLACES a marker nobody wanted to read, so it is
+   allowed to look like a control. A span card sits on words the AUTHOR wrote
+   and the reader is in the middle of reading, so it is not: a box around them
+   would turn a paragraph into a row of buttons and cost more attention than
+   the card is worth.
+
+   So it keeps the text's own font, colour and weight, and takes one hint: a
+   dotted accent underline that says "there is more here" without leaving the
+   prose. The hover deepens the hint rather than the text, the same axis every
+   other chip on this page gives ground on. */
+.chip.card.span{background:transparent;border:0;padding:0;max-width:none;
+  color:inherit;font:inherit;cursor:pointer;
+  text-decoration:underline dotted color-mix(in srgb,var(--acc,#1565c0) 65%,transparent);
+  text-underline-offset:3px;text-decoration-thickness:2px}
+.chip.card.span:hover,.chip.card.span:focus-visible{border:0;
+  background:color-mix(in srgb,var(--acc,#1565c0) 11%,transparent);
+  text-decoration-color:var(--acc,#1565c0)}
+.chipcard.card.span{border-left-color:var(--accent)}
+/* A span that is not in its sentence is a BROKEN binding, and the whole write
+   layer's rule is that a miss the reader cannot see is the one failure this
+   grammar may not have. So it renders loud, in the drawer, where a chip would
+   have been. */
+.lane.cardmiss{color:var(--todo)}
+.lane.cardmiss code{color:inherit}
+
 /* ── Pages sidebar (JL 260731): Index → group → page, hideable ──────────
-   Fixed rail outside .wrap, so the :target show/hide rules never touch it.
+   Fixed sidebar outside .wrap, so the :target show/hide rules never touch it.
    Default: open on wide screens via the media query, hidden below; the JS
    toggle sets body.nav-open/.nav-closed and persists per board. */
 .sbtoggle{position:fixed;left:10px;top:10px;z-index:31;width:30px;height:28px;
@@ -1403,7 +1643,7 @@ object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12p
  border:1px solid var(--line);border-radius:var(--radius-pill);cursor:pointer;
  font:14px/1 sans-serif}
 .sbtoggle:hover{color:var(--accent);border-color:var(--accent)}
-/* Width is one variable so the rail can be dragged (JL 260731), the same
+/* Width is one variable so the sidebar can be dragged (JL 260731), the same
    shape the chat drawer already uses for --chatw: a handle on the edge
    sets it, and the browser remembers it per machine. */
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sbw,238px);z-index:30;
@@ -1420,8 +1660,8 @@ object.figpdf{display:block;width:100%;height:clamp(26rem,58vh,48rem);margin:12p
 .sidebar .sb-p .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sidebar a.on{background:color-mix(in srgb,var(--accent) 14%,transparent)}
 body.nav-open .sidebar{transform:none}
-/* The page yields exactly as much as the rail takes. This was hard-coded at
-   238px while the rail's own width became `--sbw`, so dragging the rail moved
+/* The page yields exactly as much as the sidebar takes. This was hard-coded at
+   238px while the sidebar's own width became `--sbw`, so dragging the sidebar moved
    it over the text instead of pushing the text along (JL 260731). One variable
    now drives both, the way `--chatw` already drives the drawer and the body. */
 body.nav-open{padding-left:var(--sbw,238px)}
@@ -1432,7 +1672,23 @@ body.nav-open{padding-left:var(--sbw,238px)}
 @media(max-width:1149px){body.nav-open{padding-left:0}}
 body.nav-closed .sidebar{transform:translateX(-100%)}
 body.nav-closed{padding-left:0}
-@media print{.sidebar,.sbtoggle{display:none}}
+/* The sidebar's drag handle. FIXED rather than absolute inside the sidebar: the sidebar
+   is `overflow-y:auto`, which clips anything on its edge, so an absolute handle
+   was invisible to the pointer (elementFromPoint returned BODY).
+
+   It also has to APPEAR exactly when the sidebar appears. It did not: it is
+   positioned off `--sbw` alone, so with the sidebar collapsed it stood 238px into
+   the page as a bar across the text, tinting on hover because that is what a
+   handle does (JL 260801, with a screenshot of the QD group). The two rules
+   below mirror the sidebar's own two, so there is one condition, written twice
+   because a handle cannot be a child of what it resizes. It lives beside the
+   sidebar now instead of at the end of the matrix file. */
+.sbrz{display:none;position:fixed;left:calc(var(--sbw,238px) - 3px);top:0;bottom:0;
+ width:7px;cursor:col-resize;background:transparent;z-index:31}
+.sbrz:hover,.sbrz:active{background:var(--accent);opacity:.35}
+body.nav-open .sbrz{display:block}
+@media(min-width:1150px){body:not(.nav-closed) .sbrz{display:block}}
+@media print{.sidebar,.sbtoggle,.sbrz{display:none}}
 
 /* ── Sidebar section outline (QB2a, JL 260731): the Structure rows under the
    ACTIVE page only — one page's sections and subsections open at a time. ── */
@@ -1484,6 +1740,14 @@ body.nav-closed{padding-left:0}
  color:var(--mut);font:10px ui-monospace,Menlo,monospace;letter-spacing:.04em;
  position:sticky;top:0;background:var(--bg)}
 #chat .bd .trace .tr{display:flex;gap:7px;padding:3px 10px;align-items:baseline}
+/* AN EMPTY TRACE ROW IS A BARE LINE ACROSS THE DRAWER, and a long turn draws
+   dozens of them: a row is created at every segment boundary and only filled
+   when text for that segment arrives, so a turn that thinks and calls tools
+   without narrating leaves them blank (JL 260803, screenshot: "the thinking
+   part is like this", ~40 empty rules mid-turn at 33% done). The same fault as
+   the replay one fixed the same day, on the LIVE path instead. A row with no
+   text does not draw; it starts drawing the moment it has any. */
+#chat .bd .trace .tr:has(.x:empty){display:none}
 #chat .bd .trace .tr .i{flex:0 0 auto;opacity:.75}
 #chat .bd .trace .tr .x{flex:1;min-width:0;white-space:pre-wrap;word-break:break-word;
  color:var(--mut)}
@@ -1500,7 +1764,7 @@ body.nav-closed{padding-left:0}
 @keyframes busypulse{0%,100%{opacity:.35}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){#chat .bd .busy .g{animation:none;opacity:.8}}
 
-/* Per-group count on an Items to Finish ### heading (QB4d, JL 260731). */
+/* Per-group count on an Aims ### heading, derived from State. */
 .sh .shc{margin-left:8px;font:600 11px ui-monospace,Menlo,monospace;color:var(--mut)}
 
 /* The hidden ▸ at a page row's end (JL 260731): click toggles that page's
@@ -1604,26 +1868,51 @@ table.bstat{border-collapse:collapse;font:12px ui-monospace,Menlo,monospace;
 .gwhy-b p{margin:0 0 6px}
 
 
-/* The rail's drag handle. FIXED rather than absolute inside the rail: the rail
-   is `overflow-y:auto`, which clips anything on its edge, so an absolute handle
-   was invisible to the pointer (elementFromPoint returned BODY). */
-.sbrz{position:fixed;left:calc(var(--sbw,238px) - 3px);top:0;bottom:0;width:7px;
- cursor:col-resize;background:transparent;z-index:31}
-.sbrz:hover,.sbrz:active{background:var(--accent);opacity:.35}
-.sidebar[hidden]~.sbrz,body:not(.sbon) .sbrz{pointer-events:auto}
-
 /* RELATED FOLDERS fold (QB2/QA0 · JL 260731 "do the B level"): the outer
    disclosure reuses .board-status; only the nested folder→file browser is
    styled here. Build-time embed, so it opens with scripts stripped. */
-.related-folders .rf-intro{margin:8px 14px;color:var(--mut);font-size:12.5px}
-.related-folders .rf-folder{margin:8px 14px;border:1px solid var(--line);border-radius:var(--radius-control);background:var(--card)}
-.related-folders .rf-folder>summary{cursor:pointer;padding:8px 12px;font-weight:600;font-size:13px;list-style:none}
+
+/* RELATED FOLDERS: a directory BROWSER, not a reader (JL 260801: "the pure
+   folder that can be opened ... like the folder hosted in the browser, I can
+   open and navigate"). Rows are a file listing, so the type is monospace and
+   the columns line up; nesting is carried by indentation and a guide line. */
+.related-folders .rf-intro{margin:8px 14px 10px;color:var(--mut);font-size:12.5px}
+.related-folders .rf-folder{margin:8px 14px;border:1px solid var(--line);
+ border-radius:var(--radius-control);background:var(--card);overflow:hidden}
+.related-folders .rf-folder>summary{cursor:pointer;padding:9px 12px;font-weight:600;
+ font-size:13px;list-style:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .related-folders .rf-folder>summary::-webkit-details-marker{display:none}
-.related-folders .rf-folder>summary::before{content:"▸";display:inline-block;width:16px;color:var(--mut)}
+.related-folders .rf-folder>summary::before{content:"▸";flex:none;width:12px;color:var(--mut)}
 .related-folders .rf-folder[open]>summary::before{content:"▾"}
-.related-folders .rf-path{font-size:11.5px;color:var(--mut);font-weight:400}
-.related-folders .rf-files{padding:2px 12px 10px}
-.related-folders .rf-file{margin:6px 0;border-left:2px solid var(--line);padding-left:10px}
-.related-folders .rf-file>summary{cursor:pointer;font-size:12px;color:var(--accent)}
-.related-folders .rf-content{max-height:440px;overflow:auto;margin:6px 0 2px;padding:8px 12px;background:var(--pre);border-radius:var(--radius-inline);font-size:12.5px}
-.related-folders .rf-miss{color:#b00020;font-size:12px;padding:6px 0}
+.related-folders .rf-folder>summary:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.related-folders .rf-path{font:11px ui-monospace,Menlo,monospace;color:var(--mut);font-weight:400}
+/* the ↗ replaces the printed repo path: an affordance, not an address */
+.related-folders .rf-open{margin-left:auto;flex:none;text-decoration:none;
+ color:var(--mut);font-size:12px;padding:2px 7px;border-radius:var(--radius-inline);
+ border:1px solid transparent}
+.related-folders .rf-open:hover{color:var(--accent);border-color:var(--accent);
+ background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.related-folders .rf-open:visited{color:var(--mut)}
+.related-folders .rf-files{padding:2px 10px 10px 14px}
+
+/* one row = one entry; folders disclose, files do not */
+.related-folders .rf-dir>summary,.related-folders .rf-f{
+ display:flex;align-items:center;gap:6px;padding:3px 8px;border-radius:var(--radius-inline);
+ font:12px ui-monospace,Menlo,monospace;list-style:none}
+.related-folders .rf-dir>summary{cursor:pointer;color:var(--fg);font-weight:600}
+.related-folders .rf-dir>summary::-webkit-details-marker{display:none}
+.related-folders .rf-dir>summary::before{content:"▸";flex:none;width:11px;color:var(--mut);font-weight:400}
+.related-folders .rf-dir[open]>summary::before{content:"▾"}
+.related-folders .rf-dir>summary::after{content:"📁";order:-1;font-size:11px}
+.related-folders .rf-f{color:var(--mut);text-decoration:none}
+.related-folders a.rf-f:hover .rf-n{color:var(--accent);text-decoration:underline}
+.related-folders a.rf-f:visited{color:var(--mut)}
+.related-folders .rf-f::before{content:"📄";flex:none;font-size:11px;opacity:.75;
+ margin-left:11px}
+.related-folders .rf-dir>summary:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent)}
+.related-folders .rf-f:hover{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.related-folders .rf-n{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.related-folders .rf-c{flex:none;font-size:10.5px;color:var(--mut);opacity:.8;font-variant-numeric:tabular-nums}
+.related-folders .rf-kids{margin-left:9px;padding-left:9px;border-left:1px solid var(--line)}
+.related-folders .rf-more{padding:3px 8px 3px 30px;font-size:11px;color:var(--mut);font-style:italic}
+.related-folders .rf-miss{margin:6px 14px;color:#b00020;font-size:12px;padding:6px 0}

@@ -1,108 +1,200 @@
-# Reference: Project config.yaml (the general contract)
+# Reference: project configuration
 
-The single source of truth for a subjective-label project's `config.yaml`.
-**Construct-agnostic and zero-hardcoding** — nothing physician / openness /
-Big-Five appears in the engine; a task expresses itself entirely through these
-fields. See `ref-contract.md` (schema+metrics), `ref-datasets.md` (license
-battery), `note-update.md` (why each field exists).
+`config.yaml` contains tunable and declared project choices.
+It does not contain runtime state, observed scores, human decisions, or mutable artifact pointers.
 
----
-
-## Full schema
+## 1. Full conceptual schema
 
 ```yaml
-task:
-  corpus_path: "..."               # jsonl of {id, text, ...}
-  text_field: text
+schema_version: subjective-label/v2
+
+project:
+  id: example-project
+  description: "One human-grounded subjective-labeling project"
+
+corpus:
+  path: reviews.jsonl
   id_field: id
-  metadata_fields: [...]           # optional passthrough (platform, rating, ...)
+  text_field: text
+  metadata_fields: []
+  population: "reviews in the declared target study"
 
-construct:                         # WHAT to label (the target dimension)
-  name: "..."                      # short handle, e.g. "openness"
-  mode: auto | seed                # auto = multi-LLM propose + objective-select (S2); seed = human one-liner
-  definition: null | "..."         # required iff mode=seed
-  discriminant_from: [...]         # sibling constructs to stay distinct from → confound strata + discriminance objective
+construct:
+  name: openness
+  seed: "a vague initial human idea"
+  scope: "what texts and behaviors the project intends to judge"
 
-objective:                         # the selection/stop criterion — the irreducible human input (S2)
-  kind: downstream | discriminance | dataset_match
-  spec: {...}                      # downstream: a regression/target; discriminance: sibling labels; dataset_match: a public set
+authority:
+  human_id: JL
+  mode: single_human_semantic_authority
 
-labels:                            # see ref-contract.md §1 (categorical | ordinal now)
-  type: categorical | ordinal
-  values: [...] | null             # 2–6 (ordered iff ordinal); null → elicited in dialogue
-  none_value: <value|null>         # the "signal absent" catch-all, if any
-  tie_break: none_loses | first    # majority-vote tie rule (default: none_loses if none_value set else first)
+labels:
+  type: ordinal
+  values: [high, low, none]
+  none_value: none
 
-labeler:                           # the LABELER (multi-LLM panel) — reliability, NOT ground truth
-  engines:
-    claude_sdk: {model: haiku}
-    codex:      {model: gpt-5.5}
-  validator_model: null            # engine used for validation MUST differ from labeler (anti-circular, F1)
-  personas: [close-reader, plain-reader, skeptic]   # for persona-panel mode
+regions:
+  values: [H, L, N, HL, LN, HN, HLN]
 
-sampling:                          # two pools, distinct jobs (F6)
-  representative: {size: 120, base_rate_aware: true, none_quota: 0.33}   # honest metrics
-  enriched:       {per_stratum: 8}                                       # guideline refinement (discriminant_from-driven)
+uncertainty:
+  levels: [low, medium, high]
+  unresolved_is_label: false
 
-embedding: {backend: sentence-transformers | openai, model: "..."}       # openai/text-embedding-3-large ok
-classifier: {backend: logreg | setfit | lora-bert, thresholds: {accept_margin: 0.3, accept_prob: 0.7}}
+embedding:
+  backend: sentence-transformers
+  model: sentence-transformers/all-MiniLM-L6-v2
+  device: cpu
+  index: faiss-flat
 
-eval:                              # three sets, distinct jobs (F7)
-  anchor:  {size: 120, frozen: true,  pool: representative}   # fixed → version comparison
-  heldout: {size: 60,  fresh: true, never_trained: true}     # fresh each round → honest generalization + anti-circular
+rounds:
+  round1:
+    sampling: random
+    human_batch_size: 60
+  later:
+    candidate_pool_size: 200
+    human_batch_size: 50
+    region_quotas: {}
+    novelty_quota: null
+    consensus_audit_fraction: null
+    seed: 0
 
-metrics: [reliability_panel_kappa, executor_independence, generalization_gap, objective_score]  # auto by labels.type; ref-contract §2
+region_scorer:
+  backend: prototype | linear | classifier | mlp
+  validation: {}
 
-license: {battery: [popquorn, dices, ...], require_ceiling: true}        # engine-level, one-time (F2/F3; ref-datasets)
+weak_executors:
+  models: []
+  independent: true
+  structured_reason: true
+  sealed_before_human: true
 
-convergence: {objective_plateau: 0.02, stability: true, heldout_gap_max: 0.05}   # incl held-out gate (F8)
-escape_hatch: {extreme_case_review: on | off}                            # optional human on extreme cases only
+metrics:
+  class: [macro_f1, balanced_accuracy, per_class, confusion, kappa]
+  ordinal: [quadratic_weighted_kappa, mae]
+  uncertainty_interval: bootstrap
+
+stopping:
+  quality_floor: {}
+  epsilon: null
+  consecutive_rounds_k: null
+  coverage_minima: {}
+  unresolved_risk_max: null
+  require_human_signoff: true
+
+final_test:
+  source: corpus_holdout | fresh_same_population
+  size: null
+  representative: true
+  diagnostic_supplement: false
+  seed: 0
+  custodian: null
+
+evaluation:
+  minimal_instruction: null
+  heldout_executor_required: true
+  repeated_runs: 1
+
+production:
+  policy: single | ensemble | validated_routing
+  quality_floor: {}
+  risk_rules: {}
+  human_capacity: null
+  cost_budget: null
+  final_audit: {}
+
+external_validation:
+  enabled: false
+  datasets: []
 ```
 
-`.state.json` holds runtime state (status, iteration, versions) — NOT config.
+Values shown above are schema examples, not universal defaults.
+Project-specific numeric settings are chosen from pilot evidence, desired uncertainty, budget, and intended use.
 
----
+## 2. Required inputs
 
-## Field notes
+The minimum project input is:
 
-- **construct.mode=auto** defers "what exactly to measure" to S2 (multi-LLM
-  propose → select by `objective`). `mode=seed` takes a one-line human definition.
-  Either way the objective is the only mandatory human input (already in the
-  research design for the physician instance: "predict opioid Rx + be discriminant").
-- **objective.kind=discriminance** needs no external data (works now).
-  `downstream` needs the target regression (may be PHI-gated). `dataset_match`
-  needs a public labeled set.
-- **labeler ≠ ground truth.** Panel agreement is a reliability signal. Correctness
-  comes from the license battery (public per-rater sets), not from the panel.
-- **labels.values: null** is valid — elicited during init; once fixed it must obey
-  `ref-contract.md` (2–6, ordered iff ordinal, exhaustive with a catch-all).
+- one corpus path with stable ids and text;
+- one vague construct seed and scope;
+- one identified human semantic authority;
+- the label and region schema, using the default H/L/N plus seven regions unless explicitly changed;
+- a sealed-test sampling frame and custodian;
+- an embedding model for retrieval.
 
----
+An objective function, public dataset, classifier, model panel, and automatic construct selector are not required.
 
-## Migration from the old shape (B01–B03)
+## 3. Round settings
 
-The engine reads the new schema; keep a compatibility shim while tasks migrate:
+Round 1 uses random sampling from the eligible development pool.
+Later rounds separate candidate-pool size from human-batch size.
 
-| old | new |
-|-----|-----|
-| `topic` | `construct.name` + `construct.definition` |
-| `purpose` | folded into `construct.definition` / `objective` |
-| `corpus:` | `task:` |
-| `label_schema: null` | `labels: {type, values: null}` |
-| `panel:` | `labeler:` |
+`region_quotas`, `novelty_quota`, and `consensus_audit_fraction` are versioned per round when they change.
+The actual batch manifest records resolved quotas, seed, strata, and inclusion probabilities.
 
-`lib/label.py` / `lib/kappa.py` already accept `--labels`/`--type` overrides, so a
-not-yet-migrated task still runs by passing them on the CLI.
+## 4. Executor settings
 
----
-
-## Minimal example (a NON-physician instance, to prove generality)
+Every weak executor registry entry must include:
 
 ```yaml
-task: {corpus_path: reviews.jsonl, text_field: text, id_field: id}
-construct: {name: sarcasm, mode: seed, definition: "is the comment sarcastic?", discriminant_from: [sentiment]}
-objective: {kind: discriminance, spec: {siblings: [sentiment]}}
-labels: {type: categorical, values: [sarcastic, sincere, unclear], none_value: unclear}
-labeler: {engines: {claude_sdk: {model: haiku}, codex: {model: gpt-5.5}}}
-eval: {anchor: {size: 100, frozen: true}, heldout: {size: 50, fresh: true}}
+- id: weak-a
+  provider: "..."
+  model: "..."
+  version: "..."
+  family: "..."
+  wrapper: wrappers/weak-a.yaml
+  decoding: {temperature: 0}
+  role: seen | heldout | production_candidate
 ```
+
+The held-out role cannot participate in guideline optimization before final evaluation.
+
+## 5. Stopping settings
+
+Stopping is a conjunction, not a weighted score.
+The config records thresholds, while each checkpoint records observed evidence and pass or fail.
+
+`epsilon` and `consecutive_rounds_k` apply only to comparable audit series.
+A failed quality floor cannot be overridden by a small improvement.
+
+## 6. Final-test settings
+
+`final_test.source` names whether items are held out from the original corpus or collected separately from the same population.
+The manifest, not config, stores protected ids and access logs.
+
+The final-test size must support the intended confidence interval and protected-stratum claims.
+Diagnostic enrichment is reported separately from the representative headline sample.
+
+## 7. Runtime state
+
+`.state.json` is written by authorized keepers and may contain:
+
+```json
+{
+  "schema_version": "subjective-label/state-v2",
+  "project_status": "calibrating",
+  "open_round": "round-02",
+  "round_phase": "candidate | prelabel | batch | session | checkpoint",
+  "closed_policy": "G_1",
+  "cumulative_gold": "D_1",
+  "sealed_test_status": "reserved",
+  "latest_checkpoint": "checkpoint-01",
+  "implementation_holds": []
+}
+```
+
+State points to immutable artifacts by id or checksum.
+It does not duplicate their contents.
+
+## 8. Migration from v1
+
+| old field or assumption | v2 treatment |
+|---|---|
+| `topic` | `construct.name`, `construct.seed`, and `construct.scope` |
+| `objective` required | optional extension outside the core human-grounded workflow |
+| `panel` as authority | `weak_executors` as sealed evidence producers |
+| `gallery` as mixed gold | migrate rows by inspectable human provenance |
+| fixed anchor and fresh heldout used during development | round audit protocol plus separately sealed final test |
+| public dataset convergence | optional external validation only |
+| `scale.routing=cascade` with k-NN inheritance | validated production policy with explicit risk and audit |
+
+Migration never infers human gold from panel unanimity, majority, or missing provenance.

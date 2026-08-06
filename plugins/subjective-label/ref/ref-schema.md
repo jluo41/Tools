@@ -1,152 +1,251 @@
-ref-schema: Label Schema Design Guide
-======================================
+# Reference: subjective-label record schemas
 
-How to design a good label schema for subjective annotation.
+This reference defines the machine-readable records shared by the router, subskills, agents, and later engine implementation.
+Examples are illustrative JSON and YAML shapes, not a claim that every current library already writes them.
 
----
+## 1. Semantic fields
 
-Schema Requirements
---------------------
+Every completed human annotation keeps four independent fields:
 
-  A valid label schema for subjective-label must specify:
+```json
+{
+  "class_label": "high | low | none",
+  "diagnostic_region": "H | L | N | HL | LN | HN | HLN",
+  "uncertainty": {"level": "low | medium | high", "reason": "..."},
+  "rationale": {"evidence": ["..."], "rejected_label": "...", "reason": "..."}
+}
+```
 
-  1. Exactly ONE primary dimension per annotation task.
-     (Multi-dimension tasks: run gallery generation once per dimension.)
+Rules:
 
-  2. 2-6 label values per dimension.
-     Fewer than 2: not a classification task.
-     More than 6: too complex for gallery-based few-shot. Split into sub-tasks.
+- `class_label` is the final outcome field.
+- `diagnostic_region` records why the case is typical or boundary-informative.
+- `uncertainty` records procedural doubt.
+- `rationale` records decisive evidence and the strongest rejected alternative.
+- `none` means absent trait evidence and never substitutes for uncertainty or unresolved status.
 
-  3. Mutually exclusive values.
-     Each text should receive exactly one label.
-     If overlap is possible, add a tiebreaker rule to guideline.
+## 2. Base item identity
 
-  4. Exhaustive values.
-     Every text can receive SOME label.
-     Add a "none" or "other" catch-all if needed.
+Every record that refers to corpus content includes or resolves:
 
+```json
+{
+  "item_id": "stable-id",
+  "corpus_version": "sha256:...",
+  "text_hash": "sha256:...",
+  "source_metadata": {},
+  "population_status": "eligible | excluded | invalid"
+}
+```
 
-Good vs. Bad Schema Design
----------------------------
+Raw text may live in one canonical corpus table rather than being copied into every artifact.
+Sealed-test records use protected handles until authorized text resolution.
 
-  Bad: vague values
-    values: [positive, negative, neutral, mixed]
-    Problem: "mixed" and "neutral" will constantly be confused.
-    Fix: define exactly what "mixed" requires (e.g., "contains both
-    explicit praise and explicit criticism in same turn").
+## 3. Candidate-pool record
 
-  Bad: too many values
-    values: [authoritative, directive, advisory, responsive,
-             informational, neutral, evasive, deferring, ... 10 more]
-    Problem: gallery cannot cover all with 25 examples.
-    Fix: collapse to 4-5 values. Add a "detail" field in gallery for subtypes.
+`C_t` is selection evidence and contains no gold field:
 
-  Good: action-grounded values
-    values: [authoritative, advisory, informational, responsive, none]
-    Each value corresponds to a distinct observable behavior in the text.
-    A coder can point to specific words/phrases that signal each value.
+```json
+{
+  "round_id": "round-02",
+  "item_id": "r123",
+  "source_pool": "H | L | N | HL | LN | HN | HLN | novelty | random",
+  "scores": {"region": {}, "margin": 0.0, "novelty": 0.0},
+  "ranker": {"name": "...", "version": "..."},
+  "selection_reason": "...",
+  "seed": 0,
+  "inclusion_probability": null
+}
+```
 
-  Good: ordered spectrum (when applicable)
-    values: [strongly_toward_WLST, mildly_toward_WLST, neutral,
-             mildly_against_WLST, strongly_against_WLST]
-    Spectrum schemas are naturally ordered — useful for regression-style analysis.
+Predicted region and similarity are typed scores, not human annotation fields.
 
+## 4. Sealed pre-label record
 
-Tri-polar ordinal: the recommended default
--------------------------------------------
+Each weak executor writes one independent `P_t` row:
 
-  values: [high, low, none]
+```json
+{
+  "round_id": "round-02",
+  "item_id": "r123",
+  "policy_version": "G_1",
+  "policy_checksum": "sha256:...",
+  "executor": {"name": "...", "version": "...", "family": "..."},
+  "wrapper_checksum": "sha256:...",
+  "run_id": "...",
+  "prediction": "high | low | none",
+  "predicted_region": "HN",
+  "confidence": 0.62,
+  "structured_reason": {
+    "evidence": ["..."],
+    "applied_rule": "rule-id",
+    "rejected_label": "none",
+    "uncertainty_reason": "..."
+  },
+  "seal_checksum": "sha256:...",
+  "status": "success | failed"
+}
+```
 
-  This is the default offered by /sl-init because it cleanly separates
-  three distinct annotation states for any "is signal X present, and how
-  strongly?" task:
+Structured reasons are concise audit fields, not hidden chain-of-thought.
+Failed outputs remain failed and are never imputed from committee consensus.
 
-    high  = signal present and strong
-    low   = signal present and weak
-    none  = signal absent
+## 5. Human-batch manifest
 
-  Critical: `none` means "signal absent", NOT "annotator unsure".
-  Annotator uncertainty lives in the confidence field on each label, not
-  in the label itself. If a persona is uncertain whether a review shows
-  empathy, it still picks {high, low, none} and reports low confidence;
-  it does NOT default to `none` to mean "I couldn't tell".
+Every `B_t` row preserves why it enters human review:
 
-  Why this matters: if `none` becomes the abstain bucket, the embedding
-  geometry collapses (every uncertain item lands in the same cluster) and
-  disagreement analysis loses signal — Category B (rule ambiguity) gets
-  miscategorized as Category D (noise). Distribution instability across
-  the panel is itself a signal that the high/low/none boundaries are
-  underspecified; surface this via the n-polar projection diagnostic
-  (see ref-architecture.md "geometric convergence signal") rather than
-  by widening `none`.
+```json
+{
+  "round_id": "round-02",
+  "item_id": "r123",
+  "primary_role": "audit | challenge | coverage | carryover",
+  "source_pool": "disagreement | mismatch | novelty | consensus",
+  "stratum": {"predicted_class": "high", "predicted_region": "HN", "confidence_band": "mid"},
+  "selection_probability": 0.12,
+  "seed": 0,
+  "batch_manifest_checksum": "sha256:...",
+  "blind_access_state": "sealed"
+}
+```
 
-  Required boundary tiebreakers in guideline.md §4:
-    * high vs none  — present-and-strong vs not-absent
-    * low  vs none  — present-and-weak   vs absent-altogether
-    * high vs low   — intensity threshold (topic-specific)
+Membership freezes before the Human-AI Session.
 
-  When to deviate: if your task is purely categorical (e.g., nudge_type ∈
-  {authoritative, advisory, informational}), tri-polar is wrong — use a
-  flat categorical schema with an "other" catch-all. Tri-polar fits
-  *intensity* / *salience* questions, not type questions.
+## 6. Human-first and final records
 
+The blind initial judgment and the final human decision are separate immutable events:
 
-Boundary Case Design
----------------------
+```json
+{
+  "item_id": "r123",
+  "round_id": "round-02",
+  "human_id": "JL",
+  "policy_version": "G_1",
+  "first_pass": {
+    "timestamp": "...",
+    "class_label": "none",
+    "diagnostic_region": "HN",
+    "uncertainty": {"level": "medium", "reason": "..."},
+    "rationale": {"evidence": ["..."], "rejected_label": "high", "reason": "..."},
+    "prelabels_visible": false,
+    "checksum": "sha256:..."
+  },
+  "final": {
+    "timestamp": "...",
+    "class_label": "high",
+    "diagnostic_region": "HN",
+    "uncertainty": {"level": "low", "reason": "..."},
+    "rationale": {"evidence": ["..."], "rejected_label": "none", "reason": "..."},
+    "change_type": "none | correction | clarification | concept_revision"
+  },
+  "prelabel_comparison": {},
+  "backward_impact_ids": []
+}
+```
 
-  For each pair of adjacent/confusable values, predefine a tiebreaker:
+An unresolved item uses a workflow disposition:
 
-  Boundary: authoritative vs advisory
-    Both may mention patient values.
-    Tiebreaker: Did the recommendation come BEFORE the value question?
-      Yes -> authoritative.   No -> advisory.
+```json
+{"terminal_disposition":"unresolved","reason":"missing_context","owner":"JL","use_limitation":"exclude_from_training"}
+```
 
-  Boundary: informational vs advisory
-    Both state prognosis.
-    Tiebreaker: Did the clinician ask about patient values at all?
-      No -> informational.   Yes -> advisory.
+It does not invent a fourth class.
 
-  Boundary: responsive vs advisory
-    Both involve patient values.
-    Tiebreaker: Did the clinician ask about values BEFORE stating prognosis?
-      Yes -> responsive.   No -> advisory.
+## 7. Annotation-policy version
 
-  Document all tiebreakers in guideline.md Section 4 (Boundary Cases).
+```yaml
+policy_id: G_2
+parent: G_1
+status: draft | closed | final
+components:
+  core_guideline: guideline.md
+  boundary_rules: boundaries.yaml
+  decision_procedure: procedure.yaml
+  uncertainty_policy: uncertainty.yaml
+  casebook: casebook.jsonl
+  wrappers: wrappers/
+diff:
+  semantic: []
+  procedural: []
+  casebook: []
+  wrapper: []
+  editorial: []
+accepted_by: JL
+checkpoint_id: checkpoint-02
+checksum: sha256:...
+```
 
+Closed and final policy versions are immutable.
 
-Multi-Dimension Tasks
-----------------------
+## 8. Checkpoint record
 
-  If you need multiple labels per text (e.g., nudge_type + direction + intensity):
+```json
+{
+  "checkpoint_id": "checkpoint-02",
+  "round_id": "round-02",
+  "parents": {"prior_policy": "G_1", "prior_gold": "D_1"},
+  "artifacts": {"candidate_pool": "sha256:...", "prelabels": [], "human_batch": "sha256:...", "human_final": "sha256:..."},
+  "closed_policy": "G_2",
+  "cumulative_gold": "D_2",
+  "metrics": "metrics-02",
+  "coverage": "coverage-02",
+  "risk_ledger": "risk-02",
+  "human_evidence": "...",
+  "status": "closed"
+}
+```
 
-  Option A: Separate gallery per dimension
-    Run /subjective-label gallery once per dimension.
-    Each gallery focuses on one annotation criterion.
-    Cleanest design — recommended.
+The checkpoint is the only event that closes a round and promotes `G_t` plus `D_t` for future use.
+At an accepted calibration stop, the final closed `D_t` checksum is additionally named
+`D_cal*`. This is frozen human calibration gold, not completed corpus `D*`.
 
-  Option B: Multi-column gallery
-    Each gallery entry has multiple label fields.
-    gallery.json entry:
-      {"id": "001", "text": "...",
-       "nudge_type": "authoritative", "direction": "toward_WLST",
-       "intensity": "strong", "reasoning": "..."}
-    More complex — only use if dimensions are tightly coupled.
+## 9. Test and scorecard records
 
+The sealed manifest stores population, sampling design, seed, protected identifiers, inclusion probabilities, custodian, access log, and invalidation state.
+Final human-gold rows use the human schema after `G*` freezes.
 
-Gallery Size Guidelines
-------------------------
+Every executor scorecard stores:
 
-  Target: 15-30 examples total.
+- executor, model family, seen or held-out status;
+- `G*`, wrapper, decoding, seeds, and run count;
+- `T*` manifest and human-gold checksums;
+- per-item predictions;
+- absolute, class, region, uncertainty, stability, cost, and latency results;
+- minimal-instruction baseline and guideline uplift;
+- confidence intervals and failure strata.
 
-  Minimum per label value: 2 examples.
-  Recommended per label value: 3-5 examples.
-  Boundary cases: 4-8 total (regardless of N labels).
+## 10. Production and provenance
 
-  Rule of thumb:
-    N_values * 4 examples + 5 boundary cases = recommended gallery size.
-    For 5 values: 5*4 + 5 = 25 examples.
+One terminal production row per item:
 
-  Larger gallery -> better accuracy, but:
-    - Longer prompts -> higher cost per inference call
-    - Diminishing returns after ~30 examples
-    - Weak models may lose focus with very long few-shot context
+```json
+{
+  "item_id": "r999",
+  "terminal_disposition": "labeled | unresolved | excluded | invalid",
+  "class_label": "low",
+  "diagnostic_region": null,
+  "provenance_tier": "human_confirmed | audited_machine | machine_accepted | accepted_unresolved | excluded | invalid",
+  "policy_version": "G*",
+  "executor": {"name": "...", "version": "..."},
+  "wrapper_checksum": "sha256:...",
+  "route": "single | ensemble | classifier | human",
+  "confidence": 0.88,
+  "run_id": "production-01",
+  "audit_stratum": "...",
+  "audit_report": "audit-01"
+}
+```
+
+Production attempts remain append-only.
+One reconciler selects the terminal row and records why retries or alternate routes were rejected.
+
+Completed `D*` is created only after reconciliation and final-audit acceptance. Its
+manifest records corpus checksum, terminal-row checksum and count, `G*`, `D_cal*`, `T*`,
+selected executor scorecard, production run, audit and repair ids, provenance totals,
+limitations, and close timestamp. A pre-audit terminal file must not identify itself as
+`D*`.
+
+## 11. Migration rules
+
+Old records are classified as `human_confirmed`, `model_only`, or `unknown` from inspectable evidence.
+Only `human_confirmed` rows may enter cumulative gold automatically.
+Model-unanimous, panel-majority, and unknown rows remain non-gold evidence until reviewed by the human.
