@@ -7,6 +7,42 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.5.0 - 2026-08-06
+
+**`template.md` ships.** Until now every slide page was written by interpreting
+prose, and the type had two live instances that disagree about several things
+the contract never wrote down.
+
+- New `template.md`: the fillable skeleton, head keys in order, every section in
+  the base's fixed order, one RULE comment per rule (deleted as satisfied) and
+  `<angle-bracket>` slots. Delta only; it points at the base for the rest.
+- The DECK LOCATION is written down for the first time: a page's companion
+  folder is `<type-plural>/<page name>/`, so a deck lives at
+  `<group>/slides/<page name>/`, named after the page exactly, with
+  `deck.html` when hand-authored and `out/deck.html` beside `source/` when a
+  build writes it. `QA4`'s flat `slides/QA4-board-skillset-deck.html` predates
+  the rule and does not follow it.
+- The two SELECTORS are stated by mechanism instead of by precedence, because
+  `QA4` and `QBt9` are both right about different decks: `#sN` works on any deck
+  carrying `id="sN"` plus the `:target` pair and is the only selector that
+  survives scripts off, while `?preview=N` works only on a deck that LOADS
+  html-ppt's `runtime.js`. Both are always written. The board engine picks no
+  slide: `src/body.py` appends `plain` and reads the URL only to size a range
+  frame. `QBt9`'s Decision Now row asking whether the contract prose should be
+  rewritten stays open for JL.
+- The scripts-off reason is corrected to the true one: `cli/build.py` samples
+  only the LARGEST built page, strips `<script>`, and asserts 1200 characters of
+  body text survive. It never opens an iframe, so nothing in the build inspects
+  the deck. The binding reason is the reader's surface, a VS Code webview or a
+  locked-down frame.
+- The acceptance row's field vocabulary is fixed at four fields in order
+  (`accepted:` `slide:` `source:` `rendered:`), the embed-then-row adjacency is
+  made a rule, and the ticked and cut forms are named: `✅ <WHO> <YYMMDD>` and
+  `✂️ cut <YYMMDD>`. Neither live page had a ticked row to copy.
+- The mechanical gate is named: `check.py check_division_figures` wants the
+  division's first non-blank line to be a `**Name**: …` caption and the division
+  to hold a fence or a standalone media embed, and the embed IS the figure.
+
 ## 0.4.0 - 2026-08-05
 
 **Re-ruled A, the same day, after seeing B rendered** (JL: "So it is not like
