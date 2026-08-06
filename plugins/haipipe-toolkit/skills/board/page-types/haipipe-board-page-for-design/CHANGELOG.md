@@ -7,6 +7,25 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.1.2 - 2026-08-06
+
+Ships `template.md`, the first one in `page-types/`. It serializes this contract into the base's
+fixed section order and adds three things the prose left open, each verified against the live
+specimen `QBt10-for-design` on the boardform board:
+
+- **Aims are `P` ids only, never `### A<n>`.** `check_group_names()` reads `### A<n>` in Aims and
+  States as the Aim group of Content division `### <n>` and demands the same name, but here
+  division 1 is a CANDIDATE and Aim 1 is a CRITERION, so every criterion would fire
+  `group-name-drift`. A criterion also cuts across all candidates, which is the case `P` exists
+  for. A target belonging to one candidate is still a `P<n>` carrying that candidate's letter.
+- **The SELECTION record is the last Content division.** The contract says only that the record
+  CLOSES the page; States is a snapshot of right now, so a dated ruling parked there decays into a
+  status line. If JL rules otherwise, the template is the defect.
+- **Where a candidate's artifact lives.** Never a folder named after the brief: a file-backed
+  candidate sits in the display unit's own workspace,
+  `0-lifecycle/S05-display/workspace/<unit>/candidates/<LETTER>-<slug>.<ext>`, and a candidate that
+  is a wording or a layout is drawn whole inside its division.
+
 ## 0.1.1 - 2026-08-05
 
 Review fixes:

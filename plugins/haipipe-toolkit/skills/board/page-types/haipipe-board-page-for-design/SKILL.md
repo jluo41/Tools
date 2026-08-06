@@ -3,9 +3,9 @@ name: haipipe-board-page-for-design
 description: >-
   The VARIANT contract for a DESIGN brief Page: one page per design BRIEF, such as one message drafted for one group of people, with the audience, the goal, and the constraints stated in its Opening and one Content division per CANDIDATE artifact, side by side. It loads haipipe-board-page for the base frame and adds only what a design page needs: each division carrying one candidate whole (the artifact itself, its rationale, its fit to the brief's criteria), Aims that ARE the brief's criteria, the SELECTION record that names the winner, why, and each loser's disposition, and the rule that a losing division is never silently deleted. It sits upstream of haipipe-board-page-for-display: design selects the candidate, display accepts its render. Use when writing or fixing a design page, when candidates live loose in a candidates/ folder or a chat thread, when a winner was picked but nothing records why, or when a rejected candidate vanished with its rationale. Trigger: design page, design brief, candidate, message A B C, candidates folder, selection record, A/B test, pick a variant, /haipipe-board-page-for-design.
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-08-05"
-  summary: "First cut, on JL's A ruling: page = brief, division = candidate, closes on a SELECTION record; upstream of for-display, and a losing division keeps its disposition."
+  version: "0.1.2"
+  last_updated: "2026-08-06"
+  summary: "Ships template.md: the contract in fillable form, with the P-only Aims ruling that keeps a criterion from colliding with a candidate division, and the SELECTION record placed as the last Content division."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -74,7 +74,10 @@ A loser keeps its division, with its disposition and the reason it lost written 
 ```
 haipipe-board-page-for-design/
 ├── SKILL.md            this variant contract
+├── template.md         copy it to write one brief · RULE comments deleted as satisfied
 └── CHANGELOG.md        version history
 ```
+
+`template.md` is this contract in fillable form: the head keys, the section skeleton in the base's fixed order, one candidate division, the SELECTION division, the `P`-only Aims group, and the mechanical gate. Copy it rather than writing a brief from this prose, and delete each RULE comment as you satisfy it.
 
 Owns no scripts. The base is `haipipe-board-page`; the downstream sibling is `haipipe-board-page-for-display`, which accepts the winner's render; the application family's channel messages and the paper family's display `candidates/` folders are the shapes this contract rules, which it names but never contains.

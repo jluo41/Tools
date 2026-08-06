@@ -64,6 +64,7 @@ The core owns the terminal row states and the rule that the human gate reads the
 ```
 haipipe-board-page-for-value/
 ├── SKILL.md            this route dictionary
+├── template.md         the page skeleton to copy, plus the QA-probe record shape
 └── CHANGELOG.md        version history
 ```
 

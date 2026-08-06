@@ -490,7 +490,15 @@ def render(meta, qs):
     # A skill page is a synced MIRROR of a shipped unit, not a decision, so it
     # never enters the settled count (JL 260731). That contradiction was the
     # old `Q-Skill` name: it was counted as a question and declared not to be one.
-    qonly = [q for q in qs if q.get("kind") not in ("doc", "stage", "skill", "agent")]
+    # `meeting` joined this list on 260806. Two contracts already said it should
+    # be here, `haipipe-board-page` ("mirror and Meeting pages are NEVER counted
+    # in a board's settled totals") and `-for-meeting` ("NEVER counted in settled
+    # totals"), and the code counted it anyway, so every board holding a meeting
+    # reported a denominator one too large. A meeting page decides nothing: what
+    # was ruled in the room is routed to the page that owns it, and that page
+    # carries the count.
+    qonly = [q for q in qs
+             if q.get("kind") not in ("doc", "stage", "skill", "agent", "meeting")]
     sonly = [q for q in qs if q.get("kind") == "stage"]
     done = sum(1 for q in qonly if q["state"].startswith("✅"))
     nq = len(qonly)

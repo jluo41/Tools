@@ -147,6 +147,72 @@ def check():
     return 0
 
 
+def space_root():
+    """The SPACE root, the repo convention: the folder holding pyproject.toml."""
+    for d in [GROUP, *GROUP.parents]:
+        if (d / "pyproject.toml").exists() and (d / "Tools").exists():
+            return d
+    return None
+
+
+# A row in templates/<page>.md: a path, then 🔒 or 📎, then ✅ or ⚠️. Only the
+# ✅ rows are checked; ⚠️ says the rule lives in a repository this checkout does
+# not hold, which is a fact about the checkout and not a defect in the page.
+TPL_ROW = re.compile(r"^\s{2,}(?!what\b)(\S.*?)\s{2,}[🔒📎]\s*\w+\s+(✅|⚠️)\s*$")
+TPL_CONT = re.compile(r"^\s{6,}(\S[^\s].*)$")
+
+
+def templates():
+    """Check every reachable pointer in templates/ actually resolves.
+
+    A list of where the rules live is only worth having if it cannot quietly go
+    stale, which is the same reason `needs:` is an id rather than a path. A row
+    marked ✅ names something this checkout holds, so it is opened; a row marked
+    ⚠️ is counted and skipped.
+    """
+    folder = GROUP / "templates"
+    if not folder.is_dir():
+        print("no templates/ folder")
+        return 0
+    root, problems, checked, skipped = space_root(), [], 0, 0
+    for f in sorted(folder.glob("*.md")):
+        if f.name == "README.md":
+            continue
+        print(f"  📄 {f.name}")
+        lines = f.read_text().splitlines()
+        for i, line in enumerate(lines):
+            m = TPL_ROW.match(line)
+            if not m:
+                continue
+            target, reach = m.group(1).strip(), m.group(2)
+            # A path may wrap onto the next line, indented further.
+            nxt = TPL_CONT.match(lines[i + 1]) if i + 1 < len(lines) else None
+            if nxt and not target.endswith("/") and "/" in target:
+                pass
+            elif nxt and target.endswith("/"):
+                target += nxt.group(1).split()[0]
+            if reach == "⚠️":
+                skipped += 1
+                print(f"      ⚠️ {target}  (not in this checkout, skipped)")
+                continue
+            checked += 1
+            if "§" in target or not ("/" in target or target.endswith(".md")):
+                print(f"      ✅ {target}  (a page division, not a file)")
+                continue
+            hit = (root / target) if root else None
+            if hit and hit.exists():
+                print(f"      ✅ {target}")
+            else:
+                print(f"      ❌ {target}")
+                problems.append(f"  {f.name}: {target} does not resolve")
+    print(f"\n{checked} reachable rows checked · {skipped} skipped as not cloned here")
+    if problems:
+        print("\nPROBLEMS\n" + "\n".join(problems))
+        return 1
+    print("every reachable pointer resolves")
+    return 0
+
+
 def build_script(atom):
     """The build step for an atom, found rather than assumed.
 

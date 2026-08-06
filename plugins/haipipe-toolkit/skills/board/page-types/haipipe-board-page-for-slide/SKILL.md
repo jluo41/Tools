@@ -3,9 +3,9 @@ name: haipipe-board-page-for-slide
 description: >-
   The VARIANT contract for a SLIDE Page: one page per deck, one Content division per talk BEAT, one embed and one accept row PER SLIDE inside the beat. Each division carries the beat's SOURCE half (outline and talk notes, usually extracted from section pages) and its RENDER half: each slide LIVE as `![slide N](deck.html?preview=N#sN)`, an iframe of the one deck file in single-slide mode, so one slide can be accepted while its neighbor is redone. The same file opened bare is the full keyboard presentation, so review surface and presentation surface can never drift; `?preview=A-B` remains a legal compact strip for a settled beat. It loads haipipe-board-page for the base frame and shares for-display's acceptance model: a person accepts a specific render. Use when writing or fixing a slide page, when a talk needs a review surface colleagues can read beside the live slides, when a slide shows a number nothing traces, or when the embed shows the wrong slide or none. Trigger: slide page, deck page, talk page, slides, beat, presentation page, slide binding, preview mode, range strip, embed html, presenter deck, html-ppt, /haipipe-board-page-for-slide.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-05"
-  summary: "Re-ruled A on QA4 (JL 260805, after seeing B rendered): per-slide embeds and per-slide acceptance inside beat divisions, so slides iterate one by one; the ?preview=A-B strip stays a compact form for a settled beat."
+  version: "0.5.0"
+  last_updated: "2026-08-06"
+  summary: "template.md ships: the fillable skeleton with RULE comments, plus the three things the prose never wrote down (the deck's companion-folder location, what each of the two selectors actually does, and the acceptance row's field vocabulary)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -92,7 +92,10 @@ A rebuilt or reworded slide returns ITS acceptance row to ⬜ (a compact-strip b
 ```
 haipipe-board-page-for-slide/
 ├── SKILL.md            this variant contract
+├── template.md         the fillable page skeleton this contract serializes
 └── CHANGELOG.md        version history
 ```
+
+`template.md` is what you COPY to start a slide page: every head key, every section in the base's fixed order, one RULE comment per rule that the filler deletes as it satisfies it, and `<angle-bracket>` slots. It states only this type's delta and points at the base for the rest.
 
 Owns no scripts. The base is `haipipe-board-page`; the acceptance model is `haipipe-board-page-for-display`'s; the number rule is `haipipe-board-page-for-value`'s; the builder is `display/skills/html-ppt` (36 themes, 31 layouts, `?preview=N` single-slide mode, PNG export for non-iframe surfaces); the paper family's outline extractor is `display/skills/paper-slides`; the proving page is the boardform board's `QA-design/QA4-board-skillset.md`.
