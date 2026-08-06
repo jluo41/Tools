@@ -14,7 +14,7 @@ second mechanism for the same problem is how the two drift.
 THE SPLIT, which is the whole ruling (QC5 §1-§2):
 
     DERIVED, and this script owns it     name · version · last_updated ·
-    (inside the managed markers)         summary · allowed-tools · path ·
+    (inside the managed markers)         summary · tools · path ·
                                          the two ![[embeds]]
 
     AUTHORED, and this script never      ## Opening · ## Aims ·
@@ -117,21 +117,34 @@ def frontmatter(skill_md):
 
     A hand parser rather than PyYAML because build.py is standard-library only
     and this file must run under the same interpreter (`python3`, 3.9 is fine).
-    Only scalar keys are read; the values here are all scalars.
+
+    Block sequences are read as well as scalars, and that is not a nicety. The
+    two unit kinds declare their tools under DIFFERENT keys and in different
+    shapes: a skill writes `allowed-tools: A, B` on one line, an agent writes
+    `tools:` followed by `  - A`. Reading only scalars meant every agent page
+    ever generated printed `- tools    not declared` while its charter listed
+    five, which is the worst kind of wrong: a confident false statement about a
+    security-relevant field, on a page whose whole job is to describe the unit.
     """
     text = skill_md.read_text(encoding="utf-8")
     if not text.startswith("---"):
         return {}
     end = text.find("\n---", 3)
     block = text[3:end if end > 0 else len(text)]
-    out, indent = {}, False
+    out, indent, seq = {}, False, None
     for ln in block.split("\n"):
         if not ln.strip() or ln.lstrip().startswith("#"):
+            continue
+        item = re.match(r"^\s+-\s+(.+?)\s*$", ln)
+        if item and seq:
+            out[seq] = ", ".join(
+                filter(None, [out[seq], item.group(1).strip('"').strip("'")]))
             continue
         m = re.match(r"^(\s*)([A-Za-z][\w-]*):\s*(.*)$", ln)
         if not m:
             continue
         pad, key, val = m.group(1), m.group(2), m.group(3).strip()
+        seq = None
         if key == "metadata" and not val:
             indent = True
             continue
@@ -141,15 +154,34 @@ def frontmatter(skill_md):
         if val in (">-", "|", ">"):
             val = ""
         out[key] = val
+        if not val:
+            seq = key          # a block sequence may follow; items append above
     return out
+
+
+def tools_of(fm):
+    """The unit's declared tools, under whichever key its kind uses.
+
+    `allowed-tools` is the skill spelling and `tools` the agent spelling. Asking
+    for one and reporting "not declared" on its absence describes the reader's
+    vocabulary rather than the unit.
+    """
+    return fm.get("allowed-tools") or fm.get("tools") or ""
 
 
 def digest(target):
     """Hash the DERIVED facts only, so prose edits never look like drift."""
     h = hashlib.sha256()
     fm = frontmatter(unit(target)[0])
-    for k in ("name", "version", "last_updated", "summary", "allowed-tools"):
+    for k in ("name", "version", "last_updated", "summary"):
         h.update(f"{k}={fm.get(k, '')}\0".encode("utf-8"))
+    # Hashed through tools_of, so an agent gaining Write registers as drift.
+    # Reading `allowed-tools` alone, every agent hashed the same empty string
+    # and its tool list could change with the page none the wiser. The hash
+    # KEY keeps the old spelling on purpose: renaming it would have re-hashed
+    # all 119 scalar skills too, and a hundred pages going stale at once is how
+    # a real drift report gets scrolled past.
+    h.update(f"allowed-tools={tools_of(fm)}\0".encode("utf-8"))
     return h.hexdigest()[:16]
 
 
@@ -463,7 +495,7 @@ def block(board, skill_dir):
         f" · last shipped {fm.get('last_updated', '?')}",
         "",
         f"- folder   `{base}/`",
-        f"- tools    {fm.get('allowed-tools', 'not declared')}",
+        f"- tools    {tools_of(fm) or 'not declared'}",
     ]
     if fm.get("summary"):
         rows.append(f"- summary  {fm['summary']}")
