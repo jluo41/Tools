@@ -59,6 +59,8 @@ An answer that stays in the QA-probe's `#### A-executor` is not yet a number the
 
 The core owns the terminal row states and the rule that the human gate reads the E divisions, not the QA-probes. The close rule on this route: every E<n> division's consumers are terminal AND `E0 · incoming` is empty. What BOUND takes here is a run you can walk to: the consumer row carries the number together with its run, specification, and QA file, each named by path. A number typed from memory binds nothing. Until the provenance paths exist the row stays open, however right the number looks in the prose.
 
+**The template.** `template.md`, beside this file. ONE template serves every page of this type: two pages of it differ in what they say, never in what shape they are, so nothing has to be resolved before writing one. Copy it, fill every `<slot>`, and delete each RULE comment as you satisfy it.
+
 ## 📂 Files
 
 ```

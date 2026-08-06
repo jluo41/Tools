@@ -350,6 +350,8 @@ python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> | grep 
 python3 <board-folder>/_tools/sync-exemplars.py --check
 ```
 
+**The template.** `template.md`, beside this file. ONE template serves every page of this type: two pages of it differ in what they say, never in what shape they are, so nothing has to be resolved before writing one. Copy it, fill every `<slot>`, and delete each RULE comment as you satisfy it.
+
 ## 📂 Files
 
 ```

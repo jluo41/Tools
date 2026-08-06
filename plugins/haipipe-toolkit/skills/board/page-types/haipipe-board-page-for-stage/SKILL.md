@@ -340,6 +340,8 @@ Found on 260803 by a reader applying this file to a live page. Each is a conflic
    the sibling
 ```
 
+**The template.** NOT fixed here, and deliberately: it is resolved by the stage KEY. `paper/haipipe-paper/stages/index.yml` maps a key to its folder, and the template is that folder's `template.md`. Nine exist today, one per stage kind, because a seed stage and a section-edit stage share almost no skeleton; a single template for this type would have to be so empty that nobody could write from it. Read the key off the page's own stage contract, then open that folder.
+
 ## 📂 Files
 
 ```

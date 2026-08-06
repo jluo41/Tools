@@ -55,6 +55,8 @@ each number the unit shows  →  a Value binding on a Value topic page, BY PATH,
 
 A unit that renders well but is cited by no sentence is not finished. The page carries one placement record per consumer: which section, which sentence, and whether the citation landed. An accepted-but-unplaced unit is a visible open row, never a silent success.
 
+**The template.** `template.md`, beside this file. ONE template serves every page of this type: two pages of it differ in what they say, never in what shape they are, so nothing has to be resolved before writing one. Copy it, fill every `<slot>`, and delete each RULE comment as you satisfy it.
+
 ## 📂 Files
 
 ```

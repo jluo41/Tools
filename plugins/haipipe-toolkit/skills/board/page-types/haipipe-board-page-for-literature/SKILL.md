@@ -59,6 +59,8 @@ An answer that stays in the QA-probe's `#### A-executor` is not yet evidence the
 
 The terminal row states, and the rule that the gate reads the E divisions rather than the QA-probes, live in the core (`topic-entry-contract.md`). The close rule on this route: every E<n> division's consumers are terminal AND `E0 · incoming` is empty. This file only says what SUPPORTED takes here: named, real sources standing behind the positioning, which is the citation binding above, written onto the consumer row. A search that came back empty supports nothing by itself; the row either carries the bounded no-precedent finding, scope and all, or it stays open.
 
+**The template.** `template.md`, beside this file. ONE template serves every page of this type: two pages of it differ in what they say, never in what shape they are, so nothing has to be resolved before writing one. Copy it, fill every `<slot>`, and delete each RULE comment as you satisfy it.
+
 ## 📂 Files
 
 ```
