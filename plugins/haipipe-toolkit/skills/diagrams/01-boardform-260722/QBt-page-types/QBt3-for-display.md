@@ -1,6 +1,6 @@
 # QBt3 · D1 Type-key coverage: a display unit, and the acceptance it waits for
 
-state: 🟡 PARTIAL · rung ④ ACCEPTED · accepted 260806; one of two consumers has not cited it, so it is not yet PLACED
+state: 🟡 PARTIAL · rung ③ RENDERED · the render exists and can be looked at; ④ waits on a person, and no person has said yes
 page-type: display
 owner: JL
 method: build this unit to its claim job, name its evidence source, state an honest statistical label, and land it in a known place
@@ -10,10 +10,14 @@ provides: displays/QBt3-for-display/out/assets/figure.txt
 ## Opening
 
 Does the coverage figure show contract drift falling as a page's type key gets older, with an honest statistical label?
+🚫 No corpus was ever counted: the drift rates in the figure below are invented, and nothing on this page may be cited.
+The page is real: it is a working `for-display` page, and what it teaches is how a unit earns acceptance.
+It sits at rung ③ RENDERED: the render exists and no person has said yes to it.
+Rung ④ is a human judgment, and no machine may write it.
 
 A display is not decoration: this unit must carry one claim job, name its evidence source, state an honest statistical label, and land in a known place in the manuscript.
 
-🚫 **This unit belongs to a fabricated project.** Its numbers are invented, its corpus does not exist, and nothing here may be cited. What is NOT fabricated is the shape: this page is a real `for-display` page, and its bindings resolve to files that really sit on disk, one folder away.
+🚫 **This unit belongs to a fabricated project.** What is NOT fabricated is the shape: this page is a real `for-display` page, and its bindings resolve to files that really sit on disk, one folder away.
 
 **Where its things are**: a page's companion folder is `<type-plural>/<page name>/`, so this page's unit is `displays/QBt3-for-display/`. That is the group's one naming rule, and `QBt5`'s drawer is `QA-probe/QBt5-for-value/` by the same rule.
 
@@ -122,9 +126,10 @@ The label line is what a reviewer reads first. A figure that says "reduces" over
   S-Open-Pitch §1        "the tenure gradient"                 ⬜ named,
                                                                   not cited
   ──────────────────────────────────────────────────────────────────
-  ⬜ is why this page is at rung ④ and not ⑤. An accepted unit that a
-     consumer only alludes to is not placed, and this row is what keeps
-     that from going quiet.
+  ⬜ would be what holds an ACCEPTED unit back from ⑤. It is not what
+     holds this one back: the unit sits at ③, because ④ needs a person
+     and none has looked. Both rows stay visible, and neither closes
+     the other.
 ```
 
 🔗 Establishes whether the unit reached the manuscript, which acceptance alone does not tell you.
@@ -178,6 +183,7 @@ Acceptance is of a specific render. That is why no machine may write rung ④, a
 - 260806 CC · Building this specimen found a conflict the prose never surfaced: `haipipe-board-page-for-display` rules that the state line reports a LADDER RUNG, and `cli/check.py` raises `bad-state` on any state line whose first token is not one of the four health words. A pure rung is an ERROR on every board today. This page carries the health word first and the rung as the next token, which passes and loses nothing; whether that is the answer, or whether the checker should learn the ladder, is unruled.
 
 ### Decision Now
+- 📍 Does this render reach rung ④? Open `displays/QBt3-for-display/out/assets/figure.txt`, look at it, and say yes or no. Only you can move this one: `for-display/SKILL.md:27` calls `state:` a gate position no machine may flip, and `§5` of this page says the same. It sat at a machine-written ④ from 260806 until the cold read caught it; it is back at ③ and stays there until a person answers. 🛑 Blocks: the page's own state line, and `QBt6-for-section`'s `Q-Sec4Results-4`, which was ✅ on the strength of the forged rung.
 - 📍 When the thirteen live display pages get their type key, does the `## Stage Contract` span stay or go? **A ·** remove it: the type that owns the page owns its sections, and a span no contract declares is furniture nobody maintains. **B ·** keep it: it records `requires` / `style-from` / `provides`, which a display unit genuinely has, and `stage.py sync` already maintains it. This specimen is written as A; if you rule B, the span is added here first and then to the thirteen.
 - 📍 The state line conflict above: does `for-display` drop the ladder from `state:`, or does `cli/check.py` learn to accept a rung? Until this is ruled, every display page written to its own contract is an ERROR.
 
@@ -192,10 +198,10 @@ Acceptance is of a specific render. That is why no machine may write rung ④, a
 - ✅ A3.1 · The render's label line names two design facts, that tenure is not assigned and that page size is not controlled, and `§3` lists exactly those two as ① and ②, so a reader can check each one.
 
 ### A4 · 🔗 Placement: which sentence uses this unit
-- ❄️ A4.1 · Held on purpose at one open `⬜` row: `S-Open-Pitch §1` alludes to the unit without citing it, which is what keeps the specimen showing an accepted-but-unplaced unit at rung ④ rather than ⑤.
+- ❄️ A4.1 · Held at one open `⬜` row: `S-Open-Pitch §1` alludes to the unit without citing it. The hold is real but it is not what caps this unit; ④ is, and ④ waits on a person. The specimen therefore shows a RENDERED unit with a placement row already open, which is the ordinary shape, rather than the accepted-but-unplaced shape it claimed until the 260806 cold read.
 
 ### A5 · ⚠️ Fragility: what would send this unit back down the ladder
-- ✅ A5.1 · `§5` was written in the same 260806 draft that recorded rung ④, and it lists every path that can move a printed number: a `unit.py build` re-run, a change to the atom's answer table, a band boundary move, and a venue figure limit change.
+- ✅ A5.1 · `§5` lists every path that can move a printed number: a `unit.py build` re-run, a change to the atom's answer table, a band boundary move, and a venue figure limit change. Its own premise held up under test: `unit.py build` twice over the unchanged record reproduces `figure.txt` byte for byte, so a rebuild alone does not invalidate a render.
 
 ## Files
 
@@ -221,6 +227,8 @@ Acceptance is of a specific render. That is why no machine may write rung ④, a
 - 260806 CC · Unit built and rendered through the whole chain. `unit.py build` runs the chain in dependency order: the QA record parses its answer table into `counts.csv`, then this unit resolves that atom by id and writes `out/assets/figure.txt`. `unit.py check` reports both units, both needs resolved, both products present.
 - 260806 CC · The id-not-path rule was tested rather than asserted. The value unit was moved out of `S04-value/` into an unrelated folder and the chain was rebuilt with no edit to any script or page; the render came out identical. Then it was moved back. This is the one property the structure exists for, so it is proven here rather than claimed.
 - 260806 CC · Structure A adopted for the scenario on JL's ruling: one unit, one folder, phases as subfolders, no published twin. The MISQ paper is untouched and follows later if this holds up.
-- 260806 CC · Accepted at rung ④ as the specimen's demonstration of what acceptance looks like recorded. Not advanced to ⑤ on purpose: `S-Open-Pitch` alludes to the unit without citing it, so `§4` carries one open `⬜` row and the page shows what an unplaced-but-accepted unit looks like. A specimen with every row green teaches nothing about the rows that go wrong.
+- 260806 · [REVISE-CC] Rolled back from rung ④ to ③ by a cold read, and this is the finding the group most deserved to have caught. The page carried `state: 🟡 PARTIAL · rung ④ ACCEPTED · accepted 260806` on the strength of one Log line that named no person and quoted no one. Four sections above it, `§5` of this same page reads "no machine may write rung ④", and `for-display/SKILL.md:27` calls the state line a gate position no machine may flip. So the specimen for the one type whose whole distinction is that acceptance is a JUDGMENT had a machine-forged judgment in its state line, and `QBt6-for-section` had already marked `Q-Sec4Results-4` ✅ on the strength of it: one un-granted tick became three green claims across two pages. Rolling back is not enough by itself, so a Decision Now row now asks JL to look at the render and answer; the row it blocks is named there.
+- 260806 CC · The unplaced row was left open on purpose and stays open. `S-Open-Pitch` alludes to the unit without citing it, so `§4` carries one `⬜`. What changed is what that row means: it caps a RENDERED unit at ③ rather than an accepted one at ④, and the figure said the wrong one until today.
 - 260806 CC · Written as option A of the ruling in `States › Decision Now`: no `## Stage Contract` span, because `haipipe-board-page-for-display` declares none. The thirteen live display pages on the MISQ board all carry one, because they resolve as stage pages.
+- 260806 · [REVISE-CC] The Opening rendered as 119 characters of bare question, so a cold reader met a bar chart of drift rates and had to open the fold to learn the corpus does not exist. Four sentences now sit on stage under the question, at 481 characters: the 🚫 notice that no corpus was ever counted and nothing here may be cited, that this is a working `for-display` page whose format is what it teaches, and the two that keep the rollback honest, that the unit sits at rung ③ RENDERED with no person's yes behind it and that rung ④ is a human judgment. One drawer sentence was deleted as the on-stage text now repeats it word for word: "Its numbers are invented, its corpus does not exist, and nothing here may be cited." Nothing else in the drawer moved.
 - 260806 1259 · [REVISE-CC] States now mirrors every Aim id; three Aims are genuinely met (A2.1 by `unit.py check` resolving the need and the product, A3.1 by the label naming the same two design facts `§3` lists, A5.1 by `§5` covering every path that can move a printed number), A4.1 is held at its one open `⬜` row on purpose, A2.2 has not begun because `§2` still cites `counts.csv` and E1's consumer row carries no value binding, and A1.1 is short because the render prints `PAGES` and `DRIFT` columns that `§1` never names. The five dated records above moved here from States, where they were history sitting in a snapshot (QB4 §5.3.1); the two that describe the page as it stands now stayed.

@@ -10,8 +10,14 @@ contract-source-hash: e6751de27aec33fa
 ## Opening
 
 Which claims may this paper defend, what carries each one, and which verbs is every later stage forbidden to use?
+A claims stage answers those three once, so no page below it can quietly upgrade a verb.
+This page is the `for-stage` specimen: it IS a claims stage rather than an essay about one.
+The paper, the desk and every number in its ledger are invented, so nothing here may be cited.
+One Required Input is missing from this board on purpose, and that is what keeps the page open.
 
 🚫 **This page is one stage of a fabricated paper.** The paper is "Do typed pages reduce contract drift?", the desk is the Journal of Imaginary Systems (JIS), and neither exists. Every claim, count and key below is invented and nothing here may be cited. What is NOT fabricated is the shape: this is a real `for-stage` page, and its Required Inputs quote gate states off two files that really sit beside it.
+
+**The `page-type: stage` line above is not in the contract's table**: step ③ of the base's type resolution defines exactly four values, `display`, `slide`, `design` and `section`, and `stage` is not one of them. A stage is meant to resolve at step ④, by an `S-<Family>-<unit>` filename this page does not wear, so the only key that matches this file is `QBt1-` at step ⑤ and the resolver reads it as a Q decision page. The key is inert on top of that: `page-type` appears in no file under `haipipe-board/src/` or `haipipe-board/cli/`, so no code reads it on any page, which is what `QBt3` and `QBt9` record for their own keys. Whether the table grows or the key goes is a `### Decision Now` row in `## States`, and this page rules neither.
 
 **What a stage page is, and what this one is**: a link in a chain. It may not open until the pages in `requires:` have passed their gates, its Content IS the artifact rather than an argument about one, and its `state:` is a gate position that only a person moves. This one is a CONTROL page: it holds the ledger and no claim's own prose, the same shape `S-Work-C-claims` has on the MISQ board.
 
@@ -270,12 +276,6 @@ It does not write around it, and a display or a slide that states a stronger ver
 
 ## States
 
-- ✅ P1 · Four rows, four carriers: C0 to `QBt4` E1, C1 and C2 to `QBt5` E1, and C3 to nothing, which is what REFUSED means and is written as such.
-- ⬜ P2 · Empty on all four rows. This is the page's one deliberate hole, and the reason is in the Opening.
-- ✅ P3 · Four threats, three of them OPEN, and C1 sits at SUPPORTED rather than STRONG because of two of them.
-- 🧠 P4 · Three pages cite this boundary today and none breaks it, read by hand on 260806. Nothing checks it, so this row waits on a person every time one of them changes.
-- ⬜ P5 · The gate has not been requested, and CHECK is not ready while P2 is open.
-
 - 260806 0057 CC · The hole is the chain, on purpose. `S-Work-R` is the one page a claims ledger cannot do without, because it is what says whether the corpus can carry a claim at all, and this group holds one specimen per type rather than a whole paper. `S-Work-R-resources` on the MISQ board has carried the same kind of open row since 260803, where a declared input was removed from the board by another group mid-split.
 - 260806 0057 CC · Rule 10 of `QB6` §5.1 is the checker rule written for this type: "the page declares venue-free or venue-aligned, and a venue-aligned page's `style-from:` resolves to a venue-pinned upstream page". This page declares venue-free in its Stage Record, so it satisfies the half of rule 10 that applies to it, and the rule does not exist, so nothing reports either half on any page today.
 - 260806 0057 CC · This page declares `page-type: stage` and the engine still calls it a question page, because `src/parse.py` derives `kind` from the FILENAME alone. Two consequences, both read out of the code: `src/stage_contract.py`'s `contract_status()` returns immediately when `kind != "stage"`, so the managed span and its hash are never verified here, and `cli/check.py`'s `missing-stage-section` rule fires only for a name starting with `S`, so nothing ever asks this page for its `## Stage Contract`. That is `QBt3`'s decorative-type-key finding one step worse: for stage the engine HAS the machinery and gates all of it on a filename. Rule 1 of `QB6` §5.1 is the fix.
@@ -285,11 +285,34 @@ It does not write around it, and a display or a slide that states a stronger ver
 - 260806 0057 CC · `contract-source-hash: e6751de27aec33fa` was computed by hand with `src/stage_contract.py`'s own recipe, because `stage.py sync` cannot run on a page the parser does not call a stage. Two facts travel with it: `contract_digest` hashes each source's ABSOLUTE resolved path along with its bytes, so the same page in another clone computes a different value, and this one goes stale the moment `QBt4` or `QBt5` is edited. Nothing here reports either, since `contract_status()` never runs on this page.
 - 260806 0057 CC · The divisions carry a caption and a face figure although the contract says a manuscript section should not. That conflict is already listed on the contract as one it does not own, since the base may add a rule to a variant and gives no variant a way to suppress one. It does not bite here anyway: a claims ledger is not a manuscript section, so the figures are the artifact rather than decoration on top of it.
 - 260806 0057 CC · `QBt6` §Required Inputs says `S-Work-C` "does not exist in this group". It does now: it is this page. Routed and not fixed, because `haipipe-board-page-for-stage` rules that a page whose plan rests on a sibling's stale line records the correction rather than editing the sibling.
+- 260806 CC · The value on the head's `page-type:` line is one the contract does not define, which is a step worse than the decorative-key finding under it. Step ③ of the base's resolution table admits `display`, `slide`, `design` and `section` and nothing else (`board/haipipe-board-page/SKILL.md` lines 52 to 55), a stage is meant to resolve at step ④ by an `S-<Family>-<unit>` filename, and this file wears `QBt1-`, so it matches exactly one key, step ⑤, and reads as a Q decision page. The key is inert as well: `page-type` appears in no file under `haipipe-board/src/` or `haipipe-board/cli/`, so nothing reads it on any page of any board, the same fact `QBt3` and `QBt9` record for `display` and `slide`. `QBt2-for-venue` carries the twin of this row with `venue`, and the choice for both is the last `### Decision Now` row below.
+- 260806 CC · Half of the Aim id record above has gone stale, and it is this pass that made it stale. `PP1` now carries a State row under `### A3`, so the mirror a reader sees is complete and the words "not mirrored" no longer describe the page. The counting half stands unchanged: `src/common.py` line 46's `AIM_ID` matches `A<n>` and `P<n>` only, so `AIM_RE` skips the Aim and `AIM_STATE_RE` skips its row, and the page still reports 5 Aims where it carries 6.
 
 ### Decision Now
 - 📍 The `provides:` collision. **A ·** the stage contract renames its head key, so a prose promise stops colliding with a path-valued `provides:`. **B ·** `unit.py` learns that a `provides:` with no file behind it is a promise and skips the page. Until one is ruled, no page can carry both this contract's head and this group's resolver, and two specimens are already working around it in two different ways.
 - 📍 Required Input 1 is `S-Work-R`, which no page in this group provides. Write the resource specimen, or retire the row and let a claims ledger stand without a resource verdict. The page stays 🟡 until one of those happens, which is the behaviour being demonstrated.
 - 📍 `QBt6`'s Required Inputs row for `S-Work-C` is now stale. Correct it there, or rule that a specimen group does not maintain cross-page input rows at all. This page does not edit its sibling.
+- [ ] 🗣 Two pages in this group declare a `page-type:` value the contract does not define. Does the table grow, or do the keys go?
+      📍 `Part` the head key on line 4 of this page and of `QBt2-for-venue`, above `## Opening` on both.
+      🔔 `Why now` a cold read on 260806 checked both values against the base's resolution table and found neither there: step ③ admits `display`, `slide`, `design` and `section`, `venue` resolves at step ① by a `QBv<n>-` filename, and `stage` resolves at step ④ by an `S-<Family>-<unit>` filename.
+      `A ·` widen step ③ to admit `stage` and `venue`, which lets both specimens declare what they are and gives a second type key to two types that already resolve by filename.
+      ⭐ `B ·` drop the two keys and record that a page wearing a `QBt<n>-` filename resolves at step ⑤ as a Q decision page and cannot self-resolve to the type it demonstrates. CC recommends B, because A edits a resolution table every board in the family reads in order to serve two pages in one specimen group, and it hands every real venue and stage page a second key that can disagree with its filename.
+      🛑 `Blocks` rule 1 of `QB6` §5.1, "exactly one key claims each page, in the base's ①-⑤ order, before any per-type rule runs": a checker written for that rule has to know the legal value set, so today it would either report these two pages as defective or force the table to grow first.
+      🤖 `If nobody answers` nothing moves, because the key is inert; both pages keep a line the contract does not define, and the next specimen written in this group copies it.
+
+### A1 · 📒 The ledger: one row per claim, and what carries it
+- ✅ P1 · Four rows, four carriers: C0 to `QBt4` E1, C1 and C2 to `QBt5` E1, and C3 to nothing, which is what REFUSED means and is written as such.
+- ⬜ P2 · Empty on all four rows. This is the page's one deliberate hole, and the reason is in the Opening.
+
+### A2 · ⚔️ Threats: what would make each claim wrong, and where each is handled
+- ✅ P3 · Four threats, three of them OPEN, and C1 sits at SUPPORTED rather than STRONG because of two of them.
+
+### A3 · 🗣 The language boundary: the verbs every later stage inherits
+- 🧠 PP1 · The clause holds everywhere it is stated today, and nothing keeps it holding. Grepping this group for `unoccupied`, `novelty` and `C0` returns only this page and `QBt4`: `QBt4` line 63 reads "UNOCCUPIED within the search's own scope" and its E1 consumer row at line 75 carries the same clause, and here the clause sits in §1's C0 paragraph and in the Diagram's "novelty SUPPORTED, within a stated scope". The one bare statement is the ledger row itself, which names the carrier and leans on the paragraph under it for the scope. No page below this one repeats C0 yet, so the Aim has never been tested by a consumer, and it waits on a person for the same reason P4 does. `src/common.py` line 46's `AIM_ID` parses `A<n>` and `P<n>` only, so this row mirrors PP1 for a reader and stays invisible to the counter.
+- 🧠 P4 · Three pages cite this boundary today and none breaks it, read by hand on 260806. Nothing checks it, so this row waits on a person every time one of them changes.
+
+### P · The chain and the gate
+- ⬜ P5 · The gate has not been requested, and CHECK is not ready while P2 is open.
 
 ## Files
 
@@ -313,3 +336,4 @@ It does not write around it, and a display or a slide that states a stronger ver
 - 260806 0057 · [DRAFT-CC] written as the `for-stage` specimen on the ruling that an example must BE its type: this page is the claims stage of the fabricated JIS paper rather than an essay about stage pages, its Content is the ledger itself, and its Required Inputs quote real gate states off two sibling specimens. The claims stage was chosen over a section stage because `QBt6` already holds the section shape, and because a control page that is venue-free shows the half of this contract a section page cannot.
 - 260806 0057 · [PROBE-CC] no question was dispatched. Both evidence routes this ledger needs are already answered on `QBt4` and `QBt5` and are read by id, and `QBt5`'s E2 was left unconsumed so that sibling's open row stays open.
 - 260806 0057 · [CHECK-CC] `python3 unit.py check` green, and the gate did not move: `[CHECK-JL]` is the only line that may move it.
+- 260806 · [REVISE-CC] three cold-read repairs, no Aim text touched and no gate moved. The on-stage Opening was one bare question of 113 characters against the base's 4 to 5 sentences and roughly 450 characters (`board/haipipe-board-page/SKILL.md` line 320), so four sentences were added naming what a claims stage answers, that this page is the `for-stage` specimen, that its ledger is invented, and that one input is missing on purpose; the paragraph now measures 485 characters against the 520 ceiling. `## States` gained the four `### A<n>` group headings its Aims already carried and the missing `PP1` row: PP1 is 🧠 on a grep of the group for the C0 scope clause, which returns only this page and `QBt4` and finds the clause on both, with no consumer page repeating C0 yet and nothing checking it, which is the position P4 is already in. The five state rows moved below `### Decision Now` to reach their groups, which is the shape `QBt3-for-display` uses; the nine dated records above them were neither edited nor moved. One new dated record and one new `### Decision Now` row report that `page-type: stage` is not one of the four values step ③ of the resolution table defines and that `page-type` appears in no file under `haipipe-board/src/` or `haipipe-board/cli/`; the row recommends dropping the key and is left for a person.

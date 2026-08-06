@@ -17,7 +17,7 @@ This page owns the third list the base keeps: WHICH stable Page shapes exist at 
 The STRUCTURAL CORE is anatomy shared by several types and stated once, such as the topic register with nested entries.
 The TRANSLATION LAYER is what one route adds over a shared core: the language its questions go out in and the typed records its answers come back as.
 
-**Where the worked examples live**: this page LISTS the types; the `QBt` group SHOWS each one written out, one page per type, stating only what that type adds over `QB4`. `QBt3-for-display` is the first, written 260806.
+**Where the worked examples live**: this page LISTS the types; the `QBt` group SHOWS each one written out, one page per type, stating only what that type adds over `QB4`. `QBt3-for-display` was the first, written 260806, and eight of the ten now exist: `QBt1` stage, `QBt2` venue, `QBt3` display, `QBt4` literature, `QBt5` value, `QBt6` section, `QBt9` slide, `QBt10` design. Only `for-skill` and `for-meeting` have no specimen; QBt7 and QBt8 are unused numbers rather than missing files, and Decision Now asks whether that gap stays.
 
 **What this page does not own**: the phase contracts under `page-phases/` are `QB5`'s.
 The entry anatomy itself stays in `haipipe-board/ref/topic-entry-contract.md`, and each family's bank vocabulary stays in that family's projection.
@@ -335,6 +335,15 @@ Execution rides the paused Log pass (grammar paragraph + renderer + the QB4 P-ro
 
 ### Decision Now
 
+- [ ] 🗣 Does the `QBt` lane renumber to close its gaps, or keep them and say what they are for?
+      📍 QBt7 and QBt8 were never used: no file, no `_archive/` entry and no `## Links` row anywhere under `skills/` carries either id, so the lane runs 1 to 6 and then 9 to 10 with nothing recording what the two numbers were held for.
+      🔔 `Why now` `board.md`'s `QD` block rules the opposite for its own lane, that a lane is renumbered to close its gaps, on the stated reason that a reader cannot tell a gap from a missing page (JL 260801). Two lanes on one board answer the same question two ways, and the `for-skill` and `for-meeting` specimens are the next two pages to be numbered.
+      `A ·` renumber `QBt9` and `QBt10` down to QBt7 and QBt8, which obeys the `QD` ruling board-wide and costs every citation of those two ids plus one `## Links` row each.
+      ⭐ `B ·` keep the numbers and RESERVE QBt7 and QBt8 for `for-skill` and `for-meeting`, stated on the roster, which costs no rename and answers the `QD` ruling's actual worry by naming what each gap holds.
+      `C ·` keep the gaps and say nothing, which is the state this pass found and the one a reader cannot read.
+      🛑 `Blocks` numbering the two unwritten specimens.
+      🤖 `If nobody answers` the roster line added on 260806 stands, the gap is visible, and the two numbers stay unclaimed.
+
 - [x] 🗣 Which new Page Types are admitted to `page-types/`?
       📍 `A3` owns the queue; the row moved here from `QB5` on 260805 because the list outgrew the lifecycle page.
       🔔 `Why now` the topic shape already ships in the checker (`src/topic_entry_contract.py`) with no loadable writer contract, and the engine's own docstring states the boundary: "The Board engine never names a consumer family such as Paper, Literature, or Value."
@@ -414,6 +423,7 @@ Execution rides the paused Log pass (grammar paragraph + renderer + the QB4 P-ro
 
 ## Log
 
+- 260806 · [REVISE-CC] the Opening's worked-example line was frozen at "`QBt3-for-display` is the first", written when one specimen existed. `ls QBt-page-types/` returns eight pages, so the line now names all eight and leaves only `for-skill` and `for-meeting` unbuilt. A grep for QBt7 and QBt8 across `skills/` returns nothing, so those two numbers were never used; the gap contradicts the renumbering rule `board.md`'s `QD` block states for its own lane, and the new first Decision Now row asks JL which rule `QBt` follows.
 - 260806 2109 · [REVISE-CC] swept to the 260806 architecture; base 0.21.0 in the state line, §1's Literature/Value rows re-keyed to the head `route:` line with the duplicate Meeting row dropped, §1.1/§1.2/§3.2 closed gaps moved to past tense, §6 traces moved to QA-probe and E-division vocabulary with capital slot words
 - 260806 1000 · [REVISE-CC] JL's evidence-page ruling executed end to end: the type key moved to the head `route:` line (base 0.21.0, resolution step ②), for-literature/for-value 0.4.0 rewrote the flat `### Q-consumer register` into E<n> divisions with `#### consumers` + `#### answer digest` and the E0 queue, the core contract + checker re-keyed (head route, capital slot headings canonical, 1:1 division↔QA-probe link), templates reshaped (entry-template.md renamed qa-probe-template.md), chips re-anchored to E divisions, and the MISQ S03/S04 eight pages migrated with 28 QA-probes intact; checker baseline held at 11 ERRORs.
 - 260806 0100 · [DRAFT-CC] §6 opened with A6: the per-type Log patterns, on JL's ask; for-stage's full trace in §6.1, the nine others in §6.2, the placement rule (examples in each type contract, grammar once in the base) in §6.3. The QB4-owned grammar and the paused Log pass are cited, not restated; the dead workers/ path in Input files repointed to paper/haipipe-paper/probe/ (phase 2 move).
