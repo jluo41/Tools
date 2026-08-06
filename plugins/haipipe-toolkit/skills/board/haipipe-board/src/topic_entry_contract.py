@@ -40,9 +40,18 @@ PROBE_DIRS = ("QA-probe", "probes")
 
 
 def page_id(path: Path) -> str:
-    """Return the stable S page id encoded at the start of a filename."""
+    """The stable id a QA-probe may bind to.
+
+    The S form (`S-Value-1`) is the one a probe writes in its `requires:` line,
+    so it stays first. Any other page falls back to its own stem, which is what
+    the drawer is named after under the 260806 rule: a page's companion folder
+    is `<type-plural>/<page name>/`, exactly. Requiring an S prefix here was a
+    consequence of pairing through a hand-typed id; pairing through the folder
+    name needs no prefix, and refusing an evidence page for its filename alone
+    would have blocked every board that is not a paper.
+    """
     match = re.match(r"^(S-[A-Za-z]+-\d+[a-z]?)", path.name)
-    return match.group(1) if match else ""
+    return match.group(1) if match else path.stem
 
 
 def head(text: str) -> str:
@@ -73,6 +82,79 @@ def e_divisions(text: str) -> list[tuple[int, str, str]]:
     return out
 
 
+LEAN_SECTIONS = ("Question", "Answer")
+LEAN_ROUTES = {"task", "discovery", "local"}
+
+
+def head_key(text: str, name: str) -> str:
+    """A head key in either style: `route: task` or `- route: task`."""
+    m = re.search(rf"^-?\s*{name}:\s*(\S.*?)\s*$", head(text), re.M)
+    return m.group(1) if m else ""
+
+
+def check_four_slot_record(text: str, where: str, report) -> None:
+    """The pre-260806 record: four `#### ` slots, state inside the binding."""
+    for heading in ENTRY_HEADINGS:
+        hits = re.findall(rf"(?i)^#### ({re.escape(heading)})\s*$", text, re.M)
+        if len(hits) != 1:
+            report.add("ERROR", "topic-entry-heading", where,
+                       f"needs exactly one `#### {heading}`; found {len(hits)}")
+        elif hits[0] != heading:
+            report.add("WARN", "topic-entry-heading-case", where,
+                       f"`#### {hits[0]}` should wear the canonical casing `#### {heading}`")
+
+    binding = subsection(text, "bank binding")
+    state = re.search(r"^\*\*state\*\*:\s*([a-z-]+)\s*$", binding, re.M)
+    if not state:
+        report.add("ERROR", "topic-entry-bank-state", where,
+                   "the bank binding needs one `**state**:` line")
+    elif state.group(1) not in ENTRY_STATES:
+        allowed = " · ".join(sorted(ENTRY_STATES))
+        report.add("ERROR", "topic-entry-bank-state", where,
+                   f"state {state.group(1)!r} is not one of {allowed}")
+
+
+def check_lean_record(text: str, where: str, report) -> None:
+    """The 260806 record: head keys, and the three sections a QA-bank wears.
+
+    A record and the bank it answers to are deliberately the same shape, so a
+    reader who has read one can read the other. What a record adds is `route:`,
+    and on any route but `local` the `bank:` path that says where the original
+    lives. It is never a copy of that original: the Answer here is a digest,
+    and only the Caveats travel whole, because a digest of a LIMIT is how a
+    paper ends up claiming more than its design supports.
+    """
+    for section in LEAN_SECTIONS:
+        if not re.search(rf"(?m)^## {section}\s*$", text):
+            report.add("ERROR", "topic-record-section", where,
+                       f"a QA record needs one `## {section}` section")
+
+    state = head_key(text, "state").split("·")[0].strip().lower()
+    if not state:
+        report.add("ERROR", "topic-record-state", where,
+                   "a QA record needs one `state:` head key")
+    elif state not in ENTRY_STATES:
+        allowed = " · ".join(sorted(ENTRY_STATES))
+        report.add("ERROR", "topic-record-state", where,
+                   f"state {state!r} is not one of {allowed}")
+
+    route = head_key(text, "route").lower()
+    bank = head_key(text, "bank")
+    if route not in LEAN_ROUTES:
+        allowed = " · ".join(sorted(LEAN_ROUTES))
+        report.add("ERROR", "topic-record-route", where,
+                   f"a QA record needs one `route:` head key from {allowed}"
+                   + (f"; found {route!r}" if route else ""))
+    elif route == "local" and bank:
+        report.add("ERROR", "topic-record-route", where,
+                   "route is `local`, meaning the answer was produced here, "
+                   "so there is no bank to name")
+    elif route != "local" and not bank:
+        report.add("ERROR", "topic-record-route", where,
+                   f"route `{route}` means the answer lives in an executor "
+                   "tree, so the record must name it with a `bank:` key")
+
+
 def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None:
     """Add structural findings for every board that opts into evidence pages.
 
@@ -84,12 +166,7 @@ def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None
     for path in pages.values():
         text = path.read_text(encoding="utf-8")
         if HEAD_ROUTE.search(head(text)):
-            ident = page_id(path)
-            if not ident:
-                report.add("ERROR", "topic-route-not-s-page", path.name,
-                           "a route: head key belongs on an S page with a stable id")
-                continue
-            topics[ident] = (path, text)
+            topics[page_id(path)] = (path, text)
 
     if not topics:
         return
@@ -109,31 +186,38 @@ def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None
         relative = path.relative_to(board_dir)
         text = path.read_text(encoding="utf-8")
         where = relative.as_posix()
-        requires = re.search(r"^requires:\s*([^\s,]+)\s*$", text, re.M)
-        topic_id = requires.group(1) if requires else ""
+        # Two ways a record names the evidence page it answers to, and both are
+        # live. The DECLARED way is a `requires:` line naming the page id, which
+        # every pre-260806 probe uses. The IMPLIED way is the drawer it sits in:
+        # under the 260806 naming rule a page's companion folder carries the
+        # page's own name, so `QA-probe/QBt5-for-value/2-x.md` needs no line at
+        # all. Prefer the declared one where it exists, because a page can only
+        # be in one folder but may be renamed, and a stale `requires:` should be
+        # caught rather than silently overridden by the folder.
+        requires = re.search(r"^-?\s*requires:\s*([^\s,]+)\s*$", text, re.M)
+        topic_id = requires.group(1) if requires else relative.parts[-2]
         if topic_id not in topics:
+            how = ("its `requires:` line names" if requires
+                   else "the drawer it sits in is named for")
             report.add("ERROR", "topic-entry-requires-topic", where,
-                       "a QA-probe beneath probes/ must require one direct evidence page carrying a route: head key")
+                       f"a QA record must answer to one evidence page carrying a "
+                       f"route: head key, and {how} `{topic_id}`, which is not one")
             continue
 
-        for heading in ENTRY_HEADINGS:
-            hits = re.findall(rf"(?i)^#### ({re.escape(heading)})\s*$", text, re.M)
-            if len(hits) != 1:
-                report.add("ERROR", "topic-entry-heading", where,
-                           f"needs exactly one `#### {heading}`; found {len(hits)}")
-            elif hits[0] != heading:
-                report.add("WARN", "topic-entry-heading-case", where,
-                           f"`#### {hits[0]}` should wear the canonical casing `#### {heading}`")
-
-        binding = subsection(text, "bank binding")
-        state = re.search(r"^\*\*state\*\*:\s*([a-z-]+)\s*$", binding, re.M)
-        if not state:
-            report.add("ERROR", "topic-entry-bank-state", where,
-                       "the bank binding needs one `**state**:` line")
-        elif state.group(1) not in ENTRY_STATES:
-            allowed = " · ".join(sorted(ENTRY_STATES))
-            report.add("ERROR", "topic-entry-bank-state", where,
-                       f"state {state.group(1)!r} is not one of {allowed}")
+        # Two record shapes are live, and the file itself says which it is.
+        # FOUR-SLOT is the shape written before 260806: `#### Q-executor`,
+        # `#### consumer trace`, `#### bank binding`, `#### A-executor`, with
+        # the state inside the binding block. LEAN is the shape ruled on
+        # 260806, after JL observed that three of those four slots were copies
+        # of something that already existed elsewhere: the bank's question, the
+        # evidence page's consumers, and the bank's answer. What survives is
+        # the head keys and the same three sections a QA-bank wears.
+        lean = not any(re.search(rf"(?im)^#### {re.escape(h)}\s*$", text)
+                       for h in ENTRY_HEADINGS)
+        if lean:
+            check_lean_record(text, where, report)
+        else:
+            check_four_slot_record(text, where, report)
 
         # One E<n> division ↔ one QA-probe (JL 260806): the owning evidence
         # page must point at this record from exactly one executor division.
@@ -150,6 +234,14 @@ def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None
             report.add("ERROR", "topic-probe-division", where,
                        f"a QA-probe belongs to exactly one `### E<n>` division of "
                        f"{topic_id}; {len(owners)} division(s) point at it")
+
+        if lean:
+            # A lean record carries no consumer trace, on purpose: who is
+            # waiting is the evidence page's `#### consumers`, and holding it
+            # in two files is how the two drift. The division check above has
+            # already proven this record is pointed at from exactly one E
+            # division, which is the same binding read from the other end.
+            continue
 
         trace = subsection(text, "consumer trace")
         q_ids = set(re.findall(r"\bQ-[A-Za-z0-9-]+", trace))
