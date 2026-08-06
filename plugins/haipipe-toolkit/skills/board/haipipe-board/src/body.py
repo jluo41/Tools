@@ -10,6 +10,7 @@ from .common import esc, who_class
 from .page_stage import EMBED, embed_block
 
 BASE = None            # 当前这块板的文件夹，build.py 的入口设；用来把路径解析成链接
+PAGE_DIR = None        # 当前这一页所在的文件夹，render_question 逐页设、退出时还原
 LINKS = {}             # board.md 的 ## Links 声明的： 反引号里的写法 -> 相对路径
 EXT = ("md", "py", "html", "css", "js", "json", "yaml", "yml", "sh", "txt", "ipynb",
        "do", "R", "r", "sql", "tex", "bib", "toml", "csv", "tsv", "ps1", "log")
@@ -34,6 +35,22 @@ def resolve(token):
         return None
     if any(c in tok for c in "*?<>|"):
         return None
+    import os
+    # THE PAGE'S OWN FOLDER FIRST. The ladder below only ever walked UP from the
+    # board folder, and a page's companion folder sits BELOW it, so a page in
+    # `QBt-page-types/` naming `slides/QBt9-for-slide/out/deck.html` got no link
+    # at all. `check.py`'s dead-file-path rule resolves page-relative paths, so
+    # the checker called those paths fine while the renderer printed them as
+    # dead text: two bases, one of them silent. The sibling cross-references
+    # `QBv9 -> QBv1-misq.md` failed the same way, which cost the pages that most
+    # need to be navigable, the ones that point at each other.
+    if PAGE_DIR is not None:
+        cand = PAGE_DIR / tok
+        if cand.exists():
+            try:
+                return os.path.relpath(cand, BASE)
+            except ValueError:
+                return None
     here = BASE
     for _ in range(8):
         cand = (here / tok)

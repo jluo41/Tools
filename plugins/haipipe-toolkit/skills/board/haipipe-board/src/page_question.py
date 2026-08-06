@@ -1,6 +1,7 @@
 """One question -> one <section class="slide q"> card (QB5: the card chunk of
 the old render(), moved verbatim). page_stage.py owns embedded source content;
 this file owns the page-template anatomy on stage."""
+import pathlib
 import re
 
 from . import body as _bd
@@ -632,13 +633,25 @@ def render_question(q, prv, nxt):
     renders its `### E<n> ·` divisions in register mode, so their binding
     tokens become chips; the flag is page-scoped and restored on exit so a
     sibling page can never inherit it."""
-    prev_evidence = _bd.EVIDENCE
+    prev_evidence, prev_dir = _bd.EVIDENCE, _bd.PAGE_DIR
     _bd.EVIDENCE = bool(re.fullmatch(r"(outward|inward)",
                                      (q.get("route") or "").strip()))
+    # The page's own folder, so `resolve()` can link a companion that sits
+    # beside the page rather than beside board.md. Page-scoped and restored on
+    # exit for the same reason EVIDENCE is: a sibling must not inherit it, or
+    # one page's neighbours start resolving on another page.
+    # AGAINST BASE, not against the cwd. `q["file"]` is board-relative, so a
+    # bare `.resolve()` expands it against wherever the build was launched
+    # from; that produced `<skills>/QBt-page-types`, a folder that does not
+    # exist, so the lookup below never matched once and the whole thing was
+    # inert while looking correct in a trace: PAGE_DIR was SET, its last
+    # component was even right, and only its prefix was wrong.
+    src = q.get("file")
+    _bd.PAGE_DIR = (pathlib.Path(_bd.BASE or ".") / src).parent if src else None
     try:
         return _render_question(q, prv, nxt)
     finally:
-        _bd.EVIDENCE = prev_evidence
+        _bd.EVIDENCE, _bd.PAGE_DIR = prev_evidence, prev_dir
 
 
 def _render_question(q, prv, nxt):
