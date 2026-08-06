@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Render this display unit from the QA atom it declares a need on.
 
-🚫 FABRICATED input. See `probes/V01-drift/1-drift-counts.md`.
+🚫 FABRICATED input. See `QA-probe/QBt5-for-value/1-drift-counts.md`.
 
 The one thing to notice: this script never writes the QA's path. It asks the
-resolver for `probes/V01-drift/1-drift-counts`, which is the id declared in the
+resolver for `QA-probe/QBt5-for-value/1-drift-counts`, which is the id declared in the
 `needs:` line of `QBt3-for-display.md`. Move that QA anywhere in the group and
 this file does not change.
 

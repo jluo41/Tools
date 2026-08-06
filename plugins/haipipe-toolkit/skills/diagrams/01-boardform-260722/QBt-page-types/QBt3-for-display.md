@@ -174,17 +174,28 @@ Acceptance is of a specific render. That is why no machine may write rung ④, a
 
 ## States
 
-- 260806 CC · Unit built and rendered through the whole chain. `unit.py build` runs the chain in dependency order: the QA record parses its answer table into `counts.csv`, then this unit resolves that atom by id and writes `out/assets/figure.txt`. `unit.py check` reports both units, both needs resolved, both products present.
-- 260806 CC · The id-not-path rule was tested rather than asserted. The value unit was moved out of `S04-value/` into an unrelated folder and the chain was rebuilt with no edit to any script or page; the render came out identical. Then it was moved back. This is the one property the structure exists for, so it is proven here rather than claimed.
-- 260806 CC · Structure A adopted for the scenario on JL's ruling: one unit, one folder, phases as subfolders, no published twin. The MISQ paper is untouched and follows later if this holds up.
-- 260806 CC · Accepted at rung ④ as the specimen's demonstration of what acceptance looks like recorded. Not advanced to ⑤ on purpose: `S-Open-Pitch` alludes to the unit without citing it, so `§4` carries one open `⬜` row and the page shows what an unplaced-but-accepted unit looks like. A specimen with every row green teaches nothing about the rows that go wrong.
-- 260806 CC · Written as option A of the ruling below: no `## Stage Contract` span, because `haipipe-board-page-for-display` declares none. The thirteen live display pages on the MISQ board all carry one, because they resolve as stage pages.
 - 260806 CC · The type key on this page is currently decorative. `page-type` is read by neither `src/parse.py` nor `cli/check.py`, so resolution step ③ does not run and this file still resolves by its `QBt3` filename at step ⑤. Rule 1 of `QB6` §5.1 is the fix.
 - 260806 CC · Building this specimen found a conflict the prose never surfaced: `haipipe-board-page-for-display` rules that the state line reports a LADDER RUNG, and `cli/check.py` raises `bad-state` on any state line whose first token is not one of the four health words. A pure rung is an ERROR on every board today. This page carries the health word first and the rung as the next token, which passes and loses nothing; whether that is the answer, or whether the checker should learn the ladder, is unruled.
 
 ### Decision Now
 - 📍 When the thirteen live display pages get their type key, does the `## Stage Contract` span stay or go? **A ·** remove it: the type that owns the page owns its sections, and a span no contract declares is furniture nobody maintains. **B ·** keep it: it records `requires` / `style-from` / `provides`, which a display unit genuinely has, and `stage.py sync` already maintains it. This specimen is written as A; if you rule B, the span is added here first and then to the thirteen.
 - 📍 The state line conflict above: does `for-display` drop the ladder from `state:`, or does `cli/check.py` learn to accept a rung? Until this is ruled, every display page written to its own contract is an ERROR.
+
+### A1 · 🎯 The claim job: what this unit must show, and for which claim
+- 🔨 A1.1 · The render's five bands and its one bar each are named in `§1`, but the `PAGES` and `DRIFT` columns it also prints are not, so `§1` does not yet name every series on the render.
+
+### A2 · 🔢 Provenance: one row per number the unit shows
+- ✅ A2.1 · `python3 unit.py check` in the group folder reports this unit's one need resolved and its product present, and every path `§2` names is on disk: the atom's `1-drift-counts.md`, its `counts.csv` carrying all five bands, and the `source/build.py` the rates are derived in.
+- ⬜ A2.2 · Not begun: `§2` still cites the atom's `counts.csv` directly, and E1's consumer row on `QBt5-for-value.md` carries no value binding, even though the scenario's Value page now exists.
+
+### A3 · 📐 Spec: how the unit is produced, and what label is honest
+- ✅ A3.1 · The render's label line names two design facts, that tenure is not assigned and that page size is not controlled, and `§3` lists exactly those two as ① and ②, so a reader can check each one.
+
+### A4 · 🔗 Placement: which sentence uses this unit
+- ❄️ A4.1 · Held on purpose at one open `⬜` row: `S-Open-Pitch §1` alludes to the unit without citing it, which is what keeps the specimen showing an accepted-but-unplaced unit at rung ④ rather than ⑤.
+
+### A5 · ⚠️ Fragility: what would send this unit back down the ladder
+- ✅ A5.1 · `§5` was written in the same 260806 draft that recorded rung ④, and it lists every path that can move a printed number: a `unit.py build` re-run, a change to the atom's answer table, a band boundary move, and a venue figure limit change.
 
 ## Files
 
@@ -207,3 +218,9 @@ Acceptance is of a specific render. That is why no machine may write rung ④, a
 
 - 260806 · [DRAFT-CC] written as a real `for-display` page rather than an essay about one, on JL's ruling that the example should BE its type, the way `QB4` is both the page grammar and a page obeying it. Unit and render built under `displays/QBt3-for-display/`, named after this page exactly, so every binding resolves while every number stays invented.
 - 260806 · [PROBE-CC] building the specimen surfaced two conflicts now recorded in `## States` and both Decision Now rows: the `## Stage Contract` span the type does not declare, and the state line the checker will not accept as a ladder rung.
+- 260806 CC · Unit built and rendered through the whole chain. `unit.py build` runs the chain in dependency order: the QA record parses its answer table into `counts.csv`, then this unit resolves that atom by id and writes `out/assets/figure.txt`. `unit.py check` reports both units, both needs resolved, both products present.
+- 260806 CC · The id-not-path rule was tested rather than asserted. The value unit was moved out of `S04-value/` into an unrelated folder and the chain was rebuilt with no edit to any script or page; the render came out identical. Then it was moved back. This is the one property the structure exists for, so it is proven here rather than claimed.
+- 260806 CC · Structure A adopted for the scenario on JL's ruling: one unit, one folder, phases as subfolders, no published twin. The MISQ paper is untouched and follows later if this holds up.
+- 260806 CC · Accepted at rung ④ as the specimen's demonstration of what acceptance looks like recorded. Not advanced to ⑤ on purpose: `S-Open-Pitch` alludes to the unit without citing it, so `§4` carries one open `⬜` row and the page shows what an unplaced-but-accepted unit looks like. A specimen with every row green teaches nothing about the rows that go wrong.
+- 260806 CC · Written as option A of the ruling in `States › Decision Now`: no `## Stage Contract` span, because `haipipe-board-page-for-display` declares none. The thirteen live display pages on the MISQ board all carry one, because they resolve as stage pages.
+- 260806 1259 · [REVISE-CC] States now mirrors every Aim id; three Aims are genuinely met (A2.1 by `unit.py check` resolving the need and the product, A3.1 by the label naming the same two design facts `§3` lists, A5.1 by `§5` covering every path that can move a printed number), A4.1 is held at its one open `⬜` row on purpose, A2.2 has not begun because `§2` still cites `counts.csv` and E1's consumer row carries no value binding, and A1.1 is short because the render prints `PAGES` and `DRIFT` columns that `§1` never names. The five dated records above moved here from States, where they were history sitting in a snapshot (QB4 §5.3.1); the two that describe the page as it stands now stayed.

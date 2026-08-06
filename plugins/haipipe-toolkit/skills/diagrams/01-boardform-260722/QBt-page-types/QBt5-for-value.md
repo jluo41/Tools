@@ -55,9 +55,10 @@ An evidence page on the inward route asks what this project must PRODUCE, as aga
 
 **The binding**: what was asked, which record holds the answer, and what state it is in.
 
+🔗 QA-probe: `QA-probe/QBt5-for-value/1-drift-counts.md` · state: answered-local
+
 ```text
-  🏦 bank       banks/QBt5-for-value/1-drift-counts.md    · route: task
-  📋 QA-probe   QA-probe/QBt5-for-value/1-drift-counts.md   · state: read
+  🏦 bank       none · route: local, so this record IS the original
   🎯 product    1-drift-counts.data/counts.csv            · 5 rows
   📐 shape      one row per tenure band: pages · drift_events · CI bounds
 ```
@@ -66,9 +67,15 @@ An evidence page on the inward route asks what this project must PRODUCE, as aga
 
 #### consumers
 
-- `QBt3-for-display` · needs it for the render's five bars.
+- ✅ `QBt3-for-display` · needs it for the render's five bars.
   A-consumer: the bands go on the y axis in tenure order, and the CI columns are carried but not drawn.
   bound ✅ by id, `needs: QA-probe/QBt5-for-value/1-drift-counts` in that page's head.
+- ✅ `QBt6-for-section` · needs the band counts its §4.1 prose states.
+  A-consumer: the 400 total is derived from this atom's own band column rather than from E2, because E2 is deliberately unconsumed.
+  bound ✅ by id, in that page's head.
+- ✅ `QBt9-for-slide` · needs the five rates for slide 3 and the two limits for slide 4.
+  A-consumer: the deck prints the rates and both design limits, and prints no number this atom does not carry.
+  bound ✅ by id, in that page's head.
 
 #### answer digest
 
@@ -78,9 +85,11 @@ Drift falls from 17.3 percent for pages whose type is inferred from a filename t
 
 **The binding**: the same three facts, for an answer whose extract is too large to type.
 
+🔗 QA-probe: `QA-probe/QBt5-for-value/2-corpus-size.md` · state: read
+
 ```text
-  🏦 bank       banks/QBt5-for-value/2-corpus-size.md     · route: task
-  📋 QA-probe   QA-probe/QBt5-for-value/2-corpus-size.md    · state: read
+  🏦 bank       examples/Fabricated-Project/tasks/T01_corpus-census/
+                  QA/1-corpus-size.md · route: task · ⚠️ not cloned here
   🎯 product    2-corpus-size.data/size.csv               · 9 rows, an extract
   🧾 evidence   2-corpus-size.data/extracted-from.md      · where the copy came from
 ```
@@ -89,7 +98,7 @@ Drift falls from 17.3 percent for pages whose type is inferred from a filename t
 
 #### consumers
 
-- nobody yet ⬜. The denominator is not drawn on any figure and no sentence cites it.
+- ⬜ nobody yet. The denominator is not drawn on any figure and no sentence cites it.
   An answered question with no consumer is a visible open row, not a silent success: either a consumer appears or E2 is retired.
 
 #### answer digest
@@ -124,12 +133,15 @@ Drift falls from 17.3 percent for pages whose type is inferred from a filename t
 
 ## States
 
-- 260806 CC · Page written as the `for-value` specimen, and as the demonstration that an evidence page is a VIEW rather than an atom. It declares no `provides:` on purpose, and `unit.py check` reports it as a view page rather than a missing product.
-- 260806 CC · A `banks/` folder was built here and then deleted, on JL's ruling: the bank lives in the executor's own tree and the paper links to it, so copying one into the group repeated the very duplication the design removes. What stays is one record per question, wearing `## Question`, `## Answer`, `## Caveats`, plus `- route:` and, on a non-local route, `- bank:`.
-- 260806 CC · The two records carry different routes on purpose. E1 is `route: local`, the answer was produced here and this file is the original. E2 is `route: task` and names a bank that is NOT reachable from this checkout, which is the ordinary state of a paper whose executor tree is not cloned; `check` reports it as `⚠️ not cloned here` rather than as a failure, because an unreachable bank is a fact about the checkout, not a defect in the paper.
-- 260806 CC · Two QA records of deliberately different shapes: E1 types its table into the bank's Answer and the probe parses the CSV out of it, E2 leaves its rows with the run and the probe holds an extract with `extracted-from.md` beside it. Those are the two answer shapes, and a specimen showing only the first would teach half the pattern.
-- 260806 CC · The strict parse was tested, not assumed, and failed the first test. Changing `48` to `4B` in the bank's table made the extract ship four rows instead of five with exit code 0, which is exactly the silent disagreement the parse claims to prevent. Fixed by locating the fence first and requiring every line inside it to parse or fail; re-tested, the same typo now exits 1 and names the line.
-- 260806 CC · E2 is left with no consumer on purpose. An evidence page whose every row is bound teaches nothing about the row that is not, and an unbound answered question is the most common quiet failure on a real evidence page.
+### A1 · 🔢 E1 · drift by key tenure
+- 🔨 A1.1 · The binding side is green and the register is behind it. Three pages declare `needs: QA-probe/QBt5-for-value/1-drift-counts` in their head, `QBt3-for-display`, `QBt6-for-section` and `QBt9-for-slide`, and `unit.py check` resolves all three needs against the built `counts.csv`. E1's own consumers list names only `QBt3-for-display`, so the page that exists to say who is waiting shows 1 of the 3 who are.
+
+### A2 · 📦 E2 · corpus size
+- ❄️ A2.1 · Unbound on purpose, and this is the specimen's point rather than a gap in it. `2-corpus-size` builds, `unit.py check` reports its product `size.csv` present, and no page on this board declares a need on it. `QBt9-for-slide` met the same row from the other side and cut "across nine boards" from its cover instead of binding the atom, because a specimen may not quietly close another specimen's open row. The hold lifts when JL binds a consumer or rules the division retired, which is the row in Decision Now.
+- ✅ A2.2 · `2-corpus-size.data/extracted-from.md` names all three parts the Done when asks for: the run `runs/260806-0900-corpus-census/`, what it read, `results/per-board-counts.csv` at 462 rows one per page, and what the extraction dropped, the per-page rows, grouped down to the 9 board rows that ship. It also names the script that did it rather than a hand, the date, and what makes the extract stale.
+
+### A3 · 📥 E0 · the incoming queue
+- ✅ A3.1 · E0's figure reads `(empty)`, so nothing is queued and no row can age past one working round. The Aim comes back into play the first time a Q-consumer lands here, and its Done when then asks that row for an arrival date.
 
 ### Decision Now
 - 📍 E2 has an answer and no consumer. Bind it to something, or retire the division. The page stays 🟡 until one of those happens, which is the behaviour being demonstrated.
@@ -147,4 +159,11 @@ Drift falls from 17.3 percent for pages whose type is inferred from a filename t
 
 ## Log
 
+- 260806 1257 · [REVISE-CC] States now mirrors every Aim id, one row per id under the group headings Aims already uses. Judging the four rows against disk moved two of them off what the page said: `unit.py check` resolves three consumers of E1, not the one E1's consumers list names, so A1.1 is 🔨 rather than met, and A2.1 is ❄️ held on purpose rather than an untouched ⬜, since the unbound answer is what this specimen is for. A2.2 and A3.1 are met, `extracted-from.md` carries run, input, drop and date, and E0 is empty. The six dated CC records that were sitting in States moved here unchanged, because they are history and States holds what is true now.
+- 260806 CC · Page written as the `for-value` specimen, and as the demonstration that an evidence page is a VIEW rather than an atom. It declares no `provides:` on purpose, and `unit.py check` reports it as a view page rather than a missing product.
+- 260806 CC · A `banks/` folder was built here and then deleted, on JL's ruling: the bank lives in the executor's own tree and the paper links to it, so copying one into the group repeated the very duplication the design removes. What stays is one record per question, wearing `## Question`, `## Answer`, `## Caveats`, plus `- route:` and, on a non-local route, `- bank:`.
+- 260806 CC · The two records carry different routes on purpose. E1 is `route: local`, the answer was produced here and this file is the original. E2 is `route: task` and names a bank that is NOT reachable from this checkout, which is the ordinary state of a paper whose executor tree is not cloned; `check` reports it as `⚠️ not cloned here` rather than as a failure, because an unreachable bank is a fact about the checkout, not a defect in the paper.
+- 260806 CC · Two QA records of deliberately different shapes: E1 types its table into the bank's Answer and the probe parses the CSV out of it, E2 leaves its rows with the run and the probe holds an extract with `extracted-from.md` beside it. Those are the two answer shapes, and a specimen showing only the first would teach half the pattern.
+- 260806 CC · The strict parse was tested, not assumed, and failed the first test. Changing `48` to `4B` in the bank's table made the extract ship four rows instead of five with exit code 0, which is exactly the silent disagreement the parse claims to prevent. Fixed by locating the fence first and requiring every line inside it to parse or fail; re-tested, the same typo now exits 1 and names the line.
+- 260806 CC · E2 is left with no consumer on purpose. An evidence page whose every row is bound teaches nothing about the row that is not, and an unbound answered question is the most common quiet failure on a real evidence page.
 - 260806 · [DRAFT-CC] written as the `for-value` specimen on JL's ruling that the QBt group folder IS the scenario: this page is the evidence page itself rather than a model of one, and its probes sit under the group rather than in a separate sandbox.
