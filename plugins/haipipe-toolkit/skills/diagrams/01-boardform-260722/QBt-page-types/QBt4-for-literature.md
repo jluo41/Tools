@@ -1,6 +1,6 @@
 # QBt4 · L01 Prior art on typed pages, every citation FABRICATED: what is already KNOWN, and who leans on it
 
-state: 🟡 PARTIAL · rung: 2 of 2 questions answered, 1 answer never became a citation binding
+state: 🟡 PARTIAL · 2 of 2 questions answered · 1 answer never became a citation binding
 route: outward
 owner: JL
 method: collect each consumer's positioning stake, send the neutral question out to the published record, and write what came back onto the asking row as a key, a positioning sentence, and a verdict
@@ -8,8 +8,12 @@ method: collect each consumer's positioning stake, send the neutral question out
 ## Opening
 
 What is already known about typed pages, who on this board is leaning on it, and has any of it become a citation the manuscript can use?
+🚫 Every citation key here is invented, and none may enter a bibliography.
+Read it for the format: a working `for-literature` page keeps this register of which question went out, who asked, and what came back.
+The page owns no answer of its own.
+A digest is not yet a citation: the asking row needs a key, a positioning sentence, and a verdict.
 
-🚫 **Every citation on this page and in its drawer is invented.** No such paper, journal, or key exists, the keys are unmistakable on purpose, and nothing here may enter a bibliography. This page is a real `for-literature` evidence page and its FORMAT is what it teaches; its content is fabricated.
+🚫 **Every citation on this page and in its drawer is invented.** No such paper, journal, or key exists, the keys are unmistakable on purpose, and nothing here may enter a bibliography.
 
 An evidence page on the outward route asks what is already KNOWN, as against the inward route's question of what this project must PRODUCE. It owns no answer itself: the answer belongs to whoever read the literature, this paper keeps one bound record under `QA-probe/`, and this page is the register saying which question went out, who asked, and what came back.
 
@@ -166,6 +170,7 @@ That is good news for the label and bad news for anyone hoping a citation would 
 
 ## Log
 
+- 260806 · [REVISE-CC] The Opening rendered as 136 characters of bare question, and the 🚫 notice sat behind the fold, which is the worst place for it on a page whose invented keys look like real ones. Four sentences now sit on stage under the question, at 480 characters: that every citation key here is invented and none may enter a bibliography, that this is a working `for-literature` page read for its format, that the page owns no answer of its own, and that a digest becomes usable only when the asking row carries a key, a positioning sentence, and a verdict. One drawer sentence was deleted as the on-stage text now says the same thing: "This page is a real `for-literature` evidence page and its FORMAT is what it teaches; its content is fabricated." The rest of the drawer is untouched, including the clause that the keys are unmistakable on purpose.
 - 260806 1258 · [REVISE-CC] States now mirrors every Aim id, one row per id under the group headings Aims already uses. Judged against disk: A1.1 is ✅ because E1's single consumer row states the verdict and the scope clause in the same line, A3.1 is ✅ because E0's figure reads `(empty)`, and A2.1 is 🧠 rather than an untouched ⬜, since `QBt3-for-display` §3's label block still argues "association" from two facts about this paper's own design with no key beside it and the choice between writing the binding or withdrawing the row is the row already sitting in Decision Now. Worth naming while judging it: `python3 unit.py check` in `QBt-page-types/` lists neither drawer record, so no command on this board reports the missing binding and the open row is the only thing holding it visible. The six dated CC records that were sitting in States moved here unchanged, because they are history and States holds what is true now.
 - 260806 · [DRAFT-CC] written as the `for-literature` specimen rather than an essay about one, on the ruling that a page-type example IS a page of its type, the way `QB4` is both the page grammar and a page obeying it. Both records were written under `QA-probe/QBt4-for-literature/`, named after this page exactly, and every citation in them is invented.
 - 260806 CC · Page written as the `for-literature` specimen and as the outward twin of `QBt5`. The two share a shape on purpose: the same head keys with `route: outward` instead of `inward`, the same E divisions, the same three-H2 record. What differs is what a returned answer must BECOME, which on this route is a citation binding rather than a bound product.

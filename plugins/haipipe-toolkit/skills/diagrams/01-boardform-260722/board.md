@@ -10,6 +10,7 @@ Cast: JL = the one who decides. CC = Claude Code, who does the work. Colleagues 
 What makes this board unusual: its subject IS the board itself, a board used to define boards.
 
 ## Pipeline
+- 260806 · [REVISE-CC] the `QBt` figure was frozen at one built specimen while eight sit in the roster twelve lines below it. Corrected against `ls QBt-page-types/`: eight pages on disk (QBt1 QBt2 QBt3 QBt4 QBt5 QBt6 QBt9 QBt10), each row now carrying the head key that page really declares, and only `for-skill` and `for-meeting` left unbuilt. The `QBt7`/`QBt8` gap is recorded too: a grep for either id across `skills/` returns nothing, so the numbers were never used, which contradicts the `QD` renumbering ruling below and is now an open row on `QB6`.
 260802: QB8's five faces folded. QB8a, QB8b and QB8c became QB8's own `### 3` to `### 6` and were archived; QB8d moved to QD8, because a generated address is how a machine POINTS AT a location rather than a thing attached to a sentence; QB8e stayed its own page, since nothing in it is built and its identity question is open. Same shape and same answer as QB4's seven section faces on 260801.
 Since 260731 every page id matches its group letter, and a parent page may carry faces as sub-letters. Neither QB4 nor QB8 does any more: QB4's seven section faces folded into its Content on 260801 and QB8's five followed on 260802, which is now the answer whenever a face stops carrying a subject of its own.
 Every earlier id stays resolvable as a declared Link, so a citation written under any older naming still lands on the right page.
@@ -186,17 +187,24 @@ QB8e-sentence-details-lifecycle.md
 One worked example per admitted Page Type, so a writer copies a page instead of interpreting a contract. `QB4` is the base example, what ANY page looks like; each page here states only what ONE type adds on top, because a type loads the core and never restates it (`QB6` §4).
 Split out of `QB` on 260806 rather than added as faces of `QB4`, which already tried the face shape once: `QB4a` through `QB4g` cut the base by SECTION, folded back into `QB4`'s Content on 260801, and sit in `_archive/`. These cut by TYPE, a different axis, and they stay a group so ten of them do not flatten the Delivery ladder into twenty rows.
 This group is not an eleventh Delivery concern. It gives the reader nothing directly; every page in it is spent on writing something `QB1`-`QB10` deliver. `QB6` stays the hub that lists the types, admits new ones, and owns the checker debt; this group only shows each one written out.
+`QBt7` and `QBt8` were never used: no file, no `_archive/` entry and no `## Links` row anywhere under `skills/` carries either id, so the lane runs 1 to 6 and then 9 to 10.
+The `QD` block below rules the opposite for its own lane, that a lane is renumbered to close its gaps, because a reader cannot tell a gap from a missing page (JL 260801).
+Whether `QBt` follows that ruling or keeps its two gaps is an open `### Decision Now` row on `QB6`.
 
 ```text
-📘 THE BASE                    📄 ONE PER TYPE                      🔑 RESOLVED BY
-─────────────────────────      ───────────────────────────────      ────────────────────────
-QB4 · what any page is      ◀── QBt3  for-display                ──▶  page-type: display
-    the seven sections,             the acceptance ladder,             head key, step ③
-    the five rows                   provenance, placement
+📘 THE BASE                    📄 ONE PER TYPE · 8 of 10 built     🔑 RESOLVED BY, on disk
+─────────────────────────      ───────────────────────────────     ────────────────────────
+QB4 · what any page is      ◀── QBt1   for-stage                ──▶  page-type: stage
+    the seven sections,     ◀── QBt2   for-venue                ──▶  page-type: venue
+    the five rows           ◀── QBt3   for-display              ──▶  page-type: display
+                            ◀── QBt4   for-literature           ──▶  route: outward
+                            ◀── QBt5   for-value                ──▶  route: inward
+                            ◀── QBt6   for-section              ──▶  page-type: section
+                            ◀── QBt9   for-slide                ──▶  page-type: slide
+                            ◀── QBt10  for-design               ──▶  page-type: design
 
-                                ⬜ nine more: for-stage · for-section · for-venue ·
-                                   for-skill · for-meeting · for-literature ·
-                                   for-value · for-slide · for-design
+                                ⬜ two left: for-skill · for-meeting
+                                ⚠️ QBt7 · QBt8 unused numbers, not missing pages
 
 🔑 each page states the DELTA only; anything it does not mention, QB4 owns
 ```

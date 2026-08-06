@@ -1,6 +1,6 @@
-# QBt5 · V01 Drift evidence: what this project must PRODUCE, and who is waiting
+# QBt5 · 🚫 V01 Drift evidence: what this project must PRODUCE, and who is waiting
 
-state: 🟡 PARTIAL · rung: 2 of 2 questions answered, 1 consumer still unbound
+state: 🟡 PARTIAL · 2 of 2 questions answered · 1 answer bound to no consumer
 route: inward
 owner: JL
 method: collect each consumer's question, send it once with the stake stripped, and write the answer back where the asking page can read it
@@ -8,8 +8,11 @@ method: collect each consumer's question, send it once with the stake stripped, 
 ## Opening
 
 What numbers must this project produce about contract drift, who is waiting for each one, and have they come back?
+🚫 Not one of these numbers was measured: no corpus exists, and nothing under `QA-probe/` may be cited.
+What is real is the format: this is a working `for-value` page, and it shows how a number reaches the page that asked for it.
+Two questions came back and one of them is bound to no consumer, which is why the page is still 🟡.
 
-🚫 **Everything under `QA-probe/` is fabricated.** No corpus was counted. This page is a real `for-value` evidence page and its FORMAT is what it teaches; its content is invented.
+🚫 **Everything under `QA-probe/` is fabricated.** This page is a real `for-value` evidence page and its FORMAT is what it teaches; its content is invented.
 
 An evidence page on the inward route asks what this project must PRODUCE, as against the outward route's question of what is already KNOWN. It owns no answer itself: each answer is written once by whoever produced it, the paper keeps one bound record under `QA-probe/`, and this page is the register saying which question went out, who asked, and what came back.
 
@@ -22,6 +25,7 @@ An evidence page on the inward route asks what this project must PRODUCE, as aga
 **One page, N atoms**: the shape that makes an evidence page different from every other typed page.
 
 ```text
+  🚫 FABRICATED · every path and count below is invented
   🏦 the executor's own tree          tasks/… · discoveries/…
      the bank lives HERE and stays here. The paper links to it and
      extracts from it. It is never copied in. This group holds none.
@@ -58,6 +62,7 @@ An evidence page on the inward route asks what this project must PRODUCE, as aga
 🔗 QA-probe: `QA-probe/QBt5-for-value/1-drift-counts.md` · state: answered-local
 
 ```text
+  🚫 FABRICATED
   🏦 bank       none · route: local, so this record IS the original
   🎯 product    1-drift-counts.data/counts.csv            · 5 rows
   📐 shape      one row per tenure band: pages · drift_events · CI bounds
@@ -79,7 +84,7 @@ An evidence page on the inward route asks what this project must PRODUCE, as aga
 
 #### answer digest
 
-Drift falls from 17.3 percent for pages whose type is inferred from a filename to 3.0 percent for pages that have declared a key for thirteen months or more. Two limits travel with it and cap every downstream claim: tenure is not assigned, and page size is not controlled. Anything built on this says association, never reduces.
+🚫 FABRICATED. Drift falls from 17.3 percent for pages whose type is inferred from a filename to 3.0 percent for pages that have declared a key for thirteen months or more. Two limits travel with it and cap every downstream claim: tenure is not assigned, and page size is not controlled. Anything built on this says association, never reduces.
 
 ### E2 · How large is the Fabricated Corpus, and how was the count arrived at?
 
@@ -88,6 +93,7 @@ Drift falls from 17.3 percent for pages whose type is inferred from a filename t
 🔗 QA-probe: `QA-probe/QBt5-for-value/2-corpus-size.md` · state: read
 
 ```text
+  🚫 FABRICATED
   🏦 bank       examples/Fabricated-Project/tasks/T01_corpus-census/
                   QA/1-corpus-size.md · route: task · ⚠️ not cloned here
   🎯 product    2-corpus-size.data/size.csv               · 9 rows, an extract
@@ -103,7 +109,7 @@ Drift falls from 17.3 percent for pages whose type is inferred from a filename t
 
 #### answer digest
 
-400 pages across 9 boards after 62 exclusions, which are policy rather than error. The per-board rows are an extract copied once from the census run; `extracted-from.md` names that run and says what was dropped.
+🚫 FABRICATED. 400 pages across 9 boards after 62 exclusions, which are policy rather than error. The per-board rows are an extract copied once from the census run; `extracted-from.md` names that run and says what was dropped.
 
 ### E0 · incoming
 
@@ -134,16 +140,17 @@ Drift falls from 17.3 percent for pages whose type is inferred from a filename t
 ## States
 
 ### A1 · 🔢 E1 · drift by key tenure
-- 🔨 A1.1 · The binding side is green and the register is behind it. Three pages declare `needs: QA-probe/QBt5-for-value/1-drift-counts` in their head, `QBt3-for-display`, `QBt6-for-section` and `QBt9-for-slide`, and `unit.py check` resolves all three needs against the built `counts.csv`. E1's own consumers list names only `QBt3-for-display`, so the page that exists to say who is waiting shows 1 of the 3 who are.
+- ✅ A1.1 · Met, by this Aim's own Done when. Three pages declare `needs: QA-probe/QBt5-for-value/1-drift-counts` in their head, `QBt3-for-display`, `QBt6-for-section` and `QBt9-for-slide`; E1's consumers list names all three and each names the id it binds by; and `unit.py check` resolves all three against the built `counts.csv`. It was 🔨 for part of 260806 on the reading that the list named one of the three, which was true of the version before the register was completed and false by the time the row was written. Separately, and NOT what this row measures: `for-value/SKILL.md:45-56` asks a consumer row for a full value binding, the value with its uncertainty, the run path, and the claim update, and these rows carry none of that. See Decision Now.
 
 ### A2 · 📦 E2 · corpus size
-- ❄️ A2.1 · Unbound on purpose, and this is the specimen's point rather than a gap in it. `2-corpus-size` builds, `unit.py check` reports its product `size.csv` present, and no page on this board declares a need on it. `QBt9-for-slide` met the same row from the other side and cut "across nine boards" from its cover instead of binding the atom, because a specimen may not quietly close another specimen's open row. The hold lifts when JL binds a consumer or rules the division retired, which is the row in Decision Now.
+- 🧠 A2.1 · Waiting on JL, not frozen. It read ❄️ until the 260806 cold read, and that glyph was wrong twice over: `common.py:99` counts `closed = met + hold`, so ❄️ told the board this row was settled, and the row is not settled, it is the open question sitting in Decision Now. The demonstration is unbound on purpose; what happens next is a person's call. `2-corpus-size` builds, `unit.py check` reports its product `size.csv` present, and no page on this board declares a need on it. `QBt9-for-slide` met the same row from the other side and cut "across nine boards" from its cover instead of binding the atom, because a specimen may not quietly close another specimen's open row. The hold lifts when JL binds a consumer or rules the division retired, which is the row in Decision Now.
 - ✅ A2.2 · `2-corpus-size.data/extracted-from.md` names all three parts the Done when asks for: the run `runs/260806-0900-corpus-census/`, what it read, `results/per-board-counts.csv` at 462 rows one per page, and what the extraction dropped, the per-page rows, grouped down to the 9 board rows that ship. It also names the script that did it rather than a hand, the date, and what makes the extract stale.
 
 ### A3 · 📥 E0 · the incoming queue
 - ✅ A3.1 · E0's figure reads `(empty)`, so nothing is queued and no row can age past one working round. The Aim comes back into play the first time a Q-consumer lands here, and its Done when then asks that row for an arrival date.
 
 ### Decision Now
+- 📍 This specimen omits the one artifact its type is about. `for-value/SKILL.md:45-56` defines the VALUE BINDING a returned answer must become on the consumer row: the value with its uncertainty, the run provenance by path, and the claim update, closing with "A number whose provenance line is missing is a HOLE, not a result." E1's three consumer rows carry `bound ✅ by id` and none of the three parts, and A1.1 asks only for the id, which is the group's criterion substituted for the contract's. **A ·** write the full binding on all three rows, so the specimen shows the artifact. **B ·** keep the rows thin and say in `§E1` that this page demonstrates the register and not the binding, naming the contract section it declines. A is the honest one for a page whose Files entry calls the contract the authority. 🛑 Blocks: nothing mechanical; it is what a reader copying this page as the for-value pattern would copy wrong.
 - 📍 E2 has an answer and no consumer. Bind it to something, or retire the division. The page stays 🟡 until one of those happens, which is the behaviour being demonstrated.
 
 ## Files
@@ -158,6 +165,9 @@ Drift falls from 17.3 percent for pages whose type is inferred from a filename t
   The contract this page is an instance of.
 
 ## Log
+
+- 260806 · [REVISE-CC] The Opening rendered as 114 characters of bare question, so the 🚫 that the title, both answer digests and all three figures now carry was the one thing a reader could not see without clicking. Three sentences now sit on stage under the question, at 442 characters: that not one of these numbers was measured and nothing under `QA-probe/` may be cited, that the format is the real part and shows how a produced number reaches the page that asked for it, and that one of the two answers is bound to no consumer, which is what keeps the page 🟡. One drawer sentence was deleted as the on-stage text now repeats it: "No corpus was counted." Nothing else in the drawer moved.
+- 260806 · [REVISE-CC] A1.1 corrected from 🔨 to ✅, and the reason matters more than the glyph. The row said E1's consumers list named one page when it named three: the register was completed and the State row was written from the version before it, so the page's flagship Aim was held open by a fact its own Content disproved three sections above. A cold read caught it. The contract gap that IS real, the missing value binding, was recorded only on QBt3 and is now a Decision Now row here, on the page it is about.
 
 - 260806 1257 · [REVISE-CC] States now mirrors every Aim id, one row per id under the group headings Aims already uses. Judging the four rows against disk moved two of them off what the page said: `unit.py check` resolves three consumers of E1, not the one E1's consumers list names, so A1.1 is 🔨 rather than met, and A2.1 is ❄️ held on purpose rather than an untouched ⬜, since the unbound answer is what this specimen is for. A2.2 and A3.1 are met, `extracted-from.md` carries run, input, drop and date, and E0 is empty. The six dated CC records that were sitting in States moved here unchanged, because they are history and States holds what is true now.
 - 260806 CC · Page written as the `for-value` specimen, and as the demonstration that an evidence page is a VIEW rather than an atom. It declares no `provides:` on purpose, and `unit.py check` reports it as a view page rather than a missing product.
