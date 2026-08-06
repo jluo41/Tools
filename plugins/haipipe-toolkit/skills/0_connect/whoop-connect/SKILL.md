@@ -84,14 +84,14 @@ Once you have both values:
 
 **Step 2.1** — Save credentials using exec:
 ```bash
-cd /Users/jluo41/Desktop/OpenClawServer/jluo41-repo/Health-Sync/whoop
+cd /Users/jluo41/Desktop/jluo41-repo/Health-Sync/whoop
 printf 'WHOOP_CLIENT_ID=%s\nWHOOP_CLIENT_SECRET=%s\n' '<CLIENT_ID>' '<CLIENT_SECRET>' > .env
 chmod 600 .env
 ```
 
 **Step 2.2** — Start the background auth listener:
 ```bash
-cd /Users/jluo41/Desktop/OpenClawServer/jluo41-repo/Health-Sync/whoop
+cd /Users/jluo41/Desktop/jluo41-repo/Health-Sync/whoop
 source /Users/jluo41/Desktop/OpenClawServer/env.sh
 WHOOP_CLIENT_ID=<CLIENT_ID> WHOOP_CLIENT_SECRET=<CLIENT_SECRET> nohup python3 whoop_listen.py > /tmp/whoop_auth.log 2>&1 &
 echo $!
@@ -110,7 +110,7 @@ The listener will print the auth URL. Extract it from the output.
 
 **Step 2.4** — After the user says they're done (or after ~30 seconds), check:
 ```bash
-test -f /Users/jluo41/Desktop/OpenClawServer/jluo41-repo/Health-Sync/whoop/tokens.json && echo "CONNECTED" || echo "NOT_YET"
+test -f /Users/jluo41/Desktop/jluo41-repo/Health-Sync/whoop/tokens.json && echo "CONNECTED" || echo "NOT_YET"
 ```
 
 If NOT_YET, wait a moment and check again. If still not connected after 2 checks, show /tmp/whoop_auth.log and help troubleshoot.
@@ -138,7 +138,7 @@ If the user says "sync whoop" or "pull my whoop data":
 
 Run:
 ```bash
-cd /Users/jluo41/Desktop/OpenClawServer/jluo41-repo/Health-Sync/whoop
+cd /Users/jluo41/Desktop/jluo41-repo/Health-Sync/whoop
 source /Users/jluo41/Desktop/OpenClawServer/env.sh
 python3 whoop_sync.py
 ```

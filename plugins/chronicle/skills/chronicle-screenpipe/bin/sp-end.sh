@@ -12,7 +12,7 @@
 #   5. remove the marker file
 #
 # The raw .md is printed (path on the last line) so the skill can route it
-# through /obsidian-note into a meeting note.
+# through /note into a meeting note.
 
 set -euo pipefail
 

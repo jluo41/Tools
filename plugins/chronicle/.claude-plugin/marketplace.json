@@ -8,7 +8,7 @@
     {
       "name": "chronicle",
       "source": "./",
-      "description": "Claude Skills for Email Chronicle",
+      "description": "Claude Skills for single-entry Obsidian notes, daily chronicle, tasks, timelines, meetings, and email intake",
       "version": "1.0.0"
     }
   ]

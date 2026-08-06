@@ -2,10 +2,26 @@
 
 [Agent Skills](https://agentskills.io/specification) for chronicling daily activity — sessions and emails — into structured, scannable, git-synced artifacts.
 
-## Skills
+## User-facing entry point
+
+Use **`/note`** for normal Obsidian capture. It is the single intake router for:
+
+- quick notes and decisions
+- todos and daily planning
+- people updates (纪传体)
+- project/matter updates (纪事本末)
+- daily chronology (通鉴体)
+- meetings, emails, pasted raw material, and timelines
+
+The user should not need to remember a menu of note-related skills. Other
+skills in this plugin are support tools for capture, formatting, search, or
+automation.
+
+## Support skills
 
 | Skill | Description |
 |-------|-------------|
+| [note](skills/note/SKILL.md) | Single human-facing Obsidian intake command; routes one input into daily, people, project/matter, optional event artifact, and raw archive |
 | [chronicle-session](skills/chronicle-session/SKILL.md) | Log the current Claude Code session as a concise diagram-rich `.txt` under `~/Daily/<date>/` and sync to **your** private `Daily` git repo |
 | [chronicle-daily](skills/chronicle-daily/SKILL.md) | Roll up a day's session `.txt` files into one Excalidraw canvas at 22:00 and mark the day closed |
 | [chronicle-email](skills/chronicle-email/SKILL.md) | Index emails from MS365 Outlook into organized monthly markdown files with daily sections and reimbursement tracking |

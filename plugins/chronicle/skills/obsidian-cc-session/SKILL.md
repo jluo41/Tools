@@ -1,6 +1,6 @@
 ---
 name: obsidian-cc-session
-description: Write a concise summary of the current Claude Code session to today's Obsidian daily note (~/Documents/Obsidian Vault/0-Diary/YYYY-MM-DD.md) as a timestamped heading + bullet summary + one ASCII diagram. Use when the user says "log this session", "/obsidian-cc-session", or wants to record this conversation in Obsidian.
+description: Legacy/support skill for writing a concise Claude Code session summary to an Obsidian daily note. Prefer /note for normal capture. Use only when the user explicitly asks for the old session-summary format or names /obsidian-cc-session.
 ---
 
 # obsidian-cc-session

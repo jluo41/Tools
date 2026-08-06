@@ -13,7 +13,7 @@ Output: a raw markdown file with
      shown during the meeting, deduped by OCR similarity, with thumbnails when
      screenpipe captured a snapshot image.
 
-Stdlib only. The markdown is the archival truth; /obsidian-note turns it into a
+Stdlib only. The markdown is the archival truth; /note turns it into a
 clean meeting note.
 """
 

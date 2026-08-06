@@ -46,7 +46,7 @@ Totals: 17 findings = 🔴 9 · 🟡 7 · 🟢 1 ; [M] 10 · [J] 7.
 
 ### ④ 🪝 跨workspace耦合 (cross-workspace coupling)
 
-- [ ] **D1** 🟡 `[J]` whoop-connect hardcodes another workspace's absolute machine paths throughout: `whoop-connect/SKILL.md:87`, `SKILL.md:94`-96, `SKILL.md:113`, `SKILL.md:141`-143 all point at `/Users/jluo41/Desktop/OpenClawServer/jluo41-repo/Health-Sync/whoop` and `/Users/jluo41/Desktop/OpenClawServer/env.sh`. They exist and work on this machine today, but the shared toolkit becomes machine-bound. Fix: introduce a resolvable root (env var with the current path as documented default), or accept machine-binding deliberately and record that in the SKILL.md; owner call.
+- [ ] **D1** 🟡 `[J]` whoop-connect hardcodes another workspace's absolute machine paths throughout: `whoop-connect/SKILL.md:87`, `SKILL.md:94`-96, `SKILL.md:113`, `SKILL.md:141`-143 all point at `/Users/jluo41/Desktop/jluo41-repo/Health-Sync/whoop` and `/Users/jluo41/Desktop/OpenClawServer/env.sh`. They exist and work on this machine today, but the shared toolkit becomes machine-bound. Fix: introduce a resolvable root (env var with the current path as documented default), or accept machine-binding deliberately and record that in the SKILL.md; owner call.
 
 ### ⑤ 📇 契约缺件 (metadata contract gaps)
 
