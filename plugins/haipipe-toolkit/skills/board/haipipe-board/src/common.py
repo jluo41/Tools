@@ -43,7 +43,19 @@ def sec(d, key):
 # separate States section. A0.1 points at a Content division; P1 is the explicit
 # page-level escape hatch for a target that crosses divisions. Old checkbox
 # pages remain a first-class input and are counted by the same helper.
-AIM_ID = r"(?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*)"
+# `Q-<unit><Kind>-<n>` is here because a CONTRACT prescribes it, not because a
+# page invented it: `haipipe-board-page-for-stage/SKILL.md:251` says the stage
+# owns the id pattern and names this shape, "NOT A<n>". Parsing only A/P meant
+# the engine could not read the ids its own contract required, so `QBt6`
+# rendered `1/2 Aims met` off the two P rows while its States judged eight, and
+# three of its four Aim groups rendered with no counter at all.
+#
+# It does not bite the live paper TODAY, and that is worth being exact about:
+# 19 of its pages carry Q- ids, and all 19 sit inside legacy `- [ ]` checkboxes,
+# which `aim_progress` counts on a separate branch that never looks at an id.
+# What this unblocks is the migration off checkboxes: 94 Q- ids across those 19
+# pages would have gone invisible the moment they became canonical rows.
+AIM_ID = r"(?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*|Q-[A-Za-z][A-Za-z0-9]*-\d+(?:\.\d+)*)"
 AIM_RE = re.compile(rf"(?m)^\s*[-*]\s+({AIM_ID})\s+·\s+\S")
 # An Aim row's status glyph. 🔨 / 🧠 / ❄️ replaced 🟡 / 🟠 / ⏸️ on 260802,
 # because the old set carried two of its five meanings in HUE ALONE: 🟡 and 🟠

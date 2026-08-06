@@ -1,6 +1,6 @@
 # QBt6 · S-Main-4 §4 Results (FABRICATED): one reader-ordered section, bound to one venue allocation
 
-state: 🔴 OPEN · gate is JL's and has not been asked for. 2 of 3 landing lanes paid · desk, style and override rows bind; the blueprint row cannot, because the venue chain is missing its middle link
+state: 🟡 PARTIAL · 4 of 8 Aims met, 1 waiting on JL, 3 open · the CHECK gate is JL's and has not been asked for · 2 of 3 landing lanes paid; desk, style and override rows bind, the blueprint row cannot, because the venue chain is missing its middle link
 page-type: section
 section_kind: results
 owner: JL
@@ -379,6 +379,8 @@ This section therefore reports an association and never a reduction, and every l
   The page frame this page sits in, including the caption rule every Content division above obeys.
 
 ## Log
+
+- 260806 · [REVISE-CC] The page was 🔴 OPEN reading 1 of 2 Aims met, and both numbers were artifacts of the parser rather than of the page. `common.py:46`'s `AIM_ID` matched only `A<n>`/`P<n>`, so the six `Q-Sec4Results-<n>` ids this page carries were invisible and the counter ran off the two `P` rows alone. Those ids are not this page's invention: `for-stage/SKILL.md:251` prescribes `Q-Sec<unit><Kind>-<n>` and says NOT `A<n>`, so the engine could not read the ids its own contract required. `AIM_ID` now admits the shape, the page reads 8 Aims, 4 met, 1 waiting, 3 open, and the state line moves from 🔴 OPEN to 🟡 PARTIAL to match. The CHECK gate is still JL's and still unasked; that is a different thing from the page having nothing done, and the old state line said both with one glyph.
 
 - 260806 · [REVISE-CC] two provenance defects on the page whose whole discipline is provenance, both found by a cold read and both fixed by reading the code rather than the prose. The `## Diagram` form block credited `sections/source/build.py` with the 373-word count; that script's only print statement, at its lines 130 to 132, emits `<n> subsections · <n> P · <n> sentences -> <path>` and computes no words at all, so the figure now credits the script with three counts and marks the fourth a hand count of the 20 prose lines in `sections/QBt6-for-section.tex`, where 373 is what those lines actually total. Making the script print it was the better fix and was out of this pass's file boundary, so it is named here rather than done. And the record claiming "Aims carry ids and States mirror every one of them exactly once" as a virtue gained the half it was missing: `src/common.py:46`'s `AIM_ID` reads only `A<n>` and `P<n>`, so the six `Q-Sec4Results-<n>` ids the `for-stage` contract prescribes at its line 251 are unreadable to `aim_ids()`, `cli/check.py:368` therefore reports `open-with-met-aims - state is OPEN with 1/2 Aim(s) met`, and `src/page_question.py:236` prints no counter for three of the four Aim groups. No Aim id was changed; the choice is a new Decision Now row.
 
