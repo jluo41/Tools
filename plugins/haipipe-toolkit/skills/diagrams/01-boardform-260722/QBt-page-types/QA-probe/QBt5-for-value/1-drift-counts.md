@@ -1,6 +1,6 @@
 # Drift counts by type-key tenure
 
-- state:    answered
+- state:    answered-local
 - route:    local
 - provides: 1-drift-counts.data/counts.csv
 
