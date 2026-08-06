@@ -691,7 +691,11 @@ def check_comment_form(text, name, rep):
                     f"write `> Comment {m.group(1)} …` (QB4 §3.3.3)")
 
 
-GEN_BEGIN = "# --- form:begin (generated) ---"
+# One marker pair per generator, so two blocks can share a page: `form:` is
+# section-stats.py, `units:` is dash.py, `evidence:` is evidence.py. They shared
+# one pair until 260806, when dash.py silently deleted both other blocks from
+# three pages on its first run. The checker reads whichever names it finds.
+GEN_BEGIN = re.compile(r"^# --- (\w+):begin \(generated\) ---$", re.M)
 GEN_MEASURED = re.compile(r"MEASURED\s+(20\d\d-\d\d-\d\d|\b2\d{5}\b)")
 GEN_REGEN = re.compile(r"(?m)^\s*regenerate:\s*(\S+)")
 ANY_DATE = re.compile(r"(20\d\d-\d\d-\d\d|\b2\d{5}\b)")
@@ -722,10 +726,20 @@ def check_generated_block(text, name, rep):
     had been archived. Its own prose is the argument for this check: a wrong
     measurement is worse than none, because it reads as measured.
     """
-    if GEN_BEGIN not in text:
+    blocks = []
+    for m in GEN_BEGIN.finditer(text):
+        tag = m.group(1)
+        tail = text[m.end():].split(f"# --- {tag}:end ---", 1)
+        blocks.append((tag, tail[0]))
+    if not blocks:
         return
-    block = text.split(GEN_BEGIN, 1)[1].split("# --- form:end ---", 1)[0]
+    log = section_text(text, "Log")
+    latest = max((_ymd(d) for d in ANY_DATE.findall(log)), default="")
+    for tag, block in blocks:
+        _one_generated_block(tag, block, latest, name, rep)
 
+
+def _one_generated_block(tag, block, latest, name, rep):
     stamp = GEN_MEASURED.search(block)
     if not stamp:
         rep.add(WARN, "generated-block-undated", name,
@@ -736,10 +750,8 @@ def check_generated_block(text, name, rep):
                 "a generated block carries no `regenerate:` line, so a reader who "
                 "finds it stale has no way to refresh it")
 
-    log = section_text(text, "Log")
-    latest = max((_ymd(d) for d in ANY_DATE.findall(log)), default="")
     if stamp and latest and _ymd(stamp.group(1)) < latest:
-        rep.add(WARN, "generated-block-stale", name,
+        rep.add(WARN, "generated-block-stale", f"{name} · {tag}",
                 f"the block was measured {_ymd(stamp.group(1))} and this page has "
                 f"logged work through {latest}, so it measures a version that no "
                 "longer exists")
