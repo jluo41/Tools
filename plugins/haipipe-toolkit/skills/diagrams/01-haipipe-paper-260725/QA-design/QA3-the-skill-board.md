@@ -1,19 +1,19 @@
 # The skill board: what is argued here, and what leaves
 
-state: 🟡 PARTIAL · the record-versus-manual rule and graduation are ruled; most settled faces still carry no Law to graduate
+state: 🟡 PARTIAL · the record-versus-manual rule and graduation are ruled; no settled face names the file its Law landed in, so no graduation can be checked
 owner: JL
 method: keep the reasoning here, copy only the ruling out, and never let runtime depend on either
 
 ## Opening
 
 What belongs on a design board, and what happens to a question once it is answered?
-This folder looks like documentation and is not: `skills/paper/SKILL.md` is what a worker follows, and this is the argument that produced it.
+This folder looks like documentation and is not: `skills/paper/haipipe-paper/SKILL.md`, the family's one registered skill, is what a worker follows, and this is the argument that produced it.
 Mistake one for the other and the board becomes a second manual that drifts from the first, with nothing saying which binds.
 The argument stays, only the Law is copied out, and nothing may depend on either.
 
 **Where this page sits**: `QA1` says which folder a thing belongs in; this page says what one KIND of folder holds.
 `QA7` is its deliberate opposite, because nothing graduates out of a paper board.
-Where any board lives on disk, and its page grammar, are ruled on the board tool's own board at `QC1@boardform` and `QA2@boardform`.
+Where any board lives on disk, and its page grammar, are ruled on the board tool's own board at `QC1@boardform` and `QB4@boardform`.
 
 **What we want at the end**: a board that could be deleted without breaking anything.
 If a skill ever needs a Q page in order to run, something has been filed in the wrong folder, and the delete test is how you find out.
@@ -30,7 +30,7 @@ This page carried "the easiest of the eight" and "there are four such pairs" lon
 **Say which of the two things a sentence is about**: the argument, or the instruction.
 Every defect this page exists to prevent is one being mistaken for the other, so ambiguity here is not a style problem.
 
-**A graduation claim names BOTH targets or neither**: seven groups land in the paper skill and the board tool.
+**A graduation claim names BOTH targets or neither**: eight groups in the table below land in the paper skill and the board tool.
 Writing only one is how a ruling gets applied to half of itself, twice on 260726.
 
 ## Diagram
@@ -117,16 +117,16 @@ The four values are about the DECISION: `✅` ruled, `🟡` direction ruled with
 That was settled on 260726, after pages sat `🟡` because an implementation was missing rather than because anything was undecided, which made the board's close condition unreachable and made 17 already-decided questions read as open.
 
 #### 1.4 · A settled face with no Law is not finished
-(graduation is ruled and mostly unexercised, and this is the board's largest gap)
-Eleven of the sixteen `✅` faces carry no `## Law`, so nothing can graduate from them.
-The board's own close condition depends on the mechanism that those faces never reach.
+(the rule now holds on every settled face, and the gap moved one step down the chain)
+Four of the sixty faces on this board read `✅`, and all four carry a `## Law`, so no settled face is left with nothing to graduate.
+None of the four names the file its Law was copied into, so `✅` here still cannot be read as "the Law is out", and that is the board's largest gap.
 
 ### 2 · Both halves, or neither
 
 **The two-headed arrow**: why a graduation claim names both targets.
 
 ```text
- SEVEN groups land in ③ as well as ①.
+ EIGHT groups land in ③ as well as ①.
  A Law applied to ONE side leaves a page and an implementation that
  disagree, and nothing detects it. Twice on 260726:
 
@@ -183,7 +183,7 @@ Nothing has ever checked that no runtime skill references a Q page, and `QA1` ow
 
 ### A2 · 🎓 Both halves, or neither
 - A2.1 · A ruling that touches two skills lands in both before it counts as graduated.
-  **Done when:** each of the seven two-target groups names both files, and something compares the board's Law against them.
+  **Done when:** each of the eight two-target groups names both files, and something compares the board's Law against them.
 
 ### A3 · 🗑 Not a runtime dependency
 - A3.1 · No runtime skill requires a Q page to exist.
@@ -197,9 +197,9 @@ Nothing has ever checked that no runtime skill references a Q page, and `QA1` ow
 
 ### A1 · 📋 What a face holds, and what leaves it
 - ✅ A1.1 · Ruled and in use. The record-versus-manual distinction is the page's oldest settled content.
-- ✅ A1.2 · Ruled. The copy-not-cut rule is stated and the graduation targets are tabulated in `## Diagram`.
+- 🔨 A1.2 · The copy-not-cut rule is ruled and the graduation targets are tabulated in `## Diagram`. The second half of `Done when` has never been met: none of the four `✅` faces names the file its Law was copied into.
 - ✅ A1.3 · Pinned 260726 and applied to all faces then live; 17 moved 🟡 to ✅ without a ruling being made.
-- ⬜ A1.4 · Eleven of sixteen `✅` faces carry no `## Law`. This is the largest gap on the board, and the close condition depends on it.
+- ✅ A1.4 · Four of the sixty faces read `✅` and all four carry a `## Law`, read off disk 260806. The gap it named has moved to `A1.2`.
 
 ### A2 · 🎓 Both halves, or neither
 - 🔨 A2.1 · The table exists and names both targets per group. Nothing compares it against the files, so both 260726 incidents would recur undetected.
@@ -245,6 +245,7 @@ Nothing has ever checked that no runtime skill references a Q page, and `QA1` ow
 
 ## Log
 
+- 260806 2217 · [REVISE-CC] swept to the 260806 architecture; the door's path corrected to `skills/paper/haipipe-paper/SKILL.md`, and the stale face count replaced by what disk says: 4 of 60 faces are `✅`, all four carry a `## Law`, and none names where that Law landed, so `A1.4` closes and the gap moves to `A1.2`.
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the graduation table's landing files renamed to their live owners, since the routers and phase hubs they named are retired to `_old/`.
 
 260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into three divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Two stale counts removed, and the rule preventing a third written into Writing Style. `QA10` added to the graduation table, which had not been updated when the prose verb was placed.

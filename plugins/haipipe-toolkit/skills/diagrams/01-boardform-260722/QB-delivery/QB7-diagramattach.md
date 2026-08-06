@@ -1,6 +1,6 @@
 # Page · attaching a drawing: one button that types the line for you
 
-state: 🟡 PARTIAL · add, replace and remove all ship; the cold read is the one thing left
+state: 🟡 PARTIAL · add, replace and remove all ship; a cold read and a QB7 frame are what is left
 owner: CC
 method: one button in 🖼 Diagram that writes the same line an author would type
 session: 652d8901-e381-4f1d-9678-d286261ad6d4
@@ -374,6 +374,7 @@ What is left needs a fresh reader and a drawing, not more code.
 >> CC0726: built as a button inside 🖼 Diagram. The line it writes is the same line a hand-edit would produce, so nothing about the format depends on the button existing.
 
 ## Log
+- 260806 2106 · [REVISE-CC] swept to the 260806 architecture; state line no longer claims the cold read is the only open item, since States P2 also waits on a QB7 frame; every engine path, ruling, and cross-page pointer verified live (add_diagram refusals and warns, wireXcal, board-form.md §5, QB4 §2.7, QB8 §6, QE4, no QB7 frame in board.excalidraw)
 260802 · Brought to the page contract. `## Boundary` deleted on JL's 260731 ruling and its "covered elsewhere" list moved into `### 3`, where the prose that needs those pointers lives. The Opening's blank line was in the wrong place, so the four sentences explaining the question were hidden in More details while the page showed a bare question; rewritten to the on-stage paragraph plus labelled drawer parts. `## Items to Finish` and `## Where we are` became `## Aims` and `## States` with ids, and the three dated records under Where we are moved down here unchanged. Content is numbered all the way down and every division opens with a captioned figure. Four stale statements fixed: the control reads `🖌 Excalidraw Canvas`, not `🖌 Add an excalidraw`; the endpoint also accepts this board's own Excalidraw host, declared on `board.md`'s `excalidraw:` line; the no-Content anchor is `## Aims`, not `## Items to Finish`; and `### 3` still said removal and the no-section entry point were not built, five lines under the ticked items that built them. Files repointed to `live/xcal.py` and `assets/js/10-drawer/10-comment/50-xcal.js` after the live-layer and asset splits moved both, and the Diagram URL repointed from `frame=QD5` to `frame=QB7`, since QD5 is a different page since 260801
 260801 · Relocated QD → QB (id QD5 → QB7), beside QB4b: this is the hand-attach write-half of the ## Diagram section that QB4b specs, not a chat concern (JL); the QD7 merge here was reverted and QD7 restored to QD
 - 260726 CC · 🔁 The control became reversible, and reachable everywhere

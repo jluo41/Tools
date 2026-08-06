@@ -20,28 +20,34 @@ It succeeds when a fresh agent can run the workflow and knows exactly where deep
 user types  /haipipe-board
           │
           ▼
-      SKILL.md  ~280 lines (260725): operations only, details never inlined
+      SKILL.md  771 lines (0.124.0, 260806): operations only, spec details never inlined
+          ├─ the family: one door, one Page base (haipipe-board-page), two contract catalogs
           ├─ the shape: what a board looks like (Q + S pages, group intros, embeds)
-          ├─ nine actions: view · open · add · build · sync · link · close   (offline)
-          │                serve · comment                                    (live)
-          ├─ the sections of one Q/S page (the source side of QA4's contract)
+          ├─ eleven verbs: view · open · add · stage · build · sync · link · close  (offline)
+          │                serve · excalidraw · comment                             (live)
+          │                plus routed verbs: one-page work goes to haipipe-board-page,
+          │                one-sentence work to haipipe-board-sentence
+          ├─ the metadata head + fixed section order of one Q/S page
+          │  (the full page contract lives in board/haipipe-board-page)
           ├─ three writing rules (no invented terms / purge stale lines / fresh-agent cold read)
           ├─ the four prohibitions
           └─ board ↔ SKILL.md: the graduation mechanism
                 │
                 ▼  go to ref/ only when detail is needed
-        ref/page-template.md     copy to add a Q or S page (mirrors QA4 since 0.15.1)
-        ref/board-form.md     full spec: numbering · section↔page · syntax table · embeds §5 · order §8
-        ref/writing-rules.md  how to write plainly + cold-read prompt + convergence criterion
-        ref/board-example.md  a minimal two-question example
+        ref/page-template.md          copy to add a Q or S page (renamed from q-template.md 260801)
+        ref/board-form.md             full spec: folders · numbering · section↔render §4 · Links §4b · body syntax §5 · generated site §8
+        ref/writing-rules.md          how to write plainly + cold-read prompt + convergence criterion
+        ref/topic-entry-contract.md   the evidence page: head `route:` key · E<n> divisions · nested probes/ QA-probe records
+        ref/board-example.md          a minimal two-question example
+        ref/page-lifecycle.workflow.js  the bounded Page RUN controller (producer, build snapshot, independent CHECK, route)
 ```
 
-No canvas frame is linked here. `board.excalidraw` holds no frame named `QC1`, and JL ruled on 260802 that a page shows no link rather than one that 404s; the link returns when someone draws the frame.
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC1a
 
 ## Aims
 ### The manual's operating answers
 - [x] SKILL.md written
-      Shape · actions (view/open/add/build/sync/link/close + serve/comment) · the sections of one Q/S page · writing rules · prohibitions · ref/ index.
+      Family · shape · eleven verbs (view/open/add/stage/build/sync/link/close offline, serve/excalidraw/comment live) plus the routed page and sentence verbs · the page head and section order · writing rules · prohibitions · ref/ index.
 - [x] Answers "how to open a new board"
       The open section, five steps, including the single place that must stop and ask the user (the Q list needs a nod).
 - [x] Answers "how to add a Q to a board"
@@ -55,7 +61,8 @@ No canvas frame is linked here. `board.excalidraw` holds no frame named `QC1`, a
       Written into SKILL.md as the "board ↔ SKILL.md" section.
       This rule is itself one of the things SKILL.md must state.
 - [ ] The live layer (serve/chat/terminal) written as rules
-      SKILL.md currently holds only pointers (provisional, aimed at the QD group), because QD1/QD2/QD3 are still 🟡.
+      serve, excalidraw, and comment now carry real action sections in the door.
+      Chat and terminal still get pointers only, because QD1/QD2/QD3 are still 🟡.
       When they reach ✅, graduate them in one by one.
 
 ### Proven on fresh-agent cold reads
@@ -71,7 +78,7 @@ No canvas frame is linked here. `board.excalidraw` holds no frame named `QC1`, a
 
 
 ## States
-**Written, validated by QF2, and kept current through the 0.15.x series; the live layer stays pointer-only until the QD group settles.**
+**Written, validated by QF2, and kept current through the 0.124.x series; only the live layer's chat and terminal stay pointer-only until the QD group settles.**
 
 - 260731 JL · 🔍 Three fresh reviewers audited the family's contracts: 55 findings
   JL asked whether the Skill pages are up to date and dispatched the review as a fan-out, which is the first real use of the parallel pattern `Agent-2` was built for.
@@ -79,17 +86,21 @@ No canvas frame is linked here. `board.excalidraw` holds no frame named `QC1`, a
   All seven mirror pages were already in sync, so nothing was stale in the SENSE the generator can detect; what the reviewers found is drift the generator cannot see, between a contract's words and the code it claims to describe.
   Fixed the same round, each verified against source before the edit: the frontmatter version said 0.73.1 while its own CHANGELOG documented 0.78.0 and its summary was already 0.78.0's text, so the board displayed the wrong version; a blind Question to Opening replacement on 260731 had turned three alias declarations into the tautology "Opening is an alias for Opening" in `SKILL.md`, `ref/board-form.md`, and `ref/page-template.md`, which destroyed the only statement that old pages still parse; ten further `Question` residues were repointed individually across four files; two SPECs carried a version number inside body prose that had already rotted two releases behind their own frontmatter; `haipipe-board-page` cited §8 for a mapping that lives in §4; and the sentence spec cited `> USER:`, which is the paper family's lane id and appears nowhere in this family's authority.
   Still open, and too large for one round: the door never mentions the `live/` package at all, so four of its five live-layer citations point at `serve.py` where the code no longer is; three sections describe Index elements that 0.78.0 removed; `Skill-<n>` and `Agent-<n>` are missing from its page-kind list while line 45 actively denies that such kinds ship here; and the `page` SPEC still says three page kinds when the code has four.
+  Since landed in the 0.124.x door: the `live/` package is documented file by file in its ref index, `cli/skillpage.py`'s `Skill-<n>` and `Agent-<n>` pages are named there, and the page contract now lives in `haipipe-board-page` (0.21.0) with ten Page Types under `board/page-types/`.
 
-- `SKILL.md`, ~280 lines as of 260725
-  Operations only: the shape (Q + S pages, group intros, embeds), nine actions (view / open / add / build / sync / link / close offline, serve / comment live), the sections of one Q/S page, three writing rules, four prohibitions, the graduation mechanism, a ref/ index.
+- `SKILL.md`, 771 lines at 0.124.0 (260806)
+  Operations only: the family (one door, one Page base, two contract catalogs), the shape (Q + S pages, group intros, embeds), eleven verbs (view / open / add / stage / build / sync / link / close offline, serve / excalidraw / comment live) plus the routed page and sentence verbs, the page head and section order, three writing rules, four prohibitions, the graduation mechanism, a ref/ index.
   Spec and prose details never inlined; it enters the context on every invocation, shorter is better.
-- `ref/`, four files
-  `page-template.md`: the shared Q/S source template; mirrors QA4's rendered contract (0.15.1).
-  `board-form.md`, the full spec: folder, numbering, section↔page mapping, syntax table, embeds (§5), on-stage order (§8), Comments format, the invariant.
+  JL's 260731 shrink ruling (Decision Now, option B) has not yet landed as a smaller file: the door has grown past the 581 lines it was ruled on, as the family section, the routed verbs, and the live layer's real action sections moved in.
+- `ref/`, six files
+  `page-template.md`: the shared Q/S source template (renamed from `q-template.md` on 260801); the page contract it instantiates is owned by `haipipe-board-page`.
+  `board-form.md`, the full spec: folders, numbering, board.md, the section↔render mapping (§4), `## Links` (§4b), body syntax (§5), the generated Board-Webpage (§8), the invariant.
   `writing-rules.md`: hard writing rules + the zero-background review prompt, convergence criterion, and past scores.
-  `board-example.md`: a minimal two-question example; predates the Q/S merge (no S page, no Content section) and its prose is still Chinese, so the template, not it, is the authority on shape.
+  `topic-entry-contract.md`: the evidence page contract from the 260806 redesign (head `route:` key, `### E<n>` divisions, `### E0` queue) and its nested `probes/` QA-probe records.
+  `board-example.md`: a minimal two-question example, English since the 260731 language ruling; predates the Q/S merge (no S page, no Content section), so the template, not it, is the authority on shape.
+  `page-lifecycle.workflow.js`: the bounded non-linear controller for one Page RUN (producer, build snapshot, independent CHECK, route).
 - `CHANGELOG.md`, one entry per body of work, version matching SKILL.md's `version:` line
-  Grown from 0.2.0 alongside the board: the Q/S page merge (0.13.0), the Opening and Diagram rulings (0.13.x-0.14.0), the index chatbot (0.15.0), and the QA2 template alignment (0.15.1) are all recorded there.
+  Grown from 0.2.0 alongside the board: the Q/S page merge (0.13.0), the Opening and Diagram rulings (0.13.x-0.14.0), the index chatbot (0.15.0), and the QA2 template alignment (0.15.1) are recorded there, up through 0.124.0 (the 260806 evidence-page redesign).
   Its early self-correction stands: the invariant is "strip every script and every page plus all body text remains", asserted on every build.
 
 - 260725 CC · 📝 The S-page instructions caught up with the S-page renderer
@@ -97,7 +108,7 @@ No canvas frame is linked here. `board.excalidraw` holds no frame named `QC1`, a
   All four are now written down (`open` steps 1/4, `close`, the Page section, `ref/board-form.md` §2/§3, `ref/page-template.md`).
   The lesson is general: **the reading contract graduated on its own and left the authoring contract behind**, which is invisible to anyone who already knows both.
 
-Still open: the live layer (serve/chat/terminal) graduates in only when the QD questions settle.
+Still open: the live layer's chat and terminal graduate in only when the QD questions settle; serve, excalidraw, and comment already carry real action sections.
 
 ### Decision Now
 These are the calls only JL can make; CC ticks nothing here.
@@ -129,8 +140,8 @@ Two of the three below were ruled by JL on 260731, and their ticked rows stay he
 ## Files
 - `SKILL.md`
   The deliverable itself.
-- `ref/board-form.md` · `ref/writing-rules.md` · `ref/page-template.md` · `ref/board-example.md`
-  Where the details go; SKILL.md stays minimal because these four catch everything.
+- `ref/board-form.md` · `ref/writing-rules.md` · `ref/page-template.md` · `ref/topic-entry-contract.md` · `ref/board-example.md` · `ref/page-lifecycle.workflow.js`
+  Where the details go; SKILL.md stays minimal because these six catch everything.
 - `CHANGELOG.md`
   Version and change record, aligned with SKILL.md's `version:`.
 
@@ -152,6 +163,7 @@ When the user types `/haipipe-board`, this is what gets read in. graduation: onc
 ## Discussion
 
 ## Log
+- 260806 2131 · [REVISE-CC] swept to the 260806 architecture; the door's current shape corrected from the 0.15.x snapshot (~280 lines, nine actions, four ref/ files) to 0.124.0 reality (771 lines, eleven verbs plus routed page/sentence verbs, six ref/ files incl. topic-entry-contract.md), the QC1a canvas frame linked now that it exists, and the 260731 audit's four open items marked landed
 260801 0130 · Reindexed QC1 -> QC1a under the new QC1 skill-family parent (JL 260801)
 260731 · JL ruled the language row A and applied it to ALL the family's Chinese files, plus the door row B (shrink by moving stale halves into the SPECs); ref/board-example.md converted, SKILL.md and ref/board-form.md dispatched as a fan-out
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

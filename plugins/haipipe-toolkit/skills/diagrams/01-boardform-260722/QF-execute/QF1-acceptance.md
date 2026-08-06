@@ -18,7 +18,7 @@ This page succeeds when every change produces a clear, repeatable review instead
 
 ```
   a change lands
-       │   src/ · assets/board.css · any page's prose
+       │   src/ · assets/css/ · any page's prose
        ▼
   ┌────────────────────────────────────────────────────────┐
   │  ONE TRIGGER, TWO INSTRUMENTS                           │
@@ -46,7 +46,7 @@ This page succeeds when every change produces a clear, repeatable review instead
 
   constructs asserted on the structural side
   ───────────────────────────────────────────────────────────
-  lead is the door       ## Question lead      details.it.row.qd > summary
+  lead is the door       ## Opening lead       details.it.row.qd > summary
   Opening never folds    (renderer)            div.ch.opening-head
   drawer is flat         Boundary, contract    div.fh, no details inside
   division               ### heading           details.csec
@@ -57,7 +57,7 @@ This page succeeds when every change produces a clear, repeatable review instead
   sentence badge         attached-lane count   span.sbadge
   typed lane             > Citation: …         div.lane with its icon
   item with detail       - ICON head + indent  details.it.row
-  finish count           - [ ] / - [x]         n/m in the section heading
+  aim count              - A1 · / - P1 ·       n/m in the section heading
   dated item             260723 CC · head      span.stmp
   code block             a fenced block        details.codef
   excalidraw canvas      /_excalidraw/...      div.xcal
@@ -66,7 +66,7 @@ This page succeeds when every change produces a clear, repeatable review instead
     catches none of the four classes: too much unwritten context is already loaded
 ```
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QA9
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QF1
 
 ## Content
 ### The two instruments answer different questions
@@ -89,7 +89,7 @@ It is also the cheapest possible fixed test input because the file already exist
 ### Two kinds of structural failure, reported differently
 - The renderer drifted
   The template exercises the construct, the documentation names a class, and the page does not produce it.
-  The fix belongs in `src/` or `assets/board.css`, and the report should name the construct in words rather than a selector, because the useful sentence is "the job line stopped rendering".
+  The fix belongs in `src/` or `assets/css/`, and the report should name the construct in words rather than a selector, because the useful sentence is "the job line stopped rendering".
 - The template has a hole
   The documentation names a construct that the template never demonstrates, so a new page inherits no example of it and the check has nothing to assert.
   The fix belongs in `ref/page-template.md`, and this half is the reason to run against the template at all, since a renderer-only test would pass while the hole stayed open.
@@ -130,17 +130,16 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       This is the half that improves the template over time, and it is the half a renderer-only test would miss entirely.
       Ticked 260726, and it earned itself on the first run by making template holes measurable instead of assumed complete.
       The source-aware check now reports renderer drift as ERROR only when the source exercises a construct, and reports a missing source example as GAP.
-- [ ] 🧰 The template demonstrates every structural-table construct
-      The source-aware check currently reports two explicit fixture gaps: a group title and an Excalidraw canvas.
-      These remain open rather than being hidden by an output-only regex; the Excalidraw example needs a portable placeholder that cannot point a copied page at the wrong Board.
+- [x] 🧰 The template demonstrates every structural-table construct
+      Two fixture gaps stayed open for weeks: a group title and an Excalidraw canvas.
+      Both are in `ref/page-template.md` now, the group title as `**1.1 · Example group title**` above a run of items, and the canvas as `https://app.excalidraw.com/s/replace-this-share-link`, a placeholder that names no Board, so a copied page cannot inherit someone else's frame.
+      Ticked 260806: `check.py` on this Board reports 0 gap, and both source patterns match the template rather than only its render.
 
 ### The mechanical checker
-- [ ] 🔎 `check.py` verifies a 🧩 Skills landed row
-      A row claiming `ref/board-form.md §1 · landed` is checkable by grep, so rot becomes a warning instead of a silent lie; the current Files/action-map convention is owned by `QB4` §6.
 - [x] 🥀 A page that stopped describing its own work is reported
       An additional failure turned up on 260726: a page can render perfectly and read well while saying something that is no longer true.
       `QA4a` carried `state: 🔴 OPEN` and "nothing is built and nothing is decided" on the day its whole route was built, wired into 28 pages, and running, because the session did the work from chat and never went back to the page that owned it.
-      `check.py` now reports `open-with-done-items` and `partial-with-nothing-open` on Q pages, which is the cheapest signal that exists: a ruling state and its own boxes disagreeing.
+      `check.py` now reports `open-with-met-aims` and `partial-with-nothing-open` on Q pages, which is the cheapest signal that exists: a ruling state and its own boxes disagreeing.
       It never applies that heuristic to an S page, whose state is a human lifecycle gate independent of follow-up checklist work.
       On Q pages it sees `state:` and the checkboxes and nothing else, so it catches the shape and never the content; the rule it backs up is `SKILL.md`'s `sync`, which now says the trigger is substantive work in the session rather than opening a page.
 - [x] 🖱 A construct that RENDERS but cannot be USED is reported
@@ -148,20 +147,23 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       `check.py` now has `check_css`, which fails on any bare class selector colliding with a panel class token. Verified both ways: reintroducing `.fig` makes it fire, scoping it to `img.fig` makes it silent.
       The first diagnosis was wrong because the synthetic `element.click()` method bypasses the browser's check for what lies under the pointer. Checking the element at each control's centre found 11 of 11 unreachable and named the covering panel.
 - [ ] 🎯 An interaction check that a static reader cannot fake
-      `check_css` catches this one collision class. It does not catch an element covered by anything else, an off-screen panel, or a control whose click does nothing. The missing instrument is a headless browser that checks which element lies at each control's centre and then confirms that the opened panel stays inside the viewport. An ad hoc standard-library-only driver using Chrome DevTools Protocol (CDP) found the 260726 bug, but it was not kept.
-      Whether that belongs in `check.py` at all is the open question: it needs a browser, so it breaks this page's "standard library, runs anywhere" property. A separate opt-in script is the likelier answer.
+      `check_css` catches this one collision class. It does not catch an element covered by anything else, an off-screen panel, or a control whose click does nothing. The instrument that sees those is a real browser: it checks which element lies at each control's centre, then confirms that the opened panel stays inside the viewport.
+      That instrument exists now, and it belongs to `QF3` rather than to this page: Chrome driven over the Chrome DevTools Protocol (CDP), passing 36 of 36 assertions since 260801, still not one command and still started by hand.
+      What stays open here is the join. A browser breaks this page's "standard library, runs anywhere" property, so it stays a separate opt-in run, and the shared trigger below has to reach it without pulling a browser into `check.py`.
 - [ ] 🏷 A retired id can be told apart from a live one
-      Every `unresolved-id` warning on the first run was a deliberate historical mention: `QCb1`-`QCb4` in QA8 recording what the ids used to be, and the former QF group's QF2 in QB3 naming a retired ruling.
+      Every `unresolved-id` warning on the first run was a deliberate historical mention: `QCb1`-`QCb4` recording what the ids used to be, and `QB3` naming a ruling the retired QF group's QF2 once carried.
+      The page that held those four ids is archived, so this row is now their only home, and the only `unresolved-id` warnings this page still raises are raised by this very sentence.
       A live reference and a historical one are typographically identical today, so no check can separate them and neither can a reader.
       This closes when the convention exists, whichever way it goes: a retired id written without backticks, or marked, or listed once on the board.
 - [ ] 🧩 A board can declare which rules it opts out of
-      `settled-with-open-items` is a Q-only rule and never applies to lifecycle S pages.
+      `settled-with-open-aims` is a Q-only rule and never applies to lifecycle S pages.
       This Board uses it, while the paper family's design Board opts its Q pages out because their `state:` is about the decision and implementation lives in the item list.
       `check.py` currently detects that Q-board variant by pattern-matching the sentence the design Board happens to use to say so, which works and is fragile.
       This closes when a board can state its own variant in `board.md` rather than having it guessed from prose.
 - [ ] 🔎 A 🧩 Skills row that claims "landed" is verifiable by the checker
       `QB4` §6 carries the current convention: a page's Files action map may name the skill file or section it governs, each with a landed / NOT landed verdict when verification matters.
-      A landed claim is greppable, so `check.py` can warn when the named section no longer exists or the claim rots; until it does, the convention has no mechanical half.
+      A row claiming `ref/board-form.md §1 · landed` is checkable by grep, so `check.py` can warn when the named section no longer exists or the claim rots, and the lie stops being silent.
+      No such check exists yet, so the convention has no mechanical half.
 
 ### The fresh reviewer and the cold read
 - [x] 📏 The rules for plain language are written down
@@ -177,9 +179,10 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
       `haipipe-board-reviewer-agent` now compares each scoped page's state, finish list, current-status prose, links, and directly cited artifacts; it reports stale or contradictory claims and says `not verifiable` when evidence is unavailable.
       Ticked 260726 with the standing reviewer implementation; the mechanical state-line checks remain a cheaper backstop.
 - [x] 🤖 A registered standing reviewer, no longer an ad hoc prompt
-      `haipipe-board-reviewer-agent` now packages the read-only review: it reads the Board rules, runs `check.py --strict`, cold-reads the changed pages using `ref/writing-rules.md`, checks visible state/status contradictions, and returns `pass | revise | blocked`.
+      `haipipe-board-reviewer-agent` now packages the read-only review: it reads the Board rules, runs `check.py --strict`, cold-reads the changed pages using `ref/writing-rules.md`, checks visible state/status contradictions, and returns `pass | revise | blocked`, plus a route of `CLOSE | REVISE | PROBE | DRAFT | HOLD` when it is judging one page version.
       It has no write or edit tools. The original session remains the writer and must repair every finding, preserving builder ≠ judge.
-      Ticked 260726 after JL promoted Board to a first-class family and explicitly approved the reviewer role. Dispatch is still manual until the trigger item below is closed.
+      Ticked 260726 after JL promoted Board to a first-class family and explicitly approved the reviewer role.
+      The page engine's bounded RUN loop dispatches this agent itself for the CHECK phase, so dispatch is automatic for one page version and still manual for a change that crosses the board.
 - [ ] 📐 The cold read's convergence criterion is quantified
       `ref/writing-rules.md` defines the current pass condition: no page is unreadable, and every reason for a `half` grade is either fixed or recorded as a known gap.
       What remains unquantified is when a growing set of known gaps is acceptable, and which count or severity should block the revision.
@@ -187,8 +190,9 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
 
 ### The shared trigger and the red-result ruling
 - [ ] 🔁 One trigger runs both checks after a change, and the result is reported
-      An edit to `src/`, to `assets/board.css`, or to any page's prose should be followed by the checks, with the result stated rather than assumed.
+      An edit to `src/`, to `assets/css/`, or to any page's prose should be followed by the checks, with the result stated rather than assumed.
       This single item is why the two questions merged: it was open on both, worded almost identically, and it is the only reason either check keeps failing to happen.
+      One trigger now exists, and it covers one page: the page engine's RUN loop builds a page version and then dispatches the reviewer for CHECK. What still has no trigger is every change that is not a page RUN, which is exactly the shared `src/` and `assets/css/` edits this item was opened for.
       The structural half is fast enough to run on every renderer edit, and the prose half is slow enough that it should run per revision rather than per keystroke, so the trigger dispatches them at different rates from one place.
 - [ ] 🧠 JL rules whether a red result blocks a change or only reports it
       A blocking gate is honest but stops work when the check itself is wrong, and a reporting gate is cheap but is only as good as whoever reads it.
@@ -199,7 +203,8 @@ The prompt and the rules it enforces live in `ref/writing-rules.md`, so the chec
 Both instruments now exist and have a registered runner.
 `check.py` is the mechanical instrument; `haipipe-board-reviewer-agent` is the read-only fresh-context runner that combines its report with the prose and staleness review.
 The checker now reads the same state contract as the renderer: the first emoji is the four-value machine status, optional text is human detail, and live `/_board/` plus `/_excalidraw` routes are not mistaken for missing files.
-Seven decisions or implementations remain open: the two template examples, a full browser interaction check, a retired-id convention, Board-level rule opt-outs, a quantified policy for known cold-read gaps, automatic dispatch after changes, and whether a red result blocks the revision.
+The template fixture is complete as of 260806, and `check.py` reports 0 gap on this Board.
+Seven decisions or implementations remain open: a checker that can verify a 🧩 Skills landed row, joining `QF3`'s browser run to this trigger, a retired-id convention, Board-level rule opt-outs, a quantified policy for known cold-read gaps, a trigger for the changes that are not a page RUN, and whether a red result blocks the revision.
 
 - 260731 JL · 🌐 The trigger's scope is the SPACE, because the server's is
   JL settled that the live layer is SPACE-level: one server per repo root serving every board under it, with `--root` as the served tree, `.haipipe-board/` at the root, and terminal keys hashed from the absolute page path so two boards' `QD3` cannot collide.
@@ -258,14 +263,6 @@ Seven decisions or implementations remain open: the two template examples, a ful
   They are illustrative paths describing what a generated board contains, resolved by the tool against the skill directory instead.
   So its path check is not yet trustworthy on any document that describes a directory layout, which is most of this family; its version check, by contrast, found a true defect the same run.
 
-### Decision Now
-These are the calls only JL can make; CC ticks nothing here.
-
-- [ ] 🧠 Rule whether a red result blocks a change or only reports it
-      The page already states the fork: a blocking gate is honest but stops work when the check itself is wrong, and a reporting gate is cheap but is only as good as whoever reads it.
-      The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
-      A tick here also closes the same row in Items to Finish.
-
 - 260801 JL · 🔬 A THIRD instrument exists, and this face's two were green through every failure it catches
   `QF3` opened on 260801 after a browser run passed 36 of 36 assertions.
   What it changes here is the claim this face makes: the two instruments named above are a mechanical checker and a zero-background reader, and BOTH of them read text.
@@ -273,11 +270,19 @@ These are the calls only JL can make; CC ticks nothing here.
   Every one lived in what the BROWSER did with text that was itself correct, which is the boundary between this face and `QF3`.
   The shared trigger argument in §"Why they share a trigger anyway" now covers three instruments rather than two.
 
+### Decision Now
+These are the calls only JL can make; CC ticks nothing here.
+
+- [ ] 🧠 Rule whether a red result blocks a change or only reports it
+      The page already states the fork: a blocking gate is honest but stops work when the check itself is wrong, and a reporting gate is cheap but is only as good as whoever reads it.
+      The two checks may deserve different answers, since a failed construct assertion is a fact and a cold-read grade is a judgment.
+      A tick here also closes the same row in Aims.
+
 ## Files
 ### The two instruments
 - `cli/check.py`
   The mechanical half. Four families, the 15-construct table, and the gap report. Read-only.
-- `haipipe-board-reviewer-agent.md`
+- `../agents/haipipe-board-reviewer-agent.md`
   The standing zero-background runner for the mechanical, prose, and visible-staleness review. It returns findings and never edits.
 
 ### The standards and fixed inputs they read
@@ -314,6 +319,7 @@ Opening: the always-visible opening section that states a page's question and sc
 > JL: Board should be a first-class family, and it should have a reviewer agent.
 
 ## Log
+- 260806 2206 · [REVISE-CC] swept to the 260806 architecture; the two template fixture gaps are closed and ticked (`check.py` reports 0 gap), the checker's codes corrected to `open-with-met-aims` and `settled-with-open-aims`, the split `assets/css/` replaces `assets/board.css` in three places, the dead `frame=QA9` link repointed at `QF1`, the reviewer's Files path fixed, the browser instrument handed to `QF3` where it now runs, the page RUN loop recorded as the first automatic dispatcher of the reviewer, and the 🧩 Skills landed row merged from two identical items into one
 260802 2230 · First full deterministic sweep of the shipped family recorded: pytest 4 failed / 87 passed, and the 4 are one strip-format disagreement across code, spec and tests plus one permission default. `check.py`, `skillpage.py check` and the writing round-trip all pass. `agree.py` found one true version drift and 3 false dead paths
 260802 · A second `## Where we are` heading was silently discarding everything under the first: `split_sections` builds a dict, so the later block won and 1023 bytes of dated records had never rendered. The two are merged and the duplicate heading is gone; `check.py` gained a `duplicate-section` ERROR the same day, because nothing reported this.
 260801 · QF3 opened as the third instrument: a browser run, because this face's two instruments both read text and six 260731 failures lived in what the browser did with it

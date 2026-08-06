@@ -1,5 +1,5 @@
 # Sentence · the details lifecycle
-state: 🟡 PARTIAL · independent Q opened; lifecycle rules and implementation remain
+state: 🟡 PARTIAL · rules recorded through the 260805 RUN; two Decision Now rulings and all implementation remain
 owner: JL
 method: give the sentence panel typed views, explicit record states, and a previewed archive-first cleanup path
 session: 12fb5622-ff63-4e49-b5a3-9efbcb113613
@@ -217,6 +217,7 @@ The name, three record families, and archive-first safety boundary are recorded,
 - 🔥 **purge**: explicit permanent deletion of records that are already archived.
 
 ## Log
+- 260806 2105 · [REVISE-CC] swept to the 260806 architecture; state line refreshed from the stale 260729 opening claim to reflect that the 260805 RUN recorded the rules and only two Decision Now rulings plus implementation remain
 260805 · REVISE r1s4 (run 260805-0216-QB8e): the eight Content paragraph headings numbered 1.1 through 4.1 in the division.n form, and the A1.1 State row corrected from ✅ Met to 🔨 partly met because the rendered panel does not yet carry the Sentence details name.
 260805 · REVISE r1s2 (run 260805-0216-QB8e): face figures with captions added to §1-§4 and the Diagram, the Opening restaged as question plus rationale with labelled drawer parts, Aims converted to A/P ids with Done when, States mirrored per Aim, Decision Now options split one per line, and Glossary rows bulleted.
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

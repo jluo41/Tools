@@ -7,11 +7,11 @@ method: one seam at a time, each ruled for its own reason
 Where does a person see, start, steer and resume paper work, and what does a worker read when it gets there?
 The Board is the control plane and a coding session is an ephemeral worker, so everything a worker needs has to be ON the page, and everything it produces has to come back to the same page.
 
-`QA8` settles who may write which region. This face is the other half: given a page, how work actually leaves it and comes back. The Board is the control plane and a coding session is an ephemeral worker, so everything a session needs must be ON the page, and everything it produces must return to the same page.
+`QA8` settles who may write which region. This face is the other half: given a page, how work actually leaves it and comes back.
 
 Four questions follow from that one stance: what the control plane is, what the queue is, where a finished item's result lives, and what the runner does when the Board hands it an item.
 
-Scope: This page covers The Board as control plane, the executable queue, where a completed item's handoff lives, and the page-first runner. Neighbouring pages cover Who may write which region is `QA8`; the collaboration as a whole is `QA4`. The live layer's mechanism, one session per question, the drawer, the terminal and in-page locking, is ruled on the tool's own board at `../01-boardform-260722/` (`QBe2 §3`-`QBe2 §5`, `QE4` THERE, not here).
+Scope: This page covers The Board as control plane, the executable queue, where a completed item's handoff lives, and the page-first runner. Neighbouring pages cover Who may write which region is `QA8`; the collaboration as a whole is `QA4`. The live layer's mechanism, one session per question, the drawer, the terminal and in-page locking, is ruled on the tool's own board at `../01-boardform-260722/` (`QD1` one session per question, `QD2` the drawer, `QD3` the terminal, `QE4` in-page locking, THERE, not here).
 
 ## Diagram
 ```
@@ -65,13 +65,10 @@ Scope: This page covers The Board as control plane, the executable queue, where 
 
  WHAT THIS FACE DOES NOT DECIDE
     one session per question · the drawer · the real CLI · locking
-    ⤷ all ruled on the BOARDFORM board at QBe2 §3-QBe2 §5 and QE4.
+    ⤷ all ruled on the BOARDFORM board at QD1 · QD2 · QD3 · QE4.
 ```
 
 ## Content
-```
-
-```
 ### The Board is the control plane
 #### Durable and ephemeral
 ```
@@ -140,7 +137,7 @@ handoff:
 
 #### Where that seam stood
 The no-sidecar ruling is explicit.
-Current paper skills still contain `_DISPLAY_REQUEST.md` routes and have not been migrated.
+The paper stage contracts still carry it: `S05-display/display/stage.md` declares the `_DISPLAY_REQUEST.md` inbox, and `S02-work/narrative/stage.md` and `S06-main/section-edit/stage.md` still file DR rows into it. Nothing has been migrated.
 
 ### A page-first stage runner
 #### Entry
@@ -210,7 +207,7 @@ Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Ever
 - `../../paper/haipipe-paper/`
   The one door: the execution entry behind an S page, since the stage runner folded into it (260805).
 - `haipipe-board/ref/page-template.md`
-  The current queue grammar.
+  The current `## Aims` grammar: `### A<n>` groups mirrored by `## States`, and no checkboxes, so the item fields proposed above have no home in it yet.
 - `../../board/haipipe-board-page/SKILL.md`
   The page loop: WORK ON and RUN, the bounded producer/build/judge cycle with receipts.
 - `../../paper/S05-display/display/stage.md`
@@ -230,6 +227,7 @@ Merged 260726 from 4 faces that each ruled one seam of the same joint (JL). Ever
 - **The runner is page-first.** The door `haipipe-paper` (which absorbed the stage runner, 260805) is invoked with a page and an item, resolves the one stage contract that page needs, and hands the page to `haipipe-board-page` for the bounded loop; the result returns to that same page. A session is ephemeral; everything it needed was on the page, and everything it produced goes back there.
 
 ## Log
+- 260806 2224 · [REVISE-CC] swept to the 260806 architecture; the live-layer pointer sent readers to `QBe2 §3`-`QBe2 §5` on boardform, where no `QBe2` exists (`QBe2` is this board's own display page), and now names the real pages `QD1` `QD2` `QD3` `QE4`.
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the page-first runner Law now names its live implementers (the door + `haipipe-board-page` RUN, first live RUN 260805), and the queue section carries its current name `## Aims`.
 
 260726 · Merged from four faces. Its `## Law` was empty after the merge, which a cold-read review caught: a face about how work runs, on a board whose close condition is that Laws graduate, had nothing to graduate. Written from its four seams.

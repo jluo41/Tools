@@ -11,12 +11,12 @@ The hard part is keeping it current without creating another shared status file 
 Board and page files already hold the durable facts, so only the live mode and next action belong in the reply.
 The design works when three short lines identify the scope, state, and next move every time.
 
-**Covered elsewhere**: The index's activity dashboard, which counts updates rather than time, is `QC2 §8`. The session id and one-window rule remain `QD1`. How a topic becomes well-named pages and groups remains `QA2`. Everything in the reply ABOVE these three lines is `QA3`: the outcome, the gate that had to pass before an agent could write it, the reply's body, and the routing footer. `QA3 §5` carries the map of which owner holds which part. This page owns the last three lines and nothing above them. How LONG the address inside the label is, and whether a short route can replace the path from the repo root down to the board folder, is `QE2`: this page owns the FORM the link takes on each surface, never its length.
+**Covered elsewhere**: The index's activity dashboard, which counts updates rather than time, is `QB2 §8`. The session id and one-window rule remain `QD1`. How a topic becomes well-named pages and groups remains `QA2`. Everything in the reply ABOVE these three lines is `QA3`: the outcome, the gate that had to pass before an agent could write it, the reply's body, and the routing footer. `QA3 §5` carries the map of which owner holds which part. This page owns the last three lines and nothing above them. How LONG the address inside the label is, and whether a short route can replace the path from the repo root down to the board folder, is `QE2`: this page owns the FORM the link takes on each surface, never its length.
 
 
 ## Content
 ### One visible contract
-The strip shows the Board folder, queue, focus, live mode, next action, and deep link in three lines.
+The strip shows the Board's own name, queue, focus, live mode, next action, and deep link in three lines.
 It is session state rendered from durable Board facts, not another durable ledger.
 
 ### Attachment resolution
@@ -46,14 +46,14 @@ Substantive work still follows `sync`: update the owning page in the same round,
 - [x] 🧪 Forward-test with no design context
       A fresh agent attached to a page must end its answer with the right Board, queue, page, and mode without being shown the intended output.
 - [x] ✂️ Keep the visible attachment concise
-      The complete direct-session block is exactly three Markdown lines; the link is embedded in the board-page name on line 1, and repeated labels, page title, source file, separators, and any visible raw URL are omitted.
+      The complete direct-session block is exactly three Markdown lines; on a terminal the link is embedded in the board-page name on line 1, a piped or chat reply shows the short `/b/` deep link in parentheses after the label, and repeated labels, page title, source file, and separators are omitted.
 
 ## States
 JL ruled that attachment must be visible in every reply, including when the session is working on a page, a page group, or sourcing for one of them.
 `status.py` now renders the strip from Board files, and both SKILL.md and the launcher prime require it.
 A fresh agent given only the skill, Board path, and QD6 attachment correctly derived the QD queue, QD6 focus, live mode, deep link, and owning file, then placed the strip last.
 JL then rejected the ten-line presentation as too long.
-The same information contract now renders in three lines, with the deep link hidden behind the compact Board and queue/focus label.
+The same information contract now renders in three lines; on a terminal the deep link hides behind the compact Board and queue/focus label as an OSC 8 hyperlink, and a piped or chat reply shows the deep link in parentheses after the label, kept short by `QE2`'s `/b/<board>/<page>` route (JL 260802, later the same day than this page's Law paragraph on the link form).
 A second fresh agent read only the skill, Board, and QD6, invoked `status.py` rather than composing the tail manually, and received exactly three lines.
 All five items are complete and the ruling is settled.
 
@@ -93,6 +93,7 @@ No shared status file is written: durable decisions, comments, and logs continue
 > JL: The first status strip is too long; make it concise, preferably only a few lines.
 
 ## Log
+- 260806 2144 · [REVISE-CC] swept to the 260806 architecture; dead activity-dashboard pointer QC2 §8 corrected to QB2 §8, and the chat-surface link form updated from hidden-behind-label to the shown short `/b/` deep link in parentheses (status.py + SKILL.md are the ground truth; the Law paragraph froze earlier the same day)
 260802 · JL asked which Q owns the strip and whether it belongs in the QA series. Kept here: this page's substance is session state (attachment resolution, queue derivation, the mode and status vocabulary), which is QD's one responsibility, while QA holds what the Board system IS before any of it is built. What was actually missing is the boundary, so Covered elsewhere now points at `QA3 §5` for every part of the reply above these three lines.
 260802 1300 · Four rulings from JL landed in `status.py` and are recorded here rather than left in the session. The label now comes from `board.md`'s own first heading instead of the folder name, since the folder is an accident of the day it was created and the board calls itself something; the group prefix is dropped when the page id already carries it; and the address rides inside the name, as an OSC 8 hyperlink on a terminal and as `[label](url)` when piped, chosen by whether stdout is a TTY. That last one is why 260801 had removed the link: with one form, hiding the raw address meant having no link. JL also asked for and then reversed a one-row version, so the block stays three rows: the place, the status, and the next action are three things a reader looks for in three different moments
 260801 · Title → "Status strip: which board and page this session is on" (JL: the old one was hard to read); status.py's clickable label now shows a short board name (ordinal + date stripped) so the long URL never appears as text (JL: "make the result clickable, not just the full url")

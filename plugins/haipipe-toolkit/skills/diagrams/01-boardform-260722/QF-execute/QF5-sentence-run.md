@@ -102,7 +102,7 @@ A sentence the page must NOT offer as writable is part of the same invariant, be
  #3   ends with a `code span`                       tail-splitting logic
  #4   contains **bold**                             ③ strips it, ② must not
  #5   contains a [link](path)                       ③ strips it, ② must not
- #6   contains an inline page-id chip (`QB4c`)      rendered as an anchor
+ #6   contains an inline page-id chip (`QB4`)       rendered as an anchor
  #7   the Opening LEAD                              composed outside body()
  #8   inside a fold (Law / Glossary / Discussion)   different container
  #9   an item's explanation line under `- [ ]`      indented source
@@ -110,7 +110,7 @@ A sentence the page must NOT offer as writable is part of the same invariant, be
  #11  CJK                                           no word boundaries
  #12  contains an escaped entity (' & < >)          esc() then textContent
  #13  inside a managed span (a Meeting page)        a resync would erase the edit
- #14  a paper-dialect chip (\citep, {VAL}, DR id)   the dialect rewrites the line
+ #14  a paper-dialect chip (\citep, {VAL}, Q id)    the dialect rewrites the line
  #15  a paragraph JOINED from several source lines  no single line can match
  #16  generated text with no source at all          must not be writable
  #17  a markdown table row                          ③ skips `|` by design
@@ -124,21 +124,23 @@ Row 17 was not on the list at all until the sweep met 56 of them, because `_sent
 These three are the reason the run reports unanchored rather than broken.
 
 ### 4 · The operations, which are the columns
-**The operation matrix**: the six things a reader can start from one sentence, and what each writes.
+**The operation matrix**: the seven things a reader can start from one sentence, and what each writes.
 
 ```text
  O1  add a typed lane        POST /_board/sentence        writes `> Lane: text`
- O2  sentence-local comment  POST /_board/comment         writes `> WHO: text · time`
- O3  edit the sentence       POST /_board/edit-sentence   replaces the line + one ✎ record
- O4  discussion line         POST /_board/discuss         writes under ## Discussion
- O5  resolve                 POST /_board/resolve         marks a thread resolved
- O6  chat focus              no write                     the packet must carry the same string
+ O2  card on marked words    POST /_board/card            writes `> Card <words>: text`
+ O3  sentence-local comment  POST /_board/comment         writes `> WHO: text · time`
+ O4  edit the sentence       POST /_board/edit-sentence   replaces the line + one ✎ record
+ O5  discussion line         POST /_board/discuss         writes under ## Discussion
+ O6  resolve                 POST /_board/resolve         marks a thread resolved
+ O7  chat focus              no write                     the packet must carry the same string
 ```
 
-📌 Five of the six write; the sixth reads with the same reader and is in scope for that reason alone.
+📌 Six of the seven write; the seventh reads with the same reader and is in scope for that reason alone.
 
 The chat focus writes nothing and still belongs here.
 It reads the sentence with the same reader, and a wrong string there sends the agent to the wrong place instead of failing loudly.
+The card is the newest writer and the one tier 3 never reaches: it shares the same matcher, and `cli/sentencewrite.py`'s five endpoints do not include `/_board/card`.
 
 ### 5 · What "it works" has to mean, per cell
 **The five assertions**: what one cell of the matrix has to satisfy before it may be called green.
@@ -155,7 +157,7 @@ It reads the sentence with the same reader, and a wrong string there sends the a
 
 The fifth assertion is the one this family violated for a whole day: the server refused correctly, the page showed the refusal, and nobody was watching that corner of the screen.
 It has a second half nobody wrote down until the board sweep printed 3067 refusals at once.
-A refusal has to be READABLE, and today the five refusal strings in `live/write.py` are written in Chinese on a board whose own rule is English only.
+A refusal has to be READABLE, and today twenty of the twenty-four refusal strings in `live/write.py` are written in Chinese on a board whose own rule is English only.
 It also has to be reported as a refusal: the run currently prints every one of them as `FAIL`, which buries the six sentences that are genuinely drifting under three thousand that are behaving exactly as designed.
 
 ### 6 · Four tiers, cheapest first
@@ -175,7 +177,7 @@ It also has to be reported as a refusal: the run currently prints every one of t
      Catches: the endpoint contract, the board-root resolution, auth, locks.
 
  T3  ROUND TRIP  a FIXTURE board · real writes                          ✅ RUNS
-     Every shape × every operation, asserting A2, A3, A4 on the markdown diff.
+     Every shape × the five write endpoints, asserting A2, A3, A4 on the markdown diff.
      Catches: adjacency, duplication, rebuild, and every A5 refusal on purpose.
      8 shapes × 5 endpoints = 40 cells.                 cli/sentencewrite.py
 
@@ -318,7 +320,7 @@ B1 is the loudest of them: 2002 of 5069 sentences resolve, and B6 and B7 now car
 - A5.1 · A correct refusal is reported as a result, not as a failure.
   **Done when:** The run splits refusal from mismatch in its own output, and exits red only on a mismatch.
 - A5.2 · Every refusal a reader can meet is written in English.
-  **Done when:** The five refusal strings in `live/write.py` read in English, which is the rule the rest of the board already follows.
+  **Done when:** Every refusal string in `live/write.py` reads in English, which is the rule the rest of the board already follows.
 
 ### A6 · 🪜 Four tiers, cheapest first
 - A6.1 · Tier 1 reads every page of a board in one pass.
@@ -378,7 +380,7 @@ B1 is the loudest of them: 2002 of 5069 sentences resolve, and B6 and B7 now car
 
 ### A5 · ✅ What "it works" has to mean, per cell
 - ⬜ A5.1 · Not started. The run prints every refusal as `FAIL` and exits 1, so a correct refusal and a real drift are indistinguishable in its output.
-- ⬜ A5.2 · Not started. All five refusal strings in `live/write.py` are Chinese, on a board whose own checker reports CJK as a finding.
+- ⬜ A5.2 · Not started. Twenty of the twenty-four refusal strings in `live/write.py` are Chinese, on a board whose own checker reports CJK as a finding.
 
 ### A6 · 🪜 Four tiers, cheapest first
 - ✅ A6.1 · 55 pages, 0 unreadable, 0 timeouts on 260802. The per-page reconnect and the settle wait were already in `cli/sentencerun.py`; what stopped it was the live shell moving the document into an iframe, fixed by asking the server for `?pane=page`.
@@ -422,6 +424,7 @@ B1 is the loudest of them: 2002 of 5069 sentences resolve, and B6 and B7 now car
   ⚠️ Generated by `cli/build.py`. Never hand-edit.
 
 ## Log
+- 260806 2206 · [REVISE-CC] swept to the 260806 architecture; `### 4` gained the card writer it never listed (`POST /_board/card`, live in `cli/serve.py` since 260802) so the matrix reads seven operations with tier 3's five endpoints named as the gap, the refusal count corrected from five to twenty of twenty-four Chinese strings in `live/write.py` (§5, A5.2, States), and two dead examples repointed: the `QB4c` chip (archived) and the `DR id` dialect token (`_DIALECT` carries a Q id, never a DR)
 260802 · 🌐 A BROWSER tier joined the run: `tests/drive_sentence.py`, 31 checks green, one screenshot and one row per gesture into a `report.md`. It covers what no tier here could see, because every tier so far reads FILES: a card opening on its words, the badge counting lanes and not cards, a broken span rendering loud, two cards on one sentence, a three-line card body arriving whole, three refusals keeping the composer open, a comment still finding its anchor on a sentence that already carries a card, and the scroll and open sections surviving a save. It builds its own throwaway board (`tests/fixture_board.py`, ten targets including a sentence written twice) rather than driving a page anyone reads: the first version drove `QB8`, left five cards on it, and its second run could not tell a pass from a break
 260802 1434 · The page was brought to the QB4 contract and its numbers were re-measured rather than carried over. Tier 1 turned out to have been blind since the live shell started wrapping a page in three panes: `serve.py` answers a page URL with a frame whose real document sits in an iframe, `Runtime.evaluate` reads the outer window, and the run reported all 55 pages `SKIP this page has no __boardSentenceText`, which is indistinguishable from a clean board. `tree_url` now asks for `?pane=page`. The first honest sweep: 55 pages, 5069 writable sentences, 0 unreadable, 3067 unanchored, and not one of them the ①→② drift the run was built for. They split 2724 indented item explanations, 215 joined paragraphs, 68 generated placeholders, 56 table rows and 4 duplicates, which says the page is offering a write control on three sentences in five that the server is right to refuse. `### 3` gained `#17` and rewrote `#15`; `### 6` gained the sweep; `### 5` gained the second half of A5, that a refusal must also be readable and must not be printed as a failure
 260801 · `sentencewrite.py` added (tier 3, fixture-based): 40 cells, 33 wrote correctly, 7 refused correctly, 0 failures. Seven defects found and fixed on the way: multi-line records, replay on four writers, resolve ambiguity, strike/image normalization, paper chips, the injected 💬 marker, and the indented-line corruption

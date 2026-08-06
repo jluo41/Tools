@@ -61,10 +61,10 @@ Before writing files, the action shows one proposal table with these columns:
 
 An `open` proposal shows the whole candidate board. An `add` proposal shows the requested change plus every existing page or group needed to judge overlap and placement. For a group-only addition, the table lists every proposed member.
 
-The settled procedure will be recorded as `ref/proposal-rules.md` and invoked by the `open` and `add` sections of `SKILL.md`. This QA2 page records the design discussion and evidence until those rules are settled.
+The settled procedure will be recorded as `ref/proposal-rules.md` and invoked by the `open` and `add` sections of `SKILL.md`, and by the `propose` verb of `haipipe-board-routing`, which absorbed board-structure proposals on 260802; those two descriptions are corrected together. This QA2 page records the design discussion and evidence until those rules are settled.
 
 ### 3 · What exists today
-The `open` action asks for a list of pages and requires user approval, but it gives the agent no method for producing that list. `page-template.md` says a page title is a short phrase and its lead is an actual question. `writing-rules.md` requires a self-contained question and a short heading. `board-form.md` defines ids, slugs, and the `## Pages` grammar. `QA2b` defines how accepted groups and rows appear on the Board-Webpage-Index. `serve.py` can add a group or question from a title, but it does not judge the title or group.
+The `open` action asks for a list of pages and requires user approval, but it gives the agent no method for producing that list. Since 260802, `haipipe-board-routing`'s board altitude owns `propose` and `materialize` for an agent: it shows a six-line structure proposal (spine, close, groups, pages, connections, skills) and stops for approval, but it too has no test for judging the decomposition. `page-template.md` says a page title is a short phrase and its lead is an actual question. `writing-rules.md` requires a self-contained question and a short heading. `board-form.md` defines ids, slugs, and the `## Pages` grammar. `QB2` defines how accepted groups and rows appear on the Board-Webpage-Index. `serve.py` can add a group or question from a title (through `live/structure.py` since the 260731 live split), but it does not judge the title or group.
 
 ### 4 · What is missing
 A page proposal needs a test for whether each page owns one independently closable decision or stage, whether two pages overlap, whether an item in the requirements inventory has no page, and whether the title distinguishes the page without repeating the full question. A group proposal needs an enduring responsibility: a shared function, output, stakeholder, or lifecycle segment that applies to every member and distinguishes those pages from pages outside the group. It must not merely cluster similar words.
@@ -130,18 +130,18 @@ These are the calls only JL can make; CC ticks nothing here.
       → CC's proposal: A; the fixture test in Items needs a rules file a fresh agent can be handed, and drafting it will expose exactly what §4 still leaves undefined.
 - [ ] 🧱 Approve or reject the two remaining proposed pages on the live read/write architecture
       JL 260731 asked what the best method is for interacting with markdown as the backend, and which Q pages should exist for it; three decisions were homeless.
-      `QC7`, the write path's addressing contract, was approved the same day ("this is a very good question, please go ahead") and is open, so this row now covers only the other two.
-      Still proposed: `QC9` the unit of change (one comment regenerates all 49 pages and re-ships 1.6MB), and `QD9` what the page shows before the server answers (nothing today, which is the "slow" feeling).
-      The unit-of-change page was proposed as `QC8` earlier the same day and is renumbered `QC9` here, because a concurrent session opened `QC8` for the live-layer split while this row was pending.
-      Not proposed as new pages, because they already have owners: the Node and stack fork is `QE3`, settled; poll against SSE is `QD4`'s own Boundary and would reopen there; concurrent writers are `QE4`.
-      → CC's proposal: approve both, and take `QC9` first, since the 1.6MB refetch is the measured cost and `QC7` §4's ladder does not depend on it.
+      Overtaken by absorption, noted at the 260806 sweep: neither proposed page still needs a ruling, and every id below is retired in `board.md`'s Links table.
+      The approved write-path question lives on after the 260801 renumbering as `QC-engine/QC4-roundtrip.md`, with the write path itself split out to `QC4a-writepath.md`.
+      `QC9`, the unit of change, was absorbed by `QC4-roundtrip.md`, whose method rules the unit of change; the 1.6MB refetch was measured and closed on `QD-working/QD7-pagecost.md`.
+      `QD9`, what the page shows before the server answers, was absorbed by `QE-sharing/QE3-whereitruns.md`, now settled; poll against SSE is `QC4-roundtrip.md`'s own remaining open item; concurrent writers stay with `QE4`.
+      → CC's proposal: strike this row; nothing here is left for JL to approve.
 
 ## Files
 ### Engines
 - `../../board/haipipe-board/SKILL.md`
   The `open` action requires page-list approval but does not explain how the list is proposed.
-- `../../board/haipipe-board/cli/serve.py`
-  `_slugify`, `Q_STUB`, and `structure_op` materialize a supplied title without judging it.
+- `../../board/haipipe-board/live/structure.py`
+  `_slugify`, `Q_STUB`, and `structure_op` materialize a supplied title without judging it; they moved here in the 260731 live split, and `cli/serve.py` imports them.
 - `../../board/haipipe-board/cli/check.py`
   A future structural check could detect duplicate or weak page and group proposals after the human rule is settled.
 
@@ -159,6 +159,7 @@ These are the calls only JL can make; CC ticks nothing here.
 > JL: The current question names, page names, and especially proposed page groups are not consistently good. We need a dedicated question for how the Board should propose reasonable pages and groups.
 
 ## Log
+- 260806 2124 · [REVISE-CC] swept to the 260806 architecture; the 🧱 Decision Now row's QC9/QD9 asks marked overtaken (both ids retired into QC4-roundtrip and QE3-whereitruns via the Links table), QA2b corrected to QB2, structure_op repointed to live/structure.py, routing's 260802 propose verb added to the inventory
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · The unit-of-change proposal renumbered QC8 to QC9 after a concurrent session opened QC8 for the live-layer split: a live id beats a proposed one
 260731 · QC7 approved by JL and opened the same round; QC8 and QD9 still awaiting a ruling

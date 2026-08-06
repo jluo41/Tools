@@ -1,5 +1,5 @@
 # The round trip: md to html, and html back to md
-state: 🟡 PARTIAL · the canonical board/ tree, per-page rebuild, rerooting, and checks ship; SSE remains open
+state: 🟡 PARTIAL · the canonical board/ tree, per-page rebuild, fragment serving, rerooting, and checks ship; push versus poll remains open
 owner: JL
 method: draw the whole loop in both directions first, then rule the unit of change, the output layout, and what refreshes when
 
@@ -31,6 +31,7 @@ It succeeds when a returned edit updates one Markdown source, rebuilds its page,
    │                                                                 │
    │   live/write.py            ◀── the RETURN direction             │
    │   add_comment · edit_sentence · add_sentence · add_discuss      │
+   │   plus add_card and resolve, same anchor discipline             │
    │   anchor by exact sentence match (QC4a), insert at a section     │
    │   boundary, rewrite the whole .md, then call build.py           │
    │                                                                 │
@@ -51,7 +52,7 @@ It succeeds when a returned edit updates one Markdown source, rebuilds its page,
    rebuild scope        page + group + Index         —
    output shape         board/ tree                  —
                         one file per page + assets
-   notification         poll, up to 4 s              SSE, under 100 ms
+   notification         poll, up to 4 s              push, ruling open
    what the tab swaps   one page's div.wrap          —
 
    every row is independent: each can be adopted without the others
@@ -64,8 +65,9 @@ It discovers every page by path (`page_files()` in `src/common.py`), parses each
 `watch.py` passes one changed filename through `--only`, so that page, its group page, and the Index move while unrelated page files stay byte-identical.
 
 ### 2 · The return path, as it is
-Every write endpoint in `live/write.py` follows the same four steps, and `QC4a` owns the first two.
+Every sentence-anchored endpoint in `live/write.py` follows the same four steps, and `QC4a` owns the first two.
 It normalizes the sentence the browser sent, finds the one source line whose normalized form matches exactly, refuses when there are zero matches or several, walks to a structural insert point rather than a byte offset, rewrites the whole markdown file, and then calls `build.py`.
+The family has grown since this face was drawn: span cards (`add_card`) and the checkbox flip (`resolve`) write with the same discipline, and the image save stores a file under `fig/` and touches no markdown.
 The chat drawer is not a separate path: it writes through the same endpoints, so a machine and a person leave the same kind of line in the same place.
 
 That symmetry is the reason the loop is safe, and it is worth protecting: there is exactly one implementation of "how a change is written into markdown", and everything that writes goes through it.
@@ -75,13 +77,14 @@ The source write is one Markdown file, anchored by an exact sentence or a named 
 The incremental rebuild is that page, its group page, and the Index.
 The generated unit is one page file; CSS and JavaScript are shared.
 The browser swaps the requested page's `div.wrap`, leaving the drawer and terminal outside the replaced region.
-Only notification remains larger and slower than it needs to be: the open tab polls every four seconds instead of receiving the changed page id through SSE.
+Only notification remains larger and slower than it needs to be: a plain page still HEAD-polls its own URL every four seconds, and a split-shell pane self-polls at 800 ms backing off to 5 s.
 
 ### 4 · The shape that ships
 `board/index.html` is the front door, `board/<GROUP>.html` explains one group, `board/<GROUP>/<page>.html` holds one focused page, and `board/_assets/` is shared.
 Internal links are intercepted, the target page is fetched and swapped, and the URL is pushed; with scripts off the same links navigate normally, so the strip-scripts invariant holds.
 Board-root-relative `href`, `src`, and `data` attributes are rerooted for each generated depth, including the evidence-card panels outside the page body.
-A push instead of a poll is the only proposed structural change left on this page.
+When a live server answers, the router asks for `?fragment=wrap` and downloads only `div.wrap`; a static host still serves the full file, so the no-JS reader loses nothing.
+A push instead of a poll is the only structural change still open here, and it now carries history: the shell's `/_events` stream was built and removed on 260802 when it exhausted the browser's six connections per origin.
 
 ### 5 · What happened to `board.html`
 JL ruled it out on 260731, and a Board-folder build now removes a leftover monolith after generating `board/`.
@@ -101,7 +104,7 @@ A single Markdown target may still render one HTML file for compatibility; that 
 - [x] ⚡ Rebuild one page
       `build.py --only` rewrites the changed page, its group page, and the Index while leaving unrelated page files byte-identical.
 - [ ] 📡 Push instead of poll
-      An SSE endpoint that names the page that changed, and a client that fetches and swaps only that section.
+      A push that names the changed page without holding a standing connection; the shell's `/_events` SSE tried this on 260802 and was removed by the browser's six-connection budget.
 - [x] 🔗 Intercept internal links
       So navigation inside the tree never destroys the drawer or the terminal, and so the no-JS path still navigates.
 
@@ -152,15 +155,15 @@ A single Markdown target may still render one HTML file for compatibility; that 
 
 Both directions of the loop work and are now written once in the operating skill.
 The return path still has one implementation and one anchoring rule; the forward path has one parser and renderer, one canonical tree, and one explicit unit at each hop.
-SSE remains open because the four-second notification poll is the only hop still larger than the changed page.
+Push versus poll remains open because the four-second notification poll is the only hop still larger than the changed page; the shell's own SSE attempt was built and removed on 260802.
 
 ### Decision Now
 - [ ] 🪞 Rule what to do about the page list in every page file
-      112 KB of every page is the page list, the router discards it on arrival, and it is 76% of the whole tree on disk; revalidation now hides that cost on revisits but a FIRST visit still pays it.
+      112 KB of every page is the page list, the router discards it on arrival, and it is 76% of the whole tree on disk; revalidation hides that cost on revisits, and since 260802 the router asks a live server for `?fragment=wrap`, so a served FIRST visit downloads `div.wrap` alone while a static host still pays full price.
       A · leave it, now that a revisit costs 0.3 KB: the waste is only paid once per page per build, and the page list is what makes the tree navigable with scripts off.
       B · serve a fragment when a server is present: the router asks for `div.wrap` only, the file on disk keeps its page list, and a static host is unaffected.
       C · stop emitting the page list in page files and let the Index carry navigation: smallest files, but a page opened with scripts off can then only go back to the Index.
-      → CC recommends B, because it is the only one that makes a FIRST visit cheap without taking anything away from the no-JS reader; A is a fair answer if the tree is only ever read over localhost.
+      → CC recommends B, and B's mechanism is what the engine now runs when a server is present; the tick left for JL is whether B is the ruling or C's smaller files are still wanted. A stays fair if the tree is only ever read over localhost.
 These are the calls only JL can make; CC ticks nothing here.
 
 - [x] 🧭 Rule what the tree's index still owes
@@ -191,23 +194,25 @@ These are the calls only JL can make; CC ticks nothing here.
 - [ ] 📡 Rule push versus poll
       A · SSE, so the page is told which page changed the moment the write lands, under 100 ms instead of up to 4 s.
       B · keep the 4 second poll, which needs no new endpoint and no long-lived connection.
-      → CC recommends A; `QD4`'s Law already names SSE as the upgrade path, and this is the case it was reserved for.
+      → CC now recommends B: the split shell BUILT A on 260802 (an `/_events` stream) and removed it, because the stream held one of the browser's six connections per origin and the terminal's WebSocket spends a second one; the shipped pane refresh is a self-HEAD at 800 ms backing off to 5 s.
+      The SSE lean this row used to cite lived on `QD4-liveupdate`, which is archived; today's `QD4` is the terminal design page.
 
 ## Files
 - `../../board/haipipe-board/cli/build.py`
   The forward path's entry point; it decides the output shape, so the `board/` tree is a change here and nowhere else.
 - `../../board/haipipe-board/live/write.py`
-  The return path: four endpoints, one anchoring rule, one implementation.
+  The return path: the write endpoints, one anchoring rule, one implementation.
 - `../../board/haipipe-board/assets/js/70-router.js`
-  The delivery half: the 4 second poll, the swap, and the link behaviour that a split tree would change.
+  The delivery half: the intercepted links, the `?fragment=wrap` fetch, and the `div.wrap` swap; the 4 second poll lives beside it in `20-live-refresh.js`.
 - `../../board/haipipe-board/src/common.py`
-  `page_files()`, the discovery rule whose `_` prefix exclusion is what makes `board/` free.
+  `page_files()`, the discovery rule: pages are found by the `Q`/`S`/`Agent`/`Meeting` name prefixes with `_`, `.`, and `fig/` segments excluded, and `board/` stays free because it holds no page-named `.md` at all.
 - `QC-engine/QC4a-writepath.md`
   The return direction's addressing contract, which this face uses and does not restate.
 - `QD-working/QD5-split-workspace.md`
   How the browser learns and what it replaces, including the three symptoms this face's unit argument explains.
 
 ## Log
+- 260806 2131 · [REVISE-CC] swept to the 260806 architecture; recorded that `?fragment=wrap` serving shipped and the shell's `/_events` push was built and removed on 260802, so the page-list and push-versus-poll rows now carry the engine's real history
 260801 · Navigation cost measured and halved at the wire: `no-store` became `no-cache` on both the router's fetch and the server's header, so a revisited page costs 0.3 KB instead of 119 KB; staleness re-tested by editing a page on disk. The 112 KB page list duplicated into every page file is recorded as an open decision
 260801 0920 · Canonicalized the board/ tree across contract, engine, checker, and both design/Paper Board structure blocks; fixed href/src/data rerooting exposed by 749 Paper Board failures
 260801 0140 · Full renumber QC7 -> QC4 (JL forced 260801); write-path face QC7a -> QC4a

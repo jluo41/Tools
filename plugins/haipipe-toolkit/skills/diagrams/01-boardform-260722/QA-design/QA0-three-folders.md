@@ -11,7 +11,7 @@ The distinction is hard because all three are casually called the Board even tho
 Putting a file in the wrong layer can leave a decision nonbinding, make working history ship as law, or lose an edit on the next build.
 The model succeeds when a reader can place any new rule, page, or artifact without guessing where it belongs.
 
-**Covered elsewhere**: Where a board folder lives and what it is named is `QC1`; a page living inside its home folder is `QC4`; the words this family uses are `QB1`; how a topic becomes pages and groups is `QA2`; which units the family ships is `QC1b` and the `Q-Skill` roster.
+**Covered elsewhere**: Where a board folder lives and what it is named is `QC1`; a page living inside its home folder is `QC4`; the words this family uses are `QB1`; how a topic becomes pages and groups is `QA2`; which units the family ships is `QC1b` and the `QCskill-engine-skill/` roster.
 
 
 ## Diagram
@@ -25,39 +25,44 @@ The model succeeds when a reader can place any new rule, page, or artifact witho
    ── ① the family ─────────────────────────────────────────────────
 
   ⚙️ ① skills/board/                          ONE folder, the family
-       ├── haipipe-board/                     the DOOR and the ENGINE
+       ├── haipipe-board/                     the DOOR · build and serve
        │     SKILL.md          what an agent is told
        │     src/              parse · body · page_board · page_question
-       │     assets/           board.css · board.js  (inlined at build)
+       │     assets/           css/ · js/  (inlined at build)
        │     ref/              board-form.md · page-template.md
-       │     build.py check.py serve.py watch.py
-       │     xcal.py regroup.py skillpage.py stage.py status.py
-       ├── haipipe-board-page/                SPEC · what a page is
+       │     cli/              build.py check.py serve.py watch.py
+       │                       xcal.py regroup.py skillpage.py stage.py
+       │     status.py
+       ├── haipipe-board-page/                the ENGINE · Page = TYPE x PHASE
+       │                                      verbs CREATE / WORK ON / RUN
+       ├── page-types/                        ten TYPE variants, one unit each
+       ├── page-phases/                       four PHASE contracts
        ├── haipipe-board-sentence/            SPEC · the atomic unit
        ├── haipipe-board-routing/             VERB · BOTH altitudes
        │     SKILL.md · src/lanes.py          structure + anchored write-back
-       ├── agents/                            the reviewer
-       │     haipipe-board-reviewer-agent.md
-       ├── DESIGN.md  README.md  CHANGELOG.md
+       ├── agents/                            reviewer · creator · orchestrator
+       │     haipipe-board-reviewer-agent.md  + creator + page-orchestrator
+       ├── README.md  CHANGELOG.md
        └── every unit versions on its own clock
 
    ── ② its board ──────────────────────────────────────────────────
 
   🗂 ② skills/diagrams/01-boardform-260722/    THIS board  ← you are here
        board.md            the manifest: Topic · Pipeline · Board Map
-                           · Board Structure · Pages · Links
-       QA-design/ QB-delivery/ QC-engine/
-       QD-working/ QE-sharing/ QF-execute/     one folder per group
+                           · Related Folders · Board Structure · Pages · Links
+       QA-design/ QB-delivery/ QC-engine/ QCskill-engine-skill/
+       QD-working/ QE-sharing/ QF-execute/ QG-meeting/   one folder per group
        board.excalidraw    the one scene, page frames + authored arrows
        fig/                image assets
        _archive/           retired pages, never deleted
-       board.html          📤 GENERATED. never hand-edited
+       _runs/              RUN receipts (haipipe-board-page RUN loop)
+       board/              📤 GENERATED site. never hand-edited
 
    ── ③ what ① renders ─────────────────────────────────────────────
 
   📤 ③ every other board folder ① is pointed at
-       ⓐ skills/diagrams/01-*/            4 sibling design boards
-            haipipe-paper · haipipe-task · haipipe-display · probe-qa
+       ⓐ skills/diagrams/01-*/            2 sibling design boards
+            haipipe-paper · haipipe-task
        ⓑ <paper>/0-lifecycle/             a board that IS a tree
             the folder is both the subject folder and the S family
        ⓒ <unit>/diagram/<NN>-<topic>-<YYMMDD>/   a task or project board
@@ -78,8 +83,8 @@ The model succeeds when a reader can place any new rule, page, or artifact witho
         ① owns it. The page stays; the skill gains the rule.    → QC1
 
    ⒝  ① ──renders──▶ ② ③
-        build.py reads a board folder and writes its board.html.
-        The engine never reads a board's MEANING, only its form.
+        cli/build.py reads a board folder and writes its board/ site.
+        The renderer never reads a board's MEANING, only its form.
 
    ⒞  ① ──writes back──▶ ② ③
         serve.py turns a click into a line of markdown in a page.
@@ -93,7 +98,7 @@ The model succeeds when a reader can place any new rule, page, or artifact witho
    ── the movements that are forbidden ─────────────────────────────
 
    ✗  ① ──▶ ②          the family depending on the board that designs it
-   ✗  anything ──▶ board.html    it is output; the next build erases you
+   ✗  anything ──▶ board/   it is output; the next build erases you
 
    delete ② and every skill in ① still runs. That is the test.
 ```
@@ -126,7 +131,7 @@ If that import ever appears, the two are one skill wearing two folders.
 ### One folder per group, inside the board folder
 Since 260726 every board keeps one folder per page group, named `Q<letter>-<slug of the group title>`.
 The bare `Q<letter>/` form is rejected because it writes the id a second time, and the id is already the prefix of every filename inside; the group's SUBJECT is the half a reader cannot recover from those filenames.
-After the 260730 restructure and the 260731 QD split this board has six: `QA-design/`, `QB-delivery/`, `QC-engine/`, `QD-working/`, `QE-sharing/`, `QF-execute/`.
+After the 260730 restructure, the 260731 QD split, and the later QCskill and QG additions this board has eight: `QA-design/`, `QB-delivery/`, `QC-engine/`, `QCskill-engine-skill/`, `QD-working/`, `QE-sharing/`, `QF-execute/`, `QG-meeting/`.
 
 Membership is by PATH, never by registration.
 `## Pages` lists bare filenames and sets order and grouping only, so moving a page between folders is a pure `git mv` and `board.md` needs no edit beyond its listing.
@@ -214,12 +219,14 @@ These are the calls only JL can make; CC ticks nothing here.
   It absorbed the first subskill, `haipipe-board-index`, on 260802.
 - `../../board/agents/haipipe-board-reviewer-agent.md`
   The second subskill, an agent rather than a skill.
+  `agents/` now holds three: this reviewer, `haipipe-board-creator-agent.md`, and `haipipe-board-page-orchestrator-agent.md`.
 
 ### This board folder
 - `board.md`
   This board's own manifest, whose `## Board Map` carries the short form of the folder lane.
 
 ## Log
+- 260806 2124 · [REVISE-CC] swept to the 260806 architecture; family map redrawn (haipipe-board-page is the ENGINE with page-types/ and page-phases/ beside it, scripts under cli/, three agents), eight group folders, rendered output is the board/ site not board.html, siblings down to two
 260731 · Data source shipped for the RELATED FOLDERS fold (haipipe-board 0.87.0): board.md's `## Related Folders` names the folders (① engine, ② this board) and the files each opens; `related_folders()` embeds only those `.md`/`.txt` at build; QC8's live endpoint deferred for oversized folders
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · JL settled the live layer's scope: SPACE-level, one server per repo root over every board under it, verified against the code; the checking consequence went to QF1 and the second-port question stays with QE6

@@ -1,5 +1,5 @@
 # Sub-skills: what else this family ships
-state: 🟡 PARTIAL · roster ruled 260731, index merged out and the skill-page variant added 260802
+state: 🟡 PARTIAL · roster ruled 260731, index merged out 260802, page engine grew ten Page Types, four Page Phases and a third agent by 260806
 owner: JL
 method: name every candidate and apply one test to each, then let JL rule the set; a shipped skill follows settled decisions, never precedes them
 
@@ -13,11 +13,11 @@ Get it wrong and the same rule gets written twice, or a capability another workf
 
 **Why the answer moved**: CC read the roster on 260729 as defer page and sentence, because nothing then needed either one without a board. JL named `haipipe-board-routing` and `haipipe-board-digest` the same day, and both verbs are handed raw input with no board attached, so the missing consumer had simply not been proposed yet.
 
-**Covered elsewhere**: What a page IS, and its section contract: `QB4`. What a sentence IS, and its records: `QB8`. What SKILL.md must say, and the rule that specs go to `ref/`: `QC1a`. Where a write may land on somebody else's board: `QB1` §4. One synced mirror page per shipped unit: `Skill-0`, `Skill-3`, `Skill-4`, `Skill-5`, `Agent-1`, `Agent-2`; the retired `Skill-1` is in `_archive/` and its id still resolves.
+**Covered elsewhere**: What a page IS, and its section contract: `QB4`. What a sentence IS, and its records: `QB8`. What SKILL.md must say, and the rule that specs go to `ref/`: `QC1a`. Where a write may land on somebody else's board: `QB1` §4. One synced mirror page per shipped unit: `Skill-0`, `Skill-3`, `Skill-4`, `Skill-5`, `Skill-6`, `Skill-7`, `Skill-8`, `Agent-1`, `Agent-2`, `Agent-3`; the retired `Skill-1` is in `_archive/` and its id still resolves.
 
 ## Diagram
 
-**The family, one door and three units**: which unit runs at which moment, and what each one loads.
+**The family, one door and three units**, with ten Page Types and four Page Phases under the page engine: which unit runs at which moment, and what each one loads.
 
 ```
                         🚪 haipipe-board · the door you invoke
@@ -28,7 +28,7 @@ Get it wrong and the same rule gets written twice, or a capability another workf
         │                                                         │
         ▼                                                         ▼
   🧭 haipipe-board-routing · both altitudes             📄 haipipe-board-page
-     🗂 opening a board  Spine · Groups · Pages            sections · kinds
+     🗂 opening a board  Spine · Groups · Pages            TYPE x PHASE · sections
         canvas · lanes · writes NOTHING                 what a machine writes
         before approval                                          ▲
      ✍️ an ordinary turn Board → Group → Page → Section           │
@@ -94,13 +94,15 @@ The door test passes on evidence, and what failed instead was scope: the same th
 
 ### 2 · The roster, and what each unit owns
 
-**One door, three specs, two verbs**: the shape JL ruled, and what each unit is loaded for.
+**One door, one page engine, one sentence spec, one write verb**: the shape JL ruled, grown by 260806 into TYPE x PHASE under the engine.
 
 ```
 🚪 haipipe-board          the operating manual you invoke to run a board
-📄 haipipe-board-page     SPEC · what one page is · and a door for 2 verbs
-🪞 haipipe-board-page-for-skill
-                          SPEC · the VARIANT for the two skill and agent page kinds
+📄 haipipe-board-page     THE ENGINE · Page = TYPE x PHASE · verbs CREATE /
+                                 WORK ON / RUN
+   📚 page-types/         ten TYPE variants, for-design … for-venue
+                                 (for-skill and for-stage among them)
+   🌀 page-phases/        four PHASE contracts · draft · probe · revise · check
 ✒️ haipipe-board-sentence SPEC · what one sentence carries · and a door
                                  for 3 verbs since 260802 (comment · edit · card)
 🧭 haipipe-board-routing  VERB · every write onto a board, at BOTH altitudes
@@ -108,15 +110,15 @@ The door test passes on evidence, and what failed instead was scope: the same th
                                  owning page → one anchored write
 🔁 haipipe-board-digest   VERB · one session → many inputs → routing, fanned out
 ```
-📌 The roster took its shape across four days: JL named the units on 260729, added the index altitude on 260730, ordered four of them built on 260731, and folded the index back into routing on 260802.
+📌 The roster took its shape across four days: JL named the units on 260729, added the index altitude on 260730, ordered four of them built on 260731, and folded the index back into routing on 260802. The page unit then grew into the TYPE x PHASE engine, with its variants under `page-types/` and `page-phases/`, by 260806.
 
 `haipipe-board` stays the public orchestrator, and it does not load every detailed contract on every turn: it invokes the smallest unit that owns the current transition.
-That is the progressive-disclosure shape, so opening a Board loads Index, an ordinary turn loads Routing, a Page edit loads Page, and sentence apparatus loads Sentence.
+That is the progressive-disclosure shape, so opening a Board loads Routing's board altitude, an ordinary turn loads Routing, a Page edit loads Page, and sentence apparatus loads Sentence.
 
 **2.1 · What each unit owns**
 
 - `haipipe-board-page`, the Page layer.
-  It owns the common Page frame, the page kinds, the section contracts, Aims, States, paths and closure semantics.
+  It owns the common Page frame, the Page Types under `page-types/` and the Page Phases under `page-phases/`, the section contracts, Aims, States, paths and closure semantics, and the three verbs CREATE, WORK ON and RUN.
   The name is singular because it defines the contract for any ONE page, where `pages` would sound like a batch operation.
 - `haipipe-board-sentence`, the atomic layer.
   It owns sentence identity and the records attached to a sentence: Evidence Card, local Comment, Edit, Chat focus and lifecycle.
@@ -155,28 +157,35 @@ One unit owning both altitudes settles that by construction, which is why the ro
 
 ### 3 · What the family ships today, counted
 
-**The units on disk, 260802 after the merge and the new variant**: one door, four sub-skills, two agents, with the version each carries.
+**The units on disk, recounted 260806**: four skills, ten Page Types, four Page Phases, three agents, with the version each carries; `haipipe-board-digest` stays named and unshipped.
 
 ```
-🚪 haipipe-board                  0.112.0   the DOOR · 14 cli · 11 src · live/
-📄 haipipe-board-page             0.11.0    295 lines
-🪞 haipipe-board-page-for-skill   0.1.0     the skill-page VARIANT, new 260802
-✒️ haipipe-board-sentence         0.3.0     191 lines · ⚠️ changelog stops at 0.2.0
-🧭 haipipe-board-routing          0.9.0     both altitudes · src/lanes.py
-🤖 haipipe-board-reviewer-agent   0.4.0     read only, no write tools
-🤖 haipipe-board-creator-agent    0.3.0     no Bash, one page per dispatch
+🚪 haipipe-board                  0.124.0   the DOOR · 16 cli · 13 src · live/
+📄 haipipe-board-page             0.21.0    THE ENGINE · 468 lines · CREATE /
+                                            WORK ON / RUN · receipts in _runs/
+📚 page-types/                    ten TYPE variants · for-design … for-venue
+                                            incl. for-skill 0.4.2 · for-stage 0.5.0
+🌀 page-phases/                   four PHASE contracts · draft · probe ·
+                                            revise · check
+✒️ haipipe-board-sentence         0.3.1     191 lines
+🧭 haipipe-board-routing          0.9.1     both altitudes · src/lanes.py
+🤖 haipipe-board-reviewer-agent   0.7.0     read only, no write tools
+🤖 haipipe-board-creator-agent    0.6.0     no Bash, one page per dispatch
+🤖 haipipe-board-page-orchestrator-agent
+                                  0.1.0     runs one bounded Page RUN · first
+                                            live RUN 260805 on QB8e
 🚧 haipipe-board-digest           not on disk
 🗑 haipipe-board-index            merged into routing 260802, folder deleted
 ```
 📌 Counted rather than estimated, because the roster argument is only as good as the count under it, and the first count on 260729 went stale within three days.
 
-`ref/` carries 1017 lines across four files, and the plugin around this family holds 152 skills and 24 agents.
-That still makes this the leanest family in the plugin.
-For contrast, `task` ships 44 skills and 3 agents, `paper` 36 skills, `application` 23, and `discovery` 15 skills and 4 agents.
+`ref/` carries 1120 lines across six files, and the plugin around this family holds 130 skills and 11 agents.
+For contrast, `task` ships 44 skills and 3 agents, `application` 23 skills, `discovery` 15 skills and 4 agents, and `paper` collapsed to ONE door on 260805, `haipipe-paper` 0.7.0, with its stages as data.
+Counted as doors this family ships four; the ten types and four phases are contracts under the engine, not doors of their own.
 
 #### 3.1 · Leanness here is the intended shape, not an omission
 
-The other families ship one door per DOMAIN STEP, while this one ships a FORM.
+The other families shipped one door per DOMAIN STEP, while this one ships a FORM; `paper` adopted the same one-door shape on 260805.
 A form has one verb set (view, open, add, build, sync, link, close, serve, comment, stage, excalidraw), so a second and third door multiply the version surface without adding a workflow.
 The count that changed between 260729 and 260802 is the sub-skills, not the verbs: `haipipe-board` itself went from v0.46.0 to v0.104.1 over the same window while keeping one door.
 
@@ -241,21 +250,22 @@ So digest is a skill whose execution belongs in a fresh context, which is what t
 
 ```
 🚪 skills/board/*            the family's own doors           ✅ working as intended
-📄 haipipe-paper-stage       the S page kind, under paper/    ✅ the first variant
-🐍 live/chat.py 297–378      four rule strings, prose copies  ❌ the one real defect
+📄 page-types/for-stage      the S page TYPE, home since      ✅ the exit closed
+                             260805 (was haipipe-paper-stage)
+🐍 live/chat.py 301–397      four rule strings, prose copies  ❌ the one real defect
 ```
-📌 Counting the units understates the surface, because the form also reaches agents through a second family and through four Python strings that restate it.
+📌 Counting the units understates the surface, because the form once shipped through a second family and still ships through four Python strings that restate it.
 
-#### 6.1 · `haipipe-paper-stage` is a variant door, not a leak
+#### 6.1 · The variant door came home: for-stage ships under `page-types/` since 260805
 
-Its own summary reads "Board-first stage router: Paper is the public page creator; Board owns the shell, filename, pages, and optional inherited contracts", so the S page half of the form ships as a skill under `paper/`.
-JL's base and variant model (ruled on `QB4`) settles how to read that: the page is a BASE, and a page kind is a Content variant that ships under its consumer family.
-On that reading this is the first variant door working as intended, and `haipipe-paper-display` or a task variant would be the next ones.
-What it sharpens is `haipipe-board-page`'s job: it ships the BASE contract the variant skills extend, so the spec has a second consumer beyond routing, namely the variant authors in the other families.
+`haipipe-paper-stage` was the form's second exit, the S page half shipping as a skill under `paper/`; it retired to `paper/_old/` on 260805 when the paper family collapsed to one door.
+The S page variant now ships inside this family as `page-types/haipipe-board-page-for-stage` (0.5.0), one of the ten Page Types.
+JL's base and variant model (ruled on `QB4`) read the old exit as the first variant door working as intended, and the prediction played out: the display variant it foresaw exists as `page-types/haipipe-board-page-for-display`, and all ten variants now extend the BASE contract `haipipe-board-page` ships.
+So the spec has its second consumer beyond routing, the variant contracts, and the second exit is closed.
 
 #### 6.2 · The four rule strings in `live/chat.py` are the one real defect
 
-`CHAT_RULES` at line 297 teaches an agent one question page and `BOARD_CHAT_RULES` at line 353 teaches it the whole board, with `FULL_RULES` and `BOARD_FULL_RULES` doing the same for a full session.
+`CHAT_RULES` at line 301 teaches an agent one question page and `BOARD_CHAT_RULES` at line 357 teaches it the whole board, with `FULL_RULES` and `BOARD_FULL_RULES` doing the same for a full session.
 None of the four reads `ref/` or either spec: all four restate them in a Python string, and `QB8d` already caught one describing a page shape that no longer existed.
 They were the extraction's original trigger and they moved rather than changed, travelling from `cli/serve.py` into `live/chat.py` in the `QC2c` live-layer split, so the de-duplication is still owed.
 
@@ -263,7 +273,7 @@ They were the extraction's original trigger and they moved rather than changed, 
 
 The drawer's agent is already inside a board when it reads those rules, so `CHAT_RULES` alone never justified a door.
 Making `live/chat.py` READ the specs instead of restating them kills all four copies, costs one function, and adds no version surface.
-That is worth doing whether or not the page door ships, and the page door shipping does not do it by itself.
+The page door has since shipped and did not do it by itself, which proves the point: the de-duplication is its own piece of work and is still owed.
 
 ### 7 · Which unit supports which part
 
@@ -313,7 +323,8 @@ Nothing has been changed on that reading, and the 260731 ruling that separated a
 
 `Agent-2` is the producer half of the creator and reviewer pair, scoped by CONCURRENCY rather than by content, so its boundary is drawn by a different test than `### 1`'s: not "does it have its own trigger", but "does it touch a file another writer also touches".
 One page's `.md` fails that test and fans out, while `board.md`, the lane block, the rebuild and the checker pass it and stay with the caller, which is why the agent has no Bash tool.
-It is unshipped in the sense that matters: `haipipe-board`'s `open` and `add` still write pages one by one, and nothing turns an approved proposal table into N assignment packets.
+The caller's half now ships as written protocol: `haipipe-board` 0.124.0 says a batch dispatches one fresh creator per page, hands each an assignment packet of page facts, paths, sources and ownership context, and keeps shared writes, the one rebuild and the one check with the caller.
+What A8.2 still tracks is conduct: `open` and `add` turning an approved proposal table into those packets as their routine path.
 
 #### 8.3 · A sentence BOARD is a different fork, and it needs nothing shipped
 
@@ -415,7 +426,7 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
   The remaining three units have not been audited against each other yet.
 
 ### A3 · 🔢 What the family ships today, counted
-- ✅ A3.1 · Recounted against disk on 260802: five skills, two agents, versions in `### 3`. The 260729 count of two units is superseded and kept only in `## Log`.
+- ✅ A3.1 · Recounted against disk on 260806: four skills, ten Page Types, four Page Phases, three agents, versions in `### 3`. The 260802 count of five skills and two agents is superseded, like the 260729 count of two units before it, and kept only in `## Log`.
 
 ### A4 · 🧭 Routing automates the hard step
 - ✅ A4.1 · Met. `haipipe-board-routing` 0.6.0 step 3 reads `board.md` `## Pages` and resolves older ids through `## Links`, and `check.py`'s `declared_links` resolves ids the same way, so the resolver and the checker agree.
@@ -435,7 +446,7 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 
 ### A8 · 🚧 What is still open
 - ⬜ A8.1 · Not started. `haipipe-board-digest` is named on the roster, described in `### 2.1`, and not on disk.
-- ⬜ A8.2 · Not started. `Agent-2` exists at 0.1.0 and `haipipe-board`'s `open` and `add` still write pages one by one.
+- 🔨 A8.2 · The caller protocol ships in `haipipe-board` 0.124.0: one fresh creator per page, assignment packets, and the serialized tail (shared writes, one rebuild, one check) kept with the caller; `Agent-2` is at 0.6.0. The remaining half is `open` and `add` running that protocol routinely from an approved proposal table.
 - 🧠 A8.3 · Waiting on the reviewer-agent ruling in Decision Now above.
 
 ### P · 🏁 Page-level
@@ -452,7 +463,7 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
 
 ### ⚙️ Engines · what RUNS this subject
 - `live/chat.py`
-  Lines 297 to 378, the four hand-rolled rule strings that restate the page and board contracts instead of loading them.
+  Lines 301 to 397, the four hand-rolled rule strings that restate the page and board contracts instead of loading them.
 - `haipipe-board-routing/SKILL.md`
   The shipped write protocol: the five-step route, the two write laws, and the three end states.
 
@@ -483,6 +494,7 @@ That is a board-folder decision, which `QB1` owns through its two locations, and
   One page's `.md` fails that test and fans out; `board.md`, the lane block, the rebuild and the checker pass it and stay with the caller.
 
 ## Log
+- 260806 2131 · [REVISE-CC] swept to the 260806 architecture; roster recounted against disk to 4 skills · 10 page-types · 4 page-phases · 3 agents (board 0.124.0, page 0.21.0 as the TYPE x PHASE engine, routing 0.9.1, sentence 0.3.1, orchestrator agent new, digest still named and unshipped), for-stage recorded as home from paper/ since 260805, chat.py rule strings repointed to lines 301-397
 260802 2030 · `QB8` closed and `haipipe-board-sentence` reached 0.3.0 with three verbs, so the roster's contract-versus-action column is wrong a second time and in the opposite direction from the index. `2.3` now records both failures and rules that a row names what a reader DOES with a unit when it is both. The count in `3` corrected to 0.3.0 and 191 lines, with the changelog drift `agree.py` found flagged in place
 260802 · 🚪 The sentence unit became a DOOR, on JL's read of the `haipipe-board-page` precedent ("we migrate that part from haipipe-board to haipipe-board-sentence, just like haipipe-board-page, right?"). The precedent is precise about what migrates: the page skill owns the page contract and its two verbs, owns no scripts, and CALLS the engine. The sentence half had been the other way round, with the operating detail in `haipipe-board`'s SKILL.md and a 94-line spec carrying no verbs. `haipipe-board-sentence` 0.3.0 now holds three verbs (comment, edit, card), the boundary block, and the reader's controls, at 192 lines against the page skill's 299; `haipipe-board` 0.111.0 keeps only the two rules that bind the ENGINE rather than the contract, which are that a write needs `serve.py` and that a form closes before it asks for the repaint. The one-door table now states the rule at every altitude: one sentence is the sentence skill's, one page is the page skill's, the board is the board skill's
 260802 1810 · JL ruled `B`, merge: `haipipe-board-index` is deleted and `haipipe-board-routing` 0.9.0 owns both write altitudes, with `src/lanes.py` moved into it. Two Decision Now rows closed on the one ruling, because the group-altitude landing rule was only ever blocked on which unit would own it. `haipipe-board` 0.109.0 corrects the family block and its heading, which had said "three specs" while one of the three was a verb set. `Skill-1` retires to `_archive/` and `Skill-5` absorbs the altitude

@@ -63,9 +63,9 @@ The doubled keystroke was diagnosed and fixed twice on `QD3` as duplicated liste
                                     which iOS need not accept as the user's tap
 
   B · the form assumes the page never goes away
-      · switch away and back →   the page has EXIT handlers and no ENTRY handler.
-        everything is frozen     `pagehide` is registered in three files;
-                                 `pageshow` in none. see States.
+      · switch away and back →   the page has three EXIT handlers; the chat half
+        the terminal is frozen   now rejoins on visibilitychange and focus, but
+                                 nothing reattaches the terminal socket. see States.
 ```
 
 ## Content
@@ -125,17 +125,20 @@ It is also why the smooth pane stops being an alternative rendering and becomes 
 **Leaving against returning**: how many handlers the board registers for each direction.
 
 ```
-🚪 the board handles LEAVING three times and RETURNING zero times
+🚪 the board handles LEAVING three times and RETURNING for the chat only
    pagehide ──▶ 80-restore.js   save the view
             ──▶ 50-activity.js  end the activity span
             ──▶ 30-terminal.js  park:true, drop the WebSocket
-   pageshow ──▶ (nothing anywhere in assets/js/)
-   📱 result: dead pane in front of a live process · chat busy for up to 7 min
+   pageshow ──▶ 20-live-refresh.js   poll speed only, not the socket or the turn
+   visibilitychange / focus ──▶ 20-chat/10-sessions.js   rejoin a live turn
+   📱 result: dead terminal pane in front of a live process · a hung send still
+              holds the chat busy for up to 7 min
 ```
 A desktop tab mostly stays open, so the board could get away with tearing down on the way out and never rebuilding on the way back; a phone suspends on every app switch, which turns that omission into the most visible failure of all.
 The terminal half parks correctly, which keeps the process alive, but nothing reattaches the socket, so the reader returns to a dead pane in front of a living process and it never self-heals.
 The chat half stalls instead of dying: a suspended streaming `fetch` can hang without resolving or rejecting, so the `await` never returns, the `catch` never runs, and the cleanup that clears `inflight` never runs either.
-It does recover, after `QUIET_GIVEUP = 420000`, seven minutes, and the turn is lost; the watchdog meant to rescue it is a `setInterval`, which is exactly what a backgrounded page throttles.
+It does recover, after `QUIET_GIVEUP`, 420000 on a real send, seven minutes; the watchdog meant to rescue it is a `setInterval`, which is exactly what a backgrounded page throttles.
+The chat half has since grown a return path: `10-sessions.js` calls `chatRejoin()` on `visibilitychange` and `focus`, attaching to a live turn through `/_board/attach` and falling back to a transcript sync, so a finished turn is recovered rather than lost; the rejoin refuses to run while `inflight` is set, so the hung send above still waits out the watchdog, and the terminal socket has no entry handler at all.
 The rule: every teardown registered on the way out owes a matching rebuild on the way back, and a timer is not a rebuild.
 
 ### 5 · Every desktop gesture needs a touch twin, or an explicit desktop-only ruling
@@ -260,12 +263,12 @@ These are the calls only JL can make; CC ticks nothing here.
 - 🧠 A3.1 · Waiting on the 📐 ruling. The measurement is in: about 390 CSS pixels at 13px metrics is roughly 46 columns, which is below the width Claude's own frames are drawn for.
 
 ### A4 · 🚪 A page that can be suspended owes the reader an entry handler
-- ⬜ A4.1 · Not started. `pagehide` is registered in `80-restore.js`, `50-activity.js` and `10-drawer/30-terminal.js`, and `pageshow` appears in no file under `assets/js/`. Read from source on 260801 and not yet confirmed on a device; both halves are cheap to observe, since a stall that clears in about seven minutes and a `pageshow` that never fires are each directly visible.
+- 🔨 A4.1 · Half built, on the chat side: `10-sessions.js` now calls `chatRejoin()` on `visibilitychange` and `focus`, attaching to a live turn through `/_board/attach` with a quiet giveup (`QUIET_GIVEUP = attach ? 6000 : 420000`) and falling back to a transcript sync; it refuses while `inflight` is set, so a send whose suspended stream hung still waits out the seven minutes. The terminal half is untouched: `pagehide` still parks in `30-terminal.js`, nothing reattaches the socket, and the one `pageshow` under `assets/js/` is `20-live-refresh.js`, which only snaps the refresh poll back to fast. Read from source; not yet confirmed on a device.
 
 ### A5 · 👆 Every desktop gesture needs a touch twin, or an explicit desktop-only ruling
 - 🔨 A5.1 · Images and the session picker are both surveyed and closed below. Hover pre-warming of the assets is still open and has no touch answer and no desktop-only ruling.
 - ✅ A5.2 · Built 260801: `assets/js/10-drawer/35-imagepick.js` plus one button in the drawer header; the server was already device-agnostic and was not touched. The button sits in the HEADER because that is the one strip `termView()` leaves alone, so it is reachable from the TUI, and it routes by view, writing a bare repo-root-relative path into the PTY when the terminal is showing and `![image](path)` into the composer when the chat is. It re-encodes through a canvas before posting, since `live/write.py` caps at 8MB and rejects the HEIC an iPhone shoots, and it passes a small PNG through untouched because re-encoding a screenshot to JPEG blurs the text it was taken to show. Verified in JL's own Chrome over CDP on both branches: a 4000x3000 JPEG went in at 188KB and landed in `fig/` at 12KB, the terminal branch put the path on the CLI prompt line, and the chat branch inserted the full repo-root-relative markdown; test files were removed afterwards. Confirmation on a real phone is P2, not this row.
-- ✅ A5.3 · Nothing to build. The drawer has THREE tabs, `✨ Quick actions · 🗂 Sessions · ⚙ Settings`, and the picker is `.spick` / `.spl` inside the 🗂 Sessions tab, not `.sid` inside ⚙ Settings; `.sid` is only a session-id readout. `termView()` hides `.sfocus .bd .acts .cfg .sid .ft .tip` and does NOT hide `.sessions` or `.spick`, so the picker is reachable while the terminal is showing. Verified in JL's own Chrome over CDP: the tab strip reads exactly those three labels, clicking 🗂 leaves `.utility` at `open show-sessions`, `.sessions` computes to `display:block`, and the list rendered two session rows.
+- ✅ A5.3 · Nothing to build. The drawer has THREE tabs, `🗂 Sessions · ✨ Quick actions · ⚙ Settings`, and the picker is `.spick` / `.spl` inside the 🗂 Sessions tab, not `.sid` inside ⚙ Settings; `.sid` is only a session-id readout. `termView()` hides `.sfocus .bd .acts .cfg .sid .ft .tip` and does NOT hide `.sessions` or `.spick`, so the picker is reachable while the terminal is showing. Verified in JL's own Chrome over CDP: the tab strip reads exactly those three labels, clicking 🗂 leaves `.utility` at `open show-sessions`, `.sessions` computes to `display:block`, and the list rendered two session rows.
 
 ### A6 · 🪟 The pane renders a screen; the drawer beside it renders a document
 - 🧠 A6.1 · Not started, and it waits on the 🎨 row only for sequencing: one surface is true under options A and B alike.
@@ -289,7 +292,7 @@ These are the calls only JL can make; CC ticks nothing here.
 - `assets/js/10-drawer/35-imagepick.js`
   The 🖼 button and its canvas re-encode; the worked example of a gesture given a touch twin, and the pattern A5.1 follows for whatever it closes next.
 - `assets/js/10-drawer/20-chat/10-sessions.js`
-  The session picker `.spick` / `.spl` that A5.3 found already reachable; open it before adding any second chooser.
+  The session picker `.spick` / `.spl` that A5.3 found already reachable; open it before adding any second chooser. It also holds the chat's return path now: `syncNow()` rejoins a live turn on `visibilitychange` and `focus`, which is the built half of A4.1.
 - `live/term.py`
   `spawn_pty`, the `/_term/<key>/ws` terminus, and `park`. A composer that writes whole lines still arrives through this socket.
 - `live/write.py`
@@ -299,9 +302,10 @@ These are the calls only JL can make; CC ticks nothing here.
 - 🔁 A SYMPTOM IS NOT DIAGNOSTIC; THE INPUT PATH IS. The doubled keystroke was diagnosed and fixed twice on `QD3` as duplicated `onData` listeners after a reconnect, correctly both times, and a phone still doubles because the third cause is a different constraint. Fixing what the symptom looks like rather than which path delivered it is what made the same bug arrive three times.
 - 🔍 A CLAIM READ OUT OF SOURCE IS A HYPOTHESIS. CC read `.sid` in `termView()`'s hide list, concluded that `.sid` was the session picker and that the terminal hid it, and both halves were false. The file had also changed under CC mid-session, which is the second time this board has been bitten by another session editing the same files. Driving JL's own Chrome over CDP settled it in minutes and re-reading never would have.
 - 🚪 REACHABILITY IS A PROPERTY OF THE GESTURE, NOT OF THE FEATURE. `/_board/image` was device-agnostic the whole time and a phone still could not put an image on the board, because both entry points were `paste` listeners. A survey of `assets/js/` found no file input, no `capture` attribute and no drop handler, so the whole gap was one missing button.
-- ⏱ EVERY TEARDOWN OWES A REBUILD, AND A TIMER IS NOT A REBUILD. The board registers `pagehide` three times and `pageshow` never, and the watchdog meant to rescue the resulting stall is a `setInterval`, which is exactly what a backgrounded page throttles. The rescue is suspended by the same event that caused the failure.
+- ⏱ EVERY TEARDOWN OWES A REBUILD, AND A TIMER IS NOT A REBUILD. The board registered `pagehide` three times and `pageshow` not once when this was read, and the watchdog meant to rescue the resulting stall is a `setInterval`, which is exactly what a backgrounded page throttles. The rescue is suspended by the same event that caused the failure.
 
 ## Log
+- 260806 2143 · [REVISE-CC] swept to the 260806 architecture; the A4 exit-only story was stale: `20-live-refresh.js` now registers a `pageshow` (poll speed only) and `10-sessions.js` rejoins a live turn on `visibilitychange`/`focus` through `/_board/attach`, so the Diagram, Content 4, A4.1 (⬜→🔨) and the ⏱ Lesson now say only the terminal socket lacks an entry handler; drawer tab order in A5.3 corrected to `🗂 Sessions · ✨ Quick actions · ⚙ Settings` per `20-chat/00-open.js`
 260802 · Brought to the page contract: `## Aims` became six A-groups plus P, keyed by id and name to the six Content divisions, with a testable `Done when` on every row; `## States` became one State row per Aim with `### Decision Now` first; the seven dated narrative entries that were doing States' job moved down here and into `## Lesson`, since their substance is now in Content. Added Content 6 for the desktop pane against the SDK drawer, which was the one cluster of Aims and one Decision Now row with no division to sit under. Captions added above all eight figures, the Diagram split into its two real figures, `## Items to Finish` and `## Where we are` renamed where the prose still cited them, JL's quotes translated on the English-only board, and `## Files` grouped under ⚙️ Engines with the three files the page names but never listed
 260802 0117 · Opening rebuilt to QB4 §1. The old version put the whole rationale BELOW the first blank line, so the stage showed one bare question and the four sentences that explained it were hidden in `More details` (QB4 §1.1.2 names this exact failure by example). The visible paragraph is now 4 sentences, about 455 characters, and follows the required shape: the question, what its own words mean with a real value for each, why that is hard, what this page decides. `More details` was one prose block and is now five bold-labelled parts per QB4 §1.3.1, including the bearing on `QD3` and `QD5` that QB4 §1.2.2 requires and the Opening did not have
 260801 · JL compared the desktop terminal pane with the SDK drawer and called it the uglier of the two, asking directly for the comparison. Five defects recorded and now held in Content 6: the L-shaped session rail, three unjoined colour zones, CJK clipped at the right edge, a viewport-positioned notice landing outside the pane, and a URL wrapping as bare characters. Split into the cheap layout items, `QD3`'s wcwidth item, and the structural one: the drawer renders a document and the terminal renders a screen, which is the 🎨 Decision Now row

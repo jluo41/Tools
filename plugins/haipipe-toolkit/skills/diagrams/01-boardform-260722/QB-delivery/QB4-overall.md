@@ -1,5 +1,5 @@
 # Page · the template: one grammar every page kind obeys
-state: ✅ SETTLED · JL closed it 260802. 11 of 14 Aims met; 3 explicitly HELD with the reason on each row, which is what the contract asks of a closed page
+state: ✅ SETTLED · JL closed it 260802. 12 of 15 Aims met (A6.1 arrived and was met 260804); 3 explicitly HELD with the reason on each row, which is what the contract asks of a closed page
 owner: CC
 method: one page grammar, one fixed on-stage order; each section's own rules live in this page's matching Content division
 session: 67eb4e34-029f-4986-9d6e-645e16f23267
@@ -184,6 +184,7 @@ Required and optional markers belong in the first body line, never in the headin
 🗣 WHAT YOU TYPE IN A SESSION
    "create a new page on <topic>"        "update QB2"  ·  "work on QB2"
    "add a page about <topic> to QB"      "bring QB2 up to the standard"
+   "run QB2" ── the bounded page loop · receipts under _runs/ · QB5 owns it
         │                                        │
         └────────── /haipipe-board ──────────────┘
                      routes anything about ONE PAGE to
@@ -785,7 +786,7 @@ This part owns only the rule that evidence attaches in Content, and why.
 #### 3.4.1 · A page kind owns Content, and nothing else
 (a "kind" is a family of pages that hold the same sort of material)
 Start with the word, because the rest of this part leans on it.
-A page KIND is a family of pages that hold the same sort of material: decision pages are one kind, lifecycle-stage pages are another, skill-definition pages are a third, and `3.4.2` describes all three.
+A page KIND is a family of pages that hold the same sort of material: decision pages are one kind, lifecycle-stage pages are another, skill-definition pages are a third, and `3.4.2` says where the full roster lives.
 Every kind uses the same seven sections in the same order.
 What changes between one kind and the next is Content, and only Content.
 
@@ -798,13 +799,13 @@ It may not change the folds, change the sentence grammar, or touch the render co
 That line is guarded one layer down: `src/dialect_paper.py` opens with "THIS MODULE IS DELETABLE", and `build.py` loads that route only when a board asks for `dialect: paper`.
 
 #### 3.4.2 · The kinds that exist today
-(three so far, and the list is open: a fourth gets written down here)
+(ten Page Types now, and the roster lives under `board/page-types/`, never here)
 A decision page's Content is optional and free-shaped, and nobody composes it. The author writes it.
-A lifecycle-stage page's Content is required, and its consumer writes it when the page is created, for example `haipipe-paper-stage/create-page.py`.
+A lifecycle-stage page's Content is required, and its consumer writes it when the page is created, for example the paper door's `haipipe-paper/create-page.py`.
 Board `stage.py` owns the generic page and keeps the inherited contract in sync.
 A skill-definition page is generated from a definition file inside a managed block, which is why it needed no renderer work at all.
-The three names are fixed.
-The Opening, this part, and `## Law` all use the same ones, because a kind that answers to two names cannot be looked up.
+The engine's contract word for a kind is Page Type, and ten Page Type variants ship under `board/page-types/`; QB6 carries the catalog.
+A page resolves to exactly ONE of them through a machine-readable key, because a kind that answers to two names cannot be looked up.
 
 ### 4 · Aims
 **Aims map onto Content**: durable targets, grouped by the division they serve.
@@ -981,7 +982,7 @@ So the test is not "is this a choice?" but "does anything stop until it is answe
 Never ask for a ruling only in chat (JL 260802: "don't put the decision in the claude code session").
 Write the row FIRST, in the owning page's `States › Decision Now`, and then say in chat which page and which row. The chat line is a pointer, not the decision.
 Do not hunt for the page by hand: `haipipe-board-routing` takes the decision, reads `board.md`'s `## Pages` as the only registry, and lands it on the owning page and section.
-It writes the row, and it closes one only after the person has answered it; see `### 5.2.6`.
+It writes the row, and it closes one only after the person has answered it; see `### 5.2.8`.
 Three things fail when it lives in a session instead. Nobody else can see it, so a decision that needs a second person cannot reach them. It has no `Blocks:` and no `Default:`, so an unanswered question just evaporates rather than resolving itself. And it leaves no record of the options that were weighed, which is what the next person to reopen the question actually needs.
 The test is simple: if it is a question only YOU can answer, it is a row. If it is a question I should have answered myself, `### 5.2.2` says decide it and put it in Log.
 
@@ -1029,7 +1030,7 @@ When the person chooses, the row does not move down the page. It splits, and bot
 
 There was a subsection holding answered decisions here until 260802. It was history sitting inside a snapshot, which `5.3.1` forbids two paragraphs below it, and three of its four entries were already duplicated in Log.
 
-#### 5.2.6 · A machine closes a row the person has already answered
+#### 5.2.8 · A machine closes a row the person has already answered
 (an answered row left open is a page lying about what is pending)
 JL 260802: "I think you should close it automatically, please go ahead and do it."
 Until then a machine wrote rows and never ticked one, so a row answered in chat and acted on within the hour still rendered as pending, and the page reported work as waiting that had already shipped. That is the drift the board exists to prevent, arriving through the one section meant to belong to the person.
@@ -1211,7 +1212,8 @@ Log holds what changed and why, one dated line per change.
 #### 7.1.4 · Log is the only one with an order
 (newest first, because a reader arriving cold wants the current state, not the origin story)
 Every other fold is a set, so its entries can be arranged however reads best.
-A Log line carries the date, what changed, and the reason, and it names the person when the change was a ruling rather than an implementation.
+A Log line is one line per event, and its shape is ruled (260806): `- <date> [<time>] · [<PHASE>-<actor>] <what moved> [→ pointer]`.
+The actor tag names the AUTHORITY exercised, not whoever typed; a bare `[CC]` is only for meaning-preserving housekeeping.
 It is also the only place the page may contradict itself. A Log line records what was true when it was written and is never rewritten, and that is exactly what makes the stale-sentence rule enforceable everywhere else.
 
 **7.2 · ✍️ How to write one**
@@ -1427,7 +1429,7 @@ Its report takes the same shape as any other evaluation: one row per file, the s
 It must also report any contradiction it finds INSIDE this page, because a defect in the standard is worth more than any fix downstream of it.
 
 ### 10 · Using this page
-**Two verbs**: what you say to make a new page, and to bring an existing one up to this.
+**Three verbs**: make a new page, bring an existing one up to this, or run one through the loop.
 
 ```
 🚪 ONE DOOR · say it to haipipe-board · page work routes to haipipe-board-page
@@ -1440,15 +1442,18 @@ It must also report any contradiction it finds INSIDE this page, because a defec
                        ▼
         ⚙️ build ▸ 🧪 check ▸ ✅ zero findings, read on the RENDER
 
+🔁 "run <page>" ── the bounded page loop · receipts under _runs/ · QB5 owns it
+
 🚫 you never pick the sub-skill, and never call build.py or check.py
 🚫 not done when the source is right: a dead watcher and a shut <details>
    each produced a correct file and a wrong page
 ```
-📘 Establishes what a reader DOES with everything above: two things to say, and what finished means.
+📘 Establishes what a reader DOES with everything above: three things to say, and what finished means.
 
 #### 10.1 · There is one door, and it is a sentence
 (say it to `haipipe-board`; page work routes itself)
-Say `create a new page on <topic>` or `update <page>` and you are done choosing. `haipipe-board` is the door for everything about a board, and anything about ONE PAGE routes to `haipipe-board-page`, which owns this contract and drives that page end to end (JL 260802).
+Say `create a new page on <topic>`, `update <page>`, or `run <page>` and you are done choosing. `haipipe-board` is the door for everything about a board, and anything about ONE PAGE routes to `haipipe-board-page`, which owns this contract and drives that page end to end (JL 260802).
+`run <page>` is the third verb: it drives one page through the bounded DRAFT, PROBE, REVISE, CHECK loop with receipts under `_runs/`, and QB5 owns that loop.
 You never pick the sub-skill, and you never call `build.py` or `check.py`. Someone asking for one page should not have to know which skill or which script does what.
 Routing is by SCOPE, not by wording: one page belongs to the page skill, the board and its structure belong to the board skill, and a request naming a page id or a path is the page skill's even when it sounds structural, because whoever asks is looking at one page.
 `haipipe-board` still owns the machinery. The page skill CALLS the engine rather than containing it, which is the same separation `### 9.3.3` requires of the reviewer: one source of rules, several things that run them.
@@ -1563,10 +1568,10 @@ That is `### 6.1.1`'s question in reverse, and it is what turns one page's repai
 - ✅ P1 · The final fresh-context reviewer found the Opening, ownership boundaries, extension points, evaluation rubric, and Aims/States coherent after the conflict repairs.
 - ✅ P2 · Met 260802 by JL's ruling A. The Excalidraw history moved to `QB7 ### 4`; the group-title half named `QD4` as its target, which was a slip, since `QD4` never mentions the marker and `QB4 ### 3` already carries the contract in 19 places. Routed and recorded, which is exactly what the Done when allows.
 - ✅ P3 · `Folds` is the settled name. JL ruled it on 260801 in one sentence, "let's make this to be 'Folds', why 'fold', very bad", choosing the plural over the singular. CC read the second half as an objection to the word, recommended `Memory`, and left a Decision Now row open for a day; JL closed it on 260802 by asking whether that rename was seriously intended.
-- ❄️ P4 · HELD 260802 on JL's close. Not started. `haipipe-writing` does not exist yet; the rules in `### 9` were applied by hand all evening, which is the evidence that they are followed and also the evidence that nothing automates them.
+- ❄️ P4 · HELD 260802 on JL's close. `haipipe-writing` now exists under `writing/haipipe-writing` and carries the ✎ record-per-sentence rewrite the Done when asks for, but the Done when has not been re-tested against it since the hold, so the hold stands until it runs on one authored division.
 The canonical Aims/States model is independently validated across the source contract, renderer, and public generation paths.
 The section-by-section evaluation path is implemented and independently validated.
-Two rulings wait on JL and remain explicit below.
+Nothing waits in Decision Now; the three ❄️ Aims are explicitly HELD on JL's 260802 close, each with its reason on the row.
 The dated implementation history lives in Log, so this section stays a current snapshot.
 
 ## Files
@@ -1927,6 +1932,7 @@ The dated implementation history lives in Log, so this section stays a current s
 >> CC0804: yes. The Page now declares relation, phase, target Page, and `page`/`§n` scope under one fixed group. A scoped division brings its target Opening and matching Aims/States, the reader follows one hop, and the checker rejects a dead Page or scope before an agent works without it.
 
 ## Log
+- 260806 2059 · [REVISE-CC] swept to the 260806 architecture; §3.4.2's three-fixed-kinds roster corrected to the ten Page Types under `board/page-types/` (QB6 carries the catalog), and §7.1.4 now carries the ruled Log line grammar
 260804 2246 · The post-fix fresh-context trial passed the behavioral gate: without this discussion it loaded the base Page and CHECK contracts, read QB4 whole, selected exactly QB5 §8 from ALL and §10 from CHECK, measured the packet at 139 lines / 9,127 characters, saw QB5 identity and Opening exactly once, followed no second-hop link, ran all ten context tests, and reported zero `related-*` checker findings. It made no edits and did not claim the Files design itself was semantically approved.
 260804 2240 · The first fresh-context trial discovered the right two CHECK scopes and stopped at one hop without prompting, then exposed one context-cost defect: QB5's identity and Opening were repeated once per selected scope. The reader now emits that shared frame once per target Page while retaining each scope's Content/Aims/States closure; the focused phase-filter test asserts the Opening appears once when PROBE selects two scopes from one Page.
 260804 2229 · `### 6.4` and A6.1 implement JL's Related Board Pages proposal as bounded Page context rather than configuration reference: a typed row declares relation, Page Phase, Page id, scope, and Board-root-relative source; `pagecontext.py` returns one phase's one-hop packet; `check.py` validates every target and scope; the template, Board form, Page skill, RUN packet, Files map, Law, Discussion, and focused fault tests now carry the same rule.

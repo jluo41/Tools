@@ -43,7 +43,7 @@ Translating it into the page's own vocabulary loses the thing that made it a rep
   │ │ ⚡ streams live │ │                │  📖 reads the code it discusses,      │
   │ └────────────────┘ │ ◄───────────── │     not just the board folder         │
   │ 🔧 handle N cmts    │  📄 one JSON   │  🚦 can_use_tool ─ the gate (3 tiers) │
-  │ 🧠 Opus4.8 / high   │  per line      │    🔒 restricted: this Q's files only │
+  │ 🧠 Opus5 / high     │  per line      │    🔒 restricted: this Q's files only │
   │ ⌨️ [input]  [⏹]    │                │    🙋 full·ask: prompts for the rest  │
   └────────────────────┘                │    🚀 full·auto: bypass, no prompts   │
                                         └───────────────┬──────────────────────┘
@@ -110,7 +110,7 @@ Setting `canUseTool` is what turns the channel on: the SDK appends `--permission
    turn2 ─┼──▶ 🤖 one live claude ──▶ 💬
    turn3 ─┘
 
-🖥️ serve.py    ▶ one process PER TURN     🐢 8.1s first token · 💸 ~$0.9
+🖥️ serve.py, before M1 ▶ one process PER TURN  🐢 8.1s first token · 💸 ~$0.9
    turn1 ──▶ 🤖 boot 🔥 ~150 skills ──▶ 💬 ──▶ 💀 dropped
    turn2 ──▶ 🤖 boot 🔥 ~150 skills ──▶ 💬 ──▶ 💀 dropped
                     ⬆ the WHOLE gap: we drop the client every POST
@@ -118,12 +118,13 @@ Setting `canUseTool` is what turns the channel on: the SDK appends `--permission
 The extension's read loop runs ONCE for the life of a session and pushes each new user turn into the live process with `inputStream.enqueue(...)`.
 That is what `--input-format stream-json` buys: stdin is a STREAM of turns, not a single prompt, so one process serves the whole conversation.
 Our `ClaudeSDKClient` has the identical capability, and its own docstring names our exact use case ("Building chat interfaces or conversational UIs", "Multi-turn conversations with context").
-serve.py throws it away: `chat()` opens `async with ClaudeSDKClient(...)` inside a per-POST `anyio.run(run)`, so every message connects, runs one turn, and disconnects.
-That single line is the whole "not that good": the 8.1s first token and the near-$0.9 full-tier message are both the cost of reconnecting and reloading the ~150-skill registry per message.
+serve.py threw it away: `chat()` opened `async with ClaudeSDKClient(...)` inside a per-POST `anyio.run(run)`, so every message connected, ran one turn, and disconnected.
+That single line was the whole "not that good": the 8.1s first token and the near-$0.9 full-tier message were both the cost of reconnecting and reloading the ~150-skill registry per message.
 
-The blocker is equally specific, and it is not the protocol.
-The SDK forbids using one client across async runtime contexts ("you must complete all operations with the client within the same async context"), while serve.py runs a fresh `anyio.run()` per request inside `ThreadingHTTPServer`.
+The blocker was equally specific, and it was not the protocol.
+The SDK forbids using one client across async runtime contexts ("you must complete all operations with the client within the same async context"), while serve.py ran a fresh `anyio.run()` per request inside `ThreadingHTTPServer`.
 So holding the client means one long-lived event-loop thread owning every live client, with queues in and out; the HTTP handler stops owning the loop and becomes a producer and consumer of it.
+M1 built exactly that on 260731, and the held client lives in `live/chat.py`'s SessionHost (States A4.1).
 
 ### 4 · What "exactly the same as the extension" costs, in milestones
 ```
@@ -170,8 +171,8 @@ Three different things get called "the JS version", and they have three differen
   There is no capability we would gain by switching.
 
 So the recommendation is to stay in Python, and the decisive evidence is what else serve.py is (JL asked 260731, "what does serve.py do besides the claude code?").
-It is 2938 lines across 20 HTTP routes plus the terminal WebSocket, and the chat is one job of seven.
-Counting lines of method body per area:
+Measured 260731 it was 2938 lines across 20 HTTP routes plus the terminal WebSocket, the chat one job of seven; the monolith has since been split, so today `cli/serve.py` is a 496-line HTTP router and the seven jobs live as `live/` modules (`chat.py`, `term.py`, `activity.py`, `write.py`, `xcal.py`, `structure.py`, `shell.py`, `home.py`).
+Counting lines of method body per area, as measured then:
 
 ```
    443  excalidraw     proxy the app · per-page frames · save scenes · hydrate and
@@ -232,7 +233,7 @@ So "exactly the same" is exact at the engine and protocol layer, and deliberatel
 
 ### 8 · What a drawn interface has to be given
 ```
-🎛 FOUR things nobody gave the drawer          22 defects · ✅12 🟡2 ❌8
+🎛 FOUR things nobody gave the drawer          22 defects · ✅16 🟡2 ❌4
    🪟 THE VIEWPORT IS BORROWED      it is fixed OVER a page it does not control
    🔁 THE VIEW IS REGENERATED       build.py bakes it into every page, so it dies with each
    ✍️ THE RECORD IS WRITTEN ONCE    at `done`, the last thing the stream ever sends
@@ -255,27 +256,29 @@ Every row below is a thing JL hit, read off both session transcripts rather than
    ✅ a wheel over the drawer scrolled the PAGE behind it
    ✅ opening landed at the oldest message, not the newest
    ✅ scrolling up during a live turn snapped the reader back down
-   🟡 below 820px it overlays instead of docking; ⇤ Page shipped, R3 owed
+   🟡 below 820px it overlays instead of docking; ⇤ Page shipped; R3 ↪ `QD5`'s
+      shell, open only for a page opened alone
       └ the phone is the usage mode, not the edge case (JL 20:16)
 
-🔁 THE VIEW IS REGENERATED PER PAGE                            7 · ✅3 🟡1 ❌3
+🔁 THE VIEW IS REGENERATED PER PAGE                            7 · ✅5 🟡1 ❌1
    ✅ close → reopen rebuilt every bubble; the flash read as janky
    ✅ reopening mid-turn did nothing: the guard returned above `.on`
    ✅ a reload rebuilt the chat box while the terminal held the session
    🟡 a replayed session does not paint like a live one
       └ markdown · tool cards · timestamps landed; gate diffs + 💭 thinking owed
-   ❌ starting a new session leaves the page unchanged, with no switch
+   ✅ starting a new session leaves the page unchanged, with no switch
+      └ closed by 🗂 Sessions + ＋ New session (A8.8, A8.10)
    ❌ history has no selectable turn boundary, so two turns cannot be compared
-   ❌ the drawer is generated into every page at all              → §9 R2
+   ✅ the drawer is generated into every page at all   ↪ answered by `QD5`'s shell (§9 R2)
 
-✍️ THE RECORD IS WRITTEN AT EXACTLY ONE MOMENT                 6 · ✅4 ❌2
+✍️ THE RECORD IS WRITTEN AT EXACTLY ONE MOMENT                 6 · ✅6
    ✅ the reply appeared only after sending the NEXT message
    ✅ the drawer never re-asked the server: syncFromServer had one caller
    ✅ a cut-short turn dropped the text that had already arrived
    ✅ a group's history was written under `<id>` and read under `G:<id>`
-   ❌ an in-flight turn dies with the HTTP response that carries it → §9 R1
+   ✅ an in-flight turn dies with the HTTP response that carries it → §9 R1, closed
       └ navigate away · switch a setting · let it run long
-   ❌ a ten-minute turn hits the HTTP timeout                     → §9 R1
+   ✅ a ten-minute turn hits the HTTP timeout                     → §9 R1, closed
 
 🎛 THE CONTROLS WERE NEVER GIVEN                               5 · ✅2 ❌3
    ✅ 🗂 Sessions, as a composer tab rather than a fold
@@ -285,8 +288,8 @@ Every row below is a thing JL hit, read off both session transcripts rather than
    ❌ two named sessions on one page cannot be live at once
       └ blocked on a `QD1` ruling: HOLD keys on the SCOPE
 ```
-Read down the ❌ column and the shape is not eight separate builds.
-Five of the eight are `QD1`-blocked or closed by §9's R1 and R2, one is R3, and only two are genuinely their own work: `@`-mentions and plan mode, which are the two the page has always called chrome.
+Read down the ❌ column and four remain of the original eight; the rest were closed by §9's R1 and `QD5`'s shell.
+One is `QD1`-blocked, one is the turn-boundary compare, and only two are genuinely their own work: `@`-mentions and plan mode, which are the two the page has always called chrome.
 
 #### The viewport is borrowed
 The drawer is `position:fixed` over a page it does not control, so anything it declines to handle, the page handles instead.
@@ -319,7 +322,7 @@ What is still missing is `@`-mentions and plan mode, and they stay last on purpo
 
 ### 9 · The one build that closes them, and it already exists next door
 ```
-🖥️ QD3 terminal — already right              💬 QD2 chat — the gap
+🖥️ QD3 terminal — already right              💬 QD2 chat — the gap (closed by R1)
    PTY master fd                                claude_agent_sdk
         │ one reader thread  term.py:195             │ one HTTP handler
         ▼                                            ▼
@@ -331,14 +334,14 @@ What is still missing is `@`-mentions and plan mode, and they stay last on purpo
    🔌 reconnect → ws_send(b"0"+ring)  term.py:679   🚪 reader leaves → emit() fails
    ⏳ grace deadline → 秒接, 进程根本没死过            → stop.set() → the turn DIES
 ```
-The target is not a new architecture, it is the one QD3 shipped: a terminal survives a reload because its bytes go to a RING that clients attach to, and chat's bytes go straight down the socket of whoever happened to ask.
-That single asymmetry is the mechanism under three of the five rows above, and it is why the VS Code panel feels different rather than merely nicer.
+The target was not a new architecture, it was the one QD3 shipped: a terminal survives a reload because its bytes go to a RING that clients attach to, while chat's bytes went straight down the socket of whoever happened to ask.
+That single asymmetry was the mechanism under three of the five rows above, and it is why the VS Code panel felt different rather than merely nicer.
 
-- R1 · the ring, ported from `term.py` — 🟡 BUILT 260801, server half proven, one client defect open
+- R1 · the ring, ported from `term.py` — ✅ BUILT 260801, proven in a real browser 260802
   `live/turnring.py` is the module: one `Turn` per question key, events carrying a monotonic `n`, a 1MB/20k cap that trims from the front and reports a `gap` rather than a silently short stream, and a 600s grace window. `emit()` now pushes into it and `chat()` spawns a runner thread, so the request is no longer the turn's owner but its FIRST READER; `POST /_board/attach {file, cursor}` is how the second one joins.
   Proven by `checks/ring_e2e.py`, which is shaped like the complaint rather than like the code: start a turn, hang up the socket the way navigating does, re-attach at the cursor, and demand the rest. It gets it — 117 events and an 11k-character answer that the original reader never saw.
   Two defects the wire test could not see and a real browser did, which is the rule working: a FINISHED ring was re-attached on every 25s heartbeat and repainted its answer each time (fixed: attach declines a finished turn, because once it ends the transcript is the right source), and the cursor was keyed on `logKey()`, which folds in a session id that CHANGES mid-turn (fixed).
-  STILL OPEN, and it is why this row is 🟡 rather than ✅: after a real reload the drawer does attach — `REJOIN at cursor 2` appears in its own diagnostics — but at a cursor near zero rather than where the reader left off, so it replays instead of resuming. The mechanism is live; carrying the reader's place across the reload is not.
+  The last client defect, attaching at a cursor near zero so the drawer replayed instead of resuming, closed 260802: `checks/guichat.mjs` T6 reloads mid-turn and rejoins at cursor 137 against a pre-reload cursor of 99 (States A9.1).
   `emit()` writes into a per-session outbox with a monotonic cursor and fans out to every attached client, instead of writing to one `wfile`.
   A departed reader stops being an event: no `stop.set()` at chat.py:628, no `fut.cancel()` + `host().evict()` in the `finally`, and `gate()` keeps answering permission requests for the life of the TURN rather than the life of the request.
   Closes: the turn dying on navigate, reload, config switch or timeout; the ten-minute turn; and `这一题当前没有在跑的对话`.
@@ -473,8 +476,8 @@ Read this section as the manual and the test list at once: if a row here is wron
 
 ### P · Page-level
 - ✅ P1 · `claude-agent-sdk 0.2.126` starts a session, reads board files and answers; auth needs no work of its own because the SDK drives the machine's `claude` CLI and inherits the logged-in OAuth. `session:` sits in the page header beside `state:` and `owner:`. Cost went from a $0.92 default to $0.24 by narrowing, and a follow-up message is $0.012.
-- ✅ P2 · Three tiers ship, default full·ask (JL ruled 260723). The restricted tier hard-disables Bash, Task, Skill and Web through `disallowed_tools`, because `can_use_tool` is not reliably invoked for Bash and a blacklist is the solid way; verified by forcing Bash and getting "Bash exists but is not enabled in this context". The gate has genuinely fired: a forced `Edit` against `board.md` was blocked at the tool layer with `denied: ['Edit -> …/board.md']` and the file was untouched, comparing resolved absolute paths rather than name strings.
-- ✅ P3 · `checks/guichat.mjs`, 27 assertions, green. It drives the REAL split shell rather than a page in isolation: it opens a board url, checks the header offers both chats, clicks `💬 GUI`, then reaches into the chat frame for everything else. T1 the split · T1b what you CLICK is what OPENS, from a cleared storage · T2 a usable composer · T3 an answer whose markdown is RENDERED, asserted on `<strong>`/`<code>`/`<li>` rather than on text · T4 no apology bubbles and no JS exceptions · T5 a reader who scrolls up during a live turn is still there nine seconds later · T6 the ring, above · T7 close and reopen neither loses nor duplicates a transcript · T8 🗂 Sessions populates · T9 the meter reads `ctx N%`.
+- ✅ P2 · Three tiers ship; full·ask was the default from JL's 260723 ruling until 260802, when he ruled full·auto the default, so a browser that names no tier gets `bypass` (`live/chat.py`). The restricted tier hard-disables Bash, Task, Skill and Web through `disallowed_tools`, because `can_use_tool` is not reliably invoked for Bash and a blacklist is the solid way; verified by forcing Bash and getting "Bash exists but is not enabled in this context". The gate has genuinely fired: a forced `Edit` against `board.md` was blocked at the tool layer with `denied: ['Edit -> …/board.md']` and the file was untouched, comparing resolved absolute paths rather than name strings.
+- ✅ P3 · `checks/guichat.mjs`, 27 assertions at the 260802 tick and grown to the T1-T17 suite since, green. It drives the REAL split shell rather than a page in isolation: it opens a board url, checks the header offers both chats, clicks `💬 GUI`, then reaches into the chat frame for everything else. T1 the split · T1b what you CLICK is what OPENS, from a cleared storage · T2 a usable composer · T3 an answer whose markdown is RENDERED, asserted on `<strong>`/`<code>`/`<li>` rather than on text · T4 no apology bubbles and no JS exceptions · T5 a reader who scrolls up during a live turn is still there nine seconds later · T6 the ring, above · T7 close and reopen neither loses nor duplicates a transcript · T8 🗂 Sessions populates · T9 the meter reads `ctx N%`.
       Every turn is scoped, haiku and low effort, so a full run costs cents. This is what nine unclicked fixes on 260801 should have had, and it exists because JL made the point a third time ("please go ahead to make sure the GUI Chat is good, no, very very good to use"). ↪ The axis this belongs to is `QF4`.
 
 ### Decision Now
@@ -492,15 +495,17 @@ The calls only JL can make. CC ticks nothing here, and every row names the Aim i
 
 ## Files
 ### The host
-- `cli/serve.py`
-  `chat()`: `ClaudeSDKClient` + the `can_use_tool` permission callback + NDJSON streaming, all here.
+- `live/chat.py`
+  `chat()`, the SessionHost holding one `ClaudeSDKClient` per question, the `can_use_tool` gate, and the NDJSON stream; `cli/serve.py` is now the 496-line HTTP router that dispatches `/_board/chat` here.
+- `live/turnring.py`
+  The ring: one `Turn` per question key, monotonic cursors, the 1MB/20k cap, the 600s grace.
 
 ### The drawer surface
 - `cli/build.py`
   The generator embeds the drawer assets into each self-contained board page.
-- `assets/js/00-header.js`
-  Drawer markup and behavior, including title binding and terminal/chat mode switching.
-- `assets/css/10-focus.css`
+- `assets/js/10-drawer/20-chat/`
+  The chat drawer itself: `00-open.js`, `10-sessions.js`, `20-focus.js`, `30-render.js`, `40-permissions.js`, `50-prefs-paste.js`; `assets/js/00-header.js` no longer carries any drawer code.
+- `assets/css/20-drawer.css`
   Drawer layout and visual hierarchy, including the compact neutral header.
 
 ## Lesson
@@ -539,6 +544,7 @@ Every tool use asks it for allow/deny first. effort: how much thinking the model
 >> CC0725: simplified it into a neutral utility bar. The id is quiet metadata, the full title uses available width with ellipsis, and `>_` plus `×` are matching compact controls with accessible labels.
 
 ## Log
+- 260806 2146 · [REVISE-CC] swept to the 260806 architecture; chat() and the drawer moved on disk (`live/chat.py` + `assets/js/10-drawer/20-chat/` + `assets/css/20-drawer.css`, serve.py now a 496-line router, default model Opus5, no-tier default `bypass` per the 260802 ruling), and §9 R1 + the §8 tally caught up with A9.1's ✅
 260803 · Eight rounds, two real bugs closed, and both were things a reader hits in the first minute. ONE CHAT PER PAGE: the chat frame never followed the page pane, so page two's TUI was page one's terminal — `mirror()` re-points it now, and holds off mid-turn. THE MODE SWITCH: clicking `💬 GUI` gave the TUI, and after three failed fixes the instrumented answer was a third writer, `80-restore.js` reattaching a parked terminal a second AFTER the click landed correctly; it now stands down unless the TUI is the chosen mode. Two checks had to be re-aimed rather than re-run, because they encoded the OLD rule: `tuichat` U3 asserted the terminal survives a page move untouched, which was true only while the binding bug existed, and `guichat` T10 fingerprinted the pane while it was rebuilding. All four suites green on a fresh browser
 260802 · A8.9 narrowed from flaky to deterministic, and I stopped rather than kept patching. A switch-only probe with no model turns, four pinned cases a run, says `gui → TUI` always works and `tui → GUI` never does, with the pane landing in TUI in every case. Three fixes were tried and none landed: boot-time derivation (helps only a cold frame), the shell writing `board-tui-default` itself on every click (no effect, which suggests the drawer is not reading it at the deciding moment), and removing the fallback's stand-down (made it deterministic-worse, reverted). Also learned about my own testing: the long suites were slow because T6 needs a turn that outlives a reload, so a 1500-line count, and re-running for flakiness cost ten minutes a pass — the switch-only probe answers this question in under a minute and should have been written first
 260802 · A8.9 reopened by making its own test honest. T1b used to clear storage and click, which lands on the shell's built-in default of `tui`, so "click GUI" was only a real question half the time and inherited the previous suite's leftovers; that is why it passed, then failed, then passed. Pinned to the OPPOSITE mode before each click it fails consistently: with `board-split-mode` on `tui`, clicking `💬 GUI` leaves the strip lit on TUI. The earlier fix derives the mode at pane BOOT and is right for a cold frame; a frame that is already loaded never boots again, so the live-switch path is the one still broken. Two runs, same result, no coin-flip left in the test

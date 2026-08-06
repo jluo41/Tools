@@ -32,6 +32,13 @@ QUEUED_STATES = {"planned", "commissioned", "deferred"}
 ENTRY_STATES = RESOLVED_STATES | QUEUED_STATES
 
 
+# The paper's drawer of bound records. `QA-probe` is the name ruled on 260806 so
+# the twin law reads off the filesystem rather than only out of this contract;
+# `probes` is the pre-rename name and stays readable while each paper migrates.
+# Both are globbed; new work writes the first.
+PROBE_DIRS = ("QA-probe", "probes")
+
+
 def page_id(path: Path) -> str:
     """Return the stable S page id encoded at the start of a filename."""
     match = re.match(r"^(S-[A-Za-z]+-\d+[a-z]?)", path.name)
@@ -89,9 +96,10 @@ def check_topic_entries(board_dir: Path, pages: dict[str, Path], report) -> None
 
     entries: dict[Path, None] = {}
     for path in pages.values():
-        if "probes" in path.relative_to(board_dir).parts:
+        if set(PROBE_DIRS) & set(path.relative_to(board_dir).parts):
             entries[path] = None
-    for path in sorted(board_dir.rglob("probes/*/*.md")):
+    found = [p for d in PROBE_DIRS for p in board_dir.rglob(f"{d}/*/*.md")]
+    for path in sorted(found):
         parts = path.relative_to(board_dir).parts
         if any(s.startswith(("_", ".")) for s in parts[:-1]):
             continue

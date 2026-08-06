@@ -1,6 +1,6 @@
 # Hosting: local vs server
 
-state: 🟡 PARTIAL · read-only half verified; no route ruled, nothing deployed
+state: 🟡 PARTIAL · route ③ ruled 260727; tier unnamed, no auth anywhere, nothing deployed
 owner: JL
 method: first sort out "who needs to see it", then decide local vs. server
 
@@ -19,8 +19,8 @@ It succeeds when a second reader can use the promised tier through a protected, 
 
 ```
                      the static half         the live half (files must be local)
-                  board.html               comment write-back · chat · terminal
-                  ─────────────            ──────────────────────────────────
+                  board/index.html         comment write-back · chat · terminal
+                  ────────────────         ──────────────────────────────────
 ① today: local     ✅ 127.0.0.1:5599        ✅ everything works      only you can see it
 ② static export    ✅ opens anywhere         ❌ all gone             enough for a look
 ③ full on server   ✅                        ⚠️ needs auth + a write-permission audit   real collaboration
@@ -33,8 +33,13 @@ It succeeds when a second reader can use the promised tier through a protected, 
 - [ ] Sort out "who needs to see it, and which half"
       A read-only glance (②) or commenting and working together (③).
       Different answers, completely different builds.
+      The HALF is ruled: JL picked ③ on 260727 ("modified as the real ones"), so what is left open
+      here is WHO, which still decides the auth scheme and the attribution scheme below.
 - [ ] Settle the read-only route
-      Static export: `board.html` is self-contained and should open anywhere, but `fig/` and `## Links` relative paths must travel with it; verify once.
+      Static export: a board no longer builds to one self-contained file. Since engine 0.93.0 (260801)
+      the only generated shape is a `board/` tree, `index.html` plus one file per group and per page
+      plus shared `board/_assets/`, so the export that travels is a FOLDER; `fig/` and `## Links`
+      relative paths must travel with it; verify once.
       The verification itself ran on 260727 and split into two answers: the page BODY travels
       (zero absolute-origin references, no iframes, no `/_excalidraw` reference), while the
       outward `## Links` do NOT (1019 `../` hrefs into `sections/`, `tasks/`, `discoveries/`).
@@ -62,7 +67,9 @@ It succeeds when a second reader can use the promised tier through a protected, 
       required there, covering the write POSTs and `/_board/page/*` alike.
 - [ ] 🎚 the chat privilege level is pinned server-side, if chat is ever exposed
       `/_board/chat` accepts `scope: "bypass"` from the POST body, which disables the permission
-      callback entirely. Moot while `INLAB_BOARD_LIVE` is empty and the endpoint 501s; it becomes
+      callback entirely, and since JL's 260802 default flip in `live/chat.py`'s `chat_scope()` a
+      request that names NO tier gets `bypass` too, so a caller does not even have to ask for it.
+      Moot while `INLAB_BOARD_LIVE` is empty and the endpoint 501s; it becomes
       required the moment tier B is chosen. Closes when the ceiling is set by the server, or when
       tier A is ruled permanent and this line points at that ruling.
 
@@ -76,7 +83,11 @@ It succeeds when a second reader can use the promised tier through a protected, 
       opening a terminal or a comment write through it, not by the HTML alone.
 - [ ] 🔗 a short per-paper path exists
       JL asked for `paper.jjluo.com/<paper>/`, while `serve.py` is rooted at the repo and so serves
-      the full repo-relative path. Closes when an alias maps one short segment to one board folder.
+      the full repo-relative path. The PATH half shipped on 260802 and belongs to `QE2`:
+      `/b/<slug>[/<page-id>]` answers 302 with the real generated file, owned by `live/home.py` and
+      routed from `cli/serve.py`, and it cut this board's URL from 131 characters to 42.
+      What is still open HERE is the host half: the short segment resolves on localhost only, so
+      this line closes when the same short path answers under a public name.
 
 ### A real second reader
 - [ ] Decide how comments attribute to people
@@ -94,10 +105,14 @@ It succeeds when a second reader can use the promised tier through a protected, 
   `serve.py` has write endpoints (comment write-back, chat, terminal).
   Binding 0.0.0.0 hands disk writes and terminal spawning to the network, with no auth at all today.
 - The static half is already quite independent
-  The invariant guarantees "strip every `<script>` and every question plus all body text remains".
+  The invariant guarantees "strip every `<script>` and every question plus all body text remains",
+  and `cli/build.py` still asserts it on every build, now per page across the tree.
   So the technical bar for read-only distribution is low; what is missing is verification and rules, not capability.
+  What CHANGED is the packaging, not the invariant: the deliverable is the `board/` folder, 66 files
+  and 14 MB on this board, not one file a reader can be handed as an attachment.
 - Route ③ now has a concrete vehicle (260724)
   `haichat-inlab` gained `boards_api.py` (`QE2`/`QE3`): SPACE mounting, board discovery, page serving, comment write-backs.
+  It moved to the sibling `platforms/HAIChat-SPACE/haichat-board/` the same day, which is where it lives today; `QE3`'s Log carries that move.
   It still binds locally, so nothing about THIS question's decisions (who can reach it, auth, attribution) has changed; but when JL picks route ③, the thing to expose now exists, and it lives inside a service that docker-compose already deploys.
 - Route ② was measured on a real board (260727)
   Asked against `Paper-Personality2Opioid-MISQ2026/0-lifecycle/board.html`, 1.6 MB, 60 pages.
@@ -107,6 +122,10 @@ It succeeds when a second reader can use the promised tier through a protected, 
   What does not survive is drill-through: 1019 hrefs begin `../` and leave the board folder for
   `sections/`, `appendices/`, `tasks/*/QA/`, and `discoveries/*/QA/`. Exporting the one file
   publishes every ruling and every stage page and 404s every citation of the evidence behind them.
+  The 1.6 MB single file it measured is gone: engine 0.93.0 (260801) made the `board/` tree the only
+  build output and retired `board.html`. The drill-through finding survives the repackaging unchanged,
+  since the dead `../` hrefs are written by the page body, and the portability finding now has to be
+  re-measured against a tree page plus its `_assets/`.
 - The named IP is a tailnet address, not a host (260727)
   `<tailscale-ip>` is this machine's Tailscale address; `tailscale status` lists another device at
   `<another-tailnet-ip>` and one node belonging to `<another-tailnet-account>`. Addresses in
@@ -138,11 +157,13 @@ It succeeds when a second reader can use the promised tier through a protected, 
   remote caller can therefore request an unsupervised full-tool Claude run spending the owner's
   ambient OAuth login. Remote exposure requires the server to pin `scope` instead of trusting it,
   and that is true even for the owner's own use over a tunnel.
-- 🖥 The terminal is ttyd over a WebSocket, and it does tunnel
-  `board.js` connects to `/_term/<key>/ws` with the `tty` subprotocol, and `serve.py` handles the
-  `Upgrade` by raw-pumping both directions. Cloudflare Tunnel passes WebSockets, so the shell
-  would work remotely rather than fail closed. Convenient, and the reason the shell has to be an
-  explicit tier rather than something inherited by accident.
+- 🖥 The terminal is a real WebSocket shell, and it does tunnel
+  `assets/js/10-drawer/30-terminal.js` connects to `/_term/<key>/ws` with the `tty` subprotocol.
+  The server side moved since 260727: `serve.py` now spawns and owns the PTY itself in
+  `live/term.py` (`spawn_pty` / `ws_term`), speaking the same ttyd wire protocol, and reverse-proxies
+  a real ttyd only under the `--ttyd` fallback flag. Cloudflare Tunnel passes WebSockets either way,
+  so the shell would work remotely rather than fail closed. Convenient, and the reason the shell has
+  to be an explicit tier rather than something inherited by accident.
 - 🐳 JL redirected the vehicle to the container, and it changes which program gets exposed (260727)
   JL: "could we keep things in a docker, and it will mount only the board folder, and will only change
   the things within that board folder", pointing at `platforms/HAIChat-SPACE/haichat-board`.
@@ -162,8 +183,9 @@ It succeeds when a second reader can use the promised tier through a protected, 
   authentication of any kind, on any route.
 - 🔨 If the gate goes in `serve.py` instead, it is small
   There are exactly four request entry points to cover: `do_GET`, `do_HEAD`, `do_POST`, and the
-  `Upgrade` branch that fronts ttyd. `serve.py` takes only four flags today
-  (`--root --port --host --daemon`), so auth has no home yet; adding it here also closes `QE6`'s
+  `Upgrade` branch that terminates the terminal WebSocket. `serve.py` takes six flags today
+  (`--root --port --host --daemon --ttyd --no-hold`) and not one of them is an auth flag, so auth
+  has no home yet; adding it here also closes `QE6`'s
   open item asking for the terminal endpoint to be gated or the reason written down. Neither Caddy
   nor nginx is installed, so putting the gate in a proxy would add a dependency to do the same job
   in a second place.
@@ -179,15 +201,20 @@ It succeeds when a second reader can use the promised tier through a protected, 
 ### Decision Now
 - [ ] 🪜 Name the tier the shared URL runs at
       Tier A is board editing only, with `/_term/` and `/_board/chat` answering 501, and it is the posture the shipped container already runs; tier B adds the shell and the chat, which run on the host and which Docker does not contain.
-      The container reading above argues for tier A; a tick here also closes the 🪜 row in Items to Finish.
+      The container reading above argues for tier A; a tick here also closes the 🪜 row in Aims.
 - [ ] ✍️ Decide how comments attribute to people
-      Today the signature is browser-side initials of the writer's choosing, and the page records no candidate scheme yet, so a tick here also closes the same row in Items to Finish.
+      Today the signature is browser-side initials of the writer's choosing, and the page records no candidate scheme yet, so a tick here also closes the same row in Aims.
 
 ## Files
 - `cli/serve.py`
   Bind address, port, write endpoints, and (future) auth all live here.
-- `board.html`
-  The static-export deliverable itself; `fig/` and `## Links` relative paths must be verified together.
+- `live/chat.py`
+  `chat_scope()` is where the client-chosen privilege tier would be pinned server-side.
+- `cli/build.py`
+  Writes the `board/` tree and asserts the strip-every-script invariant the static route depends on.
+- `board/` (generated, per board folder)
+  The static-export deliverable itself, `index.html` plus one file per group and per page plus shared
+  `_assets/`; `fig/` and `## Links` relative paths must be verified together.
 
 ## Discussion
 > JL: How do you think I can host on <tailscale-ip> with the domain of paper.jjluo.com/paperxxx/ should I can share it with ours with a password. How do you think?
@@ -214,6 +241,7 @@ It succeeds when a second reader can use the promised tier through a protected, 
 >> auth and the tunnel stay here.
 
 ## Log
+- 260806 2203 · [REVISE-CC] swept to the 260806 architecture; the retired single-file `board.html` replaced by the generated `board/` tree everywhere it was presented as live (Diagram, read-only Aim, the 260727 route ② measurement, Files), the state line corrected to record JL's 260727 route ③ ruling, `serve.py` remeasured at six flags with the terminal now its own PTY in `live/term.py` rather than ttyd, the `/b/<slug>` short route recorded as shipped on `QE2`, and the two Decision Now pointers moved off the retired `Items to Finish` name
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Redacted machine and account-specific tailnet identifiers from tracked Board history; only generic placeholders remain in source
 260727 · JL redirected the vehicle to Docker + `haichat-board`. Read the service: the container, the

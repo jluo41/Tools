@@ -71,7 +71,9 @@ So the run's first assertion is deliberately `page actually loaded`, and any gro
 - [ ] 🧰 Make it one command
       It is a script pasted into a shell today. It should be a file in the skill that takes a board folder and exits non-zero on a red assertion.
 - [ ] 🔌 Decide how it gets a browser
-      It needs Chrome plus CDP plus `websocket-client`, none of which the skill declares today; a machine without them should skip loudly rather than pass silently.
+      It needs Chrome plus CDP plus `websocket-client`, and two sibling harnesses have since answered that for the skill.
+      `cli/sentencerun.py` marks the import optional and exits 2 with a loud SKIP when no browser answers the CDP port; `checks/run.py --full` boots its own headless Chrome on a free port.
+      What is left for this run is to adopt one of the two rather than invent a third.
 
 ### Making it run without being remembered
 - [ ] 🚦 Wire it into the round
@@ -81,7 +83,8 @@ So the run's first assertion is deliberately `page actually loaded`, and any gro
 
 ## States
 The run exists and passes 36 of 36 on 260801, on the boardform board.
-It is not yet a file, nothing dispatches it, and its dependencies are undeclared, so today it protects only the rounds where someone remembers to type it.
+It is not yet a file and nothing dispatches it, so today it protects only the rounds where someone remembers to type it.
+Its dependency half is no longer open: `cli/sentencerun.py` (260801) and `checks/run.py` (260802) both shipped a browser-dependency policy this run can adopt as it stands.
 
 - 260801 JL · 🔬 Opened on JL's ask to run the browser and evaluate
   JL: "could you run the browser to do the evaluation? I think in the QF series, we might have the page to explain what things we might need to check."
@@ -95,8 +98,9 @@ It is not yet a file, nothing dispatches it, and its dependencies are undeclared
   The two text instruments and their shared trigger; this face is the third and shares that trigger.
 - `QA-design/QA3-the-round.md`
   The gate whose "reachable" condition this run is the only honest test of.
-- `QC9-roundtrip.md`
-  The loop that group ⑧ closes: markdown to html and back.
+- `QC-engine/QC4-roundtrip.md`
+  The loop that group ⑧ closes: markdown to html and back. It carried the id `QC9` before the 260801 renumbering.
 
 ## Log
+- 260806 2201 · [REVISE-CC] swept to the 260806 architecture; the dead `QC9-roundtrip.md` pointer repointed at its live file `QC-engine/QC4-roundtrip.md` (renumbered 260801), and the "the skill declares no browser dependency" claim corrected in Aims and States against `cli/sentencerun.py` (exit 2 + loud SKIP) and `checks/run.py --full` (its own headless Chrome on a free CDP port)
 260801 · Opened after a 36-assertion browser run passed, and written from that run's evidence; the six failures it exists to catch all shipped green through check.py on 260731

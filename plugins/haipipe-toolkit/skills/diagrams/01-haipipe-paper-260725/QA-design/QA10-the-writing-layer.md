@@ -18,7 +18,9 @@ That is not an oversight, and the skill's own README gives the reason: every oth
 
 The prose that produced it was this board's. Every rule in `../../writing/haipipe-writing/ref/plain-rules.md` was ruled while rewriting `QB4` on `④`, the `✎` record grammar was built because the same two mistakes were made twice by hand in one evening, and `../../writing/haipipe-writing/ref/ai-tells.md`, `../../writing/haipipe-writing/ref/weaving.md` and `../../writing/haipipe-writing/ref/holes.md` were all migrated OUT of `①` because no paper owned them. The skill exists because a design board needed it first.
 
-Scope: This page covers Where the prose verb sits, what it owns against `①` and `③`, why it has no board of its own, and what is still owed at the seam. Neighbouring pages cover Which folder this is among the eleven is `QA1`; what ships and whether it is well is `Skill-11`; the lane contract the `✎` record lives inside is `Skill-9`; the paper's own venue-bound revision chain is `Skill-5`.
+Scope: This page covers Where the prose verb sits, what it owns against `①` and `③`, why it has no board of its own, and what is still owed at the seam. Neighbouring pages cover Which folder this is among the eleven is `QA1`; what ships and whether it is well is `../01-boardform-260722/QCskill-engine-skill/Skill-7-haipipe-writing.md`; the lane contract the `✎` record lives inside is `../01-boardform-260722/QCskill-engine-skill/Skill-4-haipipe-board-sentence.md`; the paper's own venue-bound revision chain is `Skill-0-haipipe-paper.md`, which since 0.5.0 is the whole paper family.
+
+This board's own mirror pages for those two units retired on 260806. The `QCskill` group here keeps `Skill-0-haipipe-paper.md` alone, and `Skill-9-haipipe-board-sentence.md`, `Skill-11-haipipe-writing.md` and `Skill-5-haipipe-paper-revise.md` are in `_archive/QCskill-retired-260806/`. The live mirrors for `③` and `⑪` are on `④`, the board that owns them.
 
 ## Writing Style
 
@@ -107,7 +109,7 @@ An undated claim here is a claim about a release nobody can identify.
 
 ```
  ⑪ /haipipe-writing   the plain-English rules and the ruling behind each ·
-   v0.4.0 · 143 ln    the ✎ diff computation and its anchoring by POSITION ·
+   v0.6.1 · 173 ln    the ✎ diff computation and its anchoring by POSITION ·
                       the general AI-tell catalogue · the weaving method ·
                       the hole discipline, both directions
                       consumer: ANY authored prose in the repo
@@ -118,11 +120,11 @@ An undated claim here is a claim about a release nobody can identify.
                       `haipipe-paper-revise-humanizer` keeps all of it.
 ```
 
-The division is the skill's own and it is stated in one line there: they share machinery, they do not share judgment. `../../writing/haipipe-writing/ref/change-record.md` §3 holds both host dialects side by side so they cannot drift into two ideas.
+The division is the skill's own and it is stated in one line there: they share machinery, they do not share judgment. `../../writing/haipipe-writing/ref/change-record.md` §4 holds both host dialects side by side so they cannot drift into two ideas. Section 3 of that file rules placement instead, which is a different job.
 
 #### 1.2 · It owns one lane out of ten, and none of the machinery around it
 
-The `✎` record is not a grammar this family invented. `③` owns the lane contract, `Skill-9` mirrors it here, and `QB4@boardform §3.3.3` names the ten kinds: eight `⚑` typed lanes, one `💬` comment, and the `✎` change record `⑪` writes. Three of those rules bind it directly and `cli/wdiff.py apply` enforces all three: a lane is appended and never edited in place, a signed `> WHO:` or `> ✎` line is never erased, and a lane with no signature is not a lane.
+The `✎` record is not a grammar this family invented. `③` owns the lane contract, `../01-boardform-260722/QCskill-engine-skill/Skill-4-haipipe-board-sentence.md` mirrors the shipping unit on `④`, and `QB4@boardform §3.3.3` names the ten kinds: eight `⚑` typed lanes, one `💬` comment, and the `✎` change record `⑪` writes. Three of those rules bind it directly and `cli/wdiff.py apply` enforces all three: a lane is appended and never edited in place, a signed `> WHO:` or `> ✎` line is never erased, and a lane with no signature is not a lane.
 
 That is the healthy shape of a dependency, and it was got wrong first. Releases 0.1.0 through 0.3.0 described `✎` as a standalone grammar, which created a second authority on something `③` already owned. JL caught it on 260802 and 0.4.0 rewrote the reference to CITE the owning contract rather than restate it.
 
@@ -218,7 +220,7 @@ The verification found one hand step nobody had asked about, and JL ruled it out
  --host paper               > Note: ~~old~~ **new** · WHO · WHEN
 ```
 
-Both paper callers pass `--host paper` and convert nothing. An unknown host is refused by `argparse` rather than silently defaulting, so a third notation has to be added deliberately.
+Both paper callers passed `--host paper` and converted nothing, and the one that is still live, the humanizer at `SKILL.md:94`, still does. An unknown host is refused by `argparse` rather than silently defaulting, so a third notation has to be added deliberately.
 
 #### 3.3 · The flag uncovered an older contradiction
 
@@ -251,7 +253,9 @@ This is the third instance today of one shape: two halves of one contract disagr
    trip    a test, because no grep can see a round trip
 ```
 
-Swept over all 152 skill folders: 2 version disagreements and 57 path findings, and it still reports the humanizer defect the moment it is reintroduced. Among the 57 is a stale reference to this board's own pre-260802 naming, `skills/diagrams/01-haipipe-paper-260725/QO-delivery-build/QC6-sentence-to-word.md`, which no longer exists in any form.
+The first sweep, on 260802, covered 152 skill folders and returned 2 version disagreements and 57 path findings, and it still reports the humanizer defect the moment it is reintroduced. Among the 57 is a stale reference to this board's own pre-260802 naming, `skills/diagrams/01-haipipe-paper-260725/QO-delivery-build/QC6-sentence-to-word.md`, which no longer exists in any form.
+
+Re-run on 260806, after the paper family collapsed to one skill, it reads 158 skill folders, 0 version disagreements, 68 path findings. The version shape is clear. The path shape grew, and the stale id above survived the collapse: it moved with its text into `paper/haipipe-paper/fn/to-word.md:163` and is still dead there.
 
 The checker got its own job wrong twice before it worked, and both are recorded in `0.6.0` rather than tidied away. It first skipped fenced blocks, which made it blind to the instruction it was written for, because that instruction lives inside a fence. Its version comparator then missed the bracketed `## [0.6.1]` heading form, fell through to the heading below, and flagged 35 of 152 folders that agreed perfectly. A checker built to catch two halves disagreeing shipped its first draft with two halves disagreeing, which is the strongest evidence available that the class is real and that noticing is not a reliable defence.
 
@@ -300,10 +304,10 @@ The checker got its own job wrong twice before it worked, and both are recorded 
 
 ### A3 · 🔗 The seam, and what checking it produced
 - ✅ A3.1 · Verified 260802, and it held. Wired in two `SKILL.md` instructions rather than the one that was claimed, and `paper/` carries no second implementation.
-- ✅ A3.2 · Shipped as 0.5.0. Both paper callers pass `--host paper`, and an unknown host is refused rather than silently defaulted.
+- ✅ A3.2 · Shipped as 0.5.0. Both paper callers passed `--host paper`, the live one still does since the revise hub retired on 260805, and an unknown host is refused rather than silently defaulted.
 - ✅ A3.3 · Repaired in 0.5.0 and locked by `../../writing/haipipe-writing/tests/test_roundtrip.py`, which was verified to FAIL against the pre-0.5.0 `check`.
 - ✅ A3.4 · Shipped as 0.6.0. `../../writing/haipipe-writing/cli/agree.py` covers the two static shapes; the round trip is a test because no grep can see it.
-- ⬜ A3.5 · Recorded, not cleared. The first sweep over 152 skill folders returned version disagreements and path findings, one of which is this board's own retired id.
+- ⬜ A3.5 · Half cleared. The version shape is clean: the 260806 sweep over 158 skill folders reports 0 version disagreements, down from 2. The path shape is not: 68 findings, up from 57, and this board's own retired id is still among them, now inside `paper/haipipe-paper/fn/to-word.md`.
 - 🔨 A3.6 · Nothing calls it. A checker a person must remember to run has the same failure mode as the defects it catches, and this is the item that decides whether any of it holds.
 - 🧠 A3.7 · Waiting on a ruling. The machinery moved and the judgment stayed, which is the right split, and there is still no test telling a writer which of the two they are doing.
 
@@ -350,6 +354,7 @@ The checker got its own job wrong twice before it worked, and both are recorded 
 
 ## Log
 
+- 260806 2223 · [REVISE-CC] swept to the 260806 architecture; the three neighbour ids in Scope (`Skill-11`, `Skill-9`, `Skill-5`) were dead, since this board's QCskill group kept only `Skill-0-haipipe-paper.md` and archived the rest to `_archive/QCskill-retired-260806/`, so they now point at the live mirrors on `④`; the skill's own version box read `v0.4.0 · 143 ln` against a live `0.6.1 · 173 ln`, the change-record dialect section is `§4` and not `§3`, and the checker sweep is re-run and split into its 260802 and 260806 counts.
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the two-caller wiring claim is now dated to its 260802 verification, with the humanizer named as the one live caller since the revise hub retired, and the two retired sibling boards are marked so on the artifact-kind figures.
 
 260802 · Opened when JL placed `writing/` on the map and ruled that its skill board is this board. The face exists because that ruling makes this board the family's owner, which is the one condition under which `QA1`'s no-face rule permits a page about a shared family. Two unverified claims recorded rather than repeated: the humanizer's call to `../../writing/haipipe-writing/cli/wdiff.py`, and the `0.1.0` frontmatter against a `0.4.0` changelog.

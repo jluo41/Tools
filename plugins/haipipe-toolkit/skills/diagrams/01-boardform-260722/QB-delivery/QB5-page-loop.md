@@ -1,5 +1,5 @@
 # Page · the loop: draft, probe, revise, and check
-state: 🟡 IN PROGRESS · contracts and audit harness pass · live Claude Workflow run pending
+state: 🟡 IN PROGRESS · contracts and audit harness pass · first live RUN closed 260805 (QB8e) · 12 RUN-contract ambiguities owed fixes; Workflow-harness invocation still pending
 owner: JL
 method: define each phase by its authority over one persistent Page, execute the routes with versioned receipts, and test both legal branches and injected failures
 
@@ -97,7 +97,7 @@ An unresolved question that matters to the promise becomes an input to PROBE.
 🔎 PROBE
 ├── 📥 enters    question id · stake · source route
 ├── 🧭 owns      inquiry · retrieval · analysis
-├── 🗂 writes    probe entry · evidence record · answer
+├── 🗂 writes    QA-probe · evidence record · answer
 ├── 📤 returns   result · source · limits · status
 └── 🚫 avoids    target Page prose
 ```
@@ -122,24 +122,24 @@ A Page with no consequential unknown can move from DRAFT directly to CHECK.
 Several probes may branch from one round, and a later phase may open another probe.
 Skipping PROBE is valid only when no unresolved question is being hidden.
 
-#### 2.4 · Filing a Probe Page does not identify the target Page
+#### 2.4 · Filing a QA-probe does not identify the target Page
 (physical evidence routing and ownership of the Page-facing question are separate decisions)
 The target Page is the Page whose lifecycle raised the stake-bearing Q-consumer.
-A family may file the Probe Page under an evidence route such as Literature or Value without transferring the Q-consumer, a-consumer, or State to that route's topic Page.
-The Paper family's S03 and S04 layout exposes the distinction: a Results Page can raise the question, a Probe Page can live beneath a Value topic, and a task QA file can answer it.
+A family may file the QA-probe under an evidence route such as Literature or Value without transferring the Q-consumer, A-consumer, or State to that route's topic Page.
+The Paper family's S03 and S04 layout exposes the distinction: a Results Page can raise the question, a QA-probe can live beneath a Value topic, and a QA-bank file can answer it.
 Treating physical placement as an ownership transfer gives one exchange two Page-facing consumer surfaces before the answer reaches prose.
 
 #### 2.5 · One active Page bounds the consumer write
 (a shared answer creates handoffs to sibling Pages rather than inline rewrites of their Content)
-One PROBE run may write its declared Probe surface and the active target Page's Probe reference, a-consumer, and State.
-When the same q-executor serves other Q-consumers, the Probe surface records their references and makes the answer available without authoring those sibling Pages in the current run.
+One PROBE run may write its declared Probe surface and the active target Page's Probe reference, A-consumer, and State.
+When the same Q-executor serves other Q-consumers, the Probe surface records their references and makes the answer available without authoring those sibling Pages in the current run.
 Each sibling interprets the answer and changes its own Content through its own PROBE or REVISE route, with its own version and CHECK.
-This preserves one q-executor for reuse without turning one answer into an unbounded cross-Page edit.
+This preserves one Q-executor for reuse without turning one answer into an unbounded cross-Page edit.
 
 #### 2.6 · A projection can show the full chain without another authored copy
 (one canonical reference should drive human display, agent context, and stale-source checks)
-The active Page may need to show the q-executor, bank target, state, returned answer, and limits while keeping its source concise.
-A read-only projection can render that chain from the Probe Page and bank answer, while the Page source keeps the Probe reference and its own a-consumer interpretation.
+The active Page may need to show the Q-executor, bank target, state, returned answer, and limits while keeping its source concise.
+A read-only projection can render that chain from the QA-probe and bank answer, while the Page source keeps the Probe reference and its own A-consumer interpretation.
 The same reference should drive phase-scoped context loading and CHECK, so an author does not maintain a Probe pointer, an embed, and a Related Board Pages row for one relationship.
 Missing targets, superseded answers, or changed source hashes must fail visibly rather than leave an old projection looking current.
 
@@ -322,10 +322,11 @@ If a phase later passes the split test, QB5 keeps the shared boundaries and tran
 
 ```text
 📄 haipipe-board-page                   the shared Page contract and router
-├── 📁 page-types/                      what kind of Page persists
+├── 📁 page-types/                      what kind of Page persists · ten types · QB6 owns the roster
 │   ├── for-stage
 │   ├── for-skill
-│   └── for-venue
+│   ├── for-venue
+│   └── … seven more · for-design · for-display · for-literature · for-meeting · for-section · for-slide · for-value
 └── 📁 page-phases/                     what authority acts now
     ├── draft
     ├── probe
@@ -339,6 +340,7 @@ one invocation = base + matching Page Type + current Page Phase + family worker
 #### 8.1 · `for-*` names only Page Types
 (the preposition says which persistent Page shape varies from the base)
 `haipipe-board-page-for-stage`, `-for-skill`, and `-for-venue` keep their names and move under `page-types/`.
+The roster has since grown to ten Page Types, and `QB6` owns the admission test and the list.
 The grouping folder is organizational and carries no `SKILL.md` of its own.
 A new Page Type is added only when a persistent Page needs a structural contract that the base does not provide.
 
@@ -460,7 +462,7 @@ The final report therefore names the checked version, traversed branches, eviden
 - A2.1 · PROBE has an explicit trigger, write surface, return record, and exit.
   **Done when:** a reader can route a consequential unknown without letting PROBE author target prose.
 - A2.2 · The target Page, Probe surface, sibling handoff, and forbidden cross-Page write are unambiguous.
-  **Done when:** a family can file a Probe Page by evidence route without silently transferring Q-consumer ownership or authoring a sibling Page in the same run.
+  **Done when:** a family can file a QA-probe by evidence route without silently transferring Q-consumer ownership or authoring a sibling Page in the same run.
 - A2.3 · One Probe reference can show the full evidence chain without becoming a second authored answer.
   **Done when:** the reference drives render projection, bounded phase context, dependency versioning, visible failure, and CHECK.
 
@@ -514,11 +516,11 @@ The final report therefore names the checked version, traversed branches, eviden
       🤖 `If nobody answers` B remains the proposal, and no skill contract changes are made.
       ✅ `Ruled B` JL 260804: "Yes, correct. Please go ahead for it."
 
-- [ ] 🗣 Can a family adapter transfer Q-consumer ownership when it files a Probe Page under an evidence topic?
+- [ ] 🗣 Can a family adapter transfer Q-consumer ownership when it files a QA-probe under an evidence topic?
       📍 `A2.2` owns the boundary between the active target Page and an evidence route supplied by a family.
       🔔 `Why now` the Paper adapter currently makes the Literature or Value topic Page canonical after another Page raises the Aim, while `QB5 §8.3` says the target Page owns the Q-consumer.
-      `A ·` Allow the transfer. The evidence topic Page owns the stake, a-consumer, State, and Probe path; this keeps a self-contained topic register but makes one PROBE a multi-Page consumer write.
-      ⭐ `B ·` Keep ownership on the Page that raised the Q-consumer. The Probe Page may be filed under any family route, while topic Pages show a derived rollup and receive their own lifecycle only when their synthesis changes.
+      `A ·` Allow the transfer. The evidence topic Page owns the stake, A-consumer, State, and Probe path; this keeps a self-contained topic register but makes one PROBE a multi-Page consumer write.
+      ⭐ `B ·` Keep ownership on the Page that raised the Q-consumer. The QA-probe may be filed under any family route, while topic Pages show a derived rollup and receive their own lifecycle only when their synthesis changes.
       🛑 `Blocks` changing the Paper topic-entry contract and implementing the zero-copy topic projection.
       🤖 `If nobody answers` the implemented Paper topic-owned rule remains unchanged, and sections 2.4 to 2.6 stay the recommended shared boundary rather than shipped family behavior.
 
@@ -570,7 +572,7 @@ The final report therefore names the checked version, traversed branches, eviden
 
 ### Input files
 
-- `../../../paper/workers/` · the paper family's side: flat LaTeX workers since the 260805 thin-paper move; the loop itself now lives in `page-phases/`
+- `../../../paper/haipipe-paper/fn/` · the paper family's side: the LaTeX workers became `fn/` verbs in the 260806 one-door merge (the old `paper/workers/` sits in `paper/_old/workers/`); the loop itself lives in `page-phases/`
 - `../../../application/2-phase/` · the application family's existing lifecycle model
 - `QB-delivery/QB4-overall.md` · the fixed Page structure paired with this lifecycle
 - `../../01-haipipe-paper-260725/QA-design/QA5-the-probe-layer.md` · the Paper S03/S04 implementation case that exposed the difference between Probe placement and target Page ownership
@@ -584,7 +586,7 @@ The final report therefore names the checked version, traversed branches, eviden
 
 ### Engines
 
-- `../../../board/haipipe-board/ref/page-lifecycle.workflow.js` · executes the bounded producer, builder, reviewer, and routing loop
+- `../../../board/haipipe-board/ref/page-lifecycle.workflow.js` · defines the bounded producer, builder, reviewer, and routing loop; not invocable without a Workflow harness, so the 260805 live RUN drove the controller by hand
 - `../../../board/agents/haipipe-board-page-orchestrator-agent.md` · dispatches one non-interactive RUN and stores its exact receipt
 - `../../../board/agents/haipipe-board-creator-agent.md` · performs one DRAFT, PROBE, or REVISE phase without judging it
 - `../../../board/agents/haipipe-board-reviewer-agent.md` · performs fresh read-only CHECK on one exact version
@@ -637,6 +639,7 @@ The final report therefore names the checked version, traversed branches, eviden
 
 ## Log
 
+- 260806 2107 · [REVISE-CC] swept to the 260806 architecture; state line now records the 260805 QB8e live RUN instead of calling it pending, dead `paper/workers/` path repointed at `paper/haipipe-paper/fn/`, §8 tree shows all ten Page Types with QB6 owning the roster, and live prose now says QA-probe with capitalized Q-executor/A-consumer slot words
 - 260806 0210 · [PROBE-CC] a 12th RUN-contract ambiguity, found by re-auditing the QB8e bundle a day later: `pageflow.py audit` now reports `artifact-version-mismatch` on the RENDER hash alone, because later innocent rebuilds changed the html while the source hash still matches `final_version`. The receipt treats source:render as one identity; the contract must say the SOURCE hash is the version's identity and the render hash is advisory (a rebuild is not a mutation), or every rebuild retroactively breaks every closed run. Also: the bundle carries no `audit` key at all, so "audit PASS" survives only in session history, which is item ⑩'s snapshot-has-no-receipt-home problem wearing a second face.
 260805 · FIRST LIVE RUN, `260805-0216-QB8e`: CLOSE, audit PASS, and the run's second product is a defect list for this page's own contract, 11 items recorded in the bundle and owed fixes here. The sharpest six: ① the workflow controller is not invocable outside a Workflow harness and the contract never says what a bare caller may do; ② the producer prompt omits the judge's findings, so a strict REVISE guesses (the controller forwarded them as a disclosed deviation); ③ "the local closing rule" is ambiguous for a mid-life Q page whose Decision rows wait on JL by design, so the contract must say run-level CLOSE certifies THE VERSION, not the page's decisions; ④ `mechanical_errors` scope is undefined, and board-scoped counting would let one foreign dead link forbid CLOSE forever; ⑤ warnings do not gate CLOSE, so the semantic judge is the only defense on a WARN-only page; ⑥ fresh judges oscillate (r1s1 waived unnumbered paragraphs, r1s3 raised them), and max_steps is the only brake. Also surfaced: no run_id minting rule, no concurrency rule while a foreign session rebuilds board/, the pre-run snapshot has no receipt home, extra bundle keys pass unaudited, and the Decision Now row shape diverges between the base and page-template.md.
 

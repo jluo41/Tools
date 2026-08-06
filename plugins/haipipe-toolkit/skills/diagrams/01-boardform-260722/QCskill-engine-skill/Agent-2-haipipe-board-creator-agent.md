@@ -320,6 +320,7 @@ Its health is `🟡 in flux` because that first run also exposed two gaps it had
   Fixed at 0.4.0. JL found it by asking whether these agents call any skills.
 
 ## Log
+- 260806 2116 · [REVISE-CC] swept to the 260806 architecture; authored prose verified clean (skillpage.py sync already current), one unit-side debt recorded: the charter's own source list still says "six Page Types" where haipipe-board-page 0.21.0 ships ten, and the managed body span mirrors that unit staleness faithfully.
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the RUN producer half is no longer untried, the QB8e RUN exercised it for both REVISE phases as fresh-context claude -p subprocesses.
 260804 · Expanded the authored mirror from batch-only Page creation to the shared producer role: exactly one DRAFT, PROBE, or REVISE authority per RUN receipt, still with no rebuild or CHECK.
 260731 · The concurrency boundary was JL's ruling that day: the test is not whether a unit has its own trigger but whether a write touches a file another writer also touches

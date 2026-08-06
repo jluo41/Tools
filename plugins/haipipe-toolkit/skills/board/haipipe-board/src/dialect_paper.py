@@ -74,6 +74,13 @@ def _one_line(f):
 # The stage token accepts DIGITS: a stage that `runs: per-unit` names its unit
 # in it (`Q-Sec0Abstract-1`), which is the only way nine section units stop
 # colliding on one id. Letters-only silently un-chipped every such bracket.
+# The executor's drawer of original answers. `QA-BANK` is the name ruled on
+# 260806 so the twin law is visible in the filesystem rather than only in the
+# contract; `QA` is the pre-rename name and stays readable while the example
+# repositories migrate one at a time. Both are accepted; new work writes the
+# first.
+BANK_DIRS = ("QA-BANK", "QA")
+
 QID = re.compile(r"\bQ-[A-Za-z0-9]+-\d+\b")
 CITE_TEX = re.compile(r"\\cite[tp]?\*?\{([^}]*)\}")
 REF_TEX = re.compile(r"\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}")
@@ -585,7 +592,7 @@ class Paper:
         p = self.bank_root / tok
         if p.is_file():
             files = [(f"answer · {p.name}", p)]
-            folder = p.parent.parent if p.parent.name.upper() == "QA" \
+            folder = p.parent.parent if p.parent.name.upper() in BANK_DIRS \
                 else p.parent
             if folder.is_dir() and folder != self.bank_root:
                 files.append((f"run · {folder.name}/", folder))

@@ -1,7 +1,7 @@
 # Convert a skill folder to a skill page
 state: 🟡 PARTIAL
 owner: JL
-method: mirror `stage.py`: generate the page once, keep one managed block in sync, never touch what a human wrote
+method: mirror `stage.py`: generate the page once, keep the three managed spans in sync, never touch what a human wrote
 
 ## Opening
 How should one independently versioned skill become a Board page that stays current and is still useful to discuss?
@@ -11,28 +11,28 @@ The page must expose the live skill and its release history without surrendering
 That makes skill activity visible beside the questions and decisions that affect it.
 It succeeds when a resync updates every derived span and preserves every authored line byte for byte.
 
-**Covered elsewhere**: What a Q source file contains and which sections are recognized: `QB4` and the QAa faces (QA2 merged into them 260729). How that page renders once it exists: `QB4`. The `![[path]]` embed grammar itself: `ref/board-form.md` §5. How groups are proposed and named: `QA2`. Where the pages sit on disk: `QB1`. Whether the board should host skills at all, rather than how: that is this page's Question, and it is JL's. The skill pages this mechanism PRODUCES are the `Q-Skill` group; each is a skill page, not a ruling.
+**Covered elsewhere**: What a Q source file contains and which sections are recognized: `QB4` and its QB4a-g faces (QA2 merged into them 260729; the faces now sit in `QB-delivery/_archive/` and the live section contract is `haipipe-board-page`). How that page renders once it exists: `QB4`. The `![[path]]` embed grammar itself: `ref/board-form.md` §5. How groups are proposed and named: `QA2`. Where the pages sit on disk: `QB1`. Whether the board should host skills at all, rather than how: that is this page's Question, and it is JL's. The skill pages this mechanism PRODUCES are the `QCskill-engine-skill` group, `Skill-<n>-…` and `Agent-<n>-…`; each is a skill page, not a ruling.
 
 
 ## Diagram
 
 ```
 THE SOURCE (untouched, ships to other people)      THE PAGE (lives on a board)
-skills/paper/0-enter/haipipe-paper-enter/          QA1-paper-enter.md
-├── SKILL.md      name · version · summary  ──┐    ┌──────────────────────────┐
-└── CHANGELOG.md  every version ever         │    │ # haipipe-paper-enter     │
-                                              │    │ state: ✅ 0.6.6           │
-                    ┌─── derived ─────────────┘    │ ## Question   what it owes│
-                    │    (managed block,           │ ## Content               │
-                    │     refreshed by sync)       │  <!-- managed:start -->  │
-                    ▼                              │   version · tools · path │
-              skillpage.py new                     │   ![[…/SKILL.md]]        │
-              skillpage.py sync                    │   ![[…/CHANGELOG.md]]    │
-              skillpage.py check                   │  <!-- managed:end -->    │
-                                                   │ ## Items to Finish   ┐   │
-  ZERO COPY: the embeds are read at BUILD time,    │ ## Where we are      │hand│
-  so the page cannot go stale between syncs        │ ## Log               ┘   │
-                                                   └──────────────────────────┘
+skills/board/haipipe-board/                        QCskill-engine-skill/Skill-0-haipipe-board.md
+├── SKILL.md      name · version · summary  ──┐    ┌────────────────────────────────┐
+└── CHANGELOG.md  every version ever          │    │ # haipipe-board · v0.124.0  🤖 │
+                                              │    │ state: 🟡 in flux · why     🧑 │
+                    ┌─── derived ─────────────┘    │ ## Opening                  🧑 │
+                    │    (three managed spans,     │ ## Diagram   tree span      🤖 │
+                    │     refreshed by sync)       │              workflow fence 🧑 │
+                    ▼                              │ ## Content   body span      🤖 │
+              skillpage.py new                     │   the whole SKILL.md,          │
+              skillpage.py sync                    │   converted, hash-marked       │
+              skillpage.py check                   │ ## Aims · ## States         🧑 │
+                                                   │ ## Log   hand lines on top  🧑 │
+  COPY UNDER GUARD: each managed span carries      │          log span below     🤖 │
+  its source hash, so check REPORTS drift          └────────────────────────────────┘
+  instead of letting it pass in silence
 
 ── the precedent this follows, exactly ──
   stage.py new    writes the S page + its managed Stage Contract
@@ -40,25 +40,26 @@ skills/paper/0-enter/haipipe-paper-enter/          QA1-paper-enter.md
   stage.py check  reports a stale contract-source-hash instead of rewriting
 
 ── the two ways to get this wrong ──
-  copy too much  → 141 stale copies of skills that ship elsewhere
+  copy too much  → 130 stale copies of skills that ship elsewhere
   copy too little → a bookmark: nothing to rank, comment on, or watch
 ```
 
 ## Content
 ### 1 · What the generator may derive
 A skill's frontmatter already carries `name`, `metadata.version`, `metadata.last_updated`, `metadata.summary`, and `allowed-tools`, so those are facts, not judgments, and a script may write them.
-The page title is the skill name and the `state:` line's readable suffix is its version, which makes the index row say `✅ 0.6.6` without anybody maintaining it.
-Everything else the page shows is an embed rather than a copy: `![[…/SKILL.md]]` and `![[…/CHANGELOG.md]]` are read at build time, so between two syncs the page is still current.
+The page title is the skill name plus its version, `haipipe-board · v0.124.0`, which is what the index row prints without anybody maintaining it.
+Everything else the page shows is a copy under guard rather than a free copy: `SKILL.md` and `CHANGELOG.md` are converted into the page's own grammar inside hash-marked spans, so drift between two syncs is something `check` reports rather than something a reader meets unwarned.
+The first design used `![[…/SKILL.md]]` and `![[…/CHANGELOG.md]]` embeds read at build time; it was superseded when the skill file became real subsections, and section 5 records why.
 
 ### 2 · What the generator must never touch
-`## Question`, `## Items to Finish`, `## Where we are`, `## Comments`, and `## Log` are written by people and are the only reason the page is worth more than an `ls`.
+`## Opening`, `## Aims`, `## States`, and the hand-written lines on top of `## Log` are written by people and are the only reason the page is worth more than an `ls`.
 This is `stage.py`'s rule and it earned it: `replace_managed` rewrites only the span between its markers, and authored subsections have survived every sync since 260725.
 A generator that reformats a human sentence once will not be trusted again, and the cost is not the sentence, it is that nobody writes the next one.
 
 ### 3 · The state line is a judgment, so a script may not set it
 `state:` is the four-value machine token, and for a skill it means health: is this thing stable, in flux, unmaintained, or parked.
 A version number cannot answer that, because a skill at `0.1.0` may be finished and one at `0.9.4` may be mid-rewrite.
-So `new` seeds `🔴 OPEN` like every other page and a person changes it, while the version rides along as readable detail after the emoji.
+So `new` seeds `🔴 OPEN` like every other page and a person changes it, while the version rides the title and the readable suffix after the emoji carries the evidence for the health call.
 
 ### 4 · Staleness has to be visible, not silent
 `stage.py` stores a `contract-source-hash` and reports drift instead of rewriting, and the same applies here: if `SKILL.md`'s frontmatter changed since the last sync, `check` says so.
@@ -79,9 +80,9 @@ Only the folder tree differs, so a single-file unit emits that span empty rather
 
 #### Scope is this family, not every skill in the plugin
 (JL 260727: "you should just focus on the skills on Tools/plugins/haipipe-toolkit/skills/board")
-The roster covers `skills/board/` and nothing else, which is the family this board was opened to design.
+The roster began as `skills/board/` and nothing else, which is the family this board was opened to design, and JL widened it on 260802 to admit `skills/writing` (`Skill-7`).
 A page generated for `haipipe-probe` was produced as a proof and deleted for this reason: a roster that reaches past its board's subject makes the board a directory of the whole plugin, and no one owns that.
-The 141-skill question stays open below as a scope item, and it is a different decision from whether the mechanism works.
+The full-plugin question (130 live skills today) stays open below as a scope item, and it is a different decision from whether the mechanism works.
 
 #### A sub-sub section is an ITEM at ONE level, because items do not nest
 (JL 260727: "2 · 🧭 Session attachment ... I still collapse this")
@@ -121,7 +122,7 @@ Numbering keeps carrying the depth either way, which is QA4's `§6` against `§6
 
 #### The file is one subsection; the file's own sections are sub-sub sections
 (JL 260727: "SKILL.md as a subsection in the Content, and the section in the SKILL.md will be sub-sub section")
-`## Content` gets one `### SKILL.md` division, and every heading inside the skill moves two levels down inside it.
+`## Content` got one `### SKILL.md` division at first, and every heading inside the skill moves two levels down inside it; the fold ruling below later dropped that division heading, and the two-level demotion stayed.
 A first pass promoted the skill's own `##` straight to `###`, which scattered nine unrelated divisions across Content and lost the fact that they are all one file.
 The board renders exactly two Content levels and `#{4,6}` all render identically, so depth cannot come from the heading level.
 It comes from NUMBERING, which is the rule QA4 already fixed for manuscript sections (`§6` against `§6.1`) and the reason a third heading level was refused there: the skill's `##` becomes `#### N ·` and its `###` becomes `##### N.M ·`, the same size on the page and an unambiguous hierarchy in the text.
@@ -167,7 +168,7 @@ That exemption belongs to the mechanism rather than to this page: a stage's inhe
 
 ### 7 · What this buys, stated as a number
 The ACTIVITY dashboard counts one update per dated `## Log` line per page, so a roster of skill pages ranks skills by how much they changed.
-Today that question needs 141 changelogs read by hand; after this it is one strip and one ranked tree on an index.
+Today that question needs 130 changelogs read by hand; after this it is one strip and one ranked tree on an index.
 
 ## Aims
 ### Rulings awaiting JL
@@ -176,27 +177,27 @@ Today that question needs 141 changelogs read by hand; after this it is one stri
       This closes either way, including "no, a roster is not a board".
 - [ ] 🗂 The grouping is decided before 35 files land in one folder
       A single flat group would mean 35 pages in one folder, which is the wall `QB1` just removed.
-      The skill tree already has groups (`0-enter`, `1-lifecycle`, `2-phase`, `3-deliver`, …), so the likely answer is one board group per skill sub-family.
+      The skill tree already has groups (task's `1_data` `2_nn` `3_end`, board's `page-types/` and `page-phases/`), so the likely answer is one board group per skill sub-family.
 - [ ] 🎯 Scope: this family only, or every skill in the plugin
       Ruled for THIS board on 260727 as `skills/board/` and nothing else, and WIDENED by JL on 260802 when he asked to add `skills/writing` to the roster; `Skill-7-haipipe-writing` is the first row outside the board family.
       The widening is defensible on its own terms, because that unit owns `ref/writing-rules.md`, the prose standard every page here is judged against, so it is a neighbour rather than a stranger.
       What is NOT yet stated is where the new line falls, and that is the row in Decision Now below.
-      Still open besides that: whether each other family gets the same group on its own design board (paper 36, task 44, application 23, discovery 15), or one roster board carries all 152.
+      Still open besides that: whether each other family gets the same group on its own design board (task 44, application 23, discovery 15; paper collapsed to ONE door skill on 260806 and its design board already carries `Skill-0-haipipe-paper`), or one roster board carries all 130.
 
 ### The generator, built and proven
 - [x] 🏷 The generated pages get their own named family and group
       Ruled 260727: a skill page is `Q-Skill-<skill-name>.md` in a `Q-Skill/` group, not a numbered id.
       A numbered id says a skill page is the first of a queue; `Q-Skill-haipipe-board` says which skill it is, which is the only thing a reader wants from the id, and it stays greppable across the repo.
       This is the same shape as the named S families and closes for the same reason: a skill page is identified by WHAT IT IS, never by a position.
-      `parse.py` now recognizes `Q-<Family>-<rest>` as a named Q page, so the id and the page title agree without a number in between.
+      JL later shortened the family to `Skill-<n>-<slug>` and split agents out as `Agent-<n>-<slug>` (JL 260731), so today `parse.py` matches those stems, the pages live in `QCskill-engine-skill/`, `<n>` orders the roster, and the version still never enters the filename.
 - [x] 🔨 `skillpage.py` with `new` / `sync` / `check`
       Built 260726 and proven on `haipipe-board` itself as its skill page (then `QB6`, today `Skill-0`), which is the right first subject: if the tool cannot describe the skill that generated it, it describes nothing.
       `new` seeds the page and lists it under its group, `sync` replaces only the marked span, `check` reports a stale derived hash with the exact command to fix it.
-      Verified: the page carries one `### SKILL.md` division holding 9 numbered sections and 11 numbered sub-sections, sync is idempotent, a version bump is caught by `check` with `saved != current`, and the authored workflow fence plus the hand-written Log line both survive a sync that really rewrites all three spans.
+      Verified on the 260726 build: the page carried one `### SKILL.md` division holding 9 numbered sections and 11 numbered sub-sections (that division heading was later dropped by the fold ruling), sync is idempotent, a version bump is caught by `check` with `saved != current`, and the authored workflow fence plus the hand-written Log line both survive a sync that really rewrites all three spans.
       The managed marker carries the skill's folder as well as the hash, because `sync` used to recover the folder from the page's embed line and that line vanished the moment the skill file became real subsections: a machine span must not depend on rendered content to know its own source.
 - [x] 📐 The managed/authored split is written down before any code
-      Derived and owned by the script: name, version, last_updated, summary, allowed-tools, folder path, and the two embed lines, all inside `<!-- haipipe:skill:start <hash> -->`.
-      Never touched: Question, Items to Finish, Where we are, Comments, Log.
+      Derived and owned by the script: name, version, last_updated, summary, allowed-tools, folder path, and the converted tree, body, and log spans, each inside its own `<!-- haipipe:skill:<part>:start <hash> <folder> -->` marker.
+      Never touched: the authored sections, today `Opening`, `Aims`, `States`, and the hand lines of `Log`.
       Proven rather than asserted: two sentinel lines were written into the authored sections, the skill's version was bumped so sync had real work, and both sentinels survived while the version changed.
       The marker only counts at the start of a line, because this very page quotes it in prose and a substring test reported the ruling page as a broken skill page.
 
@@ -205,8 +206,8 @@ Today that question needs 141 changelogs read by hand; after this it is one stri
       They must be able to say what the skill does, what version it is, and what it still owes, without opening the skill folder.
 
 ## States
-One page exists and the mechanism is proven; the ruling and the scope are not.
-`Skill-0` (born `QB6`) is the skill page for `haipipe-board`, generated by `skillpage.py` and syncing from `skills/board/haipipe-board/`.
+Ten mirror pages exist, seven Skill and three Agent in `QCskill-engine-skill/`, and the mechanism is proven; the ruling and the scope are not.
+`Skill-0` (born `QB6`) is the skill page for `haipipe-board`, generated by `skillpage.py` and syncing from `skills/board/haipipe-board/`; the mirror-page contract itself now lives in the `haipipe-board-page-for-skill` Page Type under `board/page-types/`.
 Four items remain and the first is still the one that decides the rest: whether a roster of shipped deliverables belongs on a board whose every other page is a question somebody owns.
 
 - 260726 CC · 🧪 Proven on the skill that generated it
@@ -232,16 +233,16 @@ These are the calls only JL can make; CC ticks nothing here.
 
 - [ ] 🧠 Rule whether the board hosts skills at all
       The page records that this closes either way, including "no, a roster is not a board".
-      A tick here also closes the same row in Items to Finish.
+      A tick here also closes the same row in Aims.
 - [ ] 🗂 Decide the grouping before 35 files land in one folder
       The page's stated likely answer is one board group per skill sub-family, mirroring the skill tree's own groups.
-      A tick here also closes the same row in Items to Finish.
+      A tick here also closes the same row in Aims.
 - [ ] 🎯 Where does the roster's line fall now that it has moved?
       📍 `Part` `### 5 · Where each generated thing goes` and the scope Aim above
       🔔 `Why now` The 260727 ruling was `skills/board/` and nothing else. JL widened it on 260802 by asking for `skills/writing`, and `Skill-7` now exists, so the roster has a new boundary and no stated rule for it. The next person to ask "should X be on here?" has nothing to check.
       ⭐ `A ·` units this board DEPENDS ON. `haipipe-writing` owns the prose standard every page is judged against, so it qualifies and a random other family does not. This is the smallest rule that covers what JL actually asked for, and it stays checkable.
       `B ·` this one addition and no rule; treat `skills/writing` as a one-off. Honest, but the next request re-opens the question from scratch.
-      `C ·` every skill in the plugin, all 152. The roster becomes a plugin directory, which is the outcome the 260727 ruling was written to prevent.
+      `C ·` every skill in the plugin, all 130. The roster becomes a plugin directory, which is the outcome the 260727 ruling was written to prevent.
       🛑 `Blocks` nothing today; `Skill-7` is written either way.
       🤖 `If nobody answers` A, because it is the only option that explains why `haipipe-writing` belongs and a paper stage does not.
 
@@ -254,15 +255,16 @@ These are the calls only JL can make; CC ticks nothing here.
 
 ### Input files
 - `ref/board-form.md`
-  §5 for the `![[path]]` embed grammar this depends on; §4 for which sections are recognized.
+  §5 for the `![[path]]` embed grammar the first design used before the converted spans; §4 for which sections are recognized.
 - `Tools/plugins/haipipe-toolkit/skills/`
-  The source: 141 `SKILL.md` files in 10 families, each already carrying name, version, last_updated, and summary.
+  The source: 130 live `SKILL.md` files in 11 families (retired paper skills sit in `paper/_old/`), each already carrying name, version, last_updated, and summary.
 
 ## Glossary
 managed block: a span between `<!-- haipipe:...:start -->` and `:end` that a generator owns; everything outside it belongs to whoever typed it.
 skill page: a page whose subject exists independently of the board, unlike a ruling, which exists only as the question it asks.
 
 ## Log
+- 260806 2134 · [REVISE-CC] swept to the 260806 architecture; Diagram's retired `haipipe-paper-enter` embed example replaced with the live `Skill-0` three-span converted-copy mechanism, `Q-Skill` naming updated to `QCskill-engine-skill/` `Skill-<n>`/`Agent-<n>`, and the 141/152 skill counts corrected to the 130-skill roster
 260802 2000 · JL widened the 260727 scope ruling by asking to add `skills/writing` to the roster, and `Skill-7-haipipe-writing` is the first row outside `skills/board/`. It is a sound widening because that unit owns the prose standard every page here is judged against, but no rule states where the line now falls, so a Decision Now row carries the three options with `units this board depends on` recommended
 260801 0140 · Full renumber QC5a -> QC3a (JL forced 260801)
 260801 0130 · Reindexed QC5 -> QC5a under the new QC5 generator parent (JL 260801)

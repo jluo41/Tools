@@ -35,7 +35,7 @@ serve.py has no auth, so the address IS the permission
 ## Content
 ### §1 The bind address is the only access control there is
 `serve.py` has no token, no password, and no origin check.
-Its own docstring names the loopback bind as the first line of the "deliberately narrow" write endpoint, alongside the `--root` containment and the two allowed kinds of edit.
+Its own docstring names the loopback bind as the first line of the "deliberately narrow" write endpoint, alongside the `--root` containment, the `Q*.md` or `S*.md` filename rule, and the short list of allowed writes.
 `/_board/chat` uses the owner's existing Claude login, and `/_term/` opens a real terminal, so any address the server answers on is an address from which someone can run commands as the owner.
 This is why the question cannot be settled as a convenience preference: changing the address changes who has a shell.
 
@@ -48,7 +48,7 @@ The cost is that it must be retyped on every start, and the skill's documented s
 
 #### P2. An export in `env.sh`
 (per-machine and gitignored, but `env.sh` is also the file people copy from each other)
-`env.sh` is where this repo already keeps machine-specific values, and it is gitignored, so the reader-facing `HAIPIPE_BOARD_URL` stored there never ships.
+`env.sh` is where this repo already keeps machine-specific values, and it is gitignored, so a reader-facing `HAIPIPE_BOARD_URL` stored there would never ship.
 `serve.py` does not read that value today, so its bind still arrives through a separate `--host` flag.
 The risk is social rather than technical: `env.sh` is the file a new person is told to copy from a colleague, and a copied non-loopback address is a silently widened door.
 
@@ -70,7 +70,7 @@ That is the same wall `QE1` describes from the hosting side, and this question i
       The flag is committed in `Tools`; the personal tailnet address is supplied only at launch and is not part of the shared source.
 - [x] 📌 the `--host` flag is committed in `Tools`
       The flag was committed in revision `9eb8ea8e`, so a submodule update cannot remove it.
-      Current unrelated working-tree edits to `serve.py` do not own or gate the committed flag.
+      The live layer has since been split, so the flag now lives in `cli/serve.py`, and that file is clean in the working tree.
 
 ### The shipped default and the /_term/ gate
 - [ ] 🧠 JL rules what the shipped default is, and whether a non-loopback bind is offered at all
@@ -85,13 +85,14 @@ That is the same wall `QE1` describes from the hosting side, and this question i
       Either the flag alone, or the flag plus an `env.sh` variable that `serve.py` reads, but not two half-implemented paths.
       JL chose `env.sh` on 260729 as this machine's home for the reader-facing URL, represented here as `HAIPIPE_BOARD_URL=http://<tailscale-ip>:5599`.
       The line remains open because `serve.py` still receives its bind through `--host`, so one setting does not yet control both the listener and the emitted URL.
+      It is also open in a second way as of 260806: the chosen home is empty on this machine, so the setting exists in the readers but not in the file they read.
       This line closes when the chosen home is implemented and the other is documented as not supported.
 - [x] 📖 the skill stops claiming `127.0.0.1` unconditionally
       `SKILL.md` now distinguishes the reader-facing domain from the listener bind.
       Its view command reads `HAIPIPE_BOARD_URL` and retains loopback only as the safe shared-source fallback.
 - [x] 🔀 the two places that emit a URL read the same setting
       `status.py` and `SKILL.md`'s view step now both prefer `HAIPIPE_BOARD_URL`, then the machine-local assignment in the repository's gitignored `env.sh`, then loopback.
-      The personal Tailscale IP is therefore handed to this machine's reader without becoming every clone's default.
+      A machine that sets the variable therefore hands its own address to its reader without that address becoming any clone's default.
 
 ### Proving a second reader is reached
 - [ ] 🧭 the skill's view step stops guessing local against remote from the presence of a socket
@@ -103,19 +104,21 @@ That is the same wall `QE1` describes from the hosting side, and this question i
       It may well be answered by `QE1` instead, in which case this line closes by pointing there.
 
 ## States
-The committed flag exists and works, its shared-source default is unchanged, and this machine keeps its reader-facing tailnet URL in the gitignored `env.sh`.
-JL has chosen the per-machine reader URL, and both link emitters now consume it without requiring the calling shell to source `env.sh`.
+The committed flag exists and works, its shared-source default is unchanged, and both link emitters read `HAIPIPE_BOARD_URL` before falling back to loopback.
+JL has chosen the per-machine reader URL, and neither emitter needs the calling shell to source `env.sh` to see it, but nothing on this machine sets it today, so both land on loopback.
 The shared-source listener default and whether one setting should also control the bind remain open.
-**The running server is on option ④, not option ②.** As of 260727 the live process uses `serve.py --root <repo> --port 5599 --host <tailscale-ip> --daemon`, and both its tailnet and internal loopback listeners return HTTP 200.
+**The running server is on option ④, not option ②.** Checked on 260806, the live process is `cli/serve.py --root <repo> --port 5599 --host <tailscale-ip>`, and both its tailnet and internal loopback listeners return HTTP 200.
 This page said until 260727 that the arrangement was loopback-only; that was true when JL said "maybe just use the local version" on 260726 and stopped being true when the server was next started with the flag.
 Option ④'s cost is the one written in the diagram: every device admitted to the tailnet can reach `/_term/`.
-`--host` still defaults to loopback, so nothing about a clone of `Tools` changed; only this machine's launch and reader-facing URL changed, while one setting still does not control both.
+`--host` still defaults to loopback, so nothing about a clone of `Tools` changed; only this machine's launch changed, while one setting still does not control both.
 **Before JL chose the tailnet URL, the bind was widened and the emitted URL was not.** JL asked earlier on 260729 whether `<tailscale-ip>` was being used as the host, and it was not: every link handed over that session, both the browser pushes and the closing strips, said `127.0.0.1:5599`.
 Three things were verified at that time: the live process listened on both addresses and both returned 200 from the machine itself, `HAIPIPE_BOARD_URL` was unset in the agent's shell, and `SKILL.md`'s push command carried the loopback address literally rather than reading any variable.
 At that time a reader off this machine saw a dead link unless the VS Code forward happened to be alive, which is the failure already written in the Lesson below, arriving by a second route.
 **JL has now chosen the tailnet URL for this machine.** On 260729 JL said that Board links should bind to the Tailscale IP and should not be handed over as localhost.
-The gitignored `env.sh` holds the real `HAIPIPE_BOARD_URL`; tracked files show only `http://<tailscale-ip>:5599`.
-Loopback remains an internal fallback listener in the current `serve.py`; it is no longer the address handed to JL.
+The gitignored `env.sh` is where that real value belongs; tracked files show only the placeholder `http://<tailscale-ip>:5599`.
+**The chosen home is empty as of 260806, so the ruling is not in force.** `HAIPIPE_BOARD_URL` appears nowhere in the repo root `env.sh` and is unset in the shell, so `status.py` and the skill's push command both resolve to `http://127.0.0.1:5599` while the listener stays bound to the tailnet address.
+That is the same split this page recorded on 260729, arriving by a third route: the readers were fixed, the file they read was not carried over.
+Loopback is always served alongside a non-loopback `--host`, and with nothing set it is once again the address handed to JL, so a reader off this machine needs the forward again.
 The shared-source default and the single-setting implementation remain open because a personal Tailscale address must not be committed into the plugin.
 
 - 260726 CC · 🕳 A board that looked broken was never reached at all
@@ -135,10 +138,10 @@ The shared-source default and the single-setting implementation remain open beca
 ### Decision Now
 - [ ] 🧠 Confirm the shipped default for the bind address
       When someone clones `Tools`, should `serve.py` listen on `127.0.0.1` (loopback only), or offer a wider address?
-      JL's leaning on 260726 was loopback; a tick here closes the same row in Items to Finish.
+      JL's leaning on 260726 was loopback; a tick here closes the same row in `Aims`.
 - [ ] 🗂 Decide the single home for the address setting
       Either `--host` flag alone, or the flag plus an `env.sh` variable that `serve.py` reads; not both half-implemented.
-      JL chose `env.sh` on 260729 for the reader-facing URL; a tick closes the same row in Items to Finish.
+      JL chose `env.sh` on 260729 for the reader-facing URL; a tick closes the same row in `Aims`.
 
 ## Files
 ### The running server and documentation
@@ -149,9 +152,9 @@ The shared-source default and the single-setting implementation remain open beca
 
 ### Machine-local settings
 - `status.py`
-  Resolves an explicit URL, the live environment, or the one `HAIPIPE_BOARD_URL` assignment in root `env.sh`, in that order.
+  Resolves an explicit URL, the live environment, or the one `HAIPIPE_BOARD_URL` assignment in the nearest `env.sh` at or above the served root, in that order.
 - `env.sh`
-  Gitignored and per-machine. It now holds this machine's reader-facing `HAIPIPE_BOARD_URL`; the listener still receives its address separately through `--host`.
+  Gitignored and per-machine. It is the chosen home for the reader-facing `HAIPIPE_BOARD_URL`, and this machine's copy sets none, so both emitters fall back to loopback; the listener receives its address separately through `--host`.
 
 ## Lesson
 A row in the VS Code PORTS panel is not a live tunnel: a User Forwarded entry survives the death of the process it pointed at, so the panel kept showing 5599 as forwarded while nothing was behind it.
@@ -174,6 +177,7 @@ tailnet: the private mesh network Tailscale gives one owner's devices, addressed
 >> CC0726: put the server back on loopback the same turn. The flag stays in place and defaults to loopback, so nothing changes for anyone who clones Tools, and this question now owns the ruling rather than the running server.
 
 ## Log
+- 260806 2203 · [REVISE-CC] swept to the 260806 architecture; the page claimed `env.sh` holds this machine's `HAIPIPE_BOARD_URL` and it holds none, so both emitters resolve to loopback while the bind stays on the tailnet address
 260802 · The short route `/b/<slug>/<page-id>` now answers on port 5599 alongside the long `/Tools/...` paths, across both listeners this machine serves, checked at 302 on the tailnet address and on loopback. It ships inside `live/home.py` and `cli/serve.py`, so every clone gets the route while `--host` still defaults to loopback: nobody's access surface widened, and nothing new reaches `/_term/`. The URL shape and the mount that resolves it are `QE2`'s.
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260729 · Redacted the machine-specific Tailscale IP from tracked Board history; the real reader URL remains only in gitignored env.sh

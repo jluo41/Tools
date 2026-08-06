@@ -34,12 +34,14 @@ The design succeeds when a nested page is discovered, ordered, and edited safely
 ## States
 Shipped 260724.
 Flat boards are untouched; nested pages work end to end including comment write-back (smoke-tested against `4-display/QD2-d01-iv-reporting.md`).
+Discovery has since widened to `page_files()` in `src/common.py`: S, Agent, and Meeting pages join Q pages at any depth, same `_`/`.`/`fig/` exclusions.
+The flat-birth rule below in Law was superseded 260726 (QA1): `add_question` in `live/structure.py` now creates the new page in its group's home folder, falls back to the board root only when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
 
 ## Files
 - `cli/build.py`
   Thin entry; discovery lives in `src/common.py` + `src/parse.py`.
 - `cli/serve.py`
-  `target()` / `add_question` / `archive_question` accept board-relative paths.
+  Routes the write endpoints; `target()` now lives in `live/base.py` and `add_question` / `archive_question` in `live/structure.py`, all on board-relative paths (`vet_qpath()` in `src/common.py`).
 - `cli/watch.py`
   Recursive stamp with the same exclusions.
 
@@ -52,6 +54,7 @@ Flat boards are untouched; nested pages work end to end including comment write-
 - New questions born from the page are still created flat at the board root.
 
 ## Log
+- 260806 2056 · [REVISE-CC] swept to the 260806 architecture; serve.py's page ops relocated in Files (`target()` to `live/base.py`, `add_question`/`archive_question` to `live/structure.py`) and States now records the 260726 supersession of the flat-birth Law line plus the `page_files()` widening
 260729 · Retitled to "Page folder management: a page inside its home folder" on JL's call. The id stays QB3, because the skill's SKILL.md and `ref/board-form.md` both cite it and so do two other faces; only the title changed. The index pointer in `## Boundary` moved from QC2 to QA10, which absorbed it the same day
 260726 · opening lead widened to three lines (JL: the openings are too short; say the question, how it is answered, and what turns on it)
 260724 · settled and shipped; first consumer is the MISQ paper's 0-lifecycle board

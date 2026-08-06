@@ -182,6 +182,26 @@ QB6-page-types.md
 QB7-diagramattach.md
 QB8-overview.md
 QB8e-sentence-details-lifecycle.md
+### QBt · Page Type examples
+One worked example per admitted Page Type, so a writer copies a page instead of interpreting a contract. `QB4` is the base example, what ANY page looks like; each page here states only what ONE type adds on top, because a type loads the core and never restates it (`QB6` §4).
+Split out of `QB` on 260806 rather than added as faces of `QB4`, which already tried the face shape once: `QB4a` through `QB4g` cut the base by SECTION, folded back into `QB4`'s Content on 260801, and sit in `_archive/`. These cut by TYPE, a different axis, and they stay a group so ten of them do not flatten the Delivery ladder into twenty rows.
+This group is not an eleventh Delivery concern. It gives the reader nothing directly; every page in it is spent on writing something `QB1`-`QB10` deliver. `QB6` stays the hub that lists the types, admits new ones, and owns the checker debt; this group only shows each one written out.
+
+```text
+📘 THE BASE                    📄 ONE PER TYPE                      🔑 RESOLVED BY
+─────────────────────────      ───────────────────────────────      ────────────────────────
+QB4 · what any page is      ◀── QBt3  for-display                ──▶  page-type: display
+    the seven sections,             the acceptance ladder,             head key, step ③
+    the five rows                   provenance, placement
+
+                                ⬜ nine more: for-stage · for-section · for-venue ·
+                                   for-skill · for-meeting · for-literature ·
+                                   for-value · for-slide · for-design
+
+🔑 each page states the DELTA only; anything it does not mention, QB4 owns
+```
+QBt3-for-display.md
+QBt5-for-value.md
 ### QC · Engine
 How the delivery is produced and shipped.
 QC1 what the family ships (QC1a what SKILL.md must say, QC1b the sub-skill roster); QC2 the code's shape under one Law (QC2a assets out of build.py, QC2b the src/ split, QC2c the live-layer split); QC3 generating a page from something that exists outside the board (QC3a a skill folder, QC3b a meeting note); QC4 the whole round trip md to html and back (QC4a the write path's addressing contract).
@@ -435,9 +455,9 @@ assets/css/        ../../board/haipipe-board/assets/css/
 assets/js/         ../../board/haipipe-board/assets/js/
 fig/board-mark-palettes.svg fig/board-mark-palettes.svg
 haipipe-board/assets/js/ ../../board/haipipe-board/assets/js/
-haipipe-paper-stage/ ../../paper/haipipe-paper-stage/
+haipipe-paper-stage/ ../../paper/_old/haipipe-paper-stage/
 0-lifecycle/        ../../../../../../examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/
-02-method-260722/   ../../../../subjective-label/diagram/02-method-260722/
+02-subjective-label-260722/ ../../../../subjective-label/diagram/02-subjective-label-260722/
 haichat-inlab/      ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/
 main.py             ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/main.py
 console_api.py      ../../../../../../platforms/HAIChat-SPACE/haichat-inlab/console_api.py

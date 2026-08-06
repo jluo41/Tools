@@ -6,7 +6,7 @@ method: three managed spans sync from the skill folder; everything else is writt
 ## Opening
 `haipipe-board-page-for-skill` says how to write a page that MIRRORS something: a `Skill-<n>` page standing in for a skill folder, or an `Agent-<n>` page standing in for one agent file.
 Load it on top of `haipipe-board-page`, which covers every page kind; reach past it to this one whenever the page you are writing is about a unit that ships somewhere else.
-It shipped 260802, its rules have been applied to eight pages, and one independent review on 260802 passed the noun-swap check it was built for while failing the pages on their facts.
+It shipped 260802, its rules were applied to eight pages that day, and one independent review on 260802 passed the noun-swap check it was built for while failing the pages on their facts.
 
 **Why it is separate at all**: The reason it is separate is that a mirror page decides nothing, and the base contract asks an author what their page decides.
 
@@ -23,7 +23,7 @@ On 260802 five pages opened with `Does <name> <verb> one <noun>?` followed by th
 What is it and what is it for; when you reach for it rather than the one sibling you would otherwise pick, named; and where it stands, meaning the one thing to know before trusting it.
 It also carries the rules a mirror page needs and a decision page does not: which three spans a generator owns, that `state:` is a health judgment while the version rides the title, that a page's Aims are the UNIT's open work, and how a page retires when its unit does.
 
-**Covered elsewhere**: `haipipe-board-page` owns the frame this extends, the seven sections and their order, and this file never repeats a rule from it.
+**Covered elsewhere**: `haipipe-board-page` owns the frame this extends, the sections and their fixed order, and this file never repeats a rule from it.
 `haipipe-board/cli/skillpage.py` is the generator that writes the three managed spans; `QC3a` on this board argues its design and `QC1b` argues which units exist at all.
 The stage variant, `haipipe-board-page-for-stage`, began as `haipipe-paper-stage` under the paper family; since 260805 that door is retired and all ten variants, this one included, live under the base's `page-types/`, because a variant ships where the board family maintains it.
 
@@ -53,7 +53,7 @@ haipipe-board-page-for-skill/
 WORKFLOW  load the base, then add what a mirror page needs
 
    📄 haipipe-board-page          the BASE · every page kind
-      seven sections, fixed order · the title rule · numbering
+      the sections, fixed order · the title rule · numbering
       the evaluation contract · the noun-substitution test
         │
         │  loaded FIRST, and never repeated below
@@ -388,7 +388,7 @@ A skill is LOADED into a context and an agent is DISPATCHED into a fresh one (JL
       0.4.0 opens with it and marks every slot machine-written or person-written.
 
 ## States
-The contract shipped 260802, has been applied to eight pages, and has been through one independent review that passed the check it was built for and failed the pages on their facts.
+The contract shipped 260802, was applied to eight pages that day, and has been through one independent review that passed the check it was built for and failed the pages on their facts.
 Its health is `🟡 in flux` because everything in it is new, and the two things it most needs have not happened: a writer who did not design it, and a test that it cannot break its own generator.
 
 - 260803 CC · 🩹 It broke the generator by documenting the generator
@@ -403,6 +403,7 @@ Its health is `🟡 in flux` because everything in it is new, and the two things
   Five writers were blamed for a sentence the tool wrote first, which is why the fix landed in the stub as well as in this contract.
 
 ## Log
+- 260806 2115 · [REVISE-CC] swept to the 260806 architecture; dropped the retired "seven sections" count from the Opening and the WORKFLOW fence (the base stopped claiming a count, recorded by this unit's own 0.4.1) and anchored the two live-prose "applied to eight pages" claims to 260802, since ten pages on this roster alone now follow the contract
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the "never reviewed" and "hours old" claims are corrected against the 260802 review this page's own Aims record, and the haipipe-paper-stage contrast now names the retired door and the ten page-types/ variants.
 260803 · Aims, States and Log restored by hand after `sync` deleted them; the bug they exposed is fixed in `skillpage.py` and carried as an open Aim above
 260802 1930 · Authored half written after the dispatched writer died on a session limit: the Opening replaced the generated rhetorical stub, and `state:` moved from 🔴 to 🟡 in flux

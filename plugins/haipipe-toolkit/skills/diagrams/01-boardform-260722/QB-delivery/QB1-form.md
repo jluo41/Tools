@@ -10,14 +10,14 @@ This board only argues: a decision here binds nothing until someone copies it in
 That is hard to see: on disk both are just markdown, two directories apart.
 This page names the two folders, says what goes inside one, and decides what we may write into somebody else's board.
 
-**What the two folders are**: `①` is `skills/board/`, the family that ships: five skills and two agents today.
+**What the two folders are**: `①` is `skills/board/`, the family that ships: four skills, ten Page Types, four Page Phases and three agents today.
 `②` is this folder, `skills/diagrams/01-boardform-260722/`, where those rules are argued one page at a time.
 A decision leaves `②` for `①` when a person copies it in, and that copy is the moment it starts to bind.
 
 **Where this page sits**: `QA0` names the three folders and says which kind of truth each one holds.
 This page takes the board FOLDER: where it sits in a tree, what is inside it, and how its pages are grouped into subfolders.
 `QB2` takes the webpage a reader opens, `QB3` puts a page's file beside the work it describes, and `QB4` takes what one page looks like inside.
-The vocabulary this whole family shares belongs to `QA1a`; only the few words this page adds are in its own `## Glossary`.
+The vocabulary this whole family shares belongs to `QA1`; only the few words this page adds are in its own `## Glossary`.
 
 **Why the standing rule matters**: standing means whether this family is entitled to make a given write into a board it renders but does not own.
 `①` runs on ten boards, and 266 of the pages it touches belong to other people.
@@ -31,7 +31,7 @@ The older decision underneath them, what a board folder holds and how its pages 
 How this page must be written. Read it before editing, and edit to it.
 
 **Every count on this page is measured, and it says when**: this page describes folders that change every week, so a number written from memory rots without anything reporting it.
-Count it with the parser or with `ls`, write the number, and date it: `55 pages in 7 group folders` and `321 pages across ten boards, counted on 260802`.
+Count it with the parser or with `ls`, write the number, and date it: `57 pages in 8 group folders, counted on 260806` and `321 pages across ten boards, counted on 260802`.
 A figure inherits the same rule, which is why the `## Diagram` panels carry versions and counts rather than "several scripts".
 
 **`①` and `②` mean the two folders, and nothing else**: `①` is `skills/board/` and `②` is this board folder.
@@ -56,38 +56,42 @@ Rewording it here without touching the file it graduated into is how the board a
 
   ①  📦 skills/board/                 🚢 WHAT SHIPS · binds at runtime
   │
-  ├── 🤖 haipipe-board/                 the door you invoke · v0.104.0
+  ├── 🤖 haipipe-board/                 the door you invoke · v0.124.0
   │   ├── 📖 SKILL.md                   the operating manual, kept shortest
-  │   ├── 📐 ref/           4 specs     board-form · page-template ·
-  │   │                                 writing-rules · board-example
-  │   ├── ⚙️  cli/         13 scripts   build · check · serve · watch · regroup …
-  │   ├── 🧩 src/          10 modules   the parser, split by page topic   (QC2b)
+  │   ├── 📐 ref/           5 specs     board-form · page-template ·
+  │   │                    +1 workflow  writing-rules · board-example ·
+  │   │                                 topic-entry-contract
+  │   ├── ⚙️  cli/         16 scripts   build · check · serve · watch · regroup …
+  │   ├── 🧩 src/          13 modules   the parser, split by page topic   (QC2b)
   │   ├── 📡 live/         11 modules   the running server, split off     (QC2c)
   │   ├── 🎨 assets/                    css · js · board-mark.svg          (QC2)
   │   ├── 🖥️  vendor/xterm               the terminal's front end          (QD3)
-  │   └── 🧪 tests/        13 files     what proves a change              (QF1)
+  │   └── 🧪 tests/        18 files     what proves a change              (QF1)
   │
-  ├── 📄 haipipe-board-page/            SPEC · what ONE PAGE is            (QB4)
+  ├── 📄 haipipe-board-page/            ENGINE · Page = TYPE x PHASE       (QB4)
+  ├── 🎭 page-types/       10 types     one folder per Page Type           (QB6)
+  ├── 🔄 page-phases/       4 phases    DRAFT · PROBE · REVISE · CHECK     (QB5)
   ├── ✏️  haipipe-board-sentence/        SPEC · the atomic unit            (QB8)
   ├── 🔀 haipipe-board-routing/         VERB · BOTH altitudes             (QC4a)
   │      src/lanes.py                   board.md structure + one write
   │
   └── ⚖️  agents/                        DISPATCHED, never loaded
       ├── 🔍 haipipe-board-reviewer-agent.md    judges · ⛔ NO write tools
-      └── ✍️  haipipe-board-creator-agent.md     writes ONE page at a time
+      ├── ✍️  haipipe-board-creator-agent.md     writes ONE page at a time
+      └── 🎬 haipipe-board-page-orchestrator-agent.md   runs ONE Page RUN
 
-  💡 5 units ship today · the roster and what is still unbuilt → QC1b
+  💡 4 skills · 10 types · 4 phases · 3 agents ship today · roster → QC1b
 
   ────────────────────────────────────────────────────────────────────────
 
   ②  📂 skills/diagrams/01-boardform-260722/   💬 WHAT IS ARGUED · 📍 here
   │
-  ├── 🧭 board.md                spine · close · Topic · Pipeline · Pages · Links
-  ├── 🗂️  QA-…/ … QG-…/           55 pages · 7 group folders  ✅ 7  🟡 37  🔴 11
-  ├── 🌐 board.html              generated · ⛔ NEVER hand-edited
+  ├── 🧭 board.md                spine · Topic · Pipeline · Board Map · Pages · Links
+  ├── 🗂️  QA-…/ … QG-…/           57 pages · 8 group folders · all 🟡 (260806)
+  ├── 🌐 board/                  generated site · ⛔ NEVER hand-edited
   ├── 🖌️  board.excalidraw        ONE scene, one frame per page, at the ROOT
   ├── 🖼️  fig/                    images only, 32 of them
-  └── 📦 _archive/               15 retired pages · moved, never deleted
+  └── 📦 _archive/               20 retired pages · moved, never deleted
 
   🧨 binds NOTHING · delete ② and every script in ① still runs
   🏭 what ① PRODUCES is neither: 10 boards · 321 pages · 266 not ours → §4
@@ -106,7 +110,7 @@ Rewording it here without touching the file it graduated into is how the board a
         ┃                                                ┃  until it lands, it binds nothing
         ┃                                                ┃
         ┃  ⒝ renders  🌐  build.py reads ②'s md          ┃
-        ┃◀───────────────────────────────────────────────┃  → writes board.html ONLY
+        ┃◀───────────────────────────────────────────────┃  → writes the board/ site ONLY
         ┃                                                ┃  no privilege for being designer
         ┃                                                ┃
         ┃  ⒞ judges  ⚖️  agents/ cold-reads vs           ┃
@@ -129,7 +133,7 @@ Rewording it here without touching the file it graduated into is how the board a
   🏭 ① crosses into 9 other boards on nearly every run · 266 pages, none ours
 
   ✅ MECHANICAL · always allowed, because it carries no judgement
-     🌐 generate board.html      ⌨️  write back a keystroke
+     🌐 generate the board/ site ⌨️  write back a keystroke
      🔁 sync a managed span      📦 git mv a page we are moving
 
   ⛔ EDITORIAL · never ours, however small it looks
@@ -170,18 +174,18 @@ A write to `①` changes what every future agent does, on every board, forever.
 A write to `②` changes an argument, and binds nothing until it graduates.
 Those are two different acts, and on disk they are both just markdown in the same plugin, which is exactly why the two folders have to be named rather than pointed at.
 
-#### 1.2 · `①` is one folder even though it holds five skills and two agents
-(`skills/paper/` is numbered as one entry on `QA1@paper` while holding 35 skills)
+#### 1.2 · `①` is one folder even though it holds four skills, ten Page Types, four Page Phases and three agents
+(`skills/paper/` is numbered as one entry on `QA1@paper` while registering one skill, `haipipe-paper`, over ten stage-data folders and 12 retired skills in `_old/`)
 The unit of numbering is a shipped set, not a directory, so `skills/board/` is one entry.
 An earlier draft numbered `agents/` separately, on the argument that a cited authority belongs on the map.
-That argument fails here: each agent has a skill page of its own in the QC group, so it was never off the map.
+That argument fails here: each agent has a skill page of its own in the QCskill group, so it was never off the map.
 
 #### 1.3 · `②` holds two things that are not pages, and both are generated
-(`board.html` and `board.excalidraw`, which is why neither is written by hand)
-`board.html` is written by `build.py` and must never be hand-edited, because markdown is the only source.
+(the `board/` render site and `board.excalidraw`, which is why neither is written by hand)
+The `board/` site (an index, one page per group, one page per Q file) is written by `build.py` and must never be hand-edited, because markdown is the only source.
 `board.excalidraw` is the one thing in this folder whose content does not come from markdown: the ASCII in a page's `## Diagram` seeds a frame one way, and anything drawn on the canvas never flows back.
-It sits at the board ROOT beside `board.md` and `board.html`, as a first-class citizen rather than one of the figures (JL 260729); `fig/` holds images only, 32 of them today.
-Retired pages move into an `_archive/`, never out of the repository: 15 of them today, five at the board root and the rest in the group folder they were retired from, each still reachable through a `## Links` row.
+It sits at the board ROOT beside `board.md` and the `board/` site, as a first-class citizen rather than one of the figures (JL 260729); `fig/` holds images only, 32 of them today.
+Retired pages move into an `_archive/`, never out of the repository: 20 of them today, six at the board root and the rest in the group folder they were retired from, each still reachable through a `## Links` row.
 
 ### 2 · Where a board folder lives, and what it is named
 **The two homes of a board folder**: which tree a board may sit in, and what its folder is called.
@@ -276,11 +280,11 @@ That is why Q and S share one layout and do not share one closing rule.
 
 #### 4.1 · Ten boards exist and nine of them are not ours
 (321 pages counted with the parser on 260802, 266 of them not ours: 5 boards under `<plugin>/skills/diagrams/`, 4 under a unit's `diagram/`, 1 on a paper's `0-lifecycle/`)
-`build.py` writes `board.html` into a project's folder. `serve.py` writes a comment into a paper's markdown. `regroup.py` moved 154 pages across 7 boards belonging to 4 different projects.
+`build.py` writes the `board/` site into a project's folder. `serve.py` writes a comment into a paper's markdown. `regroup.py` moved 154 pages across 7 boards belonging to 4 different projects.
 This family crosses into somebody else's tree on nearly every invocation, so what it may do there is a decision, not an afterthought.
 
 #### 4.2 · Mechanical writes are always allowed, because they carry no judgement
-(generate `board.html` · write back a keystroke the human just made · sync a managed span · `git mv` a page the tool is moving)
+(generate the `board/` site · write back a keystroke the human just made · sync a managed span · `git mv` a page the tool is moving)
 Each is regenerable from the markdown, or is a transcription of something a human just did.
 None of them decides anything about that board's topic, which is the property that makes them safe.
 
@@ -332,6 +336,7 @@ The correct output was a report to each owner, and the repair is queued for reve
 
   🔎 q_files() = rglob("Q*.md")     ─▶ 🗂 MEMBERSHIP · by path, at any depth
      ⛔ skips any segment starting with _ or . and skips fig/
+     ➕ page_files() adds S* · Agent* · Meeting* by the same rule
      🚚 move the file anywhere below the board ─▶ still a page
 
   📋 board.md ## Pages = bare names ─▶ 🔢 ORDER and GROUPING only
@@ -347,7 +352,8 @@ The correct output was a report to each owner, and the repair is queued for reve
 (`q_files()` is `rglob("Q*.md")`, skipping segments that start with `_` or `.`, and `fig/`)
 `QB3` made discovery recursive on 260724 for a different reason, so by the time the decision was taken on 260726 the capacity to group by folder had already been shipping for two days without being named.
 `## Pages` lists bare filenames and never paths, and filenames are unique board-wide, so a move needs no edit there either.
-`board.html` stays at the board root, so every href a declared Link produces still resolves.
+`page_files()` applies the same rule to the `S*`, `Agent*` and `Meeting*` prefixes, which is how the QCskill and QG pages on this board are members.
+The `board/` site is regenerated from the markdown on every build, so every href a declared Link produces still resolves.
 
 #### 6.2 · `## Links` is the exception, and this page had it wrong until it was measured
 (17 dead links across 4 boards, found by `check.py` the moment 154 pages moved)
@@ -495,15 +501,15 @@ It also removes the question entirely from every future board, which is the real
 - [ ] 🧪 Check for reverse dependencies
       No script may require an open page, and no rendered board's state may be read off this board. This has never been checked.
 - [ ] 🔤 Retire the word "ruling" in favour of "decision"
-      JL 260729: "I think we use the decision for it." This page is converted; `SKILL.md` has 9, `ref/board-form.md` 2, the reviewer agent 2, `ref/page-template.md` 1, and page prose across the ten boards has 999.
+      JL 260729: "I think we use the decision for it." This page is converted; counted on 260806, `SKILL.md` has 5, `ref/page-template.md` 3, the reviewer agent 1 and `ref/board-form.md` 0, and page prose across the ten boards had 999 on 260729.
       Most of that 999 sits on boards this family renders and does not own, so under §4 it needs each owner told rather than a silent rewrite.
-(What a page looks like inside is `QB4`'s business, and what the words mean is `QA1a`'s, so neither is handled here.)
+(What a page looks like inside is `QB4`'s business, and what the words mean is `QA1`'s, so neither is handled here.)
 
 ## States
 **The map is drafted and unapproved. The folder-internal decision underneath it stays settled and in use on every board.**
 
 - 🧩 Skills · what this page governs, and whether it has landed there yet
-  Full text of each unit is on its own skill page in the QC group, starting with `Q-Skill-haipipe-board`; this item only says what has landed.
+  Full text of each unit is on its own skill page in the QCskill group, starting with `Skill-0-haipipe-board`; this item only says what has landed.
   `SKILL.md` 🗂 Shape · **NOT landed.** It describes one board folder's contents and says nothing about the `①`/`②` split or the three crossings. This is the open `📐` item below.
   `ref/board-form.md` §1 folder · §2 numbering · **landed 260726.** The group-folder decision and the two reasons a page sits in a folder, both stated as one rule.
   `src/common.py` `q_files()` · **landed 260722.** Membership by path is the rule this page settled first, and it has not changed since.
@@ -550,12 +556,12 @@ It also removes the question entirely from every future board, which is the real
   `q_files()` is the membership rule: `rglob("Q*.md")`, skipping `_`, `.` and `fig/` segments.
   `ALIAS` is the section registry, which is why a section name the parser does not know renders nowhere.
 - `cli/serve.py`
-  `structure_op`, the write-back path for every keystroke a human contributes from the page.
+  The write-back door for every keystroke a human contributes from the page; `structure_op` itself moved into `live/structure.py` in the live split, and `serve.py` imports it.
 - `cli/regroup.py`
   The 260726 sweep, and the precedent for repairing what our own tool broke.
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `cli/check.py`
-  What turns a defect on a board we render into a report: `pages-ghost`, `dead-link`, `dead-href`.
+  What turns a defect on a board we render into a report: `pages-ghost` and `dead-link`.
 ### 📤 Output files · what a BUILD writes
 - `board/QB/QB1-form.html`
   ⚠️ Generated by `cli/build.py`. Never hand-edit it; the markdown is the only source.
@@ -599,6 +605,7 @@ It also removes the question entirely from every future board, which is the real
 >> CC0729: taken, and it is smaller than what it replaced. Two numbered folders, three crossings, one forbidden direction; everything else moved into Content, where the boards this family renders are described in §4 rather than numbered, because they are what `①` produces and not part of the map.
 
 ## Log
+- 260806 2100 · [REVISE-CC] swept to the 260806 architecture; the ① roster remeasured (four skills, ten Page Types, four Page Phases, three agents, haipipe-board at v0.124.0), the root board.html replaced by the generated board/ site everywhere it was presented as live, and ② recounted at 57 pages in 8 group folders with 20 archived
 260802 · Brought up to the QB4 page contract; the checker went from 9 findings to 0. Title changed from the question "How to design the haipipe-board folder structure?" to a phrase saying what the page is for, since QB4 §8 rules a title states a purpose in sentence case. `## Boundary` deleted, which the page contract removed as a section; its "covered elsewhere" pointers became the bearing part of the Opening's More details, and its stale `QAa0` / `QA2b` ids went with it. The Opening's blank line sat immediately under the lead question, so the whole rationale was rendering inside More details and the visible paragraph was one bare question; rewritten as a question plus four sentences, 463 characters, and the drawer became four labelled parts. Every Content part gained a `/diagram-ascii` face figure and a caption line, the three `## Diagram` panels gained captions, and paragraphs are numbered `1.1` down. Four part headings were reworded off the weak-English axis, §2 dropped its "(absorbed from QC1, 260729)" suffix, and §3, §4 and §8 gained numbered paragraphs. `## Files` groups renamed to the action menu (Contracts · Engines · Checks · Output files) and `## Law` and `## Glossary` converted to the folded `- ICON` item form. Measured facts refreshed against disk: `①` now holds 5 skills and 2 agents at v0.104.0 with 13 scripts, 10 `src/` modules, 11 `live/` modules and 13 test files; `②` holds 55 pages in 7 group folders, 32 figures and 15 archived pages; the family renders 10 boards and 321 pages, 266 of them not ours. The word "face" became "page" everywhere outside Discussion and Log, because the page contract now uses "face" only for a sub-page such as QB4a
 260731 · ## Diagram redrawn with /diagram-ascii into a 3-panel numbered series: [1/3] the two folders as emoji-dense folder-trees, [2/3] a two-column crossings panel (⒜ graduates ▶ · ⒝ renders ◀ · ⒞ judges ◀ · ✗ forbidden ①↯②), [3/3] the §4 standing rule (mechanical ✅ · editorial ⛔ · checker-error who-broke-it). Same content, no claims changed; the heavy hand-boxed blocks are gone
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)

@@ -11,12 +11,12 @@ The hard part was moving code without changing either the HTML or the parsed dat
 Names based on what a module renders give future work a stable place and keep shared helpers singular.
 It succeeds when the split is byte-identical and consumers stop carrying private copies of the same logic.
 
-**Covered elsewhere**: Moving CSS and JS out to `assets/` is `QC2`; what those modules actually render is `QB4`'s page layout; the live server's own behavior belongs to the `QD` group.
+**Covered elsewhere**: Moving CSS and JS out to `assets/` is `QC2a`; what those modules actually render is `QB4`'s page layout; the live server's own split is `QC2c`, and its behavior belongs to the `QD` group.
 
 
 ## Diagram
 
-/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC3
+/_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QC2b
 
 ## Aims
 - [x] 📦 Six modules under src/
@@ -30,7 +30,7 @@ It succeeds when the split is byte-identical and consumers stop carrying private
       Reproduced first to prove the move pure, then fixed deliberately.
 
 ## States
-Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py keeps the live layer and imports the shared helpers; the QD-group live layer was deliberately NOT refactored while it is still forming.
+Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py imports the shared helpers. The live layer's split, deferred here while the QD group was still forming, has since shipped as the `live/` package under its own page, `QC2c` (260731). The six src/ modules have since grown to twelve under the same naming rule (`assets` · `page_context` · `page_lifecycle` · `dialect_paper` · `stage_contract` · `topic_entry_contract` joined).
 
 - 260731 JL · 🧩 The browser assets split by topic, then split again
   JL: "do we write everything into one board.js? can we split it like live, by topic, otherwise it is too long and touching one thing shakes everything."
@@ -45,9 +45,9 @@ Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py
 - `cli/build.py`
   Entry only.
 - `src/`
-  The six modules.
+  The renderer modules; the original six have grown to twelve, each still named for what it renders.
 - `cli/serve.py`
-  Imports `src/common.py`; its own split waits for the QD group to settle.
+  Imports `src/common.py`; its own split shipped 260731 into `live/` (tracked on `QC2c`).
 
 ## Law
 - Refactors move code under a byte-identical gate (html AND json); features never ride along in the same step.
@@ -58,6 +58,7 @@ Shipped 260724. build.py is a thin CLI (arg parsing, BASE, assertions); serve.py
 - The byte-identical gate caught a real user-visible bug on its first run (the state pill clobber). A refactor without that gate would have shipped the same bytes and nobody would have looked.
 
 ## Log
+- 260806 2128 · [REVISE-CC] swept to the 260806 architecture; serve.py's split no longer "waits" (shipped 260731 as live/, pointed at QC2c), src/ six -> twelve modules, Diagram frame QC3 -> QC2b, assets pointer QC2 -> QC2a
 260802 · A second `## Where we are` heading was silently discarding everything under the first: `split_sections` builds a dict, so the later block won and 1643 bytes of dated records had never rendered. The two are merged and the duplicate heading is gone; `check.py` gained a `duplicate-section` ERROR the same day, because nothing reported this.
 260801 0130 · Reindexed QC3 -> QC2b under the new QC2 code-shape parent (JL 260801)
 260731 · Browser assets split by topic (27 js + 9 css, none over 365 lines), gated by assets.py verify() which parses the assembled file with node; verified functionally in a real browser (haipipe-board 0.87.0)

@@ -36,20 +36,18 @@ The frontier is read, and every attempt to store it has ended by disagreeing wit
 
 ## Diagram
 
-**The execution pipeline**: the S families, and the edges that are real. (On disk the pages sit in the ten `S01-opening/` … `S10-round/` group folders.)
+**The execution pipeline**: the S families, and the edges that are real. (On disk the pages sit in the ten `S01-opening/` … `S10-round/` group folders, and a family does not always share its folder's name: `S-Open` lives in `S01-opening/`, `S-Submission` in `S09-build/`.)
 
 ```text
- S-Seed 0,1          why this paper can exist, and where it sits
-      ▼
- S-Work 0,1          the resources and the defensible claims
-      ▼
- S-Venue 0..3        outlet · pitch · narrative · the decision register
+ S-Open  Seed · Venue · Pitch   why this paper can exist, where it sits,
+      ▼                         and what it sells in one minute
+ S-Work  R · C · N              the resources, the defensible claims, the arc
       ▼
  S-Display 1..N      one page per figure or table, each gating alone
       ▼
    ┌──┴──────────────────────┐
    ▼                         ▼
- S-Main 1..9           S-Appendix 0,A..F
+ S-Main 0..8           S-Appendix 0,A..F
    └──────────┬──────────────┘
               ▼
  S-Submission 0..3    reconcile · compile · review · submit
@@ -58,6 +56,9 @@ The frontier is read, and every attempt to store it has ended by disagreeing wit
  S-Round 1..N         ONE page per round, carrying that round's discussion,
                       decisions, applied work and gate
 
+ 🧱 S-Literature 1..N and S-Value 1..N are EVIDENCE pages rather than a step
+    in this order: any page above may raise a Q-consumer into one, each gates
+    on its own, and the answer returns to the sentence that owes it
  📖 this is EXECUTION order, not the Delivery reading order. Board adjacency
     never creates an edge
  🔁 an external review REOPENS the affected Work, Display, Main or Appendix
@@ -91,7 +92,9 @@ The frontier is read, and every attempt to store it has ended by disagreeing wit
 
  🗂 THE FAMILIES     Open · Seed · Work · Venue · Literature · Value ·
                      Display · Main · Appendix · Submission · Round
-                     (the eleven in the board's FAMILIES list)
+                     (the eleven in stage.py's FAMILIES tuple)
+ 📌 Seed and Venue stay legal names, and no live stage contract emits them:
+    seed, venue and pitch all declare board_family: Open
  📇 family order makes the index scannable; the pipeline holds the real edges
  🚫 nothing here empties on ✅, because the Content IS the paper
 ```
@@ -110,7 +113,7 @@ Delete `②` and the skill still runs. Delete this board and `⑦` becomes a fol
 
 #### 1.3 · One page per gated unit is ruled in general and unruled for Display
 (the claim the page rests on, with one family that does not follow it)
-Display has eleven S pages on the MISQ paper while its stage contract still says `runs: once`.
+Display has twelve S pages on the MISQ paper while its stage contract still says `runs: once`.
 The ruling that would reconcile them is `QC3b`'s open migration to per-unit, so the grain holds everywhere except the one family that most needs it.
 
 ### 2 · The frontier is read, never stored
@@ -140,7 +143,7 @@ Both were written to save a derivation that takes one pass over the pages, and b
 
 #### 2.2 · The derivation was a claim until it was run
 (260726 turned it into a measurement, and the run found one broken predicate)
-Every stage predicate resolves against the MISQ paper's 40 S faces, and the frontier lands on `S-Seed-0-seed.md` 🟡, awaiting human CHECK, which is correct.
+Every stage predicate resolved against the MISQ paper's 40 S faces, and the frontier landed on that day's `S-Seed-0-seed.md` 🟡, awaiting human CHECK, which was correct; the same gated unit is now `S01-opening/S-Open-Seed.md`.
 The one predicate that failed was a defect introduced the same morning: a `venue:` frontmatter key the board's grammar cannot parse, when the pin was already on the venue page's `state:` line.
 
 ### 3 · Rounds are pages, and what that replaced
@@ -185,9 +188,11 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
           and page grammar, Paper owns the Content jobs
  ⑧ ━▶ ⑦  OUT, by generation only. An S page's Content IS the section, and
           sections/*.tex is produced FROM it. md to tex, never back
- ⑧ ━▶ 🧱 OUT, through the page. A Q-consumer becomes an entry under the
-          owning S03/S04 topic's probes/, and the landed answer returns to
-          the sentence that owes it
+ ⑧ ━▶ 🧱 OUT, through the page. A Q-consumer is COLLECTED in the owning
+          S-Literature or S-Value page's ### E0 · incoming queue. PROBE turns
+          it into an ### E<n> division and opens that division's ONE QA-probe
+          under the topic's probes/L<nn>-<topic>/ or probes/V<nn>-<topic>/,
+          and the landed answer returns to the sentence that owes it
  ⑧ ━▶ ②  🚫 NOTHING. This board never writes to a design board
 ```
 
@@ -220,7 +225,7 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
 ## States
 
 ### A1 · 📄 A control plane, not a record
-- 🔨 A1.1 · Ruled in general and unruled for one family. Display carries eleven S pages on the MISQ paper while its contract still says `runs: once`; `QC3b`'s per-unit migration is the open ruling.
+- 🔨 A1.1 · Ruled in general and unruled for one family. Display carries twelve S pages on the MISQ paper while its contract still says `runs: once`; `QC3b`'s per-unit migration is the open ruling.
 - ✅ A1.2 · Ruled and in force. The CHECK gate is the one thing an unattended worker may prepare and may not write.
 - 🧠 A1.3 · Waiting, and the gap is structural. Both statements of the rule, this page and `QA3`, sit on a design board runtime is forbidden to read.
 
@@ -270,6 +275,8 @@ This differs from Display, whose S pages and rebuild workspace stay under `0-lif
 - **The frontier**: the earliest page in pipeline order whose gate has not passed, always derived and never stored.
 
 ## Log
+
+- 260806 2216 · [REVISE-CC] swept to the 260806 architecture; the boundary's evidence row rewritten to the E-division grammar (E0 incoming, one E<n> per Q-executor, one QA-probe under probes/L|V<nn>-<topic>/), the pipeline diagram corrected to the families the live stage contracts emit (S-Open, S-Work R/C/N, S-Main 0..8, evidence pages pulled out of the order), and Display recounted at twelve.
 
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the Round rows closed against `FAMILIES` and `S10-round/round/` stage data, and the runtime folder names moved to the S01-S10 groups.
 
