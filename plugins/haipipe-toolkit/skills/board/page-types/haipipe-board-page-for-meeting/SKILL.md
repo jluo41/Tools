@@ -46,6 +46,8 @@ A decision that lives only in the meeting record has the same defect as one that
 
 It never carries Aims of its own beyond the routing debt, never argues a position, never closes a question, and never counts toward the board's settled total. The moment a meeting note starts growing an argument, that argument is a Q page waiting to be proposed, and `haipipe-board-routing` proposes it.
 
+**The template.** `template.md`, beside this file. ONE template serves every page of this type: two pages of it differ in what they say, never in what shape they are, so nothing has to be resolved before writing one. Copy it, fill every `<slot>`, and delete each RULE comment as you satisfy it.
+
 ## 📂 Files
 
 ```

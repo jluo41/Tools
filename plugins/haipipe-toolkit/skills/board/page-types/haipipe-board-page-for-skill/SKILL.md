@@ -281,6 +281,8 @@ Flagged by the first independent reviewer, which correctly refused to judge the 
 
 Proven on `haipipe-board-index`, retired 260802: the page went to `_archive/`, its id still resolved, and the sweep found eight live-prose sentences on four other pages plus one dead citation on a sibling board.
 
+**The template.** `template.md`, beside this file. ONE template serves every page of this type: two pages of it differ in what they say, never in what shape they are, so nothing has to be resolved before writing one. Copy it, fill every `<slot>`, and delete each RULE comment as you satisfy it.
+
 ## 📂 Files
 
 ```

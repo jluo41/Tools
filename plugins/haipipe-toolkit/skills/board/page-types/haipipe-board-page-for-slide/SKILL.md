@@ -87,6 +87,8 @@ each division      ──▶ ![…](deck.html?preview=N) · the live embed
 
 A rebuilt or reworded slide returns ITS acceptance row to ⬜ (a compact-strip beat resets as a set, which is the compact form's stated cost); the deck file is live, so an edit shows everywhere the moment it lands, and the row is what says a human has not re-seen it. The deck-level gate closes only when every slide's row is accepted or the slide is explicitly cut from the talk.
 
+**The template.** `template.md`, beside this file. ONE template serves every page of this type: two pages of it differ in what they say, never in what shape they are, so nothing has to be resolved before writing one. Copy it, fill every `<slot>`, and delete each RULE comment as you satisfy it.
+
 ## 📂 Files
 
 ```

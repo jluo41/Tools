@@ -65,6 +65,8 @@ A binding that landed on its topic page but never reached the owing sentence is 
 
 A section page is venue-ALIGNED: retargeting the work to another venue rewrites the venue contract block, re-resolves the template, and re-judges the prose against the new floor, while the section's claims, evidence bindings, and unit identity survive. The split between what survives and what rewrites is `for-stage`'s venue-free against venue-aligned rule, applied at unit grain.
 
+**The template.** NOT fixed here, and resolved by a PAIR, `(venue, section_kind)`. The venue page's matching `### Sec-<n>-<Kind>` division states the shape that desk expects, and the venue pack carries the skeleton. A MISQ introduction and a Nature introduction differ in SHAPE, not only in wording, so one template for this type would flatten the very difference a venue page exists to record. Both halves of the pair are declared in the page's own head, which is what makes the lookup mechanical rather than a hunt.
+
 ## 📂 Files
 
 ```

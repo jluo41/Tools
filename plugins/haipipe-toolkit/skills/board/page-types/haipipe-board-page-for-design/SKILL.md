@@ -69,6 +69,8 @@ after SELECTION:
 
 A loser keeps its division, with its disposition and the reason it lost written at the division's head. The next brief for the same audience starts by reading why the last losers lost, and that reading is impossible if selection swept them away. After selection only the disposition line changes; the artifact and its rationale stay as they were judged.
 
+**The template.** `template.md`, beside this file. ONE template serves every page of this type: two pages of it differ in what they say, never in what shape they are, so nothing has to be resolved before writing one. Copy it, fill every `<slot>`, and delete each RULE comment as you satisfy it.
+
 ## 📂 Files
 
 ```
