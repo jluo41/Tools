@@ -958,6 +958,22 @@ def check_page(d, rep):
             rep.add(ERROR, "duplicate-html-id", f"{name} #{i}",
                     f"id appears {ids.count(i)} times")
 
+        # An anchor or button INSIDE a navigation row. A row is one link, and a
+        # browser closes the outer `<a>` when a second one opens, so the row
+        # stops navigating. The renderer now strips these (`body.nav_inline`),
+        # and this is the rule that says so out loud if they return by another
+        # path: a path in backticks inside a `###` heading put one in the
+        # sidebar, which is copied onto every page and never rerooted, and one
+        # heading on QE5 shipped 66 dead-href ERRORs across the built tree.
+        for cls, inner in re.findall(
+                r'<a class="(sb-p|sb-ss|sb-g|ir)[^"]*"[^>]*>(.*?)</a>', bare, re.S):
+            bad = re.search(r"<(a|button)\s", inner)
+            if bad:
+                rep.add(ERROR, "nested-anchor", f"{name} · .{cls}",
+                        f"a <{bad.group(1)}> inside a nav row; the row stops "
+                        "navigating and its href is never rerooted")
+                break          # one per page: the sidebar repeats on all of them
+
         # Tag balance, counted outside <script> AND <style>. Both quote markup
         # in their comments: board.css explains the apparatus with the words
         # "native <details>", and counting that reported three unclosed tags on

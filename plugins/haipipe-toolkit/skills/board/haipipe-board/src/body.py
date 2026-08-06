@@ -569,6 +569,29 @@ def cite_chips(s):
     return "".join(parts)
 
 
+def nav_inline(s):
+    """`inline()` for text that is ALREADY inside an anchor.
+
+    A sidebar row IS a link, so nothing inside it may be another one. A path in
+    backticks inside a `###` heading broke that twice over: `code_or_link` wrapped
+    it in `<a class="fp">`, which nests an `<a>` inside an `<a>` (browsers close
+    the outer one early, so the row stops navigating), and that inner href is
+    written relative to the board ROOT while the sidebar is copied verbatim onto
+    every page at every depth. `shell()` reroots `body` and `popcards` and never
+    the sidebar, so one such heading on QE5 shipped 66 dead-href ERRORs across
+    the built tree, one per page carrying the sidebar.
+
+    Rerooting the sidebar would have fixed the href and left the nesting. The
+    rule is the narrower one: keep the formatting and the `<code>`, drop the
+    anchor, because a navigation row has exactly one destination.
+
+    `<button>` goes with it. A citation key or QA path in an evidence heading
+    renders as a chip, and a button inside an anchor is the same invalid nesting
+    with the same broken row; the label survives, which is all a nav row wants.
+    """
+    return re.sub(r"</?(?:a|button)\b[^>]*>", "", inline(s))
+
+
 def inline(s):
     s = esc(s)
     s = re.sub(r"`([^`]+)`", code_or_link, s)

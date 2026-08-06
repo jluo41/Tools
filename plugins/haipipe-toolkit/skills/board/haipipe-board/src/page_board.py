@@ -9,7 +9,7 @@ from pathlib import Path
 from urllib.parse import quote, unquote
 
 from . import body as bd
-from .body import body, inline
+from .body import body, inline, nav_inline
 from .common import aim_progress, esc, sec, stinfo
 from .page_question import (parse_content_sections, render_question,
                             split_stage_record, structure_rows)
@@ -414,7 +414,7 @@ def index_rows(meta, qs, href_for=None, group_href=None):
             rows.append(
                 f'<a class="ir doc" href="{href_for(q)}">'
                 f'<span class="s">📄</span><span class="i">{esc(q["id"])}</span>'
-                f'<span class="t">{inline(q["title"])}</span>'
+                f'<span class="t">{nav_inline(q["title"])}</span>'
                 f'<span class="w"></span></a>')
             continue
         # 完成度上色：一条没做 = 白，越接近做完越绿（绿色叠加的透明度 = 完成比例）
@@ -425,7 +425,7 @@ def index_rows(meta, qs, href_for=None, group_href=None):
         rows.append(
             f'<a class="ir {st(q)[1]}" href="{href_for(q)}"{fill}{df} title="{pct}% done">'
             f'<span class="s">{st(q)[0]}</span><span class="i">{q["id"]}</span>'
-            f'<span class="t">{inline(q["title"])}</span>'
+            f'<span class="t">{nav_inline(q["title"])}</span>'
             + f'<span class="w">{"🧠 JL" if q["owner"]=="JL" else ("🔧 "+q["owner"] if q["owner"] else "")}</span></a>')
     return rows
 
@@ -444,7 +444,7 @@ def sidebar_rows(qs, href_for=None, group_href=None):
         if q.get("group") and q["group"] != sbcur:
             sbcur = q["group"]
             sb.append(f'<a class="sb-g" href="{group_href(bd.group_token(sbcur))}">'
-                      f'{inline(sbcur)}</a>')
+                      f'{nav_inline(sbcur)}</a>')
         chev = ('' if q.get("kind") == "doc"
                 else '<span class="sb-x" title="sections">▸</span>')
         # `data-page` is what the sidebar matches the open page against. The href
@@ -456,7 +456,7 @@ def sidebar_rows(qs, href_for=None, group_href=None):
         sb.append(f'<a class="sb-p" data-page="{esc(q["id"])}" href="{href_for(q)}">'
                   f'<span class="s">{"📄" if q.get("kind") == "doc" else st(q)[0]}</span>'
                   f'<span class="i">{esc(q["id"])}</span>'
-                  f'<span class="t">{inline(q["title"])}</span>{chev}</a>')
+                  f'<span class="t">{nav_inline(q["title"])}</span>{chev}</a>')
         # The per-page outline (QB2a, JL 260731): the Structure rows again,
         # so the sidebar and the Opening drawer can never disagree. Hidden until
         # this page is the open one — only ONE page's sections show at a time.
@@ -478,7 +478,7 @@ def sidebar_rows(qs, href_for=None, group_href=None):
                     how = (f'data-div="{j}"' if key == "content"
                            else f'data-t="{esc(t)}"')
                     out.append(f'<a class="sb-ss" data-k="{key}" {how} '
-                               f'href="{href_for(q)}">{inline(disp)}</a>')
+                               f'href="{href_for(q)}">{nav_inline(disp)}</a>')
             sb.append(f'<div class="sb-out" data-out="{esc(q["id"])}">'
                       + "".join(out) + '</div>')
     return sb
@@ -858,7 +858,7 @@ def tree_row(q, href):
     if q.get("kind") == "doc":
         return (f'<a class="ir doc" href="{href}">'
                 f'<span class="s">📄</span><span class="i">{esc(q["id"])}</span>'
-                f'<span class="t">{inline(q["title"])}</span>'
+                f'<span class="t">{nav_inline(q["title"])}</span>'
                 f'<span class="w"></span></a>')
     fr = frac_done_of(q)
     fill = (f' style="--fill:{fr:.3f}"') if fr > 0 else ""
@@ -869,7 +869,7 @@ def tree_row(q, href):
             f' title="{round(fr * 100)}% done">'
             f'<span class="s">{stinfo(q["state"])[0]}</span>'
             f'<span class="i">{esc(q["id"])}</span>'
-            f'<span class="t">{inline(q["title"])}</span>'
+            f'<span class="t">{nav_inline(q["title"])}</span>'
             f'<span class="w">{owner}</span></a>')
 
 
