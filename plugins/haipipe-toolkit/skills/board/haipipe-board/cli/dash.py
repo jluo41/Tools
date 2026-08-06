@@ -110,14 +110,14 @@ def measure(page):
     """The two facts every unit page carries, whatever its type."""
     t = page.read_text(errors="ignore")
     state = re.search(r"(?m)^state:\s*(.+)$", t)
-    prog = aim_progress(section(t, "Aims", "Done when", "Items to Finish"),
-                        section(t, "States", "Now", "Where we are"))
+    aims = section(t, "Aims", "Done when", "Items to Finish")
+    prog = aim_progress(aims, section(t, "States", "Now", "Where we are"))
     title = re.search(r"(?m)^#\s+(.+)$", t)
     return dict(
         page_id=re.sub(r"^(S-[A-Za-z]+-[A-Za-z]*\d*).*$", r"\1", page.stem),
         file=page.name,
         state=(state.group(1).strip() if state else "?"),
-        met=prog["met"], total=prog["total"],
+        met=prog["met"], total=prog["total"], mode=prog["mode"],
         title=(title.group(1).strip() if title else page.stem),
     )
 
@@ -145,8 +145,17 @@ def render(family, kind, control, units, date, board_name):
           f"  {len(rows)} units · {done} at a closed state · "
           f"{aims_met} of {aims_tot} declared aims met"]
     if aims_tot and not aims_met:
-        L.append("  no aim is met on any unit, which is either true or a States "
-                 "section nobody wrote")
+        # The diagnosis differs by which Aim vocabulary the units use, and
+        # saying the wrong one sends a reader to the wrong file. A legacy page
+        # keeps its state in the checkbox, so zero met means zero ticked, full
+        # stop. A canonical page reads its state out of States, so zero met can
+        # also mean nobody wrote that section.
+        legacy = sum(1 for r in rows if r["mode"] == "legacy")
+        why = ("every unit still uses checkbox Aims, so this is simply nothing "
+               "ticked" if legacy == len(rows) else
+               "read off States, so it is either true or a States section "
+               "nobody wrote")
+        L.append(f"  no aim is met on any unit: {why}")
     L.append(END)
     return "\n".join(L), rows
 

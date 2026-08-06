@@ -38,6 +38,10 @@ from src.topic_entry_contract import PROBE_DIRS, head            # noqa: E402
 # `form:` pair did on 260806 before this line existed.
 BEGIN, END = ("# --- evidence:begin (generated) ---",
               "# --- evidence:end ---")
+# The content preview sits on the SAME control page as the roll-up, so it needs
+# its own pair. One shared pair is how dash.py deleted three blocks on 260806.
+CBEGIN, CEND = ("# --- evidence-content:begin (generated) ---",
+                "# --- evidence-content:end ---")
 E_DIV = re.compile(r"^### (E\d+) · (.+?)\s*$", re.M)
 POINTER = re.compile(r"🔗 QA-probe:\s*`?([^`\s·]+)`?.*?state:\s*([a-z-]+)")
 # A consumer row leads with its state marker, which is the one thing that says
@@ -176,7 +180,7 @@ def content_preview(board, pages, date):
     by embedding the rendered figure, applied to the routes that have no picture.
     """
     bib = bibliography(board)
-    L = [BEGIN,
+    L = [CBEGIN,
          f"  EVIDENCE CONTENT, MEASURED {date}. GENERATED; do not hand-edit.",
          f"  regenerate: evidence.py {board.name} --content",
          "  outward: the citation key each answer became, resolved in the .bib",
@@ -211,8 +215,32 @@ def content_preview(board, pages, date):
         L += [f"  {len(bib)} entries in the bibliography · {len(cited)} bound by an "
               f"evidence page · {len(loose)} bound by none",
               "  an unbound entry is not a defect; a bound key that is NOT an entry is."]
-    L.append(END)
+    L.append(CEND)
     return "\n".join(L)
+
+
+def control_pages(board, pages):
+    """Each route's control page: the Dash beside the topics it governs."""
+    homes = {}
+    for p in pages:
+        stage = board / p["stage"]
+        dash = next((d for d in stage.glob("S-*-Dash.md")), None)
+        if dash:
+            homes.setdefault(dash, set()).add(p["route"])
+    return homes
+
+
+def write_block(page, block, begin, end, anchor_names):
+    t = page.read_text(encoding="utf-8")
+    if begin in t:
+        head, rest = t.split(begin, 1)
+        return head + block + rest.split(end, 1)[1], "replaced"
+    for name in anchor_names:
+        m = re.search(rf"(?m)^## {name}\s*$", t)
+        if m:
+            return (t[:m.end()] + "\n\n```text\n" + block + "\n```\n"
+                    + t[m.end():]), "inserted"
+    return None, "no anchor section"
 
 
 if __name__ == "__main__":
@@ -224,7 +252,22 @@ if __name__ == "__main__":
                 "unknown date")
     pages = topics(board)
     rows, tot = rollup(pages)
-    if "--content" in sys.argv:
+    if "--write" in sys.argv:
+        for page, routes in sorted(control_pages(board, pages).items()):
+            mine = [p for p in pages if p["route"] in routes]
+            rws, tt = rollup(mine)
+            for block, b, e, anchors, what in (
+                    (render(rws, tt, date, board.name), BEGIN, END,
+                     ("Diagram", "Content"), "roll-up"),
+                    (content_preview(board, mine, date), CBEGIN, CEND,
+                     ("Content",), "content")):
+                new, how = write_block(page, block, b, e, anchors)
+                if new is None:
+                    print(f"  ⚠️  {page.name:<26} {what}: {how}")
+                    continue
+                page.write_text(new, encoding="utf-8")
+                print(f"  ✅ {page.name:<26} {what} {how}")
+    elif "--content" in sys.argv:
         print(content_preview(board, pages, date))
     elif "--json" in sys.argv:
         print(json.dumps(dict(measured=date, board=board.name, rows=rows,
