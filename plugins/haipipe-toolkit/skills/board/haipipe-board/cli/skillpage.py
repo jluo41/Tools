@@ -603,16 +603,27 @@ caption line above it if the tree is the whole story.
 """
 
 
+def page_id_of(name):
+    """The id `sync` accepts, from a page's filename.
+
+    ONE definition, because `check` used to print its fix command from
+    `name.split('-')[0]` and that is `Agent` for `Agent-1-x.md`, which
+    `find_page` does not match. The command the checker told you to run
+    answered `no page 'Agent' on this board`, on exactly the two page kinds
+    this script exists for; a Q page's id happens to be its first segment, so
+    the one shape that worked was the one it was not written for.
+    """
+    stem = name[:-3] if name.endswith(".md") else name
+    if re.match(r"^Q-[A-Z]", stem):
+        return stem                           # a named family: the whole stem
+    if (m := re.match(r"^((?:Skill|Agent)-\d+)-", stem)):
+        return m.group(1)                     # the skill/agent kind: `<Kind>-<unit>`
+    return stem.split("-", 1)[0]
+
+
 def find_page(board, page_id):
     for p in page_files(board):
-        stem = p.name[:-3]
-        if re.match(r"^Q-[A-Z]", stem):
-            pid = stem                        # a named family: the whole stem
-        elif (m := re.match(r"^((?:Skill|Agent)-\d+)-", stem)):
-            pid = m.group(1)                  # the skill/agent kind: `<Kind>-<unit>`
-        else:
-            pid = stem.split("-", 1)[0]
-        if pid.casefold() == page_id.casefold():
+        if page_id_of(p.name).casefold() == page_id.casefold():
             return p
     return None
 
@@ -797,7 +808,7 @@ def cmd_check(a):
         if not saved or saved.group(1) != now:
             was = saved.group(1) if saved else "none"
             print(f"❌ {page.name}: stale (saved {was}, current {now}) "
-                  f"-> skillpage.py sync {board} {page.name.split('-')[0]}")
+                  f"-> skillpage.py sync {board} {page_id_of(page.name)}")
             bad += 1
         else:
             print(f"✅ {page.name}")

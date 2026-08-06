@@ -22,7 +22,7 @@ It runs `check.py --strict` and `--summary` itself, so the mechanical findings a
 Whether this unit stays at all is a decision row on `QC1b`, and this page's Aims carry what the unit still owes.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 573030cbcaf8f057 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:tree:start 86ed403e7bd410d0 board/agents/haipipe-board-reviewer-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
@@ -66,12 +66,12 @@ WORKFLOW  one file, no write tools, and the reason it must be a stranger
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 573030cbcaf8f057 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:body:start 86ed403e7bd410d0 board/agents/haipipe-board-reviewer-agent.md -->
 
 **haipipe-board-reviewer-agent** · `0.7.0` · last shipped 2026-08-04
 
 - folder   `board/agents/haipipe-board-reviewer-agent.md/`
-- tools    not declared
+- tools    Read, Grep, Glob, Bash, Skill
 - summary  Checks one immutable Page version and returns the auditable route consumed by the bounded RUN loop.
 
 ### haipipe-board-reviewer-agent.md
@@ -280,7 +280,7 @@ Its review now has first results rather than only a procedure: two revise verdic
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the dispatch, the four loaded contracts, the three-step review and the empty write-tool list, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in question. Recorded that the 260731 skill-versus-agent ruling argues against the retirement reading of JL's 260729 remark
 260727 0017 · page generated from `board/agents/haipipe-board-reviewer-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 573030cbcaf8f057 board/agents/haipipe-board-reviewer-agent.md -->
+<!-- haipipe:skill:log:start 86ed403e7bd410d0 board/agents/haipipe-board-reviewer-agent.md -->
 
 Converted from the skill's own `CHANGELOG.md`: 9 releases.
 

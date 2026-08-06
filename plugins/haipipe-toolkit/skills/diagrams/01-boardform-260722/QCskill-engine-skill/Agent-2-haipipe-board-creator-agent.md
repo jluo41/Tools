@@ -30,7 +30,7 @@ The agent performs exactly one DRAFT, PROBE, or REVISE authority and returns art
 The controller then rebuilds and versions the result before the independent reviewer sees it.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 0f279d488d3546f4 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:tree:start 9714e45d85f19a9b board/agents/haipipe-board-creator-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
@@ -76,12 +76,12 @@ The two halves are divided by one test: does the write touch a file another writ
 One page's `.md` fails that test and so it fans out; `board.md`, the lane block, `board.html`, and the checker all pass it and so they stay with the caller.
 
 ## Content
-<!-- haipipe:skill:body:start 0f279d488d3546f4 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:body:start 9714e45d85f19a9b board/agents/haipipe-board-creator-agent.md -->
 
 **haipipe-board-creator-agent** · `0.6.0` · last shipped 2026-08-04
 
 - folder   `board/agents/haipipe-board-creator-agent.md/`
-- tools    not declared
+- tools    Read, Write, Edit, Grep, Glob, Skill
 - summary  Produces one Page phase and returns the receipt consumed by the automatic RUN router; it never judges its own version.
 
 ### haipipe-board-creator-agent.md
@@ -328,7 +328,7 @@ Its health is `🟡 in flux` because that first run also exposed two gaps it had
 260802 1720 · Health ruled from evidence rather than left as a placeholder Aim: `state:` moved from 🔴 to 🟡 in flux, because the unit is written and registered at 0.3.0 and has never been dispatched. The `🧠 Rule this skill's health` row was removed, since the three Aims below it are the real work
 260731 1530 · page generated from `board/agents/haipipe-board-creator-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 0f279d488d3546f4 board/agents/haipipe-board-creator-agent.md -->
+<!-- haipipe:skill:log:start 9714e45d85f19a9b board/agents/haipipe-board-creator-agent.md -->
 
 Converted from the skill's own `CHANGELOG.md`: 9 releases.
 
