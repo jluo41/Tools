@@ -127,6 +127,15 @@ if __name__ == "__main__":
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(render(page, meta, body))
         n = sum(len(s) for _, blocks in body for *_, s in blocks)
+        # PROSE WORDS, off the .tex this run just wrote. The page credited this
+        # script with a word count it never computed: 373 was right and hand
+        # counted, and the sentence that introduced it named a producer that
+        # printed three other numbers. On a page whose whole discipline is that
+        # a printed number names the thing that made it, that is the defect
+        # rather than a rounding note. A comment line and a \command line are
+        # not prose, so neither is counted.
+        words = sum(len(ln.split()) for ln in out.read_text().splitlines()
+                    if ln.strip() and not ln.lstrip().startswith(("%", "\\")))
         print(f"{page.name}: {len(body)} subsections · "
-              f"{sum(len(b) for _, b in body)} P · {n} sentences -> "
-              f"{out.relative_to(GROUP)}")
+              f"{sum(len(b) for _, b in body)} P · {n} sentences · "
+              f"{words} prose words -> {out.relative_to(GROUP)}")

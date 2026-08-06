@@ -148,9 +148,9 @@ supersedes: nothing. No generated `### Venue` heading exists on this page to col
   MEASURED   3 subsections · 5 P · 20 sentences · 373 prose words
   260806     1 display reference · 1 open citation slot · 0 tables set
              here (the count table is QBt3's float)
-             the first three are printed by sections/source/build.py
-             the 373 is a HAND count of the 20 prose lines in the
-             generated .tex · that script prints no word count
+             all four are printed by sections/source/build.py, off the
+             .tex it just wrote · a % comment line and a \command line
+             are not prose, so neither is counted
 
   AGAINST    words          373 vs 700-1,100     ❌ 327 short of the floor
   QBt2 §7    band order     definition order      ✅ no effect-size sort
@@ -379,6 +379,8 @@ This section therefore reports an association and never a reduction, and every l
   The page frame this page sits in, including the caption rule every Content division above obeys.
 
 ## Log
+
+- 260806 · [REVISE-CC] The 373 now has the producer it was credited with. A cold read found the figure crediting `sections/source/build.py` with a word count the script never computed: its only print emitted subsections, P and sentences. The number was right and hand counted, which is the quieter half of the defect, because a page whose whole discipline is that a printed number names the thing that made it had one that did not. The script now counts prose words off the .tex it writes and prints 373, the same number, so the hand count is confirmed rather than replaced.
 
 - 260806 · [REVISE-CC] The page was 🔴 OPEN reading 1 of 2 Aims met, and both numbers were artifacts of the parser rather than of the page. `common.py:46`'s `AIM_ID` matched only `A<n>`/`P<n>`, so the six `Q-Sec4Results-<n>` ids this page carries were invisible and the counter ran off the two `P` rows alone. Those ids are not this page's invention: `for-stage/SKILL.md:251` prescribes `Q-Sec<unit><Kind>-<n>` and says NOT `A<n>`, so the engine could not read the ids its own contract required. `AIM_ID` now admits the shape, the page reads 8 Aims, 4 met, 1 waiting, 3 open, and the state line moves from 🔴 OPEN to 🟡 PARTIAL to match. The CHECK gate is still JL's and still unasked; that is a different thing from the page having nothing done, and the old state line said both with one glyph.
 
