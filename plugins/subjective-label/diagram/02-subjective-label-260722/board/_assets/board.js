@@ -49,6 +49,11 @@ function boardDirPath() {
     var e = document.createElement(tag); e.id = id; e.innerHTML = html || ''; return e;
   }
   var btn = mk('button', 'cbtn', '\u{1F4AC} Comment');
+  // 🪪 the SECOND thing a selection can become (JL 260802, QB5 option D):
+  // a comment goes UNDER the line, a card goes ON these exact words. Two
+  // buttons rather than one with a mode, because the reader has already made
+  // the choice by the time they let go of the mouse.
+  var cbtn = mk('button', 'ccard', '\u{1FAAA} Card');
   var box = mk('div', 'cbox',
     '<div class="qq"></div><textarea placeholder="Write a comment…"></textarea>' +
     '<div class="row"><select></select><span style="flex:1"></span>' +
@@ -57,7 +62,7 @@ function boardDirPath() {
   var dock = mk('button', 'cdock', '');
   var panel = mk('div', 'cpanel', '');
   var toast = mk('div', 'ctoast', '');
-  [btn, box, dock, panel, toast].forEach(function (e) { document.body.appendChild(e); });
+  [btn, cbtn, box, dock, panel, toast].forEach(function (e) { document.body.appendChild(e); });
 
   function save() { localStorage.setItem(KEY, JSON.stringify(db)); marks(); paint(); }
   function say(m) {
@@ -182,31 +187,64 @@ function boardDirPath() {
     // fold PROSE is a sentence like any other (JL 260731); what stays excluded
     // is rendered apparatus/comments, which serve.py refuses to anchor on anyway.
     if (!a || a !== b || a.closest('.sapp,.cmb,.cmt,.change')) return '';
-    return a.textContent.replace(/\s+/g, ' ').trim();
+    // Through the shared reader, not textContent: a sentence that already
+    // carries apparatus ends with its ⚑ badge inside the <p>, and posting that
+    // makes the anchor miss every time (JL 260801). Looked up at call time
+    // because this module is bundled before the one that defines it.
+    return window.__boardSentenceText ? window.__boardSentenceText(a)
+                                      : a.textContent.replace(/\s+/g, ' ').trim();
   }
 
   /* ── select -> floating button ───────────────────────────── */
+  function hideBtns() { btn.style.display = 'none'; cbtn.style.display = 'none'; }
   document.addEventListener('mouseup', function (ev) {
-    if (box.contains(ev.target) || panel.contains(ev.target) || ev.target === btn) return;
+    if (box.contains(ev.target) || panel.contains(ev.target)
+        || ev.target === btn || ev.target === cbtn) return;
     setTimeout(function () {
       var s = window.getSelection();
       var txt = s && String(s).trim();
-      if (!txt || txt.length < 2 || !s.rangeCount) { btn.style.display = 'none'; return; }
+      if (!txt || txt.length < 2 || !s.rangeCount) { hideBtns(); return; }
       var node = s.anchorNode;
       node = node.nodeType === 1 ? node : node.parentNode;
       var q = node.closest && node.closest('section.q');
-      if (!q) { btn.style.display = 'none'; return; }
+      if (!q) { hideBtns(); return; }
       var live = s.getRangeAt(0);
       var sentence = containingSentence(live);
-      if (!sentence) { btn.style.display = 'none'; return; }
+      if (!sentence) { hideBtns(); return; }
       var r = live.getBoundingClientRect();
       pend = { id: q.id, file: q.getAttribute('data-file') || '',
                quote: txt, sentence: sentence, range: live.cloneRange() };
       btn.style.left = (r.left + window.scrollX) + 'px';
       btn.style.top = (r.bottom + window.scrollY + 7) + 'px';
       btn.style.display = 'block';
+      // 🪪 offered only when the words are ACTUALLY IN the sentence. A card
+      // binds by matching them in the source line, so a selection that spans
+      // a code span or crosses two sentences has nothing to bind with, and
+      // showing a button that can only fail is worse than showing none.
+      cbtn.style.display = sentence.indexOf(txt) >= 0 && txt.indexOf(':') < 0
+        ? 'block' : 'none';
+      cbtn.style.left = (r.left + window.scrollX + btn.offsetWidth + 6) + 'px';
+      cbtn.style.top = btn.style.top;
     }, 0);
   });
+
+  /* ── 🪪 write a card on the selected words ─────────────────────────────
+     Reuses the comment composer, minus the person: a card says what a phrase
+     IS, and no author's initials belong on that. */
+  cbtn.onclick = function () {
+    hideBtns();
+    var words = pend.quote;
+    box.querySelector('.qq').textContent = '\u{1FAAA} ' + words;
+    box.querySelector('select').style.display = 'none';
+    box.querySelector('.nu').style.display = 'none';
+    var ta = box.querySelector('textarea');
+    ta.value = '';
+    ta.placeholder = 'What should open when someone clicks “' + words + '”…';
+    box.style.left = btn.style.left; box.style.top = btn.style.top;
+    box.style.display = 'block';
+    ta.focus();
+    box.dataset.mode = 'card';
+  };
 
   function fillWho() {
     var sel = box.querySelector('select'), last = localStorage.getItem(WK) || users[0];
@@ -231,18 +269,52 @@ function boardDirPath() {
   };
 
   btn.onclick = function () {
-    btn.style.display = 'none';
+    hideBtns();
+    box.dataset.mode = 'comment';
     fillWho(); box.querySelector('.nu').style.display = 'none';
+    box.querySelector('select').style.display = '';
     box.querySelector('.qq').textContent = pend.quote;
-    box.querySelector('textarea').value = '';
+    var ta = box.querySelector('textarea');
+    ta.value = ''; ta.placeholder = 'Write a comment…';
     box.style.left = btn.style.left; box.style.top = btn.style.top;
     box.style.display = 'block';
-    box.querySelector('textarea').focus();
+    ta.focus();
   };
   box.querySelector('.cx').onclick = function () { box.style.display = 'none'; };
   box.querySelector('.cs').onclick = function () {
     var v = box.querySelector('textarea').value.trim();
     if (!v) return;
+    if (box.dataset.mode === 'card') {
+      var words = pend.quote, file = pend.file;
+      var save = box.querySelector('.cs');
+      // The composer stays OPEN until the server says it wrote. A refusal is
+      // the whole reason this endpoint has three gates, and closing the box on
+      // the way out would throw away what the person had just typed.
+      save.disabled = true; save.textContent = 'Saving…';
+      post('/_board/card', { file: file, sentence: pend.sentence, span: words, text: v })
+        .then(function (j) {
+          save.disabled = false; save.textContent = 'Save';
+          if (!j) { say('The Board server is not running, so no card was written'); return; }
+          if (!j.ok) { say(j.err || 'the card was not written'); return; }
+          // A successful write rebuilds, so the card appearing on the words IS
+          // the confirmation and a toast would only say it again. Only the
+          // failures above still need words.
+          box.style.display = 'none';
+          // Clear the selection BEFORE refreshing: the swap holds itself back
+          // while text is selected, on the assumption that the reader is still
+          // working on it, and this selection is the one we just consumed.
+          window.getSelection().removeAllRanges();
+          // Do not wait for the poll to notice. The writer already knows the
+          // file changed, so ask for the swap now: it is the difference
+          // between the words lighting up at once and up to 800ms of nothing.
+          if (window.__boardRefresh) window.__boardRefresh();
+        })
+        .catch(function () {
+          save.disabled = false; save.textContent = 'Save';
+          say('The Board server did not answer');
+        });
+      return;
+    }
     var who = box.querySelector('select').value;
     if (who === '__new') who = users[0];
     localStorage.setItem(WK, who);
@@ -261,8 +333,15 @@ function boardDirPath() {
     paint();
     /* 这一次点击本身就是用户手势 —— 直接写盘，不用再点 Sync */
     drain(true).then(function (n) {
+      if (n && srvOK) {
+        // Same reason as the card path: the comment appearing under its
+        // sentence is the confirmation, and asking for the swap now is what
+        // makes it feel like one action instead of a save and then a wait.
+        window.getSelection().removeAllRanges();
+        if (window.__boardRefresh) window.__boardRefresh();
+      }
       if (n) say((ok ? 'Highlighted and ' : 'Saved (not anchored) and ') +
-                 'written to ' + pend.file + (srvOK ? ' — reload to see it rendered'
+                 'written to ' + pend.file + (srvOK ? ' — rendered below the sentence'
                                                     : ' — rebuild to render it'));
       else say(ok ? 'Highlighted — ' + db.length + ' pending (no folder access yet)'
                   : 'Saved, but could not anchor it (see ⚠ in the panel)');
@@ -343,7 +422,7 @@ function boardDirPath() {
     try {
       var j = await post('/_board/comment',
         { file: c.file, who: c.who, sentence: c.sentence, text: c.text,
-          when: c.when || stamp() });
+          quote: c.quote, when: c.when || stamp() });
       if (!j) return null;
       return j.ok ? true : j.err;
     } catch (e) { srvOK = false; return null; }
@@ -644,18 +723,39 @@ function boardDirPath() {
   chat.innerHTML =
     '<div class="rz" title="Drag to resize"></div>' +
     '<div class="hd"><span class="qid"></span><span class="ti"></span>' +
+    /* 🖼 lives in the HEADER, not beside the composer, because the header is the
+       one strip that survives termView(): the composer `.ft` is hidden while the
+       terminal is showing, and the terminal is exactly where a phone reader wants
+       to hand claude a screenshot (QD14, JL 260801: "手机上的话，如何 upload 这个
+       image 呢?"). One button, both halves; it decides where the path goes. */
+    '<button class="imgpick" type="button" aria-label="Attach an image" title="Attach an image from this device (photo library or camera) — paste needs a desktop clipboard">🖼</button>' +
     '<button class="term" type="button" aria-label="Open terminal" title="Open this question in a real terminal (same session)">&gt;_</button>' +
+    /* Below 820px the drawer stops docking and covers the page entirely, and
+       #chatfab hides while it is open, so a 32px × was the only way back and it
+       reads as "close the chat", not "return to the page" (JL 260801: "这好像
+       没有 button 让我去重新打开 page"). A labelled button says where it goes;
+       nothing is lost by pressing it, because the session lives on disk. */
+    '<button class="back" type="button" aria-label="Back to the page" title="Back to the page — this session is kept and resumes when you reopen">⇤ Page</button>' +
     '<button class="x" type="button" aria-label="Close chat" title="Close chat">×</button></div>' +
-    '<details class="spick" hidden><summary></summary><div class="spl"></div></details>' +
     '<div class="sfocus" hidden><div class="sfrow"><span class="sflabel">FOCUS</span>' +
     '<code class="sfref"></code><button class="sfclear" type="button" aria-label="Clear sentence focus" title="Clear sentence focus">×</button></div>' +
     '<div class="sfpath"></div><div class="sfquote"></div>' +
     '<details class="sfattached"><summary></summary><pre></pre></details></div>' +
     '<div class="bd"></div><div class="tm"></div>' +
     '<div class="utility"><div class="utility-tabs">' +
+    /* Sessions belongs beside the other two, not in a separate strip under the
+       header (JL 260801: "我怎么能加一个新的 button，叫 Sessions"). The picker
+       element itself is UNMOVED in every other sense: same .spick / .spl
+       selectors, so loadSessions and renderSessions need no change.
+       ORDER, left to right (JL 260802): which conversation, then what to say in
+       it, then how it is configured — widest scope first, and Settings last
+       because it is the one you touch least. */
+    '<button class="gtoggle" type="button" aria-expanded="false">🗂 Sessions</button>' +
     '<button class="utoggle" type="button" aria-expanded="false">✨ Quick actions</button>' +
     '<button class="stoggle" type="button" aria-expanded="false">⚙ Settings</button></div>' +
     '<div class="utility-body"><div class="acts"></div>' +
+    '<div class="sessions"><details class="spick" hidden open>'+
+    '<summary></summary><div class="spl"></div></details></div>' +
     '<div class="settings"><div class="tip"></div>' +
     '<div class="cfg">' +
     '<select class="mdl"><option value="opus">Opus 5</option>' +
@@ -672,34 +772,82 @@ function boardDirPath() {
     '<div class="ft"><textarea rows="1" placeholder="Ask about this question…"></textarea>' +
     '<button class="send">➤</button></div>';
   document.body.appendChild(chat);
+  /* The drawer is position:fixed OVER the page, so a wheel with nothing to
+     scroll inside it chains to the document and the PAGE moves instead — and
+     an empty-ish transcript is exactly the case with nothing to scroll, which
+     is why it only felt fixed after sending a message (JL 260801: "感觉还是
+     背后的那个 page 页面在滑动 ... 只有发一个 message 之后才能够滑动").
+     overscroll-behavior alone cannot help here: it governs a scroller that has
+     reached its edge, not one that never had overflow. So ask the real
+     question — can anything under the pointer take this delta? — and if the
+     answer is no, keep the event rather than hand it to the page. */
+  chat.addEventListener('wheel', function (ev) {
+    var dy = ev.deltaY;
+    if (!dy) return;
+    for (var n = ev.target; n && n !== chat; n = n.parentNode) {
+      if (!n.scrollHeight || n.scrollHeight - n.clientHeight <= 1) continue;
+      var oy = getComputedStyle(n).overflowY;
+      if (oy !== 'auto' && oy !== 'scroll') continue;
+      var room = dy > 0 ? (n.scrollHeight - n.scrollTop - n.clientHeight) : n.scrollTop;
+      if (room > 1) return;                  /* this one can take it: let it */
+    }
+    ev.preventDefault();                     /* nothing can: do not move the page */
+  }, { passive: false });
   var cq = null;                                    // 当前挂在哪一题
   var sentenceFocus = null;
   var MK = 'board-chat-model', EK = 'board-chat-effort', SK = 'board-chat-scope';
   var CHATK = function (id) { return 'board-chat:' + location.pathname + ':' + id; };
   var utility = chat.querySelector('.utility'), utilityToggle = chat.querySelector('.utoggle'),
-      settingsToggle = chat.querySelector('.stoggle');
+      settingsToggle = chat.querySelector('.stoggle'),
+      sessionsToggle = chat.querySelector('.gtoggle');
+  var UTABS = [['actions', 'show-actions', utilityToggle],
+               ['sessions', 'show-sessions', sessionsToggle],
+               ['settings', 'show-settings', settingsToggle]];
   function setUtility(mode) {
-    mode = mode === 'actions' || mode === 'settings' ? mode : '';
+    var known = UTABS.filter(function (t) { return t[0] === mode; }).length;
+    mode = known ? mode : '';
     utility.classList.toggle('open', !!mode);
-    utility.classList.toggle('show-actions', mode === 'actions');
-    utility.classList.toggle('show-settings', mode === 'settings');
     chat.classList.toggle('utility-open', !!mode);
-    utilityToggle.setAttribute('aria-expanded', mode === 'actions' ? 'true' : 'false');
-    settingsToggle.setAttribute('aria-expanded', mode === 'settings' ? 'true' : 'false');
-    utilityToggle.classList.toggle('active', mode === 'actions');
-    settingsToggle.classList.toggle('active', mode === 'settings');
+    UTABS.forEach(function (t) {
+      var on = mode === t[0];
+      utility.classList.toggle(t[1], on);
+      t[2].setAttribute('aria-expanded', on ? 'true' : 'false');
+      t[2].classList.toggle('active', on);
+    });
+    /* the picker is a <details> that other code opens and closes on its own;
+       inside a tab it should simply be open whenever the tab is */
+    if (mode === 'sessions') {
+      var sp = chat.querySelector('.spick');
+      if (sp) sp.open = true;
+      if (typeof loadSessions === 'function') loadSessions();   // refresh on reveal
+    }
   }
-  utilityToggle.onclick = function () {
-    setUtility(utility.classList.contains('show-actions') ? '' : 'actions');
-  };
-  settingsToggle.onclick = function () {
-    setUtility(utility.classList.contains('show-settings') ? '' : 'settings');
-  };
+  UTABS.forEach(function (t) {
+    t[2].onclick = function () {
+      setUtility(utility.classList.contains(t[1]) ? '' : t[0]);
+    };
+  });
 
   /* ── session 拣选器（QD1 Law 修正 260731：一题多 session，一个 current）──
      打开抽屉先亮清单：current 在头一行，历史按最后动笔新→旧，还有「＋新开一段」。
      选中的那段随下一条消息（或 ⌨ 终端）被 resume，同时成为 current，头部跟着换。 */
   var chatSid = '';        // '' = 跟着头部的 current · 'new' = 新开 · uuid = 点名的历史
+  /* THE SESSION THE DRAWER IS SHOWING (JL 260801: "我们打开了一个新的 session
+     webpage，为什么整个页面没有跟着更新呢?").
+
+     `chatSid` was only ever a PENDING INTENT: what the NEXT message should ask
+     the server for. Nothing on screen was bound to it, so picking a session
+     printed a sentence and left the header, the transcript, the local log key
+     and the row highlight all describing the session you had just left. That is
+     the whole difference from the VS Code plugin, which keeps ONE active
+     conversation id and renders every part of the panel from it.
+
+     `activeSid` is that id. It is the session the body, the `.sid` box, the
+     picker highlight and `logKey()` all agree they are showing, and `switchTo`
+     is the ONLY thing allowed to change it. '' means "a new session, not started
+     yet". */
+  var activeSid = '';
+  var lastSessJson = null;             // what the picker last drew, for repaint
   function sessAge(t) {
     if (!t) return '';
     var s = Math.max(0, Date.now() / 1000 - t);
@@ -709,13 +857,134 @@ function boardDirPath() {
   function paintSessSummary(rows) {
     var n = rows.filter(function (r) { return r.landed; }).length;
     var named = function (r) { return r && (r.name || (r.id ? r.id.slice(0, 8) + '…' : '')); };
-    var pickedRow = null;
-    for (var pi = 0; pi < rows.length; pi++) if (rows[pi].id === chatSid) pickedRow = rows[pi];
-    var cur = chatSid === 'new' ? ('new session next' + (sessName ? ': ' + sessName : ''))
-            : chatSid ? named(pickedRow) + ' picked'
-            : (rows[0] && rows[0].current ? named(rows[0]) : 'none yet');
+    var row = null;
+    for (var pi = 0; pi < rows.length; pi++) if (rows[pi].id === activeSid) row = rows[pi];
+    /* the summary says what you ARE ON, not what you have queued up: "picked"
+       and "next" were the old model's words for an intent nothing obeyed */
+    var cur = !activeSid ? ('new session' + (sessName ? ': ' + sessName : ''))
+            : row ? named(row) : activeSid.slice(0, 8) + '…';
     chat.querySelector('.spick summary').textContent =
       '🗂 Session: ' + cur + (n > 1 ? ' · ' + n + ' on record' : '') + ' ▾';
+  }
+
+  /* THE HEADER FOLLOWS THE SWITCH. The `.sid` box used to be written in exactly
+     one place, inside chatOpen, so it could only ever show the session the PAGE
+     was opened on; switching sessions left it naming the old one, with a
+     `claude --resume` command that resumed the wrong conversation. */
+  function paintSid(sid) {
+    var sidbox = chat.querySelector('.sid');
+    if (!sidbox || !cq) return;
+    if (!sid) {
+      sidbox.innerHTML = '<span class="mut">' + (cq.group
+        ? 'Group sessions live in the 🗂 tab — pick one, or start a new one here.'
+        : 'No session yet — it appears after your first message and is written into the header of '
+          + cq.file) + '</span>';
+      return;
+    }
+    /* session 归档在 cwd（= serve.py 的 --root）下的 project 目录，所以要 cd 到
+       root，不是板文件夹 —— cd 错了 --resume 就找不到这个 session。 */
+    var board = document.body.getAttribute('data-board') || '.';
+    var urlDir = boardDirPath();
+    var root = board;
+    if (urlDir && board.slice(-urlDir.length) === urlDir) {
+      root = board.slice(0, board.length - urlDir.length) || '/';
+    }
+    sidbox.innerHTML = '<code>' + sid + '</code>';
+    var full = '# ' + cq.id + ' · ' + cq.title + '\n'
+             + 'cd "' + root + '" && claude --resume ' + sid;
+    var cb = document.createElement('button');
+    cb.className = 'act'; cb.textContent = '⌨ Copy: claude --resume';
+    cb.title = full;
+    cb.onclick = function () {
+      navigator.clipboard.writeText(full)
+        .then(function () { cb.textContent = 'Copied full command'; });
+    };
+    sidbox.appendChild(cb);
+
+    /* A THIRD way into the same session: a terminal on the machine YOU are
+       sitting at (JL 260801: "在这个 App 上打开 Terminal，然后在 Terminal 里面
+       进入这个 Chat").
+
+       The board cannot open it for you, and the reason is worth stating once so
+       nobody tries again: a page cannot start a program on the machine viewing
+       it, and having the SERVER open a window is not a workaround, because the
+       server is on the Mac while the reader is usually somewhere else over ssh.
+       Tried on 260801, it opened nothing and blocked the call.
+
+       What the server DOES know is the exact command, including the ssh hop
+       back to itself. One paste in any terminal, on any machine, lands in this
+       same conversation. */
+    var lb = document.createElement('button');
+    lb.className = 'act'; lb.textContent = '🖥 Copy: open on my machine';
+    lb.title = 'An ssh command that drops any terminal, anywhere, into this session';
+    lb.onclick = async function () {
+      try {
+        var r = await fetch('/_board/local-cmd', { method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: boardPath(), file: cq.file,
+                                 group: (cq && cq.group) || undefined, session: sid }) });
+        var j = await r.json();
+        if (!j || j.ok === false) { say('⚠ ' + ((j && j.err) || 'could not build the command')); return; }
+        await navigator.clipboard.writeText(j.remote);
+        lb.textContent = 'Copied — paste in any terminal';
+        say('Paste this in a terminal on your own machine:\n' + j.remote
+            + '\nAlready on ' + j.host + '? Then: ' + j.here);
+      } catch (e) { say('⚠ ' + e.message); }
+    };
+    sidbox.appendChild(lb);
+  }
+
+  /* A SWITCH LEAVES A MARK IN THE TRANSCRIPT (JL 260801: "为什么 history 没有
+     对应的，比如说 switch 呢?"). Without it the pane silently becomes a
+     different conversation and a reader cannot tell where one ended and the
+     next began. Same shape as the turn separator, one class louder. */
+  function switchMark(label) {
+    var el = document.createElement('div');
+    el.className = 'turnsep switchsep';
+    el.textContent = label;
+    return el;
+  }
+
+  /* THE ONE PLACE A SESSION CHANGES. Everything the reader can see is repainted
+     here, in one go: the transcript body, the switch banner, the `.sid` box,
+     the picker highlight and the summary line. Nothing else may assign
+     activeSid. */
+  async function switchTo(sid, name, landed) {
+    /* NEVER SWITCH OUT FROM UNDER A LIVE TURN. This clears .bd, calls busyEnd()
+       and drops traceEl, so running it mid-stream orphans the trace and leaves
+       the ⏹ button stuck — the same defect chatOpen was fixed for on 260731,
+       and the tool cards and 💭 thinking block are exactly what disappears. */
+    if (typeof inflight !== 'undefined' && inflight) {
+      bubble('sys', 'A turn is still running — stop it with ⏹ first, then switch.');
+      return;
+    }
+    var from = activeSid;
+    activeSid = sid || '';
+    chatSid = sid || 'new';            // what the NEXT message asks the server for
+    if (name != null) sessName = sid ? '' : name;
+    var bd = chat.querySelector('.bd');
+    busyEnd(); traceEl = null; toolCards = {};
+    if (activeSid && landed) {
+      await replaySession(activeSid, true);          // clears and refills .bd itself
+    } else {
+      bd.innerHTML = '';
+      chatLoad(logKey()).forEach(replayRow);         // a fresh one may have local text
+    }
+    paintSid(activeSid);
+    var label = activeSid
+      ? '🗂 ' + (name || (lookupName(activeSid) || activeSid.slice(0, 8) + '…'))
+        + (from && from !== activeSid ? '  ·  switched from ' + from.slice(0, 8) + '…' : '')
+      : '🗂 new session' + (sessName ? ' · ' + sessName : '')
+        + '  ·  starts with your next message';
+    bd.insertBefore(switchMark(label), bd.firstChild);
+    if (lastSessJson) renderSessions(lastSessJson);   // repaint the highlight
+    bdJump();
+    syncSchedule();                                  // re-aim the heartbeat
+  }
+  function lookupName(sid) {
+    var rows = (lastSessJson && lastSessJson.sessions) || [];
+    for (var i = 0; i < rows.length; i++) if (rows[i].id === sid) return rows[i].name || rows[i].title;
+    return '';
   }
 
   /* Paint from the browser, then correct from the SERVER (JL 260801: "when it
@@ -733,7 +1002,8 @@ function boardDirPath() {
      drawer never flashes empty, then ask the server for the session's real
      transcript and adopt it when it knows more. A reload now costs the live
      trace of an in-flight turn and nothing else.  */
-  async function syncFromServer(logKey) {
+  function diagSync(m) { try { if (typeof diag === 'function') diag('SYNC', m); } catch (e) {} }
+  async function syncFromServer() {
     if (!cq || !cq.file) return;
     try {
       var r = await fetch('/_board/sessions', {
@@ -741,29 +1011,124 @@ function boardDirPath() {
         body: JSON.stringify({ path: boardPath(), file: cq.file,
                                group: (cq && cq.group) || undefined }) });
       var j = await r.json();
+      if (window.__boardTermLive) { try { await loadTermList(); } catch (e) {} }
       if (!j || j.ok === false) return;
-      var cur = ((j.sessions) || []).filter(function (s) { return s.current && s.landed; })[0];
-      if (!cur) return;
+      lastSessJson = j;
+      /* SYNC THE SESSION BEING SHOWN, NOT THE ONE THE FILE HEADER CALLS CURRENT.
+         This asked for `current` unconditionally and wrote the answer into the
+         page's log, so picking any other session was undone by the very next
+         heartbeat: the replayed history was painted over, in place, a few
+         seconds later. That is the "why doesn't the page follow" seen from the
+         other side — it followed, and then the sync dragged it back. */
+      var want = activeSid;
+      if (!want) {
+        if (chatSid === 'new') return;      // deliberately on a fresh one: nothing to adopt
+        var cur = ((j.sessions) || []).filter(function (s) { return s.current && s.landed; })[0];
+        if (!cur) return;
+        want = cur.id;
+        activeSid = want;                   // the first turn landed; adopt it
+        paintSid(want);
+      }
       var r2 = await fetch('/_board/session-log', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: boardPath(), file: cq.file,
-                               group: (cq && cq.group) || undefined, id: cur.id }) });
+                               group: (cq && cq.group) || undefined, id: want }) });
       var j2 = await r2.json();
       if (!j2 || j2.ok === false) return;
       var srv = j2.log || [];
-      var local = chatLoad(logKey);
-      /* only adopt when the server genuinely knows more, so a page whose local
-         log is ahead (a turn this tab just rendered) is never rolled back */
-      if (srv.length <= local.length) return;
+      var local = chatLoad(logKey());
+      /* Adopt when the server knows BETTER, which is not the same as knowing
+         MORE. A cut-short turn leaves a provisional reply in the local log, so
+         the two sides have equal LENGTH while one of them is a fragment; the
+         old length test therefore refused to upgrade it, forever. Anything
+         marked partial is an open invitation to be replaced. */
+      var provisional = local.some(function (m) { return m && m.partial; });
+      if (srv.length <= local.length && !provisional) return;
       var bd = chat.querySelector('.bd');
-      if (bd.querySelector('.trace') || document.body.classList.contains('chatbusy')) return;
+      /* Never clobber a turn that is genuinely running, but do not trust a
+         STALE flag either: `chatbusy` is a class that an aborted turn can
+         leave behind, and while it sat there this function refused to adopt
+         anything, forever. `inflight` is the real signal. */
+      if ((typeof inflight !== 'undefined' && inflight) || bd.querySelector('.trace')) return;
+      /* keep the switch banner: it says which conversation this pane is, and a
+         repaint that removed it would leave the reader in an unlabelled one */
+      var mark = bd.querySelector('.switchsep');
       bd.innerHTML = '';
+      if (mark) bd.appendChild(mark);
       if (j2.clipped) bubble('sys', 'Showing the last ' + srv.length + ' of ' + j2.total + ' messages.');
-      srv.forEach(function (m) { bubble(m.k, m.t); });
-      chatSave(logKey, srv);
-      bd.scrollTop = 1e9;
+      /* ADOPTING MUST NOT DELETE. This wiped the pane and repainted the
+         SERVER's rows only, then saved them over the local log — so any answer
+         this browser had that the session's .jsonl does not carry was lost from
+         the screen AND from storage. It happens: a turn that was stopped, or
+         one whose reply never reached the transcript, is real to the reader and
+         absent from the file (found 260802 — leaving the page and coming back
+         dropped two 8k answers). Keep whatever the server does not have, in
+         order, after what it does. */
+      var seen = {};
+      srv.forEach(function (m) { if (m && m.t) seen[m.k + '\u0000' + m.t] = 1; });
+      var kept = local.filter(function (m) {
+        return m && m.t && !m.partial && !seen[m.k + '\u0000' + m.t];
+      });
+      var merged = srv.concat(kept);
+      merged.forEach(replayRow);
+      chatSave(logKey(), merged);
+      if (kept.length) diagSync('kept ' + kept.length + ' local row(s) the server did not have');
+      bdJump();
     } catch (e) { /* offline or an old server: the local paint still stands */ }
+    return true;
   }
+
+  /* THE DRAWER HAS TO KEEP ASKING (JL 260801: "你这个 Chatbot 是不是没有自主地
+     去 check session update？我这一回来，然后东西就没有了").
+     syncFromServer used to be called from exactly ONE place, chatOpen, so it
+     asked the server once at the instant the drawer opened and never again. If
+     the turn had not landed in the .jsonl by that instant — and coming back
+     mid-turn is exactly when it has not — the reader was left staring at a gap
+     that the server could have filled a second later. Nothing was missing; no
+     one was asking. So: retry with backoff after opening, ask again whenever
+     the tab comes back to the front, and keep a slow idle heartbeat while the
+     drawer is open. All of them are cheap reads and all refuse to run while a
+     turn is genuinely in flight. */
+  var syncTimers = [], syncBeat = null;
+  function syncStop() {
+    syncTimers.forEach(clearTimeout); syncTimers = [];
+    if (syncBeat) { clearInterval(syncBeat); syncBeat = null; }
+  }
+  function syncNow() {
+    if (!cq) return;
+    if (typeof inflight !== 'undefined' && inflight) return;   // a live turn owns the view
+    /* R1 · REJOIN BEFORE READING. A turn may still be RUNNING on the server
+       with nobody watching it, and the transcript cannot help there because it
+       is not written until the turn ends — which is exactly the gap JL kept
+       hitting ("我这一回来，然后东西就没有了"). Ask the ring first; only when
+       nothing is live does the transcript become the right answer. */
+    if (typeof chatRejoin === 'function') {
+      Promise.resolve(chatRejoin()).then(function (attached) {
+        if (!attached) { try { syncFromServer(logKey()); } catch (e) {} }
+      }, function () { try { syncFromServer(logKey()); } catch (e) {} });
+      return;
+    }
+    try { syncFromServer(logKey()); } catch (e) {}
+  }
+  function syncSchedule() {
+    syncStop();
+    /* the .jsonl is written as the turn ends, so the useful window is the few
+       seconds AFTER opening, not the instant of it */
+    [1500, 4000, 9000, 20000].forEach(function (ms) {
+      syncTimers.push(setTimeout(syncNow, ms));
+    });
+    syncBeat = setInterval(function () {
+      var c = document.getElementById('chat');
+      if (!c || !c.classList.contains('on')) return;    // closed: nothing to repaint
+      if (document.hidden) return;                      // not being looked at
+      syncNow();
+    }, 25000);
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) syncNow();                    // you came back to the tab
+  });
+  window.addEventListener('focus', syncNow);            // you came back to the window
+
 
   /* Replace the drawer's body with a session's REAL transcript, read from its
      .jsonl by the server (POST /_board/session-log). Read-only: this does not
@@ -801,9 +1166,9 @@ function boardDirPath() {
         bubble('sys', 'Showing the last ' + log.length + ' of ' + j.total
                     + ' messages in this session.');
       }
-      log.forEach(function (m) { bubble(m.k, m.t); });
+      log.forEach(replayRow);
       bubble('sys', '\u2191 history of the picked session \u00b7 your next message resumes it');
-      bd.scrollTop = 1e9;
+      bdJump();
     } catch (e) {
       if (note && note.parentNode) note.parentNode.removeChild(note);
       bubble('sys', '\u26a0 could not load that session\u2019s history: ' + e.message);
@@ -826,25 +1191,38 @@ function boardDirPath() {
       return d;
     };
     rows.forEach(function (r) {
-      var picked = chatSid ? chatSid === r.id : r.current;
+      /* one authority, so the highlight cannot disagree with the pane */
+      var picked = r.id === activeSid;
       // 有名字显名字（QD3m-fix-black-screen），没名字退回第一句话
-      var d = mk(r.name || r.title || (r.landed ? '(untitled)' : '(recorded, never talked)'),
+      /* ⌨ marks a session that already has a terminal running, so the picker
+         is the one place that shows what exists (JL 260801). */
+      var liveT = (window.__boardTermLive ? window.__boardTermLive() : [])
+        .filter(function (x) { return x.session === r.id; })[0];
+      var d = mk((liveT ? '⌨ ' : '') + (r.name || r.title || (r.landed ? '(untitled)' : '(recorded, never talked)')),
          (r.current ? 'current · ' : '')
+           + (liveT ? (liveT.parked ? 'terminal parked · ' : 'terminal running · ') : '')
            + (r.landed ? sessAge(r.mtime) + ' · ' + Math.round((r.size || 0) / 1024) + 'k'
                        : 'hollow'),
          (picked ? 'cur' : '') + (r.name ? ' named' : '') + (r.landed || r.current ? '' : ' dim'),
-         function () {
-           chatSid = r.current ? '' : r.id;
+         async function () {
+           if (r.id === activeSid) { sp.open = false; return; }   // already here
            sp.open = false;
-           paintSessSummary(rows);
-           bubble('sys', r.current ? 'Back on the current session.'
-             : 'Picked ' + (r.name || r.id.slice(0, 8) + '…') + ' — the next message (or ⌨) resumes it and makes it current.');
-           /* Show what you are resuming (JL 260801: "I cannot see previous chat
-              history"). The drawer's own log is per PAGE and kept in this
-              browser, so it is the wrong transcript for a session picked here
-              and empty for one started in a terminal or on another machine.
-              The session's .jsonl on disk is the only honest source. */
-           replaySession(r.id, r.landed);
+           /* ONE chooser for both halves (JL 260801). In the TUI this is not a
+              plan for later: attach that session's terminal now. Terminals are
+              keyed per (page, session) since 260801, so the one you are leaving
+              keeps running and you can come straight back to it. */
+           if (window.__boardTermOn && window.__boardTermOn()) {
+             chatSid = r.id;
+             say('Attaching the terminal for ' + (r.name || r.id.slice(0, 8) + '…') + '…');
+             await window.__boardTermAttach(r.id);
+             loadSessions();
+             return;
+           }
+           /* SWITCH, do not merely INTEND to. The old code set chatSid, printed
+              a sentence and replayed the body, leaving the header, the log key
+              and the row highlight on the session you had just left — and the
+              sync then painted that one back over the replay (JL 260801). */
+           await switchTo(r.id, r.name || r.title || '', r.landed);
          });
       // ✎ 改名：行内输入，写进登记表，不打断挑选
       var e = document.createElement('button');
@@ -869,7 +1247,8 @@ function boardDirPath() {
       };
       d.appendChild(e);
     });
-    var nu = mk('＋ New session', 'starts fresh, primed with this question', 'new', function () {
+    var nu = mk('＋ New session', 'starts fresh, primed with this question',
+                'new' + (activeSid ? '' : ' cur'), function () {
       // 先问一句这段是干嘛的（可留空）：名字跟着第一条消息/⌨ 一起落进登记表
       var inp = document.createElement('input');
       inp.type = 'text'; inp.className = 'spin';
@@ -878,10 +1257,19 @@ function boardDirPath() {
       inp.onclick = function (ev) { ev.stopPropagation(); };
       inp.onkeydown = function (k) {
         if (k.key === 'Enter') {
-          sessName = inp.value.trim();
-          chatSid = 'new'; sp.open = false; paintSessSummary(rows);
-          bubble('sys', 'The next message (or ⌨) starts a NEW session'
-            + (sessName ? ' named "' + sessName + '"' : '') + ' for this question.');
+          var nm = inp.value.trim();
+          sp.open = false;
+          if (window.__boardTermOn && window.__boardTermOn()) {
+            sessName = nm; chatSid = 'new';
+            say('Starting another terminal…');
+            window.__boardTermAttach('new').then(function () { loadSessions(); });
+            return;
+          }
+          /* CLEAR THE PANE. This used to print one sentence into the OLD
+             session's transcript and change nothing else, so a "new session"
+             looked exactly like the one you were already in (JL 260801:
+             "为什么整个页面没有跟着更新呢?"). */
+          switchTo('', nm, false);
         }
         if (k.key === 'Escape') loadSessions();
       };
@@ -900,7 +1288,7 @@ function boardDirPath() {
         body: JSON.stringify({ path: boardPath(), file: cq.file,
                                group: (cq && cq.group) || undefined }) });
       var j = await r.json();
-      if (j.ok) renderSessions(j);
+      if (j.ok) { lastSessJson = j; renderSessions(j); }
     } catch (e) { /* serve.py 没跑 → 没有拣选器，其余照旧 */ }
   }
 
@@ -968,6 +1356,22 @@ function boardDirPath() {
     try { return JSON.parse(localStorage.getItem(CHATK(id)) || '[]'); } catch (e) { return []; }
   }
   function chatSave(id, log) { localStorage.setItem(CHATK(id), JSON.stringify(log)); }
+  /* The ONE key for the scope the drawer is on. chatOpen and syncFromServer
+     already read 'G:'+id for a group, but the send path saved under the bare
+     id, so a GROUP chat wrote to one key and read from another and its
+     history never came back (JL 260801: "我再把你打开，你这个新东西又没有了").
+     Everything goes through here now, so the two halves cannot drift again.
+
+     ONE MORE HALF, 260801: the key was per PAGE, so every session of a question
+     shared a single transcript in this browser. Switching sessions therefore
+     could not change what was stored, only what happened to be drawn, and the
+     next save wrote the new session's turns on top of the old one's. The key is
+     now per (scope, session), which is what makes a switch survive a reload. */
+  function logKey() {
+    if (!cq) return '';
+    var base = cq.group ? 'G:' + cq.id : cq.id;
+    return base + '#' + (activeSid || 'new');
+  }
 
   /* 回复是 markdown，得渲染出来 —— 先转义，再只认几种最常用的写法。
      不引第三方库：这一页坚持自带一切，而且要渲染的只是我们自己 agent 的输出。 */
@@ -1041,13 +1445,114 @@ function boardDirPath() {
     flush();
     return out.join('');
   }
+  /* Autoscroll must FOLLOW, never YANK (JL 260801: "我想 scroll up 去看看之前的
+     聊天内容,为啥它就不行 ... 每一次都是一下子给我弄到最下面去了"). Every
+     streamed event called scrollTop = 1e9 unconditionally, so reading back
+     through a LIVE turn was impossible: each token dragged the reader down
+     again. A scroll listener now remembers whether the reader has left the
+     bottom, and the stream stops chasing them until they come back down.
+     Programmatic jumps land AT the bottom, so they clear the flag themselves.
+     Deliberate jumps (opening, replaying, sending) still use bdJump. */
+  var BD_SLACK = 48;                    // "close enough to the bottom" in px
+  var bdAway = false;                   // the reader scrolled up; do not chase
+  (function () {
+    var bd = chat.querySelector('.bd');
+    if (!bd) return;
+    bd.addEventListener('scroll', function () {
+      bdAway = (bd.scrollHeight - bd.scrollTop - bd.clientHeight) > BD_SLACK;
+    }, { passive: true });
+  })();
+  function bdAuto() {                   // follow the stream, only if not reading back
+    if (bdAway) return;
+    var bd = chat.querySelector('.bd');
+    if (bd) bd.scrollTop = bd.scrollHeight;
+  }
+  function bdJump() {                   // deliberate: open, replay, your own message
+    bdAway = false;
+    var bd = chat.querySelector('.bd');
+    if (bd) bd.scrollTop = bd.scrollHeight;
+  }
+  /* A REPLAY SHOULD READ LIKE THE THING IT REPLAYS (JL 260801: "我重新打开一个
+     过去的 session，打开之后，它这个 content 和界面都非常差").
+     A live turn ends with a meta line saying how long it took and when it
+     finished. A replay had nothing: no times, no turn boundaries, just a flat
+     run of bubbles, so a long session read as one undifferentiated wall. The
+     jsonl carries a timestamp on every message, so a replay can at least mark
+     where each turn began and when. Same separator, whatever the source. */
+  function turnMark(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return null;
+    var z = function (n) { return String(n).padStart(2, '0'); };
+    var el = document.createElement('div');
+    el.className = 'turnsep';
+    el.textContent = String(d.getFullYear()).slice(2) + z(d.getMonth() + 1)
+                   + z(d.getDate()) + ' ' + z(d.getHours()) + ':' + z(d.getMinutes());
+    chat.querySelector('.bd').appendChild(el);
+    return el;
+  }
+  /* Draw one row of a REPLAYED transcript. The live path has three shapes on
+     screen (a bubble, a tool card, a turn separator) and the replay only had
+     one, which is most of why an old session looked nothing like the turn it
+     was a recording of. Tools now come back from the server, so they get the
+     same compact card, marked done because it already is. */
+  var replayTrace = null;      // the box consecutive replayed tool rows collect into
+  function replayRow(m) {
+    if (!m) return;
+    /* A ROW WITH NOTHING IN IT IS A LINE ACROSS THE SCREEN, and eighteen of
+       them look like the drawer broke (JL 260802, screenshot: "the thinking
+       process become lines"). An entry can arrive empty from an older saved
+       log or from a server that returned a message carrying only thinking, and
+       every one of those used to become a bordered row with no text in it.
+       Draw nothing instead: an absent row reads as absent, a blank one reads
+       as a fault. */
+    var body = ((m.t || '') + (m.name || '')).trim();
+    if (!body) return;
+    if (m.k === 'you' && m.ts) turnMark(m.ts);
+    /* A REPLAYED TURN GETS THE SAME BOX A LIVE ONE GETS (JL 260803: "I want the
+       box like this to host the old thinking process"). A live turn folds its
+       tool calls into one bounded `.trace`, which scrolls inside itself; the
+       replay appended each card straight into the transcript, so a turn that
+       ran 35 tools became 35 rows a reader had to scroll past to reach the
+       answer. Consecutive tool rows now collect into one `.trace done`, and
+       any other row closes it — the shape of the recording matches the shape
+       of the thing it recorded. */
+    if (replayTrace && !replayTrace.parentNode) replayTrace = null;  // .bd was cleared
+    if (m.k !== 'tool') {
+      replayTrace = null;
+      bubble(m.k, m.t);
+      return;
+    }
+    if (!replayTrace) {
+      replayTrace = document.createElement('div');
+      replayTrace.className = 'trace done';
+      replayTrace.dataset.n = '';
+      chat.querySelector('.bd').appendChild(replayTrace);
+    }
+    var d = document.createElement('details');
+    d.className = 'tool done';
+    d.innerHTML = '<summary><span class="tn"></span><span class="tb"></span>' +
+                  '<span class="ts">done</span></summary>';
+    d.querySelector('.tn').textContent = m.name || '?';
+    d.querySelector('.tb').textContent = (m.t || '').replace((m.name || '') + '  ', '');
+    replayTrace.appendChild(d);
+    var n = replayTrace.querySelectorAll('.tool').length;
+    replayTrace.dataset.n = n + (n === 1 ? ' tool call' : ' tool calls');
+    bdAuto();
+  }
   function bubble(kind, text) {
+    /* The live path bubbles an answer as 'cc'; the server's session-log
+       (live/chat.py) returns the very same thing as 'ai'. Only 'cc' got
+       md2html and only '.m.cc' has a style, so a REPLAYED answer arrived as
+       raw text in an unstyled box while the identical live answer rendered
+       (JL 260801: "History content 没有 Markdown render 的模式").
+       One word apart, two symptoms; normalize here so old servers work too. */
+    if (kind === 'ai') kind = 'cc';
     var d = document.createElement('div');
     d.className = 'm ' + kind;
     if (kind === 'cc') { d.classList.add('md'); d.innerHTML = md2html(text); }
     else { d.textContent = text; }
     chat.querySelector('.bd').appendChild(d);
-    chat.querySelector('.bd').scrollTop = 1e9;
+    bdAuto();
     return d;
   }
   /* 思考过程：一个可折叠块。默认展开着让你看它边想，答案一到就自动收起；
@@ -1087,8 +1592,10 @@ function boardDirPath() {
     return d;
   }
   function traceScroll() {
-    if (traceEl) traceEl.scrollTop = 1e9;
-    var bd = chat.querySelector('.bd'); if (bd) bd.scrollTop = 1e9;
+    /* the trace is its own small scroller and always shows its newest row;
+       the transcript behind it only follows when the reader is at the bottom */
+    if (traceEl) traceEl.scrollTop = traceEl.scrollHeight;
+    bdAuto();
   }
   function traceEnd(meta) {             /* keep it, labelled and re-openable */
     if (!traceEl) return;
@@ -1232,7 +1739,7 @@ function boardDirPath() {
       if (dv.childNodes.length) box.insertBefore(dv, box.querySelector('.b'));
     }
     chat.querySelector('.bd').appendChild(box);
-    chat.querySelector('.bd').scrollTop = 1e9;
+    bdJump();          /* a gate needs an answer: this one may interrupt reading */
     var send = function (ok, always) {
       box.querySelector('.b').innerHTML =
         '<span class="mut">' + (ok ? (always ? 'Always allowed' : 'Allowed') : 'Denied') + '</span>';
@@ -1262,46 +1769,85 @@ function boardDirPath() {
           'Report exactly: ✅ Meets; ⚠️ Needs work; evidence (page/section); and the 1–3 smallest proposed fixes. ' +
           'Separate mechanical consistency from human readability. Do not claim a rule is met unless you can name its evidence.'
         : 'QUALITY CHECK — answer only. Do not modify any file or run commands. ' +
-          'Inspect this question against its declared template and purpose: aim/question clarity, required sections, ' +
-          'Content answering the question, testable Items to Finish, and an honest Where we are. ' +
-          'Report exactly: ✅ Meets; ⚠️ Needs work; evidence (section or text); and the 1–3 smallest proposed fixes. ' +
-          'Separate mechanical consistency from human readability. Do not claim a rule is met unless you can name its evidence.';
+          'First use Read to load the canonical evaluation contract at ' +
+          'Tools/plugins/haipipe-toolkit/skills/board/haipipe-board-page/SKILL.md and the cold-read rules at ' +
+          'Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/writing-rules.md. ' +
+          'Resolve requirements in order: base contract; page-kind or consumer variant; this page\'s Writing Style ' +
+          'and Stage Contract; then each local division purpose and paragraph job. Report any conflict instead of choosing silently. ' +
+          'Review every present ## section, every direct ### Content division, and every #### paragraph whose job must be tested. ' +
+          'Report exactly: Requirement conflicts; then a table with unit | applicable requirements + source | verdict | evidence | smallest fix; ' +
+          'then Mechanical findings; then one Page verdict. Use only MEETS, NEEDS WORK, N/A, or NOT VERIFIABLE. ' +
+          'Separate mechanics, function, evidence, and readability. Every MEETS needs visible evidence; NOT VERIFIABLE is never a pass.';
       chatSend(prompt, { scope: 'scoped', qualityCheck: true });
     }, true);
     add('📍 Where are we?', function () {
-      chatSend('Answer only, do not edit any file: summarize the current status, ' +
+      askHere('Answer only, do not edit any file: summarize the current status, ' +
                'what is decided, what remains open, and the one concrete blocker. ' +
                'Use short bullets with evidence from this page.');
     });
     add('➡️ What next?', function () {
-      chatSend('Answer only, do not edit any file: propose the smallest valuable ' +
+      askHere('Answer only, do not edit any file: propose the smallest valuable ' +
                'next step. Name its owner, the evidence it needs, and which item it closes.');
     });
     add('🎯 Clarify aim', function () {
-      chatSend('Answer only, do not edit any file: rewrite this page\'s aim/question ' +
+      askHere('Answer only, do not edit any file: rewrite this page\'s aim/question ' +
                'as one plain-language sentence. Then identify any ambiguity that still ' +
                'needs a human decision.');
     });
     if (isBoard) {
       add('🧭 Which question should I act on?', function () {
-        chatSend('Answer only, do not edit any file: which page on this board should ' +
-                 'be acted on next, and why? Consider state and unchecked items. ' +
+        askHere('Answer only, do not edit any file: which page on this board should ' +
+                 'be acted on next, and why? Consider page state and open Aim States. ' +
                  'Give 1-3 candidates, one line each: id · reason.');
       });
     } else {
       add('📝 What is this question missing?', function () {
-        chatSend('Answer only, do not edit any file: which items in this question\'s ' +
-                 '## Done when are still unchecked, and what is each one blocked on? ' +
-                 'One per line.');
+        askHere('Answer only, do not edit any file: which Aims on this page have ' +
+                 'a State other than met or held, and what is each one blocked on? ' +
+                 'One per line, using the Aim id.');
       });
     }
     add('↻ Refresh', function () { (window.__boardRefresh || function () { location.reload(); })(); });
   }
+  /* ONE door for every "ask this" affordance in the drawer. Whichever half is
+     on screen is the half that receives it (JL 260801). */
+  function askHere(prompt, opts) {
+    if (window.__boardTermOn && window.__boardTermOn()) {
+      if (window.__boardTermType(prompt)) return;
+    }
+    chatSend(prompt, opts);
+  }
+
 
   async function chatOpen(sec) {
     /* sec 是某一题的 <section>，或字符串 'board'（QD5）：整板会话，挂在 board.md 上。
        服务器端认 file=board.md，规则和开场定位换成整板那份；session 记在 board.md 头部。 */
     var isBoard = (sec === 'board');
+    var sameTarget =
+      (isBoard && cq && cq.board) ||
+      (sec && sec.group && cq && cq.group === sec.group) ||
+      (sec && sec.id && cq && cq.id === sec.id);
+
+    /* REOPENING THE SAME CHAT IS NOT A REASON TO REBUILD IT (JL 260801: "我把
+       它打开、关了、又打开，它就没有那么丝滑了 ... VS Code 的 plugin 无论什么
+       时候开它都是非常丝滑的").
+       That is exactly what VS Code does differently: its webview is RETAINED,
+       so hiding a panel changes visibility and nothing else, and showing it
+       again costs one repaint. Ours tore the transcript down and built every
+       bubble again from storage, re-parsing markdown for each one, and then
+       sometimes wiped and rebuilt a second time when the server answered. All
+       of that work produced a transcript identical to the one just thrown
+       away, and the flash between the two is the thing that reads as janky.
+       So when the same scope is already painted and nothing is running, just
+       show it. The server is still asked, quietly, through the sync. */
+    if (!inflight && sameTarget && chat.querySelector('.bd').children.length) {
+      chat.classList.add('on'); document.body.classList.add('chaton');
+      requestAnimationFrame(bdJump);
+      chat.querySelector('textarea').focus();
+      if (typeof syncNow === 'function') syncNow();
+      return;
+    }
+
     /* NEVER re-open over a turn that is still streaming (JL 260731: "why the
        progress is not shown here again?"). This function clears .bd, calls
        busyEnd() and drops traceEl, so running it mid-turn leaves the user
@@ -1310,11 +1856,14 @@ function boardDirPath() {
        rebuild, a hash bounce, or a stray follow() can all land us here. */
     if (inflight) {
       diag('chatOpen WHILE INFLIGHT', (sec && sec.id) || (isBoard ? 'board' : '?'));
-      var sameTarget =
-        (isBoard && cq && cq.board) ||
-        (sec && sec.group && cq && cq.group === sec.group) ||
-        (sec && sec.id && cq && cq.id === sec.id);
-      if (sameTarget) return;              // same page: leave the live turn alone
+      if (sameTarget) {                    // same page: leave the live turn alone
+        /* ...but still OPEN it. The early return sat above the line that adds
+           .on, so closing the drawer mid-turn and pressing 💬 again did
+           nothing at all: the turn was fine, the drawer just never came back. */
+        chat.classList.add('on'); document.body.classList.add('chaton');
+        requestAnimationFrame(bdJump);
+        return;
+      }
       try { inflight.ctrl.abort(); } catch (e) {}   // switching away: end it cleanly
     }
     var isGroup = !!(sec && sec.group);            // 组级会话（JL 260731）
@@ -1341,64 +1890,60 @@ function boardDirPath() {
     /* leaving a page mid-turn: stop the ticker and forget the trace BEFORE the
        transcript is cleared, or the interval keeps writing to a detached node */
     busyEnd(); traceEl = null; toolCards = {};
+    /* BIND THE SESSION FIRST. Everything below — the local log key, the body,
+       the picker highlight — is now a render of `activeSid`, so it has to be
+       known before the first paint rather than assigned twenty lines later.
+       这一题的 Claude Code session id —— 抽屉和终端用的是同一个；整板会话的 id 在
+       .wrap 的 data-bsession 上（live swap 会跟着换）。 */
+    activeSid = isBoard
+      ? ((document.querySelector('.wrap') || document.body).getAttribute('data-bsession') || '')
+      : isGroup ? ''
+      : (sec.getAttribute('data-session') || '');
+    chatSid = '';                 // 换题回到「跟着头部 current」；清单重新拉
     var bd = chat.querySelector('.bd'); bd.innerHTML = '';
-    var log = chatLoad(isGroup ? 'G:' + cq.id : cq.id);
+    var log = chatLoad(logKey());
     if (!log.length) bubble('sys', isBoard
       ? 'This chat sees the WHOLE board — ask it which question to act on, or have it edit the Pages.'
       : isGroup
       ? 'This chat sees the GROUP ' + cq.group + ' — its pages, their states, and how they fit.'
       : 'This chat is attached to ' + cq.file);
-    log.forEach(function (m) { bubble(m.k, m.t); });
-    /* the local paint above is instant; the server holds the truth */
-    syncFromServer(isGroup ? 'G:' + cq.id : cq.id);
+    log.forEach(replayRow);
+    /* The local paint above is instant; the server holds the truth.
+       R1: this goes through syncNow rather than straight to syncFromServer,
+       because REOPENING AFTER A RELOAD is the single most important moment to
+       rejoin a running turn — the transcript cannot answer then, since it is
+       not written until the turn ends. syncNow asks the ring first and falls
+       back to the transcript only when nothing is live. */
+    syncNow();
+    syncSchedule();          /* and keep asking; one shot at open WAS the bug */
+    /* TUI first, unless the reader has chosen the chat box (JL 260801) */
+    if (window.__boardOpenDefaultView) {
+      setTimeout(function () { try { window.__boardOpenDefaultView(); } catch (e) {} }, 0);
+    }
     chat.querySelector('.tip').textContent = isBoard ? 'board.md · whole-board session'
       : isGroup ? cq.group + ' · group session' : cq.file;
-    /* 这一题的 Claude Code session id —— 抽屉和终端用的是同一个。
-       整板会话的 id 在 .wrap 的 data-bsession 上（live swap 会跟着换）。 */
-    var sid = isBoard
-      ? ((document.querySelector('.wrap') || document.body).getAttribute('data-bsession') || '')
-      : isGroup ? ''
-      : (sec.getAttribute('data-session') || '');
-    var sidbox = chat.querySelector('.sid');
-    /* session 归档在 cwd（= serve.py 的 --root，现在是 SPACE 根）下的 project 目录，
-       所以要 cd 到 root，不是板文件夹 —— cd 错了 --resume 就找不到这个 session。
-       root 精确算法：serve.py 在 <root> + Board public path 处提供文件，
-       所以 root = 板文件夹绝对路径 减去 URL 里的 Board 目录。不靠 .git/pyproject 猜，
-       也不把 split page 的 board/<GROUP>/ 误当成 Board 目录。 */
-    var board = document.body.getAttribute('data-board') || '.';
-    var urlDir = boardDirPath();
-    var root = board;
-    if (urlDir && board.slice(-urlDir.length) === urlDir) {
-      root = board.slice(0, board.length - urlDir.length) || '/';
-    }
-    if (sid) {
-      sidbox.innerHTML = '<code>' + sid + '</code>';
-      // 复制的是一整条能直接跑的命令（带注释说明是哪一题），不是光一个 uuid
-      var full = '# ' + cq.id + ' · ' + cq.title + '\n'
-               + 'cd "' + root + '" && claude --resume ' + sid;
-      var cb = document.createElement('button');
-      cb.className = 'act'; cb.textContent = '⌨ Copy: claude --resume';
-      cb.title = full;
-      cb.onclick = function () {
-        navigator.clipboard.writeText(full)
-          .then(function () { cb.textContent = 'Copied full command'; });
-      };
-      sidbox.appendChild(cb);
-    } else {
-      sidbox.innerHTML = '<span class="mut">' + (isGroup
-        ? 'Group sessions live in the 🗂 strip above — pick one or start a new one.'
-        : 'No session yet — it appears after your first message and is written into the header of ' + cq.file) + '</span>';
-    }
+    /* one painter, shared with switchTo, so the header can never describe a
+       different session from the one the body is showing */
+    paintSid(activeSid);
     chatActs(isGroup ? null : sec);
-    chatSid = '';                 // 换题回到「跟着头部 current」；清单重新拉
     loadSessions();
     termView(false); disposeTerm();
     chat.classList.add('on'); document.body.classList.add('chaton');
+    /* Land on the NEWEST message, not the oldest (JL 260801: "它还是一直在最
+       上面 ... 我还得往下面去翻"). bubble() already scrolls on every append,
+       but the replay above runs while #chat is still display:none, where
+       scrollHeight is 0 and every scrollTop assignment is clamped to 0. The
+       drawer only becomes visible on the line above, so the scroll has to
+       happen after layout, which is what the frame callback buys. */
+    requestAnimationFrame(bdJump);
 
     chat.querySelector('textarea').focus();
   }
-  chat.querySelector('.x').onclick = function () {
-    chat.classList.remove('on'); document.body.classList.remove('chaton'); };
+  function chatClose() {
+    chat.classList.remove('on'); document.body.classList.remove('chaton');
+  }
+  chat.querySelector('.x').onclick = chatClose;
+  chat.querySelector('.back').onclick = chatClose;   /* same act, named for where it goes */
 
   /* 模型 / effort / 权限档 记在本机；default Opus 5 · high · full·ask */
   (function () {
@@ -1406,7 +1951,13 @@ function boardDirPath() {
         s = chat.querySelector('.scope');
     m.value = localStorage.getItem(MK) || 'opus';
     e.value = localStorage.getItem(EK) || 'high';
-    s.value = localStorage.getItem(SK) || 'full';
+    /* DEFAULT: Full · no ask (JL 260802 ruled it). The board's chat is a tool
+       you drive on your own machine, on your own files, and a prompt before
+       every edit is a click you make hundreds of times a day to answer "yes"
+       every time. `scoped` stays for a session you want fenced to one page, and
+       `full` for CLI-style per-call prompts. A choice already made is
+       remembered, so this only changes what a NEW browser starts with. */
+    s.value = localStorage.getItem(SK) || 'bypass';
     m.onchange = function () { localStorage.setItem(MK, m.value); };
     e.onchange = function () { localStorage.setItem(EK, e.value); };
     s.onchange = function () {
@@ -1470,6 +2021,13 @@ function boardDirPath() {
         body: JSON.stringify({ path: boardPath(), file: inflight.file }) });
       bubble('sys', 'Stop signal sent — it will wrap up at the next message…');
     } catch (e) { /* 服务器都不通了，直接放弃等待 */ }
+    /* ONE ACTION, ONE MESSAGE. The abort below lands in the catch, which says
+       "Stopped waiting. The server got the stop signal too." — so pressing ⏹
+       printed two lines that half contradict each other, the first saying it
+       will wrap up and the second that we stopped waiting (found 260802 by
+       asserting the drawer says exactly one thing about stopping). The line
+       above is the honest one and it is already on screen. */
+    if (inflight.mark) inflight.mark();
     inflight.ctrl.abort();                // 浏览器这边立刻不等了
   }
   function chatBusy(on) {
@@ -1505,6 +2063,23 @@ function boardDirPath() {
                   + (detail ? ' ' + String(detail).slice(0, 120) : ''));
     if (chatDiag.length > 200) chatDiag.shift();
   }
+  /* THE TEST BRIDGE. The drawer is one closure, so nothing inside it is
+     reachable from Runtime.evaluate, and `checks/chatui.mjs` T8 and T10 were
+     therefore reporting "not reachable" and had NEVER ONCE RUN — two checks
+     that looked like coverage and were not. Anything the suite must reach goes
+     here, deliberately and by name, rather than by leaking the whole scope. */
+  window.__chatProbe = {
+    bubble: function (k, t) { return bubble(k, t); },
+    inflight: function () { return !!inflight; },
+    activeSid: function () { return activeSid; },
+    logKey: function () { return logKey(); },
+    switchTo: function (sid, name, landed) { return switchTo(sid, name, landed); },
+    sidText: function () { return (chat.querySelector('.sid') || {}).textContent || ''; },
+    switchMarks: function () {
+      return [].map.call(chat.querySelectorAll('.bd .switchsep'),
+                         function (e) { return e.textContent; });
+    }
+  };
   window.__chatDiag = function () {
     var d = {
       when: new Date().toISOString(),
@@ -1530,7 +2105,7 @@ function boardDirPath() {
   var chatQueue = [];
   function queueMsg(text) {
     chatQueue.push(text);
-    var d = bubble('you', text);
+    var d = bubble('you', text); bdJump();
     d.classList.add('queued');
     d.title = 'queued — sends when the current turn finishes';
     busyBump();
@@ -1546,29 +2121,192 @@ function boardDirPath() {
     chatSend(next);
   }
 
+  /* R1 · HOW FAR THIS READER GOT IN THE TURN'S RING.
+     The server now keeps every turn's events in a ring with a monotonic cursor
+     (`live/turnring.py`), so the only thing a returning drawer needs in order to
+     rejoin is the number of the last event it saw. It lives in storage rather
+     than in a variable precisely because the thing it has to survive is the
+     page that was reading — a reload, a navigation, a phone locking. */
+  /* Keyed on the SCOPE, never on the session. The ring is per question path on
+     the server, and `logKey()` folds in the session id — which CHANGES mid-turn
+     the first time a new session is created, so a cursor written before that
+     point was looked for under a key that no longer existed and the rejoin
+     started from near zero. Caught by reloading a real page, not by reading. */
+  var CURK = function () {
+    return 'board-chat-cur:' + location.pathname + ':'
+         + ((cq && (cq.group ? 'G:' + cq.group : cq.file)) || '');
+  };
+  function curGet() {
+    try { return parseInt(localStorage.getItem(CURK()) || '0', 10) || 0; }
+    catch (e) { return 0; }
+  }
+  function curSet(n) { try { localStorage.setItem(CURK(), String(n)); } catch (e) {} }
+
+  /* ── THE REJOIN IS NOT A TURN ────────────────────────────────────────────
+     It used to be: `chatRejoin` called `chatSend({attach:true})` and every
+     failure branch of a 250-line turn function became something the reader
+     saw. That cost two separate fixes in one day — the 404 branch, then the
+     abort branch — and JL still ended up with ~120 copies of "Stopped waiting.
+     The server got the stop signal too." on one page (260802), a sentence that
+     was false twice over. A third branch would have been missed the same way.
+
+     So the two are separated the way the VS Code extension separates them. Its
+     webview never owns a turn: the extension host owns the session and the
+     webview only RENDERS events, which is why it can be thrown away and
+     rebuilt at any moment without anything being lost or anything being said
+     about it. `chatSend` owns a turn: the composer, the log, the cost line,
+     the failure report. `chatAttach` owns nothing at all. It paints events
+     into the transcript and, on any failure whatsoever, returns false without
+     a word. There is no branch left in it that can address the reader. */
+  var reattaching = false;
+
+  async function chatAttach() {
+    if (inflight || reattaching || !cq) return false;
+    reattaching = true;
+    var painted = false, cur = null, acc = '', seg = '';
+    var thinkEl = null, thinkAcc = '', lastRow = null, lastSeg = '';
+    var t0 = Date.now();
+    try {
+      var r = await fetch('/_board/attach', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file,
+          group: (cq && cq.group) || undefined, cursor: curGet() })
+      });
+      /* Nothing running is the ORDINARY answer, and an older server with no
+         ring is an ordinary answer too. Both are "false", both are silent. */
+      if (!r.ok || (r.headers.get('Content-Type') || '').indexOf('ndjson') < 0) {
+        diag('REJOIN', 'nothing live');
+        return false;
+      }
+      diag('REJOIN', 'attached at cursor ' + curGet());
+      var log = chatLoad(logKey());
+      traceStart(); busyStart('Rejoining'); chatBusy(true); painted = true;
+      var rd = r.body.getReader(), dec = new TextDecoder(), buf = '', j = null;
+      while (true) {
+        var ch = await rd.read();
+        if (ch.done) break;
+        buf += dec.decode(ch.value, { stream: true });
+        var lines = buf.split('\n'); buf = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          var ev; try { ev = JSON.parse(lines[i]); } catch (e) { continue; }
+          if (typeof ev.n === 'number') curSet(ev.n + 1);
+          if (ev.t === 'ping') continue;
+          if (ev.t === 'gap') {
+            bubble('sys', '⚠ ' + (ev.text || 'reconnected mid-turn'));
+          } else if (ev.t === 'stage') {
+            busySay(ev.text.length > 46 ? ev.text.slice(0, 46) + '…' : ev.text);
+          } else if (ev.t === 'think') {
+            busySay('Thinking');
+            if (!thinkEl) thinkEl = thinkBubble();
+            thinkAcc += ev.text;
+            thinkEl.querySelector('.tk-body').textContent = thinkAcc;
+            bdAuto();
+          } else if (ev.t === 'delta') {
+            if (busyWhat !== 'Responding') busySay('Responding');
+            if (thinkEl && thinkEl.open) {
+              thinkEl.open = false;
+              thinkEl.querySelector('summary').textContent =
+                '💭 Thinking (' + thinkAcc.length + ' chars — click to reopen)';
+            }
+            if (!cur) { cur = traceRow('say', '✍️', ''); seg = ''; }
+            seg += ev.text; acc += ev.text;
+            cur.querySelector('.x').textContent = seg;
+            lastRow = cur; lastSeg = seg;
+            traceScroll();
+          } else if (ev.t === 'tool') {
+            cur = null; seg = ''; toolCard(ev); busySay(ev.name || 'tool');
+          } else if (ev.t === 'tool_result') {
+            toolResult(ev); busySay('Thinking');
+          } else if (ev.t === 'ask') {
+            cur = null; askUI(ev);
+          } else if (ev.t === 'done') {
+            j = ev;
+          }
+        }
+      }
+      if (!j) return false;             /* the stream ended without an answer */
+      busyEnd();
+      if (lastRow && lastRow.parentNode) lastRow.parentNode.removeChild(lastRow);
+      var took = (Date.now() - t0) / 1000;
+      traceEnd('rejoined · ' + (took < 60 ? took.toFixed(1) + 's'
+        : Math.floor(took / 60) + 'm' + String(Math.round(took % 60)).padStart(2, '0') + 's'));
+      var txt = lastSeg || j.text || acc;
+      if (!txt) return false;
+      bubble('cc', txt);
+      log.push({ k: 'cc', t: j.text || acc || txt });
+      chatSave(logKey(), log);
+      if (j.session) loadSessions();
+      return true;
+    } catch (e) {
+      /* EVERY failure lands here and NONE of it is the reader's business:
+         an abort, a dropped socket, a restarted server, a parse error. It goes
+         to the drawer's own diagnostics and nowhere else. */
+      diag('REJOIN', 'gave up quietly: ' + (e.name || e.message || 'error'));
+      return false;
+    } finally {
+      reattaching = false;
+      if (painted) { busyEnd(); traceEnd(); chatBusy(false); }
+    }
+  }
+
+  /* Rejoin a turn that is still running with nobody watching it.
+     Returns true when it actually attached, so the caller can fall back to
+     reading the transcript when nothing is live. */
+  function chatRejoin() { return chatAttach(); }
+
   async function chatSend(preset, opts) {
+    /* Attach mode replays the SAME reader loop against /_board/attach instead
+       of /_board/chat. Everything below the fetch is identical on purpose: a
+       rejoined turn has to paint exactly like the live one it is a continuation
+       of, which is the whole difference between this and the transcript
+       replay it replaces. */
+    /* ⚠️ DEAD PATH. `chatRejoin` calls `chatAttach` now, so nothing passes
+       `{attach:true}` any more and every `attach` branch below is unreachable.
+       It is left in place rather than surgically removed from a 250-line
+       function at the end of a long session, but DO NOT FIX BUGS IN IT: that
+       is exactly how the same rejoin defect got patched twice and missed a
+       third branch (260802). The live rejoin is `chatAttach`, above. */
+    var attach = !!(opts && opts.attach);
     var ta = chat.querySelector('textarea'), btn = chat.querySelector('.send');
-    if (inflight) return chatStop();       // 正在跑 → 这一下是「停」
-    var msg = (preset || ta.value).trim();
-    if (!msg || !cq) return;
-    if (!preset) ta.value = '';
+    if (inflight) return attach ? false : chatStop();   // 正在跑 → 这一下是「停」
+    if (!cq) return false;
+    var msg = attach ? '' : (preset || ta.value).trim();
+    if (!attach && !msg) return false;
+    if (!preset && !attach) ta.value = '';
     /* On a phone the utility controls are deliberately folded.  Starting the
        next turn must give its live answer the room, rather than leaving model,
        permission and session metadata above the composer. */
     setUtility(false);
     chatBusy(true);
-    var log = chatLoad(cq.id);
-    bubble('you', msg); log.push({ k: 'you', t: msg }); chatSave(cq.id, log);
-    diag('SEND', msg.slice(0, 60));
+    var log = chatLoad(logKey());
+    if (!attach) {
+      bubble('you', msg); bdJump(); log.push({ k: 'you', t: msg }); chatSave(logKey(), log);
+    }
+    diag(attach ? 'REJOIN' : 'SEND', attach ? ('at cursor ' + curGet()) : msg.slice(0, 60));
     traceStart();
-    busyStart('Thinking');
+    /* A REJOIN IS A PROBE, AND A PROBE THAT FINDS NOTHING MUST SAY NOTHING.
+       The sync heartbeat calls this on a timer to ask whether a turn is running
+       with nobody watching, so on a quiet page it fires over and over — and it
+       used to paint "Rejoining" every time, then let the watchdog escalate to
+       "no reply for 60s — ⏹ to stop" and a diagnostics button, for a question
+       whose honest answer was "nothing is running" (JL 260802: "why it is
+       always indicating the rejoining? what is it about?"). So the label waits
+       for the first real event: a rejoin that finds a live turn paints exactly
+       as before, and one that finds nothing is invisible. */
+    if (!attach) busyStart('Thinking');
     var ctrl = new AbortController();
     inflight = { ctrl: ctrl, file: cq.file };
+    var stoppedByUser = false;
+    inflight.mark = function () { stoppedByUser = true; };
     /* Watchdog. The fetch can hang with no event ever arriving, and then the
        code below never reaches chatBusy(false): red stop button, dead drawer,
        nothing moving. Report the silence, then give up rather than hang. */
     var lastEv = Date.now();
-    var QUIET_WARN = 45000, QUIET_GIVEUP = 420000;
+    /* A silent PROBE is the expected case, not a hang: give up in seconds and
+       without a word. A real turn keeps the long, loud timings. */
+    var QUIET_WARN = attach ? Infinity : 45000;
+    var QUIET_GIVEUP = attach ? 6000 : 420000;
     var watchdog = setInterval(function () {
       var quiet = Date.now() - lastEv;
       /* belt and braces: something else wiped the drawer while we are still
@@ -1594,10 +2332,13 @@ function boardDirPath() {
       }
     }, 5000);
     try {
-      var r = await fetch('/_board/chat', {
+      var r = await fetch(attach ? '/_board/attach' : '/_board/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         signal: ctrl.signal,
-        body: JSON.stringify({ path: boardPath(), file: cq.file,
+        body: JSON.stringify(attach
+        ? { path: boardPath(), file: cq.file,
+            group: (cq && cq.group) || undefined, cursor: curGet() }
+        : { path: boardPath(), file: cq.file,
           group: (cq && cq.group) || undefined,
           message: focusedMessage(msg),
           session: chatSid,
@@ -1621,11 +2362,36 @@ function boardDirPath() {
         var errTxt = '';
         try { errTxt = (JSON.parse(await r.text()) || {}).err || ''; } catch (e) {}
         diag('REFUSED ' + r.status, errTxt);
+        /* A REJOIN that is refused is not the reader's problem and must never
+           reach the transcript. A server older than the ring answers 404 to
+           /_board/attach, and because the drawer asks on open, on focus and on
+           a 25s heartbeat, the polite version of this bug painted a ⚠ bubble
+           into the conversation several times a minute and made a working
+           drawer look broken (found 260802 by opening the live board and
+           clicking the button, which is the only way this was ever going to
+           show up). Fail silently and let the caller read the transcript. */
+        if (attach) {
+          busyEnd(); traceEnd();
+          clearInterval(watchdog); window.__pendingSince = 0;
+          inflight = null; chatBusy(false);
+          return false;
+        }
         busyEnd(); traceEnd();
         bubble('sys', '⚠ ' + (errTxt || ('the server refused this turn (HTTP ' + r.status + ')')));
         clearInterval(watchdog); window.__pendingSince = 0;
         inflight = null; chatBusy(false); ta.focus();
-        return;
+        return false;
+      }
+      /* R1: /_board/attach answers one of two ways — the rest of a live turn as
+         NDJSON, or a plain JSON `live:false`. Nothing running is the ORDINARY
+         case, not an error: leave the drawer exactly as it was and let the
+         caller fall back to reading the transcript. */
+      if (attach && (r.headers.get('Content-Type') || '').indexOf('ndjson') < 0) {
+        diag('REJOIN', 'nothing live');
+        busyEnd(); traceEnd();
+        clearInterval(watchdog); window.__pendingSince = 0;
+        inflight = null; chatBusy(false);
+        return false;
       }
       var rd = r.body.getReader(), dec = new TextDecoder(), buf = '';
       var cur = null, acc = '', seg = '', j = { ok: true };
@@ -1640,16 +2406,35 @@ function boardDirPath() {
         for (var i = 0; i < lines.length; i++) {
           if (!lines[i].trim()) continue;
           var ev; try { ev = JSON.parse(lines[i]); } catch (e) { continue; }
+          /* A ring keepalive is NOT progress. The watchdog exists to notice a
+             turn that has gone silent, so counting a ping as activity would
+             make a hung turn look healthy forever. */
+          /* A keepalive is not progress FOR A TURN — the watchdog exists to
+             notice one that has gone silent, so counting it would make a hung
+             turn look healthy. For a REJOIN it is the opposite: a ping is the
+             server saying the turn is alive and still working, and the only
+             thing the rejoin is waiting for. Without this the 6s give-up below
+             fired on every single rejoin, because between events the ring
+             sends nothing else (JL 260802: ~120 × "Stopped waiting"). */
+          if (ev.t === 'ping') { if (attach) lastEv = Date.now(); continue; }
           lastEv = Date.now();
+          /* ask the DOM, not `busyWhat`: that variable keeps its last value
+             after a turn ends, so it cannot answer "is anything painted now" */
+          if (attach && !document.querySelector('#chat .busy')) busyStart('Rejoining');
+          /* Remember where we are, every event, so an interruption at any
+             point can be rejoined at the next one rather than from the top. */
+          if (typeof ev.n === 'number') curSet(ev.n + 1);
           if (ev.t !== 'delta' && ev.t !== 'think') diag('ev:' + ev.t, ev.name || ev.text || '');
-          if (ev.t === 'stage') {                 // real progress while nothing streams yet
+          if (ev.t === 'gap') {                   // rejoined past the buffer's front
+            bubble('sys', '⚠ ' + (ev.text || 'reconnected mid-turn; some earlier output is past the buffer'));
+          } else if (ev.t === 'stage') {          // real progress while nothing streams yet
             busySay(ev.text.length > 46 ? ev.text.slice(0, 46) + '…' : ev.text);
           } else if (ev.t === 'think') {          // 思考过程 → 折叠块，边想边展开
             busySay('Thinking');
             if (!thinkEl) thinkEl = thinkBubble();
             thinkAcc += ev.text;
             thinkEl.querySelector('.tk-body').textContent = thinkAcc;
-            chat.querySelector('.bd').scrollTop = 1e9;
+            bdAuto();
           } else if (ev.t === 'delta') {
             if (busyWhat !== 'Responding') busySay('Responding');          // 逐字答案
             if (thinkEl && thinkEl.open) {        // 答案一来就收起思考；标题留个量
@@ -1710,7 +2495,23 @@ function boardDirPath() {
          A turn with no tool calls has exactly one segment, so its trace ends up
          holding only the thinking and the answer reads as one plain reply. */
       if (lastRow && lastRow.parentNode) lastRow.parentNode.removeChild(lastRow);
-      traceEnd(tookTxt + ' · finished ' + stamp);
+      /* The context meter, which the CLI shows under /context and the drawer
+         never had (JL 260801: "我怎么看到我现在这个 context 的 usage，就是用了
+         百分之几"). It rides the turn's own done event, so it costs no extra
+         call, and it is absent rather than wrong on an SDK that cannot report
+         it. Shown on the trace label, beside how long the turn took. */
+      var ctxTxt = '';
+      if (j.ctx && typeof j.ctx.pct === 'number') {
+        var k = function (n) {
+          return typeof n === 'number' ? Math.round(n / 1000) + 'k' : '?';
+        };
+        ctxTxt = ' · ctx ' + Math.round(j.ctx.pct) + '%'
+               + (j.ctx.used ? ' (' + k(j.ctx.used) + '/' + k(j.ctx.max) + ')' : '');
+        var cw = chat.querySelector('.cost');
+        if (cw) cw.textContent = 'ctx ' + Math.round(j.ctx.pct) + '%'
+                               + (typeof j.usd === 'number' ? ' · $' + j.usd.toFixed(3) : '');
+      }
+      traceEnd(tookTxt + ' · finished ' + stamp + ctxTxt);
       var txt = j.ok ? (lastSeg || j.text || acc ||
                         '(no text reply — it may have only used tools)')
                      : ('⚠ ' + (j.err || 'failed'));
@@ -1718,11 +2519,26 @@ function boardDirPath() {
       bubble('cc', txt);              /* the answer, once, at full size */
       /* history keeps the WHOLE turn, not just its last line */
       log.push({ k: 'cc', t: (j.ok ? (j.text || acc || txt) : txt) });
-      chatSave(cq.id, log);
+      chatSave(logKey(), log);
       if (j.ok) {
         // 这一轮聊到的 session 现在就是 current（服务器已写回头部）——
         // 拣选状态归位、清单重拉，免得下一条还带着旧的点名
-        if (j.session) { chatSid = ''; sessName = ''; loadSessions(); }
+        if (j.session) {
+          /* The server has just told us which session this turn actually ran
+             in, which for a NEW one is the first time that id exists anywhere.
+             Move the log we wrote under the '#new' key onto the real id, adopt
+             it as the shown session, and repaint the header — otherwise a new
+             session's first turn is stored where nothing will ever look for it
+             and `.sid` keeps naming the session you started from. */
+          if (j.session !== activeSid) {
+            var oldKey = logKey();
+            activeSid = j.session;
+            chatSave(logKey(), log);
+            try { localStorage.removeItem(CHATK(oldKey)); } catch (e) {}
+            paintSid(activeSid);
+          }
+          chatSid = ''; sessName = ''; loadSessions();
+        }
         var bits = [];
         if (j.model) bits.push(j.model.replace('claude-', '') + ' / ' + j.effort);
         if (j.scope) bits.push({scoped:'scoped',full:'full·ask',bypass:'full·no-ask'}[j.scope] || j.scope);
@@ -1744,15 +2560,50 @@ function boardDirPath() {
       }
     } catch (e) {
       busyEnd(); traceEnd();     /* a failed turn still closes its trace */
-      bubble('sys', e.name === 'AbortError'
-        ? 'Stopped waiting. The server got the stop signal too.'
-        : '⚠ ' + e.message);
+      /* A REJOIN THAT FAILS IS NEVER THE READER'S PROBLEM, and it must never
+         reach the transcript. The drawer rejoins on open, on focus, on a 25s
+         heartbeat and on four backoff timers, so one noisy failure path is not
+         one message: it is a wall of them. JL got ~120 of "Stopped waiting.
+         The server got the stop signal too." on one page (260802), and that
+         sentence was a lie twice over — nobody pressed stop and no stop signal
+         was sent. The 404 half of this was made silent earlier the same day;
+         this is the half that was missed, which is abort, network and anything
+         else that throws. Fail quietly and let the transcript speak. */
+      if (attach) {
+        clearInterval(watchdog); window.__pendingSince = 0;
+        inflight = null; chatBusy(false);
+        diag('REJOIN', 'gave up quietly: ' + (e.name || e.message || 'error'));
+        return false;
+      }
+      if (!(e.name === 'AbortError' && stoppedByUser)) {
+        bubble('sys', e.name === 'AbortError'
+          ? 'Stopped waiting. The server got the stop signal too.'
+          : '⚠ ' + e.message);
+      }
+      /* KEEP WHAT ARRIVED. The answer was only written to the local log at
+         'done', so a turn that never got there left the question saved and the
+         reply lost: reopening showed your own message with nothing under it,
+         and the text seemed to reappear only once a new message was sent
+         (JL 260801: "只有我发一个新的 message 之后，你的 response 才能显现出来").
+         Whatever streamed is real; save it, marked, instead of dropping it. */
+      try {
+        if (acc && acc.trim()) {
+          /* `partial` is what lets syncFromServer REPLACE this later. Without
+             it the local log is the same LENGTH as the server's, and the
+             length test concluded the server knew nothing new, so a half
+             answer could never be upgraded to the real one. */
+          log.push({ k: 'cc', t: acc + '\n\n(this turn was cut short)', partial: true });
+          chatSave(logKey(), log);
+        }
+      } catch (e2) {}
     }
     clearInterval(watchdog);
     window.__pendingSince = 0;
-    inflight = null; chatBusy(false); ta.focus();
+    inflight = null; chatBusy(false);
+    if (!attach) ta.focus();     // a rejoin must not steal focus from a reader
     drainQueue();                       // whatever you typed while it ran
     if (followPending && !inflight) follow();   // you navigated while it ran
+    return true;
   }
   chat.querySelector('.send').onclick = function () { chatSend(); };
   chat.querySelector('textarea').addEventListener('keydown', function (ev) {
@@ -1796,7 +2647,7 @@ function boardDirPath() {
      终端后端仍是 serve.py 起的 ttyd；这里我们自己拿 xterm 连它的 WebSocket，
      省掉 iframe 那层（CSP、加载慢、控制不了）。ttyd 的 WS 子协议：
        连接子协议 'tty'；开场发 JSON auth；输入 '0'+data；输出帧首字节 '0'。 */
-  var termT = null, termWS = null, xtermP = null;
+  var termT = null, termWS = null, xtermP = null, termSubs = null;
   function loadXterm() {
     if (xtermP) return xtermP;
     xtermP = new Promise(function (res, rej) {
@@ -1839,6 +2690,19 @@ function boardDirPath() {
     if (!termT) return;
     var host = chat.querySelector('.tm');
     var w = host.clientWidth, h = host.clientHeight;
+    /* MEASURE THE FRAME WHEN THE HOST MEASURES NONSENSE. Inside QD5's chat
+       PANE the drawer is `position:fixed;inset:0` and `.tm` reported a
+       clientWidth of 16, which is its horizontal padding and nothing else. The
+       guard below then returned every time, so xterm kept whatever size it was
+       built with — a 501px screen inside a 16px box, 64 columns that never
+       changed however the pane was dragged. That is the messy terminal layout
+       (JL 260802), and it is measurable rather than a matter of taste.
+       The viewport is always right, so fall back to it. */
+    if (w < 40 && window.innerWidth >= 40) w = window.innerWidth;
+    if (h < 40 && window.innerHeight >= 40) {
+      var hd = chat.querySelector('.hd');
+      h = window.innerHeight - (hd ? hd.getBoundingClientRect().height : 0) - 8;
+    }
     if (w < 40 || h < 40) return;
     var c = cellDims();
     var cols = Math.max(20, Math.floor((w - 16) / c.w));
@@ -1851,6 +2715,10 @@ function boardDirPath() {
     if (termPing) { clearInterval(termPing); termPing = null; }
     try { if (termWS) termWS.close(); } catch (e) {}
     try { if (termT) termT.dispose(); } catch (e) {}
+    if (termSubs) {
+      termSubs.forEach(function (d) { try { d.dispose(); } catch (e) {} });
+      termSubs = null;
+    }
     termWS = null; termT = null; termKey = null; termRetry = 0;
     var host = chat.querySelector('.tm'); if (host) host.innerHTML = '';
   }
@@ -1879,6 +2747,13 @@ function boardDirPath() {
     };
     ws.onmessage = function (ev) {
       window.__wsDbg.msgs++;
+      /* A FRAME CAN ARRIVE AFTER THE TERMINAL IS GONE. `onclose` has guarded
+         against a null `termT` since it was written; this one never did, so
+         switching the pane from the TUI to the GUI while bytes were still in
+         flight threw `Cannot read properties of null (reading 'write')` into
+         the page (found 260802 by a suite that does exactly that switch).
+         Nothing to write to means nothing to write. */
+      if (!termT) return;
       var d = ev.data;
       if (typeof d === 'string') { if (d.charCodeAt(0) === 48) termT.write(d.slice(1)); return; }
       var b = new Uint8Array(d);
@@ -1913,10 +2788,29 @@ function boardDirPath() {
         if (!termClosing && termOn && termT && termKey === key) connectWS(key);
       }, wait);
     };
-    termT.onData(function (s) { if (ws.readyState === 1) ws.send('0' + s); });
-    termT.onResize(function (sz) {
-      if (ws.readyState === 1) ws.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
-    });
+    /* Bind input ONCE per terminal, not once per socket (JL 260801: "I enter
+       one letter, it types two letters").
+
+       `connectWS` runs again on every reconnect, and the Terminal instance
+       survives that, so each reconnect used to add ANOTHER onData listener to
+       the same xterm. xterm fires all of them, so one keystroke was written
+       twice after the first drop, three times after the second, and so on:
+       `what happened?` arrived as `wwhhaatt hhaappppeenneedd??`. The listeners
+       are disposables, so drop the previous pair before adding the next, and
+       always send through the CURRENT socket rather than the one captured when
+       the listener was created. */
+    if (termSubs) {
+      termSubs.forEach(function (d) { try { d.dispose(); } catch (e) {} });
+    }
+    termSubs = [
+      termT.onData(function (s) {
+        if (termWS && termWS.readyState === 1) termWS.send('0' + s);
+      }),
+      termT.onResize(function (sz) {
+        if (termWS && termWS.readyState === 1)
+          termWS.send('1' + JSON.stringify({ columns: sz.cols, rows: sz.rows }));
+      })
+    ];
   }
   async function mountTerm(key) {
     await loadXterm();
@@ -1958,6 +2852,32 @@ function boardDirPath() {
     setTimeout(function () { termT && termT.focus(); }, 50);
   }
   window.addEventListener('resize', function () { if (termOn) fitTerm(); });
+  /* A FRAME CAN CHANGE SIZE WITHOUT A WINDOW RESIZE. Dragging the split's
+     handle changes the chat pane's width and fires no `resize` inside it, so
+     the terminal kept its old column count and the text ran wrong until
+     something else happened to refit it. Watch the box itself. */
+  (function () {
+    if (typeof ResizeObserver !== 'function') return;
+    var host = chat.querySelector('.tm');
+    if (!host) return;
+    var t = null;
+    new ResizeObserver(function () {
+      clearTimeout(t);
+      t = setTimeout(function () { if (termOn) fitTerm(); }, 80);
+    }).observe(host);
+  })();
+  /* Anything that changes the pane's box must refit, not just a window resize:
+     the strip appearing, the drawer being dragged, a font swap. One observer on
+     the pane covers every cause, including ones not invented yet. */
+  (function () {
+    var host = chat.querySelector('.tm');
+    if (!host || !window.ResizeObserver) return;
+    var t = null;
+    new ResizeObserver(function () {
+      clearTimeout(t);
+      t = setTimeout(function () { if (termOn) fitTerm(); }, 60);
+    }).observe(host);
+  })();
   // fit when the drawer pane itself changes size, not only the window (debounced)
   (function () {
     var host = chat.querySelector('.tm'), t = null;
@@ -1996,6 +2916,13 @@ function boardDirPath() {
     fr.readAsDataURL(blob);
   }, true);
 
+  /* A release that nobody waits for is still a release the NEXT open must not
+     overtake. Flipping the view before the round trip made the click instant
+     and made this race possible: switch to the chat and straight back, and the
+     open reached the server first, so the park landed on the terminal that had
+     just been attached and the pane stayed empty (measured 260802). Whoever
+     starts a terminal waits for the hand-back to finish first. */
+  var releasing = null;
   async function termRelease(file, g) {
     disposeTerm();
     if (!file) return;
@@ -2018,21 +2945,60 @@ function boardDirPath() {
                  { type: 'application/json' }));
     }
   });
-  async function termOpen(quiet) {
+  /* Which terminal is on screen, and which sessions have one running. The
+     PICKER owns choosing (JL 260801: "为什么不把这个 session 放到那个 session
+     的选择那里去"), so this file only tracks state and attaches; a second
+     chooser above the pane was one UI too many, and it stole rows from the
+     terminal every time it rendered. */
+  var termKeyNow = null, termLive = [];
+  async function loadTermList() {
+    if (!cq || !cq.file) return [];
+    try {
+      var r = await fetch('/_board/term-probe', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: boardPath(), file: cq.file,
+                               group: (cq && cq.group) || undefined }) });
+      var j = await r.json();
+      termLive = (j && j.terminals) || [];
+    } catch (e) { termLive = []; }
+    return termLive;
+  }
+  window.__boardTermLive = function () { return termLive; };
+  window.__boardTermKeyNow = function () { return termKeyNow; };
+  window.__boardTermAttach = function (sid) { return termOpen(true, sid); };
+
+  async function termOpen(quiet, wantSession) {
     if (!cq) return false;
+    /* ...but awaited HERE, and never for long. A hand-back that hangs must not
+       be able to stop a terminal from opening: the race this closes is a few
+       hundred milliseconds wide, so a second is already generous, and the
+       failure mode of waiting forever is a drawer that says "Starting a
+       terminal…" and never does (measured 260802, one edit after the race). */
+    if (releasing) {
+      try {
+        await Promise.race([releasing, new Promise(function (r) { setTimeout(r, 1000); })]);
+      } catch (e) {}
+    }
     if (!quiet) say('Starting a terminal for this question…');
     try {
       var r = await fetch('/_board/term', { method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: boardPath(), file: cq.file,
                                group: (cq && cq.group) || undefined,
-                               session: chatSid, name: sessName }) });
+                               session: (wantSession !== undefined && wantSession !== null)
+                                        ? wantSession : chatSid,
+                               name: sessName }) });
       var j = await r.json();
       if (!j.ok) { say('⚠ ' + j.err); return false; }
       // 拣选的那段（或新开的）从这一刻起就是 current —— 状态归位、清单重拉
+      // 抽屉那半边也得跟着换：终端和聊天共用一个 session，
+      // 只把 chatSid 归零会让聊天框还停在上一段的抬头和记录上
+      if (j.session && j.session !== activeSid) { activeSid = j.session; paintSid(activeSid); }
       if (chatSid) { chatSid = ''; sessName = ''; loadSessions(); }
+      termKeyNow = j.key;
       termView(true);
       await mountTerm(j.key);
+      loadTermList();                 // so the picker can mark what is running
       if (!quiet) say(j.reused ? 'Reattached to the terminal already running'
                                : (j.note || 'Terminal ready'));
       return true;
@@ -2049,9 +3015,84 @@ function boardDirPath() {
      "when I come back it became the GUI again, in truth the TUI is running").
      The reload-restore block at the end of board.js needs to see and redo this,
      and it lives outside this closure. */
+  /* TUI FIRST (JL 260801: "make the TUI to be the default version").
+     Opening the drawer now goes straight to the terminal, because the TUI is
+     the real CLI and the SDK chat is the rebuilt one. `.term` still toggles
+     back, and the choice is remembered per machine so a reader who prefers the
+     chat box is not overruled on every page. */
+  var TUIDEF = 'board-tui-default';
+  function tuiIsDefault() {
+    try { return localStorage.getItem(TUIDEF) !== '0'; } catch (e) { return true; }
+  }
+  window.__boardTuiDefault = tuiIsDefault;
+  window.__boardOpenDefaultView = async function () {
+    if (!tuiIsDefault() || termOn || !cq) return false;
+    return await termOpen(true);
+  };
+
+  /* Putting the caret BACK. A live update swaps div.wrap and then re-resolves
+     the URL fragment, and setting location.hash moves focus to the target
+     element, so a reader who was typing in the terminal lost the caret on every
+     board update and had to click the pane again (JL 260801: "我正在打字，然后
+     它突然更新了，我就打不了字了"). xterm owns a hidden textarea, so ask xterm
+     rather than poking at the DOM. */
+  /* Type a prompt INTO the running CLI. Quick actions and "add to chat" used to
+     call the SDK path only, so in the TUI they did nothing at all (JL 260801:
+     "add to chat 以及一些 quick question ... 在 TUI work 不了").
+
+     The text is typed but NOT submitted: in a chat box the send is the whole
+     gesture, while in a terminal the prompt is a draft you may want to extend
+     before pressing Enter, and a button that silently runs something in a real
+     CLI is worse than one that does nothing. Newlines become the CLI's own
+     continuation sequence so a multi-line prompt does not submit halfway. */
+  window.__boardTermType = function (text, opts) {
+    if (!termOn || !termWS || termWS.readyState !== 1) return false;
+    var s = String(text || '').replace(/\r?\n/g, '\\\r');
+    /* CLEAR THE PROMPT FIRST. Typing blindly appends to whatever draft is
+       already sitting there, so a quick action ran together with the reader's
+       half-written sentence into one unreadable run-on line: "hello
+       worldAnswer only, do not edit any file: …" (JL 260801: "这个字跟我的
+       input message 叠到了一块儿"). Escape is the CLI's own "clear the input",
+       so the prompt starts empty and what lands is exactly what was asked for.
+       Pass {append:true} to add to a draft on purpose. */
+    if (!(opts && opts.append)) {
+      /* A lone ESC does NOT clear it: the app waits to see whether more bytes
+         follow, so ESC + text arrives as Alt+<key> and the draft survives.
+         Measured 260801, and the prompt then read
+         "hello worldAnswer only…immediatelyMYDRAFTAnswer only…".
+         Backspace has no such ambiguity and is a no-op on an empty prompt, so
+         send a generous run of it: deterministic, and it costs 2KB. */
+      var ws0 = termWS;
+      ws0.send('0' + new Array(2001).join('\u007f'));
+      setTimeout(function () {
+        if (ws0 && ws0.readyState === 1) ws0.send('0' + s);
+        window.__boardTermFocus();
+      }, 140);
+      return true;
+    }
+    termWS.send('0' + s);
+    window.__boardTermFocus();
+    return true;
+  };
+
+  window.__boardTermFocused = function () {
+    var host = chat.querySelector('.tm');
+    return !!(termOn && host && host.contains(document.activeElement));
+  };
+  window.__boardTermFocus = function () {
+    try { if (termT) termT.focus(); } catch (e) {}
+  };
+
   window.__boardTermOn = function () { return !!termOn; };
   window.__boardTermReopen = async function () {
-    if (!cq || termOn) return false;
+    /* RESTORE MUST NOT OVERRULE THE READER. `80-restore.js` calls this when the
+       saved drawer state says a terminal was open, which is right after a plain
+       reload and WRONG right after someone clicked 💬 GUI: the click set the
+       mode, the pane came up correctly in GUI, and then this reattached the
+       parked terminal a second later and put the strip back on >_ TUI. That is
+       the whole of "I click GUI and get TUI" (JL 260802), measured at +1.5s
+       correct and +2.5s flipped. The chosen mode is the authority. */
+    if (!cq || termOn || !tuiIsDefault()) return false;
     /* only reattach to a terminal that is genuinely still there; starting a new
        one on a reload would spawn a process nobody asked for */
     try {
@@ -2068,13 +3109,129 @@ function boardDirPath() {
   chat.querySelector('.term').onclick = async function () {
     if (!cq) return;
     if (termOn) {                                  // 切回抽屉 = 交回 session
-      await termRelease(cq.file, cq.group);
+      try { localStorage.setItem(TUIDEF, '0'); } catch (e) {}   // you chose chat
+      /* SWAP THE VIEW FIRST, HAND THE SESSION BACK AFTER. The release is a
+         POST, and awaiting it before flipping the panel meant the click showed
+         nothing for a round trip — a third of a second of the old view, which
+         is exactly what reads as "not smooth" (JL 260802, measured at 284 ms).
+         Nothing downstream depends on the order: the park is idempotent and the
+         drawer it reveals does not touch the PTY. */
       termView(false);
       say('Terminal closed, session handed back');
+      releasing = termRelease(cq.file, cq.group)   // not awaited HERE...
+        .catch(function () {})
+        .then(function () { releasing = null; });
       return;
     }
+    try { localStorage.setItem(TUIDEF, '1'); } catch (e) {}     // you chose TUI
+    /* THE OTHER DIRECTION MUST NOT CHEAT. Revealing the terminal panel before
+       the server names the PTY was tried and reverted the same minute: when the
+       open then fails — a 409 because something else holds the session, say —
+       it leaves a black empty panel with nothing on the way, which is worse
+       than the wait it saved. `termOpen` reveals it only once it has a key.
+       Measured: the pane sat at rows=0 for the whole 2.5 s film. */
     await termOpen(false);
   };
+
+  /* 🖼 Attach an image WITHOUT a clipboard (QD14, JL 260801: "然后我们手机上的话，
+     如何 upload 这个 image 呢?").
+
+     Until now the only two ways an image could enter the board were `paste`
+     listeners — the terminal pane in 30-terminal.js and the comment box in
+     10-comment/40-paste.js — and pasting an image into a pane is a DESKTOP
+     gesture. A phone offers a photo library and a camera, and both of those are
+     an `<input type="file">`, which this board never had. So on a phone the
+     board simply could not take a screenshot or a photo at all.
+
+     The server half needed nothing: /_board/image already accepts a base64 data
+     URL and writes into the board's fig/, so the whole gap was this gesture.
+
+     Why it re-encodes instead of forwarding the file untouched: live/write.py
+     caps an image at 8MB and accepts png/jpeg/gif/webp ONLY, while a modern
+     phone routinely shoots larger than the cap and an iPhone shoots HEIC, which
+     is not on that list. Drawing the file through a canvas both shrinks it and
+     normalises the format, so one button serves a 12MP photo and a screenshot.
+     A small PNG is passed through instead, because re-encoding a screenshot to
+     JPEG blurs exactly the text you took the screenshot to show. */
+  var PICK_MAX = 1600, PICK_Q = 0.85, PICK_PNG_KEEP = 3 * 1024 * 1024;
+
+  function shrinkImage(file) {
+    return new Promise(function (res, rej) {
+      if (file.type === 'image/png' && file.size < PICK_PNG_KEEP) {
+        var fr = new FileReader();
+        fr.onload = function () { res(fr.result); };
+        fr.onerror = function () { rej(new Error('could not read that file')); };
+        return fr.readAsDataURL(file);
+      }
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        var s = Math.min(1, PICK_MAX / Math.max(w, h));
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(w * s));
+        c.height = Math.max(1, Math.round(h * s));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        /* toDataURL throws on a tainted canvas; a local file cannot taint one,
+           so this only fires on a decode the browser half-managed. */
+        try { res(c.toDataURL('image/jpeg', PICK_Q)); }
+        catch (e) { rej(new Error('could not convert that image')); }
+      };
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        rej(new Error('this browser cannot decode that image (HEIC outside Safari?)'));
+      };
+      img.src = url;
+    });
+  }
+
+  /* Where the path GOES depends on which half is showing, because the two halves
+     want different things: the CLI wants a bare repo-root-relative path it can
+     hand to its Read tool, the chat composer wants markdown it can send. Both
+     are repo-root-relative rather than board-relative, because the session's cwd
+     is the SPACE root and a bare fig/… does not resolve there. */
+  async function attachImageFile(file) {
+    if (!cq || !file) return;
+    var data;
+    try { data = await shrinkImage(file); }
+    catch (e) { return say(e.message); }
+    var j = null;
+    try {
+      j = await post('/_board/image',
+        { file: cq.file, name: file.name || 'photo', data: data });
+    } catch (e) { j = null; }
+    if (!j || !j.ok) {
+      return say((j && j.err) || 'image upload failed (is serve.py running?)');
+    }
+    var dir = boardDirPath().replace(/^\//, '');
+    var path = (dir ? dir + '/' : '') + j.rel;
+    if (termOn && termWS && termWS.readyState === 1) {
+      termWS.send('0' + path);
+      say('Attached ' + j.rel + ' — it is on the prompt line, press Enter');
+    } else {
+      var ta = chat.querySelector('.ft textarea');
+      if (ta) insertAtCursor(ta, '![image](' + path + ')');
+      else say('Saved ' + j.rel);
+    }
+  }
+
+  (function () {
+    var btn = chat.querySelector('.imgpick');
+    if (!btn) return;
+    var inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    /* deliberately NOT `capture`: that attribute forces the camera and takes the
+       photo library away, and a screenshot already in the library is the common
+       case here. Without it a phone offers both. */
+    inp.style.display = 'none';
+    chat.appendChild(inp);
+    btn.onclick = function () { inp.value = ''; inp.click(); };
+    inp.onchange = function () {
+      if (inp.files && inp.files[0]) attachImageFile(inp.files[0]);
+    };
+  })();
 
   /* ── 面板跟着题走（JL 260723）────────────────────────────────
      换一题 = 换一个 session。抽屉开着的时候，切到哪一题它就跟到哪一题：
@@ -2284,6 +3441,8 @@ function boardDirPath() {
     var qs = document.querySelectorAll('section.q');
     return qs.length === 1 ? qs[0] : null;
   }
+  // The sidebar needs the same answer and must not compute it a second way.
+  window.__boardDocPage = docPage;
   /* A GROUP file (board/QA.html) holds no page section and its own h1 IS the
      group title, in board.md's `### QA · Design` grammar. That title is exactly
      what a group session is keyed by, so no new registry is needed. The index's
@@ -2306,9 +3465,100 @@ function boardDirPath() {
   }
   var fab = document.createElement('button');
   fab.id = 'chatfab';
+
+  /* ── THE CHAT PICKER (JL 260802: "could we make it a list that I can choose
+     GUI-Chat or TUI-Chat") ────────────────────────────────────────────────
+     This board has TWO chats and one button, so which one you got was decided
+     by a stored preference you could not see, and the only way to switch was a
+     `>_` in the drawer header that is hard to find on a phone ("我咋按这个键啊",
+     260801). The list makes the pair visible at the moment you are choosing.
+
+     It also carries the thing no surface reported until now: whether something
+     is ALREADY running. The ring answers that for a turn and `term-probe` for
+     a parked PTY, so the extra tap buys a fact rather than costing one.
+
+     Deliberately the FAB only. A per-card `🤖 Chat` means "talk about THIS
+     card" and its reader has already decided; giving twelve buttons a chooser
+     would be noise. Those keep going straight to the last-used view. */
+  var TUIKEY = 'board-tui-default';
+  function tuiDefault() {
+    try { return localStorage.getItem(TUIKEY) !== '0'; } catch (e) { return true; }
+  }
+  var pick = document.createElement('div');
+  pick.id = 'chatpick';
+  pick.hidden = true;
+  pick.setAttribute('role', 'menu');
+  document.body.appendChild(pick);
+
+  function pickClose() {
+    pick.hidden = true;
+    document.removeEventListener('pointerdown', pickAway, true);
+    document.removeEventListener('keydown', pickKey, true);
+  }
+  function pickAway(e) {
+    if (!pick.contains(e.target) && e.target !== fab) pickClose();
+  }
+  function pickKey(e) { if (e.key === 'Escape') { e.preventDefault(); pickClose(); } }
+
+  function pickTarget(tgt) {
+    if (!tgt) return { file: 'board.md' };
+    if (tgt.group) return { file: 'board.md', group: tgt.group };
+    return { file: tgt.getAttribute && tgt.getAttribute('data-file') || 'board.md' };
+  }
+
+  /* Both questions at once, and neither is allowed to hold the menu up: a
+     picker that waits on the network is a picker that feels broken, so the
+     rows paint immediately and the state lines fill in when they arrive. */
+  function pickState(body, paint) {
+    fetch('/_board/attach', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ path: boardPath(), probe: 1 }, body)) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { paint('gui', j && j.live ? '⚡ a turn is still running' : ''); })
+      .catch(function () {});
+    fetch('/_board/term-probe', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ path: boardPath() }, body)) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var n = (j && j.terminals || []).length;
+        paint('tui', n ? '🟢 a session is parked here' : '');
+      })
+      .catch(function () {});
+  }
+
+  function pickOpen() {
+    var tgt = chatTarget();
+    var tui = tuiDefault();
+    pick.innerHTML =
+      '<button class="pk" data-v="gui" role="menuitem">'
+        + '<b>\u{1F4AC} GUI-Chat</b><i>the SDK drawer: gated edits, diffs, tool cards</i>'
+        + '<u></u><s>' + (tui ? '' : '●') + '</s></button>'
+      + '<button class="pk" data-v="tui" role="menuitem">'
+        + '<b>⌨️ TUI-Chat</b><i>the real CLI in a terminal: long jobs, skills</i>'
+        + '<u></u><s>' + (tui ? '●' : '') + '</s></button>';
+    pick.hidden = false;
+    document.addEventListener('pointerdown', pickAway, true);
+    document.addEventListener('keydown', pickKey, true);
+    pickState(pickTarget(tgt), function (which, text) {
+      var row = pick.querySelector('.pk[data-v="' + which + '"] u');
+      if (row) row.textContent = text;
+    });
+    pick.querySelectorAll('.pk').forEach(function (b) {
+      b.onclick = function () {
+        try { localStorage.setItem(TUIKEY, b.dataset.v === 'tui' ? '1' : '0'); } catch (e) {}
+        pickClose();
+        var t = chatTarget();
+        chatOpen(t || 'board');
+      };
+    });
+    var first = pick.querySelector('.pk');
+    if (first) first.focus();
+  }
+
   fab.onclick = function () {
-    var sec = chatTarget();
-    if (sec) chatOpen(sec); else chatOpen('board');
+    if (!pick.hidden) return pickClose();
+    pickOpen();
   };
   function fabLbl() {
     var tgt = chatTarget();
@@ -2331,9 +3581,21 @@ function boardDirPath() {
   /* Sentence chat reuses this question's existing session. The click establishes
      a visible focus card but does not spend a model turn. The next user message
      is augmented with the address, sentence, and direct apparatus at send time. */
+  /* "Add to chat" in the TUI (JL 260801). The SDK half shows the quote in a
+     focus card and augments the next message; a real CLI has no such card, so
+     the address and the sentence are typed into the prompt instead, unsubmitted,
+     for the reader to finish. Same gesture, whichever half is open. */
+  function sentenceToTerm(ref, sentence, contentPath) {
+    if (!(window.__boardTermOn && window.__boardTermOn())) return false;
+    var where = (contentPath ? contentPath + ' · ' : '') + (ref || '');
+    var q = 'About ' + where + ':\n> ' + String(sentence || '').trim() + '\n';
+    return !!window.__boardTermType(q);
+  }
+
   window.__boardSentenceChat = async function (sec, ref, sentence, attached, contentPath) {
     if (!sec || !sec.classList.contains('q')) return;
     await chatOpen(sec);
+    if (sentenceToTerm(ref, sentence, contentPath)) return;
     if (location.hash !== '#' + sec.id) location.hash = sec.id;
     setSentenceFocus(ref, sentence, attached, contentPath);
     chat.querySelector('textarea').focus();
@@ -2346,6 +3608,7 @@ function boardDirPath() {
   window.__boardHeadingChat = async function (sec, path, block, file) {
     if (!sec || !sec.classList.contains('q')) return;
     await chatOpen(sec);
+    if (sentenceToTerm(path, block, file)) return;
     setSentenceFocus(path, block, '', file, 'heading');
     chat.querySelector('textarea').focus();
   };
@@ -2379,7 +3642,7 @@ function boardDirPath() {
   var last = null, busy = false;
   function tick() {
     if (busy || document.hidden) return;
-    fetch(location.pathname, { method: 'HEAD', cache: 'no-store' })
+    fetch(location.href, { method: 'HEAD', cache: 'no-store' })
       .then(function (h) {
         var lm = h.headers.get('last-modified');
         if (!lm) return;
@@ -2401,58 +3664,128 @@ function boardDirPath() {
           }
         }
         busy = true;
-        return fetch(location.pathname, { cache: 'no-store' })
+        return fetch(location.href, { cache: 'no-store' })
           .then(function (r) { return r.text(); })
           .then(function (t) {
             var doc = new DOMParser().parseFromString(t, 'text/html');
-            // The swap keeps THIS tab's scripts alive forever, so when the
-            // BUILD's assets changed (three sessions shipped JS today while a
-            // tab sat open, JL 260731), old JS would rewire new markup and die
-            // silently — dead ➕ buttons. Different stamp = the one full reload.
-            var theirs = doc.querySelector('meta[name="board-assets"]');
-            var mine = document.querySelector('meta[name="board-assets"]');
-            if (theirs && (!mine || mine.content !== theirs.content)) {
-              // ⌨ 开着时不整页 reload（JL 260731「开一会儿它自己退了」的另一半）：
-              // 挂个角标等着，终端一关（termView(false)）再 reload。
-              // park 让 reload 后也能秒接，但正打着字被刷掉仍然是打断。
-              var termOpen = document.body.classList.contains('termon');
-              var chatRunning = document.body.classList.contains('chatbusy');
-              if (!window.__pendingSince) window.__pendingSince = Date.now();
-              // HARD CAP: holding the reload is a courtesy, not a promise. A
-              // wedged turn must not pin the tab on stale JS indefinitely.
-              var heldTooLong = Date.now() - window.__pendingSince > 90000;
-              if ((termOpen || chatRunning) && !heldTooLong) {
-                window.__pendingReload = 1;
-                if (!document.getElementById('lrf-hold')) {
-                  var b = document.createElement('div');
-                  b.id = 'lrf-hold'; b.className = 'lrf';
-                  b.textContent = termOpen
-                    ? '↻ board updated — will reload when the terminal closes'
-                    : '↻ board updated — will reload when this turn finishes';
-                  document.body.appendChild(b);
-                }
-                return;
+            /* SURGICAL UPDATES (JL 260801: "只更新这个配置的一小部分",
+               "我一旦改了之后，我想看到这个变化是 immediate 的变化").
+
+               A full reload is the only thing that can destroy a running
+               terminal, so it is now the last resort rather than the first
+               move, and the two assets are handled apart:
+
+                 CSS changed  → swap the <link>. Instant, and nothing in the
+                                page even notices; no reload, ever.
+                 JS  changed  → cannot be hot-swapped safely, so reload, but
+                                NEVER while a terminal or a turn is live. The
+                                badge then says so and reloads the moment that
+                                work ends, or immediately if you click it.
+
+               The old code used one stamp for both, so a CSS tweak reloaded the
+               page and took the terminal with it, and a 90-second hard cap
+               reloaded even with a terminal open. Both are gone. */
+            var newCss = (doc.querySelector('meta[name="board-css"]') || {}).content;
+            var myCss = (document.querySelector('meta[name="board-css"]') || {}).content;
+            if (newCss && myCss && newCss !== myCss) {
+              var link = document.querySelector('link[rel="stylesheet"][href*="board.css"]');
+              if (link) {
+                var href = link.getAttribute('href').split('?')[0] + '?v=' + newCss;
+                var fresh = link.cloneNode();
+                fresh.setAttribute('href', href);
+                /* load the new sheet BEFORE dropping the old one, or the page
+                   flashes unstyled for a frame */
+                fresh.onload = function () { if (link.parentNode) link.remove(); };
+                link.parentNode.insertBefore(fresh, link.nextSibling);
+                var m = document.querySelector('meta[name="board-css"]');
+                if (m) m.content = newCss;
               }
+            }
+
+            var newJs = (doc.querySelector('meta[name="board-js"]') || {}).content;
+            var myJs = (document.querySelector('meta[name="board-js"]') || {}).content;
+            if (newJs && myJs && newJs !== myJs) {
+              /* RELOAD, even with a terminal open (JL 260801: "你能够把这个
+                 reload 变成自动 reload 吗... 哪怕我打开 terminal TUI 的时候").
+
+                 This was deferred for a while because a reload used to destroy
+                 the terminal. It no longer does, and each part of that is now
+                 held up by its own check:
+                   · the PTY is PARKED, not killed, so the process survives
+                   · the drawer comes back in TUI mode and reattaches to it
+                   · the ring replay repaints at THIS browser's size, so the
+                     screen is not shredded
+                   · a half-typed prompt lives in the CLI process, not in the
+                     page, so it is still there afterwards
+                 The badge stays for the moment it takes, so the reload is
+                 explained rather than mysterious. */
+              var bar = document.getElementById('lrf-hold');
+              if (!bar) {
+                bar = document.createElement('div');
+                bar.id = 'lrf-hold'; bar.className = 'lrf';
+                document.body.appendChild(bar);
+              }
+              bar.textContent = '↻ new board code · reloading…';
+              /* remember the caret so the reattached terminal gets it back */
+              try {
+                sessionStorage.setItem('board-refocus',
+                  (window.__boardTermFocused && window.__boardTermFocused()) ? 'term' : '');
+              } catch (e) {}
               location.reload();
               return;
             }
+
             var nw = doc.querySelector('div.wrap');
             var old = document.querySelector('div.wrap');
             if (!nw || !old) return;
             var y = window.scrollY;
+            /* Remember the caret BEFORE anything moves it. The hash re-bind
+               below focuses the fragment's element, and a reader mid-sentence
+               in the terminal or the composer should not pay for a board
+               update they did not ask for (JL 260801). */
+            var hadTerm = !!(window.__boardTermFocused && window.__boardTermFocused());
+            var hadEl = document.activeElement;
+            var hadChat = !hadTerm && hadEl && hadEl.closest && hadEl.closest('#chat');
+            var selStart = hadChat && 'selectionStart' in hadEl ? hadEl.selectionStart : null;
             // Carry the OPEN/CLOSED state of every drawer across the swap
             // (JL 260731: "even when a section is open, the change should be
             // smooth"). Without this, replacing div.wrap silently re-collapses
             // whatever the reader had opened, which reads as the page resetting
             // itself under them. Keyed by the drawer's own heading text, so it
             // survives a section moving up or down the page.
+            /* THE KEY IS THE AUTHORED HEADING, NOT WHAT IS ON SCREEN
+               (JL 260802, measured: a comment saved at scroll 1112 came back
+               at 171 with every section shut, on a document that had shrunk
+               from 2000px to 1091px).
+
+               `board.js` DECORATES a summary after each render: the `C1`/`H1`
+               address chip, the ⧉ copy, the 🤖 chat, the sentence badge. So
+               the OLD summary reads "📚 Content C1 ⧉ 🤖" while the same
+               summary in the freshly fetched html reads "📚 Content", and the
+               two never matched. Nothing reported it, because the fallback
+               only runs when the drawer COUNT changed, and the count changes
+               exactly when a sentence gains its first record: the comment
+               path, and nothing else. That is why the card path looked smooth
+               and the comment path did not.
+
+               So both sides are read with the decoration removed, the same way
+               `sentenceText` reads a sentence for its anchor. */
+            function sumKey(d) {
+              var s = d.querySelector('summary');
+              if (!s) return '';
+              var c = s.cloneNode(true);
+              c.querySelectorAll('.caddr,.haddr,.sbz,.sbadge,.cmk,.cv,'
+                                 + '.schatbar,button,input,select').forEach(
+                function (x) { x.remove(); });
+              return c.textContent.replace(/\s+/g, ' ').trim();
+            }
             var oldD = old.querySelectorAll('details');
             var openAt = [], openKey = {};
             oldD.forEach(function (d, i) {
               if (!d.open) return;
               openAt.push(i);
-              var s = d.querySelector('summary');
-              if (s) openKey[s.textContent.replace(/\s+/g, ' ').trim()] = 1;
+              var k = sumKey(d);
+              if (k) openKey[k] = 1;
             });
             old.replaceWith(nw);
             var newD = nw.querySelectorAll('details');
@@ -2461,11 +3794,11 @@ function boardDirPath() {
               // sentence does not add or remove drawers.
               openAt.forEach(function (i) { newD[i].open = true; });
             } else {
-              // The page gained or lost a drawer, so fall back to the summary
-              // text, which survives a section moving.
+              // The page gained or lost a drawer, so fall back to the heading,
+              // which survives a section moving up or down the page.
               newD.forEach(function (d) {
-                var s = d.querySelector('summary');
-                if (s && openKey[s.textContent.replace(/\s+/g, ' ').trim()]) d.open = true;
+                var k = sumKey(d);
+                if (k && openKey[k]) d.open = true;
               });
             }
             if (window.__boardRewire) window.__boardRewire();
@@ -2482,6 +3815,16 @@ function boardDirPath() {
             var h = location.hash;
             if (h) { location.hash = ''; location.hash = h; }
             window.scrollTo(0, y);
+            /* ...and put it back, after every one of those has had its turn. */
+            if (hadTerm && window.__boardTermFocus) {
+              window.__boardTermFocus();
+            } else if (hadChat && hadEl && document.contains(hadEl)) {
+              try {
+                hadEl.focus({ preventScroll: true });
+                if (selStart !== null && 'setSelectionRange' in hadEl)
+                  hadEl.setSelectionRange(selStart, selStart);
+              } catch (e) {}
+            }
             last = lm;
             var n = document.createElement('div');
             n.className = 'lrf';
@@ -2496,6 +3839,110 @@ function boardDirPath() {
   }
   // instant, drawer-preserving refresh — what every former location.reload() now calls
   window.__boardRefresh = function () { if (last === null) last = '0'; tick(); };
+  /* QD5 · IN A PANE, A FRAME REFRESHES ITSELF.
+     The swap above exists to keep a drawer and a terminal alive inside the one
+     document that held everything. A pane holds one of those things and nothing
+     else, so the honest update is a real reload of this frame — the browser
+     rebuilds the document correctly instead of us patching it, and no other pane
+     can even observe it.
+
+     It asks about ITSELF, which is the whole difference from the 4000 ms poll
+     this replaces: that one ran in a document carrying the sidebar, the page and
+     the chat, so its answer had to be surgery. Here a HEAD on our own URL is the
+     complete question, so it can be asked often and answered by reloading.
+
+     The chat pane never asks. It is the one frame whose whole value is that it
+     is NOT interrupted, and a terminal mid-command is exactly what a reload
+     would take. Everything the shell knows about refreshing is now this. */
+  if (window.__boardPane) {
+    /* A PANE SWAPS TOO (JL 260802: "怎么让这个东西变得比较丝滑… 我加了
+       comments，一点提交，然后它就 refresh 一下").
+
+       This used to reload, on the reasoning that a pane holds one thing and
+       the browser rebuilds a document better than we can patch it. That is
+       true of the DOCUMENT and false of the READER: a page pane holds the
+       scroll position, every `details` the reader opened to get here, the
+       text they have selected, and the composer they are typing into. A
+       reload takes all four and hands back a page scrolled to the top with
+       every section shut, which is what "not smooth" means.
+
+       The swap above already keeps all of it, and it was written for exactly
+       this. It also holds itself back mid-selection and mid-typing, and it
+       still falls back to a real reload when the board's JS changed, which is
+       the one case a patch cannot cover. So the pane gets the swap and keeps
+       the reload only as that fallback. */
+    window.__boardRefresh = function () { if (last === null) last = '0'; tick(); };
+    if (window.__boardPane === 'chat') return;
+    /* THE BASELINE IS THIS DOCUMENT, not the first answer we happen to get.
+       Asking once and keeping that as "current" looks equivalent and is not:
+       an edit that lands between this document loading and the first tick is
+       then adopted as the baseline, and the frame sits on the old page forever
+       while believing it is fresh. `document.lastModified` is the timestamp of
+       the response this frame is ACTUALLY showing, so it cannot drift. */
+    /* Compare the ETag, which the server sets from the file's mtime in
+       NANOSECONDS. `Last-Modified` is whole seconds, so an edit landing in the
+       same second as this document was served looks identical to it and the
+       frame sits stale forever believing it is current — narrow, but this board
+       is rebuilt in bursts and it was hit (260802). The timestamp stays as the
+       fallback for anything that does not send a tag. */
+    /* BACK OFF WHEN NOTHING IS HAPPENING. 800 ms was chosen while measuring on
+       localhost, where a HEAD is free. It is not free across a tailnet: two
+       panes asking every 800 ms is 2.5 requests a second forever, each costing
+       a round trip, and they compete with a CLICK for the six connections a
+       browser allows per origin. That is why navigating one page to the next
+       felt slower in the split than in the board it replaced (JL 260802), while
+       the same click measured 42 ms against 49 ms on the machine serving it.
+
+       So the interval grows while the answer keeps being "nothing changed", and
+       snaps back to fast the moment this tab is looked at again. Editing feels
+       instant because editing means the tab is focused; an idle pane in a tab
+       you are not using costs a request every five seconds instead of every
+       800 ms. */
+    var tag = window.__paneStamp || '';
+    var mine = Date.parse(document.lastModified);
+    /* the router swaps the content without a reload, so it hands us the stamp
+       of what it just put on screen */
+    window.__paneRebase = function (t) { if (t) { tag = t; wait = FAST; } };
+    var FAST = 800, SLOW = 5000, wait = FAST, timer = null;
+    function quick() { wait = FAST; if (timer) { clearTimeout(timer); arm(); } }
+    window.addEventListener('focus', quick);
+    window.addEventListener('pageshow', quick);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) quick();
+    });
+    function arm() { timer = setTimeout(ask, wait); }
+    /* The swap landed, so THIS frame is now showing that build: take its tag
+       as the new baseline and go back to polling fast. */
+    window.addEventListener('board:updated', function () {
+      fetch(location.href, { method: 'HEAD', cache: 'no-store' })
+        .then(function (h) { var t = h.headers.get('etag'); if (t) tag = t; })
+        .catch(function () {});
+      wait = FAST;
+    });
+    function ask() {
+      if (document.hidden) { wait = SLOW; return arm(); }
+      fetch(location.href, { method: 'HEAD', cache: 'no-store' })
+        .then(function (h) {
+          var t = h.headers.get('etag');
+          /* The tag is NOT rebased here. `tick()` holds itself back while the
+             reader is selecting or typing, so rebasing on the poll would tell
+             this frame it is current while it still shows the old build, and
+             the change would never arrive. It is rebased on `board:updated`
+             below, which only fires once the swap actually landed. */
+          if (tag && t) { if (t !== tag) { window.__boardRefresh(); return arm(); } }
+          else {
+            var lm = Date.parse(h.headers.get('last-modified') || '');
+            if (lm && mine && lm !== mine) { window.__boardRefresh(); return arm(); }
+          }
+          /* nothing changed: ask a little less often, up to the ceiling */
+          wait = Math.min(SLOW, Math.round(wait * 1.6));
+          arm();
+        })
+        .catch(function () { wait = SLOW; arm(); });
+    }
+    arm();
+    return;
+  }
   setInterval(tick, 4000);
 })();
 
@@ -2523,6 +3970,39 @@ document.addEventListener('click', function (ev) {
    directly under that sentence in the markdown (POST /_board/sentence). Script-only
    enhancement: without scripts the page still reads; writing needs serve.py anyway. */
 (function () {
+
+  /* ONE reading of "what this sentence says". `QC7`'s anchor is an EXACT match
+     on this string against a source line, so anything the renderer added has to
+     come back out. The ⚑ badge is the trap: it lives INSIDE the <p> (it became a
+     zero-width span so it could never wrap), so a raw textContent posts
+     "…below the read.⚑ 1", which is not in the markdown and never will be, and
+     the server correctly answers "not found, nothing written" (JL 260801, with
+     a screenshot of exactly that). Both writers on this page use this, and the
+     address module reuses it rather than keeping a second copy. */
+  function sentenceText(p) {
+    var c = p.cloneNode(true);
+    // 🪪 A SPAN CARD IS THE EXCEPTION TO THE RULE BELOW (JL 260802, QB5 D).
+    // Every other button in a sentence is a paper-dialect chip, whose label
+    // replaced a marker and is NOT the source text, so deleting it is what
+    // makes the posted string match the file. A span card is the opposite: it
+    // sits on words the author typed and its label IS those words. Deleting it
+    // would post a sentence with a hole in it, and every later write on that
+    // sentence would miss its anchor forever. So it is UNWRAPPED, not removed.
+    c.querySelectorAll('button.chip.card.span').forEach(function (b) {
+      b.parentNode.replaceChild(document.createTextNode(b.textContent), b);
+    });
+    // `.cmk` is the 💬 the comment layer inserts INSIDE the paragraph for every
+    // pending comment it still holds in localStorage. It is added text, so a
+    // sentence that once failed to write would post "…text 💬" and keep failing
+    // forever, poisoned by the very comment that failed. `button` covers the
+    // paper dialect's chips, whose LABEL is not the source text anyway
+    // (`Smith 2024` for `\citep{smith2024}`), so both sides delete rather than
+    // keep: the server strips the marker out of the source line to match.
+    c.querySelectorAll('.cmk,.sbz,.sbadge,.cv,.schatbar,button,input,select,textarea')
+      .forEach(function (x) { x.remove(); });
+    return c.textContent.replace(/\s+/g, ' ').trim();
+  }
+  window.__boardSentenceText = sentenceText;
   var LANES = ['JL', 'CC', 'Note', 'Check', 'Citation', 'Value', 'Display',
                'Q-consumer', 'Link', 'Source'];
   var cur = null;
@@ -2555,13 +4035,20 @@ document.addEventListener('click', function (ev) {
       fetch('/_board/sentence', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: boardPath(), file: file,
-          sentence: sentP.textContent.replace(/\s+/g, ' ').trim(),
+          sentence: sentenceText(sentP),
           lane: sel.value, text: text })
       }).then(function (r) { return r.json(); })
         .then(function (j) {
           if (!j.ok) { err.textContent = '⚠ ' + (j.err || 'failed'); return; }
           err.textContent = '✔ saved';
-          setTimeout(close, 700);
+          // CLOSE FIRST, THEN ASK (JL 260802). The swap refuses to run while
+          // any textarea inside `div.wrap` still holds text, which is the rule
+          // that stops a board rebuild from eating what someone is typing.
+          // This form is inside `div.wrap` and its input still holds what was
+          // just saved, so asking before closing asks for something that can
+          // only be refused, and the lane then waited for the poll instead.
+          close();
+          if (window.__boardRefresh) window.__boardRefresh();
         })
         .catch(function () { err.textContent = '⚠ serve.py not running?'; });
     }
@@ -2573,7 +4060,7 @@ document.addEventListener('click', function (ev) {
   }
   function edit(afterEl, sentP, file) {
     close();
-    var before = sentP.textContent.replace(/\s+/g, ' ').trim();
+    var before = sentenceText(sentP);
     var d = document.createElement('div');
     d.className = 'sedit';
     var inp = document.createElement('textarea'); inp.value = before;
@@ -2598,7 +4085,23 @@ document.addEventListener('click', function (ev) {
       }).then(function (r) { return r.json(); }).then(function (j) {
         if (!j.ok) { err.textContent = '⚠ ' + (j.err || 'failed'); return; }
         localStorage.setItem('board-user-last', actor);
-        location.reload();
+        // A RELOAD IS THE WRONG TOOL HERE (JL 260802: adding something and
+        // having the whole page refresh is what "not smooth" means). It threw
+        // away the scroll position, shut every section the reader had opened
+        // to reach this sentence, and cost a full document parse, all to show
+        // one changed line. The swap keeps the reader exactly where they were
+        // and still falls back to a real reload when the board's JS changed.
+        //
+        // CLOSE FIRST. This editor's textarea lives inside `div.wrap` and
+        // still holds the sentence that was just saved, and the swap refuses
+        // to run while any textarea in there has text, which is the rule that
+        // stops a rebuild from eating what someone is typing. The reload this
+        // replaced never met that rule, so the guard had never been crossed
+        // here before: the markdown gained its `> ✎` record and the page sat
+        // unchanged until the reader refreshed by hand.
+        close();
+        if (window.__boardRefresh) window.__boardRefresh();
+        else location.reload();
       }).catch(function () { err.textContent = '⚠ serve.py not running?'; });
     }
     ok.onclick = save;
@@ -2728,12 +4231,8 @@ document.addEventListener('click', function (ev) {
        QAb3.C1.P2.S1    sentence in the second paragraph of C1
 
      These are render-local focus addresses, not durable Markdown identity. */
-  function sentenceText(p) {
-    var c = p.cloneNode(true);
-    c.querySelectorAll('.sbadge,.cv,.schatbar,button,input,select,textarea')
-      .forEach(function (x) { x.remove(); });
-    return c.textContent.replace(/\s+/g, ' ').trim();
-  }
+  // Defined in 00-apparatus.js, which runs first: one grammar, never two.
+  var sentenceText = window.__boardSentenceText;
   function apparatusText(p) {
     var box = null;
     var sent = p.closest('details.sent');
@@ -2945,7 +4444,7 @@ document.addEventListener('click', function (ev) {
 
   /* ── Section and subsection breadcrumbs (QB5d) ────────────────────────────
      Above Content's fine `C.H.P.S` grammar sits a coarser address every reader
-     can say out loud: `QB4e / Where we are / Decision Now`. Every rendered `##`
+     can say out loud: `QB4 / State / Decision Now`. Every rendered `##`
      section and `###` subsection heading gets one, at the END of the heading
      and invisible until that heading is hovered — the contract the sentence
      rail and the C/H chips already follow.
@@ -3006,18 +4505,28 @@ document.addEventListener('click', function (ev) {
     try { document.execCommand('copy'); } catch (e) {}
     ta.remove(); done();
   }
-  function headingRail(head, sec, path, file, blockEl, withCopy) {
+  /* The chip SHOWS the short id and COPIES the full address (JL 260801: "the
+     address here is too long ... maybe just C1 is ok, when I click C1, I can
+     copy the link"). Two different jobs were being served by one string: the
+     reader needs a token they can see at a glance and say out loud, and Claude
+     Code needs `QB4 / Content / 0 · The page protocol · <file>` to open the
+     right place. So the label shrinks and the clipboard payload does not.
+     A Content division already carries `C1` from the sentence grammar, so it
+     reuses that id rather than inventing a second one; everywhere else the
+     page id drops off the front, since the tab and the breadcrumb both
+     already say which page this is. */
+  function headingRail(head, sec, path, short, file, blockEl, withCopy) {
     if (head.querySelector(':scope > .hpath')) return;
     var rail = document.createElement('span');
     rail.className = 'hpath';
     var chip = document.createElement('button');
     chip.type = 'button';
     chip.className = 'hpid';
-    chip.textContent = path;
+    chip.textContent = short || path;
     chip.title = 'Copy this address' + (file ? '\n' + path + '\n' + file : '');
     chip.addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
-      copyInto(chip, path + (file ? ' · ' + file : ''), '✓ address copied');
+      copyInto(chip, path + (file ? ' · ' + file : ''), '✓ copied');
     });
     rail.appendChild(chip);
     if (withCopy) {                 // `##` headings already carry their own ⧉
@@ -3046,6 +4555,19 @@ document.addEventListener('click', function (ev) {
     rail.appendChild(bot);
     head.appendChild(rail);
   }
+  function shortLabel(label) {
+    /* The chip is a HANDLE, not a caption (JL 260802: "we don't want this long
+       copy button, please make them the same to the Content"). A Content part
+       shows `C1`; every other group heading now shows only what comes before
+       its first ` · `, so `⚙️ Engines · what RUNS this subject` becomes
+       `Engines` instead of repeating the whole heading the reader is looking
+       at. The clipboard still carries the full address. */
+    var id = label.match(/^((?:A\d+|C\d+|P\d*))\s*·/);
+    if (id) return id[1];
+    var head = label.split(' · ')[0].trim();
+    return head.replace(/^[^\p{L}\p{N}]+/u, '').trim() || label;
+  }
+
   function ownHead(host) {
     return host ? host.querySelector(':scope > summary.ch, :scope > .ch') : null;
   }
@@ -3058,7 +4580,7 @@ document.addEventListener('click', function (ev) {
         var name = plainLabel(ch);
         if (!name) return;
         var box = ch.closest(SECT) || ch.parentElement || ch;
-        headingRail(ch, sec, sec.id + ' / ' + name, file,
+        headingRail(ch, sec, sec.id + ' / ' + name, shortLabel(name), file,
                     function () { return box; }, false);
       });
       function subPath(el) {
@@ -3068,12 +4590,23 @@ document.addEventListener('click', function (ev) {
       }
       sec.querySelectorAll('.sh').forEach(function (sh) {
         if (!plainLabel(sh)) return;
-        headingRail(sh, sec, subPath(sh), file,
+        headingRail(sh, sec, subPath(sh), shortLabel(plainLabel(sh)), file,
                     function () { return shRun(sh); }, true);
       });
       sec.querySelectorAll('details.csec > summary').forEach(function (sm) {
         if (!plainLabel(sm)) return;
-        headingRail(sm, sec, subPath(sm), file,
+        // `C1` comes from 10-address.js, which runs first; the visible `.caddr`
+        // chip beside it is the same id, so this rail shows no second copy of
+        // it and contributes only the ⧉ and 🤖 buttons.
+        var cid = (sm.parentElement && sm.parentElement.dataset)
+          ? sm.parentElement.dataset.contentId : '';
+        // Aims and States groups fold like Content divisions since 260802, so
+        // they arrive here too. They have no `C1` from the sentence grammar,
+        // and the fallback printed the WHOLE title beside a heading already
+        // showing it (JL 260802: "they are nested together"). Their own id is
+        // the first token of the heading, `A0` or `P`, so use that.
+        if (!cid) cid = shortLabel(plainLabel(sm));
+        headingRail(sm, sec, subPath(sm), cid || plainLabel(sm), file,
                     function () { return sm.parentElement; }, true);
       });
     });
@@ -3133,6 +4666,122 @@ document.addEventListener('click', function (ev) {
    `.chipcard:not(:popover-open){display:none}` so no future class collision
    can resurrect a ghost. The chip needs NO script: `popovertarget` alone is
    enough, inside a <summary> or out of it, verified in Chrome 150. */
+
+/* A hidden ⧉ on every Decision Now row (JL 260802: "could you give a hidden
+   copy button so I can copy the decision easier?").
+
+   A decision row is the one block on a page a person routinely moves OUT of the
+   board: into a chat, a message, a commit. Copying it by hand means dragging
+   across six wrapped lines and picking up the checkbox glyph with them.
+
+   Hidden the same way the heading rail is: absent until the row is hovered or
+   something inside it takes focus, so a page at rest still reads as a document.
+   Keyboard users get it from focus, which is why this is not a :hover-only rule.
+
+   The clipboard gets the row as PLAIN TEXT with the ☐/☑ box dropped, because the
+   box is the page's state and means nothing once the text is somewhere else. */
+(function () {
+  'use strict';
+
+  function rowText(row) {
+    /* textContent, NOT innerText. innerText reads LAID-OUT text, and a decision
+       row lives inside `details.it` nested in `details.sect`, both shut on load.
+       Nothing is rendered, so innerText returns '' and the button cheerfully
+       copies an empty string while still flashing \u2713. Caught by clicking it
+       (JL 260731: "did you clicked it yourself?"), never by reading the markup.
+
+       textContent ignores layout but also drops every line break, so block
+       boundaries are re-inserted on a DETACHED clone first. */
+    var body = row.querySelector('.itw') || row;
+    var clone = body.cloneNode(true);
+    var blocks = clone.querySelectorAll('div,p,br,summary,li,tr');
+    Array.prototype.forEach.call(blocks, function (el) {
+      if (el.parentNode) { el.parentNode.insertBefore(document.createTextNode('\n'), el); }
+    });
+    return (clone.textContent || '')
+      .replace(/\u00a0/g, ' ')
+      .split('\n')
+      .map(function (l) { return l.replace(/\s+/g, ' ').trim(); })
+      .filter(function (l, i, a) { return l || (i > 0 && a[i - 1]); })
+      .join('\n')
+      .trim();
+  }
+
+  function copy(btn, text) {
+    var done = function () {
+      var was = btn.textContent;
+      btn.textContent = '✓';
+      setTimeout(function () { btn.textContent = was; }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+    } else {
+      fallback(text, done);
+    }
+  }
+
+  function fallback(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:-1000px;left:-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  function isDecisionRow(row) {
+    /* Only rows under `Decision Now`. Every other `- [ ]` on a board is a legacy
+       checklist item, and putting the affordance on those would decorate
+       hundreds of rows nobody moves anywhere.
+
+       The heading is NOT a sibling: a `###` inside States renders as
+       `details.csec > summary` with the rows in a following `div.cbody`, so this
+       climbs to the owning `details` and reads its own summary. A first version
+       walked previousElementSibling for a `.sh` and matched nothing, which is
+       invisible in the markup and obvious the moment you open the page. */
+    var host = row.closest ? row.closest('details.csec') : null;
+    var head = host && host.querySelector(':scope > summary');
+    if (head) { return /decision now/i.test(head.textContent || ''); }
+    /* Fallback for a flat render, where `###` becomes a plain `div.sh`. */
+    var n = row.previousElementSibling;
+    while (n) {
+      if (n.classList && n.classList.contains('sh')) {
+        return /decision now/i.test(n.textContent || '');
+      }
+      n = n.previousElementSibling;
+    }
+    return false;
+  }
+
+  function wire(root) {
+    var rows = (root || document).querySelectorAll('.ck');
+    Array.prototype.forEach.call(rows, function (row) {
+      if (row.__dcopy || !isDecisionRow(row)) { return; }
+      row.__dcopy = true;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dcopy';
+      b.textContent = '⧉';
+      b.title = 'Copy this decision as plain text';
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        copy(b, rowText(row));
+      });
+      row.appendChild(b);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { wire(); });
+  } else {
+    wire();
+  }
+  /* The live layer re-renders sections in place, so re-wire after a refresh. */
+  window.__boardWireDecisionCopy = wire;
+})();
 
 /* ── QD8 · activity timing and layout ───────────────────────────────────
    Timing is runtime data, so it is enhancement-only by definition. The static
@@ -3437,7 +5086,7 @@ document.addEventListener('click', function (ev) {
     apply(state);
     try { localStorage.setItem(key, state); } catch (e) {}
   });
-  /* On narrow screens the rail overlays the text: a jump closes it (not
+  /* On narrow screens the sidebar overlays the text: a jump closes it (not
      persisted, so a wide screen later still opens by default). */
   sb.addEventListener('click', function (e) {
     var x = e.target.closest('.sb-x');
@@ -3467,18 +5116,56 @@ document.addEventListener('click', function (ev) {
     if (e.target.closest('a') && window.innerWidth < 1150) apply('closed');
   });
   function mark() {
-    var want = location.hash || '#top';
-    var on = null;
-    sb.querySelectorAll('a.sb-top,a.sb-g,a.sb-p').forEach(function (a) {
-      var hit = a.getAttribute('href') === want;
-      a.classList.toggle('on', hit);
-      if (hit) on = a;
-    });
+    /* WHERE AM I, asked of the DOCUMENT rather than of the URL.
+
+       The sidebar was written for the one-file board, where every page is a
+       section and `location.hash` names the open one. In the tree a page is
+       its own file with no hash at all and the row hrefs are file paths, so
+       the comparison matched nothing: no row was highlighted and no section
+       outline ever opened (JL 260801). That is the same assumption QC9 took
+       out of the drawer; the sidebar kept it.
+
+       Three kinds of file, answered in order, because a wrong order lets the
+       Index row win on a group page:
+         a page   -> the one `section.q` in the document, matched by data-page
+         a group  -> the row whose href IS this file
+         neither  -> the Index row
+
+       `data-page` exists so the match survives BOTH packagings: the id is the
+       same, the href is not. The drawer's docPage() is reused, never copied. */
+    var doc = window.__boardDocPage && window.__boardDocPage();
+    var here = location.pathname.split('/').pop();
+    var on = null, want = null;
+
+    if (doc) {
+      want = '#' + doc.id;
+    } else if (document.querySelector('section.q')) {
+      want = location.hash || '#top';            // the one-file board
+    }
+    if (want) {
+      sb.querySelectorAll('a.sb-top,a.sb-g,a.sb-p').forEach(function (a) {
+        var id = a.getAttribute('data-page');
+        var hit = id ? ('#' + id) === want : a.getAttribute('href') === want;
+        a.classList.toggle('on', hit);
+        if (hit) on = a;
+      });
+    }
+    if (!on && here) {                           // a group file in the tree
+      sb.querySelectorAll('a.sb-g').forEach(function (a) {
+        var hit = (a.getAttribute('href') || '').split('/').pop() === here;
+        a.classList.toggle('on', hit);
+        if (hit) { on = a; want = null; }
+      });
+    }
+    if (!on) {                                   // the Index
+      var top = sb.querySelector('a.sb-top');
+      if (top) { top.classList.add('on'); on = top; want = '#top'; }
+    }
     /* Accordion (QB2a, JL 260731): only the open page's outline shows. */
     sb.querySelectorAll('.sb-out.open').forEach(function (o) {
       o.classList.remove('open');
     });
-    var out = on && sb.querySelector('.sb-out[data-out="' + want.slice(1) + '"]');
+    var out = want && sb.querySelector('.sb-out[data-out="' + want.slice(1) + '"]');
     if (out) out.classList.add('open');
     if (on) on.scrollIntoView({ block: 'nearest' });
   }
@@ -3491,25 +5178,77 @@ document.addEventListener('click', function (ev) {
                  same page.querySelector path resolves them */
               map: 'details.board-map', status: 'details.board-status',
               pages: '#qlist', activity: '#activity' };
+  /* Wait for the page element to EXIST rather than guessing how long a
+     navigation takes. In the tree the row's click is intercepted by the router,
+     which fetches the file and swaps div.wrap; 80ms was a race it usually lost,
+     and losing it silently did nothing at all. */
+  function afterPage(pid, fn, tries) {
+    var page = document.getElementById(pid);
+    if (page) { fn(page); return; }
+    if ((tries || 0) > 40) return;                 // ~2.5s, then give up quietly
+    setTimeout(function () { afterPage(pid, fn, (tries || 0) + 1); }, 60);
+  }
+  /* A click on an outline row is a REQUEST that outlives the click: it names a
+     page that may still have to load. Two things can happen, and the row must
+     work under both. The router usually intercepts and swaps div.wrap. But if
+     scripts are stripped, if the fetch fails, or if the page is opened in a new
+     tab, the browser does an ordinary navigation and this document is gone. So
+     the request is PARKED in sessionStorage and applied by whoever ends up
+     holding the page: this document after a swap, or the fresh one after a
+     load. It is cleared the moment it is honoured, so it can never fire twice.
+     (JL 260801: "clicking a content division does not take me there".) */
+  var PARK = 'bnav:goto';
+  function park(a) {
+    var out = a.closest('.sb-out');
+    try {
+      sessionStorage.setItem(PARK, JSON.stringify({
+        /* the id, read off the outline the row lives in: the href is `#QB5c`
+           in the one-file board and `QB/QB5c-editing.html` in the tree, and
+           slicing one character off the second gave an id nothing has. */
+        pid: out ? out.getAttribute('data-out') : (a.getAttribute('href') || '').slice(1),
+        k: a.dataset.k || '',
+        div: a.dataset.div === undefined ? null : a.dataset.div,
+        t: a.dataset.t || ''
+      }));
+    } catch (e) { /* private mode: the row still navigates, it just lands at the top */ }
+  }
+  function honour() {
+    var req;
+    try { req = JSON.parse(sessionStorage.getItem(PARK) || 'null'); } catch (e) { req = null; }
+    if (!req || !req.pid) return;
+    var page = document.getElementById(req.pid);
+    if (!page) return;                       // not here yet; a later call will
+    try { sessionStorage.removeItem(PARK); } catch (e) {}
+    reveal(req, page);
+  }
   sb.addEventListener('click', function (e) {
     var a = e.target.closest('a.sb-s,a.sb-ss');
     if (!a) return;
-    var pid = (a.getAttribute('href') || '').slice(1);
-    setTimeout(function () {
-      var page = document.getElementById(pid);
-      if (!page) return;
-      var el = SEL[a.dataset.k] ? page.querySelector(SEL[a.dataset.k]) : null;
-      if (el && a.dataset.div !== undefined) {
+    park(a);
+    /* Do NOT honour it here when the router will handle the click. Honouring
+       eagerly opened the division on the DOM that was about to be REPLACED and
+       consumed the request on the way, so the fresh wrap arrived with nothing
+       left to apply: the row worked from another page and did nothing from its
+       own (JL 260801, found by clicking §6 and watching §3 open instead).
+       In the one-file board no fetch happens, so 90ms is the whole story. */
+    var routed = document.body.classList.contains('split') &&
+                 /\.html(\?|#|$)/.test(a.getAttribute('href') || '');
+    if (!routed) setTimeout(honour, 90);
+  });
+  function reveal(req, page) {
+    {
+      var el = SEL[req.k] ? page.querySelector(SEL[req.k]) : null;
+      if (el && req.div !== null && req.div !== undefined) {
         var divs = Array.prototype.filter.call(el.children, function (x) {
           return x.matches && x.matches('details.csec') &&
                  x.className.indexOf('display') < 0;
         });
-        var d = divs[+a.dataset.div];
+        var d = divs[+req.div];
         if (d) { el.open = true; d.open = true; el = d; }
-      } else if (el && a.dataset.t) {
+      } else if (el && req.t) {
         /* a non-Content subsection (### Decision Now …) is found by its
            rendered .sh heading text */
-        var m = a.dataset.t.trim().toLowerCase();
+        var m = req.t.trim().toLowerCase();
         var hs = el.querySelectorAll('.sh');
         for (var i = 0; i < hs.length; i++) {
           if (hs[i].textContent.trim().toLowerCase().indexOf(m) === 0) {
@@ -3519,16 +5258,23 @@ document.addEventListener('click', function (ev) {
           }
         }
       }
-      if (el) {
-        if (el.tagName === 'DETAILS') el.open = true;
-        el.scrollIntoView({ block: 'start' });
-      } else {
-        page.scrollIntoView({ block: 'start' });
-      }
-    }, 80);
-  });
+      var to = el || page;
+      if (el && el.tagName === 'DETAILS') el.open = true;
+      /* Scroll TWICE, deliberately. The arrival path that swaps the wrap calls
+         `window.scrollTo(0, 0)` on its way in, and the path that reloads gets
+         the browser's own scroll restoration; either can land after this one
+         and put the reader back at the top of a page they asked to enter part
+         way down. The second call is cheap and it is what makes the row feel
+         like it went somewhere (JL 260801). */
+      to.scrollIntoView({ block: 'start' });
+      setTimeout(function () { to.scrollIntoView({ block: 'start' }); }, 140);
+    }
+  }
   window.addEventListener('hashchange', mark);
+  // A tree navigation replaces div.wrap and fires no hashchange.
+  window.addEventListener('board:updated', function () { mark(); honour(); });
   mark();
+  honour();                       // a real page load, arriving with a parked request
 })();
 
 /* ── SECTION MATRIX cells open their page at the named section (QB2). ── */
@@ -3563,6 +5309,17 @@ document.addEventListener('click', function (ev) {
    With scripts off every link is still an ordinary href, so the tree stays
    fully navigable and the strip-scripts invariant holds. */
 (function () {
+  /* QD5, corrected 260802. The first cut turned the router OFF in every pane,
+     reasoning that a frame is the unit that reloads. That made every click a
+     full DOCUMENT boot: fetch the page, parse 400 KB of html, and execute this
+     whole bundle again, where the one-document board had swapped one column and
+     kept everything else alive. JL felt it immediately ("really slow to click
+     and go to a new page"), and he was right: 42 ms against 49 ms on the machine
+     serving it, and far worse across a tailnet.
+
+     So the PAGE pane keeps the router and a click is a swap again. The index and
+     chat panes still return here: nothing in them should swap anything. */
+  if (window.__boardPane && window.__boardPane !== 'page') return;
   if (!document.body.classList.contains('split')) return;  // single-file mode
   var busy = false, pending = null;
 
@@ -3582,13 +5339,46 @@ document.addEventListener('click', function (ev) {
     if (busy) { pending = [url, push]; return; }
     busy = true;
     try {
-      var r = await fetch(url, { cache: 'no-store' });
+      /* `no-store` re-downloaded the whole page on every visit, and 82% of a
+         page's bytes are the sidebar, which this swap then throws away because the
+         sidebar lives outside div.wrap. `no-cache` still REVALIDATES every time, so
+         a rebuilt page is never served stale, but an unchanged one comes back as
+         a 0-byte 304 instead of 136 KB (JL 260801: "why does it take a long time
+         to navigate"). Correctness is unchanged; only the wire is. */
+      /* A HUNG FETCH MUST NOT WEDGE THE ROUTER. `busy` guards against two
+         clicks racing, and its only release is this function finishing, so a
+         request that never settles left every later click queued forever and
+         the sidebar simply stopped working (measured 260802, after the swap was
+         put back in the page pane). Five seconds, then fall back to an ordinary
+         navigation, which is slower but always arrives. */
+      var ctl = new AbortController();
+      var bell = setTimeout(function () { ctl.abort(); }, 5000);
+      var r;
+      /* The sidebar is repeated in every generated page. Navigation only replaces
+         `.wrap`, so ask the live server for that fragment directly. A static
+         server that ignores the query still returns the full page as fallback. */
+      var fragmentUrl = new URL(url, location.href);
+      fragmentUrl.searchParams.set('fragment', 'wrap');
+      try { r = await fetch(fragmentUrl.href, { cache: 'no-cache', signal: ctl.signal }); }
+      finally { clearTimeout(bell); }
       var doc = new DOMParser().parseFromString(await r.text(), 'text/html');
       var nw = doc.querySelector('div.wrap'), old = document.querySelector('div.wrap');
       if (!nw || !old) { location.href = url; return; }
       old.replaceWith(nw);
       document.title = doc.title || document.title;
       if (push) history.pushState({ board: 1 }, '', url);
+      /* A SWAP LEAVES THE DOCUMENT'S OWN STAMP BEHIND. The pane's refresh poll
+         compares this document's `__paneStamp` against the server's ETag, and
+         after a swap that stamp still describes the page we just LEFT, so the
+         next tick would see a difference and reload the frame we were trying
+         not to reload. Rebase it from the response we just read. */
+      try {
+        var et = r.headers.get('etag');
+        if (et && window.__paneRebase) window.__paneRebase(et);
+      } catch (e) {}
+      /* and tell the shell, so the address bar and the strip follow a swap the
+         same way they follow a real navigation */
+      try { if (parent !== window && parent.__boardMirror) parent.__boardMirror(); } catch (e) {}
       window.scrollTo(0, 0);
       if (window.__boardRewire) window.__boardRewire();
       window.dispatchEvent(new CustomEvent('board:updated'));
@@ -3609,12 +5399,14 @@ document.addEventListener('click', function (ev) {
   });
 
   window.addEventListener('popstate', function () { go(location.href, false); });
+  /* the index pane calls this instead of navigating this frame (QD5, 260802) */
+  window.__boardGo = go;
 })();
 
-/* Rail drag-to-resize (JL 260731: "can the left panel be dragged, it feels
+/* Sidebar drag-to-resize (JL 260731: "can the left panel be dragged, it feels
    fixed"). Same shape the chat drawer uses for --chatw: one CSS variable, a
    handle on the edge that sets it, and the width remembered per machine.
-   Pure enhancement, so with scripts off the rail keeps its default width. */
+   Pure enhancement, so with scripts off the sidebar keeps its default width. */
 (function () {
   var KEY = 'board-sidebar-width';
   function setW(px) {
@@ -3714,7 +5506,18 @@ document.addEventListener('click', function (ev) {
            lives in __boardTermReopen so a reload never SPAWNS one. */
         if (st.term && window.__boardTermReopen) {
           Promise.resolve(opened).then(function () {
-            try { window.__boardTermReopen(); } catch (e) {}
+            try {
+              Promise.resolve(window.__boardTermReopen()).then(function () {
+                /* and give the caret back, so an automatic reload costs you a
+                   moment rather than a click (JL 260801) */
+                var want = '';
+                try { want = sessionStorage.getItem('board-refocus') || ''; } catch (e) {}
+                if (want === 'term' && window.__boardTermFocus) {
+                  setTimeout(window.__boardTermFocus, 400);
+                  setTimeout(window.__boardTermFocus, 1500);
+                }
+              });
+            } catch (e) {}
           });
         }
       } catch (e) {}

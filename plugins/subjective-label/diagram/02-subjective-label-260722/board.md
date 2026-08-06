@@ -1,69 +1,151 @@
-# Subjective labeling: the method, the engine, and a score we did not award ourselves
-spine: Settle this subjective-labeling system: the labeling method JL described in the meeting, the engine underneath it (how a sentence becomes a vector, the three-tier cascade, training a small classifier), and an externally awarded score. For every step, pin down what it should look like and whether the code already does it.
-close: Every Q below reaches ✅ SETTLED or ⏸️ ON HOLD. When they all land, the system is written down.
+# Subjective labeling: turn one person's vague concept into labels, policy, and measured executors
+spine: Settle a human-grounded subjective-labeling system in which one identified person is the semantic authority, repeated Calibration Rounds jointly improve human-confirmed labels and an executable annotation policy, and a sealed final test selects how the remaining corpus is completed.
+close: Every active Q reaches ✅ SETTLED or ⏸️ ON HOLD, the settled laws are reflected in the subjective-label skill family, and the resulting workflow passes a fresh-context end-to-end test.
 
 ## Topic
-Patients write reviews of their doctors online, and we want to label each review for a personality trait: agreeableness, conscientiousness, openness, and so on.
-Every label takes one of three values, HIGH, LOW, or NONE.
-Asking real people to label is slow and expensive, so a set of large language models stands in for a team of human annotators.
-This board settles the labeling method JL described out loud in the meeting, together with the engine beneath it and one external validation, and for each step it records both what it should look like and whether the code already does it.
+A large corpus of reviews has no outcome label, and the target trait begins as a vague subjective idea rather than a fixed ontology.
+One human supplies the target judgment.
+A strong calibration agent helps that person inspect selected reviews, make the concept explicit, assign final labels, explain boundaries, and turn the emerging policy into a guideline that both people and weaker language models can follow.
+Every human-reviewed item receives three separate records: a final class in HIGH, LOW, or NONE; one of seven diagnostic regions; and an uncertainty record.
+Repeated Calibration Rounds expand the human-confirmed gold set, close a new annotation-policy version, measure correction and coverage, and decide whether another round is worth the human effort.
+After the policy freezes, a sealed unseen set receives human gold and scores candidate executors under one protocol.
+The selected executor then labels the remaining corpus, routes risky items to the human, and leaves item-level provenance.
 
-Cast: JL is the project lead, who supplies the method and makes the calls, and shows as 🧠 on the page. RA is the research assistant doing the work. CC is Claude Code, responsible for migration and for writing things down. ZD is the colleague whose 2026-07-21 notes are pinned as comments.
+Cast: JL is the project lead and semantic authority, who makes the subjective calls and shows as 🧠 on the page.
+CC is the implementation and migration owner, who turns settled Board laws into reusable skill contracts and shows as 🔧.
+RA is a research assistant who may run the workflow but cannot replace JL's semantic authority.
 
-Words this board leans on. A guideline is the document stating what counts as HIGH, LOW, or NONE, which a model follows when it labels. The gallery is the set of answers JL personally confirmed, used as the ruler for measuring whether a model labels correctly. A construct is the trait being labeled. The cascade is the three-tier funnel that decides which items a cheap method can settle and which need an expensive one. A license is a score awarded by an outside dataset rather than by this project. The human ceiling is the agreement level real annotators reach on a public dataset, which is what makes a kappa number interpretable.
+Words this Board leans on.
+A Calibration Round starts from a closed policy, selects or receives a human batch, runs one or more Human-AI Sessions, and ends at a Checkpoint.
+A Human-AI Session is one continuous dialogue in which items, regions, reasons, and policy text are refined together.
+An annotation policy contains the core guideline, boundary rules, ordered decision procedure, uncertainty and escalation policy, and a compact generalized casebook.
+A candidate pool is the broad set considered before the smaller human batch is composed.
+Pre-labels are sealed weak-model predictions produced under the previous closed policy.
+A consensus audit is a stratified random human review of items on which the weak executors agree.
+A sealed test is kept outside development and receives human gold only after the final policy freezes.
 
 ## Pipeline
+**Lifecycle**: the chronological path through the six responsibility groups.
+
+```text
+QA  semantic contract
+ │
+ ▼
+QB  initialize project and run Round 1
+ │
+ ▼
+QC  select, pre-label, and adjudicate later-round batches
+ │
+ ▼
+QD  optimize policy, measure progress, and decide whether to stop
+ │
+ ▼
+QE  freeze, test, score executors, and complete the corpus
+ │
+ └──────────────▶ QF  keep artifacts, skills, agents, and checks aligned
 ```
-QA · method        the labeling loop settled in the meeting, starting from 60 items
-  QA1 build the first 60  →  QA2 label them independently  →  QA3 weak-model exam
 
-QB · grow + verify  roll the sample up, verify every version
-  QB1 60 → 140, hard cases  →  QB2 three-layer exam  →  QB3 an external license
+**Round state**: the artifact sequence that must close before another round begins.
 
-QC · calls JL owes  open judgment, not open evidence
-  QC1 when can the human let go · QC2 how to finish the remaining thousands
-  QC3 what standard picks a construct
-
-QD · engine         answers the "does the code do it" half of the spine
-  QD1 sentence → vector ✅ · QD2 cascade ✅ · QD3 train the classifier 🟡
-  QD4 generate the lexicon instead of hard-coding it 🔴
+```text
+closed G_(t-1)
+      ↓
+candidate pool C_t
+      ↓
+sealed pre-labels P_t
+      ↓
+human batch B_t
+      ↓
+Human-AI Session or Sessions
+      ↓
+human gold Y*_t + policy draft G_t
+      ↓
+Checkpoint t
+      ↓
+cumulative gold D_t + closed G_t
 ```
-The two layers interlock. QB1 picks hard cases by standing on QD1; the implementation of QC2's "let a small classifier take over" is QD3; the cascade's Tier 0 in QD2 is QD1 itself; and QC3's construct standard is one of the gates QC1 needs before a human can let go.
-QC3, QD4, and the ZD comments distributed across the other faces (F1 to F8) all come from `note-update-v3`; the former 01-license board folded into this one and was deleted.
+
+QA0 is the governing conception for this edition.
+The other pages make one part of that conception independently inspectable and closeable.
+Old questions were reopened where their earlier purpose conflicted with QA0; their former filenames remain aliases under Links.
 
 ## Pages
-### QA · Method: the labeling loop settled in the meeting
-How the first labels come into existence at all, before any gallery or guideline exists.
-QA1-coldstart.md
-QA2-split-label.md
-QA3-weak-exam.md
-### QB · Growing the sample and verifying each version
-Roll 60 items up to 140 by hunting hard cases, examine the result in three layers, then have an outside dataset award the score.
-QB1-grow-140.md
-QB2-layered-eval.md
-QB3-external-license.md
-### QC · Calls JL owes
-These are not waiting on evidence; they are waiting on a decision.
-QC1-when-stop.md
-QC2-scale-out.md
-QC3-objective.md
-### QD · Engine: how the machine actually runs
-The layer under the method: vectors, the cascade, the small classifier, and the lexicon.
-QD1-embedding.md
-QD2-cascade.md
-QD3-train-classifier.md
-QD4-auto-lexicon.md
+### QA · Semantic contract
+This group owns what the project means: its authority, output contract, label geometry, and executable policy.
+QA0-the-revised-conception.md
+QA1-system-contract.md
+QA2-label-region-uncertainty.md
+QA3-guideline-contract.md
+
+### QB · Calibration Round
+This group owns project initialization, the human-facing interaction unit, and the Checkpoint that closes a round.
+QB1-initialize-round-one.md
+QB2-human-ai-session.md
+QB3-checkpoint-and-versions.md
+
+### QC · Selection and adjudication
+This group owns how later-round evidence enters human review without allowing retrieval or model consensus to become gold.
+QC1-candidate-pool.md
+QC2-prelabel-and-seal.md
+QC3-compose-human-batch.md
+QC4-blind-adjudication.md
+
+### QD · Optimization and convergence
+This group owns policy improvement, comparable measurements, coverage and concept stability, and the stopping decision.
+QD1-optimize-guideline.md
+QD2-round-metrics.md
+QD3-coverage-and-stability.md
+QD4-stopping-criteria.md
+
+### QE · Final evaluation and completion
+This group owns the sealed human test, executor scorecards, full-corpus execution, and the final reliability package.
+QE1-sealed-final-test.md
+QE2-model-scorecard.md
+QE3-complete-corpus.md
+QE4-final-audit-and-provenance.md
+
+### QF · Execution contract
+This group owns how settled Board laws become references, callable skills, agent authority, implementation boundaries, and acceptance tests.
+QF1-skill-command-contract.md
+QF2-artifact-schema-config.md
+QF3-agent-topology.md
+QF4-library-mapping.md
+QF5-acceptance-tests.md
 
 ## Links
-lib/embed.py          ../../lib/embed.py
-lib/classify.py       ../../lib/classify.py
-lib/license.py        ../../lib/license.py
-lib/construct.py      ../../lib/construct.py
-lib/converge.py       ../../lib/converge.py
-lib/sample.py         ../../lib/sample.py
+skills/subjective-label/SKILL.md ../../skills/subjective-label/SKILL.md
+skills/sl-init/SKILL.md ../../skills/sl-init/SKILL.md
+skills/sl-round/SKILL.md ../../skills/sl-round/SKILL.md
+skills/sl-evaluate/SKILL.md ../../skills/sl-evaluate/SKILL.md
+skills/sl-complete/SKILL.md ../../skills/sl-complete/SKILL.md
+skills/sl-iterate/SKILL.md ../../skills/sl-iterate/SKILL.md
+skills/sl-validate/SKILL.md ../../skills/sl-validate/SKILL.md
+skills/sl-scale/SKILL.md ../../skills/sl-scale/SKILL.md
+skills/sl-status/SKILL.md ../../skills/sl-status/SKILL.md
+ref/ref-contract.md ../../ref/ref-contract.md
+ref/ref-schema.md ../../ref/ref-schema.md
+ref/ref-stages.md ../../ref/ref-stages.md
+ref/ref-architecture.md ../../ref/ref-architecture.md
+ref/ref-config.md ../../ref/ref-config.md
 ref/ref-embeddings.md ../../ref/ref-embeddings.md
-ref/ref-cascade.md    ../../ref/ref-cascade.md
-ref/ref-datasets.md   ../../ref/ref-datasets.md
-ref/ref-config.md     ../../ref/ref-config.md
-note-update-v3        _source/note-update-v3-260721.md
-workflow-audit        _source/260721-workflow-audit.txt
+ref/ref-cascade.md ../../ref/ref-cascade.md
+lib/embed.py ../../lib/embed.py
+lib/sample.py ../../lib/sample.py
+lib/label.py ../../lib/label.py
+lib/classify.py ../../lib/classify.py
+lib/converge.py ../../lib/converge.py
+note-update-v3 _source/note-update-v3-260721.md
+workflow-audit _source/260721-workflow-audit.txt
+QA1-coldstart QB-calibration-round/QB1-initialize-round-one.md
+QA2-split-label QC-selection-and-adjudication/QC3-compose-human-batch.md
+QA3-weak-exam QE-final-evaluation-and-completion/QE2-model-scorecard.md
+QB1-grow-140 QC-selection-and-adjudication/QC1-candidate-pool.md
+QB2-layered-eval QD-optimization-and-convergence/QD2-round-metrics.md
+QB3-external-license QE-final-evaluation-and-completion/QE2-model-scorecard.md
+QC1-when-stop QD-optimization-and-convergence/QD4-stopping-criteria.md
+QC2-scale-out QE-final-evaluation-and-completion/QE3-complete-corpus.md
+QC3-objective QA-semantic-contract/QA1-system-contract.md
+QD1-embedding QB-calibration-round/QB1-initialize-round-one.md
+QD2-cascade QE-final-evaluation-and-completion/QE3-complete-corpus.md
+QD3-train-classifier QC-selection-and-adjudication/QC1-candidate-pool.md
+QD4-auto-lexicon QA-semantic-contract/QA3-guideline-contract.md

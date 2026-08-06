@@ -1,163 +1,176 @@
-Reference: Multi-Agent Panel Architecture
-==========================================
+# Reference: human-grounded agent architecture
 
-The full protocol for how skills, agents, and personas collaborate.
+This reference defines roles, access, write authority, and call order for the revised subjective-label system.
+One human is the semantic authority.
+Models create evidence and execution artifacts but do not substitute for that authority.
 
+## 1. Topology
 
-Topology
---------
-
-```
-Researcher (PI)
-    │
-    │  talks only to
-    ▼
-┌──────────────┐
-│  Moderator   │  state machine + only researcher-facing agent
-└──────┬───────┘
-       │ orchestrates via Task tool
-       │
-       ├──> Sampler              (stage-aware: init_map, iterate_batch, validate_heldout, scale_preflight, diagnostic)
-       │       │ uses
-       │       ├──> Embedder     (sentence-transformers / OpenAI / FAISS)
-       │       └──> Classifier   (logreg / SetFit; trained on gallery)
-       │
-       ├──> Boundary Prober      (LLM-judgment layer on Sampler's candidate pool)
-       │
-       ├──> Labeler Panel        (spawns 3-5 personas)
-       │       ├── close-reader
-       │       ├── fast-patterns
-       │       ├── skeptic
-       │       ├── plain-reader
-       │       └── domain-expert (conditional)
-       │
-       ├──> Disagreement Analyzer   (categorizes A/B/C/D)
-       ├──> Gallery Keeper          (sole writer of gallery/guideline)
-       │
-       ├──> Classifier              (trained after every /sl-iterate; serves Tier 1 of cascade)
-       │
-       ├──> Embedder                (serves Tier 0 of cascade; used by Sampler, Gallery Keeper, Validator)
-       │
-       └──> Validator               (public dataset benchmarking)
+```text
+Human semantic authority
+          ↕
+Strong calibration agent
+  ├── Embedder
+  ├── Candidate selector
+  ├── Weak executors
+  ├── Comparison auditor
+  ├── Guideline optimizer
+  ├── Checkpoint keeper
+  ├── Test custodian
+  ├── Final evaluator
+  ├── Production executor
+  └── Final audit keeper
 ```
 
-See `ref/ref-stages.md` for the three-loop decomposition (big / medium / small).
-See `ref/ref-cascade.md` for the three-tier cascade used in /sl-scale.
+The strong calibration agent is the only conversational door for the human.
+This does not grant it semantic or canonical-write authority.
 
+## 2. Authority matrix
 
-State machine
--------------
+| role | may read | may write | may propose | may decide | forbidden |
+|---|---|---|---|---|---|
+| human semantic authority | item, prior closed policy, post-lock comparison | human-first and final decisions through the keeper | label, region, reason, rule wording | class, region, semantic patch, concept revision, stop signoff, risk acceptance | viewing weak predictions before first-pass lock |
+| strong calibration agent | allowed Session context | chat and proposal records | contrast questions, rules, regressions, impacts | interaction order only | creating gold, accepting semantic patches, revealing sealed outputs early |
+| embedder | corpus text and embedding config | vector cache, index, clusters, distances | none | none | semantic label decisions |
+| candidate selector | eligible ids, scores, gold anchors, sealed committee signatures | `C_t` and `B_t` manifests | quotas and sampling plan | selection under approved config | writing class or region gold |
+| weak executor | closed policy, wrapper, assigned item | its own prediction record | predicted class, region, confidence, reason | none | seeing peer outputs or human answer before run close |
+| comparison auditor | sealed predictions and human records after release | comparison, disagreement, consensus-failure, and error-taxonomy records | error category and affected strata | none | final label or policy acceptance |
+| guideline optimizer | accepted human evidence and model error records | policy patch proposal and regression plan | smallest general patch | none | accepting its own patch |
+| checkpoint keeper | full round package and human evidence | closed checkpoint, `D_t`, closed `G_t` | HOLD or close recommendation | artifact validity only | inventing human evidence or semantic acceptance |
+| test custodian | sealed manifest and authorized freeze state | access log and test release | invalidation warning | access authorization from contract | exposing test text during calibration |
+| final evaluator | frozen `G*`, registered wrappers, `T*` gold after lock | frozen predictions and scorecards | eligible executor set | metric computation only | changing scored systems or test gold |
+| production executor | frozen production manifest and corpus remainder | attempts, predictions, risk queue | route disposition | automatic acceptance under frozen rule only | waiving risk thresholds or writing human gold |
+| final audit keeper | production terminal records and audit frame | audit sample, findings, repairs, receipt | pass, expand, repair, or reopen recommendation | statistical acceptance under frozen rule | changing semantic policy silently |
 
+## 3. Human interaction protocol
+
+Every calibration item follows this access order:
+
+```text
+item text + prior closed policy
+        ↓
+human-first record
+        ↓ immutable lock
+release weak-model comparison
+        ↓
+clarification and contrast
+        ↓
+final human decision
+        ↓
+policy proposal and checkpoint evidence
 ```
-initialized ──/sl-iterate──> iterating ──/sl-validate──> validating
-                                 ▲                            │
-                                 └────── STALLED / refine ────┤
-                                                              ▼
-                                                          CONVERGED
-                                                              │
-                                                         /sl-scale
-                                                              ▼
-                                                           scaled
+
+The strong agent must not hint at vote direction, confidence, region, or model rationale before the lock.
+Selection reason may be hidden when it reveals model predictions.
+
+## 4. Weak-executor committee
+
+The former persona panel becomes a committee of independent executors.
+Personas may still be used as experimental wrappers, but persona majority is not a semantic authority.
+
+Committee requirements:
+
+- same closed core policy;
+- independently registered wrappers;
+- no peer output access;
+- fixed schema and run settings;
+- prediction, optional region, confidence, concise structured reason, and provenance;
+- immutable seal before human batch finalization.
+
+Consensus is one sampling stratum.
+Every later human batch includes a stratified random consensus audit.
+
+## 5. Selection call graph
+
+Round 1:
+
+```text
+router → initializer → embedder → random sampler → strong calibration agent → checkpoint keeper
 ```
 
-Stored in `{project_dir}/.state.json`:
-```json
-{
-  "status": "iterating",
-  "iteration": 3,
-  "last_validation": {"dataset": "goemotions", "kappa": 0.42, "iter": 3},
-  "last_guideline_update": 3,
-  "gallery_size": 18,
-  "created_at": "2026-04-24T...",
-  "updated_at": "..."
-}
+Round 2 onward:
+
+```text
+router
+→ candidate selector
+   → embedder
+   → optional classifier or region scorer
+→ weak executors in parallel
+→ comparison auditor for signatures
+→ candidate selector for B_t composition
+→ strong calibration agent and human
+→ guideline optimizer
+→ checkpoint keeper
 ```
 
+## 6. Final evaluation call graph
 
-Skill × Agent call graph
-------------------------
+```text
+router
+→ verify QD4 stop and frozen G*
+→ test custodian releases T* text
+→ strong calibration agent records blind human gold
+→ test custodian locks gold
+→ final evaluator runs registered executors and baselines
+→ final evaluator writes scorecards
+```
 
-| Skill          | Agents invoked (in order)                                                                  |
-|----------------|--------------------------------------------------------------------------------------------|
-| `/sl-init`     | moderator → sampler(init_map) → embedder → prober → moderator → gallery-keeper             |
-| `/sl-iterate`  | moderator → sampler(iterate_batch) → embedder + classifier → prober → labeler-panel → disagreement-analyzer → moderator → gallery-keeper → classifier(train) → embedder(rebuild index) |
-| `/sl-validate` | moderator → sampler(validate_heldout) → validator → labeler-panel → moderator              |
-| `/sl-scale`    | moderator → sampler(scale_preflight) → labeler-panel(scale, cascade) → embedder + classifier (tier 0/1) → labeler-panel (tier 2) |
-| `/sl-status`   | (no agents — pure file read)                                                                |
+The evaluator remains read-only over `G*`, wrappers, test gold, and candidate registry.
 
+## 7. Production and audit call graph
 
-Disagreement categorization (Analyzer output)
----------------------------------------------
+```text
+router
+→ production-policy selection from frozen evidence
+→ preflight
+→ production executor
+→ human risk review through strong calibration agent
+→ terminal reconciler
+→ final audit keeper
+→ repair or complete
+```
 
-| Category | Meaning                                      | Who resolves     | Surfaces to researcher? |
-|----------|----------------------------------------------|------------------|--------------------------|
-| A        | Boundary case (genuinely subjective edge)    | Researcher       | Yes — "what's the label?" |
-| B        | Rule ambiguity (guideline underspecified)    | Researcher       | Yes — "refine the rule"   |
-| C        | Novel pattern (schema gap)                   | Researcher       | Yes — "new label?"        |
-| D        | Noise (one persona careless)                 | Panel majority   | No — auto-resolved        |
+The production and audit roles must not silently revise `G*`.
+A semantic failure returns the project to calibration and follows final-test invalidation rules.
 
+## 8. Canonical write authorities
 
-Persona selection policy
-------------------------
+| artifact family | sole canonical writer |
+|---|---|
+| embeddings and vector indexes | Embedder |
+| candidate and human-batch manifests | Candidate selector |
+| one executor's predictions | that executor's registered run |
+| human-first and final Session records | strong agent recording inspectable human input |
+| cumulative human gold and closed policy | Checkpoint Keeper |
+| sealed manifest and access log | Test Custodian |
+| final predictions and scorecards | Final Evaluator |
+| production attempts and terminal labels | Production Executor plus reconciler |
+| final audit and repair receipt | Final Audit Keeper |
 
-Labeler Panel selects 3-5 personas per iteration:
+Rendered Markdown views are generated from canonical records and have no independent authority.
 
-- Mandatory: `close-reader`, `plain-reader`, `skeptic`
-- Conditional: `fast-patterns` (include for large batches / cascade)
-- Conditional: `domain-expert` (include if config.yaml specifies a domain)
+## 9. Failure and HOLD behavior
 
-Panels can vary per iteration, but consistency helps. Panel composition is
-logged in `{project_dir}/panel_config.json` per iteration.
+An agent stops with an explicit HOLD when:
 
+- required human evidence is absent;
+- the sealed-access rule would be violated;
+- artifact checksum or parent version mismatches;
+- a required engine capability has not shipped;
+- a metric lacks a valid population or denominator;
+- a policy change would invalidate a final claim;
+- high-severity risk lacks an owner.
 
-Researcher interaction budget
------------------------------
+The HOLD names the missing evidence, affected artifact, current safe state, and next authorized actor.
 
-Per iteration, the researcher sees AT MOST:
-- 3-5 Category A items to adjudicate
-- 1-3 Category B rule-refinement asks
-- 0-2 Category C schema-gap asks
+## 10. Retired assumptions
 
-Total: ~5-10 decisions per iteration. A convergent project typically runs
-3-6 iterations, meaning ~20-60 researcher decisions total — vs. labeling
-the whole batch themselves.
+The canonical architecture forbids:
 
-
-Convergence signals
--------------------
-
-Four signals, in order of authority:
-
-1. **Public-dataset κ** (Validator): agent κ ≥ human κ ceiling on GoEmotions / MFTC / POPQuorn / DICES. This is the primary signal.
-2. **Panel-internal κ** (Labeler Panel): pairwise κ across personas > 0.7 AND plateau across 2 iterations.
-3. **Category D ratio** (Analyzer): D / (A+B+C+D) > 0.7 suggests most disagreement is noise, i.e. guideline is mature.
-4. **Geometric separation** (`embedder project`): for an n-label schema,
-   the embedding space should resolve into n distinguishable regions.
-   Per-label silhouette ≥ 0.3 and no `pairwise_overlap` flagged means
-   labels are geometrically distinct. This signal is **n-label generic**:
-   it works the same way for binary, tri-polar, or 5-label schemas. It
-   often warns *earlier* than κ — you can see two labels overlapping in
-   embedding space before personas start disagreeing about them, which
-   means the definition is borderline and a tiebreaker is needed.
-
-Moderator reports all four. Researcher decides when to /sl-scale.
-
-
-File conventions
-----------------
-
-All agents write to `{project_dir}/` subfolders. No agent writes to plugin
-source files. The gallery and guideline are the canonical artifacts.
-Everything else (panel_labels, disagreement_items, batch.jsonl, etc.) is
-regenerated per iteration and kept for audit.
-
-
-Traceability
-------------
-
-Every gallery entry has `provenance` and `added_iteration`. Every guideline
-rule links to the gallery item(s) that motivated it. Every decision
-surfaced to the researcher is logged with the researcher's reasoning. This
-gives a complete audit trail: for any final label, you can trace back to
-which persona voted what, what the Analyzer categorized it as, what the
-researcher decided, and which guideline rule applied.
+- persona or model majority as gold;
+- unanimous committee cases bypassing probability audit;
+- Category D auto-resolution into cumulative gold;
+- public-dataset kappa as the project stop rule;
+- model-model agreement as correctness;
+- embedding or classifier confidence as semantic authority;
+- one agent predicting, adjudicating, writing gold, and approving its own checkpoint.

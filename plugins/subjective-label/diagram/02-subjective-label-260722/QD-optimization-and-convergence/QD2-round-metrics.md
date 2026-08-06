@@ -1,84 +1,184 @@
-# How the three-tier cascade divides the work
+# Round metrics: separate comparable quality from difficult-case learning
 state: ✅ SETTLED
-owner: CC
-method: Tier 0 embedding k-NN, then Tier 1 the small classifier, then Tier 2 the large-model panel; each level down is more expensive and takes fewer items
+owner: JL
+method: Report representative or weighted audit measurements apart from adaptive challenge yield and policy-change evidence.
 
-## Question
-When the whole corpus is being labeled, how do we make sure most of the easy items take a cheap route and only the few hard ones disturb an expensive model?
+## Opening
+Which measurements can show that one annotation-policy version is better when each later human batch deliberately contains harder cases?
+Raw error on B_t is not a stationary loss because the selector changes its distribution from round to round.
+A probability-based audit slice supports quality and stopping, while challenge cases support policy discovery and boundary diagnosis.
+This page fixes those score families, their denominators, and the rule against merging them.
 
-This is the machine answer to QC2, which asks how the remaining thousands of items get finished at all, and the two options weighed there, (a) label the whole corpus outright and (b) train a small model to take over, are merged into a single funnel here.
-JL's "pick one" therefore becomes "set the thresholds": how much is handed to embedding inheritance, how much to the small classifier, and how much is allowed to reach the large model.
-Setting them is hard because the two ends of the funnel are priced very differently per item (~$0.00001 at Tier 0 against ~$0.05-0.20 at Tier 2), so a gate set too loose buys speed by inheriting wrong labels while a gate set too tight sends nearly everything to the panel and the run stops being affordable.
-While this stays open there is no rule saying which items a cheap method is allowed to settle, so a full-corpus run can be neither costed nor started.
+**Where this page sits**: QC3 assigns audit and challenge roles; QC4 supplies human gold; QD4 uses only eligible metrics for stopping.
 
-## Boundary
-- ✅ Covered here
-  Which tier settles an item and which escalates it, the threshold at each tier's gate, the record each item keeps of the route it took, and the routing modes that skip tiers.
-- ↪ Covered elsewhere
-  How a sentence becomes the vector Tier 0 compares against is QD1; how the Tier 1 classifier is trained is QD3; whether to finish the remaining thousands this way at all is QC2's call, and it is still ⏸️ ON HOLD.
+**Why it matters**: A worsening challenge score may mean the selector found harder evidence, while an improving easy batch may hide a poor policy.
+
+## Writing Style
+**Language and sentences**: Name the population, sampling protocol, denominator, policy version, and uncertainty for every metric.
+
+**Separation**: Never put audit and challenge observations into one unlabeled accuracy or kappa value.
+
+**Metric choice**: Use task-appropriate categorical or ordinal metrics and preserve per-class and per-region views.
 
 ## Diagram
-```
-  ┌ Tier 0 · embedding k-NN ──────────────────────┐  ~$0.00001/item · fastest · takes 60-80%
-  │  top-5 gallery neighbors share one label      │
-  │  and average cosine sim >= 0.85 → inherit     │
-  └────────────┬──────────────────────────────────┘ unresolved ↓
-  ┌ Tier 1 · trained small classifier ────────────┐  ~$0.0001/item · fast · takes 10-30%
-  │  prob >= 0.70 and margin >= 0.30 → use it     │   (how it is trained: QD3)
-  └────────────┬──────────────────────────────────┘ unresolved ↓
-  ┌ Tier 2 · large-model panel (3-5 personas) ────┐  ~$0.05-0.20/item · slow · takes 5-15%
-  │  majority support >= 0.6 → use it             │
-  │  support < 0.6 → drop into the human queue    │
-  └───────────────────────────────────────────────┘
+**Two score families**: one supports claims and stopping; the other supports learning.
+
+```text
+🟢 AUDIT SLICE                  🔴 CHALLENGE SLICE
+probability or weighted         adaptively selected
+comparable protocol             changing difficulty
+quality + stopping              discovery + diagnosis
+          │                            │
+          └────────▶ 📌 round report ◀─┘
 ```
 
-## Items to Finish
-- [x] 🎯 The division of labor and the thresholds are pinned down
-      Each tier has one written rule for when it may settle an item, with the numbers fixed at `cascade_inherit_sim` 0.85, `accept_margin` 0.30, `accept_prob` 0.70, and panel support 0.6.
-      Tier 0 leans on the gallery: if the top-5 gallery neighbors all carry the same label and their average cosine similarity reaches 0.85, the item inherits that label instead of being labeled again.
-      Tier 1 leans on training: the classifier's label is used when its probability reaches 0.70 and its margin over the runner-up reaches 0.30.
-      Tier 2 leans on the panel: the majority vote is used when its support reaches 0.6, and anything below that is dropped into the human queue rather than forced.
-      Every tier that cannot meet its own bar escalates instead of guessing, which is what makes the funnel cheap at the top without being reckless.
-- [x] 🧾 Every item records `method` and `confidence`
-      The annotation written for each item carries `method: tier0/1/2` together with a `confidence`, so any label can be traced back to the tier that produced it.
-      Without that record the corpus is a flat pile of labels and there is no way to tell an inherited label apart from one the panel argued over.
-      With it the cheapest audit in the system becomes possible: "show me everything Tier 0 decided, is any of it obviously wrong".
-      That check is what keeps a loose Tier 0 threshold from quietly contaminating the whole run.
-- [x] 🔀 Three routing modes are supported
-      A run can be sent through `routing=panel`, `routing=single`, or `routing=cascade`, so the funnel can be bypassed when the point of the run is not cost.
-      `panel` sends every item to the full panel and is what the validation set uses, because a validation number measured through the cheap tiers would be measuring the cheap tiers.
-      `single` uses one labeler and is the cheapest option available.
-      `cascade` is the default and the mode the full-corpus rollout runs in.
+## Content
 
-## Where we are
-The three tiers, their thresholds, and the routing modes are all written down, and every checkbox on this face is closed.
-What is settled here is the shape of the funnel and the number at each gate, not yet the evidence that those numbers hold on this corpus: the shares in the diagram (60-80% at Tier 0, 10-30% at Tier 1, 5-15% at Tier 2) are what the design expects the split to be.
-The middle tier is the weakest part standing today, because QD3, the face that owns how the Tier 1 classifier is trained, is still 🟡 PARTIAL.
-QC2, the decision this funnel exists to serve, is still ⏸️ ON HOLD, so the funnel is specified and waiting rather than running.
+### 1 · Correction records
+**Pre-post comparison**: sealed P_t and final Y*_t create item-level execution-error evidence.
+
+```text
+🔒 P_t prediction
+        versus
+🏷 Y*_t human gold
+        │
+        ▼
+📉 corrected class · rule · confidence · region
+```
+
+#### 1.1 · Correction loss
+Correction loss records whether the pre-label class differs from human gold and may be summarized as error rate, macro-F1, balanced accuracy, or kappa.
+Per-model results remain separate before any committee summary is reported.
+
+#### 1.2 · Reason and region differences
+The report also counts same-class but wrong-reason cases, predicted-region errors, confidence miscalibration, and NONE-specific confusion.
+These diagnostic differences may motivate policy work even when class accuracy is unchanged.
+
+### 2 · Audit metrics
+**Comparable series**: an audit protocol represents one declared population with known or reconstructable selection weights.
+
+```text
+🎲 audit sample
+├── population + strata
+├── inclusion probability
+├── policy and executor version
+├── class and region metrics
+└── interval or uncertainty
+```
+
+#### 2.1 · Fixed protocol
+The audit may use a fresh probability sample each round or another weighted design with a stable target population.
+The sampling rule must remain comparable even when the selected items change.
+
+#### 2.2 · Required views
+The report includes macro and balanced class performance, per-class precision and recall, confusion, consensus error, and key seven-region results.
+Population estimates apply weights when the sampling design requires them.
+
+#### 2.3 · Uncertainty
+Point estimates include a confidence interval, bootstrap interval, or an explicit small-sample warning.
+A sparse region cannot pass from an apparently perfect score with one item.
+
+### 3 · Challenge metrics
+**Learning yield**: adaptively selected cases measure what the round discovered, not ordinary corpus performance.
+
+```text
+🔴 challenge results
+├── new-rule yield
+├── new-boundary yield
+├── consensus-failure yield
+├── concept-revision yield
+└── unresolved rate
+```
+
+#### 3.1 · Discovery measures
+Challenge yield counts substantive new rules, boundary clarifications, shared model failures, novel evidence patterns, and backward-impact cases.
+It also reports how many selected items taught nothing new.
+
+#### 3.2 · No stationary-loss claim
+Challenge error may rise because later rounds target more difficult cases.
+It is shown by round and source stratum but is never treated as a directly comparable training-loss curve.
+
+### 4 · Policy and round deltas
+**Change evidence**: the report links metric movement to what changed in the annotation policy and selection process.
+
+```text
+📜 G_(t-1) → G_t
+├── semantic edits
+├── procedure edits
+├── casebook edits
+├── wrapper edits
+└── editorial edits
+        │
+        ▼
+📊 audit delta + 🔴 challenge yield
+```
+
+#### 4.1 · Policy diff counts
+Each checkpoint counts additions, deletions, rewrites, example changes, and editorial-only changes by policy component.
+Semantic and procedural changes are never merged with punctuation or formatting cleanup.
+
+#### 4.2 · Comparable delta
+Audit improvement compares the prior and current closed policies under the same declared protocol when possible.
+If executor, sampling, or target population changes, the trajectory opens a new series rather than splicing incomparable values.
+
+#### 4.3 · Round report
+The report carries both score families, policy deltas, human time, reviewed-item count, and known limitations.
+Its headline states whether evidence supports quality, learning, both, or neither.
+
+## Aims
+
+### A1 · 📉 Correction records
+- A1.1 · P_t versus Y*_t produces typed class, reason, region, and confidence differences.
+  **Done when:** Every comparison names the executor and policy version.
+
+### A2 · 🎲 Audit metrics
+- A2.1 · A comparable score series supports quality and stopping claims.
+  **Done when:** Population, design, weights, metrics, and uncertainty are reported.
+
+### A3 · 🔴 Challenge metrics
+- A3.1 · Hard-case learning is measured without becoming a population estimate.
+  **Done when:** Discovery yield and adaptive selection are explicit.
+
+### A4 · 📜 Policy and round deltas
+- A4.1 · Metric movement remains linked to policy and protocol changes.
+  **Done when:** Every trajectory break or comparable delta is declared.
+
+## States
+
+### A1 · 📉 Correction records
+- ✅ A1.1 · Met; division 1 defines pre-post execution differences.
+
+### A2 · 🎲 Audit metrics
+- ✅ A2.1 · Met; division 2 defines comparable quality evidence.
+
+### A3 · 🔴 Challenge metrics
+- ✅ A3.1 · Met; division 3 defines adaptive learning yield.
+
+### A4 · 📜 Policy and round deltas
+- ✅ A4.1 · Met; division 4 fixes policy diffs and trajectory breaks.
 
 ## Files
-- `ref/ref-cascade.md`
-  The reference this face was taken from: it holds each tier's invariant, its algorithm, its config block, and the routing modes, so a threshold change starts there.
-- `lib/embed.py`
-  Tier 0 runs on its `index` and `nearest` subcommands, which produce the top-5 gallery neighbors and the cosine similarities the 0.85 gate is applied to.
-- `lib/classify.py`
-  Tier 1's gate reads the probability and the `margin` that this file's `predict` emits, and the file already carries `accept_margin` 0.3 and `accept_prob` 0.7 as its defaults.
-- `ref/ref-config.md`
-  Where the classifier thresholds are declared as configuration (`accept_margin: 0.3, accept_prob: 0.7`), which is what makes a threshold change a config edit rather than a code edit.
+
+### 🔗 Related Board Pages · what this Page READS BY SCOPE
+- `reads · ALL` · [QC3 §4](QC-selection-and-adjudication/QC3-compose-human-batch.md)
+  QC3 assigns item roles and preserves selection probabilities.
+- `continues · ALL` · [QD4 page](QD-optimization-and-convergence/QD4-stopping-criteria.md)
+  QD4 consumes quality and stability evidence without using raw challenge loss.
+
+### Contracts · what must carry this rule
+- `../../ref/ref-contract.md`
+  The metric contract must define correction, audit, challenge, final-test, and production-audit contexts.
+- `../../ref/ref-stages.md`
+  The lifecycle must produce one typed report at every checkpoint.
 
 ## Law
-- The cascade is a sieve built up by iteration: each `/sl-iterate` round adds one layer (the gallery grows so Tier 0 takes more, the classifier gets trained so Tier 1 comes up, the guideline tightens so Tier 2 agrees more).
-- Tier 0 rests on the gallery, Tier 1 on training, Tier 2 on the panel; all three thresholds live in `config.yaml`, where raising them is safer and more expensive and lowering them is faster and riskier.
+- 260806 JL · 📊 Audit quality and challenge learning are separate score families
+      Only a comparable audit protocol supports round-to-round quality and stopping claims; adaptively selected cases report discovery yield.
 
 ## Glossary
-k-NN: find the k nearest neighbors and look at their labels.
-margin: the gap between the classifier's highest probability and its second highest; the wider the gap, the clearer the decision boundary.
-persona: one large-model labeler carrying a particular point of view; a panel is a set of different personas labeling at the same time.
-gallery: the set of answers JL personally confirmed, used as the ruler; Tier 0 compares each new item against it.
-
-## Discussion
-> CC0723: Tier 0 rests on QD1 (embedding), how the Tier 1 layer is trained is QD3, and this funnel is the engineering implementation of QC2. Reading those three questions together gives the whole picture of the full-corpus rollout. The content comes from `ref/ref-cascade.md`.
+- 📉 **Correction loss**: disagreement between a sealed executor pre-label and the final human-confirmed record.
+- 🎲 **Audit slice**: a probability or weighted sample used for a declared quality population.
+- 🔴 **Challenge slice**: adaptively selected difficult evidence used for policy discovery rather than population estimation.
 
 ## Log
-260725 · rewritten to the current face format in English
-260723 1600 · created: the three tiers, the thresholds, and the routing modes were brought in from `ref/ref-cascade.md` and the face was marked ✅ settled
+260806 · Reopened QD2 in DRAFT and replaced the previous cascade question with the approved round-metric contract.

@@ -1,95 +1,125 @@
-Reference: Output Style Contract
-================================
+# Reference: rendered output contract
 
-Every artifact this plugin writes must be **scannable in one glance**. A
-researcher should see *what was done and where it stands* without reading prose.
-This contract is binding on all skills and agents (sl-init, sl-iterate,
-sl-validate, sl-status, gallery-keeper).
+Human-facing artifacts should make the active semantic and operational state visible
+without becoming a second source of truth. Machine-readable records remain canonical.
 
-Principles
-----------
+## 1. Principles
 
-1. **Result first.** Line 1 of every rendered file = the conclusion + the key
-   number (status, κ, what changed). Never open with background.
-2. **Tables/bullets over paragraphs.** No multi-sentence prose where a row will
-   do. Any `reasoning` / `note` / changelog entry ≤ 1 line.
-3. **Machine JSON gets a rendered `.md` twin.** Keep `*.jsonl` / `*.json` for the
-   pipeline, but every one a human reads (trajectory, per-version eval, gallery)
-   also gets a compact `.md` rendering written next to it.
-4. **Cheatsheet + detail, layered.** Long documents (the guideline) keep full
-   detail for the labeler, but ship a one-screen cheatsheet for humans.
-5. **One-page dashboard.** `REPORT.md` and `/sl-status` fit in ≤ 15 lines: the
-   whole project state at a glance.
+1. **Lead with the result.** State status, active gate, and consequential evidence first.
+2. **Separate evidence types.** Audit, challenge, final-test, external, and production
+   metrics never share an unlabeled score column.
+3. **Show provenance.** Every label count identifies human-confirmed, machine-accepted,
+   unresolved, excluded, or invalid provenance.
+4. **Pair canonical and rendered views.** Render inspectable Markdown from manifests,
+   events, scorecards, and checkpoints; never hand-edit it as authority.
+5. **Layer policy detail.** Preserve the full guideline and provide a compact cheatsheet.
+6. **Expose uncertainty and holds.** Do not hide failed gates, missing capabilities,
+   invalidated tests, or unresolved items behind a green summary.
 
-Required rendered files (write/refresh these whenever the underlying data changes)
----------------------------------------------------------------------------------
+## 2. Required rendered views
 
-- `REPORT.md`               — project dashboard (sl-init Step 9; refresh each iterate/validate)
-- `eval/trajectory.md`      — version trajectory table + sparkline (every measurement)
-- `gallery/gallery.md`      — gold items as a table (gallery-keeper, each write)
-- `guideline/cheatsheet.md` — label + tiebreaker cheatsheet (gallery-keeper, each guideline change)
+- `REPORT.md`: current lifecycle state, open gate, latest closed policy and gold, risk,
+  holds, and next valid action;
+- `gold/cumulative.md`: human-confirmed H/L/N and seven-region examples with reasons and
+  checkpoint provenance;
+- policy cheatsheet: class signals, boundary tests, procedure, and escalation rules;
+- round report: batch composition, blind adjudication, audit/challenge metrics, policy
+  diff, regression, coverage, risk, and stopping decision;
+- evaluation summary: registered candidate scorecards on `T*`, baseline uplift, held-out
+  executor result, intervals, errors, cost, and invalidation status;
+- production report: route shares, terminal dispositions, risk queue, cost, and failures;
+- final-audit report: design, weighted error, intervals, protected strata, repairs,
+  provenance shares, and accepted limitations.
 
-Templates
----------
+## 3. `REPORT.md` template
 
-### REPORT.md  (≤ 15 lines)
-```
-# {task} — {dimension} ({LABELS})
+```markdown
+# {project} — {construct}
 
-status **{status}**   guideline **v{N}**   gallery **{G}**   anchor **{A}**
+status **{state}** · round **{round/phase}** · policy **{G_t}** · human gold **{D_t_n}**
 
-| metric | value |
-|--------|-------|
-| anchor κ (vs gold) | {k} (acc {acc}) |
-| generalization κ (fresh batch) | {kgen} |
-| panel κ ({engines}) | {kpanel} |
-| validate — {dataset} | agent {ka} {≥/<} ceiling {kc} → {converged/below} |
+| gate | evidence | result |
+|---|---|---|
+| quality | audit {metric + interval} | {pass/fail/pending} |
+| stability | comparable audit improvement | {value; streak} |
+| coverage | H/L/N + seven regions + strata | {pass/fail} |
+| risk | unresolved and critical errors | {pass/fail} |
+| sealed test | {reserved/frozen/released/valid/invalid} | {custodian} |
 
-engine: {engine}
-next: **{next command}** {one-line why}
-```
-
-### eval/trajectory.md
-```
-# Guideline trajectory
-anchor: {A} items (fixed) · metric: Cohen's κ, majority vs gold
-
-| ver | change | κ | acc | panel κ* |
-|-----|--------|---|-----|----------|
-| v01 | {≤1-line change} | {k} | {acc} | {kp} |
-| ... |
-
-\* panel κ = {engineA} vs {engineB} agreement
-
-{ascii sparkline: κ on y, versions on x, one ● per version, mark dips/convergence}
-
-converged at v{N} ({criterion})
+holds: {none or concise capability list}
+next: **{one valid command or human decision}**
 ```
 
-### gallery/gallery.md
-```
-# Gold gallery — {dimension} (n={G})
-| id | text (≤80 chars) | label | why (≤1 line) | diff |
-|----|------|-------|-----|------|
-| {id} | {excerpt}… | {LABEL} | {reasoning} | {boundary/clear} |
+Keep the dashboard compact, but do not impose a line limit that removes material risk.
+
+## 4. Round report template
+
+```markdown
+# Round {t} — {closed/open/held}
+
+result: **{checkpoint decision}** · policy **{G_prev} → {G_t}** · gold **+{n}**
+
+| slice | selected | human changed prelabel | final unresolved |
+|---|---:|---:|---:|
+| audit | ... | ... | ... |
+| challenge | ... | ... | ... |
+| consensus audit | ... | ... | ... |
+
+policy diff: {semantic/procedural/casebook/wrapper summary}
+regression: {pass/fail and affected prior gold}
+stopping: quality {x} · stability {x} · coverage {x} · risk {x} · human {x}
 ```
 
-### guideline/cheatsheet.md
+## 5. Policy cheatsheet template
+
+```markdown
+# {construct} — decision cheatsheet (`{policy_id}`)
+
+| class | positive signal | exclusion | canonical contrast |
+|---|---|---|---|
+| H | ... | ... | ... |
+| L | ... | ... | ... |
+| N | ... | ... | ... |
+
+boundary order: {ordered tests}
+uncertainty: {when to mark uncertain, escalate, or remain unresolved}
 ```
-# {dimension} — decision cheatsheet
-Full rules the labeler uses: guideline.md.
 
-| label | signal | example |
-|-------|--------|---------|
-| {LABEL} | {≤6 words} | "{short quote}" |
+Examples should be compact and generalized. If verbatim text is retained, link it to
+its authorized corpus record and avoid turning the casebook into a memorized training
+set.
 
-Tiebreakers (N)
-1. {≤1 line}  ...
+## 6. Scorecard template
+
+```markdown
+# Executor scorecard — {executor/run}
+
+test **{T_star checksum}** · policy **{G_star checksum}** · validity **{valid/invalid}**
+
+| evidence | score | interval | floor/result |
+|---|---:|---:|---|
+| absolute headline | ... | ... | ... |
+| uplift vs minimal instruction | ... | ... | ... |
+| held-out-family comparison | ... | ... | ... |
+
+class/region/stratum errors: {link}
+stability: {repeats}
+cost and latency: {values}
 ```
 
-Anti-patterns (do NOT do)
--------------------------
-- Dumping a one-line JSON blob as the human-facing trajectory.
-- Multi-paragraph changelog entries (compress to `vNN | what changed | κ`).
-- A status/report that requires scrolling to grasp.
-- Deleting guideline detail to shorten it — layer a cheatsheet instead.
+## 7. Anti-patterns
+
+- reporting consensus as gold or `NONE` as uncertainty;
+- mixing challenge-set improvement with representative quality;
+- claiming convergence from a single aggregate score;
+- exposing sealed prelabels before the human-first event;
+- exposing `T*` labels before executor predictions close;
+- hiding invalidation, exclusions, or unresolved records;
+- presenting similarity or confidence as semantic truth;
+- shortening the guideline by deleting necessary boundary logic instead of layering it.
+
+## 8. Implementation boundary
+
+If a renderer cannot derive a view from canonical v2 artifacts, label the view `HOLD`
+or `legacy`; do not fabricate fields or silently translate old panel metrics into the
+new contract.

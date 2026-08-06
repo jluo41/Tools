@@ -1,71 +1,79 @@
 ---
 name: subjective-label
-description: "Multi-agent panel for subjective text annotation. One researcher + an AI panel (3-5 persona labelers + moderator + analyzer + validator) converge on a labeling guideline through iterative disagreement analysis, validated against public-dataset human consensus (κ). Use when the user wants to label texts on a subjective dimension (humanity, empathy, moral framing, emotion, stance, etc.), run a labeling panel, validate a gallery against public datasets, or says /subjective-label."
+description: "Human-grounded workflow for labeling a large text corpus on a vague subjective trait while jointly refining H/L/N gold labels, seven diagnostic regions, a human-and-machine-readable guideline, sealed-test model scorecards, and production provenance. Use for subjective annotation projects, calibration rounds, guideline optimization, final evaluation, corpus completion, or /subjective-label."
 ---
 
-Skill: subjective-label (router)
-================================
+# Subjective Label router
 
-Entry point for the subjective-label plugin. Routes the user to the correct sub-skill.
+Route the request to the smallest canonical command that can advance the project.
 
-Invocation:  /subjective-label <command> [args]
+## Canonical commands
 
+| command | responsibility |
+|---|---|
+| `/sl-init` | initialize corpus, seal final-test ids, embed the development pool, run random Round 1, and close the first checkpoint |
+| `/sl-round` | run or resume one later calibration round from candidate retrieval through checkpoint |
+| `/sl-evaluate` | freeze `G*`, create blind human gold on the sealed test, and score registered executors |
+| `/sl-complete` | run a validated production policy over the remaining corpus, reconcile outcomes, and perform final audit |
+| `/sl-status` | inspect current state, evidence, holds, and next valid action without writing |
 
-Sub-commands
-------------
+Compatibility aliases:
 
-  Project lifecycle:
-  init      Elicit guideline from vague seed via three-way conversation
-  iterate   Run one iteration: probe → panel labels → analyze → surface
-  validate  Benchmark current gallery against public dataset (κ vs human)
-  scale     Batch-label full dataset using the converged gallery
-  status    Show project state, κ trajectory, gallery stats, next step
+- `/sl-iterate` routes to `/sl-round`;
+- `/sl-validate` routes to `/sl-evaluate`;
+- `/sl-scale` routes to `/sl-complete`.
 
-  Knowledge layer:
-  lesson    Capture / list / search annotation methodology gotchas
-  feedback  Capture / list skill defects and complaints
-  digest    Bulk harvest lessons + feedback from a session transcript
+Explain the changed semantics when an alias is used. Do not reproduce the legacy
+panel-majority, public-dataset convergence, or k-NN inheritance workflow.
 
-  (no sub-command) Show this menu and ask what the researcher wants.
+Knowledge commands remain available when installed: `lesson`, `feedback`, and `digest`.
 
+## Core contract
 
-Routing
--------
+Treat one identified human as the semantic authority. Use the strong calibration agent
+to elicit, contrast, record, and generalize that person's judgment. Use weak language
+models as independent executors whose sealed outputs diagnose guideline clarity; never
+treat their consensus as gold.
 
-Parse $ARGUMENTS for the sub-command token. Then invoke the matching sub-skill:
+Maintain these outputs:
 
-  init      ->  /sl-init
-  iterate   ->  /sl-iterate
-  validate  ->  /sl-validate
-  scale     ->  /sl-scale
-  status    ->  /sl-status
-  lesson    ->  fn/lesson.md  (capture / list / search)
-  feedback  ->  fn/feedback.md (capture / list / move)
-  digest    ->  fn/digest.md  (harvest → lesson/ + feedback/)
+- cumulative human-confirmed calibration gold `D_t`, frozen as `D_cal*` at stopping;
+- completed corpus `D*` only after validated production, reconciliation, and audit;
+- versioned structured guideline `G_t` and eventually `G*`;
+- seven diagnostic regions H, L, N, HL, LN, HN, and HLN, separate from uncertainty;
+- complete Session, checkpoint, test, scorecard, production, and provenance records.
 
+The canonical round is:
 
-Core Model
-----------
+```text
+closed G_(t-1)
+  → candidate pool C_t
+  → sealed weak prelabels P_t
+  → human batch B_t
+  → blind Human-AI Session
+  → human final Y*_t + guideline draft
+  → checkpoint
+  → closed D_t + G_t
+```
 
-The researcher talks only to the **Moderator** agent. All other work happens
-behind Moderator:
+Round 1 is random and has no model prelabels or inherited regions. Later rounds combine
+targeted challenge items with a stratified random sample of consensus items to detect
+shared model error.
 
-  Researcher <---> Moderator --+--> Boundary Prober
-                               |--> Labeler Panel (3-5 personas)
-                               |--> Disagreement Analyzer
-                               |--> Gallery Keeper
-                               +--> Validator
+## Required references
 
-See ref/ref-architecture.md for the full protocol.
+Before routing a mutating command, read the command skill and the references it names.
+The authority and lifecycle sources are:
 
+- `../../ref/ref-contract.md`
+- `../../ref/ref-stages.md`
+- `../../ref/ref-assets.md`
+- `../../ref/ref-architecture.md`
 
-Key Principle
--------------
+## Safety and implementation truth
 
-Disagreement is signal, not noise. When the panel disagrees, the Analyzer
-decides whether it's (a) boundary case → refine guideline,
-(b) rule ambiguity → add tie-breaker, (c) novel pattern → extend label
-schema, or (d) pure noise → ignore. Only (a)/(b)/(c) are surfaced to the
-researcher.
-
-Convergence = agent-panel κ matches human-panel κ ceiling on a public dataset.
+Inspect the actual project state and available implementation before writing. Never
+claim a phase ran because its conceptual contract exists. When a required engine,
+custodian, schema writer, or verifier is absent, write no substitute evidence; return a
+structured `HOLD` with the missing capability, preserved state, and next implementation
+action.

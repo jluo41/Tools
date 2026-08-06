@@ -1,200 +1,124 @@
-Reference: Three-Tier Cascade
-==============================
+# Reference: validated production routing
 
-The cost-reduction machine for /sl-scale. Built on the principle that
-most items are easy and a small minority are hard.
+Production routing is the cost-and-risk policy used after calibration and sealed final
+evaluation. It is not part of semantic authority and is not automatically licensed by
+the existence of embeddings, a classifier, or several agreeing language models.
 
+## 1. Entry gate
 
-The tiers
----------
+Do not label the remaining corpus through an automated route until all of the following
+are true:
 
-```
-   ┌────────────────────────────────────────┐
-   │ Tier 0 — Embedding k-NN                │   cheapest
-   │   ~$0.00001 per item (CPU only)        │   fastest
-   │   handles:   similar-to-gallery items  │   ~60-80%
-   └────────────────────┬───────────────────┘
-                        │ unresolved
-                        ▼
-   ┌────────────────────────────────────────┐
-   │ Tier 1 — Trained small classifier      │   cheap
-   │   ~$0.0001 per item                    │   fast
-   │   handles:   easy-but-not-identical    │   ~10-30%
-   └────────────────────┬───────────────────┘
-                        │ unresolved
-                        ▼
-   ┌────────────────────────────────────────┐
-   │ Tier 2 — LLM panel (3-5 personas)      │   expensive
-   │   ~$0.05-0.20 per item                 │   slow
-   │   handles:   genuinely hard cases      │   ~5-15%
-   └────────────────────────────────────────┘
-```
+1. calibration has stopped under the declared conjunction of quality, stability,
+   coverage, risk, and human signoff;
+2. the final guideline `G*` is frozen;
+3. the sealed human-gold test `T*` is complete;
+4. each candidate executor or route has closed predictions on `T*`;
+5. its scorecard meets the intended-use quality and protected-stratum floors;
+6. the production manifest freezes policy, thresholds, budgets, and audit design.
 
+If no candidate passes, production remains human-only or unresolved. Budget pressure
+does not lower the quality gate silently.
 
-Tier 0 — Embedding k-NN
-------------------------
+## 2. Allowed route structure
 
-**Invariant:** if the top-5 gallery neighbors all share the same label AND
-average cosine similarity is high, the item is effectively already in the
-gallery. Inherit.
+A validated route may combine:
 
-**Algorithm:**
-```
-neighbors = embedder.nearest(item, gallery_index, k=5)
-top_labels = [n.gallery_label for n in neighbors]
-avg_sim    = mean(n.sim for n in neighbors)
-
-if all_same(top_labels) and avg_sim >= cascade_inherit_sim:
-    assign: label = top_labels[0], method = "tier0", confidence = avg_sim
-else:
-    escalate to Tier 1
+```text
+corpus item
+    │
+    ├─ deterministic checks or duplicate rules
+    ├─ validated small classifier or weak LM
+    ├─ validated ensemble or routing rule
+    └─ risk queue → human review / accepted unresolved
 ```
 
-**Config:**
-```yaml
-embedding:
-  thresholds:
-    cascade_inherit_sim: 0.85   # default; raise for safety, lower for speed
-    cascade_k: 5
-```
+Each component must have a declared role. Retrieval, similarity, classifier confidence,
+and LM agreement are routing signals. They are not gold labels by themselves.
 
-**Failure modes:**
-- Items whose surface is similar but whose subtle signal differs → wrong
-  label inherited. Mitigation: Tier 2 will catch these because we also
-  validate κ against public datasets.
-- Items in a label region the gallery doesn't cover → escalate to Tier 1.
+## 3. Registration and validation
 
+Register every candidate route before test predictions are opened:
 
-Tier 1 — Trained classifier
-----------------------------
+- component model ids, versions, and families;
+- guideline and wrapper checksums;
+- decoding and repeat policy;
+- thresholds and combination rule;
+- abstention and human-escalation rule;
+- expected cost and capacity;
+- provenance tier assigned to accepted output;
+- protected claims and selection rule.
 
-**Invariant:** if the classifier's top-probability is high AND the margin
-to second-best is wide, the decision boundary is clear. Use the label.
+Evaluate the whole route on `T*`. A component score cannot be substituted for the route
+score. Any post-test threshold tuning invalidates that test for the modified route.
 
-**Algorithm:**
-```
-pred = classifier.predict(item)  # {label, prob, margin, entropy}
+## 4. Preflight
 
-if pred.margin >= accept_margin and pred.prob >= accept_prob:
-    assign: label = pred.label, method = "tier1", confidence = pred.prob
-else:
-    escalate to Tier 2
-```
+Before a full run, execute a frozen preflight sample and report:
 
-**Config:**
-```yaml
-classifier:
-  backend: logreg             # or setfit
-  thresholds:
-    accept_margin: 0.30
-    accept_prob:   0.70
-```
+- expected acceptance, escalation, and unresolved rates;
+- class and region mix by route;
+- quality estimate linked to sealed-test evidence;
+- projected cost, latency, and human-review load;
+- sensitivity to threshold changes;
+- known uncovered neighborhoods and drift risks.
 
-**Retrain trigger:** classifier is retrained at the end of every
-/sl-iterate. Before /sl-scale, Moderator optionally invokes SetFit backend
-for a one-time higher-quality train, if the researcher opts in.
+The preflight is a deployment check, not a new opportunity to optimize `G*` against
+`T*`. Material semantic problems reopen calibration and require a new evaluation plan.
 
-**Failure modes:**
-- Classifier can be wrong with high confidence if training data is biased
-  (small, gallery-only). Tier 2's panel catches these during validation.
-- If classifier CV F1 is low (< 0.6), tighten thresholds or skip Tier 1
-  entirely (all non-Tier-0 items go straight to panel).
+## 5. Idempotent execution
 
+Every attempt is append-only and keyed by corpus item, production run, policy version,
+executor version, and attempt number. Retries do not overwrite earlier predictions.
 
-Tier 2 — LLM panel
--------------------
+Terminal reconciliation creates exactly one disposition for every in-scope item:
 
-**Invariant:** the item is genuinely on the boundary. Use the full panel.
+- human-confirmed;
+- audited-machine;
+- machine-accepted under a validated route;
+- accepted unresolved;
+- excluded with reason;
+- invalid or failed with reason.
 
-**Algorithm:**
-```
-panel_labels = labeler_panel.label(item, personas=config.panel.personas)
-majority = mode(panel_labels)
-support = count(panel_labels == majority) / len(panel_labels)
+The system must never convert an unresolved or failed item to `NONE` merely to complete
+the table.
 
-if support >= 0.6:
-    assign: label = majority, method = "tier2", confidence = support
-else:
-    queue to human_review_queue.jsonl (flagged for researcher)
-```
+## 6. Risk queue
 
-Items that even the panel can't resolve (support < 60%) are surfaced for
-researcher review. These become candidates for the next /sl-iterate.
+Route an item to risk review when any declared condition fires, such as:
 
+- executor disagreement or high predictive entropy;
+- boundary-region hypothesis;
+- low coverage or embedding novelty;
+- policy reason-code mismatch;
+- protected-stratum risk;
+- duplicate conflict;
+- out-of-scope or missing-context signal;
+- production drift.
 
-Configurable cost target
--------------------------
+Human capacity is explicit. If the queue exceeds capacity, preserve unresolved status or
+pause the run; do not relax thresholds without a new registered policy.
 
-Researcher sets a target cost budget for /sl-scale. Example:
+## 7. Final probability audit
 
-```yaml
-scale:
-  target_budget_usd: 100
-  hard_cap_budget_usd: 200
-```
+After reconciliation, draw a probability sample from the production outputs. Include
+representative coverage plus separately reported enrichment for risky routes, regions,
+classes, and provenance tiers. Humans label audit items blind to machine output.
 
-The Sampler `scale_preflight` mode estimates the tier distribution on a
-500-item sample and projects total cost. If projected > target_budget,
-Moderator warns the researcher and suggests:
-- Raise `cascade_inherit_sim` (more Tier 0 acceptance, less cost but more risk)
-- Switch classifier to SetFit (more Tier 1 acceptance, higher quality)
-- Reduce panel size from 5 to 3 (30-40% Tier 2 cost saving)
+Report weighted error and intervals, class and protected-stratum findings, route-specific
+errors, provenance shares, repairs, and accepted limitations. Failed claims trigger
+targeted repair, re-audit, or scope reduction.
 
+## 8. Relationship to calibration
 
-Tier routing decisions are logged
-----------------------------------
+Calibration improves the semantic parameter `G_t` and the human's own articulated
+boundary through repeated human-grounded rounds. Production routing is selected only
+after that process. A lower weak-model loss can motivate guideline edits during
+development, but it cannot overrule human meaning or become an automatic stopping rule.
 
-Every item's annotation records its tier:
+## 9. Implementation boundary
 
-```json
-{"id": "c123", "label": "high", "confidence": 0.87, "method": "tier0"}
-{"id": "c456", "label": "medium", "confidence": 0.78, "method": "tier1"}
-{"id": "c789", "label": "low", "confidence": 0.80, "method": "tier2",
- "votes": {"low": 4, "medium": 1}}
-```
-
-This lets the researcher audit: "show me all items resolved by Tier 0 —
-are any obviously wrong?" (spot-check Tier 0 is the cheapest audit).
-
-
-Skipping tiers
---------------
-
-For diagnostic or research runs:
-- `routing=panel`: skip Tier 0 + 1, use panel everywhere (expensive, baseline)
-- `routing=single`: skip Tier 0 + 1, use one persona (cheapest LLM option)
-- `routing=cascade`: default 3-tier
-
-Researchers typically use `panel` on the validation set, `cascade` at scale.
-
-
-Convergence and drift
----------------------
-
-When the cascade is well-calibrated, Tier 2 load should be roughly
-constant across scale runs. If Tier 2 load spikes on a new batch:
-- Possible data drift — the new data differs from gallery's coverage
-- Possible classifier drift — retrain with fresh examples
-- Possible guideline drift — /sl-iterate a few more rounds on the new data
-
-
-Relationship to the shrinking-residual loop
---------------------------------------------
-
-The three-tier cascade above is the static snapshot of a sieve that was
-built up iteratively. Each /sl-iterate added one layer:
-
-  /sl-iterate round 1 → gallery grew     → Tier 0 will catch more next time
-  /sl-iterate round 2 → classifier trained → Tier 1 starts absorbing
-  /sl-iterate round k → guideline tightened → Tier 2 panel agrees more
-
-When Sampler runs in `pool_strategy=residual` mode (see agents/sampler.md
-and ref-stages.md "The shrinking-residual loop"), each iteration's batch
-is drawn ONLY from items the *current* Tier 1 classifier cannot resolve.
-That makes every iteration a targeted attack on the next layer of the
-sieve. /sl-scale's cascade then runs the result over the full corpus in
-one pass.
-
-In short: the cascade IS the sieve, and /sl-iterate is how you build it
-one layer at a time. Reading this file alongside ref-stages.md gives the
-full picture.
+Legacy code may implement k-NN inheritance, classifier thresholds, or panel majority.
+Those mechanisms are not v2-compliant production routes unless their registration,
+sealed evaluation, abstention, provenance, and audit contracts are implemented and
+passed. Until then, commands emit `HOLD` and list the missing evidence.
