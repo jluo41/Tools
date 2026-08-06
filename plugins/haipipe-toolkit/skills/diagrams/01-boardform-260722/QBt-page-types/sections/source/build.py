@@ -42,7 +42,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 SECTIONS = HERE.parent                     # sections/
 GROUP = SECTIONS.parent                    # the QBt group folder
 
-HEAD = re.compile(r"^(page-type|section_kind|provides):\s*(.*)$")
+HEAD = re.compile(r"^(page-type|section_kind|output):\s*(.*)$")
 DIVISION = re.compile(r"^### (§[\d.]+) (.+)$")
 PARAGRAPH = re.compile(r"^#### (P\d+)\.\s*(.+)$")
 BRACKET = re.compile(r"\s*\[Q-[A-Za-z0-9]+-\d+\]")
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         meta = head(lines)
         if meta.get("page-type") != "section":
             continue
-        out = GROUP / meta["provides"]
+        out = GROUP / meta["output"]
         body = parse(lines)
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(render(page, meta, body))

@@ -13,7 +13,7 @@ and the limits copied whole. The bank path above is not reachable from this
 checkout, which is the ordinary state of a paper whose executor tree is not
 cloned; it is a fact about the checkout, not a defect in the record.
 
-An outward answer's product is PROSE, so this record declares no `- provides:`
+An outward answer's product is PROSE, so this record declares no `- output:`
 line: a citation is not a file. That is why `unit.py check` counts this drawer as
 neither an atom nor a view, which is a real limit of the resolver on this route.
 

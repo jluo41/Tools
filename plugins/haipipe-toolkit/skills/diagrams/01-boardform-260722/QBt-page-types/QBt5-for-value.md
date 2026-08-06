@@ -43,7 +43,7 @@ An evidence page on the inward route asks what this project must PRODUCE, as aga
   │         │
   │         │  resolved by ID from the consumer's `needs:` line
   │         ▼
-  📄 QBt5-for-value.md            ← this page. A VIEW. No provides:.
+  📄 QBt5-for-value.md            ← this page. A VIEW. No output:.
        ### E1 · how much drift, by key tenure?   🔗 1-drift-counts
        ### E2 · how large is the corpus?         🔗 2-corpus-size
        ### E0 · incoming

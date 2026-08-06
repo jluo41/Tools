@@ -4,7 +4,7 @@
 WHAT AN ATOM IS. Anything that produces something another page may read. It
 declares itself in the head of its own markdown file:
 
-    provides: <path>          exactly one, relative to that file's folder
+    output: <path>            exactly one, relative to that file's folder
     needs:    <id>, <id>      zero or more, by id, never by path
 
 Two shapes of atom live in this group, and they are not the same shape:
@@ -41,7 +41,7 @@ GROUP = pathlib.Path(__file__).resolve().parent
 # Two head styles exist and both are real. A board page writes bare `provides:`
 # lines; a QA record writes them as list items, `- provides:`, which is the shape
 # the task bank already uses for `- state:` and `- started:`. Accept either.
-HEAD_KEY = re.compile(r"^-?\s*(provides|needs|bank|route):\s*(.*)$")
+HEAD_KEY = re.compile(r"^-?\s*(output|needs|bank|route):\s*(.*)$")
 
 
 def head(md):
@@ -64,7 +64,7 @@ def atoms():
         if any(p.name.endswith(".data") for p in f.parents):
             continue                       # products and evidence, never atoms
         meta = head(f)
-        if "provides" not in meta:
+        if "output" not in meta:
             continue                       # a view page, or plain prose
         uid = f.relative_to(GROUP).with_suffix("").as_posix()
         meta["file"] = f
@@ -79,7 +79,7 @@ def resolve(uid, index=None):
     if uid not in index:
         raise SystemExit(
             f"unknown atom id: {uid}\nknown ids:\n  " + "\n  ".join(sorted(index)))
-    return index[uid]["dir"] / index[uid]["provides"]
+    return index[uid]["dir"] / index[uid]["output"]
 
 
 def order(index):
@@ -104,13 +104,13 @@ def order(index):
 def check():
     index = atoms()
     views = [f.relative_to(GROUP).as_posix() for f in sorted(GROUP.glob("QBt*.md"))
-             if "provides" not in head(f)]
+             if "output" not in head(f)]
     problems = []
     print(f"{len(index)} atoms · {len(views)} view pages\n")
     for uid in sorted(index):
         a = index[uid]
         needs = ", ".join(a.get("needs", [])) or "nothing"
-        product = a["dir"] / a["provides"]
+        product = a["dir"] / a["output"]
         mark = "✅" if product.exists() else "❌"
         print(f"  {mark} {uid}")
         route = a.get("route")
@@ -130,9 +130,9 @@ def check():
                 print(f"      route    {route} · bank {mark2}")
                 print(f"               {a['bank']}")
         print(f"      needs    {needs}")
-        print(f"      provides {a['provides']}")
+        print(f"      output {a['output']}")
         if not product.exists():
-            problems.append(f"  {uid}: product missing, {a['provides']} (run build)")
+            problems.append(f"  {uid}: product missing, {a['output']} (run build)")
         for need in a.get("needs", []):
             if need not in index:
                 problems.append(f"  {uid}: needs {need}, which no atom declares")
@@ -222,7 +222,7 @@ def build_script(atom):
     encode both, walk up from the product until a folder holding
     `source/build.py` appears. A new companion shape then costs nothing here.
     """
-    product = atom["dir"] / atom["provides"]
+    product = atom["dir"] / atom["output"]
     for d in product.parents:
         if not d.is_relative_to(atom["dir"]):
             break

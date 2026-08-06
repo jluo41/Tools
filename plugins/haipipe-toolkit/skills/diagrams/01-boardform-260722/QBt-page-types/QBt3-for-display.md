@@ -5,7 +5,7 @@ page-type: display
 owner: JL
 method: build this unit to its claim job, name its evidence source, state an honest statistical label, and land it in a known place
 needs: QA-probe/QBt5-for-value/1-drift-counts
-provides: displays/QBt3-for-display/out/assets/figure.txt
+output: displays/QBt3-for-display/out/assets/figure.txt
 
 ## Opening
 
@@ -98,7 +98,7 @@ Proven by moving the answering atom's whole drawer and rebuilding: no script cha
 
 ```text
   unit       displays/QBt3-for-display/    ← named after this page, exactly
-  declares   this page's own head: needs, provides
+  declares   this page's own head: needs, output
   input      needs: QA-probe/QBt5-for-value/1-drift-counts   ← id, not path
   build      source/build.py · resolves that id, writes out/assets/figure.txt
   rebuild    python3 unit.py build         ← dependency order, whole chain

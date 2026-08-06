@@ -2,7 +2,7 @@
 
 - state:    answered-local
 - route:    local
-- provides: 1-drift-counts.data/counts.csv
+- output: 1-drift-counts.data/counts.csv
 
 🚫 FABRICATED. No corpus was counted. The FORMAT is what this file teaches.
 
