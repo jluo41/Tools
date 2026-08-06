@@ -346,6 +346,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
 
     aims_text, states_text = section_text(text, "Done when"), section_text(text, "Now")
     check_state_mirrors_aims(aims_text, states_text, name, rep)
+    check_generated_block(text, name, rep)
 
     progress = aim_progress(aims_text, states_text)
     met, total, closed = progress["met"], progress["total"], progress["closed"]
@@ -688,6 +689,60 @@ def check_comment_form(text, name, rep):
             rep.add(WARN, "old-comment-form", f"{name} · Content",
                     f"`> {m.group(1)}:` is the legacy sentence-comment form; "
                     f"write `> Comment {m.group(1)} …` (QB4 §3.3.3)")
+
+
+GEN_BEGIN = "# --- form:begin (generated) ---"
+GEN_MEASURED = re.compile(r"MEASURED\s+(20\d\d-\d\d-\d\d|\b2\d{5}\b)")
+GEN_REGEN = re.compile(r"(?m)^\s*regenerate:\s*(\S+)")
+ANY_DATE = re.compile(r"(20\d\d-\d\d-\d\d|\b2\d{5}\b)")
+
+
+def _ymd(token):
+    """`260727` and `2026-07-27` are both in use; compare them as one shape."""
+    t = token.replace("-", "")
+    return t[2:] if len(t) == 8 else t
+
+
+def check_generated_block(text, name, rep):
+    """A measured block must say when it was measured, and not be older than
+    the page it measures.
+
+    Every other page type closes on an event: a display is accepted, a stage
+    passes its gate, a skill's unit ships. A measured block has no such moment,
+    which is why `for-dashboard` failed the admission test's fourth question on
+    260806. What it has instead is FRESHNESS, and freshness is checkable, so the
+    thing that would have been a closing rule becomes this.
+
+    The page's own newest Log date is the reference rather than the file's
+    mtime, because a clone resets every mtime and the Log travels with the file.
+
+    Measured on the MISQ board the day the rule was written: seven of eight
+    section pages carried a block measured 2026-07-27 whose page had logged work
+    through 260803, and the S-Main dashboard was still reporting a section that
+    had been archived. Its own prose is the argument for this check: a wrong
+    measurement is worse than none, because it reads as measured.
+    """
+    if GEN_BEGIN not in text:
+        return
+    block = text.split(GEN_BEGIN, 1)[1].split("# --- form:end ---", 1)[0]
+
+    stamp = GEN_MEASURED.search(block)
+    if not stamp:
+        rep.add(WARN, "generated-block-undated", name,
+                "a generated block carries no `MEASURED <date>` line, so nothing "
+                "can tell whether it describes the page as it stands")
+    if not GEN_REGEN.search(block):
+        rep.add(WARN, "generated-block-no-command", name,
+                "a generated block carries no `regenerate:` line, so a reader who "
+                "finds it stale has no way to refresh it")
+
+    log = section_text(text, "Log")
+    latest = max((_ymd(d) for d in ANY_DATE.findall(log)), default="")
+    if stamp and latest and _ymd(stamp.group(1)) < latest:
+        rep.add(WARN, "generated-block-stale", name,
+                f"the block was measured {_ymd(stamp.group(1))} and this page has "
+                f"logged work through {latest}, so it measures a version that no "
+                "longer exists")
 
 
 def check_state_mirrors_aims(aims_text, states_text, name, rep):

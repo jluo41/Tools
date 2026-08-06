@@ -11,6 +11,19 @@ board_unit: "N"            # venue contract (what the outlet requires, what the 
 board_slug: narrative      # family + unit + slug resolve the S-face filename;
                            # haipipe-board/stage.py owns that resolution (QB4@paper)
 
+dashboard: none
+#            no aggregate this stage's own pages cannot each answer for themselves.
+#            Declared rather than left blank: a missing key reads as an
+#            oversight, and this is a decision.
+#            A dashboard is not a page TYPE: `for-dashboard` failed the
+#            admission test's fourth question on 260806, because the four
+#            pages wearing `-Dash` are three different things (two control
+#            pages, one rehearsal, one measurement) and no single closing
+#            rule covers them. What IS shared is the measured BLOCK, a span
+#            any page may carry, and its rule is freshness rather than
+#            completion: `check.py` reports a block older than its page's
+#            newest Log date.
+
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
                            # Default is ONE, at CHECK. DRAFT/PROBE/REVISE run unattended.
