@@ -1,5 +1,5 @@
 # Driving the talk layer: the SDK chat version and the TUI chat version
-state: 🔴 OPEN · the SDK chat version has three suites and real numbers; the TUI chat version has none
+state: 🟡 PARTIAL · both chat versions have suites checked into `checks/`; only two tiers run from one command, and nothing dispatches them
 owner: JL
 method: list the talk failures that shipped green through every existing instrument, then name the axes a run has to cover
 
@@ -51,28 +51,48 @@ do both chat versions share a session ✗        ✗         ✗          ✅
 - The session is REUSED rather than reconnected, which is a timing assertion and not a correctness one, because a reconnecting session still answers correctly.
 
 **HANDOVER**
-- The SDK chat version and the TUI chat version share one session per page without fighting over it, which is `QD1`'s Law.
+- The SDK chat version and the TUI chat version share one current session and one live window per scope without fighting over it, which is `QD1`'s Law.
 - A dead TUI chat must not leave a hold that refuses the SDK chat forever.
 
 **INTERRUPTION**
 - Navigating, reloading, or shipping new assets during a live turn must not lose the turn or the transcript.
 - This is the axis that produced two of the five failures in §1.
 
-### 4 · What exists today, and what it measured
-Three suites, all Chrome over CDP against the live server, driving the real drawer rather than the endpoint.
+### 4 · What exists today, and where it lives
+The three scratchpad suites of 260801 never landed under their own names; their coverage was rebuilt inside the board skill's `checks/` folder, and `checks/run.py` is the one command, in two tiers.
 
 ```text
-① navtest.mjs   27 checks   binding + interruption
-                            index → group → page → page, Back, drawer closed,
-                            and a real turn that survives navigating away
-② rl.mjs         3 checks   interruption: a reload mid-conversation keeps
-                            every open section, the drawer, and its page
-③ allpages.mjs  61 + 5      binding on every built URL, then one real turn
-                            on one page of each kind
+smoke   python3 checks/run.py         seconds, read-only, the LIVE server:
+                                      the tree serves, watch.py is rebuilding,
+                                      the tree's _assets match the source,
+                                      claude and node are present, and
+                                      GET /_board/health proves the server's OWN
+                                      interpreter imports claude_agent_sdk
+full    python3 checks/run.py --full  minutes, real turns, on a THROWAWAY
+                                      fixture board with its own server and its
+                                      own Chrome: pty_e2e.py ①-⑦ (a real CLI turn
+                                      through the PTY), one scoped SDK chat turn,
+                                      and termnav.mjs (12 browser checks)
 ```
 
-Two older instruments already sit next to these and are not duplicated here.
-`test_hold.py` measures the second-turn latency that exposed the reconnect bug, and `gate_live.py` freezes the live layer's responses so a refactor of `serve.py` can be proven not to change any of them.
+Five more suites sit next to those and are still typed one node file at a time, all Chrome over CDP against a real server, driving the real drawer rather than the endpoint.
+
+```text
+① binding.mjs     B1-B8    BINDING as an ORDER of operations, which is where
+                           every instance of that bug has lived
+② guichat.mjs     T1-T17   the SDK chat driven as a reader uses it: rendered
+                           markdown, a reload mid-turn, 🗂 Sessions, context cost
+③ tuichat.mjs     U1-U5    the TUI chat's own half; it runs `echo` and never
+                           spends a model turn, so it costs nothing
+④ switchback.mjs  S1-S3    HANDOVER: GUI → TUI → GUI while a turn is RUNNING,
+                  C1-C2    a session switch, and closing the tab and coming back
+⑤ scopechat.mjs   B1-B4    the chat at three scopes: page, group, whole board
+```
+
+`checks/ring_e2e.py` belongs to the same set and proves the turn outlives the socket that started it, which is CONTINUITY measured from the server side rather than the browser.
+
+Two older instruments are not duplicated here.
+`tests/test_hold.py` measures the second-turn latency that exposed the reconnect bug, and `cli/gate_live.py` freezes the live layer's responses so a refactor of `serve.py` can be proven not to change any of them.
 
 ### 5 · The trap this run has already fallen into
 A talk run has one failure mode the browser run does not, and it cost most of a session on 260731.
@@ -84,11 +104,12 @@ So the run pins its own tab and re-navigates if it drifts, it waits on condition
 ## Aims
 ### Making the run exist as a thing
 - [ ] 🧰 Make it one command
-      Three `.mjs` files in a scratchpad today, which means they protect only the rounds where someone remembers them; they should be files in the skill that take a board folder and exit non-zero.
-- [ ] ⌨ Cover the TUI chat version
-      Every assertion listed above drives the SDK chat version; the TUI chat version has none, and HANDOVER is exactly the axis where the two meet.
+      `checks/run.py` is that command for the smoke tier and for the three checks inside `--full`, and it exits non-zero; the five browser suites in §4 are still typed one node file at a time, and nothing takes a board folder as an argument.
+- [x] ⌨ Cover the TUI chat version
+      Closed by `checks/tuichat.mjs` (U1-U5, its own half), `checks/pty_e2e.py` (a real CLI turn through the PTY), `checks/termnav.mjs` (the terminal follows the tree router, parked not held), and `checks/switchback.mjs` for HANDOVER, the axis where the two versions meet.
 - [ ] 🎛 Settle which model and tier the run uses
       Cheap tiers make the run affordable and expensive tiers are what JL actually uses; 260731 showed a bug that only appeared at JL's settings.
+      Unsettled in code too: the `--full` tier's SDK turn asks for `scope: scoped` and names no model, so it spends whatever the server's default is.
 
 ### Making it run without being remembered
 - [ ] 🚦 Wire it into the round
@@ -97,7 +118,8 @@ So the run pins its own tab and re-navigates if it drifts, it waits on condition
       Break the router listener on purpose and watch `navtest.mjs` go red, the same way `assets.py`'s `verify()` was proven.
 
 ## States
-The SDK chat version has three suites and real numbers; the TUI chat version has nothing, and none of it is a command anyone can run without being told.
+Both chat versions now have suites checked into `checks/`, and `checks/run.py` gives two tiers of it a command that exits non-zero.
+The five browser suites are still typed one file at a time, and no round dispatches any of it, so it still protects only the rounds where someone remembers.
 
 - 260801 CC · 🔬 Opened from a session that fixed four talk failures and built the suites while doing it
   JL: "I think I want to add something in QF about testing out code for the SDK-Talk and CLI-Talk."
@@ -123,7 +145,9 @@ These are the calls only JL can make; CC ticks nothing here.
   `follow()`, the function whose missing listener was failure one in §1.
 - `../../board/haipipe-board/live/chat.py`
   The session host, the hold, and the refusal that was rendered as an answer.
-- `../../board/haipipe-board/test_hold.py`
+- `../../board/haipipe-board/checks/run.py`
+  The standing checklist's entry point, smoke tier and `--full` tier; the rest of `checks/` is the suites in §4.
+- `../../board/haipipe-board/tests/test_hold.py`
   The second-turn latency probe that exposed the reconnecting session.
 - `../../board/haipipe-board/cli/gate_live.py`
   The response-identical gate for the live layer, which this run does not replace.
@@ -135,4 +159,5 @@ These are the calls only JL can make; CC ticks nothing here.
   The TUI chat version's own face.
 
 ## Log
+- 260806 2201 · [REVISE-CC] swept to the 260806 architecture; `### 4` repointed from the three scratchpad `.mjs` suites to the checked-in `checks/` folder (`run.py`'s two tiers plus binding/guichat/tuichat/switchback/scopechat), the TUI-coverage Aim ticked on that evidence, `test_hold.py` corrected to `tests/test_hold.py`, and HANDOVER restated in `QD1`'s current per-scope Law
 260801 · Opened on JL's ask for a QF face covering the SDK chat version and the TUI chat version, written from the five talk failures found in the browser on 260731 and the three suites built to catch them

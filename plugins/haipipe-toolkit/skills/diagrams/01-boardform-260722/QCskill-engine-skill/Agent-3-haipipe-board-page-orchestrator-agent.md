@@ -1,5 +1,5 @@
 # haipipe-board-page-orchestrator-agent · v0.1.0
-state: 🔴 OPEN
+state: 🟡 in flux · shipped 0.1.0 260804, exercised once 260805 in emulation, never dispatched
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
@@ -24,7 +24,9 @@ English only. One sentence per source line. Describe the shipped unit factually 
 
 **How `haipipe-board-page-orchestrator-agent` is used**: the controller owns routing and the receipt while four other authorities retain their own boundaries.
 
-```
+```text
+WORKFLOW  one packet in, four dispatched authorities, one durable receipt
+
 📦 Page RUN packet
         │
         ▼
@@ -127,18 +129,30 @@ never author or judge.
 <!-- haipipe:skill:body:end -->
 
 ## Aims
-### P · Page-level health ruling
-- P1 · Rule this skill's health.
-  **Done when:** `state:` records a human judgment: stable, in flux, needs work, or parked.
+- [ ] 🧭 The charter is dispatched rather than emulated
+      The one live RUN on 260805 could not reach the Workflow tool, so the session played this controller itself, dispatched the producer and the judge as fresh-context `claude -p` subprocesses, and performed the builder role under the identity `orchestrator-mechanical-builder`.
+      Nothing has yet run this agent AS an agent, so its procedure, its stop rules and its return contract have been reasoned about rather than exercised.
+- [ ] 🧾 The auditor's result reaches the receipt it audits
+      Procedure step 4 runs `pageflow.py audit` and the return contract carries an `audit: pass | fail` field, and the one stored receipt has no such field, so whether the auditor ever passed that run is not on the record.
+      Re-running the auditor today returns `artifact-version-mismatch`, which is the stop rule working rather than a defect: `QB8e` moved on after CLOSE, so the closed version is no longer the current one.
+- [ ] 📐 The deviations the first run invented are ruled or written in
+      The receipt names three: the controller appended the preceding CHECK findings to each REVISE dispatch because the shipped workflow prompt omits them, it added a closing-rule interpretation so that CLOSE asserts one exact version rather than every Aim of a decision page, and it minted the `run_id` the packet arrived without.
+      Each is a gap the charter does not cover, and none of the three has been folded back into the charter or into `page-lifecycle.workflow.js`.
+- [x] 🧾 One run leaves a record a stranger can read
+      The 260805 run wrote `_runs/page/QB8e/260805-0216-QB8e.json` carrying five step receipts with their actors, routes and verdicts, the packet it started from, the limits it ran under, and the controller's own deviations.
+      It sits outside the rendered board, so a rebuild cannot erase it and no reader stumbles on it by accident.
 
 ## States
 The first live Page RUN executed this controller logic on 260805 against QB8e: the Workflow tool was unavailable, so the session emulated `page-lifecycle.workflow.js` verbatim, dispatched the producer and judge as fresh-context `claude -p` subprocesses, and played the mechanical builder itself under the actor name `orchestrator-mechanical-builder`.
 The run closed in five steps and one round, CHECK to REVISE to CHECK to REVISE to CHECK, on a final reviewer verdict of pass and route CLOSE; the receipt is `_runs/page/QB8e/260805-0216-QB8e.json`.
 
-### P · Page-level health ruling
-- ⬜ P1 · Page generated 260804 2030; nothing ruled yet.
+- 260805 CC · 🧭 The first live RUN closed, and the controller was not this agent
+  The Workflow tool was unavailable, so the session emulated `page-lifecycle.workflow.js` and wrote that substitution into the receipt's `controller` block instead of leaving it implicit.
+  It recorded three deviations it had to invent at run time as well, which is the part worth keeping: an emulated controller that writes down where it departed can still be audited, and one that does not is only a conversation.
 
 ## Log
+- 260806 2222 · [REVISE-CC] type-conformance pass against haipipe-board-page-for-skill; Aims and States converted from the generator's base-form stub to the checkbox and dated-record form this variant overrides to, the "Page generated 260804 2030; nothing ruled yet" row the variant forbids on a shipping unit is gone, the three open Aims now carry the UNIT's own work read off the 260805 receipt, `state:` gained the evidence note the variant requires and moved off the seeded 🔴 OPEN, and the Diagram figure is labelled as the WORKFLOW fence
+- 260806 2115 · [REVISE-CC] swept to the 260806 architecture; no false facts found: skillpage sync reports spans current, and the States account verified verbatim against the frozen receipt `_runs/page/QB8e/260805-0216-QB8e.json` (5 steps, 1 round, CHECK→REVISE→CHECK→REVISE→CHECK, final pass → CLOSE, emulated Workflow controller).
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the first live RUN is on the record, 260805 on QB8e, closed in five steps on a final CHECK pass, with the session emulating the Workflow controller because the Workflow tool was unavailable.
 260804 2035 · Replaced the generated Opening and Diagram stubs with the Page-specific role boundary, reviewer comparison, trust condition, dispatched authorities, and durable receipt flow. Page health remains for JL to rule after fresh validation.
 260804 2030 · page generated from `board/agents/haipipe-board-page-orchestrator-agent.md/` by `skillpage.py new`

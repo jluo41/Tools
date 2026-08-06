@@ -1,5 +1,5 @@
 # haipipe-board-sentence · v0.3.1
-state: 🟡 in flux · became a door 260802; three releases that day, all now in the changelog
+state: 🟡 in flux · became a door 260802; four releases that day, all now in the changelog
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
@@ -272,6 +272,7 @@ Its health is `🟡 in flux` for one reason now: the door half, shipped 260802, 
   A sync updates the derived half and cannot touch the authored one, so a page can be green on `skillpage.py check` and self-contradictory on screen, which is the sharpest example yet of why that check covers frontmatter only.
 
 ## Log
+- 260806 2115 · [REVISE-CC] swept to the 260806 architecture; head state line's release count corrected from three to four (CHANGELOG dates 0.1.1, 0.1.2, 0.2.0 and 0.3.0 all to 260802), every cited path and pointer verified live
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the "one day old" age clauses on the door half now date it 260802 instead, and no 260805 change touched this unit.
 260802 2030 · Rewritten after `QB8` closed and this unit reached 0.3.0: the Opening and the `WORKFLOW` fence had said `loaded, never run` while the page's own derived Content announced three verbs. Four Aims replace the earlier set, including the missing 0.3.0 changelog entry that `agree.py` found, and `state:` now names the two live problems rather than the one it had
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the address, the three consumers and the boundary, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. Recorded plainly that this unit's consumers are declared rather than measured, and that `live/chat.py`, the consumer that justified cutting it out, still carries its own copy

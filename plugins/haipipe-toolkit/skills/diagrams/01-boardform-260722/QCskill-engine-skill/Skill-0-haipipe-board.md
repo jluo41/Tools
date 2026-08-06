@@ -1,5 +1,5 @@
 # haipipe-board · v0.124.0
-state: 🟡 in flux · 160 releases in 14 days, 3 open defects
+state: 🟡 in flux · 168 releases in 15 days, 3 open defects
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 session: e95d488f-0b05-4425-b8e0-6836fbfccc02
@@ -8,7 +8,7 @@ session: e95d488f-0b05-4425-b8e0-6836fbfccc02
 `haipipe-board` is the door you walk through to run a board: `build.py` turns a folder of markdown pages into a site, and `serve.py` keeps it live so comments land back in the markdown.
 Reach for it when the BOARD is the subject: opening one, viewing one, changing its groups or roster.
 One page is `haipipe-board-page`'s job; one write onto a page is `haipipe-board-routing`'s.
-It moves fast: 160 releases since 260722, and three open defects.
+It moves fast: 168 releases since 260722, and three open defects.
 
 **What a board is**: A board is one folder of markdown.
 `board.md` carries the spine, the closing condition and the `## Pages` roster; one `.md` file carries one decision (Q) or one lifecycle stage (S).
@@ -177,7 +177,7 @@ haipipe-board/
     test_shell.py                   157 ln  QD5 · the operating shell: pane recognition, injection, and link carry-over.
     test_stage_style.py              88 ln
     test_status.py                  150 ln
-    test_topic_entry_contract.py    149 ln
+    test_topic_entry_contract.py    152 ln
     test_tree_reroot.py              39 ln
     test_turnring.py                134 ln  QD2 R1 · the turn ring, tested where a browser cannot see it.
   vendor/
@@ -1010,7 +1010,7 @@ tests/test_sentence_editing.py      94 ln  Regression tests for sentence-local c
 tests/test_shell.py                157 ln  QD5 · the operating shell: pane recognition, injection, and link carry-over.
 tests/test_stage_style.py           88 ln
 tests/test_status.py               150 ln
-tests/test_topic_entry_contract.py   149 ln
+tests/test_topic_entry_contract.py   152 ln
 tests/test_tree_reroot.py           39 ln
 tests/test_turnring.py             134 ln  QD2 R1 · the turn ring, tested where a browser cannot see it.
 vendor/xterm/addon-unicode11.js      2 ln
@@ -1030,14 +1030,14 @@ vendor/xterm/xterm.min.js            2 ln
       A ✅ therefore means the metadata is current, not that the page's copy of a `SKILL.md` still matches it, and byte equality needs a regenerate-and-diff done by hand.
       `Skill-1` found this on 260801 and correctly sent it here, because `skillpage.py` ships in this skill.
 - [ ] 📏 The manual stays a manual
-      `SKILL.md` is 771 lines and has shipped 160 releases since 260722, while `QC1a`'s Law says specs belong in `ref/` so the manual stays as short as possible.
+      `SKILL.md` is 771 lines and has shipped 168 releases since 260722, while `QC1a`'s Law says specs belong in `ref/` so the manual stays as short as possible.
       Nothing measures whether that Law is still being followed, and a door nobody can read to the end stops being a door.
 - [x] 👪 The family boundary is declared in the file, not left implicit
       0.109.0 states which unit owns what, and names the one duplication kept on purpose: `open` still describes proposing and materializing a board, because a person opening their first board should not have to load a second skill.
       A duplication that is declared can be corrected in both places; one that is undiscovered is what retired `haipipe-board-index`.
 
 ## States
-This is the door and by far the largest unit: 771 lines of `SKILL.md`, 16 scripts under `cli/`, 12 modules under `src/`, and 0.120.1 after 160 releases since 260722.
+This is the door and by far the largest unit: 771 lines of `SKILL.md`, 16 scripts under `cli/`, 12 modules under `src/`, and 0.124.0 after 168 releases since 260722.
 Its health is `🟡 in flux` for the plain reason that it changes almost every working day, not because anything is known to be broken.
 Two of its three open Aims are defects other pages found and correctly sent here, which is what a door should expect: it owns the scripts, so it inherits their gaps.
 
@@ -1053,6 +1053,7 @@ Two of its three open Aims are defects other pages found and correctly sent here
   The page went from 4,132 rendered characters to 132,256 once the embeds resolved.
 
 ## Log
+- 260806 2115 · [REVISE-CC] swept to the 260806 architecture; managed spans resynced to 0.124.0 and the authored counts corrected from "0.120.1 after 160 releases" to 0.124.0 after 168 releases (state line, Opening, Aims, States)
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the managed spans resynced to 0.120.1 and the authored counts read 160 releases, 771 lines, 16 cli scripts, 12 src modules, replacing the 0.113.0-era figures.
 260804 · Updated the authored family map for Page RUN and the producer, reviewer, and Page orchestrator roles.
 260802 1830 · Authored half written, the last of the six skill and agent pages to get one: the placeholder health Aim and the "Nothing ruled yet" stub were replaced with four real Aims and three dated State records. Two of the open Aims are defects other pages found and routed here because this skill ships the file: `Skill-1`'s finding that `skillpage.py check` hashes frontmatter only, and `QC1b`'s four `live/chat.py` rule strings. `state:` gained the release evidence behind its 🟡

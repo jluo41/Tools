@@ -8,14 +8,14 @@ session: 8c876e73-8134-46ec-90ac-f1a34318c99a
 ## Opening
 
 How do you read this board?
-Four groups, and each owns one question.
+Four layers, and each owns one question.
 `QB5` says a paper owes its reader a figure, `QC1` says which skill makes one, `QF1` records the run that did.
 Start in the wrong one and every answer reads as an opinion, because the page that owns the fact is elsewhere.
-Design, Delivery, Engine, Execute, and no group may answer another's question.
+Design, Delivery, Engine, Execute, and no layer may answer another's question.
 
 **Where this page sits**: This is the entry face, and it is the only page whose subject is the board itself rather than the paper.
 `QA1` takes over at the next question, which is where a given file belongs among the folders.
-Everything else on the board is inside one of the four groups this page names.
+Every other page on the board sits in one of the four layers, either in the layer's own group or in a group that hangs under it.
 
 **Why the order is a ruling and not a preference**: Delivery is the reader-facing specification, so it can be written before any skill exists to satisfy it.
 Engine is skill-first rather than stage-first, because one skill serves several deliveries and one delivery needs several skills.
@@ -69,13 +69,16 @@ Content states what is true by design; States states what is true today and is e
 **Who answers what**: the question each group owns, and the one it must never answer.
 
 ```text
- 🗂 GROUP        ❓ ANSWERS                        🚫 NEVER ANSWERS
+ 🗂 LAYER        ❓ ANSWERS                        🚫 NEVER ANSWERS
  ───────────     ──────────────────────────       ─────────────────────────
  🧭 QA Design    what the system is · who owns    what a reader receives
  📦 QB Delivery  what the reader gets · the       which skill produces it
                  human decision it is fit
  ⚙️ QC Engine    which route may produce it       whether it ran
  🧪 QF Execute   what one bounded run did          whether the design is right
+
+ 🧷 three groups HANG under a layer and none of them adds a fifth question:
+    QBe and QBv under Delivery · QCskill under Engine
 
  ↩️ a failed run REOPENS the owning Delivery or Engine page
  🚫 a failed candidate never becomes an implicit promotion
@@ -98,6 +101,11 @@ A skill card states its trigger, the delivery content it serves, what it reads, 
 One run turns one Delivery target through one Engine route on a named fixture or paper, producing an artifact, candidate, observation, gate result, or receipt.
 Tests, compile checks, gates and fresh-agent observations are ways of gathering that evidence, never a separate authoring layer.
 Failure reopens the owning Delivery or Engine page.
+
+#### 1.4 · Three groups hang under a layer, and a hanging group narrows a question rather than owning one
+(the registry has seven groups; the reading order still has four layers)
+`QBe` and `QBv` hang under Delivery: a series says what a rule APPLIES TO and a venue page says what a desk REWARDS, and neither is an eleventh concern.
+`QCskill` hangs under Engine and holds one generated mirror page per shipped unit, split out of `QC` on 260805 so a settled design count never mixes with a unit that is still shipping.
 
 ### 2 · The delivery order, and who ruled it
 
@@ -181,21 +189,21 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 ## States
 
 ### A1 · 🧭 The four layers
-- ✅ A1.1 · The registry reads Design, Delivery, skill-first Engine, then Execute evidence. The 260801 consolidation folded 16 historical groups into the four.
+- ✅ A1.1 · The registry reads Design, Delivery, skill-first Engine, then Execute evidence. The 260801 consolidation folded 16 historical groups into the four. Three groups have since been split out UNDER a layer, `QBv` on 260802, `QBe` on 260803 and `QCskill` on 260805, so the registry holds seven groups and still four questions.
 - 🔨 A1.2 · Stated in `## Law` and practised by the one real record: the MISQ Main-1 candidate names its blocker. Whether every future record will is not enforced.
 
 ### A2 · 📦 The delivery order, and who ruled it
 - ✅ A2.1 · Ruled by JL on 260729 and applied. `QBe3` through `QBe2` were added on 260802 as series rather than concerns, which left the ten untouched.
 - ⬜ A2.2 · Not started. Do it one group at a time, so no page claims a route or run that does not exist.
-- ⬜ A2.3 · Not started. The initial skill cards become the first Engine route, never a new authority layer.
-- ⬜ A2.4 · Overtaken by the thin restructure rather than audited: `haipipe-paper-deliver` is retired to `_old/routers/`, and `haipipe-paper-project` becomes a door `fn/` verb under phase 3 (ruled 260806, executing; `QC6` Log). The admission test now applies only to future candidates.
+- ⬜ A2.3 · Not started. The initial skill cards become the first Engine route, never a new authority layer. The `QCskill` roster is one live card, `Skill-0`, since the seven retired mirrors were archived on 260806.
+- ⬜ A2.4 · Overtaken by the thin restructure rather than audited: `haipipe-paper-deliver` is retired to `_old/routers/`, and `haipipe-paper-project` landed as the one door's `fn/project.md` with its old folder retired to `_old/phase3-260806/` (ruled and executed 260806; `QC6` Log). The admission test now applies only to future candidates.
 - ⬜ A2.5 · Not started. Present and Round are the two currently visible as gaps.
 
 ### A3 · 🌐 Source and generated
 - ✅ A3.1 · `board.md` declares both trees and the strict checker verifies the generated side.
 
 ### P · 🏁 Page-level
-- ⬜ P1 · Never run. The board has grown from 53 pages to 63 since the reorganization it would have judged.
+- ⬜ P1 · Never run. The board has grown from 53 pages to 61 since the reorganization it would have judged, counted off `board.md`'s `## Pages` on 260806.
 
 ## Files
 
@@ -210,7 +218,7 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `../../board/haipipe-board/cli/check.py`
   Verifies the generated tree and the page rules. It reports structure and never judges whether a sentence is still true.
-  ⚠️ A fenced line whose first glyph is `⚠️` (U+26A0 U+FE0F) is read by the figure linker as a group token, and it builds the anchor out of already-rendered HTML: `#group-<span class=`. Measured 260802 across the whole board: 123 occurrences, 44 dead-fragment errors, and no other glyph triggers it. That is `③`'s machinery and not this board's to patch, so pages avoid the trigger by leading such a line with any other glyph.
+  ⚠️ A fenced line whose first glyph is `⚠️` (U+26A0 U+FE0F) is read by the figure linker as a group token, and it builds the anchor out of already-rendered HTML: `#group-<span class=`. Measured 260802 across the whole board: 123 occurrences, 44 dead-fragment errors, and no other glyph triggers it. That is the board tool's machinery, `../../board/haipipe-board/`, and not this board's to patch, so pages avoid the trigger by leading such a line with any other glyph.
 
 ### 📤 Output files · what a BUILD writes
 - `../board/index.html`
@@ -238,6 +246,7 @@ The former Engine `QB*` and `QC*` names collided with the new Delivery and Engin
 
 ## Log
 
+- 260806 2215 · [REVISE-CC] swept to the 260806 architecture; the page said "four groups" while the registry holds seven, so the four are now named LAYERS and `### 1.4` says which groups hang under Delivery and Engine.
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); A2.4's two audit subjects left the roster, so its state row now says the admission test is for future candidates.
 
 260802 · Migrated to the `QB4` page contract: Writing Style added, Content numbered into three divisions each with a face figure and caption, Aims regrouped as A1-A3 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Two stale facts corrected in the pass: the board is 63 pages rather than 53, and `QBe3`-`QBe2` were added to `### 2` as series rather than being silently absent.

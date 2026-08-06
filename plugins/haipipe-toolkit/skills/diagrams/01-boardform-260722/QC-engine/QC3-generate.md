@@ -2,7 +2,7 @@
 
 state: 🟡 PARTIAL · both generators ship, routing of consequences does not
 owner: JL
-method: mirror `stage.py`: generate the page once, keep one managed block in sync, and never touch what a human wrote around it
+method: mirror `stage.py`: generate the page once, keep its managed spans in sync, and never touch what a human wrote around them
 
 ## Opening
 How can the Board represent an existing skill or meeting note without becoming a stale second copy?
@@ -17,7 +17,7 @@ It succeeds when managed spans resync from the source and every authored line su
 ## Diagram
 
 ```
-   a thing that exists on disk ── generate a page, keep one managed block in sync
+   a thing that exists on disk ── generate a page, keep managed spans in sync
         │
         ├── ⚙️ skill folder   →  Skill-*.md    QC3a  skillpage.py, version + history point back
         └── 🗣  meeting note   →  a board page  QC3b  meetingpage.py, artifact vs routed consequence
@@ -25,9 +25,9 @@ It succeeds when managed spans resync from the source and every authored line su
 
 ## Content
 ### §1 One contract, two sources
-`QC3a` turns one of 141 skill folders into one synced page, so a group of them is a roster that can be ranked, commented on, and watched over time; the page owns a snapshot and points at the live `SKILL.md`.
+`QC3a` turns one of 130 skill folders into one synced page, so a group of them is a roster that can be ranked, commented on, and watched over time; the page owns a snapshot and points at the live `SKILL.md`.
 `QC3b` gives a meeting note a home the board can show (page discovery matches a NAME, and a dated file was invisible), then separates the artifact from its consequences: the note gets a page, and what it decided routes into the Q pages that own it.
-Both mirror `stage.py`: one managed block resyncs, everything a human wrote around it is left alone.
+Both mirror `stage.py`: the managed spans resync (three per generated page), everything a human wrote around them is left alone.
 
 ## Aims
 - [x] 🧪 skill folder → synced page ships (QC3a)
@@ -47,5 +47,6 @@ Both page kinds generate and are live; what remains is routing a meeting note's 
   The family, one source each.
 
 ## Log
+- 260806 2130 · [REVISE-CC] swept to the 260806 architecture; both generators sync three managed spans (not "one managed block"), and the live skill roster is 130 after the paper family's consolidation into `paper/_old/`
 260801 0140 · Full renumber QC5 -> QC3 (contiguous QC1-QC4, JL forced 260801); faces QC5a/QC5b -> QC3a/QC3b
 260801 0130 · Opened as the generator-family parent overview when QC5/QC10 were regrouped into QC5a/QC5b and QC4 (migrate old boards) was archived (JL 260801)

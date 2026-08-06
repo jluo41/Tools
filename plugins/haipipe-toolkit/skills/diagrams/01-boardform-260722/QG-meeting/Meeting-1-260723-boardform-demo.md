@@ -1443,17 +1443,18 @@ Nothing has been routed onto the Q pages yet, so this page is the whole record s
 ## Files
 ### Engines
 - `../../board/haipipe-board/cli/meetingpage.py`
-  Reads the note and writes the three managed spans; seeds Items and Decision Now once.
+  Reads the note and writes the three managed spans; seeds Aims and Decision Now once.
 
 ### Input files
 - `meeting/260723-meeting.md`
   The vault note this page mirrors, written by `jluo41/echo-meeting`.
 - `_WorkSpace/AssetStore/Recordings/2026-07-23-2001-meeting.webm`
-  The recording the note embeds.
+  The recording the note embeds, as an Obsidian vault path rather than a repo path, which is why the checker reports it as unresolved from here.
 
 ### Output files
 - This page
   The artifact half. The consequences half is whatever routing lands on the Q pages.
 
 ## Log
+- 260806 2213 · [REVISE-CC] swept to the 260806 architecture; the record itself is historical and untouched, and only two Files lines were corrected: `meetingpage.py` seeds Aims, not Items, since this page has carried a `## Aims` section since the rename, and the recording is now named as an Obsidian vault path, which is what the checker's `dead-file-path` warning is actually reporting. Verified live: the note, the generator, and the `nothing routed yet` state all still hold, because `QC3b`'s "Route one real meeting end to end" is still unticked
 260731 · Imported from `meeting/260723-meeting.md` by `meetingpage.py`

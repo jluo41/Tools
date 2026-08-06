@@ -58,7 +58,7 @@ This page succeeds when every conversation has a clear scope, a resumable histor
       **JL ruled: same as the Claude Code CLI, ask when asking is due.** No longer my hard-coded "may only edit this one file".
       Read anything; writes to this question's own file pass; writes elsewhere / running Bash → a permission prompt (allow once / always / deny).
       The terminal (QD3) is fully unrestricted.
-      Details in ## Where we are.
+      Details in ## States.
 - [x] Settle where the conversation itself goes
       The conversation IS the session, and it **stays**: it lands in `~/.claude/projects/<encoded cwd>/<sid>.jsonl`, resumable from both drawer and terminal.
       The board's md keeps only outcomes (`## Where we are` / `## Log`), never transcripts.
@@ -140,8 +140,8 @@ These are the calls only JL can make; CC ticks nothing here.
       → CC's proposal: D, staged: B now (cheap insurance, one copy at release time) and C once the P2 mirror's jsonl parser exists anyway; both stay gitignored, because transcripts can carry secrets and this repo is distributed.
 
 ## Files
-- `cli/serve.py`
-  `HOLD` / `RUNS` / `TERMS`: "one window per session" is enforced by these tables.
+- `cli/serve.py` + `live/base.py`
+  `HOLD` / `RUNS` / `TERMS`: "one window per session" is enforced by these tables; since the QC8 split into `live/` modules the tables are defined in `live/base.py`, and `serve.py` imports them.
 - Each question's `.md` header
   The `session:` line is where that question's session id lives.
 
@@ -205,8 +205,9 @@ The browser is on JL's laptop; `claude` is on the server.
 Whatever the route, the machine actually running Claude is the server side; the page is only a window.
 
 ## Glossary
-board level / question level: a conversation's scope.
-Board level runs the whole board (opening questions, editing the generator, cross-question decisions); question level runs one Q. headless session: a Claude session started by a program, with no terminal UI.
+board / group / page level: the three altitudes of a conversation's scope (Law, 260731).
+Board level runs the whole board (opening questions, editing the generator, cross-question decisions); group level runs one group FOLDER; page level runs one page file.
+headless session: a Claude session started by a program, with no terminal UI.
 
 ## Discussion
 > JL: how do I attach a chatbot so that opening it is really opening Claude Code, and it takes this page as input and context? With the choice of opening it or not.
@@ -216,6 +217,7 @@ Board level runs the whole board (opening questions, editing the generator, cros
 >> CC0723: split. This question keeps only the three unanswered framework items (levels and boundaries); the SDK chat version goes to QD2, the TUI chat version to QD3.
 
 ## Log
+- 260806 2141 · [REVISE-CC] swept to the 260806 architecture; Files record repointed HOLD/RUNS/TERMS to `live/base.py` (QC8 split), dead "## Where we are" pointer in Aims fixed to ## States, Glossary caught up from two levels to the three altitudes
 260731 1905 · The one-live-window rule held only for chat on the tree: navigating with ⌨ on left the old scope's PTY live AND unparked while a new one opened (two windows, one of them invisible), and a group release parked the wrong scope. Fixed in `follow()` (0.86.0, recorded on `QD3`); the law itself needed no change — the code had simply stopped enforcing it on the split site
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260731 · JL: "this law should be updated. It is actually very old"; the Law rewritten to **one scope · one CURRENT session · one live window**; three-altitudes and names bullets added, "One Q ⇄ one session" retired, remaining bullets generalized question → scope, parking written into the window rule, Diagram and Boundary follow; two renumbered version refs (0.72.0→0.74.0, 0.73.0→0.77.0) corrected on the way

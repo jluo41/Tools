@@ -74,6 +74,7 @@ The folder's own shape is settled: 25 top-level `.py` → 1. The engine now pres
   The family, one file each.
 
 ## Log
+- 260806 2128 · [REVISE-CC] swept to the 260806 architecture; verified clean against the live tree (top level = SKILL.md + CHANGELOG.md + status.py + cli/ src/ live/ tests/ checks/ assets/ ref/ vendor/; cli/build.py, cli/serve.py, src/ modules, QC2a/b/c states), no corrections needed
 260801 1330 · The 13 runnable scripts moved into cli/ on JL's ruling (top level = SKILL.md + CHANGELOG.md + status.py + folders); HERE re-pointed to the engine dir in 12 scripts, tests/conftest.py now adds cli/, 6 SKILL.md command paths rewritten, board.md ## Links repointed; 50 passed and check.py 96 error -> 0 error. Board Map also shut by default (JL: "默认的话就合起来")
 260801 1200 · The 11 test_*.py moved to tests/ on JL's "这个结构很差" (25 top-level .py -> 14): baseline 50 passed, conftest.py added, HERE/root re-pointed one level up, 50 passed again, SKILL.md file table updated; the remaining 14 are costed in Decision Now by external reference count
 260801 0140 · Repointed sibling ref QC7 -> QC4 after the full renumber (JL 260801)

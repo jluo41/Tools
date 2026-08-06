@@ -18,13 +18,13 @@ This page owns the first. `QB4` owns the second.
 **Where this page sits**: The board walks down one ladder: Board, Group, Page, Section, Sentence.
 `QB1` owns the board's folder on disk, and `QB3` puts a page's file beside the work it describes.
 This page takes the rung a reader meets first: the Index, plus the visual language every view shares.
-`QB2a` carries the page list page list that travels with it.
+`QB2a` carries the pages sidebar that travels with it.
 
 **What is settled elsewhere**: Whether a page's prose is well written, and the mechanical checks run after any change, belong to `QA9`.
 Paper and venue writing style belongs to the Paper lifecycle.
 
 **Why it matters**: A reader who cannot see what is stuck, or whose move it is, has to open every page to find out.
-This board has 55 of them, and 51 of those have nothing waiting on anyone.
+This board has 57 of them, and 52 of those have nothing waiting on anyone.
 
 ## Diagram
 
@@ -51,7 +51,7 @@ This board has 55 of them, and 51 of those have nothing waiting on anyone.
 │   click ▸ → what this group is for, and why  │
 │  ✅ QB1  Board folder shape        🔧 CC      │  ← what does a row show?
 │  🟡 QB4  The page template     🔧 CC     9/20 │  ← how is completion coloured?
-│  🔴 QB2a Pages page list         🗄 🔧 CC   0/4 │  ← hover 🗄, archive, 2 clicks
+│  🔴 QB2a Pages sidebar           🗄 🔧 CC   0/4 │  ← hover 🗄, archive, 2 clicks
 │  …                                            │
 │  [＋ Group]                                   │
 ├──────────────────────────────────────────────┤
@@ -640,7 +640,7 @@ The panel is authored, not inferred: which folders count as related and what eac
 
 ### A1 · 🗂 Board-Webpage-Index and Board-Webpage-Page
 - ✅ A1.1 · Content now names the reader outcome for all ten Index components, and the opened page's sections stay with `QB4`.
-- 🧠 A1.2 · The first two are answered today by the spine and the progress bar. The third is not: a reader still scans 55 rows, and the three-second visual answer is what `P1` tests.
+- 🧠 A1.2 · The first two are answered today by the spine and the progress bar. The third is not: a reader still scans 57 rows, and the three-second visual answer is what `P1` tests.
 
 ### A3 · 📖 Group, explain why these pages belong together
 - ✅ A3.1 · Shipped 260724. Every group on this board carries an intro, rendered as a native `<details>`, so the strip-scripts invariant holds.
@@ -695,7 +695,7 @@ The dated implementation history below is the record of how it got here; each Ai
   State badge · id · title · open-comment badge · owner · row tinted white to green by completion (`--fill`, percentage in `title`) · hover archive.
 
 - Known defects
-  ⏸️ ON HOLD renders as full green like ✅, so it reads as "done"; with 55 pages the list is one long strip with no visible priority; group order is entirely hand-maintained in `## Pages`.
+  ⏸️ ON HOLD renders as full green like ✅, so it reads as "done"; with 57 pages the list is one long strip with no visible priority; group order is entirely hand-maintained in `## Pages`.
   No external skill has been installed and no dependency has been added.
 
 - 260731 CC · 🗂 RELATED FOLDERS shipped (0.87.0, depth B)
@@ -825,17 +825,22 @@ The dated implementation history below is the record of how it got here; each Ai
 ## Files
 ### ⚙️ Engines · what RUNS the Index
 - `src/page_board.py`
-  The Index itself: the Board Map panel, `related_folders()` for the Related Folders fold, the Section Matrix, and the static ACTIVITY shell emitted after the page cards.
+  The Index itself: `index_rows()` and `sidebar_rows()` with `frac_done`, the Board Map panel, `related_folders()` for the Related Folders fold, the Section Matrix, and the static ACTIVITY shell emitted after the page cards.
   Runtime activity data stays an enhancement, so with no server the section reads as a sentence and the board is still complete.
-- `cli/build.py`
-  The index-rendering pass: `rows`, `frac_done`, the `.ir` CSS family, the `## Pages` intro parse (`gintro`), and the `details.gi` render.
   Changing what the Index SHOWS starts here.
+- `cli/build.py`
+  The build entry: it writes `board.html` and the `board/` tree from the `src/` renderers.
+  The index pass it once held moved out in the src split: the row render to `src/page_board.py`, the `## Pages` intro parse (`gintro`) to `src/parse.py`, and the `.ir` row styles to the `assets/css/` set.
 - `cli/serve.py`
-  Two things this page owns. `structure_op()` is the one writer for add_group, add_question, archive_question and archive_group behind `POST /_board/structure`, imported by the console and never reimplemented.
-  `log_counts`, `log_boards` and `activity_stats` are the update counter: `log_counts` reads only `## Log` and caches on file mtime, and `activity_stats` joins it to `## Pages` for group ownership.
-- `assets/js/00-header.js`
+  The endpoint host: `POST /_board/structure` and `POST /_board/activity` land here, and the live-layer split (`QC2c`) moved the code itself into `live/`.
+- `live/structure.py`
+  `structure_op()`, the one writer for add_group, add_question, archive_question and archive_group behind `POST /_board/structure`, imported by `cli/serve.py` and the console and never reimplemented.
+- `live/activity.py`
+  `log_counts`, `log_boards` and `activity_stats`, the update counter: `log_counts` reads only `## Log` and caches on file mtime, and `activity_stats` joins it to `## Pages` for group ownership.
+- `assets/js/10-drawer/50-structure.js`
   The page-side controls: ＋Q, ＋Group, 🗄 with its two-click confirm, and the inline mini form, wired into `__boardRewire` so they survive a live swap.
-  Also the ACTIVITY render: `sampleData`, `rowHtml`, `render`, and the `.act-*` styles.
+- `assets/js/50-activity.js`
+  The ACTIVITY render: `sampleData`, `rowHtml`, `render`, and the `.act-*` styles.
 - `assets/css/10-focus.css`
   The responsive Board Map surface and the group-intro styling. The map stays on the Index only; a focused page hides it with the rest of the index.
   The stylesheet set also holds the palette, typography, density, surfaces, interaction feedback, dark mode, and responsive rules that `### 11` audits.
@@ -896,6 +901,7 @@ The dated implementation history below is the record of how it got here; each Ai
   The rows already live where they are owned, and a second surface listing them is a second thing that can disagree with the first. The cost is real and accepted: finding what is waiting means opening pages.
 
 ## Log
+- 260806 2058 · [REVISE-CC] swept to the 260806 architecture; Files re-pointed to the src/ and live/ splits (index pass → src/page_board.py + src/parse.py, structure_op → live/structure.py, update counter → live/activity.py, ＋Q controls → assets/js/10-drawer/50-structure.js, ACTIVITY render → assets/js/50-activity.js), page count 55 → 57 with 52 waiting on nobody, and the garbled "page list page list" restored to the pages sidebar
 260802 1600 · Brought up to the QB4 page contract. Title now states the page's purpose; the Opening was rewritten to the blank-line split with a visible paragraph under 450 chars and a labelled `More details`; `## Boundary` was deleted on JL's 260731 ruling and its pointers moved into the Opening drawer; all 16 Content parts gained a face figure and a caption, and §8's two paragraphs were numbered 8.1 and 8.2; `## Items to Finish` became `## Aims` with 20 Aims in 13 Content-linked groups plus P1, and `## Where we are` became `## States` with Decision Now first and one state row per Aim; `## Files` was regrouped by ACTION and three dead or duplicated rows were repaired (`QA9-acceptance.md` → `QF-execute/QF1-acceptance.md`); the RELATED FOLDERS depth ruling left Decision Now for `## Law`, per QB4 §5.2.7; the excalidraw anchor moved off the non-existent `QA10` frame to `QA2b`; stale text corrected in §11 (three audit findings the pilot had already closed), §14 (the QAa faces were folded into QB4 on 260802), and §16 (the depth was ruled and shipped)
 260802 1150 · JL ruled option C on the Index roll-up, the same day it was raised: the Index stays as it is and a reader goes to States to find an open row. Recorded in Law and removed from Decision Now, per QB4 §5.2.7, which says an answered decision leaves States entirely rather than moving down the page
 260802 1130 · An Index roll-up of every open `Decision Now` row was proposed and recorded here rather than left in a chat session (JL 260802: "don't put the decision in the claude code session"). It came out of JL asking whether a human could check Decision Now and nothing else: it is the only thing that requires them, but finding the rows today means opening 53 pages to learn that 51 have nothing waiting

@@ -50,7 +50,8 @@ Scope: This page covers What each skill may write on a shared page, which declar
 
 ```
  SEAM 4 · WHO CREATES A PAGE
-    Paper Stage is the ONLY public creator ──calls──► stage.py new
+    the door /haipipe-paper is the ONLY public creator
+        its create-page.py ──calls──► cli/stage.py new
     board owns filename · face grammar · Pages insertion · managed block
     paper owns the stage-specific Content jobs
 
@@ -95,7 +96,7 @@ The alternative was an adapter: the paper skill writes its own format, the board
 The generic Board owns the reusable shape of a page and the mechanics of locating, rendering, and writing one. This Paper Board owns what a manuscript section, paragraph, and sentence must mean and prove inside that shape. `QC3` records the page-level split and `QC5` is the sole Paper-writing contract; neither requirement is copied into `haipipe-board-page` or `haipipe-board-sentence`.
 
 #### The part that is real and unwritten
-The Stage Contract block is generated and will be overwritten. Everything else is authored and must never be. That rule exists in the code and in a comment inside the block; it is not in the paper skill's contracts at all, which is exactly where an agent writing a stage would look for it.
+The Stage Contract block is generated and will be overwritten. Everything else is authored and must never be. That rule exists in the code and in a comment inside the block, which reads "Refresh with stage.py sync; build.py never edits Markdown." The door's `SKILL.md` now names the managed `## Stage Contract` span and the `stage.py sync` command in its Board-mapping step, but no `stage.md` says the block is regenerated, and `stage.md` is what an agent writing a stage reads.
 
 #### What belongs in Content
 (absorbed from the former `QC4b`, 260726: it is this same ownership question asked about one section)
@@ -152,20 +153,21 @@ Settled and implemented. Paper state is derived from S pages and disk; there is 
 ### Who creates a page?
 #### The two creators
 ```
- DRAFT            copies the stage template and fills it: the disciplinary content,
-                  the section's jobs, the placeholder grammar, the Q-consumer block
+ create-page.py   selects the stage contract and its template, and composes what the
+ (then DRAFT)     stage owes: the disciplinary content, the section's jobs, the
+                  placeholder grammar, the Q-consumer division. DRAFT then fills them.
 
  stage.py new     writes the face: title, state, owner, requires/style-from/provides,
                   the managed Stage Contract, and a generic Content stub
 ```
 
 #### Why this is not merely a race
-They compose different things. DRAFT knows the stage's craft and the venue's expectations; `stage.py new` knows the board's grammar and the dependency graph. A page needs both, and today whichever runs second either overwrites or sits beside the first.
+They compose different things. The paper side knows the stage's craft and the venue's expectations; `stage.py new` knows the board's grammar and the dependency graph. A page needs both, and the order is now fixed rather than raced: `create-page.py` calls `stage.py new` first, then replaces the shell's Opening, Content and Aims from the stage template, sending the template's Q-consumer division to `## Aims` rather than to Content.
 
-#### The composition that is designed but unbuilt
-The intended answer is on record: a new page's Content should be composed at creation from four layers, the board shell for layout, the stage template for base subsections and gates, the venue template for reader expectations and length, and the previous stages' contracts for accepted inputs and open requirements. Resolution order is stage, then venue, then contracts. That is written down and nothing implements it: `stage.py new` still writes a generic stub.
+#### The composition that is designed and half-built
+The intended answer is on record: a new page's Content should be composed at creation from four layers, the board shell for layout, the stage template for base subsections and gates, the venue template for reader expectations and length, and the previous stages' contracts for accepted inputs and open requirements. Resolution order is stage, then venue, then contracts. Two of the four layers run today. `stage.py new` still writes only a generic stub, and `create-page.py` composes the stage template on top of it. The venue template and the upstream contracts are still not composed by anything.
 
-So the real question is not who creates the page, but who performs that composition, and with which of the two skills' knowledge.
+So the real question was never who creates the page, but who performs that composition, and with which of the two skills' knowledge. That is now answered: the composition runs on the paper side, in `create-page.py`, which rents the Board's shell rather than the other way round.
 
 #### The composition order
 (absorbed from the former `QC4c`, 260726)
@@ -197,7 +199,7 @@ Stating it as a delete-test rather than a principle is what catches the real fai
 
 #### What a dialect module may not do
 
-- It may not render. It returns `(state, label, tooltip)`; `body.py` decides what a chip is.
+- It may not render. It returns `(state, label, tooltip, meta)`, and `meta` is data and never html; `body.py` decides what a chip is.
 - It may not write. It reads a paper tree and holds an index, and nothing else.
 - It may not be reached unless a board declared it. The declaration is on the board, never a default.
 
@@ -265,12 +267,12 @@ One consequence, stated rather than discovered later: the delete-test needs a bo
 Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Every division, item and Law below is the original's, unchanged; only the framing above is new.
 
 ## Files
-- `../../paper/S01-opening/seed/stage.md` (and its sibling stage contracts, resolved via `haipipe-paper/stages/index.yml`)
+- `../../paper/S01-opening/seed/stage.md` (and its sibling stage contracts, resolved via `../../paper/haipipe-paper/stages/index.yml`)
   Where the ownership line should be stated.
-- `haipipe-board/src/stage_contract.py`
+- `../../board/haipipe-board/src/stage_contract.py`
   The only writer of the managed block.
 - `../../paper/S06-main/section-edit/stage.md`
-  Four of five inputs archived.
+  Now declares `read_order:` and no `inputs:`; its dependencies live on the Board page.
 - `0-lifecycle/S06-main/S-Main-6-results.md`
   The same dependencies, generated, with gate states.
 - `../../paper/haipipe-paper/ref/paper-folder-anatomy.md`
@@ -279,15 +281,15 @@ Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Ever
   Carries the ruling in its Topic and Pipeline.
 - `../../paper/S01-opening/seed/template.md` (one per stage folder)
   The disciplinary half of what a new page needs.
-- `haipipe-board/cli/stage.py`
+- `../../board/haipipe-board/cli/stage.py`
   The board half, currently writing a generic stub.
-- `create-page.py`
+- `../../paper/haipipe-paper/create-page.py`
   The public composition path; Board shell first, selected stage scaffold second.
-- `haipipe-board/src/dialect_paper.py`
+- `../../board/haipipe-board/src/dialect_paper.py`
   The only paper-aware module in the Board.
-- `haipipe-board/cli/build.py`
+- `../../board/haipipe-board/cli/build.py`
   The guarded import and the declaration check.
-- `haipipe-board/src/body.py`
+- `../../board/haipipe-board/src/body.py`
   The mechanism half: `cite_chips()` and the code-span guard.
 
 ## Law
@@ -298,6 +300,7 @@ Merged 260726 from 5 faces that each ruled one seam of the same joint (JL). Ever
 - **The board runs paper code: where is that boundary.** - Dialect code may hold grammar and resolution. Rendering, invariants and file writing stay with the Board. - A dialect is DELETABLE: the board must build without it, and boards that do not declare it must render byte-identical. - A dialect is opted into by a declaration on the board, never by detection.
 
 ## Log
+- 260806 2224 · [REVISE-CC] swept to the 260806 architecture; SEAM 4's creator is the one door `/haipipe-paper` and its `create-page.py`, not the retired Paper Stage skill, and the four-layer composition is now half-built rather than unbuilt.
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the shared-page section names moved to their post-rename forms (Opening, Aims, States) and the Files paths to the live SNN stage folders and `cli/` tools.
 
 260726 · Merged from five faces that each ruled one seam of the `①`/`③` joint. Every division, item and Law is the original's. Seam labels were renumbered to `SEAM n` after a board-wide glyph sweep collided them with the folder numbers.

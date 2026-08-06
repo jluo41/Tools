@@ -57,7 +57,7 @@ WORKFLOW  three verbs and one spec load, from the same door
   variant now lives at page-types/for-stage) · the chat drawer, one day
         │  it READS the contract and writes nothing
         ▼
-  the seven sections, in their fixed order, and what each one owes
+  the sections, in their fixed on-stage order, and what each one owes
   🧭 Opening  🖼 Diagram  📚 Content  🎯 Aims  📍 States  📎 Files  🗃 folds
 
   ── invoked as a VERB ─────────────────────────────────────────
@@ -486,7 +486,7 @@ ref/page-run-contract.md     195 ln  Page RUN contract
       The syntax is unruled and no page carries one, which is `A7.1` on `QC1b`.
 
 ## States
-This is the most proven unit in the family and also the one changing fastest: 23 releases to 0.20.1, and the only one whose door test was measured rather than assumed.
+This is the most proven unit in the family and also the one changing fastest: 24 releases to 0.21.0, and the only one whose door test was measured rather than assumed.
 Its health is `🟡 in flux` because 0.10.0 shipped a bound that has not been re-measured, not because anything about it is unsettled.
 It is also the base that variant doors extend, so the ten `page-types/` variants, the stage and display types among them, depend on this contract staying one file.
 
@@ -499,6 +499,7 @@ It is also the base that variant doors extend, so the ten `page-types/` variants
   So this unit is not written only for routing: variant authors in other families resolve the same base contract, which is why a rule may never be forked into a variant.
 
 ## Log
+- 260806 2114 · [REVISE-CC] swept to the 260806 architecture; States release count corrected to 24 releases to 0.21.0, and the Diagram's retired "seven sections" count reworded to the on-stage-order phrasing 0.12.0 ruled.
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); haipipe-paper-stage no longer cited as live, the stage variant is page-types/for-stage and the release count reads 23 to 0.20.1.
 260804 · Updated the authored mirror for the third Page verb: CREATE, WORK ON, and bounded RUN now appear together, including the producer, builder, reviewer, version receipt, and audit boundary.
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the spec load, the two verbs and the 0.10.0 scope bound, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. The measured door test recorded as met, and its scope failure recorded as the one Aim it left open

@@ -67,18 +67,18 @@ This page owns the gate that runs BEFORE the reply, and part 6 adds the newer ha
    outcome              the round's result, first        ✅ shipped
    routing footer       one line per write ·             ✅ shipped
                         page id · ## section
-   decision pointer     the page and its row count,      ✅ shipped
-                        never the rows
+   decision lines       one line per touched row,        ✅ shipped
+                        in brief, never re-argued
    Next:                one action for the user          ✅ shipped
    status strip         3 lines from status.py           ✅ shipped
    ────────────────────────────────────────────────────────────────
    none of them says whether the work was right before it was written
 ```
 
-`haipipe-board-routing` 0.2.0 owns the reply's shape, and this page does not restate it.
+`haipipe-board-routing` owns the reply's shape, 0.2.0 when this page opened and 0.9.1 today, and this page does not restate it.
 Every reply that wrote to a board closes with one line per write, `page id · ## section`, so the human sees where each record landed without hunting for it.
-Decisions are pointed at rather than re-listed, which means the footer names the page and its `Decision Now` row count while the rows themselves live only on the page.
-That rule came from JL on 260731 and it works; what it does not do is say anything about whether the work was correct before the footer was written.
+Decisions are listed in brief and never re-argued: one line per `Decision Now` row the round touched, the ask plus the recommended option, while the full rows live only on the page.
+That rule came from JL on 260731 as a count-only pointer and was amended by him on 260802 to the brief list that §5.1 records; what it does not do is say anything about whether the work was correct before the footer was written.
 
 ### 2 · Why habit is not enough, with this session as the evidence
 
@@ -173,7 +173,7 @@ A round can only honestly claim the delta for the pages it edited.
 
 ### 4 · What a machine cannot check, and who covers it
 
-**Two instruments, one boundary**: what each one judges, and which of them has no cadence yet.
+**Two instruments, one boundary**: what each one judges, and the cadence each one runs on.
 
 ```text
    instrument        judges                        cadence
@@ -182,9 +182,9 @@ A round can only honestly claim the delta for the pages it edited.
                      dead paths · missing figures  (the gate, ③)
                      em-dashes · state vs Aims
    ──────────────────────────────────────────────────────────────
-   Agent-1           prose                         UNRULED
-                     is the argument right · is    (the 🤖 row
-                     the page still true after     below)
+   Agent-1           prose                         prose rounds only
+                     is the argument right · is    (ruled B,
+                     the page still true after     260802)
                      the code moved
    ──────────────────────────────────────────────────────────────
    the boundary between them is itself a judgment a machine cannot make
@@ -192,8 +192,8 @@ A round can only honestly claim the delta for the pages it edited.
 
 A checker tests structure, and it cannot test whether the prose is right, whether the argument holds, or whether the page still says something true after the code moved underneath it.
 `QF1` already names the two instruments for this: a mechanical checker for structure, and a zero-background reviewer for readability and visible staleness.
-The gate above is the mechanical half made mandatory, and the open question is whether `Agent-1`, the fresh-context reviewer, runs every round or only on request.
-Requiring it on every round is honest and slow; requiring it on rounds that changed prose rather than only mechanics is the middle path, and the boundary between those two is itself a judgment a machine cannot make.
+The gate above is the mechanical half made mandatory, and the cadence of `Agent-1`, the fresh-context reviewer, was ruled `B` on 260802: it runs on rounds that changed prose.
+Requiring it on every round is honest and slow; requiring it only on request makes the cold read easy to forget; rounds that changed prose rather than only mechanics is the middle path that shipped, and the boundary between those two is itself a judgment a machine cannot make.
 
 ### 5 · What the reply says
 
@@ -204,8 +204,8 @@ Requiring it on every round is honest and slow; requiring it on rounds that chan
    ──────────────────────────────────────────────────────────────
    1       outcome                 this page, §5
    2       the body                this page, §5.2
-   3       pending decisions,      haipipe-board-routing 0.6.0
-           one line each
+   3       pending decisions,      haipipe-board-routing
+           one line each             (since 0.6.0)
    4       routing footer          haipipe-board-routing
    5       status strip            haipipe-board SKILL.md · QD6
    ──────────────────────────────────────────────────────────────
@@ -221,7 +221,7 @@ JL ruled on 260802 that the reply lists its Decision Now rows in brief rather th
 The rule it amends came from JL himself on 260731 and said the opposite, that decisions are pointed at and never re-listed, and the reason for the change is what a bare number does to a reader: it says something waits, and it does not say whether the thing waiting is worth opening the page for.
 The line drawn is between LISTING and RE-ARGUING.
 The reply carries one line per row, the ask plus the recommended option, and the full row keeps its `Part`, `Why now`, options, `Blocks` and default on the page where they can be commented on.
-`haipipe-board-routing` 0.6.0 carries this, and the same five lines are now a figure at the top of this page's own `Decision Now`, so the page and the reply say the same thing from one source.
+`haipipe-board-routing` has carried this since 0.6.0, and the same five lines are now a figure at the top of this page's own `Decision Now`, so the page and the reply say the same thing from one source.
 
 #### 5.2 · The body is written for a weak English reader
 JL asked on 260802 for a reply he could actually read, being a weak English speaker with ADHD, and then said of the result "I love this format".
@@ -270,8 +270,8 @@ The reply and the page are two places the same round can put the same thing, and
   The repo default for every session: emoji-headed sections, and any non-trivial design, tradeoff or flow leads with an ASCII diagram rather than prose. It is loaded whether or not a board exists, so it cannot stand down on its own.
 - `haipipe-board`'s SKILL.md, section `Session attachment and Closing Block`
   Owns the last three lines that `status.py` renders, and the rule that no prose follows them.
-- `haipipe-board-routing` 0.2.0
-  Owns the write-back footer: one line per write as `page id · ## section`, decisions pointed at instead of re-listed, and a closing `Next:` line naming one action for the user.
+- `haipipe-board-routing` 0.9.1
+  Owns the write-back footer: one line per write as `page id · ## section`, decisions listed in brief instead of re-argued, and a closing `Next:` line naming one action for the user.
 - this page, §5
   Owns the order: outcome first, then the footer, and never a condition the round did not actually run.
 
@@ -406,13 +406,13 @@ The five in one line each, so you can see what is waiting before reading any of 
 - `../../board/haipipe-board/cli/check.py`
   Condition ③'s instrument, and the source of the warning count the gate compares.
 - `../../board/haipipe-board/status.py`
-  Condition ⑤'s last three lines, and the renderer of the `mode` field the first Decision Now row would switch on.
+  Condition ⑤'s last three lines, and the renderer of the `mode` field the reply-body rule switches on.
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 - `../../board/haipipe-board-routing/SKILL.md`
-  Owns the reply's footer and the point-do-not-re-list rule; candidate `A` for the gate's home.
+  Owns the reply's footer, the list-in-brief rule for decisions, and, since the row closed `A` on 260802, the gate itself.
 - `../../board/haipipe-board/SKILL.md`
-  Owns the closing block and is loaded by every attached session; candidate `B` for the gate, and where §6.2.2 puts the reply-body rule.
+  Owns the closing block and the reply-body mode rule from §6.2.2, and is loaded by every attached session; the gate's home went to routing instead.
 - `CLAUDE.md`
   The repo default an attached session has to override; §6.1.1's first contract.
 
@@ -433,6 +433,7 @@ The five in one line each, so you can see what is waiting before reading any of 
   ⚠️ Generated by `cli/build.py`. Never hand-edit.
 
 ## Log
+- 260806 2123 · [REVISE-CC] swept to the 260806 architecture; §1 and §6.1.1 caught up to the 260802 list-in-brief amendment, §4's UNRULED cadence closed to the ruled B, routing cited at 0.9.1 instead of 0.2.0/0.6.0, and the two Files "candidate" framings closed to the shipped rulings
 260802 · P1 run and passed, so the page closes. A fresh agent told only to load `haipipe-board-routing` ran the gate without being asked, reported ③ red with the concurrent session's commits named, ran the cold read because it had changed prose, and verified ④ by driving the page itself. Six of six Aims met, state → ✅ SETTLED
 260802 · JL said "take the defaults", so all 5 Decision Now rows closed on their own 🤖 defaults: C the mode decides the reply body, A all five conditions become the gate, A a warning the round introduced blocks the handback, B the cold read only when prose changed, A the gate ships into routing. Built `cli/gate.py`, shipped both rules into the two skills, and 5 of 6 Aims went ✅
 260802 · JL amended his own 260731 rule: the reply LISTS its Decision Now rows in brief instead of naming a count ("I think you can also briefly list the 5 decisions here as well"). §5.1 records the ruling and the line between listing and re-arguing; `Decision Now` gained a five-line figure so the page and the reply read from one source; `haipipe-board-routing` went 0.5.0 → 0.6.0

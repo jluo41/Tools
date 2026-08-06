@@ -19,7 +19,7 @@ A `✎` record reads `> ✎ the sentence with ~removed~ *added* words · WHO · 
 **Why it is not part of this family**: the test on `QC1b` §1 asks whether some consumer needs a unit's rules with no board open, and `haipipe-writing` passes it too easily.
 Its consumer is ANY authored prose in the repo: a board page, a `SKILL.md`, a README, a grant application section.
 Folding it in would have tied a general writing verb to one host, so the test sent it OUT of the family rather than into it (`QC1b` §1.3, 260802).
-It is host-agnostic by construction, and `ref/change-record.md` §3 writes the board dialect and the LaTeX dialect down together so the two cannot drift into two ideas.
+It is host-agnostic by construction, and `ref/change-record.md` §4 writes the board dialect and the LaTeX dialect down together so the two cannot drift into two ideas.
 
 **Covered elsewhere**: `haipipe-board/ref/writing-rules.md` is the board's own prose standard and is what a board page is checked against; this skill is the verb that acts on prose anywhere.
 `haipipe-paper-revise-humanizer` rewrites ACADEMIC prose for a venue and keeps the venue's voice, so the two share machinery and not judgment: the humanizer calls `cli/wdiff.py` rather than writing its own diffs.
@@ -27,8 +27,8 @@ It is host-agnostic by construction, and `ref/change-record.md` §3 writes the b
 So two units now produce the same record: that verb writes one when a person retypes a sentence in the browser, and `cli/wdiff.py apply` writes one when this skill rewrites prose anywhere.
 They agree today because both follow the same grammar, and nothing checks that they still will.
 
-**Where it stands**: 7 releases to 0.6.1, the most recent adding `cli/agree.py`, which compares two statements of one fact after three defects on 260802 all turned out to be that shape.
-It is the newest home for three contracts that used to live in the paper family, `ref/ai-tells.md`, `ref/weaving.md` and `ref/holes.md`, all migrated on 260801, and nothing has yet confirmed the paper family stopped keeping its own copies.
+**Where it stands**: 7 releases to 0.6.1, with 0.6.0 adding `cli/agree.py`, which compares two statements of one fact after three defects on 260802 all turned out to be that shape.
+It is the newest home for three contracts that used to live in the paper family, `ref/ai-tells.md`, `ref/weaving.md` and `ref/holes.md`, all migrated on 260801; the 260805-06 one-door rebuild of the paper family left no copy of the three in the paper tree, and the humanizer itself now lives beside this unit in `skills/writing/`.
 No `score` run has been used to choose what this board rewrites, which is the obvious next use and has not happened.
 
 ## Writing Style
@@ -88,7 +88,7 @@ WORKFLOW  one judgment step, fenced by code on both sides
 
   ── why this unit is on a board about boards ─────────────────────
   it is HOST-AGNOSTIC and lives outside skills/board/. The board is
-  one host among several, and ref/change-record.md §3 keeps the board
+  one host among several, and ref/change-record.md §4 keeps the board
   dialect and the LaTeX dialect in one file so they cannot drift.
 ```
 
@@ -265,7 +265,9 @@ tests/test_roundtrip.py     114 ln  What `apply` writes, `check` must accept. Ru
 ## Aims
 - [ ] 🧹 The paper family stopped keeping its own copies
       `ref/ai-tells.md`, `ref/weaving.md` and `ref/holes.md` migrated here on 260801 out of `haipipe-paper-revise-humanizer`, `haipipe-paper-revise-content` and the paper DRAFT phase.
-      A migration is finished only when the old home points at the new one, and nothing has confirmed that for all three.
+      A migration is finished only when the old home points at the new one.
+      The 260805-06 rebuild changed the ground: the paper family is one door now, `haipipe-paper-revise-content` and the old DRAFT phase sit in `paper/_old/`, the paper tree keeps no copy of the three, and the humanizer moved to `skills/writing/` beside this unit.
+      What is left is for the owner to close this aim on that evidence.
 - [ ] ✎ The two producers of a `✎` record are checked against each other
       `haipipe-board-sentence` 0.3.0 added an `edit` verb that writes a change record, and `cli/wdiff.py apply` here writes one too.
       One grammar with two independent implementations is the shape `cli/agree.py` was built for, and it has never been pointed at this pair.
@@ -274,7 +276,7 @@ tests/test_roundtrip.py     114 ln  What `apply` writes, `check` must accept. Ru
       Today's roster rewrite was chosen by JL reading Openings by eye, which is exactly the work `score` exists to replace.
 - [ ] 🪞 The roster's scope beyond `skills/board/` is settled, not just widened
       `QC3a` ruled on 260727 that this roster covers `skills/board/` and nothing else, and JL widened it on 260802 by asking for this page.
-      What is still unstated is where the new line falls: this one neighbour, every family the board depends on, or all 152 skills in the plugin.
+      What is still unstated is where the new line falls: this one neighbour, every family the board depends on, or all 158 skills in the plugin.
 
 ## States
 This unit ships at 0.6.1 after 7 releases and is healthy in the ordinary sense: its two code verbs are deterministic, its contracts are collected in one place, and it has tests.
@@ -292,6 +294,7 @@ Its `🟡 in flux` is about position rather than quality, because it absorbed th
   Being on the roster is not the same as being in the family, and this page is the first row that makes that distinction visible.
 
 ## Log
+- 260806 2118 · [REVISE-CC] swept to the 260806 architecture; the two-dialect pointer now reads `ref/change-record.md` §4 (disk truth, §3 is placement), `cli/agree.py` is credited to 0.6.0 not the latest release, and the paper-family migration clauses now state the one-door outcome: no copies left in the paper tree, humanizer relocated to `skills/writing/`, plugin count 158
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the "two days ago" migration clause now says 260801 and the board page count reads 57, with no 260805 change touching this unit.
 260802 2100 · Corrected one claim after `haipipe-board-sentence` reached 0.3.0: this page said that skill owns what a `✎` line IS while this one owns when it gets written, and its new `edit` verb now writes one too. Two producers of one record is a new Aim, and `cli/agree.py` is the obvious instrument since it already compares two statements of one fact
 260802 2000 · Page opened at JL's request to add `skills/writing` to the roster, and written to `haipipe-board-page-for-skill` 0.1.0. It is the first skill page for a unit outside `skills/board/`, which widens `QC3a`'s 260727 scope ruling; the open question of where the new line falls is an Aim here and a Decision Now row on `QC3a`

@@ -1,5 +1,5 @@
 # serve.py: splitting the live layer
-state: 🟡 PARTIAL · built 260731: gate + the six modules + a 361-line serve.py; chat and terminal moved with the rest, so the M1 sequencing item is the one left
+state: 🟡 PARTIAL · split shipped 260731 (gate + mixin move + thin serve.py); QD2 M1 landed in live/chat.py the same day, so what is left is retiring the serve.py shims and promoting navtest.mjs
 owner: JL
 method: QC2b's Law verbatim, a mechanical move under a response-identical gate; mixins so no signature changes; the areas that stopped moving go first
 
@@ -14,25 +14,26 @@ It succeeds when focused modules assemble into the same server and a response ga
 
 ## Diagram
 ```
-   today                                   proposed
+   before the split (260731)               shipped 260731
    ─────────────────────────────           ──────────────────────────────────────
-   serve.py        2938 lines              serve.py      ~300  thin CLI + routes
+   serve.py        2938 lines              serve.py       361  thin CLI + routes
      20 routes + the terminal WS             live/chat.py         the Claude bridge
      one Handler class, 65 methods           live/term.py         PTY + WS terminus
-     seven unrelated areas in one file       live/excalidraw.py   canvas round-trip
+     seven unrelated areas in one file       live/xcal.py         canvas round-trip
                                              live/write.py        sentence anchors
    src/            the RENDER half           live/activity.py     the focus-time DB
      build.py is already a thin CLI          live/structure.py    add Q · group · archive
      over 8 modules (QC2b, shipped 260724)
                                             src/common.py stays the one shared floor
    one process · one port · 5599 only       both halves, no duplication (QC2b Law)
+                                            since then: home · shell · turnring joined live/
 ```
 
 ## Content
 ### 1 · What is actually in there
 Counted 260731 by lines of method body: excalidraw 443, chat 414, activity 390, write-back 334, terminal 322, http plumbing 291, then image paste, HOLD and structure edits at 48, over roughly 670 more lines at module level (the four rules texts, `prime_context`, `tool_brief`, `_slugify`, `structure_op`, the PTY helpers).
 The inventory and its per-area reading live on `QD2` §5, where it was gathered.
-Two things in it are worth saying plainly: Claude Code is about one sixth of the file, and the largest single area is a drawing-canvas round-trip.
+Two things in it were worth saying plainly: Claude Code was about one sixth of the file, and the largest single area was a drawing-canvas round-trip.
 
 ### 2 · One process with modules, not several servers
 JL's naming ("server_excalidraw, server_xxx, and a server_main") reads two ways, and only one of them works here.
@@ -42,8 +43,8 @@ The areas also share state that would have to be duplicated or synchronized acro
 So the split is MODULES, and the word for the result is a package, not a fleet.
 
 ### 3 · How you split a request-handler class
-The 65 methods are not independent functions; they are methods on one `BaseHTTPRequestHandler` subclass sharing `self.root`, `self.reply()`, `self.target()`, `self.hold()`, and `self.rebuild()`.
-That makes the mechanism a real choice rather than a formality.
+The 65 methods were not independent functions; they were methods on one `BaseHTTPRequestHandler` subclass sharing `self.root`, `self.reply()`, `self.target()`, `self.hold()`, and `self.rebuild()`.
+That made the mechanism a real choice rather than a formality.
 
 - A · mixins
   `class Handler(ChatMixin, TermMixin, XcalMixin, WriteMixin, ActivityMixin, StructureMixin, BaseHandler)`, one file per mixin, `do_POST` staying as the single routing table.
@@ -58,16 +59,17 @@ That selects A for the move, and leaves B available afterwards as its own gated 
 `src/` is the render half, and its `common.py` is already shared with serve.py, so the serve modules want their own home rather than a second meaning for `src/`.
 The board's own word for that half is the live layer (`QC2b`), so `live/` uses vocabulary the board already speaks.
 The modules are named for what they SERVE, mirroring `QC2b`'s rule that render modules are named for what they render.
-`live/excalidraw.py` spells the name out because a top-level `xcal.py` script already exists and `live/xcal.py` would read as the same thing.
-serve.py then becomes what build.py became on 260724: a thin CLI plus the routing table.
+This page argued `live/excalidraw.py` because a top-level `xcal.py` script already exists, but the move shipped `live/xcal.py` anyway and the two have coexisted without confusion.
+serve.py then became what build.py became on 260724: a thin CLI plus the routing table.
 
 ### 5 · What moves now, and what waits
-Three areas have stopped moving and can go first: excalidraw, activity, and the write path, together 1167 lines, all shipped and stable.
-Structure edits go with them.
+Three areas had stopped moving and could go first: excalidraw, activity, and the write path, together 1167 lines, all shipped and stable.
+Structure edits went with them.
 
-Two areas are moving right now, and moving them would be doing the work twice.
-Chat is about to become a session host (`QD2` M1), which rewrites that area, so the honest sequence is to let M1 land IN `live/chat.py` as that module's first version rather than to move the current code and then replace it.
-The terminal took the PTY in-house on 260731 (0.64.0) and `QD3m`'s route is still open, so it moves last.
+Two areas were still moving, and moving them looked like doing the work twice.
+Chat was about to become a session host (`QD2` M1), which rewrites that area, so the honest sequence looked like letting M1 land IN `live/chat.py` as that module's first version rather than moving the current code and then replacing it.
+The terminal took the PTY in-house on 260731 (0.64.0) and `QD3m`'s route was still open at the time (since archived), so it was slated to move last.
+In the end the `ast` slicer made the move free, chat and terminal moved with the rest, and M1 landed inside `live/chat.py` on 260731; the Aims record the inversion.
 
 ## Aims
 ### The mechanical split
@@ -82,9 +84,10 @@ The terminal took the PTY in-house on 260731 (0.64.0) and `QD3m`'s route is stil
       2933 lines to 361: the imports, the mixin assembly, `do_GET`, `do_HEAD`, `do_POST`, the daemon, and the console's re-exports.
 
 ### Follow-up work
-- [ ] 🔌 Land `QD2` M1 inside `live/chat.py`
-      Still the sequencing that matters, but the reasoning inverted once the move turned out to be free: chat moved with the rest at zero hand-editing cost, so M1 now lands in a 702-line module that holds only chat instead of inside a 2933-line file.
+- [x] 🔌 Land `QD2` M1 inside `live/chat.py`
+      The reasoning inverted once the move turned out to be free: chat moved with the rest at zero hand-editing cost, so M1 landed in a module that holds only chat instead of inside a 2933-line file.
       That was the point of moving it early rather than an argument against it.
+      LANDED 260731 (`QD2` A4.1): a daemon thread owns one asyncio loop plus the per-question client registry, and chat.py has grown 702 to 1332 lines around it.
 - [ ] 🧹 Retire the shims once JL has clicked through
       `serve.py` re-exports `structure_op`, `prime_context`, `tool_brief`, `MODELS` and friends so the console keeps importing them from `serve` (QE3's Law).
       They can point at `live.*` directly once the console is confirmed working.
@@ -98,8 +101,8 @@ The terminal took the PTY in-house on 260731 (0.64.0) and `QD3m`'s route is stil
       It was mid-iteration when the battery shipped; copying an in-flight file would freeze a flaky version.
 
 ## States
-Nothing is built.
-The question was opened by JL on 260731 ("could we separate them? I don't think it is good to put all the things in one"), and the inventory that motivates it was gathered the same day on `QD2` §5.
+The split is shipped: the mixin modules under `live/`, a thin serve.py, and the `checks/` battery standing guard; `QD2` M1 landed inside `live/chat.py` the same day, so only the shim retirement and the navtest.mjs promotion remain.
+The question was opened by JL on 260731 ("could we separate them? I don't think it is good to put all the things in one"), and the inventory that motivated it was gathered the same day on `QD2` §5.
 
 - 260731 CC · 📋 The one-off batteries became a standing checklist (`checks/`, 0.89.0)
   JL's ruling made it explicit: a ticked hard item must stay CHECKED, not remembered — today one did not (`follow()` on the tree silently stopped enforcing `QD1`'s one-window law and no tick moved).
@@ -152,17 +155,20 @@ These are the calls only JL can make; CC ticks nothing here.
 ## Files
 ### Engines
 - `../../board/haipipe-board/cli/serve.py`
-  The file this page is about; 2938 lines, 20 routes, one handler class.
+  The file this page split; 2938 lines then, 496 today: imports, the mixin assembly, and the routing table.
+- `../../board/haipipe-board/live/`
+  Where the split landed: ten modules today (the moved six plus base, with home, shell, and turnring grown since).
 - `../../board/haipipe-board/src/common.py`
   The shared floor both halves import, and the one file this split must not duplicate.
 - `../../board/haipipe-board/cli/build.py`
-  What a thin CLI looks like after the same treatment, 128 lines over `src/`.
+  What a thin CLI looks like after the same treatment, 164 lines over `src/`.
 
 ### Related work
 - `QC-engine/QC2b-srcsplit.md`
   The render-side split, its Law, and the sentence that deferred this one.
 
 ## Log
+- 260806 2129 · [REVISE-CC] swept to the 260806 architecture; QD2 M1 ticked as landed in live/chat.py (260731, QD2 A4.1), the drawing module corrected to the shipped live/xcal.py, the States "Nothing is built" opener replaced with the shipped split, and serve.py's Files row brought from 2938 to today's 496 lines
 260801 0130 · Reindexed QC8 -> QC2c under the new QC2 code-shape parent (JL 260801)
 260731 2358 · The venv rule became code (0.90.0): the checklist's next run caught 5599 on system 3.9 a THIRD time (three restarts, three hands, same trap), so `main()` now re-execs itself onto `<--root>/.venv/bin/python` when the SDK is missing — proven by starting under `/usr/bin/python3` and getting `python 3.13.14 · sdk true` from `/_board/health`; the 1830 "maybe a Decision Now row" is thereby closed as built, per JL's no-decisions rule. Same lap re-ran `checks/run.py --full` against SDK-Talk's assets split + router queue: full tier green, the 0.86 follow() fix intact in `assets/js/10-drawer/40-follow.js`, ledger sequential — the two sessions are aligned, and the checklist is what proved it
 260731 1934 · `checks/` shipped (0.89.0) on JL's ruling that the checklist IS the items-to-finish, kept checked: smoke tier (live server, read-only, incl. the new `GET /_board/health` venv probe) + full tier (fixture board, real CLI turn, real SDK turn, 12 browser checks); both tiers green first time after the battery fixed its own two fixture bugs

@@ -1,5 +1,5 @@
 # The write path: one browser edit, one markdown mutation
-state: 🟡 PARTIAL · one Aim met silently, 4 rulings waiting on JL, remeasured 260802
+state: 🟡 PARTIAL · one Aim met silently, 3 rulings waiting on JL, remeasured 260802
 owner: JL
 method: name the addressing contract every write endpoint already shares, measure where it fails on this board, then rule the ladder and the version token
 
@@ -32,7 +32,7 @@ It succeeds when one shared matcher handles decorated and repeated text and reje
                                      ▼
                                ③ walk to the insert point   ◀── never a
                                   comment: end of the `>`       byte offset
-                                  run below the sentence        (QC6 §9)
+                                  run below the sentence        (QC1b §4.2)
                                   discussion: end of the
                                   ## Discussion section
                                      │
@@ -76,7 +76,7 @@ It succeeds when one shared matcher handles decorated and repeated text and reje
 
    🈶 the refusal a reader actually meets is in CHINESE.
       edit_sentence returns 这句话带有 Markdown 格式；为避免丢格式，请先在
-      源文件编辑 — the one message 44.8% of this board's sentences produce,
+      源文件编辑, the one message 44.8% of this board's sentences produce,
       on boards JL ruled English-only on 260724.
 ```
 
@@ -88,15 +88,15 @@ Refusing beats guessing, because a wrong anchor puts a comment under a sentence 
 
 The insert point is the other half, and it is already correct.
 A comment lands at the end of the `>` run below its sentence (`_apparatus_end`), and a discussion line lands at the end of the `## Discussion` section, so both are anchored to a structural boundary rather than to a byte offset.
-That is `QC6` §9's law, written after a concurrent session spliced a `### 2 · The source` block into the middle of a sentence on `QB4`.
+That is `QC1b` §4.2's law, written after a concurrent session spliced a `### 2 · The source` block into the middle of a sentence on `QB4d`.
 
 ### 2 · What is actually broken
-The normalizer is implemented twice.
-`_plain_sentence` serves the comment and edit paths, and `add_sentence` carries its own private `plain()` with the same three substitutions copied out.
+The normalizer was implemented twice, and that defect is now closed.
+`add_sentence` carried its own private `plain()` with the same three substitutions copied out, and the `QC2c` split moved both copies into `live/write.py` unchanged.
 Two copies of one rule drift, and when they drift the same click will anchor on one endpoint and refuse on another.
-The `QC8` split moved both copies into `live/write.py` unchanged, which is correct for a mechanical move and means this duplication is still open here.
+The private copy is gone: one `_plain_sentence` serves every caller, verified against `live/write.py` on 260806, so the two defects still live below are the decoration refusal and the missing version token.
 
-The edit path refuses 47.3% of this board.
+The edit path refuses 44.8% of this board, 3474 of its 7752 addressable lines at the 260802 remeasure.
 `edit_sentence` finds the line by normalized match, then insists the raw source equals the browser's text before it will write, so any sentence containing code, bold, or a link is rejected with a message telling the author to open the file by hand.
 The intent is right, since replacing a decorated sentence with its flattened text would erase the formatting.
 The mechanism is wrong, because it protects the file by refusing half the board rather than by handing the author the real source line.
@@ -160,7 +160,7 @@ Levels 1 and 2 are text, so they verify themselves.
 ### 5 · Ending the decoration refusal
 The edit box should carry the SOURCE line rather than the rendered text.
 The server already knows the line, since it just found it, so the response that opens the editor can return the raw markdown for the author to edit directly.
-Formatting is then never guessed at and never erased, the 47.3% refusal disappears, and the rule stays "the machine never rewrites markdown it did not understand".
+Formatting is then never guessed at and never erased, the 44.8% refusal disappears, and the rule stays "the machine never rewrites markdown it did not understand".
 
 ## Aims
 ### Finding the line
@@ -178,15 +178,15 @@ Formatting is then never guessed at and never erased, the 47.3% refusal disappea
 
 ### Writing safely
 - [ ] ✂️ Give the edit box the source line
-      Return the raw markdown for the matched line so an author edits the source, which ends the 47.3% refusal without ever flattening formatting.
+      Return the raw markdown for the matched line so an author edits the source, which ends the 44.8% refusal without ever flattening formatting.
 - [ ] 🔒 Put a version token on every write
       Send the hash the page was built from and refuse on mismatch, the `If-Match` and `412` shape, so a concurrent write is reported rather than lost.
       iA's Markdown Annotations does the file-level version of this with a SHA-256 over the annotated range, which is the closest precedent for a format rather than a request.
 - [ ] 🌐 Widen the contract past the browser
-      This face is titled "one browser edit" and `haipipe-board-routing` 0.9.0 names moving the write path behind one anchored-append endpoint so a routed agent write and a clicked comment share it.
+      This face is titled "one browser edit" and `haipipe-board-routing` (0.9.1 today) still names moving the write path behind one anchored-append endpoint so a routed agent write and a clicked comment share it.
       An agent write has no rendered `textContent` to normalize, so it enters the ladder at a different rung, and nothing states which.
 - [ ] 🔁 Take the law back from `haipipe-board-sentence`
-      That skill's 0.3.0 restates "the anchor is an EXACT match on the source line; a miss FAILS VISIBLY" and "a write needs serve.py" in its own words.
+      That skill's 0.3.1 still restates "the anchor is an EXACT match on the source line; a miss FAILS VISIBLY" and "a write needs serve.py" in its own words.
       This face owns the rule, so the skill should cite it rather than carry a second copy, which is the same defect `QC1b` spent two days finding in the index.
 - [ ] 🧪 Prove the refusals with a test
       A fixture page with a duplicated sentence, a decorated sentence, and a stale version, asserting that each is refused with its own message and that none of them writes anything.
@@ -233,19 +233,17 @@ These are the calls only JL can make; CC ticks nothing here.
 ### Engines
 - `../../board/haipipe-board/live/write.py`
   `_plain_sentence`, `_sentence_line`, and `_apparatus_end` are the rule; `add_comment`, `edit_sentence`, `add_sentence`, and `add_discuss` are its four callers.
-  They lived in `cli/serve.py` when this face was opened and moved here the same afternoon under `QC8`'s split, which changed no behaviour.
-- `../../board/haipipe-board/assets/js/10-drawer/10-comment-dock.js`
+  They lived in `cli/serve.py` when this face was opened and moved here the same afternoon under `QC2c`'s split, which changed no behaviour.
+- `../../board/haipipe-board/assets/js/10-drawer/10-comment/00-highlight.js`
   `findAndWrap` holds the approximate fallback that this face rules acceptable for highlights and forbidden for writes.
 
 ### The faces this contract borders
 - `QB-delivery/QB8-overview.md`
   `### 6` owns the edit as an author meets it, and `### 8` claims "everything written onto" a sentence. The decorated-sentence ruling moved there on 260802. This face owns the addressing mechanism every writer shares, not any one writer's gesture.
 - `QC-engine/QC1b-subskills.md`
-  §9 is the section-boundary law this face's step ③ implements, and the incident that produced it.
+  §4.2 is the section-boundary law this face's step ③ implements, and the incident that produced it.
 - `QE-sharing/QE4-editlock.md`
   The lock around a page, which composes with the version token rather than replacing it.
-- `QB-delivery/QB8-overview.md`
-  What a comment is, as opposed to how its line is found.
 
 ## Glossary
 The sources behind §3, so every claim there is checkable.
@@ -258,6 +256,7 @@ The sources behind §3, so every claim there is checkable.
 - iA Markdown Annotations, the SHA-256 over the annotated range: https://github.com/iainc/Markdown-Annotations
 
 ## Log
+- 260806 2135 · [REVISE-CC] swept to the 260806 architecture; retired ids repointed (`QC6` §9 -> `QC1b` §4.2, `QC8` -> `QC2c`), §2 stopped claiming the fixed normalizer duplication as open, live figures moved to the 260802 remeasure (44.8%), `findAndWrap` repointed to `10-drawer/10-comment/00-highlight.js`, sentence/routing versions verified at 0.3.1/0.9.1, state line's ruling count corrected to 3
 260802 2200 · The decorated-sentence ruling moved to `QB8`, its real owner (JL: "I think it should be the QB8 question, right?"). It had been written here because CC anchored to `live/write.py` rather than to the page owning the gesture. What stays here is the shared mechanism: the normalizer, the ladder, the version token, and widening past the browser; what left is one writer's reader-facing behaviour
 260802 2130 · Remeasured against disk and the numbers all moved: 4908 to 7752 addressable lines, decorated 47.3% to 44.8% but 2321 to 3474 in absolute count, and the two normalizers are now ONE, so that Aim was met silently and is ticked. Three new Aims: the Chinese refusal message, widening the contract past the browser now that routing wants the same endpoint, and taking the law back from `haipipe-board-sentence` 0.3.0 which restates it. `state:` 🔴 to 🟡 PARTIAL
 260801 0140 · Full renumber QC7a -> QC4a (JL forced 260801)

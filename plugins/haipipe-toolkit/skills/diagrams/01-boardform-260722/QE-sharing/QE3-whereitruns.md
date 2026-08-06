@@ -12,7 +12,7 @@ Moving everything into a new stack could ease deployment while quietly breaking 
 That choice determines where the code lives and which later sharing features can be built safely.
 The design works when both surfaces use one grammar and each degrades honestly when the live half is unavailable.
 
-**Covered elsewhere**: Who may access it and whether it needs a login: that is `QE1`. Nor how a SPACE is mounted and what the board list looks like: that is `QE2`. Nor whether the body text is editable in the page: that is `QE4`.
+**Covered elsewhere**: Who may access it and whether it needs a login: that is `QE1`. Nor how a SPACE is mounted and what the board list looks like: that is `QE2`. Nor whether the body text is editable in the page: that is `QE4`. Nor which address the listener actually binds to: that is `QE6`.
 
 
 ## Diagram
@@ -21,17 +21,21 @@ The design works when both surfaces use one grammar and each degrades honestly w
 two candidates; the difference is what comes free and what it costs
 ─────────────────────────────────────────────────────────────────
 ① stay in serve.py (Tools repo)
-   Python SimpleHTTPRequestHandler · 976 lines · bound to 127.0.0.1 only
+   Python SimpleHTTPRequestHandler · cli/serve.py, 496 lines today
+   binds 127.0.0.1 by default; --host can widen it (that address is QE6)
    ✅ the static half survives by default   ✅ smallest change; SPACE layer could ship tomorrow
    ❌ no auth, no multi-user, no deploy     ❌ cannot embed in HAI-Chat
 
-② move into haichat-inlab as a fifth router (HAIChat-SPACE repo)
-   main.py mounts four today: console_api · haichat_api · labeling_api · tasks_api
-   every one has the same shape: an env var injects a repo path -> render what is
+② move into haichat-inlab as one more router (HAIChat-SPACE repo)
+   main.py mounts two today: console_api · haichat_api
+   (four when this was drawn; labeling_api.py and tasks_api.py are no longer
+    in the repo, checked 260806)
+   both have the same shape: an env var injects a repo path -> render what is
    already on disk, read-only -> one narrow write-back path.
    The board has exactly that shape.
    ✅ per-thread iframe embed comes free    ✅ docker-compose deploy comes free
-   ✅ web/ is already React + TS + Vite     ✅ _datasets() multi-store registry (QE2 needs it)
+   ✅ web/ is already React + TS + Vite
+   ❌ no _datasets() registry on disk, so QE2 has to write one, not copy one
    ❌ must wire auth / multi-user (couples to QE1)   ❌ touches both repos
 
 Should the front end use Node: yes, but **the one that already exists** —
@@ -56,6 +60,7 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
       Chat/terminal (`QD2`/`QD3`) stay on the workstation's `serve.py`; the console answers them 501.
 - [x] Decide whether to branch, and in which repo
       **`feat/haichat-board` in `HAIChat-SPACE`** (created, first commit 27e3ed6); **no branch in `Tools`**: its two changes (`--json`, English chrome) are small and additive, and a Tools branch only adds submodule-ref churn in `Physician-SPACE`.
+      As of 260806 that branch is not in `HAIChat-SPACE` any more: it holds `main`, `align-mm-server-to-agent`, and `inlab-databricks-ui`, and `27e3ed6` is not a valid object there. The ruling stands; the code it named no longer exists.
 
 ### build.py --json, shipped and cross-checked
 - [x] Ship `build.py --json`
@@ -64,7 +69,11 @@ Do not rewrite the back end: build.py's parse_* is not rendering code, it is
       Verified 260724 on this board: 22 question ids match the HTML sections exactly; comment counts match (`QB1 0 open / 7`); the console's `/api/board/q` returns byte-identical JSON because it calls the same `to_json`.
 
 ## States
-Settled 260724: JL approved the discussed plan ("you just go ahead… as we discussed"), and v1 is built, verified, and committed on `feat/haichat-board`.
+Settled 260724: JL approved the discussed plan ("you just go ahead… as we discussed"), and v1 was built, verified, and committed on `feat/haichat-board`.
+
+Checked against disk 260806: the skill half is alive and has grown; the SPACE half is not on disk anywhere. There is no `boards_api.py` in `HAIChat-SPACE`, no sibling `haichat-board/` project, nothing on port 8094, and no `feat/haichat-board` branch. The layer split ruled in `## Law` still stands as the plan; only the skill half of it has shipped.
+
+The static half survived in a new shape. A Board folder now builds the `board/` tree (an index, one file per group, one file per page), and `build.py` deletes a leftover single-file `board.html` after generating it (JL 260731, recorded on `QC4`). The scripts-off assertion still runs on every build, now against the largest generated page instead of the monolith.
 
 **🐍 This half today (`serve.py`, Tools repo)**
 
@@ -72,16 +81,19 @@ Settled 260724: JL approved the discussed plan ("you just go ahead… as we disc
   Comment write-back (`/_board/comment`) · discussion (`/_board/discuss`) · resolving (`/_board/resolve`) · chat (`/_board/chat`, Claude Agent SDK with per-call Allow/Deny) · a real terminal (`/_board/term`, ttyd behind a reverse proxy) · a per-file `HOLD` lock.
   Every write calls `build.py` to rebuild immediately.
 - The hard limit
-  Bound to `127.0.0.1` only, no auth, single user.
-  That is not an oversight: it can write files and spawn terminals, so binding it outward hands both of those to the network (`QE1` spells this out).
+  No auth of any kind, single user.
+  It binds `127.0.0.1` by default, and `--host` can widen that to a tailnet address or to `0.0.0.0`.
+  That is not an oversight: it can write files and spawn terminals, so binding it outward hands both of those to the network (`QE1` spells this out; `QE6` picks the address).
 
 **⚛️ The other half (`haichat-inlab`, HAIChat-SPACE repo)**
 
 - Its shape is identical to the board's
-  `main.py` mounts four routers, each one "an env var injects a repo path → render what is already on disk, read-only → one narrow write-back path": `tasks_api.py` takes `INLAB_PROJECTS_ROOT` and scans the task-folders of `Project-*`; `labeling_api.py` takes `INLAB_LABEL_STORE`, and its "only write" is the researcher's own decision appended to `human_decisions.jsonl`.
+  `main.py` mounts two routers on 260806, `console_api` and `haichat_api`, each one "an env var injects a repo path → render what is already on disk, read-only → one narrow write-back path": `console_api.py` takes `INLAB_PATIENT_STORE`, `INLAB_ENDPOINT_STORE`, and `INLAB_REGISTRY`, and serves the records and packaged endpoints it finds under them.
+  The two other routers this page cited in 260724, `tasks_api.py` and `labeling_api.py`, are no longer in the repo, so the count is two, not four; the shape argument is unchanged.
   The board wants precisely this shape.
-- Four things that come free
-  HAI-Chat renders any URL as a per-thread iframe (the board embeds into a conversation naturally) · `docker-compose.yml` already has a `haichat-inlab` service · `web/` is React + TypeScript + Vite already · `console_api.py`'s `_datasets()` is the multi-SPACE registry `QE2` needs.
+- Three things that come free, and one that no longer does
+  HAI-Chat renders any URL as a per-thread iframe (the board embeds into a conversation naturally) · `docker-compose.yml` already has a `haichat-inlab` service · `web/` is React + TypeScript + Vite already.
+  The fourth is gone: `console_api.py` has no `_datasets()` on 260806, so the multi-SPACE registry `QE2` needs has to be written rather than copied.
 
 **🔍 What the "mature options" actually are, honestly**
 
@@ -97,21 +109,24 @@ Settled 260724: JL approved the discussed plan ("you just go ahead… as we disc
 
 ## Files
 ### The skill half (Tools repo)
+All of these sit under `Tools/plugins/haipipe-toolkit/skills/board/haipipe-board/` (`haipipe-board` 0.124.0).
 - `cli/serve.py`
   Candidate ① itself.
-  976 lines; routing in `do_GET` / `do_POST`, write paths in `add_comment` / `add_discuss` / `resolve`, live layer in `chat` / `terminal`.
+  496 lines; routing in `do_GET` / `do_POST`, and the handler mixes in the `live/` package: the write paths `add_comment` / `add_discuss` / `resolve` are in `live/write.py`, the live layer is `live/chat.py` and `live/term.py`, and the `HOLD` lock is in `live/base.py`.
 - `cli/build.py`
-  Parsing half `parse_dir` / `parse_file` / `parse_q` / `split_sections` / `parse_comments`; rendering half `render`.
-  `--json` goes between the two.
+  A 164-line entry now.
+  The parse half is `src/parse.py` (`split_sections` / `parse_q` / `parse_file` / `parse_dir`); the render half and `to_json` are `src/page_board.py`; `--json` goes between the two.
+  `parse_comments` no longer exists.
 - `SKILL.md`
-  Holds the hard invariant (strip every `<script>` and the body is still there), which `cli/build.py` asserts on every build.
+  Holds the hard invariant, worded there as "delete every `<script>` in the page and every question and all of the prose is still there", which `cli/build.py` asserts on every build.
   Dropping the static half means editing this first.
 
 ### The haichat-inlab half (HAIChat-SPACE repo)
 - `main.py`
-  Candidate ②'s mount point, currently holding four routers.
+  Candidate ②'s mount point, holding two routers on 260806.
 - `console_api.py`
-  The multi-store registry template (`_datasets()` / `_scope()`): the thing `QE2` would copy.
+  The env-var-injects-a-path shape the board wants, read from `INLAB_PATIENT_STORE` / `INLAB_ENDPOINT_STORE` / `INLAB_REGISTRY`.
+  The `_datasets()` / `_scope()` registry `QE2` planned to copy is not in this file, so there is nothing to copy yet.
 
 ## Law
 - The static half is an invariant
@@ -134,7 +149,7 @@ Settled 260724: JL approved the discussed plan ("you just go ahead… as we disc
 
 ## Glossary
 router: a FastAPI `APIRouter`, a group of endpoints under a shared prefix.
-`haichat-inlab/main.py` uses `include_router()` to compose four into one service; the board is now the fifth (`boards_api.py`). per-thread iframe: HAI-Chat embedding any URL as a page alongside one conversation thread.
+`haichat-inlab/main.py` uses `include_router()` to compose its routers into one service, two of them on 260806; the board's `boards_api.py` would be one more and has not been written yet. per-thread iframe: HAI-Chat embedding any URL as a page alongside one conversation thread.
 `haichat-inlab`'s README describes itself exactly this way.
 
 ## Discussion
@@ -144,6 +159,7 @@ router: a FastAPI `APIRouter`, a group of endpoints under a shared prefix.
 >> CC0724: Only partly. Of the five steps, the first two (`build.py --json`, the SPACE index on `serve.py`) stay in `Tools`; the last three (`boards_api.py`, the `web/` view, in-page editing) go to `HAIChat-SPACE`. On branching: yes for `HAIChat-SPACE` (`feat/haichat-board`, a multi-day feature in a repo whose `haichat-inlab` service others run), no for `Tools` (both changes are small and additive, and branching there only adds submodule-ref churn in `Physician-SPACE`).
 
 ## Log
+- 260806 2203 · [REVISE-CC] swept to the 260806 architecture; the SPACE half is presented as planned, not shipped: no `boards_api.py`, no sibling `haichat-board/`, nothing on 8094, and `feat/haichat-board` is gone from `HAIChat-SPACE`. Skill-half facts re-measured on disk: `cli/serve.py` 496 lines with the writers and live layer in `live/`, `cli/build.py` a 164-line entry over `src/parse.py` + `src/page_board.py`, `parse_comments` retired, the `board/` tree replacing the single-file `board.html`, and `haichat-inlab/main.py` mounting two routers with no `_datasets()`.
 260731 · Items, Where we are, and Files regrouped to the QB4d/QB4e/QB4f subsection conventions (matrix retrofit)
 260724 1440 · JL: a separate project for haichat-board, merged back later → `boards_api.py` moved to the sibling `haichat-board/` (standalone on 8094: server-rendered index, Dockerfile, compose entry); inlab imports the same router from there. Law amended; still ✅, the decision deepened, nothing reversed
 260724 1324 · SETTLED. JL approved the discussed plan ("go ahead… as we discussed, don't stop to ask me"): static invariant KEPT (`build.py --json` shipped, skill v0.7.0); hybrid layer split (grammar+writers in the skill, SPACE/discovery/serving in `haichat-inlab`'s new `boards_api.py`, chat/terminal workstation-only via 501); branch `feat/haichat-board` created in HAIChat-SPACE (commit 27e3ed6), no branch in Tools. JSON≡HTML verified on this board (22 ids, comment counts). `## Law` written

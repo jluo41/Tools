@@ -61,7 +61,7 @@ haipipe-board-page-for-venue/
 WORKFLOW  writing or fixing ONE QBv page
 
    📄 haipipe-board-page              the BASE · every page kind
-      seven sections, fixed order · the Opening split · numbering
+      five on-stage sections, fixed order · the Opening split · numbering
         │
         │  loaded FIRST, never repeated below
         ▼
@@ -471,6 +471,7 @@ Nothing about it is unreachable, which is the one thing its sibling got wrong: t
   That is the same move that produced `Skill-6` the day before, and the roster now carries two variants born the same way, which is an argument that the base's variant list is the thing that keeps going stale.
 
 ## Log
+- 260806 2115 · [REVISE-CC] swept to the 260806 architecture; the WORKFLOW figure's "seven sections" corrected to the base's five on-stage sections (board-form.md §4, Files after, folds last), the count the venue skill's own 0.1.1 changelog already dropped
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the "1 of 16 conforms, never used, still contradicting itself" picture is replaced by the measured one, 13 of 16 conform after the 260803 fan-out, the 0.1.1 fixes landed, the base's resolution table routes QBv writers here, and the placement was ruled by the maintainer rule with the folder now under page-types/.
 260803 0043 · authored half written: Opening, the WORKFLOW figure, Aims, States; `state:` ruled 🟡 in flux from 🔴 OPEN; Aims and States converted from the generator's base-form stub to the checkbox and dated-record form `haipipe-board-page-for-skill` overrides to
 260803 0043 · page generated from `board/page-types/haipipe-board-page-for-venue/` by `skillpage.py new`

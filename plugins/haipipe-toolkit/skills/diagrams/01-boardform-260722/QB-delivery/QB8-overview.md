@@ -1,5 +1,5 @@
 # Sentence · one source line, and everything that attaches to it
-state: ✅ SETTLED · all 16 Aims closed and JL moved the line, 260802
+state: ✅ SETTLED · all 18 Aims closed and JL moved the line, 260802
 owner: JL
 method: one sentence per source line; everything that attaches to a sentence gets its own face
 session: 958e95d5-b099-4cde-b3fd-9b4b2b7ba8b5
@@ -228,7 +228,8 @@ So the anchor differs by design: the card takes the words, the lanes take the li
                      displayNN \ref{tab:|fig:}
      span from       the marker itself
      prose pays      nothing new · the author wrote it anyway
-     written by      the build, resolved against .bib 1-probes/ displays/
+     written by      the build, resolved against .bib 1-probes/
+                     and the display workspace (legacy displays/)
 
   🎨 render   a button in the words · a native popover panel
   🚫 never    a box · a colour · a weight the prose does not have
@@ -499,7 +500,7 @@ A render address says where a record appears in the current render, so archive a
 ### A2 · 🪪 Two surfaces: the card on the words, the lanes under the line
 - ✅ A2.1 · `### 2` and the `## Diagram` figure split the two anchors, and `### 3` and `### 4` now rule one each. The face that owned both, and mis-titled itself "click a sentence", was archived when the family folded on 260802, so nothing describes a card as a thing a sentence click opens.
 - ✅ A2.2 · Built and driven 260802. JL delegated the ruling ("You make the best decision and I will just check it how it works on the board") and CC ruled option D, which none of A, B or C had proposed: the record names its own span, `> Card <the words>: <text>`, so the prose pays nothing. `src/body.py` renders it, `live/write.py`'s `add_card` writes it behind `POST /_board/card`, and 🪪 Card appears beside 💬 Comment on any selection whose words are really in the sentence. Proven in JL's own Chrome by `tests/drive_sentence.py`, now 36 checks green, including select, write, reopen, and three refusals.
-- ✅ A2.3 · Eight typed kinds plus `> Comment WHO` and `> ✎` all render from their first word, through the single `LANE` pattern at `src/body.py:704`. `Card` joins them as the one record that renders inside the sentence instead of under it.
+- ✅ A2.3 · Eight typed kinds plus `> Comment WHO` and `> ✎` all render from their first word, through the single `LANE` pattern at `src/body.py:767`. `Card` joins them as the one record that renders inside the sentence instead of under it.
 - ✅ A2.4 · Measured on all four. Card 883 to 883 with 16 sections open before and after; comment 1204 to 1204; edit 1925 to 1925 with 16 to 16; typed lane unchanged across the save. A window flag set before the edit is still there after it, which is how the run proves it SWAPPED rather than reloaded.
 - ✅ A2.5 · All four repaint in 0.4s. Two were broken until 260802 and neither had ever been tested past the point where it could not fail. Editing called `location.reload()` on save, and even after that was replaced the swap silently refused, because the editor's own textarea sits inside `div.wrap` and the swap will not run while a textarea in there holds text: the `> ✎` record reached the markdown and the page sat unchanged until somebody pressed reload. Adding a typed lane never asked for a repaint at all and waited on the background poll, which backs off to five seconds on a page nobody has touched. Both forms now CLOSE first and then ask.
 
@@ -531,7 +532,7 @@ A render address says where a record appears in the current render, so archive a
 - `src/body.py`
   RENDER, both surfaces. The `LANE` pattern and the adjacency walk that folds a `>` run under the sentence above it, the badge that names which kind is underneath, and `_chip`, which turns a marked span into a button and its card into a `popover` panel.
 - `src/dialect_paper.py`
-  RESOLVE. What a marked span is looked up against before it can become a card: the paper's `.bib`, its `1-probes/`, and its `displays/`.
+  RESOLVE. What a marked span is looked up against before it can become a card: the paper's `.bib`, its `1-probes/`, and its display workspace (`0-lifecycle/S05-display/workspace/`; the legacy `displays/` is only the fallback).
 - `cli/serve.py`
   WRITE. The routes that add a remark, add a typed lane, or replace one sentence, each anchored on an exact source line.
 - `assets/js/40-sentence/00-apparatus.js`
@@ -593,6 +594,7 @@ A render address says where a record appears in the current render, so archive a
 - 🪞 **face**: a page carrying one part of a subject, whose id is its parent's id plus a letter, as `QB2a` is a face of `QB2`. This page had five until 260802; a face is folded back in once it stops carrying a subject of its own.
 
 ## Log
+- 260806 2109 · [REVISE-CC] swept to the 260806 architecture; display resolution repointed from the legacy `displays/` to the `S05-display` workspace in `### 3` and Files, the state line's Aim count corrected to the 18 that exist, and the drifted `LANE` line number brought to `src/body.py:767`
 260802 2200 · JL moved the decorated-sentence ruling here from `QC4a`, where CC had put it by anchoring to `live/write.py` instead of to the page that owns the gesture. `### 8` already claimed `§6 the edit` for this page. The misplacement had hidden that this page went ✅ SETTLED while `### 6`'s figure recorded the refusal as a fact, and it covers 44.8% of the board; whether the ✅ survives is part of the row
 260802 · 🧪 `### 1` rebuilt as a showcase AND a test sheet, on JL's ask for a showcase of every feature that also instructs the reader how to try each one. It opens with one figure listing every gesture, then four groups: rows that are already live and only need clicking, procedures a person carries out themselves on a practice line that exists for the purpose, the controls that appear only on hover and what replaces them on a phone, and the three refusals worth triggering on purpose plus what a good save looks like. A deliberately broken card was added so the ⚠️ badge and its loud row can be seen rather than described
 260802 · 🔎 A fresh reviewer read the folded page cold and returned `revise` with 28 findings; 26 were real and are fixed. The three that mattered were contradictions the fold created and nobody had reread for: the Opening's last sentence still said this page "hands each attachment to its own page", which is the pre-fold model and the one paragraph a reader gets without clicking; `### 6.1` still described the `✎` diff as two implementations agreeing by luck, hours after `A6.2` recorded it wired; and a live pointer aimed at a `### Decision Now` row whose heading was left behind empty, which the render drops entirely. `### 2` was also a compressed copy of `### 3` and `### 4` in nine places, so its mechanism paragraphs went and it is now the contrast alone; the card demonstration moved into `### 1`, where "try it on this row" had been covering only the lanes. Four 📌 lines advertising which archived face each division came from are gone, since that belongs here. Also added: the canonical `**Covered elsewhere**` part the `## Boundary` ruling requires, Glossary rows for `badge`, `chip` and `paper board`, and first-use definitions for the MISQ board and the drive. One finding did NOT survive: it asked for the section emoji to move onto the `###` division headings, which `check.py` reports as `group-name-drift` on all sixteen Aims and States groups, so only its real half was taken, that `A2` and `A3` had both been using 🪪

@@ -221,18 +221,20 @@ The thing to watch is that the imbalance stays a reflection rather than becoming
  ─────────────────────────────────     ──────────────────────────────────
  🗣 a rule still being argued      ━▶  a Q face on ②
  ⚖️ a rule that is decided         ━▶  ② as ## Law, then graduate into ①
- 🤖 a procedure an agent follows   ━▶  ①, in the owning SKILL.md or contract
+ 🤖 a procedure an agent follows   ━▶  ①: the one SKILL.md, an fn/ verb, or the
+                                       owning stage.md contract
  📝 one paper's prose · display    ━▶  ⑦
  📊 one paper's status · queue     ━▶  ⑧
- 🔢 a number or citation from a run ━▶ across the wall, through a probes/
-                                       entry under ⑧'s S03/S04 topic page
+ 🔢 a number or citation from a run ━▶ across the wall: an E<n> division on ⑧'s
+                                       S03/S04 evidence page, bound by path to a
+                                       QA-probe in that stage's probes/ drawer
 ```
 
 📍 Establishes the answer to the page's lead question, in the form a reader can apply without reading the rest.
 
 #### 4.1 · The table is the deliverable, and it is not yet portable
 (a fresh agent should be able to place a file without opening this board)
-`paper/README.md` was rewritten to the thin family map on 260805 and still carries no routing table, so today the only place the routing exists is here.
+`paper/README.md` was rewritten to the thin family map on 260805 and extended again by the 260806 one-door collapse, and it still carries no routing table, so today the only place the routing exists is here.
 That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than ✅.
 
 ## Aims
@@ -281,7 +283,7 @@ That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than �
 - ✅ A3.1 · The rule sorted `⑪` correctly on the day it was written, without an exception being added for it.
 
 ### A4 · 📍 Placing something new
-- ⬜ A4.1 · `paper/README.md` was rewritten to the thin family map on 260805, but the placement routing table is still only here. This is the one gap keeping the page 🟡.
+- ⬜ A4.1 · `paper/README.md` was rewritten to the thin family map on 260805 and rewritten again by the 260806 one-door collapse, and the placement routing table is still only here. This is the one gap keeping the page 🟡.
 
 ### P · 🏁 Page-level
 - 🔨 P1 · First QA page migrated to the `QB4` contract, on JL's pilot ruling of 260802. The remaining ten are unmigrated.
@@ -327,6 +329,7 @@ That is the gap `A4.1` names, and it is what keeps this page 🟡 rather than �
 
 ## Log
 
+- 260806 2215 · [REVISE-CC] swept to the 260806 architecture; rewrote the routing table's evidence row to the E-division grammar (an E<n> division on the S03/S04 evidence page, bound by path to a QA-probe in that stage's probes/ drawer) and pointed its procedure row at the one SKILL.md, an fn/ verb, or a stage.md.
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); marked `⑥` and `⑩` retired on the map, repointed the probe routing row at S03/S04 `probes/` entries, and replaced the dead `PHILOSOPHY.md` contract path.
 
 260802 · Migrated to the `QB4` page contract as JL's pilot for the QA series: Writing Style added, Content numbered into four divisions each with a face figure and caption, Aims regrouped as A1-A4 plus P with `Done when`, States mirrored one row per Aim, Files grouped by action. Three rulings that had been buried in prose became their own Aims: the artifact-kind test, the stale-claim rule, and the unchecked forbidden directions.

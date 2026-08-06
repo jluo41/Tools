@@ -42,6 +42,8 @@ WORKFLOW  one file, no write tools, and the reason it must be a stranger
         │     haipipe-board-page/SKILL.md   the base page contract
         │     haipipe-board-page-for-skill/  the SKILL-PAGE variant, when the
         │                                    page under review is Skill-/Agent-
+        │     page-phases/haipipe-board-page-check/  the CHECK judgment and
+        │                                    routing boundary inside RUN
         │     ref/writing-rules.md          the cold-read standard
         │     the target board.md           topic, groups, links, order
         │
@@ -249,11 +251,11 @@ copy is exactly what goes a night out of date while the contract moves:
 - [x] 🛡 The read-only promise is enforced rather than trusted
       Its frontmatter grants `Read`, `Grep`, `Glob`, `Bash` and `Skill` and no write tool at all, so "never edits" is a property of the dispatch rather than an instruction it could disobey.
 - [x] 🔗 It loads the contracts instead of carrying a copy of them
-      The file says plainly that it is a procedure and not a second copy of the contract, and names five sources to load, "because a copy is exactly what goes a night out of date while the contract moves".
+      The file says plainly that it is a procedure and not a second copy of the contract, and names six sources to load, "because a copy is exactly what goes a night out of date while the contract moves".
       That is the same defect still open in `live/chat.py`, avoided here by construction.
 
 ## States
-The agent is written the way this family wants its agents written: it loads five contracts, restates none of them, and holds no write tool.
+The agent is written the way this family wants its agents written: it loads six sources, restates none of them, and holds no write tool.
 What is unsettled is not its quality but its existence, and that has been unsettled since 260729.
 It reached 0.7.0 on 260804 and was first exercised on this board on 260805, when the QB8e RUN dispatched its charter three times as the judge, as fresh-context `claude -p` subprocesses rather than the Agent tool.
 Its review now has first results rather than only a procedure: two revise verdicts with file-and-line findings and one final pass that routed the run to CLOSE (receipt `_runs/page/QB8e/260805-0216-QB8e.json`).
@@ -271,6 +273,7 @@ Its review now has first results rather than only a procedure: two revise verdic
   That is precisely the input 0.4.0's consecutive-Openings pass was added to judge, and the session limit is the only reason it has not run.
 
 ## Log
+- 260806 2116 · [REVISE-CC] swept to the 260806 architecture; the Diagram load list gains `page-phases/haipipe-board-page-check` (source 4 of six on disk since the RUN work) and the two "five sources/contracts" counts become six
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); "never yet dispatched" is over, the QB8e RUN exercised this judge three times as fresh-context claude -p subprocesses and its final CHECK pass closed the run.
 260804 · Updated the authored mirror for exact-version CHECK and the CLOSE, REVISE, PROBE, DRAFT, or HOLD route returned to Page RUN.
 260802 2100 · Synced to 0.5.0 and the authored half updated: the agent now loads `haipipe-board-page-for-skill` for a skill page, which it did not when that variant shipped hours earlier. Two Aims closed, one opened for the consecutive read of the eight roster Openings that is now waiting on it

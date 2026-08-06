@@ -1,6 +1,6 @@
 # A meeting note on the board
 
-state: 🟡 PARTIAL · the page kind ships; routing does not
+state: 🟡 PARTIAL · the page kind ships and has its type contract; no meeting routed yet
 owner: JL
 method: separate the artifact from its consequences: give the note a home, and route what it decided into the Qs that own it
 
@@ -12,7 +12,7 @@ Keeping only the note makes an archive, while routing only the decisions removes
 The split affects how readers revisit the meeting and how later pages explain why they changed.
 It succeeds when the note has one readable page and each consequence points to its owning page.
 
-**Covered elsewhere**: How a folder is mirrored into a page at all: `QC3a`, which already does exactly this for a skill folder. How one input becomes one anchored write: `Skill-5-haipipe-board-routing`. The Related Folders fold that can open the file today without any of this: `QB2`. What a page's sections must contain once it exists: `QB4`.
+**Covered elsewhere**: How a folder is mirrored into a page at all: `QC3a`, which already does exactly this for a skill folder. How one input becomes one anchored write: `Skill-5-haipipe-board-routing`. What a Meeting page itself owes, since 260805: `haipipe-board-page-for-meeting`, one of the ten Page Types under `board/page-types/`. The Related Folders fold that can open the file today without any of this: `QB2`. What a page's sections must contain once it exists: `QB4`.
 
 ## Diagram
 
@@ -95,7 +95,7 @@ A meeting page is the same generator pointed at a different source, which makes 
                                                            Meeting-1-260723
 ```
 
-This is the half that matters, and it is the half that has no machinery today.
+This is the half that matters, and since 260805 it has a written rule but still no routed meeting: the `haipipe-board-page-for-meeting` type contract rules that a decision spoken in a meeting is not RULED until it lands on the page that owns the subject.
 `Skill-5-haipipe-board-routing` is the verb that turns one input into one anchored write, and a meeting note is a batch of exactly that shape.
 
 ### §4 What the producing end actually emits
@@ -183,8 +183,8 @@ Routing is `Skill-5-haipipe-board-routing`'s verb, summarizing already happened 
 
 ## Aims
 ### The decision this face owes
-- [ ] 🧠 Rule how a meeting note enters the board
-      The options and their costs are in `Where we are`; nothing below can start before this.
+- [x] 🧠 Rule how a meeting note enters the board
+      Ruled **B, and C next** (JL 260731); the options and their costs are in the first `Decision Now` row below.
 
 ### The artifact half
 - [x] 🗂 Define the Meeting page kind
@@ -193,7 +193,7 @@ Routing is `Skill-5-haipipe-board-routing`'s verb, summarizing already happened 
 - [x] ⚙️ Generate it
       `meetingpage.py new|sync` ships; `Meeting-1-260723-boardform-demo.md` was generated from the real note and renders all six base sections.
 - [ ] 🔢 Decide whether a Meeting page counts
-      Skill and Agent pages sit outside the settled-question count; a Meeting page almost certainly should too, but the Index and Section Matrix both need telling.
+      The type contract ruled it 260805 (`haipipe-board-page-for-meeting`: never counted in a board's settled total), but `page_board.py`'s counted tuples still exclude only `skill` and `agent`, so the Index has not been told.
 
 ### Where it sits, and how you watch for new ones
 - [x] 📍 A meeting page lives in its own group, `QG · Meeting`
@@ -209,8 +209,8 @@ Routing is `Skill-5-haipipe-board-routing`'s verb, summarizing already happened 
 ### The consequences half
 - [ ] 🧭 Route one real meeting end to end
       Take `260723-meeting.md`, extract its decisions, and land each one on the Q that owns it with a citation back to the meeting page.
-- [ ] 📐 Write the routing rules down
-      What a routable line looks like in a summary, and what happens to a decision whose Q does not exist yet.
+- [x] 📐 Write the routing rules down
+      Written into the type contract 260805: a decision-shaped line either points at where it landed or is marked not-yet-routed, and a decision whose Q does not exist yet becomes a Q proposal through `haipipe-board-routing`.
 
 ## States
 Opened 260731 when JL asked how meeting notes could go on the board, and the artifact half shipped the same evening.
@@ -280,6 +280,7 @@ Opened 260731 when JL asked how meeting notes could go on the board, and the art
   macOS helper: far-end audio through a CoreAudio process tap, spawned by the plugin and read over a local websocket.
 
 ## Log
+- 260806 2130 · [REVISE-CC] swept to the 260806 architecture; recorded `haipipe-board-page-for-meeting` (0.1.0, 260805, one of the ten Page Types): §3's "no machinery" claim replaced by the written routing rule, Aims 🧠 and 📐 closed against on-page and contract evidence, 🔢 note now says `page_board.py` still lacks the `meeting` exclusion
 260801 0140 · Full renumber QC5b -> QC3b (JL forced 260801)
 260801 0130 · Reindexed QC10 -> QC5b under the new QC5 generator parent (JL 260801)
 260801 · `QG · Meeting` opened as the board's seventh group and `Meeting-1` moved into it; the group renders on the Index, in the page list, and as its own `board/QG/` folder in the tree. This face stays in QC. `meetingpage.py --group` defaults to QG

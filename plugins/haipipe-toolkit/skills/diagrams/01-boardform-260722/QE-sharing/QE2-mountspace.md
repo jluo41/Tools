@@ -39,16 +39,19 @@ shipped 260724 (boards_api.py + Boards view)          still missing
 🏢 SPACE picker  /api/board/spaces                     ＋ open a new board
    Physician-SPACE (2) · Scratch-SPACE (1)               from the web  ❌
      ↓
-📋 boards in this SPACE  /api/board/boards?space=      a real 2nd SPACE
-   🧭 01-boardform-260722   ✅5 🟡9 🔴8 · 💬0            (WellDoc)  ❌
-   🧭 02-method-260722      ✅2 🟡4 🔴5 ⏸2 · 💬12
-     ↓ click
+📋 boards in this SPACE  /api/board/boards?space=      a board inside
+   🧭 01-boardform-260722   ✅5 🟡9 🔴8 · 💬0            WellDoc-SPACE  ❌
+   🧭 02-method-260722      ✅2 🟡4 🔴5 ⏸2 · 💬12          (the SPACE exists,
+     ↓ click                                               it holds no board.md)
 📖 the real board.html   /_board/page/{space}/{path}
    comments/discuss/resolve write back to the md
    (chat/terminal → 501, workstation-only, QE3 Law)
 
-how boards are discovered: scan the space root for <unit>/diagram/*/board.md
-(os.walk + prune list + depth cap — no cache needed yet)
+how boards are discovered: TWO walks, and they do not agree
+  console  boards_api._find_boards()  only <unit>/diagram/*/board.md
+                                      (os.walk + PRUNE + MAX_DEPTH 9)
+  direct   live/home._manifests()     ANY board.md below the SPACE root
+                                      (os.walk, pruned in place, no cache)
 ```
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QE2
@@ -71,6 +74,8 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 - [ ] Actually mount two SPACEs and open a board in each
       The mechanism ran 260724: `Physician-SPACE` (2 boards) + a scratch space mounted together, both listed, both pages served, a comment written into the scratch one.
       But the second space was a throwaway: the honest tick waits for a real second research SPACE (WellDoc-SPACE).
+      Checked 260806: `WellDoc-SPACE` now exists beside this one as a real research repo, and it holds no `board.md` at all.
+      So what the tick waits on has moved: the second SPACE is here, and it needs a board inside it before mounting two proves anything.
 
 ### Board discovery inside a SPACE
 - [x] Decide how boards are discovered
@@ -85,9 +90,15 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
       skill's own grammar says an existing tree can BE a board and then "the tree is called
       whatever it is called", with the paper lifecycle folder as the named example. So
       `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`
-      holds 60 pages and a `board.md` and is invisible to `_find_boards()`.
-      This is the board JL asked to host on 260727, so the gap is blocking, not theoretical.
-      Closes when discovery finds any pruned folder containing `board.md`, and this board appears.
+      holds 59 pages and a `board.md` and is invisible to `_find_boards()`.
+      This is the board JL asked to host on 260727, so the gap was blocking, not theoretical.
+      The blocking half closed 260801 from the other side: the direct Board service's `/boards`
+      home walks for ANY `board.md` (`live/home.py`'s `_manifests()`), so it lists that lifecycle
+      board today, classifies it as a Paper Board, and serves it at `/b/personality2opioid-misq2026-lifecycle`.
+      What is left is the console path: `boards_api.py`'s `_find_boards()` still matches only a
+      folder named `diagram`, so the two surfaces disagree about what a board is.
+      Closes when `_find_boards()` finds any pruned folder containing `board.md`, so the console
+      and the direct service list the same set.
 
 ### The Boards page surface
 - [ ] Decide what each row of the board list shows
@@ -102,9 +113,10 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
 
 - The short route is BUILT, and option A of the URL-length row is what was built
   JL ruled it in chat on 260802 and the row below is closed with that answer recorded, under the same-day rule that a machine closes a row the person has already answered. `/b/<slug>[/<page-id>]` answers 302 with the real generated file, and the strip's link went from 131 characters to 42.
-  `live/home.py` owns it: `board_slug()` strips the `NN-` ordinal and the `-YYMMDD` date, and `resolve_short()` walks the same `_manifests()` discovery the Home page already uses, so there is no second registry. `HomeMixin.short_request()` matches only `/b/<slug>` and `/b/<slug>/<id>`, and `serve_short()` redirects rather than serving the bytes, so the address bar lands on the canonical URL and every relative asset and write-back path inside the page keeps working.
+  `live/home.py` owns it: `board_slug()` strips the `NN-` ordinal and the `-YYMMDD` date, and `resolve_short()` walks the same `_manifests()` discovery the Home page already uses, so there is no second registry.
+  One rule was added 260803, after JL said "the lifecycle is not good, I prefer it to be misq-xxxx-lifecycle": a folder name that says what KIND of board it is rather than WHICH one (`lifecycle`, `board`, `boards`, `diagram`, `diagrams`) takes its owning folder as a prefix, with the `Paper-` / `Project-` prefix dropped. So `0-lifecycle` inside `Paper-Personality2Opioid-MISQ2026` is `personality2opioid-misq2026-lifecycle`, and a second paper on this SPACE cannot claim the same URL as the first. `HomeMixin.short_request()` matches only `/b/<slug>` and `/b/<slug>/<id>`, and `serve_short()` redirects rather than serving the bytes, so the address bar lands on the canonical URL and every relative asset and write-back path inside the page keeps working.
   `status.py` prints the short form whenever the anchor resolves to a generated file, and keeps the long URL when it does not, because the route answers 404 there and a long working link beats a short dead one. It imports `board_slug` rather than copying the rule.
-  Driven on a second server on port 5601, leaving the live one untouched: `/b/boardform` → the Index, `/b/boardform/QE2` and `/b/boardform/QD6` → their pages, `/b/boardform/QE` → the group page, and following the redirect ends on a 200. `/b/boardform/NOPE` and `/b/nosuchboard/QE2` both 404 rather than redirecting somewhere plausible. All 10 boards in this SPACE produce distinct slugs, so nothing is ambiguous today. 5 new tests in `tests/test_home.py`; the suite is 87 green.
+  Driven on a second server on port 5601, leaving the live one untouched: `/b/boardform` → the Index, `/b/boardform/QE2` and `/b/boardform/QD6` → their pages, `/b/boardform/QE` → the group page, and following the redirect ends on a 200. `/b/boardform/NOPE` and `/b/nosuchboard/QE2` both 404 rather than redirecting somewhere plausible. All 10 boards in this SPACE produced distinct slugs that day; the SPACE holds 9 now and they are still distinct, re-checked 260806. 5 new tests in `tests/test_home.py`; the suite was 87 green.
   LIVE on 5599 since 260802, after JL restarted the server himself. Re-checked against the real host, not the spare port: `/b/boardform/QE2` answers 302 and following it lands on 200, `/b/boardform` answers 302 to the Index, and both `/b/boardform/NOPE` and `/b/nosuchboard/QE2` answer 404.
   A restart is what it costs to pick this up, because `live/term.py`'s `kill_all_terms` is registered `atexit` and `reap_stale_terms` clears whatever survived, so an attached terminal cannot be carried across. Three `claude` sessions were attached when this was built, each resumable by its own session id.
 
@@ -113,7 +125,7 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
   The one way the short route could take something away is by shadowing: it claims `/b/<one>/<two>`, so a real folder named `b` at the SPACE root would disappear behind it. There is none, checked 260802. A SPACE that grows one would need the route renamed, which is the reason to record this rather than assume it.
 
 - Direct Board service home, shipped 260801
-  One mounted SPACE now has a lightweight, read-only `/boards` entry page in `serve.py`: 10 current Board source folders are discovered by `live/home.py`, grouped into Task Boards (the default), Paper Boards (paper lifecycle trees), and Skill Boards (`plugins/*/skills/diagrams/`). Each card opens its own generated Board Index. This is not another Board and writes no registry or `board.md`; it is a fresh discovery view. It does not solve multi-SPACE mounting, which remains this page's open design work.
+  One mounted SPACE now has a lightweight, read-only `/boards` entry page in `serve.py`: every Board source folder is discovered by `live/home.py` (9 in this SPACE on 260806, 10 when this shipped), grouped into Task Boards (the default), Paper Boards (paper lifecycle trees), and Skill Boards (`plugins/*/skills/diagrams/`). Each card opens its own generated Board Index. This is not another Board and writes no registry or `board.md`; it is a fresh discovery view. It does not solve multi-SPACE mounting, which remains this page's open design work.
 
 - What runs now
   `GET /api/board/spaces` (mounted SPACEs + board counts) · `GET /api/board/boards?space=` (rows with progress) · `GET /api/board/q` (one board as JSON, same code path as `build.py --json`) · `GET /_board/page/{space}/{path}` (the real `board.html`, path-vetted) · `POST /_board/comment|discuss|resolve` (the page's own write-backs, relayed to the skill's `serve.py` functions, then rebuild).
@@ -172,7 +184,7 @@ how boards are discovered: scan the space root for <unit>/diagram/*/board.md
   Lives in the sibling project `haichat-board/` since 260724 (JL: "a separate project"); `haichat-inlab` imports it from there.
   Branch `feat/haichat-board`.
 - `web/`
-  `src/components/BoardsView.tsx` + the `boards` entries in `src/views.ts` / `src/types.ts` / `src/Console.tsx`.
+  `src/components/BoardsView.tsx` is the view; `src/main.tsx` carries the wiring (`type Page = Scope | 'boards'`, the `/boards` route, and the `<BoardsView/>` render), and `src/Console.tsx` carries the `🧭 Boards` button that navigates to it.
 
 ### Imported from the skill
 - `live/home.py` · `cli/serve.py` · `src/page_board.py`
@@ -191,6 +203,7 @@ SPACE: JL's term for the root of one research repo, e.g. `Physician-SPACE`, `Wel
 One SPACE holds several boards.
 
 ## Log
+- 260806 2204 · [REVISE-CC] swept to the 260806 architecture; the page told one discovery story where two now exist, so the Diagram, the 🔴 row and the `/boards` record were split: `live/home.py`'s `_manifests()` finds ANY `board.md` and already lists and serves the MISQ lifecycle board, while `boards_api.py`'s `_find_boards()` still matches only a `diagram/` parent. Also: `WellDoc-SPACE` now exists and holds no `board.md`, so the second-SPACE row's blocker moved; board count 10 → 9; the 260803 generic-name slug rule recorded; the `web/` files corrected to `src/main.tsx` + `src/Console.tsx`
 260802 1410 · Opening rewritten to the `/haipipe-board-page` contract: the four visible sentences now sit above the first blank line (they were below it, so the page rendered as one bare question), the question's own words `SPACE` and `mount` are defined in it with a real example, and the drawer became labelled parts (Why it matters · Why the mount is the hard half · How boards are found · What a good answer produces · Covered elsewhere) instead of a prose wall
 260802 · Live on 5599 after JL restarted it, and re-checked against the real host rather than the spare port: short 302 then 200, index 302, both bad-name cases 404. JL asked whether the old URL still works; it does, it was checked at 200, and the answer is now on the page as its own record rather than only in a session
 260802 · Built option A the same round, after JL said go ahead: `/b/<slug>[/<page-id>]` as a 302 in `live/home.py`, routed from `cli/serve.py`, printed by `status.py`, 131 characters down to 42. Driven on a spare port so the live server kept its attached terminals; 6 routes checked including both 404 cases, 10 boards with no slug collision, 5 tests added, suite 87 green. The running 5599 still needs a restart to serve it

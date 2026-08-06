@@ -1,7 +1,7 @@
 # TUI chat version: the real CLI
 state: 🟡 PARTIAL
 owner: JL
-method: ttyd spawns the process + serve.py reverse-proxies through 5599; claude opens at the SPACE root, one session per question
+method: serve.py owns the PTY and terminates /_term/<key>/ws itself through 5599 (ttyd is the --ttyd fallback); claude opens at the SPACE root, one session per question
 session: d650c47e-0d7d-464d-8405-a98a545fe552
 ## Opening
 What does the board need to provide around a real Claude Code terminal so the session stays usable, recoverable, and safe?
@@ -19,19 +19,20 @@ This page succeeds when the process can be opened, resumed, released, and handed
 ```
    browser (JL's laptop)                        server (the files live here)
    ┌──────────────────┐                         ┌──────────────────────────────┐
-   │ boardA/QD3 tab   │ /_term/cc6638…/ (WS)    │ ttyd -i haiboard/cc6638.sock  │
+   │ boardA/QD3 tab   │ /_term/cc6638…/ws (WS)  │ serve.py PTY cc6638…          │
    │ boardA/QA6 tab   │ ─────────────────────►  │   claude --resume a0c6698a    │
-   │ boardB/QD3 tab   │     everything rides    │ ttyd -i haiboard/3d798.sock   │
+   │ boardB/QD3 tab   │     everything rides    │ serve.py PTY 3d798…           │
    │  …N tabs…       │   the forwarded 5599    │   claude --session-id <uuid>  │
-   └──────────────────┘ ◄─────────────────────  │ …one unix socket per Q, no ports│
+   └──────────────────┘ ◄─────────────────────  │ …one PTY per key, no ports    │
       each tab = one question                   └───────────┬──────────────────┘
       = one key = one session        cwd = SPACE root ▼
                                     ~/.claude/projects/-Users-…-Physician-SPACE/<uuid>.jsonl
-   key = sha1(absolute Q-file path)[:12]  ← unique across all boards; boardA/QD3 and boardB/QD3 never collide
+   key = sha1(page path [+ session])[:12]  ← unique across all boards; boardA/QD3 and boardB/QD3 never collide
    cwd = the whole repo (not the board folder)  ← the session reads the code it discusses; archives under the repo root's project dir
 
-   why 5599 reverse proxy + unix sockets: only 5599 is forwarded to the laptop; no port pool —
-   one socket file per question (no "which port / will they run out"). ttyd -b mounts a subpath; serve.py forwards verbatim (WS included).
+   why one port, no port pool: only 5599 is forwarded to the laptop. Since 260731 (0.64.0) serve.py spawns the
+   PTY itself and terminates the WS at /_term/<key>/ws, still speaking ttyd's wire protocol; the ttyd road
+   (haiboard-terms/<key>.sock unix sockets, reverse-proxied verbatim) survives as the --ttyd fallback.
 ```
 
 /_excalidraw/?board=Tools/plugins/haipipe-toolkit/skills/diagrams/01-boardform-260722/board.excalidraw&frame=QD3
@@ -100,8 +101,8 @@ The switch is therefore a handover and not a second window, which is also why th
       Startup sweeps TERM_DIR and kills last round's leftovers (not relying on exit signals, most reliable); exit reaps best-effort again; `/_board/killall` closes everything; closing the board page sends a `pagehide` beacon to release.
       Verified: planted a stale ttyd → started serve.py → it was killed and its socket removed.
 - [ ] 🔑 Finish the (page, session) re-key: four lookups still use the page-only key
-      260801 re-keyed terminals by (page, session) so that attaching one stops killing another, and `terminal()` registers under `term_key(f, sid)` at `live/term.py:538`. Four lookups were never moved and still ask for `term_key(f)`, which cannot match a registry entry that has a session in its hash.
-      `hold()` at 398 and 408, `park()` at 460, `kill_term()` at 734. `term_probe()` is fine because it resolves by FILE through `terms_for(f)`, and that asymmetry is the signature: the page can SEE the terminal and cannot ACT on it.
+      260801 re-keyed terminals by (page, session) so that attaching one stops killing another, and `terminal()` registers under `term_key(f, sid)` at `live/term.py:581`. Four lookups were never moved and still ask for `term_key(f)`, which cannot match a registry entry that has a session in its hash.
+      `hold()` at 398 and 408, `park()` at 503, `kill_term()` at 789 (line numbers re-checked against live/term.py 260806; all four still page-only). `term_probe()` is fine because it resolves by FILE through `terms_for(f)`, and that asymmetry is the signature: the page can SEE the terminal and cannot ACT on it.
       Consequences, worst first: `hold()` finds no terminal, rules the terminal's claim void, drops the HOLD and lets the drawer open an SDK session on the SAME `.jsonl` a live PTY is writing, which is QD1's Law broken and loses transcript state; `park()` returns `parked:false` and silently neither parks nor releases; `kill_term()` can never close a terminal.
       Proven arithmetically rather than by argument: the live QB4 terminal is registered as `47d8ca068ee1` while `sha1(path)[:12]` for that same page is `f891ba932470`, so the lookups miss by construction. Observed directly too: `/_board/release` returned `{"closed": false}` for a terminal `/_board/terms` was listing as alive.
       The fix is to resolve by file (`terms_for(f)`) rather than by page key; `park` and `kill_term` additionally need a ruling on WHICH terminal they mean now that a page may hold several.
@@ -114,16 +115,16 @@ The switch is therefore a handover and not a second window, which is also why th
 - [ ] Render the session as web chat beside the raw pane
       Plan of record (QD3m's Decision Now proposals adopted under JL's 260731 no-decisions rule; say the word to reverse any): route **D** — serve.py holds the stream-json process (`QD2` M1's session host) and this pane renders its events, no file to tail, no boot cost per message; the raw TTY stays permanently one toggle away (standing **A**), because permission dialogs and pickers exist only on the PTY screen.
       The two location rulings were decided by shipping (sidecar registry · fig/); the picker's whole-repo expander is parked until asked for.
-      Blocked on `QD2` M1 landing in `live/chat.py`; the full route analysis is in the archive.
+      `QD2` M1 landed 260731 (the session host in `live/chat.py`), so the blocker is gone; the pane rendering itself is the remaining work, and the full route analysis is in the archive.
 - [ ] The fallback seam
       Detect the waiting-on-TUI moment, surface the ⌨ toggle, take the screen back after — the seam, not the rendering, is the real work.
 
 ### 🚧 Smoothness and the security line
-- [ ] Make it smooth (JL 260724): ①–④ built, ⑤⑥ open, live drop-test still owed
+- [ ] Make it smooth (JL 260724): ①–⑤ built, ⑥ open, live drop-test still owed
       ① auto-reconnect with backoff, BUILT: the WS rebuilds on drops (1s→2s→…→15s, 6 tries), the terminal object survives so scrollback stays; the post-auth resize makes claude repaint.
       Not yet exercised against a real mid-session drop. ② keepalive, BUILT: a same-size resize op every 30s keeps idle relays/proxies from reaping the pipe. ③ fit on drawer resize, BUILT: ResizeObserver on the terminal host, debounced 150ms → fit → resize op. ④ pre-warm on hover, BUILT (assets only): pointer on ⌨ pulls the 480KB xterm.js early, so the click is instant.
-      Deliberately NOT pre-starting ttyd: POST /_board/term takes HOLD, and a hover that never becomes a click would lock the question (see the HOLD Lesson). ⑤ grace-period release: closing the tab keeps ttyd alive ~10 min before reaping (pagehide kills it instantly today; --resume makes reopening lossless, this would make it fast).
-      Open. ⑥ optional: vendored xterm WebGL addon for big-scrollback rendering.
+      Deliberately NOT pre-starting the PTY: POST /_board/term takes HOLD, and a hover that never becomes a click would lock the question (see the HOLD Lesson). ⑤ grace-period release, BUILT (0.71.0): closing the tab PARKS the PTY (600s grace) instead of killing it; same-pid reattach replays the ring; re-proven on every `checks/run.py --full`.
+      ⑥ optional: vendored xterm WebGL addon for big-scrollback rendering.
       Open.
 - [ ] 📱 Moved to `QD4` on 260801: the phone is a FORM question, not an engine one
       This item read as one focus bug, and JL's 260801 phone session showed it is four failures with a shared shape (doubled keystrokes, shredded frames, a keyboard that will not open, and a frozen drawer after switching away), none of which is fixed by adjusting the grid.
@@ -260,10 +261,12 @@ These are the calls only JL can make; CC ticks nothing here.
       To sweep everything at once: `/_board/killall` (or restart serve.py, startup clears leftovers).
 
 ## Files
+- `live/term.py`
+  `terminal()` / `proxy_term()` / `reap_stale_terms()` / `spawn_pty`: the PTY engine, the WS end, and process reaping; ttyd + unix sockets only on the `--ttyd` fallback. (Moved here from `cli/serve.py` in the 260731 live/ split.)
 - `cli/serve.py`
-  `terminal()` / `proxy_term()` / `reap_stale_terms()`: ttyd + unix sockets + reverse proxy + process reaping.
-- `cli/build.py`
-  The page-side entry that switches into the terminal.
+  The HTTP entry: routes `/_term/<key>/…` and `/_board/term*` into `live/term.py`; `--ttyd` flips the fallback.
+- `assets/js/10-drawer/30-terminal.js`
+  The page-side entry that switches into the terminal (was `cli/build.py`'s page JS before the assets split).
 
 ## Lesson
 #### An exception after `termView(true)` IS a black pane, and the wire being perfect proves nothing about the front end.
@@ -322,7 +325,7 @@ Searching for wheels is right; choosing one is about how big "the piece you need
 
 ## Glossary
 ttyd: a small tool that turns a command-line program into a usable web terminal.
-`-i` binds the address, `-b` mounts a subpath, `-W` allows input. reverse proxy: serve.py forwards `/_term/<key>/…` requests verbatim to the local ttyd; the browser talks only to 5599 and never needs to know where ttyd is.
+`-i` binds the address, `-b` mounts a subpath, `-W` allows input. Since 260731 ttyd is the `--ttyd` fallback only. reverse proxy: on that fallback serve.py forwards `/_term/<key>/…` requests verbatim to the local ttyd; the browser talks only to 5599 either way (the default engine terminates the WS in serve.py itself).
 WebSocket / Upgrade: one always-open, two-way character connection.
 All terminal keystrokes and output ride it.
 AGPL-3.0: myrlin's license.
@@ -335,6 +338,7 @@ Fine to use as a standalone tool; constraints bite when you copy it into somethi
 >> CC0723: read its source: the discovery path matches ours exactly. But it is a whole application, too heavy; ended with ttyd + serve.py's own proxy embedded instead.
 
 ## Log
+- 260806 2143 · [REVISE-CC] swept to the 260806 architecture; head method, Diagram, Files and Glossary now name serve.py's own-PTY engine (ttyd = --ttyd fallback), ⑤ grace release marked BUILT (0.71.0), the QD2-M1 blocker on the smooth pane cleared (M1 landed 260731), and the 🔑 re-key line numbers refreshed against live/term.py (581/503/789; all four lookups verified still page-only)
 260802 · A4.1 closed, and the lesson is worth more than the row. The terminal reattach after a reload was reported by me twice as broken, first as coming back empty and then as non-deterministic, and it was correct both times. The empty screen is the CLI repainting on reconnect. The coin-flip was the CHECK clicking `>_ TUI` unconditionally: the strip's buttons are a radio with an off position, clicking the lit one puts the chat away, and whether it was lit depended on what the previous run left in `board-split-chat` — so the suite was closing the pane it meant to open, about half the time. Click-only-if-not-lit, and it is four for four. The rule this leaves: when a UI control is a TOGGLE, a test that clicks it without reading its state is measuring its own history, not the product
 260802 · A4.1 corrected, and the correction is the finding. The terminal does NOT come back empty after a reload: same key either side, 1,300 characters replayed from the ring, parking working as designed. The missing `echo` is the CLI repainting on reconnect, which is what a full-screen app does. What is real is that the reattach is not DEPENDABLE — three outcomes from identical code in one sitting, including one where no terminal returned inside sixty seconds. Also learned, and worth keeping: the shell mirrors the page frame's path into its own address, so a test that moves the page frame and then reloads is asking for a DIFFERENT page's terminal, and asserting sameness across that is the test lying rather than the terminal failing
 260802 · The messy terminal layout was found, measured and fixed. Inside the chat pane xterm held a 501px screen in a 16px box at a fixed 64 columns, because `fitTerm` measures `.tm` and the pane's fixed positioning left that element reporting only its padding, so the small-box guard returned on every call. It now falls back to the frame's viewport and watches its own box with a `ResizeObserver`, since dragging the split handle resizes a frame without firing `resize` in it. Columns now track the pane: 64 at 520px, 102 at 820px, 36 at 300px, 47 by 11 on a phone, no sideways scrollbar anywhere. Recorded as A4.2 and asserted in `checks/switchback.mjs` S3

@@ -13,7 +13,7 @@ The wire half is bytes and the lanes that carry them: file size, what repeats on
 The browser half is work: parsing, running the JavaScript, building what you scroll.
 This page rules which of those costs we pay to remove.
 
-**What "a page" means here**: One generated `.html` under a board's `board/` folder, such as `QB1-opening.html`, together with the `board.css` and `board.js` it asks for.
+**What "a page" means here**: One generated `.html` under a board's `board/` folder, such as `QB1-form.html`, together with the `board.css` and `board.js` it asks for.
 The three arrive separately, and only the first is different from page to page.
 
 **Where this page sits**: `QD` is where a board is WORKED ON, and waiting is the thing that stops the work, so the cost of opening a page belongs beside the surfaces you wait at.
@@ -139,7 +139,7 @@ The instrument that does see it is CDP or devtools, and the question it has to b
 
 #### 2.1 · The assets are cached, and the version hash is why
 
-`board.js` and `board.css` are 82 KB and 33 KB gzipped, they are identical on every page, and the markup asks for them with a content hash: `board.js?v=25cc58ca7354`.
+`board.js` and `board.css` measured 260802 at 82 KB and 33 KB gzipped, they are identical on every page, and the markup asks for them with a content hash: `board.js?v=25cc58ca7354`.
 `serve.py` answers a stamped request with `public, max-age=31536000, immutable` and an unstamped one with `no-store`, which is correct in both cases: the hash already guarantees a changed file gets a new URL, so nothing stale can survive, and nothing unchanged is ever re-sent.
 The unstamped path is the one a person types by hand, and reading its header is how two separate measurements concluded the assets were never cached.
 
@@ -170,11 +170,12 @@ The symptom to recognise next time is not a timing at all: it is devtools showin
 
 #### 2.4 · The page list is what is left, and it is staying
 
-The page list is the panel down the left of every page: all 55 pages of the board, each opened out into its own Opening, Diagram, Content and Aims links, 303 links in total.
-It is 110,651 bytes, 67% of a page's html, the same blocks on every page, and gzip does not remove it: compression makes a repeated thing cheap to send, not absent.
+The page list is the panel down the left of every page: every page of the board, each opened out into its own section links.
+On 260802 that was 55 pages and 303 links, 110,651 bytes, 67% of a page's html; re-counted 260806 on the sidebar `<nav>` of this page's own built html, it is 57 pages, 995 links and 149,359 bytes, 80%, because the board and its section links have both grown.
+It is the same blocks on every page, and gzip does not remove it: compression makes a repeated thing cheap to send, not absent.
 It is therefore the single largest lever left on this page, and on 260802 JL ruled that it will not be pulled: "I still want to have that panel, please give me that panel. Please keep it."
 That closes the question rather than deferring it, and the reason is worth writing down: the panel is what makes any page reachable from any other page, and a page opened on its own would otherwise be a dead end.
-So 67% is now a KNOWN price for a named benefit, which is a different thing from 67% nobody had looked at, and the remaining work on this page moves to the browser half.
+So the panel's share, 67% then and 80% now, is a KNOWN price for a named benefit, which is a different thing from a share nobody had looked at, and the remaining work on this page moves to the browser half.
 
 ### 3 · The browser half
 
@@ -191,7 +192,7 @@ So 67% is now a KNOWN price for a named benefit, which is a different thing from
 
 #### 3.1 · A navigation costs 250 KB of JavaScript, every time
 
-Counted on `QB1-opening.html`: 604,938 uncompressed bytes parsed, 250 KB of JavaScript executed, 3,455 DOM elements built.
+Counted on `QB1-form.html`: 604,938 uncompressed bytes parsed, 250 KB of JavaScript executed, 3,455 DOM elements built.
 That is the price of a NAVIGATION, and it is paid whether the bytes came from the network or from cache, which is exactly the cost no cache header can touch.
 A swap avoids it: replacing one column inside a document that is already running keeps the parsed page, the executed bundle and the built DOM.
 
@@ -235,7 +236,7 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 - ✅ A2.1 · `serve.py` answers a `?v=` request with `public, max-age=31536000, immutable`; a second page in a session fetches only its own html, measured at 1 request and 29 KB.
 - ✅ A2.2 · `try_gzip` covers static text and `serve_asset` covers the vendored bundle; 304 revalidation, `HEAD` and the `.md` links were each checked by hand afterwards.
 - ✅ A2.3 · `log_boards` prunes in place and caches for two seconds. `POST /_board/activity` went from over 60 s with no answer to 43 ms, ten concurrent to 0.88 s, and a headless load of `QB1-form.html?pane=page` finished all 8 requests with nothing pending.
-- ✅ A2.4 · RULED by JL on 260802: "I still want to have that panel, please give me that panel. Please keep it." The page list ships on every page of every door, 55 page blocks and 303 links, 110,651 bytes, 67% of the file. That is now a price this board pays knowingly for being able to jump anywhere from anywhere, and it is not a defect to be worked off. The Aim was rewritten to match the ruling; what it asks for is measurement and a decision, and it has both.
+- ✅ A2.4 · RULED by JL on 260802: "I still want to have that panel, please give me that panel. Please keep it." The page list ships on every page of every door: 55 page blocks and 303 links, 110,651 bytes, 67% of the file at the ruling, 57 blocks, 995 links and 80% at the 260806 re-count. That is now a price this board pays knowingly for being able to jump anywhere from anywhere, and it is not a defect to be worked off. The Aim was rewritten to match the ruling; what it asks for is measurement and a decision, and it has both.
 
 ### A3 · 🧠 The browser half
 - ✅ A3.1 · The one-document board always swapped; the split now does too, after a regression that made every click a full document load. 7 requests to 1.
@@ -267,6 +268,7 @@ Until it exists, this page refuses to spend on the browser half beyond the swap 
 260802 · A CHECK THAT ASKS "DID IT WORK" WILL NOT FIND A RESOURCE LEAK. Every existing check passed throughout, because the page did load and its content was right. The question that finds this class of bug is "is anything still pending", and it has to be asked of a real browser, since a request never sent is not a request any server log will show.
 
 ## Log
+- 260806 2143 · [REVISE-CC] swept to the 260806 architecture; corrected the dead `QB1-opening.html` name to `QB1-form.html` in Opening and 3.1, and re-anchored the page-list price with a 260806 re-count of the built sidebar: 57 pages, 995 links, 149,359 B, 80% of the file
 260802 · A2.4 RULED AND CLOSED by JL: "I still want to have that panel, please give me that panel. Please keep it." He read the open question as a proposal to delete the page list, which it was not, and the wording was mine to fix. The 67% stays, knowingly: 110,651 bytes buying the ability to reach any page from any page, where a page opened on its own would otherwise be a dead end. The Aim was rewritten from "a page does not carry the whole board" to what it now asks, that the cost be measured and the keeping be a decision, and it has both. The only work left on this page is the browser half, A3.2
 260802 · Moved from `QC5` to `QD8-pagecost` on JL's call ("move it"), then renumbered to `QD7-pagecost` the same day when the empty QD7 rejoin-bench stub was archived and this lane closed its gap. Both old ids resolve here through `## Links`. The QD8 position was a poor one anyway: it had already meant the activity dashboard, absorbed into `QC2` on 260726, so it was a collision waiting to be read the wrong way. It was opened in the engine lane because every lever it names is engine code, `serve.py`, `build.py`, `live/activity.py`, and that is the wrong test: a lane is chosen by where a cost is FELT, not by which file holds its fix. Waiting stops the work, and `QD` is where the work happens. The QD8 position had been a second alias into `QE2` from the 260731 split, which is one more reason it was the wrong home; `QDb2` still resolves that page, and `QC5-pagecost` and `QD8-pagecost` both resolve here
 260802 · Found and fixed the cause of the one-to-two-minute page JL had reported for days, recorded in 2.3. `POST /_board/activity` never returned, because `log_boards` still ran the unpruned `rglob` that `/boards` had been fixed for that morning. Each hung post held one of the browser's six connections per origin, so a few open tabs left a CLICK with nowhere to go, which is the "Provisional headers are shown" in JL's devtools and the "12 requests / 0 B transferred" beneath it. The diagnosis took as long as it did because every measurement said the server was fast, and it was: 20 to 70 ms to serve a page, on a 24 to 35 ms link. Nothing was measuring whether a socket was free to serve it on, which is why `checks/pending.mjs` now exists and asks exactly that

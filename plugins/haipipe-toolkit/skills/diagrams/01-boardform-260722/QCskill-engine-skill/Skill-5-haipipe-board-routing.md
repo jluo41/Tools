@@ -4,7 +4,7 @@ owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
 
 ## Opening
-`haipipe-board-routing` is the board family's only verb that writes: one thing that happened becomes one dated record on the page that owns it.
+`haipipe-board-routing` is the board family's WRITE verb: one thing that happened becomes one dated record on the page that owns it.
 Since 260802 it also proposes a board's groups and pages, then creates those files once a person approves.
 `haipipe-board` renders, serves and checks the board; reach here when something that happened must be kept on it.
 
@@ -17,7 +17,8 @@ A board write decides which pages will exist, and the group letters it picks are
 Content part 1 states that separation, and `## Aims` carries it as the one open risk the merge introduced.
 
 **Covered elsewhere**: `haipipe-board` owns the machinery, `build.py`, `serve.py` and `check.py`, while this verb writes markdown only.
-`haipipe-board-page` says which section a write owes and `haipipe-board-sentence` says how the line must read; routing loads both, and neither of them writes anything itself.
+`haipipe-board-page` says which section a write owes and `haipipe-board-sentence` says how the line must read; routing loads both, and the sentence spec writes nothing itself.
+The page engine is no longer write-free: at 0.21.0 its CREATE, WORK ON and RUN verbs produce and repair a page's own prose, so routing's claim is narrower now, the one verb that lands an outside input on a page that already exists.
 `haipipe-board`'s `open` action still describes propose and materialize too, which Content 2.2 declares on purpose, so those two descriptions have to be corrected together.
 `haipipe-board-index` held the board altitude until 260802; its folder is deleted and its page sits in `_archive/`.
 
@@ -335,7 +336,8 @@ src/lanes.py     253 ln  One `⚙️ engine · 📋 pages · 📂 folder` lane b
       0.8.0 carries the human-decision law, the cross-board law and the anchored-append rule under its own headings, so digest will inherit a written protocol instead of needing a new one.
 
 ## States
-This is the fastest-moving unit in the family, 11 releases to 0.9.1, and as of 260802 it is the family's only write verb.
+This was the family's fastest-moving unit through the merge, 11 releases to 0.9.1, though the page engine has since outpaced it to 0.21.0.
+As of 260802 it is the family's write verb for outside inputs at both altitudes; the engine's CREATE, WORK ON and RUN verbs write a page's own prose, not routed records.
 Its health is `🟡 in flux` because the merge landed the same day it was ruled and nothing has exercised the new altitude yet.
 Both failure modes its page-altitude rules exist to prevent had already happened by hand before it shipped, which is why those fixes were written into the contract rather than learned from it; the board altitude has no equivalent scar tissue yet.
 
@@ -351,6 +353,7 @@ Both failure modes its page-altitude rules exist to prevent had already happened
   That is real evidence for the door test's premise and it is not the door test, because the script names the skill instead of an agent choosing it.
 
 ## Log
+- 260806 2116 · [REVISE-CC] swept to the 260806 architecture; routing is the family's WRITE verb, no longer its ONLY writer: the page engine 0.21.0 also writes through CREATE / WORK ON / RUN, and Opening plus States now say so.
 - 260806 0140 · [REVISE-CC] card synced to disk truth after 260805 (ten types · thin-paper phase 2 · first live RUN); the merge's "one day old" clause now dates it 260802 and the release count reads 11 to 0.9.1, with no 260805 change touching this unit.
 260802 1810 · Absorbed `haipipe-board-index` at 0.9.0 on JL's `B` ruling: the board and group altitude, `propose` `materialize` `lanes` `regroup`, and `src/lanes.py`. The Opening, the `WORKFLOW` fence and the Aims were rewritten for two altitudes, and the group-altitude landing rule the merge settled is now on the page. The two Aims that were waiting on `QC1b`'s rows are closed, and one new Aim opened for the risk the merge introduced: one unit now carries two approval rules and only the contract keeps them apart
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the five-step route, the three end states and the never-list, five real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux on the release evidence. JL's merge proposal recorded as a State record pointing at `QC1b`'s row rather than restating its options
