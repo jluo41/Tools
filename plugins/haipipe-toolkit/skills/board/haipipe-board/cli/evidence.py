@@ -135,6 +135,82 @@ def render(rows, tot, date, board_name):
     return "\n".join(L)
 
 
+BIBKEY = re.compile(r"`([A-Za-z][A-Za-z'-]*\d{4}[a-z][A-Za-z0-9-]*)`")
+BANKPATH = re.compile(r"`((?:tasks|discoveries)/[^`\s]+)`")
+BIB_ENTRY = re.compile(r"^@\w+\s*\{\s*([^,\s]+)\s*,(.*?)(?=^@|\Z)", re.S | re.M)
+BIB_FIELD = re.compile(r"(\w+)\s*=\s*(?:\{(.*?)\}|\"(.*?)\")\s*,?\s*$", re.S | re.M)
+
+
+def bibliography(board):
+    """Every key in the paper's .bib, with a one-line description.
+
+    A literature topic's answer IS a citation key, so the key resolving is the
+    difference between an answer and a claim about one. The .bib is that route's
+    data file, which is why managing it belongs to the literature family rather
+    than to whoever last touched a sentence.
+    """
+    out = {}
+    for bib in sorted(board.parent.glob("*.bib")) + sorted(board.glob("*.bib")):
+        for key, blob in BIB_ENTRY.findall(bib.read_text(errors="ignore")):
+            f = {k.lower(): re.sub(r"[{}]", "", " ".join((a or b).split()))
+                 for k, a, b, in
+                 ((m.group(1), m.group(2), m.group(3)) for m in BIB_FIELD.finditer(blob))}
+            who = (f.get("author") or "").split(" and ")[0]
+            who = who.split(",")[0].strip() if "," in who else who.split()[-1] if who else "?"
+            out[key] = f"{who} {f.get('year', '?')} · {f.get('title', '')}"[:88]
+    return out
+
+
+def content_preview(board, pages, date):
+    """One block per evidence page: what each answer actually IS, not its state.
+
+    The status table says how far along a topic is. This says what came back, in
+    the substance the route deals in: a literature answer is a citation key, so
+    the key's real bibliography entry is shown and an unresolvable key is called
+    out; an inward answer is a number produced by a run, so the run and QA paths
+    are resolved against disk. It is the same job the display control page does
+    by embedding the rendered figure, applied to the routes that have no picture.
+    """
+    bib = bibliography(board)
+    L = [BEGIN,
+         f"  EVIDENCE CONTENT, MEASURED {date}. GENERATED; do not hand-edit.",
+         f"  regenerate: evidence.py {board.name} --content",
+         "  outward: the citation key each answer became, resolved in the .bib",
+         "  inward:  the run and QA the answer came from, resolved on disk",
+         ""]
+    cited = set()
+    for p in pages:
+        real = [d for d in p["divisions"] if d["division"] != "E0"]
+        if not real:
+            continue
+        L.append(f"  {p['page'][:-3]}")
+        for d in real:
+            L.append(f"    {d['division']} · {d['question'][:68]}   [{d['state']}]")
+            body = (board / p["stage"] / p["page"]).read_text(errors="ignore")
+            body = body.split(f"### {d['division']} · ", 1)[1].split("\n### ", 1)[0]
+            shown = 0
+            for key in dict.fromkeys(BIBKEY.findall(body)):
+                cited.add(key)
+                mark = "✅" if key in bib else "❌ not in the .bib"
+                L.append(f"        📚 {key:<26} {bib.get(key, mark)}")
+                shown += 1
+            for path in dict.fromkeys(BANKPATH.findall(body)):
+                ok = "✅" if (board.parents[2] / path).exists() else "⚠️ not cloned here"
+                L.append(f"        🔢 {path[:60]:<60} {ok}")
+                shown += 1
+            if not shown:
+                L.append("        (nothing bound yet: the answer has not become "
+                         "a key or a path)")
+        L.append("")
+    if bib:
+        loose = sorted(set(bib) - cited)
+        L += [f"  {len(bib)} entries in the bibliography · {len(cited)} bound by an "
+              f"evidence page · {len(loose)} bound by none",
+              "  an unbound entry is not a defect; a bound key that is NOT an entry is."]
+    L.append(END)
+    return "\n".join(L)
+
+
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if not args:
@@ -144,7 +220,9 @@ if __name__ == "__main__":
                 "unknown date")
     pages = topics(board)
     rows, tot = rollup(pages)
-    if "--json" in sys.argv:
+    if "--content" in sys.argv:
+        print(content_preview(board, pages, date))
+    elif "--json" in sys.argv:
         print(json.dumps(dict(measured=date, board=board.name, rows=rows,
                               totals=dict(tot)), indent=2))
     else:
