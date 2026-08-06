@@ -33,7 +33,11 @@ HERE = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
 from src.topic_entry_contract import PROBE_DIRS, head            # noqa: E402
 
-BEGIN, END = "# --- form:begin (generated) ---", "# --- form:end ---"
+# One marker pair PER GENERATOR. A shared pair means the last writer
+# silently deletes every other block on the page, which is what a shared
+# `form:` pair did on 260806 before this line existed.
+BEGIN, END = ("# --- evidence:begin (generated) ---",
+              "# --- evidence:end ---")
 E_DIV = re.compile(r"^### (E\d+) · (.+?)\s*$", re.M)
 POINTER = re.compile(r"🔗 QA-probe:\s*`?([^`\s·]+)`?.*?state:\s*([a-z-]+)")
 # A consumer row leads with its state marker, which is the one thing that says
