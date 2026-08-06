@@ -35,6 +35,7 @@ defaults to the harmless side and the ruling stays open.
     python3 check.py <board-dir> [--strict] [--quiet]
 """
 import argparse
+import collections
 import os
 import json
 import re
@@ -46,7 +47,8 @@ from urllib.parse import unquote
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
-from src.common import ALIAS, STN, aim_progress, page_files  # noqa: E402
+from src.common import (ALIAS, STN, AIM_STATE_RE, aim_ids, aim_progress,  # noqa: E402
+                        page_files)
 from src.page_context import audit_related_rows  # noqa: E402
 from src.topic_entry_contract import check_topic_entries  # noqa: E402
 
@@ -342,8 +344,10 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
                     "a whole-line **bold** renders as a group title with 🔹, but prose follows it, "
                     "not a run of items (QA4 §3)")
 
-    progress = aim_progress(section_text(text, "Done when"),
-                            section_text(text, "Now"))
+    aims_text, states_text = section_text(text, "Done when"), section_text(text, "Now")
+    check_state_mirrors_aims(aims_text, states_text, name, rep)
+
+    progress = aim_progress(aims_text, states_text)
     met, total, closed = progress["met"], progress["total"], progress["closed"]
     st = token
     # Aim/state alignment is a Q ruling heuristic, not an S gate rule.
@@ -684,6 +688,51 @@ def check_comment_form(text, name, rep):
             rep.add(WARN, "old-comment-form", f"{name} · Content",
                     f"`> {m.group(1)}:` is the legacy sentence-comment form; "
                     f"write `> Comment {m.group(1)} …` (QB4 §3.3.3)")
+
+
+def check_state_mirrors_aims(aims_text, states_text, name, rep):
+    """Every Aim id carries exactly one status row in States.
+
+    Aims say what should become true; States says what is true now, one row per
+    Aim id. `aim_progress` reads the rows and defaults a missing one to ⬜, so a
+    page that never wrote States renders as 0 of N and looks untouched. That is
+    the failure this catches, and it was invisible until 260806, when writing
+    the ten Page Type templates walked eight specimens and found five of them
+    missing EVERY row: 11 of 11 on one page, 7 of 7, 6 of 6, 8 of 9, 3 of 3.
+
+    The opposite direction is worse and this catches it too. A row for an id no
+    Aim declares reads as progress on a target that does not exist; QA4 rendered
+    P1 ✅ through P5 ✅ while zero of its seven slides had been accepted.
+
+    Legacy checkbox pages are exempt: they carry their state in the box, which
+    is why `aim_progress` reads them by a different path.
+    """
+    if re.search(r"(?m)^\s*[-*]\s*\[[ xX]\]", aims_text or ""):
+        return                                  # legacy checklist, state in the box
+    declared = aim_ids(aims_text)
+    if not declared:
+        return
+    rows = [aim_id for _emoji, aim_id in AIM_STATE_RE.findall(states_text or "")]
+    seen = collections.Counter(rows)
+
+    missing = [a for a in declared if not seen[a]]
+    if missing:
+        shown = " · ".join(missing[:6]) + (" …" if len(missing) > 6 else "")
+        rep.add(WARN, "aim-without-state", name,
+                f"{len(missing)} of {len(declared)} Aim(s) carry no row in States, "
+                f"so each renders as ⬜ and the page reads less done than it is: {shown}")
+
+    twice = sorted(a for a, n in seen.items() if n > 1 and a in declared)
+    if twice:
+        rep.add(WARN, "aim-stated-twice", name,
+                "States carries two rows for the same Aim, so which one counts is "
+                f"whichever the parser met last: {' · '.join(twice)}")
+
+    stray = sorted(a for a in seen if a not in declared)
+    if stray:
+        rep.add(WARN, "state-without-aim", name,
+                "States reports progress on an id no Aim declares, so the page "
+                f"shows work against a target that does not exist: {' · '.join(stray)}")
 
 
 def check_division_figures(text, name, rep):
