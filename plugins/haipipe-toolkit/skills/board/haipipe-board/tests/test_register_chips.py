@@ -1,10 +1,11 @@
-"""Register rows render as evidence cards (JL 260806).
+"""Evidence-page divisions render their bindings as evidence cards (JL 260806).
 
-Inside a `### Q-consumer register` section, and only there, a backticked
+Inside an evidence page's `### E<n> ·` division, and only there, a backticked
 binding token becomes a chip: a bibliography key opens the cite card, a
 tasks//discoveries/ path opens a val card whose links are the provenance
-paths. Everything else in backticks, and every register token outside the
-register, keeps its ordinary rendering.
+paths. Everything else in backticks, and every binding token outside an E
+division, keeps its ordinary rendering. The page-level gate is body.EVIDENCE,
+set from the head `route: outward|inward` line by page_question.
 """
 import tempfile
 import unittest
@@ -33,11 +34,12 @@ class RegisterChipTest(unittest.TestCase):
         (qa / "1-answer.md").write_text("state: answered\n\nthe digest\n",
                                         encoding="utf-8")
         self.paper = Paper(root)
-        self._prev = (_bd.PAPER, _bd.BASE)
+        self._prev = (_bd.PAPER, _bd.BASE, _bd.EVIDENCE)
         _bd.PAPER, _bd.BASE = self.paper, root
+        _bd.EVIDENCE = True     # the page under test declares route: outward
 
     def tearDown(self):
-        _bd.PAPER, _bd.BASE = self._prev
+        _bd.PAPER, _bd.BASE, _bd.EVIDENCE = self._prev
         self._tmp.cleanup()
 
     # -- the dialect resolves ------------------------------------------------
@@ -77,11 +79,18 @@ class RegisterChipTest(unittest.TestCase):
         self.assertNotIn("chip val", plain)
 
     def test_own_heading_toggles_register_mode_on_and_off(self):
-        txt = ("### Q-consumer register\nroute: outward\n"
+        txt = ("### E1 · is the measure novel?\n"
+               "#### consumers\n"
                "- ⬜ stake · `luo2025mapping`\n"
                "### Something else\n- `luo2025mapping` again\n")
         html = body(txt)
         self.assertEqual(1, html.count("chip cite ok"))
+
+    def test_e_division_stays_plain_off_an_evidence_page(self):
+        _bd.EVIDENCE = False    # same division, page head carries no route:
+        txt = ("### E1 · is the measure novel?\n"
+               "- ⬜ stake · `luo2025mapping`\n")
+        self.assertNotIn("chip cite", body(txt))
 
     def test_log_stays_chip_free(self):
         html = note_body("- 260806 · quoted `luo2025mapping` in a log line",

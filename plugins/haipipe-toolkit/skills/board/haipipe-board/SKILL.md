@@ -3,9 +3,9 @@ name: haipipe-board
 description: >-
   Open and run a BOARD: one topic, one source folder tree, and one markdown page per decision (Q) or lifecycle stage (S), generated into a browsable board/ site with an Index, one page per group, one page per Q/S file, and shared assets. Use when a topic has several undecided questions or stages that need to be laid out and closed; when one Page must run through an automatic, auditable lifecycle; when a session must remain visibly attached to a Board, page group, or page; when sharing work with colleagues; or when the user says board, status strip, queue, open this board, open a board, add a question, run this page, audit this page, close the board, 打开这块板, 开板, 加一题, 关板, or /haipipe-board. "Open BOARD_FOLDER" means VIEW an existing board by rebuilding it and pushing board/index.html to the user's VS Code browser over the VS Code IPC socket. It does not mean creating a new board, opening a retired board.html, or using file://.
 metadata:
-  version: "0.123.0"
+  version: "0.124.0"
   last_updated: "2026-08-06"
-  summary: "Probe entries are hidden SOURCE RECORDS, not board pages (JL ruling B, 260806): the probe QA (entry record) is named <n>-<slug>.md so the Q/S/Agent/Meeting page sweep never finds it, and points at the bank QA, the original; ref/topic-entry-contract.md states the record shape, the naming law, and the twin-QA vocabulary, and the checker finds records with its own probes/ glob."
+  summary: "Evidence pages replace the flat register (JL 260806): the type key is the head route: line, Content organizes BY EXECUTOR (one E<n> division per Q-executor conversation, #### consumers + #### answer digest, E0 incoming), one division per QA-probe; checker re-keyed and slot headings canonical in capitals, chips re-anchored to E divisions."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -727,7 +727,7 @@ Operating rules go into SKILL.md's prose, and **specifications** such as display
 | `ref/page-template.md` | The file a Q or S page is copied from (renamed from `ref/q-template.md` on 260801). A Skill, Agent or Meeting page is generated from its own stub instead and never copies this |
 | `ref/board-form.md` | The full specification: folders, numbering, section ↔ page correspondence, the syntax table, `## Links` |
 | `ref/writing-rules.md` | How to write it in plain language, plus the zero-background review prompt and its convergence criteria |
-| `ref/topic-entry-contract.md` | Optional generic contract for a topic page and its nested `probes/<topic>/` entry records (hidden `<n>-<slug>.md` source files, not pages) |
+| `ref/topic-entry-contract.md` | Optional generic contract for an evidence page (head `route:` key, `### E<n>` divisions, E0 queue) and its nested `probes/<topic>/` QA-probe records (hidden `<n>-<slug>.md` source files, not pages) |
 | `ref/board-example.md` | A minimal example board with two questions |
 | `ref/page-lifecycle.workflow.js` | Bounded non-linear controller for one Page: producer → build/version snapshot → independent CHECK → route |
 

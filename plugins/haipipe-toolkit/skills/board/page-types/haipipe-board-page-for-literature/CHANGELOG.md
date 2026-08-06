@@ -7,6 +7,19 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.4.0 - 2026-08-06
+
+JL's final evidence-page design (ruled 260806): the flat `### Q-consumer
+register` is retired. The page declares `route: outward` in its metadata
+head (the type key, base resolution step ②) and organizes Content BY EXECUTOR:
+one `### E<n> · <question>` division per Q-executor conversation, each owning
+exactly one QA-probe (pointer line with state), a `#### consumers` block (one
+row per collected Q-consumer: source page id, stake, A-consumer, row state),
+and a `#### answer digest` of 2-3 lines. `### E0 · incoming` is the standing
+collect queue: a Q-consumer born on any page lands there until PROBE promotes
+it. Close rule: every division's consumers are SUPPORTED, DEFERRED, or
+WITHDRAWN, AND E0 is empty.
+
 ## 0.3.0 - 2026-08-06
 
 Entries are hidden source records, not board pages (JL ruling B, 260806: "an

@@ -245,13 +245,13 @@ def render_aims(aims, state=""):
         # check is not one, so hiding the check behind a second click made the
         # row a title with nothing under it. The GROUP is still shut, so the
         # page still collapses to its group names.
-        # A `### Q-consumer register` division renders in register mode: its
-        # backticked binding tokens (bib keys, bank paths) become evidence
+        # An evidence page's `### E<n> ·` division renders in register mode:
+        # its backticked binding tokens (bib keys, bank paths) become evidence
         # chips (JL 260806). The heading was split off above, so body() cannot
         # detect it on its own; the flag is how the division's identity travels.
         parts.append(f'<details class="csec"><summary>{inline(title)} {cnt}'
                      f'</summary><div class="cbody aims-open">'
-                     f'{body(stamp_aim_states(b, state), register=bool(_bd.REGISTER_TITLE.match(title)))}'
+                     f'{body(stamp_aim_states(b, state), register=bool(_bd.EVIDENCE and _bd.EDIV_TITLE.match(title)))}'
                      f'</div></details>')
     return "".join(parts)
 
@@ -362,10 +362,11 @@ def render_subsections(sections, open_first=False, flat=False):
     out = []
     for i, (heading, md) in enumerate(sections):
         # #### 不再压成 **…**（那会套上组标题的 🔹）；body() 现在自己渲染段落标题。
-        # A register division carries its binding chips wherever it lives:
-        # some topic pages keep `### Q-consumer register` in Content.
+        # An E division carries its binding chips wherever it lives: the
+        # evidence pages keep their `### E<n> ·` divisions in Content.
         rendered = body(merge_prose_lines(md) if flat else md,
-                        register=bool(heading and _bd.REGISTER_TITLE.match(heading)))
+                        register=bool(heading and _bd.EVIDENCE
+                                      and _bd.EDIV_TITLE.match(heading)))
         if heading and flat:
             out.append(f'<div class="fh">{inline(heading)}</div>'
                        f'<div class="cbody flat">{rendered}</div>')
@@ -627,6 +628,20 @@ def render_contract(sections, lead=""):
 
 
 def render_question(q, prv, nxt):
+    """One page. An evidence page (head `route: outward|inward`, JL 260806)
+    renders its `### E<n> ·` divisions in register mode, so their binding
+    tokens become chips; the flag is page-scoped and restored on exit so a
+    sibling page can never inherit it."""
+    prev_evidence = _bd.EVIDENCE
+    _bd.EVIDENCE = bool(re.fullmatch(r"(outward|inward)",
+                                     (q.get("route") or "").strip()))
+    try:
+        return _render_question(q, prv, nxt)
+    finally:
+        _bd.EVIDENCE = prev_evidence
+
+
+def _render_question(q, prv, nxt):
     nav = ('<div class="nav">'
            + (f'<a href="#{prv["id"]}">← {prv["id"]}</a>' if prv else '<span></span>')
            + f'<a class="all" href="#top">☰ Index</a>'

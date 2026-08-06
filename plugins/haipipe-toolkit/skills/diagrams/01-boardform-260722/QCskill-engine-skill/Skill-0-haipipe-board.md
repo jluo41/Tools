@@ -1,4 +1,4 @@
-# haipipe-board · v0.120.1
+# haipipe-board · v0.124.0
 state: 🟡 in flux · 160 releases in 14 days, 3 open defects
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -30,7 +30,7 @@ Nothing measures whether the manual stays short, which is what `QC1a`'s Law asks
 All three sit in `## Aims`, and two of them arrived from other pages because this skill ships the file.
 
 ## Diagram
-<!-- haipipe:skill:tree:start 4ac82d54f6110bd5 board/haipipe-board -->
+<!-- haipipe:skill:tree:start 5017efbaa6daeb9b board/haipipe-board -->
 
 **What `haipipe-board` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -45,7 +45,7 @@ haipipe-board/
       40-structure.css               45 ln  group intro (QC2, JL 260724): one quiet sentence under each group header;
       45-sitebar.css                 44 ln  The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
       50-embeds.css                  35 ln  QF1 · embeds: another file's content shown by reference (live)
-      60-chips.css                  235 ln  chips: an inline marker that knows its own state (QC1, 260726)
+      60-chips.css                  242 ln  chips: an inline marker that knows its own state (QC1, 260726)
       70-sidebar.css                139 ln  Pages sidebar (JL 260731): Index → group → page, hideable
       80-matrix.css                 142 ln  SECTION MATRIX (QB2, JL 260731): page × section, computed at build
     js/
@@ -134,22 +134,22 @@ haipipe-board/
     board-form.md                   452 ln  Board form: full specification
     page-lifecycle.workflow.js      417 ln
     page-template.md                375 ln  Short title in sentence case: say what this page is FOR
-    topic-entry-contract.md          53 ln  Topic page and nested entry contract
+    topic-entry-contract.md          70 ln  Evidence page and nested QA-probe contract
     writing-rules.md                 98 ln  Writing rules: how to write so it reads like human language
   src/
     __init__.py                       3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
     assets.py                        90 ln  The browser assets, assembled from parts.
-    body.py                        1438 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
+    body.py                        1493 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
     common.py                       197 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
-    dialect_paper.py               1012 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
+    dialect_paper.py               1085 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
     page_board.py                  1048 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
     page_context.py                 318 ln  Bounded cross-Page context declared under ``## Files``.
     page_lifecycle.py               550 ln  Deterministic audit of one Page lifecycle Workflow receipt.
-    page_question.py                809 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
+    page_question.py                832 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
     page_stage.py                   262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
-    parse.py                        398 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
+    parse.py                        402 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
     stage_contract.py               128 ln  Managed requirements and page-writing sources for S pages.
-    topic_entry_contract.py          95 ln  Optional generic contract for a topic page and its nested entry pages.
+    topic_entry_contract.py         155 ln  Optional generic contract for an evidence page and its nested QA-probes.
   tests/
     fixtures/
       page_lifecycle/
@@ -171,12 +171,13 @@ haipipe-board/
     test_page_context.py            196 ln  Related Board Pages grammar, validation, and bounded context tests.
     test_page_lifecycle.py          368 ln
     test_quality_check.py            69 ln  Executable safety checks for the one-click, read-only Quality Check.
+    test_register_chips.py          102 ln  Evidence-page divisions render their bindings as evidence cards (JL 260806).
     test_sentence_chat.py            81 ln  Contract checks for render-local sentence addressing and focused Q chat.
     test_sentence_editing.py         94 ln  Regression tests for sentence-local comments and tracked edits.
     test_shell.py                   157 ln  QD5 · the operating shell: pane recognition, injection, and link carry-over.
     test_stage_style.py              88 ln
     test_status.py                  150 ln
-    test_topic_entry_contract.py    106 ln
+    test_topic_entry_contract.py    149 ln
     test_tree_reroot.py              39 ln
     test_turnring.py                134 ln  QD2 R1 · the turn ring, tested where a browser cannot see it.
   vendor/
@@ -184,7 +185,7 @@ haipipe-board/
       addon-unicode11.js              2 ln
       xterm.css                     285 ln  * Copyright (c) 2014 The xterm.js authors. All rights reserved.
       xterm.min.js                    2 ln
-  CHANGELOG.md                     2047 ln  haipipe-board — Changelog
+  CHANGELOG.md                     2084 ln  haipipe-board — Changelog
   SKILL.md                          771 ln  /haipipe-board: one topic, one source tree, one generated Board site
   status.py                         364 ln  Render the three-line closing block for one Board-attached session.
 ```
@@ -236,13 +237,13 @@ WORKFLOW  one folder in, one site out, and every writer aimed at the markdown
 ```
 
 ## Content
-<!-- haipipe:skill:body:start 4ac82d54f6110bd5 board/haipipe-board -->
+<!-- haipipe:skill:body:start 5017efbaa6daeb9b board/haipipe-board -->
 
-**haipipe-board** · `0.120.1` · last shipped 2026-08-05
+**haipipe-board** · `0.124.0` · last shipped 2026-08-06
 
 - folder   `board/haipipe-board/`
 - tools    not declared
-- summary  Html-embed URLs carry the shell opt-out (plain): a browser iframe request looks like a tab navigation to the Accept fallback, so tailnet embeds got the shell and every slide division showed the cover (JL 260805).
+- summary  Evidence pages replace the flat register (JL 260806): the type key is the head route: line, Content organizes BY EXECUTOR (one E<n> division per Q-executor conversation, #### consumers + #### answer digest, E0 incoming), one division per QA-probe; checker re-keyed and slot headings canonical in capitals, chips re-anchored to E divisions.
 
 ### SKILL.md
 
@@ -841,7 +842,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       | `ref/page-template.md` | The file a Q or S page is copied from (renamed from `ref/q-template.md` on 260801). A Skill, Agent or Meeting page is generated from its own stub instead and never copies this |
       | `ref/board-form.md` | The full specification: folders, numbering, section ↔ page correspondence, the syntax table, `## Links` |
       | `ref/writing-rules.md` | How to write it in plain language, plus the zero-background review prompt and its convergence criteria |
-      | `ref/topic-entry-contract.md` | Optional generic contract for a topic page and its nested `probes/<topic>/` entry pages |
+      | `ref/topic-entry-contract.md` | Optional generic contract for an evidence page (head `route:` key, `### E<n>` divisions, E0 queue) and its nested `probes/<topic>/` QA-probe records (hidden `<n>-<slug>.md` source files, not pages) |
       | `ref/board-example.md` | A minimal example board with two questions |
       | `ref/page-lifecycle.workflow.js` | Bounded non-linear controller for one Page: producer → build/version snapshot → independent CHECK → route |
       The scripts and packages in the skill root:
@@ -881,7 +882,7 @@ It replaces `/haipipe-session` (that skill was only a working log the person doi
       A live example of the nested form (Q decisions + S stages): `examples/Project-Personality-OpioidRx/papers/Paper-Personality2Opioid-MISQ2026/0-lifecycle/`.
 ### The other files
 
-130 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
+131 files besides `SKILL.md` and `CHANGELOG.md`, each with the purpose it states about itself. They are described here, not reproduced: the folder is the copy.
 
 ```
 assets/board-mark.svg               44 ln
@@ -892,7 +893,7 @@ assets/css/30-slide.css            191 ln  聚焦 = 一张幻灯片，不是一�
 assets/css/40-structure.css         45 ln  group intro (QC2, JL 260724): one quiet sentence under each group header;
 assets/css/45-sitebar.css           44 ln  The breadcrumb bar at the top of every tree page (QB2, JL 260801: "I feel
 assets/css/50-embeds.css            35 ln  QF1 · embeds: another file's content shown by reference (live)
-assets/css/60-chips.css            235 ln  chips: an inline marker that knows its own state (QC1, 260726)
+assets/css/60-chips.css            242 ln  chips: an inline marker that knows its own state (QC1, 260726)
 assets/css/70-sidebar.css          139 ln  Pages sidebar (JL 260731): Index → group → page, hideable
 assets/css/80-matrix.css           142 ln  SECTION MATRIX (QB2, JL 260731): page × section, computed at build
 assets/js/00-header.js              33 ln  Every write posts `path`, and the server takes that path's PARENT as the
@@ -971,21 +972,21 @@ ref/board-example.md               125 ln  Minimal example: a board with two que
 ref/board-form.md                  452 ln  Board form: full specification
 ref/page-lifecycle.workflow.js     417 ln
 ref/page-template.md               375 ln  Short title in sentence case: say what this page is FOR
-ref/topic-entry-contract.md         53 ln  Topic page and nested entry contract
+ref/topic-entry-contract.md         70 ln  Evidence page and nested QA-probe contract
 ref/writing-rules.md                98 ln  Writing rules: how to write so it reads like human language
 src/__init__.py                      3 ln  haipipe-board src/ (QB5): build.py and serve.py are thin entries; the code
 src/assets.py                       90 ln  The browser assets, assembled from parts.
-src/body.py                       1438 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
+src/body.py                       1493 ln  The board's body grammar -> html (ref/board-form.md §5): inline marks, link
 src/common.py                      197 ln  Shared constants + tiny helpers (QB5). Used by every page module AND by
-src/dialect_paper.py              1012 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
+src/dialect_paper.py              1085 ln  The `paper` dialect: resolve a manuscript's inline markers at BUILD time.
 src/page_board.py                 1048 ln  The cover + index + whole-page assembly (QB5: render(), asset inlining,
 src/page_context.py                318 ln  Bounded cross-Page context declared under ``## Files``.
 src/page_lifecycle.py              550 ln  Deterministic audit of one Page lifecycle Workflow receipt.
-src/page_question.py               809 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
+src/page_question.py               832 ln  One question -> one <section class="slide q"> card (QB5: the card chunk of
 src/page_stage.py                  262 ln  Stage/source content on a slide (QF1, JL 260724): the `![[path]]` /
-src/parse.py                       398 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
+src/parse.py                       402 ln  md -> data (QB5): board.md, Q files, folder discovery, legacy blocks.
 src/stage_contract.py              128 ln  Managed requirements and page-writing sources for S pages.
-src/topic_entry_contract.py         95 ln  Optional generic contract for a topic page and its nested entry pages.
+src/topic_entry_contract.py        155 ln  Optional generic contract for an evidence page and its nested QA-probes.
 status.py                          364 ln  Render the three-line closing block for one Board-attached session.
 tests/conftest.py                   15 ln  Make the engine folder importable from tests/ (JL 260801: the top level had
 tests/drive_board.py               191 ln  Smoke the WHOLE board in a real browser, and record it.
@@ -1003,12 +1004,13 @@ tests/test_home.py                 135 ln  Read-only discovery and rendering che
 tests/test_page_context.py         196 ln  Related Board Pages grammar, validation, and bounded context tests.
 tests/test_page_lifecycle.py       368 ln
 tests/test_quality_check.py         69 ln  Executable safety checks for the one-click, read-only Quality Check.
+tests/test_register_chips.py       102 ln  Evidence-page divisions render their bindings as evidence cards (JL 260806).
 tests/test_sentence_chat.py         81 ln  Contract checks for render-local sentence addressing and focused Q chat.
 tests/test_sentence_editing.py      94 ln  Regression tests for sentence-local comments and tracked edits.
 tests/test_shell.py                157 ln  QD5 · the operating shell: pane recognition, injection, and link carry-over.
 tests/test_stage_style.py           88 ln
 tests/test_status.py               150 ln
-tests/test_topic_entry_contract.py   106 ln
+tests/test_topic_entry_contract.py   149 ln
 tests/test_tree_reroot.py           39 ln
 tests/test_turnring.py             134 ln  QD2 R1 · the turn ring, tested where a browser cannot see it.
 vendor/xterm/addon-unicode11.js      2 ln
@@ -1059,10 +1061,38 @@ Two of its three open Aims are defects other pages found and correctly sent here
 260727 0115 · renamed `QB6-board-skill.md` -> `Q-Skill-haipipe-board.md` and moved into the new `Q-Skill/` group; the version now rides the `state:` line as readable detail, never the filename
 260726 2325 · page generated from `board/haipipe-board/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start 4ac82d54f6110bd5 board/haipipe-board -->
+<!-- haipipe:skill:log:start 5017efbaa6daeb9b board/haipipe-board -->
 
-Converted from the skill's own `CHANGELOG.md`: 160 releases.
+Converted from the skill's own `CHANGELOG.md`: 164 releases.
 
+260806 · `0.124.0`
+      JL's final evidence-page design (ruled 260806) executed:
+      - "evidence page" is the collective name for the for-literature and for-value
+        types; the type key is now ONE head line, `route: outward | inward`, right
+        after `owner:`/`method:`, replacing the retired `### Q-consumer register`
+        marker + register route line
+      - the page organizes Content BY EXECUTOR: one `### E<n> · <question>` division
+        per Q-executor conversation (🔗 QA-probe pointer + `#### consumers` rows +
+        `#### answer digest`), plus the standing `### E0 · incoming` collect queue;
+        one E<n> division ↔ one QA-probe; many QA-probes ↔ one QA-bank
+      - `ref/topic-entry-contract.md` rewritten to that shape; word order finalized
+        (QA-bank / QA-probe); the four slot words are CAPITALS everywhere including
+        heading slots (`#### Q-executor`, `#### A-executor`; `consumer trace` and
+        `bank binding` stay lowercase)
+      - `src/topic_entry_contract.py` re-keyed: topics detected by the head route:
+        line; capital slot headings canonical with lowercase accepted as a
+        `topic-entry-heading-case` WARN; new `topic-probe-division` ERROR enforces
+        the 1:1 E<n>↔record link
+      - chips re-anchored (src/body.py EDIV_TITLE + page-scoped EVIDENCE flag,
+        src/page_question.py, src/parse.py `route:` head key): binding tokens chip
+        inside E divisions of evidence pages only; Log stays chip-free
+      - tests updated (test_register_chips, test_topic_entry_contract; 137 green)
+260806 · `0.123.0`
+      **Probe entries become hidden SOURCE RECORDS** (JL ruling B, 260806: "an entry is a source file the topic page points at, like a PDF; the board renders the topic page, never the entry"). `ref/topic-entry-contract.md` rewritten: an entry is a RECORD, not a Page. No page frame (no `state:` header, Opening, Aims, States, Log, or gate); just a `# title` line, a `requires:` line, and the four slots (`#### q-executor` · `#### consumer trace` · bank binding with `**route**`/`**bank**`/`**target**`/`**state**` · `#### a-executor`). The naming law is now stated with its mechanism: `<n>-<slug>.md`, digit first, `<n>` restarting at 1 per `probes/<topic>/` folder, hidden precisely because `page_files` in `src/common.py` sweeps only the `Q`/`S`/`Agent`/`Meeting` prefixes (the glob itself is unchanged). Naming addendum, same ruling: both files in the exchange are called QA, distinguished by location; one conversation, two QAs: the bank QA is the original, the probe QA is the paper's copy that points at it. The file-level names QA-executor and QA-consumer are retired as WRONG; consumer and executor name slots only. `src/topic_entry_contract.py` therefore finds records with its own `probes/*/*.md` glob instead of relying on the page registry, and its test fixture moved to the record shape and digit-first names. First live migration: the MISQ paper's 28 entries (10 S03 + 18 S04) renamed per drawer, every pointer repointed, board page count 87 to 59 with an unchanged ERROR set.
+260806 · `0.122.0`
+      **Register rows render as evidence cards** (JL 260806: literature/values are the first to test the card evidence). Inside a `### Q-consumer register` section, and only there, a backticked binding token becomes the same chip + popover chipcard the prose `\citep` markers get: a bibliography key (or key-shaped token, which renders broken when it does not resolve, suggestions included) opens the cite card with the .bib entry, source links and rendered reference; a `tasks/…` or `discoveries/…` provenance path opens a `val` card whose links are the QA file and its run folder, with the QA's own `state:` line quoted, and a path that is not on disk renders `owed` with the miss stated, never invented. `src/dialect_paper.py` gains `Paper.register_binding` / `Paper.bank_binding` (the dialect resolves, the board renders, QBc5); `src/body.py` gains the scoped `REGISTER` mode (a `body(register=True)` door plus its own `###` detector, save/restore so embeds cannot bleed it) and the `code_or_link` binding branch; `src/page_question.py` passes the flag from `render_aims` and `render_subsections`, whose division split had hidden the heading from body(). Log lines and discussion lanes stay chip-free through the existing NOTE wall, and non-register backticks everywhere render exactly as before. Companion data files shipped with the paper family: `paper/S03-literature/{template,entry-template}.md` and `paper/S04-value/{template,entry-template}.md`, the copyable topic-register and probe-entry skeletons those cards read from.
+260806 · `0.121.0`
+      **Chip-card PDF previews fold shut** (JL: "the evidence card doesn't work, I cannot click it", S-Main-1). Root cause verified by driving a real Chrome over CDP: an open display card stacked two 24em `<object>` PDF previews inside its 60vh scroll box, pushing the file links ~900px below the card's fold, and the PDF plugin swallowed the wheel, so the card could neither be scrolled nor clicked where it mattered. `src/body.py` now wraps each pdf preview in a closed `<details class="ccfold">` whose summary wears the figcaption's face; `assets/css/60-chips.css` styles the fold. A card opens compact (header, body, one summary line per preview, links visible); one click expands the PDF in place (verified expanding to 348px and collapsing again). Image, text, and reference previews are unchanged.
 260805 · `0.120.1`
       One line reworded for thin-paper phase 2: family-specific stage data (the paper
       door's stages/ and craft files) stays with its family; the retired

@@ -1,4 +1,4 @@
-# haipipe-board-page · v0.20.1
+# haipipe-board-page · v0.21.0
 state: 🟡 in flux · door test passed 260802, scope bound unmeasured
 owner: JL
 method: three managed spans sync from the skill folder; everything else is written by hand
@@ -31,7 +31,7 @@ The durable `_runs/page/` bundle and `pageflow.py` make illegal routes, self-app
 `haipipe-board-page-for-skill` owns the Skill and Agent mirror kinds, and it is the variant this page itself is written to.
 
 ## Diagram
-<!-- haipipe:skill:tree:start c2c826fa70d66d44 board/haipipe-board-page -->
+<!-- haipipe:skill:tree:start a631478e23a1bd9a board/haipipe-board-page -->
 
 **What `haipipe-board-page` ships**: every file in the folder, with the one-line purpose each one states for itself.
 
@@ -39,7 +39,7 @@ The durable `_runs/page/` bundle and `pageflow.py` make illegal routes, self-app
 haipipe-board-page/
   ref/
     page-run-contract.md   195 ln  Page RUN contract
-  CHANGELOG.md             292 ln  haipipe-board-page · Changelog
+  CHANGELOG.md             301 ln  haipipe-board-page · Changelog
   SKILL.md                 468 ln  /haipipe-board-page · the page, as a contract you can load
 ```
 
@@ -79,13 +79,13 @@ WORKFLOW  three verbs and one spec load, from the same door
 ```
 
 ## Content
-<!-- haipipe:skill:body:start c2c826fa70d66d44 board/haipipe-board-page -->
+<!-- haipipe:skill:body:start a631478e23a1bd9a board/haipipe-board-page -->
 
-**haipipe-board-page** · `0.20.1` · last shipped 2026-08-05
+**haipipe-board-page** · `0.21.0` · last shipped 2026-08-06
 
 - folder   `board/haipipe-board-page/`
 - tools    not declared
-- summary  One resolution table covers ALL types: filename prefix, then the register's REQUIRED route: line, then the REQUIRED page-type: frontmatter key, then the stage and Q filenames; exactly one key matches or the page is defective.
+- summary  One resolution table covers ALL types: filename prefix, then the HEAD route: line (moved out of the retired register marker, JL 260806), then the REQUIRED page-type: frontmatter key, then the stage and Q filenames; exactly one key matches or the page is defective.
 
 ### SKILL.md
 
@@ -115,7 +115,7 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
 
 
 - 1 · 🧬 Page Types, one base
-      A Page's TYPE comes from one machine-readable key on the page: a filename prefix, a declared register marker, or a frontmatter `page-type:` line.
+      A Page's TYPE comes from one machine-readable key on the page: a filename prefix, a head `route:` line, or a frontmatter `page-type:` line.
       The type decides how the Page closes, what its Content holds, and which typed records it fills through the base frame's declared extension points.
       Everything else is the shared base (the model on the design board's QB4, JL 260729).
       The implementation may still call this field `kind`; the contract term is Page Type.
@@ -126,8 +126,8 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       ①     filename Skill-<n>- or Agent-<n>-               Skill / Agent mirror  for-skill
             filename Meeting-<n>-                           Meeting               for-meeting
             filename QBv<n>-                                QBv venue             for-venue
-      ②     `### Q-consumer register` + `route: outward`    Literature topic      for-literature
-            `### Q-consumer register` + `route: inward`     Value topic           for-value
+      ②     head line `route: outward`                      Literature evidence   for-literature
+            head line `route: inward`                       Value evidence        for-value
       ③     frontmatter `page-type: display`                Display unit          for-display
             frontmatter `page-type: slide`                  Slide deck            for-slide
             frontmatter `page-type: design`                 Design brief          for-design
@@ -136,7 +136,7 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       ⑤     filename Q<group><n>[<face>]-<slug>             Q decision            base only
       ```
       EXACTLY ONE step may claim a page, or the page is defective: a page no key matches, or one carrying two keys that disagree, is fixed on the page, never in the resolver.
-      Step ② needs the register's `route:` line because the marker alone cannot tell the two topic routes apart; the line is REQUIRED, and `haipipe-board/ref/topic-entry-contract.md` declares it.
+      Step ②'s key is ONE line in the page's metadata head, right after `owner:`/`method:` (JL 260806; it replaced the retired register marker): an evidence page wears a stage-shaped filename, so only the head `route:` line separates the two evidence routes from a plain stage page. The line is REQUIRED, and `haipipe-board/ref/topic-entry-contract.md` declares it.
       Step ③'s `page-type:` line is REQUIRED on those four types' pages, and it BEATS the filename.
       That order settles the two real collisions: `S-Display-4c` wears a stage filename and is a display unit, so `page-type: display` resolves it at ③ before ④ can claim it; `QA4` wears a Q filename and is a slide deck, so `page-type: slide` resolves it before ⑤.
       Each type's contract states how it closes; the base's own type, the Q decision page, closes when every Aim is met or explicitly held, and mirror and Meeting pages are NEVER counted in a board's settled totals.
@@ -156,9 +156,9 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
                                                                    is submitted to
       S-<Family>-<unit>       →  haipipe-board-page-for-stage      a page per lifecycle stage
                                                                    of one paper or application
-      topic, outward route    →  haipipe-board-page-for-literature a Q-consumer register asking
+      evidence, outward route →  haipipe-board-page-for-literature an evidence page asking
                                                                    what is already KNOWN
-      topic, inward route     →  haipipe-board-page-for-value      a Q-consumer register asking
+      evidence, inward route  →  haipipe-board-page-for-value      an evidence page asking
                                                                    what this project must PRODUCE
       display unit            →  haipipe-board-page-for-display    a unit a person must ACCEPT:
                                                                    figure, table, diagram
@@ -178,7 +178,7 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
       A section reads the venue BLUEPRINT, never the QBv catalog.
       `-for-meeting` closed a gap this section itself used to record: `Meeting-<n>` pages had a generator and no contract.
       Its one owned rule is that a spoken decision is not ruled until routed to the owning page.
-      The two topic types resolve by the `### Q-consumer register` marker plus the register's REQUIRED `route:` line, the same marker `src/topic_entry_contract.py` already trusts.
+      The two evidence types resolve by the head `route:` line, the same key `src/topic_entry_contract.py` already trusts.
       Their filenames look like stage-page filenames, which is why a filename cannot resolve them.
       Both LOAD `haipipe-board/ref/topic-entry-contract.md` for the anatomy and add only their route's translation layer.
       A display page is mirror-shaped but closes on human ACCEPTANCE of a render, not on a unit shipping.
@@ -504,10 +504,17 @@ It is also the base that variant doors extend, so the ten `page-types/` variants
 260802 1720 · Authored half written: the `WORKFLOW` fence replaced the template placeholder with the spec load, the two verbs and the 0.10.0 scope bound, four real Aims replaced the single health placeholder, and `state:` moved from 🔴 to 🟡 in flux. The measured door test recorded as met, and its scope failure recorded as the one Aim it left open
 260731 1115 · page generated from `board/haipipe-board-page/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start c2c826fa70d66d44 board/haipipe-board-page -->
+<!-- haipipe:skill:log:start a631478e23a1bd9a board/haipipe-board-page -->
 
-Converted from the skill's own `CHANGELOG.md`: 23 releases.
+Converted from the skill's own `CHANGELOG.md`: 24 releases.
 
+260806 · `0.21.0`
+      Resolution step ② re-keyed (JL's evidence-page ruling, 260806): the two
+      evidence types resolve by the HEAD `route: outward | inward` line, one line in
+      the metadata head right after `owner:`/`method:`, replacing the retired
+      `### Q-consumer register` marker + register route line. The variant table now
+      says "evidence page" for the pair; `haipipe-board/ref/topic-entry-contract.md`
+      declares the line.
 260805 · `0.20.1`
       Resolve-order slot reworded for thin-paper phase 2: the last slot is
       "family craft: the stage's declared craft files (and for probe, the family

@@ -7,6 +7,16 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.4.0 - 2026-08-06
+
+The lifecycle runs COLLECT-first on evidence pages (JL 260806): collect the
+new Q-consumer into the owning topic's E0 queue → translate it into an E<n>
+division + its QA-probe (① ORGANIZE) → dispatch → copy the A-executor back
+into the QA-probe → write each A-consumer under the division's `####
+consumers` rows (⑤ INTERPRET). Vocabulary finalized: QA-probe / QA-bank, four
+capital slot words; the write-surfaces table names the E0 queue and E<n>
+division parts explicitly.
+
 ## 0.3.3 - 2026-08-06
 
 Wording sweep for JL ruling B (260806: "an entry is a source file the topic

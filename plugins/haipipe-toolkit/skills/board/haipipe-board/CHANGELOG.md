@@ -5,6 +5,31 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 **v0-series rule (JL, 2026-07-23):** this skill stays on `0.x.x` — **it never goes to 1.0.0 without JL's explicit say-so.** Everything here is provisional: the board form, the Q template, the generator's output. Ship `0.MINOR.PATCH` freely; `1.0.0` is a decision, not a milestone that arrives on its own.
 
+## 0.124.0 - 2026-08-06
+
+JL's final evidence-page design (ruled 260806) executed:
+
+- "evidence page" is the collective name for the for-literature and for-value
+  types; the type key is now ONE head line, `route: outward | inward`, right
+  after `owner:`/`method:`, replacing the retired `### Q-consumer register`
+  marker + register route line
+- the page organizes Content BY EXECUTOR: one `### E<n> · <question>` division
+  per Q-executor conversation (🔗 QA-probe pointer + `#### consumers` rows +
+  `#### answer digest`), plus the standing `### E0 · incoming` collect queue;
+  one E<n> division ↔ one QA-probe; many QA-probes ↔ one QA-bank
+- `ref/topic-entry-contract.md` rewritten to that shape; word order finalized
+  (QA-bank / QA-probe); the four slot words are CAPITALS everywhere including
+  heading slots (`#### Q-executor`, `#### A-executor`; `consumer trace` and
+  `bank binding` stay lowercase)
+- `src/topic_entry_contract.py` re-keyed: topics detected by the head route:
+  line; capital slot headings canonical with lowercase accepted as a
+  `topic-entry-heading-case` WARN; new `topic-probe-division` ERROR enforces
+  the 1:1 E<n>↔record link
+- chips re-anchored (src/body.py EDIV_TITLE + page-scoped EVIDENCE flag,
+  src/page_question.py, src/parse.py `route:` head key): binding tokens chip
+  inside E divisions of evidence pages only; Log stays chip-free
+- tests updated (test_register_chips, test_topic_entry_contract; 137 green)
+
 ## 0.123.0 - 2026-08-06
 
 **Probe entries become hidden SOURCE RECORDS** (JL ruling B, 260806: "an entry is a source file the topic page points at, like a PDF; the board renders the topic page, never the entry"). `ref/topic-entry-contract.md` rewritten: an entry is a RECORD, not a Page. No page frame (no `state:` header, Opening, Aims, States, Log, or gate); just a `# title` line, a `requires:` line, and the four slots (`#### q-executor` · `#### consumer trace` · bank binding with `**route**`/`**bank**`/`**target**`/`**state**` · `#### a-executor`). The naming law is now stated with its mechanism: `<n>-<slug>.md`, digit first, `<n>` restarting at 1 per `probes/<topic>/` folder, hidden precisely because `page_files` in `src/common.py` sweeps only the `Q`/`S`/`Agent`/`Meeting` prefixes (the glob itself is unchanged). Naming addendum, same ruling: both files in the exchange are called QA, distinguished by location; one conversation, two QAs: the bank QA is the original, the probe QA is the paper's copy that points at it. The file-level names QA-executor and QA-consumer are retired as WRONG; consumer and executor name slots only. `src/topic_entry_contract.py` therefore finds records with its own `probes/*/*.md` glob instead of relying on the page registry, and its test fixture moved to the record shape and digit-first names. First live migration: the MISQ paper's 28 entries (10 S03 + 18 S04) renamed per drawer, every pointer repointed, board page count 87 to 59 with an unchanged ERROR set.

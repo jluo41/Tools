@@ -144,6 +144,10 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
         "state": "🔴",
         "owner": "",
         "method": "",
+        # route: outward | inward is the evidence-page type key (JL 260806):
+        # it sits in the head, right after owner:/method:, and resolves the
+        # page to for-literature or for-value where the filename cannot.
+        "route": "",
         "session": "",
         "requires": "",
         "style_from": "",
@@ -152,7 +156,7 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
     }
     while i < len(lines) and not lines[i].startswith("## "):
         m = re.match(
-            r"^(state|owner|method|session|requires|style-from|provides|contract-source-hash):\s*(.*)$",
+            r"^(state|owner|method|route|session|requires|style-from|provides|contract-source-hash):\s*(.*)$",
             lines[i].strip(),
         )
         if m:

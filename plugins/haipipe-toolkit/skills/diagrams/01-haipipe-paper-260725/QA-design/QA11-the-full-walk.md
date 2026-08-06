@@ -37,7 +37,7 @@ scene 0 · enter      you: /haipipe-paper enter papers/Paper-X (missing → asks
 
 scene 1 · seed       you: /haipipe-paper seed
                      system: DRAFT writes question·motivation·landscape·H1-H3;
-                     every shaky claim wears [Q-Seed-n] → first register rows
+                     every shaky claim wears [Q-Seed-n] → collected into E0 queues
                      yours: the gate: is this seed worth a paper?
 
 scene 2 · resource   you: /haipipe-paper resource
@@ -61,9 +61,10 @@ scene 5 · pitch +    you: pitch, then narrative
                      yours: two gates (narrative is every later scene's work order)
 
 interlude · S03/S04  not a scene: the evidence desk running through the whole play.
-                     Every scene's PROBE lands here: register row + probes/L|V entry,
-                     agents cross the wall, QA file returns, entry copies, S page
-                     points. You drop by to watch rows turn SUPPORTED / BOUND.
+                     Every scene's question is COLLECTED into a topic's E0 queue;
+                     PROBE promotes it to an E<n> division + its QA-probe, agents
+                     cross the wall, the QA-bank answers, the record copies it in.
+                     You drop by to watch consumer rows turn SUPPORTED / BOUND.
 
 scene 6 · display    you: /haipipe-paper display "Table1 + main regression + concept"
                      system: one for-display page per unit, each climbing
@@ -100,11 +101,11 @@ scene 9 · round      you: round (submit) … months later: rebuttal with the le
   engine: haipipe-board-page · TYPE for-stage · PHASE by authority
     DRAFT   write Content per template.md; every unknown becomes an owned
             hole: a Q-consumer with its stake, an Aims row
-    PROBE   only exit to evidence: q-executor (stake stripped) → an entry
-            page under S03 or S04 → bank agents → QA file; the entry copies
-            the answer in (a-executor), the S page points and interprets
-            (A-consumer). Ceiling: probe_depth (0 = harvest only; --depth
-            is the human spend lever)
+    PROBE   only exit to evidence: Q-executor (stake stripped) → a QA-probe
+            record under S03 or S04 → bank agents → QA-bank file; the record
+            copies the answer in (A-executor), the owning E<n> division's
+            consumers rows interpret it (A-consumer). Ceiling: probe_depth
+            (0 = harvest only; --depth is the human spend lever)
     REVISE  weave landed answers in; discharge [Q-<Stage>-n] brackets
     CHECK   run the stage.md `checker:` → fresh judge → the HUMAN GATE:
             state ✅ is [CHECK-JL]'s alone
@@ -114,7 +115,7 @@ scene 9 · round      you: round (submit) … months later: rebuttal with the le
 
 ### §2 S01 Opening: three pages that fix what the paper IS
 - seed (order 0, venue-FREE) · page S-Open-Seed
-  The seed question, motivations, landscape, hedged H1/H2/H3. Its unknowns become the first register rows in S03/S04.
+  The seed question, motivations, landscape, hedged H1/H2/H3. Its unknowns are collected into S03/S04's E0 queues.
 - venue (order 2a) · page S-Open-Venue · phases [draft, probe, check], no REVISE
   Reads the QBv venue catalog ONCE (the one stage allowed to); pins the journal; produces a CONTRACT, not prose. Retarget = re-run venue; seed/resource/claims never change on retarget.
 - pitch (order 2b, venue-ALIGNED) · page S-Open-Pitch
@@ -129,9 +130,9 @@ scene 9 · round      you: round (submit) … months later: rebuttal with the le
   The arc: beats, section map, what each section owes the argument. Feeds display and the section blueprint.
 
 ### §4 S03 Literature · S04 Value: the two evidence POOLS
-Not stages with their own runs: topic pages (for-literature outward, for-value inward) whose `### Q-consumer register` collects EVERY stage's questions.
-- One nested entry page per neutral question under `probes/L<n>-…/` or `probes/V<n>-…/`; dispatch crosses the wall to discovery (outward) or task (inward) orchestrator agents.
-- Write-backs are typed: citation binding (real key + positioning + novelty verdict) or value binding (number + run/spec/QA paths + claim update). A register row closes SUPPORTED/BOUND · DEFERRED · WITHDRAWN.
+Not stages with their own runs: evidence pages (for-literature outward, for-value inward, keyed by the head `route:` line) that collect EVERY stage's questions into their E0 queue and organize Content BY EXECUTOR: one `### E<n>` division per Q-executor conversation.
+- One hidden QA-probe record per conversation under `probes/L<n>-…/` or `probes/V<n>-…/` (1:1 with its E<n> division); dispatch crosses the wall to discovery (outward) or task (inward) orchestrator agents; many QA-probes may point at one QA-bank.
+- Write-backs are typed, on the division's `#### consumers` rows: citation binding (real key + positioning + novelty verdict) or value binding (number + run/spec/QA paths + claim update). A consumer row closes SUPPORTED/BOUND · DEFERRED · WITHDRAWN; the page closes when every division's rows are terminal AND E0 is empty.
 
 ### §5 S05 Display: units a person accepts
 - display (order 4) · one for-display page PER UNIT (figure, table, diagram)
@@ -181,7 +182,7 @@ S08/S09/S10   no stage.md: present · build      —                      round 
 ```
 
 ### §11 The type table: which for-xxx each stage touches
-(resolution: S-filename → for-stage · register route: → for-literature/-value · page-type: key → for-display/-slide/-section · QBv name → for-venue · Skill-/Agent-/Meeting- → for-skill/-meeting)
+(resolution: S-filename → for-stage · head route: line → for-literature/-value · page-type: key → for-display/-slide/-section · QBv name → for-venue · Skill-/Agent-/Meeting- → for-skill/-meeting)
 ```text
 stage           its S page     other typed pages it produces or reads
 ──────────────────────────────────────────────────────────────────────
@@ -190,8 +191,8 @@ resource·
 narrative
 venue           for-stage      READS for-venue (QBv catalog, sole reader)
 claims          for-stage      consumes S04's value bindings
-S03 Literature  for-literature nested entry pages (topic-entry contract)
-S04 Value       for-value      nested entry pages
+S03 Literature  for-literature hidden QA-probe records (topic-entry contract)
+S04 Value       for-value      hidden QA-probe records
 display         for-stage hub  one for-display page per unit
 section-edit    (per unit)     for-section, which LOADS for-stage + venue
                                contract block; the only two-layer type
@@ -217,6 +218,7 @@ unused by paper —              for-skill (design boards) · for-design
   The wiring view this walk complements.
 
 ## Log
+- 260806 1000 · [REVISE-CC] §4 and the script interlude rewritten to JL's final evidence-page shape: questions are COLLECTED into E0, PROBE promotes each to an E<n> division + its QA-probe, write-backs land on `#### consumers` rows, and the type key is the head `route:` line (base 0.21.0, for-literature/for-value 0.4.0). Minimal edits; the walk's other divisions already read correctly.
 - 260806 0700 · [REVISE-CC] the SCRIPT landed as §S on JL's placement ruling ("剧本放到哪里? QA11"): ten scenes, four lines each (you say · system does · you see · in your hands), the S03/S04 interlude, and the three-things-you-do rule; §0-§9 stay as the reference prose behind it, §10/§11 as the tables. Chat carried the Chinese telling; the page carries the English per the boards-are-English rule.
 - 260806 0600 · [REVISE-CC] theory consolidated before the MISQ end-to-end rerun (JL: "在做之前,我想先把这个东西在理论上整清楚"): §10 the per-stage table (template · draft · probe home · revise/check), §11 the per-stage type table; S03/S04's missing template.md recorded as owed and its build dispatched the same hour, together with register-rows-as-evidence-cards (JL: literature/values are the first test bed for the card mechanism).
 - 260806 0520 · [DRAFT-CC] page opened on JL's ask ("把 paper 这个 board 从头走到尾... 详细列一下"): the walk in nine divisions, the per-stage loop stated once in §1, pools not stages for S03/S04, the acceptance ladder, the venue two-hop, and the round loop; sources are the shipped 0.5.0 contracts, not memory.

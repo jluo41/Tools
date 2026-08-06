@@ -8,7 +8,7 @@ session: 822af3ea-7685-49dd-9ee0-7d0ee2eea8ec
 ## Opening
 
 A paper may not run code and may not read the literature, so where does a question live between being raised and being answered?
-It lives in a topic-keyed entry inside the paper: `S04-value/probes/V01-headline-lbp/S-Value-6-opioid-cohort-regression-estimates.md` holds one q-executor and points by path at the answer.
+It lives in a topic-keyed entry inside the paper: `S04-value/probes/V01-headline-lbp/1-opioid-cohort-regression-estimates.md` holds one Q-executor and points by path at the answer.
 The answer is written by an executor that never learns which claim it settles, because a clean context IS the wall.
 The paper's half of that crossing is ruled here; the model itself stays the layer's.
 
@@ -46,7 +46,7 @@ Name what it owns instead of where it sits in a list.
  │  S-Literature-<n>-<topic>.md │            │   tasks/  discoveries/ │
  │   a sentence owes a number   │            │   tasks/  discoveries/ │
  │   {VAL:? …} [Q-Sec6Results-4]│            │                        │
-│   ### Q-consumer register    │            │ owned by /haipipe-task │
+│   route: outward + ### E<n>  │            │ owned by /haipipe-task │
  │     🔒 the STAKE lives here  │            │ and /haipipe-discovery │
  │        and never crosses     │            │ neither knows a paper  │
  └────────────┬─────────────────┘            │ exists                 │
@@ -54,10 +54,10 @@ Name what it owns instead of where it sits in a list.
  ┌──────────────────────────────┐            │ <task-folder>/QA/      │
  │ S03-literature/probes/       │            │   <n>-<slug>.md        │
  │   L01-<topic>/<entry>.md     │            │   state: working |     │
-│   #### q-executor  ━━ STRING ━━━━━━━━━━━▶ │   answered | superseded│
+│   #### Q-executor  ━━ STRING ━━━━━━━━━━━▶ │   answered | superseded│
 │   #### consumer trace        │            │                        │
 │   #### bank binding · target: ━━ BY PATH ▶│   points at that file  │
-│   #### a-executor ◀━━━━━━━━━━━ the answer │                        │
+│   #### A-executor ◀━━━━━━━━━━━ the answer │                        │
  └──────────────────────────────┘  as a FILE └────────────────────────┘
 ```
 
@@ -66,10 +66,10 @@ Name what it owns instead of where it sits in a list.
 ```text
  🎯 Q-consumer   the question WITH its stake: which claim it settles, which
                  sentence owes it. Stays in the stage doc
- ✂️ q-executor   the same question, stake STRIPPED. The only thing that
+ ✂️ Q-executor   the same question, stake STRIPPED. The only thing that
                  crosses. General language, no claim ids
- 📦 a-executor   the answer, copied back into the probe file verbatim
- 🧠 a-consumer   the consumer's INTERPRETATION, back in the stage doc.
+ 📦 A-executor   the answer, copied back into the QA-probe verbatim
+ 🧠 A-consumer   the consumer's INTERPRETATION, back in the stage doc.
                  Whether it settles a claim is the paper's business
  🔖 Q-<Stage>-<n>  the citation in the prose that names the question
 ```
@@ -104,7 +104,7 @@ The pattern is the shared-family pattern `QA1` rules, and this page is one insta
 
 #### 1.2 · The Paper overlay is checked without claiming ownership of the shared execution model
 (the Board checks location, dependency, headings, state vocabulary, and trace symmetry)
-`haipipe-board/cli/check.py` detects a direct `### Q-consumer register`, then checks nested entries against the generic topic-entry contract. It does not judge the executor's evidence or invent a second Probe model.
+`haipipe-board/cli/check.py` detects a direct page's head `route: outward|inward` key, then checks nested QA-probes against the generic topic-entry contract. It does not judge the executor's evidence or invent a second Probe model.
 
 #### 1.3 · Nobody has ruled what happens when the layer's contract changes
 (two consumer families bind the same folder, and neither owns the migration)
@@ -146,12 +146,12 @@ Renaming both sides moved all nine to `parked` or `unowned` with zero evidence c
 ```text
   S03 Literature                         S04 Value
   ├── S-Literature-<n>-<topic>.md        ├── S-Value-<n>-<topic>.md
-  │   └── Aim: Q-consumer + stake         │   └── Aim: Q-consumer + stake
+  │   └── E<n> divisions + E0 queue       │   └── E<n> divisions + E0 queue
   └── probes/                             └── probes/
       └── L01-<topic>/                        └── V01-<topic>/
-          └── one entry per q-executor            └── one entry per q-executor
+          └── one QA-probe per Q-executor          └── one QA-probe per Q-executor
               discovery binding                     task binding
-              a-executor                            a-executor
+              A-executor                            A-executor
 
   queue = entries whose bank-binding state is planned | commissioned | deferred
   _archive/1-probes/ = historical provenance, never a live work queue
@@ -162,7 +162,7 @@ Renaming both sides moved all nine to `parked` or `unowned` with zero evidence c
 #### 3.1 · The topic owns the paper stake; the entry owns the execution payload
 (the Q-consumer must stay with the paper, while the q-executor must stay clean)
 The topic page sits directly in S03 or S04 and is the canonical home for the Aim and Q-consumer because it explains why the paper needs an answer.
-Its keyed entry under `probes/<topic>/` holds one q-executor, its bank binding, and its a-executor because those are the neutral exchange with Discovery or Task; it retains the original Q-consumer text only as a review trace during the page-level normalization.
+Its keyed QA-probe under `probes/<topic>/` holds one Q-executor, its bank binding, and its A-executor because those are the neutral exchange with Discovery or Task; it retains the original Q-consumer text only as a review trace during the page-level normalization.
 The generic Probe layer remains the owner of the loop and entry anatomy, so nesting changes the live location without forking the contract.
 
 #### 3.2 · The queue is a view, not another folder
@@ -223,7 +223,7 @@ No queue file is written by hand, so moving or resolving an entry cannot leave a
 
 ### 🧪 Checks · what CATCHES a page breaking a rule
 - `../../board/haipipe-board/cli/check.py`
-  Detects `### Q-consumer register` and validates the generic topic-entry seam: direct topic dependency, headings, state, and trace symmetry.
+  Detects the head `route:` key and validates the generic topic-entry seam: direct topic dependency, capital slot headings, state, the E<n>↔QA-probe link, and trace symmetry.
 
 ### 📤 Output files · what a BUILD writes
 - `../board/QA/QA5-the-probe-layer.html`
@@ -233,7 +233,7 @@ No queue file is written by hand, so moving or resolving an entry cannot leave a
 
 - The probe layer is a reusable family this paper depends on and does not own. The paper side is a delta on a shared model, and this board rules the delta and never the model.
 - A question crosses the wall as a STRING with its stake stripped, and the answer comes back as a FILE the executor wrote, bound BY PATH. The manuscript never contains the bank's file and the bank never learns the claim, because a clean context IS the wall: strip the stake and the answer is evidence, leave it in and it is a request.
-- An S03 Literature or S04 Value topic page lives directly in its stage folder. Its `### Q-consumer register` is the canonical paper-facing mapping from Q-consumer to entry. Live entries belong in that stage's `probes/<topic>/` folder. Each entry is one q-executor and holds its bank binding and a-executor; its consumer trace is audit history only.
+- An S03 Literature or S04 Value evidence page lives directly in its stage folder, declares `route: outward|inward` in its head, and organizes Content BY EXECUTOR: one `### E<n>` division per Q-executor conversation is the canonical paper-facing mapping from Q-consumer to QA-probe, with E0 as the incoming queue (restated 260806; the flat register form this law first named is retired). Live QA-probes belong in that stage's `probes/<topic>/` folder. Each record is one Q-executor and holds its bank binding and A-executor; its consumer trace is audit history only.
 - `_archive/1-probes/` preserves historical provenance only. It is not a live queue or a location for new probe entries.
 - Queue is derived from the `state:` inside each nested entry's bank binding. It is never maintained as a separate file or a third register.
 - A Q-consumer id is CONSUMER-LOCAL and must not collide across consumers, so a stage that `runs: per-unit` names its unit in its own token, both halves read off the S page filename. The resolver takes the FURTHEST-ALONG match among entries claiming an id, so a shared id lets a DEFERRED question inherit an ANSWERED one's state. That is a manufactured green on the exact chip a reader trusts.
@@ -245,8 +245,8 @@ No queue file is written by hand, so moving or resolving an entry cannot leave a
 
 ## Glossary
 
-- **q-executor**: the question with its stake stripped, which is the only part that crosses the wall.
-- **a-consumer**: the paper's interpretation of a landed answer, which is the paper's business and never the bank's.
+- **Q-executor**: the question with its stake stripped, which is the only part that crosses the wall.
+- **A-consumer**: the paper's interpretation of a landed answer, which is the paper's business and never the bank's.
 - **The wall**: the clean context between a paper's claim and the executor's evidence.
 
 ## Discussion
@@ -263,6 +263,7 @@ No queue file is written by hand, so moving or resolving an entry cannot leave a
   The former `1-probes/` tree is preserved only at `_archive/1-probes/`, and the separate S11 Probe group is gone.
 
 ## Log
+- 260806 1000 · [REVISE-CC] JL's evidence-page ruling swept through this page's live surfaces: the type key is now the head `route:` line, the topic page organizes Content BY EXECUTOR (one E<n> division per Q-executor conversation, `#### consumers` + `#### answer digest`, E0 incoming), files are QA-bank and QA-probe, and the four slot words wear capitals everywhere including heading slots. Contracts: topic-entry core + for-literature/for-value 0.4.0 + base 0.21.0; MISQ S03/S04 migrated; the retired register marker survives only in dated records below.
 - 260806 0900 · [REVISE-CC] TWO RULINGS landed and executed. Ruling B (JL: entry is a hidden source file, like a PDF, never on the board): entries demoted from board pages to records named <n>-<slug>.md (digit-first, invisible to the page glob); 28 MISQ entries renamed with pointers repointed, MISQ board 87 to 59 pages, record shape = title + requires + four slots, no page frame. Naming law (JL: call them both QA): one conversation, two QAs, the BANK QA is the original (# Q = q-executor, ## Answer = a-executor) and the PROBE QA is the paper's copy that points at it; QA-executor/QA-consumer retired as file names, consumer/executor words name slots only. Contracts at topic-entry-contract + for-literature/for-value 0.3.0 + page-probe 0.3.3, haipipe-board 0.123.0; 131 tests green.
 
 - 260806 0720 · [REVISE-CC] swept to the thin architecture (one door + stage data + board rental); the paper-side probe adapter is now the door's `probe/` + `fn/probes.md` (the `workers/haipipe-paper-probe` skill dissolved 260805), and the retired probe board's pages are no longer cited as live.

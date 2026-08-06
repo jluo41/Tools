@@ -182,9 +182,9 @@ a file actually lands, so these are bindings, not prose.
  <paper>.tex · .bib · .pdf                       the deliverable. UNNUMBERED
 ```
 
-The direct S03/S04 topic page is the canonical Q-consumer register. Each nested
+The direct S03/S04 evidence page is canonical: one `### E<n>` division per Q-executor conversation, plus the E0 incoming queue. Each nested
 entry names that direct topic in `requires:`, and contains exactly `####
-q-executor`, `#### consumer trace`, `#### bank binding`, and `#### a-executor`.
+Q-executor`, `#### consumer trace`, `#### bank binding`, and `#### A-executor`.
 The trace is an audit copy, not a second consumer record. `planned`,
 `commissioned`, and `deferred` are queue states derived from the entry's bank
 binding; `read` and `answered-local` are resolved states.
