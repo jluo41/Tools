@@ -18,7 +18,7 @@ That record is the difference between a resumable process and a hidden agent con
 English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
 
 ## Diagram
-<!-- haipipe:skill:tree:start f5f85d290b794539 board/agents/haipipe-board-page-orchestrator-agent.md -->
+<!-- haipipe:skill:tree:start d2a32a0eeea13e2d board/agents/haipipe-board-page-orchestrator-agent.md -->
 
 <!-- haipipe:skill:tree:end -->
 
@@ -40,12 +40,12 @@ WORKFLOW  one packet in, four dispatched authorities, one durable receipt
 ```
 
 ## Content
-<!-- haipipe:skill:body:start f5f85d290b794539 board/agents/haipipe-board-page-orchestrator-agent.md -->
+<!-- haipipe:skill:body:start d2a32a0eeea13e2d board/agents/haipipe-board-page-orchestrator-agent.md -->
 
 **haipipe-board-page-orchestrator-agent** · `0.1.0` · last shipped 2026-08-04
 
 - folder   `board/agents/haipipe-board-page-orchestrator-agent.md/`
-- tools    not declared
+- tools    Read, Write, Grep, Glob, Bash, Skill, Workflow
 - summary  Routes one Page through bounded producer/build/judge loops and preserves an auditable receipt.
 
 ### haipipe-board-page-orchestrator-agent.md
@@ -157,7 +157,7 @@ The run closed in five steps and one round, CHECK to REVISE to CHECK to REVISE t
 260804 2035 · Replaced the generated Opening and Diagram stubs with the Page-specific role boundary, reviewer comparison, trust condition, dispatched authorities, and durable receipt flow. Page health remains for JL to rule after fresh validation.
 260804 2030 · page generated from `board/agents/haipipe-board-page-orchestrator-agent.md/` by `skillpage.py new`
 
-<!-- haipipe:skill:log:start f5f85d290b794539 board/agents/haipipe-board-page-orchestrator-agent.md -->
+<!-- haipipe:skill:log:start d2a32a0eeea13e2d board/agents/haipipe-board-page-orchestrator-agent.md -->
 
 Converted from the skill's own `CHANGELOG.md`: 9 releases.
 
