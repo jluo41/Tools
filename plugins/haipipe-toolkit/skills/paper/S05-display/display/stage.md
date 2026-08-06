@@ -8,6 +8,17 @@ one_line: "What evidence artifacts must the reader SEE, and are they ready?"
 board_family: Display
 board_unit: "0"
 
+dashboard: display-report.py <this stage's dir>
+#            where every display unit stands, and which are named by no section's prose.
+#            A dashboard is not a page TYPE: `for-dashboard` failed the
+#            admission test's fourth question on 260806, because the four
+#            pages wearing `-Dash` are three different things (two control
+#            pages, one rehearsal, one measurement) and no single closing
+#            rule covers them. What IS shared is the measured BLOCK, a span
+#            any page may carry, and its rule is freshness rather than
+#            completion: `check.py` reports a block older than its page's
+#            newest Log date.
+
 phases: [draft, probe, revise, check]
 gates: [check]             # THE HUMAN GATES THIS STAGE OPENS, declared like `phases:`.
                            # Default is ONE, at CHECK. DRAFT/PROBE/REVISE run unattended.

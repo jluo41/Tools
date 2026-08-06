@@ -8,6 +8,18 @@ one_line: "Write ONE section as real, venue-quality prose."
 board_family: "Main or Appendix, according to section_kind"
 board_unit: "reader-order section number or appendix letter"
 
+dashboard: section-stats.py --dashboard <this stage's dir>
+#            the section set's form: paragraphs, sentences, words against the venue
+#            floor, citation density against target, displays placed, defects.
+#            A dashboard is not a page TYPE: `for-dashboard` failed the
+#            admission test's fourth question on 260806, because the four
+#            pages wearing `-Dash` are three different things (two control
+#            pages, one rehearsal, one measurement) and no single closing
+#            rule covers them. What IS shared is the measured BLOCK, a span
+#            any page may carry, and its rule is freshness rather than
+#            completion: `check.py` reports a block older than its page's
+#            newest Log date.
+
 phases: [draft, probe, revise, check]
 
 # The phase list above runs once PER SECTION, not once for the paper. Display

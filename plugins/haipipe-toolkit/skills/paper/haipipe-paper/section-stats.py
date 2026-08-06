@@ -28,6 +28,7 @@ one sentence per source line. A `[Q-…]` bracket is apparatus too and is
 stripped before counting, because a word budget is about what a reader reads.
 """
 import pathlib
+import json
 import re
 import statistics
 import sys
@@ -215,7 +216,7 @@ def dashboard(main_dir, date):
          "  §  page            P  sent  words  floor      !    cite  targ  disp  bad  state",
          "  " + "-" * 76]
     placed, tot_def, tot_w, owed, noq = set(), 0, 0, 0, 0
-    detail = []
+    detail, rows, found = [], [], []
     for p in sorted(main.glob("S-Main-[0-9]*.md")):
         n = p.name.split("-")[2]
         text = p.read_text()
@@ -264,12 +265,26 @@ def dashboard(main_dir, date):
         fl = "-" if not lo else "%d-%d" % (lo, hi)
         low = "LOW" if lo and w < lo else ""
         st = re.search(r"^state:\s*(\S+)", text, re.M)
+        # The board turns a PAGE ID inside a figure into a link (`link_faces`,
+        # JL 260730), and it does not know what `1-introduction` is. Printing
+        # the id instead of the slug makes every row of this table clickable
+        # with no new machinery: the reader sees a number they doubt and lands
+        # on the page that produced it.
+        page_id = "S-Main-%s" % n
+        rows.append(dict(unit=n, page_id=page_id, file=p.name, paragraphs=npara,
+                         sentences=len(sents), words=w, floor_low=lo, floor_high=hi,
+                         under_floor=bool(low), cite_density=round(dens, 2),
+                         cite_target=CDENS[n],
+                         displays=len(REFRX.findall("\n".join(pl))), defects=d,
+                         state=st.group(1) if st else "?"))
         L.append("  %s  %-14s %2d %5d %6d  %-9s %-4s %.2f  %.2f %4d %4d  %s" %
-                 (n, p.name[7:-3][:14], npara, len(sents), w, fl, low, dens,
+                 (n, page_id, npara, len(sents), w, fl, low, dens,
                   CDENS[n], len(REFRX.findall("\n".join(pl))), d,
                   st.group(1) if st else "?"))
         for one in issues:
             detail.append("  §%s %-4s %-38s %s" % (n, one[0], one[1], one[2]))
+            found.append(dict(unit=n, page_id=page_id, paragraph=one[0],
+                              what=one[1], sentence=one[2]))
     L += ["  " + "-" * 76,
           "  %d prose words across the section set" % tot_w,
           "  %d REAL defects in PROSE SENTENCES: %d owed citation(s), %d Q-id(s) that no"
@@ -285,8 +300,34 @@ def dashboard(main_dir, date):
               "  question owns. Each line is the sentence that carries it.",
               "  " + "-" * 76] + detail
     L.append(END)
-    if True:
-        return "\n".join(L)
+
+    # THE MEASUREMENT IS DATA FIRST, TEXT SECOND (JL 260806).
+    #
+    # Until now the only place these numbers existed was the text block above,
+    # which meant nothing could check them and nothing else could read them. A
+    # number that lives only as prose drifts, and this page's own words are the
+    # warning: four of nine hand-written totals had already drifted by
+    # 2026-07-27, one of them by eleven sentences, and "a wrong measurement is
+    # worse than none, because it reads as measured".
+    #
+    # So the profile is written beside the page as JSON and the table is one
+    # rendering of it. `check.py` can then compare what a page SAYS against what
+    # was MEASURED, another page can cite a figure by path instead of retyping
+    # it, and an analysis in any language reads the profile rather than parsing
+    # a fixed-width table.
+    profile = dict(
+        measured=date,
+        generator="section-stats.py --dashboard",
+        source=str(main),
+        rows=rows,
+        totals=dict(prose_words=tot_w, defects=tot_def, owed_citations=owed,
+                    unowned_q_ids=noq,
+                    displays_placed=len(placed), displays_total=len(units),
+                    unplaced=sorted(units - placed)),
+        issues=found,
+    )
+    (main / "profile.json").write_text(json.dumps(profile, indent=2) + "\n")
+    return "\n".join(L)
 
 
 if __name__ == "__main__":
@@ -297,6 +338,26 @@ if __name__ == "__main__":
     if not args:
         sys.exit(__doc__)
     if "--dashboard" in argv:
-        print(dashboard(args[0], date))
+        block = dashboard(args[0], date)
+        page = next(Path(args[0]).glob("S-*-Dash.md"), None)
+        if page is None or "--print" in argv:
+            print(block)
+        else:
+            # REPLACE THE BLOCK, do not print it for a person to paste.
+            # The page has always said "produced by this script and replaced
+            # whole on every run"; until 260806 the script printed to stdout and
+            # a human pasted, which is how the block on disk came to be ten days
+            # stale and to carry a regenerate command naming a folder that had
+            # been renamed. A generated block that a person has to move by hand
+            # is a hand-maintained block wearing a machine's label.
+            text = page.read_text(encoding="utf-8")
+            if BEGIN in text and END in text:
+                head, rest = text.split(BEGIN, 1)
+                new = head + block + rest.split(END, 1)[1]
+            else:
+                sys.exit(f"{page.name} carries no {BEGIN} … {END} pair to replace. "
+                         f"Paste the block once by hand, then this runs itself.")
+            page.write_text(new, encoding="utf-8")
+            print(f"{page.name}: block replaced · profile.json written")
     else:
         print(render(args[0], date, per_sentence="--sentences" in argv))
