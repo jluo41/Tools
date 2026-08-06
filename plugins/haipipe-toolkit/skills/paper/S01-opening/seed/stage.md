@@ -71,7 +71,7 @@ defer_to: resource        # anything else: keep the Q block, `Answer: deferred -
 done_criteria:
   - "all four Content divisions plus the Q-consumer records carry real content; every <!-- RULE --> comment deleted"
   - "every question the draft hangs on is a Q-consumer Aim record, anchored to a draft assertion"
-  - "each Q links from a direct topic register to one nested entry, or is explicitly deferred"
+  - "each Q links from a direct evidence page's E<n> division to one nested QA-probe, or is explicitly deferred"
   - "no bare \\cite{TOADD} — the citation command and its [Q-Seed-<n>] bracket sit side by side"
   - "the S page's ## Log records phase history and the gate row"
   - "check-probe-cards.sh <paper_root> --stage seed exits 0"
@@ -138,11 +138,11 @@ DRAFT may search; PROBE must bind
 ---------------------------------
 
 Inline WebSearch is legitimate DRAFT fuel — orientation that becomes prose plus `planned`
-q-executor entries. It is NEVER evidence.
+Q-executor entries. It is NEVER evidence.
 
 PROBE must ALWAYS run the real worker. An inline result binds to nothing.
 DRAFT raises the Q-consumer question; PROBE alone opens the entry, MATCHes it,
-dispatches within the ceiling, and harvests `#### a-executor`.
+dispatches within the ceiling, and harvests `#### A-executor`.
 
 Profiling OUR OWN data belongs in RESOURCE. Such a question may well have been RAISED here — it
 was deferred at the gate, and it is not dispatched from this stage.

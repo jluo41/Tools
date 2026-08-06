@@ -3,6 +3,20 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.12.0] -- 2026-08-06 -- twin-QA names final; slot words are capitals
+
+- QA-bank and QA-probe are the two FILE names (word order fixed): the QA-bank
+  is the original the executor writes (`# Q` = Q-executor, `## Answer` =
+  A-executor); the QA-probe is the consumer's stub that points at it.
+  "Probe record or Page" replaced by "QA-probe record"; "entry" survives only
+  as an informal alias in checker names and schemas.
+- The four slot words are CAPITALS everywhere, including heading slots:
+  Q-consumer, A-consumer, Q-executor, A-executor. They name SLOTS, never
+  files; QA-executor/QA-consumer stay dead as file names.
+- Consumer-side pointer: an evidence page's E<n> divisions (see
+  `board/haipipe-board/ref/topic-entry-contract.md`) are the paper-family
+  surface this model's Q-consumers land on.
+
 ## [0.11.3] — 2026-08-05 — paper projection repointed
 
 - The paper family's probe tooling moved from `paper/workers/haipipe-paper-probe/`

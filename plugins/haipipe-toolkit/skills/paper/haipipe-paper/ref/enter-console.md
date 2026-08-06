@@ -25,7 +25,7 @@ Read only files that exist, in this order:
 2. The pitch S page (HIGH PRIORITY for the header): its `## Question` lead and one-line pitch become the "what this paper is about" sentence. Absent → "pitch not yet written".
 3. The remaining S pages, by family folder; each page's own `state:` line is the primary signal (seed, resources, claims, venue with its PIN on the `state:` line, narrative, display pages).
 4. Main and appendix section pages; derive per-section DPRC status from each page's `state:` and disk.
-5. `S03-literature/probes/` and `S04-value/probes/`: per entry read its bank-binding `**state**` and whether `#### a-executor` is filled; this drives the phase strip's `probe` glyph.
+5. `S03-literature/probes/` and `S04-value/probes/`: per entry read its bank-binding `**state**` and whether `#### A-executor` is filled; this drives the phase strip's `probe` glyph.
 6. Explicit need records: search for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, `open`.
 7. `displays/*/README.md` (one per unit; there is no top-level index), `sections/README.md`, then section/appendix file names and short headers only.
 8. The `S-Round-*` pages (there is no stored pointer to a current round).

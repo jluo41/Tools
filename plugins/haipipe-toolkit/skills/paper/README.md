@@ -67,7 +67,7 @@ round/rebuttal became the `round` stage's data under `S10-round/`.
 S03 and S04 use the same topic-entry grammar:
 
 ```text
-direct S topic page:  canonical Q-consumer register and paper interpretation
+direct S evidence page: canonical E<n> divisions (one per Q-executor) and paper interpretation
 nested probes/ entry: one Q-executor, consumer trace, bank binding, and answer
 ```
 

@@ -88,7 +88,7 @@ Neither gap blocks the list question, and both are recorded here so they stop be
 
 #### 1.2 · One structure is enforced with no contract at all
 (the checker knows a shape the list never teaches)
-`src/topic_entry_contract.py` enforces the topic shape today: a `### Q-consumer register` on a direct page, entries below `probes/`, four fixed headings each, a derived queue.
+`src/topic_entry_contract.py` enforces the evidence-page shape today: a `route: outward|inward` key in a direct page's head, one `### E<n>` division per QA-probe below `probes/`, four fixed slot headings each, a derived queue.
 No loadable contract teaches a writer that same shape.
 The machine holds a rule the skill list does not state, which is the strongest standing argument for admitting the topic types.
 
@@ -117,8 +117,8 @@ A direction is host-agnostic.
 #### 2.2 · Self-resolution may use a marker, not only a filename
 (the checker already trusts one)
 `S-Literature-1` and `S-Value-6` share the `S-<Family>-<unit>` filename shape, so the filename alone cannot separate them from a plain stage page.
-The `### Q-consumer register` marker can, and `src/topic_entry_contract.py` already keys on exactly that signal.
-Admitting a type on a declared marker follows the machine's own precedent rather than inventing a second resolution rule.
+The head `route:` line can, and `src/topic_entry_contract.py` keys on exactly that signal (the retired register marker played this role until 260806).
+Admitting a type on a declared head key follows the machine's own precedent rather than inventing a second resolution rule.
 
 ### 3 · The queue: six admitted and built, one rejected
 
@@ -407,8 +407,13 @@ Execution rides the paused Log pass (grammar paragraph + renderer + the QB4 P-ro
 - `../../../board/haipipe-board/src/topic_entry_contract.py` · enforces the topic shape the admitted types would teach
 - `../../../board/haipipe-board/cli/check.py` · catches source and rendering violations on this Page
 
+## Law
+
+- 260806 · JL · Evidence pages organize BY EXECUTOR: one Content division per Q-executor conversation (E<n>), consumers collected under it, E0 incoming queue; one division ↔ one QA-probe; many QA-probes ↔ one QA-bank. Files are QA-bank and QA-probe; slot words are the four capitals Q-consumer/A-consumer/Q-executor/A-executor; the type key is the head route: line.
+
 ## Log
 
+- 260806 1000 · [REVISE-CC] JL's evidence-page ruling executed end to end: the type key moved to the head `route:` line (base 0.21.0, resolution step ②), for-literature/for-value 0.4.0 rewrote the flat `### Q-consumer register` into E<n> divisions with `#### consumers` + `#### answer digest` and the E0 queue, the core contract + checker re-keyed (head route, capital slot headings canonical, 1:1 division↔QA-probe link), templates reshaped (entry-template.md renamed qa-probe-template.md), chips re-anchored to E divisions, and the MISQ S03/S04 eight pages migrated with 28 QA-probes intact; checker baseline held at 11 ERRORs.
 - 260806 0100 · [DRAFT-CC] §6 opened with A6: the per-type Log patterns, on JL's ask; for-stage's full trace in §6.1, the nine others in §6.2, the placement rule (examples in each type contract, grammar once in the base) in §6.3. The QB4-owned grammar and the paused Log pass are cited, not restated; the dead workers/ path in Input files repointed to paper/haipipe-paper/probe/ (phase 2 move).
 260805 · The checker debt recorded as `§5` with its own Aim (A5.1, ⬜). The admission test's ⑤ was answered ✅ for every candidate, while the checker actually ships one real coverage (for-skill's managed spans), two partials (the stage contract span + hash, the slide embed-as-figure rule), the topic anatomy only, and meeting's counting exemption; venue, display, design, and section have nothing. The ten missing rules are specced one line each in `§5.1`, type resolution first. The same review pass landed across the contracts: the base's one resolution table for all types (0.20.0) with the REQUIRED `route:` register line and `page-type:` frontmatter keys, the core's new Register route line and Register-row states sections, the topic pair de-parallelized into their own voices (0.2.0 each), and patch fixes on section, display, design, slide, and stage.
 260805 · `for-design` RULED A and built the same day. JL's definition decided it: the page is the brief, and the Content divisions ARE the different messages, one per candidate carrying the artifact, its rationale, and its fit to the brief's criteria. The contract ships at `page-types/haipipe-board-page-for-design` 0.1.0 and the base at 0.19.0 with a ten-variant table. It sits UPSTREAM of `for-display`, design selecting the candidate and display accepting its render; the page closes on a SELECTION record naming the winner, why, and each loser's disposition (dropped · kept for A/B test · merged), and a losing division is never silently deleted.

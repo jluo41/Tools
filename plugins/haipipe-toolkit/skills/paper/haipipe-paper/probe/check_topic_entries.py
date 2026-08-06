@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the Paper S03/S04 nested topic-entry contract.
+"""Verify the Paper S03/S04 nested QA-probe contract.
 
 Usage: check-probe-cards.sh <paper_root> [project_root] [--stage <key>] [--final]
 """
@@ -12,13 +12,19 @@ import sys
 from pathlib import Path
 
 
+# Canonical casing: the four slot words are capitals (JL 260806); `consumer
+# trace` and `bank binding` are not among the four words and stay lowercase.
+# Matching stays case-insensitive so an unmigrated record still parses.
 ENTRY_HEADINGS = (
-    "q-executor",
+    "Q-executor",
     "consumer trace",
     "bank binding",
-    "a-executor",
+    "A-executor",
 )
 STATES = {"planned", "commissioned", "deferred", "read", "answered-local"}
+# The evidence-page type key lives in the metadata head (JL 260806), no longer
+# in a `### Q-consumer register` marker.
+HEAD_ROUTE = re.compile(r"^route:\s*(outward|inward)\s*$", re.M)
 
 
 def page_id(path: Path) -> str | None:
@@ -122,10 +128,13 @@ def main() -> int:
                 parent_text = ""
             else:
                 parent_path, parent_text = parent
-                if not re.search(r"^###\s+Q-consumer register\s*$", parent_text, re.I | re.M):
-                    issues.append(f"topic-has-no-q-consumer-register={parent_path.name}")
-        if not entry.name.startswith(f"S-{entry_family}-"):
-            issues.append(f"entry-filename-does-not-match-{entry_family.lower()}")
+                head = parent_text.split("\n## ", 1)[0]
+                if not HEAD_ROUTE.search(head):
+                    issues.append(f"topic-has-no-route-head-key={parent_path.name}")
+        # A QA-probe is a hidden record named <n>-<slug>.md (JL ruling B,
+        # 260806): digit first, so the board's page sweep never finds it.
+        if not re.match(r"^\d+-", entry.name):
+            issues.append("qa-probe-filename-not-digit-first")
         if not trace_ids:
             issues.append("consumer-trace-has-no-q-id")
         elif parent_text and not trace_ids.issubset(q_ids(parent_text)):

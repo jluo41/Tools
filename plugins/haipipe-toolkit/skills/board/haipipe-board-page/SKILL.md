@@ -3,9 +3,9 @@ name: haipipe-board-page
 description: >-
   The PAGE contract and router of a Board: one persistent Page combines a stable Page Type with a current Page Phase. It owns the shared frame, fixed section order, section obligations, machine write boundaries, evaluation contract, and the lifecycle vocabulary DRAFT, PROBE, REVISE, CHECK. Page Type variants live under page-types/; phase contracts live under page-phases/. THREE VERBS form the callable door: CREATE scaffolds one Page, WORK ON repairs one Page, and RUN drives one Page through a bounded non-linear producer/build/judge loop with auditable receipts. RUN is deliberately not ADVANCE. Trigger: create a page, new page, working on a page, update a page, run page lifecycle, automatic page loop, audit page workflow, page contract, page grammar, page sections, Page Type, Page Phase, draft probe revise check, rewrite Opening, section evaluation, quality check, which section, base page, /haipipe-board-page.
 metadata:
-  version: "0.20.1"
-  last_updated: "2026-08-05"
-  summary: "One resolution table covers ALL types: filename prefix, then the register's REQUIRED route: line, then the REQUIRED page-type: frontmatter key, then the stage and Q filenames; exactly one key matches or the page is defective."
+  version: "0.21.0"
+  last_updated: "2026-08-06"
+  summary: "One resolution table covers ALL types: filename prefix, then the HEAD route: line (moved out of the retired register marker, JL 260806), then the REQUIRED page-type: frontmatter key, then the stage and Q filenames; exactly one key matches or the page is defective."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -34,7 +34,7 @@ The authoritative template stays `haipipe-board/ref/page-template.md`; this cont
 
 ## 🧬 Page Types, one base
 
-A Page's TYPE comes from one machine-readable key on the page: a filename prefix, a declared register marker, or a frontmatter `page-type:` line.
+A Page's TYPE comes from one machine-readable key on the page: a filename prefix, a head `route:` line, or a frontmatter `page-type:` line.
 The type decides how the Page closes, what its Content holds, and which typed records it fills through the base frame's declared extension points.
 Everything else is the shared base (the model on the design board's QB4, JL 260729).
 The implementation may still call this field `kind`; the contract term is Page Type.
@@ -47,8 +47,8 @@ step  machine-readable key                            Page Type             cont
 ①     filename Skill-<n>- or Agent-<n>-               Skill / Agent mirror  for-skill
       filename Meeting-<n>-                           Meeting               for-meeting
       filename QBv<n>-                                QBv venue             for-venue
-②     `### Q-consumer register` + `route: outward`    Literature topic      for-literature
-      `### Q-consumer register` + `route: inward`     Value topic           for-value
+②     head line `route: outward`                      Literature evidence   for-literature
+      head line `route: inward`                       Value evidence        for-value
 ③     frontmatter `page-type: display`                Display unit          for-display
       frontmatter `page-type: slide`                  Slide deck            for-slide
       frontmatter `page-type: design`                 Design brief          for-design
@@ -58,7 +58,7 @@ step  machine-readable key                            Page Type             cont
 ```
 
 EXACTLY ONE step may claim a page, or the page is defective: a page no key matches, or one carrying two keys that disagree, is fixed on the page, never in the resolver.
-Step ② needs the register's `route:` line because the marker alone cannot tell the two topic routes apart; the line is REQUIRED, and `haipipe-board/ref/topic-entry-contract.md` declares it.
+Step ②'s key is ONE line in the page's metadata head, right after `owner:`/`method:` (JL 260806; it replaced the retired register marker): an evidence page wears a stage-shaped filename, so only the head `route:` line separates the two evidence routes from a plain stage page. The line is REQUIRED, and `haipipe-board/ref/topic-entry-contract.md` declares it.
 Step ③'s `page-type:` line is REQUIRED on those four types' pages, and it BEATS the filename.
 That order settles the two real collisions: `S-Display-4c` wears a stage filename and is a display unit, so `page-type: display` resolves it at ③ before ④ can claim it; `QA4` wears a Q filename and is a slide deck, so `page-type: slide` resolves it before ⑤.
 Each type's contract states how it closes; the base's own type, the Q decision page, closes when every Aim is met or explicitly held, and mirror and Meeting pages are NEVER counted in a board's settled totals.
@@ -82,9 +82,9 @@ QBv<n>                  →  haipipe-board-page-for-venue      a page per place 
                                                              is submitted to
 S-<Family>-<unit>       →  haipipe-board-page-for-stage      a page per lifecycle stage
                                                              of one paper or application
-topic, outward route    →  haipipe-board-page-for-literature a Q-consumer register asking
+evidence, outward route →  haipipe-board-page-for-literature an evidence page asking
                                                              what is already KNOWN
-topic, inward route     →  haipipe-board-page-for-value      a Q-consumer register asking
+evidence, inward route  →  haipipe-board-page-for-value      an evidence page asking
                                                              what this project must PRODUCE
 display unit            →  haipipe-board-page-for-display    a unit a person must ACCEPT:
                                                              figure, table, diagram
@@ -105,7 +105,7 @@ It adds the section kind, the venue contract block, and the landing surface wher
 A section reads the venue BLUEPRINT, never the QBv catalog.
 `-for-meeting` closed a gap this section itself used to record: `Meeting-<n>` pages had a generator and no contract.
 Its one owned rule is that a spoken decision is not ruled until routed to the owning page.
-The two topic types resolve by the `### Q-consumer register` marker plus the register's REQUIRED `route:` line, the same marker `src/topic_entry_contract.py` already trusts.
+The two evidence types resolve by the head `route:` line, the same key `src/topic_entry_contract.py` already trusts.
 Their filenames look like stage-page filenames, which is why a filename cannot resolve them.
 Both LOAD `haipipe-board/ref/topic-entry-contract.md` for the anatomy and add only their route's translation layer.
 A display page is mirror-shaped but closes on human ACCEPTANCE of a render, not on a unit shipping.

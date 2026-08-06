@@ -7,6 +7,15 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.21.0 - 2026-08-06
+
+Resolution step ② re-keyed (JL's evidence-page ruling, 260806): the two
+evidence types resolve by the HEAD `route: outward | inward` line, one line in
+the metadata head right after `owner:`/`method:`, replacing the retired
+`### Q-consumer register` marker + register route line. The variant table now
+says "evidence page" for the pair; `haipipe-board/ref/topic-entry-contract.md`
+declares the line.
+
 ## 0.20.1 - 2026-08-05
 
 Resolve-order slot reworded for thin-paper phase 2: the last slot is

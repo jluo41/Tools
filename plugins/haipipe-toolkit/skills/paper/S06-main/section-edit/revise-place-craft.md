@@ -12,7 +12,7 @@ Source: converted from `workers/haipipe-paper-revise-place/SKILL.md` on 2026-08-
 > `[Q-X-n]` is ONE join key shared by all of them, ruled once on `QC2@paper`, and
 > it sits BESIDE its marker and is never fused into it.
 
-DRAFT marked the holes and named their owners. PROBE brought the answers back into each entry's `#### a-executor`. This pass does the one remaining mechanical step: **put the landed answer where the placeholder is, and discharge the bracket.**
+DRAFT marked the holes and named their owners. PROBE brought the answers back into each entry's `#### A-executor`. This pass does the one remaining mechanical step: **put the landed answer where the placeholder is, and discharge the bracket.**
 
 
 Why it runs FIRST
@@ -32,13 +32,13 @@ What this pass does NOT do
 
 - It does NOT verify. Whether the DOI resolves, whether the paper says what the sentence claims, whether the number re-derives — none of that is here. That is the pre-submission evidence check (`check-evidence-craft.md`).
 - It does NOT search, and does NOT re-run anything. If the answer has not landed, the hole stays a hole.
-- It does NOT invent. There is no case where this pass writes a value or a key that it did not read out of a landed `#### a-executor` or the `.bib`.
+- It does NOT invent. There is no case where this pass writes a value or a key that it did not read out of a landed `#### A-executor` or the `.bib`.
 
 
 The three substitutions
 ------------------------
 
-For each placeholder in the working `.md`, resolve its `[Q-<Stage>-<n>]` through the direct topic register to the nested entry, and read that entry's `#### a-executor`.
+For each placeholder in the working `.md`, resolve its `[Q-<Stage>-<n>]` through the direct evidence page's E<n> division to the nested QA-probe, and read that record's `#### A-executor`.
 
 ```
 CITATION   \cite{TOADD} [Q-X-n]
@@ -48,7 +48,7 @@ CITATION   \cite{TOADD} [Q-X-n]
            leave it, flag it: the source landed but the .bib entry is owed
 
 VALUE      {VAL:? mean MME difference, LBP cohort} [Q-X-n]
-             ↓ the entry is `read` and its a-executor carries the number
+             ↓ the entry is `read` and its A-executor carries the number
            12.9 [Q-X-n]                      ← bracket KEPT, and a lane added
            > Value: <what the number is> · probe=<entry path> · run=<run id>
                     · state=verified

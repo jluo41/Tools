@@ -53,15 +53,21 @@ def resolve(token):
 
 LABEL_TOK = re.compile(r"^(?:tab|fig):[a-z0-9_-]+$")
 
-# True only while a `### Q-consumer register` section renders (JL 260806,
-# "literature/values are the first to test the card evidence"). Inside it a
-# backticked binding token, a bib key or a bank path, becomes the same chip +
-# card the prose \citep markers get; outside it backticks stay plain code, so
-# the register is the ONE place a code span can carry evidence. The flag is
-# set by body(register=True) for a division whose heading is the register, and
-# by _body's own ### handler where the heading text flows through whole.
+# True only while an evidence page's `### E<n> ·` division renders (JL 260806,
+# "literature/values are the first to test the card evidence"; the flat
+# register was replaced by one Content division per Q-executor conversation).
+# Inside it a backticked binding token, a bib key or a bank path, becomes the
+# same chip + card the prose \citep markers get; outside it backticks stay
+# plain code, so the E divisions are the ONE place a code span can carry
+# evidence. The flag is set by body(register=True) for a division whose
+# heading is an E division on an evidence page, and by _body's own ###
+# handler where the heading text flows through whole.
 REGISTER = False
-REGISTER_TITLE = re.compile(r"^\s*Q-consumer register\s*$", re.I)
+# An evidence page declares itself with a head `route: outward|inward` line;
+# page_question sets this per page, because a division heading alone cannot
+# say which page it renders on.
+EVIDENCE = False
+EDIV_TITLE = re.compile(r"^\s*E\d+\s*·")
 
 
 def code_or_link(m):
@@ -71,10 +77,10 @@ def code_or_link(m):
     # here, because the rewriter is forbidden to reach inside a code span.
     if PAPER is not None and LABEL_TOK.match(tok):
         return _ref(tok)
-    # A register row's BINDING TOKEN: `luo2025mapping` opens the cite card,
+    # An E-division BINDING TOKEN: `luo2025mapping` opens the cite card,
     # `tasks/…/QA/….md` opens a card whose links are the provenance paths.
-    # Register only, and never in a Log or discussion lane (NOTE), so free
-    # prose and quoted keys elsewhere keep the no-chips rulings.
+    # Evidence divisions only, and never in a Log or discussion lane (NOTE),
+    # so free prose and quoted keys elsewhere keep the no-chips rulings.
     if PAPER is not None and REGISTER and not NOTE:
         reg = PAPER.register_binding(tok)
         if reg is not None:
@@ -987,7 +993,7 @@ def pad_emoji(html):
 def body(txt, fold_code=True, apparatus=True, show_lead=False, register=False):
     """The public door to _body, plus the one flag that cannot travel in txt.
 
-    `register=True` says the caller is rendering a `### Q-consumer register`
+    `register=True` says the caller is rendering an evidence page's `### E<n> ·`
     division whose heading was split off before the text got here (render_aims
     and render_subsections both split on ###), so _body's own heading detector
     never sees it. The flag is scoped by save/restore rather than assignment,
@@ -1245,10 +1251,11 @@ def _body(txt, fold_code=True, apparatus=True, show_lead=False):
         # "### …" prose. `.sh` is also the anchor the sidebar outline scrolls to.
         m = re.match(r"^###\s+(.+?)\s*$", ln)
         if m:
-            # The register's binding chips switch on at its own heading and off
-            # at the next one. The pending rows flushed above, before this
-            # branch, so the last register row still rendered in register mode.
-            REGISTER = bool(REGISTER_TITLE.match(m.group(1)))
+            # An E division's binding chips switch on at its own heading and
+            # off at the next one, and only while an evidence page renders
+            # (EVIDENCE). The pending rows flushed above, before this branch,
+            # so the last row still rendered in register mode.
+            REGISTER = bool(EVIDENCE and EDIV_TITLE.match(m.group(1)))
             out.append(f'<div class="sh">{inline(m.group(1))}</div>')
             last_p = None
             continue

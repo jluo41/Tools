@@ -63,7 +63,7 @@ status:                   # THIS STAGE IS THE ONLY HOME OF A CLAIM'S STATUS — 
   confidence: "per-claim, written beside the status"
   claim_type: [associational, causal, in-sample, generalizing]
   blocked: "BLOCKED-ON-RESOURCE — cites the resource row it waits on (`-> N<n>` in S-Work-0-resources.md)"
-  written_at: "INTERPRET, when a nested entry's `#### a-executor` lands and the topic register records it"
+  written_at: "INTERPRET, when a nested QA-probe's `#### A-executor` lands and the evidence page's consumers row records it"
 
 formatting:
   title_rule: "====="
@@ -80,7 +80,7 @@ done_criteria:
   - "both Content divisions plus the Q-consumer records carry real content; every <!-- RULE --> comment deleted"
   - "every claim carries a status and an `Evidence:` line naming the Q-Claim-<n>s that settle it"
   - "every GAP/inconclusive claim has a plan and a question ENTRY — or is BLOCKED-ON-RESOURCE citing its `-> N<n>` row"
-  - "every settled claim passes BOTH stages: the cited file exists with the number in it, AND a nested entry whose `target:` QA file resolves on disk carries the answer in its `#### a-executor`"
+  - "every settled claim passes BOTH stages: the cited file exists with the number in it, AND a nested entry whose `target:` QA file resolves on disk carries the answer in its `#### A-executor`"
   - "no aspirational anchor cited as evidence — a `planned` entry settles nothing"
   - "no bare {VAL:?} or \\cite{TOADD} — the marker and its [Q-Claim-<n>] bracket sit side by side"
   - "the S page's ## Log records phase history and the gate row"
@@ -97,7 +97,7 @@ Claims — the craft
 Claims settles the paper's argument. Two things make it unlike every other stage.
 
 **It is the ONLY home of a claim's status.** A probe entry carries the evidence itself (its
-`### a-executor`); the a-consumer HERE says what that evidence MEANS for this paper. Two papers
+`### A-executor`); the A-consumer HERE says what that evidence MEANS for this paper. Two papers
 reading the same bank fact may judge their own claims differently — the fact is shared, the
 judgment is not, and the judgment is ours to write.
 
@@ -138,8 +138,8 @@ Cite each question on the `Evidence:` line of every claim it bears on (forward),
 
 ```text
 1  the cited file EXISTS and the number APPEARS in it
-2  a probe entry whose `target:` QA file RESOLVES on disk, whose `### a-executor` carries the
-   answer, and whose Q-consumer a-consumer here says that number CARRIES the claim
+2  a probe entry whose `target:` QA file RESOLVES on disk, whose `### A-executor` carries the
+   answer, and whose Q-consumer A-consumer here says that number CARRIES the claim
 ```
 
 Stage 1 alone is a number nobody has judged; stage 2 alone is an assertion. AGGREGATION happens at

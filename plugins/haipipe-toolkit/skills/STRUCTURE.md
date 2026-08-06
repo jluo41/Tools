@@ -35,7 +35,7 @@ The probe, in five lines
 ```
 A PROBE IS A PAPER-LEVEL DOCUMENT. Nothing else.
     papers/<P>/1-probes/PPNN_<topic>/    ·    applications/<A>/1-probes/PPNN_<topic>/
-One file per TOPIC; each question is one SECTION: serves / target / state / q-executor/a-consumer.
+One file per TOPIC; each question is one SECTION: serves / target / state / Q-executor/A-consumer.
 Plus one '## Why' per file — the STAKE. It NEVER leaves the file.
 Binding is by PATH, never by id: `target:` points at a QA file in the bank.
 ```
@@ -47,7 +47,7 @@ no `answers:` field, no PP id anywhere. It answers plain questions through its o
 `ls QA/` IS the index.
 
 **The probe CAUSES a QA file; the EXECUTOR AUTHORS it.** A consumer session never
-executes bank work inline (LAW 1) — it hands the `q-executor` block, verbatim, to
+executes bank work inline (LAW 1) — it hands the `Q-executor` block, verbatim, to
 `Agent(haipipe-task-orchestrator-agent)` or
 `Agent(haipipe-discovery-orchestrator-agent)`, and their clean context is the wall.
 There is NO probe gateway agent (retired 2026-07-14).

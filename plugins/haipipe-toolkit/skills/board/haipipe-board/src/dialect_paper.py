@@ -93,12 +93,12 @@ S_DISPLAY_UNIT = re.compile(
 NUMTOK = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+")
 
 # ---------------------------------------------------- register bindings --
-# A `### Q-consumer register` row (ref/topic-entry-contract.md) binds its
-# stake to evidence with backticked TOKENS, not prose: a bibliography key on
-# the outward route (the citation binding), bank provenance paths on the
-# inward one (the value binding). Only these two shapes resolve to chips;
-# everything else in backticks stays ordinary code, which is how the
-# register's free prose keeps the no-chips ruling (JL 260806).
+# An evidence page's `### E<n> ·` division (ref/topic-entry-contract.md)
+# binds a consumer row's stake to evidence with backticked TOKENS, not prose:
+# a bibliography key on the outward route (the citation binding), bank
+# provenance paths on the inward one (the value binding). Only these two
+# shapes resolve to chips; everything else in backticks stays ordinary code,
+# which is how the page's free prose keeps the no-chips ruling (JL 260806).
 #   BIBKEY is the surname-year-word shape this family's .bib uses
 #   (luo2025mapping, mafi2013association). Requiring the trailing word is
 #   what keeps run ids (`v0618`) and spec names (`SPEC5`) out.
@@ -548,8 +548,8 @@ class Paper:
     # -- register bindings ---------------------------------------------------
     def register_binding(self, tok):
         """-> (kind, state, label, tip, meta) for one backticked token inside
-        a `### Q-consumer register` section, or None when the token is not a
-        binding shape and must keep its ordinary code rendering.
+        an evidence page's `### E<n> ·` division, or None when the token is
+        not a binding shape and must keep its ordinary code rendering.
 
         The citation side reuses citation() whole, so a register key opens the
         same card a prose \\citep chip does: the .bib entry, its line, the

@@ -5,7 +5,7 @@ Source: converted from `workers/haipipe-paper-draft-values/SKILL.md` on 2026-08-
 
 One job: **no number leaves DRAFT without a traceable origin or an owner.**
 
-This lane is READ-ONLY. It walks and reports; the DRAFT phase holds the pen for the manuscript and the direct topic Q-consumer register, and PROBE owns nested entries.
+This lane is READ-ONLY. It walks and reports; the DRAFT phase holds the pen for the manuscript and collects Q-consumers into the evidence page's E0 queue, and PROBE owns the E<n> divisions and their nested QA-probes.
 
 
 What this lane does NOT do
@@ -40,7 +40,7 @@ For each, ask one question: **what named source would a stranger open to confirm
 
 ```
 has a source     the number appears in a named results file, a landed
-                 `#### a-executor`, or a display unit's source data → keep it, and
+                 `#### A-executor`, or a display unit's source data → keep it, and
                  write the source path beside it so REVISE and CHECK can follow it
 no source        it came from memory, from an earlier draft, or from nowhere → it
                  is a hole

@@ -30,23 +30,23 @@ file holds only how a PAPER runs the loop, plus the paper-side deltas.
     └── probes/V<nn>-<topic>/<n>-<slug>.md
 ```
 
-An entry is a probe QA (the entry record): a hidden source record, not a board
+An entry is a QA-probe (the entry record): a hidden source record, not a board
 page (JL ruling B, 260806). Its digit-first `<n>-<slug>.md` name, `<n>`
 restarting at 1 per drawer, keeps it out of the board's page sweep, so the
-board renders the topic page only. One conversation, two QAs: the bank QA is
-the original, the probe QA is the paper's copy that points at it.
+board renders the topic page only. One conversation, two QAs: the QA-bank is
+the original, the QA-probe is the paper's copy that points at it.
 
 S03 is for outside-project discovery. S04 is for project-task evidence. The
-direct topic page is canonical for its `### Q-consumer register`: it states the
+direct evidence page is canonical for its `### E<n>` divisions: it states the
 paper-facing question, stake, and final interpretation. Every nested entry has
 one direct topic `requires:` and exactly this anatomy:
 
 ```markdown
-#### q-executor
+#### Q-executor
 <neutral, stake-free question sent verbatim to the executor>
 
 #### consumer trace
-Q-<Stage>-<n> <audit copy only; it must exist in the parent topic register>
+Q-<Stage>-<n> <audit copy only; it must appear on the parent evidence page>
 
 #### bank binding
 **route**: task | discovery
@@ -54,7 +54,7 @@ Q-<Stage>-<n> <audit copy only; it must exist in the parent topic register>
 **target**: <QA file or NEW>
 **state**: planned | commissioned | deferred | read | answered-local
 
-#### a-executor
+#### A-executor
 <answer copied from the resolved QA file>
 ```
 
@@ -82,9 +82,9 @@ themselves.
 ```text
 ① ORGANIZE   open one entry per Q-executor under the owning S03/S04 topic
 ② MATCH      read the bank's QA corpus and set route, bank, target, state
-③ DISPATCH   send only the frozen q-executor block for unmatched work
+③ DISPATCH   send only the frozen Q-executor block for unmatched work
 ④ POINT      bind target to the answering QA file
-⑤ INTERPRET  copy into a-executor and update the parent topic register
+⑤ INTERPRET  copy into A-executor and write each A-consumer row
 ```
 
 The default rule is MATCH before DISPATCH. The paper never writes the bank and
@@ -142,9 +142,9 @@ initiative.
 ### ③ DISPATCH goes through the collector
 
 Hand the still-collecting SET to `Agent(haipipe-probe-q-executor-agent)` with
-`project_root`, the probe QAs, and each one's PROBE-authored `route`
+`project_root`, the QA-probes, and each one's PROBE-authored `route`
 (task|discovery, AUTHORITATIVE). The agent's clean context IS the wall: it
-sends each `q-executor` VERBATIM to the task or discovery orchestrator agent
+sends each `Q-executor` VERBATIM to the task or discovery orchestrator agent
 and returns `{ entry → target: QA-path | in-flight | failed }`. A stage or the
 door calling an orchestrator agent inline bypasses this contract; results
 would land nowhere reviewable.
@@ -158,8 +158,8 @@ harvested now, not at its eta.
 
 ### ⑤ INTERPRET and harvest (inline)
 
-- Copy the QA answer into `#### a-executor`, then update the parent topic's
-  Q-consumer register with its paper-facing interpretation and the entry path.
+- Copy the QA answer into `#### A-executor`, then update the parent topic's
+  E<n> division's `#### consumers` rows with each A-consumer interpretation.
 - The AUTHOR writes a claim's status (supported | refuted | inconclusive +
   confidence + claim_type) into the owning S02 claims page, never in the probe
   file. A resource-serving entry writes its reading back as the Q's `A:` on the

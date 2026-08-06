@@ -3,6 +3,34 @@ haipipe-paper — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
+## [0.7.0] -- 2026-08-06 -- S03/S04 become evidence pages (JL's final design)
+
+JL's evidence-page ruling (260806, "exactly what I want") executed across the
+paper projection:
+
+- the topic page is an EVIDENCE PAGE: `route: outward|inward` in its metadata
+  head (the type key; the `### Q-consumer register` marker is retired), and
+  Content organized BY EXECUTOR: one `### E<n> · <question>` division per
+  Q-executor conversation (🔗 QA-probe pointer, `#### consumers` rows with
+  per-consumer A-consumer + row state, `#### answer digest`), plus the
+  standing `### E0 · incoming` collect queue
+- naming final: QA-bank (the executor's original) and QA-probe (the paper's
+  stub); the four slot words are capitals everywhere including heading slots
+  (`#### Q-executor` / `#### A-executor`; `consumer trace` and `bank binding`
+  stay lowercase)
+- `probe/topic-entry-contract.md`, `probe/per-stage-dispatch.md`,
+  `fn/probes.md`, `stages/CONTRACT.md`, `ref/enter-console.md`, the S01/S02
+  stage files, the S03/S04 craft files and READMEs swept to the new shape
+- `S03-literature/template.md` + `S04-value/template.md` rewritten to the
+  division shape with the head route: line; `entry-template.md` RENAMED
+  `qa-probe-template.md` in both folders, in the record shape
+- `probe/check_topic_entries.py`: topics detected by the head route: key,
+  digit-first `<n>-<slug>.md` record names enforced (the stale S-prefix
+  filename rule fixed), capital slot headings canonical
+- MISQ 2026 migrated as the proving paper: 8 evidence pages restructured into
+  E divisions, 28 QA-probes kept their names and gained capital slots; board
+  checker baseline held at 11 ERRORs
+
 ## [0.6.1] -- 2026-08-06 -- probe entries are hidden probe QAs (ruling B)
 
 JL ruling B (260806: "an entry is a source file the topic page points at, like a
