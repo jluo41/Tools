@@ -1,6 +1,6 @@
 ---
 name: chronicle-screenpipe
-description: Record a meeting from the computer with screenpipe and turn it into a raw markdown transcript routed into the vault. Verb-routed — `start` launches a scoped recording (AUDIO-ONLY by default, add vision for slides), `end` stops it and extracts the transcript, `extract` pulls a past time window from the existing DB without recording. Hands the raw .md to /obsidian-note to file a clean meeting note. Use when the user says /screenpipe, "record this meeting", "start recording", "stop recording", "transcribe the meeting", "记录会议".
+description: Record a meeting from the computer with screenpipe and turn it into a raw markdown transcript routed into the vault. Verb-routed — `start` launches a scoped recording (AUDIO-ONLY by default, add vision for slides), `end` stops it and extracts the transcript, `extract` pulls a past time window from the existing DB without recording. Hands the raw .md to /note to file a clean meeting note. Use when the user says /screenpipe, "record this meeting", "start recording", "stop recording", "transcribe the meeting", "记录会议".
 created: 2026-06-28T00:22
 updated: 2026-06-28T00:22
 ---
@@ -59,10 +59,10 @@ bin/sp-extract.py --db ~/.screenpipe/db.sqlite --out <path.md> --slug <slug> \
 
 ## route — file it into the vault (always the last step)
 
-After `end`/`extract` produce the raw `.md`, hand it to **/obsidian-note**:
+After `end`/`extract` produce the raw `.md`, hand it to **/note**:
 it logs to the diary, keeps the raw file in `_WorkSpace`, and writes a clean
 structured **meeting note** into `1-EVENT-SPACE` linking the raw transcript.
-Do NOT hand-author the meeting note here — that is obsidian-note's job.
+Do NOT hand-author the meeting note here — that is `/note`'s job.
 
 ## What the raw markdown contains
 
