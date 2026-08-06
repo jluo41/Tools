@@ -3,7 +3,7 @@
 - state:    read
 - route:    task
 - bank:     ../../../../../../../examples/Fabricated-Project/tasks/T01_corpus-census/QA/1-corpus-size.md
-- provides: 2-corpus-size.data/size.csv
+- output: 2-corpus-size.data/size.csv
 
 🚫 FABRICATED, and this one is fabricated on purpose in a way the other is not:
 its `- bank:` names a task tree that does not exist. That is not an oversight. It

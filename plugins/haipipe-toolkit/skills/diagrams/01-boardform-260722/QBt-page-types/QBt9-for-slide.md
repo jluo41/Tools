@@ -5,7 +5,7 @@ page-type: slide
 owner: JL
 method: build one real deck, embed each slide live on its own, resolve every number the deck shows by atom id, and leave every acceptance row for a person
 needs: QA-probe/QBt5-for-value/1-drift-counts
-provides: slides/QBt9-for-slide/out/deck.html
+output: slides/QBt9-for-slide/out/deck.html
 
 ## Opening
 

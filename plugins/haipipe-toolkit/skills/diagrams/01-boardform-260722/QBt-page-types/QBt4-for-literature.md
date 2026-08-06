@@ -41,7 +41,7 @@ An evidence page on the outward route asks what is already KNOWN, as against the
   │         │
   │         │  reached by reading, not by id: prose has no product to resolve
   │         ▼
-  📄 QBt4-for-literature.md          ← this page. A VIEW. No provides:.
+  📄 QBt4-for-literature.md          ← this page. A VIEW. No output:.
        ### E1 · is the ground occupied?        🔗 1-typed-page-precedent
        ### E2 · did anyone assign the key?     🔗 2-tenure-confound
        ### E0 · incoming

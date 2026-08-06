@@ -19,7 +19,7 @@ The Journal of Imaginary Systems does not exist. It was invented so this page co
 
 **Where its things are**: a page's companion folder is `<type-plural>/<page name>/`, so this page's pack is `venue/QBt2-for-venue/`. That is the group's one naming rule, and it collides with how real packs are named: a real pack is named after the OUTLET, as `playbook-utd-is/MISQ/` is, and it lives in a different repository. Both facts are true, the group rule is followed here, and the collision is written down in §2 rather than smoothed over.
 
-**Why this page declares no `provides:`**: because the folder named after it is an INPUT it does not own. The three specimens in this group each have a companion, and each one is owned by somebody different. `QBt3`'s `displays/QBt3-for-display/` is an OUTPUT the page builds. `QBt5`'s `QA-probe/QBt5-for-value/` is a RECORD its probes write. This page's `venue/QBt2-for-venue/` is a pack: read on every pass, written on none, and at a real board it is a pinned submodule of somebody else's repository. A venue page records a desk; it manufactures nothing.
+**Why this page declares no `output:`**: because the folder named after it is an INPUT it does not own. The three specimens in this group each have a companion, and each one is owned by somebody different. `QBt3`'s `displays/QBt3-for-display/` is an OUTPUT the page builds. `QBt5`'s `QA-probe/QBt5-for-value/` is a RECORD its probes write. This page's `venue/QBt2-for-venue/` is a pack: read on every pass, written on none, and at a real board it is a pinned submodule of somebody else's repository. A venue page records a desk; it manufactures nothing.
 
 **What every section division here is missing, and why**: no `n.4 · The language, in the papers' own words`. That subsubsection quotes attributed sentences out of published papers, and this pack is blueprint-only, so there are none to quote. The contract's rule for that case is to leave it out and say so, never to print an empty shape.
 
@@ -667,7 +667,7 @@ At most desks the unfixable step is the length count, because it is a content de
 ### ⚙️ Engines · what REGENERATES this page
 
 - `unit.py`
-  The group's resolver and checker. It reports this page as a view: no `provides:`, so no product is expected of it. It regenerates nothing here, and that is the honest content of this group: there is no `_tools/sync-exemplars.py`, so the `📤 Generated` span below is hand-typed and `P2` holds it open.
+  The group's resolver and checker. It reports this page as a view: no `output:`, so no product is expected of it. It regenerates nothing here, and that is the honest content of this group: there is no `_tools/sync-exemplars.py`, so the `📤 Generated` span below is hand-typed and `P2` holds it open.
 
 ### 📋 Contracts · what CARRIES a rule to other pages
 

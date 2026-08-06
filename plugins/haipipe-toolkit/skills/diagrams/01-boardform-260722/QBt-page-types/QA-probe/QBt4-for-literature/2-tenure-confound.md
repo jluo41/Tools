@@ -12,7 +12,7 @@ question was answered by re-reading two sources already on the shelf rather than
 by commissioning a search. The cost is written in the Caveats and it is real,
 because an absence read off two sources is bounded by those two sources.
 
-No `- provides:` line here either. The product of this record is the two lines a
+No `- output:` line here either. The product of this record is the two lines a
 consumer may put beside its label, and those lines are prose.
 
 ## Question

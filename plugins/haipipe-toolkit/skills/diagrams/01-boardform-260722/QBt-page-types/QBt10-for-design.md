@@ -50,13 +50,13 @@ Where does a typed page keep the bytes it owns, and what names that folder?
   ├── displays/                           🔑 the display type's level
   │   └── QBt3-for-display/               🏷 the page's filename, exactly
   │       ├── source/build.py
-  │       └── out/assets/figure.txt       ← that page's one provides:
+  │       └── out/assets/figure.txt       ← that page's one output:
   ├── QBt5-for-value.md                   route: inward
   ├── QA-probe/                           🔑 the value type's level
   │   └── QBt5-for-value/                 🏷 the page's filename, exactly
   │       ├── 1-drift-counts.md
   │       └── 1-drift-counts.data/        ♻️ candidate A, one level down
-  │           └── counts.csv              ← that record's one provides:
+  │           └── counts.csv              ← that record's one output:
   ├── QBt10-for-design.md                 ← this page. No companion.
   └── unit.py
   ─────────────────────────────────────────────────────────────────────

@@ -7,7 +7,7 @@ owner: JL
 method: write §4 as real prose, land each record type on the sentence that owes it, take the desk's rules from the catalog only where no blueprint can supply them, and leave the binding row open
 requires: S-Open-Venue · S-Work-C · S-Work-N (none of the three exists in this group)
 style-from: S-Open-Pitch (does not exist in this group)
-provides: sections/QBt6-for-section.tex
+output: sections/QBt6-for-section.tex
 needs: QA-probe/QBt5-for-value/1-drift-counts, QBt3-for-display
 
 ## Opening
@@ -63,7 +63,7 @@ Rollup: none. This group has no submission page, so no float number and no page 
 Unit: 4 of an unset reader order. `units_from` names `S-Work-N-narrative.md`, which is absent, and the fallback is the folders scaffolded under `S06-main/`, of which there are none.
 Gate: 🔴 not asked for.
 Hands downstream: the §4 results prose, the drift gradient at its honest label, and the two record bindings it lands.
-⚠️ That last line is what `for-stage` means by `provides:`, and it is NOT what the head's `provides:` says. See `## States`.
+✅ That last line is what `for-stage` means by `provides:`, a prose promise about what this stage hands downstream. The head no longer competes with it: this page's machine key is `output:`, which is the name `S06-main/section-edit/stage.md` already uses for exactly this, so the two live side by side and mean different things on purpose. Settled 260806; the reasoning is in `## Log`.
 
 ### Venue contract
 
@@ -343,7 +343,7 @@ This section therefore reports an association and never a reduction, and every l
 ### Decision Now
 - 📍 Six of this page's eight Aim ids are invisible to the engine, and the contract is what put them there. `for-stage` line 251 prescribes `Q-Sec<unit><Kind>-<n>` and forbids `A<n>`; `src/common.py:46` reads only `A<n>` and `P<n>`. **A ·** widen `AIM_ID` to admit the `Q-<Unit><Kind>-<n>` form, which makes every section page written to the contract countable and touches one constant, `AIM_ID`, that `AIM_RE` and `AIM_STATE_RE` both build on. **B ·** rename this page's six ids to `A<n>.<n>` under groups matching its Content divisions, which fixes the counter here, breaks the `for-stage` scheme this specimen exists to teach, and leaves every other section page uncounted. **C ·** change the scheme in `for-stage`, which reaches every page already written to it. Until this is ruled, `check.py` reports this page as `1/2 Aim(s) met` and three of its four Aim groups render with no counter, so the page reads far less done than it is.
 - 📍 `Q-Sec4Results-4` is blocked on QBt3, not on this page. Its Done when asks for rung ④ or higher, and QBt3 is back at ③ because its ④ was machine-written. Answer QBt3's own Decision Now row, look at the render, and this row closes with it. 🛑 Blocks: nothing this page can do; the row stays ⬜ until a person accepts that figure.
-- 📍 `provides:` collides. **A ·** the head carries the path `unit.py` needs and the downstream sentence lives in `### Stage Contract`, which is what this page does. **B ·** `for-stage` keeps the prose line and the engine grows a second key such as `product:`. Until this is ruled, a real section page cannot pass `unit.py check` and a specimen cannot match a real page.
+- ✅ `provides:` collided and is settled, 260806, by a fact neither option had: the live stage `S06-main/section-edit/stage.md:78` ALREADY declares `output: sections/*.tex` for exactly this meaning. So the machine key became `output:` here too, rather than the head taking `provides:` (A) or the engine growing a third name like `product:` (B). Three pages, two QA records and two scripts moved; the 78 prose `provides:` lines on the live MISQ board did not have to. `unit.py check` resolves the whole chain and the deck rebuilds byte for byte.
 - 📍 `P<n>` means both a page-level Aim and a Content paragraph on the same page. **A ·** rename the page-level Aim id in `for-stage`. **B ·** rename the paragraph marker, which is 17 live pages and the tex generator. This page runs the collision rather than dodging it.
 - 📍 A manuscript section's Content divisions: figure or no figure? `for-stage` says the base's rule must NOT be satisfied here and gives no way to suppress it; the group's house rule says every division opens with one. Ruling either way is cheap now and expensive after ten section pages exist.
 - 📍 The blueprint hop is missing and this page read the catalog instead. **A ·** build a venue stage page for this group, re-derive the three rows from its blueprint, and delete the deviation note. **B ·** rule that a group with one desk and one paper may let a section read the catalog directly, and say so in `for-section` so it stops being a break. This is the row that keeps the page at 🔴.
@@ -379,6 +379,8 @@ This section therefore reports an association and never a reduction, and every l
   The page frame this page sits in, including the caption rule every Content division above obeys.
 
 ## Log
+
+- 260806 · [REVISE-CC] `provides:` renamed to `output:` in this group, and the collision recorded below is closed. The count decided it: 3 path-valued uses here against 78 prose uses on the live MISQ board, so the smaller side moves. The name was not invented: `S06-main/section-edit/stage.md:78` already declares `output: sections/*.tex`, so the group now matches the live convention instead of adding a third word for one idea. Verified rather than assumed: `unit.py check` reports 5 atoms and 5 view pages with every need resolving, and `unit.py build` reproduces the deck at the same md5, so nothing about the products moved with the key.
 
 - 260806 · [REVISE-CC] The 373 now has the producer it was credited with. A cold read found the figure crediting `sections/source/build.py` with a word count the script never computed: its only print emitted subsections, P and sentences. The number was right and hand counted, which is the quieter half of the defect, because a page whose whole discipline is that a printed number names the thing that made it had one that did not. The script now counts prose words off the .tex it writes and prints 373, the same number, so the hand count is confirmed rather than replaced.
 
