@@ -411,6 +411,38 @@ class TermMixin:
         HOLD[str(f)] = (who, None)
         return None
 
+    def term_type(self, f, p):
+        """POST /_board/term-type {file, session, text} -> type into THIS page's PTY.
+
+        `local_cmd` above explains why the server cannot start a program on the
+        reader's machine. This is the other half, and it is the half that was
+        missing: the terminal this page already owns runs HERE, on the server, and
+        writing to its master fd is exactly what a keystroke does. So a button can
+        run a command after all, as long as the command goes where the person's own
+        terminal already is rather than where their screen is (JL 260808).
+
+        It opens no new exposure: `/_term/<key>/` already carries this same PTY over
+        a websocket on this same listener. What it adds is a named door for one line
+        of text, so a surface does not have to speak the terminal's wire protocol.
+        """
+        sid = (p.get("session") or "").strip()
+        key = term_key(f, sid) if sid else term_key(f)
+        cur = TERMS.get(key)
+        if not cur or not self.alive(cur["pid"]):
+            return None, "这一页还没有终端：先从 🔌 Plugin 开一次 TUI Chat。"
+        if cur.get("kind") != "pty" or cur.get("fd") is None:
+            return None, "这个终端不是自有 PTY，暂时只能复制命令。"
+        text = (p.get("text") or "").strip()
+        if not text:
+            return None, "没有要输入的命令。"
+        if "\n" in text or "\r" in text:
+            return None, "一次只送一行：多行命令请在终端里自己敲。"
+        try:
+            os.write(cur["fd"], (text + "\r").encode("utf-8"))
+        except Exception as e:
+            return None, f"写不进终端：{e}"
+        return {"ok": True, "key": key, "sent": text}, None
+
     def local_cmd(self, f, p):
         """POST /_board/local-cmd {path, file, session} -> the commands that put
         THIS session in a terminal, wherever the reader actually is.

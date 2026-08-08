@@ -1,0 +1,116 @@
+/* 🪜 Workflow panel · the third interaction surface, beside GUI-Chat and TUI-Chat.
+   The strip scrolls sideways rather than wrapping, because a lifecycle that wraps
+   stops reading as an order. Colours come from the board's own tokens. */
+
+#wfpanel {
+  position: fixed; right: 0; bottom: 0; left: 0; z-index: 60;
+  max-height: 58vh; overflow: auto;
+  background: var(--bg, #fff);
+  border-top: 2px solid var(--line, #d8d8d8);
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, .13);
+  padding: 14px 18px 20px;
+}
+#wfpanel[hidden] { display: none; }
+
+#wfpanel .wf-x {
+  position: absolute; top: 8px; right: 10px;
+  border: 1px solid var(--line, #d8d8d8); border-radius: 6px;
+  background: var(--bg, #fff); cursor: pointer;
+  width: 26px; height: 26px; line-height: 1; font-size: 13px;
+}
+
+.wf-head { font-size: 13px; margin: 0 0 10px; }
+.wf-head .mut { opacity: .6; font-weight: 400; }
+
+/* one row, sideways-scrolling: the order is the message */
+.wf-strip {
+  display: flex; align-items: center; gap: 3px;
+  overflow-x: auto; padding: 0 0 8px;
+}
+.wf-arrow { align-self: center; opacity: .35; font-size: 18px; }
+
+.wf-step {
+  flex: 0 0 auto; min-width: 0; max-width: none;
+  display: flex; align-items: baseline; gap: 7px;
+  text-align: left; cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid var(--line, #d8d8d8); border-radius: 7px;
+  background: var(--bg, #fff); font: inherit; white-space: nowrap;
+}
+.wf-step .wf-n { display: none; }          /* the order is the strip itself */
+.wf-step:hover { border-color: #9aa0a6; }
+
+.wf-step .wf-t { font-size: 12.5px; font-weight: 600; line-height: 1.2; }
+.wf-step .wf-s { font-size: 11px; opacity: .7; }
+.wf-step .wf-c { font-size: 10px; opacity: .5; }
+.wf-step.unknown { border-style: dashed; }
+
+.wf-step.done  { background: color-mix(in srgb, #29a745 9%, transparent); }
+.wf-step.live  { border-color: #2f6fd0; border-width: 2px; padding: 4px 9px; }
+.wf-step.live .wf-here {
+  font-size: 10px; color: #2f6fd0; font-weight: 700; letter-spacing: .04em;
+}
+/* locked is COMPUTED (an earlier step is not ✅), never a stored state */
+.wf-step.locked { opacity: .45; cursor: default; }
+.wf-step.locked:hover { border-color: var(--line, #d8d8d8); }
+.wf-step .wf-lock { font-size: 11px; }
+
+.wf-detail {
+  border-top: 1px dashed var(--line, #d8d8d8); padding-top: 10px; margin-top: 2px;
+}
+.wf-dh { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.wf-rows { margin: 0 0 8px; padding-left: 0; list-style: none; }
+.wf-rows li { font-size: 12.5px; line-height: 1.5; margin: 0 0 3px; }
+.wf-rows .ti { margin-right: 4px; }
+.wf-jump { font-size: 12px; }
+.wf-empty { font-size: 13px; opacity: .75; }
+
+@media (max-width: 620px) {
+  #wfpanel { max-height: 72vh; padding: 12px 12px 16px; }
+  .wf-step { min-width: 132px; }
+}
+
+/* 🗂 FOLDED (JL 260807): the page stays real, linkable and unchanged; it only
+   stops competing for room on the Index. Not display:none — hiding it would
+   hide the merge decision the page was KEPT to record, which is the whole
+   reason it was not archived. Dimmed, compact, still clickable. */
+.folded, .st-folded { opacity: .55; }
+li.folded, tr.folded { font-size: .92em; }
+.folded .sub, .folded .aimbar, .folded .cue { display: none; }
+.folded:hover { opacity: 1; }
+
+/* 🔌 the Plugin menu's own title row: the list stopped being "the chat picker" the
+   day two of its entries were not chats (JL 260807). */
+#chatpick .pkh {
+  font-size: 11px; letter-spacing: .06em; opacity: .55;
+  padding: 7px 12px 4px; border-bottom: 1px solid var(--line, #d8d8d8);
+  margin-bottom: 3px;
+}
+
+/* the live step's one action. The command is SHOWN, so a reader can see exactly what
+   the button would put in their hands before pressing it (QB7: what lands is what an
+   author would have typed). */
+.wf-act { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.wf-cmd { font-size: 12.5px; padding: 3px 7px; border-radius: 5px;
+          background: #f1f3f5; border: 1px solid var(--line, #d8d8d8); }
+.wf-run { font: inherit; font-size: 12px; padding: 3px 10px; cursor: pointer;
+          border: 1px solid #2f6fd0; color: #2f6fd0; border-radius: 5px;
+          background: var(--bg, #fff); }
+.wf-note { font-size: 11.5px; opacity: .6; }
+.wf-human { font-size: 12.5px; opacity: .8; }
+
+/* the way out must be unmissable: a labelled button, above everything in the panel */
+#wfpanel .wf-x { width:auto; padding:3px 10px; font-size:12px; z-index:5;
+                 background:#fff; color:#1e1e1e; }
+
+/* the options a door takes, asked before it runs */
+.wf-form { display:flex; gap:10px; flex-wrap:wrap; width:100%; margin-bottom:8px; }
+.wf-fl { display:flex; flex-direction:column; gap:2px; font-size:11px; opacity:.75; }
+.wf-f { font:inherit; font-size:12.5px; padding:4px 7px; min-width:210px;
+        border:1px solid var(--line,#d8d8d8); border-radius:5px; background:var(--bg,#fff); }
+.wf-runrow { display:flex; align-items:center; gap:8px; flex-wrap:wrap; width:100%; }
+.wf-run { font:inherit; font-size:12px; font-weight:600; padding:4px 12px; cursor:pointer;
+          border:1px solid #2f6fd0; background:#2f6fd0; color:#fff; border-radius:5px; }
+.wf-run[disabled] { opacity:.55; cursor:default; }
+.wf-copy { font:inherit; font-size:12px; padding:4px 10px; cursor:pointer;
+           border:1px solid var(--line,#d8d8d8); background:var(--bg,#fff); border-radius:5px; }

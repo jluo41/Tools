@@ -876,7 +876,7 @@ def check_one_canvas(text, name, rep):
 # demanded a digit and reported 25 of 59 pages on the live MISQ paper as
 # claimed by nothing, which was the pattern being wrong, not the board.
 PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
-PAGE_TYPE_VALUES = ("display", "slide", "design", "section")
+PAGE_TYPE_VALUES = ("display", "slide", "design", "section", "labeling")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 
