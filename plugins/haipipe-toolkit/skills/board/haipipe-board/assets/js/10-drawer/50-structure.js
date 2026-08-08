@@ -219,16 +219,25 @@
     // a plugin contributes its own surface, and an entry that cannot act on the open
     // page is never drawn. `data-v` stays the id so the existing handler still reads it.
     var page = window.boardPlugins ? window.boardPlugins.livePage() : null;
-    var entries = window.boardPlugins ? window.boardPlugins.applicable(page) : [];
-    // The menu has a NAME now (JL 260807): it is the Plugin menu, not "the chat picker",
-    // because two of its entries are not chats and the next ones will not be either.
-    pick.innerHTML = '<div class="pkh">\u{1F50C} Plugin</div>' + entries.map(function (e) {
-      var dot = e.id === 'gui' ? (tui ? '' : '●')
-              : e.id === 'tui' ? (tui ? '●' : '') : '';
-      return '<button class="pk" data-v="' + e.id + '" role="menuitem">'
-        + '<b>' + e.label + '</b><i>' + (e.hint || '') + '</i>'
-        + '<u></u><s>' + dot + '</s></button>';
-    }).join('');
+    // TWO GROUPS, ONE LIST (JL 260808). The shell splits these into two buttons because
+    // it has a bar to put them in; the in-page picker is one popup, so the split shows
+    // as two titled groups. Same registry, same ids, so `data-v` still resolves.
+    // A group with nothing applicable prints no heading: an empty heading claims the
+    // page has a workflow and then shows none, which is worse than saying nothing.
+    function group(title, menu) {
+      var rows = window.boardPlugins
+        ? window.boardPlugins.applicable(page, menu) : [];
+      if (!rows.length) return '';
+      return '<div class="pkh">' + title + '</div>' + rows.map(function (e) {
+        var dot = e.id === 'gui' ? (tui ? '' : '●')
+                : e.id === 'tui' ? (tui ? '●' : '') : '';
+        return '<button class="pk" data-v="' + e.id + '" role="menuitem">'
+          + '<b>' + e.label + '</b><i>' + (e.hint || '') + '</i>'
+          + '<u></u><s>' + dot + '</s></button>';
+      }).join('');
+    }
+    pick.innerHTML = group('\u{1F50C} Plugin', 'plugin')
+                   + group('\u{1FA9C} Workflow', 'workflow');
     pick.hidden = false;
     document.addEventListener('pointerdown', pickAway, true);
     document.addEventListener('keydown', pickKey, true);
@@ -250,7 +259,9 @@
   }
 
   // The board owns exactly two surfaces and registers them like anybody else, so the
-  // engine has no privileged path a plugin cannot take.
+  // engine has no privileged path a plugin cannot take. Both are PLUGINS: they open a
+  // surface to the right and neither knows or cares where you are on the page, which
+  // is exactly the line the Workflow menu is on the other side of.
   if (window.boardPlugins) {
     window.boardPlugins.register({
       id: 'gui', label: '\u{1F4AC} GUI Chat',

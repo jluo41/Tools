@@ -386,6 +386,10 @@
       id: 'labeling',
       label: '\u{1F3F7} Labeling',
       hint: 'this run’s steps, left to right, one live',
+      // 🪜 A WORKFLOW, not a plugin (JL 260808): it opens along the bottom and its
+      // whole content is where THIS page stands, which is why it is type-gated and
+      // GUI Chat is not. Page's four phases join this menu, not the other one.
+      menu: 'workflow',
       applies: function (page, type) { return type === 'labeling'; },
       open: function () { open(); }
     });
