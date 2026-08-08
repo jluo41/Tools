@@ -93,6 +93,45 @@ Step 3: Emit the structured tail.
 
 ---
 
+Guardrails (learned the hard way — do NOT skip)
+------------------------------------------------
+
+```
+SRC-1  A column this Fn DECLARES it reads must RAISE if absent. `safe_get(row, name,
+       default)` and a `format_date` that falls back to `datetime.now()` turn a wrong
+       column name into a plausible value with no error.
+       InferenceInverseV1219 read SEVEN names that exist in no source frame:
+
+           created_date              -> created_date_utc
+           invitation_date           -> invitation_date_utc     (read in TWO sections)
+           patient_zipcode_3         -> zipcode3
+           pharmacy_zipcode_3, ther_eq_hierarchy_level,
+           ther_eq_ult_child_ind, ther_eq_ult_parent_etc_id     -> no source at all
+
+       Result: every generated payload carried dateOfBirth 1980-01-01 and a null
+       zipCode, blanking PAge5 + PZip3FixedLen + InvCrntTimeFixedLen +
+       Zip3EngFixedLen = 371 of 1995 vocab slots, 18.6% of the model's input, for
+       months. Use a `col()` that raises for declared reads and an `opt()` for the
+       genuinely optional ones. Audit an existing Fn with:
+
+           check every safe_get/format_date name against
+           set(Ptt.columns) | set(invitation.columns) | set(Rx.columns)
+
+SRC-2  The emitted payload's KEY SET must equal the real production payload's key
+       set, asserted at build time against a captured reference. A generated payload
+       that carries the old rich training-era contract (46 fields production no
+       longer sends, 20 it does send but the writer omits) cannot test production.
+       Keep a masked real payload in the repo as the reference and diff key paths.
+
+SRC-3  A field with no source column is emitted as NULL, never omitted. Production
+       sends the key; the parser's fill/tolerance logic depends on its presence.
+
+SRC-4  Coerce numpy scalars to native Python. Parquet hands back bool_/int64/float64
+       and json.dump cannot serialize them.
+```
+
+---
+
 Scope
 ------
 
@@ -149,3 +188,22 @@ Real data catches: tables dropped by Src2InputFn (only 4 of 19 serialized), date
 
 The builder script (d1_build_* in the endpoint fn_develop task folder) must include this test.
 If the roundtrip fails, the Fn is not production-ready.
+
+**⚠️ Comparing scores is NOT sufficient — also compare the SERVED arm.** The response
+carries every arm in `predictions[]` and separately names one in `action.name`. A PostFn
+with a broken candidate list leaves all scores correct and still serves the wrong message,
+so a score-only comparison passes a broken endpoint. Assert all three:
+
+```python
+assert served == max(model_scores, key=model_scores.get)          # action.name
+assert argmax(model_scores) == argmax(endpoint_scores)            # the ranking
+assert max(abs(model[a] - endpoint[a]/100) for a in arms) < 0.001  # per-arm, SAME arm
+```
+
+**⚠️ This test must be run against a KNOWN-BROKEN build first.** A round-trip check that
+has never failed is not yet a check. The pre-existing one in `c_endpoint_nb.py` matched ANY
+train score to ANY endpoint score, across DIFFERENT arms, with the two sides scaled 100x
+apart, and was non-fatal — so it caught none of four real defects. A working reference
+implementation is `examples/Project-ExpModel-ClickPred/tasks/C_endpoint/C5_src2input_fn_develop/c1_roundtrip_gate.py`
+(in-process/Docker) and `platform-sagemaker-inference/scripts/build_endpoint/roundtrip_gate_sage.py`
+(live endpoint).
